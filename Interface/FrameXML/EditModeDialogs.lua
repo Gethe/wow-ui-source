@@ -39,7 +39,10 @@ function EditModeNewLayoutDialogMixin:OnAccept()
 		local layoutType = self.CharacterSpecificLayoutCheckButton:IsControlChecked() and Enum.EditModeLayoutType.Character or Enum.EditModeLayoutType.Account;
 		local newLayoutInfo = CopyTable(self.copyLayoutInfo);
 		EditModeManagerFrame:RevertAllChanges();
-		EditModeManagerFrame:MakeNewLayout(newLayoutInfo, layoutType, self.LayoutNameEditBox:GetText());
+
+		local isLayoutImportedNo = false;
+		EditModeManagerFrame:MakeNewLayout(newLayoutInfo, layoutType, self.LayoutNameEditBox:GetText(), isLayoutImportedNo);
+
 		StaticPopupSpecial_Hide(self);
 	end
 end
@@ -306,7 +309,13 @@ end
 
 function EditModeSystemSettingsDialogMixin:OnKeyDown(key)
 	if self.attachedToSystem then
-		self.attachedToSystem:OnKeyDown(key);
+		if key == "PRINTSCREEN" then
+			Screenshot();
+		elseif key == "ESCAPE" then
+			self.CloseButton:Click();
+		else
+			self.attachedToSystem:OnKeyDown(key);
+		end
 	end
 end
 

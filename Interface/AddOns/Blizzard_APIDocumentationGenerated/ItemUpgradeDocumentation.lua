@@ -146,6 +146,15 @@ local ItemUpgrade =
 			},
 		},
 		{
+			Name = "ItemUpgradeItemCost",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ItemUpgradeItemInfo",
 			Type = "Structure",
 			Fields =
@@ -168,7 +177,8 @@ local ItemUpgrade =
 				{ Name = "displayQuality", Type = "number", Nilable = false },
 				{ Name = "itemLevelIncrement", Type = "number", Nilable = false },
 				{ Name = "levelStats", Type = "table", InnerType = "ItemUpgradeStat", Nilable = false },
-				{ Name = "costsToUpgrade", Type = "table", InnerType = "ItemUpgradeCurrencyCost", Nilable = false },
+				{ Name = "currencyCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeCurrencyCost", Nilable = false },
+				{ Name = "itemCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeItemCost", Nilable = false },
 				{ Name = "failureMessage", Type = "string", Nilable = true },
 			},
 		},

@@ -91,7 +91,7 @@
 						<Frames>
 							<Frame parentKey="HealthBarArea" setAllPoints="true" useParentLevel="true">
 								<Frames>
-									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" useParentLevel="true">
+									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health"/>
 										<Scripts>
 											<OnLoad method="OnLoad"/>

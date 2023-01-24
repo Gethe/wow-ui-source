@@ -547,7 +547,11 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 	for i=1,MAX_ACTIVE_PETS do
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
 		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
-		local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
+
+		local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType;
+		if petID then
+			speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
+		end
 
 		if ( not C_PetJournal.IsJournalUnlocked() ) then
 			loadoutPlate.ReadOnlyFrame:Show();

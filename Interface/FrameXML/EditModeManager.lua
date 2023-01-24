@@ -1076,7 +1076,7 @@ function EditModeManagerFrameMixin:ResetDropdownToActiveLayout()
 	self.LayoutDropdown:SetSelectedValue(self.layoutInfo.activeLayout);
 end
 
-function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName)
+function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImported)
 	if newLayoutInfo and layoutName and layoutName ~= "" then
 		newLayoutInfo.layoutType = layoutType;
 		newLayoutInfo.layoutName = layoutName;
@@ -1094,7 +1094,7 @@ function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layo
 
 		table.insert(self.layoutInfo.layouts, newLayoutIndex, newLayoutInfo);
 		self:SaveLayouts();
-		C_EditMode.OnLayoutAdded(newLayoutIndex, activateNewLayout);
+		C_EditMode.OnLayoutAdded(newLayoutIndex, activateNewLayout, isLayoutImported);
 	end
 end
 
@@ -1146,7 +1146,9 @@ end
 
 function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layoutName)
 	self:RevertAllChanges();
-	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName);
+
+	local isLayoutImportedYes = true;
+	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImportedYes);
 end
 
 local function callPrepareForSave(index, systemFrame)

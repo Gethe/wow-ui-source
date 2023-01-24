@@ -1978,7 +1978,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CurrencyLayoutFrameIconTemplate" useParentLevel="true" virtual="true">
+	<Frame name="CurrencyLayoutFrameIconTemplate" mixin="CurrencyLayoutFrameIconMixin" useParentLevel="true" virtual="true">
 		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1986,10 +1986,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyByID(self.id);
-			</OnEnter>
+			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>

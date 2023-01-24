@@ -514,7 +514,29 @@ function CurrencyDisplayGroupMixin:SetCurrencyFont(fontObject)
 	self.customFontObject = fontObject;
 end
 
-CurrencyHorizontalLayoutFrameMixin = { };
+CurrencyLayoutFrameIconMixin = {};
+
+function CurrencyLayoutFrameIconMixin:OnEnter()
+	if self.currencyID then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetCurrencyByID(self.currencyID);
+	elseif self.itemID then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetItemByID(self.itemID);
+	end
+end
+
+function CurrencyLayoutFrameIconMixin:SetCurrencyID(currencyID)
+	self.currencyID = currencyID;
+	self.itemID = nil;
+end
+
+function CurrencyLayoutFrameIconMixin:SetItemID(itemID)
+	self.currencyID = nil;
+	self.itemID = itemID;
+end
+
+CurrencyHorizontalLayoutFrameMixin = {};
 
 function CurrencyHorizontalLayoutFrameMixin:Clear()
 	if self.quantityPool then
@@ -585,11 +607,33 @@ function CurrencyHorizontalLayoutFrameMixin:AddCurrency(currencyID, overrideAmou
 		local frame = self:GetIconFrame();
 		frame:SetSize(height, height);
 		frame.Icon:SetTexture(currencyInfo.iconFileID);
-		frame.id = currencyID;
+		frame:SetCurrencyID(currencyID);
 		-- spacing
 		fontString.rightPadding = self.quantitySpacing;
 		if fontString.layoutIndex > 1  then
 			fontString.leftPadding = self.currencySpacing;
 		end
+	end
+end
+
+function CurrencyHorizontalLayoutFrameMixin:AddItem(itemID, overrideAmount, color)
+	local height = self.fixedHeight;
+	-- quantity
+	local fontString = self:GetQuantityFontString();
+	fontString:SetHeight(height);
+	local includeBank = true;
+	local amountString = BreakUpLargeNumbers(overrideAmount or GetItemCount(itemID, includeBank));
+	fontString:SetText(amountString);
+	color = color or HIGHLIGHT_FONT_COLOR;
+	fontString:SetTextColor(color:GetRGB());
+	-- icon
+	local frame = self:GetIconFrame();
+	frame:SetSize(height, height);
+	frame.Icon:SetTexture(C_Item.GetItemIconByID(itemID));
+	frame:SetItemID(itemID);
+	-- spacing
+	fontString.rightPadding = self.quantitySpacing;
+	if fontString.layoutIndex > 1  then
+		fontString.leftPadding = self.currencySpacing;
 	end
 end

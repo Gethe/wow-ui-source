@@ -157,20 +157,37 @@ function FormatUnreadMailTooltip(tooltip, headerText, senders)
 	tooltip:SetText(headerText);
 end
 
+FormattingUtil = {};
+
+function FormattingUtil.GetCostString(icon, quantity, colorCode, abbreviate)
+	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
+
+	local markup = CreateTextureMarkup(icon, 64, 64, 16, 16, 0, 1, 0, 1);
+	local amountString;
+	if abbreviate then
+		amountString = AbbreviateNumbers(quantity);
+	else
+		amountString = BreakUpLargeNumbers(quantity);
+	end
+	return ("%s%s %s|r"):format(colorCode, amountString, markup);
+end
+
+function FormattingUtil.GetItemCostString(itemID, quantity, colorCode, abbreviate)
+	local icon = C_Item.GetItemIconByID(itemID);
+	if icon then
+		return FormattingUtil.GetCostString(icon, quantity, colorCode, abbreviate);
+	end
+
+	return "";
+end
+
 function GetCurrencyString(currencyID, overrideAmount, colorCode, abbreviate)
 	colorCode = colorCode or HIGHLIGHT_FONT_COLOR_CODE;
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 	if currencyInfo then
-		local currencyTexture = currencyInfo.iconFileID;
-		local markup = CreateTextureMarkup(currencyTexture, 64, 64, 16, 16, 0, 1, 0, 1);
-		local amountString;
-		if abbreviate then
-			amountString = AbbreviateNumbers(overrideAmount or currencyInfo.quantity);
-		else
-			amountString = BreakUpLargeNumbers(overrideAmount or currencyInfo.quantity);
-		end
-		return ("%s%s %s|r"):format(colorCode, amountString, markup);
+		local quantity = overrideAmount or currencyInfo.quantity;
+		return FormattingUtil.GetCostString(currencyInfo.iconFileID, quantity, colorCode, abbreviate);
 	end
 
 	return "";

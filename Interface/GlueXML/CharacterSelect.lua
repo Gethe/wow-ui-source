@@ -181,6 +181,10 @@ function CharacterSelect_OnLoad(self)
 	view:SetPadding(pad, pad, left, pad, spacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
+	
+	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions. 
+	-- When the actual character data arrives, this data provider will be discarded.
+	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 
 function CharacterSelect_OnShow(self)

@@ -18,6 +18,8 @@ MotionSicknessMixin = {
 };
 
 function MotionSicknessMixin:OnLoad()
+	self.focalCircle = false;
+	self.landscapeDarkening = false;
 	EventUtil.ContinueOnVariablesLoaded(
 		function()
 			self:RegisterEvent("CVAR_UPDATE");
@@ -58,16 +60,27 @@ function MotionSicknessMixin:OnEvent(event, ...)
 		if cvar == "motionSicknessFocalCircle" or "motionSicknessLandscapeDarkening" then
 			self:OnCVarChanged(cvar);
 		end
-	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then
-		local eventCanGlide = ...;
-		self:UpdateFocalCircle();
-		self:UpdateLandscapeDarkening(eventCanGlide);
+	elseif event == "PLAYER_CAN_GLIDE_CHANGED" then	
+		local canGlide = ...;
+		self:FullUpdate(canGlide);
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:UpdateFocalCircle();
-		self:UpdateLandscapeDarkening();
+		self:FullUpdate();
 	elseif event == "UI_SCALE_CHANGED" then
 		self:UpdateScale();
 	end
+end
+
+function MotionSicknessMixin:FullUpdate(canGlide)
+	if canGlide == nil then
+		canGlide = select(2, C_PlayerInfo.GetGlidingInfo());
+	end
+
+	if canGlide then
+		self:SetScript("OnUpdate", self.OnUpdate);
+	else
+		self:SetScript("OnUpdate", nil);
+	end
+	self:UpdateLandscapeDarkening(canGlide);
 end
 
 function MotionSicknessMixin:UpdateScale()
@@ -101,18 +114,27 @@ function MotionSicknessMixin:OnUpdate()
 	self.FocalCircle:SetShown(showFocalCircle);
 end
 
-function MotionSicknessMixin:UpdateFocalCircle()
-	local doShow = self.focalCircle and (select(3, C_PlayerInfo.GetGlidingInfo()) > 0);
-	self.FocalCircle:SetShown(doShow);
-end
-
 function MotionSicknessMixin:OnCVarChanged(cvar)
+	local hasChange = false;
+
 	if not cvar or cvar == "motionSicknessFocalCircle" then
+		local oldFocalCircle = self.focalCircle;
 		self.focalCircle = GetCVarBool("motionSicknessFocalCircle");
+		if oldFocalCircle ~= self.focalCircle then
+			hasChange = true;
+		end
 	end
 
 	if not cvar or cvar == "motionSicknessLandscapeDarkening" then
+		local oldLandscapeDarkening = self.landscapeDarkening;
 		self.landscapeDarkening = GetCVarBool("motionSicknessLandscapeDarkening");
+		if oldLandscapeDarkening ~= self.landscapeDarkening then
+			hasChange = true;
+		end
+	end
+
+	if not hasChange then
+		return;
 	end
 
 	if self.focalCircle or self.landscapeDarkening then
@@ -129,24 +151,13 @@ function MotionSicknessMixin:OnCVarChanged(cvar)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	end
 
-	if not cvar or cvar == "motionSicknessFocalCircle" then
-		self:UpdateFocalCircle();
-	end
-	if not cvar or cvar == "motionSicknessLandscapeDarkening" then
-		self:UpdateLandscapeDarkening();
-	end
+	self:FullUpdate();
 end
 
-function MotionSicknessMixin:UpdateLandscapeDarkening(eventCanGlide)
+function MotionSicknessMixin:UpdateLandscapeDarkening(canGlide)
 	local doShow = false;
-	if self.landscapeDarkening then
-		local isGliding, canGlide, forwardSpeed = C_PlayerInfo.GetGlidingInfo();
-
-		if eventCanGlide == nil then
-			doShow = canGlide;
-		else
-			doShow = eventCanGlide
-		end
+	if self.landscapeDarkening then	
+		doShow = canGlide;
 	end
 
 	if doShow then
@@ -154,11 +165,9 @@ function MotionSicknessMixin:UpdateLandscapeDarkening(eventCanGlide)
 			texture:SetAlpha(0);
 			texture:Show();
 		end
-		self:SetScript("OnUpdate", self.OnUpdate);	
 	else
 		for i, texture in ipairs(self.LandscapeDarkeningTextures) do
 			texture:Hide();
 		end
-		self:SetScript("OnUpdate", nil);
 	end	
 end
