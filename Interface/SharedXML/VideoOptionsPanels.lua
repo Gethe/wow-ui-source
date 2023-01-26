@@ -509,7 +509,7 @@ function Graphics_TableGetValue(self)
 			local allMatch = true;
 			for _, child in pairs(self.childOptions) do
 				if(_G[child].graphicsCVar) then
-					local childValue = _G[child].newValue or tonumber(GetCVar(_G[child].graphicsCVar));
+					local childValue = _G[child].newValue or tonumber(GetGraphicsCVarOffsetForUI(GetCVar(_G[child].graphicsCVar)));
 					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
 						allMatch = false;
 						break;
@@ -529,7 +529,7 @@ function Graphics_TableGetValue(self)
 		if(value.cvars ~= nil) then
 			for cvar, cvar_value in pairs(value.cvars) do
 				if(readCvars[cvar] == nil) then
-					readCvars[cvar] = BlizzardOptionsPanel_GetCVarSafe(cvar);
+					readCvars[cvar] = GetGraphicsCVarOffsetForUI(BlizzardOptionsPanel_GetCVarSafe(cvar));
 				end
 				if(readCvars[cvar] ~= cvar_value) then
 					match = false;
@@ -1273,7 +1273,7 @@ function Graphics_SliderOnLoad(self)
 	self.SetValue = Graphics_TableSetValue;
 
 	self.GetCurrentValue = function(self)
-		return self.newValue or tonumber(GetCVar(self.graphicsCVar));
+		return self.newValue or tonumber(GetGraphicsCVarOffsetForUI(GetCVar(self.graphicsCVar)));
 	end;
 
 	if(self.graphicsCVar) then

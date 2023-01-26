@@ -999,6 +999,12 @@ function AuctionFrameBrowse_Update()
 				MoneyFrame_Update(moneyFrame:GetName(), sortedPrice);
 
 				yourBidText = _G[buttonName.."YourBidText"];
+
+				-- Re-anchor "Your bid" label to moneyFrame in case "Buyout" label isn't shown
+				yourBidText:SetPoint("TOP", moneyFrame, "TOP", 0, 0);
+				yourBidText:SetPoint("BOTTOM", moneyFrame, "BOTTOM", 0, 0);
+				yourBidText:SetPoint("RIGHT", moneyFrame, "LEFT", -2, 0);
+
 				if ( highBidder ) then
 					yourBidText.Text:SetText(YOUR_BID);
 					yourBidText:Show();
@@ -1030,6 +1036,10 @@ function AuctionFrameBrowse_Update()
 					else
 						buyoutFrameText.Text:SetText(BUYOUT_COST);
 					end
+
+					-- Right-align "Your bid" or "20x" label with "Buyout" label if "Buyout" is shown.
+					-- (Buyout price is always >= bid price so assume its text has >= width too.)
+					yourBidText:SetPoint("RIGHT", buyoutFrameText, "RIGHT", 0, 0);
 				else
 					moneyFrame:SetPoint("RIGHT", button, "RIGHT", 10, 3);
 					buyoutFrame:Hide();
@@ -2051,7 +2061,7 @@ local function SetupUnitPriceTooltip(tooltip, type, auctionItem, insertNewline)
 			else
 				prefix = AUCTION_TOOLTIP_TOTAL_BID_PREFIX;
 			end
-			SetTooltipMoney(tooltip, amount, "STATIC", prefix);
+			SetTooltipMoney(tooltip, amount, "AUCTION_TOOLTIP", prefix);
 		end
 
 		if ( hasBuyout ) then
@@ -2062,7 +2072,7 @@ local function SetupUnitPriceTooltip(tooltip, type, auctionItem, insertNewline)
 			else
 				prefix = AUCTION_TOOLTIP_TOTAL_BUYOUT_PREFIX;
 			end
-			SetTooltipMoney(tooltip, amount, "STATIC", prefix);
+			SetTooltipMoney(tooltip, amount, "AUCTION_TOOLTIP", prefix);
 		end
 
 		-- This is necessary to update the extents of the tooltip

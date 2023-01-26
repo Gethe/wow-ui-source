@@ -399,7 +399,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	if ( not UnitIsConnected(frame.unit) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
-	elseif (UnitIsDead(frame.unit)) then
+	elseif (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
 		-- Also hide the health bar
@@ -751,7 +751,7 @@ end
 function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount, barOffsetXPercent)
 	local totalWidth, totalHeight = frame.healthBar:GetSize();
 
-	if ( totalWidth == 0 or amount == 0 ) then
+	if ( totalWidth == 0 or amount == 0 ) then	
 		bar:Hide();
 		if ( bar.overlay ) then
 			bar.overlay:Hide();

@@ -693,27 +693,46 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
-	
-	
-	local itemName = "";
-	local itemQuality = 1;
-	local _;
-	local specs = {};
-	if(itemButton.link) then
-		itemName, _, itemQuality = GetItemInfo(itemButton.link);
-	end
-	local r, g, b = GetItemQualityColor(itemQuality);
+
+	local popupData, specs = MerchantFrame_GetProductInfo(itemButton);
+	popupData.count = numToPurchase;
 	local specText = "";
 	
 	if (itemButton.showNonrefundablePrompt) then
-		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, 
-							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
-							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, popupData);
 	else
-		StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
-							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
-							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+		StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, popupData);
 	end
+end
+
+function MerchantFrame_GetProductInfo(itemButton)
+	local itemName, itemHyperlink;
+	local itemQuality = 1;
+	local r, g, b = 1, 1, 1;
+	if(itemButton.link) then
+		itemName, itemHyperlink, itemQuality = GetItemInfo(itemButton.link);
+	end
+
+	local specs = {};
+	if ( itemName ) then
+		--It's an item
+		r, g, b = GetItemQualityColor(itemQuality);
+		--specs = GetItemSpecInfo(itemButton.link, specs);
+	else
+		--Not an item. Could be currency or something. Just use what's on the button.
+		itemName = itemButton.name;
+		r, g, b = GetItemQualityColor(1);
+	end
+
+	local productInfo = {
+		texture = itemButton.texture,
+		name = itemName,
+		color = {r, g, b, 1},
+		link = itemButton.link,
+		index = itemButton:GetID(),
+	};
+
+	return productInfo, specs;
 end
 
 function MerchantFrame_ResetRefundItem()
