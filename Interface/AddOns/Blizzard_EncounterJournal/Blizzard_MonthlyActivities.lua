@@ -341,6 +341,8 @@ function MonthlyActivitiesFilterListMixin:OnLoad()
 end
 
 function MonthlyActivitiesFilterListMixin:UpdateFilters()
+	local oldSelection = MonthlyActivityFilterSelection:GetFirstSelectedElementData();
+
 	local dataProvider = CreateDataProvider();
 	
 	local allTags = C_PerksActivities.GetAllPerksActivityTags();
@@ -379,7 +381,9 @@ function MonthlyActivitiesFilterListMixin:UpdateFilters()
 	
 	self.ScrollBox:SetDataProvider(dataProvider);
 
-	if not MonthlyActivityFilterSelection:HasSelection() then
+	if oldSelection then
+		MonthlyActivityFilterSelection:SelectElementDataByPredicate(function(elementData) return elementData.filter == oldSelection.filter; end);
+	else
 		MonthlyActivityFilterSelection:SelectFirstElementData();
 	end
 end

@@ -212,6 +212,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsTradingPostAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTravelersLogAvailable",
 			Type = "Function",
 

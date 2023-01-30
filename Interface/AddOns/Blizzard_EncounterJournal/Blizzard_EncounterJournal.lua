@@ -628,11 +628,22 @@ function EncounterJournal_OnShow(self)
 	end
 
 	EncounterJournal_CheckAndDisplayLootTab();
+	EncounterJournal_CheckAndDisplayTradingPostTab();
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
+end
 
-	PanelTemplates_SetTabEnabled(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
+function EncounterJournal_CheckAndDisplayTradingPostTab()
+	EncounterJournal.suggestTab:ClearAllPoints();
+	if C_PlayerInfo.IsTradingPostAvailable() then
+		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
+		PanelTemplates_SetTabEnabled(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
+		EncounterJournal.suggestTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT", 3, 0);
+	else
+		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
+		EncounterJournal.suggestTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "LEFT");
+	end
 end
 
 function EncounterJournal_CheckAndDisplayLootTab()

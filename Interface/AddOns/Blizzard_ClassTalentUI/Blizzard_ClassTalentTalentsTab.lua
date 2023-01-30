@@ -347,7 +347,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 
 		local commitedConfigID = self.commitedConfigID;
 		if commitedConfigID then
-			self:UpdateLastSelectedConfigID(commitedConfigID);
+			self:CheckUpdateLastSelectedConfigID(commitedConfigID);
 		end
 
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
@@ -365,7 +365,7 @@ function ClassTalentTalentsTabMixin:OnTraitConfigUpdated(configID)
 		self:UpdateTreeCurrencyInfo(skipButtonUpdates);
 	elseif configID == self.autoLoadNewConfigID then
 		self:OnTraitConfigCreateFinished(self.autoLoadNewConfigID);
-		self:UpdateLastSelectedConfigID(configID);
+		self:CheckUpdateLastSelectedConfigID(configID);
 	end
 
 	-- There are expected cases for TRAIT_CONFIG_UPDATED being fired that we don't need to react to
@@ -547,8 +547,12 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 	self.LoadoutDropDown:SetLoadCallback(LoadConfiguration);
 end
 
-function ClassTalentTalentsTabMixin:UpdateLastSelectedConfigID(configID)
+function ClassTalentTalentsTabMixin:CheckUpdateLastSelectedConfigID(configID)
 	if self:IsInspecting() then
+		return;
+	end
+
+	if configID == C_ClassTalents.GetActiveConfigID() then
 		return;
 	end
 
@@ -922,7 +926,7 @@ function ClassTalentTalentsTabMixin:LoadConfigInternal(configID, autoApply, skip
 	self.isConfigReadyToApply = isConfigReadyToApply;
 
 	if loadResult == Enum.LoadConfigResult.NoChangesNecessary then
-		self:UpdateLastSelectedConfigID(configID);
+		self:CheckUpdateLastSelectedConfigID(configID);
 
 		if self.unflagStarterBuildAfterNextCommit then
 			self:UnflagStarterBuild();
