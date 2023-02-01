@@ -5,6 +5,7 @@ StanceBarMixin = {};
 
 function StanceBarMixin:OnLoad()
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
+	self:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
 end
 
 function StanceBarMixin:OnEvent(event)
@@ -21,6 +22,7 @@ end
 
 function StanceBarMixin:Update()
 	self.numForms = GetNumShapeshiftForms();
+	self.numButtonsShowable = self.numForms or self.numButtons;
 	if ( self.numForms > 0) then
 		self:UpdateState();
 	end
@@ -70,7 +72,6 @@ function StanceBarMixin:UpdateState()
 	end
 
 	self:UpdateShownButtons();
-	self:UpdateGridLayout();
 end
 
 function StanceBarMixin:Select(id)

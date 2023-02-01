@@ -945,15 +945,20 @@ function TalentFrameBaseMixin:UpdateTreeInfo(skipButtonUpdates)
 end
 
 function TalentFrameBaseMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
-	self.treeCurrencyInfo = C_Traits.GetTreeCurrencyInfo(self:GetConfigID(), self:GetTalentTreeID(), self.excludeStagedChangesForCurrencies);
-
 	self.treeCurrencyInfoMap = {};
-	for i, treeCurrency in ipairs(self.treeCurrencyInfo) do
-		self.treeCurrencyInfoMap[treeCurrency.traitCurrencyID] = treeCurrency;
-	end
 
-	if not skipButtonUpdates then
-		self:UpdateAllButtons();
+	local configID = self:GetConfigID();
+	local treeID = self:GetTalentTreeID();
+	if configID and treeID then
+		self.treeCurrencyInfo = C_Traits.GetTreeCurrencyInfo(configID, treeID, self.excludeStagedChangesForCurrencies);
+
+		for i, treeCurrency in ipairs(self.treeCurrencyInfo) do
+			self.treeCurrencyInfoMap[treeCurrency.traitCurrencyID] = treeCurrency;
+		end
+
+		if not skipButtonUpdates then
+			self:UpdateAllButtons();
+		end
 	end
 end
 

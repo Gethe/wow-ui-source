@@ -1670,10 +1670,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
-	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-	end
-
 	bar.editModeForceShow = false;
 	bar:SetShown(self.oldActionBarSettings[bar].isShown);
 end
@@ -1684,11 +1680,6 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 
 	if show then
 		bar.editModeForceShow = true;
-
-		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) and (bar.numShowingButtonsOrSpacers == 0 or not bar.dontShowAllButtonsInEditMode) then
-			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-		end
-
 		bar:Show();
 		bar:HighlightSystem();
 	else

@@ -808,8 +808,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
 		self:EditModeSetScale(iconScale);
 	end
 
-	for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
-		buttonOrSpacer:SetScale(iconScale);
+	for i, actionButton in pairs(self.actionButtons) do
+		actionButton.container:SetScale(iconScale);
 	end
 
 	-- Changing icon size will effect the size of the ResizeLayoutFrame

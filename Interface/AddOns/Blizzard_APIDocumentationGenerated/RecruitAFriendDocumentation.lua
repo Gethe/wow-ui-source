@@ -242,14 +242,21 @@ local RecruitAFriend =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "lifetimeMonths", Type = "number", Nilable = false },
-				{ Name = "spentMonths", Type = "number", Nilable = false },
-				{ Name = "availableMonths", Type = "number", Nilable = false },
-				{ Name = "claimInProgress", Type = "bool", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
 				{ Name = "nextReward", Type = "RafReward", Nilable = true },
 				{ Name = "recruitmentInfo", Type = "RafRecruitmentinfo", Nilable = true },
 				{ Name = "recruits", Type = "table", InnerType = "RafRecruit", Nilable = false },
+				{ Name = "claimInProgress", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RafMonthCount",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "lifetimeMonths", Type = "number", Nilable = false },
+				{ Name = "spentMonths", Type = "number", Nilable = false },
+				{ Name = "availableMonths", Type = "number", Nilable = false },
 			},
 		},
 		{

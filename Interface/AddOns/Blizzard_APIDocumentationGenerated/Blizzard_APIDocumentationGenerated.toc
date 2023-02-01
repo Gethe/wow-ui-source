@@ -33,6 +33,7 @@ CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
 ConsoleDocumentation.lua
+ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
 CooldownFrameAPIDocumentation.lua
@@ -242,6 +243,7 @@ WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
 ZoneAbilityDocumentation.lua
 PerksProgramDocumentation.lua
+AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua

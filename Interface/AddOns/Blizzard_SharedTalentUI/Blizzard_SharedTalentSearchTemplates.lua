@@ -47,7 +47,8 @@ function TalentSearchPreviewContainerMixin:OnLoad()
 		button:Init(elementData);
 	end);
 	view:SetPadding(1,3,0,0,1);
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ScrollBox:SetView(view);
 	
 	self.DefaultResultButton:SetScript("OnClick", GenerateClosure(self.OnDefaultResultButtonClicked, self));
 	self.DefaultResultButton:SetScript("OnEnter", GenerateClosure(self.OnDefaultResultButtonEnter, self));

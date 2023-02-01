@@ -21,6 +21,15 @@ function GetChatTimestampFormat()
 	return nil;
 end
 
+ChatFrameUtil = {};
+
+function ChatFrameUtil.ForEachChatFrame(func)
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName];
+		func(frame);
+	end
+end
+
 CHAT_SHOW_IME = false;
 
 MAX_CHARACTER_NAME_BYTES = 305;
@@ -3519,12 +3528,7 @@ function ChatFrame_GetMentorChannelStatus(entityStatus, channelRuleSet)
 	return Enum.PlayerMentorshipStatus.None;
 end
 
-local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
-	-- Renaming for clarity:
-	local specialFlag = arg6;
-	local zoneChannelID = arg7;
-	local localChannelID = arg8;
-
+local function GetPFlag(specialFlag, zoneChannelID, localChannelID)
 	if specialFlag ~= "" then
 		if specialFlag == "GM" or specialFlag == "DEV" then
 			-- Add Blizzard Icon if  this was sent by a GM/DEV
@@ -3833,116 +3837,132 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		else
-			local body;
-
-			local _, fontHeight = FCF_GetChatWindowInfo(self:GetID());
-
-			if ( fontHeight == 0 ) then
-				--fontHeight will be 0 if it's still at the default (14)
-				fontHeight = 14;
-			end
-
-			-- Add AFK/DND flags
-			local pflag = GetPFlag(...);
-
-			if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
-				return;
-			end
-
-			local showLink = 1;
-			if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
-				showLink = nil;
-			else
-				arg1 = gsub(arg1, "%%", "%%%%");
-			end
-
-			-- Search for icon links and replace them with texture links.
-			arg1 = C_ChatInfo.ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
-
-			--Remove groups of many spaces
-			arg1 = RemoveExtraSpaces(arg1);
-
-			local playerLink;
-			local playerLinkDisplayText = coloredName;
-			local relevantDefaultLanguage = self.defaultLanguage;
-			if ( (type == "SAY") or (type == "YELL") ) then
-				relevantDefaultLanguage = self.alternativeDefaultLanguage;
-			end
-			local usingDifferentLanguage = (arg3 ~= "") and (arg3 ~= relevantDefaultLanguage);
-			local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
-
-			if ( usingDifferentLanguage or not usingEmote ) then
-				playerLinkDisplayText = ("[%s]"):format(coloredName);
-			end
-
-			local isCommunityType = type == "COMMUNITIES_CHANNEL";
+			local msgTime = time();
 			local playerName, lineID, bnetIDAccount = arg2, arg11, arg13;
-			if ( isCommunityType ) then
-				local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
-				local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
-				if (messageInfo ~= nil) then
-					if ( isBattleNetCommunity ) then
-						playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+
+			local function MessageFormatter(msg)
+				local fontHeight = select(2, FCF_GetChatWindowInfo(self:GetID()));
+				if ( fontHeight == 0 ) then
+					--fontHeight will be 0 if it's still at the default (14)
+					fontHeight = 14;
+				end
+
+				-- Add AFK/DND flags
+				local pflag = GetPFlag(arg6, arg7, arg8);
+
+				if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
+					return;
+				end
+
+				local showLink = 1;
+				if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
+					showLink = nil;
+				else
+					msg = gsub(msg, "%%", "%%%%");
+				end
+
+				-- Search for icon links and replace them with texture links.
+				msg = C_ChatInfo.ReplaceIconAndGroupExpressions(msg, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
+
+				--Remove groups of many spaces
+				msg = RemoveExtraSpaces(msg);
+
+				local playerLink;
+				local playerLinkDisplayText = coloredName;
+				local relevantDefaultLanguage = self.defaultLanguage;
+				if ( (type == "SAY") or (type == "YELL") ) then
+					relevantDefaultLanguage = self.alternativeDefaultLanguage;
+				end
+				local usingDifferentLanguage = (arg3 ~= "") and (arg3 ~= relevantDefaultLanguage);
+				local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
+
+				if ( usingDifferentLanguage or not usingEmote ) then
+					playerLinkDisplayText = ("[%s]"):format(coloredName);
+				end
+
+				local isCommunityType = type == "COMMUNITIES_CHANNEL";
+				if ( isCommunityType ) then
+					local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
+					local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
+					if (messageInfo ~= nil) then
+						if ( isBattleNetCommunity ) then
+							playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+						else
+							playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+						end
 					else
-						playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+						playerLink = playerLinkDisplayText;
 					end
 				else
-					playerLink = playerLinkDisplayText;
-				end
-			else
-				if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
-					playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
-				else
-					playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
-				end
-			end
-
-			local message = arg1;
-			if ( arg14 ) then	--isMobile
-				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
-			end
-
-			if ( usingDifferentLanguage ) then
-				local languageHeader = "["..arg3.."] ";
-				if ( showLink and (arg2 ~= "") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink);
-				else
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
-				end
-			else
-				if ( not showLink or arg2 == "" ) then
-					if ( type == "TEXT_EMOTE" ) then
-						body = message;
+					if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
+						playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
-					end
-				else
-					if ( type == "EMOTE" ) then
-						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
-					elseif ( type == "TEXT_EMOTE") then
-						body = string.gsub(message, arg2, pflag..playerLink, 1);
-					elseif (type == "GUILD_ITEM_LOOTED") then
-						body = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
-					else
-						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+						playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
 					end
 				end
+
+				-- isMobile
+				local outMsg = arg14 and ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b) or "";
+				local appendMsg = true;
+
+				if ( usingDifferentLanguage ) then
+					local languageHeader = "["..arg3.."] ";
+					if ( showLink and (arg2 ~= "") ) then
+						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..outMsg, pflag..playerLink);
+					else
+						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..outMsg, pflag..arg2);
+					end
+				else
+					if ( not showLink or arg2 == "" ) then
+						if ( type ~= "TEXT_EMOTE" ) then
+							outMsg = format(_G["CHAT_"..type.."_GET"]..outMsg, pflag..arg2, arg2);
+						end
+					else
+						if ( type == "EMOTE" ) then
+							outMsg = format(_G["CHAT_"..type.."_GET"]..outMsg, pflag..playerLink);
+						elseif ( type == "TEXT_EMOTE") then
+							appendMsg = false;
+							outMsg = string.gsub(msg, arg2, pflag..playerLink, 1);
+						elseif (type == "GUILD_ITEM_LOOTED") then
+							appendMsg = false;
+							outMsg = string.gsub(msg, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+						else
+							outMsg = format(_G["CHAT_"..type.."_GET"]..outMsg, pflag..playerLink);
+						end
+					end
+				end
+
+				-- Add Channel
+				if (channelLength > 0) then
+					outMsg = "|Hchannel:channel:"..arg8.."|h["..ChatFrame_ResolvePrefixedChannelName(arg4).."]|h "..outMsg;
+				end
+
+				--Add Timestamps
+				local chatTimestampFmt = GetChatTimestampFormat();
+				if ( chatTimestampFmt ) then
+					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
+				end
+				
+				if appendMsg then
+					outMsg = outMsg..msg;
+				end
+
+				return outMsg;
 			end
 
-			-- Add Channel
-			if (channelLength > 0) then
-				body = "|Hchannel:channel:"..arg8.."|h["..ChatFrame_ResolvePrefixedChannelName(arg4).."]|h "..body;
-			end
-
-			--Add Timestamps
-			local chatTimestampFmt = GetChatTimestampFormat();
-			if ( chatTimestampFmt ) then
-				body = BetterDate(chatTimestampFmt, time())..body;
-			end
-
+			local isChatLineCensored = C_ChatInfo.IsChatLineCensored(lineID);
+			local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
 			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
-			self:AddMessage(body, info.r, info.g, info.b, info.id, accessID, typeID);
+			
+			-- The message formatter is captured so that the original message can be reformatted when a censored message
+			-- is approved to be shown. We only need to pack the event args if the line was censored, as the message transformation
+			-- step is the only code that needs these arguments. See ItemRef.lua "censoredmessage".
+			local eventArgs;
+			if isChatLineCensored then
+				eventArgs = SafePack(...);
+			end
+			self:AddMessage(msg, info.r, info.g, info.b, info.id, accessID, typeID, event, eventArgs, MessageFormatter);
 		end
 
 		if ( type == "WHISPER" or type == "BN_WHISPER" ) then
@@ -4819,7 +4839,17 @@ function ChatEdit_UpdateHeader(editBox)
 	header:SetTextColor(info.r, info.g, info.b);
 	headerSuffix:SetTextColor(info.r, info.g, info.b);
 
-	editBox:SetTextInsets(15 + header:GetWidth() + (headerSuffix:IsShown() and headerSuffix:GetWidth() or 0), 13, 0, 0);
+	local languageHeaderWidth = 0;
+	if header:IsShown() and editBox.language and editBox.language ~= GetDefaultLanguage() then
+		editBox.languageHeader:Show();
+		editBox.languageHeader:SetWidth(0);
+		editBox.languageHeader:SetText(string.format(CHAT_LANGUAGE_NAME_TAG, editBox.language));
+		languageHeaderWidth = editBox.languageHeader:GetWidth();
+	else
+		editBox.languageHeader:Hide();
+	end
+
+	editBox:SetTextInsets(15 + header:GetWidth() + (headerSuffix:IsShown() and headerSuffix:GetWidth() or 0) + languageHeaderWidth, 13, 0, 0);
 	editBox:SetTextColor(info.r, info.g, info.b);
 
 	editBox.focusLeft:SetVertexColor(info.r, info.g, info.b);
@@ -5099,6 +5129,12 @@ function ChatEdit_OnInputLanguageChanged(self)
 	local button = _G[self:GetName().."Language"];
 	local variable = _G["INPUT_"..self:GetInputLanguage()];
 	button:SetText(variable);
+end
+
+function ChatEdit_SetGameLanguage(self, language, languageId)
+	self.language = language;
+	self.languageID = languageId;
+	ChatEdit_UpdateHeader(self);
 end
 
 local function processChatType(editBox, msg, index, send)
@@ -5402,11 +5438,16 @@ function ChatMenu_OnLoad(self)
 	UIMenu_AddButton(self, GUILD_MESSAGE, SLASH_GUILD1, ChatMenu_Guild);
 	UIMenu_AddButton(self, YELL_MESSAGE, SLASH_YELL1, ChatMenu_Yell);
 	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_SMART_WHISPER1, ChatMenu_Whisper);
-	UIMenu_AddButton(self, EMOTE_MESSAGE, SLASH_EMOTE1, ChatMenu_Emote, "EmoteMenu");
 	UIMenu_AddButton(self, REPLY_MESSAGE, SLASH_REPLY1, ChatMenu_Reply);
-	UIMenu_AddButton(self, LANGUAGE, nil, nil, "LanguageMenu");
-	UIMenu_AddButton(self, VOICEMACRO_LABEL, nil, nil, "VoiceMacroMenu");
 	UIMenu_AddButton(self, MACRO, SLASH_MACRO1, ShowMacroFrame);
+	UIMenu_AddButton(self, EMOTE_MESSAGE, SLASH_EMOTE1, ChatMenu_Emote, "EmoteMenu");
+
+	local VoiceMacroMenuButton = UIMenu_AddButton(self, VOICEMACRO_LABEL, nil, nil, "VoiceMacroMenu");
+	VoiceMacroMenuButton.dontHideParentOnClick = true;
+
+	local languageMenuButton = UIMenu_AddButton(self, LANGUAGE, nil, nil, "LanguageMenu");
+	languageMenuButton.dontHideParentOnClick = true;
+
 	UIMenu_AutoSize(self);
 end
 
@@ -5472,14 +5513,6 @@ function EmoteMenu_OnLoad(self)
 	OnMenuLoad(self, EmoteList, EmoteMenu_Click);
 end
 
-function LanguageMenu_OnLoad(self)
-	UIMenu_Initialize(self);
-	self.parentMenu = "ChatMenu";
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
-	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-end
-
 function VoiceMacroMenu_Click(self)
 	local emote = TextEmoteSpeechList[self:GetID()];
 	if (emote == EMOTE454_TOKEN or emote == EMOTE455_TOKEN) then
@@ -5499,49 +5532,60 @@ function VoiceMacroMenu_OnLoad(self)
 	OnMenuLoad(self, TextEmoteSpeechList, VoiceMacroMenu_Click);
 end
 
-function LanguageMenu_OnEvent(self, event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		self:Hide();
-		UIMenu_Initialize(self);
-		LanguageMenu_LoadLanguages(self);
-		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetDefaultLanguage();
-		return;
-	end
-	if ( event == "LANGUAGE_LIST_CHANGED" ) then
-		self:Hide();
-		UIMenu_Initialize(self);
-		LanguageMenu_LoadLanguages(self);
-		return;
-	end
-	if ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
-		self:Hide();
-		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetDefaultLanguage();
-		return;
+LanguageMenuMixin = {};
+
+function LanguageMenuMixin:OnLoad()
+	self.parentMenu = "ChatMenu";
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("LANGUAGE_LIST_CHANGED");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+	self:RegisterEvent("CAN_PLAYER_SPEAK_LANGUAGE_CHANGED");
+end
+
+function LanguageMenuMixin:OnEvent(event, ...)
+	self:ValidateSelectedLanguage();
+
+	if self:IsShown() then
+		self:SetupLanguageButtons();
 	end
 end
 
-function LanguageMenu_LoadLanguages(self)
-	local numLanguages = GetNumLanguages();
-	local i;
-	local editBoxLanguageID = self:GetParent().chatFrame.editBox.languageID;
-	local languageKnown = false;
-	for i = 1, numLanguages, 1 do
-		local language, languageID = GetLanguageByIndex(i);
-		UIMenu_AddButton(self, language, nil, LanguageMenu_Click);
-		if ( languageID == editBoxLanguageID ) then
-			languageKnown = true;
-		end
-	end
+function LanguageMenuMixin:OnShow()
+	self:ValidateSelectedLanguage();
+	self:SetupLanguageButtons();
+end
 
-	if ( languageKnown ~= true ) then
-		self:GetParent().chatFrame.editBox.language, self:GetParent().chatFrame.editBox.languageID = GetLanguageByIndex(1);
+function LanguageMenuMixin:GetSelectedLanguageId()
+	return self:GetParent().chatFrame.editBox.languageID;
+end
+
+function LanguageMenuMixin:SetLanguage(language, languageId)
+	ChatEdit_SetGameLanguage(self:GetParent().chatFrame.editBox, language, languageId);
+end
+
+function LanguageMenuMixin:ValidateSelectedLanguage()
+	local editBoxLanguageId = self:GetSelectedLanguageId();
+	if not editBoxLanguageId or not C_ChatInfo.CanPlayerSpeakLanguage(editBoxLanguageId) then
+		local defaultLanguage, defaultLanguageId = GetDefaultLanguage();
+		self:SetLanguage(defaultLanguage, defaultLanguageId);
+	end
+end
+
+function LanguageMenuMixin:SetupLanguageButtons()
+	UIMenu_Initialize(self);
+
+	local editBoxLanguageId = self:GetSelectedLanguageId();
+	for i = 1, GetNumLanguages() do
+		local language, languageId = GetLanguageByIndex(i);
+		local button = UIMenu_AddButton(self, language, nil, LanguageMenuButton_OnClick);
+		button:SetNormalFontObject(languageId == editBoxLanguageId and button.initialHighlightFont or button.initialNormalFont);
 	end
 
 	UIMenu_AutoSize(self);
 end
 
-function LanguageMenu_Click(self)
-	self:GetParent():GetParent().chatFrame.editBox.language, self:GetParent():GetParent().chatFrame.editBox.languageID = GetLanguageByIndex(self:GetID());
+function LanguageMenuButton_OnClick(self)
+	LanguageMenu:SetLanguage(GetLanguageByIndex(self:GetID()));
 	ChatMenu:Hide();
 end
 
@@ -5735,4 +5779,35 @@ end
 function Social_GetShareScreenshotLink()
 	local index = C_Social.GetLastScreenshotIndex();
 	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
+end
+
+local NewLanguageHelpTipInfo = {
+	text = NEW_SPOKEN_LANGUAGE_HELPTIP,
+	buttonStyle = HelpTip.ButtonStyle.Close,
+	offsetX = 0, offsetY = 0,
+	targetPoint = HelpTip.Point.RightEdgeCenter,
+};
+
+ChatFrameMenuButtonMixin = {};
+
+function ChatFrameMenuButtonMixin:OnLoad()
+	self:RegisterEvent("CAN_PLAYER_SPEAK_LANGUAGE_CHANGED");
+end
+
+function ChatFrameMenuButtonMixin:OnEvent(event, ...)
+	if event == "CAN_PLAYER_SPEAK_LANGUAGE_CHANGED" then
+		local languageId, canPlayerSpeakLanguage = ...;
+		if canPlayerSpeakLanguage and not ChatMenu:IsShown() then
+			HelpTip:Show(self, NewLanguageHelpTipInfo, self);
+		end
+	end
+end
+
+function ChatFrameMenuButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+	ChatFrame_ToggleMenu();
+
+	if ChatMenu:IsShown() and HelpTip:IsShowingAny(self) then
+		HelpTip:HideAll(self);
+	end
 end

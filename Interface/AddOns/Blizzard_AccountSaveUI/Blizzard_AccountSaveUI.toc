@@ -1,0 +1,5 @@
+## Title: Blizzard_AccountSaveUI
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: Glue
+Blizzard_AccountSaveUI.xml

@@ -1714,6 +1714,8 @@ function PaperDollItemSlotButton_Update(self)
 		end
 	end
 
+	self:UpdateItemContextMatching();
+
 	local quality = GetInventoryItemQuality("player", self:GetID());
 	local suppressOverlays = self.HasPaperDollAzeriteItemOverlay;
 	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()), suppressOverlays);

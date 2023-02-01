@@ -327,7 +327,7 @@ local currencySpecific = {
 local function currencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
-	assert(info ~= nil, ("Missing currency info for currency ID '%d'"):format(currency));
+	assert(info ~= nil, ("Missing currency info for currency ID '%d', bpay product list status '%d'"):format(currency, C_StoreSecure.GetLastProductListResponseError()));
 	return info;
 end
 

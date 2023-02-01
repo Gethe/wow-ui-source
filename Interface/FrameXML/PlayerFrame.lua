@@ -379,18 +379,23 @@ end
 
 function PlayerFrame_UpdateRolesAssigned()
 	local roleIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RoleIcon;
-	local role = UnitGroupRolesAssigned("player");
 	local hasIcon = false;
 
-	if (role == "TANK") then
-		roleIcon:SetAtlas("roleicon-tiny-tank", TextureKitConstants.IgnoreAtlasSize);
-		hasIcon = true;
-	elseif (role == "HEALER") then
-		roleIcon:SetAtlas("roleicon-tiny-healer", TextureKitConstants.IgnoreAtlasSize);
-		hasIcon = true;
-	elseif (role == "DAMAGER") then
-		roleIcon:SetAtlas("roleicon-tiny-dps", TextureKitConstants.IgnoreAtlasSize);
-		hasIcon = true;
+	-- Only show role icons when in instanced content areas (raids, dungeons, battleground, etc.)
+	local _, instanceType = GetInstanceInfo();
+	if instanceType ~= "none" then
+		local role = UnitGroupRolesAssigned("player");
+
+		if (role == "TANK") then
+			roleIcon:SetAtlas("roleicon-tiny-tank", TextureKitConstants.IgnoreAtlasSize);
+			hasIcon = true;
+		elseif (role == "HEALER") then
+			roleIcon:SetAtlas("roleicon-tiny-healer", TextureKitConstants.IgnoreAtlasSize);
+			hasIcon = true;
+		elseif (role == "DAMAGER") then
+			roleIcon:SetAtlas("roleicon-tiny-dps", TextureKitConstants.IgnoreAtlasSize);
+			hasIcon = true;
+		end
 	end
 
 	-- If we show the role, hide the level text which is in the same location.

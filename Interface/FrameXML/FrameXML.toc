@@ -83,7 +83,7 @@
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
-MixinUtil.lua
+..\SharedXML\MixinUtil.lua
 IconDataProvider.lua
 
 ..\SharedXML\Tooltip\TooltipUtil.lua

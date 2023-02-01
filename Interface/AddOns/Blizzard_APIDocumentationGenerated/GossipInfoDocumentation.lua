@@ -181,6 +181,17 @@ local GossipInfo =
 				{ Name = "confirmed", Type = "bool", Nilable = true },
 			},
 		},
+		{
+			Name = "SelectOptionByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "optionID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = true },
+				{ Name = "confirmed", Type = "bool", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -306,7 +317,7 @@ local GossipInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "gossipOptionID", Type = "number", Nilable = false },
+				{ Name = "gossipOptionID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "GossipOptionRewardInfo", Nilable = false },

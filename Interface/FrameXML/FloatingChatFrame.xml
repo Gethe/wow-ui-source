@@ -679,16 +679,15 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame">
+	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin">
 		<Size x="32" y="32"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
 		</Anchors>
 		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
-				ChatFrame_ToggleMenu();
-			</OnClick>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
 		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
@@ -733,10 +732,11 @@
 			<OnLoad inherit="prepend" function="EmoteMenu_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
+	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu" mixin="LanguageMenuMixin">
 		<Scripts>
-			<OnLoad inherit="prepend" function="LanguageMenu_OnLoad"/>
-			<OnEvent function="LanguageMenu_OnEvent"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">

@@ -282,6 +282,11 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "SelectedLoadoutChanged",
+			Type = "Event",
+			LiteralName = "SELECTED_LOADOUT_CHANGED",
+		},
+		{
 			Name = "SpecializationChangeCastFailed",
 			Type = "Event",
 			LiteralName = "SPECIALIZATION_CHANGE_CAST_FAILED",

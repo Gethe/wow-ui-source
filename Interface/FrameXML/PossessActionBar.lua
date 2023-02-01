@@ -3,6 +3,10 @@ POSSESS_CANCEL_SLOT = 2;
 
 PossessActionBarMixin = {};
 
+function PossessActionBarMixin:PossessActionBar_OnLoad()
+	self:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
+end
+
 function PossessActionBarMixin:Update()
 	if ( not MainMenuBar.busy and not UnitHasVehicleUI("player") ) then	--Don't change while we're animating out MainMenuBar for vehicle UI
 		if ( IsPossessBarVisible() ) then
@@ -39,7 +43,6 @@ function PossessActionBarMixin:UpdateState()
 	end
 
 	self:UpdateShownButtons();
-	self:UpdateGridLayout();
 end
 
 PossessButtonMixin = {};

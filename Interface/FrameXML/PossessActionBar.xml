@@ -29,5 +29,8 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
+		<Scripts>
+			<OnLoad method="PossessActionBar_OnLoad" inherit="prepend"/>
+		</Scripts>
 	</Frame>
 </Ui>

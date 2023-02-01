@@ -37,15 +37,34 @@ local ChatConstants =
 			},
 		},
 		{
+			Name = "ExcludedCensorSources",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 1,
+			MaxValue = 128,
+			Fields =
+			{
+				{ Name = "Friends", Type = "ExcludedCensorSources", EnumValue = 1 },
+				{ Name = "Guild", Type = "ExcludedCensorSources", EnumValue = 2 },
+				{ Name = "Reserve1", Type = "ExcludedCensorSources", EnumValue = 4 },
+				{ Name = "Reserve2", Type = "ExcludedCensorSources", EnumValue = 8 },
+				{ Name = "Reserve3", Type = "ExcludedCensorSources", EnumValue = 16 },
+				{ Name = "Reserve4", Type = "ExcludedCensorSources", EnumValue = 32 },
+				{ Name = "Reserve5", Type = "ExcludedCensorSources", EnumValue = 64 },
+				{ Name = "Reserve6", Type = "ExcludedCensorSources", EnumValue = 128 },
+			},
+		},
+		{
 			Name = "LanguageFlag",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "IsExotic", Type = "LanguageFlag", EnumValue = 1 },
 				{ Name = "HiddenFromPlayer", Type = "LanguageFlag", EnumValue = 2 },
+				{ Name = "HideLanguageNameInChat", Type = "LanguageFlag", EnumValue = 4 },
 			},
 		},
 		{

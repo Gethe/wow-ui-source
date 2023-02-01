@@ -188,7 +188,7 @@ function CustomGossipOptionButtonBaseMixin:Setup()
 end 
 
 function CustomGossipOptionButtonBaseMixin:OnClick()
-	C_GossipInfo.SelectOption(self.index);
+	C_GossipInfo.SelectOptionByIndex(self.index);
 end
 
 function CustomGossipOptionButtonBaseMixin:SetupBase(textureKit, buttonInfo, index, buttonTextureKitRegions)

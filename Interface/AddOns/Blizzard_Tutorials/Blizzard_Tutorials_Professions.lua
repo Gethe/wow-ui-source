@@ -514,11 +514,6 @@ end
 
 EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_UNLOCKED", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
-EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(checker, isLogin)
-	if isLogin then
-		SpecPointsChecker:CheckShowReminder();
-	end
-end, SpecPointsChecker);
 
 
 function PlayerHasPrimaryProfession()

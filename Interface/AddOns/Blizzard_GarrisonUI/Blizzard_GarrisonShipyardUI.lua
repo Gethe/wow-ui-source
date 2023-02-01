@@ -1120,7 +1120,7 @@ function GarrisonShipyardMap_AdjustMissionPositions()
 
 					local radiusB = frameB:GetWidth() / 2;
 					local minDistSquared = (radiusA + radiusB) * (radiusA + radiusB);
-					if (distSquared + distBufferSquared < minDistSquared) then
+					if (distSquared > 0 and (distSquared + distBufferSquared < minDistSquared)) then
 						local minDist = math.sqrt(minDistSquared);
 						local dist = math.sqrt(distSquared);
 						-- We want to move each frame by half the amount that they overlap, minus the buffer space

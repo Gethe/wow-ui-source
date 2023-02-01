@@ -51,6 +51,21 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetNumPetsInJournal",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxAllowed", Type = "number", Nilable = false },
+				{ Name = "numPets", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetAbilityInfo",
 			Type = "Function",
 

@@ -50,10 +50,10 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 		self.ItemContainer.Item:SetItemButtonCount(resultData.quantity);
 		self.ItemContainer.Item:SetScript("OnEnter", function(button)
 			GameTooltip:SetOwner(self.ItemContainer.Item, "ANCHOR_RIGHT");
-			if resultData.itemGUID then
-				GameTooltip:SetItemByGUID(resultData.itemGUID);
-			else
+			if resultData.preferHyperlink or not resultData.itemGUID then
 				GameTooltip:SetHyperlink(resultData.hyperlink);
+			else
+				GameTooltip:SetItemByGUID(resultData.itemGUID);
 			end
 		end);
 	end
@@ -357,6 +357,22 @@ function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
 			self.ScrollBox:InsertElementData(resultData);
 		end
 	end
+
+	-- We may encounter the same itemGUID multiple times if the item was recrafted.
+	-- In those cases, opt to display the item tooltip via hyperlink instead of item guid.
+	-- The most recent item will continue to be displayed via item guid.
+	local found = {};
+	self.ScrollBox:ReverseForEachElementData(function(resultData)
+		local itemGUID = resultData.itemGUID;
+		if itemGUID then
+			local wasFound = found[itemGUID];
+			found[itemGUID] = true;
+
+			if wasFound then
+				resultData.preferHyperlink = true;
+			end
+		end
+	end);
 
 	self.pendingResultData = {};
 

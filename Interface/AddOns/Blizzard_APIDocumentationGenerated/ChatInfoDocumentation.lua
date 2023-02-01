@@ -7,6 +7,20 @@ local ChatInfo =
 	Functions =
 	{
 		{
+			Name = "CanPlayerSpeakLanguage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "languageId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canSpeakLanguage", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetChannelInfoFromIdentifier",
 			Type = "Function",
 
@@ -92,6 +106,48 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "shortcut", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChatLineSenderGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "guid", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChatLineSenderName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetChatLineText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -219,6 +275,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsChatLineCensored",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCensored", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyChannelType",
 			Type = "Function",
 
@@ -336,6 +406,15 @@ local ChatInfo =
 				{ Name = "secondChannelIndex", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "UncensorChatLine",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatLine", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -355,6 +434,16 @@ local ChatInfo =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "channel", Type = "string", Nilable = false },
 				{ Name = "senderID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerSpeakLanguageChanged",
+			Type = "Event",
+			LiteralName = "CAN_PLAYER_SPEAK_LANGUAGE_CHANGED",
+			Payload =
+			{
+				{ Name = "languageId", Type = "number", Nilable = false },
+				{ Name = "canSpeakLanguage", Type = "bool", Nilable = false },
 			},
 		},
 		{

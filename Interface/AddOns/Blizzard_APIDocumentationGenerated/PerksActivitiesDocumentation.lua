@@ -155,6 +155,15 @@ local PerksActivities =
 			},
 		},
 		{
+			Name = "PerksActivityCriteria",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "criteriaID", Type = "number", Nilable = false },
+				{ Name = "requiredValue", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PerksActivityInfo",
 			Type = "Structure",
 			Fields =
@@ -166,6 +175,7 @@ local PerksActivities =
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "tracked", Type = "bool", Nilable = false },
 				{ Name = "requirementsList", Type = "table", InnerType = "PerksActivityRequirement", Nilable = false },
+				{ Name = "criteriaList", Type = "table", InnerType = "PerksActivityCriteria", Nilable = false },
 				{ Name = "tagNames", Type = "table", InnerType = "string", Nilable = false },
 			},
 		},

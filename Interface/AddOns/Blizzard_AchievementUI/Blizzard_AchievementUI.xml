@@ -1777,10 +1777,7 @@
 				<Scripts>
 					<OnLoad function="AchievementFrameAchievements_OnLoad"/>
 					<OnEvent function="AchievementFrameAchievements_OnEvent"/>
-					<OnHide>
-						AchievementFrameFilterDropDown:Hide();
-						AchievementFrame.Header.LeftDDLInset:Hide();
-					</OnHide>
+					<OnHide function="AchievementFrameAchievements_OnHide"/>
 					<OnShow function="AchievementFrameAchievements_OnShow"/>
 				</Scripts>
 				<Frames>
@@ -1809,6 +1806,8 @@
 				<Scripts>
 					<OnLoad function="AchievementFrameStats_OnLoad"/>
 					<OnEvent function="AchievementFrameStats_OnEvent"/>
+					<OnShow function="AchievementFrameStats_OnShow"/>
+					<OnHide function="AchievementFrameStats_OnHide"/>
 				</Scripts>
 				<Frames>
 					<Frame name="$parentBG">

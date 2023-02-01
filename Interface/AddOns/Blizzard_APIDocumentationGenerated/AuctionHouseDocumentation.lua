@@ -1503,7 +1503,7 @@ local AuctionHouse =
 				{ Name = "itemName", Type = "string", Nilable = false },
 				{ Name = "battlePetLink", Type = "string", Nilable = true },
 				{ Name = "appearanceLink", Type = "string", Nilable = true },
-				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 				{ Name = "iconFileID", Type = "number", Nilable = false },
 				{ Name = "isPet", Type = "bool", Nilable = false },
 				{ Name = "isCommodity", Type = "bool", Nilable = false },

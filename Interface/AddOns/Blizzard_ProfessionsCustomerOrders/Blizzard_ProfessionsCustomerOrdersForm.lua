@@ -812,9 +812,9 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									self:UpdateListOrderButton();
 								end
 
-								flyout.GetElementsImplementation = function(self, filterOwned)
+								flyout.GetElementsImplementation = function(self, filterAvailable)
 									local itemIDs = Professions.ExtractItemIDsFromCraftingReagents(reagentSlotSchematic.reagents);
-									if filterOwned then
+									if filterAvailable then
 										itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
 									end
 									local items = ItemUtil.TransformItemIDsToItems(itemIDs);

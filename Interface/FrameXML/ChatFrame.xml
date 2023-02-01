@@ -73,6 +73,12 @@
 						<Anchor point="LEFT" relativeTo="$parentHeader" relativePoint="RIGHT"/>
 					</Anchors>
 				</FontString>
+				<FontString inherits="ChatFontNormal" parentKey="languageHeader" text="" hidden="true">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.header" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentNewcomerHint" inherits="ChatFontNormal" parentKey="NewcomerHint">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentHeader"/>

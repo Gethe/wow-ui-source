@@ -54,6 +54,14 @@ local ProfessionSpecConstants =
 			},
 		},
 		{
+			Name = "ProfTabHighlight",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ProfTabInfo",
 			Type = "Structure",
 			Fields =
@@ -61,6 +69,8 @@ local ProfessionSpecConstants =
 				{ Name = "rootNodeID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "rootIconID", Type = "number", Nilable = false },
+				{ Name = "highlights", Type = "table", InnerType = "ProfTabHighlight", Nilable = false },
 			},
 		},
 		{

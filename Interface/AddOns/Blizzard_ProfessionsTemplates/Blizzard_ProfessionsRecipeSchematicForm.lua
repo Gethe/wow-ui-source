@@ -415,11 +415,30 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.TrackRecipeCheckBox:SetShown(hasReagentSlots and self.showTrackRecipe and Professions.CanTrackRecipe(recipeInfo));
 	self.TrackRecipeCheckBox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID, isRecraft));
 
+	-- If the item we're creating has no quality then default to using the lowest quality
+	-- reagents. If so, also hide the check box so that the player doesn't reactivate the option for no benefit.
+	local shouldAllocateUnconfigurable = false;
+	local shouldAllocateBest = Professions.ShouldAllocateBestQualityReagents();
+	do
+		local function CountTable(tbl)
+			return tbl and #tbl or 0;
+		end
+
+		local anyVariations = 
+			CountTable(recipeInfo.qualityIDs) > 1 or 
+			CountTable(recipeInfo.qualityIlvlBonuses) > 1 or 
+			CountTable(recipeInfo.qualityItemIDs) > 1;
+		if not anyVariations then
+			shouldAllocateBest = false;
+			shouldAllocateUnconfigurable = true;
+		end
+	end
+
 	if newTransaction or not self.transaction:IsManuallyAllocated() then
 		self.transaction:SanitizeOptionalAllocations();
 		-- Unless the allocation has been manually changed, the 'best quality reagent' option is used to
 		-- auto-allocate the reagents.
-		Professions.AllocateAllBasicReagents(self.transaction, Professions.ShouldAllocateBestQualityReagents());
+		Professions.AllocateAllBasicReagents(self.transaction, shouldAllocateBest);
 	else
 		-- We still need to sanitize the transaction to remove allocations we no longer have even if
 		-- we're manually allocating. When we run out of a reagent, we expect the allocation to be
@@ -896,9 +915,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								end
 							end
 
-							flyout.GetElementsImplementation = function(self, filterOwned)
+							flyout.GetElementsImplementation = function(self, filterAvailable)
 								local itemIDs = Professions.ExtractItemIDsFromCraftingReagents(reagentSlotSchematic.reagents);
-								local items = Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned);
+								local items = Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable);
 								local elementData = {items = items};
 								return elementData;
 							end
@@ -963,16 +982,24 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 					end
 					
+					local function IsElementEnabled(elementData)
+						local item = elementData.item;
+						local quantity = item:GetItemGUID() and item:GetStackCount() or nil;
+						return (quantity ~= nil) and (quantity >= self.recipeSchematic.quantityMax);
+					end
 		
-					flyout.GetElementsImplementation = function(self, filterOwned)
+					flyout.GetElementsImplementation = function(self, filterAvailable)
 						local itemIDs = C_TradeSkillUI.GetSalvagableItemIDs(recipeID);
 						local targetItems = C_TradeSkillUI.GetCraftingTargetItems(itemIDs);
 						local items = {};
 						for index, targetItem in ipairs(targetItems) do
-							table.insert(items, Item:CreateFromItemGUID(targetItem.itemGUID));
+							local item = Item:CreateFromItemGUID(targetItem.itemGUID);
+							if not filterAvailable or IsElementEnabled({item = item}) then
+								table.insert(items, Item:CreateFromItemGUID(targetItem.itemGUID));
+							end
 						end
 
-						if not filterOwned then
+						if not filterAvailable then
 							for index, itemID in ipairs(itemIDs) do
 								local contained = ContainsIf(targetItems, function(targetItem)
 									return targetItem.itemID == itemID;
@@ -983,12 +1010,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							end
 						end
 						return {items = items, onlyCountStack = true,};
-					end
-
-					local function IsElementEnabled(elementData)
-						local item = elementData.item;
-						local quantity = item:GetItemGUID() and item:GetStackCount() or nil;
-						return (quantity ~= nil) and (quantity >= self.recipeSchematic.quantityMax);
 					end
 
 					flyout.OnElementEnterImplementation = function(elementData, tooltip)
@@ -1065,7 +1086,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 					end
 		
-					flyout.GetElementsImplementation = function(self, filterOwned)
+					flyout.GetElementsImplementation = function(self, filterAvailable)
 						local items = {};
 						local guids = {};
 						local elementsData = {items = items, itemGUIDs = guids};
@@ -1187,9 +1208,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	self:UpdateRecraftSlot(operationInfo);
 
-	if professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic) then
+	if not shouldAllocateUnconfigurable and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic) then
 		self.AllocateBestQualityCheckBox:Show();
-		self.AllocateBestQualityCheckBox:SetChecked(Professions.ShouldAllocateBestQualityReagents());
+		self.AllocateBestQualityCheckBox:SetChecked(shouldAllocateBest);
 	else
 		self.AllocateBestQualityCheckBox:Hide();
 	end

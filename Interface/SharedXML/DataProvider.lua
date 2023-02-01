@@ -19,8 +19,12 @@ function DataProviderMixin:Init(tbl)
 	end
 end
 
-function DataProviderMixin:Enumerate(indexBegin, indexEnd)
-	return CreateTableEnumerator(self.collection, indexBegin, indexEnd);
+function DataProviderMixin:Enumerate(minIndex, maxIndex)
+	return CreateTableEnumerator(self.collection, minIndex, maxIndex);
+end
+
+function DataProviderMixin:ReverseEnumerate(minIndex, maxIndex)
+	return CreateTableReverseEnumerator(self.collection, minIndex, maxIndex);
 end
 
 function DataProviderMixin:GetCollection()
@@ -59,13 +63,13 @@ function DataProviderMixin:InsertTable(tbl)
 	self:InsertTableRange(tbl, 1, #tbl);
 end
 
-function DataProviderMixin:InsertTableRange(tbl, indexBegin, indexEnd)
-	if indexEnd - indexBegin < 0 then
+function DataProviderMixin:InsertTableRange(tbl, minIndex, maxIndex)
+	if maxIndex - minIndex < 0 then
 		return;
 	end
 
 	local hasSortComparator = self:HasSortComparator();
-	for index = indexBegin, indexEnd do
+	for index = minIndex, maxIndex do
 		self:InsertInternal(tbl[index], hasSortComparator);
 	end
 
@@ -108,16 +112,16 @@ function DataProviderMixin:RemoveIndex(index)
 	self:RemoveIndexRange(index, index);
 end
 
-function DataProviderMixin:RemoveIndexRange(indexBegin, indexEnd)
+function DataProviderMixin:RemoveIndexRange(minIndex, maxIndex)
 	local originalSize = self:GetSize();
 
-	indexBegin = math.max(1, indexBegin);
-	indexEnd = math.min(self:GetSize(), indexEnd);
-	while indexEnd >= indexBegin do
-		local elementData = self.collection[indexEnd];
-		tremove(self.collection, indexEnd);
-		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, indexEnd);
-		indexEnd = indexEnd - 1;
+	minIndex = math.max(1, minIndex);
+	maxIndex = math.min(self:GetSize(), maxIndex);
+	while maxIndex >= minIndex do
+		local elementData = self.collection[maxIndex];
+		tremove(self.collection, maxIndex);
+		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, maxIndex);
+		maxIndex = maxIndex - 1;
 	end
 
 	if self:GetSize() ~= originalSize then
@@ -182,6 +186,12 @@ end
 
 function DataProviderMixin:ForEach(func)
 	for index, elementData in self:Enumerate() do
+		func(elementData);
+	end
+end
+
+function DataProviderMixin:ReverseForEach(func)
+	for index, elementData in self:ReverseEnumerate() do
 		func(elementData);
 	end
 end

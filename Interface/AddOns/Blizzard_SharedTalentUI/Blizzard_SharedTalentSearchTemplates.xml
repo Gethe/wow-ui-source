@@ -99,13 +99,7 @@
 					<Anchor point="BOTTOMRIGHT"  x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" hidden="true" frameStrata="HIGH">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
-				</Anchors>
-			</EventFrame>
-
+			
 			<Frame parentKey="OverflowCount" hidden="true">
 				<Size x="176" y="16"/>
 				<Anchors>

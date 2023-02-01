@@ -97,10 +97,10 @@ function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	return items;
 end
 
-function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
+function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
 	local items = {};
 	local maxFindCount = 1;
-	if filterOwned then
+	if filterAvailable then
 		for index, itemID in ipairs(itemIDs) do
 			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			tAppendAll(items, foundItems);
@@ -775,7 +775,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 			if addUnlearnedDivider and C_TradeSkillUI.GetShowUnlearned() then
 				-- Categories and dividers ordered by group, position this divider just before the unlearned group.
-				node:Insert({isDivider = true, dividerHeight = 30, group = Group.UnlearnedDivider});
+				node:Insert({isDivider = true, dividerHeight = 70, group = Group.UnlearnedDivider});
 			end
 		end
 	end
@@ -1244,8 +1244,9 @@ function Professions.GetProfessionBackgroundAtlas(professionInfo)
 	return GetProfessionBackground(professionInfo, "Professions-Recipe-Background-%s");
 end
 
-function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo)
-	return GetProfessionBackground(professionInfo, "Professions-Specializations-Background-%s");
+function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo, forPreview)
+	local atlasFmt = forPreview and "Professions-Specializations-Preview-Art-%s" or "Professions-Specializations-Background-%s";
+	return GetProfessionBackground(professionInfo, atlasFmt);
 end
 
 function Professions.CanTrackRecipe(recipeInfo)

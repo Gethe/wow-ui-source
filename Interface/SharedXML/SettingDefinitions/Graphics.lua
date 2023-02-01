@@ -1043,6 +1043,8 @@ local function Register()
 
 	-- Graphics API
 	do
+		-- here, CVar("gxapi") refers to the current requested api
+
 		local apis = {GetGraphicsAPIs()};
 		for index, api in ipairs(apis) do
 			apis[index] = string.lower(api);
@@ -1062,8 +1064,34 @@ local function Register()
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
+			local currentApiCvar = GetCurrentGraphicsAPI();
+			local requestedApi = GetCVar("gxapi");
 			for index, api in ipairs(apis) do
-				container:Add(api, _G["GXAPI_"..strupper(api)]);
+				
+				local tooltip = nil;
+				local name =  _G["GXAPI_"..strupper(api)];
+
+				if (strupper(api) == strupper("auto")) then
+					if (strupper(api) == strupper(requestedApi)) then
+						tooltip = GXAPI_TOOLTIP_AUTO_SELECTED; --"Selected Graphics API. Auto-detect best available Graphics API.";
+					--else
+						--Omitting as the tooltip appears un-necessarily verbose
+						--tooltip = GXAPI_TOOLTIP_AUTO; --"Auto-detect best available Graphics API."
+					end
+				elseif (strupper(api) == strupper(currentApiCvar)) then
+					tooltip = GXAPI_TOOLTIP_CURRENT_API; --"Current Graphics API.";
+				elseif (strupper(api) == strupper(requestedApi) and strupper(api) ~= strupper("auto")) then
+					tooltip = GXAPI_TOOLTIP_FAILED_SELECTED; --"Selected Graphics API. Failed to load, next attempt of restart.";
+				end
+
+				if (nil == name) then
+					DeveloperConsole:AddMessage("GXAPI_"..strupper(api).." not found");
+				elseif (nil == tooltip) then
+					container:Add(api, name);
+				else
+					container:Add(api, name, tooltip);
+				end
+				
 			end
 			return container:GetData();
 		end
@@ -1072,6 +1100,16 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "PROXY_GRAPHICS_API", Settings.DefaultVarLocation,
 			Settings.VarType.String, GXAPI, defaultValue, GetValue, SetValue, CommitValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
+
+		-- Mike A note, CVar callbacks do not work in the start-screen menu, so need the more focused approach
+		-- of watching for a GX_RESTARTED event.
+		-- Note, a restart triggerred from the console will not effect the state of the Apply flag.
+		local function OnGxRestart(self, addonName, showTool)
+			setting:SetValue(GetValue());
+		end
+
+		EventRegistry:RegisterFrameEvent("GX_RESTARTED");
+		EventRegistry:RegisterCallback("GX_RESTARTED", OnGxRestart);
 
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_GXAPI);
 	end

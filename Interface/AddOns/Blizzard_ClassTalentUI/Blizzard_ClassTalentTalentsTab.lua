@@ -118,6 +118,8 @@ function ClassTalentTalentsTabMixin:OnLoad()
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED");
 
+	self:RegisterEvent("SELECTED_LOADOUT_CHANGED");
+
 	-- CVars are unloaded when we leave the world, so we have to refresh last selected configID after entering the world.
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
@@ -322,6 +324,17 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 		if spellID == Constants.TraitConsts.COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID then
 			self:SetCommitVisualsActive(false, TalentFrameBaseMixin.VisualsUpdateReasons.CommitStoppedComplete);
 			self:SetCommitCompleteVisualsActive(true);
+		end
+	elseif event == "SELECTED_LOADOUT_CHANGED" then
+		local currentSpecID = PlayerUtil.GetCurrentSpecID();
+		if currentSpecID then
+			local lastSelectedSavedConfigID = C_ClassTalents.GetLastSelectedSavedConfigID(currentSpecID);
+			self.lastSelectedConfigID = lastSelectedSavedConfigID;
+			if lastSelectedSavedConfigID ~= nil then
+				self:SetSelectedSavedConfigID(lastSelectedSavedConfigID, false, true);
+			else
+				self.LoadoutDropDown:ClearSelection();
+			end
 		end
 	end
 
@@ -534,9 +547,11 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 					CancelLoadConfiguration();
 					self:UpdateConfigButtonsState();
 
-					local systemPrefix = "CLASS_TALENTS";
-					local notificationType = "LOAD_ERROR";
-					StaticPopup_ShowNotification(systemPrefix, notificationType, RED_FONT_COLOR:WrapTextInColorCode(changeError));
+					if changeError and changeError ~= "" then
+						local systemPrefix = "CLASS_TALENTS";
+						local notificationType = "LOAD_ERROR";
+						StaticPopup_ShowNotification(systemPrefix, notificationType, RED_FONT_COLOR:WrapTextInColorCode(changeError));
+					end
 				end
 			end
 

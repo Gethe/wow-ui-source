@@ -29,11 +29,37 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
      end);
 
     self.CreateButton:SetScript("OnClick", function()
-        if self:IsRecrafting() then
-            self:RecraftOrder();
-        else
-            self:CraftOrder();
-        end
+		local function StartCraft()
+			if self:IsRecrafting() then
+				self:RecraftOrder();
+			else
+				self:CraftOrder();
+			end
+		end
+
+		local providedReagents = false;
+		for slotIndex, allocations in self.OrderDetails.SchematicForm.transaction:EnumerateAllAllocations() do
+			if allocations:HasAllocations() and not self.reagentSlotProvidedByCustomer[slotIndex] then
+				providedReagents = true;
+				break;
+			end
+		end
+
+		local referenceKey = self;
+		if providedReagents and not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			local customData = 
+			{
+				text = CRAFTING_ORDERS_OWN_REAGENTS_CONFIRMATION,
+				callback = StartCraft,
+				acceptText = YES,
+				cancelText = CANCEL,
+				referenceKey = referenceKey,
+			};
+
+			StaticPopup_ShowCustomGenericConfirmation(customData);
+		else
+			StartCraft();
+		end
      end);
 
     self.StartRecraftButton:SetScript("OnEnter", function(frame)
@@ -376,7 +402,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
     end
 
     if self:IsRecrafting() then
-        self.OrderDetails.SchematicForm.recraftSlot:Init(self.transaction, function() return false; end, nop, self.order.outputItemHyperlink or self.order.recraftItemHyperlink);
+        self.OrderDetails.SchematicForm.recraftSlot:Init(transaction, function() return false; end, nop, self.order.outputItemHyperlink or self.order.recraftItemHyperlink);
         self.OrderDetails.SchematicForm.recraftSlot.InputSlot:SetScript("OnEnter", function(slot)
             GameTooltip:SetOwner(slot, "ANCHOR_RIGHT");
             GameTooltip:SetHyperlink(self.order.outputItemHyperlink or self.order.recraftItemHyperlink);
