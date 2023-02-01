@@ -31,7 +31,7 @@ jobs:
       env:
         LUA_PATH: "./InterfaceExport/libs/?.lua;./InterfaceExport/libs/?/init.lua"
       run: |
-        lua InterfaceExport/export.lua ptr code
+        lua InterfaceExport/export.lua vanilla ptr code
 
     - name: Get build version
       id: version
