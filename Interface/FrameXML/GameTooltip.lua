@@ -325,6 +325,18 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	end
 	MoneyFrame_Update(moneyFrame:GetName(), money);
 	local moneyFrameWidth = moneyFrame:GetWidth();
+
+	-- Align money frames
+	local widths = {};
+	for i=1, frame.shownMoneyFrames do
+		local moneyFrame = _G[frame:GetName().."MoneyFrame"..i];
+		MoneyFrame_AccumulateAlignmentWidths(moneyFrame, widths);
+	end
+	for i=1, frame.shownMoneyFrames do
+		local moneyFrame = _G[frame:GetName().."MoneyFrame"..i];
+		MoneyFrame_UpdateAlignment(moneyFrame, widths);
+	end
+
 	if ( frame:GetMinimumWidth() < moneyFrameWidth ) then
 		frame:SetMinimumWidth(moneyFrameWidth);
 	end
@@ -342,6 +354,7 @@ function GameTooltip_ClearMoney(self)
 		if(moneyFrame) then
 			moneyFrame:Hide();
 			MoneyFrame_SetType(moneyFrame, "STATIC");
+			MoneyFrame_ResetAlignment(moneyFrame);
 		end
 	end
 	self.shownMoneyFrames = nil;

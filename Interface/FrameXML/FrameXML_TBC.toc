@@ -283,6 +283,8 @@ ArenaFrame.xml
 ArenaRegistrarFrame.xml
 PVPFrame.xml
 PlayerInteractionFrameManager.xml
+SocialQueue.xml
+InviteConfirmationDialog.lua
 
 
 #Save off whatever we need available unmodified.

@@ -509,7 +509,13 @@ function Graphics_TableGetValue(self)
 			local allMatch = true;
 			for _, child in pairs(self.childOptions) do
 				if(_G[child].graphicsCVar) then
-					local childValue = _G[child].newValue or tonumber(GetCVar(_G[child].graphicsCVar));
+					local childCVarValue;
+					if(_G[child].cvaroffset) then
+						childCVarValue = tonumber(GetGraphicsCVarOffsetForUI(GetCVar(_G[child].graphicsCVar)));
+					else
+						childCVarValue = tonumber(GetCVar(_G[child].graphicsCVar));
+					end
+					local childValue = _G[child].newValue or childCVarValue;
 					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
 						allMatch = false;
 						break;
@@ -1273,7 +1279,7 @@ function Graphics_SliderOnLoad(self)
 	self.SetValue = Graphics_TableSetValue;
 
 	self.GetCurrentValue = function(self)
-		return self.newValue or tonumber(GetCVar(self.graphicsCVar));
+		return self.newValue or tonumber(GetGraphicsCVarOffsetForUI(GetCVar(self.graphicsCVar)));
 	end;
 
 	if(self.graphicsCVar) then
