@@ -37,6 +37,16 @@ PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
 
+local ManaBarFrequentUpdateUnitTypes = {
+	"player",
+	"pet",
+	"vehicle",
+	"target",
+	"focus",
+	"targettarget",
+	"focustarget"
+};
+
 -- Threat Display
 MAX_DISPLAYED_THREAT_PERCENT = 999;
 
@@ -119,7 +129,17 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.manabar.capNumericDisplay = true;
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus"));
+
+	local manaBarFrequentUpdates = false;
+	for _, unitType in ipairs(ManaBarFrequentUpdateUnitTypes) do
+		if (unit == unitType) then
+			manaBarFrequentUpdates = true;
+			break;
+		end
+	end
+
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, manaBarFrequentUpdates);
+
 	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

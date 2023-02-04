@@ -367,6 +367,7 @@ VideoData["Graphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
 	tooltip = OPTION_TOOLTIP_GROUND_CLUTTER,
 	graphicsCVar = "graphicsGroundClutter",
+	cvaroffset = true,
 	classic = 3,
 	dependent = {
 		"Graphics_Quality",
@@ -377,6 +378,7 @@ VideoData["RaidGraphics_GroundClutterSlider"]={
 	name= GROUND_CLUTTER;
 	tooltip = OPTION_TOOLTIP_GROUND_CLUTTER,
 	graphicsCVar = "raidGraphicsGroundClutter",
+	cvaroffset = true,
 	classic = 3,
 	dependent = {
 		"RaidGraphics_Quality",
@@ -388,6 +390,7 @@ VideoData["Graphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
 	tooltip = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 	graphicsCVar = "graphicsEnvironmentDetail",
+	cvaroffset = true,
 	classic = 3,
 	dependent = {
 		"Graphics_Quality",
@@ -398,6 +401,7 @@ VideoData["RaidGraphics_EnvironmentalDetailSlider"]={
 	name = ENVIRONMENT_DETAIL;
 	tooltip = OPTION_TOOLTIP_ENVIRONMENT_DETAIL,
 	graphicsCVar = "raidGraphicsEnvironmentDetail",
+	cvaroffset = true,
 	classic = 3,
 	dependent = {
 		"RaidGraphics_Quality",

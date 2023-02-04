@@ -509,7 +509,13 @@ function Graphics_TableGetValue(self)
 			local allMatch = true;
 			for _, child in pairs(self.childOptions) do
 				if(_G[child].graphicsCVar) then
-					local childValue = _G[child].newValue or tonumber(GetGraphicsCVarOffsetForUI(GetCVar(_G[child].graphicsCVar)));
+					local childCVarValue;
+					if(_G[child].cvaroffset) then
+						childCVarValue = tonumber(GetGraphicsCVarOffsetForUI(GetCVar(_G[child].graphicsCVar)));
+					else
+						childCVarValue = tonumber(GetCVar(_G[child].graphicsCVar));
+					end
+					local childValue = _G[child].newValue or childCVarValue;
 					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
 						allMatch = false;
 						break;
@@ -529,7 +535,7 @@ function Graphics_TableGetValue(self)
 		if(value.cvars ~= nil) then
 			for cvar, cvar_value in pairs(value.cvars) do
 				if(readCvars[cvar] == nil) then
-					readCvars[cvar] = GetGraphicsCVarOffsetForUI(BlizzardOptionsPanel_GetCVarSafe(cvar));
+					readCvars[cvar] = BlizzardOptionsPanel_GetCVarSafe(cvar);
 				end
 				if(readCvars[cvar] ~= cvar_value) then
 					match = false;

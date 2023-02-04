@@ -563,7 +563,7 @@ function CompactUnitFrame_UpdateName(frame)
 		if ( frame.optionTable.highlightNameOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
 			-- Classic Nameplates had a yellow name on mouseover.
 			frame.name:SetVertexColor(1.0, 1.0, 0.0);
-		elseif ( CompactUnitFrame_IsTapDenied(frame) or UnitIsDead(frame.unit) ) then
+		elseif ( CompactUnitFrame_IsTapDenied(frame) or UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then

@@ -483,7 +483,7 @@
 			</OnShow>
 			<OnHide function="TargetofTarget_OnHide"/>
 			<OnEvent function="UnitFrame_OnEvent"/>
-			<OnUpdate function="TargetofTarget_Update"/>
+			
 		</Scripts>
 	</Button>
 	<StatusBar name="TargetSpellBarTemplate" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
@@ -541,7 +541,7 @@
 				self.showAuraCount = true;
 				TargetFrame_OnLoad(self, "focus", FocusFrameDropDown_Initialize);
 				TargetFrame_CreateSpellbar(self, "PLAYER_FOCUS_CHANGED");
-				TargetFrame_CreateTargetofTarget(self, "focus-target");
+				TargetFrame_CreateTargetofTarget(self, "focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>

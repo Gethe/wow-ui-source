@@ -277,6 +277,8 @@ ProductChoice.xml
 ClassTrainerFrameTemplates.xml
 BattlefieldFrame.xml
 PlayerInteractionFrameManager.xml
+SocialQueue.xml
+InviteConfirmationDialog.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

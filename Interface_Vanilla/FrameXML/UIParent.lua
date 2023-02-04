@@ -3657,41 +3657,6 @@ function GetSocialColoredName(displayName, guid)
 	return displayName;
 end
 
-function UpdateInviteConfirmationDialogs()
-	if ( StaticPopup_FindVisible("GROUP_INVITE_CONFIRMATION") ) then
-		return;
-	end
-
-	local firstInvite = GetNextPendingInviteConfirmation();
-	if ( not firstInvite ) then
-		return;
-	end
-
-	local confirmationType, name, guid, roles, willConvertToRaid = GetInviteConfirmationInfo(firstInvite);
-	local text = "";
-	if ( confirmationType == LE_INVITE_CONFIRMATION_REQUEST ) then
-		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
-
-		local playerLink = GetPlayerLink(name, name);
-		local safeLink = playerLink and "["..playerLink.."]" or name;
-
-		if ( isQuickJoin ) then
-			text = text..string.format(INVITE_CONFIRMATION_REQUEST_GROUPFINDER, FRIENDS_WOW_NAME_COLOR_CODE..safeLink..FONT_COLOR_CODE_CLOSE);
-		else
-			text = text..string.format(INVITE_CONFIRMATION_REQUEST, name);
-		end
-	elseif ( confirmationType == LE_INVITE_CONFIRMATION_SUGGEST ) then
-		local suggesterGuid, suggesterName, relationship, isQuickJoin = GetInviteReferralInfo(firstInvite);
-		text = text..string.format(INVITE_CONFIRMATION_SUGGEST, suggesterName, name);
-	end
-
-	if ( willConvertToRaid ) then
-		text = text.."\n\n"..RED_FONT_COLOR_CODE..LFG_LIST_CONVERT_TO_RAID_WARNING..FONT_COLOR_CODE_CLOSE;
-	end
-
-	StaticPopup_Show("GROUP_INVITE_CONFIRMATION", text, nil, firstInvite);
-end
-
 function UnitHasMana(unit)
 	if ( UnitPowerMax(unit, Enum.PowerType.Mana) > 0 ) then
 		return 1;
