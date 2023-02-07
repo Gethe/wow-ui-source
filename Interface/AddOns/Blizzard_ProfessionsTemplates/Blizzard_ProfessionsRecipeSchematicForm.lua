@@ -539,17 +539,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			if not firstRecipeInfo then
 				return;
 			end
-			local spell = Spell:CreateFromSpellID(firstRecipeInfo.recipeID);
-			local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());
-			if description and description ~= "" then
-				self.Description:SetText(description);
-				self.Description:SetHeight(600);
-				self.Description:SetHeight(self.Description:GetStringHeight() + 1);
-				self.Description:Show();
-			else
-				self.Description:SetText("");
-				self.Description:SetHeight(1);
-			end
+			self:UpdateRecipeDescription();
 			organizer:Add(self.Description, LayoutEntry.Description, 0, 5);
 			organizer:Layout();
 		end
@@ -1227,9 +1217,25 @@ function ProfessionsRecipeSchematicFormMixin:UpdateDetailsStats(operationInfo)
 			operationInfo = self:GetRecipeOperationInfo();
 		end
 
-		if operationInfo then
-			self.Details:SetStats(operationInfo, self.currentRecipeInfo.supportsQualities, self.currentRecipeInfo.isGatheringRecipe);
+		if operationInfo then		
+			self.Details:SetStats(operationInfo, self.currentRecipeInfo.supportsQualities, self.currentRecipeInfo.isGatheringRecipe);			
+			self:UpdateRecipeDescription();
 		end
+	end
+end
+
+function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
+	local spell = Spell:CreateFromSpellID(self.currentRecipeInfo.recipeID);
+	local reagents = self.transaction:CreateCraftingReagentInfoTbl();
+	local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());
+	if description and description ~= "" then
+		self.Description:SetText(description);
+		self.Description:SetHeight(600);
+		self.Description:SetHeight(self.Description:GetStringHeight() + 1);
+		self.Description:Show();
+	else
+		self.Description:SetText("");
+		self.Description:SetHeight(1);
 	end
 end
 

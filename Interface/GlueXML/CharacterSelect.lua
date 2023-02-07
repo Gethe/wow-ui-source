@@ -1429,9 +1429,9 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
     end
 
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfo(GetCharacterSelection()));
+    local boostInProgress, _, _, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(19, GetCharacterInfo(GetCharacterSelection()));
 	local trialBoostUnavailable = (isExpansionTrialCharacter and (isTrialBoostLocked or not IsExpansionTrial())) or (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled()));
-    if (revokedCharacterUpgrade or trialBoostUnavailable) then
+    if (boostInProgress or revokedCharacterUpgrade or trialBoostUnavailable) then
         return false;
     end
 

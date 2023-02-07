@@ -4,7 +4,7 @@
 PerksProgramFooterFrameMixin = {};
 function PerksProgramFooterFrameMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH");
-	EventRegistry:RegisterCallback("PerksProgram.OnProductPurchasedStateChange", self.OnProductSelected, self);
+	EventRegistry:RegisterCallback("PerksProgram.OnProductPurchasedStateChange", self.OnProductPurchasedStateChange, self);
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnModelSceneChanged", self.OnModelSceneChanged, self);
 	self.LeaveButton:SetText(PERKS_PROGRAM_LEAVE:format(CreateAtlasMarkup("perks-backarrow", 8, 13, 0, 0)));
@@ -35,6 +35,8 @@ function PerksProgramFooterFrameMixin:OnEvent(event, ...)
 end
 
 function PerksProgramFooterFrameMixin:OnProductSelected(data)
+
+	self.perksVendorItemID = data.perksVendorItemID;
 
 	local historyFrame = self.PurchasedHistoryFrame;
 	local isPurchased = data.purchased;
@@ -82,7 +84,9 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 end
 
 function PerksProgramFooterFrameMixin:OnProductPurchasedStateChange(data)
-	self:OnProductSelected(data);
+	if self.perksVendorItemID == data.perksVendorItemID then
+		self:OnProductSelected(data);
+	end
 end
 
 function PerksProgramFooterFrameMixin:Init()

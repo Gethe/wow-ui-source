@@ -165,6 +165,9 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 end
 
 do
+	-- Cache securecallfunction in case it changes in the global environment
+	local securecallfunction = securecallfunction;
+
 	local hasValidPlayer = false;
 	EventRegistry:RegisterFrameEvent("PLAYER_ENTERING_WORLD");
 	EventRegistry:RegisterFrameEvent("PLAYER_LEAVING_WORLD");
@@ -198,7 +201,7 @@ do
 	end
 
 	function AuraUtil.ShouldDisplayDebuff(unitCaster, spellId)
-		local hasCustom, alwaysShowMine, showForMySpec = GetCachedVisibilityInfo(spellId);
+		local hasCustom, alwaysShowMine, showForMySpec = securecallfunction(GetCachedVisibilityInfo, spellId);
 		if ( hasCustom ) then
 			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") );	--Would only be "mine" in the case of something like forbearance.
 		else
@@ -216,12 +219,12 @@ do
 	end
 
 	function AuraUtil.ShouldDisplayBuff(unitCaster, spellId, canApplyAura)
-		local hasCustom, alwaysShowMine, showForMySpec = GetCachedVisibilityInfo(spellId);
+		local hasCustom, alwaysShowMine, showForMySpec = securecallfunction(GetCachedVisibilityInfo, spellId);
 	
 		if ( hasCustom ) then
 			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"));
 		else
-			return (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura and not CheckIsSelfBuff(spellId);
+			return (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura and not securecallfunction(CheckIsSelfBuff, spellId);
 		end
 	end
 
@@ -238,11 +241,11 @@ do
 	if ( classFilename == "PALADIN" ) then
 		AuraUtil.IsPriorityDebuff = function(spellId)
 			local isForbearance = (spellId == 25771);
-			return isForbearance or CheckIsPriorityAura(spellId);
+			return isForbearance or securecallfunction(CheckIsPriorityAura, spellId);
 		end
 	else
 		AuraUtil.IsPriorityDebuff = function(spellId)
-			return CheckIsPriorityAura(spellId);
+			return securecallfunction(CheckIsPriorityAura, spellId);
 		end
 	end
 
