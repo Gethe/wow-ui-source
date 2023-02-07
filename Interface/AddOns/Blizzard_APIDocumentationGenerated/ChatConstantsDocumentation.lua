@@ -37,6 +37,20 @@ local ChatConstants =
 			},
 		},
 		{
+			Name = "ChatToxityFilterOptOut",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 4294967295,
+			Fields =
+			{
+				{ Name = "FilterAll", Type = "ChatToxityFilterOptOut", EnumValue = 0 },
+				{ Name = "ExcludeFilterFriend", Type = "ChatToxityFilterOptOut", EnumValue = 1 },
+				{ Name = "ExcludeFilterGuild", Type = "ChatToxityFilterOptOut", EnumValue = 2 },
+				{ Name = "ExcludeFilterAll", Type = "ChatToxityFilterOptOut", EnumValue = 4294967295 },
+			},
+		},
+		{
 			Name = "ExcludedCensorSources",
 			Type = "Enumeration",
 			NumValues = 8,

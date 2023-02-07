@@ -20,6 +20,7 @@ if ( tbl.IsOnGlueScreen() ) then
 	Import("GlueParent_RemoveModalFrame");
 	Import("LE_AURORA_STATE_NONE");
 	Import("LE_WOW_CONNECTION_STATE_IN_QUEUE");
+	Import("GetCharacterListUpdate");
 end
 
 setfenv(1, tbl);
@@ -2347,9 +2348,6 @@ function StoreFrame_OnShow(self)
 end
 
 function StoreFrame_OnHide(self)
-	if (VASReady) then
-		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
-	end
 	self:SetAttribute("isshown", false);
 	-- TODO: Fix so will only hide if Store showed the preview frame
 	Outbound.HidePreviewFrame();
@@ -2358,6 +2356,12 @@ function StoreFrame_OnHide(self)
 	else
 		GlueParent_RemoveModalFrame(self);
 		GlueParent_UpdateDialogs();
+	end
+
+	if (VASReady) then
+		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+	elseif (WaitingOnVASToComplete > 0 and IsOnGlueScreen()) then
+		GetCharacterListUpdate();
 	end
 
 	StoreVASValidationFrame:Hide();
@@ -2618,7 +2622,7 @@ function StoreFrame_IsLoading(self)
 	return false;
 end
 
-function StoreFrame_UpdateActivePanel(self)
+function StoreFrame_UpdateActivePanel(self, fromVASPurchaseCompletion)
 	if (StoreFrame.ErrorFrame:IsShown()) then
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
@@ -2653,6 +2657,11 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
 	elseif ( not StoreFrame_CurrencyInfo() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
+	elseif (fromVASPurchaseCompletion and StoreVASValidationFrame and StoreVASValidationFrame:IsShown() and StoreVASValidationFrame.productID == C_StoreSecure.GetVASCompletionInfo() ) then
+		-- a VAS purchase completed while viewing another of the same product
+		StoreVASValidationFrame:Hide();
+		StoreFrame_HideAlert(self);
+		StoreFrame_ShowPurchaseSent(self);
 	else
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
@@ -3532,7 +3541,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			WaitingOnConfirmation = false;
 			VASReady = true;
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
-			StoreFrame_UpdateActivePanel(StoreFrame);
+			local fromVASPurchaseCompletion = true;
+			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
 		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end

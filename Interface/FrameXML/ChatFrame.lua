@@ -4840,7 +4840,7 @@ function ChatEdit_UpdateHeader(editBox)
 	headerSuffix:SetTextColor(info.r, info.g, info.b);
 
 	local languageHeaderWidth = 0;
-	if header:IsShown() and editBox.language and editBox.language ~= GetDefaultLanguage() then
+	if (type == "SAY" or type == "YELL") and header:IsShown() and editBox.language and editBox.language ~= GetDefaultLanguage() then
 		editBox.languageHeader:Show();
 		editBox.languageHeader:SetWidth(0);
 		editBox.languageHeader:SetText(string.format(CHAT_LANGUAGE_NAME_TAG, editBox.language));

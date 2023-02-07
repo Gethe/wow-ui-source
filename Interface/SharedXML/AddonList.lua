@@ -1,6 +1,8 @@
 ADDON_BUTTON_HEIGHT = 16;
 MAX_ADDONS_DISPLAYED = 19;
 
+local ADDON_ACTIONS_BLOCKED = { };
+
 if ( not InGlue() ) then
 	UIPanelWindows["AddonList"] = { area = "center", pushable = 0, whileDead = 1 };
 end
@@ -312,11 +314,11 @@ function AddonList_InitButton(entry, addonIndex)
 		entry.Title:SetTextColor(0.5, 0.5, 0.5);
 	end
 
-	if ( title ) then
-		entry.Title:SetText(title);
-	else
-		entry.Title:SetText(name);
+	local titleText = title or name;
+	if ADDON_ACTIONS_BLOCKED[name] then
+		titleText = titleText .. CreateSimpleTextureMarkup([[Interface\DialogFrame\DialogIcon-AlertNew-16]], 16, 16);
 	end
+	entry.Title:SetText(titleText);
 
 	if ( security == "SECURE" ) then
 		AddonList_SetSecurityIcon(entry.Security.Icon, 1);
@@ -576,5 +578,12 @@ function AddonTooltip_Update(owner)
 		AddonTooltip:AddLine(notes, 1.0, 1.0, 1.0);
 		AddonTooltip:AddLine(AddonTooltip_BuildDeps(GetAddOnDependencies(owner:GetID())));
 	end
+	if ADDON_ACTIONS_BLOCKED[name] then
+		AddonTooltip:AddLine(INTERFACE_ACTION_BLOCKED_TOOLTIP:format(ADDON_ACTIONS_BLOCKED[name]));
+	end
 	AddonTooltip:Show()
+end
+
+function AddonTooltip_ActionBlocked(addon)
+	ADDON_ACTIONS_BLOCKED[addon] = (ADDON_ACTIONS_BLOCKED[addon] or 0) + 1;
 end

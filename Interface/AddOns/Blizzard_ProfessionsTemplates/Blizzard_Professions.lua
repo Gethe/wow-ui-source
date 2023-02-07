@@ -1425,3 +1425,15 @@ function Professions.GetProfessionInfo()
 
 	return professionInfo;
 end
+
+Professions.OrderTimeLeftFormatter = CreateFromMixins(SecondsFormatterMixin);
+Professions.OrderTimeLeftFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
+Professions.OrderTimeLeftFormatter:SetStripIntervalWhitespace(true);
+
+function Professions.OrderTimeLeftFormatter:GetDesiredUnitCount(seconds)
+	return 1;
+end
+
+function Professions.OrderTimeLeftFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
+end

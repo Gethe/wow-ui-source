@@ -1875,8 +1875,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
+		AddonTooltip_ActionBlocked(arg1);
 		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
+		AddonTooltip_ActionBlocked(arg1);
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
 		local dialog = StaticPopup_Show("ADDON_ACTION_FORBIDDEN", arg1);
@@ -5297,10 +5299,16 @@ function IsPlayerAtEffectiveMaxLevel()
 	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
 end
 
+local INTERFACE_ACTION_BLOCKED_COUNT = 0;
+
 function DisplayInterfaceActionBlockedMessage()
-	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+	if ( INTERFACE_ACTION_BLOCKED_COUNT > 50000 ) then
+		INTERFACE_ACTION_BLOCKED_COUNT = 0;
+	end
+	INTERFACE_ACTION_BLOCKED_COUNT = INTERFACE_ACTION_BLOCKED_COUNT + 1;
+
+	if ( INTERFACE_ACTION_BLOCKED_COUNT == 1 ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-		INTERFACE_ACTION_BLOCKED_SHOWN = true;
 	end
 end

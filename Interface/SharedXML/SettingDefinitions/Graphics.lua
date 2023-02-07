@@ -1041,6 +1041,21 @@ local function Register()
 		Settings.SetupCVarDropDown(category, cvar, Settings.VarType.Number, GetOptions, RESAMPLE_QUALITY, OPTION_TOOLTIP_RESAMPLE_QUALITY);
 	end
 
+	-- Variable Rate Shading (VRS)
+	do
+		local cvar = "vrsValar";
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			AddValidatedCVarOption(container, cvar, 0, VIDEO_OPTIONS_DISABLED);
+			AddValidatedCVarOption(container, cvar, 1, VIDEO_OPTIONS_STANDARD, OPTION_TOOLTIP_VRS_STANDARD);
+			AddValidatedCVarOption(container, cvar, 2, VIDEO_OPTIONS_AGGRESSIVE, OPTION_TOOLTIP_VRS_AGGRESSIVE);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropDown(category, cvar, Settings.VarType.Number, GetOptions, VRS_MODE, OPTION_TOOLTIP_VRS_MODE);
+	end
+
 	-- Graphics API
 	do
 		-- here, CVar("gxapi") refers to the current requested api

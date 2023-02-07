@@ -302,9 +302,16 @@ MonthlyActivitiesTabButtonMixin = CreateFromMixins(PanelTabButtonMixin);
 function MonthlyActivitiesTabButtonMixin:OnEnter()
 	if not C_PlayerInfo.IsTravelersLogAvailable() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
 		local factionGroup = UnitFactionGroup("player");
 		local tradingPostLocation = factionGroup == "Alliance" and MONTHLY_ACTIVITIES_TRADING_POST_ALLIANCE or MONTHLY_ACTIVITIES_TRADING_POST_HORDE;
 		GameTooltip_AddErrorLine(GameTooltip, MONTHLY_ACTIVITIES_UNAVAILABLE_TOOLTIP:format(tradingPostLocation));
+
+		if AreMonthlyActivitiesRestricted() then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddErrorLine(GameTooltip, MONTHLY_ACTIVITIES_RESTRICTED_TOOLTIP);
+		end
+
 		GameTooltip:Show();
 	end
 end

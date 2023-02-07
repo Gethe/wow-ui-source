@@ -1149,8 +1149,7 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 
 		local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 		local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
-		local fmt, time = SecondsToTimeAbbrev(seconds);
-		local timeRemainingText = fmt:format(time);
+		local timeRemainingText = Professions.OrderTimeLeftFormatter:Format(seconds);
 		if self.order.orderState ~= Enum.CraftingOrderState.Created then
 			timeRemainingText = CRAFTING_ORDER_TIME_PENDING_FMT:format(timeRemainingText);
 		end

@@ -291,8 +291,7 @@ end
 
 function ProfessionsCrafterOrderViewMixin:UpdateClaimEndTime()
     local timeRemaining = Professions.GetCraftingOrderRemainingTime(self.order.claimEndTime);
-    local fmt, time = SecondsToTimeAbbrev(timeRemaining);
-    self.OrderInfo.TimeRemainingValue:SetText(fmt:format(time));
+    self.OrderInfo.TimeRemainingValue:SetText(Professions.OrderTimeLeftFormatter:Format(timeRemaining));
 end
 
 function ProfessionsCrafterOrderViewMixin:CloseOrder()
@@ -329,7 +328,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.reagentSlot);
 
-            if not self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] then
+            if not self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] or not reagentInfo.isBasic then
                 allocations:Clear();
                 self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] = true;
             end
