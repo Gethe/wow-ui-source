@@ -195,55 +195,6 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 
-	-- Twitter
-	do
-		if not Kiosk.IsEnabled() and not LOCALE_zhCN then
-			local listener = Mixin(CreateFrame("Frame"), CallbackRegistryMixin);	
-			listener:GenerateCallbackEvents(
-				{
-					"StatusUpdate",
-					"LinkResult",
-				}
-			);
-			CallbackRegistryMixin.OnLoad(listener);
-
-			listener:RegisterEvent("TWITTER_STATUS_UPDATE");
-			listener:RegisterEvent("TWITTER_LINK_RESULT");
-			listener:SetScript("OnEvent", function(o, event, ...)
-				if event == "TWITTER_STATUS_UPDATE" then
-					local enabled, linked, screenName = ...;
-					if enabled then
-						listener.linked = linked;
-						if linked then
-							listener.screenName = "@"..screenName;
-						end
-						
-						listener:TriggerEvent(listener.Event.StatusUpdate);
-					end
-				elseif event == "TWITTER_LINK_RESULT" then
-					local linked, screenName, errorMsg = ...;
-					SocialBrowserFrame:Hide();
-
-					listener.linked = linked;
-					if linked then
-						listener.screenName = "@"..screenName;
-						UIErrorsFrame:AddMessage(SOCIAL_TWITTER_CONNECT_SUCCESS_MESSAGE, 1.0, 1.0, 0.0, 1.0);
-					else
-						UIErrorsFrame:AddMessage(SOCIAL_TWITTER_CONNECT_FAIL_MESSAGE, 1.0, 0.1, 0.1, 1.0);
-					end
-
-					listener:TriggerEvent(listener.Event.LinkResult);
-				end
-			end);
-
-			local setting = Settings.RegisterCVarSetting(category, "enableTwitter", Settings.VarType.Boolean, SOCIAL_ENABLE_TWITTER_FUNCTIONALITY);
-			local initializer = CreateTwitterPanelInitializer(setting, listener);
-			layout:AddInitializer(initializer);
-
-			C_Social.TwitterCheckStatus();
-		end
-	end
-
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 
