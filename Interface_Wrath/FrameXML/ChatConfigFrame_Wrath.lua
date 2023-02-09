@@ -31,7 +31,7 @@ function GetTemplateForChatConfigFrame()
 end
 
 function GetChatConfigChannelInfo()
-	return "ChatConfigCheckBoxWithSwatchAndClassColorTemplate", CHANNELS;
+	return "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS;
 end
 
 function ColorClassesCheckBox_OnClick(self, checked)

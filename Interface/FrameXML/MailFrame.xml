@@ -512,6 +512,7 @@
 						<KeyValues>
 							<KeyValue key="maxLetters" value="500" type="number"/>
 							<KeyValue key="fontName" value="MailTextFontNormal" type="string"/>
+							<KeyValue key="fontColor" value="BRONZE_MATERIAL_TEXT_COLOR" type="global"/>
 						</KeyValues>
 						<Scripts>
 							<OnMouseUp>
