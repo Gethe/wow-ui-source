@@ -829,7 +829,6 @@
 								<KeyValues>
 									<KeyValue key="icon" value="Interface\Worldmap\Gear_64Grey.blp" type="string"/>
 									<KeyValue key="tooltipTitle" value="AUCTION_SORT_OPTIONS_TOOLTIP_TITLE" type="global"/>
-									<!--KeyValue key="tooltipText" value="AUCTION_SORT_OPTIONS_TOOLTIP_TEXT" type="global"/-->
 									<KeyValue key="onClickHandler" value="BrowsePriceOptionsButton_OnClick" type="global"/>
 								</KeyValues>
 							</Button>
@@ -1047,6 +1046,15 @@
 								AuctionFrameBrowse_Search();
 								self:ClearFocus();
 							</OnEnterPressed>
+							<OnEnter>
+								GameTooltip_SetDefaultAnchor(GameTooltip, self);
+								GameTooltip_SetTitle(GameTooltip, AUCTION_TOOLTIP_BROWSE_BY_NAME_TITLE);
+								GameTooltip_AddNormalLine(GameTooltip, AUCTION_TOOLTIP_BROWSE_BY_NAME_BODY, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>

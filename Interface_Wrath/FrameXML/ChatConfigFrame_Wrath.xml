@@ -296,16 +296,16 @@
 		</Frames>
 	</Frame>
 	<Frame name="ChatConfigWideCheckBoxWithSwatchTemplate" inherits="ChatConfigCheckBoxWithSwatchTemplate" virtual="true">
-		<Size x="550" y="26"/>
+		<Size x="350" y="26"/>
 		<Scripts>
 			<OnLoad inherit="prepend">
 				self.CheckButton:SetHitRectInsets(0, -300, 0, 0);
-				self.ColorSwatch:SetPoint("LEFT", self, "LEFT", 350, 0);
+				self.ColorSwatch:SetPoint("LEFT", self, "LEFT", 178, 0);
 			</OnLoad>
 		</Scripts>
 	</Frame>
 	<Frame name="MovableChatConfigWideCheckBoxWithSwatchTemplate" parentArray="WideCheckBoxes" mixin="ChatConfigWideCheckBoxMixin" inherits="ChatConfigWideCheckBoxWithSwatchTemplate" virtual="true">
-		<Size x="550" y="23"/>
+		<Size x="350" y="25"/>
 		<Frames>
 			<Button parentKey="CloseChannel">
 				<Size x="14" y="14"/>
@@ -333,6 +333,21 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<CheckButton name="$parentColorClasses" inherits="ChatConfigBaseCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentColorSwatch" relativePoint="RIGHT">
+						<Offset x="65" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.func = ColorClassesCheckBox_OnClick;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="prepend" method="OnLoad"/>

@@ -869,7 +869,7 @@
 		end
 	</Binding>
 	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
-		if ( not C_PlayerInteractionManager.InteractUnit("mouseover") ) then
+		if ( not C_PlayerInteractionManager.InteractUnit("mouseover", false, false) ) then
 			C_PlayerInteractionManager.InteractUnit("anyinteract");
 		end
 	</Binding>
