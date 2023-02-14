@@ -15,19 +15,33 @@ function EssencePowerBar:UpdatePower()
 		self.classResourceButtonTable[i]:AnimOut();
 	end
 	
+	-- We need to update the animation of the filling point if it hasn't started at all, or if it's inaccurate'
 	local isAtMaxPoints = comboPoints == maxComboPoints; 
 	local fillingPoint = self.classResourceButtonTable[comboPoints + 1];
-	if (not isAtMaxPoints and fillingPoint and not (fillingPoint.EssenceFilling.FillingAnim:IsPlaying() or fillingPoint.EssenceFull:IsShown())) then 
-		local peace,interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
-		if (peace == nil or peace == 0) then
-			peace = 0.2;
-		end
-		local cooldownDuration = 1 / peace;
-		local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration;
-
+	if (not isAtMaxPoints and fillingPoint) then
 		local partialPoint = UnitPartialPower(unit, Enum.PowerType.Essence);
 		local elapsedPortion = (partialPoint / 1000.0);
-		self.classResourceButtonTable[comboPoints + 1]:AnimIn(animationSpeedMultiplier, elapsedPortion);
+
+		local filling = fillingPoint.EssenceFilling.FillingAnim:IsPlaying() or fillingPoint.EssenceFull:IsShown(); 
+		local outdatedProgress = false;
+		if filling then
+			-- 10% too fast or too slow is the current threshold for updating the anim
+			outdatedProgress = math.abs(elapsedPortion - fillingPoint.EssenceFilling.FillingAnim:GetProgress()) > 0.1;
+		end
+
+		if not filling or outdatedProgress then
+			local peace,interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
+			if (peace == nil or peace == 0) then
+				peace = 0.2;
+			end
+			local cooldownDuration = 1 / peace;
+			local animationSpeedMultiplier = FillingAnimationTime / cooldownDuration;
+			if not filling then
+				fillingPoint.EssenceFilling.FillingAnim:Stop();
+				fillingPoint.EssenceFilling.CircleAnim:Stop();
+			end
+			fillingPoint:AnimIn(animationSpeedMultiplier, elapsedPortion);
+		end
 	end
 end
 
