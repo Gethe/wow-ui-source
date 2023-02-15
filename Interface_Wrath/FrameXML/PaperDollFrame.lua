@@ -1615,9 +1615,27 @@ function PaperDollItemSlotButton_UpdateLock(self)
 	end
 end
 
+function PaperDollItemSlotButton_UpdateFlyout (self)
+	if ( self:GetID() ~= INVSLOT_AMMO ) then
+		if ( (IsModifiedClick("SHOWITEMFLYOUT") and not (PaperDollFrameItemFlyout:IsVisible() and PaperDollFrameItemFlyout.button == self)) or
+			self.popoutButton.flyoutLocked) then
+			PaperDollFrameItemFlyout_Show(self);
+		elseif ( (PaperDollFrameItemFlyout:IsVisible() and PaperDollFrameItemFlyout.button == self) and
+			not self.popoutButton.flyoutLocked and not IsModifiedClick("SHOWITEMFLYOUT") ) then
+			PaperDollFrameItemFlyout_Hide();
+		end
+	end
+end
+
 function PaperDollItemSlotButton_OnEnter(self)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	PaperDollItemSlotButton_UpdateFlyout(self);
+	if ( PaperDollFrameItemFlyout:IsShown() ) then
+		GameTooltip:SetOwner(PaperDollFrameItemFlyoutButtons, "ANCHOR_RIGHT", 6, -PaperDollFrameItemFlyoutButtons:GetHeight() - 6);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	end
 	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), nil, true);
 	if ( not hasItem ) then
 		local text = _G[strupper(strsub(self:GetName(), 10))];
@@ -2164,6 +2182,7 @@ function GearManagerDialog_OnShow (self)
 	self:RegisterEvent("EQUIPMENT_SETS_CHANGED");
 	C_EquipmentSet.ClearIgnoredSlotsForSave();
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
+	GearManagerDialogClose:SetPoint("TOPRIGHT", 2.2, 0);
 	
 	PaperDollFrameItemPopoutButton_ShowAll();
 	

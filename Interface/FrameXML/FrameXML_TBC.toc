@@ -39,6 +39,7 @@ FontStyles.xml
 
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
+..\SharedXML\ClassicCvarUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
