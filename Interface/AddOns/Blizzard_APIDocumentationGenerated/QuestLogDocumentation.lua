@@ -157,7 +157,7 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "questLogIndex", Type = "number", Nilable = false },
+				{ Name = "questLogIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -177,7 +177,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "questLogIndex", Type = "number", Nilable = true },
+				{ Name = "questLogIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -350,7 +350,7 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "questLogIndex", Type = "number", Nilable = false },
+				{ Name = "questLogIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -364,7 +364,7 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "questWatchIndex", Type = "number", Nilable = false },
+				{ Name = "questWatchIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -378,7 +378,7 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "questWatchIndex", Type = "number", Nilable = false },
+				{ Name = "questWatchIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -406,14 +406,14 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "questLogIndex", Type = "number", Nilable = true },
+				{ Name = "questLogIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "portraitGiver", Type = "number", Nilable = false },
-				{ Name = "portraitGiverText", Type = "string", Nilable = false },
-				{ Name = "portraitGiverName", Type = "string", Nilable = false },
+				{ Name = "portraitGiverText", Type = "cstring", Nilable = false },
+				{ Name = "portraitGiverName", Type = "cstring", Nilable = false },
 				{ Name = "portraitGiverMount", Type = "number", Nilable = false },
 				{ Name = "portraitGiverModelSceneID", Type = "number", Nilable = true },
 			},
@@ -548,12 +548,12 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "questLogIndex", Type = "number", Nilable = false },
+				{ Name = "questLogIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "title", Type = "string", Nilable = true },
+				{ Name = "title", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -568,7 +568,7 @@ local QuestLog =
 
 			Returns =
 			{
-				{ Name = "title", Type = "string", Nilable = true },
+				{ Name = "title", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -869,7 +869,7 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 			},
 
@@ -1047,7 +1047,7 @@ local QuestLog =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -1109,7 +1109,7 @@ local QuestLog =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "specificTreeID", Type = "number", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "numFulfilled", Type = "number", Nilable = false },
 				{ Name = "numRequired", Type = "number", Nilable = false },
 			},
@@ -1282,7 +1282,7 @@ local QuestLog =
 			Fields =
 			{
 				{ Name = "title", Type = "string", Nilable = false },
-				{ Name = "questLogIndex", Type = "number", Nilable = false },
+				{ Name = "questLogIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "campaignID", Type = "number", Nilable = true },
 				{ Name = "level", Type = "number", Nilable = false },
@@ -1334,7 +1334,7 @@ local QuestLog =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "tagName", Type = "string", Nilable = false },
+				{ Name = "tagName", Type = "cstring", Nilable = false },
 				{ Name = "tagID", Type = "number", Nilable = false },
 				{ Name = "worldQuestType", Type = "number", Nilable = true },
 				{ Name = "quality", Type = "WorldQuestQuality", Nilable = true },
@@ -1348,10 +1348,10 @@ local QuestLog =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "background", Type = "string", Nilable = false },
-				{ Name = "seal", Type = "string", Nilable = false },
-				{ Name = "signature", Type = "string", Nilable = false },
-				{ Name = "poiIcon", Type = "string", Nilable = false },
+				{ Name = "background", Type = "textureAtlas", Nilable = false },
+				{ Name = "seal", Type = "textureAtlas", Nilable = false },
+				{ Name = "signature", Type = "cstring", Nilable = false },
+				{ Name = "poiIcon", Type = "textureAtlas", Nilable = false },
 			},
 		},
 	},

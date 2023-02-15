@@ -39,7 +39,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -49,7 +49,7 @@ local Map =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -91,7 +91,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -129,12 +129,12 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "layerIndex", Type = "number", Nilable = false },
+				{ Name = "layerIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "textures", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "textures", Type = "table", InnerType = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -236,8 +236,8 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "fileDataID", Type = "number", Nilable = false },
-				{ Name = "atlasID", Type = "string", Nilable = false },
+				{ Name = "fileDataID", Type = "fileID", Nilable = false },
+				{ Name = "atlasID", Type = "textureAtlas", Nilable = false },
 				{ Name = "texturePercentageX", Type = "number", Nilable = false },
 				{ Name = "texturePercentageY", Type = "number", Nilable = false },
 				{ Name = "textureX", Type = "number", Nilable = false },
@@ -314,14 +314,14 @@ local Map =
 			Arguments =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "overrideUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -366,12 +366,12 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -380,7 +380,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "point", Type = "table", Nilable = false },
+				{ Name = "point", Type = "UiMapPoint", Nilable = false },
 			},
 		},
 		{
@@ -394,7 +394,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "point", Type = "table", Nilable = false },
+				{ Name = "point", Type = "UiMapPoint", Nilable = false },
 			},
 		},
 		{
@@ -417,7 +417,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -427,13 +427,13 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -488,7 +488,7 @@ local Map =
 
 			Arguments =
 			{
-				{ Name = "point", Type = "table", Nilable = false },
+				{ Name = "point", Type = "UiMapPoint", Nilable = false },
 			},
 		},
 	},
@@ -612,9 +612,9 @@ local Map =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
-				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
 			},
 		},
 		{
@@ -623,8 +623,8 @@ local Map =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
 			},
@@ -635,7 +635,7 @@ local Map =
 			Fields =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "mapType", Type = "UIMapType", Nilable = false },
 				{ Name = "parentMapID", Type = "number", Nilable = false },
 				{ Name = "flags", Type = "number", Nilable = false },
@@ -648,7 +648,7 @@ local Map =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
 				{ Name = "relativeHeightIndex", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -656,8 +656,8 @@ local Map =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "fileDataID", Type = "number", Nilable = false },
-				{ Name = "atlasID", Type = "string", Nilable = false },
+				{ Name = "fileDataID", Type = "fileID", Nilable = false },
+				{ Name = "atlasID", Type = "textureAtlas", Nilable = false },
 				{ Name = "texturePercentageX", Type = "number", Nilable = false },
 				{ Name = "texturePercentageY", Type = "number", Nilable = false },
 				{ Name = "textureX", Type = "number", Nilable = false },

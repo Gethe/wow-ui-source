@@ -507,6 +507,10 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 		SetCVar("perksActivitiesLastPoints", 0);
 	end
 
+	-- Reset bar animation targets if already started from a previous update
+	self.pendingTargetValue = nil;
+	self.targetValue = nil;
+
 	local lastPoints = tonumber(GetCVar("perksActivitiesLastPoints"));
 	self:SetCurrentPoints(lastPoints, lastPoints);
 

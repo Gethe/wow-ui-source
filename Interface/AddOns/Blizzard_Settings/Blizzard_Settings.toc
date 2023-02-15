@@ -1,3 +1,5 @@
 ## Title: Blizzard Settings
 ## Author: Blizzard Entertainment
-## AllowLoad: Both
+## LoadOnDemand: 1
+
+Blizzard_Settings.lua

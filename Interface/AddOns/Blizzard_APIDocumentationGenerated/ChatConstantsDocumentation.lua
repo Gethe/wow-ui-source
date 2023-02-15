@@ -51,6 +51,19 @@ local ChatConstants =
 			},
 		},
 		{
+			Name = "ChatWhisperTargetStatus",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "CanWhisper", Type = "ChatWhisperTargetStatus", EnumValue = 0 },
+				{ Name = "Offline", Type = "ChatWhisperTargetStatus", EnumValue = 1 },
+				{ Name = "WrongFaction", Type = "ChatWhisperTargetStatus", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ExcludedCensorSources",
 			Type = "Enumeration",
 			NumValues = 8,
@@ -127,8 +140,8 @@ local ChatConstants =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "shortcut", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "shortcut", Type = "cstring", Nilable = false },
 				{ Name = "localID", Type = "number", Nilable = false },
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "zoneChannelID", Type = "number", Nilable = false },

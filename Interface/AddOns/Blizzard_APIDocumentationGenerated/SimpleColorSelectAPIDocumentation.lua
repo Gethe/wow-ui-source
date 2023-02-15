@@ -53,7 +53,7 @@ local SimpleColorSelectAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -66,7 +66,7 @@ local SimpleColorSelectAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -79,7 +79,7 @@ local SimpleColorSelectAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -92,7 +92,7 @@ local SimpleColorSelectAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -123,7 +123,7 @@ local SimpleColorSelectAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -132,7 +132,7 @@ local SimpleColorSelectAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "string", Nilable = false },
+				{ Name = "texture", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -141,7 +141,7 @@ local SimpleColorSelectAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -150,7 +150,7 @@ local SimpleColorSelectAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "string", Nilable = false },
+				{ Name = "texture", Type = "TextureAsset", Nilable = false },
 			},
 		},
 	},

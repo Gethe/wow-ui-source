@@ -35,7 +35,7 @@ local ClickBindingsConstants =
 			{
 				{ Name = "type", Type = "ClickBindingType", Nilable = false },
 				{ Name = "actionID", Type = "number", Nilable = false },
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 				{ Name = "modifiers", Type = "number", Nilable = false },
 			},
 		},

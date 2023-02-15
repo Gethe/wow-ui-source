@@ -53,8 +53,8 @@ local FogOfWar =
 			Fields =
 			{
 				{ Name = "fogOfWarID", Type = "number", Nilable = false },
-				{ Name = "backgroundAtlas", Type = "string", Nilable = false },
-				{ Name = "maskAtlas", Type = "string", Nilable = false },
+				{ Name = "backgroundAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "maskAtlas", Type = "textureAtlas", Nilable = false },
 				{ Name = "maskScalar", Type = "number", Nilable = false },
 			},
 		},

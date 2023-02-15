@@ -18,7 +18,7 @@ local PetBattles =
 
 			Returns =
 			{
-				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -33,7 +33,7 @@ local PetBattles =
 
 			Returns =
 			{
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 			},
 		},
 		{

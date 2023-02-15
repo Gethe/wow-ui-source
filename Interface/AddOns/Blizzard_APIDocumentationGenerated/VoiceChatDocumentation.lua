@@ -48,7 +48,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelDisplayName", Type = "string", Nilable = false },
+				{ Name = "channelDisplayName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -148,8 +148,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = false },
 			},
 
 			Returns =
@@ -190,7 +190,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -242,7 +242,7 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "memberGUID", Type = "string", Nilable = false },
+				{ Name = "memberGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -252,7 +252,7 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "memberGUID", Type = "string", Nilable = false },
+				{ Name = "memberGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -296,7 +296,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -374,8 +374,8 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = true },
-				{ Name = "streamId", Type = "string", Nilable = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = true },
 			},
 
 			Returns =
@@ -431,7 +431,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -502,7 +502,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -593,8 +593,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = false },
 			},
 		},
 		{
@@ -658,7 +658,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 				{ Name = "muted", Type = "bool", Nilable = false },
 			},
 		},
@@ -669,7 +669,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
 		},
@@ -706,7 +706,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "textureObject", Type = "table", Nilable = false },
+				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
 				{ Name = "memberID", Type = "number", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 			},
@@ -755,7 +755,7 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "voiceID", Type = "number", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 				{ Name = "rate", Type = "number", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
@@ -775,7 +775,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -841,7 +841,7 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "channelDisplayName", Type = "string", Nilable = false },
+				{ Name = "channelDisplayName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -853,8 +853,8 @@ local VoiceChat =
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = true },
-				{ Name = "streamId", Type = "string", Nilable = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = true },
 			},
 		},
 		{
@@ -993,7 +993,7 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
-				{ Name = "pushToTalkSetting", Type = "string", Nilable = false },
+				{ Name = "pushToTalkSetting", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1112,8 +1112,8 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = true },
-				{ Name = "streamId", Type = "string", Nilable = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = true },
 				{ Name = "pendingJoin", Type = "bool", Nilable = false },
 			},
 		},
@@ -1323,8 +1323,8 @@ local VoiceChat =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "channelID", Type = "number", Nilable = false },
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "streamId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "streamId", Type = "ClubStreamId", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isMuted", Type = "bool", Nilable = false },

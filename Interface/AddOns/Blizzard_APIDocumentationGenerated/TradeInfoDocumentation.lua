@@ -69,7 +69,7 @@ local TradeInfo =
 			LiteralName = "TRADE_POTENTIAL_REMOVE_TRANSMOG",
 			Payload =
 			{
-				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
 				{ Name = "tradeSlotIndex", Type = "number", Nilable = false },
 			},
 		},
@@ -79,7 +79,7 @@ local TradeInfo =
 			LiteralName = "TRADE_REQUEST",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{

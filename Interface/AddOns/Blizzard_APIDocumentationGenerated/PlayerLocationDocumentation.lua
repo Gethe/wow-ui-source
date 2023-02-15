@@ -12,7 +12,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -26,13 +26,13 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "className", Type = "string", Nilable = true },
-				{ Name = "classFilename", Type = "string", Nilable = true },
+				{ Name = "className", Type = "cstring", Nilable = true },
+				{ Name = "classFilename", Type = "cstring", Nilable = true },
 				{ Name = "classID", Type = "number", Nilable = true },
 			},
 		},
@@ -42,7 +42,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -56,7 +56,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -70,7 +70,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -84,7 +84,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
 			},
 
 			Returns =
@@ -98,7 +98,7 @@ local PlayerLocation =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =

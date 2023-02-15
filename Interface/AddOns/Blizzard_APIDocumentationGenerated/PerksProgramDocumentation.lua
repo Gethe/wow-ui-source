@@ -107,7 +107,7 @@ local PerksProgram =
 
 			Returns =
 			{
-				{ Name = "timeRemaining", Type = "number", Nilable = false },
+				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -135,7 +135,7 @@ local PerksProgram =
 
 			Returns =
 			{
-				{ Name = "refundTimeRemaining", Type = "number", Nilable = false },
+				{ Name = "refundTimeRemaining", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -335,7 +335,7 @@ local PerksProgram =
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "displayName", Type = "string", Nilable = false },
+				{ Name = "displayName", Type = "cstring", Nilable = false },
 				{ Name = "defaultUIModelSceneID", Type = "number", Nilable = false },
 			},
 		},
@@ -347,7 +347,7 @@ local PerksProgram =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "perksVendorCategoryID", Type = "number", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "timeRemaining", Type = "number", Nilable = false },
+				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "purchased", Type = "bool", Nilable = false },
 				{ Name = "refundable", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },

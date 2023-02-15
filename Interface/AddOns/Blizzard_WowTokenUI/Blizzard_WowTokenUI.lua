@@ -86,6 +86,7 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_HKD");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 
@@ -149,6 +150,7 @@ local CURRENCY_GEL = 31;
 local CURRENCY_TRY = 32;
 local CURRENCY_KZT = 33;
 local CURRENCY_UAH = 34;
+local CURRENCY_HKD = 35;
 
 local currencyMult = 100;
 
@@ -261,6 +263,10 @@ local function currencyFormatUAH(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
 end
 
+local function currencyFormatHKD(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_HKD, formatCurrency(dollars, cents, false));
+end
+
 local currencySpecific = {
 	[CURRENCY_USD] = {
 		["currencyFormat"] = currencyFormatUSD,
@@ -321,6 +327,9 @@ local currencySpecific = {
 	},
 	[CURRENCY_UAH] = {
 		["currencyFormat"] = currencyFormatUAH,
+	},
+	[CURRENCY_HKD] = {
+		["currencyFormat"] = currencyFormatHKD,
 	},
 };
 

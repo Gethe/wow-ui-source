@@ -169,7 +169,7 @@ local ProfessionSpecUI =
 
 			Returns =
 			{
-				{ Name = "sourceText", Type = "string", Nilable = false },
+				{ Name = "sourceText", Type = "cstring", Nilable = false },
 			},
 		},
 		{

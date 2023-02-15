@@ -1,6 +1,7 @@
 ## Title: Blizzard API Documentation Generated
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
+## AllowLoad: Both
 ## Dependencies: Blizzard_APIDocumentation
 
 # Start documentation files here

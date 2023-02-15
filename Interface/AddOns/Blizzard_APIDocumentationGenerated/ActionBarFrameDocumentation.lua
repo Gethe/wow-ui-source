@@ -17,7 +17,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -31,7 +31,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -45,7 +45,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -54,12 +54,12 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "bonusBarIndex", Type = "number", Nilable = true },
+				{ Name = "bonusBarIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -68,7 +68,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -87,7 +87,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -96,7 +96,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -166,7 +166,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -180,7 +180,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -194,7 +194,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 				{ Name = "useNeutral", Type = "bool", Nilable = false },
 			},
 
@@ -209,7 +209,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 				{ Name = "useNeutral", Type = "bool", Nilable = false },
 			},
 
@@ -238,7 +238,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -265,7 +265,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 		},
 	},

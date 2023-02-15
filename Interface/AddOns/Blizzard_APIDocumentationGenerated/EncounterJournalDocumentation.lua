@@ -54,8 +54,8 @@ local EncounterJournal =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "encounterIndex", Type = "number", Nilable = true },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "encounterIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
@@ -218,9 +218,9 @@ local EncounterJournal =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "journalInstanceID", Type = "number", Nilable = false },
 			},
@@ -235,7 +235,7 @@ local EncounterJournal =
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "itemQuality", Type = "string", Nilable = true },
 				{ Name = "filterType", Type = "ItemSlotFilterType", Nilable = true },
-				{ Name = "icon", Type = "number", Nilable = true },
+				{ Name = "icon", Type = "fileID", Nilable = true },
 				{ Name = "slot", Type = "string", Nilable = true },
 				{ Name = "armorType", Type = "string", Nilable = true },
 				{ Name = "link", Type = "string", Nilable = true },
@@ -262,10 +262,10 @@ local EncounterJournal =
 			Fields =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "title", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "headerType", Type = "number", Nilable = false },
-				{ Name = "abilityIcon", Type = "number", Nilable = false },
+				{ Name = "abilityIcon", Type = "fileID", Nilable = false },
 				{ Name = "creatureDisplayID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
 				{ Name = "siblingSectionID", Type = "number", Nilable = true },

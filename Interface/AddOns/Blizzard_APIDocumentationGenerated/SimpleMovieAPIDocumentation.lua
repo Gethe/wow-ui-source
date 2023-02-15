@@ -36,7 +36,7 @@ local SimpleMovieAPI =
 
 			Arguments =
 			{
-				{ Name = "movieName", Type = "string", Nilable = false },
+				{ Name = "movieName", Type = "cstring", Nilable = false },
 				{ Name = "looping", Type = "bool", Nilable = false, Default = false },
 				{ Name = "resolution", Type = "number", Nilable = false, Default = 0 },
 			},

@@ -35,7 +35,7 @@ local TTSSettings =
 
 			Arguments =
 			{
-				{ Name = "chatName", Type = "string", Nilable = false },
+				{ Name = "chatName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -100,7 +100,7 @@ local TTSSettings =
 
 			Returns =
 			{
-				{ Name = "voiceName", Type = "string", Nilable = false },
+				{ Name = "voiceName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -133,7 +133,7 @@ local TTSSettings =
 
 			Arguments =
 			{
-				{ Name = "chatName", Type = "string", Nilable = false },
+				{ Name = "chatName", Type = "cstring", Nilable = false },
 				{ Name = "newVal", Type = "bool", Nilable = false, Default = false },
 			},
 		},

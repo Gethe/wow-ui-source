@@ -20,7 +20,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -34,7 +34,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -48,7 +48,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -62,7 +62,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "number", Nilable = false },
 			},
 
@@ -77,7 +77,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -105,14 +105,14 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "tooltip", Type = "string", Nilable = true },
-				{ Name = "cost", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "tooltip", Type = "cstring", Nilable = true },
+				{ Name = "cost", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -126,9 +126,9 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "tooltip", Type = "string", Nilable = true },
-				{ Name = "cost", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "tooltip", Type = "cstring", Nilable = true },
+				{ Name = "cost", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -137,14 +137,14 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "textureIndex", Type = "number", Nilable = false },
-				{ Name = "timerIndex", Type = "number", Nilable = true },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "textureIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "timerIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
@@ -158,12 +158,12 @@ local Unit =
 			Arguments =
 			{
 				{ Name = "barID", Type = "number", Nilable = false },
-				{ Name = "textureIndex", Type = "number", Nilable = false },
+				{ Name = "textureIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
@@ -176,7 +176,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -190,7 +190,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -213,8 +213,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "textureObject", Type = "table", Nilable = false },
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "disableMasking", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -224,7 +224,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "textureObject", Type = "table", Nilable = false },
+				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
 				{ Name = "creatureDisplayID", Type = "number", Nilable = false },
 			},
 		},
@@ -234,8 +234,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "textureObject", Type = "table", Nilable = false },
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "style", Type = "CursorStyle", Nilable = true },
 				{ Name = "includeLowPriority", Type = "bool", Nilable = true },
 			},
@@ -251,7 +251,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -266,7 +266,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -280,13 +280,13 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "className", Type = "string", Nilable = false },
-				{ Name = "classFilename", Type = "string", Nilable = false },
+				{ Name = "className", Type = "cstring", Nilable = false },
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 			},
 		},
@@ -296,12 +296,12 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "classFilename", Type = "string", Nilable = false },
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 			},
 		},
@@ -311,7 +311,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -325,7 +325,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -339,8 +339,8 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "controllingUnit", Type = "string", Nilable = false },
-				{ Name = "controlledUnit", Type = "string", Nilable = false },
+				{ Name = "controllingUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "controlledUnit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -354,7 +354,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -368,7 +368,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -384,7 +384,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitGUID", Type = "string", Nilable = false },
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -398,7 +398,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -412,7 +412,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -428,7 +428,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -456,7 +456,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = false, Default = "NumPowerTypes" },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
 			},
@@ -472,7 +472,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -486,7 +486,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -500,7 +500,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -514,7 +514,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -528,7 +528,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unitGUID", Type = "string", Nilable = false },
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -542,7 +542,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -556,7 +556,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -579,7 +579,7 @@ local Unit =
 			LiteralName = "ARENA_COOLDOWNS_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -588,7 +588,7 @@ local Unit =
 			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -598,7 +598,7 @@ local Unit =
 			LiteralName = "AUTOFOLLOW_BEGIN",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -617,7 +617,7 @@ local Unit =
 			LiteralName = "CONFIRM_BINDER",
 			Payload =
 			{
-				{ Name = "areaName", Type = "string", Nilable = false },
+				{ Name = "areaName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -641,7 +641,7 @@ local Unit =
 			LiteralName = "HONOR_XP_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -650,7 +650,7 @@ local Unit =
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -659,7 +659,7 @@ local Unit =
 			LiteralName = "INCOMING_SUMMON_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -668,7 +668,7 @@ local Unit =
 			LiteralName = "KNOWN_TITLES_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -682,7 +682,7 @@ local Unit =
 			LiteralName = "MIRROR_TIMER_PAUSE",
 			Payload =
 			{
-				{ Name = "timerName", Type = "string", Nilable = false },
+				{ Name = "timerName", Type = "cstring", Nilable = false },
 				{ Name = "paused", Type = "number", Nilable = false },
 			},
 		},
@@ -692,12 +692,12 @@ local Unit =
 			LiteralName = "MIRROR_TIMER_START",
 			Payload =
 			{
-				{ Name = "timerName", Type = "string", Nilable = false },
+				{ Name = "timerName", Type = "cstring", Nilable = false },
 				{ Name = "value", Type = "number", Nilable = false },
 				{ Name = "maxValue", Type = "number", Nilable = false },
 				{ Name = "scale", Type = "number", Nilable = false },
 				{ Name = "paused", Type = "number", Nilable = false },
-				{ Name = "timerLabel", Type = "string", Nilable = false },
+				{ Name = "timerLabel", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -706,7 +706,7 @@ local Unit =
 			LiteralName = "MIRROR_TIMER_STOP",
 			Payload =
 			{
-				{ Name = "timerName", Type = "string", Nilable = false },
+				{ Name = "timerName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -724,7 +724,7 @@ local Unit =
 			LiteralName = "OBJECT_ENTERED_AOI",
 			Payload =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -733,7 +733,7 @@ local Unit =
 			LiteralName = "OBJECT_LEFT_AOI",
 			Payload =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -761,7 +761,7 @@ local Unit =
 			LiteralName = "PLAYER_DAMAGE_DONE_MODS",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -780,7 +780,7 @@ local Unit =
 			LiteralName = "PLAYER_FLAGS_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -832,7 +832,7 @@ local Unit =
 			LiteralName = "PLAYER_PVP_KILLS_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -841,7 +841,7 @@ local Unit =
 			LiteralName = "PLAYER_PVP_RANK_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -870,8 +870,8 @@ local Unit =
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
 			Payload =
 			{
-				{ Name = "oldTarget", Type = "string", Nilable = false },
-				{ Name = "newTarget", Type = "string", Nilable = false },
+				{ Name = "oldTarget", Type = "WOWGUID", Nilable = false },
+				{ Name = "newTarget", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -885,7 +885,7 @@ local Unit =
 			LiteralName = "PLAYER_SPECIALIZATION_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -929,7 +929,7 @@ local Unit =
 			LiteralName = "PLAYER_TRIAL_XP_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -943,7 +943,7 @@ local Unit =
 			LiteralName = "PLAYER_XP_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -966,7 +966,7 @@ local Unit =
 			LiteralName = "PVP_TIMER_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1001,7 +1001,7 @@ local Unit =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "effectValue", Type = "number", Nilable = false },
-				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "message", Type = "cstring", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "currencyTypesID", Type = "number", Nilable = false },
 				{ Name = "currencyCost", Type = "number", Nilable = false },
@@ -1024,7 +1024,7 @@ local Unit =
 			LiteralName = "UNIT_ABSORB_AMOUNT_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1033,7 +1033,7 @@ local Unit =
 			LiteralName = "UNIT_AREA_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1042,7 +1042,7 @@ local Unit =
 			LiteralName = "UNIT_ATTACK",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1051,7 +1051,7 @@ local Unit =
 			LiteralName = "UNIT_ATTACK_POWER",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1060,7 +1060,7 @@ local Unit =
 			LiteralName = "UNIT_ATTACK_SPEED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1074,7 +1074,7 @@ local Unit =
 			LiteralName = "UNIT_CLASSIFICATION_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1083,9 +1083,9 @@ local Unit =
 			LiteralName = "UNIT_COMBAT",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "event", Type = "string", Nilable = false },
-				{ Name = "flagText", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "event", Type = "cstring", Nilable = false },
+				{ Name = "flagText", Type = "cstring", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
 				{ Name = "schoolMask", Type = "number", Nilable = false },
 			},
@@ -1096,7 +1096,7 @@ local Unit =
 			LiteralName = "UNIT_CONNECTION",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "isConnected", Type = "bool", Nilable = false },
 			},
 		},
@@ -1106,7 +1106,7 @@ local Unit =
 			LiteralName = "UNIT_CTR_OPTIONS",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1115,7 +1115,7 @@ local Unit =
 			LiteralName = "UNIT_DAMAGE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1124,7 +1124,7 @@ local Unit =
 			LiteralName = "UNIT_DEFENSE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1133,7 +1133,7 @@ local Unit =
 			LiteralName = "UNIT_DISPLAYPOWER",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1142,7 +1142,7 @@ local Unit =
 			LiteralName = "UNIT_FACTION",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1151,7 +1151,7 @@ local Unit =
 			LiteralName = "UNIT_FLAGS",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1160,7 +1160,7 @@ local Unit =
 			LiteralName = "UNIT_FORM_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1169,7 +1169,7 @@ local Unit =
 			LiteralName = "UNIT_HEAL_ABSORB_AMOUNT_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1178,7 +1178,7 @@ local Unit =
 			LiteralName = "UNIT_HEAL_PREDICTION",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1187,7 +1187,7 @@ local Unit =
 			LiteralName = "UNIT_HEALTH",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1196,7 +1196,7 @@ local Unit =
 			LiteralName = "UNIT_INVENTORY_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1205,7 +1205,7 @@ local Unit =
 			LiteralName = "UNIT_LEVEL",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1214,7 +1214,7 @@ local Unit =
 			LiteralName = "UNIT_MANA",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1223,7 +1223,7 @@ local Unit =
 			LiteralName = "UNIT_MAXHEALTH",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1232,8 +1232,8 @@ local Unit =
 			LiteralName = "UNIT_MAXPOWER",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "powerType", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1242,7 +1242,7 @@ local Unit =
 			LiteralName = "UNIT_MODEL_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1251,7 +1251,7 @@ local Unit =
 			LiteralName = "UNIT_NAME_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1260,7 +1260,7 @@ local Unit =
 			LiteralName = "UNIT_OTHER_PARTY_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1269,7 +1269,7 @@ local Unit =
 			LiteralName = "UNIT_PET",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1278,7 +1278,7 @@ local Unit =
 			LiteralName = "UNIT_PET_EXPERIENCE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1287,7 +1287,7 @@ local Unit =
 			LiteralName = "UNIT_PHASE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1296,7 +1296,7 @@ local Unit =
 			LiteralName = "UNIT_PORTRAIT_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1305,7 +1305,7 @@ local Unit =
 			LiteralName = "UNIT_POWER_BAR_HIDE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1314,7 +1314,7 @@ local Unit =
 			LiteralName = "UNIT_POWER_BAR_SHOW",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1323,7 +1323,7 @@ local Unit =
 			LiteralName = "UNIT_POWER_BAR_TIMER_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1332,8 +1332,8 @@ local Unit =
 			LiteralName = "UNIT_POWER_FREQUENT",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "powerType", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1342,7 +1342,7 @@ local Unit =
 			LiteralName = "UNIT_POWER_POINT_CHARGE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1351,8 +1351,8 @@ local Unit =
 			LiteralName = "UNIT_POWER_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "powerType", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1361,7 +1361,7 @@ local Unit =
 			LiteralName = "UNIT_QUEST_LOG_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1370,7 +1370,7 @@ local Unit =
 			LiteralName = "UNIT_RANGED_ATTACK_POWER",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1379,7 +1379,7 @@ local Unit =
 			LiteralName = "UNIT_RANGEDDAMAGE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1388,7 +1388,7 @@ local Unit =
 			LiteralName = "UNIT_RESISTANCES",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1397,7 +1397,7 @@ local Unit =
 			LiteralName = "UNIT_SPELL_HASTE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1406,8 +1406,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1417,8 +1417,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1428,8 +1428,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1439,8 +1439,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1450,8 +1450,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1461,8 +1461,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1472,8 +1472,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1483,8 +1483,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_FAILED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1494,8 +1494,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1505,8 +1505,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1516,7 +1516,7 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTIBLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1525,7 +1525,7 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1534,8 +1534,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_START",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1545,8 +1545,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_STOP",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1556,8 +1556,8 @@ local Unit =
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -1567,7 +1567,7 @@ local Unit =
 			LiteralName = "UNIT_STATS",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1576,7 +1576,7 @@ local Unit =
 			LiteralName = "UNIT_TARGET",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1585,7 +1585,7 @@ local Unit =
 			LiteralName = "UNIT_TARGETABLE_CHANGED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1594,7 +1594,7 @@ local Unit =
 			LiteralName = "UNIT_THREAT_LIST_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1603,7 +1603,7 @@ local Unit =
 			LiteralName = "UNIT_THREAT_SITUATION_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{

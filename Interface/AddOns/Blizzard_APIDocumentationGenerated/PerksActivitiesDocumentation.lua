@@ -57,7 +57,7 @@ local PerksActivities =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -133,7 +133,7 @@ local PerksActivities =
 			Fields =
 			{
 				{ Name = "activePerksMonth", Type = "number", Nilable = false },
-				{ Name = "displayMonthName", Type = "string", Nilable = false },
+				{ Name = "displayMonthName", Type = "cstring", Nilable = false },
 				{ Name = "activities", Type = "table", InnerType = "PerksActivityInfo", Nilable = false },
 				{ Name = "thresholds", Type = "table", InnerType = "PerksActivityThresholdInfo", Nilable = false },
 			},
@@ -169,8 +169,8 @@ local PerksActivities =
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "activityName", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "activityName", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "thresholdContributionAmount", Type = "number", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "tracked", Type = "bool", Nilable = false },

@@ -62,7 +62,7 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 	self:SetID(optionInfo.orderIndex or 0);
 	self.spellID = optionInfo.spellID;
 
-	if ( optionInfo.flags == Enum.GossipOptionRecFlags.QuestLabelPrepend) then
+	if (FlagsUtil.IsSet(optionInfo.flags, Enum.GossipOptionRecFlags.QuestLabelPrepend)) then
 		self:SetText(GOSSIP_QUEST_OPTION_PREPEND:format(optionInfo.name));
 	else
 		self:SetText(optionInfo.name);

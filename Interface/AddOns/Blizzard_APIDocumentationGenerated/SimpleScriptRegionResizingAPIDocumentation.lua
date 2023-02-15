@@ -11,8 +11,8 @@ local SimpleScriptRegionResizingAPI =
 
 			Arguments =
 			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -59,16 +59,16 @@ local SimpleScriptRegionResizingAPI =
 
 			Arguments =
 			{
-				{ Name = "anchorIndex", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "anchorIndex", Type = "luaIndex", Nilable = false, Default = 0 },
 			},
 
 			Returns =
 			{
 				{ Name = "point", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -83,10 +83,10 @@ local SimpleScriptRegionResizingAPI =
 			Returns =
 			{
 				{ Name = "point", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -95,7 +95,7 @@ local SimpleScriptRegionResizingAPI =
 
 			Arguments =
 			{
-				{ Name = "relativeTo", Type = "table", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
 				{ Name = "doResize", Type = "bool", Nilable = false, Default = true },
 			},
 		},
@@ -105,7 +105,7 @@ local SimpleScriptRegionResizingAPI =
 
 			Arguments =
 			{
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -115,10 +115,10 @@ local SimpleScriptRegionResizingAPI =
 			Arguments =
 			{
 				{ Name = "point", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -127,8 +127,8 @@ local SimpleScriptRegionResizingAPI =
 
 			Arguments =
 			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -137,7 +137,7 @@ local SimpleScriptRegionResizingAPI =
 
 			Arguments =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
 			},
 		},
 	},

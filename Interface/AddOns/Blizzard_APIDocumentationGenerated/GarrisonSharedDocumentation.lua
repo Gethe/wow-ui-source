@@ -7,8 +7,8 @@ local GarrisonShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "factor", Type = "number", Nilable = false },
 			},
@@ -19,13 +19,13 @@ local GarrisonShared =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "isTrait", Type = "bool", Nilable = false },
 				{ Name = "isSpecialization", Type = "bool", Nilable = false },
 				{ Name = "temporary", Type = "bool", Nilable = false },
-				{ Name = "category", Type = "string", Nilable = true },
+				{ Name = "category", Type = "cstring", Nilable = true },
 				{ Name = "counters", Type = "table", InnerType = "GarrisonAbilityEffect", Nilable = false },
 				{ Name = "isEmptySlot", Type = "bool", Nilable = false },
 			},
@@ -55,9 +55,9 @@ local GarrisonShared =
 				{ Name = "selected", Type = "bool", Nilable = false },
 				{ Name = "researched", Type = "bool", Nilable = false },
 				{ Name = "ignoreTalent", Type = "bool", Nilable = false },
-				{ Name = "researchDuration", Type = "number", Nilable = false },
-				{ Name = "startTime", Type = "number", Nilable = false },
-				{ Name = "timeRemaining", Type = "number", Nilable = false },
+				{ Name = "researchDuration", Type = "time_t", Nilable = false },
+				{ Name = "startTime", Type = "time_t", Nilable = false },
+				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "researchGoldCost", Type = "number", Nilable = false },
 				{ Name = "researchCurrencyCosts", Type = "table", InnerType = "GarrisonTalentCurrencyCostInfo", Nilable = false },
 				{ Name = "talentAvailability", Type = "GarrisonTalentAvailability", Nilable = false },
@@ -89,8 +89,8 @@ local GarrisonShared =
 			Fields =
 			{
 				{ Name = "treeID", Type = "number", Nilable = false },
-				{ Name = "title", Type = "string", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "title", Type = "cstring", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "talents", Type = "table", InnerType = "GarrisonTalentInfo", Nilable = false },
 				{ Name = "isClassAgnostic", Type = "bool", Nilable = false },
 				{ Name = "isThemed", Type = "bool", Nilable = false },

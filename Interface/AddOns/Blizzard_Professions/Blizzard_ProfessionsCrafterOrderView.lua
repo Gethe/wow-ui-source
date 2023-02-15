@@ -9,24 +9,6 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
         self.DeclineOrderDialog.NoteEditBox.ScrollingEditBox:SetText("");
         self.DeclineOrderDialog:Show();
     end);
-    self.OrderInfo.IgnoreButton:SetScript("OnClick", function() 
-        local referenceKey = self;
-		if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-			local customData = 
-            {
-				text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
-                text_arg1 = self.order.customerName,
-				callback = function()
-                    C_FriendList.AddIgnore(self.order.customerName);
-                end,
-				acceptText = YES,
-				cancelText = NO,
-				referenceKey = referenceKey,
-			};
-
-			StaticPopup_ShowCustomGenericConfirmation(customData);
-		end
-     end);
 
     self.CreateButton:SetScript("OnClick", function()
 		local function StartCraft()
@@ -86,6 +68,81 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
     
     self.DeclineOrderDialog.ConfirmButton:SetScript("OnClick", function() C_CraftingOrders.RejectOrder(self.order.orderID, self.DeclineOrderDialog.NoteEditBox.ScrollingEditBox:GetInputText(), C_TradeSkillUI.GetChildProfessionInfo().profession) end);
     self.DeclineOrderDialog.CancelButton:SetScript("OnClick", function() self.DeclineOrderDialog:Hide(); end);
+
+	SquareButton_SetIcon(self.OrderInfo.SocialDropdownButton, "DOWN");
+	self.OrderInfo.SocialDropdownButton:SetScript("OnMouseDown", function(button)
+		UIMenuButtonStretchMixin.OnMouseDown(self.OrderInfo.SocialDropdownButton, button);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		ToggleDropDownMenu(nil, nil, self.OrderInfo.SocialDropdownButton.DropDown, self.OrderInfo.SocialDropdownButton, 0, 0);
+	end);
+	UIDropDownMenu_Initialize(self.OrderInfo.SocialDropdownButton.DropDown, function(menu, level)
+		if not self.order then
+			return;
+		end
+
+		-- Add ignore option
+		do
+			local canIgnore = self.order.orderState == Enum.CraftingOrderState.Created and not C_FriendList.IsIgnoredByGuid(self.order.customerGuid);
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = IGNORE;
+			if canIgnore then
+				info.func = function()
+					local referenceKey = self;
+					if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+						local customData = 
+						{
+							text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
+							text_arg1 = self.order.customerName,
+							callback = function()
+								C_FriendList.AddIgnore(self.order.customerName);
+							end,
+							acceptText = YES,
+							cancelText = NO,
+							referenceKey = referenceKey,
+						};
+
+						StaticPopup_ShowCustomGenericConfirmation(customData);
+					end
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				info.tooltipText = self.order.orderState ~= Enum.CraftingOrderState.Created and PROF_ORDER_CANT_IGNORE_IN_PROGRESS or PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+
+		-- Add whisper option
+		do
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = WHISPER_MESSAGE;
+
+			local whisperStatus = self:GetWhisperCustomerStatus();
+
+			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper then
+				info.func = function()
+					ChatFrame_SendTell(self.order.customerName);
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				if whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
+					info.tooltipText = PROF_ORDER_CANT_WHISPER_OFFLINE;
+				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction then
+					info.tooltipText = PROF_ORDER_CANT_WHISPER_WRONG_FACTION;
+				end
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+	end, "MENU");
 end
 
 function ProfessionsCrafterOrderViewMixin:InitRegions()
@@ -167,6 +224,7 @@ local ProfessionsCrafterOrderViewEvents =
 	"TRADE_SKILL_LIST_UPDATE",
 	"BAG_UPDATE",
 	"BAG_UPDATE_DELAYED",
+	"CAN_LOCAL_WHISPER_TARGET_RESPONSE",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -248,7 +306,7 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     elseif event == "PLAYER_MONEY" then
         self:UpdateFulfillButton();
     elseif event == "IGNORELIST_UPDATE" then
-        if C_FriendList.IsIgnoredByGuid(self.order.customerGuid) then
+        if C_FriendList.IsIgnoredByGuid(self.order.customerGuid) and self.order and self.order.orderState == Enum.CraftingOrderState.Created then
             self:CloseOrder();
         end
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
@@ -259,6 +317,12 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 		local highestRecipe = Professions.GetHighestLearnedRecipe(recipeInfo);
 		self.OrderDetails.SchematicForm:Init(highestRecipe or recipeInfo, self:IsRecrafting());
 		self:UpdateCreateButton();
+	elseif event == "CAN_LOCAL_WHISPER_TARGET_RESPONSE" then
+		local whisperTarget, status = ...;
+		
+		if whisperTarget == self.order.customerGuid then
+			self:SetWhisperCustomerStatus(status);
+		end
     end
 end
 
@@ -328,7 +392,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.reagentSlot);
 
-            if not self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] or not reagentInfo.isBasic then
+            if not self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] or not reagentInfo.isBasicReagent then
                 allocations:Clear();
                 self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] = true;
             end
@@ -597,6 +661,11 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 
     self.DeclineOrderDialog:Hide();
     self:SetOrderState(order.orderState);
+
+	self:SetWhisperCustomerStatus(Enum.ChatWhisperTargetStatus.Offline);
+	if order.customerGuid then
+		C_ChatInfo.RequestCanLocalWhisperTarget(order.customerGuid);
+	end
 end
 
 function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
@@ -612,16 +681,17 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     local enableStartRecraftButton = false;
     local showStopRecraftButton = false;
     local showDeclineOrderButton = false;
-    local showIgnoreCustomerButton = false;
+    local showSocialDropdownButton = false;
 
     if orderState == Enum.CraftingOrderState.Created then
         showBackButton = true;
         showStartOrderButton = true;
         showSchematic = true;
         showDeclineOrderButton = self.order.orderType == Enum.CraftingOrderType.Personal;
-        showIgnoreCustomerButton = self.order.customerGuid ~= UnitGUID("player");
+        showSocialDropdownButton = self.order.customerGuid ~= UnitGUID("player");
     elseif orderState == Enum.CraftingOrderState.Claimed then
         showTimeRemaining = true;
+		showSocialDropdownButton = true;
 
         if self.order.isFulfillable and self.recraftingOrderID ~= self.order.orderID then
             showCompleteOrderButton = true;
@@ -637,7 +707,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
     end
 
     self.OrderInfo.BackButton:SetShown(showBackButton);
-    self.OrderInfo.IgnoreButton:SetShown(showIgnoreCustomerButton);
+    self.OrderInfo.SocialDropdownButton:SetShown(showSocialDropdownButton);
     self.OrderInfo.StartOrderButton:SetShown(showStartOrderButton);
     self.OrderInfo.ReleaseOrderButton:SetShown(showReleaseOrderButton);
     self.OrderInfo.TimeRemainingTitle:SetShown(showTimeRemaining);
@@ -716,4 +786,12 @@ function ProfessionsCrafterOrderViewMixin:SetOverrideCastBarActive(active)
 		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
 		self.isOverrideCastBarActive = false;
 	end
+end
+
+function ProfessionsCrafterOrderViewMixin:GetWhisperCustomerStatus()
+	return self.whisperCustomerStatus;
+end
+
+function ProfessionsCrafterOrderViewMixin:SetWhisperCustomerStatus(status)
+	self.whisperCustomerStatus = status;
 end

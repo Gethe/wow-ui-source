@@ -12,7 +12,7 @@ local AccountInfo =
 
 			Arguments =
 			{
-				{ Name = "battleNetAccountGUID", Type = "string", Nilable = false },
+				{ Name = "battleNetAccountGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -26,7 +26,7 @@ local AccountInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -40,7 +40,7 @@ local AccountInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =

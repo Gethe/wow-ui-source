@@ -12,13 +12,13 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "aura", Type = "table", Nilable = true },
+				{ Name = "aura", Type = "AuraData", Nilable = true },
 			},
 		},
 		{
@@ -27,13 +27,13 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "aura", Type = "table", Nilable = true },
+				{ Name = "aura", Type = "AuraData", Nilable = true },
 			},
 		},
 		{
@@ -61,7 +61,7 @@ local UnitAura =
 
 			Returns =
 			{
-				{ Name = "aura", Type = "table", Nilable = true },
+				{ Name = "aura", Type = "AuraData", Nilable = true },
 			},
 		},
 		{
@@ -70,9 +70,9 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filterFlags", Type = "string", Nilable = false },
+				{ Name = "filterFlags", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -86,7 +86,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -104,7 +104,7 @@ local UnitAura =
 			LiteralName = "UNIT_AURA",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "updateInfo", Type = "UnitAuraUpdateInfo", Nilable = false },
 			},
 		},

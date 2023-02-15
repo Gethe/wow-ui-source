@@ -160,6 +160,7 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_HKD");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 Import("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
@@ -430,6 +431,7 @@ local CURRENCY_GEL = 31;
 local CURRENCY_TRY = 32;
 local CURRENCY_KZT = 33;
 local CURRENCY_UAH = 34;
+local CURRENCY_HKD = 35;
 local NUM_STORE_PRODUCT_CARDS = 8;
 local NUM_STORE_PRODUCT_CARD_ROWS = 2;
 local NUM_STORE_PRODUCT_CARDS_PER_ROW = 4;
@@ -561,6 +563,10 @@ end
 
 local function currencyFormatUAH(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatHKD(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_HKD, formatCurrency(dollars, cents, false));
 end
 
 local function GetFactionIcon(faction, returnOpposite)
@@ -1424,6 +1430,45 @@ local currencySpecific = {
 		browseHasStar = true,
 		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
 		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
+		vasDisclaimerData = {
+			[Enum.VasServiceType.FactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.RaceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+			},
+			[Enum.VasServiceType.AppearanceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+			},
+			[Enum.VasServiceType.NameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.CharacterTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+		},
+	},
+	[CURRENCY_HKD] = {
+		formatShort = currencyFormatHKD,
+		formatLong = currencyFormatHKD,
+		browseNotice = "",
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
+		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
+		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
+		requireLicenseAccept = true,
+		browseHasStar = false,
 		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
 			[Enum.VasServiceType.FactionChange] = {

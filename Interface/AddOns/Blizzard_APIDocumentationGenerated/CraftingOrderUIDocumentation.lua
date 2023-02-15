@@ -28,7 +28,7 @@ local CraftingOrderUI =
 
 			Returns =
 			{
-				{ Name = "deposit", Type = "number", Nilable = false },
+				{ Name = "deposit", Type = "WOWMONEY", Nilable = false },
 			},
 		},
 		{
@@ -51,7 +51,7 @@ local CraftingOrderUI =
 
 			Arguments =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -60,7 +60,7 @@ local CraftingOrderUI =
 
 			Arguments =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 				{ Name = "profession", Type = "Profession", Nilable = false },
 			},
 		},
@@ -78,7 +78,7 @@ local CraftingOrderUI =
 
 			Arguments =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 				{ Name = "crafterNote", Type = "string", Nilable = false },
 				{ Name = "profession", Type = "Profession", Nilable = false },
 			},
@@ -116,7 +116,7 @@ local CraftingOrderUI =
 
 			Returns =
 			{
-				{ Name = "time", Type = "number", Nilable = false },
+				{ Name = "time", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -175,7 +175,7 @@ local CraftingOrderUI =
 
 			Returns =
 			{
-				{ Name = "numFavorites", Type = "number", Nilable = false },
+				{ Name = "numFavorites", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -247,7 +247,7 @@ local CraftingOrderUI =
 
 			Arguments =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 
 			Returns =
@@ -274,7 +274,7 @@ local CraftingOrderUI =
 
 			Arguments =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 				{ Name = "crafterNote", Type = "string", Nilable = false },
 				{ Name = "profession", Type = "Profession", Nilable = false },
 			},
@@ -285,7 +285,7 @@ local CraftingOrderUI =
 
 			Arguments =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 				{ Name = "profession", Type = "Profession", Nilable = false },
 			},
 		},
@@ -365,7 +365,7 @@ local CraftingOrderUI =
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -384,7 +384,7 @@ local CraftingOrderUI =
 			LiteralName = "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED",
 			Payload =
 			{
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -404,7 +404,7 @@ local CraftingOrderUI =
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -442,7 +442,7 @@ local CraftingOrderUI =
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -452,7 +452,7 @@ local CraftingOrderUI =
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{
@@ -476,8 +476,8 @@ local CraftingOrderUI =
 			LiteralName = "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
 			Payload =
 			{
-				{ Name = "customerName", Type = "string", Nilable = false },
-				{ Name = "orderID", Type = "number", Nilable = false },
+				{ Name = "customerName", Type = "cstring", Nilable = false },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 			},
 		},
 		{

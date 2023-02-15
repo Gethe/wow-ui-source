@@ -643,18 +643,32 @@ function EntitlementDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID
 end
 
 -- [[ RafRewardDeliveredAlertFrame ]] --
-function RafRewardDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast)
+function RafRewardDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast, rafVersion)
 	EntitlementDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast);
 
+	local useLegacyArt = RAFUtil.DoesRAFVersionUseLegacyArt(rafVersion);
 	if showFancyToast then
+		frame.FancyBackground:SetAtlas(useLegacyArt and frame.legacyFancyToastAtlas or frame.fancyToastAtlas, TextureKitConstants.UseAtlasSize);
 		frame.StandardBackground:SetShown(false);
 		frame.FancyBackground:SetShown(true);
 		frame.Icon:SetPoint("LEFT", frame, "LEFT", 34, -5);
 	else
+		frame.StandardBackground:SetAtlas(useLegacyArt and frame.legacyStandardToastAtlas or frame.standardToastAtlas, TextureKitConstants.UseAtlasSize);
 		frame.StandardBackground:SetShown(true);
 		frame.FancyBackground:SetShown(false);
 		frame.Icon:SetPoint("LEFT", frame, "LEFT", 35, -3);
 	end
+
+	if not useLegacyArt then
+		local textureKitRegionFormatStrings = {
+			Watermark = "recruitafriend_%s_watermark_small"
+		};
+		SetupTextureKitOnRegions(RAFUtil.GetTextureKitForRAFVersion(rafVersion), frame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+		local xOffset = showFancyToast and -38 or -36;
+		local yOffset = showFancyToast and -13 or -10;
+		frame.Watermark:SetPoint("RIGHT", frame, "RIGHT", xOffset, yOffset);
+	end
+	frame.Watermark:SetShown(not useLegacyArt);
 
 	if type == Enum.WoWEntitlementType.GameTime then
 		frame.Title:SetTextColor(HEIRLOOM_BLUE_COLOR:GetRGBA());

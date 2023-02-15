@@ -64,12 +64,12 @@ local PetInfo =
 			LiteralName = "PET_FORCE_NAME_DECLENSION",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "declinedName1", Type = "string", Nilable = true },
-				{ Name = "declinedName2", Type = "string", Nilable = true },
-				{ Name = "declinedName3", Type = "string", Nilable = true },
-				{ Name = "declinedName4", Type = "string", Nilable = true },
-				{ Name = "declinedName5", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "declinedName1", Type = "cstring", Nilable = true },
+				{ Name = "declinedName2", Type = "cstring", Nilable = true },
+				{ Name = "declinedName3", Type = "cstring", Nilable = true },
+				{ Name = "declinedName4", Type = "cstring", Nilable = true },
+				{ Name = "declinedName5", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -102,8 +102,8 @@ local PetInfo =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = true },
 				{ Name = "textureIndex", Type = "number", Nilable = true },
 			},

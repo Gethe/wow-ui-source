@@ -64,7 +64,7 @@ local PlayerInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -137,7 +137,7 @@ local PlayerInfo =
 
 			Arguments =
 			{
-				{ Name = "playerToken", Type = "string", Nilable = false },
+				{ Name = "playerToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -151,7 +151,7 @@ local PlayerInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =

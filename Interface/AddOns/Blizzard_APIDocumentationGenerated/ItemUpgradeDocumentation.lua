@@ -12,7 +12,7 @@ local ItemUpgrade =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -34,7 +34,7 @@ local ItemUpgrade =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -106,7 +106,7 @@ local ItemUpgrade =
 
 			Arguments =
 			{
-				{ Name = "itemToSet", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemToSet", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{

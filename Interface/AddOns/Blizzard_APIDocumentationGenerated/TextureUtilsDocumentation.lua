@@ -12,7 +12,7 @@ local TextureUtils =
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 			},
 
 			Returns =
@@ -31,7 +31,7 @@ local TextureUtils =
 
 			Returns =
 			{
-				{ Name = "textureMarkup", Type = "string", Nilable = false },
+				{ Name = "textureMarkup", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -69,7 +69,7 @@ local TextureUtils =
 				{ Name = "bottomTexCoord", Type = "number", Nilable = false },
 				{ Name = "tilesHorizontally", Type = "bool", Nilable = false },
 				{ Name = "tilesVertically", Type = "bool", Nilable = false },
-				{ Name = "file", Type = "number", Nilable = true },
+				{ Name = "file", Type = "fileID", Nilable = true },
 				{ Name = "filename", Type = "string", Nilable = true },
 			},
 		},

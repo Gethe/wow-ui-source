@@ -11,11 +11,11 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 				{ Name = "messageID", Type = "number", Nilable = true },
 			},
 		},
@@ -76,9 +76,9 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -91,7 +91,7 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -105,7 +105,7 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "fontString", Type = "table", Nilable = false },
+				{ Name = "fontString", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{
@@ -131,7 +131,7 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "mode", Type = "string", Nilable = false },
+				{ Name = "mode", Type = "InsertMode", Nilable = false },
 			},
 		},
 		{
@@ -144,7 +144,7 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -157,7 +157,7 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -200,7 +200,7 @@ local SimpleMessageFrameAPI =
 
 			Returns =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -288,9 +288,9 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -299,7 +299,7 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -317,7 +317,7 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "mode", Type = "string", Nilable = false },
+				{ Name = "mode", Type = "InsertMode", Nilable = false },
 			},
 		},
 		{
@@ -326,7 +326,7 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -335,7 +335,7 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -347,7 +347,7 @@ local SimpleMessageFrameAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -366,7 +366,7 @@ local SimpleMessageFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -378,7 +378,7 @@ local SimpleMessageFrameAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{

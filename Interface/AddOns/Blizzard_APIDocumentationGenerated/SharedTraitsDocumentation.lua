@@ -99,7 +99,7 @@ local SharedTraits =
 
 			Arguments =
 			{
-				{ Name = "target", Type = "string", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

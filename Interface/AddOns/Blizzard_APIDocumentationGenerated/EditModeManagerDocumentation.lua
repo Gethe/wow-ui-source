@@ -62,7 +62,7 @@ local EditModeManager =
 
 			Arguments =
 			{
-				{ Name = "addedLayoutIndex", Type = "number", Nilable = false },
+				{ Name = "addedLayoutIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "activateNewLayout", Type = "bool", Nilable = false },
 				{ Name = "isLayoutImported", Type = "bool", Nilable = false },
 			},
@@ -73,7 +73,7 @@ local EditModeManager =
 
 			Arguments =
 			{
-				{ Name = "deletedLayoutIndex", Type = "number", Nilable = false },
+				{ Name = "deletedLayoutIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -101,7 +101,7 @@ local EditModeManager =
 
 			Arguments =
 			{
-				{ Name = "activeLayout", Type = "number", Nilable = false },
+				{ Name = "activeLayout", Type = "luaIndex", Nilable = false },
 			},
 		},
 	},
@@ -150,7 +150,7 @@ local EditModeManager =
 			Fields =
 			{
 				{ Name = "layouts", Type = "table", InnerType = "EditModeLayoutInfo", Nilable = false },
-				{ Name = "activeLayout", Type = "number", Nilable = false },
+				{ Name = "activeLayout", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -168,7 +168,7 @@ local EditModeManager =
 			Fields =
 			{
 				{ Name = "system", Type = "EditModeSystem", Nilable = false },
-				{ Name = "systemIndex", Type = "number", Nilable = true },
+				{ Name = "systemIndex", Type = "luaIndex", Nilable = true },
 				{ Name = "anchorInfo", Type = "EditModeAnchorInfo", Nilable = false },
 				{ Name = "anchorInfo2", Type = "EditModeAnchorInfo", Nilable = true },
 				{ Name = "settings", Type = "table", InnerType = "EditModeSettingInfo", Nilable = false },

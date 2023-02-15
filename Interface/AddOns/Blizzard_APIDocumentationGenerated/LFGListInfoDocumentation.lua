@@ -124,7 +124,7 @@ local LFGListInfo =
 			Arguments =
 			{
 				{ Name = "localID", Type = "number", Nilable = false },
-				{ Name = "applicantIndex", Type = "number", Nilable = false },
+				{ Name = "applicantIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "activityID", Type = "number", Nilable = false },
 			},
 
@@ -154,7 +154,7 @@ local LFGListInfo =
 			Arguments =
 			{
 				{ Name = "localID", Type = "number", Nilable = false },
-				{ Name = "applicantIndex", Type = "number", Nilable = false },
+				{ Name = "applicantIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "activityID", Type = "number", Nilable = false },
 			},
 
@@ -413,9 +413,9 @@ local LFGListInfo =
 			Payload =
 			{
 				{ Name = "searchResultID", Type = "number", Nilable = false },
-				{ Name = "newStatus", Type = "string", Nilable = false },
-				{ Name = "oldStatus", Type = "string", Nilable = false },
-				{ Name = "groupName", Type = "string", Nilable = false },
+				{ Name = "newStatus", Type = "cstring", Nilable = false },
+				{ Name = "oldStatus", Type = "cstring", Nilable = false },
+				{ Name = "groupName", Type = "kstringLfgListChat", Nilable = false },
 			},
 		},
 		{
@@ -445,7 +445,7 @@ local LFGListInfo =
 			Payload =
 			{
 				{ Name = "searchResultID", Type = "number", Nilable = false },
-				{ Name = "groupName", Type = "string", Nilable = false },
+				{ Name = "groupName", Type = "kstringLfgListChat", Nilable = false },
 			},
 		},
 		{
@@ -454,7 +454,7 @@ local LFGListInfo =
 			LiteralName = "LFG_LIST_SEARCH_FAILED",
 			Payload =
 			{
-				{ Name = "reason", Type = "string", Nilable = true },
+				{ Name = "reason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -548,11 +548,11 @@ local LFGListInfo =
 			Fields =
 			{
 				{ Name = "applicantID", Type = "number", Nilable = false },
-				{ Name = "applicationStatus", Type = "string", Nilable = false },
-				{ Name = "pendingApplicationStatus", Type = "string", Nilable = true },
+				{ Name = "applicationStatus", Type = "cstring", Nilable = false },
+				{ Name = "pendingApplicationStatus", Type = "cstring", Nilable = true },
 				{ Name = "numMembers", Type = "number", Nilable = false },
 				{ Name = "isNew", Type = "bool", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
+				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "displayOrderID", Type = "number", Nilable = false },
 			},
 		},
@@ -561,8 +561,8 @@ local LFGListInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "searchPromptOverride", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "searchPromptOverride", Type = "cstring", Nilable = true },
 				{ Name = "separateRecommended", Type = "bool", Nilable = false },
 				{ Name = "autoChooseActivity", Type = "bool", Nilable = false },
 				{ Name = "preferCurrentArea", Type = "bool", Nilable = false },
@@ -578,10 +578,10 @@ local LFGListInfo =
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
-				{ Name = "voiceChat", Type = "string", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "name", Type = "kstringLfgListApplicant", Nilable = false },
+				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
+				{ Name = "voiceChat", Type = "kstringLfgListApplicant", Nilable = false },
+				{ Name = "duration", Type = "time_t", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
 				{ Name = "privateGroup", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
@@ -599,9 +599,9 @@ local LFGListInfo =
 				{ Name = "searchResultID", Type = "number", Nilable = false },
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "leaderName", Type = "string", Nilable = true },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
-				{ Name = "voiceChat", Type = "string", Nilable = false },
+				{ Name = "name", Type = "kstringLfgListSearch", Nilable = false },
+				{ Name = "comment", Type = "kstringLfgListSearch", Nilable = false },
+				{ Name = "voiceChat", Type = "kstringLfgListSearch", Nilable = false },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
 				{ Name = "hasSelf", Type = "bool", Nilable = false },
@@ -612,7 +612,7 @@ local LFGListInfo =
 				{ Name = "isDelisted", Type = "bool", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
 				{ Name = "isWarMode", Type = "bool", Nilable = false },
-				{ Name = "age", Type = "number", Nilable = false },
+				{ Name = "age", Type = "time_t", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "leaderOverallDungeonScore", Type = "number", Nilable = true },
 				{ Name = "leaderDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },

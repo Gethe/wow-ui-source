@@ -51,7 +51,7 @@ local SpecializationInfo =
 
 			Arguments =
 			{
-				{ Name = "inspectedUnit", Type = "string", Nilable = false },
+				{ Name = "inspectedUnit", Type = "UnitToken", Nilable = false },
 				{ Name = "talentIndex", Type = "number", Nilable = false },
 			},
 

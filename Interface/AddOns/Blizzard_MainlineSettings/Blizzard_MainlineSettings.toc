@@ -1,5 +1,0 @@
-## Title: Blizzard Mainline Settings
-## Author: Blizzard Entertainment
-## RequiredDep: Blizzard_Settings
-## ShowInAddOnList: 1
-## AllowLoad: both

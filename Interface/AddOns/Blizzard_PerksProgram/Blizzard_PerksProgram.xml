@@ -561,9 +561,10 @@
 			</Frame>
 
 			<Frame parentKey="ModelSceneContainerFrame" mixin="PerksProgramModelSceneContainerFrameMixin" alpha="0" >
+				<Size x="1920" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOP" x="0" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<Frames>
 					<CheckButton parentKey="AlteredFormButton" inherits="RingedMaskedButtonTemplate" mixin="PerksProgramAlteredFormButtonMixin"  frameLevel="1000">

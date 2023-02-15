@@ -76,7 +76,7 @@ local ConsoleScriptCollection =
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -94,10 +94,10 @@ local ConsoleScriptCollection =
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "help", Type = "string", Nilable = false },
-				{ Name = "script", Type = "string", Nilable = false },
-				{ Name = "params", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "help", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "cstring", Nilable = false },
+				{ Name = "params", Type = "cstring", Nilable = false },
 				{ Name = "isLuaScript", Type = "bool", Nilable = false },
 			},
 		},

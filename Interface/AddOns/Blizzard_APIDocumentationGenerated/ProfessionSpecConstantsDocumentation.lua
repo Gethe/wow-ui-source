@@ -58,7 +58,7 @@ local ProfessionSpecConstants =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -67,8 +67,8 @@ local ProfessionSpecConstants =
 			Fields =
 			{
 				{ Name = "rootNodeID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "rootIconID", Type = "number", Nilable = false },
 				{ Name = "highlights", Type = "table", InnerType = "ProfTabHighlight", Nilable = false },
 			},
@@ -88,7 +88,7 @@ local ProfessionSpecConstants =
 			Fields =
 			{
 				{ Name = "numAvailable", Type = "number", Nilable = false },
-				{ Name = "currencyName", Type = "string", Nilable = false },
+				{ Name = "currencyName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -97,7 +97,7 @@ local ProfessionSpecConstants =
 			Fields =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false, Default = true },
-				{ Name = "errorReason", Type = "string", Nilable = false },
+				{ Name = "errorReason", Type = "cstring", Nilable = false },
 			},
 		},
 	},
