@@ -159,6 +159,7 @@ retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 retain("Round");
 retain("IsCharacterNPERestricted");
+retain("securecallfunction");
 
 --For auth challenge
 take("C_AuthChallenge");

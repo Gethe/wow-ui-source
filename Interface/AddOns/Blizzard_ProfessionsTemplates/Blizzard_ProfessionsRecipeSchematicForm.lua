@@ -784,7 +784,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		slot:Show();
 
 		if reagentType == Enum.CraftingReagentType.Basic then
-			if Professions.InLocalCraftingMode() and Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
+			if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 				slot.Button:SetScript("OnClick", function(button, buttonName, down)
 					if IsShiftKeyDown() then
 						local qualityIndex = Professions.FindFirstQualityAllocated(self.transaction, reagentSlotSchematic) or 1;
@@ -792,6 +792,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						if not handled then
 							Professions.TriggerReagentClickedEvent(link);
 						end
+						return;
+					end
+
+					if not Professions.InLocalCraftingMode() then
 						return;
 					end
 
@@ -856,8 +860,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			slot.Button:SetScript("OnEnter", function()
 				GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 
+				local slotInfo = reagentSlotSchematic.slotInfo;
+
 				if locked then
-					local title = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_TITLE:format(reagentSlotSchematic.slotInfo.slotText) or EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE;
+					local title;
+					if reagentType == Enum.CraftingReagentType.Finishing then
+						title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotInfo.slotText);
+					else
+						title = slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX;
+					end
+
 					GameTooltip_SetTitle(GameTooltip, title);
 					GameTooltip_AddErrorLine(GameTooltip, lockedReason);
 				else
@@ -1188,7 +1200,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		if recipeInfo.isGatheringRecipe then
 			self.Details:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -30);
 		else
-			self.Details:SetPoint("TOPRIGHT", self, "TOPRIGHT", -30, -85);
+			self.Details:SetPoint("TOPRIGHT", self, "TOPRIGHT", -30, -125);
 		end
 		
 		self.Details:SetData(self.transaction, recipeInfo, hasFinishingSlots);

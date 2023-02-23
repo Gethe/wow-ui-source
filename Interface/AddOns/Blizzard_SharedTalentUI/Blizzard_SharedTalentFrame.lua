@@ -1503,3 +1503,8 @@ function TalentFrameBaseMixin:GetInspectUnit()
 	-- Override in your derived Mixin.
 	return nil;
 end
+
+function TalentFrameBaseMixin:ShouldShowConfirmation()
+	-- Override in your derived Mixin as desired.
+	return false;
+end

@@ -2518,14 +2518,6 @@ SlashCmdList["RAIDFINDER"] = function(msg)
 	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
 end
 
-SlashCmdList["SHARE"] = function(msg)
-	-- Allow if any social platforms are enabled (currently only Twitter)
-	if (C_Social.IsSocialEnabled()) then
-		SocialFrame_LoadUI();
-		Social_ToggleShow(msg);
-	end
-end
-
 SlashCmdList["API"] = function(msg)
 	APIDocumentation_LoadUI();
 	APIDocumentation:HandleSlashCommand(msg);
@@ -3573,6 +3565,18 @@ function ChatFrame_CheckShowNewcomerGraduation(isFromGraduationEvent)
 	end
 end
 
+local function FlashTabIfNotShown(frame, info, type, chatGroup, chatTarget)
+	if ( not frame:IsShown() ) then
+		if ( (frame == DEFAULT_CHAT_FRAME and info.flashTabOnGeneral) or (frame ~= DEFAULT_CHAT_FRAME and info.flashTab) ) then
+			if ( not CHAT_OPTIONS.HIDE_FRAME_ALERTS or type == "WHISPER" or type == "BN_WHISPER" ) then	--BN_WHISPER FIXME
+				if (not FCFManager_ShouldSuppressMessageFlash(frame, chatGroup, chatTarget) ) then
+					FCF_StartAlertFlash(frame);
+				end
+			end
+		end
+	end
+end
+
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( TextToSpeechFrame_MessageEventHandler ~= nil ) then
 		TextToSpeechFrame_MessageEventHandler(self, event, ...)
@@ -3693,15 +3697,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			 type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
-			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
-			if (C_Social.IsSocialEnabled() and UnitGUID("player") == arg12) then
-				-- Because it is being placed inside another hyperlink (the shareitem link created below), we have to strip off the hyperlink markup
-				-- The item link markup will be added back in when the shareitem link is clicked (in ItemRef.lua) and then passed to the social panel
-				local itemID, strippedItemLink = GetItemInfoFromHyperlink(arg1);
-				if (itemID and C_Social.GetLastItem() == itemID) then
-					arg1 = arg1 .. " " .. Social_GetShareItemLink(strippedItemLink, true);
-				end
-			end
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -3710,25 +3705,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
-			-- Append [Share] hyperlink
-			if (arg12 == UnitGUID("player") and C_Social.IsSocialEnabled()) then
-				local achieveID = GetAchievementInfoFromHyperlink(arg1);
-				if (achieveID) then
-					arg1 = arg1 .. " " .. Social_GetShareAchievementLink(achieveID, true);
-				end
-			end
 			self:AddMessage(arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
-			if (C_Social.IsSocialEnabled()) then
-				local achieveID = GetAchievementInfoFromHyperlink(arg1);
-				if (achieveID) then
-					local isGuildAchievement = select(12, GetAchievementInfo(achieveID));
-					if (isGuildAchievement) then
-						message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
-					end
-				end
-			end
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
@@ -3809,10 +3788,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local accountInfo = C_BattleNet.GetAccountInfoByID(arg13);
 				if accountInfo and accountInfo.gameAccountInfo.clientProgram ~= "" then
-					local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedAtlas(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14);
-					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
-					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
-					message = format(globalstring, playerLink);
+					C_Texture.GetTitleIconTexture(accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, texture, 32, 32, 10);
+							local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
+							local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
+							local message = format(globalstring, playerLink);
+							self:AddMessage(message, info.r, info.g, info.b, info.id);
+							FlashTabIfNotShown(self, info, type, chatGroup, chatTarget);
+						end
+					end);
+					return;
 				else
 					local linkDisplayText = ("[%s]"):format(arg2);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
@@ -3977,15 +3963,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			FlashClientIcon();
 		end
 
-		if ( not self:IsShown() ) then
-			if ( (self == DEFAULT_CHAT_FRAME and info.flashTabOnGeneral) or (self ~= DEFAULT_CHAT_FRAME and info.flashTab) ) then
-				if ( not CHAT_OPTIONS.HIDE_FRAME_ALERTS or type == "WHISPER" or type == "BN_WHISPER" ) then	--BN_WHISPER FIXME
-					if (not FCFManager_ShouldSuppressMessageFlash(self, chatGroup, chatTarget) ) then
-						FCF_StartAlertFlash(self);
-					end
-				end
-			end
-		end
+		FlashTabIfNotShown(self, info, type, chatGroup, chatTarget);
 
 		return true;
 	elseif ( event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" ) then
@@ -5751,34 +5729,6 @@ end
 function Chat_AddSystemMessage(messageText)
 	local info = ChatTypeInfo["SYSTEM"];
 	DEFAULT_CHAT_FRAME:AddMessage(messageText, info.r, info.g, info.b, info.id);
-end
-
---------------------------------------------------------------------------------
--- Social share link functions
---------------------------------------------------------------------------------
-
-SHARE_ICON_COLOR = "ffffd200";
-SHARE_ICON_TEXT = "|TInterface\\ChatFrame\\UI-ChatIcon-Share:18:18|t";
-
-function Social_GetShareItemLink(strippedItemLink, earned)
-	local earnedNum = 0;
-	if (earned) then
-		earnedNum = 1;
-	end
-	return format("|c%s|Hshareitem:%s:%d|h%s|h|r", SHARE_ICON_COLOR, strippedItemLink, earnedNum, SHARE_ICON_TEXT);
-end
-
-function Social_GetShareAchievementLink(achievementID, earned)
-	local earnedNum = 0;
-	if (earned) then
-		earnedNum = 1;
-	end
-	return format("|c%s|Hshareachieve:%d:%d|h%s|h|r", SHARE_ICON_COLOR, achievementID, earnedNum, SHARE_ICON_TEXT);
-end
-
-function Social_GetShareScreenshotLink()
-	local index = C_Social.GetLastScreenshotIndex();
-	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
 end
 
 local NewLanguageHelpTipInfo = {

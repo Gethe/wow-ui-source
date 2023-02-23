@@ -1173,8 +1173,13 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 	CharacterSelect_SetButtonSelected(button, button.index == CharacterSelect.selectedIndex);
 end
 
-function UpdateCharacterSelection(self)
+function CharacterSelect_GetCharactersDataProvider()
 	local dataProvider = CreateDataProviderByIndexCount(GetNumCharacters());
+	return dataProvider;
+end
+
+function UpdateCharacterSelection(self)
+	local dataProvider = CharacterSelect_GetCharactersDataProvider();
 	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	CharacterSelect_UpdateButtonState();

@@ -79,6 +79,25 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 end
 
+local CraftingAccessibleBags = 
+{
+	Enum.BagIndex.Backpack,
+	Enum.BagIndex.Bag_1,
+	Enum.BagIndex.Bag_2,
+	Enum.BagIndex.Bag_3,
+	Enum.BagIndex.Bag_4,
+	Enum.BagIndex.ReagentBag,
+	Enum.BagIndex.Bank,
+	Enum.BagIndex.BankBag_1,
+	Enum.BagIndex.BankBag_2,
+	Enum.BagIndex.BankBag_3,
+	Enum.BagIndex.BankBag_4,
+	Enum.BagIndex.BankBag_5,
+	Enum.BagIndex.BankBag_6,
+	Enum.BagIndex.BankBag_7,
+	Enum.BagIndex.Reagentbank,
+};
+
 function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	local items = {};
 	local max = maxFindCount or math.huge;
@@ -93,7 +112,13 @@ function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 		end
 	end
 
-	ItemUtil.IteratePlayerInventoryAndEquipment(FindMatchingItemID);
+	for index, bagIndex in ipairs(CraftingAccessibleBags) do
+		if ItemUtil.IterateBagSlots(bagIndex, FindMatchingItemID) then
+			return items;
+		end
+	end
+
+	ItemUtil.IterateInventorySlots(INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED, FindMatchingItemID);
 	return items;
 end
 
@@ -414,7 +439,13 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 			end
 		end
 	else
-		local title = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText) or EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE;
+		local title;
+		if reagentType == Enum.CraftingReagentType.Finishing then
+			title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
+		else
+			title = slotText or OPTIONAL_REAGENT_POSTFIX;
+		end
+
 		GameTooltip_SetTitle(GameTooltip, title, nil, false);
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
 			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
@@ -1181,30 +1212,27 @@ function Professions.OnRecipeListSearchTextChanged(text)
 end
 
 function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider)
-	local stride = 1;
-	local spacing = -5;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing);
-	
-	local function Layout(slots, anchor, layout)
-		if slots then
-			AnchorUtil.GridLayout(slots, anchor, layout);
-		end
-	end
-	
-	do
+	if reagentSlots then
+		local stride = 4;
+		local spacing = -5;
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride, spacing, spacing);
 		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 1, -23);
-		Layout(reagentSlots, anchor, layout);
+		AnchorUtil.GridLayout(reagentSlots, anchor, layout);
 		reagentsContainer:Layout();
 	end
 
 	do
 		local optionalShown = optionalReagentsSlots and #optionalReagentsSlots > 0;
 		if optionalShown then
+			local stride = 4;
+			local spacing = 3;
+			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40, 40);
 			local anchor = CreateAnchor("TOPLEFT", optionalReagentsContainer, "TOPLEFT", 1, -23);
-			Layout(optionalReagentsSlots, anchor, layout);
+			AnchorUtil.GridLayout(optionalReagentsSlots, anchor, layout);
 			optionalReagentsContainer:Layout();
 		end
 		optionalReagentsContainer:SetShown(optionalShown);
+
 		if divider then
 			divider:SetShown(optionalShown);
 		end

@@ -211,6 +211,32 @@ function GenericTraitFrameMixin:AttemptConfigOperation(...)
 end
 
 function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
+	local baseButton = self:GetTalentButtonByNodeID(nodeID);
+	if baseButton and baseButton:IsMaxed() then
+		self:SetSelectionCallback(nodeID, entryID);
+		return;
+	end
+
+	local referenceKey = self;
+	if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+		StaticPopup_Hide("GENERIC_CONFIRMATION");
+	end
+
+	local cost = self:GetNodeCost(nodeID);
+	local costStrings = self:GetCostStrings(cost);
+	local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+
+	local setSelectionCallback = GenerateClosure(self.SetSelectionCallback, self, nodeID, entryID);
+	local customData = {
+		text = costString,
+		callback = setSelectionCallback,
+		referenceKey = self,
+	};
+
+	StaticPopup_ShowCustomGenericConfirmation(customData);
+end
+
+function GenericTraitFrameMixin:SetSelectionCallback(nodeID, entryID)
 	TalentFrameBaseMixin.SetSelection(self, nodeID, entryID );
 	self:ShowPurchaseVisuals(nodeID);
 end
@@ -290,6 +316,10 @@ function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
 	end
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT);
+end
+
+function GenericTraitFrameMixin:ShouldShowConfirmation()
+	return true;
 end
 
 GenericTraitFrameCurrencyFrameMixin = { }; 

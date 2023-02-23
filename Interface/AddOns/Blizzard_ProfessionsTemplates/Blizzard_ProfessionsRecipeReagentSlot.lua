@@ -70,12 +70,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			else
 				self.Button:SetItem(reagent.itemID);
 			end
-		elseif reagentType == Enum.CraftingReagentType.Optional then
-			local slotInfo = reagentSlotSchematic.slotInfo;
-			self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
-
-			InitButton();
-		elseif reagentType == Enum.CraftingReagentType.Finishing then
+		elseif reagentType == Enum.CraftingReagentType.Optional or reagentType == Enum.CraftingReagentType.Finishing then
 			self.Name:Hide();
 
 			InitButton();

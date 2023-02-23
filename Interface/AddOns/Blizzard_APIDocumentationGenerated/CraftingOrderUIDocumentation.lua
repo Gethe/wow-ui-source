@@ -398,6 +398,19 @@ local CraftingOrderUI =
 			LiteralName = "CRAFTINGORDERS_CUSTOMER_OPTIONS_PARSED",
 		},
 		{
+			Name = "CraftingordersDisplayCrafterFulfilledMsg",
+			Type = "Event",
+			LiteralName = "CRAFTINGORDERS_DISPLAY_CRAFTER_FULFILLED_MSG",
+			Payload =
+			{
+				{ Name = "orderTypeString", Type = "cstring", Nilable = false },
+				{ Name = "itemNameString", Type = "cstring", Nilable = false },
+				{ Name = "playerNameString", Type = "cstring", Nilable = false },
+				{ Name = "tipAmount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "quantityCrafted", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "CraftingordersFulfillOrderResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",

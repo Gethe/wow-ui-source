@@ -1084,7 +1084,7 @@ function AchievementTemplateMixin:Init(elementData)
 	if self.index then
 		id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, self.index);
 	else
-		-- Twitter
+		-- Social
 		id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(self.id);
 		category = GetAchievementCategory(self.id);
 	end

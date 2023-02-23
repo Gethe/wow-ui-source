@@ -103,11 +103,18 @@ function ClassResourceBarMixin:Setup()
 end
 
 function ClassResourceBarMixin:UpdateMaxPower()
-	self.classResourceButtonPool:ReleaseAll();
-	self.classResourceButtonTable = { };
-
+	local oldMaxPoints = self.maxUsablePoints;
 	self.unit = self.unit or self:GetParent():GetParent().unit or "player";
 	self.maxUsablePoints = UnitPowerMax(self.unit, self.powerType);
+
+	-- Avoid resetting resource buttons if max points hasn't changed
+	if oldMaxPoints and self.maxUsablePoints == oldMaxPoints and self.classResourceButtonTable and #self.classResourceButtonTable == self.maxUsablePoints then
+		return;
+	end
+
+	self.classResourceButtonPool:ReleaseAll();
+	self.classResourceButtonTable = { };
+	
 	for i = 1, self.maxUsablePoints do
 		local resourcePoint = self.classResourceButtonPool:Acquire();
 		self.classResourceButtonTable[i] = resourcePoint;
@@ -119,6 +126,10 @@ function ClassResourceBarMixin:UpdateMaxPower()
 	end
 
 	self:Layout();
+
+	-- Since we just re-acquired all the resource buttons, make sure they all get the current power state applied to them
+	-- Very important since it's possible for max to update either without or after other power update events
+	self:UpdatePower();
 end
 
 --To be overriden in inherited class

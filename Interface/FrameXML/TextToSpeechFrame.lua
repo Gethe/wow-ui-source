@@ -840,7 +840,7 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		local message, arg2, _, _, _, _, _, _, _, languageID, lineID = ...;
 		local name = Ambiguate(arg2 or "", "none");
 
-		if ( languageID and C_TTSSettings.ShouldOverrideMessage(languageID) ) then
+		if ( languageID and C_TTSSettings.ShouldOverrideMessage(languageID, message) ) then
 			message = UNKNOWN_LANG_TTS_MESSAGE;
 		end
 

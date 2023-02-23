@@ -2073,9 +2073,9 @@ function UIParent_OnEvent(self, event, ...)
 			{
 				text = PROFESSION_EQUIPMENT_LOCATION_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				targetPoint = HelpTip.Point.RightEdgeTop,
+				targetPoint = HelpTip.Point.LeftEdgeTop,
 				alignment = HelpTip.Alignment.Left,
-				autoHorizontalSlide = true,
+				offsetX = 940,
 				offsetY = -48,
 			};
 			HelpTip:Show(ProfessionsFrame.CraftingPage, helpTipInfo, ProfessionsFrame.CraftingPage);

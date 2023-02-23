@@ -276,7 +276,7 @@
 							<KeyValue key="labelText" value="PROFESSIONS_CUSTOMER_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="85"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 						</Anchors>
 					</Frame>
 				</Frames>

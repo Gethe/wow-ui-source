@@ -114,7 +114,16 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderGlow" setAllPoints="true" file="Interface\Buttons\CheckButtonHilight" alpha="0" alphaMode="ADD"/>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="UnclaimedRewardsAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="BorderGlow" duration="0.9" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha childKey="BorderGlow" duration="0.9" order="2" fromAlpha="1" toAlpha="0" />
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>

@@ -31,6 +31,7 @@ Import("type");
 Import("PlaySound");
 Import("GetCVar");
 Import("LoadURLIndex");
+Import("securecallfunction")
 Import("LOCALE_enGB");
 Import("TOKEN_REDEEM_LABEL");
 Import("TOKEN_REDEEM_GAME_TIME_TITLE");
@@ -539,7 +540,8 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 	elseif ( name == "getbalancestring" ) then
 		self:SetAttribute("balancestring", GetBalanceString());
 	elseif ( name == "showdialog" ) then
-		WowTokenDialog_SetDialog(WowTokenDialog, value);
+		local dialogName, dialogData = securecallfunction(unpack, value);
+		WowTokenDialog_SetDialog(WowTokenDialog, dialogName, dialogData);
 	end
 end
 
@@ -810,8 +812,9 @@ dialogs = {
 		button1 = ACCEPT,
 		button1OnClick = function(self)
 			self:Hide();
-			if C_RecruitAFriend.ClaimNextReward() then
-				Outbound.RecruitAFriendPlayClaimRewardFanfare();
+			local rafVersion = self.dialogData;
+			if rafVersion and C_RecruitAFriend.ClaimNextReward(rafVersion) then
+				Outbound.RecruitAFriendTryPlayClaimRewardFanfare(rafVersion);
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
@@ -826,7 +829,7 @@ dialogs = {
 	};
 };
 
-function WowTokenDialog_SetDialog(self, dialogName)
+function WowTokenDialog_SetDialog(self, dialogName, dialogData)
 	local dialog = dialogs[dialogName];
 	if (not dialog) then
 		return;
@@ -853,6 +856,8 @@ function WowTokenDialog_SetDialog(self, dialogName)
 
 	local descArgs = nil;
 	local confDescArgs = nil;
+
+	self.dialogData = dialogData;
 
 	if (dialog.descFormatArgs) then
 		descArgs = dialog.descFormatArgs();

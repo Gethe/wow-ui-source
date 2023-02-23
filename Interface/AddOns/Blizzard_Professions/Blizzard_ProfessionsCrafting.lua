@@ -227,7 +227,6 @@ function ProfessionsCraftingPageMixin:OnHide()
 		HelpPlate_Hide(false);
 	end
 
-	self:Reset();
 	self:SetOverrideCastBarActive(false);
 	HelpTip:HideAllSystem(helpTipSystem);
 
@@ -245,7 +244,7 @@ end
 
 function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
 	local compact = C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging();
-	return compact and 811 or 1112;
+	return compact and 811 or 992;
 end
 
 function ProfessionsCraftingPageMixin:OnReagentClicked(reagentName)
@@ -714,7 +713,7 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
 	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
-	local schematicWidth = useCondensedPanel and 500 or 799;
+	local schematicWidth = useCondensedPanel and 500 or 679;
 	self.SchematicForm:SetWidth(schematicWidth);
 	
 	if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then

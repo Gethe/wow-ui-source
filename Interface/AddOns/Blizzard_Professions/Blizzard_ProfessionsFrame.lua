@@ -392,6 +392,8 @@ function ProfessionsMixin:OnHide()
 	C_Garrison.CloseGarrisonTradeskillNPC();
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_CLOSE);
 
+	self.CraftingPage:Reset();
+
 	C_TradeSkillUI.CloseTradeSkill();
 	C_CraftingOrders.CloseCrafterCraftingOrders();
 end

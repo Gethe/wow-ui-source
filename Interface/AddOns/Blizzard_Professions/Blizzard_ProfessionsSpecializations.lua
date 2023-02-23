@@ -51,6 +51,14 @@ function ProfessionsSpecFrameMixin:ConfigureButtons()
 		self.TreePreview:Show();
 	end);
 
+	self.ViewPreviewButton:SetScript("OnClick", function()
+		self.TreePreview:Show();
+	end);
+
+	self.BackToFullTreeButton:SetScript("OnClick", function()
+		self.TreePreview:Hide();
+	end);
+
 	self.DetailedView.SpendPointsButton:SetScript("OnClick", function()
 		self:PurchaseRank(self:GetDetailedPanelNodeID());
 		PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_SPEND);
@@ -87,20 +95,25 @@ end
 
 function ProfessionsSpecFrameMixin:ConfigureRegions()
 	self.TreePreview:SetScript("OnShow", function()
-		self:UpdateTreePreviewButtonVisibility();
+		self:UpdateSelectedTabState();
 	end);
 	self.TreePreview:SetScript("OnHide", function()
-		self:UpdateTreePreviewButtonVisibility();
+		self:UpdateSelectedTabState();
 	end);
 end
 
 function ProfessionsSpecFrameMixin:UpdateTreePreviewButtonVisibility()
+	local isUnlocked = C_ProfSpecs.GetStateForTab(self:GetTalentTreeID(), self:GetConfigID()) == Enum.ProfessionsSpecTabState.Unlocked; 
 	if self.TreePreview:IsShown() then
-		self.ViewTreeButton:Show();
+		self.ViewPreviewButton:Hide();
+		self.BackToFullTreeButton:SetShown(isUnlocked);
+		self.ViewTreeButton:SetShown(not isUnlocked);
 		self.BackToPreviewButton:Hide();
 	else
+		self.ViewPreviewButton:SetShown(isUnlocked);
+		self.BackToFullTreeButton:Hide();
 		self.ViewTreeButton:Hide();
-		self.BackToPreviewButton:SetShown(C_ProfSpecs.GetStateForTab(self:GetTalentTreeID(), self:GetConfigID()) ~= Enum.ProfessionsSpecTabState.Unlocked);
+		self.BackToPreviewButton:SetShown(not isUnlocked);
 	end
 end
 
@@ -567,7 +580,7 @@ function ProfessionsSpecFrameMixin:UpdateSelectedTabState()
 	local isLocked = C_ProfSpecs.GetStateForTab(self:GetTalentTreeID(), self:GetConfigID()) ~= Enum.ProfessionsSpecTabState.Unlocked;
 
 	self.UnlockTabButton:SetShown(isLocked);
-	self.ApplyButton:SetShown(not isLocked);
+	self.ApplyButton:SetShown(not isLocked and not self.TreePreview:IsShown());
 	if isLocked then
 		local canUnlock = C_Traits.CanPurchaseRank(self:GetConfigID(), self.tabInfo.rootNodeID, C_ProfSpecs.GetUnlockEntryForPath(self.tabInfo.rootNodeID)) and self:CanAfford(self:GetNodeCost(self.tabInfo.rootNodeID));
 		self.UnlockTabButton:SetEnabled(canUnlock);
@@ -586,6 +599,7 @@ function ProfessionsSpecFrameMixin:UpdateSelectedTabState()
 	end
 
 	self:UpdateTreePreviewButtonVisibility();
+	self:UpdateConfigButtonsState();
 end
 
 function ProfessionsSpecFrameMixin:ConfigurePreviewHighlights(highlights)

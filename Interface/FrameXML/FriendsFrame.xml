@@ -216,9 +216,9 @@
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\FriendsFrame\Battlenet-WoWicon" parentKey="gameIcon">
-					<Size x="28" y="28"/>
+					<Size x="24" y="24"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-21" y="-3"/>
+						<Anchor point="TOPRIGHT" x="-23" y="-5"/>
 					</Anchors>
 				</Texture>
 				<FontString inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">

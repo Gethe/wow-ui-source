@@ -196,6 +196,7 @@ local TTSSettings =
 			Arguments =
 			{
 				{ Name = "language", Type = "number", Nilable = false },
+				{ Name = "messageText", Type = "string", Nilable = false },
 			},
 
 			Returns =

@@ -167,65 +167,32 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 end
 
 function ProfessionsRecipeTracking_Initialize()
-	local function GetAllBasicReagentIDs()
-		local currencyIDs = {};
-		local itemIDs = {};
-		local function AddIDs(isRecraft)
-			for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(isRecraft)) do
-				for _, reagent in ipairs(Professions.CreateRecipeReagentsForAllBasicReagents(recipeID)) do
-					if reagent.itemID then
-						table.insert(itemIDs, reagent.itemID);	
-					elseif reagent.currencyID then
-						table.insert(currencyIDs, reagent.currencyID);	
-					end
-				end
-			end
-		end
-
-		AddIDs(IsRecrafting);
-		AddIDs(not IsRecrafting);
-		return itemIDs, currencyIDs;
-	end
-
-	-- itemIDs and currencyIDs captured by OnItemCountChanged will be updated by OnTrackedRecipeUpdate below.
-	local itemIDs, currencyIDs = GetAllBasicReagentIDs();
-
-	local function OnItemCountChanged(o, itemID)
-		if tContains(itemIDs, itemID) then
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
-		end
-	end
-	EventRegistry:RegisterFrameEvent("ITEM_COUNT_CHANGED");
-	EventRegistry:RegisterCallback("ITEM_COUNT_CHANGED", OnItemCountChanged, PROFESSION_RECIPE_TRACKER_MODULE);
-
 	local function OnCurrencyChanged(o, currencyID)
-		if tContains(currencyIDs, currencyID) then
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
-		end
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
 	end
 	EventRegistry:RegisterFrameEvent("CURRENCY_DISPLAY_UPDATE");
 	EventRegistry:RegisterCallback("CURRENCY_DISPLAY_UPDATE", OnCurrencyChanged, PROFESSION_RECIPE_TRACKER_MODULE);
 
 	local function OnTrackedRecipeUpdate(o, recipeID, tracked)
-		itemIDs, currencyIDs = GetAllBasicReagentIDs();
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
 	end
-
+	
 	EventRegistry:RegisterFrameEvent("TRACKED_RECIPE_UPDATE");
 	EventRegistry:RegisterCallback("TRACKED_RECIPE_UPDATE", OnTrackedRecipeUpdate, PROFESSION_RECIPE_TRACKER_MODULE);
 
-	local function UntrackRecipeIfUnlearned(isRecraft)
-		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(isRecraft)) do
+	local function OnBagUpdateDelayed(o)
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE);
+	end
+	EventRegistry:RegisterFrameEvent("BAG_UPDATE_DELAYED");
+	EventRegistry:RegisterCallback("BAG_UPDATE_DELAYED", OnBagUpdateDelayed, PROFESSION_RECIPE_TRACKER_MODULE);
+
+	local function OnSkillLinesChanged(o)
+		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(not IsRecrafting)) do
 			if not C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
 				local track = false;
 				C_TradeSkillUI.SetRecipeTracked(recipeID, track, isRecraft);
 			end
 		end
-	end
-
-	local function OnSkillLinesChanged(o)
-		UntrackRecipeIfUnlearned(IsRecrafting);
-		UntrackRecipeIfUnlearned(not IsRecrafting);
 	end
 	EventRegistry:RegisterFrameEvent("SKILL_LINES_CHANGED");
 	EventRegistry:RegisterCallback("SKILL_LINES_CHANGED", OnSkillLinesChanged, PROFESSION_RECIPE_TRACKER_MODULE);
