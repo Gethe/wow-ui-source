@@ -631,7 +631,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 
 					local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
 
-					if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+					if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 						GarrisonShipMissionAlertSystem:AddAlert(missionInfo);
 					else
 						GarrisonMissionAlertSystem:AddAlert(missionInfo);
@@ -642,7 +642,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
 		local followerID, name, class, level, quality, isUpgraded, textureKit, followerType = ...;
 		local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-		if (followerType == Enum.GarrisonFollowerType.FollowerType_6_2) then
+		if (followerType == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 			GarrisonShipFollowerAlertSystem:AddAlert(followerID, name, class, textureKit, level, quality, isUpgraded, followerInfo);
 		else
 			GarrisonFollowerAlertSystem:AddAlert(followerID, name, level, quality, isUpgraded, followerInfo);

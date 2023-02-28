@@ -3887,33 +3887,36 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					end
 				end
 
+				local message = msg;
 				-- isMobile
-				local outMsg = arg14 and ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b) or "";
-				local appendMsg = true;
+				if arg14 then 
+					message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
+				end
 
+				local outMsg;
 				if ( usingDifferentLanguage ) then
 					local languageHeader = "["..arg3.."] ";
 					if ( showLink and (arg2 ~= "") ) then
-						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..outMsg, pflag..playerLink);
+						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink);
 					else
-						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..outMsg, pflag..arg2);
+						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
 					end
 				else
 					if ( not showLink or arg2 == "" ) then
-						if ( type ~= "TEXT_EMOTE" ) then
-							outMsg = format(_G["CHAT_"..type.."_GET"]..outMsg, pflag..arg2, arg2);
+						if ( type == "TEXT_EMOTE" ) then
+							outMsg = message;
+						else
+							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
 						end
 					else
 						if ( type == "EMOTE" ) then
-							outMsg = format(_G["CHAT_"..type.."_GET"]..outMsg, pflag..playerLink);
+							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
 						elseif ( type == "TEXT_EMOTE") then
-							appendMsg = false;
-							outMsg = string.gsub(msg, arg2, pflag..playerLink, 1);
+							outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
 						elseif (type == "GUILD_ITEM_LOOTED") then
-							appendMsg = false;
-							outMsg = string.gsub(msg, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+							outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
 						else
-							outMsg = format(_G["CHAT_"..type.."_GET"]..outMsg, pflag..playerLink);
+							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
 						end
 					end
 				end
@@ -3929,10 +3932,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
 				end
 				
-				if appendMsg then
-					outMsg = outMsg..msg;
-				end
-
 				return outMsg;
 			end
 

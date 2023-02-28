@@ -8,8 +8,8 @@ GARRISON_LONG_MISSION_TIME_FORMAT = "|cffff7d1a%s|r";
 ---------------------------------------------------------------------------------
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
 
 ---------------------------------------------------------------------------------
 --- Garrison Follower Mission  Mixin Functions                                ---
@@ -1004,7 +1004,7 @@ function GarrisonMissionList_InitButton(button, elementData, missionFrame)
 		button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);
 	end
 	button.MissionType:SetAtlas(mission.typeAtlas);
-	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower0) then
 		button.MissionType:SetSize(62, 62);
 		button.MissionType:SetPoint("TOPLEFT", 74, -6);
 	else
@@ -1128,7 +1128,7 @@ function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 	end
 	-- success chance, automissions don't have success chance
 	local successChance = C_Garrison.GetMissionSuccessChance(missionInfo.missionID);
-	if ( successChance and missionInfo.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0) then
+	if ( successChance and missionInfo.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower) then
 		GameTooltip:AddLine(format(GARRISON_MISSION_PERCENT_CHANCE, successChance), 1, 1, 1);
 	end
 
@@ -1561,7 +1561,7 @@ end
 -- duration is irrelevant for the last entry
 -- WARNING: If you're going to alter this, make sure OnSkipKeyPressed still works
 local ANIMATION_CONTROL = {
-	[Enum.GarrisonFollowerType.FollowerType_6_0] = {
+	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = {
 		[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
 		[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
 		[3] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimModels },					-- model fight
@@ -1576,7 +1576,7 @@ local ANIMATION_CONTROL = {
 		[12] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
 		[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
 	},
-	[Enum.GarrisonFollowerType.FollowerType_7_0] = {
+	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = {
 		[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
 		[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
 		[3] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimModels },					-- model fight
@@ -1593,7 +1593,7 @@ local ANIMATION_CONTROL = {
 		[14] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
 	}
 };
-ANIMATION_CONTROL[Enum.GarrisonFollowerType.FollowerType_8_0] = ANIMATION_CONTROL[Enum.GarrisonFollowerType.FollowerType_7_0];
+ANIMATION_CONTROL[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = ANIMATION_CONTROL[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower];
 
 function GarrisonFollowerMissionComplete:SetAnimationControl()
 	self.animationControl = ANIMATION_CONTROL[self:GetParent().followerTypeID];

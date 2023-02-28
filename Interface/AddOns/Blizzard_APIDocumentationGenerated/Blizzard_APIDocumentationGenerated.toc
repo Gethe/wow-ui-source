@@ -263,6 +263,8 @@ CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
+GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
+GARRISON_TYPEConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua

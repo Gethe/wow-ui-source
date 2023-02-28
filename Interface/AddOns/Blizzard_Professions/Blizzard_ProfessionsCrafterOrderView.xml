@@ -243,6 +243,7 @@
 						<KeyValues>
 							<KeyValue key="showTrackRecipe" value="false" type="boolean"/>
 							<KeyValue key="canShowFavoriteButton" value="false" type="boolean"/>
+							<KeyValue key="forCratingOrders" value="true" type="boolean"/>
 						</KeyValues>
 					</Frame>
 

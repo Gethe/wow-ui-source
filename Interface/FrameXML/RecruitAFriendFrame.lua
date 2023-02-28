@@ -83,6 +83,7 @@ end
 
 local splashFrameTextureKitRegions = {
 	Watermark = "recruitafriend_%s_iwatermark_big",
+	Picture = "recruitafriend_%s_splash_picture",
 };
 function RecruitAFriendFrameMixin:ShowSplashScreen()
 	local latestRAFVersion = self:GetLatestRAFVersion();
@@ -284,7 +285,21 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 		self.RewardClaiming.EarnInfo:Hide();
 		self.RewardClaiming.NextRewardButton:Hide();
 		self.RewardClaiming.NextRewardName:Hide();
+		self.RewardClaiming.NewVersionMessage:Hide();
 		return;
+	end
+
+	local rightAlignedTooltip = true;
+	self.RewardClaiming.NextRewardButton:Setup(nextReward, rightAlignedTooltip);
+
+	local noNewRecruits = self:GetLatestRAFVersionInfo().numRecruits <= 0;
+	if noNewRecruits then
+		self.RewardClaiming.EarnInfo:Hide();
+		self.RewardClaiming.NextRewardName:Hide();
+		self.RewardClaiming.NewVersionMessage:Show();
+		return;
+	else
+		self.RewardClaiming.NewVersionMessage:Hide();
 	end
 
 	if nextReward.canClaim then
@@ -296,9 +311,6 @@ function RecruitAFriendFrameMixin:UpdateNextReward(nextReward)
 	else
 		self.RewardClaiming.EarnInfo:SetText(RAF_NEXT_REWARD);
 	end
-
-	local rightAlignedTooltip = true;
-	self.RewardClaiming.NextRewardButton:Setup(nextReward, rightAlignedTooltip);
 
 	if nextReward.petInfo then
 		self:SetNextRewardName(nextReward.petInfo.speciesName, nextReward.repeatableClaimCount, nextReward.rewardType);
@@ -681,6 +693,9 @@ function RecruitListButtonMixin:UpdateActivities(recruitInfo)
 	end
 end
 
+local recruitListButtonTextureKitRegions = {
+	Icon = "recruitafriend_friendslist_%s_icon",
+};
 function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	self:MakeDivider(false);
 
@@ -690,11 +705,10 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 	self.Name:SetTextColor(recruitInfo.nameColor:GetRGB());
 
 	local versionRecruited = self.recruitInfo.versionRecruited;
+	SetupTextureKitOnRegions(RAFUtil.GetTextureKitForRAFVersion(versionRecruited), self, recruitListButtonTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	self.Icon:SetAlpha(recruitInfo.isOnline and 1 or 0.7);
 	if recruitInfo.isOnline then
-		self.Icon:SetAtlas(self.IconAtlasFormat:format(RAFUtil.GetTextureKitForRAFVersion(versionRecruited), TextureKitConstants.UseAtlasSize));
-		self.Icon:Show();
 		self.Background:SetColorTexture(RAFUtil.GetColorForRAFVersion(versionRecruited):GetRGBA());
-
 		if recruitInfo.subStatus == Enum.RafRecruitSubStatus.Active then
 			self.InfoText:SetText(RAF_ACTIVE_RECRUIT);
 			self.InfoText:SetTextColor(GREEN_FONT_COLOR:GetRGB());
@@ -706,7 +720,6 @@ function RecruitListButtonMixin:SetupRecruit(recruitInfo)
 			self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 		end
 	else
-		self.Icon:Hide();
 		self.Background:SetColorTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR:GetRGBA());
 		self.InfoText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 
@@ -897,6 +910,10 @@ function RecruitAFriendRewardsFrameMixin:UpdateBackground()
 	SetupTextureKitOnRegions(RAFUtil.GetTextureKitForRAFVersion(selectedRAFVersion), self, rewardsFrameTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
+function RecruitAFriendRewardsFrameMixin:UpdateDescription(selectedRAFVersionInfo)
+	self.Description:SetText((selectedRAFVersionInfo.rafVersion == self:GetRecruitAFriendFrame():GetLatestRAFVersion()) and RAF_REWARDS_DESC or RAF_LEGACY_REWARDS_DESC);
+end
+
 function RecruitAFriendRewardsFrameMixin:SetUpTabs(rafInfo)
 	self.rewardTabPool:ReleaseAll();
 
@@ -950,13 +967,15 @@ function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 end
 
 function RecruitAFriendRewardsFrameMixin:Refresh()
-	local rafInfo = self:GetRecruitAFriendFrame():GetRAFInfo();
-	local selectedRAFVersionInfo = self:GetRecruitAFriendFrame():GetSelectedRAFVersionInfo();
+	local recruitAFriendFrame = self:GetRecruitAFriendFrame();
+	local rafInfo = recruitAFriendFrame:GetRAFInfo();
+	local selectedRAFVersionInfo = recruitAFriendFrame:GetSelectedRAFVersionInfo();
 
 	local isUsingDressUp = SideDressUpFrame:IsShown() and SideDressUpFrame:GetParent() == self;
 	CloseSideDressUpFrame(self);
 
 	self:UpdateBackground();
+	self:UpdateDescription(selectedRAFVersionInfo);
 	self:UpdateRewards(selectedRAFVersionInfo.rewards);
 	self.ClaimLegacyRewardsButton:Update(selectedRAFVersionInfo.nextReward, rafInfo.claimInProgress);
 	self:Layout();

@@ -8,7 +8,7 @@ function OrderHallCommandBarMixin:OnLoad()
 
 	self.categoryPool = CreateFramePool("FRAME", self, "OrderHallClassSpecCategoryTemplate");
 
-	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(Enum.GarrisonType.Type_7_0);
+	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(Enum.GarrisonType.Type_7_0_Garrison);
 	self.currency = primaryCurrency;
 
 
@@ -80,7 +80,7 @@ function OrderHallCommandBarMixin:OnEvent(event)
 
 		self:RefreshCategories();
 	elseif (event == "UNIT_AURA") then
-		local inOrderHall = C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0);
+		local inOrderHall = C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0_Garrison);
 		self:SetShown(inOrderHall);
 	elseif (event == "GARRISON_TALENT_COMPLETE" 
 		or event == "GARRISON_TALENT_UPDATE"
@@ -105,7 +105,7 @@ function OrderHallUpdatePosition()
 end
 
 function OrderHallCommandBarMixin:RequestCategoryInfo()
-	C_Garrison.RequestClassSpecCategoryInfo(Enum.GarrisonFollowerType.FollowerType_7_0);
+	C_Garrison.RequestClassSpecCategoryInfo(Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower);
 end
 
 function OrderHallCommandBarMixin:RefreshAll()
@@ -115,7 +115,7 @@ end
 
 function OrderHallCommandBarMixin:RefreshCategories()
 	self.categoryPool:ReleaseAll();
-	local categoryInfo = C_Garrison.GetClassSpecCategoryInfo(Enum.GarrisonFollowerType.FollowerType_7_0);
+	local categoryInfo = C_Garrison.GetClassSpecCategoryInfo(Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower);
 
 	local numCategories = #categoryInfo;
 	local prevCategory, firstCategory;

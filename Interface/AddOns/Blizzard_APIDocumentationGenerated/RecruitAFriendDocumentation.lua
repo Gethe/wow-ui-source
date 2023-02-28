@@ -377,6 +377,7 @@ local RecruitAFriend =
 				{ Name = "monthCount", Type = "RafMonthCount", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
 				{ Name = "nextReward", Type = "RafReward", Nilable = true },
+				{ Name = "numRecruits", Type = "number", Nilable = false },
 			},
 		},
 	},

@@ -720,7 +720,7 @@ function QuestInfo_ShowRewards()
 					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
 				elseif ( garrFollowerID ) then
 					local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
-					if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+					if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_COMPANION, rewardSpellIndex);
 					else
 						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
@@ -762,7 +762,7 @@ function QuestInfo_ShowRewards()
 						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
 						followerFrame.Name:SetText(followerInfo.name);
 
-						local adventureCompanion = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+						local adventureCompanion = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower;
 						followerFrame.AdventuresFollowerPortraitFrame:SetShown(adventureCompanion);
 						followerFrame.PortraitFrame:SetShown(not adventureCompanion);
 

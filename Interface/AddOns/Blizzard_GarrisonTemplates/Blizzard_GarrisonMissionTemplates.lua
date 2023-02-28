@@ -1283,7 +1283,7 @@ function GarrisonMissionComplete:FindAnimIndexFor(func)
 end
 
 local ENDINGS = {
-	[Enum.GarrisonFollowerType.FollowerType_6_0] = {
+	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = {
 	    [1] = { ["ModelMiddle"] = { dist = 0, facing = 0.1, followerIndex = 1 },
 			    ["ModelLeft"] = { hidden = true },
 			    ["ModelRight"] = { hidden = true },
@@ -1297,7 +1297,7 @@ local ENDINGS = {
 			    ["ModelRight"] = { dist = -0.275, facing = 0.3, followerIndex = 3 },
 	    },
 	},
-	[Enum.GarrisonFollowerType.FollowerType_7_0] = {
+	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = {
 	    [1] = { ["ModelMiddle"] = { dist = 0, facing = 0, followerIndex = 1 },
 			    ["ModelLeft"] = { hidden = true },
 			    ["ModelRight"] = { hidden = true },
@@ -1312,15 +1312,15 @@ local ENDINGS = {
 	    },
 	}
 };
-ENDINGS[Enum.GarrisonFollowerType.FollowerType_8_0] = ENDINGS[Enum.GarrisonFollowerType.FollowerType_7_0];
+ENDINGS[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = ENDINGS[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower];
 
 local POSITION_DATA = {
-	[Enum.GarrisonFollowerType.FollowerType_6_0] = {
+	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = {
 	    [1] = {
 		    [1] = { scale=1.0,		facing=0,		x=0,	y=0		}
 	    },
 	},
-	[Enum.GarrisonFollowerType.FollowerType_7_0] = {
+	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = {
 	    [1] = {
 		    [1] = { scale=1.0,		facing=0,		x=-0.02,	y=0		}
 	    },
@@ -1348,7 +1348,7 @@ local POSITION_DATA = {
 	    }
 	}
 };
-POSITION_DATA[Enum.GarrisonFollowerType.FollowerType_8_0] = POSITION_DATA[Enum.GarrisonFollowerType.FollowerType_7_0];
+POSITION_DATA[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = POSITION_DATA[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower];
 
 function GarrisonMissionComplete:SetupEnding(numFollowers, hideExhaustedTroopModels)
 	self.Stage.ModelRight:SetFacingLeft(false);
@@ -2001,7 +2001,7 @@ function GarrisonMissionComplete:AnimXPBarOnFinish(xpBar)
 		end
 		-- visual
 		-- don't cheer for 7.0 followers because we are already cheering for mission success
-		if (self:GetParent().followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_7_0) then
+		if (self:GetParent().followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower) then
 			for _, cluster in ipairs(self.Stage.ModelCluster) do
 				if (cluster:IsShown()) then
 					for _, model in ipairs(cluster.Model) do
@@ -2553,9 +2553,9 @@ function GarrisonMissionMechanic_OnEnter(self)
 	tooltip:SetParent(self.mainFrame);
 	tooltip:SetFrameStrata("TOOLTIP");
 	if (not self.followerTypeID) then
-		self.followerTypeID = Enum.GarrisonFollowerType.FollowerType_6_0;
+		self.followerTypeID = Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower;
 	end
-	if ( self.info.factor <= GARRISON_HIGH_THREAT_VALUE and self.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+	if ( self.info.factor <= GARRISON_HIGH_THREAT_VALUE and self.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 		tooltip.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
 	else
 		tooltip.Border:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
@@ -2601,7 +2601,7 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 	local tooltip = GarrisonMissionMechanicFollowerCounterTooltip;
 	tooltip.Icon:SetTexture(self.info.icon);
 	tooltip.Name:SetText(self.info.name);
-	if (self.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+	if (self.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 		tooltip.Subtitle:SetText(GARRISON_SHIP_CAN_COUNTER);
 	else
 		tooltip.Subtitle:SetText(GARRISON_FOLLOWER_CAN_COUNTER);
@@ -2615,7 +2615,7 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 		tooltip.CounterIcon:SetTexture(self.info.counterIcon);
 		tooltip.CounterName:SetText(self.info.counterName);
 
-		if ( self.info.factor <= GARRISON_HIGH_THREAT_VALUE and self.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+		if ( self.info.factor <= GARRISON_HIGH_THREAT_VALUE and self.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 			tooltip.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
 		else
 			tooltip.Border:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
@@ -2718,7 +2718,7 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerTypeID, no
 				threatFrame.Border:SetShown(ability and ShouldShowFollowerAbilityBorder(followerTypeID, ability));
 				threatFrame.Icon:SetTexture(ability and ability.icon);
 			else
-				if ( mechanic.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+				if ( mechanic.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 					threatFrame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
 				else
 					threatFrame.Border:SetAtlas("GarrMission_EncounterAbilityBorder");

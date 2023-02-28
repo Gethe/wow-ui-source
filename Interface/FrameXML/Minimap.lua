@@ -10,13 +10,13 @@ TOWNSFOLK = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
 GARRISON_ALERT_CONTEXT_MISSION = {
-	[Enum.GarrisonFollowerType.FollowerType_6_0] = 2,
-	[Enum.GarrisonFollowerType.FollowerType_6_2] = 4,
-	[Enum.GarrisonFollowerType.FollowerType_7_0] = 5,
-	[Enum.GarrisonFollowerType.FollowerType_8_0] = 6,
+	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = 2,
+	[Enum.GarrisonFollowerType.FollowerType_6_0_Boat] = 4,
+	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = 5,
+	[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = 6,
 
 	-- TODO:: Replace with the correct flash.
-	[Enum.GarrisonFollowerType.FollowerType_9_0] = 6,
+	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = 6,
 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
@@ -878,7 +878,7 @@ end
 
 local garrisonTypeAnchors = {
 	["default"] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", 5, -162),
-	[Enum.GarrisonType.Type_9_0] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", -3, -150),
+	[Enum.GarrisonType.Type_9_0_Garrison] = AnchorUtil.CreateAnchor("TOPLEFT", "MinimapBackdrop", "TOPLEFT", -3, -150),
 }
 
 local function GetGarrisonTypeAnchor(garrisonType)
@@ -928,9 +928,9 @@ function ExpansionLandingPageMinimapButtonMixin:HandleGarrisonEvent(event, ...)
 		local followerType = ...;
 		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[followerType]);
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
-		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[Enum.GarrisonFollowerType.FollowerType_6_2]);
+		self:HidePulse(GARRISON_ALERT_CONTEXT_MISSION[Enum.GarrisonFollowerType.FollowerType_6_0_Boat]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
-		if ( C_Garrison.GetLandingPageGarrisonType() == Enum.GarrisonType.Type_6_0 ) then
+		if ( C_Garrison.GetLandingPageGarrisonType() == Enum.GarrisonType.Type_6_0_Garrison ) then
 			GarrisonMinimapInvasion_ShowPulse(self);
 		end
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
@@ -955,7 +955,7 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIconForGarrison()
 
 	ApplyGarrisonTypeAnchor(self, garrisonType);
 
-	if (garrisonType == Enum.GarrisonType.Type_6_0) then
+	if (garrisonType == Enum.GarrisonType.Type_6_0_Garrison) then
 		self.faction = UnitFactionGroup("player");
 		if ( self.faction == "Horde" ) then
 			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true);
@@ -966,18 +966,18 @@ function ExpansionLandingPageMinimapButtonMixin:UpdateIconForGarrison()
 		end
 		self.title = GARRISON_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP;
-	elseif (garrisonType == Enum.GarrisonType.Type_7_0) then
+	elseif (garrisonType == Enum.GarrisonType.Type_7_0_Garrison) then
 		local _, className = UnitClass("player");
 		self:GetNormalTexture():SetAtlas("legionmission-landingbutton-"..className.."-up", true);
 		self:GetPushedTexture():SetAtlas("legionmission-landingbutton-"..className.."-down", true);
 		self.title = ORDER_HALL_LANDING_PAGE_TITLE;
 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
-	elseif (garrisonType == Enum.GarrisonType.Type_8_0) then
+	elseif (garrisonType == Enum.GarrisonType.Type_8_0_Garrison) then
 		self.faction = UnitFactionGroup("player");
 		SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType8_0(self.faction));
 		self.title = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE;
 		self.description = GARRISON_TYPE_8_0_LANDING_PAGE_TOOLTIP;
-	elseif (garrisonType == Enum.GarrisonType.Type_9_0) then
+	elseif (garrisonType == Enum.GarrisonType.Type_9_0_Garrison) then
 		local covenantData = C_Covenants.GetCovenantData(C_Covenants.GetActiveCovenantID());
 		if covenantData then
 			SetLandingPageIconFromAtlases(self, GetMinimapAtlases_GarrisonType9_0(covenantData));
@@ -1076,7 +1076,7 @@ function GarrisonMinimap_ClearQueuedHelpTip(self)
 end
 
 function GarrisonMinimap_HideHelpTip(self)
-	if self.garrisonType == Enum.GarrisonType.Type_9_0 then
+	if self.garrisonType == Enum.GarrisonType.Type_9_0_Garrison then
 		HelpTip:Acknowledge(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 		GarrisonMinimap_ClearQueuedHelpTip(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 	end

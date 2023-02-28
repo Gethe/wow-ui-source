@@ -931,9 +931,10 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 		end
 	end
 
+	local forCraftingOrders = true;
 	Professions.LayoutReagentSlots(
 		reagentTypes[Enum.CraftingReagentType.Basic], self.ReagentContainer.Reagents,
-		reagentTypes[Enum.CraftingReagentType.Optional], self.ReagentContainer.OptionalReagents);
+		reagentTypes[Enum.CraftingReagentType.Optional], self.ReagentContainer.OptionalReagents, nil, forCraftingOrders);
 
 	self:UpdateListOrderButton();
 end

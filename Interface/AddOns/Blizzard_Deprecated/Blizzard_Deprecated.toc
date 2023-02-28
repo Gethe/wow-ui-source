@@ -5,3 +5,4 @@
 ## LoadOnDemand: 0
 
 Deprecated_10_0_0.lua
+Deprecated_10_0_7.lua

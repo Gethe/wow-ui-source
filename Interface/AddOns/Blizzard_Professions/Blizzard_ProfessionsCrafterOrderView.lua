@@ -409,7 +409,9 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
                 slot:SetUnallocatable(true);
                 slot:SetOverrideNameColor(HIGHLIGHT_FONT_COLOR);
 				slot:SetShowOnlyRequired(true);
-                slot:SetCheckmarkShown(true);
+				if reagentType ~= Enum.CraftingReagentType.Optional then
+					slot:SetCheckmarkShown(true);
+				end
 				slot:SetCheckmarkTooltipText(PROFESSIONS_CUSTOMER_ORDER_REAGENT_PROVIDED);
             end
 

@@ -58,7 +58,7 @@
 					<Color color="NORMAL_FONT_COLOR" />
 				</FontString>
 				<FontString parentKey="Description" inherits="FriendsFont_11" text="RAF_REWARDS_DESC">
-					<Size x="350"/>
+					<Size x="330"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 					</Anchors>
@@ -348,9 +348,6 @@
 
 	<Button name="RecruitListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="RecruitListButtonMixin">
 		<Size x="298" y="34"/>
-		<KeyValues>
-			<KeyValue key="IconAtlasFormat" value="recruitafriend_friendslist_%s_icon" type="string"/>
-		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="Background">
@@ -478,6 +475,23 @@
 									</KeyValues>
 									<Size x="230" y="14"/>
 									<Color color="NORMAL_FONT_COLOR" />
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="NewVersionMessage" inherits="TruncatedTooltipFontStringWrapperTemplate">
+						<Size x="230" y="30"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="90" y="-30"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" mixin="AutoScalingFontStringMixin" text="RAF_NEW_VERSION_PROMPT">
+									<KeyValues>
+										<KeyValue key="minLineHeight" value="12" type="number"/>
+									</KeyValues>
+									<Size x="230" y="36"/>
+									<Color color="BLUE_FONT_COLOR" />
 								</FontString>
 							</Layer>
 						</Layers>

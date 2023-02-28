@@ -31,14 +31,14 @@ end
 
 function GarrisonFollowerTooltip_ShowWithData(data, tooltipFrame)
 	if (not tooltipFrame) then
-		if (data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+		if (data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 			tooltipFrame = GarrisonShipyardFollowerTooltip;
 		else
 			tooltipFrame = GarrisonFollowerTooltip;
 		end
 	end
 
-	if (data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+	if (data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 		GarrisonFollowerTooltipTemplate_SetShipyardFollower(tooltipFrame, data, xpWidth);
 	else
 		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data, xpWidth);

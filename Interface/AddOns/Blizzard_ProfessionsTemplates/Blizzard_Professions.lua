@@ -790,6 +790,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 			end
 
 			local addUnlearnedDivider = false;
+			local addedKnownRecipe = false;
 			local node = dataProvider:GetRootNode();
 
 			local affectChildren = false;
@@ -801,12 +802,13 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 					AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
 				end
 				addUnlearnedDivider = addUnlearnedDivider or (addedRecipe and categoryMap == unlearnedCategoryMap);
+				addedKnownRecipe = addedKnownRecipe or (addedRecipe and categoryMap == learnedCategoryMap);
 				addedRecipe = false;
 			end
 
 			if addUnlearnedDivider and C_TradeSkillUI.GetShowUnlearned() then
 				-- Categories and dividers ordered by group, position this divider just before the unlearned group.
-				node:Insert({isDivider = true, dividerHeight = 70, group = Group.UnlearnedDivider});
+				node:Insert({isDivider = true, dividerHeight = addedKnownRecipe and 70 or 30, group = Group.UnlearnedDivider});
 			end
 		end
 	end
@@ -1211,11 +1213,12 @@ function Professions.OnRecipeListSearchTextChanged(text)
 	end
 end
 
-function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider)
+function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider, forCraftingOrders)
 	if reagentSlots then
 		local stride = 4;
-		local spacing = -5;
-		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride, spacing, spacing);
+		local spacingX = forCraftingOrders and 35 or -5;
+		local spacingY = -5;
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride, spacingX, spacingY);
 		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 1, -23);
 		AnchorUtil.GridLayout(reagentSlots, anchor, layout);
 		reagentsContainer:Layout();

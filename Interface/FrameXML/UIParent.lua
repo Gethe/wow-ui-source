@@ -913,7 +913,7 @@ end
 
 function OrderHall_CheckCommandBar()
 	if (not OrderHallCommandBar or not OrderHallCommandBar:IsShown()) then
-		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0)) then
+		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0_Garrison)) then
 			OrderHall_LoadUI();
 			OrderHallCommandBar:Show();
 		end
@@ -1423,7 +1423,7 @@ function UIParent_OnEvent(self, event, ...)
 				local garrTypeID = GarrisonFollowerOptions[followerTypeID].garrisonType;
 				if(garrTypeID == garrisonType) then
 					if (C_Garrison.HasGarrison(garrTypeID)) then
-						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 							landingPageTabIndex = 3;
 						else
 							landingPageTabIndex = 2;
@@ -1453,8 +1453,8 @@ function UIParent_OnEvent(self, event, ...)
 					GarrisonMissionListTab_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
 				end
 			else
-				if (C_Garrison.HasGarrison(Enum.GarrisonType.Type_6_0)) then
-					ShowGarrisonLandingPage(Enum.GarrisonType.Type_6_0);
+				if (C_Garrison.HasGarrison(Enum.GarrisonType.Type_6_0_Garrison)) then
+					ShowGarrisonLandingPage(Enum.GarrisonType.Type_6_0_Garrison);
 
 					-- switch to the mission tab
 					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
@@ -2110,11 +2110,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
 		local followerTypeID = ...;
-		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0 ) then
+		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower ) then
 			ShowUIPanel(OrderHallMissionFrame);
-		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0 ) then
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower ) then
 			ShowUIPanel(BFAMissionFrame);
-		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 ) then
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower ) then
 			ShowUIPanel(CovenantMissionFrame);
 		end
 
@@ -2274,7 +2274,7 @@ function UIParent_OnEvent(self, event, ...)
 		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		local followerType = ...;
-		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0 then
+		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower then
 			local frameName = GarrisonFollowerOptions[followerType].missionFrame;
 			if (not _G[frameName]) then
 				Garrison_LoadUI();

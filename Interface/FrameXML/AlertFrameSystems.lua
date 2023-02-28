@@ -729,7 +729,7 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 		frame.EncounterIcon:SetShown(false);
 	end
 
-	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0) then
+	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower) then
 		frame.EncounterIcon:SetShown(true);
 		frame.MissionType:SetShown(false);
 
@@ -744,10 +744,10 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 		end
 
 		frame.EncounterIcon:SetPoint("TOPLEFT", frame, "TOPLEFT", 24, -19);
-	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower) then
 		frame.MissionType:SetSize(50, 50);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 21, -14);
-	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0) then
+	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower) then
 		frame.MissionType:SetSize(64, 64);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -8);
 	end
