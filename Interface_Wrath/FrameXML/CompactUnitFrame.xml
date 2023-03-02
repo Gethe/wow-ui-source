@@ -159,7 +159,7 @@
 				<Texture name="$parentVertLeftBorder" parentKey="vertLeftBorder" vertTile="true" ignoreParentAlpha="true"/>
 				<Texture name="$parentVertRightBorder" parentKey="vertRightBorder" vertTile="true" ignoreParentAlpha="true"/>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="2">
 				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name" wordwrap="false"/>
 				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
 				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon"/>

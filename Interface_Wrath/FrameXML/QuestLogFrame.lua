@@ -431,8 +431,12 @@ function QuestLogTitleButton_OnClick(self, button)
 		if ( self.isHeader ) then
 			return;
 		end
-		-- Otherwise trim leading whitespace and put it into chat
-		ChatEdit_InsertLink(gsub(self:GetText(), " *(.*)", "%1"));
+
+		local questIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+		local questLink = GetQuestLink(GetQuestIDFromLogIndex(questIndex));
+		if ( questLink ) then
+			ChatEdit_InsertLink(questLink);
+		end
 	elseif ( IsShiftKeyDown() ) then
 		-- If header then return
 		if ( self.isHeader ) then

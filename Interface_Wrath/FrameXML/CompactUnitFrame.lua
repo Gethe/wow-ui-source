@@ -67,6 +67,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateName(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
 		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
+	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
+		CompactUnitFrame_UpdateRoleIcon(self);
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		CompactUnitFrame_UpdateLevel(self);
 	elseif ( event == "READY_CHECK" ) then
@@ -792,7 +794,7 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 		frame.roleIcon:SetTexCoord(0, 1, 0, 1);
 		frame.roleIcon:Show();
 		frame.roleIcon:SetSize(size, size);
-	--[[else
+	else
 		local role = UnitGroupRolesAssigned(frame.unit);
 		if ( frame.optionTable.displayRoleIcon and (role == "TANK" or role == "HEALER" or role == "DAMAGER") ) then
 			frame.roleIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
@@ -802,7 +804,7 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 		else
 			frame.roleIcon:Hide();
 			frame.roleIcon:SetSize(1, size);
-		end]]
+		end
 	end
 end
 

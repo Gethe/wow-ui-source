@@ -86,7 +86,8 @@ end
 function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		if ( self.type == "QUEST" ) then
-			local questLink = GetQuestLink(GetQuestIndexForWatch(self.index));
+			local questIndex = GetQuestIndexForWatch(self.index);
+			local questLink = GetQuestLink(GetQuestIDFromLogIndex(questIndex));
 			if ( questLink ) then
 				ChatEdit_InsertLink(questLink);
 			end
