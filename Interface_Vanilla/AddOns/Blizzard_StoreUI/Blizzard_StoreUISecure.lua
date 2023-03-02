@@ -18,6 +18,7 @@ if ( tbl.IsOnGlueScreen() ) then
 	Import("GlueParent_AddModalFrame");
 	Import("GlueParent_RemoveModalFrame");
 	Import("LE_WOW_CONNECTION_STATE_NONE");
+	Import("GetCharacterListUpdate");
 end
 
 setfenv(1, tbl);
@@ -1374,12 +1375,7 @@ function StoreFrame_OnShow(self)
 	PlaySound(SOUNDKIT.UI_IG_STORE_WINDOW_OPEN_BUTTON);
 end
 
-function StoreFrame_OnHide(self)
-	if (VASReady) then
-		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
-	elseif (IsOnGlueScreen()) then -- Only do this is we didn't just show a VAS alert.
-		GlueParent_UpdateDialogs();
-	end
+function StoreFrame_OnHide(self)	
 	self:SetAttribute("isshown", false);
 	-- TODO: Fix so will only hide if Store showed the preview frame
 	Outbound.HidePreviewFrame();
@@ -1387,6 +1383,13 @@ function StoreFrame_OnHide(self)
 		Outbound.UpdateMicroButtons();
 	else
 		GlueParent_RemoveModalFrame(self);
+		GlueParent_UpdateDialogs();
+	end
+
+	if (VASReady) then
+		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+	elseif (WaitingOnVASToComplete > 0 and IsOnGlueScreen()) then
+		GetCharacterListUpdate();
 	end
 
 	StoreVASValidationFrame:Hide();
@@ -1640,7 +1643,7 @@ function StoreFrame_OnError(self, errorID, needsAck, internalErr)
 	end
 end
 
-function StoreFrame_UpdateActivePanel(self)
+function StoreFrame_UpdateActivePanel(self, fromVASPurchaseCompletion)
 	if (StoreFrame.ErrorFrame:IsShown()) then
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
@@ -1676,6 +1679,11 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
 	elseif ( not SecureCurrencyUtil.GetActiveCurrencyInfo() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
+	elseif (fromVASPurchaseCompletion and StoreVASValidationFrame and StoreVASValidationFrame:IsShown() and StoreVASValidationFrame.productID == C_StoreSecure.GetVASCompletionInfo() ) then
+		-- a VAS purchase completed while viewing another of the same product
+		StoreVASValidationFrame:Hide();
+		StoreFrame_HideAlert(self);
+		StoreFrame_ShowPurchaseSent(self);
 	else
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
@@ -2397,7 +2405,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			WaitingOnConfirmation = false;
 			VASReady = true;
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
-			StoreFrame_UpdateActivePanel(StoreFrame);
+			local fromVASPurchaseCompletion = true;
+			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
 		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end

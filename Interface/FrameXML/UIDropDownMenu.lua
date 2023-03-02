@@ -509,7 +509,8 @@ function UIDropDownMenu_AddButton(info, level)
 
 	-- If not checkable move everything over to the left to fill in the gap where the check would be
 	local xPos = 5;
-	local yPos = -((button:GetID() - 1) * UIDROPDOWNMENU_BUTTON_HEIGHT) - UIDROPDOWNMENU_BORDER_HEIGHT;
+	local buttonHeight = (info.topPadding or 0) + UIDROPDOWNMENU_BUTTON_HEIGHT;
+	local yPos = -((button:GetID() - 1) * buttonHeight) - UIDROPDOWNMENU_BORDER_HEIGHT;
 	local displayInfo = normalText;
 	if (info.iconOnly) then
 		displayInfo = icon;
@@ -662,8 +663,15 @@ function UIDropDownMenu_AddButton(info, level)
 		listFrame.maxWidth = width;
 	end
 
+	local customFrameCount = listFrame.customFrames and #listFrame.customFrames or 0;
+	local height = ((index - customFrameCount) * buttonHeight) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2);
+	for frameIndex = 1, customFrameCount do
+		local frame = listFrame.customFrames[frameIndex];
+		height = height + frame:GetPreferredEntryHeight();
+	end
+
 	-- Set the height of the listframe
-	listFrame:SetHeight((index * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2));
+	listFrame:SetHeight(height);
 
 	return button;
 end
@@ -1086,14 +1094,20 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame:SetPoint(point, anchorFrame, relativePoint, 0, 0);
 		end
 
-		-- Change list box appearance depending on display mode
-		if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
+		if dropDownFrame.hideBackdrops then
 			_G[listFrameName.."Backdrop"]:Hide();
-			_G[listFrameName.."MenuBackdrop"]:Show();
-		else
-			_G[listFrameName.."Backdrop"]:Show();
 			_G[listFrameName.."MenuBackdrop"]:Hide();
+		else
+			-- Change list box appearance depending on display mode
+			if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
+				_G[listFrameName.."Backdrop"]:Hide();
+				_G[listFrameName.."MenuBackdrop"]:Show();
+			else
+				_G[listFrameName.."Backdrop"]:Show();
+				_G[listFrameName.."MenuBackdrop"]:Hide();
+			end
 		end
+
 		dropDownFrame.menuList = menuList;
 		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level, menuList);
 		-- If no items in the drop down don't show it
