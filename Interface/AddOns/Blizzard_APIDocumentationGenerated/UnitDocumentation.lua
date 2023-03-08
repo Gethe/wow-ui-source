@@ -551,6 +551,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitTrialBankedLevels",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bankedLevels", Type = "number", Nilable = false },
+				{ Name = "xpIntoCurrentLevel", Type = "number", Nilable = false },
+				{ Name = "xpForNextLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitWidgetSet",
 			Type = "Function",
 

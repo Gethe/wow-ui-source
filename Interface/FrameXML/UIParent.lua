@@ -494,8 +494,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
-
-	ExpansionTrial_Initialize();
 end
 
 function UIParent_OnShow(self)
@@ -668,7 +666,7 @@ function BarberShopFrame_LoadUI()
 end
 
 function PerksProgramFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_PerksProgram");	
+	UIParentLoadAddOn("Blizzard_PerksProgram");
 end
 
 function AchievementFrame_LoadUI()
@@ -824,41 +822,12 @@ function ClassTrial_AttemptLoad()
 end
 
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
-	return ExpansionTrialThanksForPlayingDialog and ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
-end
+	if ExpansionTrialThanksForPlayingDialog then
+		return ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
+	end
 
-function ExpansionTrial_Initialize()
-	local isExpansionTrial = GetExpansionTrialInfo();
-	if isExpansionTrial then
-		local hitLevelLimit = function(playerLevel)
-			return playerLevel >= 63;
-		end
-
-		local displayPurchaseDialog = function()
-			UIParentLoadAddOn("Blizzard_ClassTrial");
-			local buyExpansionToContinue = false;
-			local suppressClassTrial = true;
-			ExpansionTrialThanksForPlayingDialog:SetupDialogType(buyExpansionToContinue, suppressClassTrial);
-			ExpansionTrialThanksForPlayingDialog:Show();
-		end
-
-		EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_CHANGED", function(f, oldLevel, newLevel, hasRealLevelChanged)
-			if hasRealLevelChanged and hitLevelLimit(newLevel) then
-				displayPurchaseDialog();
-			end
-		end);
-
-		EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
-			if hitLevelLimit(UnitLevel("player")) then
-				displayPurchaseDialog();
-			end
-		end);
-
-		EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", function(f, questID)
-			if questID == 65794 then
-				displayPurchaseDialog();
-			end
-		end);
+	if ExpansionTrialCheckPointDialog then
+		return ExpansionTrialCheckPointDialog:IsShowingExpansionTrialUpgrade();
 	end
 end
 

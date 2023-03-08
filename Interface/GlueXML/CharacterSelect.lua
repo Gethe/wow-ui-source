@@ -2140,7 +2140,6 @@ function CharacterServicesMaster_UpdateServiceButton()
 			remainingTime = expansionTrialRemainingSeconds,
 			hideTimer = true,
 			characterCreateType = Enum.CharacterCreateType.Normal,
-			overrideAtlas = "raceicon128-dracthyr-male",
 		};
 	end
 
