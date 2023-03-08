@@ -108,19 +108,28 @@ local FrameEvents =
 	"UNIT_EXITING_VEHICLE",
 };
 
+local function UpdateEventRegistration(register)
+	if register then
+		FrameUtil.RegisterFrameForEvents(CombatText, FrameEvents);
+	else
+		FrameUtil.UnregisterFrameForEvents(CombatText, FrameEvents);
+	end
+end
+
 function CombatText_OnLoad(self)
-	CombatText_UpdateDisplayedMessages();
-	CombatText.previousMana = {};
-	CombatText.xDir = 1;
-	
-	local function OnValueChanged(_, setting, value)
+	local function OnValueChanged(_, _, value)
+		UpdateEventRegistration(value);
 		if value then
 			CombatText_UpdateDisplayedMessages();
-		else
-			FrameUtil.UnregisterFrameForEvents(CombatText, FrameEvents);
 		end
 	end
 	Settings.SetOnValueChangedCallback("enableFloatingCombatText", OnValueChanged);
+
+	UpdateEventRegistration(GetCVarBool("enableFloatingCombatText"));
+
+	CombatText_UpdateDisplayedMessages();
+	CombatText.previousMana = {};
+	CombatText.xDir = 1;
 end
 
 function CombatText_OnEvent(self, event, ...)
@@ -585,9 +594,6 @@ function CombatText_UpdateDisplayedMessages()
 		CombatText.unit = "player";
 	end
 	CombatTextSetActiveUnit(CombatText.unit);
-
-	-- register events
-	FrameUtil.RegisterFrameForEvents(CombatText, FrameEvents);
 
 	-- Get scale
 	COMBAT_TEXT_Y_SCALE = WorldFrame:GetHeight() / 768;

@@ -15,3 +15,7 @@ end
 function Outbound.RecruitAFriendTryPlayClaimRewardFanfare()
 	securecall("RecruitAFriend_TryPlayClaimRewardFanfare");
 end
+
+function Outbound.RecruitAFriendTryCancelAutoClaim()
+	securecall("RecruitAFriend_TryCancelAutoClaim");
+end

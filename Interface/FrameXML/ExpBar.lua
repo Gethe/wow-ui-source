@@ -8,24 +8,33 @@ function ExpBarMixin:ShouldBeVisible()
 	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled();
 end
 
-function ExpBarMixin:Update() 
-	local currXP = UnitXP("player");
+function ExpBarMixin:IsCapped()
+	if GameLimitedMode_IsBankedXPActive() then
+		local restrictedLevel = GameLimitedMode_GetLevelLimit();
+		return UnitLevel("player") >= restrictedLevel;
+	end
+
+	return false;
+end
+
+function ExpBarMixin:GetLevelData()
+	local currXP = self:IsCapped() and UnitTrialXP("player") or UnitXP("player");
 	local nextXP = UnitXPMax("player");
 	local level = UnitLevel("player");
+	local bankedLevels = UnitTrialBankedLevels("player");
 
+	return currXP, nextXP, level, bankedLevels;
+end
+
+function ExpBarMixin:Update()
+	local currXP, nextXP, level = self:GetLevelData();
 	local minBar, maxBar = 0, nextXP;
 
-	local isCapped = false;
-	if (GameLimitedMode_IsActive()) then
-		local rLevel = GetRestrictedAccountData();
-		if UnitLevel("player") >= rLevel then
-			isCapped = true;
-			self:SetBarValues(1, 0, 1, level);
-			self.StatusBar:ProcessChangesInstantly();
-			self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Experience");
-		end
-	end
-	if (not isCapped) then
+	if self:IsCapped() then
+		self:SetBarValues(1, 0, 1, level);
+		self.StatusBar:ProcessChangesInstantly();
+		self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Experience");
+	else
 		self:SetBarValues(currXP, minBar, maxBar, level);
 	end
 
@@ -36,15 +45,7 @@ function ExpBarMixin:Update()
 end
 
 function ExpBarMixin:UpdateCurrentText()
-	local currXP = self.currXP;
-	local maxBar = self.maxBar;
-	if (GameLimitedMode_IsActive()) then
-		local rLevel = GetRestrictedAccountData();
-		if (UnitLevel("player") >= rLevel) then
-			currXP = UnitTrialXP("player");
-		end
-	end
-	self:SetBarText(XP_STATUS_BAR_TEXT:format(currXP, maxBar));
+	self:SetBarText(XP_STATUS_BAR_TEXT:format(self.currXP, self.maxBar));
 end
 
 function ExpBarMixin:OnLoad()
@@ -55,7 +56,7 @@ function ExpBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
-	self.priority = 3; 
+	self.priority = 3;
 end
 
 function ExpBarMixin:OnEvent(event, ...)
@@ -77,28 +78,13 @@ function ExpBarMixin:OnEnter()
 	TextStatusBar_UpdateTextString(self);
 	self:ShowText(self);
 	self:UpdateCurrentText();
-	self.ExhaustionTick.timer = 1;
-	local label = XPBAR_LABEL;
 
-	if ( GameLimitedMode_IsActive() ) then
+	if GameLimitedMode_IsBankedXPActive() then
 		local rLevel = GetRestrictedAccountData();
 		if UnitLevel("player") >= rLevel then
 			local trialXP = UnitTrialXP("player");
-			local bankedLevels = UnitTrialBankedLevels("player");
-			if (trialXP > 0) then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				local text = TRIAL_CAP_BANKED_XP_TOOLTIP;
-				if (bankedLevels > 0) then
-					text = TRIAL_CAP_BANKED_LEVELS_TOOLTIP:format(bankedLevels);
-				end
-				GameTooltip:SetText(text, nil, nil, nil, nil, true);
-				GameTooltip:Show();
-				if (IsTrialAccount()) then
-					MicroButtonPulse(StoreMicroButton);
-				end
-				return
-			else
-				label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
+			if trialXP > 0 and IsTrialAccount() then
+				MicroButtonPulse(StoreMicroButton);
 			end
 		end
 	end
@@ -106,8 +92,8 @@ function ExpBarMixin:OnEnter()
 	self.ExhaustionTick:ExhaustionToolTipText();
 end
 
-function ExpBarMixin:OnLeave() 
-	self:HideText(); 
+function ExpBarMixin:OnLeave()
+	self:HideText();
 	GameTooltip:Hide();
 	self.ExhaustionTick.timer = nil;
 end
@@ -131,40 +117,39 @@ end
 ExhaustionTickMixin = { }
 function ExhaustionTickMixin:ExhaustionToolTipText()
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
-	if(not exhaustionStateID) then 
-		return; 
-	end
-	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-	local exhaustionCurrXP, exhaustionMaxXP;
-	local exhaustionThreshold = GetXPExhaustion();
-	local exhaustionCountdown = nil;
-
-	exhaustionStateMultiplier = exhaustionStateMultiplier * 100;
-
-	if ( GetTimeToWellRested() ) then
-		exhaustionCountdown = GetTimeToWellRested() / 60;
+	if(not exhaustionStateID) then
+		return;
 	end
 
-	local currXP = UnitXP("player");
-	local nextXP = UnitXPMax("player");
+	local currXP, nextXP = self:GetParent():GetLevelData();
 	local percentXP = math.ceil(currXP/nextXP*100);
-	local XPText = format( XP_TEXT, BreakUpLargeNumbers(currXP), BreakUpLargeNumbers(nextXP), percentXP );
-	local tooltipText = XPText..format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier);
-	local append = nil;
 
-	if ( IsResting() ) then
-		if ( exhaustionThreshold and exhaustionCountdown ) then
-			append = format(EXHAUST_TOOLTIP4, exhaustionCountdown);
+	local tooltip = GetAppropriateTooltip();
+	GameTooltip_SetDefaultAnchor(tooltip, UIParent);
+	GameTooltip_SetTitle(tooltip, XP_TEXT:format(BreakUpLargeNumbers(currXP), BreakUpLargeNumbers(nextXP), percentXP));
+	GameTooltip_AddHighlightLine(tooltip, EXHAUST_TOOLTIP1:format(exhaustionStateName, exhaustionStateMultiplier * 100));
+
+	if not IsResting() and (exhaustionStateID == 4 or exhaustionStateID == 5) then
+		GameTooltip_AddHighlightLine(tooltip, EXHAUST_TOOLTIP2);
+	end
+
+	if GameLimitedMode_IsBankedXPActive() then
+		local bankedLevels = UnitTrialBankedLevels("player");
+		local bankedXP = UnitTrialXP("player");
+
+		if bankedLevels > 0 or bankedXP > 0 then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			GameTooltip_AddNormalLine(tooltip, XP_TEXT_BANKED_XP_HEADER);
 		end
-	elseif ( (exhaustionStateID == 4) or (exhaustionStateID == 5) ) then
-		append = EXHAUST_TOOLTIP2;
+
+		if bankedLevels > 0 then
+			GameTooltip_AddHighlightLine(tooltip, TRIAL_CAP_BANKED_LEVELS_TOOLTIP:format(bankedLevels));
+		elseif bankedXP > 0 then
+			GameTooltip_AddHighlightLine(tooltip, TRIAL_CAP_BANKED_XP_TOOLTIP);
+		end
 	end
 
-	if ( append ) then
-		tooltipText = tooltipText..append;
-	end
-
-	GameTooltip:SetText(tooltipText);
+	GameTooltip:Show();
 end
 
 function ExhaustionTickMixin:OnLoad()
@@ -179,7 +164,7 @@ function ExhaustionTickMixin:UpdateTickPosition()
 	local playerCurrXP = UnitXP("player");
 	local playerMaxXP = UnitXPMax("player");
 	local exhaustionThreshold = GetXPExhaustion();
-	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
+	local exhaustionStateID = GetRestState();
 
 	if ( exhaustionStateID and exhaustionStateID >= 3 ) then
 		self:SetPoint("CENTER", self:GetParent() , "RIGHT", 0, 0);

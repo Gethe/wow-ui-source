@@ -66,11 +66,12 @@ local ChatConstants =
 		{
 			Name = "ExcludedCensorSources",
 			Type = "Enumeration",
-			NumValues = 8,
-			MinValue = 1,
-			MaxValue = 128,
+			NumValues = 10,
+			MinValue = 0,
+			MaxValue = 255,
 			Fields =
 			{
+				{ Name = "None", Type = "ExcludedCensorSources", EnumValue = 0 },
 				{ Name = "Friends", Type = "ExcludedCensorSources", EnumValue = 1 },
 				{ Name = "Guild", Type = "ExcludedCensorSources", EnumValue = 2 },
 				{ Name = "Reserve1", Type = "ExcludedCensorSources", EnumValue = 4 },
@@ -79,6 +80,7 @@ local ChatConstants =
 				{ Name = "Reserve4", Type = "ExcludedCensorSources", EnumValue = 32 },
 				{ Name = "Reserve5", Type = "ExcludedCensorSources", EnumValue = 64 },
 				{ Name = "Reserve6", Type = "ExcludedCensorSources", EnumValue = 128 },
+				{ Name = "All", Type = "ExcludedCensorSources", EnumValue = 255 },
 			},
 		},
 		{

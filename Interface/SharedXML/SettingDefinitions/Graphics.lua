@@ -473,7 +473,7 @@ local function Register()
 			
 			if fullscreen then
 				local autoSizeValue = FormatScreenResolution(0, 0);
-				container:Add(autoSizeValue, "Default");
+				container:Add(autoSizeValue, DEFAULT);
 			end
 
 			local sizes = GetGameWindowSizes(monitor, fullscreen);

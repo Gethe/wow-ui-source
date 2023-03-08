@@ -362,7 +362,18 @@ function ProfessionsCrafterOrderViewMixin:CloseOrder()
     self:GetParent():CloseOrder();
 end
 
+function ProfessionsCrafterOrderViewMixin:CancelAsyncLoads()
+    if self.asyncContainers then
+		for _, container in ipairs(self.asyncContainers) do
+			container:Cancel();
+		end
+	end
+	self.asyncContainers = {};
+end
+
 function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
+	self:CancelAsyncLoads();
+
     self.hasOptionalReagentSlots = true;
     self.reagentSlotProvidedByCustomer = {};
 
@@ -434,6 +445,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
                     continuableContainer:ContinueOnLoad(function()
                         slot:SetItem(item);
                     end);
+					table.insert(self.asyncContainers, continuableContainer);
 
                     if locked then
                         slot:SetOverrideNameColor(ERROR_COLOR);

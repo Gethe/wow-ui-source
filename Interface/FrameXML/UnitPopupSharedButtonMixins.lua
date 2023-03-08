@@ -2053,6 +2053,8 @@ end
 function UnitPopupAddCharacterFriendButtonMixin:IsEnabled()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local isSameServer = UnitPopupSharedUtil.IsSameServerFromSelf();
+	local accountInfo = dropdownMenu.accountInfo;
+	local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo or nil;
 	if ( dropdownMenu.unit ~= nil ) then
 		if ( not UnitCanCooperate("player", dropdownMenu.unit) ) then
 			return false;
@@ -2066,7 +2068,9 @@ function UnitPopupAddCharacterFriendButtonMixin:IsEnabled()
 		if not isSameServer or C_FriendList.GetFriendInfo(dropdownMenu.clubMemberInfo.name) then
 			return false;
 		end
-	elseif not isSameServer or not dropdownMenu.accountInfo or not dropdownMenu.accountInfo.gameAccountInfo.characterName or C_FriendList.GetFriendInfo(dropdownMenu.accountInfo.gameAccountInfo.characterName) then
+	elseif not isSameServer or not accountInfo or not gameAccountInfo or not gameAccountInfo.characterName or C_FriendList.GetFriendInfo(gameAccountInfo.characterName) then
+		return false;
+	elseif not gameAccountInfo.factionName or gameAccountInfo.factionName ~= UnitFactionGroup("player") then
 		return false;
 	end
 	return true;

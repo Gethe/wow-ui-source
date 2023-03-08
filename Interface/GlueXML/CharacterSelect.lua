@@ -606,14 +606,11 @@ function CharacterSelect_OnEvent(self, event, ...)
         CHARACTER_UNDELETE_COOLDOWN_REMAINING = remaining;
 
         CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown);
-		local tooltipTitle = nil;
         if (not enabled) then
-            CharSelectUndeleteCharacterButton:SetTooltipInfo(tooltipTitle, UNDELETE_TOOLTIP_DISABLED);
+            CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_DISABLED);
         elseif (onCooldown) then
             local timeStr = SecondsToTime(remaining, false, true, 1, false);
-			CharSelectUndeleteCharacterButton:SetTooltipInfo(tooltipTitle, UNDELETE_TOOLTIP_COOLDOWN:format(timeStr));
-        else
-			CharSelectUndeleteCharacterButton:SetTooltipInfo(tooltipTitle, UNDELETE_TOOLTIP);
+			CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_COOLDOWN:format(timeStr));
         end
 	elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
         AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
@@ -2256,7 +2253,6 @@ function CharacterServicesMaster_UpdateServiceButton()
 			remainingTime = expansionTrialRemainingSeconds,
 			hideTimer = true,
 			characterCreateType = Enum.CharacterCreateType.Normal,
-			overrideAtlas = "raceicon128-dracthyr-male",
 		};
 	end
 

@@ -25,6 +25,10 @@ function ProfessionsReagentSlotButtonMixin:Reset()
 	ItemButtonMixin.Reset(self);
 	self.locked = nil;
 	self.currencyID = nil;
+	self:Update();
+end
+
+function ProfessionsReagentSlotButtonMixin:Update()
 	self:UpdateOverlay();
 	self:UpdateCursor();
 end

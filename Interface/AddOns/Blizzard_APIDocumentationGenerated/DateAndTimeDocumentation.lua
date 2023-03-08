@@ -109,6 +109,17 @@ local DateAndTime =
 
 	Tables =
 	{
+		{
+			Name = "TimeEventFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "GlueScreenShortcut", Type = "TimeEventFlag", EnumValue = 1 },
+			},
+		},
 	},
 };
 

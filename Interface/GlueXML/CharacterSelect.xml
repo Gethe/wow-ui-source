@@ -1093,7 +1093,7 @@
 							</Button>
 							<Button name="CharSelectUndeleteCharacterButton" inherits="BigRedRefreshButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
 								<KeyValues>
-									<KeyValue key="tooltipText" value="UNDELETE_TOOLTIP_DISABLED" type="global"/>
+									<KeyValue key="tooltipText" value="UNDELETE_TOOLTIP" type="global"/>
 									<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
 									<KeyValue key="onClickHandler" value="CharacterSelect_StartCharacterUndelete" type="global"/>
 									<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>

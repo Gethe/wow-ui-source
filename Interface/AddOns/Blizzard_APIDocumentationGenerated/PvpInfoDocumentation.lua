@@ -193,6 +193,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetAssignedSpecForBattlefieldQueue",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "queueID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAvailableBrawlInfo",
 			Type = "Function",
 			Documentation = { "If nil is returned, PVP_BRAWL_INFO_UPDATED event will be sent when the data is ready." },

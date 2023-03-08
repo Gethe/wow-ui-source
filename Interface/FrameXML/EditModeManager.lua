@@ -1182,11 +1182,13 @@ end
 
 function EditModeManagerFrameMixin:ShowNewLayoutDialog(layoutData)
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 	EditModeNewLayoutDialog:ShowDialog(layoutData or self:GetActiveLayoutInfo());
 end
 
 function EditModeManagerFrameMixin:ShowImportLayoutDialog()
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 	EditModeImportLayoutDialog:ShowDialog();
 end
 
@@ -1200,6 +1202,7 @@ end
 
 function EditModeManagerFrameMixin:ShowRenameLayoutDialog(layoutButton)
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 
 	local function onAcceptCallback(layoutName)
 		self:RenameLayout(layoutButton.layoutIndex, layoutName);
@@ -1211,6 +1214,7 @@ end
 
 function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutButton)
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 
 	local function onAcceptCallback()
 		self:DeleteLayout(layoutButton.layoutIndex);
@@ -1221,6 +1225,7 @@ function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutButton)
 end
 
 function EditModeManagerFrameMixin:ShowRevertWarningDialog(selectedLayoutIndex)
+	self:ClearSelectedSystem();
 	EditModeUnsavedChangesDialog:ShowDialog(selectedLayoutIndex);
 end
 

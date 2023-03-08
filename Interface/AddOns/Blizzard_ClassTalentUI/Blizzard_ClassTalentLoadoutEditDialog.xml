@@ -18,7 +18,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.ContentArea"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="UsesSharedActionBars" mixin="UseSharedActionBarsMixin">
+			<Button parentKey="UsesSharedActionBars" mixin="UseSharedActionBarsMixin">
 				<Size y="30"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.ContentArea" y="-55"/>
@@ -49,8 +49,9 @@
 				<Scripts>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Button parentKey="AcceptButton" inherits="ClassTalentLoadoutDialogButtonTemplate" text="ACCEPT">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ContentArea"/>

@@ -98,7 +98,7 @@
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="BOTTOM" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="false">

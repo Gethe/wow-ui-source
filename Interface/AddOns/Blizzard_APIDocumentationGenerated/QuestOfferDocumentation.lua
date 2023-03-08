@@ -7,12 +7,12 @@ local QuestOffer =
 	Functions =
 	{
 		{
-			Name = "GetHideRequiredItemsOnTurnIn",
+			Name = "GetHideRequiredItems",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "hideRequiredItemsOnTurnIn", Type = "bool", Nilable = false },
+				{ Name = "hideRequiredItems", Type = "bool", Nilable = false },
 			},
 		},
 		{

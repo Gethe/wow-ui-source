@@ -41,6 +41,13 @@ function BaseLayoutMixin:IgnoreLayoutIndex()
 	return false;
 end
 
+function BaseLayoutMixin:MarkIgnoreInLayout(region, ...)
+	if region then
+		region.ignoreInLayout = true;
+		self:MarkIgnoreInLayout(...);
+	end
+end
+
 local function IsLayoutFrame(f)
 	return f.IsLayoutFrame and f:IsLayoutFrame();
 end
@@ -379,7 +386,7 @@ function GridLayoutFrameMixin:Layout()
 		return;
 	end
 
-	-- Multipliers determine the direction the layout grows for grid layouts 
+	-- Multipliers determine the direction the layout grows for grid layouts
 	-- Positive means right/up
 	-- Negative means left/down
 	local xMultiplier = self.layoutFramesGoingRight and 1 or -1;

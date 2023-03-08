@@ -2193,7 +2193,7 @@ function Class_EatFood:OnBegin(args)
 			TutorialHelper:CloseAllBags();
 
 			self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
-			EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BackpackOpened, self);
+			EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 		end
 	else
 		TutorialManager:Finished(self:Name());

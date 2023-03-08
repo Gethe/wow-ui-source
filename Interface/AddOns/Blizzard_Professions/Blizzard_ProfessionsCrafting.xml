@@ -47,6 +47,7 @@
 			</Button>
 
 			<Frame parentKey="RecipeList" inherits="ProfessionsRecipeListTemplate">
+				<Size x="274"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-72"/>
 					<Anchor point="BOTTOMLEFT" y="5"/>
@@ -73,7 +74,7 @@
 
 			<Frame parentKey="RankBar" frameStrata="HIGH" inherits="ProfessionsRankBarTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="330" y="-40"/>
+					<Anchor point="TOPLEFT" x="280" y="-40"/>
 				</Anchors>
 			</Frame>
 

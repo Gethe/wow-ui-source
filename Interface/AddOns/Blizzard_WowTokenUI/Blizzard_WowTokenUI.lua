@@ -815,11 +815,14 @@ dialogs = {
 			local rafVersion = self.dialogData;
 			if rafVersion and C_RecruitAFriend.ClaimNextReward(rafVersion) then
 				Outbound.RecruitAFriendTryPlayClaimRewardFanfare(rafVersion);
+			else
+				Outbound.RecruitAFriendTryCancelAutoClaim();
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
 		button2 = CANCEL,
 		button2OnClick = function(self)
+			Outbound.RecruitAFriendTryCancelAutoClaim();
 			self:Hide();
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,

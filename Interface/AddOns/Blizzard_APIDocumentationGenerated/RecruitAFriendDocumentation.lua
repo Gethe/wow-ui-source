@@ -151,6 +151,11 @@ local RecruitAFriend =
 			},
 		},
 		{
+			Name = "RafRewardClaimFailed",
+			Type = "Event",
+			LiteralName = "RAF_REWARD_CLAIM_FAILED",
+		},
+		{
 			Name = "RafSystemEnabledStatus",
 			Type = "Event",
 			LiteralName = "RAF_SYSTEM_ENABLED_STATUS",
@@ -341,6 +346,7 @@ local RecruitAFriend =
 				{ Name = "illusionInfo", Type = "RafIllusionInfo", Nilable = true },
 				{ Name = "canClaim", Type = "bool", Nilable = false },
 				{ Name = "claimed", Type = "bool", Nilable = false },
+				{ Name = "canAfford", Type = "bool", Nilable = false },
 				{ Name = "repeatable", Type = "bool", Nilable = false },
 				{ Name = "repeatableClaimCount", Type = "number", Nilable = false },
 				{ Name = "monthsRequired", Type = "number", Nilable = false },
@@ -377,6 +383,7 @@ local RecruitAFriend =
 				{ Name = "monthCount", Type = "RafMonthCount", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
 				{ Name = "nextReward", Type = "RafReward", Nilable = true },
+				{ Name = "numAffordableRewards", Type = "number", Nilable = false },
 				{ Name = "numRecruits", Type = "number", Nilable = false },
 			},
 		},

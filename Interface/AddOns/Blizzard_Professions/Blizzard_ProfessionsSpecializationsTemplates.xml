@@ -182,7 +182,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="240" y="0"/>
+					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Pip" relativePoint="RIGHT" x="15" y="0"/>
 					</Anchors>

@@ -964,6 +964,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.salvageSlot = CreateFrame("FRAME", nil, self, "ProfessionsReagentSalvageTemplate");
 			table.insert(self.extraSlotFrames, self.salvageSlot);
 		end
+
+		self.salvageSlot:Reset();
 		self.salvageSlot:Show();
 		self.salvageSlot:Init(self.transaction, self.recipeSchematic.quantityMax);
 
@@ -1068,6 +1070,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.enchantSlot = CreateFrame("FRAME", nil, self, "ProfessionsReagentEnchantTemplate");
 			table.insert(self.extraSlotFrames, self.enchantSlot);
 		end
+
+		self.enchantSlot:Reset();
 		self.enchantSlot:Show();
 		self.enchantSlot:Init(self.transaction);
 	

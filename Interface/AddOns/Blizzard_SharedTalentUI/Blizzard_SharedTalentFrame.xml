@@ -14,7 +14,7 @@
 		basePanOffsetY: offset Y in the zoom area to start anchoring buttons from.
 		enableZoomAndPan: if zooming and panning should be enabled.
 		excludeStagedChangesForCurrencies: if staged changes should be excluded for currency calculations.
-		maximumCommitTime: temporarily configuration parameter for commits until we replace with an event-driven system.
+		maximumCommitTime: temporary configuration parameter for commits until we replace with an event-driven system.
 		disabledOverlayAlpha: alpha to set the disabled overlay to. It is shown while a commit is in progress.
 		enableCommitCastBar: if overlay player cast bar should be displayed while commit is in progress.
 		enableCommitEndFlash: if background flash should be played on commit completion.
@@ -33,7 +33,7 @@
 			<KeyValue key="basePanOffsetY" value="0" type="number"/>
 			<KeyValue key="enableZoomAndPan" value="true" type="boolean"/>
 			<KeyValue key="excludeStagedChangesForCurrencies" value="false" type="boolean"/>
-			<KeyValue key="maximumCommitTime" value="0.5" type="number"/>
+			<KeyValue key="maximumCommitTime" value="3" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0.4" type="number"/>
 			<KeyValue key="enableCommitCastBar" value="false" type="boolean"/>
 			<KeyValue key="enableCommitSpinner" value="false" type="boolean"/>
