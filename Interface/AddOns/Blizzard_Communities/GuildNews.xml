@@ -353,10 +353,10 @@
 					<Anchor point="TOPLEFT" x="4" y="-25"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-10" y="2"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-9" y="-5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-8" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-8" y="1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

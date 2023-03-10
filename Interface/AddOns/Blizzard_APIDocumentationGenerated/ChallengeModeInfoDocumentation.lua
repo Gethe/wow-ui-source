@@ -12,7 +12,7 @@ local ChallengeModeInfo =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -59,8 +59,8 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "filedataid", Type = "number", Nilable = false },
 			},
 		},
@@ -107,7 +107,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "scoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "scoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -131,7 +131,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "levelScore", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "levelScore", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -163,7 +163,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "timeLimit", Type = "number", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = true },
@@ -218,7 +218,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "specificDungeonOverallScoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -233,7 +233,7 @@ local ChallengeModeInfo =
 
 			Returns =
 			{
-				{ Name = "specificDungeonScoreColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "specificDungeonScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -359,7 +359,7 @@ local ChallengeModeInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "memberGUID", Type = "string", Nilable = false },
+				{ Name = "memberGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 			},
 		},
@@ -369,7 +369,7 @@ local ChallengeModeInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "classFileName", Type = "string", Nilable = false },
+				{ Name = "classFileName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -378,7 +378,7 @@ local ChallengeModeInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "classFileName", Type = "string", Nilable = false },
+				{ Name = "classFileName", Type = "cstring", Nilable = false },
 				{ Name = "keystoneLevel", Type = "number", Nilable = false },
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
 				{ Name = "isYou", Type = "bool", Nilable = false },

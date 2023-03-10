@@ -175,11 +175,11 @@ local TransmogItems =
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
 				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
 				{ Name = "canHaveIllusion", Type = "bool", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "itemLink", Type = "string", Nilable = false },
 				{ Name = "transmoglink", Type = "string", Nilable = false },
-				{ Name = "sourceType", Type = "number", Nilable = true },
+				{ Name = "sourceType", Type = "luaIndex", Nilable = true },
 				{ Name = "itemSubClass", Type = "number", Nilable = false },
 			},
 		},
@@ -191,7 +191,7 @@ local TransmogItems =
 			{
 				{ Name = "appearanceID", Type = "number", Nilable = false },
 				{ Name = "categoryType", Type = "TransmogCollectionType", Nilable = true },
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
 			},
 
 			Returns =
@@ -210,8 +210,8 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -221,7 +221,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
 			},
 
 			Returns =
@@ -268,7 +268,7 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isWeapon", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canHaveIllusions", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canMainHand", Type = "bool", Nilable = false, Default = false },
@@ -352,7 +352,7 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "list", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 		},
 		{
@@ -375,7 +375,7 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -390,12 +390,12 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "list", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 		},
 		{
@@ -432,12 +432,12 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -451,8 +451,8 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -466,7 +466,7 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "list", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "list", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 		},
 		{
@@ -503,7 +503,7 @@ local TransmogItems =
 
 			Returns =
 			{
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -587,7 +587,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -638,7 +638,7 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -662,7 +662,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "outfitID", Type = "number", Nilable = false },
-				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 		},
 		{
@@ -671,9 +671,9 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "itemTransmogInfoList", Type = "table", InnerType = "ItemTransmogInfo", Nilable = false },
 			},
 
 			Returns =
@@ -717,7 +717,7 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -760,7 +760,7 @@ local TransmogItems =
 			Arguments =
 			{
 				{ Name = "outfitID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -862,7 +862,7 @@ local TransmogItems =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "checked", Type = "bool", Nilable = false },
 			},
 		},
@@ -938,11 +938,11 @@ local TransmogItems =
 				{ Name = "category", Type = "TransmogCollectionType", Nilable = false },
 				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
 				{ Name = "canHaveIllusion", Type = "bool", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "itemLink", Type = "string", Nilable = false },
 				{ Name = "transmoglink", Type = "string", Nilable = false },
-				{ Name = "sourceType", Type = "number", Nilable = true },
+				{ Name = "sourceType", Type = "luaIndex", Nilable = true },
 				{ Name = "itemSubClass", Type = "number", Nilable = false },
 			},
 		},
@@ -957,7 +957,7 @@ local TransmogItems =
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
 				{ Name = "exclusions", Type = "number", Nilable = false },
-				{ Name = "restrictedSlotID", Type = "number", Nilable = true },
+				{ Name = "restrictedSlotID", Type = "luaIndex", Nilable = true },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "hasRequiredHoliday", Type = "bool", Nilable = false },
 				{ Name = "hasActiveRequiredHoliday", Type = "bool", Nilable = false },
@@ -969,7 +969,7 @@ local TransmogItems =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isWeapon", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canHaveIllusions", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canMainHand", Type = "bool", Nilable = false, Default = false },
@@ -983,7 +983,7 @@ local TransmogItems =
 			{
 				{ Name = "visualID", Type = "number", Nilable = false },
 				{ Name = "sourceID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
@@ -994,8 +994,8 @@ local TransmogItems =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 			},
 		},
 	},

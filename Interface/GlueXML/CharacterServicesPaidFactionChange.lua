@@ -1,9 +1,10 @@
 local function RequestAssignPFCForResults(results, isValidationOnly)
 	local currentRealmAddress = select(5, GetServerName());
-	return C_CharacterServices.AssignPFCDistribution(
+	return C_CharacterServices.AssignRaceOrFactionChangeDistribution(
 		results.selectedCharacterGUID,
 		"",
-		isValidationOnly
+		isValidationOnly,
+		Enum.ValueAddedServiceType.PaidFactionChange
 	);
 end
 

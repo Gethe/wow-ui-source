@@ -11,7 +11,7 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "sourceFont", Type = "table", Nilable = false },
+				{ Name = "sourceFont", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -24,7 +24,7 @@ local SimpleFontAPI =
 
 			Returns =
 			{
-				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -37,9 +37,9 @@ local SimpleFontAPI =
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -52,7 +52,7 @@ local SimpleFontAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -78,7 +78,7 @@ local SimpleFontAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -91,7 +91,7 @@ local SimpleFontAPI =
 
 			Returns =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -134,7 +134,7 @@ local SimpleFontAPI =
 
 			Returns =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -159,7 +159,7 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -168,9 +168,9 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -179,7 +179,7 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -197,7 +197,7 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -206,7 +206,7 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -218,7 +218,7 @@ local SimpleFontAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -237,7 +237,7 @@ local SimpleFontAPI =
 
 			Arguments =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -249,7 +249,7 @@ local SimpleFontAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 	},

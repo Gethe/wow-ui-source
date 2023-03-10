@@ -5,7 +5,6 @@
 	<Button name="AuraButtonTemplate" mixin="AuraButtonMixin" virtual="true">
 		<Size x="30" y="40"/>
 		<!-- <KeyValues>
-			<KeyValue key="auraType" value="Buff" type="string"/> Can be "Buff", "Debuff", "DeadlyDebuff", "TempEnchant"
 			<KeyValue key="isExample" value="false" type="boolean"/>
 		</KeyValues> -->
 		<Layers>
@@ -168,9 +167,6 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="Debuff" inherits="AuraButtonTemplate">
-				<KeyValues>
-					<KeyValue key="auraType" value="DeadlyDebuff" type="string"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>

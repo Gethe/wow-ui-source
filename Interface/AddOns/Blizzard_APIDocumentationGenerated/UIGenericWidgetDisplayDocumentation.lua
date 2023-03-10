@@ -6,6 +6,14 @@ local UIGenericWidgetDisplay =
 
 	Functions =
 	{
+		{
+			Name = "Acknowledge",
+			Type = "Function",
+		},
+		{
+			Name = "Close",
+			Type = "Function",
+		},
 	},
 
 	Events =
@@ -29,10 +37,12 @@ local UIGenericWidgetDisplay =
 			Fields =
 			{
 				{ Name = "uiWidgetSetID", Type = "number", Nilable = true },
-				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
 				{ Name = "title", Type = "string", Nilable = true },
 				{ Name = "frameWidth", Type = "number", Nilable = false },
 				{ Name = "frameHeight", Type = "number", Nilable = false },
+				{ Name = "extraButtonText", Type = "string", Nilable = true },
+				{ Name = "closeButtonText", Type = "string", Nilable = true },
 			},
 		},
 	},

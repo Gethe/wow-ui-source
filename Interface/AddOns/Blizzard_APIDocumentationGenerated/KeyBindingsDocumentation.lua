@@ -12,12 +12,12 @@ local KeyBindings =
 
 			Arguments =
 			{
-				{ Name = "action", Type = "string", Nilable = false },
+				{ Name = "action", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "bindingIndex", Type = "number", Nilable = true },
+				{ Name = "bindingIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -26,7 +26,7 @@ local KeyBindings =
 
 			Arguments =
 			{
-				{ Name = "bindingIndex", Type = "number", Nilable = false },
+				{ Name = "bindingIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -44,7 +44,7 @@ local KeyBindings =
 			LiteralName = "MODIFIER_STATE_CHANGED",
 			Payload =
 			{
-				{ Name = "key", Type = "string", Nilable = false },
+				{ Name = "key", Type = "cstring", Nilable = false },
 				{ Name = "down", Type = "number", Nilable = false },
 			},
 		},

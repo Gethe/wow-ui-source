@@ -22,65 +22,26 @@
 		<Frames>
 			<ScrollingMessageFrame parentKey="CombatLogMessageFrame" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-12"/>
+					<Anchor point="TOPLEFT" x="8" y="-8"/>
 					<Anchor point="BOTTOMRIGHT" x="-18" y="12"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1">
-						<Size x="10" y="0"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="8" y="-30"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="8" y="30"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG" atlas="Soulbinds_Collection_Scrollbar_Background" useAtlasSize="true"/>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOPRIGHT" x="7" y="37"/>
-										<Anchor point="BOTTOMRIGHT" x="7" y="-37"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="ScrollUp" registerForClicks="LeftButtonDown" inherits="OribosScrollUpButtonTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativePoint="TOP" x="0" y="20"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():GetParent():ScrollByAmount(3);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button parentKey="ScrollDown" registerForClicks="LeftButtonDown" inherits="OribosScrollDownButtonTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="-20"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():GetParent():ScrollByAmount(-3);
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-						<Scripts>
-							<OnValueChanged function="ScrollingMessageFrameScrollBar_OnValueChanged"/>
-						</Scripts>
-						<ThumbTexture name="$parentThumbTexture" atlas="Soulbinds_Collection_Scrollbar_Thumb_Wide" parentKey="thumbTexture">
-							<Size x="10" y="24"/>
-						</ThumbTexture>
-					</Slider>
-				</Frames>
-				<Scripts>
-					<OnMouseWheel>
-						self:ScrollByAmount(delta * 3);
-					</OnMouseWheel>
-				</Scripts>
 			</ScrollingMessageFrame>
+			<EventFrame parentKey="ScrollBar" inherits="OribosScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CombatLogMessageFrame" relativePoint="TOPRIGHT" x="8" y="-12"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.CombatLogMessageFrame" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Soulbinds_Collection_Scrollbar_Backplate" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="6" y="15"/>
+								<Anchor point="BOTTOMRIGHT" x="7" y="-12"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</EventFrame>
 			<Frame parentKey="ElevatedFrame" frameLevel="50" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="5">

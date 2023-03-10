@@ -35,7 +35,7 @@ local Tutorial =
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "tutorialGlobalStringTag", Type = "string", Nilable = false },
+				{ Name = "tutorialGlobalStringTag", Type = "cstring", Nilable = false },
 			},
 		},
 		{

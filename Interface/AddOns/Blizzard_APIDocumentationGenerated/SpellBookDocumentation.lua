@@ -71,7 +71,7 @@ local SpellBook =
 
 			Returns =
 			{
-				{ Name = "skillIndex", Type = "number", Nilable = true },
+				{ Name = "skillIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -164,7 +164,7 @@ local SpellBook =
 			LiteralName = "PLAYER_TOTEM_UPDATE",
 			Payload =
 			{
-				{ Name = "totemSlot", Type = "number", Nilable = false },
+				{ Name = "totemSlot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -239,9 +239,9 @@ local SpellBook =
 			LiteralName = "UNIT_SPELLCAST_SENT",
 			Payload =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "target", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "cstring", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -286,7 +286,7 @@ local SpellBook =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "iconID", Type = "number", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
 				{ Name = "castTime", Type = "number", Nilable = false },
 				{ Name = "minRange", Type = "number", Nilable = false },
 				{ Name = "maxRange", Type = "number", Nilable = false },

@@ -255,7 +255,12 @@
 				</Scripts>
 				<NormalTexture file="Interface\RaidFrame\Raid-Move-Down"/>
 			</Button>
-			<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="7" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-2" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="0" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-28" y="7"/>
@@ -265,17 +270,6 @@
 						<Size x="1" y="1"/>
 					</Frame>
 				</ScrollChild>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="ScrollBarBackground">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBar.ScrollUpButton" relativePoint="TOPLEFT" x="-2" y="2"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar.ScrollDownButton" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
-							</Anchors>
-							<Color r="0" g="0" b="0"/>
-						</Texture>
-					</Layer>
-				</Layers>
 			</ScrollFrame>
 		</Frames>
 		<Scripts>

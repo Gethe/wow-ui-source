@@ -210,8 +210,6 @@
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
-			<KeyValue key="minimumWidth" value="230" type="number"/>
-			<KeyValue key="minimumHeight" value="30" type="number"/>
 		</KeyValues>
 	</Frame>
 

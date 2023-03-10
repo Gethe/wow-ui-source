@@ -1,3 +1,28 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+	Import("table");
+	Import("math");
+	Import("ipairs");
+	Import("pairs");
+end
+---------------
+
 local tRemove = table.remove;
 local tInsert = table.insert;
 local tWipe = table.wipe;
@@ -22,13 +47,13 @@ function ipairs_reverse(table)
 	return Enumerator, table, #table + 1;
 end
 
-function CreateTableEnumerator(tbl, indexBegin, indexEnd)
-	indexBegin = indexBegin and (indexBegin - 1) or 0;
-	indexEnd = indexEnd or math.huge;
+function CreateTableEnumerator(tbl, minIndex, maxIndex)
+	minIndex = minIndex and (minIndex - 1) or 0;
+	maxIndex = maxIndex or math.huge;
 
 	local function Enumerator(tbl, index)
 		index = index + 1;
-		if index <= indexEnd then
+		if index <= maxIndex then
 			local value = tbl[index];
 			if value ~= nil then
 				return index, value;
@@ -36,7 +61,24 @@ function CreateTableEnumerator(tbl, indexBegin, indexEnd)
 		end
 	end
 
-	return Enumerator, tbl, indexBegin;
+	return Enumerator, tbl, minIndex;
+end
+
+function CreateTableReverseEnumerator(tbl, minIndex, maxIndex)
+	minIndex = minIndex or 1;
+	maxIndex = (maxIndex or #tbl) + 1;
+
+	local function Enumerator(tbl, index)
+		index = index - 1;
+		if index >= minIndex then
+			local value = tbl[index];
+			if value ~= nil then
+				return index, value;
+			end
+		end
+	end
+
+	return Enumerator, tbl, maxIndex;
 end
 
 function tDeleteItem(tbl, item)
@@ -238,14 +280,6 @@ function TableUtil.Execute(tbl, op)
 	end
 end
 
-function TableUtil.Map(tbl, op)
-	local result = {};
-	for k, v in pairs(tbl) do
-		table.insert(result, op(v));
-	end
-	return result;
-end
-
 function TableUtil.ExecuteUntil(tbl, op)
 	for k, v in pairs(tbl) do
 		local operationResult = op(v);
@@ -255,6 +289,14 @@ function TableUtil.ExecuteUntil(tbl, op)
 	end
 
 	return nil;
+end
+
+function TableUtil.Transform(tbl, op)
+	local result = {};
+	for k, v in pairs(tbl) do
+		table.insert(result, op(v));
+		return result;
+	end
 end
 
 function ContainsIf(tbl, pred)

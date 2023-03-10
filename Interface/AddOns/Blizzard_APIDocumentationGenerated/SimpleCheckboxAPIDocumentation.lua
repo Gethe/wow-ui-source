@@ -28,7 +28,7 @@ local SimpleCheckboxAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -41,7 +41,7 @@ local SimpleCheckboxAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -59,7 +59,7 @@ local SimpleCheckboxAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -68,7 +68,7 @@ local SimpleCheckboxAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 	},

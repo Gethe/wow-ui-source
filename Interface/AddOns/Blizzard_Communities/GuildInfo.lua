@@ -60,7 +60,6 @@ function CommunitiesGuildInfoFrame_UpdateText(self, infoText)
 	self.MOTDScrollFrame.MOTD:SetText(GetGuildRosterMOTD(), true); --Extra argument ignores markup.
 	self.DetailsFrame:GetScrollChild().Details:SetText(infoText or GetGuildInfoText());
 	self.DetailsFrame:SetVerticalScroll(0);
-	self.DetailsFrame.ScrollBar.ScrollUpButton:Disable();
 end
 
 local CHALLENGE_ORDER = { 1, 4, 2, 3, };
@@ -107,7 +106,7 @@ end
 
 function CommunitiesGuildTextEditFrame_SetType(self, editType, guildInfoFrame)
 	if ( editType == "motd" ) then
-		self:SetHeight(162);
+		self:SetHeight(200);
 		self.Container.ScrollFrame.EditBox:SetMaxLetters(255);
 		self.Container.ScrollFrame.EditBox:SetText(GetGuildRosterMOTD());
 		self.Title:SetText(GUILD_MOTD_EDITLABEL);
@@ -139,7 +138,6 @@ end
 
 function CommunitiesGuildLogFrame_OnLoad(self)
 	self.Container.ScrollFrame.Child.HTMLFrame:SetSpacing("P", 2);
-	ScrollBar_AdjustAnchors(self.Container.ScrollFrame.ScrollBar, 0, -2);
 	self:RegisterEvent("GUILD_EVENT_LOG_UPDATE");
 end
 

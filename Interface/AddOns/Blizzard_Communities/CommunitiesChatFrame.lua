@@ -25,6 +25,19 @@ function CommunitiesChatMixin:OnLoad()
 	self.pendingMemberInfo = {};
 	self.broadcastSent = {};
 	self.eventsSent = {};
+
+	self.MessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
+		if not (messageFrame:GetNumMessages() < MAX_NUM_CHAT_LINES) then
+			return;
+		end
+
+		local offsetToFront = messageFrame:GetNumMessages() - offset;
+		if offsetToFront <= REQUEST_MORE_MESSAGES_THRESHOLD then
+			self:RequestMoreHistory();
+		end
+	end);
+
+	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self.MessageFrame, self.ScrollBar);
 end
 
 function CommunitiesChatMixin:OnShow()
@@ -42,7 +55,6 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() and streamId == self:GetCommunitiesFrame():GetSelectedStreamId() then
 			local message = C_Club.GetMessageInfo(clubId, streamId, messageId);
 			self:AddMessage(clubId, streamId, message);
-			self:UpdateScrollbar();
 		end
 	elseif event == "CLUB_MESSAGE_HISTORY_RECEIVED" then
 		local clubId, streamId, downloadedRange, contiguousRange = ...;
@@ -207,8 +219,6 @@ function CommunitiesChatMixin:BackfillMessages(maxCount)
 	end
 	
 	self.messageRangeOldest = messages[1].messageId;
-	
-	self:UpdateScrollbar();
 end
 
 function CommunitiesChatMixin:DisplayChat()
@@ -246,14 +256,6 @@ function CommunitiesChatMixin:DisplayChat()
 	self:AddOngoingEventMessages(clubId);
 	
 	C_Club.AdvanceStreamViewMarker(clubId, streamId);
-	self:UpdateScrollbar();
-end
-
-function CommunitiesChatMixin:UpdateScrollbar()
-	local numMessages = self.MessageFrame:GetNumMessages();
-	local maxValue = math.max(numMessages, 1);
-	self.MessageFrame.ScrollBar:SetMinMaxValues(1, maxValue);
-	self.MessageFrame.ScrollBar:SetValue(maxValue - self.MessageFrame:GetScrollOffset());
 end
 
 function CommunitiesChatMixin:UpdateChatColor()
@@ -479,33 +481,6 @@ end
 function CommunitiesChatEditBox_OnHide(self)
 	if ChatFrame_GetChatFocusOverride() == self then
 		ChatFrame_ClearChatFocusOverride();
-	end
-end
-
-function CommunitiesChatFrameScrollBar_OnValueChanged(self, value, userInput)
-	self.ScrollUp:Enable();
-	self.ScrollDown:Enable();
-
-	local minVal, maxVal = self:GetMinMaxValues();
-	if value >= maxVal then
-		self.thumbTexture:Show();
-		self.ScrollDown:Disable()
-	end
-	if value <= minVal then
-		self.thumbTexture:Show();
-		self.ScrollUp:Disable();
-	end
-	
-	if userInput then
-		self:GetParent():SetScrollOffset(maxVal - value);
-	end
-	
-	local communitiesChatFrame = self:GetParent():GetParent();
-	-- If we don't have many messages left, request more from the server.
-	-- TODO:: We should support for viewing more messages beyond what we can display at one time.
-	-- This will require support for requesting more messages as we scroll back down to the most recent messages.
-	if value <= REQUEST_MORE_MESSAGES_THRESHOLD and communitiesChatFrame.MessageFrame:GetNumMessages() < MAX_NUM_CHAT_LINES then
-		communitiesChatFrame:RequestMoreHistory();
 	end
 end
 

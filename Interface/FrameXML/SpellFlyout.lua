@@ -221,7 +221,6 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local oldIsActionBar = self.isActionBar;
 
 	local _, _, numSlots, isKnown = GetFlyoutInfo(flyoutID);
-	local actionBar = parent:GetParent();
 	self:SetParent(parent);
 	self.isActionBar = isActionBar;
 
@@ -237,7 +236,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 
 	-- If you're on an action bar then base your direction on the action bar's orientation and position
 	if (isActionBar) then
-		direction = actionBar:GetSpellFlyoutDirection();
+		direction = parent.bar:GetSpellFlyoutDirection();
 	end
 
 	-- Update all spell buttons for this flyout

@@ -19,7 +19,7 @@ local function SetTabTitleWithCount(tabButton, type, count)
 	end
 end
 
-ProfessionsCrafterOrderListElementMixin = CreateFromMixins(ScrollListLineMixin, TableBuilderRowMixin);
+ProfessionsCrafterOrderListElementMixin = CreateFromMixins(TableBuilderRowMixin);
 
 function ProfessionsCrafterOrderListElementMixin:OnLineEnter()
 	self.HighlightTexture:Show();

@@ -10,7 +10,7 @@ local GARRISON_FOLLOWER_FLOATING_TOOLTIP = {};
 function FloatingGarrisonFollower_Toggle(garrisonFollowerID, quality, level, itemLevel, spec1, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4)
 	local followerTypeID = C_Garrison.GetFollowerTypeByID(garrisonFollowerID);
 	local floatingTooltip = FloatingGarrisonFollowerTooltip;
-	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 		floatingTooltip = FloatingGarrisonShipyardFollowerTooltip;
 	end
 	if ( floatingTooltip:IsShown() and
@@ -47,7 +47,7 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroop(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.autoCombatSpells = GarrAutoCombatUtil.GetFollowerAutoCombatSpells(garrisonFollowerID, level, true --[[ includeAutoAttack ]]);
 
-		if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+		if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 			GarrisonFollowerTooltipTemplate_SetShipyardFollower(floatingTooltip, GARRISON_FOLLOWER_FLOATING_TOOLTIP);
 		else
 			GarrisonFollowerTooltipTemplate_SetGarrisonFollower(floatingTooltip, GARRISON_FOLLOWER_FLOATING_TOOLTIP);
@@ -63,7 +63,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.iLevel);
 	tooltipFrame.PortraitFrame:SetupPortrait(data, false);
 
-	local isAutoCombatant = data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+	local isAutoCombatant = data.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower;
 
 	if ( data.spec ) then
 		local classSpecName = C_Garrison.GetFollowerClassSpecName(data.garrisonFollowerID);
@@ -551,7 +551,7 @@ function FloatingGarrisonFollowerAbility_Toggle(garrFollowerAbilityID)
 end
 
 function FloatingGarrisonFollowerAbility_Show(garrFollowerAbilityID)
-	GarrisonFollowerAbilityTooltipTemplate_SetAbility(FloatingGarrisonFollowerAbilityTooltip, garrFollowerAbilityID, Enum.GarrisonFollowerType.FollowerType_6_0)
+	GarrisonFollowerAbilityTooltipTemplate_SetAbility(FloatingGarrisonFollowerAbilityTooltip, garrFollowerAbilityID, Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower)
 end
 
 function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFollowerAbilityID, followerTypeID)
@@ -602,7 +602,7 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 				tooltipFrame.CounterIcon:SetTexture(abilityCounterMechanicIcon);
 				tooltipFrame.CounterIcon:Show();
 				tooltipFrame.CounterIconBorder:Show();
-				if ( abilityCounterFactor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+				if ( abilityCounterFactor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 					tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
 				else
 					tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
@@ -634,9 +634,9 @@ function FloatingGarrisonMission_Show(garrMissionID, garrMissionDBID)
 	FloatingGarrisonMissionTooltip.garrMissionDBID = garrMissionDBID;
 	FloatingGarrisonMissionTooltip.Name:SetText(C_Garrison.GetMissionName(garrMissionID));
 	local followerTypeID = C_Garrison.GetFollowerTypeByMissionID(garrMissionID);
-	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+	if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 		FloatingGarrisonMissionTooltip.FollowerRequirement:SetFormattedText(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, C_Garrison.GetMissionMaxFollowers(garrMissionID), 1, 1, 1);
-	elseif followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+	elseif followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 		FloatingGarrisonMissionTooltip.FollowerRequirement:SetText(COVENANT_MISSIONS_COVENANT_ADVENTURE, WHITE_FONT_COLOR);
 	else
 		FloatingGarrisonMissionTooltip.FollowerRequirement:SetFormattedText(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, C_Garrison.GetMissionMaxFollowers(garrMissionID), 1, 1, 1);

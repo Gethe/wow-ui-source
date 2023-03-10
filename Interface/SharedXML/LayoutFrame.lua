@@ -41,6 +41,13 @@ function BaseLayoutMixin:IgnoreLayoutIndex()
 	return false;
 end
 
+function BaseLayoutMixin:MarkIgnoreInLayout(region, ...)
+	if region then
+		region.ignoreInLayout = true;
+		self:MarkIgnoreInLayout(...);
+	end
+end
+
 local function IsLayoutFrame(f)
 	return f.IsLayoutFrame and f:IsLayoutFrame();
 end
@@ -357,6 +364,7 @@ function ResizeLayoutMixin:Layout()
 	if left and right and top and bottom then
 		local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
 		local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
+
 		self:SetSize(width, height);
 	end
 
@@ -379,7 +387,7 @@ function GridLayoutFrameMixin:Layout()
 		return;
 	end
 
-	-- Multipliers determine the direction the layout grows for grid layouts 
+	-- Multipliers determine the direction the layout grows for grid layouts
 	-- Positive means right/up
 	-- Negative means left/down
 	local xMultiplier = self.layoutFramesGoingRight and 1 or -1;
@@ -423,6 +431,10 @@ function GridLayoutFrameMixin:ShouldUpdateLayout(layoutChildren)
     if not self:IsShown() then
         return false;
     end
+
+	if self.alwaysUpdateLayout then
+		return true;
+	end
 
     if self.oldGridSettings == nil then
         return true;

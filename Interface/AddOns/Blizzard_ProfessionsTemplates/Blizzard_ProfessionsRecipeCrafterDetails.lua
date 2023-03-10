@@ -200,6 +200,18 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 	self.QualityMeter.Right:SetScript("OnLeave", GameTooltip_Hide);
 end
 
+function ProfessionsRecipeCrafterDetailsMixin:SetMaximized()
+	if self.ApplyLayout then
+		self.ApplyLayout();
+	end
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:SetMinimized()
+	if self.ApplyLayout then
+		self.ApplyLayout();
+	end
+end
+
 function ProfessionsRecipeCrafterDetailsMixin:SetQualityMeterAnimSpeedMultiplier(animSpeedMultiplier)
 	self.animSpeedMultiplier = animSpeedMultiplier;
 end
@@ -259,6 +271,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, h
 
 	self:SetOutputItemName(recipeInfo.name);
 	self.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
+	self.FinishingReagentSlotContainer.shouldShow = hasFinishingSlots;
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:HasData()
@@ -282,41 +295,83 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		end
 	end
 	self.craftingQuality = nextCraftingQuality;
-
-	local professionType = isGatheringRecipe and Professions.ProfessionType.Gathering or Professions.ProfessionType.Crafting;
-	self.Label:SetText(detailsPanelTitles[professionType]);
 	self.operationInfo = operationInfo;
 
-	self.statLinePool:ReleaseAll();
+	self.ApplyLayout = function()
+		if self.recipeInfo == nil then
+			return;
+		end
 
-	self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
-	self.StatLines.DifficultyStatLine:SetProfessionType(professionType);
-	self.StatLines.SkillStatLine:SetShown(supportsQualities or isGatheringRecipe);
-	self.StatLines.SkillStatLine:SetProfessionType(professionType);
-	if supportsQualities or isGatheringRecipe then
-		self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
-		self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
-	end
-	
-	local nextStatLineIndex = 3;
-	for _, bonusStat in ipairs(operationInfo.bonusStats) do
-		local statLine = self.statLinePool:Acquire();
-		statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
-		statLine.layoutIndex = nextStatLineIndex;
-		statLine:Show();
+		self.statLinePool:ReleaseAll();
+		
+		if Professions.IsCraftingMinimized() then
+			self.BackgroundTop:Hide();
+			self.BackgroundBottom:Hide();
+			self.BackgroundMiddle:Hide();
+			self.BackgroundMinimized:Show();
 
-		nextStatLineIndex = nextStatLineIndex + 1;
-	end
+			self.Label:Hide();
+			self.Line:Hide();
+			self.StatLines.DifficultyStatLine:Hide();
+			self.StatLines.SkillStatLine:Hide();
+			self.FinishingReagentSlotContainer:Hide();
 
-	self.StatLines:Layout();
-	
-	self.QualityMeter:SetShown(supportsQualities);
-	self.Spacer:SetShown(not supportsQualities);
-	if supportsQualities then
-		self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
-	end
+			self.QualityMeter.layoutIndex = 1;
+			self.QualityMeter.topPadding = 17;
+			self.minimumHeight = 125;
+			self.maximumHeight = 125;
+		else
+			self.BackgroundTop:Show();
+			self.BackgroundBottom:Show();
+			self.BackgroundMiddle:Show();
+			self.BackgroundMinimized:Hide();
 
-	self:Layout();
+			local professionType = isGatheringRecipe and Professions.ProfessionType.Gathering or Professions.ProfessionType.Crafting;
+			self.Label:SetText(detailsPanelTitles[professionType]);
+			self.Label:Show();
+			self.Line:Show();
+
+			if self.FinishingReagentSlotContainer.shouldShow then
+				self.FinishingReagentSlotContainer:Show();
+			end
+
+			self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
+			self.StatLines.DifficultyStatLine:SetProfessionType(professionType);
+			self.StatLines.SkillStatLine:SetShown(supportsQualities or isGatheringRecipe);
+			self.StatLines.SkillStatLine:SetProfessionType(professionType);
+			if supportsQualities or isGatheringRecipe then
+				self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
+				self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
+			end
+			
+			local nextStatLineIndex = 3;
+			for _, bonusStat in ipairs(operationInfo.bonusStats) do
+				local statLine = self.statLinePool:Acquire();
+				statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
+				statLine.layoutIndex = nextStatLineIndex;
+				statLine:Show();
+
+				nextStatLineIndex = nextStatLineIndex + 1;
+			end
+
+			self.QualityMeter.layoutIndex = 4;
+			self.QualityMeter.topPadding = -4;
+			self.minimumHeight = 199;
+			self.maximumHeight = nil;
+		end
+
+		self.StatLines:Layout();
+
+		self.QualityMeter:SetShown(supportsQualities);
+		self.Spacer:SetShown(not supportsQualities);
+		if supportsQualities then
+			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
+		end
+
+		self:Layout();
+	end;
+
+	self.ApplyLayout();
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetOutputItemName(itemName)

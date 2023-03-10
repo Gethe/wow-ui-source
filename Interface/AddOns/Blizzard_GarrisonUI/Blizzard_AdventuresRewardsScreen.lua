@@ -10,7 +10,7 @@ local CovenantVictorySoundKits = {
 };
 
 function AdventuresRewardsScreenMixin:OnLoad() 
-	followerXPTable = C_Garrison.GetFollowerXPTable(Enum.GarrisonFollowerType.FollowerType_9_0);
+	followerXPTable = C_Garrison.GetFollowerXPTable(Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
 	self.rewardsPool = CreateFramePool("FRAME", self.FinalRewardsPanel.SpoilsFrame.RewardsEarnedFrame, "GarrisonMissionListButtonRewardTemplate");
 	self.followerPool = CreateFramePool("FRAME", self.FinalRewardsPanel.SpoilsFrame.FollowerExperienceEarnedFrame, "AdventuresRewardsPaddedFollower");
 end

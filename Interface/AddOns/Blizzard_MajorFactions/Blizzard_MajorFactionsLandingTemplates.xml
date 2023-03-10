@@ -5,17 +5,17 @@
 	<Frame name="LandingPageMajorFactionListTemplate" mixin="MajorFactionListMixin" virtual="true" scale="0.875">
 		<Size x="450" y="520"/>
 		<Frames>
-			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" scale="0.875">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="BOTTOMRIGHT" y="80"/>
 				</Anchors>
 			</Frame>
 
-			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="5" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="5" y="70"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
@@ -27,7 +27,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin" scale="0.875">
+	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin">
 		<Size x="458" y="122"/>
 		<Frames>
 			<Frame parentKey="LockedState" mixin="MajorFactionButtonLockedStateMixin">

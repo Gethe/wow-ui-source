@@ -147,7 +147,12 @@ function ItemUpgradeMixin:Update(fromDropDown)
 
 	HideDropDownMenu(1);
 	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
-	UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel));
+	
+	if self.upgradeInfo.customUpgradeString then
+		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(self.upgradeInfo.customUpgradeString, self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
+	else
+		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
+	end
 
 	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
 	self.upgradeInfo.targetQualityColor = self.targetUpgradeLevelInfo and ITEM_QUALITY_COLORS[self.targetUpgradeLevelInfo.displayQuality].color;
@@ -408,7 +413,11 @@ function ItemUpgradeMixin:InitDropdown()
 
 	local info = UIDropDownMenu_CreateInfo();
 	for i = currUpgradeLevel + 1, maxUpgradeLevel do
-		info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i);
+		if self.upgradeInfo.customUpgradeString then
+			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(self.upgradeInfo.customUpgradeString, i, maxUpgradeLevel);
+		else
+			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i, maxUpgradeLevel);
+		end
 		info.value = i;
 		info.notCheckable = true;
 		info.minWidth = 120;
@@ -547,10 +556,15 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel), false);
 	end
 
+	local upgradeLevel = upgradeInfo.currUpgrade;
 	if isUpgrade then
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade + numUpgradeLevels, upgradeInfo.maxUpgrade), false);
+		upgradeLevel = upgradeLevel + numUpgradeLevels;
+	end
+
+	if upgradeInfo.customUpgradeString then
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT_STRING:format(upgradeInfo.customUpgradeString, upgradeLevel, upgradeInfo.maxUpgrade), false);
 	else
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade), false);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeLevel, upgradeInfo.maxUpgrade), false);
 	end
 
 	-- Stats ----------------------------------------------------------------------------------------------

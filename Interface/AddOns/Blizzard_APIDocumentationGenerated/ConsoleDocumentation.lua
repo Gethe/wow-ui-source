@@ -26,7 +26,7 @@ local Console =
 
 			Returns =
 			{
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -44,7 +44,7 @@ local Console =
 
 			Arguments =
 			{
-				{ Name = "partialCommandText", Type = "string", Nilable = false },
+				{ Name = "partialCommandText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -81,7 +81,7 @@ local Console =
 			LiteralName = "CONSOLE_LOG",
 			Payload =
 			{
-				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "message", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -90,7 +90,7 @@ local Console =
 			LiteralName = "CONSOLE_MESSAGE",
 			Payload =
 			{
-				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "message", Type = "cstring", Nilable = false },
 				{ Name = "colorType", Type = "number", Nilable = false },
 			},
 		},
@@ -100,8 +100,8 @@ local Console =
 			LiteralName = "CVAR_UPDATE",
 			Payload =
 			{
-				{ Name = "eventName", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = false },
+				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -110,7 +110,7 @@ local Console =
 			LiteralName = "GLUE_CONSOLE_LOG",
 			Payload =
 			{
-				{ Name = "message", Type = "string", Nilable = false },
+				{ Name = "message", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -188,12 +188,12 @@ local Console =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "command", Type = "string", Nilable = false },
-				{ Name = "help", Type = "string", Nilable = false },
+				{ Name = "command", Type = "cstring", Nilable = false },
+				{ Name = "help", Type = "cstring", Nilable = false },
 				{ Name = "category", Type = "ConsoleCategory", Nilable = false },
 				{ Name = "commandType", Type = "ConsoleCommandType", Nilable = false },
-				{ Name = "scriptContents", Type = "string", Nilable = false },
-				{ Name = "scriptParameters", Type = "string", Nilable = false },
+				{ Name = "scriptContents", Type = "cstring", Nilable = false },
+				{ Name = "scriptParameters", Type = "cstring", Nilable = false },
 			},
 		},
 	},

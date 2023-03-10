@@ -84,14 +84,14 @@ end
 function AdventureMap_ZoneSummaryProviderMixin:GatherMissions()
 	self.missionsByZone = {};
 	local mapAreaID = self:GetMap():GetMapID();
-	local currentMissions = C_Garrison.GetAvailableMissions(nil, Enum.GarrisonFollowerType.FollowerType_7_0);
+	local currentMissions = C_Garrison.GetAvailableMissions(nil, Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower);
 	if currentMissions then
 		for i, missionInfo in pairs(currentMissions) do
 			TryAddItem(mapAreaID, self.missionsByZone, missionInfo.mapPosX, missionInfo.mapPosY, missionInfo);
 		end
 	end
 
-	local inProgressMissions = C_Garrison.GetInProgressMissions(Enum.GarrisonFollowerType.FollowerType_7_0);
+	local inProgressMissions = C_Garrison.GetInProgressMissions(Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower);
 	if inProgressMissions then
 		for i, missionInfo in pairs(inProgressMissions) do
 			TryAddItem(mapAreaID, self.missionsByZone, missionInfo.mapPosX, missionInfo.mapPosY, missionInfo);

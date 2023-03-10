@@ -77,17 +77,20 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
 };
 
 local FrameSpecificDefaults = {
-	itemSlotOffsetY = 0,
+	itemSlotOffsetY = -20,
 	glowOverLayOffsetY = 0,
-	descriptionOffset = -65,
+	descriptionOffset = 38,
 	tutorialBitFlag = nil,
+	costDisplayOffsetY = -100;
 };
 
 local FrameSpecificOverrides = {
 	[Enum.UIItemInteractionType.CleanseCorruption] = {
 		tutorialBitFlag = LE_FRAME_TUTORIAL_CORRUPTION_CLEANSER,
 		glowOverLayOffsetY = 7,
-		descriptionOffset = -74,
+		itemSlotOffsetY = 0,
+		descriptionOffset = 75,
+		costDisplayOffsetY = -80;
 	},
 
 	[Enum.UIItemInteractionType.RunecarverScrapping] = {
@@ -97,8 +100,6 @@ local FrameSpecificOverrides = {
 	},
 
 	[Enum.UIItemInteractionType.ItemConversion] = {
-		itemSlotOffsetY = 17,
-		descriptionOffset = -74,
 	},
 };
 
@@ -352,6 +353,9 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 
 	self.Description:ClearAllPoints();
 	self.Description:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
+
+	self.CurrencyCost:ClearAllPoints();
+	self.CurrencyCost:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("costDisplayOffsetY"));
 end
 
 -- The 9.2 "Item Conversion" interaction requires two currencies from the player: A flat cost of 1 "Charge" and an extended currency cost of X "Cosmic Flux" depending on the armor slot (gloves, legs, etc)
@@ -414,6 +418,7 @@ function ItemInteractionMixin:UpdateCostFrame()
 	elseif (costsMoney) then
 		self:UpdateMoney();
 	end
+	self.CurrencyCost:SetShown(costsCurrency);
 	buttonFrame.Currency:SetShown(costsCurrency);
 	buttonFrame.MoneyFrame:SetShown(costsMoney);
 	buttonFrame.BlackBorder:SetShown(hasPrice);
@@ -438,13 +443,18 @@ function ItemInteractionMixin:UpdateCurrency()
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
 	local amount = currencyInfo.quantity;
 	local currencyTexture = currencyInfo.iconFileID;
+
 	self.ButtonFrame.Currency.currencyID = self.currencyTypeId;
 	self.ButtonFrame.Currency.Icon:SetTexture(currencyTexture);
-	self.ButtonFrame.Currency.Count:SetText(self.cost);
+	self.ButtonFrame.Currency.Count:SetText(amount);
+
+	self.CurrencyCost.Currency.currencyID = self.currencyTypeId;
+	self.CurrencyCost.Currency.Icon:SetTexture(currencyTexture);
+	self.CurrencyCost.Currency.Count:SetText(self.cost);
 	if (self.cost > amount) then
-		self.ButtonFrame.Currency.Count:SetTextColor(RED_FONT_COLOR:GetRGB());
+		self.CurrencyCost.Currency.Count:SetTextColor(RED_FONT_COLOR:GetRGB());
 	else
-		self.ButtonFrame.Currency.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.CurrencyCost.Currency.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
 	self:UpdateActionButtonState();
 end
@@ -590,9 +600,11 @@ function ItemInteractionMixin:SetItemConversionExtendedCurrencyCost(itemLocation
 
 	if (self.currencyTypeId and self.cost) then
 		self:UpdateCurrency();
-		self.ButtonFrame.Currency:SetShown(true);
+		self.ButtonFrame.Currency:Show();
+		self.CurrencyCost:Show();
 	else
-		self.ButtonFrame.Currency:SetShown(false);
+		self.ButtonFrame.Currency:Hide();
+		self.CurrencyCost:Hide();
 	end
 end
 

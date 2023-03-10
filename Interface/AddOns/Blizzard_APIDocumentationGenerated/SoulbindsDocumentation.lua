@@ -27,7 +27,7 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
-				{ Name = "errorDescription", Type = "string", Nilable = true },
+				{ Name = "errorDescription", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -51,7 +51,7 @@ local Soulbinds =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
-				{ Name = "errorDescription", Type = "string", Nilable = true },
+				{ Name = "errorDescription", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -231,7 +231,7 @@ local Soulbinds =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -434,7 +434,7 @@ local Soulbinds =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -622,7 +622,7 @@ local Soulbinds =
 				{ Name = "conduitType", Type = "SoulbindConduitType", Nilable = false },
 				{ Name = "conduitSpecSetID", Type = "number", Nilable = false },
 				{ Name = "conduitSpecIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "conduitSpecName", Type = "string", Nilable = true },
+				{ Name = "conduitSpecName", Type = "cstring", Nilable = true },
 				{ Name = "covenantID", Type = "number", Nilable = true },
 				{ Name = "conduitItemID", Type = "number", Nilable = false },
 			},
@@ -643,15 +643,15 @@ local Soulbinds =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "covenantID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "unlocked", Type = "bool", Nilable = false },
-				{ Name = "cvarIndex", Type = "number", Nilable = false },
+				{ Name = "cvarIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "tree", Type = "SoulbindTree", Nilable = false },
 				{ Name = "modelSceneData", Type = "SoulbindModelSceneData", Nilable = false },
 				{ Name = "activationSoundKitID", Type = "number", Nilable = false },
-				{ Name = "playerConditionReason", Type = "string", Nilable = true },
+				{ Name = "playerConditionReason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -671,9 +671,9 @@ local Soulbinds =
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "row", Type = "number", Nilable = false },
 				{ Name = "column", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "playerConditionReason", Type = "string", Nilable = true },
+				{ Name = "playerConditionReason", Type = "cstring", Nilable = true },
 				{ Name = "conduitID", Type = "number", Nilable = false },
 				{ Name = "conduitRank", Type = "number", Nilable = false },
 				{ Name = "state", Type = "SoulbindNodeState", Nilable = false },

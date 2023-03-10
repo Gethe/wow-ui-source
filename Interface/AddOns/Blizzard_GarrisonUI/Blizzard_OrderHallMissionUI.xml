@@ -260,7 +260,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_7_0" type="global"/>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoadMainFrame"/>

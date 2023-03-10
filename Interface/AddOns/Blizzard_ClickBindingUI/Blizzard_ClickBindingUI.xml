@@ -166,10 +166,10 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBoxBackground" relativePoint="BOTTOMRIGHT" x="-5" y ="5"/>
 				</Anchors>
 			</Button>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="TOPRIGHT" x="0" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="TOPRIGHT" x="5" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 				</Anchors>
 			</EventFrame>
 			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">

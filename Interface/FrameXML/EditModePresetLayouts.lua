@@ -35,11 +35,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -54,11 +54,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MultiBarBottomLeft",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -92,11 +92,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "TOPRIGHT",
-				relativeTo = "MultiBarRight",
-				relativePoint = "TOPLEFT",
-				offsetX = -5,
-				offsetY = 0,
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -131,10 +131,10 @@ local modernSystemMap =
 			},
 			anchorInfo = {
 				point = "TOP",
-				relativeTo = "MultiBar5",
-				relativePoint = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "CENTER",
 				offsetX = 0,
-				offsetY = 0,
+				offsetY = -50,
 			},
 		},
 
@@ -150,10 +150,10 @@ local modernSystemMap =
 			},
 			anchorInfo = {
 				point = "TOP",
-				relativeTo = "MultiBar6",
-				relativePoint = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "CENTER",
 				offsetX = 0,
-				offsetY = 0,
+				offsetY = -100,
 			},
 		},
 
@@ -165,11 +165,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -182,11 +182,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -198,11 +198,11 @@ local modernSystemMap =
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 	},
@@ -213,6 +213,7 @@ local modernSystemMap =
 		settings = {
 			[Enum.EditModeCastBarSetting.BarSize] = 0,
 			[Enum.EditModeCastBarSetting.LockToPlayerFrame] = 0,
+			[Enum.EditModeCastBarSetting.ShowCastTime] = 0,
 		},
 		anchorInfo = {
 			point = "CENTER",
@@ -259,11 +260,11 @@ local modernSystemMap =
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 			},
 			anchorInfo = {
-				point = "LEFT",
-				relativeTo = "TargetFrame",
-				relativePoint = "RIGHT",
-				offsetX = -10,
-				offsetY = 0,
+				point = "BOTTOMLEFT",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
+				offsetX = 520,
+				offsetY = 265,
 			},
 		},
 
@@ -340,6 +341,7 @@ local modernSystemMap =
 		settings = {
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
 			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
+			[Enum.EditModeMinimapSetting.Size] = 5,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -355,10 +357,10 @@ local modernSystemMap =
 		},
 		anchorInfo = {
 			point = "BOTTOM",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -366,11 +368,11 @@ local modernSystemMap =
 		settings = {
 		},
 		anchorInfo = {
-			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOPLEFT",
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -386,9 +388,9 @@ local modernSystemMap =
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
-				relativeTo = "MinimapCluster",
-				relativePoint = "TOPLEFT",
-				offsetX = -10,
+				relativeTo = "UIParent",
+				relativePoint = "TOPRIGHT",
+				offsetX = -255,
 				offsetY = -10,
 			},
 		},
@@ -403,10 +405,10 @@ local modernSystemMap =
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
-				relativeTo = "BuffFrame",
-				relativePoint = "BOTTOMRIGHT",
-				offsetX = -13,
-				offsetY = -15,
+				relativeTo = "UIParent",
+				relativePoint = "TOPRIGHT",
+				offsetX = -270,
+				offsetY = -155,
 			},
 		},
 	},
@@ -415,11 +417,11 @@ local modernSystemMap =
 		settings = {
 		},
 		anchorInfo = {
-			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOPLEFT",
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -443,11 +445,11 @@ local modernSystemMap =
 		settings = {
 		},
 		anchorInfo = {
-			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOPLEFT",
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -493,6 +495,7 @@ local modernSystemMap =
 			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
 			[Enum.EditModeMicroMenuSetting.Order] = Enum.MicroMenuOrder.Default,
 			[Enum.EditModeMicroMenuSetting.Size] = 0,
+			[Enum.EditModeMicroMenuSetting.EyeSize] = 10,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
@@ -519,7 +522,7 @@ local modernSystemMap =
 	},
 
 	[Enum.EditModeSystem.StatusTrackingBar] = {
-		[Enum.EditModeStatusTrackingBarSystemIndices.ExperienceBar] = {
+		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
 			},
 			anchorInfo = {
@@ -530,15 +533,15 @@ local modernSystemMap =
 				offsetY = 0,
 			},
 		},
-		[Enum.EditModeStatusTrackingBarSystemIndices.ReputationBar] = {
+		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
 			settings = {
 			},
 			anchorInfo = {
 				point = "BOTTOM",
-				relativeTo = "MainStatusTrackingBarContainer",
-				relativePoint = "TOP",
+				relativeTo = "StatusTrackingBarManager",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 0,
+				offsetY = 17,
 			},
 		},
 	},
@@ -590,11 +593,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -609,11 +612,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MultiBarBottomLeft",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -647,11 +650,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
-				point = "TOPRIGHT",
-				relativeTo = "MultiBarRight",
-				relativePoint = "TOPLEFT",
-				offsetX = -5,
-				offsetY = 0,
+				point = "RIGHT",
+				relativeTo = "UIParent",
+				relativePoint = "RIGHT",
+				offsetX = RIGHT_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -686,10 +689,10 @@ local classicSystemMap =
 			},
 			anchorInfo = {
 				point = "TOP",
-				relativeTo = "MultiBar5",
-				relativePoint = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "CENTER",
 				offsetX = 0,
-				offsetY = 0,
+				offsetY = -50,
 			},
 		},
 
@@ -705,10 +708,10 @@ local classicSystemMap =
 			},
 			anchorInfo = {
 				point = "TOP",
-				relativeTo = "MultiBar6",
-				relativePoint = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "CENTER",
 				offsetX = 0,
-				offsetY = 0,
+				offsetY = -100,
 			},
 		},
 
@@ -720,11 +723,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -737,11 +740,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -753,11 +756,11 @@ local classicSystemMap =
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
-				relativeTo = "MainMenuBar",
-				relativePoint = "TOPLEFT",
+				point = "BOTTOM",
+				relativeTo = "UIParent",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 5,
+				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 	},
@@ -768,6 +771,7 @@ local classicSystemMap =
 		settings = {
 			[Enum.EditModeCastBarSetting.BarSize] = 0,
 			[Enum.EditModeCastBarSetting.LockToPlayerFrame] = 0,
+			[Enum.EditModeCastBarSetting.ShowCastTime] = 0,
 		},
 		anchorInfo = {
 			point = "CENTER",
@@ -815,9 +819,9 @@ local classicSystemMap =
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
-				relativeTo = "TargetFrame",
+				relativeTo = "UIParent",
 				relativePoint = "TOPLEFT",
-				offsetX = 250,
+				offsetX = 500,
 				offsetY = -240,
 			},
 		},
@@ -895,6 +899,7 @@ local classicSystemMap =
 		settings = {
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
 			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
+			[Enum.EditModeMinimapSetting.Size] = 5,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -910,10 +915,10 @@ local classicSystemMap =
 		},
 		anchorInfo = {
 			point = "BOTTOM",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -921,11 +926,11 @@ local classicSystemMap =
 		settings = {
 		},
 		anchorInfo = {
-			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOPLEFT",
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -941,9 +946,9 @@ local classicSystemMap =
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
-				relativeTo = "MinimapCluster",
-				relativePoint = "TOPLEFT",
-				offsetX = -10,
+				relativeTo = "UIParent",
+				relativePoint = "TOPRIGHT",
+				offsetX = -255,
 				offsetY = -10,
 			},
 		},
@@ -958,10 +963,10 @@ local classicSystemMap =
 			},
 			anchorInfo = {
 				point = "TOPRIGHT",
-				relativeTo = "BuffFrame",
-				relativePoint = "BOTTOMRIGHT",
-				offsetX = -13,
-				offsetY = -15,
+				relativeTo = "UIParent",
+				relativePoint = "TOPRIGHT",
+				offsetX = -270,
+				offsetY = -155,
 			},
 		},
 	},
@@ -970,11 +975,11 @@ local classicSystemMap =
 		settings = {
 		},
 		anchorInfo = {
-			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOPLEFT",
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -998,11 +1003,11 @@ local classicSystemMap =
 		settings = {
 		},
 		anchorInfo = {
-			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
-			relativePoint = "TOPLEFT",
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 5,
+			offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
 		},
 	},
 
@@ -1048,6 +1053,7 @@ local classicSystemMap =
 			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
 			[Enum.EditModeMicroMenuSetting.Order] = Enum.MicroMenuOrder.Default,
 			[Enum.EditModeMicroMenuSetting.Size] = 0,
+			[Enum.EditModeMicroMenuSetting.EyeSize] = 10,
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
@@ -1074,7 +1080,7 @@ local classicSystemMap =
 	},
 
 	[Enum.EditModeSystem.StatusTrackingBar] = {
-		[Enum.EditModeStatusTrackingBarSystemIndices.ExperienceBar] = {
+		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
 			settings = {
 			},
 			anchorInfo = {
@@ -1085,15 +1091,15 @@ local classicSystemMap =
 				offsetY = 0,
 			},
 		},
-		[Enum.EditModeStatusTrackingBarSystemIndices.ReputationBar] = {
+		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
 			settings = {
 			},
 			anchorInfo = {
 				point = "BOTTOM",
-				relativeTo = "MainStatusTrackingBarContainer",
-				relativePoint = "TOP",
+				relativeTo = "StatusTrackingBarManager",
+				relativePoint = "BOTTOM",
 				offsetX = 0,
-				offsetY = 0,
+				offsetY = 17,
 			},
 		},
 	},

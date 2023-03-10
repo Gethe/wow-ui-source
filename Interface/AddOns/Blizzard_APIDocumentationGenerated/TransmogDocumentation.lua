@@ -26,7 +26,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -40,15 +40,15 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "canBeTransmogged", Type = "bool", Nilable = false },
-				{ Name = "selfFailureReason", Type = "string", Nilable = true },
+				{ Name = "selfFailureReason", Type = "cstring", Nilable = true },
 				{ Name = "canTransmogOthers", Type = "bool", Nilable = false },
-				{ Name = "othersFailureReason", Type = "string", Nilable = true },
+				{ Name = "othersFailureReason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -57,14 +57,14 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "targetItemInfo", Type = "string", Nilable = false },
-				{ Name = "sourceItemInfo", Type = "string", Nilable = false },
+				{ Name = "targetItemInfo", Type = "ItemInfo", Nilable = false },
+				{ Name = "sourceItemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "canTransmog", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "string", Nilable = true },
+				{ Name = "failureReason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -77,7 +77,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -90,7 +90,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "input", Type = "string", Nilable = false },
+				{ Name = "input", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -164,12 +164,12 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "pendingInfo", Type = "table", Mixin = "TransmogPendingInfoMixin", Nilable = false },
+				{ Name = "pendingInfo", Type = "TransmogPendingInfo", Mixin = "TransmogPendingInfoMixin", Nilable = false },
 			},
 		},
 		{
@@ -178,7 +178,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -192,12 +192,12 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "inventoryType", Type = "number", Nilable = false },
+				{ Name = "inventoryType", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -206,7 +206,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -218,7 +218,7 @@ local Transmog =
 				{ Name = "cannotTransmogrifyReason", Type = "number", Nilable = false },
 				{ Name = "hasUndo", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
-				{ Name = "texture", Type = "number", Nilable = true },
+				{ Name = "texture", Type = "fileID", Nilable = true },
 			},
 		},
 		{
@@ -227,13 +227,13 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "errorCode", Type = "number", Nilable = false },
-				{ Name = "errorString", Type = "string", Nilable = false },
+				{ Name = "errorString", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -242,7 +242,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -274,7 +274,7 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -297,8 +297,8 @@ local Transmog =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
-				{ Name = "pendingInfo", Type = "table", Mixin = "TransmogPendingInfoMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "pendingInfo", Type = "TransmogPendingInfo", Mixin = "TransmogPendingInfoMixin", Nilable = false },
 			},
 		},
 	},
@@ -339,10 +339,10 @@ local Transmog =
 			LiteralName = "TRANSMOG_COLLECTION_UPDATED",
 			Payload =
 			{
-				{ Name = "collectionIndex", Type = "number", Nilable = true },
+				{ Name = "collectionIndex", Type = "luaIndex", Nilable = true },
 				{ Name = "modID", Type = "number", Nilable = true },
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
-				{ Name = "reason", Type = "string", Nilable = true },
+				{ Name = "reason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -400,7 +400,7 @@ local Transmog =
 			LiteralName = "TRANSMOGRIFY_SUCCESS",
 			Payload =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -409,8 +409,8 @@ local Transmog =
 			LiteralName = "TRANSMOGRIFY_UPDATE",
 			Payload =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = true },
-				{ Name = "action", Type = "string", Nilable = true },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },
+				{ Name = "action", Type = "cstring", Nilable = true },
 			},
 		},
 	},
@@ -452,7 +452,7 @@ local Transmog =
 				{ Name = "cannotTransmogrifyReason", Type = "number", Nilable = false },
 				{ Name = "hasUndo", Type = "bool", Nilable = false },
 				{ Name = "isHideVisual", Type = "bool", Nilable = false },
-				{ Name = "texture", Type = "number", Nilable = true },
+				{ Name = "texture", Type = "fileID", Nilable = true },
 			},
 		},
 		{

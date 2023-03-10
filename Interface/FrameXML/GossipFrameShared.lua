@@ -59,10 +59,10 @@ end
 GossipOptionButtonMixin = { };
 
 function GossipOptionButtonMixin:Setup(optionInfo)
-	self:SetID(optionInfo.gossipOptionID);
+	self:SetID(optionInfo.orderIndex or 0);
 	self.spellID = optionInfo.spellID;
 
-	if ( optionInfo.flags == Enum.GossipOptionRecFlags.QuestLabelPrepend) then
+	if (FlagsUtil.IsSet(optionInfo.flags, Enum.GossipOptionRecFlags.QuestLabelPrepend)) then
 		self:SetText(GOSSIP_QUEST_OPTION_PREPEND:format(optionInfo.name));
 	else
 		self:SetText(optionInfo.name);
@@ -79,7 +79,7 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 	self:Show();
 end
 function GossipOptionButtonMixin:OnClick(button)
-	C_GossipInfo.SelectOption(self:GetID());
+	C_GossipInfo.SelectOptionByIndex(self:GetID());
 end
 
 GossipGreetingTextMixin = { }
@@ -99,7 +99,7 @@ end
 
 
 GossipFrameSharedMixin = {};
-function GossipFrameSharedMixin:AvailableQuestButtonInit(button, elementDat)
+function GossipFrameSharedMixin:AvailableQuestButtonInit(button, elementData)
 	button:Setup(elementData.info);
 	if(self.tutorialMode) then
 		table.insert(self.tutorialButtons, button);
@@ -169,7 +169,7 @@ function GossipFrameSharedMixin:HandleShow()
 	table.sort(self.gossipOptions, GossipOptionSort);
 	if ( (C_GossipInfo.GetNumAvailableQuests() == 0) and (C_GossipInfo.GetNumActiveQuests()  == 0) and (#self.gossipOptions == 1) and not C_GossipInfo.ForceGossip() ) then
 		if (self.gossipOptions and self.gossipOptions[1].selectOptionWhenOnlyOption) then
-			C_GossipInfo.SelectOption(self.gossipOptions[1].gossipOptionID);
+			C_GossipInfo.SelectOptionByIndex(self.gossipOptions[1].orderIndex);
 			return;
 		end
 	end
@@ -197,16 +197,23 @@ function GossipFrameSharedMixin:SelectGossipOption(index)
 		return; 
 	end
 
-	C_GossipInfo.SelectOption(self.gossipOptions[index].gossipOptionID);
+	C_GossipInfo.SelectOptionByIndex(self.gossipOptions[index].orderIndex);
 end	
+
+local greetingTextFrame;
+local titleOptionButton;
+local activeQuestButton;
+local availableQuestButton;
 
 function GossipFrameSharedMixin:Update()
 	self.buttons = {};
 
-	local greetingTextFrame = CreateFrame("FRAME", nil, self, "GossipGreetingTextTemplate");
-	local titleOptionButton =  CreateFrame("Button", nil, self,"GossipTitleOptionButtonTemplate");
-	local activeQuestButton =  CreateFrame("Button", nil, self, "GossipTitleActiveQuestButtonTemplate");
-	local availableQuestButton =  CreateFrame("Button", nil, self, "GossipTitleAvailableQuestButtonTemplate");
+	if not greetingTextFrame then
+		greetingTextFrame = CreateFrame("FRAME", nil, self, "GossipGreetingTextTemplate");
+		titleOptionButton = CreateFrame("Button", nil, self,"GossipTitleOptionButtonTemplate");
+		activeQuestButton = CreateFrame("Button", nil, self, "GossipTitleActiveQuestButtonTemplate");
+		availableQuestButton = CreateFrame("Button", nil, self, "GossipTitleAvailableQuestButtonTemplate");
+	end
 
 	local dataProvider = CreateDataProvider();
 	dataProvider:Insert({buttonType= GOSSIP_BUTTON_TYPE_TITLE, text=C_GossipInfo.GetText() or "", greetingTextFrame = greetingTextFrame});
@@ -214,7 +221,7 @@ function GossipFrameSharedMixin:Update()
 	dataProvider:Insert({buttonType= GOSSIP_BUTTON_TYPE_DIVIDER});
 
 	local availableQuests = C_GossipInfo.GetAvailableQuests();
-	local hasAvailablQuests = availableQuests and #availableQuests > 0;
+	local hasAvailableQuests = availableQuests and #availableQuests > 0;
 
 	local index = 1;
 	for _, questInfo in ipairs(availableQuests) do
@@ -222,7 +229,7 @@ function GossipFrameSharedMixin:Update()
 		index = index + 1;
 	end
 
-	if(hasAvailablQuests) then
+	if(hasAvailableQuests) then
 		dataProvider:Insert({buttonType= GOSSIP_BUTTON_TYPE_DIVIDER});
 	end
 
@@ -258,6 +265,6 @@ end
 --This is an API for players and addon authors to continue to be able to select by index rather than ID
 function SelectGossipOption(index)
 	if (GossipFrame and GossipFrame:IsShown()) then
-		GossipFrame:SelectGossipOption(index);
+		GossipFrame:SelectOptionByIndex(index);
 	end 
 end

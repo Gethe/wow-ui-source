@@ -208,10 +208,10 @@
 					<Anchor point="TOPRIGHT" relativeTo="$parentInset" x="-5" y="5"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="2" y="3"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="2" y="-7"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="-2"/>
 				</Anchors>
 			</EventFrame>
 			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="bottomInset" hidden="true">

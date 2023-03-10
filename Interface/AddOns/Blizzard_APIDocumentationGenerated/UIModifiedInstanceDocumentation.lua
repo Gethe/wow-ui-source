@@ -37,7 +37,7 @@ local UIModifiedInstance =
 				{ Name = "normalItemLevel", Type = "number", Nilable = true },
 				{ Name = "heroicItemLevel", Type = "number", Nilable = true },
 				{ Name = "mythicItemLevel", Type = "number", Nilable = true },
-				{ Name = "uiTextureKit", Type = "string", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
 			},
 		},

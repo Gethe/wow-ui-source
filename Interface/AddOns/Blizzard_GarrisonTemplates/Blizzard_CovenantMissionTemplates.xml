@@ -678,22 +678,6 @@
 		</Scripts>
 	</Frame>
 
-	<!--adventures log still needs this-->
-	<Button name="OribosScrollUpButtonTemplate" virtual="true">
-		<Size x="10" y="10"/>
-		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
-		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
-		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true"/>
-		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Up" useAtlasSize="true" alphaMode="ADD"/>
-	</Button>
-	<Button name="OribosScrollDownButtonTemplate" virtual="true">
-		<Size x="10" y="10"/>
-		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" />
-		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true"/>
-		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true"/>
-		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="Soulbinds_Collection_Scrollbar_Arrow_Down" useAtlasSize="true" alphaMode="ADD"/>
-	</Button>
-
 	<Frame name="CovenantListWideFrameTemplate" inherits="CovenantMissionBaseFrameTemplate" virtual="true">
 		<Size x="300" y="575"/>
 		<Frames>

@@ -259,17 +259,19 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="EditModeExperienceBarSystemTemplate" inherits="EditModeStatusTrackingBarSystemTemplate" mixin="EditModeExperienceBarSystemMixin" virtual="true">
+	<Frame name="EditModeStatusTrackingBar1SystemTemplate" inherits="EditModeStatusTrackingBarSystemTemplate" mixin="EditModeStatusTrackingBar1SystemMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.ExperienceBar" type="global"/>
-			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_EXPERIENCE_BAR_LABEL" type="global"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STATUS_TRACKING_BAR_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 
-	<Frame name="EditModeReputationBarContainer" inherits="EditModeStatusTrackingBarSystemTemplate" virtual="true">
+	<Frame name="EditModeStatusTrackingBar2SystemTemplate" inherits="EditModeStatusTrackingBarSystemTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.ReputationBar" type="global"/>
-			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_REPUTATION_BAR_LABEL" type="global"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_STATUS_TRACKING_BAR_LABEL" type="global"/>
+			<KeyValue key="addSystemIndexToName" value="true" type="boolean"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>

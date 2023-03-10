@@ -150,6 +150,10 @@ function QuestMapFrame_OnLoad(self)
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
 	UIDropDownMenu_SetInitializeFunction(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize);
 	UIDropDownMenu_SetDisplayMode(QuestMapQuestOptionsDropDown, "MENU");
+
+	QuestMapFrame.DetailsFrame.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(o, xrange, yrange)
+		QuestMapFrame_AdjustPathButtons();
+	end);
 end
 
 local function QuestMapFrame_DoFullUpdate()
@@ -610,7 +614,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
-	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
+	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:ScrollToBegin();
 
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
@@ -1808,10 +1812,6 @@ end
 -- ***** POPUP DETAIL FRAME
 -- *****************************************************************************************************
 
-function QuestLogPopupDetailFrame_OnLoad(self)
-	self.ScrollFrame.ScrollBar:SetPoint("TOPLEFT", self.ScrollFrame, "TOPRIGHT", 6, -14);
-end
-
 function QuestLogPopupDetailFrame_OnHide(self)
 	self.questID = nil;
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
@@ -1848,7 +1848,7 @@ end
 function QuestLogPopupDetailFrame_Update(resetScrollBar)
 	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogPopupDetailFrame.ScrollFrame.ScrollChild)
 	if ( resetScrollBar ) then
-		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:SetValue(0);
+		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:ScrollToBegin();
 	end
 end
 

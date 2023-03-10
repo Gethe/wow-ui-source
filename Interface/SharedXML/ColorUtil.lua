@@ -1,4 +1,4 @@
-local function ExtractColorValueFromHex(str, index)
+function ExtractColorValueFromHex(str, index)
 	return tonumber(str:sub(index, index + 1), 16) / 255;
 end
 

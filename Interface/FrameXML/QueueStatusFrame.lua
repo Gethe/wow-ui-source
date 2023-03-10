@@ -272,6 +272,8 @@ function QueueStatusButtonMixin:OnShow()
 
 	self.Eye:StartInitialAnimation();
 	EventRegistry:TriggerEvent("QueueStatusButton.OnShow");
+
+	MicroMenuContainer:Layout();
 end
 
 function QueueStatusButtonMixin:OnHide()
@@ -319,6 +321,72 @@ function QueueStatusButtonMixin:OnGlowPulse()
 	end
 
 	return playSounds;
+end
+
+function QueueStatusButtonMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
+	-- Position button so that it is facing towards the center of the screen to avoid it going offscreen
+	local point, relativeTo, relativePoint, offsetX, offsetY;
+
+	self:ClearAllPoints();
+	if MicroMenu:GetParent() == MicroMenuContainer then
+		-- Micro menu is in default container. Anchor to the micro menu
+		relativeTo = MicroMenu;
+
+		if isMenuHorizontal then
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 15, 0;
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", -15, 0;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 15, 0;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", -15, 0;
+			end
+		else
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 0, 15;
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", 0, 15;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 0, -15;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", 0, -15;
+			end
+		end
+	else
+		-- Micro menu isn't in it's normal container so don't anchor to it and instead anchor relative to the container
+		relativeTo = MicroMenuContainer;
+		offsetX, offsetY = 0, 0;
+
+		if isMenuHorizontal then
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint = "TOPLEFT", "TOPLEFT";
+			end
+		else
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint = "TOPLEFT", "TOPLEFT";
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
+			end
+		end
+	end
+
+	-- Make sure to account for scale since it can be changed via edit mode
+	local scale = self:GetScale();
+	offsetX = offsetX / scale;
+	offsetY = offsetY / scale;
+
+	self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 end
 
 ----------------------------------------------
@@ -562,6 +630,16 @@ function QueueStatusFrameMixin:Update()
 		end
 	end
 
+	-- NOTICE: Keep this as the last possible entry
+	-- If you're in edit mode and there are no other entries then add one for edit mode so the eye shows
+	if ( nextEntry <= 1 and EditModeManagerFrame:IsEditModeActive() ) then
+		local entry = self:GetEntry(nextEntry);
+		QueueStatusEntry_SetMinimalDisplay(entry, HUD_EDIT_MODE_TITLE, QUEUED_STATUS_IN_PROGRESS);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+	end
+
 	QueueStatusFrame_SortAndAnchorEntries(self);
 
 	--Update the size of this frame to fit everything
@@ -582,6 +660,35 @@ function QueueStatusFrameMixin:Update()
 	end
 
 	QueueStatusButton.Eye:SetStaticMode(makeEyeStatic);
+end
+
+function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
+	-- Position frame so that it is facing towards the center of the screen to avoid it going offscreen
+	local point, relativePoint, offsetX, offsetY;
+	if isMenuHorizontal then
+		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 0, 25;
+		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", 0, 25;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+			point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 0, -25;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", 0, -25;
+		end
+	else
+		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 25, 0;
+		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", -25, 0;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+			point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 25, 0;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", -25, 0;
+		end
+	end
+
+	self:ClearAllPoints();
+	self:SetPoint(point, QueueStatusButton, relativePoint, offsetX, offsetY);
 end
 
 ----------------------------------------------
@@ -756,7 +863,9 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 		else
 			local queuedTime = GetTime() - GetBattlefieldTimeWaited(idx) / 1000;
 			local estimatedTime = GetBattlefieldEstimatedWaitTime(idx) / 1000;
-			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime, estimatedTime);
+			local isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil;
+			local assignedSpec = C_PvP.GetAssignedSpecForBattlefieldQueue(idx);
+			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime, estimatedTime, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText, assignedSpec);
 		end
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
@@ -856,6 +965,7 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 	for i=1, LFD_NUM_ROLES do
 		entry["RoleIcon"..i]:Hide();
 	end
+	entry.AssignedSpec:Hide();
 
 	entry.TanksFound:Hide();
 	entry.HealersFound:Hide();
@@ -866,7 +976,7 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 	entry:SetHeight(height + 6);
 end
 
-function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText)
+function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText, assignedSpec)
 	local height = 14;
 
 	entry.Title:SetText(title);
@@ -884,30 +994,37 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.SubTitle:Hide();
 	end
 
-	--Update your role icons
 	local nextRoleIcon = 1;
-	if ( isDPS ) then
-		local icon = entry["RoleIcon"..nextRoleIcon];
-		icon:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-		icon:Show();
-		nextRoleIcon = nextRoleIcon + 1;
-	end
-	if ( isHealer ) then
-		local icon = entry["RoleIcon"..nextRoleIcon];
-		icon:SetTexCoord(GetTexCoordsForRole("HEALER"));
-		icon:Show();
-		nextRoleIcon = nextRoleIcon + 1;
-	end
-	if ( isTank ) then
-		local icon = entry["RoleIcon"..nextRoleIcon];
-		icon:SetTexCoord(GetTexCoordsForRole("TANK"));
-		icon:Show();
-		nextRoleIcon = nextRoleIcon + 1;
+	if assignedSpec then
+		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
+		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+	else
+		--Update your role icons
+		if ( isDPS ) then
+			local icon = entry["RoleIcon"..nextRoleIcon];
+			icon:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+			icon:Show();
+			nextRoleIcon = nextRoleIcon + 1;
+		end
+		if ( isHealer ) then
+			local icon = entry["RoleIcon"..nextRoleIcon];
+			icon:SetTexCoord(GetTexCoordsForRole("HEALER"));
+			icon:Show();
+			nextRoleIcon = nextRoleIcon + 1;
+		end
+		if ( isTank ) then
+			local icon = entry["RoleIcon"..nextRoleIcon];
+			icon:SetTexCoord(GetTexCoordsForRole("TANK"));
+			icon:Show();
+			nextRoleIcon = nextRoleIcon + 1;
+		end
 	end
 
+	-- Hide unused role and spec icons
 	for i=nextRoleIcon, LFD_NUM_ROLES do
 		entry["RoleIcon"..i]:Hide();
 	end
+	entry.AssignedSpec:SetShown(assignedSpec ~= nil);
 
 	--Update the role needs
 	if ( totalTanks and totalHealers and totalDPS ) then

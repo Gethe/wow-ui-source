@@ -358,6 +358,61 @@ function SetItemRef(link, text, button, chatFrame)
 			OpenWorldMap(waypoint.uiMapID);
 		end
 		return;
+	elseif ( strsub(link, 1, 15) == "censoredmessage" ) then
+		local hyperlinkLineID = tonumber(select(2, strsplit(":", link)));
+
+		-- Uncensor this line so that the original text can be retrieved from C_ChatInfo.GetChatLineText.
+		C_ChatInfo.UncensorChatLine(hyperlinkLineID);
+
+		local function DoesMessageLineIDMatch(message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...)
+			-- eventArgs only present if the line was censored.
+			local lineID = eventArgs and eventArgs[11];
+			return lineID == hyperlinkLineID;
+		end
+
+		local _event = nil;
+		local _eventArgs = nil;
+		local function SetMessage(message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...)
+			local lineID = eventArgs[11];
+
+			-- Original text is routed through the tts system, which prepends the message with "<player whispers> text.
+			local text = C_ChatInfo.GetChatLineText(lineID);
+			-- The displayed message
+			local formattedText = MessageFormatter(text);
+			
+			-- Report hyperlink is appended to the display message.
+			local reportHyperlink = CENSORED_MESSAGE_REPORT:format(lineID);
+			formattedText = formattedText..reportHyperlink;
+
+			_event = event;
+			_eventArgs = eventArgs;
+			-- The tts handler should only include the original text, not the formatted text; what is displayed is not the
+			-- same as what is spoken.
+			_eventArgs[1] = text;
+			return formattedText, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...;
+		end
+
+		-- The line may be present in multiple chat windows, particularly if chat settings are configured to
+		-- send the line to both the default chat window and a whisper tab.
+		ChatFrameUtil.ForEachChatFrame(function(chatFrame)
+			chatFrame:TransformMessages(DoesMessageLineIDMatch, SetMessage);
+		end);
+		
+		-- If we captured event and eventArgs in SetMessage, then we successfully replaced the message and need to route it
+		-- through tts.
+		if _event and _eventArgs then
+			TextToSpeechFrame_MessageEventHandler(chatFrame, _event, SafeUnpack(_eventArgs));
+		end
+		return;
+	elseif ( strsub(link, 1, 21) ==  "reportcensoredmessage" ) then 
+		local hyperlinkLineID = tonumber(select(2, strsplit(":", link)));
+		local reportTarget = C_ChatInfo.GetChatLineSenderGUID(hyperlinkLineID);
+		local playerName = C_ChatInfo.GetChatLineSenderName(hyperlinkLineID);
+
+		local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Chat);
+		reportInfo:SetReportTarget(reportTarget);
+		ReportFrame:InitiateReport(reportInfo, playerName);
+		return; 
 	elseif ( strsub(link, 1, 12) ==  "dungeonScore" ) then 
 		DisplayDungeonScoreLink(link);
 		return; 
@@ -365,12 +420,26 @@ function SetItemRef(link, text, button, chatFrame)
 		DisplayPvpRatingLink(link);
 		return;
 	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
-		ShowUIPanel(ChatConfigFrame);
+		Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
 		return;
 	elseif ( strsub(link, 1, 6) == "layout" ) then
 		local fixedLink = GetFixedLink(text);
 		if not HandleModifiedItemClick(fixedLink) then
 			EditModeManagerFrame:OpenAndShowImportLayoutLinkDialog(fixedLink);
+		end
+		return;
+	elseif (strsub(link, 1, 11) == "talentbuild") then
+		local fixedLink = GetFixedLink(text);
+		if not HandleModifiedItemClick(fixedLink) then
+			local specID, level, inspectString = string.split(":", linkData);
+			level = tonumber(level);
+
+			ClassTalentFrame_LoadUI();
+
+			ClassTalentFrame:SetInspectString(inspectString, level);
+			if not ClassTalentFrame:IsShown() then
+				ShowUIPanel(ClassTalentFrame);
+			end
 		end
 		return;
 	elseif ( strsub(link, 1, 13) == "perksactivity" ) then
@@ -430,6 +499,8 @@ function GetFixedLink(text, quality)
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 7) == "layout" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 12) == "talentbuild" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		end
 	end

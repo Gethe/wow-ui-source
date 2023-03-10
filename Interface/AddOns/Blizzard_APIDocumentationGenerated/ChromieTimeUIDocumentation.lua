@@ -56,10 +56,10 @@ local ChromieTimeUI =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "mapAtlas", Type = "string", Nilable = false },
-				{ Name = "previewAtlas", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "mapAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "previewAtlas", Type = "textureAtlas", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "alreadyOn", Type = "bool", Nilable = false },
 			},

@@ -56,6 +56,15 @@ function Professions.ExtractItemIDsFromCraftingReagents(reagents)
 	return tbl;
 end
 
+local isCraftingMinimized = false;
+function Professions.SetCraftingMinimized(minimized)
+	isCraftingMinimized = minimized;
+end
+
+function Professions.IsCraftingMinimized()
+	return isCraftingMinimized;
+end
+
 function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
@@ -79,6 +88,25 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 end
 
+local CraftingAccessibleBags = 
+{
+	Enum.BagIndex.Backpack,
+	Enum.BagIndex.Bag_1,
+	Enum.BagIndex.Bag_2,
+	Enum.BagIndex.Bag_3,
+	Enum.BagIndex.Bag_4,
+	Enum.BagIndex.ReagentBag,
+	Enum.BagIndex.Bank,
+	Enum.BagIndex.BankBag_1,
+	Enum.BagIndex.BankBag_2,
+	Enum.BagIndex.BankBag_3,
+	Enum.BagIndex.BankBag_4,
+	Enum.BagIndex.BankBag_5,
+	Enum.BagIndex.BankBag_6,
+	Enum.BagIndex.BankBag_7,
+	Enum.BagIndex.Reagentbank,
+};
+
 function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	local items = {};
 	local max = maxFindCount or math.huge;
@@ -93,14 +121,20 @@ function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 		end
 	end
 
-	ItemUtil.IteratePlayerInventoryAndEquipment(FindMatchingItemID);
+	for index, bagIndex in ipairs(CraftingAccessibleBags) do
+		if ItemUtil.IterateBagSlots(bagIndex, FindMatchingItemID) then
+			return items;
+		end
+	end
+
+	ItemUtil.IterateInventorySlots(INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED, FindMatchingItemID);
 	return items;
 end
 
-function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
+function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
 	local items = {};
 	local maxFindCount = 1;
-	if filterOwned then
+	if filterAvailable then
 		for index, itemID in ipairs(itemIDs) do
 			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			tAppendAll(items, foundItems);
@@ -414,7 +448,13 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 			end
 		end
 	else
-		local title = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText) or EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE;
+		local title;
+		if reagentType == Enum.CraftingReagentType.Finishing then
+			title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
+		else
+			title = slotText or OPTIONAL_REAGENT_POSTFIX;
+		end
+
 		GameTooltip_SetTitle(GameTooltip, title, nil, false);
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
 			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
@@ -759,6 +799,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 			end
 
 			local addUnlearnedDivider = false;
+			local addedKnownRecipe = false;
 			local node = dataProvider:GetRootNode();
 
 			local affectChildren = false;
@@ -770,12 +811,13 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 					AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
 				end
 				addUnlearnedDivider = addUnlearnedDivider or (addedRecipe and categoryMap == unlearnedCategoryMap);
+				addedKnownRecipe = addedKnownRecipe or (addedRecipe and categoryMap == learnedCategoryMap);
 				addedRecipe = false;
 			end
 
 			if addUnlearnedDivider and C_TradeSkillUI.GetShowUnlearned() then
 				-- Categories and dividers ordered by group, position this divider just before the unlearned group.
-				node:Insert({isDivider = true, dividerHeight = 30, group = Group.UnlearnedDivider});
+				node:Insert({isDivider = true, dividerHeight = addedKnownRecipe and 70 or 30, group = Group.UnlearnedDivider});
 			end
 		end
 	end
@@ -1180,35 +1222,28 @@ function Professions.OnRecipeListSearchTextChanged(text)
 	end
 end
 
-function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider)
-	local stride = 1;
-	local spacing = -5;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing);
-	
-	local function Layout(slots, anchor, layout)
-		if slots then
-			AnchorUtil.GridLayout(slots, anchor, layout);
-		end
-	end
-	
-	do
-		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 1, -23);
-		Layout(reagentSlots, anchor, layout);
-		reagentsContainer:Layout();
-	end
 
-	do
-		local optionalShown = optionalReagentsSlots and #optionalReagentsSlots > 0;
-		if optionalShown then
-			local anchor = CreateAnchor("TOPLEFT", optionalReagentsContainer, "TOPLEFT", 1, -23);
-			Layout(optionalReagentsSlots, anchor, layout);
-			optionalReagentsContainer:Layout();
-		end
-		optionalReagentsContainer:SetShown(optionalShown);
-		if divider then
-			divider:SetShown(optionalShown);
-		end
+function Professions.LayoutReagentSlots(slots, slotContainer, spacingX, spacingY, stride, direction)
+	if slots then
+		local spacingY = -5;
+		local layout = AnchorUtil.CreateGridLayout(direction, stride, spacingX, spacingY);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		AnchorUtil.GridLayout(slots, anchor, layout);
+		slotContainer:Layout();
 	end
+end
+
+function Professions.LayoutAndShowReagentSlotContainer(slots, slotContainer)
+	local slotsShown = slots and #slots > 0;
+	if slotsShown then
+		local stride = 4;
+		local spacing = 3;
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40, 40);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		AnchorUtil.GridLayout(slots, anchor, layout);
+		slotContainer:Layout();
+	end
+	slotContainer:SetShown(slotsShown);
 end
 
 function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer)
@@ -1244,8 +1279,9 @@ function Professions.GetProfessionBackgroundAtlas(professionInfo)
 	return GetProfessionBackground(professionInfo, "Professions-Recipe-Background-%s");
 end
 
-function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo)
-	return GetProfessionBackground(professionInfo, "Professions-Specializations-Background-%s");
+function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo, forPreview)
+	local atlasFmt = forPreview and "Professions-Specializations-Preview-Art-%s" or "Professions-Specializations-Background-%s";
+	return GetProfessionBackground(professionInfo, atlasFmt);
 end
 
 function Professions.CanTrackRecipe(recipeInfo)
@@ -1423,4 +1459,16 @@ function Professions.GetProfessionInfo()
 	professionInfo.displayName = professionInfo.parentProfessionName and professionInfo.parentProfessionName or professionInfo.professionName;
 
 	return professionInfo;
+end
+
+Professions.OrderTimeLeftFormatter = CreateFromMixins(SecondsFormatterMixin);
+Professions.OrderTimeLeftFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
+Professions.OrderTimeLeftFormatter:SetStripIntervalWhitespace(true);
+
+function Professions.OrderTimeLeftFormatter:GetDesiredUnitCount(seconds)
+	return 1;
+end
+
+function Professions.OrderTimeLeftFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
 end

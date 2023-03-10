@@ -218,7 +218,10 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBG"/>
 				</Anchors>
 			</Frame>
-			<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarTemplate" value="MinimalScrollBar" type="string"/>
+				</KeyValues>
 				<Size x="743" y="194"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="-30"/>

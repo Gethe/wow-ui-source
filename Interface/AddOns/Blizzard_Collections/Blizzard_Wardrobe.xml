@@ -889,10 +889,10 @@
 						</Anchors>
 						<Frames>
 							<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBoxList"/>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="36"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="-8"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="31"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 								</Anchors>
 							</EventFrame>
 							<Frame parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>

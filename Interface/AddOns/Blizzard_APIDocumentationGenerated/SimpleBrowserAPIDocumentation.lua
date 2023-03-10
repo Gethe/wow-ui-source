@@ -51,7 +51,7 @@ local SimpleBrowserAPI =
 
 			Arguments =
 			{
-				{ Name = "urlType", Type = "string", Nilable = false },
+				{ Name = "urlType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -77,7 +77,7 @@ local SimpleBrowserAPI =
 
 			Arguments =
 			{
-				{ Name = "url", Type = "string", Nilable = false },
+				{ Name = "url", Type = "cstring", Nilable = false },
 			},
 		},
 		{

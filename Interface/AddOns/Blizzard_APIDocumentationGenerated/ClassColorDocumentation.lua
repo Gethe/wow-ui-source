@@ -17,7 +17,7 @@ local ClassColor =
 
 			Returns =
 			{
-				{ Name = "classColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "classColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 	},

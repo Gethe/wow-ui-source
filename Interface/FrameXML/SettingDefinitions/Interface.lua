@@ -1,3 +1,10 @@
+RaidFramePreviewMixin = { };
+
+function RaidFramePreviewMixin:OnLoad()
+	CompactUnitFrame_SetUpFrame(self.RaidFrame, DefaultCompactUnitFrameSetup);
+	CompactUnitFrame_SetUnit(self.RaidFrame, "player");
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(INTERFACE_LABEL);
 	Settings.INTERFACE_CATEGORY_ID = category:GetID();
@@ -332,6 +339,13 @@ local function Register()
 	end
 
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
+
+	-- Raid Frame Preview
+	do
+		local data = { };
+		local initializer = Settings.CreatePanelInitializer("RaidFramePreviewTemplate", data);
+		layout:AddInitializer(initializer);
+	end
 
 	-- Incoming Heals
 	Settings.SetupCVarCheckBox(category, "raidFramesDisplayIncomingHeals", COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION);

@@ -1,8 +1,4 @@
-StatusTrackingBarMixin = { } 
-
-function StatusTrackingBarMixin:GetPriority()
-	return self.priority; 
-end
+StatusTrackingBarMixin = { }
 
 --Override this in your bar.lua function 
 function StatusTrackingBarMixin:Update()
@@ -16,34 +12,29 @@ function StatusTrackingBarMixin:UpdateTick()
 end
 
 function StatusTrackingBarMixin:UpdateAll()
-	self:Update(); 	
+	self:Update();
 	self:UpdateTick();
-	self:UpdateTextVisibility(); 
-end	
-
-function StatusTrackingBarMixin:SetBarText(barText) 
-	self.OverlayFrame.Text:SetText(barText); 
+	self:UpdateTextVisibility();
 end
 
-function StatusTrackingBarMixin:ShowText() 
+function StatusTrackingBarMixin:SetBarText(barText)
+	self.OverlayFrame.Text:SetText(barText);
+end
+
+function StatusTrackingBarMixin:ShowText()
 	self:SetTextLocked(true);
 end
 
-function StatusTrackingBarMixin:HideText() 
+function StatusTrackingBarMixin:HideText()
 	self:SetTextLocked(false);
 end
 
-function StatusTrackingBarMixin:SetBarValues(currentValue, minBar, maxBar, level) 
-	self.StatusBar:SetAnimatedValues(currentValue, minBar, maxBar, level); 
-end
-
-function StatusTrackingBarMixin:SetBarColor(r, g, b)
-	self.StatusBar:SetStatusBarColor(r, g, b);
-	self.StatusBar:SetAnimatedTextureColors(r, g, b);
+function StatusTrackingBarMixin:SetBarValues(currentValue, minBar, maxBar, level, maxLevel)
+	self.StatusBar:SetAnimatedValues(currentValue, minBar, maxBar, level, maxLevel);
 end
 
 function StatusTrackingBarMixin:ShouldBarTextBeDisplayed()
-	return GetCVarBool("xpBarText") or self.textLocked or self:GetParent():IsTextLocked();
+	return GetCVarBool("xpBarText") or self.textLocked or StatusTrackingBarManager:IsTextLocked();
 end
 
 function StatusTrackingBarMixin:SetTextLocked(locked)
@@ -54,5 +45,5 @@ function StatusTrackingBarMixin:SetTextLocked(locked)
 end
 
 function StatusTrackingBarMixin:UpdateTextVisibility()
-	self.OverlayFrame.Text:SetShown(self:ShouldBarTextBeDisplayed()); 
+	self.OverlayFrame.Text:SetShown(self:ShouldBarTextBeDisplayed());
 end

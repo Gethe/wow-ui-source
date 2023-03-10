@@ -16,9 +16,9 @@
 ..\..\SharedXML\PortraitFrame.lua
 ..\..\SharedXML\SecureUIPanelTemplates.lua
 ..\..\SharedXML\VASErrorLookup.lua
-Blizzard_SimpleCheckout.xml
-Blizzard_StoreButtonMixin.lua
-Blizzard_ProductCardTemplates.xml
-Blizzard_StoreUI.xml
-Blizzard_StoreUIInsecure.xml
-Localization.lua
+Blizzard_Shared_SimpleCheckout.xml
+Blizzard_Shared_StoreButtonMixin.lua
+Blizzard_Shared_ProductCardTemplates.xml
+Blizzard_Shared_StoreUI.xml
+Blizzard_Shared_StoreUIInsecure.xml
+Shared_Localization.lua

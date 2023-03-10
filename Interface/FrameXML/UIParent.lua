@@ -84,7 +84,7 @@ UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoff
 UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -125,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 0, allowOtherPanels = 1, ignoreControlLost = true };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -494,8 +494,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
-
-	ExpansionTrial_Initialize();
 end
 
 function UIParent_OnShow(self)
@@ -668,7 +666,7 @@ function BarberShopFrame_LoadUI()
 end
 
 function PerksProgramFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_PerksProgram");	
+	UIParentLoadAddOn("Blizzard_PerksProgram");
 end
 
 function AchievementFrame_LoadUI()
@@ -704,10 +702,6 @@ function GMChatFrame_LoadUI(...)
 			GMChatFrame_OnEvent(GMChatFrame, ...);
 		end
 	end
-end
-
-function GuildFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
 function EncounterJournal_LoadUI()
@@ -824,41 +818,21 @@ function ClassTrial_AttemptLoad()
 end
 
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
-	return ExpansionTrialThanksForPlayingDialog and ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
+	if ExpansionTrialThanksForPlayingDialog then
+		return ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
+	end
+
+	if ExpansionTrialCheckPointDialog then
+		return ExpansionTrialCheckPointDialog:IsShowingExpansionTrialUpgrade();
+	end
+
+	return false;
 end
 
-function ExpansionTrial_Initialize()
+function ExpansionTrial_CheckLoadUI()
 	local isExpansionTrial = GetExpansionTrialInfo();
 	if isExpansionTrial then
-		local hitLevelLimit = function(playerLevel)
-			return playerLevel >= 63;
-		end
-
-		local displayPurchaseDialog = function()
-			UIParentLoadAddOn("Blizzard_ClassTrial");
-			local buyExpansionToContinue = false;
-			local suppressClassTrial = true;
-			ExpansionTrialThanksForPlayingDialog:SetupDialogType(buyExpansionToContinue, suppressClassTrial);
-			ExpansionTrialThanksForPlayingDialog:Show();
-		end
-
-		EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_CHANGED", function(f, oldLevel, newLevel, hasRealLevelChanged)
-			if hasRealLevelChanged and hitLevelLimit(newLevel) then
-				displayPurchaseDialog();
-			end
-		end);
-
-		EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
-			if hitLevelLimit(UnitLevel("player")) then
-				displayPurchaseDialog();
-			end
-		end);
-
-		EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", function(f, questID)
-			if questID == 65794 then
-				displayPurchaseDialog();
-			end
-		end);
+		UIParentLoadAddOn("Blizzard_ExpansionTrial");
 	end
 end
 
@@ -913,7 +887,7 @@ end
 
 function OrderHall_CheckCommandBar()
 	if (not OrderHallCommandBar or not OrderHallCommandBar:IsShown()) then
-		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0)) then
+		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0_Garrison)) then
 			OrderHall_LoadUI();
 			OrderHallCommandBar:Show();
 		end
@@ -954,7 +928,7 @@ function ToggleTalentFrame(suggestedTab, inspectUnit)
 
 	ClassTalentFrame_LoadUI();
 
-	ClassTalentFrame:SetInspecting(inspectUnit);
+	ClassTalentFrame:SetInspectUnit(inspectUnit);
 	if not ClassTalentFrame:IsShown() then
 		ShowUIPanel(ClassTalentFrame);
 	else
@@ -1024,11 +998,6 @@ function ToggleGuildFrame()
 		end
 
 		ToggleCommunitiesFrame();
-	elseif ( IsInGuild() ) then
-		GuildFrame_LoadUI();
-		if ( GuildFrame_Toggle ) then
-			GuildFrame_Toggle();
-		end
 	else
 		ToggleGuildFinder();
 	end
@@ -1423,7 +1392,7 @@ function UIParent_OnEvent(self, event, ...)
 				local garrTypeID = GarrisonFollowerOptions[followerTypeID].garrisonType;
 				if(garrTypeID == garrisonType) then
 					if (C_Garrison.HasGarrison(garrTypeID)) then
-						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 							landingPageTabIndex = 3;
 						else
 							landingPageTabIndex = 2;
@@ -1453,8 +1422,8 @@ function UIParent_OnEvent(self, event, ...)
 					GarrisonMissionListTab_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
 				end
 			else
-				if (C_Garrison.HasGarrison(Enum.GarrisonType.Type_6_0)) then
-					ShowGarrisonLandingPage(Enum.GarrisonType.Type_6_0);
+				if (C_Garrison.HasGarrison(Enum.GarrisonType.Type_6_0_Garrison)) then
+					ShowGarrisonLandingPage(Enum.GarrisonType.Type_6_0_Garrison);
 
 					-- switch to the mission tab
 					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
@@ -1806,6 +1775,8 @@ function UIParent_OnEvent(self, event, ...)
 		if IsTrialAccount() or IsVeteranTrialAccount() then
 			SubscriptionInterstitial_LoadUI();
 		end
+
+		ExpansionTrial_CheckLoadUI();
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -1875,8 +1846,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
+		AddonTooltip_ActionBlocked(arg1);
 		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
+		AddonTooltip_ActionBlocked(arg1);
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
 		local dialog = StaticPopup_Show("ADDON_ACTION_FORBIDDEN", arg1);
@@ -2071,9 +2044,9 @@ function UIParent_OnEvent(self, event, ...)
 			{
 				text = PROFESSION_EQUIPMENT_LOCATION_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				targetPoint = HelpTip.Point.RightEdgeTop,
+				targetPoint = HelpTip.Point.LeftEdgeTop,
 				alignment = HelpTip.Alignment.Left,
-				autoHorizontalSlide = true,
+				offsetX = 940,
 				offsetY = -48,
 			};
 			HelpTip:Show(ProfessionsFrame.CraftingPage, helpTipInfo, ProfessionsFrame.CraftingPage);
@@ -2108,11 +2081,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
 		local followerTypeID = ...;
-		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0 ) then
+		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower ) then
 			ShowUIPanel(OrderHallMissionFrame);
-		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0 ) then
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower ) then
 			ShowUIPanel(BFAMissionFrame);
-		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 ) then
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower ) then
 			ShowUIPanel(CovenantMissionFrame);
 		end
 
@@ -2272,7 +2245,7 @@ function UIParent_OnEvent(self, event, ...)
 		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		local followerType = ...;
-		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0 then
+		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower then
 			local frameName = GarrisonFollowerOptions[followerType].missionFrame;
 			if (not _G[frameName]) then
 				Garrison_LoadUI();
@@ -3388,7 +3361,7 @@ function CloseSpecialWindows()
 	return found;
 end
 
-function CloseWindows(ignoreCenter, frameToIgnore)
+function CloseWindows(ignoreCenter, frameToIgnore, context)
 	-- This function will close all frames that are not the current frame
 	local leftFrame = GetUIPanel("left");
 	local centerFrame = GetUIPanel("center");
@@ -3396,15 +3369,18 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	local doublewideFrame = GetUIPanel("doublewide");
 	local fullScreenFrame = GetUIPanel("fullscreen");
 	local found = leftFrame or centerFrame or rightFrame or doublewideFrame or fullScreenFrame;
+	local ignoreControlLostLeft =  ( leftFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( leftFrame, "ignoreControlLost" ) )
+	local ignoreControlLostRight =  ( rightFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( rightFrame, "ignoreControlLost" ) )
+	local ignoreControlLostCenter =  ( centerFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( centerFrame, "ignoreControlLost" ) )
 
-	if ( not frameToIgnore or frameToIgnore ~= leftFrame ) then
+	if ( ( not frameToIgnore or frameToIgnore ~= leftFrame ) and not ignoreControlLostLeft ) then
 		HideUIPanel(leftFrame, UIPANEL_SKIP_SET_POINT);
 	end
-
+	
 	HideUIPanel(fullScreenFrame, UIPANEL_SKIP_SET_POINT);
 	HideUIPanel(doublewideFrame, UIPANEL_SKIP_SET_POINT);
 
-	if ( not frameToIgnore or frameToIgnore ~= centerFrame ) then
+	if ( ( not frameToIgnore or frameToIgnore ~= centerFrame ) and not ignoreControlLostCenter ) then
 		if ( centerFrame ) then
 			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ~= "center" or not ignoreCenter ) then
@@ -3413,7 +3389,7 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 		end
 	end
 
-	if ( not frameToIgnore or frameToIgnore ~= rightFrame ) then
+	if ( ( not frameToIgnore or frameToIgnore ~= rightFrame ) and not ignoreControlLostRight ) then
 		if ( rightFrame ) then
 			HideUIPanel(rightFrame, UIPANEL_SKIP_SET_POINT);
 		end
@@ -3426,17 +3402,14 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	return found;
 end
 
+-- When the player loses control we close all UIs, unless they're handled below
 function CloseAllWindows_WithExceptions()
-	-- When the player loses control we close all UIs, unless they're handled below
-	local centerFrame = GetUIPanel("center");
-	local ignoreCenter = (centerFrame and GetUIPanelAttribute(centerFrame, "ignoreControlLost")) or IsOptionFrameOpen();
-
-	CloseAllWindows(ignoreCenter);
+	CloseAllWindows(IsOptionFrameOpen(), "lossOfControl");
 end
 
-function CloseAllWindows(ignoreCenter)
+function CloseAllWindows(ignoreCenter, context)
 	local bagsVisible = CloseAllBags();
-	local windowsVisible = CloseWindows(ignoreCenter);
+	local windowsVisible = CloseWindows(ignoreCenter, nil, context );
 	local anyClosed = (bagsVisible or windowsVisible);
 	if (anyClosed and CanAutoSetGamePadCursorControl(false)) then
 		SetGamePadCursorControl(false);
@@ -5297,10 +5270,16 @@ function IsPlayerAtEffectiveMaxLevel()
 	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
 end
 
+local INTERFACE_ACTION_BLOCKED_COUNT = 0;
+
 function DisplayInterfaceActionBlockedMessage()
-	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+	if ( INTERFACE_ACTION_BLOCKED_COUNT > 50000 ) then
+		INTERFACE_ACTION_BLOCKED_COUNT = 0;
+	end
+	INTERFACE_ACTION_BLOCKED_COUNT = INTERFACE_ACTION_BLOCKED_COUNT + 1;
+
+	if ( INTERFACE_ACTION_BLOCKED_COUNT == 1 ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-		INTERFACE_ACTION_BLOCKED_SHOWN = true;
 	end
 end

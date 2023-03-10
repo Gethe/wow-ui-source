@@ -182,8 +182,8 @@ local WarCampaign =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 			},
 		},
@@ -202,9 +202,9 @@ local WarCampaign =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "uiTextureKit", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "isWarCampaign", Type = "bool", Nilable = false },
 			},
 		},

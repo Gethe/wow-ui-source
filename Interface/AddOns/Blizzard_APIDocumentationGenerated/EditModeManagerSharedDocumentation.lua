@@ -97,9 +97,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 23,
+			NumValues = 24,
 			MinValue = 0,
-			MaxValue = 22,
+			MaxValue = 23,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -112,8 +112,8 @@ local EditModeManagerShared =
 				{ Name = "ShowCastBar", Type = "EditModeAccountSetting", EnumValue = 7 },
 				{ Name = "ShowEncounterBar", Type = "EditModeAccountSetting", EnumValue = 8 },
 				{ Name = "ShowExtraAbilities", Type = "EditModeAccountSetting", EnumValue = 9 },
-				{ Name = "ShowBuffFrame", Type = "EditModeAccountSetting", EnumValue = 10 },
-				{ Name = "ShowDebuffFrame", Type = "EditModeAccountSetting", EnumValue = 11 },
+				{ Name = "ShowBuffsAndDebuffs", Type = "EditModeAccountSetting", EnumValue = 10 },
+				{ Name = "DeprecatedShowDebuffFrame", Type = "EditModeAccountSetting", EnumValue = 11 },
 				{ Name = "ShowPartyFrames", Type = "EditModeAccountSetting", EnumValue = 12 },
 				{ Name = "ShowRaidFrames", Type = "EditModeAccountSetting", EnumValue = 13 },
 				{ Name = "ShowTalkingHeadFrame", Type = "EditModeAccountSetting", EnumValue = 14 },
@@ -122,9 +122,10 @@ local EditModeManagerShared =
 				{ Name = "ShowArenaFrames", Type = "EditModeAccountSetting", EnumValue = 17 },
 				{ Name = "ShowLootFrame", Type = "EditModeAccountSetting", EnumValue = 18 },
 				{ Name = "ShowHudTooltip", Type = "EditModeAccountSetting", EnumValue = 19 },
-				{ Name = "ShowReputationBar", Type = "EditModeAccountSetting", EnumValue = 20 },
+				{ Name = "ShowStatusTrackingBar2", Type = "EditModeAccountSetting", EnumValue = 20 },
 				{ Name = "ShowDurabilityFrame", Type = "EditModeAccountSetting", EnumValue = 21 },
 				{ Name = "EnableSnap", Type = "EditModeAccountSetting", EnumValue = 22 },
+				{ Name = "EnableAdvancedOptions", Type = "EditModeAccountSetting", EnumValue = 23 },
 			},
 		},
 		{
@@ -214,13 +215,14 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeCastBarSetting",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "BarSize", Type = "EditModeCastBarSetting", EnumValue = 0 },
 				{ Name = "LockToPlayerFrame", Type = "EditModeCastBarSetting", EnumValue = 1 },
+				{ Name = "ShowCastTime", Type = "EditModeCastBarSetting", EnumValue = 2 },
 			},
 		},
 		{
@@ -264,26 +266,28 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeMicroMenuSetting",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeMicroMenuSetting", EnumValue = 0 },
 				{ Name = "Order", Type = "EditModeMicroMenuSetting", EnumValue = 1 },
 				{ Name = "Size", Type = "EditModeMicroMenuSetting", EnumValue = 2 },
+				{ Name = "EyeSize", Type = "EditModeMicroMenuSetting", EnumValue = 3 },
 			},
 		},
 		{
 			Name = "EditModeMinimapSetting",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "HeaderUnderneath", Type = "EditModeMinimapSetting", EnumValue = 0 },
 				{ Name = "RotateMinimap", Type = "EditModeMinimapSetting", EnumValue = 1 },
+				{ Name = "Size", Type = "EditModeMinimapSetting", EnumValue = 2 },
 			},
 		},
 		{
@@ -300,13 +304,14 @@ local EditModeManagerShared =
 		{
 			Name = "EditModePresetLayouts",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Modern", Type = "EditModePresetLayouts", EnumValue = 0 },
 				{ Name = "Classic", Type = "EditModePresetLayouts", EnumValue = 1 },
+				{ Name = "Spectate", Type = "EditModePresetLayouts", EnumValue = 2 },
 			},
 		},
 		{
@@ -343,8 +348,8 @@ local EditModeManagerShared =
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "ExperienceBar", Type = "EditModeStatusTrackingBarSystemIndices", EnumValue = 1 },
-				{ Name = "ReputationBar", Type = "EditModeStatusTrackingBarSystemIndices", EnumValue = 2 },
+				{ Name = "StatusTrackingBar1", Type = "EditModeStatusTrackingBarSystemIndices", EnumValue = 1 },
+				{ Name = "StatusTrackingBar2", Type = "EditModeStatusTrackingBarSystemIndices", EnumValue = 2 },
 			},
 		},
 		{

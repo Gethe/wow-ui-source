@@ -31,11 +31,11 @@ function ScrollingEditBoxMixin:OnLoad()
 	editBox:SetFontObject(self.fontName);
 	
 	if self.fontColor then
-		self:SetTextColor(self.fontColor:GetRGB());
+		self:SetTextColor(self.fontColor);
 	end
 
 	if self.defaultFontColor then
-		self:SetDefaultTextColor(self.defaultFontColor:GetRGB());
+		self:SetDefaultTextColor(self.defaultFontColor);
 	end
 
 	if self.defaultText then

@@ -112,14 +112,18 @@ function CVarCallbackRegistry:OnEvent(event, ...)
 end
 
 function CVarCallbackRegistry:GetCVarValue(cvar)
-	if self.cachable[cvar] and not self.cvarValueCache[cvar] then
-		self.cvarValueCache[cvar] = GetCVar(cvar);
+	local value = self.cvarValueCache[cvar];
+	if value then
+		return value;
 	end
 
-	if self.cvarValueCache[cvar] then
-		return self.cvarValueCache[cvar];
+	value = GetCVar(cvar);
+
+	if self.cachable[cvar] then
+		self.cvarValueCache[cvar] = value;
 	end
-	return GetCVar(cvar);
+
+	return value;
 end
 
 function CVarCallbackRegistry:GetCVarValueBool(cvar)

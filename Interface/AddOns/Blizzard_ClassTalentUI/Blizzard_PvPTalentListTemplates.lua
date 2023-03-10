@@ -123,7 +123,7 @@ function PvPTalentListMixin:OnLoad()
 	end);
 	view:SetPadding(1,0,0,0,PVP_TALENT_LIST_BUTTON_OFFSET);
 
-	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+	self.ScrollBox:Init(view);
 end
 
 function PvPTalentListMixin:SetTalentFrame(talentFrame)

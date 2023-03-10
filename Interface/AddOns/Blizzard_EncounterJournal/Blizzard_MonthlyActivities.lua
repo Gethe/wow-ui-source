@@ -587,14 +587,22 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 	end
 
 	dataProvider:SetSortComparator(function(a, b)
+		-- Sort pending complete to the top
+		if a.pendingComplete ~= b.pendingComplete then
+			return a.pendingComplete;
+		end
+
+		-- But sort already completed to the bottom
 		if a.completed ~= b.completed then
-			return a.completed;
+			return b.completed;
 		end
 	
+		-- Then sort by points descending
 		if a.points ~= b.points then
 			return a.points > b.points;
 		end
 	
+		-- Last sort by alphabetical name
 		return a.name < b.name;
 	end);
 
@@ -634,6 +642,9 @@ function MonthlyActivitiesFrameMixin:OnUpdate()
 		else
 			PlaySound(SOUNDKIT.TRADING_POST_UI_ACTIVITY_PROGRESSION_STOP);
 		end
+
+		-- Re-sort completed activities to bottom once all animations are complete.
+		self.ScrollBox:GetDataProvider():Sort();
 	end
 end
 

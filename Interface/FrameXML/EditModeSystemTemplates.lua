@@ -18,8 +18,7 @@ function EditModeSystemMixin:OnSystemLoad()
 
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
-	self.systemName = (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
-	self.Selection:SetLabelText(self.systemName);
+	self.Selection:SetGetLabelTextFunction(function() return self:GetSystemName(); end);
 	self:SetupSettingsDialogAnchor();
 	self.snappedFrames = {};
 	self.downKeys = {};
@@ -669,6 +668,10 @@ function EditModeSystemMixin:OnDragStop()
 	end
 end
 
+function EditModeSystemMixin:GetSystemName()
+	return (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
+end
+
 EditModeActionBarSystemMixin = {};
 
 function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
@@ -694,32 +697,6 @@ end
 function EditModeActionBarSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
 	self:UpdateSpellFlyoutDirection();
-end
-
-function EditModeActionBarSystemMixin:GetRightAnchoredWidth()
-	if not self:IsInitialized() then
-		return 0;
-	end
-
-	local offsetX = select(4, self:GetPoint(1));
-	if self:IsShown() and self:IsInDefaultPosition() and offsetX then
-		return self:GetWidth() - offsetX;
-	end
-
-	return 0;
-end
-
-function EditModeActionBarSystemMixin:GetBottomAnchoredHeight()
-	if not self:IsInitialized() then
-		return 0;
-	end
-
-	local offsetY = select(5, self:GetPoint(1));
-	if self:IsShown() and self:IsInDefaultPosition() and offsetY then
-		return self:GetHeight() + offsetY;
-	end
-
-	return 0;
 end
 
 function EditModeActionBarSystemMixin:MarkGridLayoutDirty()
@@ -808,12 +785,14 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
 		self:EditModeSetScale(iconScale);
 	end
 
-	for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
-		buttonOrSpacer:SetScale(iconScale);
+	for i, actionButton in pairs(self.actionButtons) do
+		actionButton.container:SetScale(iconScale);
 	end
 
 	-- Changing icon size will effect the size of the ResizeLayoutFrame
 	self:Layout();
+
+	EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingIconPadding()
@@ -1279,10 +1258,19 @@ EditModeMinimapSystemMixin = {};
 
 function EditModeMinimapSystemMixin:UpdateSystemSettingHeaderUnderneath()
 	self:SetHeaderUnderneath(self:GetSettingValueBool(Enum.EditModeMinimapSetting.HeaderUnderneath));
+	self:Layout();
 end
 
 function EditModeMinimapSystemMixin:UpdateSystemSettingRotateMinimap()
 	self:SetRotateMinimap(self:GetSettingValueBool(Enum.EditModeMinimapSetting.RotateMinimap));
+end
+
+function EditModeMinimapSystemMixin:UpdateSystemSettingSize()
+	local scale = self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100;
+	self.MinimapContainer:SetScale(scale);
+
+	-- Updating the header will adjust the map's offsets to account for the scale change
+	self:UpdateSystemSettingHeaderUnderneath();
 end
 
 function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1297,6 +1285,8 @@ function EditModeMinimapSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 		self:UpdateSystemSettingHeaderUnderneath();
 	elseif setting == Enum.EditModeMinimapSetting.RotateMinimap and self:HasSetting(Enum.EditModeMinimapSetting.RotateMinimap) then
 		self:UpdateSystemSettingRotateMinimap();
+	elseif setting == Enum.EditModeMinimapSetting.Size and self:HasSetting(Enum.EditModeMinimapSetting.Size) then
+		self:UpdateSystemSettingSize();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1373,6 +1363,11 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
 	self:UpdateSystemSettingBarSize();
 end
 
+function EditModeCastBarSystemMixin:UpdateSystemSettingShowCastTime()
+	local showCastTime = self:GetSettingValueBool(Enum.EditModeCastBarSetting.ShowCastTime);
+	self:SetCastTimeTextShown(showCastTime);
+end
+
 function EditModeCastBarSystemMixin:UpdateSystemSettingBarSize()
 	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
 		self:SetScale(1);
@@ -1395,6 +1390,8 @@ function EditModeCastBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpd
 		self:UpdateSystemSettingBarSize();
 	elseif setting == Enum.EditModeCastBarSetting.LockToPlayerFrame then
 		self:UpdateSystemSettingLockToPlayerFrame();
+	elseif setting == Enum.EditModeCastBarSetting.ShowCastTime then
+		self:UpdateSystemSettingShowCastTime();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1707,14 +1704,6 @@ function EditModeVehicleLeaveButtonSystemMixin:OnEditModeExit()
 	self:UpdateShownState();
 end
 
-function EditModeVehicleLeaveButtonSystemMixin:GetBottomAnchoredHeight()
-	if self:IsShown() and self:IsInDefaultPosition() then
-		return self:GetHeight() + self.systemInfo.anchorInfo.offsetY;
-	end
-
-	return 0;
-end
-
 function EditModeVehicleLeaveButtonSystemMixin:EditModeVehicleLeaveButtonSystem_OnShow()
     EditModeManagerFrame:UpdateActionBarLayout(self);
 end
@@ -1821,10 +1810,29 @@ end
 
 EditModeMicroMenuSystemMixin = {};
 
+function EditModeMicroMenuSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	-- Update queue status frame so it can show the lfg eye while in edit mode since it is editable via the micro menu in edit mode
+	QueueStatusFrame:Update();
+end
+
+function EditModeMicroMenuSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	QueueStatusFrame:Update();
+end
+
 function EditModeMicroMenuSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
 
-	self:UpdateHelpTicketButtonAnchor();
+	self:Layout();
+end
+
+function EditModeMicroMenuSystemMixin:OnDragStop()
+	EditModeSystemMixin.OnDragStop(self);
+
+	self:Layout();
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystem(systemInfo)
@@ -1833,16 +1841,20 @@ function EditModeMicroMenuSystemMixin:UpdateSystem(systemInfo)
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingOrientation()
-	self.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Orientation, Enum.MicroMenuOrientation.Horizontal);
+	MicroMenu.isHorizontal = self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Orientation, Enum.MicroMenuOrientation.Horizontal);
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingOrder()
-	self.layoutFramesGoingRight = self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Order, Enum.MicroMenuOrder.Default);
-	self.layoutFramesGoingUp = not self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Order, Enum.MicroMenuOrder.Default);
+	MicroMenu.layoutFramesGoingRight = self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Order, Enum.MicroMenuOrder.Default);
+	MicroMenu.layoutFramesGoingUp = not self:DoesSettingValueEqual(Enum.EditModeMicroMenuSetting.Order, Enum.MicroMenuOrder.Default);
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingSize()
-	self:SetScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
+	MicroMenu:SetScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
+end
+
+function EditModeMicroMenuSystemMixin:UpdateSystemSettingEyeSize()
+	MicroMenu:SetQueueStatusScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.EyeSize) / 100);
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1859,6 +1871,8 @@ function EditModeMicroMenuSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingOrder();
 	elseif setting == Enum.EditModeMicroMenuSetting.Size and self:HasSetting(Enum.EditModeMicroMenuSetting.Size) then
 		self:UpdateSystemSettingSize();
+	elseif setting == Enum.EditModeMicroMenuSetting.EyeSize and self:HasSetting(Enum.EditModeMicroMenuSetting.EyeSize) then
+		self:UpdateSystemSettingEyeSize();
 	end
 
 	if not entireSystemUpdate then
@@ -1954,13 +1968,25 @@ function EditModeStatusTrackingBarSystemMixin:OnEditModeExit()
 	self:UpdateShownState();
 end
 
-EditModeExperienceBarSystemMixin = {};
+EditModeStatusTrackingBar1SystemMixin = {};
 
-function EditModeExperienceBarSystemMixin:OnEditModeEnter()
+function EditModeStatusTrackingBar1SystemMixin:OnEditModeEnter()
 	EditModeSystemMixin.OnEditModeEnter(self);
 
 	self.isInEditMode = true;
 	self:UpdateShownState();
+end
+
+function EditModeStatusTrackingBar1SystemMixin:GetSystemName()
+	if self.ContainedBar and self.ContainedBar.isExpBar then
+		self.systemNameString = HUD_EDIT_MODE_EXPERIENCE_BAR_LABEL;
+		self.addSystemIndexToName = false;
+	else
+		self.systemNameString = HUD_EDIT_MODE_STATUS_TRACKING_BAR_LABEL;
+		self.addSystemIndexToName = true;
+	end
+
+	return EditModeSystemMixin.GetSystemName(self);
 end
 
 EditModeDurabilityFrameSystemMixin = {};
@@ -2038,19 +2064,22 @@ end
 
 EditModeSystemSelectionMixin = {};
 
-function EditModeSystemSelectionMixin:SetLabelText(text)
-	self.Label:SetText(text);
+function EditModeSystemSelectionMixin:SetGetLabelTextFunction(getLabelText)
+	self.getLabelText = getLabelText;
 end
 
 function EditModeSystemSelectionMixin:UpdateLabelVisibility()
+	if self.getLabelText then
+		self.Label:SetText(self.getLabelText());
+	end
+
 	self.Label:SetShown(self.isSelected);
 end
 
 EditModeSystemSelectionDoubleLabelMixin = {};
 
-function EditModeSystemSelectionDoubleLabelMixin:SetLabelText(text)
-	self.HorizontalLabel:SetText(text);
-	self.VerticalLabel:SetText(text);
+function EditModeSystemSelectionDoubleLabelMixin:SetGetLabelTextFunction(getLabelText)
+	self.getLabelText = getLabelText;
 end
 
 function EditModeSystemSelectionDoubleLabelMixin:SetVerticalState(vertical)
@@ -2059,6 +2088,12 @@ function EditModeSystemSelectionDoubleLabelMixin:SetVerticalState(vertical)
 end
 
 function EditModeSystemSelectionDoubleLabelMixin:UpdateLabelVisibility()
+	if self.getLabelText then
+		local labelText = self.getLabelText();
+		self.HorizontalLabel:SetText(labelText);
+		self.VerticalLabel:SetText(labelText);
+	end
+
 	self.HorizontalLabel:SetShown(self.isSelected and not self.isVertical);
 	self.VerticalLabel:SetShown(self.isSelected and self.isVertical);
 end

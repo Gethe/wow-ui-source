@@ -148,6 +148,9 @@
 	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
 		nop(); -- Action handler is custom
 	</Binding>
+	<Binding name="TEXT_TO_SPEECH_STOP" category="BINDING_HEADER_CHAT">
+		C_VoiceChat.StopSpeakingText();
+	</Binding>
 	<!-- Action bar bindings header="ACTIONBAR" -->
 	<Binding name="ACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then

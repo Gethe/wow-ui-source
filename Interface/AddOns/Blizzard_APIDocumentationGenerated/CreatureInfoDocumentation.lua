@@ -71,8 +71,8 @@ local CreatureInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "groupTag", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "groupTag", Type = "cstring", Nilable = false },
 			},
 		},
 		{

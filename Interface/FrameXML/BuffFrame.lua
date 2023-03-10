@@ -470,7 +470,20 @@ function DebuffFrameMixin:UpdateAuras()
 
 		local deadlyDebuffInfo = C_SpellBook.GetDeadlyDebuffInfo(spellID);
 		if(deadlyDebuffInfo) then
-			local deadlyDebuff = { index = 0, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, warningText = deadlyDebuffInfo.warningText, soundKitID = deadlyDebuffInfo.soundKitID, priority = deadlyDebuffInfo.priority, criticalTimeRemaining = deadlyDebuffInfo.overrideCriticalTimeRemaining };
+			local deadlyDebuff = {
+				index = 0,
+				auraType = "DeadlyDebuff",
+				texture = texture,
+				count = count,
+				debuffType = debuffType,
+				duration = duration,
+				expirationTime = expirationTime,
+				timeMod = timeMod,
+				warningText = deadlyDebuffInfo.warningText,
+				soundKitID = deadlyDebuffInfo.soundKitID,
+				priority = deadlyDebuffInfo.priority,
+				criticalTimeRemaining = deadlyDebuffInfo.overrideCriticalTimeRemaining,
+			};
 			table.insert(self.deadlyDebuffInfo, deadlyDebuff);
 		else
 			local index = #self.auraInfo + 1;
@@ -542,7 +555,6 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 	-- Add remaining deadly debuffs onto end of aura list so they appear at the end
 	for index, deadlyDebuff in ipairs(self.deadlyDebuffInfo) do
 		deadlyDebuff.index = #self.auraInfo + 1;
-		deadlyDebuff.auraType = "DeadlyDebuff";
 		self.auraInfo[deadlyDebuff.index] = deadlyDebuff;
 	end
 end
@@ -569,8 +581,7 @@ AuraButtonMixin = { };
 
 function AuraButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-
-	self:UpdateAuraType();
+	self:UpdateAuraType(nil);
 end
 
 function AuraButtonMixin:OnClick(button)

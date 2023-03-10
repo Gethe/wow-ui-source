@@ -3,6 +3,23 @@
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 ## LoadOnDemand: 1
 
+..\..\SharedXML\Mixin.lua
+..\..\SharedXML\MathUtil.lua
+..\..\SharedXML\EnumUtil.lua
+..\..\SharedXML\TableUtil.lua
+..\..\SharedXML\Flags.lua
+..\..\SharedXML\CallbackRegistry.lua
+..\..\SharedXML\Interpolator.lua
+..\..\SharedXML\ButtonStateBehavior.lua
+..\..\SharedXML\Frame\EventButton.lua
+..\..\SharedXML\Frame\EventFrame.lua
+..\..\SharedXML\Frame\EventScrollFrame.lua
+..\..\SharedXML\Scroll\ScrollUtil.lua
+..\..\SharedXML\Scroll\ScrollController.lua
+..\..\SharedXML\Scroll\ScrollBox.lua
+..\..\SharedXML\Scroll\ScrollBar.lua
+..\..\SharedXML\Scroll\MinimalScrollBar.lua
+
 ..\..\SharedXML\SecureUIPanelTemplates.lua
 ..\..\SharedXML\NineSliceLayouts.lua
 ..\..\SharedXML\NineSlice.lua

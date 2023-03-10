@@ -314,13 +314,16 @@
 					<KeyValue key="charCreateOnClickMethod" value="NavBack" type="string"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="ForwardButton" inherits="CharacterCreateNavButtonTemplate">
+			<Button parentKey="ForwardButton" inherits="CharacterCreateNavButtonTemplate" mixin="CharacterCreateNavForwardButtonMixin">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-46" y="28"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="charCreateOnClickMethod" value="NavForward" type="string"/>
 				</KeyValues>
+				<Scripts>
+					<OnLoad method="OnLoad_NavForward" inherit="append"/>
+				</Scripts>
 			</Button>
 			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true">
 				<Frames>

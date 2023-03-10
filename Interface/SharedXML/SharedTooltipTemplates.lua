@@ -141,6 +141,12 @@ function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColo
 	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap, leftOffset);
 end
 
+function GameTooltip_ShowSimpleTooltip(tooltip, text, overrideColor, wrap, owner, point, offsetX, offsetY)
+	tooltip:SetOwner(owner, point, offsetX, offsetY);
+	GameTooltip_SetTitle(tooltip, text, overrideColor, wrap);
+	tooltip:Show();
+end
+
 function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 	verticalPadding = verticalPadding or 0;
 

@@ -26,7 +26,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+			<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
 				<Size x="330" y="520"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="-93"/>
@@ -69,12 +69,6 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Slider parentKey="ScrollBar" inherits="MinimalScrollBarWithBorderTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="53"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="21"/>
-						</Anchors>
-					</Slider>
 				</Frames>
 			</ScrollFrame>
 		</Frames>

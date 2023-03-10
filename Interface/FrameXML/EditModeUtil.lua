@@ -15,38 +15,37 @@ function EditModeUtil:IsBottomAnchoredActionBar(systemFrame)
 		or (systemFrame == MainMenuBarVehicleLeaveButton);
 end
 
+local function GetBarsLayoutSize(barHeirarchy, getWidth)
+	for _, bar in ipairs(barHeirarchy) do
+		if bar and bar:IsVisible()
+			and (not bar.IsInitialized or bar:IsInitialized())
+			and (not bar.IsInDefaultPosition or bar:IsInDefaultPosition())
+			then
+			local offset, size;
+			if getWidth then
+				offset = select(4, bar:GetPoint(1));
+				size = bar:GetWidth();
+			else -- getHeight
+				offset = select(5, bar:GetPoint(1));
+				size = bar:GetHeight();
+			end
+			return math.abs(offset) + size;
+		end
+	end
+
+	return 0;
+end
+
 function EditModeUtil:GetRightActionBarWidth()
-	local offset = 0;
-	if MultiBar3_IsVisible and MultiBar3_IsVisible() and MultiBarRight:IsInDefaultPosition() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarRight:GetPoint(1);
-		offset = (MultiBarRight:GetScale() * MultiBarRight:GetWidth()) - offsetX; -- Subtract x offset since it will be a negative value due to us anchoring to the right side and anchoring towards the middle
-	end
-
-	if MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:IsInDefaultPosition() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarLeft:GetPoint(1);
-		offset = offset + (MultiBarLeft:GetScale() * MultiBarLeft:GetWidth()) - offsetX;
-	end
-
-	return offset;
+	local barHeirarchy = { MultiBarLeft, MultiBarRight };
+	local getWidthYes = true;
+	return GetBarsLayoutSize(barHeirarchy, getWidthYes);
 end
 
 function EditModeUtil:GetBottomActionBarHeight()
-	local actionBarHeight = 0;
-
-	if OverrideActionBar and OverrideActionBar:IsShown() then
-		actionBarHeight = actionBarHeight + OverrideActionBar:GetBottomAnchoredHeight();
-	else
-		actionBarHeight = actionBarHeight + MainMenuBar:GetBottomAnchoredHeight();
-		actionBarHeight = actionBarHeight + (MultiBarBottomLeft and MultiBarBottomLeft:GetBottomAnchoredHeight() or 0);
-		actionBarHeight = actionBarHeight + (MultiBarBottomRight and MultiBarBottomRight:GetBottomAnchoredHeight() or 0);
-	end
-
-	actionBarHeight = actionBarHeight + (StanceBar and StanceBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + (PetActionBar and PetActionBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + (PossessActionBar and PossessActionBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + (MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:GetBottomAnchoredHeight() or 0);
-
-	return actionBarHeight;
+	local barHeirarchy = { MainMenuBarVehicleLeaveButton, PossessActionBar, PetActionBar, StanceBar, OverrideActionBar, MultiBarBottomRight, MultiBarBottomLeft, MainMenuBar };
+	local getWidthNo = false;
+	return GetBarsLayoutSize(barHeirarchy, getWidthNo);
 end
 
 function EditModeUtil:GetRightContainerAnchor()

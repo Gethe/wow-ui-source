@@ -31,7 +31,7 @@ local Spell =
 
 			Returns =
 			{
-				{ Name = "rarityBorderAtlas", Type = "string", Nilable = false },
+				{ Name = "rarityBorderAtlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{

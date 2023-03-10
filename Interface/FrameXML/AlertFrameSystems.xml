@@ -1325,8 +1325,15 @@
 	</ContainedAlertFrame>
 
 	<ContainedAlertFrame name="RafRewardDeliveredAlertFrameTemplate" inherits="EntitlementDeliveredAlertFrameBaseTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="legacyStandardToastAtlas" value="recruitafriend_toast_standard" type="string"/>
+			<KeyValue key="legacyFancyToastAtlas" value="recruitafriend_toast_fancy" type="string"/>
+
+			<KeyValue key="standardToastAtlas" value="recruitafriend_toast_standard_generic" type="string"/>
+			<KeyValue key="fancyToastAtlas" value="recruitafriend_toast_fancy_generic" type="string"/>
+		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="StandardBackground" atlas="RecruitAFriend_Toast_Standard" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -1335,6 +1342,13 @@
 				<Texture parentKey="FancyBackground" atlas="RecruitAFriend_Toast_Fancy" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_small" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-36" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>

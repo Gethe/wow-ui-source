@@ -13,7 +13,7 @@ local RecruitAFriend =
 			Arguments =
 			{
 				{ Name = "activityID", Type = "number", Nilable = false },
-				{ Name = "acceptanceID", Type = "string", Nilable = false },
+				{ Name = "acceptanceID", Type = "RecruitAcceptanceID", Nilable = false },
 			},
 
 			Returns =
@@ -24,6 +24,11 @@ local RecruitAFriend =
 		{
 			Name = "ClaimNextReward",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "rafVersion", Type = "RecruitAFriendRewardsVersion", Nilable = true },
+			},
 
 			Returns =
 			{
@@ -64,7 +69,7 @@ local RecruitAFriend =
 			Arguments =
 			{
 				{ Name = "activityID", Type = "number", Nilable = false },
-				{ Name = "acceptanceID", Type = "string", Nilable = false },
+				{ Name = "acceptanceID", Type = "RecruitAcceptanceID", Nilable = false },
 			},
 
 			Returns =
@@ -106,7 +111,7 @@ local RecruitAFriend =
 
 			Arguments =
 			{
-				{ Name = "wowAccountGUID", Type = "string", Nilable = false },
+				{ Name = "wowAccountGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -144,6 +149,11 @@ local RecruitAFriend =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "RafRewardClaimFailed",
+			Type = "Event",
+			LiteralName = "RAF_REWARD_CLAIM_FAILED",
 		},
 		{
 			Name = "RafSystemEnabledStatus",
@@ -242,14 +252,20 @@ local RecruitAFriend =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "versions", Type = "table", InnerType = "RafVersionInfo", Nilable = false },
+				{ Name = "recruitmentInfo", Type = "RafRecruitmentinfo", Nilable = true },
+				{ Name = "recruits", Type = "table", InnerType = "RafRecruit", Nilable = false },
+				{ Name = "claimInProgress", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RafMonthCount",
+			Type = "Structure",
+			Fields =
+			{
 				{ Name = "lifetimeMonths", Type = "number", Nilable = false },
 				{ Name = "spentMonths", Type = "number", Nilable = false },
 				{ Name = "availableMonths", Type = "number", Nilable = false },
-				{ Name = "claimInProgress", Type = "bool", Nilable = false },
-				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
-				{ Name = "nextReward", Type = "RafReward", Nilable = true },
-				{ Name = "recruitmentInfo", Type = "RafRecruitmentinfo", Nilable = true },
-				{ Name = "recruits", Type = "table", InnerType = "RafRecruit", Nilable = false },
 			},
 		},
 		{
@@ -279,11 +295,12 @@ local RecruitAFriend =
 			Fields =
 			{
 				{ Name = "bnetAccountID", Type = "number", Nilable = false },
-				{ Name = "wowAccountGUID", Type = "string", Nilable = false },
+				{ Name = "wowAccountGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "battleTag", Type = "string", Nilable = false },
 				{ Name = "monthsRemaining", Type = "number", Nilable = false },
 				{ Name = "subStatus", Type = "RafRecruitSubStatus", Nilable = false },
-				{ Name = "acceptanceID", Type = "string", Nilable = false },
+				{ Name = "acceptanceID", Type = "RecruitAcceptanceID", Nilable = false },
+				{ Name = "versionRecruited", Type = "RecruitAFriendRewardsVersion", Nilable = false },
 				{ Name = "activities", Type = "table", InnerType = "RafRecruitActivity", Nilable = false },
 			},
 		},
@@ -318,6 +335,7 @@ local RecruitAFriend =
 			Fields =
 			{
 				{ Name = "rewardID", Type = "number", Nilable = false },
+				{ Name = "rafVersion", Type = "RecruitAFriendRewardsVersion", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "rewardType", Type = "RafRewardType", Nilable = false },
 				{ Name = "petInfo", Type = "RafPetInfo", Nilable = true },
@@ -328,12 +346,13 @@ local RecruitAFriend =
 				{ Name = "illusionInfo", Type = "RafIllusionInfo", Nilable = true },
 				{ Name = "canClaim", Type = "bool", Nilable = false },
 				{ Name = "claimed", Type = "bool", Nilable = false },
+				{ Name = "canAfford", Type = "bool", Nilable = false },
 				{ Name = "repeatable", Type = "bool", Nilable = false },
 				{ Name = "repeatableClaimCount", Type = "number", Nilable = false },
 				{ Name = "monthsRequired", Type = "number", Nilable = false },
 				{ Name = "monthCost", Type = "number", Nilable = false },
 				{ Name = "availableInMonths", Type = "number", Nilable = false },
-				{ Name = "iconID", Type = "number", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -353,6 +372,19 @@ local RecruitAFriend =
 			Fields =
 			{
 				{ Name = "titleMaskID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RafVersionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rafVersion", Type = "RecruitAFriendRewardsVersion", Nilable = false },
+				{ Name = "monthCount", Type = "RafMonthCount", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "RafReward", Nilable = false },
+				{ Name = "nextReward", Type = "RafReward", Nilable = true },
+				{ Name = "numAffordableRewards", Type = "number", Nilable = false },
+				{ Name = "numRecruits", Type = "number", Nilable = false },
 			},
 		},
 	},

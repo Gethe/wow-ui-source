@@ -148,6 +148,7 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransition
 	end
 
 	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
+	EventRegistry:TriggerEvent("ModelScene.TransitionToModelSceneID", self, self.modelSceneID);
 end
 
 -- There may be inactive (pooled) actors maintained by this scene, these function only returns the active actors

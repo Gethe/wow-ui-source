@@ -98,6 +98,10 @@
 				<KeyValue key="fixedHeight" value="300" type="number"/>
 				<KeyValue key="widthPadding" value="300" type="number"/>
 				<KeyValue key="heightPadding" value="300" type="number"/>
+				<KeyValue key="minimumWidth" value="300" type="number"/>
+				<KeyValue key="minimumHeight" value="300" type="number"/>
+				<KeyValue key="maximumWidth" value="300" type="number"/>
+				<KeyValue key="maximumHeight" value="300" type="number"/>
 			</KeyValues>
 			-->
 		</Frame>

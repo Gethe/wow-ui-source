@@ -16,7 +16,7 @@ local UIMacros =
 			LiteralName = "EXECUTE_CHAT_LINE",
 			Payload =
 			{
-				{ Name = "chatLine", Type = "string", Nilable = false },
+				{ Name = "chatLine", Type = "cstring", Nilable = false },
 			},
 		},
 		{

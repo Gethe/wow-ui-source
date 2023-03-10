@@ -4,8 +4,8 @@ local FOLLOWER_BUTTON_HEIGHT = 80;
 ---------------------------------------------------------------------------------
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
 
 
 ---------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ function GarrisonShipyardMission:SelectTab(id)
 end
 
 function GarrisonShipyardMission:CheckFollowerCount()
-	local numFollowers = C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_2);
+	local numFollowers = C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 	if (numFollowers > 0) then
 		PanelTemplates_EnableTab(self, 2);
 	else
@@ -406,7 +406,7 @@ function GarrisonShipyardMission:UpdateMissionParty(followers)
 				end
 				for i = 1, #counters do
 					local Counter = followerFrame.Counters[i];
-					Counter.followerTypeID = Enum.GarrisonFollowerType.FollowerType_6_2;
+					Counter.followerTypeID = Enum.GarrisonFollowerType.FollowerType_6_0_Boat;
 					if ( Counter.info.factor > GARRISON_HIGH_THREAT_VALUE ) then
 						Counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
 					else
@@ -1120,7 +1120,7 @@ function GarrisonShipyardMap_AdjustMissionPositions()
 
 					local radiusB = frameB:GetWidth() / 2;
 					local minDistSquared = (radiusA + radiusB) * (radiusA + radiusB);
-					if (distSquared + distBufferSquared < minDistSquared) then
+					if (distSquared > 0 and (distSquared + distBufferSquared < minDistSquared)) then
 						local minDist = math.sqrt(minDistSquared);
 						local dist = math.sqrt(distSquared);
 						-- We want to move each frame by half the amount that they overlap, minus the buffer space
@@ -1141,8 +1141,8 @@ end
 function GarrisonShipyardMap_UpdateMissions()
 	local self = GarrisonShipyardFrame.MissionTab.MissionList;
 
-	local inProgressMissions = C_Garrison.GetInProgressMissions(Enum.GarrisonFollowerType.FollowerType_6_2);
-	C_Garrison.GetAvailableMissions(self.missions, Enum.GarrisonFollowerType.FollowerType_6_2);
+	local inProgressMissions = C_Garrison.GetInProgressMissions(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
+	C_Garrison.GetAvailableMissions(self.missions, Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 	for i = 1, #inProgressMissions do
 		local mission = inProgressMissions[i];
 		mission.inProgress = true;
@@ -1297,7 +1297,7 @@ end
 
 function GarrisonShipyardMap_UpdateBonusEffects()
 	local self = GarrisonShipyardFrame.MissionTab.MissionList;
-	self.bonusEffects = C_Garrison.GetAllBonusAbilityEffects(Enum.GarrisonFollowerType.FollowerType_6_2);
+	self.bonusEffects = C_Garrison.GetAllBonusAbilityEffects(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 	for i=1, #self.bonusEffects do
 		local bonus = self.bonusEffects[i];
 
@@ -2084,11 +2084,11 @@ function GarrisonShipTrait_OnClick(self, button)
 end
 
 function GarrisonShipTrait_OnEnter(self)
-	ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_2);
+	ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 end
 
 function GarrisonShipTrait_OnHide(self)
-	HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_2);
+	HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 end
 
 function GarrisonShipEquipment_OnClick(self, button)
@@ -2115,7 +2115,7 @@ function GarrisonShipEquipment_OnEnter(self)
 		end
 		GameTooltip:Show();
 	elseif (self.Icon:IsShown() and self.abilityID) then
-		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_2);
+		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 		GameTooltip:SetText(GARRISON_SHIPYARD_EQUIPMENT_EMPTY_SLOT_TOOLTIP);
@@ -2125,7 +2125,7 @@ end
 
 function GarrisonShipEquipment_OnHide(self)
 	GameTooltip_Hide();
-	HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_2);
+	HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 end
 
 function GarrisonShipEquipment_OnReceiveDrag(self)
@@ -2239,7 +2239,7 @@ function GarrisonShipOptionsMenu_Initialize(self, level)
 		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
 		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_ON_MISSION;
 		info.tooltipOnButton = 1;
-	elseif ( C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_2) <  C_Garrison.GetFollowerSoftCap(Enum.GarrisonFollowerType.FollowerType_6_2) ) then
+	elseif ( C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) <  C_Garrison.GetFollowerSoftCap(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) ) then
 		info.disabled = 1;
 		info.tooltipWhileDisabled = 1;
 		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;

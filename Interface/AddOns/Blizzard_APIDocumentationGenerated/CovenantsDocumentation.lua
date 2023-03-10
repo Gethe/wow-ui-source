@@ -61,7 +61,7 @@ local Covenants =
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "celebrationSoundKit", Type = "number", Nilable = false },
 				{ Name = "animaChannelSelectSoundKit", Type = "number", Nilable = false },
 				{ Name = "animaChannelActiveSoundKit", Type = "number", Nilable = false },
@@ -72,7 +72,7 @@ local Covenants =
 				{ Name = "reservoirFullSoundKitID", Type = "number", Nilable = false },
 				{ Name = "beginResearchSoundKitID", Type = "number", Nilable = false },
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "soulbindIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},

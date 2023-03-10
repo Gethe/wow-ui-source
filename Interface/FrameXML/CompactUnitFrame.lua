@@ -1663,9 +1663,19 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.readyCheckIcon:SetPoint("BOTTOM", frame, "BOTTOM", 0, frameHeight / 3 - 4);
 	frame.readyCheckIcon:SetSize(readyCheckSize, readyCheckSize);
 
-	local buffSize = 11 * componentScale;
+	local buffSize = math.min(15, 11 * componentScale);
 
-	CompactUnitFrame_SetMaxBuffs(frame, 3);
+	-- Determine max buffs by calculating how much space is available
+	-- Prioritize debuffs and assume worst case scenario (showing all max size debuffs)
+	-- Whatever space is leftover can be used for showing buffs
+	local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE);
+	local buffSpace = frame:GetWidth() - (#frame.debuffFrames * maxDebuffSize);
+	local maxBuffs = buffSpace / buffSize;
+	maxBuffs = math.floor(maxBuffs);
+	maxBuffs = math.max(3, maxBuffs); -- Show at least 3 buffs. This is how many we previously supported before making it more dynamic.
+	maxBuffs = math.min(#frame.buffFrames, maxBuffs); -- Don't show more buffs than we have frames for
+
+	CompactUnitFrame_SetMaxBuffs(frame, maxBuffs);
 	CompactUnitFrame_SetMaxDebuffs(frame, 3);
 	CompactUnitFrame_SetMaxDispelDebuffs(frame, 3);
 
@@ -1689,7 +1699,7 @@ function DefaultCompactUnitFrameSetup(frame)
 			frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
 		end
 		frame.debuffFrames[i].baseSize = buffSize;
-		frame.debuffFrames[i].maxHeight = frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE;
+		frame.debuffFrames[i].maxHeight = maxDebuffSize;
 		--frame.debuffFrames[i]:SetSize(11, 11);
 	end
 

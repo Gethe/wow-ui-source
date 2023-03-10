@@ -483,10 +483,10 @@
 				</Anchors>
 			</Frame>
 			
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="36"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="31"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 				</Anchors>
 			</EventFrame>
 			

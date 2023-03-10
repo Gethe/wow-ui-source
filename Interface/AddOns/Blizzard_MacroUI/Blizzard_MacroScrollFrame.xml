@@ -1,0 +1,10 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI_shared.xsd">
+	<ScrollFrame name="MacroFrameScrollFrameTemplate" inherits="ScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="scrollBarX" value="6" type="number"/>
+			<KeyValue key="scrollBarTopY" value="-4" type="number"/>
+			<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+		</KeyValues>
+	</ScrollFrame>
+</Ui>

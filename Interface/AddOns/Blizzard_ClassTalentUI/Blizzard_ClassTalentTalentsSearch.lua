@@ -7,7 +7,7 @@ function ClassTalentTalentsSearchMixin:InitializeSearch()
 		return;
 	end
 
-	self.searchInspectUnit = self:GetInspectUnit();
+	self.isInspecting = self:IsInspecting();
 
 	self.textSearch = CreateAndInitFromMixin(ClassTalentTextSearchMixin, self, true);
 	self.actionBarSearch = CreateAndInitFromMixin(ClassTalentActionBarSearchMixin, self, false);
@@ -25,10 +25,10 @@ function ClassTalentTalentsSearchMixin:UpdateEnabledSearchTypes()
 		return;
 	end
 
-	local oldInspectUnit = self.searchInspectUnit;
-	self.searchInspectUnit = self:GetInspectUnit();
+	local wasInspecting = self.isInspecting;
+	self.isInspecting = self:IsInspecting();
 
-	local isActionBarSearchEnabled = not self.searchInspectUnit and not self:HasAnyPendingChanges();
+	local isActionBarSearchEnabled = not self.isInspecting and not self:HasAnyPendingChanges();
 	local wasActionBarSearchEnabled = self.actionBarSearch:GetIsEnabled();
 	local wasActionBarSearchActive = self.actionBarSearch:GetIsActive();
 
@@ -42,7 +42,7 @@ function ClassTalentTalentsSearchMixin:UpdateEnabledSearchTypes()
 		end
 	end
 
-	if (oldInspectUnit ~= self.searchInspectUnit) or (isActionBarSearchEnabled ~= wasActionBarSearchEnabled and wasActionBarSearchActive) then
+	if (wasInspecting ~= self.isInspecting) or (isActionBarSearchEnabled ~= wasActionBarSearchEnabled and wasActionBarSearchActive) then
 		self:ClearActiveSearchState();
 	end
 end

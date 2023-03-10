@@ -1728,10 +1728,10 @@
 						</Anchors>
 					</Frame>
 
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-3"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="1"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-8"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -1777,10 +1777,7 @@
 				<Scripts>
 					<OnLoad function="AchievementFrameAchievements_OnLoad"/>
 					<OnEvent function="AchievementFrameAchievements_OnEvent"/>
-					<OnHide>
-						AchievementFrameFilterDropDown:Hide();
-						AchievementFrame.Header.LeftDDLInset:Hide();
-					</OnHide>
+					<OnHide function="AchievementFrameAchievements_OnHide"/>
 					<OnShow function="AchievementFrameAchievements_OnShow"/>
 				</Scripts>
 				<Frames>
@@ -1791,10 +1788,10 @@
 						</Anchors>
 					</Frame>
 
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-3"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="1"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-8"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
 						</Anchors>
 					</EventFrame>
 					<Frame setAllPoints="true" inherits="AchivementGoldBorderBackdrop"/>
@@ -1809,6 +1806,8 @@
 				<Scripts>
 					<OnLoad function="AchievementFrameStats_OnLoad"/>
 					<OnEvent function="AchievementFrameStats_OnEvent"/>
+					<OnShow function="AchievementFrameStats_OnShow"/>
+					<OnHide function="AchievementFrameStats_OnHide"/>
 				</Scripts>
 				<Frames>
 					<Frame name="$parentBG">
@@ -1839,10 +1838,10 @@
 						</Anchors>
 					</Frame>
 
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-3"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="1"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-8"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
 						</Anchors>
 					</EventFrame>
 					<Frame setAllPoints="true" inherits="AchivementGoldBorderBackdrop"/>
@@ -2203,10 +2202,10 @@
 								</Anchors>
 							</Frame>
 
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Summary" relativePoint="TOPRIGHT" x="7" y="-3"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="1"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Summary" relativePoint="TOPRIGHT" x="12" y="-8"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -2237,10 +2236,10 @@
 								</Anchors>
 							</Frame>
 
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-3"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="1"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-8"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -2726,10 +2725,10 @@
 						</Anchors>
 					</Frame>
 
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="0" y="-28"/>
-							<Anchor point="BOTTOMRIGHT" x="0" y="10"/>
+							<Anchor point="TOPRIGHT" x="-7" y="-33"/>
+							<Anchor point="BOTTOMRIGHT" x="-7" y="15"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>

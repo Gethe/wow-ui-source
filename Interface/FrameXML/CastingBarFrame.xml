@@ -334,6 +334,11 @@
 						<Anchor point="TOP" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="CastTimeText" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="Spark" atlas="ui-castingbar-pip">

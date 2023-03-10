@@ -98,10 +98,11 @@ end
 
 ClassTrialDialogMixin = {}
 
-function ClassTrialDialogMixin:ShowThanks()
+function ClassTrialDialogMixin:ShowThanks(soundKit)
 	local className, classFilename = UnitClass("player");
 	self.ClassNameText:SetText(className);
 	self.ClassIcon:SetAtlas(classFilenameToAtlas[classFilename])
+	self.soundKit = soundKit;
 
 	local dialogText = CLASS_TRIAL_THANKS_DIALOG_TEXT:format(UnitName("player"));
 	self.DialogText:SetText(dialogText);
@@ -185,9 +186,9 @@ function ClassTrialDialogMixin:OnEvent(event, ...)
 	end
 end
 
-function ClassTrialDialogMixin:OnShow(sound)
+function ClassTrialDialogMixin:OnShow()
 	ClassTrialTimerDisplay:Hide();
-	PlaySound(sound or SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING_SMALLER);
+	PlaySound(self.soundKit or SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING_SMALLER);
 end
 
 function ClassTrialDialogMixin:OnLoad()

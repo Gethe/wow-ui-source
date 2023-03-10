@@ -2,8 +2,8 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="SuperTrackedFrame.lua"/>
 
-	<Frame name="SuperTrackedFrame" enableMouse="true" parent="UIParent" frameStrata="BACKGROUND" mixin="SuperTrackedFrameMixin">
-		<Size x="1" y="1"/>
+	<Frame name="SuperTrackedFrame" parent="UIParent" frameStrata="BACKGROUND" mixin="SuperTrackedFrameMixin">
+		<Size x="100" y="100"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" atlas="Navigation-Tracked-Icon" useAtlasSize="true">

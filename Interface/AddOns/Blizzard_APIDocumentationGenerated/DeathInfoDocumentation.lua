@@ -17,7 +17,7 @@ local DeathInfo =
 
 			Returns =
 			{
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -31,7 +31,7 @@ local DeathInfo =
 
 			Returns =
 			{
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -145,7 +145,7 @@ local DeathInfo =
 			LiteralName = "RESURRECT_REQUEST",
 			Payload =
 			{
-				{ Name = "inviter", Type = "string", Nilable = false },
+				{ Name = "inviter", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -175,8 +175,8 @@ local DeathInfo =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
 				{ Name = "graveyardID", Type = "number", Nilable = false },
 				{ Name = "isGraveyardSelectable", Type = "bool", Nilable = false },

@@ -204,7 +204,7 @@ function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 	end
 
 	local loadoutContent = self:ReadLoadoutContent(importStream, treeInfo.ID);
-	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(treeInfo.ID, loadoutContent);
+	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(configID, treeInfo.ID, loadoutContent);
 
 	local newConfigHasPurchasedRanks = #loadoutEntryInfo > 0;
 	local configInfo = C_Traits.GetConfigInfo(configID);
@@ -217,6 +217,32 @@ function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 	self:OnTraitConfigCreateStarted(newConfigHasPurchasedRanks);
 
 	return true;
+end
+
+function ClassTalentImportExportMixin:ViewLoadout(importText, level)
+	local importStream = ExportUtil.MakeImportDataStream(importText);
+
+	local headerValid, serializationVersion, specID = self:ReadLoadoutHeader(importStream);
+	local currentSerializationVersion = C_Traits.GetLoadoutSerializationVersion();
+
+	if (not headerValid) then
+		self:ShowImportError(LOADOUT_ERROR_BAD_STRING);
+		return false;
+	end
+
+	if (serializationVersion ~= currentSerializationVersion) then
+		self:ShowImportError(LOADOUT_ERROR_SERIALIZATION_VERSION_MISMATCH);
+		return false;
+	end
+
+	C_ClassTalents.InitializeViewLoadout(specID, level);
+
+	local configID = Constants.TraitConsts.VIEW_TRAIT_CONFIG_ID;
+	local treeID = C_ClassTalents.GetTraitTreeForSpec(specID);
+
+	local loadoutContent = self:ReadLoadoutContent(importStream, treeID);
+	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(configID, treeID, loadoutContent);
+	return C_ClassTalents.ViewLoadout(loadoutEntryInfo), specID;
 end
 
 -- Returns true if all elements in the treehash are zero
@@ -271,10 +297,9 @@ function ClassTalentImportExportMixin:ReadLoadoutHeader(importStream)
 end
 
 -- converts from compact bit-packing format to LoadoutEntryInfo format to pass to ImportLoadout API
-function ClassTalentImportExportMixin:ConvertToImportLoadoutEntryInfo(treeID, loadoutContent)
+function ClassTalentImportExportMixin:ConvertToImportLoadoutEntryInfo(configID, treeID, loadoutContent)
 	local results = {};
 	local treeNodes = C_Traits.GetTreeNodes(treeID);
-	local configID = self:GetConfigID();
 	local count = 1;
 	for i, treeNodeID in ipairs(treeNodes) do
 

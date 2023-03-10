@@ -1,0 +1,134 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ExpansionTrial.lua"/>
+
+	<Frame name="ExpansionTrialCheckPointLevelHeaderTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopLine" atlas="levelup-bar-gold" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Header" inherits="GameFontHighlightHuge" text="EXPANSION_TRIAL_GAINED_LEVEL_HEADER">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TopLine" x="0" y="-17"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFont_Gigantic">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="BottomLine" atlas="levelup-bar-gold" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" y="0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ExpansionTrialCheckPointDialog" toplevel="true" frameStrata="DIALOG" parent="UIParent" inherits="BaseExpandableDialog, VerticalLayoutFrame" mixin="ExpansionTrialCheckPointDialogMixin">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="521" type="number"/>
+		</KeyValues>
+		<Size x="521" y="250"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="TOP">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+						<KeyValue key="topPadding" value="45" type="number"/>
+					</KeyValues>
+					<Size x="270" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ExpansionImage">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+						<KeyValue key="topPadding" value="5" type="number"/>
+					</KeyValues>
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="TOP">
+					<Size x="415" y="0"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="4" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+						<KeyValue key="topPadding" value="20" type="number"/>
+					</KeyValues>
+					<Size x="360" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="EatAllInput" frameStrata="LOW" enableMouse="true" enableKeyboard="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="GainedLevelContainer" inherits="ExpansionTrialCheckPointLevelHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="38" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate" text="EXPANSION_TRIAL_THANKS_BUTTON">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="20" type="number"/>
+					<KeyValue key="bottomPadding" value="52" type="number"/>
+				</KeyValues>
+				<Size x="250" y="22"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnButtonClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown function="nop"/>
+			<OnKeyUp function="nop"/>
+		</Scripts>
+	</Frame>
+</Ui>

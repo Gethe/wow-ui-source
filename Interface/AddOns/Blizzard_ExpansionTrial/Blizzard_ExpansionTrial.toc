@@ -1,0 +1,4 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Expansion Trial
+## LoadOnDemand: 1
+Blizzard_ExpansionTrial.xml

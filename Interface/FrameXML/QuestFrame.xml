@@ -207,6 +207,11 @@
 						</Scripts>
 					</Button>
 					<ScrollFrame name="QuestDetailScrollFrame" parentKey="ScrollFrame" inherits="QuestScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="9" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-3" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="3" type="number"/>
+						</KeyValues>
 						<ScrollChild>
 							<Frame name="QuestDetailScrollChildFrame">
 								<Size x="300" y="403"/>
@@ -448,21 +453,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="QuestNPCModelTextScrollFrame" inherits="UIPanelScrollFrameTemplate" useParentLevel="true">
+					<ScrollFrame name="QuestNPCModelTextScrollFrame" inherits="ScrollFrameTemplate" useParentLevel="true">
+						<KeyValues>
+							<KeyValue key="noScrollBar" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="10" y="-6"/>
 							<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = 1;
-								ScrollFrame_OnLoad(self);
-								self.ScrollBar:SetThumbTexture("");
-								ScrollFrame_OnScrollRangeChanged(self);
-								self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -12, -16);
-								self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -12, 16);
-							</OnLoad>
-						</Scripts>
 						<ScrollChild>
 							<Frame name="QuestNPCModelTextScrollChildFrame">
 								<Size x="178" y="0"/>

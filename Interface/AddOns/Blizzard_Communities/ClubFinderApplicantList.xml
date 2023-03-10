@@ -139,10 +139,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-18" y="1"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-16" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-14" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-14" y="2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -154,7 +154,7 @@
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="3"/>
-					<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

@@ -336,7 +336,7 @@ end
 function EditModeSystemSettingsDialogMixin:AttachToSystemFrame(systemFrame)
 	self.resetDialogAnchors = systemFrame:ShouldResetSettingsDialogAnchors(self.attachedToSystem);
 	self.attachedToSystem = systemFrame;
-	self.Title:SetText(systemFrame.systemName);
+	self.Title:SetText(systemFrame:GetSystemName());
 	self:UpdateDialog(systemFrame);
 	self:Show();
 end

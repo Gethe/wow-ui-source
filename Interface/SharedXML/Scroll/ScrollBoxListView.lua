@@ -114,6 +114,10 @@ function ScrollBoxListViewMixin:ForEachElementData(func)
 	self:GetDataProvider():ForEach(func);
 end
 
+function ScrollBoxListViewMixin:ReverseForEachElementData(func)
+	self:GetDataProvider():ReverseForEach(func);
+end
+
 function ScrollBoxListViewMixin:EnumerateFrames()
 	return ipairs(self:GetFrames());
 end
@@ -484,6 +488,8 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 	if not self:IsVirtualized() then
 		CheckDataIndicesReturn(1, size);
 	end
+
+	self:RecalculateExtent(scrollBox, stride, spacing); --prevents the assert in GetElementExtent
 
 	local dataIndexBegin;
 	local scrollOffset = scrollBox:GetDerivedScrollOffset();

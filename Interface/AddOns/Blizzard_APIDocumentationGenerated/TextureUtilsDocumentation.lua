@@ -7,12 +7,21 @@ local TextureUtils =
 	Functions =
 	{
 		{
+			Name = "ClearTitleIconTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasInfo",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 			},
 
 			Returns =
@@ -31,7 +40,7 @@ local TextureUtils =
 
 			Returns =
 			{
-				{ Name = "textureMarkup", Type = "string", Nilable = false },
+				{ Name = "textureMarkup", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -48,6 +57,43 @@ local TextureUtils =
 				{ Name = "filename", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "GetTitleIconTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "titleID", Type = "string", Nilable = false },
+				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+				{ Name = "callback", Type = "GetTitleIconTextureCallback", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTitleIconTextureReady",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "titleID", Type = "string", Nilable = false },
+				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ready", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTitleIconTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "titleID", Type = "string", Nilable = false },
+				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -56,6 +102,19 @@ local TextureUtils =
 
 	Tables =
 	{
+		{
+			Name = "TitleIconVersion",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Small", Type = "TitleIconVersion", EnumValue = 0 },
+				{ Name = "Medium", Type = "TitleIconVersion", EnumValue = 1 },
+				{ Name = "Large", Type = "TitleIconVersion", EnumValue = 2 },
+			},
+		},
 		{
 			Name = "AtlasInfo",
 			Type = "Structure",
@@ -69,8 +128,18 @@ local TextureUtils =
 				{ Name = "bottomTexCoord", Type = "number", Nilable = false },
 				{ Name = "tilesHorizontally", Type = "bool", Nilable = false },
 				{ Name = "tilesVertically", Type = "bool", Nilable = false },
-				{ Name = "file", Type = "number", Nilable = true },
+				{ Name = "file", Type = "fileID", Nilable = true },
 				{ Name = "filename", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTitleIconTextureCallback",
+			Type = "CallbackType",
+
+			Arguments =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 			},
 		},
 	},

@@ -11,7 +11,7 @@ local SimpleTextureAPI =
 
 			Arguments =
 			{
-				{ Name = "mask", Type = "table", Nilable = false },
+				{ Name = "mask", Type = "SimpleMaskTexture", Nilable = false },
 			},
 		},
 		{
@@ -20,12 +20,12 @@ local SimpleTextureAPI =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "mask", Type = "table", Nilable = false },
+				{ Name = "mask", Type = "SimpleMaskTexture", Nilable = false },
 			},
 		},
 		{
@@ -38,7 +38,7 @@ local SimpleTextureAPI =
 
 			Returns =
 			{
-				{ Name = "count", Type = "number", Nilable = false },
+				{ Name = "count", Type = "size", Nilable = false },
 			},
 		},
 		{
@@ -47,7 +47,7 @@ local SimpleTextureAPI =
 
 			Arguments =
 			{
-				{ Name = "mask", Type = "table", Nilable = false },
+				{ Name = "mask", Type = "SimpleMaskTexture", Nilable = false },
 			},
 		},
 	},

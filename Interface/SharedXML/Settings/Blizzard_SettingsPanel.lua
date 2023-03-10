@@ -341,6 +341,9 @@ end
 function SettingsPanelMixin:Open()
 	self:WipeModifiedTable();
 	ShowUIPanel(SettingsPanel);
+	if not SettingsAddonLoaded then
+		LoadAddOn("Blizzard_Settings"); -- Loaded for tracking
+	end
 end
 
 function SettingsPanelMixin:OpenToCategory(categoryID, scrollToElementName)

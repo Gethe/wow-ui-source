@@ -644,44 +644,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<ScrollFrame name="$parentSpellScrollFrame" parentKey="spellsScroll" inherits="UIPanelScrollFrameCodeTemplate">
+			<ScrollFrame name="$parentSpellScrollFrame" parentKey="spellsScroll" inherits="ScrollFrameTemplate">
 				<Size x="420" y="410"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="217" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
-							<Size x="27" y="120"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-1" y="2"/>
-							</Anchors>
-							<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
-						</Texture>
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
-							<Size x="27" y="123"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-1" y="-2"/>
-							</Anchors>
-							<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
-						</Texture>
-						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar" hidden="true">
-							<Size x="27" y="200"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="-1" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.46875" top="0.6" bottom="0.9609375"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar" hidden="true">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
-						</Anchors>
-					</Slider>
-				</Frames>
 				<ScrollChild>
 					<Frame name="$parentScrollChild" parentKey="child">
 						<Size x="420" y="410"/>
@@ -1159,7 +1126,7 @@
 								</Anchors>
 							</Frame>
 
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>

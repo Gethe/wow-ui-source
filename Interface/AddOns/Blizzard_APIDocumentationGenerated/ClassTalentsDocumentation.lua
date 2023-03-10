@@ -15,7 +15,7 @@ local ClassTalents =
 			{
 				{ Name = "canChange", Type = "bool", Nilable = false },
 				{ Name = "canAdd", Type = "bool", Nilable = false },
-				{ Name = "changeError", Type = "string", Nilable = false },
+				{ Name = "changeError", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -35,7 +35,7 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "canEdit", Type = "bool", Nilable = false },
-				{ Name = "changeError", Type = "string", Nilable = false },
+				{ Name = "changeError", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -132,6 +132,20 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "GetTraitTreeForSpec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "treeID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "HasUnspentTalentPoints",
 			Type = "Function",
 
@@ -156,7 +170,17 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
-				{ Name = "importError", Type = "string", Nilable = false },
+				{ Name = "importError", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "InitializeViewLoadout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -187,7 +211,7 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "result", Type = "LoadConfigResult", Nilable = false },
-				{ Name = "changeError", Type = "string", Nilable = false },
+				{ Name = "changeError", Type = "cstring", Nilable = false },
 				{ Name = "newLearnedNodeIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
@@ -268,6 +292,20 @@ local ClassTalents =
 				{ Name = "configID", Type = "number", Nilable = true },
 			},
 		},
+		{
+			Name = "ViewLoadout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entries", Type = "table", InnerType = "ImportLoadoutEntryInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -280,6 +318,11 @@ local ClassTalents =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "SelectedLoadoutChanged",
+			Type = "Event",
+			LiteralName = "SELECTED_LOADOUT_CHANGED",
 		},
 		{
 			Name = "SpecializationChangeCastFailed",

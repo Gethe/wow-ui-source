@@ -58,7 +58,7 @@ local WeeklyRewards =
 			Arguments =
 			{
 				{ Name = "type", Type = "WeeklyRewardChestThresholdType", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -96,12 +96,12 @@ local WeeklyRewards =
 
 			Arguments =
 			{
-				{ Name = "itemDBID", Type = "string", Nilable = false },
+				{ Name = "itemDBID", Type = "WeeklyRewardItemDBID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -126,7 +126,7 @@ local WeeklyRewards =
 
 			Returns =
 			{
-				{ Name = "uiTextureKit", Type = "string", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{
@@ -248,13 +248,13 @@ local WeeklyRewards =
 			Fields =
 			{
 				{ Name = "type", Type = "WeeklyRewardChestThresholdType", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "threshold", Type = "number", Nilable = false },
 				{ Name = "progress", Type = "number", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "claimID", Type = "number", Nilable = true },
-				{ Name = "raidString", Type = "string", Nilable = true },
+				{ Name = "raidString", Type = "cstring", Nilable = true },
 				{ Name = "rewards", Type = "table", InnerType = "WeeklyRewardActivityRewardInfo", Nilable = false },
 			},
 		},
@@ -266,7 +266,7 @@ local WeeklyRewards =
 				{ Name = "type", Type = "CachedRewardType", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
-				{ Name = "itemDBID", Type = "string", Nilable = true },
+				{ Name = "itemDBID", Type = "WeeklyRewardItemDBID", Nilable = true },
 			},
 		},
 	},

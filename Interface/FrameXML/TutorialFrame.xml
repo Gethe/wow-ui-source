@@ -124,17 +124,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="TutorialFrameTextScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="TutorialFrameTextScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="30" y="-100"/>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="40"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = true;
-						ScrollFrame_OnLoad(self);
-					</OnLoad>
-				</Scripts>
 				<ScrollChild>
 					<Frame name="TutorialFrameTextScrollChildFrame">
 						<Size x="1" y="1"/>

@@ -25,12 +25,21 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local bastionNodeFound = false;
 	local mapID = self:GetMap():GetMapID();
+
+	if not self.startingMapID then
+		self.startingMapID = mapID;
+	end
+	local isMapLayerTransition = self.startingMapID ~= mapID;
+
 	local taxiNodes = C_TaxiMap.GetAllTaxiNodes(mapID);
 	for i, taxiNodeData in ipairs(taxiNodes) do
-		self:AddFlightNode(taxiNodeData);
+		-- Only show map transition points when on a different map from the one you started viewing.
+		if (isMapLayerTransition or not taxiNodeData.isMapLayerTransition) then
+			self:AddFlightNode(taxiNodeData);
 
-		if taxiNodeData.textureKit == "FlightMaster_Bastion" then
-			bastionNodeFound = true;
+			if taxiNodeData.textureKit == "FlightMaster_Bastion" then
+				bastionNodeFound = true;
+			end
 		end
 	end
 
@@ -39,6 +48,10 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	self:ShowBackgroundRoutesFromCurrent();
+end
+
+function FlightMap_FlightPathDataProviderMixin:OnHide()
+	self.startingMapID = nil;
 end
 
 local function OnRelease(framePool, frame)
@@ -94,7 +107,7 @@ function FlightMap_FlightPathDataProviderMixin:RemoveRouteToPin(pin)
 		local destinationSlotIndex = TaxiGetNodeSlot(slotIndex, routeIndex, false);
 
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
-		
+
 		-- Exit-only flight points don't show a preview.
 		if startPin == nil then
 			return;
@@ -161,11 +174,15 @@ function FlightMap_FlightPathDataProviderMixin:AddFlightNode(taxiNodeData)
 	pin.taxiNodeData = taxiNodeData;
 	pin.owner = self;
 	pin.linkedPins = {};
+	pin.textureKit = taxiNodeData.textureKit;
 	pin.useSpecialReachableIcon = taxiNodeData.useSpecialIcon and taxiNodeData.textureKit and not IsVindicaarTextureKit(taxiNodeData.textureKit);
-	pin:SetFlightPathStyle(taxiNodeData.textureKit, taxiNodeData.state);
-	
+	pin.isMapLayerTransition = taxiNodeData.isMapLayerTransition;
+
+	pin:SetFlightPathStyle(taxiNodeData.state);
 	pin:UpdatePinSize(taxiNodeData.state);
-	pin:SetShown(taxiNodeData.state ~= Enum.FlightPathState.Unreachable); -- Only show if part of a route, handled in the route building functions
+
+	-- Only show if part of a route or a layer transition point, handled in the route building functions
+	pin:SetShown(taxiNodeData.state ~= Enum.FlightPathState.Unreachable or taxiNodeData.isMapLayerTransition);
 end
 
 function FlightMap_FlightPathDataProviderMixin:CalculateLineThickness()
@@ -206,7 +223,8 @@ function FlightMap_FlightPointPinMixin:OnAcquired(playAnim)
 end
 
 function FlightMap_FlightPointPinMixin:OnClick(button)
-	if button == "LeftButton" then
+	-- Map layer transition points are not valid flight targets.
+	if button == "LeftButton" and not self.isMapLayerTransition then
 		TakeTaxiNode(self.taxiNodeData.slotIndex);
 	end
 end
@@ -233,9 +251,9 @@ function FlightMap_FlightPointPinMixin:OnMouseEnter()
 		end
 
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Yellow"));
-		
+
 		self.owner:HighlightRouteToPin(self);
-	elseif self.taxiNodeData.state == Enum.FlightPathState.Unreachable then
+	elseif self.taxiNodeData.state == Enum.FlightPathState.Unreachable and not self.isMapLayerTransition then
 		GameTooltip_AddErrorLine(GameTooltip, TAXI_PATH_UNREACHABLE, true);
 	end
 
@@ -275,6 +293,8 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 		elseif pinType == Enum.FlightPathState.Reachable or pinType == Enum.FlightPathState.Unreachable then
 			self:SetSize(28, 19);
 		end
+	elseif self.isMapLayerTransition then
+		self:SetSize(20, 20);
 	elseif pinType == Enum.FlightPathState.Current then
 		self:SetSize(28, 28);
 	elseif pinType == Enum.FlightPathState.Reachable then
@@ -284,13 +304,12 @@ function FlightMap_FlightPointPinMixin:UpdatePinSize(pinType)
 	end
 end
 
-function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKit, taxiNodeType)
-	self.textureKit = textureKit;
+function FlightMap_FlightPointPinMixin:SetFlightPathStyle(taxiNodeType)
 	self:SetNudgeSourceRadius(1);
 	self:SetNudgeSourceMagnitude(1, 2);
-	if textureKit then
-		self.atlasFormat = textureKit.."-%s";
-		
+	if self.textureKit then
+		self.atlasFormat = self.textureKit.."-%s";
+
 		if IsVindicaarTextureKit(self.textureKit) then
 			self:SetNudgeSourceRadius(2);
 			self:SetNudgeSourceMagnitude(1.5, 3.65);
@@ -302,7 +321,10 @@ function FlightMap_FlightPointPinMixin:SetFlightPathStyle(textureKit, taxiNodeTy
 		self.atlasFormat = "%s";
 	end
 
-	if taxiNodeType == Enum.FlightPathState.Current then
+	if self.isMapLayerTransition then
+		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
+	elseif taxiNodeType == Enum.FlightPathState.Current then
 		self.Icon:SetAtlas(self.atlasFormat:format("Taxi_Frame_Green"));
 		self.IconHighlight:SetAtlas(self.atlasFormat:format("Taxi_Frame_Gray"));
 	elseif taxiNodeType == Enum.FlightPathState.Unreachable then

@@ -183,6 +183,11 @@ QuestData.Horde = {
 
 Class_PerksProgramActivitiesPromptWatcher = class("PerksProgramActivitiesPromptWatcher", Class_TutorialBase);
 function Class_PerksProgramActivitiesPromptWatcher:OnInitialize()
+	local factionTable = QuestData[TutorialHelper:GetFaction()];
+	if not factionTable then
+		return;
+	end
+
 	self.questID = QuestData[TutorialHelper:GetFaction()].IntroTradingPostQuestID;
 	self.helpTipInfo = {
 		text = TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN,
@@ -202,6 +207,11 @@ function Class_PerksProgramActivitiesPromptWatcher:ShowHelpTip()
 end
 
 function Class_PerksProgramActivitiesPromptWatcher:StartWatching()
+	if not self.questID then
+		self:Complete();
+		return;
+	end
+
 	if C_QuestLog.IsQuestFlaggedCompleted(self.questID) then
 		C_Timer.After(0.1, function()
 			self:ShowHelpTip();

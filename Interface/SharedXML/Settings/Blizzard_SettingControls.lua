@@ -47,10 +47,18 @@ function DefaultTooltipMixin:OnEnter()
 		SettingsTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 	end
 	SettingsTooltip:Show();
+
+	if self.HoverBackground then
+		self.HoverBackground:Show();
+	end
 end
 
 function DefaultTooltipMixin:OnLeave()
 	SettingsTooltip:Hide();
+
+	if self.HoverBackground then
+		self.HoverBackground:Hide();
+	end
 end
 
 function DefaultTooltipMixin:SetCustomTooltipAnchoring(parent, anchoring, xOffset, yOffset)

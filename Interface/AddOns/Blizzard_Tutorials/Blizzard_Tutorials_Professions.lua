@@ -485,13 +485,57 @@ function Class_EquipProfessionGear:OnComplete()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
+-- New Specialization reminder
+-- ------------------------------------------------------------------------------------------------------------
+local NewSpecChecker = {};
+NewSpecChecker.reminderShownThisSession = false;
+
+function NewSpecChecker:ShowReminder(profName)
+	NewSpecChecker.reminderShownThisSession = true;
+
+	if ProfessionsFrame and ProfessionsFrame:IsVisible() then
+		return;
+	end
+
+	MainMenuMicroButton_ShowAlert(SpellbookMicroButton, PROFESSIONS_NEW_CHOICE_AVAILABLE_SPECIALIZATION:format(C_ProfSpecs.GetNewSpecReminderProfName()));
+	MicroButtonPulse(SpellbookMicroButton);
+	SpellbookMicroButton.suggestedTabButton = SpellBookFrameTabButton2;
+end
+
+function NewSpecChecker:ShouldShowReminder()
+	if NewSpecChecker.reminderShownThisSession then
+		return false;
+	end
+
+	if C_ProfSpecs.GetNewSpecReminderProfName() then
+		return true;
+	end
+
+	return false;
+end
+
+function NewSpecChecker:CheckShowReminder()
+	if self:ShouldShowReminder() then
+		self:ShowReminder();
+	end
+end
+
+EventRegistry:RegisterFrameEventAndCallback("SKILL_LINES_CHANGED", NewSpecChecker.CheckShowReminder, NewSpecChecker);
+EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_RANKS_CHANGED", NewSpecChecker.CheckShowReminder, NewSpecChecker);
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(checker, isLogin)
+	if isLogin then
+		NewSpecChecker:CheckShowReminder();
+	end
+end, NewSpecChecker);
+
+-- ------------------------------------------------------------------------------------------------------------
 -- Specialization points reminder
 -- ------------------------------------------------------------------------------------------------------------
 local SpecPointsChecker = {};
-local reminderShownThisSession = false;
+SpecPointsChecker.reminderShownThisSession = false;
 
 function SpecPointsChecker:ShowReminder()
-	reminderShownThisSession = true;
+	SpecPointsChecker.reminderShownThisSession = true;
 
 	if ProfessionsFrame and ProfessionsFrame:IsVisible() then
 		return;
@@ -503,22 +547,17 @@ function SpecPointsChecker:ShowReminder()
 end
 
 function SpecPointsChecker:CheckShowReminder()
-	if reminderShownThisSession then
+	if SpecPointsChecker.reminderShownThisSession then
 		return;
 	end
 
-	if C_ProfSpecs.ShouldShowPointsReminder() then
+	if C_ProfSpecs.ShouldShowPointsReminder() and not NewSpecChecker:ShouldShowReminder() then
 		self:ShowReminder();
 	end
 end
 
 EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_UNLOCKED", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
-EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(checker, isLogin)
-	if isLogin then
-		SpecPointsChecker:CheckShowReminder();
-	end
-end, SpecPointsChecker);
 
 
 function PlayerHasPrimaryProfession()

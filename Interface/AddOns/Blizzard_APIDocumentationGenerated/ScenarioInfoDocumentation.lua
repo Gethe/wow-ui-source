@@ -17,7 +17,7 @@ local ScenarioInfo =
 
 			Returns =
 			{
-				{ Name = "typeString", Type = "string", Nilable = true },
+				{ Name = "typeString", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -162,7 +162,7 @@ local ScenarioInfo =
 				{ Name = "money", Type = "number", Nilable = false },
 				{ Name = "type", Type = "number", Nilable = false },
 				{ Name = "area", Type = "string", Nilable = false },
-				{ Name = "uiTextureKit", Type = "string", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{

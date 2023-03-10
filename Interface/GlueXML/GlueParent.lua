@@ -158,6 +158,10 @@ local function IsHigherPriorityError(errorID, currentErrorID)
 	return true;
 end
 
+local function GlueParent_ShowLastErrorDialog(which, text, data)
+	GlueDialog_Show(which, text, data, C_Login.ClearLastError);
+end
+
 local currentlyShowingErrorID = nil;
 function GlueParent_UpdateDialogs()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
@@ -181,6 +185,11 @@ function GlueParent_UpdateDialogs()
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, localizedString, debugString, errorCodeString;
 		errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
+
+		if (ACCOUNT_SAVE_KICK_ERROR_CODE and AccountSaveFrame and errorCategory == "WOW" and errorID == ACCOUNT_SAVE_KICK_ERROR_CODE) then
+			-- If client is kicked due to account save success, allow the Account Save Frame to handle messaging if it's loaded
+			return;
+		end
 
 		if (IsHigherPriorityError(errorID, currentlyShowingErrorID)) then
 			local isHTML = false;
@@ -246,13 +255,13 @@ function GlueParent_UpdateDialogs()
 			end
 
 			if ( isHTML ) then
-				GlueDialog_Show("OKAY_HTML", localizedString);
+				GlueParent_ShowLastErrorDialog("OKAY_HTML", localizedString);
 			elseif ( hasURL ) then
-				GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+				GlueParent_ShowLastErrorDialog("OKAY_WITH_URL", localizedString, urlTag);
 			elseif ( useGenericURL ) then
-				GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
+				GlueParent_ShowLastErrorDialog("OKAY_WITH_GENERIC_URL", localizedString);
 			else
-				GlueDialog_Show("OKAY", localizedString);
+				GlueParent_ShowLastErrorDialog("OKAY", localizedString);
 			end
 			currentlyShowingErrorID = errorID;
 

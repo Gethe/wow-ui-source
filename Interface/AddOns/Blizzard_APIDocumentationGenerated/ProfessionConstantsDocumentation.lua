@@ -177,7 +177,7 @@ local ProfessionConstants =
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "Optional", Type = "CraftingReagentType", EnumValue = 0 },
+				{ Name = "Modifying", Type = "CraftingReagentType", EnumValue = 0 },
 				{ Name = "Basic", Type = "CraftingReagentType", EnumValue = 1 },
 				{ Name = "Finishing", Type = "CraftingReagentType", EnumValue = 2 },
 			},

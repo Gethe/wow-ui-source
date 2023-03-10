@@ -326,17 +326,6 @@
 		<TexCoords left="0.359375" right="0.99609375" top="0.8525390625" bottom="0.880859375"/>
 	</Texture>
 
-
-	<EventFrame name="EncounterJournalScrollBarTemplate" inherits="WowTrimScrollBar" mixin="EncounterJournalScrollBarMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="hideBackground" value="true" type="boolean"/>
-			<KeyValue key="backplateAlpha" value=".3" type="number"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</EventFrame>
-	
 	<Button name="EJButtonTemplate" mixin="EJButtonMixin" virtual="true">
 		<Size x="75" y="26"/>
 		<HitRectInsets>
@@ -1402,17 +1391,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-		
-	<Slider name="EncounterJournalScrollBarTemplateOld" mixin="EncounterJournalScrollBarOldMixin" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar" virtual="true">
-		<Anchors>
-			<Anchor point="TOPRIGHT" x="0" y="-17"/>
-			<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Slider>
-
+	
 	<Frame name="EncounterJournal" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
 		<Size x="800" y="496"/>
 		<Anchors>
@@ -1768,10 +1747,10 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" x="-20" y="1"/>
 						</Anchors>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-5"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -1876,10 +1855,10 @@
 							<Anchor point="TOPLEFT" x="14" y="-50"/>
 						</Anchors>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="EncounterJournalScrollBarTemplate">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="4" y="6"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="4" y="-9"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="12" y="-6"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="12" y="-4"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -1983,10 +1962,13 @@
 									<KeyValue key="fontName" value="GameFontBlack" type="string"/>
 								</KeyValues>
 							</Frame>
-							<EventFrame parentKey="LoreScrollBar" inherits="EncounterJournalScrollBarTemplate" frameStrata="HIGH">
+							<EventFrame parentKey="LoreScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+								<KeyValues>
+									<KeyValue key="hideTrack" value="true" type="boolean"/>
+								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.LoreScrollingFont" relativePoint="TOPRIGHT" x="5" y="0"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.LoreScrollingFont" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.LoreScrollingFont" relativePoint="TOPRIGHT" x="9" y="-33"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.LoreScrollingFont" relativePoint="BOTTOMRIGHT" x="9" y="33"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -2184,10 +2166,10 @@
 									<Anchor point="BOTTOMLEFT" x="25" y="1"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="BossesScrollBar" inherits="EncounterJournalScrollBarTemplate">
+							<EventFrame parentKey="BossesScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.BossesScrollBox" relativePoint="TOPRIGHT"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.BossesScrollBox" relativePoint="BOTTOMRIGHT"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.BossesScrollBox" relativePoint="TOPRIGHT" x="5" y="-5"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.BossesScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 								</Anchors>
 							</EventFrame>
 							<DropDownToggleButton name="$parentDifficulty" parentKey="difficulty" inherits="EJButtonTemplate" frameLevel="10">
@@ -2244,14 +2226,16 @@
 									</OnLeave>
 								</Scripts>
 							</Button>
-							<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="UIPanelScrollFrameCodeTemplate">
+							<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="ScrollFrameTemplate">
 								<Size x="350" y="383"/>
+								<KeyValues>
+									<KeyValue key="scrollBarX" value="-15" type="number"/>
+									<KeyValue key="scrollBarTopY" value="-6" type="number"/>
+									<KeyValue key="scrollBarBottomY" value="6" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplateOld"/>
-								</Frames>
 								<ScrollChild>
 									<Frame name="$parentScrollChild" parentKey="child">
 										<Size x="320" y="372"/>
@@ -2286,14 +2270,16 @@
 									</OnHide>
 								</Scripts>
 							</ScrollFrame>
-							<ScrollFrame name="$parentOverviewScrollFrame" parentKey="overviewScroll" inherits="UIPanelScrollFrameCodeTemplate">
+							<ScrollFrame name="$parentOverviewScrollFrame" parentKey="overviewScroll" inherits="ScrollFrameTemplate">
 								<Size x="350" y="383"/>
+								<KeyValues>
+									<KeyValue key="scrollBarX" value="-15" type="number"/>
+									<KeyValue key="scrollBarTopY" value="-6" type="number"/>
+									<KeyValue key="scrollBarBottomY" value="6" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
-								<Frames>
-									<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplateOld"/>
-								</Frames>
 								<ScrollChild>
 									<Frame name="$parentScrollChild" parentKey="child">
 										<Size x="320" y="372"/>
@@ -2424,10 +2410,10 @@
 											<Anchor point="BOTTOMRIGHT" x="-20" y="1"/>
 										</Anchors>
 									</Frame>
-									<EventFrame parentKey="ScrollBar" inherits="EncounterJournalScrollBarTemplate">
+									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
-											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-5"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 										</Anchors>
 									</EventFrame>
 									<DropDownToggleButton name="$parentFilterToggle" parentKey="filter" text="GEAR_FILTER" inherits="EJButtonTemplate">

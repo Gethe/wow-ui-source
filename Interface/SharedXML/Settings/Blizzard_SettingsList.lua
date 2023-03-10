@@ -72,7 +72,7 @@ function SettingsListMixin:OnLoad()
 	local scrollBoxAnchors = 
 	{
 		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", 10, -2),
-		CreateAnchor("BOTTOMRIGHT", -20, 10);
+		CreateAnchor("BOTTOMRIGHT", -20, -2);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchors, scrollBoxAnchors);
 	

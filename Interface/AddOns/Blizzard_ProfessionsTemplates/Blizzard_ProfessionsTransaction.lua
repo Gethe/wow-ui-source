@@ -248,7 +248,7 @@ end
 
 local function CanReagentSlotBeItemModification(reagentSlotSchematic)
 	return (reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent) and
-			(reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Optional);
+			(reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying);
 end
 
 function ProfessionsRecipeTransactionMixin:GenerateExpectedItemModifications()
@@ -600,14 +600,14 @@ end
 function ProfessionsRecipeTransactionMixin:CreateOptionalOrFinishingCraftingReagentInfoTbl()
 	local function IsOptionalOrFinishing(reagentTbl)
 		local reagentType = reagentTbl.reagentSlotSchematic.reagentType;
-		return reagentType == Enum.CraftingReagentType.Optional or reagentType == Enum.CraftingReagentType.Finishing;
+		return reagentType == Enum.CraftingReagentType.Modifying or reagentType == Enum.CraftingReagentType.Finishing;
 	end
 	return self:CreateCraftingReagentInfoTblIf(IsOptionalOrFinishing);
 end
 
 function ProfessionsRecipeTransactionMixin:CreateOptionalCraftingReagentInfoTbl()
 	local function IsOptionalReagentType(reagentTbl)
-		return reagentTbl.reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Optional;
+		return reagentTbl.reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying;
 	end
 	return self:CreateCraftingReagentInfoTblIf(IsOptionalReagentType);
 end

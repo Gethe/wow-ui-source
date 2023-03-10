@@ -35,6 +35,33 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="EditModeManagerSettingCheckButtonTemplate" inherits="EditModeCheckButtonTemplate" virtual="true">
+		<Size x="225" y="32"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="225" type="number"/>
+			<KeyValue key="fixedHeight" value="32" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeManagerSettingsOptionsContainerTemplate" inherits="GridLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="childXPadding" value="0" type="number"/>
+			<KeyValue key="childYPadding" value="0" type="number"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="stride" value="2" type="number"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+			<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+			<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="EditModeUnsavedChangesCheckerTemplate" mixin="EditModeUnsavedChangesCheckerMixin" virtual="true">
 		<Scripts>
 			<OnEnter method="OnEnter"/>

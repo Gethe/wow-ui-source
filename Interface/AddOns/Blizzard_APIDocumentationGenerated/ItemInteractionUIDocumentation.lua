@@ -29,7 +29,7 @@ local ItemInteractionUI =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -73,7 +73,7 @@ local ItemInteractionUI =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
 			},
 
 			Returns =
@@ -96,7 +96,7 @@ local ItemInteractionUI =
 			LiteralName = "ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
 			Payload =
 			{
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
 			},
 		},
 	},
@@ -127,7 +127,7 @@ local ItemInteractionUI =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "openSoundKitID", Type = "number", Nilable = false },
 				{ Name = "closeSoundKitID", Type = "number", Nilable = false },
 				{ Name = "titleText", Type = "string", Nilable = false },

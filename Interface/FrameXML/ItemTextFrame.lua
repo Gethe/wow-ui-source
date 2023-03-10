@@ -125,7 +125,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			ItemTextScrollFrame:GetScrollChild():SetHeight(ItemTextScrollFrame:GetHeight() + ItemTextScrollFrame:GetVerticalScrollRange() + 30);
 		end
 
-		ItemTextScrollFrameScrollBar:SetValue(0);
+		ItemTextScrollFrame.ScrollBar:ScrollToBegin();
 		ItemTextScrollFrame:Show();
 		local page = ItemTextGetPage();
 		local hasNext = ItemTextHasNextPage();

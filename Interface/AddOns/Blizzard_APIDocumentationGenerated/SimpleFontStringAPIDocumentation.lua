@@ -11,8 +11,8 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "leftIndex", Type = "number", Nilable = false },
-				{ Name = "rightIndex", Type = "number", Nilable = false },
+				{ Name = "leftIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "rightIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -52,13 +52,13 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "characterIndex", Type = "number", Nilable = false },
+				{ Name = "characterIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "inside", Type = "bool", Nilable = false },
 			},
 		},
@@ -85,9 +85,9 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = true },
-				{ Name = "fontHeight", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = true },
+				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -100,7 +100,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -126,7 +126,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -139,7 +139,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -152,7 +152,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "lineHeight", Type = "number", Nilable = false },
+				{ Name = "lineHeight", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -234,7 +234,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -247,7 +247,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -260,7 +260,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -273,7 +273,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -315,7 +315,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -328,7 +328,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -374,9 +374,9 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "fontHeight", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -385,7 +385,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -394,7 +394,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -412,7 +412,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -421,7 +421,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -460,7 +460,7 @@ local SimpleFontStringAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -479,7 +479,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -488,7 +488,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false, Default = "" },
+				{ Name = "text", Type = "cstring", Nilable = false, Default = "" },
 			},
 		},
 		{
@@ -500,7 +500,7 @@ local SimpleFontStringAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -509,7 +509,7 @@ local SimpleFontStringAPI =
 
 			Arguments =
 			{
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{

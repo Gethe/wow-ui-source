@@ -19,6 +19,7 @@ if tbl then
 
 	Import("math");
 	Import("GetTickTime");
+	Import("securecallfunction");
 end
 ----------------
 

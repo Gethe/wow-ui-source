@@ -74,7 +74,7 @@ local AzeriteEssence =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -300,11 +300,11 @@ local AzeriteEssence =
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "rank", Type = "number", Nilable = false },
 				{ Name = "unlocked", Type = "bool", Nilable = false },
 				{ Name = "valid", Type = "bool", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 			},
 		},
 		{

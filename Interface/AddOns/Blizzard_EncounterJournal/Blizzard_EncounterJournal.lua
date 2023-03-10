@@ -192,12 +192,6 @@ local SlotFilterToSlotName = {
 local BOSS_LOOT_BUTTON_HEIGHT = 45;
 local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
-EncounterJournalScrollBarMixin = {};
-
-function EncounterJournalScrollBarMixin:OnLoad()
-	WowTrimScrollBarMixin.OnLoad(self);
-end
-
 EncounterJournalItemMixin = {};
 
 function EncounterJournalItemMixin:Init(elementData)
@@ -302,9 +296,16 @@ MonthlyActivitiesTabButtonMixin = CreateFromMixins(PanelTabButtonMixin);
 function MonthlyActivitiesTabButtonMixin:OnEnter()
 	if not C_PlayerInfo.IsTravelersLogAvailable() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
 		local factionGroup = UnitFactionGroup("player");
 		local tradingPostLocation = factionGroup == "Alliance" and MONTHLY_ACTIVITIES_TRADING_POST_ALLIANCE or MONTHLY_ACTIVITIES_TRADING_POST_HORDE;
 		GameTooltip_AddErrorLine(GameTooltip, MONTHLY_ACTIVITIES_UNAVAILABLE_TOOLTIP:format(tradingPostLocation));
+
+		if AreMonthlyActivitiesRestricted() then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip_AddErrorLine(GameTooltip, MONTHLY_ACTIVITIES_RESTRICTED_TOOLTIP);
+		end
+
 		GameTooltip:Show();
 	end
 end
@@ -1829,7 +1830,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 			--check to see if it is offscreen
 			if self.index and not EncounterJournal.encounter.infoFrame.updatingSpells then
-				local scrollValue = EncounterJournal.encounter.info.detailsScroll.ScrollBar:GetValue();
+				local scrollValue = EncounterJournal.encounter.info.detailsScroll:GetVerticalScroll();
 				local cutoff = EncounterJournal.encounter.info.detailsScroll:GetHeight() + scrollValue;
 
 				local _, _, _, _, anchorY = self:GetPoint(1);
@@ -1917,7 +1918,7 @@ function EncounterJournal_MoveSectionUpdate(self)
 		local _, _, _, _, anchorY = self:GetPoint(1);
 		local height = min(EJ_MAX_SECTION_MOVE, self:GetHeight() + self.description:GetHeight() + SECTION_DESCRIPTION_OFFSET);
 		local scrollValue = abs(anchorY) - (EncounterJournal.encounter.info.detailsScroll:GetHeight()-height);
-		EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(scrollValue);
+		EncounterJournal.encounter.info.detailsScroll:SetVerticalScroll(scrollValue);
 		self:SetScript("OnUpdate", nil);
 	end
 	self.frameCount = self.frameCount + 1;
@@ -1958,8 +1959,8 @@ function EncounterJournal_ClearDetails()
 	EncounterJournal.encounter.infoFrame.description:SetText("");
 	EncounterJournal.encounter.info.encounterTitle:SetText("");
 
-	EncounterJournal.encounter.info.overviewScroll.ScrollBar:SetValue(0);
-	EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(0);
+	EncounterJournal.encounter.info.overviewScroll.ScrollBar:ScrollToBegin();
+	EncounterJournal.encounter.info.detailsScroll.ScrollBar:ScrollToBegin();
 
 	local freeHeaders = EncounterJournal.encounter.freeHeaders;
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;

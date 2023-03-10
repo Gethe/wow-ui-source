@@ -225,7 +225,6 @@ end
 
 function MainMenuBarBackpackMixin:OnLoadInternal()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_LOOTED");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
@@ -265,9 +264,6 @@ function MainMenuBarBackpackMixin:BackpackOnEvent(event, ...)
 		self:OnBagUpdate(bag);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:OnPlayerEnteringWorld();
-	elseif ( event == "CVAR_UPDATE" ) then
-		local cvar, value = ...;
-		self:OnCVarUpdate(cvar, value);
 	elseif event == "AZERITE_EMPOWERED_ITEM_LOOTED" then
 		self:OnAzeriteEmpoweredItemLooted();
 	end
@@ -310,15 +306,8 @@ function MainMenuBarBackpackMixin:OnBagUpdate(bagID)
 end
 
 function MainMenuBarBackpackMixin:OnPlayerEnteringWorld()
-	self:SetCountShown(GetCVarBool("displayFreeBagSlots"));
+	self:SetCountShown(true);
 	self:UpdateFreeSlots();
-end
-
-function MainMenuBarBackpackMixin:OnCVarUpdate(cvar, value)
-	-- [NB] TODO: Check if this is broken, it's probably been broken for a long time
-	if cvar == "DISPLAY_FREE_BAG_SLOTS" then
-		self:SetCountShown(value == "1");
-	end
 end
 
 function MainMenuBarBackpackMixin:OnAzeriteEmpoweredItemLooted()

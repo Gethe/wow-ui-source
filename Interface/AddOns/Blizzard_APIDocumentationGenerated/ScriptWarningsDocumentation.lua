@@ -17,7 +17,7 @@ local ScriptWarnings =
 			Payload =
 			{
 				{ Name = "warnType", Type = "number", Nilable = false },
-				{ Name = "warningText", Type = "string", Nilable = false },
+				{ Name = "warningText", Type = "cstring", Nilable = false },
 			},
 		},
 	},

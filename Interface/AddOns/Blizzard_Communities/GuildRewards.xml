@@ -236,10 +236,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="2"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="-5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="1"/>
 				</Anchors>
 			</EventFrame>
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">

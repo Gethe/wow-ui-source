@@ -73,13 +73,13 @@ function QuestFrame_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_ITEM_UPDATE" ) then
 		if ( QuestFrameDetailPanel:IsShown() ) then
 			QuestInfo_ShowRewards();
-			QuestDetailScrollFrameScrollBar:SetValue(0);
+			QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
 		elseif ( QuestFrameProgressPanel:IsShown() ) then
 			QuestFrameProgressItems_Update()
-			QuestProgressScrollFrameScrollBar:SetValue(0);
+			QuestProgressScrollFrame.ScrollBar:ScrollToBegin();
 		elseif ( QuestFrameRewardPanel:IsShown() ) then
 			QuestInfo_ShowRewards();
-			QuestRewardScrollFrameScrollBar:SetValue(0);
+			QuestRewardScrollFrame.ScrollBar:ScrollToBegin();
 		end
 	elseif ( event == "QUEST_LOG_UPDATE" ) then
 		-- just update if at greeting panel
@@ -90,7 +90,7 @@ function QuestFrame_OnEvent(self, event, ...)
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
-			QuestDetailScrollFrameScrollBar:SetValue(0);
+			QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
 		end
 		return;
 	end
@@ -125,7 +125,7 @@ function QuestFrameRewardPanel_OnShow()
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameRewardPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame, QuestFrameCompleteQuestButton, material);
-	QuestRewardScrollFrameScrollBar:SetValue(0);
+	QuestRewardScrollFrame.ScrollBar:ScrollToBegin();
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
 		local questPortraitMount = 0;
@@ -180,6 +180,7 @@ end
 
 local function QuestFrameProgressPanel_SetupBG(self)
 	local material, isDefaultMaterial = QuestFrame_GetMaterial();
+	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	if ( isDefaultMaterial ) then
 		local theme = C_QuestLog.GetQuestDetailsTheme(GetQuestID());
 		if ( theme and theme.background ) then
@@ -188,11 +189,11 @@ local function QuestFrameProgressPanel_SetupBG(self)
 		end
 	end
 
-	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	return material;
 end
 
 function QuestFrameProgressPanel_OnShow(self)
+	local material, isDefaultMaterial = QuestFrame_GetMaterial();
 	QuestFrameRewardPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
@@ -202,6 +203,8 @@ function QuestFrameProgressPanel_OnShow(self)
 	QuestFrame_SetTitleTextColor(QuestProgressTitleText, material);
 	QuestProgressText:SetText(GetProgressText());
 	QuestFrame_SetTextColor(QuestProgressText, material);
+	QuestFrame_SetTitleTextColor(QuestProgressRequiredItemsText, material);
+
 	if ( IsQuestCompletable() ) then
 		QuestFrameCompleteButton:Enable();
 	else
@@ -241,9 +244,8 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..1]:SetPoint("TOPLEFT", "QuestProgressRequiredItemsText", "BOTTOMLEFT", -3, -5);
 		end
 
-		-- Check if this quest should hide required items on turn in.
 		local actualNumRequiredItems = 0;
-		if ( not IsQuestCompletable() or not C_QuestOffer.GetHideRequiredItemsOnTurnIn() ) then
+		if not C_QuestOffer.GetHideRequiredItems() then
 			-- Keep track of how many actual required items there are, in case we hide any of them.
 			for i=1, numRequiredItems do
 				local hidden = IsQuestItemHidden(i);
@@ -291,7 +293,7 @@ function QuestFrameProgressItems_Update()
 	for i=buttonIndex, MAX_REQUIRED_ITEMS do
 		_G[questItemName..i]:Hide();
 	end
-	QuestProgressScrollFrameScrollBar:SetValue(0);
+	QuestProgressScrollFrame.ScrollBar:ScrollToBegin();
 end
 
 function QuestFrameGreetingPanel_OnLoad(self)
@@ -524,7 +526,9 @@ function QuestFrameDetailPanel_OnShow()
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
-	QuestDetailScrollFrameScrollBar:SetValue(0);
+	
+	QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
+
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
 		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);

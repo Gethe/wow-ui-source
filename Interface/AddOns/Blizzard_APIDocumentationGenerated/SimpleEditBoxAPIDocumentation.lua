@@ -11,7 +11,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -116,9 +116,9 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "fontHeight", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -131,7 +131,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -186,7 +186,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "language", Type = "string", Nilable = false },
+				{ Name = "language", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -199,7 +199,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -212,7 +212,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -307,7 +307,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "fontHeight", Type = "number", Nilable = false },
+				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -320,7 +320,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -349,10 +349,10 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -423,7 +423,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -598,9 +598,9 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 
 			Returns =
@@ -614,7 +614,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -626,7 +626,7 @@ local SimpleEditBoxAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -653,7 +653,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -662,7 +662,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -753,7 +753,7 @@ local SimpleEditBoxAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -772,7 +772,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "fontHeight", Type = "number", Nilable = false },
+				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -781,7 +781,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -793,7 +793,7 @@ local SimpleEditBoxAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -802,10 +802,10 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{

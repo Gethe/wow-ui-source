@@ -12,7 +12,7 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -26,8 +26,8 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -41,7 +41,7 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -55,7 +55,7 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -69,8 +69,8 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -83,8 +83,8 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -98,8 +98,8 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "value", Type = "bool", Nilable = false },
 			},
 

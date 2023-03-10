@@ -54,8 +54,8 @@ local LootJournal =
 			Fields =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "invType", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "invType", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -65,7 +65,7 @@ local LootJournal =
 			{
 				{ Name = "setID", Type = "number", Nilable = false },
 				{ Name = "itemLevel", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 	},

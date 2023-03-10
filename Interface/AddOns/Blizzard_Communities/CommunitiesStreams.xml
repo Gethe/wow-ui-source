@@ -211,19 +211,16 @@
 					<KeyValue key="width" value="160" type="number"/>
 				</KeyValues>
 			</Frame>
-			<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+			<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="5" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-67"/>
 					<Anchor point="BOTTOMRIGHT" x="-32" y="35"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="ScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
-						</Anchors>
-					</Slider>
-				</Frames>
 				<ScrollChild>
 					<Frame parentKey="Child">
 						<Size x="568" y="1500"/>

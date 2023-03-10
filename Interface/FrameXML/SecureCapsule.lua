@@ -126,8 +126,11 @@ retain("GMError");
 retain("GetMouseFocus");
 retain("LOCALE_enGB");
 retain("CreateFrame");
+retain("CreateCounter");
 retain("Lerp");
 retain("Clamp");
+retain("ClampMod");
+retain("NegateIf");
 retain("PercentageBetween");
 retain("Saturate");
 retain("GetCursorDelta");
@@ -150,7 +153,6 @@ retain("IsVeteranTrialAccount");
 retain("C_StorePublic");
 retain("C_Club");
 retain("UnitFactionGroup");
-retain("FrameUtil");
 retain("strlenutf8");
 retain("UnitRace");
 retain("UnitSex");
@@ -159,6 +161,31 @@ retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 retain("Round");
 retain("IsCharacterNPERestricted");
+retain("GetScaledCursorPosition");
+retain("CreateInterpolator");
+retain("ApproximatelyEqual");
+retain("GenerateClosure");
+retain("WithinRangeExclusive");
+retain("TextureKitConstants");
+retain("CopyValuesAsKeys");
+retain("securecallfunction");
+retain("secureexecuterange");
+retain("rawset");
+retain("UNKNOWN");
+retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
+retain("securecallfunction");
+
+-- Require move
+retain("tInvert");
+retain("tContains");
+
+-- Investigate loading these from the .tocs and adding preambles
+retain("FrameUtil");
+retain("EnumUtil");
+retain("FlagsUtil");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -238,6 +265,7 @@ take("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_HKD");
 take("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 take("BLIZZARD_STORE_CURRENCY_BETA");
 take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");

@@ -15,7 +15,9 @@ function APIDocumentationMixin:OnLoad()
 		OpenDump = 3,
 	};
 
-	DEFAULT_CHAT_FRAME:SetMaxLines(2000);
+	if DEFAULT_CHAT_FRAME then
+		DEFAULT_CHAT_FRAME:SetMaxLines(2000);
+	end
 end
 
 function APIDocumentationMixin:HandleSlashCommand(command)
@@ -297,8 +299,12 @@ function APIDocumentationMixin:AddDocumentationTable(documentationInfo)
 end
 
 function APIDocumentationMixin:WriteLine(message)
-	local info = ChatTypeInfo["SYSTEM"];
-	DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
+	if DEFAULT_CHAT_FRAME then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
+	else
+		print(message);
+	end
 end
 
 function APIDocumentationMixin:WriteLineF(format, ...)

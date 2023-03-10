@@ -25,7 +25,7 @@ local AnimaDiversionUI =
 
 			Returns =
 			{
-				{ Name = "normalizedPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -43,7 +43,7 @@ local AnimaDiversionUI =
 
 			Returns =
 			{
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{
@@ -116,7 +116,7 @@ local AnimaDiversionUI =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "mapID", Type = "number", Nilable = false },
 			},
@@ -132,7 +132,7 @@ local AnimaDiversionUI =
 				{ Name = "costs", Type = "table", InnerType = "AnimaDiversionCostInfo", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "normalizedPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "state", Type = "AnimaDiversionNodeState", Nilable = false },
 			},
 		},

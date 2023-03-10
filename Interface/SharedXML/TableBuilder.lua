@@ -202,7 +202,7 @@ function TableBuilderColumnMixin:GetDisplayUnderPreviousHeader()
 end
 
 -- Constructs a table of frames within an existing set of row frames. These row frames could originate from
--- a hybrid scroll frame or statically fixed set. To populate the table, assign a data provider (CAPI or lua function)
+-- a scroll box or statically fixed set. To populate the table, assign a data provider (CAPI or lua function)
 -- that can retrieve an object by index (number).
 TableBuilderMixin = {};
 function TableBuilderMixin:Init()

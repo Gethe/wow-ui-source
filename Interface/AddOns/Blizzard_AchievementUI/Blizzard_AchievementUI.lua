@@ -688,7 +688,17 @@ function AchievementFrameCategories_OnCategoryChanged(category)
 	end
 end
 
+local AchievementFrameShownEvents =
+{
+	"ACHIEVEMENT_EARNED",
+	"CRITERIA_UPDATE",
+	"RECEIVED_ACHIEVEMENT_MEMBER_LIST",
+	"ACHIEVEMENT_SEARCH_UPDATED",
+};
+
 function AchievementFrameAchievements_OnShow(self)
+	FrameUtil.RegisterFrameForEvents(self, AchievementFrameShownEvents);
+
 	if IsCategoryFeatOfStrength(GetSelectedCategory()) then
 		AchievementFrameFilterDropDown:Hide();
 		AchievementFrame.Header.LeftDDLInset:Hide();
@@ -696,6 +706,13 @@ function AchievementFrameAchievements_OnShow(self)
 		AchievementFrameFilterDropDown:Show();
 		AchievementFrame.Header.LeftDDLInset:Show();
 	end
+end
+
+function AchievementFrameAchievements_OnHide(self)
+	FrameUtil.UnregisterFrameForEvents(self, AchievementFrameShownEvents);
+
+	AchievementFrameFilterDropDown:Hide();
+	AchievementFrame.Header.LeftDDLInset:Hide();
 end
 
 function AchievementFrameComparison_UpdateStatusBars (id)
@@ -800,11 +817,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		return;
 	end
 	if ( event == "ADDON_LOADED" ) then
-		self:RegisterEvent("ACHIEVEMENT_EARNED");
-		self:RegisterEvent("CRITERIA_UPDATE");
 		self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
-		self:RegisterEvent("RECEIVED_ACHIEVEMENT_MEMBER_LIST");
-		self:RegisterEvent("ACHIEVEMENT_SEARCH_UPDATED");
 
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
@@ -1071,7 +1084,7 @@ function AchievementTemplateMixin:Init(elementData)
 	if self.index then
 		id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, self.index);
 	else
-		-- Twitter
+		-- Social
 		id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(self.id);
 		category = GetAchievementCategory(self.id);
 	end
@@ -2109,7 +2122,7 @@ function AchievementStatTemplateMixin:Init(elementData)
 end
 
 function AchievementFrameStats_OnEvent (self, event, ...)
-	if ( event == "CRITERIA_UPDATE" and self:IsVisible() ) then
+	if ( event == "CRITERIA_UPDATE" ) then
 		AchievementFrameStats_UpdateDataProvider();
 	end
 end
@@ -2122,6 +2135,14 @@ function AchievementFrameStats_OnLoad (self)
 	view:SetPadding(2,0,0,4,0);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function AchievementFrameStats_OnShow(self)
+	self:RegisterEvent("CRITERIA_UPDATE");
+end
+
+function AchievementFrameStats_OnHide(self)
+	self:UnregisterEvent("CRITERIA_UPDATE");
 end
 
 function AchievementFrameStats_UpdateDataProvider ()
@@ -2664,30 +2685,37 @@ function AchievementFrameComparison_OnLoad (self)
 		ScrollUtil.InitScrollBoxListWithScrollBar(self.StatContainer.ScrollBox, self.StatContainer.ScrollBar, view);
 	end
 
-	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("INSPECT_ACHIEVEMENT_READY");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	self:RegisterEvent("PORTRAITS_UPDATED");
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
+local AchievementFrameComparisonShownEvents =
+{
+	"ACHIEVEMENT_EARNED",
+	"UNIT_PORTRAIT_UPDATE",
+	"PORTRAITS_UPDATED",
+	"DISPLAY_SIZE_CHANGED",
+};
 
-function AchievementFrameComparison_OnShow ()
+function AchievementFrameComparison_OnShow(self)
 	AchievementFrameStats:Hide();
 	AchievementFrameAchievements:Hide();
 	AchievementFrame:SetWidth(890);
 	SetUIPanelAttribute(AchievementFrame, "xOffset", 38);
 	UpdateUIPanelPositions(AchievementFrame);
 	AchievementFrame.isComparison = true;
+	C_AchievementInfo.SetPortraitTexture(AchievementFrameComparisonHeaderPortrait);
+	FrameUtil.RegisterFrameForEvents(self, AchievementFrameComparisonShownEvents);
+	AchievementFrameComparison_ForceUpdate();
 end
 
-function AchievementFrameComparison_OnHide ()
+function AchievementFrameComparison_OnHide(self)
 	AchievementFrame.selectedTab = nil;
 	AchievementFrame:SetWidth(768);
 	SetUIPanelAttribute(AchievementFrame, "xOffset", 80);
 	UpdateUIPanelPositions(AchievementFrame);
 	AchievementFrame.isComparison = false;
 	ClearAchievementComparisonUnit();
+	FrameUtil.UnregisterFrameForEvents(self, AchievementFrameComparisonShownEvents);
 end
 
 function AchievementFrameComparison_OnEvent (self, event, ...)

@@ -81,29 +81,14 @@ function GuildControlUI_BankTabPermissions_Update(self)
 
 	local numTabs = GetNumGuildBankTabs();
 	local canBuyTab = false;
-	local hasScrollBar = true;
 	if numTabs < MAX_BUY_GUILDBANK_TABS then
 		canBuyTab = true;
 		numTabs = numTabs + 1;
-		hasScrollBar = numTabs > 3;
 	end	
 	
 	local scrollFrame = self.scrollFrame;
-	local scrollFrameName = scrollFrame:GetName();
-	local buttonWidth;
-	if ( hasScrollBar ) then
-		scrollFrame:SetPoint("BOTTOMRIGHT",-28 ,8);
-		scrollFrame.ScrollBar:Show();
-		_G[scrollFrameName.."Top"]:Show();
-		_G[scrollFrameName.."Bottom"]:Show();
-		buttonWidth = scrollFrame:GetWidth() - 2;
-	else
-		scrollFrame:SetPoint("BOTTOMRIGHT",-2 ,8);
-		scrollFrame.ScrollBar:Hide();
-		_G[scrollFrameName.."Top"]:Hide();
-		_G[scrollFrameName.."Bottom"]:Hide();
-		buttonWidth = scrollFrame:GetWidth() - 5;
-	end
+	scrollFrame:SetPoint("BOTTOMRIGHT",-28 ,8);
+	local buttonWidth = scrollFrame:GetWidth();
 
 	for i = 1, numTabs do
 		local button = _G["GuildControlBankTab"..i];

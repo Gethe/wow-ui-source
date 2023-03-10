@@ -492,7 +492,12 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="SendMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<ScrollFrame name="SendMailScrollFrame" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="10" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-4" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="3" type="number"/>
+						</KeyValues>
 						<Size x="296" y="257"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="8" y="-83"/>
@@ -510,22 +515,6 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="SendStationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
 									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture name ="SendScrollBarBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="256"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="106"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -973,28 +962,17 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<ScrollFrame name="OpenMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="OpenMailScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="10" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-3" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+				</KeyValues>
 				<Size x="296" y="257"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="8" y="-84"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="OpenScrollBarBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="31" y="256"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size x="31" y="106"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture name="OpenStationeryBackgroundLeft">
 							<Size x="252" y="256"/>

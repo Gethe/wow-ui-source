@@ -49,7 +49,7 @@ function MacroFrameMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 
-	self.MacroSelector:AdjustScrollBarOffsets(0, 5, -4);
+	self.MacroSelector:AdjustScrollBarOffsets(MACRO_SCROLL_BAR_OFFSET_X, MACRO_SCROLL_BAR_OFFSET_TOP, MACRO_SCROLL_BAR_OFFSET_BOTTOM);
 
 	local function MacroFrameInitMacroButton(macroButton, selectionIndex, name, texture, body)
 		if name ~= nil then

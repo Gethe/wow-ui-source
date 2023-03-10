@@ -37,6 +37,50 @@
 					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="CurrencyCost">
+				<Size x="1" y="12"/>
+				<!-- Anchored dynamically -->
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Costs" inherits="GameFontNormal" justifyH="RIGHT" text="RUNEFORGE_LEGENDARY_COST_LABEL">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="CENTER" x="8" y="-1"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<!-- Count/Icon override for different anchoring -->
+								<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+									<Size y="10"/>
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="Icon">
+									<Size x="12" y="12"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Count" relativePoint="RIGHT" x="4" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetCurrencyByID(self.currencyID);
+							</OnEnter>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
 			<Button parentKey="ItemSlot" mixin="ItemInteractionItemSlotMixin">
 				<Size x="44" y="44"/>
 				<!-- Anchored dynamically -->

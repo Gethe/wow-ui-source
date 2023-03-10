@@ -51,7 +51,7 @@
 		</Animations>
 	</Button>
 
-	<Frame name="ProfessionsSpecPerkTemplate" mixin="ProfessionsSpecPerkMixin" enableMouse="true" virtual="true" frameStrata="HIGH" frameLevel="300">
+	<Frame name="ProfessionsSpecPerkTemplate" mixin="ProfessionsSpecPerkMixin" enableMouse="true" virtual="true" frameLevel="300">
 		<Size x="90" y="90"/>
 		<HitRectInsets>
 			<AbsInset left="10" right="10" top="10" bottom="10"/>
@@ -170,4 +170,24 @@
 			</AnimationGroup>
 		</Animations>
 	</Button>
+
+	<Frame name="ProfessionSpecHighlightTemplate" virtual="true" parentArray="Highlights">
+		<Size x="310" y="50"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Pip">
+					<Size x="22" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Pip" relativePoint="RIGHT" x="15" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>
