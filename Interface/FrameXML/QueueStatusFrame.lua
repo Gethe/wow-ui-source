@@ -1139,7 +1139,7 @@ end
 
 function QueueStatusDropDown_AddBattlefieldButtons(idx)
 	local info = UIDropDownMenu_CreateInfo();
-	local status, mapName, teamSize, registeredMatch,_,_,_,_, asGroup = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
@@ -1159,7 +1159,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 		info.arg1 = idx;
 		info.arg2 = nil;
-		info.disabled = IsInGroup() and not UnitIsGroupLeader("player");
+		info.disabled = IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue;
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "locked" ) then
 		info.text = LEAVE_BATTLEGROUND;

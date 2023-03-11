@@ -683,9 +683,11 @@ function EntitlementDelivered_OnClick(self, button, down)
 	end
 
 	if (self.type == Enum.WoWEntitlementType.Item) then
-		local slot = SearchBagsForItem(self.payloadID);
-		if (slot >= 0) then
-			OpenBag(slot);
+		if self.payloadID then
+			local slot = SearchBagsForItem(self.payloadID);
+			if (slot >= 0) then
+				OpenBag(slot);
+			end
 		end
 	elseif (self.type == Enum.WoWEntitlementType.Mount) then
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
