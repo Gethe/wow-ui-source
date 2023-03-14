@@ -247,7 +247,7 @@ function QueueStatusButtonMixin:OnClick(button)
 end
 
 function QueueStatusButtonMixin:CheckTutorials()
-	if not self:IsShown() then
+	if not self:IsShown() or EditModeManagerFrame:IsEditModeActive() then
 		return;
 	end
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES) then
@@ -261,7 +261,7 @@ function QueueStatusButtonMixin:CheckTutorials()
 			alignment = HelpTip.Alignment.Center,
 			acknowledgeOnHide = true,
 		};
-		HelpTip:Show(UIParent, helpTipInfo, self);
+		HelpTip:Show(self, helpTipInfo, self);
 	end
 end
 
@@ -1246,7 +1246,7 @@ end
 
 function QueueStatusDropDown_AddBattlefieldButtons(idx)
 	local info = UIDropDownMenu_CreateInfo();
-	local status, mapName, teamSize, registeredMatch,_,_,_,_, asGroup = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
@@ -1266,7 +1266,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 		info.arg1 = idx;
 		info.arg2 = nil;
-		info.disabled = IsInGroup() and not UnitIsGroupLeader("player");
+		info.disabled = IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue;
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "locked" ) then
 		info.text = LEAVE_BATTLEGROUND;

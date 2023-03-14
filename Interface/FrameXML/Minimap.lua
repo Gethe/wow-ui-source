@@ -168,7 +168,9 @@ function MinimapMixin:OnEvent(event, ...)
 			if not HybridMinimap then
 				UIParentLoadAddOn("Blizzard_HybridMinimap");
 			end
+			C_Minimap.GetUiMapID = function() return C_Map.GetBestMapForUnit("player"); end
 			HybridMinimap:Enable();
+			HybridMinimap:CheckMap();
 		else
 			if HybridMinimap then
 				HybridMinimap:Disable();
@@ -179,8 +181,11 @@ end
 
 function MinimapMixin:OnEnter()
 	self:SetScript("OnUpdate", Minimap_OnUpdate);
+
+	if(not DISABLE_MAP_ZOOM) then 
 	self.ZoomIn:Show();
 	self.ZoomOut:Show();
+	end
 end
 
 function MinimapMixin:OnLeave()

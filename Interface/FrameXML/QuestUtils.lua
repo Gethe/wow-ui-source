@@ -665,11 +665,13 @@ function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end
 
-QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling");
+QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary" );
 
 function QuestUtils_GetQuestSortType(questInfo)
 	if questInfo.isCalling then
 		return QuestSortType.Calling;
+	elseif questInfo.isLegendarySort then
+		return QuestSortType.Legendary;
 	elseif questInfo.campaignID and questInfo.campaignID > 0 then
 		if not C_CampaignInfo.SortAsNormalQuest(questInfo.campaignID) then
 			return QuestSortType.Campaign;

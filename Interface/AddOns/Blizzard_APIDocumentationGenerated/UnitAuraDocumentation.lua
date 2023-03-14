@@ -7,6 +7,23 @@ local UnitAura =
 	Functions =
 	{
 		{
+			Name = "AddPrivateAuraAnchor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "globalXOfsFromCenter", Type = "uiUnit", Nilable = false },
+				{ Name = "globalYOfsFromCenter", Type = "uiUnit", Nilable = false },
+				{ Name = "useCompactAura", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "anchorID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
 
@@ -78,6 +95,15 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "isFiltered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RemovePrivateAuraAnchor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "anchorID", Type = "number", Nilable = false },
 			},
 		},
 		{

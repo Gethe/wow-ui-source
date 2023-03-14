@@ -108,13 +108,13 @@ function MainMenuBarVehicleLeaveButtonMixin:Update()
 
 	if self:CanExitVehicle() then
 		self:Enable();
-		if (PetHasActionBar()) then
+		if (PetHasActionBar() and PetActionBar ~= nil) then
 			PetActionBar:Show();
 		end
 	else
 		self:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD");
 		self:UnlockHighlight();
-		if PetHasActionBar() then
+		if (PetHasActionBar() and PetActionBar ~= nil) then
 			PetActionBar:Show();
 		end
 	end
@@ -294,6 +294,8 @@ end
 function MainMenuBarMixin:UpdateEndCaps(overrideHideEndCaps)
 	local factionGroup = UnitFactionGroup("player");
 	local showEndCaps = false;
+
+	overrideHideEndCaps = self.hideEndCaps or overrideHideEndCaps; 
 
 	if ( factionGroup and factionGroup ~= "Neutral" ) then
 

@@ -210,7 +210,9 @@ StaticPopup.xml
 SettingDefinitions\Definitions.xml
 QuickKeybind.xml
 TutorialFrame.xml
+EditModePresetLayoutSystemUtils.lua
 EditModePresetLayouts.lua
+EditModePresetLayoutsManager.lua
 EditModeSettingDisplayInfo.lua
 EditModeUtil.lua
 EditModeTemplates.lua
@@ -320,6 +322,9 @@ QuestPOI.xml
 QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml
+ContainerFrame.lua
+ContainerFrameOverrides.lua
+ContainerFrameTemplates.xml
 ContainerFrame.xml
 ScrollingFlatPanel.xml
 LootFrame.xml

@@ -79,18 +79,75 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 
-	-- Auto Self Cast
-	Settings.SetupCVarCheckBox(category, "autoSelfCast", AUTO_SELF_CAST_TEXT, OPTION_TOOLTIP_AUTO_SELF_CAST);
-
-	-- Self Cast Key
+	-- Self Cast
 	do
+		local function GetValue()
+			local hasSelfCastKey = GetModifiedClick("SELFCAST") ~= "NONE";
+			local autoSelfCast = GetCVarBool("autoSelfCast");
+			if not hasSelfCastKey and not autoSelfCast then
+				return 1;
+			elseif autoSelfCast then
+				return 2;
+			elseif hasSelfCastKey then
+				return 3;
+			end
+			
+			return 4;
+		end
+		
+		local function SetValue(value)
+			local selfCastKeySetting = Settings.GetSetting("SELFCAST");
+
+			local autoSelfCast = false;
+			local selfCastKey = selfCastKeySetting:GetValue();
+
+			if value == 1 or value == 2 then
+				selfCastKey = "NONE";
+			else
+				if selfCastKey == "NONE" then
+					selfCastKey = "ALT";
+				end
+			end
+
+			if value == 2 or value == 4 then
+				autoSelfCast = true;
+			else
+				autoSelfCast = false;
+			end
+
+			SetCVar("autoSelfCast", autoSelfCast);
+			selfCastKeySetting:SetValue(selfCastKey);
+		end
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(1, NONE, OPTIONS_TOOLTIP_SELF_CAST_NONE);
+			container:Add(2, SELF_CAST_AUTO, OPTIONS_TOOLTIP_SELF_CAST_AUTO);
+			container:Add(3, SELF_CAST_KEY_PRESS, OPTIONS_TOOLTIP_SELF_CAST_KEY_PRESS);
+			container:Add(4, SELF_CAST_AUTO_AND_KEY_PRESS, OPTIONS_TOOLTIP_SELF_CAST_AUTO_AND_KEY_PRESS);
+			return container:GetData();
+		end
+
+		local defaultValue = 4;
+		local selfCastSetting = Settings.RegisterProxySetting(category, "PROXY_SELF_CAST", Settings.DefaultVarLocation,
+			Settings.VarType.Number, SELF_CAST, defaultValue, GetValue, SetValue);
+		local selfCastInitializer = Settings.CreateDropDown(category, selfCastSetting, GetOptions, OPTION_TOOLTIP_AUTO_SELF_CAST);
+		
+		-- Self Cast Key
 		local tooltips = {
 			OPTION_TOOLTIP_AUTO_SELF_CAST_ALT_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_NONE_KEY,
 		};
-		Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT);
+		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT);
+
+		local function IsUsingKeyPress()
+			local value = selfCastSetting:GetValue();
+			return value == 3 or value == 4;
+		end
+
+		selfCastKeyInitializer:SetParentInitializer(selfCastInitializer, IsUsingKeyPress);
 	end
 
 	-- Focus Cast Key

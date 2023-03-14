@@ -3,13 +3,25 @@ local issecure = issecure;
 local type = type;
 local pairs = pairs;
 local select = select;
+local error = error;
+local format = string.format;
 
 --Create a local version of this function just so we don't have to worry about changes
-local function copyTable(tab)
+local function copyTable(tab, tableCopies)
+	if not tableCopies then
+		tableCopies = {};
+	end
+
 	local copy = {};
+	tableCopies[tab] = copy;
+
 	for k, v in pairs(tab) do
 		if ( type(v) == "table" ) then
-			copy[k] = copyTable(v);
+			if ( tableCopies[v] ) then
+				copy[k] = tableCopies[v];
+			else
+				copy[k] = copyTable(v, tableCopies);
+			end
 		else
 			copy[k] = v;
 		end
@@ -17,14 +29,42 @@ local function copyTable(tab)
 	return copy;
 end
 
-function SecureCapsuleGet(name)
+local function copyTableWithTypeCheck(tab, name, tableCopies)
+	if not tableCopies then
+		tableCopies = {};
+	end
+
+	local copy = {};
+	tableCopies[tab] = copy;
+
+	for k, v in pairs(tab) do
+		if ( type(v) == "table" ) then
+			if ( tableCopies[v] ) then
+				copy[k] = tableCopies[v];
+			else
+				copy[k] = copyTableWithTypeCheck(v, name, tableCopies);
+			end
+		elseif ( type(v) == "userdata" ) then
+			error(format("Cannot import userdata into secure capsule (importing %s)", name));
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end
+
+function SecureCapsuleGet(name, skipTableCopy)
 	if ( not issecure() ) then
 		return;
 	end
 
 	if ( type(contents[name]) == "table" ) then
-		--Segment the users
-		return copyTable(contents[name]);
+		--Segment the users, unless otherwise requested (likely segmented in its own sanitization)
+		if skipTableCopy then
+			return contents[name];
+		else
+			return copyTable(contents[name]);
+		end
 	else
 		return contents[name];
 	end
@@ -37,7 +77,9 @@ end
 --Retains a copy of name
 local function retain(name)
 	if ( type(_G[name]) == "table" ) then
-		contents[name] = copyTable(_G[name]);
+		contents[name] = copyTableWithTypeCheck(_G[name], name);
+	elseif ( type(_G[name]) == "userdata" ) then
+		error(format("Cannot import userdata into secure capsule (importing %s)", name));
 	else
 		contents[name] = _G[name];
 	end
@@ -45,7 +87,7 @@ end
 
 --Takes name and removes it from the global environment (note: make sure that nothing else has saved off a copy)
 local function take(name)
-	contents[name] = _G[name];
+	retain(name);
 	_G[name] = nil;
 end
 
@@ -102,6 +144,10 @@ retain("wipe");
 retain("error");
 retain("assert");
 retain("strtrim");
+retain("getfenv");
+retain("setfenv");
+retain("pcall");
+retain("pack");
 retain("LoadURLIndex");
 retain("C_Container");
 retain("GetCursorPosition");

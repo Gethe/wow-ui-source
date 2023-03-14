@@ -5167,8 +5167,8 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
-		if ( status == "queued" or status == "confirmed" ) then
+		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueue = GetBattlefieldStatus(i);
+		if ( (status == "queued" or status == "confirmed" ) and not isSoloQueue ) then
 			return true;
 		end
 	end

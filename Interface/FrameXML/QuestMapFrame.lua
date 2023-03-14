@@ -607,6 +607,7 @@ end
 
 function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID);
+	QuestMapFrame_PingQuestID(questID);
 
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	C_QuestLog.SetSelectedQuest(questID);
@@ -1106,7 +1107,7 @@ local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Normal then
+		if info.questSortType == QuestSortType.Normal or info.questSortType == QuestSortType.Legendary then
 			table.insert(infos, info);
 		end
 	end

@@ -142,7 +142,7 @@ local BattleNet =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "gameAccountID", Type = "number", Nilable = true },
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
 				{ Name = "clientProgram", Type = "string", Nilable = false },
 				{ Name = "isOnline", Type = "bool", Nilable = false },
 				{ Name = "isGameBusy", Type = "bool", Nilable = false },

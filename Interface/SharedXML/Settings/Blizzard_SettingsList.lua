@@ -95,7 +95,9 @@ end
 function SettingsListMixin:Display(initializers)
 	local dataProvider = CreateDataProvider();
 	for key, initializer in EnumerateTaintedKeysTable(initializers) do
-		dataProvider:Insert(initializer)
+		if initializer:ShouldShow() then
+			dataProvider:Insert(initializer);
+		end
 	end
 
 	securecallfunction(self.ScrollBox.SetDataProvider, self.ScrollBox, dataProvider);

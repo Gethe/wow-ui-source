@@ -779,12 +779,18 @@ end
 --
 
 local function AnchorCastBarToPlayerFrame()
-	PlayerCastingBarFrame:ClearAllPoints()
-	if(PlayerFrameBottomManagedFramesContainer:IsShown() and PlayerFrameBottomManagedFramesContainer:GetHeight() > 0) then
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", -10, -5);
-	else
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 20, 10);
+	local playerFrameScale = PlayerFrame:GetScale();
+	local castBarScale = PlayerCastingBarFrame:GetScale();
+
+	local xOffset = -24 / castBarScale;
+	local yOffset = 20 * playerFrameScale;
+	if PlayerFrameBottomManagedFramesContainer:IsShown() then
+		yOffset = yOffset - (PlayerFrameBottomManagedFramesContainer:GetHeight() * playerFrameScale);
 	end
+	yOffset = yOffset / castBarScale / playerFrameScale;
+
+	PlayerCastingBarFrame:ClearAllPoints();
+	PlayerCastingBarFrame:SetPoint("TOPRIGHT", PlayerFrame, "BOTTOMRIGHT", xOffset, yOffset);
 end
 
 function PlayerFrame_AttachCastBar()

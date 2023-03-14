@@ -348,7 +348,9 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 		end
 
 		self.claimInProgress = rafInfo.claimInProgress;
-		self:UpdateNextReward(latestRAFVersionInfo.nextReward);
+		if latestRAFVersionInfo.nextReward then
+			self:UpdateNextReward(latestRAFVersionInfo.nextReward);
+		end
 
 		RecruitAFriendRewardsFrame:SetUpTabs(rafInfo);
 		RecruitAFriendRewardsFrame:Refresh();
@@ -1055,6 +1057,10 @@ end
 
 function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 	self.rewardPool:ReleaseAll();
+
+	if not rewards then
+		return;
+	end
 
 	local lastRewardFrame;
 	for index, rewardInfo in ipairs(rewards) do	

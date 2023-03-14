@@ -2,7 +2,7 @@ MAIN_ACTION_BAR_DEFAULT_OFFSET_Y = 45;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_X = -5;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -77;
 
-local modernSystemMap =
+EDIT_MODE_MODERN_SYSTEM_MAP =
 {
 	[Enum.EditModeSystem.ActionBar] = {
 		[Enum.EditModeActionBarSystemIndices.MainBar] = {
@@ -335,6 +335,19 @@ local modernSystemMap =
 				offsetY = 0,
 			},
 		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Pet] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+			},
+			anchorInfo = {
+				point = "CENTER",
+				relativeTo = "UIParent",
+				relativePoint = "CENTER",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.Minimap] = {
@@ -560,7 +573,7 @@ local modernSystemMap =
 	},
 };
 
-local classicSystemMap =
+EDIT_MODE_CLASSIC_SYSTEM_MAP =
 {
 	[Enum.EditModeSystem.ActionBar] = {
 		[Enum.EditModeActionBarSystemIndices.MainBar] = {
@@ -893,6 +906,19 @@ local classicSystemMap =
 				offsetY = 0,
 			},
 		},
+
+		[Enum.EditModeUnitFrameSystemIndices.Pet] = {
+			settings = {
+				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+			},
+			anchorInfo = {
+				point = "CENTER",
+				relativeTo = "UIParent",
+				relativePoint = "CENTER",
+				offsetX = 0,
+				offsetY = 0,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.Minimap] = {
@@ -1117,73 +1143,3 @@ local classicSystemMap =
 		},
 	},
 };
-
-local function AddSystem(systems, system, systemIndex, anchorInfo, settings)
-	table.insert(systems, {
-		system = system,
-		systemIndex = systemIndex,
-		anchorInfo = anchorInfo,
-		settings = {},
-		isInDefaultPosition = true;
-	});
-
-	local settingsTable = systems[#systems].settings;
-	for setting, value in pairs(settings) do
-		table.insert(settingsTable, { setting = setting, value = value });
-	end
-end
-
-local function GetSystems(systemsMap)
-	local systems = {};
-	for system, systemInfo in pairs(systemsMap) do
-		if systemInfo.settings ~= nil then
-			-- This system has no systemIndices, just add it
-			AddSystem(systems, system, nil, systemInfo.anchorInfo, systemInfo.settings);
-		else
-			-- This system has systemIndices, so we need to loop through each one and add them one at a time
-			for systemIndex, subSystemInfo in pairs(systemInfo) do
-				AddSystem(systems, system, systemIndex, subSystemInfo.anchorInfo, subSystemInfo.settings);
-			end
-		end
-	end
-	return systems;
-end
-
-EditModePresetLayoutManager = {};
-
-EditModePresetLayoutManager.presetLayoutInfo =
-{
-	{
-		layoutIndex = Enum.EditModePresetLayouts.Modern;
-		layoutName = LAYOUT_STYLE_MODERN,
-		layoutType = Enum.EditModeLayoutType.Preset,
-		systems = GetSystems(modernSystemMap),
-	},
-
-	{
-		layoutIndex = Enum.EditModePresetLayouts.Classic;
-		layoutName = LAYOUT_STYLE_CLASSIC,
-		layoutType = Enum.EditModeLayoutType.Preset,
-		systems = GetSystems(classicSystemMap),
-	},
-};
-
-function EditModePresetLayoutManager:GetCopyOfPresetLayouts()
-	return CopyTable(self.presetLayoutInfo);
-end
-
-function EditModePresetLayoutManager:GetModernSystemMap()
-	return modernSystemMap;
-end
-
-function EditModePresetLayoutManager:GetModernSystems()
-	return self.presetLayoutInfo[1].systems;
-end
-
-function EditModePresetLayoutManager:GetModernSystemAnchorInfo(system, systemIndex)
-	local modernSystemInfo = systemIndex and modernSystemMap[system][systemIndex] or modernSystemMap[system];
-	return CopyTable(modernSystemInfo.anchorInfo);
-end
-
-EnableAddOn("Blizzard_ObjectiveTracker");
-EnableAddOn("Blizzard_CompactRaidFrames");

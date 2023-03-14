@@ -2,6 +2,24 @@ AddonCompartmentMixin = { };
 
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
+
+	local addonCount = GetNumAddOns();
+	for addon = 1, addonCount do
+		local addonCompartmentFunc = GetAddOnEnableState(nil, addon) > 0 and GetAddOnMetadata(addon, "AddonCompartmentFunc");
+		if addonCompartmentFunc then
+			local name, title, notes, loadable, reason, security = GetAddOnInfo(addon);
+
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = title;
+			info.icon = GetAddOnMetadata(addon, "IconTexture") or GetAddOnMetadata(addon, "IconAtlas");
+			info.notCheckable = true;
+			info.func = function()
+				_G[addonCompartmentFunc](name);
+			end;
+			table.insert(self.registeredAddons, info);
+		end
+	end
+
 	self:UpdateDisplay();
 end
 
@@ -26,8 +44,13 @@ function AddonCompartmentDropDown_OnLoad(self)
 end
 
 function AddonCompartmentDropDown_Initialize(self, level)
-	local addonCompartment = AddonCompartmentFrame;
-	for _, info in ipairs(addonCompartment.registeredAddons or {}) do
-		UIDropDownMenu_AddButton(info, level);
+	local addonCompartment = self:GetParent();
+
+	if addonCompartment.registeredAddons then
+		table.sort(addonCompartment.registeredAddons, function(infoA, infoB) return strcmputf8i(infoA.text, infoB.text) < 0; end);
+
+		for _, info in ipairs(addonCompartment.registeredAddons) do
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
 end

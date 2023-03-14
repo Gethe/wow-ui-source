@@ -317,7 +317,6 @@ UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
-VehicleConstantsDocumentation.lua
 VignetteConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
 WowLabsConstantsDocumentation.lua

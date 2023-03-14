@@ -97,9 +97,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 23,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -126,6 +126,7 @@ local EditModeManagerShared =
 				{ Name = "ShowDurabilityFrame", Type = "EditModeAccountSetting", EnumValue = 21 },
 				{ Name = "EnableSnap", Type = "EditModeAccountSetting", EnumValue = 22 },
 				{ Name = "EnableAdvancedOptions", Type = "EditModeAccountSetting", EnumValue = 23 },
+				{ Name = "ShowPetFrame", Type = "EditModeAccountSetting", EnumValue = 24 },
 			},
 		},
 		{
@@ -253,14 +254,15 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeLayoutType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Preset", Type = "EditModeLayoutType", EnumValue = 0 },
 				{ Name = "Account", Type = "EditModeLayoutType", EnumValue = 1 },
 				{ Name = "Character", Type = "EditModeLayoutType", EnumValue = 2 },
+				{ Name = "Override", Type = "EditModeLayoutType", EnumValue = 3 },
 			},
 		},
 		{
@@ -304,14 +306,13 @@ local EditModeManagerShared =
 		{
 			Name = "EditModePresetLayouts",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 2,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 1,
 			Fields =
 			{
 				{ Name = "Modern", Type = "EditModePresetLayouts", EnumValue = 0 },
 				{ Name = "Classic", Type = "EditModePresetLayouts", EnumValue = 1 },
-				{ Name = "Spectate", Type = "EditModePresetLayouts", EnumValue = 2 },
 			},
 		},
 		{
@@ -409,9 +410,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeUnitFrameSystemIndices",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 1,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Player", Type = "EditModeUnitFrameSystemIndices", EnumValue = 1 },
@@ -421,6 +422,7 @@ local EditModeManagerShared =
 				{ Name = "Raid", Type = "EditModeUnitFrameSystemIndices", EnumValue = 5 },
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
 				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
+				{ Name = "Pet", Type = "EditModeUnitFrameSystemIndices", EnumValue = 8 },
 			},
 		},
 		{

@@ -111,10 +111,17 @@ function SettingsKeybindingSectionInitializer:GetExtent()
 	return bindingHeight;
 end
 
-function CreateKeybindingSectionInitializer(name, bindingsCategories)
+function CreateKeybindingSectionInitializer(name, bindingsCategories, requiredSettingName)
 	local initializer = CreateFromMixins(SettingsKeybindingSectionInitializer);
 	initializer:Init("SettingsKeybindingSectionTemplate");
 	initializer.data = {name=name, bindingsCategories=bindingsCategories};
+
+	local function ShouldShowKeybindingSection()
+		local requiredSetting = Settings.GetSetting(requiredSettingName);
+		return not requiredSetting or requiredSetting:GetValue();
+	end
+	initializer:AddShownPredicate(ShouldShowKeybindingSection);
+
 	return initializer;
 end
 
@@ -156,8 +163,74 @@ local function CreateSearchableSettings(redirectCategory)
 	Settings.RegisterCategory(fakeCategory, SETTING_GROUP_GAMEPLAY);
 end
 
+local retained = {};
+
+local function CreateKeybindingInitializers(category, layout)
+	-- Keybinding sections
+	local bindingsCategories = {};
+	local nextOrder = 1;
+	local function AddBindingCategory(key, requiredSettingName)
+		if not bindingsCategories[key] then
+			bindingsCategories[key] = {order = nextOrder, bindings = {}, requiredSettingName = requiredSettingName};
+			nextOrder = nextOrder + 1;
+		end
+	end
+
+	AddBindingCategory(BINDING_HEADER_MOVEMENT);
+	AddBindingCategory(BINDING_HEADER_INTERFACE);
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR);
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR2, "PROXY_SHOW_ACTIONBAR_2");
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR3, "PROXY_SHOW_ACTIONBAR_3");
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR4, "PROXY_SHOW_ACTIONBAR_4");
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR5, "PROXY_SHOW_ACTIONBAR_5");
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR6, "PROXY_SHOW_ACTIONBAR_6");
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR7, "PROXY_SHOW_ACTIONBAR_7");
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR8, "PROXY_SHOW_ACTIONBAR_8");
+	AddBindingCategory(BINDING_HEADER_MULTIACTIONBAR);
+	AddBindingCategory(BINDING_HEADER_CHAT);
+	AddBindingCategory(BINDING_HEADER_TARGETING);
+	AddBindingCategory(BINDING_HEADER_RAID_TARGET);
+	AddBindingCategory(BINDING_HEADER_VEHICLE);
+	AddBindingCategory(BINDING_HEADER_CAMERA);
+	AddBindingCategory(BINDING_HEADER_MISC);
+	AddBindingCategory(BINDING_HEADER_OTHER);
+
+	for bindingIndex = 1, GetNumBindings() do
+		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
+		if not cat then
+			tinsert(bindingsCategories[BINDING_HEADER_OTHER].bindings, {bindingIndex, action});
+		else
+			cat = _G[cat] or cat;
+			AddBindingCategory(cat);
+
+			if strsub(action, 1, 6) == "HEADER" then
+				tinsert(bindingsCategories[cat].bindings, KeybindingSpacer);
+			else
+				tinsert(bindingsCategories[cat].bindings, {bindingIndex, action});
+			end
+		end
+	end
+
+	local sortedCategories = {};
+
+	for cat, bindingCategory in pairs(bindingsCategories) do
+		sortedCategories[bindingCategory.order] = {cat = cat, bindings = bindingCategory.bindings, requiredSettingName = bindingCategory.requiredSettingName};
+	end
+
+	for _, categoryInfo in ipairs(sortedCategories) do
+		if #(categoryInfo.bindings) > 0 then
+			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryInfo.cat, categoryInfo.bindings, categoryInfo.requiredSettingName));
+		end
+	end
+	
+	-- Keybindings (search + redirectCategory)
+	CreateSearchableSettings(category);
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(SETTINGS_KEYBINDINGS_LABEL);
+	retained.layout = layout;
+	retained.category = category;
 	Settings.SetKeybindingsCategory(category);
 
 	-- Order set in GameplaySettingsGroup.lua
@@ -219,62 +292,29 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 	
+	retained.initializers = CopyTable(layout:GetInitializers(), true);
 
-	-- Keybinding sections
-	local bindingsCategories = {};
-	local nextOrder = 1;
-	local function AddBindingCategory(key)
-		if not bindingsCategories[key] then
-			bindingsCategories[key] = {order = nextOrder, bindings = {}};
-			nextOrder = nextOrder + 1;
-		end
-	end
-
-	AddBindingCategory(BINDING_HEADER_MOVEMENT);
-	AddBindingCategory(BINDING_HEADER_INTERFACE);
-	AddBindingCategory(BINDING_HEADER_ACTIONBAR);
-	AddBindingCategory(BINDING_HEADER_MULTIACTIONBAR);
-	AddBindingCategory(BINDING_HEADER_CHAT);
-	AddBindingCategory(BINDING_HEADER_TARGETING);
-	AddBindingCategory(BINDING_HEADER_RAID_TARGET);
-	AddBindingCategory(BINDING_HEADER_VEHICLE);
-	AddBindingCategory(BINDING_HEADER_CAMERA);
-	AddBindingCategory(BINDING_HEADER_MISC);
-	AddBindingCategory(BINDING_HEADER_OTHER);
-
-	for bindingIndex = 1, GetNumBindings() do
-		local action, cat, binding1, binding2 = GetBinding(bindingIndex);
-		
-		if not cat then
-			tinsert(bindingsCategories[BINDING_HEADER_OTHER], {bindingIndex, action});
-		else
-			cat = _G[cat] or cat;
-			AddBindingCategory(cat);
-
-			if strsub(action, 1, 6) == "HEADER" then
-				tinsert(bindingsCategories[cat].bindings, KeybindingSpacer);
-			else
-				tinsert(bindingsCategories[cat].bindings, {bindingIndex, action});
-			end
-		end
-	end
-
-	local sortedCategories = {};
-
-	for cat, bindingCategory in pairs(bindingsCategories) do
-		sortedCategories[bindingCategory.order] = {cat = cat, bindings = bindingCategory.bindings};
-	end
-
-	for _, categoryInfo in ipairs(sortedCategories) do
-		if #(categoryInfo.bindings) > 0 then
-			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryInfo.cat, categoryInfo.bindings));
-		end
-	end
-	
-	-- Keybindings (search + redirectCategory)
-	CreateSearchableSettings(category);
+	CreateKeybindingInitializers(category, layout);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
-end
+	end
 
 SettingsRegistrar:AddRegistrant(Register);
+
+-- Temporary fix to restore access to CG bindings. Will be removed shortly with a proper
+-- regeneration technique.
+EventUtil.ContinueOnAddOnLoaded("CameraGuy", function()
+	-- Flush out every initializer from the layout.
+	local initializers = retained.layout:GetInitializers();
+	wipe(initializers);
+
+	-- Reassign the initializers we don't need to regenerate.
+	for index, initializer in ipairs(retained.initializers) do
+		retained.layout:AddInitializer(initializer);
+	end
+	
+	-- Create new bindings.
+	CreateKeybindingInitializers(retained.category, retained.layout);
+
+	retained = nil;
+end);

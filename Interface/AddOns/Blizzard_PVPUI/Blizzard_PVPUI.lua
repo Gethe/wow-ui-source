@@ -674,6 +674,18 @@ function HonorFrame_UpdateQueueButtons()
 			end
 		end
 	end
+
+	--Disable the button if the person is active in LFGList
+	if not disabledReason then
+		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+			disabledReason = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+			canQueue = false;
+		elseif ( C_LFGList.HasActiveEntryInfo() ) then
+			disabledReason = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+			canQueue = false;
+		end
+	end
+
 	local isInCrossFactionGroup = C_PartyInfo.IsCrossFactionParty();
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
@@ -695,15 +707,6 @@ function HonorFrame_UpdateQueueButtons()
 			if not disabledReason then
 				disabledReason = LFGConstructDeclinedMessage(HonorFrame.BonusFrame.selectedButton.queueID);
 			end
-		end
-	end
-
-	--Disable the button if the person is active in LFGList
-	if not disabledReason then
-		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-			disabledReason = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-		elseif ( C_LFGList.HasActiveEntryInfo() ) then
-			disabledReason = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 		end
 	end
 
@@ -1298,10 +1301,12 @@ function ConquestFrame_UpdateJoinButton()
 
 	--Disable the button if the person is active in LFGList
 	local lfgListDisabled;
-	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-	elseif ( C_LFGList.HasActiveEntryInfo() ) then
-		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	if ( not ConquestFrame.selectedButton ) or ( ConquestFrame.selectedButton.id ~= RATED_SOLO_SHUFFLE_BUTTON_ID ) then
+		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+			lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+		elseif ( C_LFGList.HasActiveEntryInfo() ) then
+			lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+		end
 	end
 
 	if ( lfgListDisabled ) then
@@ -1312,20 +1317,18 @@ function ConquestFrame_UpdateJoinButton()
 
 	--Check whether they have a valid button selected
 	if ( ConquestFrame.selectedButton ) then
-		if ( groupSize == 0 ) then
-			if ( ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
-				local minItemLevel = C_PvP.GetRatedSoloShuffleMinItemLevel();
-				local _, _, playerPvPItemLevel = GetAverageItemLevel();
-				if (playerPvPItemLevel < minItemLevel) then
-					button.tooltip = format(_G["INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW"], "", minItemLevel, playerPvPItemLevel);
-				else
-					button.tooltip = nil;
-					button:Enable();
-					return;
-				end
+		if ( ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
+			local minItemLevel = C_PvP.GetRatedSoloShuffleMinItemLevel();
+			local _, _, playerPvPItemLevel = GetAverageItemLevel();
+			if (playerPvPItemLevel < minItemLevel) then
+				button.tooltip = format(_G["INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW"], "", minItemLevel, playerPvPItemLevel);
 			else
-				button.tooltip = PVP_NO_QUEUE_GROUP;
+				button.tooltip = nil;
+				button:Enable();
+				return;
 			end
+		elseif ( groupSize == 0 ) then
+			button.tooltip = PVP_NO_QUEUE_GROUP;
 		elseif ( not UnitIsGroupLeader("player") ) then
 			button.tooltip = PVP_NOT_LEADER;
 		else

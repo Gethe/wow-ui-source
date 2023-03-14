@@ -73,6 +73,8 @@ PerksProgramProductButtonMixin = {};
 function PerksProgramProductButtonMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 	self.tooltip = PerksProgramFrame.PerksProgramTooltip;
+	local newFont = PerksProgramFrame:GetLabelFont();
+	self.ContentsContainer.Label:SetFontObject(newFont);
 end
 
 function PerksProgramProductButtonMixin:Init(elementData, currencyIconMarkup, isSelected, playerCurrencyAmount)
@@ -534,6 +536,11 @@ end
 PerksProgramProductDetailsFrameMixin = {};
 function PerksProgramProductDetailsFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
+end
+
+function PerksProgramProductDetailsFrameMixin:OnShow()
+	local newFont = PerksProgramFrame:GetLabelFont();
+	self.DescriptionText:SetFontObject(newFont);
 end
 
 local restrictions = { Enum.TooltipDataLineType.RestrictedRaceClass, Enum.TooltipDataLineType.RestrictedFaction, Enum.TooltipDataLineType.RestrictedSkill,

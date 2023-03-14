@@ -88,7 +88,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ActionBarButtonEventsFrame" mixin="ActionBarButtonEventsFrameMixin">
+	<Frame name="ActionBarButtonEventsFrame" mixin="ActionBarButtonEventsDerivedFrameMixin">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
@@ -302,7 +302,7 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonMixin">
+	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonDerivedMixin">
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
 			<OnAttributeChanged method="OnAttributeChanged"/>
@@ -311,6 +311,7 @@
 			<PostClick method="UpdateState"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnReceiveDrag method="OnReceiveDrag"/>
+			<OnDragStop method="OnDragStop"/>
 			<OnEnter method="OnEnter" inherit="append"/>
 			<OnLeave method="OnLeave" inherit="append"/>
 			<OnUpdate method="OnUpdate" inherit="append"/>

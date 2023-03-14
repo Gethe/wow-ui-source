@@ -55,14 +55,10 @@ end
 
 function PetFrameMixin:Update(override)
 	if (not PlayerFrame.animating) or override then
-		local previousShownState = self:IsShown();
+		self:UpdateShownState();
 
-		if UnitIsVisible(self.unit) and PetUsesPetFrame() and not PlayerFrame.vehicleHidesPet then
-			if self:IsShown() then
-				UnitFrame_Update(self);
-			else
-				self:Show();
-			end
+		if self:IsShown() then
+			UnitFrame_Update(self);
 
 			if UnitPowerMax(self.unit) == 0 then
 				PetFrameManaBarText:Hide();
@@ -71,17 +67,8 @@ function PetFrameMixin:Update(override)
 			PetAttackModeTexture:Hide();
 
 			self:UpdateAuras();
-		else
-			self:Hide();
-		end
-
-		-- If we're in edit mode we should update the player frame's selection since it adjusts according to the PetFrame's shown state
-		if previousShownState ~= self:IsShown() and EditModeManagerFrame:IsEditModeActive() then
-			PlayerFrame:AnchorSelectionFrame();
 		end
 	end
-
-	PlayerFrame_AdjustAttachments();
 end
 
 function PetFrameMixin:OnEvent(event, ...)
@@ -161,6 +148,11 @@ end
 function PetFrameMixin:OnLeave()
 	UnitFrame_OnLeave(self);
 	PartyMemberBuffTooltip:Hide();
+end
+
+function PetFrameMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode
+		or (UnitIsVisible(self.unit) and PetUsesPetFrame() and not PlayerFrame.vehicleHidesPet));
 end
 
 PetFrameDropDownMixin = {};

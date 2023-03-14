@@ -228,13 +228,20 @@
 									<KeyValue key="advancedLayoutIndex" value="1" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="PetFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_PET_FRAME_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="2" type="number"/>
+								</KeyValues>
+							</Frame>
 							<Frame parentKey="PartyFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
 									<KeyValue key="isBasicOption" value="true" type="boolean"/>
 									<KeyValue key="basicLayoutIndex" value="3" type="number"/>
-									<KeyValue key="advancedLayoutIndex" value="2" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="3" type="number"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="BossFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
@@ -243,7 +250,7 @@
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
 									<KeyValue key="isBasicOption" value="true" type="boolean"/>
 									<KeyValue key="basicLayoutIndex" value="4" type="number"/>
-									<KeyValue key="advancedLayoutIndex" value="3" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="4" type="number"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="RaidFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
@@ -252,14 +259,14 @@
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
 									<KeyValue key="isBasicOption" value="true" type="boolean"/>
 									<KeyValue key="basicLayoutIndex" value="2" type="number"/>
-									<KeyValue key="advancedLayoutIndex" value="4" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="5" type="number"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="ArenaFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_ARENA_FRAMES_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
-									<KeyValue key="advancedLayoutIndex" value="5" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
 								</KeyValues>
 							</Frame>
 

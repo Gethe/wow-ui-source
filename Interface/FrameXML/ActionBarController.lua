@@ -196,6 +196,7 @@ function ValidateActionBarTransition()
 
 	if CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_MAIN then
 		MainMenuBar:Show();
+		CustomActionBarOverlays_Show(); 
 
 		if StanceBar:ShouldShow() then
 			StanceBar:Show();
@@ -207,6 +208,7 @@ function ValidateActionBarTransition()
 	elseif CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_OVERRIDE then
 		MainMenuBar:Hide();
 		StanceBar:Hide();
+		CustomActionBarOverlays_Hide(); 
 
 		if not OverrideActionBar:IsShown() then
 			BeginActionBarTransition(OverrideActionBar, 1);

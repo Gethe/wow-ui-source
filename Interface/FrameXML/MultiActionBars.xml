@@ -61,12 +61,13 @@
 			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR1" type="string"/>
 			<KeyValue key="isHorizontal" value="true" type="boolean"/>
 			<KeyValue key="numRows" value="1" type="number"/>
-			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="numButtons" value="MULTI_BAR_BOTTOM_LEFT_NUM_BUTTONS" type="global"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar2" type="global"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="6"/>
@@ -89,12 +90,13 @@
 			<KeyValue key="commandNamePrefix" value="MULTIACTIONBAR2" type="string"/>
 			<KeyValue key="isHorizontal" value="true" type="boolean"/>
 			<KeyValue key="numRows" value="1" type="number"/>
-			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="numButtons" value="MULTI_BAR_BOTTOM_RIGHT_NUM_BUTTONS" type="global"/>
 			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.Bar3" type="global"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
 		</KeyValues>
 		<Attributes>
 			<Attribute name="actionpage" type="number" value="5"/>

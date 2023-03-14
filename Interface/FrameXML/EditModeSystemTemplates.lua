@@ -33,6 +33,10 @@ function EditModeSystemMixin:OnSystemHide()
 end
 
 function EditModeSystemMixin:ProcessMovementKey(key)
+	if not self:CanBeMoved() then
+		return;
+	end
+
 	local deltaAmount = self:IsShiftKeyDown() and 10 or 1;
 	local xDelta, yDelta = 0, 0;
 	if key == "UP" then
@@ -45,9 +49,18 @@ function EditModeSystemMixin:ProcessMovementKey(key)
 		xDelta = deltaAmount;
 	end
 
-	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+	if (self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame) and self:IsInDefaultPosition() then
 		self:SetParent(UIParent);
+
+		if self.isPlayerFrameBottomManagedFrame then
+			self:UpdateSystemSettingFrameSize();
+		end
 	end
+
+	if self:HasSetting(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeCastBarSetting.LockToPlayerFrame, 0);
+	end
+
 	self:ClearFrameSnap();
 
 	self:StopMovingOrSizing();
@@ -223,17 +236,32 @@ function EditModeSystemMixin:ResetToDefaultPosition()
 end
 
 function EditModeSystemMixin:ApplySystemAnchor()
-	if self.isBottomManagedFrame or self.isRightManagedFrame then
-		local frameContainer = self.isBottomManagedFrame and UIParentBottomManagedFrameContainer or UIParentRightManagedFrameContainer;
+	if self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame then
+		local frameContainer;
+		if self.isBottomManagedFrame then
+			frameContainer = UIParentBottomManagedFrameContainer;
+		elseif self.isRightManagedFrame then
+			frameContainer = UIParentRightManagedFrameContainer;
+		else
+			frameContainer = PlayerFrameBottomManagedFramesContainer;
+		end
 
 		if self:IsInDefaultPosition() then
 			self.ignoreFramePositionManager = nil;
 			frameContainer:AddManagedFrame(self);
+
+			if self.isPlayerFrameBottomManagedFrame then
+				self:UpdateSystemSettingFrameSize();
+			end
 			return;
-		else
-			self.ignoreFramePositionManager = true;
-			frameContainer:RemoveManagedFrame(self);
-			self:SetParent(UIParent);
+		end
+
+		self.ignoreFramePositionManager = true;
+		frameContainer:RemoveManagedFrame(self);
+		self:SetParent(UIParent);
+
+		if self.isPlayerFrameBottomManagedFrame then
+			self:UpdateSystemSettingFrameSize();
 		end
 	end
 
@@ -650,8 +678,12 @@ end
 
 function EditModeSystemMixin:OnDragStart()
 	if self:CanBeMoved() then
-		if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+		if (self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame) and self:IsInDefaultPosition() then
 			self:SetParent(UIParent);
+
+			if self.isPlayerFrameBottomManagedFrame then
+				self:UpdateSystemSettingFrameSize();
+			end
 		end
 		self:ClearFrameSnap();
 		self:StartMoving();
@@ -820,7 +852,9 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarArt()
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarScrolling()
+	if(self.ActionBarPageNumber) then 
 	self.ActionBarPageNumber:SetShown(not self:GetSettingValueBool(Enum.EditModeActionBarSetting.HideBarScrolling));
+	end
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingVisibleSetting()
@@ -1007,6 +1041,9 @@ function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
 		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Pet then
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -3);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -4, 6);
 	end
 
 	self:UpdateClampOffsets();
@@ -1027,6 +1064,8 @@ function EditModeUnitFrameSystemMixin:SetupSettingsDialogAnchor()
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -400, -200);
 	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
 		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("TOPRIGHT", UIParent, "TOPRIGHT", -400, -200);
+	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Pet then
+		self.settingsDialogAnchor = AnchorUtil.CreateAnchor("LEFT", UIParent, "LEFT", 250);
 	end
 end
 
@@ -1294,6 +1333,13 @@ end
 
 EditModeCastBarSystemMixin = {};
 
+function EditModeCastBarSystemMixin:OnDragStart()
+	-- If we start dragging then unlock the cast bar from the player frame so it can move
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeCastBarSetting.LockToPlayerFrame, 0);
+
+	EditModeSystemMixin.OnDragStart(self);
+end
+
 function EditModeCastBarSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
@@ -1306,8 +1352,15 @@ function EditModeCastBarSystemMixin:ApplySystemAnchor()
 	if lockToPlayerFrame then
 		PlayerFrame_AttachCastBar();
 	else
+		PlayerFrame_DetachCastBar();
 		EditModeSystemMixin.ApplySystemAnchor(self);
 	end
+	self:UpdateSystemSettingBarSize();
+end
+
+function EditModeCastBarSystemMixin:ResetToDefaultPosition()
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeCastBarSetting.LockToPlayerFrame, 0);
+	EditModeSystemMixin.ResetToDefaultPosition(self);
 end
 
 function EditModeCastBarSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
@@ -1319,21 +1372,11 @@ function EditModeCastBarSystemMixin:ShouldShowSetting(setting)
 		return false;
 	end
 
-	if setting == Enum.EditModeCastBarSetting.BarSize then
-		return not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
-	end
-
 	return true;
 end
 
 function EditModeCastBarSystemMixin:SetupSettingsDialogAnchor()
 	self.settingsDialogAnchor = AnchorUtil.CreateAnchor("LEFT", UIParent, "CENTER", 100);
-end
-
-function EditModeCastBarSystemMixin:AddExtraButtons(extraButtonPool)
-	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
-	self.resetToDefaultPositionButton:SetEnabled(not self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame));
-	return true;
 end
 
 function EditModeCastBarSystemMixin:AnchorSelectionFrame()
@@ -1353,14 +1396,19 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
 	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
 	if lockToPlayerFrame then
 		PlayerFrame_AttachCastBar();
-		self.isLocked = true;
-	else
+		self:UpdateSystemSettingBarSize();
+		EditModeManagerFrame:OnSystemPositionChange(self);
+	elseif not self:IsInDefaultPosition() then
+		-- If we aren't locked to the player frame and we aren't in our default position then
+		-- try to detach from the player frame and break any connections.
+		-- Only do this when not in our default position since our default position is in the UIParent bottom layout frame 
+		-- which we would not want to unparent from
+		self:SetParent(UIParent);
+		self:UpdateSystemSettingBarSize();
 		PlayerFrame_DetachCastBar();
-		self:ApplySystemAnchor();
-		self.isLocked = false;
+		self:BreakFrameSnap();
+		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
-
-	self:UpdateSystemSettingBarSize();
 end
 
 function EditModeCastBarSystemMixin:UpdateSystemSettingShowCastTime()
@@ -1369,13 +1417,16 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingShowCastTime()
 end
 
 function EditModeCastBarSystemMixin:UpdateSystemSettingBarSize()
+	local barScale = self:GetSettingValue(Enum.EditModeCastBarSetting.BarSize) / 100;
+
 	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		self:SetScale(1);
-	else
-		local barSizeSetting = self:GetSettingValue(Enum.EditModeCastBarSetting.BarSize);
-		local barScale = barSizeSetting / 100;
-		self:SetScale(barScale);
+		-- Counteract player frame scale so only the cast bar's size is taken into account
+		self:SetScale(barScale / PlayerFrame:GetScale());
+		PlayerFrame_AttachCastBar();
+		return;
 	end
+
+	self:SetScale(barScale);
 end
 
 function EditModeCastBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -2015,6 +2066,48 @@ function EditModeDurabilityFrameSystemMixin:UpdateSystemSetting(setting, entireS
 	end
 
 	self:ClearDirtySetting(setting);
+end
+
+local function UpdatePetFrameScale()
+	-- If the pet frame is anchored to the player frame's managed container then we need to counteract the player frame scale's effect on the pet frame
+	local petFrameScale = PetFrame:GetSettingValue(Enum.EditModeUnitFrameSetting.FrameSize) / 100;
+	petFrameScale = petFrameScale > 0 and petFrameScale or 1;
+	if PetFrame:GetParent() == PlayerFrameBottomManagedFramesContainer then
+		petFrameScale = petFrameScale / PlayerFrame:GetScale();
+	end
+
+	PetFrame:SetScale(petFrameScale);
+	PlayerFrameBottomManagedFramesContainer:Layout();
+end
+
+EditModePlayerFrameSystemMixin = {};
+
+function EditModePlayerFrameSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+
+	-- If the player frame moves we should re-apply the casting bar frame's anchor in case it is supposed to be locked to the player frame
+	PlayerCastingBarFrame:ApplySystemAnchor();
+end
+
+function EditModePlayerFrameSystemMixin:UpdateSystemSettingFrameSize()
+	EditModeUnitFrameSystemMixin.UpdateSystemSettingFrameSize(self);
+
+	-- When player frame's size updates we should update the pet frame and cast bar in case they are parented to the player frame
+	UpdatePetFrameScale();
+	PlayerCastingBarFrame:UpdateSystemSettingBarSize();
+end
+
+EditModePetFrameSystemMixin = {};
+
+function EditModePetFrameSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.isInEditMode = false;
+	self:UpdateShownState();
+end
+
+function EditModePetFrameSystemMixin:UpdateSystemSettingFrameSize()
+	UpdatePetFrameScale();
 end
 
 local EditModeSystemSelectionLayout =

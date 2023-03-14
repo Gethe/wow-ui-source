@@ -31,15 +31,16 @@ function PRCCharacterSelectBlock:SetResultsShown(shown)
 	end
 end
 
-local function DoesClientThinkTheCharacterIsEligibleForPRC(characterID)
+function DoesClientThinkTheCharacterIsEligibleForPRC(characterID)
 	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local sameFaction, _ = CharacterHasAlternativeRaceOptions(characterID);
 	local errors = {};
 
 	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
 	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE, faction ~= "Neutral");
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, C_StoreSecure.IsVASEligibleCharacterGUID(playerguid));
+	CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, sameFaction);
+	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
+	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidRaceChange));
 
 	local canTransfer = #errors == 0;
 	return canTransfer, errors, playerguid, characterServiceRequiresLogin;

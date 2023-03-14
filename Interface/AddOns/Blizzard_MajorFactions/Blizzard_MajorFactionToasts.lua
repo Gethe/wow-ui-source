@@ -6,6 +6,7 @@ local majorFactionSwirlEffects =
 	Centaur = {152},
 	Tuskarr = {152},
 	Valdrakken = {152},
+	Niffen = {152},
 };
 
 local majorFactionColorFormat = "%s_MAJOR_FACTION_COLOR";

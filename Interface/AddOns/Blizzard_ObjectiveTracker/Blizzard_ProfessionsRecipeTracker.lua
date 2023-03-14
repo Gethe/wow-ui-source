@@ -190,7 +190,7 @@ function ProfessionsRecipeTracking_Initialize()
 		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(not IsRecrafting)) do
 			if not C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
 				local track = false;
-				C_TradeSkillUI.SetRecipeTracked(recipeID, track, isRecraft);
+				C_TradeSkillUI.SetRecipeTracked(recipeID, track, not IsRecrafting);
 			end
 		end
 	end

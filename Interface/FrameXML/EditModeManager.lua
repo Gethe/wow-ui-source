@@ -640,24 +640,39 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 	end
 
 	local topMostBar = nil;
+
+	local layoutInfo = self:GetActiveLayoutInfo();
+	local isPresetLayout = layoutInfo.layoutType == Enum.EditModeLayoutType.Preset;
+	local isOverrideLayout = layoutInfo.layoutType == Enum.EditModeLayoutType.Override; 
+
 	for index, bar in ipairs(barsToUpdate) do
-		if bar and bar:IsInDefaultPosition() and bar:IsShown() then
-			if not topMostBar then
-				offsetX = -bar:GetWidth() / 2;
-			end
-
-			local topBarHeight = topMostBar and topMostBar:GetHeight() + 5 or 0;
-			offsetY = offsetY + topBarHeight;
-
+		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
 			bar:ClearAllPoints();
-			bar:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", offsetX, offsetY);
+
+			if bar.useDefaultAnchors and isPresetLayout then
+				local anchorInfo = EditModePresetLayoutManager:GetPresetLayoutSystemAnchorInfo(layoutInfo.layoutIndex, bar.system, bar.systemIndex);
+				bar:SetPoint(anchorInfo.point, anchorInfo.relativeTo, anchorInfo.relativePoint, anchorInfo.offsetX, anchorInfo.offsetY);
+			elseif bar.useDefaultAnchors and isOverrideLayout then
+				local anchorInfo = EditModePresetLayoutManager:GetOverrideLayoutSystemAnchorInfo(layoutInfo.layoutIndex, bar.system, bar.systemIndex);
+				bar:SetPoint(anchorInfo.point, anchorInfo.relativeTo, anchorInfo.relativePoint, anchorInfo.offsetX, anchorInfo.offsetY);
+			else
+				if not topMostBar then
+					offsetX = -bar:GetWidth() / 2;
+				end
+
+				local topBarHeight = topMostBar and topMostBar:GetHeight() + 5 or 0;
+				offsetY = offsetY + topBarHeight;
+
+				bar:ClearAllPoints();
+				bar:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", offsetX, offsetY);
+
+				topMostBar = bar;
+			end
 
 			-- Bar position changed so we should update our flyout direction
 			if bar.UpdateSpellFlyoutDirection then
 				bar:UpdateSpellFlyoutDirection();
 			end
-
-			topMostBar = bar;
 		end
 	end
 
@@ -841,7 +856,9 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetPartyFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames));
 	self.AccountSettings:SetRaidFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidFrames));
 	self.AccountSettings:SetActionBarShown(StanceBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStanceBar));
+	if(PetActionBar) then 
 	self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
+	end 
 	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
 	self.AccountSettings:SetCastBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCastBar));
 	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
@@ -855,6 +872,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetHudTooltipShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowHudTooltip));
 	self.AccountSettings:SetStatusTrackingBar2Shown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStatusTrackingBar2));
 	self.AccountSettings:SetDurabilityFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDurabilityFrame));
+	self.AccountSettings:SetPetFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetFrame));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1067,8 +1085,26 @@ function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)
 	end
 end
 
+function EditModeManagerFrameMixin:SetOverrideLayout(overrideLayoutIndex)
+	local overrideLayouts = EditModePresetLayoutManager:GetCopyOfOverrideLayouts();
+	if(not overrideLayouts) then 
+		self.overrideLayoutInfo = nil; 
+		return;
+	end
+
+	local overrideLayout = overrideLayouts[overrideLayoutIndex];
+	self.overrideLayoutInfo = overrideLayout or nil; 
+	if(overrideLayout) then 
+	self:UpdateLayoutInfo(C_EditMode.GetLayouts());
+	end		
+end
+
 function EditModeManagerFrameMixin:GetActiveLayoutInfo()
+	if(self.overrideLayoutInfo) then 
+		return self.overrideLayoutInfo; 
+	else 
 	return self.layoutInfo and self.layoutInfo.layouts[self.layoutInfo.activeLayout];
+end
 end
 
 function EditModeManagerFrameMixin:GetActiveLayoutSystemInfo(system, systemIndex)
@@ -1530,6 +1566,12 @@ function EditModeAccountSettingsMixin:OnLoad()
 	self.settingsCheckButtons.DurabilityFrame = self.SettingsContainer.DurabilityFrame;
 	self.settingsCheckButtons.DurabilityFrame:SetCallback(onDurabilityFrameCheckboxChecked);
 
+	local function onPetFrameCheckboxChecked(isChecked, isUserInput)
+		self:SetPetFrameShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.PetFrame = self.SettingsContainer.PetFrame;
+	self.settingsCheckButtons.PetFrame:SetCallback(onPetFrameCheckboxChecked);
+
 	self:LayoutSettings();
 end
 
@@ -1561,6 +1603,8 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 
 	self:SetupStatusTrackingBar2();
 	self:SetupDurabilityFrame();
+	self:SetupPetFrame();
+	self:SetupEncounterBar();
 
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
@@ -1577,6 +1621,7 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshHudTooltip();
 	self:RefreshStatusTrackingBar2();
 	self:RefreshDurabilityFrame();
+	self:RefreshPetFrame();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -1794,6 +1839,13 @@ function EditModeAccountSettingsMixin:RefreshCastBar()
 	PlayerCastingBarFrame:UpdateShownState();
 end
 
+function EditModeAccountSettingsMixin:SetupEncounterBar()
+	-- If encounter bar is showing and has content showing then auto enable the setting
+	if EncounterBar:IsShown() and EncounterBar:HasContentShowing() then
+		self.settingsCheckButtons.EncounterBar:SetControlChecked(true);
+	end
+end
+
 function EditModeAccountSettingsMixin:SetEncounterBarShown(shown, isUserInput)
 	if isUserInput then
 		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowEncounterBar, shown);
@@ -1810,8 +1862,8 @@ function EditModeAccountSettingsMixin:RefreshEncounterBar()
 		EncounterBar.minimumHeight = 30;
 		EncounterBar:HighlightSystem();
 	else
-		EncounterBar.minimumWidth = 0;
-		EncounterBar.minimumHeight = 0;
+		EncounterBar.minimumWidth = 1;
+		EncounterBar.minimumHeight = 1;
 		EncounterBar:ClearHighlight();
 	end
 
@@ -2061,6 +2113,35 @@ function EditModeAccountSettingsMixin:RefreshDurabilityFrame()
 	DurabilityFrame:UpdateShownState();
 end
 
+function EditModeAccountSettingsMixin:SetupPetFrame()
+	-- If the frame is already showing then set control checked
+	if PetFrame:IsShown() then
+		self.settingsCheckButtons.PetFrame:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetPetFrameShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowPetFrame, shown);
+		self:RefreshPetFrame();
+	else
+		self.settingsCheckButtons.PetFrame:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshPetFrame()
+	local showPetFrame = self.settingsCheckButtons.PetFrame:IsControlChecked();
+	if showPetFrame then
+		PetFrame.isInEditMode = true;
+		PetFrame:HighlightSystem();
+	else
+		PetFrame.isInEditMode = false;
+		PetFrame:ClearHighlight();
+	end
+
+	PetFrame:UpdateShownState();
+end
+
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)
 	self.expanded = expanded;
 	self.Expander.Label:SetText(expanded and HUD_EDIT_MODE_COLLAPSE_OPTIONS or HUD_EDIT_MODE_EXPAND_OPTIONS);
@@ -2128,9 +2209,11 @@ end
 
 function EditModeManagerTutorialMixin:ShowHelpTip()
 	local helpTipInfo = HelpTipInfos[self.currentTipIndex];
+	if(helptipInfo) then 
 	local relativeRegion = helpTipInfo.relativeRegionParentKey and EditModeManagerFrame[helpTipInfo.relativeRegionParentKey] or EditModeManagerFrame;
 
 	HelpTip:Show(self, helpTipInfo, relativeRegion);
+end
 end
 
 function EditModeManagerTutorialMixin:ProgressHelpTips()

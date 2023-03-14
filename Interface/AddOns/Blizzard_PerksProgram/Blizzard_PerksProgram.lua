@@ -20,6 +20,7 @@ function PerksProgramMixin:OnLoad()
 	self.activeFilters["collected"] = true;
 	self.activeFilters["uncollected"] = true;
 	self.activeFilters["useable"] = false;
+	self:SetLabelFont(GameFontNormalMed3);
 
 	local useNativeForm = true;
 	self:SetUseNativeForm(useNativeForm);
@@ -35,6 +36,14 @@ function PerksProgramMixin:OnLoad()
 	self.ProductsFrame:Init();
 	self.ModelSceneContainerFrame:Init();
 	self.FooterFrame:Init();
+end
+
+function PerksProgramMixin:GetLabelFont()
+	return self.labelFont or GameFontNormalMed3;
+end
+
+function PerksProgramMixin:SetLabelFont(font)
+	self.labelFont = font;
 end
 
 function PerksProgramMixin:SetSortField(sortField)
