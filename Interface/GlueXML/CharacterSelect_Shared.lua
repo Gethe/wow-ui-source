@@ -2286,28 +2286,34 @@ end
 local function GetVASDistributions()
 	local distributions = C_CharacterServices.GetVASDistributions();
 	local distributionsByVASType = {};
+
 	for index, distribution in ipairs(distributions) do
 		distribution.tokenStatus = distribution.inReview and "review" or "normal";
 		distribution.isVAS = true;
 		distributionsByVASType[distribution.serviceType] = distribution;
 	end
 
-	local hasAtLeastOneEligible = false;
-	for i = 1, GetNumCharacters() do
-		hasAtLeastOneEligible = DoesClientThinkTheCharacterIsEligibleForPFC(GetCharIDFromIndex(i));
-		if hasAtLeastOneEligible then
-			break;
-		end
-	end
-
-	if GetNumCharacters() == 0 or not hasAtLeastOneEligible then
-		local needsNoCharactersStatus = {
-			Enum.ValueAddedServiceType.PaidCharacterTransfer,
-			Enum.ValueAddedServiceType.PaidFactionChange
-		};
-		for i, serviceType in ipairs(needsNoCharactersStatus) do
-			local distribution = distributionsByVASType[serviceType];
-			if distribution then
+	for vasType, distribution in pairs(distributionsByVASType) do
+		if not IsVASEnabledOnRealm(vasType) then
+			distribution.tokenStatus = "disabledOnRealm";
+		else
+			-- Are there any characters for which this token is valid?
+			local usable = false;
+			for i = 1, GetNumCharacters() do
+				local charID = GetCharIDFromIndex(i);
+				if vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer then
+					-- Uncomment when tokenized transfer is ported to Classic
+					--usable = DoesClientThinkTheCharacterIsEligibleForPCT(charID);
+				elseif vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+					usable = DoesClientThinkTheCharacterIsEligibleForPFC(charID);
+				elseif vasType == Enum.ValueAddedServiceType.PaidRaceChange then
+					usable = DoesClientThinkTheCharacterIsEligibleForPRC(charID);
+				end
+				if usable then
+					break;
+				end
+			end
+			if not usable then
 				distribution.tokenStatus = "noCharacters";
 			end
 		end
@@ -2327,6 +2333,7 @@ end
 local statusToTooltipLookup = {
 	review = VAS_TOKEN_TOOLTIP_STATUS_REVIEW,
 	noCharacters = VAS_TOKEN_TOOLTIP_STATUS_NO_CHARACTERS,
+	disabledOnRealm = VAS_TOKEN_TOOLTIP_STATUS_DISABLED_ON_REALM,
 };
 
 local function GetVASTokenStatusTooltip(vasTokenInfo)
@@ -2701,8 +2708,10 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 	assert(data.vasType ~= nil);
 	if data.vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer then
 		BeginFlow(PaidCharacterTransferFlow, data);
-	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange  then
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
 		BeginFlow(PaidFactionChangeFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
+		BeginFlow(PaidRaceChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end

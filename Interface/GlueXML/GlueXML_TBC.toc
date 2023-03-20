@@ -110,6 +110,7 @@ KioskModeSplash.xml
 CharacterServicesShared.lua
 CharacterServices.xml
 CharacterServicesPaidFactionChange.xml
+CharacterServicesPaidRaceChange.xml
 CharacterServicesCharacterSelector.xml
 ..\..\Interface_TBC\GlueXML\CharacterCreate.xml
 PromotionFrame.xml
