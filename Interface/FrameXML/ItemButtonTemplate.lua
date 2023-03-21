@@ -279,7 +279,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	elseif IsCorruptedItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
 		button.IconOverlay:Show();
-	elseif IsCosmeticItem(itemIDOrLink) and not C_TransmogCollection.PlayerHasTransmogByItemInfo(itemIDOrLink) then
+	elseif IsCosmeticItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("CosmeticIconFrame");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then

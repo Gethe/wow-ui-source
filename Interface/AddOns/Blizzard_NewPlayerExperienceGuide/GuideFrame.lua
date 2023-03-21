@@ -258,9 +258,9 @@ end
 
 function GuideFrameMixin:ConfirmChoice()
 	if self:GetState() ~= Enum.GuideFrameState.CannotGuide then
-		local gossipOptions = C_GossipInfo.GetOptions(); 
-		if(gossipOptions and gossipOptions[1]) then 
-			C_GossipInfo.SelectOption(gossipOptions[1].gossipOptionID); -- TODO: Probably enumerate the available options...this is a toggle so this is fine for now
+		local gossipOptions = C_GossipInfo.GetOptions();
+		if(gossipOptions and gossipOptions[1]) then
+			C_GossipInfo.SelectOptionByIndex(gossipOptions[1].orderIndex); -- TODO: Probably enumerate the available options...this is a toggle so this is fine for now
 		end
 	end
 

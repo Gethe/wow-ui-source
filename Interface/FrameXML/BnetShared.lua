@@ -24,3 +24,12 @@ end
 function BNet_GetBattlenetClientAtlas(client)
 	return BNet_GetClientAtlas("Battlenet-ClientIcon-", client);
 end
+
+function BNet_GetClientEmbeddedTexture(texture, fileWidth, fileHeight, width, height, xOffset, yOffset)
+	width = width or 0;
+	height = height or width;
+	xOffset = xOffset or 0;
+	yOffset = yOffset or 0;
+	
+	return CreateTextureMarkup(texture, fileWidth, fileHeight, width, height, 0, 1, 0, 1, xOffset, yOffset);
+end

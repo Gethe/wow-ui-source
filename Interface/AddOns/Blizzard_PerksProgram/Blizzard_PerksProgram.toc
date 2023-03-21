@@ -10,3 +10,4 @@ Blizzard_PerksProgramFooter.lua
 Blizzard_PerksProgram.lua
 Blizzard_PerksProgramElements.xml
 Blizzard_PerksProgram.xml
+Localization.lua

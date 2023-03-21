@@ -474,9 +474,12 @@ function PerksProgramCurrencyFrameMixin:OnLoad()
 	self.GlowPulse:SetPoint("CENTER", self.Icon, "CENTER", 0, 0);
 end
 
+local RED_TEXT_CURRENCY_THRESHOLD = 0;
 function PerksProgramCurrencyFrameMixin:UpdateCurrencyAmount()
 	local currencyAmount = C_PerksProgram.GetCurrencyAmount();
-	self.Text:SetText(currencyAmount);
+	local color = (currencyAmount >= RED_TEXT_CURRENCY_THRESHOLD) and WHITE_FONT_COLOR or RED_FONT_COLOR;
+	local text = color:WrapTextInColorCode(currencyAmount);
+	self.Text:SetText(text);
 end
 
 function PerksProgramCurrencyFrameMixin:OnEvent(event, ...)

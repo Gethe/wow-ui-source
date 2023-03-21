@@ -58,7 +58,7 @@ local SimpleSliderAPI =
 
 			Returns =
 			{
-				{ Name = "orientation", Type = "string", Nilable = false },
+				{ Name = "orientation", Type = "Orientation", Nilable = false },
 			},
 		},
 		{
@@ -84,7 +84,7 @@ local SimpleSliderAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -173,7 +173,7 @@ local SimpleSliderAPI =
 
 			Arguments =
 			{
-				{ Name = "orientation", Type = "string", Nilable = false },
+				{ Name = "orientation", Type = "Orientation", Nilable = false },
 			},
 		},
 		{
@@ -191,7 +191,7 @@ local SimpleSliderAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{

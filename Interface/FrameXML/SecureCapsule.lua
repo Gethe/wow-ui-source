@@ -159,6 +159,7 @@ retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 retain("Round");
 retain("IsCharacterNPERestricted");
+retain("securecallfunction");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -238,6 +239,7 @@ take("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_HKD");
 take("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 take("BLIZZARD_STORE_CURRENCY_BETA");
 take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");

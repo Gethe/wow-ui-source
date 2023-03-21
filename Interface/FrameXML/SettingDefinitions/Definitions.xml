@@ -12,7 +12,7 @@
 	<Script file="Interface.lua"/>
 	<Script file="Combat.lua"/>
 	<Script file="ActionBars.lua"/>
-	<Include file="Social.xml"/>
+	<Include file="Social.lua"/>
 	<Include file="Keybindings.xml"/>
 	<Script file="Accessibility.lua"/>
 	<Include file="Colorblind.xml"/>

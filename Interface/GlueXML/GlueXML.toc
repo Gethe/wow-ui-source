@@ -65,6 +65,7 @@
 ..\SharedXML\Dump.lua
 ..\SharedXML\NewFeatureLabel.xml
 ..\SharedXML\VASErrorLookup.lua
+..\SharedXML\MixinUtil.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml

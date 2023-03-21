@@ -27,8 +27,6 @@ function ProfessionsReagentSlotMixin:Reset()
 end
 
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
-	self:Reset();
-	
 	self:SetTransaction(transaction);
 	self:SetReagentSlotSchematic(reagentSlotSchematic);
 
@@ -70,12 +68,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			else
 				self.Button:SetItem(reagent.itemID);
 			end
-		elseif reagentType == Enum.CraftingReagentType.Optional then
-			local slotInfo = reagentSlotSchematic.slotInfo;
-			self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
-
-			InitButton();
-		elseif reagentType == Enum.CraftingReagentType.Finishing then
+		elseif reagentType == Enum.CraftingReagentType.Optional or reagentType == Enum.CraftingReagentType.Finishing then
 			self.Name:Hide();
 
 			InitButton();
@@ -123,6 +116,7 @@ end
 function ProfessionsReagentSlotMixin:Update()
 	self:UpdateAllocationText();
 	self:UpdateQualityOverlay();
+	self.Button:Update();
 
 	if self.Name:IsShown() and self.nameText ~= nil then
 		self.Name:SetText(self:GetNameColor():WrapTextInColorCode(self.nameText));
@@ -262,7 +256,7 @@ function ProfessionsReagentSlotMixin:SetOriginalItem(item)
 end
 
 function ProfessionsReagentSlotMixin:SetItem(item)
-	self.Button:Reset();
+	ItemButtonMixin.Reset(self.Button);
 	self.item = item;
 	self.currencyID = nil;
 
@@ -286,7 +280,7 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 end
 
 function ProfessionsReagentSlotMixin:SetCurrency(currencyID)
-	self.Button:Reset();
+	ItemButtonMixin.Reset(self.Button);
 	self.item = nil;
 	self.currencyID = currencyID;
 

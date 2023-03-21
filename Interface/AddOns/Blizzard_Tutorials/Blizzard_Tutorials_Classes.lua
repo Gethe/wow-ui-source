@@ -70,7 +70,7 @@ end
 function Class_ChangeSpec:ShowSpecButtonPointer()
 	self:HidePointerTutorials();
 	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
-	ActionButton_ShowOverlayGlow(TalentMicroButton);
+	MicroButtonPulse(TalentMicroButton);
 end
 
 function Class_ChangeSpec:EvaluateTalentFrame()
@@ -116,7 +116,7 @@ function Class_ChangeSpec:OnComplete()
 	self:CleanUpCallbacks();
 
 	self:EnableHelp(false);
-	ActionButton_HideOverlayGlow(TalentMicroButton);
+	MicroButtonPulseStop(TalentMicroButton);
 	self:HidePointerTutorials();
 	TutorialManager:RemoveTutorial(self:Name());
 end
@@ -288,7 +288,7 @@ function Class_TalentPoints:ShowTalentButtonPointer()
 		HelpTip:HideAllSystem("MicroButtons");
 	end
 	self:ShowPointerTutorial(TALENT_MICRO_BUTTON_UNSPENT_TALENTS, "DOWN", TalentMicroButton, 0, 10, nil, "DOWN");
-	ActionButton_ShowOverlayGlow(TalentMicroButton);
+	MicroButtonPulse(TalentMicroButton);
 end
 
 function Class_TalentPoints:EvaluateTalentFrame()
@@ -343,7 +343,7 @@ end
 
 function Class_TalentPoints:OnComplete()
 	self:HidePointerTutorials();
-	ActionButton_HideOverlayGlow(TalentMicroButton);
+	MicroButtonPulseStop(TalentMicroButton);
 	Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
 	Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:UnregisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);

@@ -45,6 +45,12 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture atlas="UI-CharacterCreate-PadLock" setAllPoints="true"/>
+				<Texture parentKey="TooltipAnchor">
+					<Size x="20" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<HighlightTexture atlas="UI-CharacterCreate-PadLock" alpha="0.1" alphaMode="ADD" setAllPoints="true"/>
@@ -1087,7 +1093,7 @@
 							</Button>
 							<Button name="CharSelectUndeleteCharacterButton" inherits="BigRedRefreshButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
 								<KeyValues>
-									<KeyValue key="tooltipText" value="UNDELETE_TOOLTIP_DISABLED" type="global"/>
+									<KeyValue key="tooltipText" value="UNDELETE_TOOLTIP" type="global"/>
 									<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
 									<KeyValue key="onClickHandler" value="CharacterSelect_StartCharacterUndelete" type="global"/>
 									<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
@@ -1547,24 +1553,8 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-570"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								ServerAlert_OnLoad(self);
-								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
-								if ( not C_Login.IsLauncherLogin() ) then
-									ServerAlert_Disable(self);
-								end
-							</OnLoad>
-							<OnEvent>
-								if ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
-									if ( C_Login.IsLauncherLogin() ) then
-										ServerAlert_Enable(self);
-									else
-										ServerAlert_Disable(self);
-									end
-								else
-									ServerAlert_OnEvent(self, event, ...);
-								end
-							</OnEvent>
+							<OnLoad function="CharacterSelectServerAlert_OnLoad"/>
+							<OnEvent function="CharacterSelectServerAlert_OnEvent"/>
 							<OnShow>
 								AccountUpgradePanel_UpdateExpandState();
 							</OnShow>
@@ -1599,6 +1589,7 @@
 			<Frame name="GameRoomBillingFrame" hidden="true" inherits="TooltipBackdropTemplate">
 				<Size x="255" y="60"/>
 				<Anchors>
+					<!-- Anchor is also conditionally updated in lua -->
 					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<Layers>

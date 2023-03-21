@@ -80,7 +80,7 @@ local SimpleAnimAPI =
 
 			Returns =
 			{
-				{ Name = "region", Type = "table", Nilable = false },
+				{ Name = "region", Type = "CScriptObject", Nilable = false },
 			},
 		},
 		{
@@ -89,13 +89,13 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "script", Type = "function", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = false },
 			},
 		},
 		{
@@ -121,7 +121,7 @@ local SimpleAnimAPI =
 
 			Returns =
 			{
-				{ Name = "weights", Type = "string", Nilable = false },
+				{ Name = "weights", Type = "SmoothingType", Nilable = false },
 			},
 		},
 		{
@@ -147,7 +147,7 @@ local SimpleAnimAPI =
 
 			Returns =
 			{
-				{ Name = "target", Type = "table", Nilable = false },
+				{ Name = "target", Type = "CScriptObject", Nilable = false },
 			},
 		},
 		{
@@ -156,7 +156,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptName", Type = "string", Nilable = false },
+				{ Name = "scriptName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -170,8 +170,8 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
-				{ Name = "script", Type = "function", Nilable = false },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
 			},
 		},
@@ -270,7 +270,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "childKey", Type = "string", Nilable = false },
+				{ Name = "childKey", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -313,7 +313,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "parent", Type = "table", Nilable = false },
+				{ Name = "parent", Type = "SimpleAnimGroup", Nilable = false },
 				{ Name = "order", Type = "number", Nilable = true },
 			},
 		},
@@ -332,8 +332,8 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
-				{ Name = "script", Type = "function", Nilable = true },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = true },
 			},
 		},
 		{
@@ -351,7 +351,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "weights", Type = "string", Nilable = false },
+				{ Name = "weights", Type = "SmoothingType", Nilable = false },
 			},
 		},
 		{
@@ -370,7 +370,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "target", Type = "table", Nilable = false },
+				{ Name = "target", Type = "CScriptObject", Nilable = false },
 			},
 
 			Returns =
@@ -384,7 +384,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "key", Type = "string", Nilable = false },
+				{ Name = "key", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -398,7 +398,7 @@ local SimpleAnimAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

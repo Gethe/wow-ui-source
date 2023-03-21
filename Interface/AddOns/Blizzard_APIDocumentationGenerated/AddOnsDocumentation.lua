@@ -16,7 +16,7 @@ local AddOns =
 			LiteralName = "ADDON_LOADED",
 			Payload =
 			{
-				{ Name = "addOnName", Type = "string", Nilable = false },
+				{ Name = "addOnName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -34,7 +34,7 @@ local AddOns =
 			LiteralName = "SAVED_VARIABLES_TOO_LARGE",
 			Payload =
 			{
-				{ Name = "addOnName", Type = "string", Nilable = false },
+				{ Name = "addOnName", Type = "cstring", Nilable = false },
 			},
 		},
 	},

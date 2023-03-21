@@ -12,9 +12,9 @@ local TooltipComparison =
 
 			Arguments =
 			{
-				{ Name = "comparisonItem", Type = "table", Nilable = false },
-				{ Name = "equippedItem", Type = "table", Nilable = false },
-				{ Name = "pairedItem", Type = "table", Nilable = true },
+				{ Name = "comparisonItem", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "equippedItem", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "pairedItem", Type = "TooltipComparisonItem", Nilable = true },
 				{ Name = "addPairedStats", Type = "bool", Nilable = true, Documentation = { "Whether the paired item's stats are added or subtracted" } },
 			},
 
@@ -29,7 +29,7 @@ local TooltipComparison =
 
 			Arguments =
 			{
-				{ Name = "comparisonItem", Type = "table", Nilable = false },
+				{ Name = "comparisonItem", Type = "TooltipComparisonItem", Nilable = false },
 			},
 
 			Returns =
@@ -65,8 +65,8 @@ local TooltipComparison =
 			Fields =
 			{
 				{ Name = "method", Type = "TooltipComparisonMethod", Nilable = false, Default = "Single" },
-				{ Name = "item", Type = "table", Nilable = false },
-				{ Name = "additionalItems", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "item", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "additionalItems", Type = "table", InnerType = "TooltipComparisonItem", Nilable = false },
 			},
 		},
 	},

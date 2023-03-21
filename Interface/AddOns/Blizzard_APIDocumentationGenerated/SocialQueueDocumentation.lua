@@ -18,7 +18,7 @@ local SocialQueue =
 
 			Returns =
 			{
-				{ Name = "groupGUIDs", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "groupGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -36,12 +36,12 @@ local SocialQueue =
 
 			Arguments =
 			{
-				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
 			},
 		},
@@ -51,7 +51,7 @@ local SocialQueue =
 
 			Arguments =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -63,7 +63,7 @@ local SocialQueue =
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },
-				{ Name = "leaderGUID", Type = "string", Nilable = false },
+				{ Name = "leaderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -72,7 +72,7 @@ local SocialQueue =
 
 			Arguments =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -86,7 +86,7 @@ local SocialQueue =
 
 			Arguments =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -100,7 +100,7 @@ local SocialQueue =
 
 			Arguments =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "applyAsTank", Type = "bool", Nilable = false, Default = false },
 				{ Name = "applyAsHealer", Type = "bool", Nilable = false, Default = false },
 				{ Name = "applyAsDamage", Type = "bool", Nilable = false, Default = false },
@@ -117,7 +117,7 @@ local SocialQueue =
 
 			Arguments =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "priority", Type = "number", Nilable = false },
 			},
 		},
@@ -136,7 +136,7 @@ local SocialQueue =
 			LiteralName = "SOCIAL_QUEUE_UPDATE",
 			Payload =
 			{
-				{ Name = "groupGUID", Type = "string", Nilable = false },
+				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "numAddedItems", Type = "number", Nilable = true },
 			},
 		},
@@ -186,7 +186,7 @@ local SocialQueue =
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },
-				{ Name = "leaderGUID", Type = "string", Nilable = false },
+				{ Name = "leaderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -208,8 +208,8 @@ local SocialQueue =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
 			},
 		},
 	},

@@ -297,13 +297,19 @@ end
 
 local function GetCompareFieldFromType(extraColumnType)
 	if extraColumnType == Enum.AuctionHouseExtraColumn.Ilvl then
-		return "iLvl";
+		return "iLvlMax";
 	elseif extraColumnType == Enum.AuctionHouseExtraColumn.Slots then
 		return "slots";
 	elseif extraColumnType == Enum.AuctionHouseExtraColumn.Level then
 		return "level";
 	elseif extraColumnType == Enum.AuctionHouseExtraColumn.Skill then
 		return "skill";
+	end
+end
+
+local function GetFallbackCompareFieldFromType(extraColumnType)
+	if extraColumnType == Enum.AuctionHouseExtraColumn.Ilvl then
+		return "iLvlMin";
 	end
 end
 
@@ -321,9 +327,10 @@ function ProfessionsCustomerOrdersBrowsePageMixin:SetupSortManager(extraColumnTy
 	end);
 
 	local extraColumnField = extraColumnType and GetCompareFieldFromType(extraColumnType);
+	local fallbackColumnFiled = extraColumnType and GetFallbackCompareFieldFromType(extraColumnType);
 	if extraColumnField ~= nil then
 		self.sortManager:InsertComparator(GetSortOrderFromType(extraColumnType), function(lhs, rhs)
-			return SortUtil.CompareNumeric(lhs.option[extraColumnField], rhs.option[extraColumnField]);
+			return SortUtil.CompareNumeric(lhs.option[extraColumnField] or lhs.option[fallbackColumnFiled], rhs.option[extraColumnField] or rhs.option[fallbackColumnFiled]);
 		end);
 	end
 

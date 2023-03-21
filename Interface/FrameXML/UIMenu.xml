@@ -16,12 +16,21 @@
 			<OnLeave>
 				UIMenuButton_OnLeave(self, motion);
 			</OnLeave>
+			<OnHide>
+				UIMenuButton_OnHide(self);
+			</OnHide>
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentShortcutText" inherits="GameFontHighlight" hidden="true">
+				<Texture parentKey="NestedArrow" file="Interface\ChatFrame\ChatFrameExpandArrow">
+					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentShortcutText" inherits="GameFontHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.NestedArrow" relativePoint="LEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>

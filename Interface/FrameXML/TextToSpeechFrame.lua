@@ -837,12 +837,10 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 	end
 
 	if TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...) then
-		local arg1, arg2 = ...;
-		local message = arg1;
-		local languageID = select(10, ...);
+		local message, arg2, _, _, _, _, _, _, _, languageID, lineID = ...;
 		local name = Ambiguate(arg2 or "", "none");
 
-		if ( languageID and C_TTSSettings.ShouldOverrideMessage(languageID) ) then
+		if ( languageID and C_TTSSettings.ShouldOverrideMessage(languageID, message) ) then
 			message = UNKNOWN_LANG_TTS_MESSAGE;
 		end
 
@@ -851,13 +849,14 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 			-- These messages have a token for sender name that needs filled in.
 			message = message:format(name);
 		elseif ( type ~= "TEXT_EMOTE" and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AddCharacterNameToSpeech) and name ~= "" ) then
-			-- Format messages as "<Player> says <message>" except for certain types.
-			local formatType = "SAY";
-			if ( chatTypesWithTtsFormat[type] ) then
-				formatType = type;
+			if not lineID or not C_ChatInfo.IsChatLineCensored(lineID) then
+				-- Format messages as "<Player> says <message>" except for certain types.
+				local formatType = "SAY";
+				if ( chatTypesWithTtsFormat[type] ) then
+					formatType = type;
+				end
+				message = _G["CHAT_" .. formatType .. "_GET"]:format(name) .. message;
 			end
-
-			message = _G["CHAT_" .. formatType .. "_GET"]:format(name) .. message;
 		end
 
 		-- Check for chat text from the local player and skip it, unless the player wants their messages narrated

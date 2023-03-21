@@ -21,7 +21,7 @@ local PaperDollInfo =
 
 			Arguments =
 			{
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -64,8 +64,8 @@ local PaperDollInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "equipmentSlotIndex", Type = "number", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "equipmentSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -79,7 +79,7 @@ local PaperDollInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -111,7 +111,7 @@ local PaperDollInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -200,7 +200,7 @@ local PaperDollInfo =
 			LiteralName = "INSPECT_READY",
 			Payload =
 			{
-				{ Name = "inspecteeGUID", Type = "string", Nilable = false },
+				{ Name = "inspecteeGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

@@ -17,6 +17,7 @@ local GEM_TYPE_INFO =	{	Yellow = {textureKit="yellow", r=0.97, g=0.82, b=0.29},
 							Domination = {textureKit="domination", r=1, g=1, b=1},
 							Cypher = {textureKit="meta", r=1, g=1, b=1},
 							Tinker = {textureKit="punchcard-red", r=1, g=0.47, b=0.47},
+							Primordial = {textureKit="meta", r=1, g=1, b=1},
 						};
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;

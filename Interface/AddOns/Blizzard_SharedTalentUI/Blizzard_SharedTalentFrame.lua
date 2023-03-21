@@ -748,6 +748,41 @@ function TalentFrameBaseMixin:EnumerateAllTalentButtons()
 	return self.talentButtonCollection:EnumerateActive();
 end
 
+function TalentFrameBaseMixin:GetButtonsInOrder(comparison)
+	local talentButtons = {};
+	for talentButton in self:EnumerateAllTalentButtons() do
+		table.insert(talentButtons, talentButton);
+	end
+
+	table.sort(talentButtons, comparison);
+	return talentButtons;
+end
+
+function TalentFrameBaseMixin:GetButtonsInTopLeftOrder()
+	local function CompareTalentButtons(lhsButton, rhsButton)
+		local lhsIsShown = lhsButton:IsShown();
+		if lhsIsShown ~= rhsButton:IsShown() then
+			return lhsIsShown;
+		end
+
+		local lhsTop = lhsButton:GetTop();
+		local rhsTop = rhsButton:GetTop();
+		if math.abs(lhsTop - rhsTop) > 3 then
+			return lhsTop > rhsTop;
+		end
+
+		local lhsLeft = lhsButton:GetLeft();
+		local rhsLeft = rhsButton:GetLeft();
+		if math.abs(lhsLeft - rhsLeft) > 3 then
+			return lhsLeft < rhsLeft;
+		end
+
+		return lhsButton:GetNodeID() < rhsButton:GetNodeID();
+	end
+
+	return self:GetButtonsInOrder(CompareTalentButtons);
+end
+
 function TalentFrameBaseMixin:UpdateAllButtons()
 	for talentButton in self:EnumerateAllTalentButtons() do
 		talentButton:FullUpdate();
@@ -945,15 +980,20 @@ function TalentFrameBaseMixin:UpdateTreeInfo(skipButtonUpdates)
 end
 
 function TalentFrameBaseMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
-	self.treeCurrencyInfo = C_Traits.GetTreeCurrencyInfo(self:GetConfigID(), self:GetTalentTreeID(), self.excludeStagedChangesForCurrencies);
-
 	self.treeCurrencyInfoMap = {};
-	for i, treeCurrency in ipairs(self.treeCurrencyInfo) do
-		self.treeCurrencyInfoMap[treeCurrency.traitCurrencyID] = treeCurrency;
-	end
 
-	if not skipButtonUpdates then
-		self:UpdateAllButtons();
+	local configID = self:GetConfigID();
+	local treeID = self:GetTalentTreeID();
+	if configID and treeID then
+		self.treeCurrencyInfo = C_Traits.GetTreeCurrencyInfo(configID, treeID, self.excludeStagedChangesForCurrencies);
+
+		for i, treeCurrency in ipairs(self.treeCurrencyInfo) do
+			self.treeCurrencyInfoMap[treeCurrency.traitCurrencyID] = treeCurrency;
+		end
+
+		if not skipButtonUpdates then
+			self:UpdateAllButtons();
+		end
 	end
 end
 
@@ -1202,6 +1242,11 @@ function TalentFrameBaseMixin:CommitConfig()
 
 	self:SetCommitStarted(self:GetConfigID(), self:CanCommitInstantly() and TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit or TalentFrameBaseMixin.CommitUpdateReasons.CommitStarted);
 
+	if self.commitTimer then
+		self.commitTimer:Cancel();
+		self.commitTimer = nil;
+	end
+
 	-- TODO:: Consider removing this backup now that we're confident with the proper flow.
 	self.commitTimer = C_Timer.NewTimer(self:GetMaximumCommitTime(), function()
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed);
@@ -1286,7 +1331,7 @@ function TalentFrameBaseMixin:AttemptConfigOperation(operation, ...)
 	end
 
 	if not operation(self:GetConfigID(), ...) then
-		UIErrorsFrame:AddExternalErrorMessage("Trait operation failed.");
+		UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
 		return false;
 	end
 
@@ -1294,23 +1339,23 @@ function TalentFrameBaseMixin:AttemptConfigOperation(operation, ...)
 end
 
 function TalentFrameBaseMixin:PurchaseRank(nodeID)
-	self:AttemptConfigOperation(C_Traits.PurchaseRank, nodeID);
+	return self:AttemptConfigOperation(C_Traits.PurchaseRank, nodeID);
 end
 
 function TalentFrameBaseMixin:CascadeRepurchaseRanks(nodeID)
-	self:AttemptConfigOperation(C_Traits.CascadeRepurchaseRanks, nodeID);
+	return self:AttemptConfigOperation(C_Traits.CascadeRepurchaseRanks, nodeID);
 end
 
 function TalentFrameBaseMixin:RefundRank(nodeID)
-	self:AttemptConfigOperation(C_Traits.RefundRank, nodeID);
+	return self:AttemptConfigOperation(C_Traits.RefundRank, nodeID);
 end
 
 function TalentFrameBaseMixin:RefundAllRanks(nodeID)
-	self:AttemptConfigOperation(C_Traits.RefundAllRanks, nodeID);
+	return self:AttemptConfigOperation(C_Traits.RefundAllRanks, nodeID);
 end
 
 function TalentFrameBaseMixin:SetSelection(nodeID, entryID)
-	self:AttemptConfigOperation(C_Traits.SetSelection, nodeID, entryID);
+	return self:AttemptConfigOperation(C_Traits.SetSelection, nodeID, entryID);
 end
 
 function TalentFrameBaseMixin:ClearCascadeRepurchaseHistory()
@@ -1497,4 +1542,9 @@ end
 function TalentFrameBaseMixin:GetInspectUnit()
 	-- Override in your derived Mixin.
 	return nil;
+end
+
+function TalentFrameBaseMixin:ShouldShowConfirmation()
+	-- Override in your derived Mixin as desired.
+	return false;
 end

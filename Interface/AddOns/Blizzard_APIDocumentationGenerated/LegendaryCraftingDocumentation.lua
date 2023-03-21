@@ -25,7 +25,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "runeforgePowerID", Type = "number", Nilable = true },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = true },
 			},
@@ -41,7 +41,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "runeforgeLegendary", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgeLegendary", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -55,7 +55,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -87,8 +87,8 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "runeforgeLegendary", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-				{ Name = "upgradeItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgeLegendary", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "upgradeItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -102,9 +102,9 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = true },
-				{ Name = "addedModifierIndex", Type = "number", Nilable = false },
+				{ Name = "addedModifierIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
 			},
 
@@ -148,7 +148,7 @@ local LegendaryCrafting =
 
 			Returns =
 			{
-				{ Name = "slotNames", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "slotNames", Type = "table", InnerType = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -157,7 +157,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
 				{ Name = "filter", Type = "RuneforgePowerFilter", Nilable = true },
 			},
 
@@ -190,7 +190,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "item", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "item", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -204,7 +204,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "runeforgeLegendary", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgeLegendary", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -218,8 +218,8 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "runeforgeLegendary", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-				{ Name = "upgradeItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgeLegendary", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "upgradeItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -233,7 +233,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -247,7 +247,7 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "baseItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "baseItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "runeforgePowerID", Type = "number", Nilable = false },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = false },
 			},
@@ -263,8 +263,8 @@ local LegendaryCrafting =
 
 			Arguments =
 			{
-				{ Name = "runeforgeLegendary", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
-				{ Name = "upgradeItem", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "runeforgeLegendary", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "upgradeItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 	},

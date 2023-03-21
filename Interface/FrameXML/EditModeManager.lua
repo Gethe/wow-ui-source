@@ -1182,11 +1182,13 @@ end
 
 function EditModeManagerFrameMixin:ShowNewLayoutDialog(layoutData)
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 	EditModeNewLayoutDialog:ShowDialog(layoutData or self:GetActiveLayoutInfo());
 end
 
 function EditModeManagerFrameMixin:ShowImportLayoutDialog()
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 	EditModeImportLayoutDialog:ShowDialog();
 end
 
@@ -1200,6 +1202,7 @@ end
 
 function EditModeManagerFrameMixin:ShowRenameLayoutDialog(layoutButton)
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 
 	local function onAcceptCallback(layoutName)
 		self:RenameLayout(layoutButton.layoutIndex, layoutName);
@@ -1211,6 +1214,7 @@ end
 
 function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutButton)
 	CloseDropDownMenus();
+	self:ClearSelectedSystem();
 
 	local function onAcceptCallback()
 		self:DeleteLayout(layoutButton.layoutIndex);
@@ -1221,6 +1225,7 @@ function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutButton)
 end
 
 function EditModeManagerFrameMixin:ShowRevertWarningDialog(selectedLayoutIndex)
+	self:ClearSelectedSystem();
 	EditModeUnsavedChangesDialog:ShowDialog(selectedLayoutIndex);
 end
 
@@ -1670,10 +1675,6 @@ function EditModeAccountSettingsMixin:SetupActionBar(bar)
 end
 
 function EditModeAccountSettingsMixin:ResetActionBarShown(bar)
-	if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-		bar:SetShowGrid(false, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-	end
-
 	bar.editModeForceShow = false;
 	bar:SetShown(self.oldActionBarSettings[bar].isShown);
 end
@@ -1684,11 +1685,6 @@ function EditModeAccountSettingsMixin:RefreshActionBarShown(bar)
 
 	if show then
 		bar.editModeForceShow = true;
-
-		if not bar:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) and (bar.numShowingButtonsOrSpacers == 0 or not bar.dontShowAllButtonsInEditMode) then
-			bar:SetShowGrid(true, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
-		end
-
 		bar:Show();
 		bar:HighlightSystem();
 	else

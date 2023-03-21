@@ -341,11 +341,9 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 		SetActionUIButton(self, action, self.cooldown);
 		self:Update();
 
-		-- If on an action bar and layout fields are set, ask  it to update visibility of its buttons
-		local actionBar = self:GetParent();
-		if (self.index and actionBar and actionBar.UpdateShownButtons) then
-			actionBar:UpdateShownButtons();
-			actionBar:UpdateGridLayout();
+		-- If on an action bar and layout fields are set, ask it to update visibility of its buttons
+		if (self.index and self.bar) then
+			self.bar:UpdateShownButtons();
 		end
 	end
 end
@@ -896,8 +894,7 @@ function ActionBarActionButtonMixin:SetTooltip()
 	if ( GetCVar("UberTooltips") == "1" or inQuickKeybind ) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	else
-		local parent = self:GetParent();
-		if ( parent == MultiBarBottomRight or parent == MultiBarRight or parent == MultiBarLeft ) then
+		if ( self.bar and (self.bar == MultiBarBottomRight or self.bar == MultiBarRight or self.bar == MultiBarLeft) ) then
 			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1097,9 +1094,8 @@ function ActionBarActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 	local arrowDistance = isFlyoutShown and 1 or 4;
 
 	-- If you are on an action bar then base your direction based on the action bar's orientation
-	local actionBar = self:GetParent();
-	if (actionBar.actionButtons) then
-		arrowDirection = actionBar:GetSpellFlyoutDirection();
+	if (self.bar) then
+		arrowDirection = self.bar:GetSpellFlyoutDirection();
 	end
 
 	if (arrowDirection == "LEFT") then
@@ -1233,15 +1229,14 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		end
 
 		-- Don't show dividers if we have multiple rows or any extra padding
-		local parent = self:GetParent();
-		if (not shown or parent.numRows > 1 or parent.buttonPadding > parent.minButtonPadding) then
+		if (not self.bar or not shown or self.bar.numRows > 1 or self.bar.buttonPadding > self.bar.minButtonPadding) then
 			self.RightDivider:Hide();
 			self.BottomDivider:Hide();
 			return;
 		end
 
 		-- Right now buttons are only added to the right for horizontal and below for vertical
-		if (parent.isHorizontal) then
+		if (self.bar.isHorizontal) then
 			self.RightDivider:Show();
 			self.BottomDivider:Hide();
 		else

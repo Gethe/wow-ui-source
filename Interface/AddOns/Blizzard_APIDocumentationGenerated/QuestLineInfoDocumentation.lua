@@ -98,8 +98,8 @@ local QuestLineInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "questLineName", Type = "string", Nilable = false },
-				{ Name = "questName", Type = "string", Nilable = false },
+				{ Name = "questLineName", Type = "cstring", Nilable = false },
+				{ Name = "questName", Type = "cstring", Nilable = false },
 				{ Name = "questLineID", Type = "number", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },

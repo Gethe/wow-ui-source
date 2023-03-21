@@ -1393,8 +1393,10 @@ end
 function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
 	local oldSelection = self.selectedEntryID;
 
-	if not self:UpdateSelectedEntryID(selectedEntryID, selectedDefinitionInfo) then
-		return;
+	if not self:GetTalentFrame():ShouldShowConfirmation() then
+		if not self:UpdateSelectedEntryID(selectedEntryID, selectedDefinitionInfo) then
+			return;
+		end
 	end
 
 	local nodeID = self:GetNodeID();

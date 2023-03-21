@@ -1,10 +1,10 @@
 GARRISON_FOLLOWER_MAX_LEVEL = 100;
 GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY = {
-	[Enum.GarrisonFollowerType.FollowerType_6_0] = Enum.GarrFollowerQuality.Epic,
-	[Enum.GarrisonFollowerType.FollowerType_6_2] = Enum.GarrFollowerQuality.Epic,
-	[Enum.GarrisonFollowerType.FollowerType_7_0] = Enum.GarrFollowerQuality.Title,
-	[Enum.GarrisonFollowerType.FollowerType_8_0] = Enum.GarrFollowerQuality.Legendary,
-	[Enum.GarrisonFollowerType.FollowerType_9_0] = Enum.GarrFollowerQuality.Common,
+	[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = Enum.GarrFollowerQuality.Epic,
+	[Enum.GarrisonFollowerType.FollowerType_6_0_Boat] = Enum.GarrFollowerQuality.Epic,
+	[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = Enum.GarrFollowerQuality.Title,
+	[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = Enum.GarrFollowerQuality.Legendary,
+	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = Enum.GarrFollowerQuality.Common,
 }
 
 GARRISON_MISSION_NAME_FONT_COLOR	=	{r=0.78, g=0.75, b=0.73};
@@ -30,7 +30,7 @@ end
 
 function GarrisonLandingPageMixin:UpdateTabs()
 	local numTabs = 2;
-	if (self.garrTypeID == Enum.GarrisonType.Type_6_0 and C_Garrison.HasShipyard()) then
+	if (self.garrTypeID == Enum.GarrisonType.Type_6_0_Garrison and C_Garrison.HasShipyard()) then
 		numTabs = 3;
 		self.FleetTab:Show();
 	else
@@ -40,8 +40,8 @@ function GarrisonLandingPageMixin:UpdateTabs()
 	PanelTemplates_SetNumTabs(self, numTabs);
 	PanelTemplates_UpdateTabs(self);
 
-	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
-		local fleetCount = C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_2);
+	if (self.garrTypeID == Enum.GarrisonType.Type_6_0_Garrison) then
+		local fleetCount = C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
 		if (fleetCount == 0) then
 			if (PanelTemplates_GetSelectedTab(self) == self.FleetTab:GetID()) then
 				GarrisonLandingPageTab_SetTab(self.ReportTab);
@@ -60,10 +60,10 @@ end
 function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self:UpdateTabs();
 
-	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0) or C_Garrison.HasAdventures();
+	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0_Garrison) or C_Garrison.HasAdventures();
 	self.FollowerTabButton:SetShown(shouldShowFollowerTab);
 
-	if (self.garrTypeID == Enum.GarrisonType.Type_6_0) then
+	if (self.garrTypeID == Enum.GarrisonType.Type_6_0_Garrison) then
 		if (C_Garrison.IsInvasionAvailable()) then
 			self.InvasionBadge:Show();
 			self.InvasionBadge.InvasionBadgeAnim:Play();
@@ -73,17 +73,17 @@ function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOMLEFT", 60, 40);
-	elseif (self.garrTypeID == Enum.GarrisonType.Type_7_0) then
+	elseif (self.garrTypeID == Enum.GarrisonType.Type_7_0_Garrison) then
 		local _, className = UnitClass("player");
 		self.Report.Background:SetAtlas("legionmission-landingpage-background-"..className, true);
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOM", self.Report, "BOTTOMLEFT", 194, 54);
-	elseif (self.garrTypeID == Enum.GarrisonType.Type_8_0) then
+	elseif (self.garrTypeID == Enum.GarrisonType.Type_8_0_Garrison) then
 
 		self.Report.Background:ClearAllPoints();
 		self.Report.Background:SetPoint("BOTTOMLEFT", 100, 127);
 		self.Report.Background:SetAtlas(("BfAMissionsLandingPage-Background-%s"):format(UnitFactionGroup("player")));
-	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0) then
+	elseif (self.garrTypeID == Enum.GarrisonType.Type_9_0_Garrison) then
 		self:ResetSectionLayoutIndex();
 		self:SetupCovenantTopPanel();
 		self:SetupCovenantCallings();
@@ -114,7 +114,7 @@ end
 function GarrisonLandingPageMixin:OnShow()
 	self:UpdateUIToGarrisonType();
 
-	if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+	if self.garrTypeID == Enum.GarrisonType.Type_9_0_Garrison then
 	    PlaySound(SOUNDKIT.UI_GARRISON_9_0_OPEN_LANDING_PAGE);
 	else
 	    PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_OPEN);
@@ -125,7 +125,7 @@ function GarrisonLandingPageMixin:OnShow()
 end
 
 function GarrisonLandingPageMixin:OnHide()
-    if self.garrTypeID == Enum.GarrisonType.Type_9_0 then
+    if self.garrTypeID == Enum.GarrisonType.Type_9_0_Garrison then
         PlaySound(SOUNDKIT.UI_GARRISON_9_0_CLOSE_LANDING_PAGE);
     else
         PlaySound(SOUNDKIT.UI_GARRISON_GARRISON_REPORT_CLOSE);
@@ -543,7 +543,7 @@ function GarrisonLandingPageReportList_UpdateItems()
 	GarrisonLandingPageReport.List.items = items;
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #items);
 
-	local availableString = garrTypeID == Enum.GarrisonType.Type_9_0 and COVENANT_MISSIONS_AVAILABLE or GARRISON_LANDING_AVAILABLE;
+	local availableString = garrTypeID == Enum.GarrisonType.Type_9_0_Garrison and COVENANT_MISSIONS_AVAILABLE or GARRISON_LANDING_AVAILABLE;
 	GarrisonLandingPageReport.Available.Text:SetFormattedText(availableString, #GarrisonLandingPageReport.List.AvailableItems);
 	
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
@@ -556,7 +556,7 @@ end
 function GarrisonLandingPageReportList_UpdateAvailable()
 	local dataProvider = CreateDataProvider(GarrisonLandingPageReport.List.AvailableItems or {});
 	if dataProvider:GetSize() == 0 then
-		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0 and COVENANT_MISSIONS_EMPTY_LIST or GARRISON_EMPTY_MISSION_LIST;
+		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0_Garrison and COVENANT_MISSIONS_EMPTY_LIST or GARRISON_EMPTY_MISSION_LIST;
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(emptyMissionText);
 	else
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
@@ -567,7 +567,7 @@ end
 function GarrisonLandingPageReportList_InitButtonAvailable(button, elementData)
 	local item = elementData;
 
-	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 		button.BG:SetAtlas("GarrLanding-ShipMission-InProgress", true);
 	else
 		button.BG:SetAtlas("GarrLanding-Mission-InProgress", true);
@@ -579,14 +579,14 @@ function GarrisonLandingPageReportList_InitButtonAvailable(button, elementData)
 	else
 		button.MissionType:SetText(item.duration);
 	end
-	button.MissionTypeIcon:SetShown(item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0);
-	button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0);
+	button.MissionTypeIcon:SetShown(item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
+	button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
 
 	button.MissionTypeIcon:SetAtlas(item.typeAtlas);
 	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
 		button.MissionTypeIcon:SetSize(40, 40);
 		button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
-	elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+	elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 		button.EncounterIcon:SetEncounterInfo(C_Garrison.GetMissionEncounterIconInfo(item.missionID));
 	else
 		button.MissionTypeIcon:SetSize(50, 50);
@@ -697,7 +697,7 @@ function GarrisonLandingPageReportList_InitButton(button, elementData)
 	if (item.isBuilding) then
 		bgName = "GarrLanding-Building-";
 		button.Status:SetText(GARRISON_LANDING_STATUS_BUILDING);
-	elseif (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+	elseif (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 		bgName = "GarrLanding-ShipMission-";
 	else
 		bgName = "GarrLanding-Mission-";
@@ -726,18 +726,18 @@ function GarrisonLandingPageReportList_InitButton(button, elementData)
 		button.Title:SetWidth(322 - button.TimeLeft:GetWidth());
 	end
 	button.MissionTypeIcon:SetAtlas(item.typeAtlas);
-	button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0);
+	button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
 
-	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower) then
 		button.MissionTypeIcon:SetSize(40, 40);
 		button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
-	elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+	elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 		button.EncounterIcon:SetEncounterInfo(C_Garrison.GetMissionEncounterIconInfo(item.missionID));
 	else
 		button.MissionTypeIcon:SetSize(50, 50);
 		button.MissionTypeIcon:SetPoint("TOPLEFT", 0, 2);
 	end
-	button.MissionTypeIcon:SetShown(not item.isBuilding and item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0);
+	button.MissionTypeIcon:SetShown(not item.isBuilding and item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
 	button.Status:SetShown(not item.isComplete);
 	button.TimeLeft:SetShown(not item.isComplete);
 
@@ -754,7 +754,7 @@ function GarrisonLandingPageReportList_Update()
 	GarrisonLandingPageReport.List.items = items;
 	
 	if #items == 0 then
-		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0 and COVENANT_MISSIONS_EMPTY_IN_PROGRESS or GARRISON_EMPTY_IN_PROGRESS_LIST;
+		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0_Garrison and COVENANT_MISSIONS_EMPTY_IN_PROGRESS or GARRISON_EMPTY_IN_PROGRESS_LIST;
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(emptyMissionText);
 	else
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
@@ -851,7 +851,7 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	end
 
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
-		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 			GarrisonShipyardMapMissionTooltip:ClearAllPoints();
 			GarrisonShipyardMapMissionTooltip:SetPoint("LEFT", self, "RIGHT", 0, 0);
 			GarrisonShipyardMapMission_SetTooltip(item, true);
@@ -861,9 +861,9 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 		end
 	else
 		GameTooltip:SetText(item.name);
-		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 			GameTooltip:AddLine(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
-		elseif (item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0) then
+		elseif (item.followerTypeID ~= Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower) then
 			GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
 		end
 		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, item.followerTypeID, false, GarrisonLandingPage.abilityCountersForMechanicTypes);
@@ -871,7 +871,7 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 			GameTooltip:AddLine(GarrisonFollowerOptions[item.followerTypeID].strings.AVAILABILITY);
 			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
 		end
-		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+		if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 			if (not C_Garrison.IsOnShipyardMap()) then
 				GameTooltip:AddLine(" ");
 				GameTooltip:AddLine(GarrisonFollowerOptions[item.followerTypeID].strings.RETURN_TO_START, nil, nil, nil, 1);

@@ -74,7 +74,7 @@
 					<KeyValue key="labelText" value="PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPLEFT" x="235" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
 
@@ -109,7 +109,7 @@
 			
 			<Frame parentKey="Details" inherits="ProfessionsRecipeCrafterDetailsTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-27" y="-85"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-27" y="-125"/>
 				</Anchors>
 			</Frame>
 

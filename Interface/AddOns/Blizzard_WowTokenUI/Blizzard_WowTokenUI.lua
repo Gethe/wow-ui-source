@@ -31,6 +31,7 @@ Import("type");
 Import("PlaySound");
 Import("GetCVar");
 Import("LoadURLIndex");
+Import("securecallfunction")
 Import("LOCALE_enGB");
 Import("TOKEN_REDEEM_LABEL");
 Import("TOKEN_REDEEM_GAME_TIME_TITLE");
@@ -86,6 +87,7 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_HKD");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 
@@ -149,6 +151,7 @@ local CURRENCY_GEL = 31;
 local CURRENCY_TRY = 32;
 local CURRENCY_KZT = 33;
 local CURRENCY_UAH = 34;
+local CURRENCY_HKD = 35;
 
 local currencyMult = 100;
 
@@ -261,6 +264,10 @@ local function currencyFormatUAH(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
 end
 
+local function currencyFormatHKD(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_HKD, formatCurrency(dollars, cents, false));
+end
+
 local currencySpecific = {
 	[CURRENCY_USD] = {
 		["currencyFormat"] = currencyFormatUSD,
@@ -322,12 +329,15 @@ local currencySpecific = {
 	[CURRENCY_UAH] = {
 		["currencyFormat"] = currencyFormatUAH,
 	},
+	[CURRENCY_HKD] = {
+		["currencyFormat"] = currencyFormatHKD,
+	},
 };
 
 local function currencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
 	local info = currencySpecific[currency];
-	assert(info ~= nil, ("Missing currency info for currency ID '%d'"):format(currency));
+	assert(info ~= nil, ("Missing currency info for currency ID '%d', bpay product list status '%d'"):format(currency, C_StoreSecure.GetLastProductListResponseError()));
 	return info;
 end
 
@@ -530,7 +540,8 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 	elseif ( name == "getbalancestring" ) then
 		self:SetAttribute("balancestring", GetBalanceString());
 	elseif ( name == "showdialog" ) then
-		WowTokenDialog_SetDialog(WowTokenDialog, value);
+		local dialogName, dialogData = securecallfunction(unpack, value);
+		WowTokenDialog_SetDialog(WowTokenDialog, dialogName, dialogData);
 	end
 end
 
@@ -801,13 +812,17 @@ dialogs = {
 		button1 = ACCEPT,
 		button1OnClick = function(self)
 			self:Hide();
-			if C_RecruitAFriend.ClaimNextReward() then
-				Outbound.RecruitAFriendPlayClaimRewardFanfare();
+			local rafVersion = self.dialogData;
+			if rafVersion and C_RecruitAFriend.ClaimNextReward(rafVersion) then
+				Outbound.RecruitAFriendTryPlayClaimRewardFanfare(rafVersion);
+			else
+				Outbound.RecruitAFriendTryCancelAutoClaim();
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
 		button2 = CANCEL,
 		button2OnClick = function(self)
+			Outbound.RecruitAFriendTryCancelAutoClaim();
 			self:Hide();
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
@@ -817,7 +832,7 @@ dialogs = {
 	};
 };
 
-function WowTokenDialog_SetDialog(self, dialogName)
+function WowTokenDialog_SetDialog(self, dialogName, dialogData)
 	local dialog = dialogs[dialogName];
 	if (not dialog) then
 		return;
@@ -844,6 +859,8 @@ function WowTokenDialog_SetDialog(self, dialogName)
 
 	local descArgs = nil;
 	local confDescArgs = nil;
+
+	self.dialogData = dialogData;
 
 	if (dialog.descFormatArgs) then
 		descArgs = dialog.descFormatArgs();

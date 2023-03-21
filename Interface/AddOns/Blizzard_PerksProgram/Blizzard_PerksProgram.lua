@@ -4,7 +4,6 @@ local SERVER_TIMEOUT = 20;
 PerksProgramMixin = {};
 function PerksProgramMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_DATA_REFRESH");
-	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS");
 	self:RegisterEvent("PERKS_PROGRAM_REFUND_SUCCESS");
 	EventRegistry:RegisterCallback("PerksProgram.ServerPurchaseCountdownExpired", self.OnServerPurchaseCountdownExpired, self);
@@ -21,6 +20,7 @@ function PerksProgramMixin:OnLoad()
 	self.activeFilters["collected"] = true;
 	self.activeFilters["uncollected"] = true;
 	self.activeFilters["useable"] = false;
+	self:SetLabelFont(GameFontNormalMed3);
 
 	local useNativeForm = true;
 	self:SetUseNativeForm(useNativeForm);
@@ -36,6 +36,14 @@ function PerksProgramMixin:OnLoad()
 	self.ProductsFrame:Init();
 	self.ModelSceneContainerFrame:Init();
 	self.FooterFrame:Init();
+end
+
+function PerksProgramMixin:GetLabelFont()
+	return self.labelFont or GameFontNormalMed3;
+end
+
+function PerksProgramMixin:SetLabelFont(font)
+	self.labelFont = font;
 end
 
 function PerksProgramMixin:SetSortField(sortField)
@@ -172,7 +180,6 @@ function PerksProgramMixin:OnShow()
 	ActionStatus:SetAlternateParentFrame(self);
 
 	EventRegistry:TriggerEvent("PerksProgramFrame.OnShow");
-
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_OPEN);
 end
 
@@ -210,10 +217,12 @@ function PerksProgramMixin:OnEvent(event, ...)
 		if self.purchaseStateTimer then
 			self.purchaseStateTimer:Cancel();
 		end
-	elseif event == "CURSOR_CHANGED" then
-		local isDefault, newCursorType, oldCursorType = ...;
-		if isDefault then
-			C_PerksProgram.ResetHeldItemDragAndDrop();
+	elseif event == "GLOBAL_MOUSE_DOWN" then
+		local buttonName = ...;
+		local isRightButton = buttonName == "RightButton";
+		if isRightButton and StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
+			StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM");
+			PerksProgramFrame:ResetDragAndDrop();
 		end
 	end
 end
@@ -318,6 +327,7 @@ function PerksProgramMixin:ConfirmOverrideFrozenItem()
 	local data = self:GetFrozenItemData();
 	if data then
 		StaticPopup_Show("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM", nil, nil, data);
+		self:RegisterEvent("GLOBAL_MOUSE_DOWN");		
 	else
 		self:GetFrozenItemFrame():TriggerFreezeItem();
 		C_PerksProgram.SetFrozenPerksVendorItem();
@@ -332,13 +342,12 @@ function PerksProgramMixin:OverrideFrozenItem()
 end
 
 function PerksProgramMixin:ResetDragAndDrop()
+	self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
 	local frozenItemFrame = self:GetFrozenItemFrame();
-
 	frozenItemFrame.FrozenButton:TriggerCancelFrozenItem();
 
 	local frozenVendorItemInfo = C_PerksProgram.GetFrozenPerksVendorItemInfo();
 	frozenItemFrame:SetupFrozenVendorItem(frozenVendorItemInfo);
-
 	C_PerksProgram.ResetHeldItemDragAndDrop();
 end
 

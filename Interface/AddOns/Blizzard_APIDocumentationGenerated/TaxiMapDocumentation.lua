@@ -104,11 +104,11 @@ local TaxiMap =
 			Fields =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "atlasName", Type = "cstring", Nilable = false },
 				{ Name = "faction", Type = "FlightPathFaction", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{
@@ -117,11 +117,11 @@ local TaxiMap =
 			Fields =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "state", Type = "FlightPathState", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "useSpecialIcon", Type = "bool", Nilable = false },
 				{ Name = "specialIconCostString", Type = "string", Nilable = true },
 			},

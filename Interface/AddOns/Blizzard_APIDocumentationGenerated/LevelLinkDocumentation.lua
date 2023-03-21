@@ -12,7 +12,7 @@ local LevelLink =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =

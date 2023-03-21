@@ -20,6 +20,7 @@ if ( tbl.IsOnGlueScreen() ) then
 	Import("GlueParent_RemoveModalFrame");
 	Import("LE_AURORA_STATE_NONE");
 	Import("LE_WOW_CONNECTION_STATE_IN_QUEUE");
+	Import("GetCharacterListUpdate");
 end
 
 setfenv(1, tbl);
@@ -159,6 +160,7 @@ Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
+Import("BLIZZARD_STORE_CURRENCY_FORMAT_HKD");
 Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 Import("BLIZZARD_STORE_CURRENCY_BETA");
 Import("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
@@ -429,6 +431,7 @@ local CURRENCY_GEL = 31;
 local CURRENCY_TRY = 32;
 local CURRENCY_KZT = 33;
 local CURRENCY_UAH = 34;
+local CURRENCY_HKD = 35;
 local NUM_STORE_PRODUCT_CARDS = 8;
 local NUM_STORE_PRODUCT_CARD_ROWS = 2;
 local NUM_STORE_PRODUCT_CARDS_PER_ROW = 4;
@@ -560,6 +563,10 @@ end
 
 local function currencyFormatUAH(dollars, cents)
 	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
+end
+
+local function currencyFormatHKD(dollars, cents)
+	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_HKD, formatCurrency(dollars, cents, false));
 end
 
 local function GetFactionIcon(faction, returnOpposite)
@@ -1423,6 +1430,45 @@ local currencySpecific = {
 		browseHasStar = true,
 		browseBuyButtonText = BLIZZARD_STORE_BUY_EUR,
 		confirmationButtonText = BLIZZARD_STORE_FINAL_BUY_EUR,
+		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
+		vasDisclaimerData = {
+			[Enum.VasServiceType.FactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.RaceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+			},
+			[Enum.VasServiceType.AppearanceChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+			},
+			[Enum.VasServiceType.NameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.CharacterTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
+			[Enum.VasServiceType.GuildNameChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_NAME_CHANGE,
+			},
+			[Enum.VasServiceType.GuildFactionChange] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+		},
+	},
+	[CURRENCY_HKD] = {
+		formatShort = currencyFormatHKD,
+		formatLong = currencyFormatHKD,
+		browseNotice = "",
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasGuildServicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_GUILD_SERVICES,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
+		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
+		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
+		requireLicenseAccept = true,
+		browseHasStar = false,
 		boostDisclaimerText = BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100,
 		vasDisclaimerData = {
 			[Enum.VasServiceType.FactionChange] = {
@@ -2347,9 +2393,6 @@ function StoreFrame_OnShow(self)
 end
 
 function StoreFrame_OnHide(self)
-	if (VASReady) then
-		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
-	end
 	self:SetAttribute("isshown", false);
 	-- TODO: Fix so will only hide if Store showed the preview frame
 	Outbound.HidePreviewFrame();
@@ -2358,6 +2401,12 @@ function StoreFrame_OnHide(self)
 	else
 		GlueParent_RemoveModalFrame(self);
 		GlueParent_UpdateDialogs();
+	end
+
+	if (VASReady) then
+		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+	elseif (WaitingOnVASToComplete > 0 and IsOnGlueScreen()) then
+		GetCharacterListUpdate();
 	end
 
 	StoreVASValidationFrame:Hide();
@@ -2618,7 +2667,7 @@ function StoreFrame_IsLoading(self)
 	return false;
 end
 
-function StoreFrame_UpdateActivePanel(self)
+function StoreFrame_UpdateActivePanel(self, fromVASPurchaseCompletion)
 	if (StoreFrame.ErrorFrame:IsShown()) then
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
@@ -2653,6 +2702,11 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_BAG_FULL, BLIZZARD_STORE_BAG_FULL_DESC);
 	elseif ( not StoreFrame_CurrencyInfo() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
+	elseif (fromVASPurchaseCompletion and StoreVASValidationFrame and StoreVASValidationFrame:IsShown() and StoreVASValidationFrame.productID == C_StoreSecure.GetVASCompletionInfo() ) then
+		-- a VAS purchase completed while viewing another of the same product
+		StoreVASValidationFrame:Hide();
+		StoreFrame_HideAlert(self);
+		StoreFrame_ShowPurchaseSent(self);
 	else
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
@@ -3532,7 +3586,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			WaitingOnConfirmation = false;
 			VASReady = true;
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
-			StoreFrame_UpdateActivePanel(StoreFrame);
+			local fromVASPurchaseCompletion = true;
+			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
 		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end

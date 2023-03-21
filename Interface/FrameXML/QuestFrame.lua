@@ -180,6 +180,7 @@ end
 
 local function QuestFrameProgressPanel_SetupBG(self)
 	local material, isDefaultMaterial = QuestFrame_GetMaterial();
+	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	if ( isDefaultMaterial ) then
 		local theme = C_QuestLog.GetQuestDetailsTheme(GetQuestID());
 		if ( theme and theme.background ) then
@@ -188,11 +189,11 @@ local function QuestFrameProgressPanel_SetupBG(self)
 		end
 	end
 
-	QuestFrame_SetMaterial(QuestFrameProgressPanel, material);
 	return material;
 end
 
 function QuestFrameProgressPanel_OnShow(self)
+	local material, isDefaultMaterial = QuestFrame_GetMaterial();
 	QuestFrameRewardPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrameGreetingPanel:Hide();
@@ -202,6 +203,8 @@ function QuestFrameProgressPanel_OnShow(self)
 	QuestFrame_SetTitleTextColor(QuestProgressTitleText, material);
 	QuestProgressText:SetText(GetProgressText());
 	QuestFrame_SetTextColor(QuestProgressText, material);
+	QuestFrame_SetTitleTextColor(QuestProgressRequiredItemsText, material);
+
 	if ( IsQuestCompletable() ) then
 		QuestFrameCompleteButton:Enable();
 	else
@@ -241,9 +244,8 @@ function QuestFrameProgressItems_Update()
 			_G[questItemName..1]:SetPoint("TOPLEFT", "QuestProgressRequiredItemsText", "BOTTOMLEFT", -3, -5);
 		end
 
-		-- Check if this quest should hide required items on turn in.
 		local actualNumRequiredItems = 0;
-		if ( not IsQuestCompletable() or not C_QuestOffer.GetHideRequiredItemsOnTurnIn() ) then
+		if not C_QuestOffer.GetHideRequiredItems() then
 			-- Keep track of how many actual required items there are, in case we hide any of them.
 			for i=1, numRequiredItems do
 				local hidden = IsQuestItemHidden(i);

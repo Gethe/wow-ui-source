@@ -756,7 +756,9 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 		else
 			local queuedTime = GetTime() - GetBattlefieldTimeWaited(idx) / 1000;
 			local estimatedTime = GetBattlefieldEstimatedWaitTime(idx) / 1000;
-			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime, estimatedTime);
+			local isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil;
+			local assignedSpec = C_PvP.GetAssignedSpecForBattlefieldQueue(idx);
+			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime, estimatedTime, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText, assignedSpec);
 		end
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
@@ -856,6 +858,7 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 	for i=1, LFD_NUM_ROLES do
 		entry["RoleIcon"..i]:Hide();
 	end
+	entry.AssignedSpec:Hide();
 
 	entry.TanksFound:Hide();
 	entry.HealersFound:Hide();
@@ -866,7 +869,7 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 	entry:SetHeight(height + 6);
 end
 
-function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText)
+function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText, assignedSpec)
 	local height = 14;
 
 	entry.Title:SetText(title);
@@ -884,30 +887,37 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.SubTitle:Hide();
 	end
 
-	--Update your role icons
 	local nextRoleIcon = 1;
-	if ( isDPS ) then
-		local icon = entry["RoleIcon"..nextRoleIcon];
-		icon:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-		icon:Show();
-		nextRoleIcon = nextRoleIcon + 1;
-	end
-	if ( isHealer ) then
-		local icon = entry["RoleIcon"..nextRoleIcon];
-		icon:SetTexCoord(GetTexCoordsForRole("HEALER"));
-		icon:Show();
-		nextRoleIcon = nextRoleIcon + 1;
-	end
-	if ( isTank ) then
-		local icon = entry["RoleIcon"..nextRoleIcon];
-		icon:SetTexCoord(GetTexCoordsForRole("TANK"));
-		icon:Show();
-		nextRoleIcon = nextRoleIcon + 1;
+	if assignedSpec then
+		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
+		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+	else
+		--Update your role icons
+		if ( isDPS ) then
+			local icon = entry["RoleIcon"..nextRoleIcon];
+			icon:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+			icon:Show();
+			nextRoleIcon = nextRoleIcon + 1;
+		end
+		if ( isHealer ) then
+			local icon = entry["RoleIcon"..nextRoleIcon];
+			icon:SetTexCoord(GetTexCoordsForRole("HEALER"));
+			icon:Show();
+			nextRoleIcon = nextRoleIcon + 1;
+		end
+		if ( isTank ) then
+			local icon = entry["RoleIcon"..nextRoleIcon];
+			icon:SetTexCoord(GetTexCoordsForRole("TANK"));
+			icon:Show();
+			nextRoleIcon = nextRoleIcon + 1;
+		end
 	end
 
+	-- Hide unused role and spec icons
 	for i=nextRoleIcon, LFD_NUM_ROLES do
 		entry["RoleIcon"..i]:Hide();
 	end
+	entry.AssignedSpec:SetShown(assignedSpec ~= nil);
 
 	--Update the role needs
 	if ( totalTanks and totalHealers and totalDPS ) then
@@ -1129,7 +1139,7 @@ end
 
 function QueueStatusDropDown_AddBattlefieldButtons(idx)
 	local info = UIDropDownMenu_CreateInfo();
-	local status, mapName, teamSize, registeredMatch,_,_,_,_, asGroup = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
@@ -1149,7 +1159,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 		info.arg1 = idx;
 		info.arg2 = nil;
-		info.disabled = IsInGroup() and not UnitIsGroupLeader("player");
+		info.disabled = IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue;
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "locked" ) then
 		info.text = LEAVE_BATTLEGROUND;

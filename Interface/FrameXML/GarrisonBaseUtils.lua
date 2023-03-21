@@ -14,7 +14,7 @@ FOLLOWER_QUALITY_COLORS = {
 -- Display Options
 ---------------------------------------------------------------------------------
 GarrisonFollowerOptions = { };
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0] = {
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower] = {
 	abilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
 	displayCounterAbilityInPlaceOfMechanic = false,
 	followerListCounterNumPerRow = 2,
@@ -24,7 +24,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0] = {
 	followerListCounterScale = 1.0,
 	followerPageShowSourceText = true,
 	followerPageShowGear = true,
-	garrisonType = Enum.GarrisonType.Type_6_0,
+	garrisonType = Enum.GarrisonType.Type_6_0_Garrison,
 	hideCountersInAbilityFrame = false,
 	hideMissionTypeInLandingPage = false,
 	isPrimaryFollowerType = true,
@@ -77,7 +77,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0] = {
 	showCompleteDialog = true,
 }
 
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat] = {
 	abilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
 	displayCounterAbilityInPlaceOfMechanic = false,
 	followerListCounterNumPerRow = 4,
@@ -87,7 +87,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
 	followerListCounterScale = 1.0,
 	followerPageShowSourceText = false,
 	followerPageShowGear = false,
-	garrisonType = Enum.GarrisonType.Type_6_0,
+	garrisonType = Enum.GarrisonType.Type_6_0_Garrison,
 	hideCountersInAbilityFrame = false,
 	hideMissionTypeInLandingPage = true,
 	isPrimaryFollowerType = false,
@@ -140,7 +140,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_2] = {
 	showCompleteDialog = true,
 }
 
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower] = {
 	abilityTooltipFrame = "GarrisonFollowerAbilityWithoutCountersTooltip",
 	displayCounterAbilityInPlaceOfMechanic = true,
 	followerListCounterNumPerRow = 2,
@@ -150,7 +150,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
 	followerListCounterScale = 1.15,
 	followerPageShowSourceText = false,
 	followerPageShowGear = false,
-	garrisonType = Enum.GarrisonType.Type_7_0,
+	garrisonType = Enum.GarrisonType.Type_7_0_Garrison,
 	hideCountersInAbilityFrame = true,
 	hideMissionTypeInLandingPage = true,
 	isPrimaryFollowerType = true,
@@ -205,7 +205,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_7_0] = {
 	showCompleteDialog = true,
 }
 
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower] = {
 	abilityTooltipFrame = "GarrisonFollowerAbilityWithoutCountersTooltip",
 	displayCounterAbilityInPlaceOfMechanic = true,
 	followerListCounterNumPerRow = 2,
@@ -215,7 +215,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
 	followerListCounterScale = 1.15,
 	followerPageShowSourceText = false,
 	followerPageShowGear = false,
-	garrisonType = Enum.GarrisonType.Type_8_0,
+	garrisonType = Enum.GarrisonType.Type_8_0_Garrison,
 	hideCountersInAbilityFrame = true,
 	hideMissionTypeInLandingPage = true,
 	isPrimaryFollowerType = true,
@@ -270,7 +270,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_8_0] = {
 	showCompleteDialog = true,
 }
 
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0] = {
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = {
 	abilityTooltipFrame = "GarrisonFollowerAbilityWithoutCountersTooltip",
 	displayCounterAbilityInPlaceOfMechanic = true,
 	followerListCounterNumPerRow = 2,
@@ -280,7 +280,7 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0] = {
 	followerListCounterScale = 1.15,
 	followerPageShowSourceText = false,
 	followerPageShowGear = false,
-	garrisonType = Enum.GarrisonType.Type_9_0,
+	garrisonType = Enum.GarrisonType.Type_9_0_Garrison,
 	hideCountersInAbilityFrame = true,
 	hideMissionTypeInLandingPage = true,
 	isPrimaryFollowerType = true,
@@ -380,17 +380,17 @@ function ShowGarrisonLandingPage(garrTypeID)
 
 GarrisonLandingPage.Report.Title:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
 
-	if (garrTypeID == Enum.GarrisonType.Type_6_0) then
+	if (garrTypeID == Enum.GarrisonType.Type_6_0_Garrison) then
 		GarrisonLandingPage.Report.Title:SetText(GARRISON_LANDING_PAGE_TITLE);
-		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0);
-		GarrisonLandingPage.ShipFollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_2);
-	elseif (garrTypeID == Enum.GarrisonType.Type_7_0) then
+		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower);
+		GarrisonLandingPage.ShipFollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_6_0_Boat);
+	elseif (garrTypeID == Enum.GarrisonType.Type_7_0_Garrison) then
 		GarrisonLandingPage.Report.Title:SetText(ORDER_HALL_LANDING_PAGE_TITLE);
-		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_7_0);
-	elseif (garrTypeID == Enum.GarrisonType.Type_8_0) then
+		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower);
+	elseif (garrTypeID == Enum.GarrisonType.Type_8_0_Garrison) then
 		GarrisonLandingPage.Report.Title:SetText(GARRISON_TYPE_8_0_LANDING_PAGE_TITLE);
-		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_8_0);
-	elseif (garrTypeID == Enum.GarrisonType.Type_9_0) then
+		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower);
+	elseif (garrTypeID == Enum.GarrisonType.Type_9_0_Garrison) then
 		local pageTitle = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE;
 		local activeCovenantID = C_Covenants.GetActiveCovenantID();
 		if activeCovenantID and activeCovenantID > 0 then
@@ -402,7 +402,7 @@ GarrisonLandingPage.Report.Title:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
 
 		GarrisonLandingPage.Report.Title:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
 		GarrisonLandingPage.Report.Title:SetText(pageTitle);
-		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_9_0);
+		GarrisonLandingPage.FollowerList:Initialize(Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
 	else
 		return;
 	end

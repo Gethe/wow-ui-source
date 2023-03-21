@@ -32,6 +32,7 @@ local PlayerInteractionManager =
 			{
 				{ Name = "unit", Type = "string", Nilable = false },
 				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
+				{ Name = "looseTargeting", Type = "bool", Nilable = false, Default = true },
 			},
 
 			Returns =

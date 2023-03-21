@@ -1,81 +1,57 @@
-local function CreateTwitterPanelInitializer(setting, state)
-	local options = nil;
-	local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_SOCIAL_ENABLE_TWITTER_FUNCTIONALITY);
-	
-	local atlasMarkup = CreateAtlasMarkup("WoWShare-TwitterLogo", 14, 11, 0, 0);
-	data.name = string.format(SOCIAL_ENABLE_TWITTER_FUNCTIONALITY, atlasMarkup);
-	data.state = state;
-
-	return Settings.CreateSettingInitializer("TwitterPanelTemplate", data);
-end
-
-TwitterPanelMixin = CreateFromMixins(SettingsCheckBoxControlMixin);
-
-function TwitterPanelMixin:OnLoad()
-	SettingsCheckBoxControlMixin.OnLoad(self);
-	self.Button:SetPoint("LEFT", self.LoginStatus, "RIGHT", 16, 0);
-	self.LoginStatus:SetPoint("LEFT", self.CheckBox, "RIGHT", 16, 0);
-end
-
-function TwitterPanelMixin:UpdateControls()
-	local state = self.data.state;
-	local linked = state.linked;
-	local twitterEnabled = GetCVarBool("enableTwitter");
-
-	if state.linked then
-		local name = SOCIAL_TWITTER_STATUS_CONNECTED:format(state.screenName);
-		local color = twitterEnabled and GREEN_FONT_COLOR or GRAY_FONT_COLOR;
-		self.LoginStatus:SetText(color:WrapTextInColorCode(name));
-		self.Button:SetText(SOCIAL_TWITTER_DISCONNECT);
-	else
-		local color = twitterEnabled and RED_FONT_COLOR or GRAY_FONT_COLOR;
-		self.LoginStatus:SetText(color:WrapTextInColorCode(SOCIAL_TWITTER_STATUS_NOT_CONNECTED));
-		self.Button:SetText(SOCIAL_TWITTER_SIGN_IN);
-	end
-
-	self.Button:SetWidth(self.Button:GetTextWidth() + 30);
-end
-
-function TwitterPanelMixin:Init(initializer)
-	SettingsCheckBoxControlMixin.Init(self, initializer);
-	
-	local state = self.data.state;
-	self.Button:SetScript("OnClick", function(button, buttonName, down)
-		if state.linked then
-			C_Social.TwitterDisconnect();
-		else
-			SocialBrowserFrame:Show();
-			C_Social.TwitterConnect();
-		end
-	end);
-
-	state:RegisterCallback(state.Event.StatusUpdate, GenerateClosure(self.UpdateControls, self), self);
-	state:RegisterCallback(state.Event.LinkResult, GenerateClosure(self.UpdateControls, self), self);
-
-	self:UpdateControls();
-end
-
-function TwitterPanelMixin:Release(initializer)
-	self.Button:SetScript("OnClick", nil);
-
-	local state = self.data.state;
-	state:UnregisterCallback(state.Event.StatusUpdate, self);
-	state:UnregisterCallback(state.Event.LinkResult, self);
-
-	SettingsCheckBoxControlMixin.Release(self);
-end
-
-function TwitterPanelMixin:OnCheckBoxValueChanged(twitterEnabled)
-	SettingsCheckBoxControlMixin.OnCheckBoxValueChanged(self, twitterEnabled);
-
-	self:UpdateControls();
-end
-
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(SOCIAL_LABEL);
 
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[SOCIAL_LABEL]);
+
+	--do
+	--	local cvar = "excludedCensorSources";
+	--	local friendsAndGuild = bit.bor(Enum.ExcludedCensorSources.Friends, Enum.ExcludedCensorSources.Guild);
+	--
+	--	local EVERYONE = 1;
+	--	local EVERYONE_EXCEPT_FRIEND = 2;
+	--	local EVERYONE_EXCEPT_FRIEND_AND_GUILD = 3;
+	--	local NO_ONE = 4;
+	--
+	--	local function GetValue()
+	--		local censoredMessageSources = tonumber(C_CVar.GetCVar(cvar));
+	--		if censoredMessageSources == 0 then
+	--			return EVERYONE;
+	--		elseif censoredMessageSources == Enum.ExcludedCensorSources.Friends then
+	--			return EVERYONE_EXCEPT_FRIEND;
+	--		elseif censoredMessageSources == friendsAndGuild then
+	--			return EVERYONE_EXCEPT_FRIEND_AND_GUILD;
+	--		else
+	--			return NO_ONE;
+	--		end
+	--	end
+	--	
+	--	local function SetValue(value)
+	--		if value == EVERYONE then
+	--			SetCVar(cvar, 0);
+	--		elseif value == EVERYONE_EXCEPT_FRIEND then
+	--			SetCVar(cvar, Enum.ExcludedCensorSources.Friends);
+	--		elseif value == EVERYONE_EXCEPT_FRIEND_AND_GUILD then
+	--			SetCVar(cvar, friendsAndGuild);
+	--		else
+	--			SetCVar(cvar, 255);
+	--		end
+	--	end
+	--
+	--	local function GetOptions()
+	--		local container = Settings.CreateControlTextContainer();
+	--		container:Add(EVERYONE, CENSOR_SOURCE_EVERYONE);
+	--		container:Add(EVERYONE_EXCEPT_FRIEND, CENSOR_SOURCE_EXCLUDE_FRIENDS);
+	--		container:Add(EVERYONE_EXCEPT_FRIEND_AND_GUILD, CENSOR_SOURCE_EXCLUDE_FRIENDS_AND_GUILD);
+	--		container:Add(NO_ONE, CENSOR_SOURCE_NO_ONE);
+	--		return container:GetData();
+	--	end
+	--
+	--	local defaultValue = EVERYONE_EXCEPT_FRIEND;
+	--	local setting = Settings.RegisterProxySetting(category, "PROXY_CENSOR_MESSAGES", Settings.DefaultVarLocation,
+	--		Settings.VarType.Number, CENSOR_SOURCE_EXCLUDE, defaultValue, GetValue, SetValue);
+	--	Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CENTER_SOURCE_EXCLUDE);
+	--end
 
 	-- Mature Language
 	do

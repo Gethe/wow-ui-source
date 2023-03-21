@@ -75,7 +75,6 @@ function PetActionBarMixin:OnEvent(event, ...)
 			self:Show();
 			self:LockPetActionBar();
 			self:UpdateShownButtons();
-			self:UpdateGridLayout();
 		else
 			self:UnlockPetActionBar();
 			self:Hide();

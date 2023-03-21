@@ -40,6 +40,41 @@
 				</Anchors>
 			</Button>
 
+			<Button parentKey="UnlockTabButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_TAB" motionScriptsWhileDisabled="true" frameStrata="HIGH">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ViewTreeButton" inherits="UIPanelButtonTemplate" text="PROF_VIEW_FULL_TREE" frameStrata="HIGH" hidden="true">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="BackToPreviewButton" inherits="UIPanelButtonTemplate" text="BACK" frameStrata="HIGH" hidden="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="ViewPreviewButton" inherits="UIPanelButtonTemplate" text="PROF_VIEW_TREE_OVERVIEW" frameStrata="HIGH" hidden="true">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="BackToFullTreeButton" inherits="UIPanelButtonTemplate" text="BACK" frameStrata="HIGH" hidden="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="20" y="20"/>
+				</Anchors>
+			</Button>
+
 			<Button parentKey="UndoButton" inherits="IconButtonTemplate" frameLevel="1000">
 				<KeyValues>
 					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
@@ -80,20 +115,13 @@
 				</Layers>
 			</Frame>
 
-			<Button parentKey="UnlockTabButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_TAB" motionScriptsWhileDisabled="true" frameStrata="HIGH">
-				<Size x="163" y="22"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TreeView.TreeDescription" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-				</Anchors>
-			</Button>
-
 			<Frame parentKey="DetailedView">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TreeView" relativePoint="TOPRIGHT" x="-40" y="0"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TreeView" relativePoint="BOTTOMRIGHT" x="434" y="0"/>
 				</Anchors>
 				<Frames>
-					<Button parentKey="Path" inherits="ProfessionsSpecPathTemplate" mixin="ProfessionsDetailedSpecPathMixin" frameStrata="HIGH">
+					<Button parentKey="Path" inherits="ProfessionsSpecPathTemplate" mixin="ProfessionsDetailedSpecPathMixin">
 						<Size x="339" y="339"/>
 						<KeyValues>
 							<KeyValue key="iconSize" value="63" type="number"/>
@@ -342,6 +370,89 @@
 						</Texture>
 					</Layer>
 				</Layers>
+			</Frame>
+
+			<Frame parentKey="TreePreview" frameStrata="HIGH" frameLevel="800" enableMouse="true" hidden="true">
+				<Size x="1140" y="520"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-86"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontHighlightHuge">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOPRIGHT" x="-300" y="-120"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" inherits="GameFontNormalMed3" justifyV="TOP">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Separator" atlas="spec-dividerline" alpha="0.2">
+							<Size x="350" y="2"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-30"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="HighlightsHeader" inherits="GameFontHighlight" text="PROF_SPECIALIZATION_HIGHLIGHTS">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Separator" relativePoint="BOTTOM" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PathIcon">
+						<Size x="70" y="70"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.Title" relativePoint="TOP" x="0" y="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Ring" atlas="spec-sampleabilityring" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon">
+									<Size x="58" y="58"/>
+									<Anchors>
+										<Anchor point="CENTER" y="1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="Highlight1" inherits="ProfessionSpecHighlightTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.HighlightsHeader" relativePoint="CENTER" x="15" y="-40"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Highlight2" inherits="ProfessionSpecHighlightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Highlight1" relativePoint="TOPRIGHT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Highlight3" inherits="ProfessionSpecHighlightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Highlight1" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Highlight4" inherits="ProfessionSpecHighlightTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Highlight2" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</Frame>
 		</Frames>
 	</Frame>

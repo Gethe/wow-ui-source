@@ -1229,7 +1229,8 @@ function UIButtonMixin:OnEnter()
 		end
 	else
 		if self.disabledTooltip then
-			GameTooltip_ShowDisabledTooltip(GameTooltip, self, self.disabledTooltip, self.disabledTooltipAnchor or defaultTooltipAnchor, self.disabledTooltipOffsetX, self.disabledTooltipOffsetY);
+			local tooltip = GetAppropriateTooltip();
+			GameTooltip_ShowDisabledTooltip(tooltip, self, self.disabledTooltip, self.disabledTooltipAnchor or defaultTooltipAnchor, self.disabledTooltipOffsetX, self.disabledTooltipOffsetY);
 		end
 	end
 end
@@ -2392,6 +2393,8 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 end
 
 function PanelResizeButtonMixin:OnMouseDown()
+	self.isActive = true;
+
 	if self.target then
 		local alwaysStartFromMouse = true;
 		self.target:StartSizing("BOTTOMRIGHT", alwaysStartFromMouse);
@@ -2399,6 +2402,8 @@ function PanelResizeButtonMixin:OnMouseDown()
 end
 
 function PanelResizeButtonMixin:OnMouseUp()
+	self.isActive = false;
+
 	if self.target then
 		self.target:StopMovingOrSizing();
 
@@ -2406,6 +2411,10 @@ function PanelResizeButtonMixin:OnMouseUp()
 			self.resizeStoppedCallback(self.target);
 		end
 	end
+end
+
+function PanelResizeButtonMixin:IsActive()
+	return not not self.isActive;
 end
 
 function PanelResizeButtonMixin:SetMinWidth(minWidth)
@@ -2699,7 +2708,8 @@ EnumDropDownControlMixin = CreateFromMixins(DropDownControlMixin);
 function EnumDropDownControlMixin:SetEnum(enum, nameTranslation, ordering)
 	local options = {};
 	for enumKey, enumValue in pairs(enum) do
-		table.insert(options, { value = enumValue, text = nameTranslation(enumValue), });
+		local optionText = type(nameTranslation) == "function" and nameTranslation(enumValue) or nameTranslation[enumValue];
+		table.insert(options, { value = enumValue, text = optionText, });
 	end
 
 	if ordering then

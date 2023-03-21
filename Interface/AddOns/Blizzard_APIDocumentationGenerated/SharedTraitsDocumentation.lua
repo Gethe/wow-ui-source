@@ -99,7 +99,7 @@ local SharedTraits =
 
 			Arguments =
 			{
-				{ Name = "target", Type = "string", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -307,6 +307,20 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetTraitSystemFlags",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "flags", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTraitSystemWidgetSetID",
 			Type = "Function",
 
@@ -387,6 +401,15 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "hasValidInspectData", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsReadyForCommit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isReadyForCommit", Type = "bool", Nilable = false },
 			},
 		},
 		{

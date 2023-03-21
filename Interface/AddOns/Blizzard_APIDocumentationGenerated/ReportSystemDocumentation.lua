@@ -12,7 +12,7 @@ local ReportSystem =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -26,7 +26,7 @@ local ReportSystem =
 
 			Arguments =
 			{
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -59,7 +59,7 @@ local ReportSystem =
 
 			Returns =
 			{
-				{ Name = "majorCategoryString", Type = "string", Nilable = false },
+				{ Name = "majorCategoryString", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -88,7 +88,7 @@ local ReportSystem =
 
 			Returns =
 			{
-				{ Name = "minorCategoryString", Type = "string", Nilable = false },
+				{ Name = "minorCategoryString", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -106,8 +106,8 @@ local ReportSystem =
 
 			Arguments =
 			{
-				{ Name = "reportInfo", Type = "table", Mixin = "ReportInfoMixin", Nilable = false },
-				{ Name = "playerLocation", Type = "table", Mixin = "PlayerLocationMixin", Nilable = true },
+				{ Name = "reportInfo", Type = "ReportInfo", Mixin = "ReportInfoMixin", Nilable = false },
+				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
 			},
 		},
 	},

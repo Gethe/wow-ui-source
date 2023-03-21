@@ -15,7 +15,7 @@ local SimpleScrollFrameAPI =
 
 			Returns =
 			{
-				{ Name = "offset", Type = "number", Nilable = false },
+				{ Name = "offset", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -28,7 +28,7 @@ local SimpleScrollFrameAPI =
 
 			Returns =
 			{
-				{ Name = "range", Type = "number", Nilable = false },
+				{ Name = "range", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -41,7 +41,7 @@ local SimpleScrollFrameAPI =
 
 			Returns =
 			{
-				{ Name = "scrollChild", Type = "table", Nilable = false },
+				{ Name = "scrollChild", Type = "SimpleFrame", Nilable = false },
 			},
 		},
 		{
@@ -54,7 +54,7 @@ local SimpleScrollFrameAPI =
 
 			Returns =
 			{
-				{ Name = "offset", Type = "number", Nilable = false },
+				{ Name = "offset", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -67,7 +67,7 @@ local SimpleScrollFrameAPI =
 
 			Returns =
 			{
-				{ Name = "range", Type = "number", Nilable = false },
+				{ Name = "range", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -76,7 +76,7 @@ local SimpleScrollFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "offset", Type = "number", Nilable = false },
+				{ Name = "offset", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -85,7 +85,7 @@ local SimpleScrollFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "scrollChild", Type = "table", Nilable = false },
+				{ Name = "scrollChild", Type = "SimpleFrame", Nilable = false },
 			},
 		},
 		{
@@ -94,7 +94,7 @@ local SimpleScrollFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "offset", Type = "number", Nilable = false },
+				{ Name = "offset", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{

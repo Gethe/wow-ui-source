@@ -11,14 +11,14 @@ local SimpleAnimGroupAPI =
 
 			Arguments =
 			{
-				{ Name = "animationType", Type = "string", Nilable = true },
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "animationType", Type = "cstring", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "anim", Type = "table", Nilable = false },
+				{ Name = "anim", Type = "SimpleAnim", Nilable = false },
 			},
 		},
 		{
@@ -78,7 +78,7 @@ local SimpleAnimGroupAPI =
 
 			Returns =
 			{
-				{ Name = "loopState", Type = "string", Nilable = false },
+				{ Name = "loopState", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -91,7 +91,7 @@ local SimpleAnimGroupAPI =
 
 			Returns =
 			{
-				{ Name = "loopType", Type = "string", Nilable = false },
+				{ Name = "loopType", Type = "LoopType", Nilable = false },
 			},
 		},
 		{
@@ -113,13 +113,13 @@ local SimpleAnimGroupAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "script", Type = "function", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = false },
 			},
 		},
 		{
@@ -128,7 +128,7 @@ local SimpleAnimGroupAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptName", Type = "string", Nilable = false },
+				{ Name = "scriptName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -142,8 +142,8 @@ local SimpleAnimGroupAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
-				{ Name = "script", Type = "function", Nilable = false },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
 			},
 		},
@@ -276,7 +276,7 @@ local SimpleAnimGroupAPI =
 
 			Arguments =
 			{
-				{ Name = "loopType", Type = "string", Nilable = false },
+				{ Name = "loopType", Type = "LoopType", Nilable = false },
 			},
 		},
 		{
@@ -294,8 +294,8 @@ local SimpleAnimGroupAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
-				{ Name = "script", Type = "function", Nilable = true },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = true },
 			},
 		},
 		{

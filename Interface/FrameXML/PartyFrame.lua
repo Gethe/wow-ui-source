@@ -34,7 +34,7 @@ function PartyFrameMixin:InitializePartyMemberFrames()
 		 memberFrame:SetPoint("TOPLEFT");
 		 memberFrame.layoutIndex = i;
 		 memberFramesToSetup[i] = memberFrame;
-		 memberFrame:Show();
+		 memberFrame:SetShown(ShouldShowPartyFrames());
 	end
 	self:Layout();
 	for _, frame in ipairs(memberFramesToSetup) do 

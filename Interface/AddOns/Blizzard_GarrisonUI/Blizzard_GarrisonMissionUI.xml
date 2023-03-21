@@ -1867,7 +1867,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_0" type="global"/>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower" type="global"/>
 		</KeyValues>
 		<Frames>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">

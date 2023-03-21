@@ -12,7 +12,7 @@ local System =
 
 			Returns =
 			{
-				{ Name = "objects", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "objects", Type = "table", InnerType = "ScriptRegion", Nilable = false },
 			},
 		},
 	},
@@ -50,7 +50,7 @@ local System =
 			LiteralName = "GENERIC_ERROR",
 			Payload =
 			{
-				{ Name = "errorMessage", Type = "string", Nilable = false },
+				{ Name = "errorMessage", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -59,7 +59,7 @@ local System =
 			LiteralName = "GLOBAL_MOUSE_DOWN",
 			Payload =
 			{
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -68,7 +68,7 @@ local System =
 			LiteralName = "GLOBAL_MOUSE_UP",
 			Payload =
 			{
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -82,7 +82,7 @@ local System =
 			LiteralName = "LOC_RESULT",
 			Payload =
 			{
-				{ Name = "result", Type = "string", Nilable = false },
+				{ Name = "result", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -145,7 +145,7 @@ local System =
 			LiteralName = "SYSMSG",
 			Payload =
 			{
-				{ Name = "string", Type = "string", Nilable = false },
+				{ Name = "string", Type = "cstring", Nilable = false },
 				{ Name = "r", Type = "number", Nilable = false },
 				{ Name = "g", Type = "number", Nilable = false },
 				{ Name = "b", Type = "number", Nilable = false },
@@ -167,7 +167,7 @@ local System =
 			LiteralName = "UI_ERROR_MESSAGE",
 			Payload =
 			{
-				{ Name = "errorType", Type = "number", Nilable = false },
+				{ Name = "errorType", Type = "luaIndex", Nilable = false },
 				{ Name = "message", Type = "string", Nilable = false },
 			},
 		},
@@ -177,7 +177,7 @@ local System =
 			LiteralName = "UI_ERROR_POPUP",
 			Payload =
 			{
-				{ Name = "errorType", Type = "number", Nilable = false },
+				{ Name = "errorType", Type = "luaIndex", Nilable = false },
 				{ Name = "message", Type = "string", Nilable = false },
 			},
 		},
@@ -187,7 +187,7 @@ local System =
 			LiteralName = "UI_INFO_MESSAGE",
 			Payload =
 			{
-				{ Name = "errorType", Type = "number", Nilable = false },
+				{ Name = "errorType", Type = "luaIndex", Nilable = false },
 				{ Name = "message", Type = "string", Nilable = false },
 			},
 		},

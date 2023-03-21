@@ -35,12 +35,12 @@
 		<Scripts>
 			<OnEnter>
 				if ( self.abilityID ) then
-					ShowGarrisonFollowerAbilityTooltip(self.Icon, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_0);
+					ShowGarrisonFollowerAbilityTooltip(self.Icon, self.abilityID, Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower);
 					return;
 				end
 			</OnEnter>
 			<OnLeave>
-				HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_0);
+				HideGarrisonFollowerAbilityTooltip(Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower);
 			</OnLeave>
 		</Scripts>
 	</Frame>

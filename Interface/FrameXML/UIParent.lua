@@ -829,6 +829,15 @@ function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
 	if ExpansionTrialCheckPointDialog then
 		return ExpansionTrialCheckPointDialog:IsShowingExpansionTrialUpgrade();
 	end
+
+	return false;
+end
+
+function ExpansionTrial_CheckLoadUI()
+	local isExpansionTrial = GetExpansionTrialInfo();
+	if isExpansionTrial then
+		UIParentLoadAddOn("Blizzard_ExpansionTrial");
+	end
 end
 
 function DeathRecap_LoadUI()
@@ -882,7 +891,7 @@ end
 
 function OrderHall_CheckCommandBar()
 	if (not OrderHallCommandBar or not OrderHallCommandBar:IsShown()) then
-		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0)) then
+		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0_Garrison)) then
 			OrderHall_LoadUI();
 			OrderHallCommandBar:Show();
 		end
@@ -1392,7 +1401,7 @@ function UIParent_OnEvent(self, event, ...)
 				local garrTypeID = GarrisonFollowerOptions[followerTypeID].garrisonType;
 				if(garrTypeID == garrisonType) then
 					if (C_Garrison.HasGarrison(garrTypeID)) then
-						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2) then
+						if (followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
 							landingPageTabIndex = 3;
 						else
 							landingPageTabIndex = 2;
@@ -1422,8 +1431,8 @@ function UIParent_OnEvent(self, event, ...)
 					GarrisonMissionListTab_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
 				end
 			else
-				if (C_Garrison.HasGarrison(Enum.GarrisonType.Type_6_0)) then
-					ShowGarrisonLandingPage(Enum.GarrisonType.Type_6_0);
+				if (C_Garrison.HasGarrison(Enum.GarrisonType.Type_6_0_Garrison)) then
+					ShowGarrisonLandingPage(Enum.GarrisonType.Type_6_0_Garrison);
 
 					-- switch to the mission tab
 					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
@@ -1775,6 +1784,8 @@ function UIParent_OnEvent(self, event, ...)
 		if IsTrialAccount() or IsVeteranTrialAccount() then
 			SubscriptionInterstitial_LoadUI();
 		end
+
+		ExpansionTrial_CheckLoadUI();
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -1844,8 +1855,10 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "END_BOUND_TRADEABLE" ) then
 		local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, arg1);
 	elseif ( event == "MACRO_ACTION_BLOCKED" or event == "ADDON_ACTION_BLOCKED" ) then
+		AddonTooltip_ActionBlocked(arg1);
 		DisplayInterfaceActionBlockedMessage();
 	elseif ( event == "MACRO_ACTION_FORBIDDEN" ) then
+		AddonTooltip_ActionBlocked(arg1);
 		StaticPopup_Show("MACRO_ACTION_FORBIDDEN");
 	elseif ( event == "ADDON_ACTION_FORBIDDEN" ) then
 		local dialog = StaticPopup_Show("ADDON_ACTION_FORBIDDEN", arg1);
@@ -2040,9 +2053,9 @@ function UIParent_OnEvent(self, event, ...)
 			{
 				text = PROFESSION_EQUIPMENT_LOCATION_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				targetPoint = HelpTip.Point.RightEdgeTop,
+				targetPoint = HelpTip.Point.LeftEdgeTop,
 				alignment = HelpTip.Alignment.Left,
-				autoHorizontalSlide = true,
+				offsetX = 940,
 				offsetY = -48,
 			};
 			HelpTip:Show(ProfessionsFrame.CraftingPage, helpTipInfo, ProfessionsFrame.CraftingPage);
@@ -2077,11 +2090,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		Garrison_LoadUI();
 		local followerTypeID = ...;
-		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0 ) then
+		if ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower ) then
 			ShowUIPanel(OrderHallMissionFrame);
-		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0 ) then
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower ) then
 			ShowUIPanel(BFAMissionFrame);
-		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 ) then
+		elseif ( followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower ) then
 			ShowUIPanel(CovenantMissionFrame);
 		end
 
@@ -2241,7 +2254,7 @@ function UIParent_OnEvent(self, event, ...)
 		HandleLuaWarning(...);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		local followerType = ...;
-		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0 then
+		if followerType ~= Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower then
 			local frameName = GarrisonFollowerOptions[followerType].missionFrame;
 			if (not _G[frameName]) then
 				Garrison_LoadUI();
@@ -5163,8 +5176,8 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
-		if ( status == "queued" or status == "confirmed" ) then
+		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueue = GetBattlefieldStatus(i);
+		if ( (status == "queued" or status == "confirmed" ) and not isSoloQueue ) then
 			return true;
 		end
 	end
@@ -5266,10 +5279,16 @@ function IsPlayerAtEffectiveMaxLevel()
 	return IsLevelAtEffectiveMaxLevel(UnitLevel("player"));
 end
 
+local INTERFACE_ACTION_BLOCKED_COUNT = 0;
+
 function DisplayInterfaceActionBlockedMessage()
-	if ( not INTERFACE_ACTION_BLOCKED_SHOWN ) then
+	if ( INTERFACE_ACTION_BLOCKED_COUNT > 50000 ) then
+		INTERFACE_ACTION_BLOCKED_COUNT = 0;
+	end
+	INTERFACE_ACTION_BLOCKED_COUNT = INTERFACE_ACTION_BLOCKED_COUNT + 1;
+
+	if ( INTERFACE_ACTION_BLOCKED_COUNT == 1 ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
-		INTERFACE_ACTION_BLOCKED_SHOWN = true;
 	end
 end

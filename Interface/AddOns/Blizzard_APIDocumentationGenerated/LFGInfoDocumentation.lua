@@ -66,7 +66,7 @@ local LFGInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = false },
+				{ Name = "category", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -167,7 +167,7 @@ local LFGInfo =
 			LiteralName = "LFG_OFFER_CONTINUE",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "lfgDungeonsID", Type = "number", Nilable = false },
 				{ Name = "typeID", Type = "number", Nilable = false },
 			},
@@ -217,7 +217,7 @@ local LFGInfo =
 			LiteralName = "LFG_READY_CHECK_DECLINED",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -231,7 +231,7 @@ local LFGInfo =
 			LiteralName = "LFG_READY_CHECK_PLAYER_IS_READY",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -264,7 +264,7 @@ local LFGInfo =
 			LiteralName = "LFG_ROLE_CHECK_ROLE_CHOSEN",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isTank", Type = "bool", Nilable = false },
 				{ Name = "isHealer", Type = "bool", Nilable = false },
 				{ Name = "isDamage", Type = "bool", Nilable = false },
@@ -329,7 +329,7 @@ local LFGInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "iconID", Type = "number", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
 				{ Name = "link", Type = "string", Nilable = true },
 			},
 		},

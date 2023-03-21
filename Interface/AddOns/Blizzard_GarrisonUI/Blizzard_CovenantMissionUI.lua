@@ -9,8 +9,8 @@ local STRATEGIC_POSITIONING_TUTORIAL_MISSION_ID = 2295;
 local DRAGON_ISLES_MAP_ID = 2057;
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerSortFunc =  GarrisonFollowerList_DefaultMissionSort;
-GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower].missionFollowerSortFunc =  GarrisonFollowerList_DefaultMissionSort;
+GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
 
 StaticPopupDialogs["COVENANT_MISSIONS_CONFIRM_ADVENTURE"] = {
 	text = COVENANT_MISSIONS_START_MISSION_QUESTION,

@@ -29,7 +29,7 @@ local UIGenericWidgetDisplay =
 			Fields =
 			{
 				{ Name = "uiWidgetSetID", Type = "number", Nilable = true },
-				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
 				{ Name = "title", Type = "string", Nilable = true },
 				{ Name = "frameWidth", Type = "number", Nilable = false },
 				{ Name = "frameHeight", Type = "number", Nilable = false },

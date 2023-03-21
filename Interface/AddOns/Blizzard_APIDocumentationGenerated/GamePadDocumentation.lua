@@ -13,7 +13,7 @@ local GamePad =
 			Arguments =
 			{
 				{ Name = "platform", Type = "ClientPlatformType", Nilable = false },
-				{ Name = "mapping", Type = "string", Nilable = false },
+				{ Name = "mapping", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -36,7 +36,7 @@ local GamePad =
 
 			Returns =
 			{
-				{ Name = "configName", Type = "string", Nilable = true },
+				{ Name = "configName", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -45,7 +45,7 @@ local GamePad =
 
 			Arguments =
 			{
-				{ Name = "bindingName", Type = "string", Nilable = false },
+				{ Name = "bindingName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -64,7 +64,7 @@ local GamePad =
 
 			Returns =
 			{
-				{ Name = "bindingName", Type = "string", Nilable = true },
+				{ Name = "bindingName", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -78,7 +78,7 @@ local GamePad =
 
 			Returns =
 			{
-				{ Name = "configName", Type = "string", Nilable = true },
+				{ Name = "configName", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -178,7 +178,7 @@ local GamePad =
 
 			Returns =
 			{
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -219,7 +219,7 @@ local GamePad =
 
 			Arguments =
 			{
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -228,7 +228,7 @@ local GamePad =
 
 			Arguments =
 			{
-				{ Name = "vibrationType", Type = "string", Nilable = false },
+				{ Name = "vibrationType", Type = "cstring", Nilable = false },
 				{ Name = "intensity", Type = "number", Nilable = false },
 			},
 		},
@@ -243,7 +243,7 @@ local GamePad =
 
 			Returns =
 			{
-				{ Name = "configName", Type = "string", Nilable = true },
+				{ Name = "configName", Type = "cstring", Nilable = true },
 			},
 		},
 		{

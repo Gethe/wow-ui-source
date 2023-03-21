@@ -86,7 +86,7 @@ local Minimap =
 
 			Arguments =
 			{
-				{ Name = "spellIndex", Type = "number", Nilable = false },
+				{ Name = "spellIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -100,15 +100,15 @@ local Minimap =
 
 			Arguments =
 			{
-				{ Name = "spellIndex", Type = "number", Nilable = false },
+				{ Name = "spellIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "textureFileID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "textureFileID", Type = "fileID", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
-				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
 				{ Name = "subType", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = true },
 			},
@@ -196,7 +196,7 @@ local Minimap =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "on", Type = "bool", Nilable = false },
 			},
 		},
@@ -219,7 +219,7 @@ local Minimap =
 			LiteralName = "MINIMAP_PING",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 			},
@@ -252,10 +252,10 @@ local Minimap =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "textureFileID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "textureFileID", Type = "fileID", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
-				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
 				{ Name = "subType", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = true },
 			},

@@ -516,6 +516,10 @@ function ScrollBoxListMixin:ForEachElementData(func)
 	self:GetView():ForEachElementData(func);
 end
 
+function ScrollBoxListMixin:ReverseForEachElementData(func)
+	self:GetView():ReverseForEachElementData(func);
+end
+
 function ScrollBoxListMixin:EnumerateFrames()
 	return self:GetView():EnumerateFrames();
 end

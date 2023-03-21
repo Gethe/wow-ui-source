@@ -31,7 +31,7 @@ local DuelInfo =
 			LiteralName = "DUEL_REQUESTED",
 			Payload =
 			{
-				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "playerName", Type = "cstring", Nilable = false },
 			},
 		},
 	},

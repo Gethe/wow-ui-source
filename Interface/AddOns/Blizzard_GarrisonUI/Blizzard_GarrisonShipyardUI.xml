@@ -1632,7 +1632,7 @@
 					<Anchor point="TOPRIGHT" x="-12" y="30"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, Enum.GarrisonFollowerType.FollowerType_6_2, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
+					<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, Enum.GarrisonFollowerType.FollowerType_6_0_Boat, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1644,7 +1644,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_2" type="global"/>
+			<KeyValue key="followerTypeID" value="Enum.GarrisonFollowerType.FollowerType_6_0_Boat" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">

@@ -22,13 +22,13 @@ function ipairs_reverse(table)
 	return Enumerator, table, #table + 1;
 end
 
-function CreateTableEnumerator(tbl, indexBegin, indexEnd)
-	indexBegin = indexBegin and (indexBegin - 1) or 0;
-	indexEnd = indexEnd or math.huge;
+function CreateTableEnumerator(tbl, minIndex, maxIndex)
+	minIndex = minIndex and (minIndex - 1) or 0;
+	maxIndex = maxIndex or math.huge;
 
 	local function Enumerator(tbl, index)
 		index = index + 1;
-		if index <= indexEnd then
+		if index <= maxIndex then
 			local value = tbl[index];
 			if value ~= nil then
 				return index, value;
@@ -36,7 +36,24 @@ function CreateTableEnumerator(tbl, indexBegin, indexEnd)
 		end
 	end
 
-	return Enumerator, tbl, indexBegin;
+	return Enumerator, tbl, minIndex;
+end
+
+function CreateTableReverseEnumerator(tbl, minIndex, maxIndex)
+	minIndex = minIndex or 1;
+	maxIndex = (maxIndex or #tbl) + 1;
+
+	local function Enumerator(tbl, index)
+		index = index - 1;
+		if index >= minIndex then
+			local value = tbl[index];
+			if value ~= nil then
+				return index, value;
+			end
+		end
+	end
+
+	return Enumerator, tbl, maxIndex;
 end
 
 function tDeleteItem(tbl, item)

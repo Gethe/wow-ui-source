@@ -48,8 +48,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -64,8 +64,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -80,8 +80,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -118,7 +118,7 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -161,8 +161,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -208,7 +208,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "inviteIndex", Type = "number", Nilable = false },
+				{ Name = "inviteIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -230,7 +230,7 @@ local Calendar =
 
 			Returns =
 			{
-				{ Name = "info", Type = "string", Nilable = true },
+				{ Name = "info", Type = "ClubId", Nilable = true },
 			},
 		},
 		{
@@ -239,7 +239,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -253,7 +253,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -277,7 +277,7 @@ local Calendar =
 
 			Returns =
 			{
-				{ Name = "inviteIndex", Type = "number", Nilable = true },
+				{ Name = "inviteIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -286,7 +286,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -350,7 +350,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -359,7 +359,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "inviteIndex", Type = "number", Nilable = false },
+				{ Name = "inviteIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -368,7 +368,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -377,7 +377,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "inviteIndex", Type = "number", Nilable = false },
+				{ Name = "inviteIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -390,7 +390,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
 			},
 		},
 		{
@@ -399,8 +399,8 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "month", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
+				{ Name = "month", Type = "luaIndex", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
 				{ Name = "year", Type = "number", Nilable = false },
 			},
 		},
@@ -410,7 +410,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -419,7 +419,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "status", Type = "CalendarStatus", Nilable = false },
 			},
 		},
@@ -433,7 +433,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "inviteIndex", Type = "number", Nilable = false },
+				{ Name = "inviteIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -442,7 +442,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "textureIndex", Type = "number", Nilable = false },
+				{ Name = "textureIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -461,7 +461,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "title", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -483,7 +483,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "criterion", Type = "string", Nilable = false },
+				{ Name = "criterion", Type = "cstring", Nilable = false },
 				{ Name = "reverse", Type = "bool", Nilable = false },
 			},
 		},
@@ -497,7 +497,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 				{ Name = "startTime", Type = "CalendarTime", Nilable = false },
 				{ Name = "endTime", Type = "CalendarTime", Nilable = false },
 			},
@@ -514,8 +514,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "monthOffset", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -547,7 +547,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "eventID", Type = "string", Nilable = false },
+				{ Name = "eventID", Type = "CalendarEventID", Nilable = false },
 				{ Name = "monthOffset", Type = "number", Nilable = true },
 				{ Name = "monthDay", Type = "number", Nilable = true },
 			},
@@ -573,12 +573,12 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "firstPendingInvite", Type = "number", Nilable = true },
+				{ Name = "firstPendingInvite", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -587,7 +587,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -601,7 +601,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -616,8 +616,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "monthOffset", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -663,7 +663,7 @@ local Calendar =
 
 			Returns =
 			{
-				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
 			},
 		},
 		{
@@ -673,7 +673,7 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -715,8 +715,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -748,10 +748,10 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
-				{ Name = "maxRankOrder", Type = "number", Nilable = true },
+				{ Name = "maxRankOrder", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -762,7 +762,7 @@ local Calendar =
 			{
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
-				{ Name = "maxRankOrder", Type = "number", Nilable = false },
+				{ Name = "maxRankOrder", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -776,8 +776,8 @@ local Calendar =
 			Arguments =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -795,7 +795,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "month", Type = "number", Nilable = false },
+				{ Name = "month", Type = "luaIndex", Nilable = false },
 				{ Name = "year", Type = "number", Nilable = false },
 			},
 		},
@@ -814,7 +814,7 @@ local Calendar =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
 			},
 		},
 		{
@@ -845,7 +845,7 @@ local Calendar =
 			LiteralName = "CALENDAR_EVENT_ALARM",
 			Payload =
 			{
-				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "title", Type = "cstring", Nilable = false },
 				{ Name = "hour", Type = "number", Nilable = false },
 				{ Name = "minute", Type = "number", Nilable = false },
 			},
@@ -865,7 +865,7 @@ local Calendar =
 			LiteralName = "CALENDAR_OPEN_EVENT",
 			Payload =
 			{
-				{ Name = "calendarType", Type = "string", Nilable = false },
+				{ Name = "calendarType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -874,7 +874,7 @@ local Calendar =
 			LiteralName = "CALENDAR_UPDATE_ERROR",
 			Payload =
 			{
-				{ Name = "errorReason", Type = "string", Nilable = false },
+				{ Name = "errorReason", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -883,7 +883,7 @@ local Calendar =
 			LiteralName = "CALENDAR_UPDATE_ERROR_WITH_COUNT",
 			Payload =
 			{
-				{ Name = "errorReason", Type = "string", Nilable = false },
+				{ Name = "errorReason", Type = "cstring", Nilable = false },
 				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
@@ -893,8 +893,8 @@ local Calendar =
 			LiteralName = "CALENDAR_UPDATE_ERROR_WITH_PLAYER_NAME",
 			Payload =
 			{
-				{ Name = "errorReason", Type = "string", Nilable = false },
-				{ Name = "playerName", Type = "string", Nilable = false },
+				{ Name = "errorReason", Type = "cstring", Nilable = false },
+				{ Name = "playerName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -935,26 +935,26 @@ local Calendar =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "eventID", Type = "string", Nilable = false },
+				{ Name = "eventID", Type = "CalendarEventID", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "isCustomTitle", Type = "bool", Nilable = false },
 				{ Name = "startTime", Type = "CalendarTime", Nilable = false },
 				{ Name = "endTime", Type = "CalendarTime", Nilable = false },
-				{ Name = "calendarType", Type = "string", Nilable = false },
-				{ Name = "sequenceType", Type = "string", Nilable = false },
+				{ Name = "calendarType", Type = "cstring", Nilable = false },
+				{ Name = "sequenceType", Type = "cstring", Nilable = false },
 				{ Name = "eventType", Type = "CalendarEventType", Nilable = false },
-				{ Name = "iconTexture", Type = "number", Nilable = true },
-				{ Name = "modStatus", Type = "string", Nilable = false },
+				{ Name = "iconTexture", Type = "fileID", Nilable = true },
+				{ Name = "modStatus", Type = "cstring", Nilable = false },
 				{ Name = "inviteStatus", Type = "CalendarStatus", Nilable = false },
 				{ Name = "invitedBy", Type = "string", Nilable = false },
 				{ Name = "difficulty", Type = "number", Nilable = false },
 				{ Name = "inviteType", Type = "CalendarInviteType", Nilable = false },
-				{ Name = "sequenceIndex", Type = "number", Nilable = false },
+				{ Name = "sequenceIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "numSequenceDays", Type = "number", Nilable = false },
-				{ Name = "difficultyName", Type = "string", Nilable = false },
+				{ Name = "difficultyName", Type = "cstring", Nilable = false },
 				{ Name = "dontDisplayBanner", Type = "bool", Nilable = false },
 				{ Name = "dontDisplayEnd", Type = "bool", Nilable = false },
-				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "clubID", Type = "ClubId", Nilable = false },
 				{ Name = "isLocked", Type = "bool", Nilable = false },
 			},
 		},
@@ -964,8 +964,8 @@ local Calendar =
 			Fields =
 			{
 				{ Name = "offsetMonths", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "eventIndex", Type = "number", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "eventIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -979,7 +979,7 @@ local Calendar =
 				{ Name = "eventType", Type = "CalendarEventType", Nilable = false },
 				{ Name = "repeatOption", Type = "CalendarEventRepeatOptions", Nilable = false },
 				{ Name = "maxSize", Type = "number", Nilable = false },
-				{ Name = "textureIndex", Type = "number", Nilable = true },
+				{ Name = "textureIndex", Type = "luaIndex", Nilable = true },
 				{ Name = "time", Type = "CalendarTime", Nilable = false },
 				{ Name = "lockoutTime", Type = "CalendarTime", Nilable = false },
 				{ Name = "isLocked", Type = "bool", Nilable = false },
@@ -1006,7 +1006,7 @@ local Calendar =
 				{ Name = "type", Type = "CalendarInviteType", Nilable = false },
 				{ Name = "notes", Type = "string", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = true },
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -1024,7 +1024,7 @@ local Calendar =
 			Fields =
 			{
 				{ Name = "title", Type = "string", Nilable = false },
-				{ Name = "iconTexture", Type = "number", Nilable = false },
+				{ Name = "iconTexture", Type = "fileID", Nilable = false },
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
 				{ Name = "difficultyId", Type = "number", Nilable = true },
 				{ Name = "mapId", Type = "number", Nilable = true },
@@ -1045,19 +1045,19 @@ local Calendar =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "eventID", Type = "string", Nilable = false },
+				{ Name = "eventID", Type = "CalendarEventID", Nilable = false },
 				{ Name = "year", Type = "number", Nilable = false },
-				{ Name = "month", Type = "number", Nilable = false },
-				{ Name = "monthDay", Type = "number", Nilable = false },
-				{ Name = "weekday", Type = "number", Nilable = false },
+				{ Name = "month", Type = "luaIndex", Nilable = false },
+				{ Name = "monthDay", Type = "luaIndex", Nilable = false },
+				{ Name = "weekday", Type = "luaIndex", Nilable = false },
 				{ Name = "hour", Type = "number", Nilable = false },
 				{ Name = "minute", Type = "number", Nilable = false },
 				{ Name = "eventType", Type = "CalendarEventType", Nilable = false },
 				{ Name = "title", Type = "string", Nilable = false },
 				{ Name = "calendarType", Type = "string", Nilable = false },
-				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "inviteStatus", Type = "CalendarStatus", Nilable = false },
-				{ Name = "clubID", Type = "string", Nilable = false },
+				{ Name = "clubID", Type = "ClubId", Nilable = false },
 			},
 		},
 		{
@@ -1075,9 +1075,9 @@ local Calendar =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "texture", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "texture", Type = "fileID", Nilable = false },
 				{ Name = "startTime", Type = "CalendarTime", Nilable = true },
 				{ Name = "endTime", Type = "CalendarTime", Nilable = true },
 			},
@@ -1087,10 +1087,10 @@ local Calendar =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "month", Type = "number", Nilable = false },
+				{ Name = "month", Type = "luaIndex", Nilable = false },
 				{ Name = "year", Type = "number", Nilable = false },
 				{ Name = "numDays", Type = "number", Nilable = false },
-				{ Name = "firstWeekday", Type = "number", Nilable = false },
+				{ Name = "firstWeekday", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

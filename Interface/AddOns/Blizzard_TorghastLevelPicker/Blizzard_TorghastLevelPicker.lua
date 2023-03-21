@@ -200,7 +200,7 @@ end
 
 function TorghastLevelPickerOptionButtonMixin:Setup(textureKit, optionInfo, index) 
 	self.optionInfo = optionInfo;
-	self:SetupBase(textureKit, optionInfo, index, gossipButtonTextureKitRegions)
+	self:SetupBase(textureKit, optionInfo, optionInfo.orderIndex, gossipButtonTextureKitRegions)
 	self:SetState(optionInfo.status); 
 	self:SetDifficultyTexture();
 	self.spell = nil; 
@@ -537,6 +537,6 @@ function TorghastLevelPickerOpenPortalButtonMixin:OnClick()
 	if(not selectedPortal) then 
 		return; 
 	end
-	C_GossipInfo.SelectOption(selectedPortal.optionInfo.gossipOptionID); 
+	C_GossipInfo.SelectOptionByIndex(selectedPortal.optionInfo.orderIndex);
 	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL); 
 end 

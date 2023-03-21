@@ -49,8 +49,8 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
-				{ Name = "targetGUID", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
+				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -60,7 +60,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -80,7 +80,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 				{ Name = "tank", Type = "bool", Nilable = true },
 				{ Name = "healer", Type = "bool", Nilable = true },
 				{ Name = "dps", Type = "bool", Nilable = true },
@@ -119,7 +119,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "inviteGUID", Type = "string", Nilable = false },
+				{ Name = "inviteGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -133,16 +133,16 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "inviteGUID", Type = "string", Nilable = false },
+				{ Name = "inviteGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "outReferredByGuid", Type = "string", Nilable = false },
-				{ Name = "outReferredByName", Type = "string", Nilable = false },
+				{ Name = "outReferredByGuid", Type = "WOWGUID", Nilable = false },
+				{ Name = "outReferredByName", Type = "cstring", Nilable = false },
 				{ Name = "outRelationType", Type = "PartyRequestJoinRelation", Nilable = false },
 				{ Name = "outIsQuickJoin", Type = "bool", Nilable = false },
-				{ Name = "outClubId", Type = "string", Nilable = false },
+				{ Name = "outClubId", Type = "ClubId", Nilable = false },
 			},
 		},
 		{
@@ -166,7 +166,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -223,7 +223,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 				{ Name = "tank", Type = "bool", Nilable = true },
 				{ Name = "healer", Type = "bool", Nilable = true },
 				{ Name = "dps", Type = "bool", Nilable = true },
@@ -263,7 +263,7 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
-				{ Name = "partyGUID", Type = "string", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -278,7 +278,7 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
-				{ Name = "partyGUID", Type = "string", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -288,7 +288,7 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
-				{ Name = "partyGUID", Type = "string", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -317,7 +317,7 @@ local PartyInfo =
 			LiteralName = "INVITE_TO_PARTY_CONFIRMATION",
 			Payload =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 				{ Name = "willConvertToRaid", Type = "bool", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 			},
@@ -328,8 +328,8 @@ local PartyInfo =
 			LiteralName = "INVITE_TRAVEL_PASS_CONFIRMATION",
 			Payload =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
-				{ Name = "targetGUID", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
+				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "willConvertToRaid", Type = "bool", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 			},
@@ -350,13 +350,13 @@ local PartyInfo =
 			LiteralName = "PARTY_INVITE_REQUEST",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isTank", Type = "bool", Nilable = false },
 				{ Name = "isHealer", Type = "bool", Nilable = false },
 				{ Name = "isDamage", Type = "bool", Nilable = false },
 				{ Name = "isNativeRealm", Type = "bool", Nilable = false },
 				{ Name = "allowMultipleRoles", Type = "bool", Nilable = false },
-				{ Name = "inviterGUID", Type = "string", Nilable = false },
+				{ Name = "inviterGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 			},
 		},
@@ -381,7 +381,7 @@ local PartyInfo =
 			LiteralName = "PARTY_MEMBER_DISABLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -390,7 +390,7 @@ local PartyInfo =
 			LiteralName = "PARTY_MEMBER_ENABLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -414,8 +414,8 @@ local PartyInfo =
 			LiteralName = "READY_CHECK",
 			Payload =
 			{
-				{ Name = "initiatorName", Type = "string", Nilable = false },
-				{ Name = "readyCheckTimeLeft", Type = "number", Nilable = false },
+				{ Name = "initiatorName", Type = "cstring", Nilable = false },
+				{ Name = "readyCheckTimeLeft", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -424,7 +424,7 @@ local PartyInfo =
 			LiteralName = "READY_CHECK_CONFIRM",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "isReady", Type = "bool", Nilable = false },
 			},
 		},
@@ -443,7 +443,7 @@ local PartyInfo =
 			LiteralName = "REQUEST_INVITE_CONFIRMATION",
 			Payload =
 			{
-				{ Name = "targetName", Type = "string", Nilable = false },
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 				{ Name = "partyLevelLink", Type = "number", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },
 				{ Name = "tank", Type = "bool", Nilable = true },
@@ -457,10 +457,10 @@ local PartyInfo =
 			LiteralName = "ROLE_CHANGED_INFORM",
 			Payload =
 			{
-				{ Name = "changedName", Type = "string", Nilable = false },
-				{ Name = "fromName", Type = "string", Nilable = false },
-				{ Name = "oldRole", Type = "string", Nilable = false },
-				{ Name = "newRole", Type = "string", Nilable = false },
+				{ Name = "changedName", Type = "cstring", Nilable = false },
+				{ Name = "fromName", Type = "cstring", Nilable = false },
+				{ Name = "oldRole", Type = "cstring", Nilable = false },
+				{ Name = "newRole", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -469,7 +469,7 @@ local PartyInfo =
 			LiteralName = "ROLE_POLL_BEGIN",
 			Payload =
 			{
-				{ Name = "fromName", Type = "string", Nilable = false },
+				{ Name = "fromName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -478,8 +478,8 @@ local PartyInfo =
 			LiteralName = "VOTE_KICK_REASON_NEEDED",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "resultGUID", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "resultGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},

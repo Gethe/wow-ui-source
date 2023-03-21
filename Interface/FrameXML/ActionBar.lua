@@ -1,32 +1,37 @@
 ActionBarMixin = {}
 
 function ActionBarMixin:ActionBar_OnLoad()
-    self.numShowingButtonsOrSpacers = 0;
     self.numButtonsShowable = self.numButtons;
     self.minButtonPadding = 2;
     self.buttonPadding = self.minButtonPadding;
     self.actionButtons = {};
-    self.buttonsAndSpacers = {};
+    self.shownButtonContainers = {};
+
+    local actionBarName = self:GetName();
 
     -- Create action buttons
     for i=1, self.numButtons do
+        local buttonContainer = CreateFrame("Frame", actionBarName.."ButtonContainer"..i, self, "ActionBarButtonContainerTemplate", i);
 
         -- Different naming for these bars is to avoid errors with legacy code
         -- Ideally this wouldn't be needed
-        local name;
+        local buttonName;
         if self == MainMenuBar then
-            name = "ActionButton"..i;
+            buttonName = "ActionButton"..i;
         elseif self == StanceBar then
-            name = "StanceButton"..i;
+            buttonName = "StanceButton"..i;
         elseif self == PetActionBar then
-            name = "PetActionButton"..i;
+            buttonName = "PetActionButton"..i;
         elseif self == PossessActionBar then
-            name = "PossessButton"..i;
+            buttonName = "PossessButton"..i;
         else
-            name = self:GetName().."Button"..i;
+            buttonName = actionBarName.."Button"..i;
         end
 
-		local actionButton = CreateFrame("CheckButton", name, self, self.buttonTemplate, i);
+		local actionButton = CreateFrame("CheckButton", buttonName, buttonContainer, self.buttonTemplate, i);
+        actionButton:SetPoint("CENTER");
+        actionButton.bar = self;
+        actionButton.container = buttonContainer;
         actionButton.index = i;
         actionButton.isLastActionButton = i == self.numButtons;
 
@@ -35,15 +40,8 @@ function ActionBarMixin:ActionBar_OnLoad()
         end
 
         table.insert(self.actionButtons, actionButton);
-        table.insert(self.buttonsAndSpacers, actionButton);
 
-        if not self.noSpacers then
-            -- Create button spacer
-            -- Spacers are used to keep size of bar the same when we aren't showing the grid
-            local spacer = CreateFrame("Frame", "ActionBarButtonSpacer"..i, self, "ActionBarButtonSpacerTemplate", i);
-            spacer:SetSize(actionButton:GetWidth(), actionButton:GetHeight()); -- Spacer size should match the size of the action buttons
-            table.insert(self.buttonsAndSpacers, spacer);
-        end
+        buttonContainer:SetSize(actionButton:GetWidth(), actionButton:GetHeight());
     end
 
     self:UpdateShownButtons();
@@ -65,14 +63,9 @@ function ActionBarMixin:ActionBar_OnEvent(event, ...)
     end
 end
 
-function ActionBarMixin:ActionBar_OnShow()
-    self:UpdateGridLayout();
-end
-
-function ActionBarMixin:CacheGridSettings(layoutChildren)
+function ActionBarMixin:CacheGridSettings()
     self.oldGridSettings = {
-        layoutChildren = layoutChildren,
-        numShowingButtonsOrSpacers = self.numShowingButtonsOrSpacers,
+        numLaidOutObjects = #self.shownButtonContainers,
         numRows = self.numRows,
         isHorizontal = self.isHorizontal,
         addButtonsToRight = self.addButtonsToRight,
@@ -81,50 +74,31 @@ function ActionBarMixin:CacheGridSettings(layoutChildren)
     };
 end
 
-function ActionBarMixin:ShouldUpdateGrid(layoutChildren)
-    if not self:IsShown() then
-        return false;
-    end
-
+function ActionBarMixin:ShouldUpdateGrid()
     if self.oldGridSettings == nil then
         return true;
     end
 
-    if self.oldGridSettings.numShowingButtonsOrSpacers ~= self.numShowingButtonsOrSpacers
+    if self.oldGridSettings.numLaidOutObjects ~= #self.shownButtonContainers
     or self.oldGridSettings.numRows ~= self.numRows
     or self.oldGridSettings.isHorizontal ~= self.isHorizontal
     or self.oldGridSettings.addButtonsToRight ~= self.addButtonsToRight
     or self.oldGridSettings.addButtonsToTop ~= self.addButtonsToTop
-    or self.oldGridSettings.buttonPadding ~= self.buttonPadding
-    or #self.oldGridSettings.layoutChildren ~= #layoutChildren then
+    or self.oldGridSettings.buttonPadding ~= self.buttonPadding then
         return true;
-    end
-
-    for index, layoutChild in ipairs(layoutChildren) do
-        if self.oldGridSettings.layoutChildren[index] ~= layoutChild then
-            return true;
-        end
     end
 
     return false;
 end
 
 function ActionBarMixin:UpdateGridLayout()
-    -- Determine which things will be laid out in the grid
-    local shownButtonsAndSpacers = {};
-    for i, buttonOrSpacer in pairs(self.buttonsAndSpacers) do
-        if buttonOrSpacer:IsShown() then
-            table.insert(shownButtonsAndSpacers, buttonOrSpacer);
-        end
-    end
-
-    if not self:ShouldUpdateGrid(shownButtonsAndSpacers) then
+    if not self:ShouldUpdateGrid() then
         return;
     end
 
     -- Stride is the number of buttons per row (or column if we are vertical)
     -- Set stride so that if we can have the same number of icons per row we do
-    local stride = math.ceil(self.numShowingButtonsOrSpacers / self.numRows);
+    local stride = math.ceil(#self.shownButtonContainers / self.numRows);
 
     -- Set button padding. User can set padding through edit mode
     local buttonPadding = math.max(self.minButtonPadding, self.buttonPadding);
@@ -160,10 +134,10 @@ function ActionBarMixin:UpdateGridLayout()
     end
 
     -- Apply the layout and then update our size
-	GridLayoutUtil.ApplyGridLayout(shownButtonsAndSpacers, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
+	GridLayoutUtil.ApplyGridLayout(self.shownButtonContainers, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
     self:Layout();
     self:UpdateSpellFlyoutDirection();
-    self:CacheGridSettings(shownButtonsAndSpacers);
+    self:CacheGridSettings();
 end
 
 function ActionBarMixin:SetShowGrid(showGrid, reason)
@@ -195,8 +169,10 @@ function ActionBarMixin:SetShowGrid(showGrid, reason)
 	self:UpdateFrameStrata(shouldBeRaised);
 
     self:UpdateShownButtons();
-    self:UpdateVisibility();
-    self:UpdateGridLayout();
+
+    if self.UpdateVisibility then
+        self:UpdateVisibility();
+    end
 end
 
 function ActionBarMixin:GetShowAllButtons()
@@ -208,7 +184,7 @@ function ActionBarMixin:UpdateFrameStrata(shouldBeRaised)
 end
 
 function ActionBarMixin:UpdateShownButtons()
-    self.numShowingButtonsOrSpacers = 0;
+    table.wipe(self.shownButtonContainers);
 
     for i, actionButton in pairs(self.actionButtons) do
         local showButton = actionButton.index <= self.numButtonsShowable  -- Show button if it is within the num buttons which are showable
@@ -217,17 +193,10 @@ function ActionBarMixin:UpdateShownButtons()
 
         actionButton:SetShown(showButton);
 
-        if showButton then
-            self.numShowingButtonsOrSpacers = self.numShowingButtonsOrSpacers + 1;
-        end
-
-        if not self.noSpacers then
-            if not showButton and i <= self.numButtonsShowable then
-                self.ButtonSpacers[i]:Show();
-                self.numShowingButtonsOrSpacers = self.numShowingButtonsOrSpacers + 1;
-            else
-                self.ButtonSpacers[i]:Hide();
-            end
+        local showButtonContainer = showButton or (not self.noSpacers and i <= self.numButtonsShowable);
+        actionButton.container:SetShown(showButtonContainer);
+        if showButtonContainer then
+            table.insert(self.shownButtonContainers, actionButton.container);
         end
     end
 end
@@ -295,13 +264,13 @@ function EditModeActionBarMixin:EditModeActionBar_OnEvent(event, ...)
     end
 end
 
-function EditModeActionBarMixin:ShouldUpdateGrid(layoutChildren)
+function EditModeActionBarMixin:ShouldUpdateGrid()
 	if self:IsInitialized() and not self.gridInitialized then
-		self.gridInitialized = true;
+        self.gridInitialized = true;
 		return true;
 	end
 
-	return ActionBarMixin.ShouldUpdateGrid(self, layoutChildren);
+	return ActionBarMixin.ShouldUpdateGrid(self);
 end
 
 function EditModeActionBarMixin:IsShownOverride()
@@ -368,6 +337,5 @@ function EditModeActionBarMixin:UpdateVisibility()
         self:ShowBase();
     end
 
-    self:UpdateGridLayout();
     EditModeManagerFrame:UpdateActionBarLayout(self);
 end

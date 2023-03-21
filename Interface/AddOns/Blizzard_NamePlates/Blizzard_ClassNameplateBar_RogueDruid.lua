@@ -4,6 +4,10 @@ function ClassNameplateBarRogueDruid:OnLoad()
 	ClassResourceBarMixin.OnLoad(self);
 end
 
+function ClassNameplateBarRogueDruid:OnEvent(event, ...)
+	ClassResourceBarMixin.OnEvent(self, event, ...);
+end
+
 function ClassNameplateBarRogueDruid:UpdateMaxPower()
 	ClassResourceBarMixin.UpdateMaxPower(self);
 end

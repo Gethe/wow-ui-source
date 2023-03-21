@@ -28,8 +28,8 @@ local UIColor =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "baseTag", Type = "string", Nilable = false },
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "baseTag", Type = "cstring", Nilable = false },
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 	},

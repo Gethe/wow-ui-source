@@ -260,12 +260,13 @@ local TraitConstants =
 		{
 			Name = "TraitSystemFlag",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "AllowMultipleLoadoutsPerTree", Type = "TraitSystemFlag", EnumValue = 1 },
+				{ Name = "ShowSpendConfirmation", Type = "TraitSystemFlag", EnumValue = 2 },
 			},
 		},
 		{

@@ -1,7 +1,7 @@
 local MaxColumns = 3;
 local MaxRows = 6;
 local MaxUnscrolledCount = MaxColumns * MaxRows;
-local HideUnownedCvar = "professionsFlyoutHideUnowned";
+local HideUnavailableCvar = "professionsFlyoutHideUnowned";
 
 ProfessionsItemFlyoutButtonMixin = {};
 
@@ -61,7 +61,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	self.HideUnownedCheckBox.text:SetText(PROFESSIONS_HIDE_UNOWNED_REAGENTS);
 	self.HideUnownedCheckBox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
-		SetCVar(HideUnownedCvar, checked);
+		SetCVar(HideUnavailableCvar, checked);
 		self:InitializeContents();
 		PlaySound(SOUNDKIT.UI_PROFESSION_HIDE_UNOWNED_REAGENTS_CHECKBOX);
 	end);
@@ -131,31 +131,31 @@ function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
 end
 
 function ProfessionsItemFlyoutMixin:InitializeContents()
-	local cannotModifyHideUnowned, alwaysShowUnowned = false, false;
+	local cannotModifyHideUnavailable, alwaysShowUnavailable = false, false;
 	if self.transaction then
 		local recipeID = self.transaction:GetRecipeID();
-		cannotModifyHideUnowned, alwaysShowUnowned = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
+		cannotModifyHideUnavailable, alwaysShowUnavailable = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
 	end
 	
-	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnowned;
+	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnavailable;
 	self.HideUnownedCheckBox:SetShown(canShowCheckBox);
 
-	local hideUnownedCvar = GetCVarBool(HideUnownedCvar);
+	local hideUnavailableCvar = GetCVarBool(HideUnavailableCvar);
 	if canShowCheckBox then
-		self.HideUnownedCheckBox:SetChecked(hideUnownedCvar);
+		self.HideUnownedCheckBox:SetChecked(hideUnavailableCvar);
 	end
 
-	local hideUnowned;
-	if cannotModifyHideUnowned then
+	local hideUnavailable;
+	if cannotModifyHideUnavailable then
 		-- Determined in data, supercedes player preference.
-		hideUnowned = not alwaysShowUnowned;
+		hideUnavailable = not alwaysShowUnavailable;
 	else
 		local alwaysHide = not self.canModifyFilter;
-		local preferHide = canShowCheckBox and hideUnownedCvar;
-		hideUnowned = alwaysHide or preferHide;
+		local preferHide = canShowCheckBox and hideUnavailableCvar;
+		hideUnavailable = alwaysHide or preferHide;
 	end
 
-	local elements = self:GetElementsImplementation(hideUnowned);
+	local elements = self:GetElementsImplementation(hideUnavailable);
 	local count = #elements.items;
 	if count > 0 then
 		self.Text:Hide();

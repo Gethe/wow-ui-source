@@ -26,7 +26,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -50,7 +50,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -65,7 +65,7 @@ local ArtifactUI =
 			Arguments =
 			{
 				{ Name = "relicItemID", Type = "number", Nilable = false },
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -80,7 +80,7 @@ local ArtifactUI =
 			Arguments =
 			{
 				{ Name = "relicItemID", Type = "number", Nilable = false },
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -207,7 +207,7 @@ local ArtifactUI =
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "altItemID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "xp", Type = "number", Nilable = false },
 				{ Name = "pointsSpent", Type = "number", Nilable = false },
 				{ Name = "quality", Type = "number", Nilable = false },
@@ -216,7 +216,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -234,7 +234,7 @@ local ArtifactUI =
 
 			Returns =
 			{
-				{ Name = "tier", Type = "number", Nilable = true },
+				{ Name = "tier", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -249,7 +249,7 @@ local ArtifactUI =
 			Returns =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -259,7 +259,7 @@ local ArtifactUI =
 			Arguments =
 			{
 				{ Name = "rank", Type = "number", Nilable = false },
-				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -285,7 +285,7 @@ local ArtifactUI =
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "altItemID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "xp", Type = "number", Nilable = false },
 				{ Name = "pointsSpent", Type = "number", Nilable = false },
 				{ Name = "quality", Type = "number", Nilable = false },
@@ -294,7 +294,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -326,14 +326,14 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "slotTypeName", Type = "string", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "slotTypeName", Type = "cstring", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
 				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
@@ -343,7 +343,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -368,7 +368,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "itemLinkOrID", Type = "string", Nilable = false },
+				{ Name = "itemLinkOrID", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -439,7 +439,7 @@ local ArtifactUI =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -485,7 +485,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -499,7 +499,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicItemInfo", Type = "string", Nilable = false },
+				{ Name = "relicItemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -522,14 +522,14 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "slotTypeName", Type = "string", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "slotTypeName", Type = "cstring", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
 				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
@@ -545,8 +545,8 @@ local ArtifactUI =
 			Returns =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "slotTypeName", Type = "string", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "slotTypeName", Type = "cstring", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
 				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
@@ -556,7 +556,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -570,12 +570,12 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "relicSlotIndex", Type = "number", Nilable = false },
+				{ Name = "relicSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "slotTypeName", Type = "string", Nilable = false },
+				{ Name = "slotTypeName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -596,7 +596,7 @@ local ArtifactUI =
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "altItemID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "xp", Type = "number", Nilable = false },
 				{ Name = "pointsSpent", Type = "number", Nilable = false },
 				{ Name = "quality", Type = "number", Nilable = false },
@@ -605,7 +605,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -623,9 +623,9 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "startingTrait", Type = "number", Nilable = false },
+				{ Name = "startingTrait", Type = "luaIndex", Nilable = false },
 				{ Name = "numTraits", Type = "number", Nilable = false },
-				{ Name = "artifactTier", Type = "number", Nilable = false },
+				{ Name = "artifactTier", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -657,7 +657,7 @@ local ArtifactUI =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -784,8 +784,8 @@ local ArtifactUI =
 			{
 				{ Name = "numRefundedPowers", Type = "number", Nilable = false },
 				{ Name = "refundedTier", Type = "number", Nilable = false },
-				{ Name = "bagOrSlotIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = true },
+				{ Name = "bagOrSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -819,9 +819,9 @@ local ArtifactUI =
 			LiteralName = "ARTIFACT_TIER_CHANGED",
 			Payload =
 			{
-				{ Name = "newTier", Type = "number", Nilable = false },
-				{ Name = "bagOrSlotIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = true },
+				{ Name = "newTier", Type = "luaIndex", Nilable = false },
+				{ Name = "bagOrSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -854,7 +854,7 @@ local ArtifactUI =
 				{ Name = "failureDescription", Type = "string", Nilable = true },
 				{ Name = "uiCameraID", Type = "number", Nilable = false },
 				{ Name = "altHandCameraID", Type = "number", Nilable = true },
-				{ Name = "swatchColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "swatchColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "modelOpacity", Type = "number", Nilable = false },
 				{ Name = "modelSaturation", Type = "number", Nilable = false },
 				{ Name = "obtainable", Type = "bool", Nilable = false },
@@ -876,11 +876,11 @@ local ArtifactUI =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "titleName", Type = "string", Nilable = false },
-				{ Name = "titleColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "barConnectedColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "barDisconnectedColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "titleColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "barConnectedColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "barDisconnectedColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
 				{ Name = "spellVisualKitID", Type = "number", Nilable = false },
 			},
@@ -893,7 +893,7 @@ local ArtifactUI =
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "altItemID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "xp", Type = "number", Nilable = false },
 				{ Name = "pointsSpent", Type = "number", Nilable = false },
 				{ Name = "quality", Type = "number", Nilable = false },
@@ -902,7 +902,7 @@ local ArtifactUI =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altItemAppearanceID", Type = "number", Nilable = true },
 				{ Name = "altOnTop", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -930,10 +930,10 @@ local ArtifactUI =
 				{ Name = "isStart", Type = "bool", Nilable = false },
 				{ Name = "isGoldMedal", Type = "bool", Nilable = false },
 				{ Name = "isFinal", Type = "bool", Nilable = false },
-				{ Name = "tier", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "offset", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
-				{ Name = "linearIndex", Type = "number", Nilable = true },
+				{ Name = "tier", Type = "luaIndex", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "offset", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "linearIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -942,8 +942,8 @@ local ArtifactUI =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "slotTypeName", Type = "string", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "slotTypeName", Type = "cstring", Nilable = false, Documentation = { "Matches the socket identifiers used in the socketing system." } },
 				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},

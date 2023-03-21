@@ -219,6 +219,31 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<DropDownToggleButton parentKey="SocialDropdownButton" inherits="UIMenuButtonStretchTemplate">
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.CrafterValue" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
+									<Size x="12" y="12"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+								<Size x="10" y="10"/>
+							</Frame>
+						</Frames>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</DropDownToggleButton>
+				</Frames>
 			</Frame>
 
 			<Frame parentKey="RecraftSlot" inherits="ProfessionsRecraftSlotTemplate" hidden="true">
@@ -251,7 +276,7 @@
 							<KeyValue key="labelText" value="PROFESSIONS_CUSTOMER_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="85"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 						</Anchors>
 					</Frame>
 				</Frames>

@@ -120,7 +120,7 @@ function SecureButton_GetModifiedAttribute(frame, name, button, prefix, suffix)
     local value = LOCAL_CHECK_Frame.GetAttribute(frame, prefix, name, suffix);
     if ( not value and (LOCAL_CHECK_Frame.GetAttribute(frame, "useparent-"..name) or
                         LOCAL_CHECK_Frame.GetAttribute(frame, "useparent*")) ) then
-        local parent = LOCAL_CHECK_Frame.GetParent(frame);
+        local parent = frame.bar or LOCAL_CHECK_Frame.GetParent(frame);
         if ( parent ) then
             value = SecureButton_GetModifiedAttribute(parent, name, button, prefix, suffix);
         end

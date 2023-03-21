@@ -130,3 +130,7 @@ end
 function UseSharedActionBarsMixin:OnLeave()
 	GameTooltip_Hide();
 end
+
+function UseSharedActionBarsMixin:OnClick()
+	self.CheckButton:Click();
+end

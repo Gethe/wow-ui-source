@@ -12,8 +12,8 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "notes", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -22,7 +22,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -36,7 +36,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -45,8 +45,8 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "notes", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -55,7 +55,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -69,7 +69,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -78,7 +78,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -92,7 +92,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -106,7 +106,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -157,7 +157,7 @@ local FriendList =
 
 			Returns =
 			{
-				{ Name = "index", Type = "number", Nilable = true },
+				{ Name = "index", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -166,7 +166,7 @@ local FriendList =
 
 			Returns =
 			{
-				{ Name = "index", Type = "number", Nilable = true },
+				{ Name = "index", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -175,7 +175,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -189,7 +189,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -203,7 +203,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "token", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -217,7 +217,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -231,7 +231,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "token", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -245,7 +245,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -259,7 +259,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -268,7 +268,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "filter", Type = "string", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -277,8 +277,8 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "notes", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -292,8 +292,8 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "notes", Type = "string", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "notes", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -302,7 +302,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -311,7 +311,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -333,7 +333,7 @@ local FriendList =
 
 			Arguments =
 			{
-				{ Name = "sorting", Type = "string", Nilable = false },
+				{ Name = "sorting", Type = "cstring", Nilable = false },
 			},
 		},
 	},
@@ -346,7 +346,7 @@ local FriendList =
 			LiteralName = "BATTLETAG_INVITE_SHOW",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -355,7 +355,7 @@ local FriendList =
 			LiteralName = "BN_BLOCK_FAILED_TOO_MANY",
 			Payload =
 			{
-				{ Name = "blockType", Type = "string", Nilable = false },
+				{ Name = "blockType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -431,7 +431,7 @@ local FriendList =
 			LiteralName = "BN_FRIEND_INFO_CHANGED",
 			Payload =
 			{
-				{ Name = "friendIndex", Type = "number", Nilable = true },
+				{ Name = "friendIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -510,7 +510,7 @@ local FriendList =
 				{ Name = "className", Type = "string", Nilable = true },
 				{ Name = "area", Type = "string", Nilable = true },
 				{ Name = "notes", Type = "string", Nilable = true },
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "dnd", Type = "bool", Nilable = false },
 				{ Name = "afk", Type = "bool", Nilable = false },

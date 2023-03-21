@@ -374,11 +374,11 @@ function ProfessionsCrafterTableCellExpirationMixin:Populate(rowData, dataIndex)
 	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
 	self.remainingTime = seconds;
-	local fmt, time = SecondsToTimeAbbrev(seconds);
+	local timeText = Professions.OrderTimeLeftFormatter:Format(seconds);
 	if seconds <= Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
-		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
+		timeText = ERROR_COLOR:WrapTextInColorCode(timeText);
 	end
-	ProfessionsTableCellTextMixin.SetText(self, fmt:format(time));
+	ProfessionsTableCellTextMixin.SetText(self, timeText);
 end
 
 function ProfessionsCrafterTableCellExpirationMixin:OnEnter()
@@ -442,7 +442,8 @@ ProfessionsCustomerTableCellIlvlMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellIlvlMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
-	local text = order.qualityIlvlBonuses and CRAFTING_ORDER_ILVL_DISPLAY:format(order.iLvl) or order.iLvl;
+
+	local text = order.iLvlMax and CRAFTING_ORDER_ILVL_DISPLAY_RANGE:format(order.iLvlMin, order.iLvlMax) or order.iLvlMin;
 	ProfessionsTableCellTextMixin.SetText(self, text);
 end
 
@@ -561,16 +562,14 @@ function ProfessionsCustomerTableCellExpirationMixin:Populate(rowData, dataIndex
 	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
 	self.remainingTime = seconds;
-	local fmt, time = SecondsToTimeAbbrev(seconds);
-	local twoHrsSeconds = 60 * 60 * 2;
-	if seconds <= twoHrsSeconds then
-		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
+	local timeText = Professions.OrderTimeLeftFormatter:Format(seconds);
+	if seconds <= Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
+		timeText = ERROR_COLOR:WrapTextInColorCode(timeText);
 	end
-	local text = fmt:format(time);
 	if self.isClaimed then
-		text = text..CRAFTING_ORDER_PENDING;
+		timeText = timeText..CRAFTING_ORDER_PENDING;
 	end
-	ProfessionsTableCellTextMixin.SetText(self, text);
+	ProfessionsTableCellTextMixin.SetText(self, timeText);
 end
 
 function ProfessionsCustomerTableCellExpirationMixin:OnEnter()

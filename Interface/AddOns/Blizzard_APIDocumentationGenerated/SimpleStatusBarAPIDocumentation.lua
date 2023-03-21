@@ -15,7 +15,7 @@ local SimpleStatusBarAPI =
 
 			Returns =
 			{
-				{ Name = "fillStyle", Type = "string", Nilable = false },
+				{ Name = "fillStyle", Type = "StatusBarFillStyle", Nilable = false },
 			},
 		},
 		{
@@ -42,7 +42,7 @@ local SimpleStatusBarAPI =
 
 			Returns =
 			{
-				{ Name = "orientation", Type = "string", Nilable = false },
+				{ Name = "orientation", Type = "Orientation", Nilable = false },
 			},
 		},
 		{
@@ -97,7 +97,7 @@ local SimpleStatusBarAPI =
 
 			Returns =
 			{
-				{ Name = "desaturation", Type = "number", Nilable = false },
+				{ Name = "desaturation", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -110,7 +110,7 @@ local SimpleStatusBarAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -148,7 +148,7 @@ local SimpleStatusBarAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -157,7 +157,7 @@ local SimpleStatusBarAPI =
 
 			Arguments =
 			{
-				{ Name = "fillStyle", Type = "string", Nilable = false },
+				{ Name = "fillStyle", Type = "StatusBarFillStyle", Nilable = false },
 			},
 		},
 		{
@@ -176,7 +176,7 @@ local SimpleStatusBarAPI =
 
 			Arguments =
 			{
-				{ Name = "orientation", Type = "string", Nilable = false },
+				{ Name = "orientation", Type = "Orientation", Nilable = false },
 			},
 		},
 		{
@@ -206,7 +206,7 @@ local SimpleStatusBarAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -224,7 +224,7 @@ local SimpleStatusBarAPI =
 
 			Arguments =
 			{
-				{ Name = "desaturation", Type = "number", Nilable = false },
+				{ Name = "desaturation", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -233,7 +233,7 @@ local SimpleStatusBarAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{

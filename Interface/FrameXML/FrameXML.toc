@@ -83,7 +83,7 @@
 ..\SharedXML\StringUtil.lua
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
-MixinUtil.lua
+..\SharedXML\MixinUtil.lua
 IconDataProvider.lua
 
 ..\SharedXML\Tooltip\TooltipUtil.lua
@@ -179,6 +179,7 @@ MoneyInputFrame.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\Tabs\MinimalTab.xml
+RAFUtil.lua
 
 ## IME.xml needs to be loaded after UIParent.xml
 ..\SharedXML\IME.xml

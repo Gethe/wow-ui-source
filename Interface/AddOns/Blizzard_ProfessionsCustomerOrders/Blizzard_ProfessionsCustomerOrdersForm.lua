@@ -27,6 +27,7 @@ local ProfessionsCustomerOrderFormEvents =
 	"CRAFTINGORDERS_ORDER_CANCEL_RESPONSE",
 	"PLAYER_MONEY",
 	"TRACKED_RECIPE_UPDATE",
+	"CAN_LOCAL_WHISPER_TARGET_RESPONSE",
 };
 
 ProfessionsCustomerOrderFormMixin = {};
@@ -236,6 +237,83 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		GameTooltip:Show();
 	end);
 	self.AllocateBestQualityCheckBox:SetScript("OnLeave", GameTooltip_Hide);
+
+	SquareButton_SetIcon(self.OrderRecipientDisplay.SocialDropdownButton, "DOWN");
+	self.OrderRecipientDisplay.SocialDropdownButton:SetScript("OnMouseDown", function(button)
+		UIMenuButtonStretchMixin.OnMouseDown(self.OrderRecipientDisplay.SocialDropdownButton, button);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		ToggleDropDownMenu(nil, nil, self.OrderRecipientDisplay.SocialDropdownButton.DropDown, self.OrderRecipientDisplay.SocialDropdownButton, 0, 0);
+	end);
+	UIDropDownMenu_Initialize(self.OrderRecipientDisplay.SocialDropdownButton.DropDown, function(menu, level)
+		if not self.order then
+			return;
+		end
+
+		-- Add ignore option
+		do
+			local canIgnore = self.order.crafterGuid and not C_FriendList.IsIgnoredByGuid(self.order.crafterGuid);
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = IGNORE;
+			if canIgnore then
+				info.func = function()
+					local referenceKey = self;
+					if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+						local customData = 
+						{
+							text = CRAFTING_ORDERS_IGNORE_CONFIRMATION,
+							text_arg1 = self.order.crafterName,
+							callback = function()
+								C_FriendList.AddIgnore(self.order.crafterName);
+							end,
+							acceptText = YES,
+							cancelText = NO,
+							referenceKey = referenceKey,
+						};
+
+						StaticPopup_ShowCustomGenericConfirmation(customData);
+					end
+				end
+			else
+				info.disabled = true;
+				if self.order.crafterGuid then
+					info.tooltipWhileDisabled = true;
+					info.tooltipOnButton = true;
+					info.tooltipTitle = "";
+					info.tooltipText = PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
+				end
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+
+		-- Add whisper option
+		do
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = WHISPER_MESSAGE;
+
+			local whisperStatus = self:GetWhisperCrafterStatus();
+
+			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper then
+				info.func = function()
+					ChatFrame_SendTell(self.order.crafterName);
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				if whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
+					info.tooltipText = PROF_ORDER_CANT_WHISPER_OFFLINE;
+				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction then
+					info.tooltipText = PROF_ORDER_CANT_WHISPER_WRONG_FACTION;
+				end
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+	end, "MENU");
 end
 
 function ProfessionsCustomerOrderFormMixin:InitCurrentListings()
@@ -391,6 +469,12 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 		local recipeID, tracked = ...;
 		if recipeID == self.order.spellID then
 			self.TrackRecipeCheckBox.Checkbox:SetChecked(tracked);
+		end
+	elseif event == "CAN_LOCAL_WHISPER_TARGET_RESPONSE" then
+		local whisperTarget, status = ...;
+		
+		if whisperTarget == self.order.crafterGuid then
+			self:SetWhisperCrafterStatus(status);
 		end
 	end
 end
@@ -608,10 +692,6 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 	local optionalReagentHelptipShown = GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS_CO_OPTIONAL_REAGENTS);
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		local orderSource = reagentSlotSchematic.orderSource;
-		if orderSource == Enum.CraftingOrderReagentSource.Any and self.order.orderType == Enum.CraftingOrderType.Public then
-			-- For public orders, only the customer can provide "Any" sourced reagents
-			orderSource = Enum.CraftingOrderReagentSource.Customer;
-		end
 
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType ~= Enum.CraftingReagentType.Finishing then
@@ -812,9 +892,9 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									self:UpdateListOrderButton();
 								end
 
-								flyout.GetElementsImplementation = function(self, filterOwned)
+								flyout.GetElementsImplementation = function(self, filterAvailable)
 									local itemIDs = Professions.ExtractItemIDsFromCraftingReagents(reagentSlotSchematic.reagents);
-									if filterOwned then
+									if filterAvailable then
 										itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
 									end
 									local items = ItemUtil.TransformItemIDsToItems(itemIDs);
@@ -851,9 +931,10 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 		end
 	end
 
+	local forCraftingOrders = true;
 	Professions.LayoutReagentSlots(
 		reagentTypes[Enum.CraftingReagentType.Basic], self.ReagentContainer.Reagents,
-		reagentTypes[Enum.CraftingReagentType.Optional], self.ReagentContainer.OptionalReagents);
+		reagentTypes[Enum.CraftingReagentType.Optional], self.ReagentContainer.OptionalReagents, nil, forCraftingOrders);
 
 	self:UpdateListOrderButton();
 end
@@ -1149,16 +1230,18 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 
 		local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 		local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
-		local fmt, time = SecondsToTimeAbbrev(seconds);
-		local timeRemainingText = fmt:format(time);
+		local timeRemainingText = Professions.OrderTimeLeftFormatter:Format(seconds);
 		if self.order.orderState ~= Enum.CraftingOrderState.Created then
 			timeRemainingText = CRAFTING_ORDER_TIME_PENDING_FMT:format(timeRemainingText);
 		end
 		self.PaymentContainer.TimeRemainingDisplay.Text:SetText(timeRemainingText);
 
+		self.OrderRecipientDisplay.SocialDropdownButton:SetShown(order.crafterName ~= nil);
 		local crafterText;
 		if order.crafterName then
 			crafterText = order.crafterName;
+			self:SetWhisperCrafterStatus(Enum.ChatWhisperTargetStatus.Offline);
+			C_ChatInfo.RequestCanLocalWhisperTarget(order.crafterGuid);
 		elseif self.order.orderState == Enum.CraftingOrderState.Created then
 			crafterText = CRAFTING_ORDER_NOT_YET_CLAIMED;
 		else
@@ -1474,4 +1557,12 @@ function ProfessionsCustomerOrderFormMixin:RequestMoreOrders()
 	request.offset = self.numOrders;
 	local requestCallback = C_FunctionContainers.CreateCallback(function(...) self:OrderRequestCallback(...); end);
 	self:SendOrderRequest(request, requestCallback);
+end
+
+function ProfessionsCustomerOrderFormMixin:GetWhisperCrafterStatus()
+	return self.whisperCrafterStatus;
+end
+
+function ProfessionsCustomerOrderFormMixin:SetWhisperCrafterStatus(status)
+	self.whisperCrafterStatus = status;
 end

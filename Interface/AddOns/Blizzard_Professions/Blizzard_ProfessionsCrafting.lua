@@ -227,7 +227,6 @@ function ProfessionsCraftingPageMixin:OnHide()
 		HelpPlate_Hide(false);
 	end
 
-	self:Reset();
 	self:SetOverrideCastBarActive(false);
 	HelpTip:HideAllSystem(helpTipSystem);
 
@@ -245,7 +244,7 @@ end
 
 function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
 	local compact = C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging();
-	return compact and 811 or 1112;
+	return compact and 786 or 942;
 end
 
 function ProfessionsCraftingPageMixin:OnReagentClicked(reagentName)
@@ -714,7 +713,7 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
 	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
-	local schematicWidth = useCondensedPanel and 500 or 799;
+	local schematicWidth = useCondensedPanel and 500 or 655;
 	self.SchematicForm:SetWidth(schematicWidth);
 	
 	if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then
@@ -879,21 +878,25 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		ProfessionsCraftingPage_HelpPlate[i] = nil;
 	end
 
-	table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 297, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
+	table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 271, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
 
 	if self.SchematicForm.Reagents:IsShown() then
-		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 30;
+		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 24;
 		local reagentsLeftPoint = self.SchematicForm.Reagents:GetLeft() - self:GetLeft() - 20;
 		local basicReagentsBoxLeft = reagentsLeftPoint;
 		local basicReagentsBoxTop = reagentsTopPoint;
-		local reagentsBoxWidth = 225;
-		local reagentsBoxHeight = 360;
+		local reagentsBoxWidth = 319;
+		local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
+		local slotCount = slots and #slots or 0;
+		local slotSpacing = (math.max(0, slotCount - 1) * -3);
+		local slotHeight = (50 * math.min(4, slotCount));
+		local reagentsBoxHeight = 32 + slotHeight + slotSpacing;
 		local reagentsButtonXOfs = 150;
 		local reagentsButtonYOfs = -5;
 
 		local basicReagentsSection =
 		{
-			ButtonPos = { x = basicReagentsBoxLeft + reagentsButtonXOfs, y = basicReagentsBoxTop + reagentsButtonYOfs },
+			ButtonPos = { x = basicReagentsBoxLeft + reagentsBoxWidth - 25, y = basicReagentsBoxTop + reagentsButtonYOfs },
 			HighLightBox = { x = basicReagentsBoxLeft, y = basicReagentsBoxTop, width = reagentsBoxWidth, height = reagentsBoxHeight },
 			ToolTipDir = "UP",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_BASIC_REAGENTS,
@@ -902,12 +905,17 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 
 		if self.SchematicForm.OptionalReagents:IsShown() then
 			local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-			local padding = 5;
-			local optioanlReagentsWidth = 240;
+			local y = basicReagentsBoxTop - reagentsBoxHeight - 5;
+			local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			local slotCount = slots and #slots or 0;
+			local slotSpacing = (math.max(0, slotCount - 1) * -5);
+			local slotWidth = (50 * math.max(3, slotCount));
+			local width = 25 + slotWidth + slotSpacing;
+
 			local optionalReagentsSection =
 			{
-				ButtonPos = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding + reagentsButtonXOfs, y = basicReagentsBoxTop + reagentsButtonYOfs },
-				HighLightBox = { x = basicReagentsBoxLeft + reagentsBoxWidth + padding, y = basicReagentsBoxTop, width = optioanlReagentsWidth, height = reagentsBoxHeight },
+				ButtonPos = { x = basicReagentsBoxLeft + width - 25, y = y - 15 },
+				HighLightBox = { x = basicReagentsBoxLeft, y = basicReagentsBoxTop - reagentsBoxHeight - 3, width = width, height = 85 },
 				ToolTipDir = "UP",
 				ToolTipText = PROFESSIONS_CRAFTING_HELP_OPTIONAL_REAGENTS,
 			};
@@ -916,7 +924,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 
 		if self.SchematicForm.AllocateBestQualityCheckBox:IsShown() then
 			local width = 210;
-			local y = basicReagentsBoxTop - reagentsBoxHeight - 5;
+			local y = -545;
 			local bestQualityCheckboxSection =
 			{
 				ButtonPos = { x = basicReagentsBoxLeft + width - 25, y = y },
@@ -934,26 +942,26 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 	local finishingReagents = self.SchematicForm.Details.FinishingReagentSlotContainer;
 	if detailsShown and qualityMeter:IsShown() then
 		local qualityMeterTopPoint = qualityMeter:GetTop() - self:GetTop() + 14;
-		local qualityMeterLeftPoint = qualityMeter:GetLeft() - self:GetLeft() - 5;
-		local qualityMeterBoxWidth = 250;
+		local qualityMeterLeftPoint = qualityMeter:GetLeft() - self:GetLeft() - 7;
+		local qualityMeterBoxWidth = 251;
 		local qualityMeterSection =
 		{
 			ButtonPos = { x = qualityMeterLeftPoint - 22, y = qualityMeterTopPoint - 5 },
-			HighLightBox = { x = qualityMeterLeftPoint, y = qualityMeterTopPoint, width = qualityMeterBoxWidth, height = 60 },
+			HighLightBox = { x = qualityMeterLeftPoint, y = qualityMeterTopPoint, width = qualityMeterBoxWidth, height = 54 },
 			ToolTipDir = "DOWN",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_BAR,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, qualityMeterSection);
 	end
 	if detailsShown then
-		local statsTopPoint = details:GetTop() - self:GetTop() + 4;
+		local statsTopPoint = details:GetTop() - self:GetTop() + 6;
 		local statsLeftPoint = details:GetLeft() - self:GetLeft();
-		local statsBoxWidth = 250;
+		local statsBoxWidth = 251;
 		local statsBoxHeight;
 		if qualityMeter:IsShown() then
-			statsBoxHeight = details:GetTop() - qualityMeter:GetTop() - 23;
+			statsBoxHeight = details:GetTop() - qualityMeter:GetTop() - 11;
 		elseif finishingReagents:IsShown() then
-			statsBoxHeight = details:GetTop() - finishingReagents:GetTop() - 10;
+			statsBoxHeight = details:GetTop() - finishingReagents:GetTop() - 2;
 		else
 			statsBoxHeight = details:GetHeight() - 40;
 		end
@@ -985,7 +993,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		local gearSection =
 		{
 			ButtonPos = { x = 894, y = -3 },
-			HighLightBox = { x = 915, y = 1, width = 175, height = 56 },
+			HighLightBox = { x = 758, y = 1, width = 175, height = 56 },
 			ToolTipDir = "DOWN",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_GEAR,
 		};

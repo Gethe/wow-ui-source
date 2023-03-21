@@ -17,7 +17,7 @@ local VoidStorageInfo =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{

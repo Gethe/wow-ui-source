@@ -643,18 +643,32 @@ function EntitlementDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID
 end
 
 -- [[ RafRewardDeliveredAlertFrame ]] --
-function RafRewardDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast)
+function RafRewardDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast, rafVersion)
 	EntitlementDeliveredAlertFrame_SetUp(frame, type, icon, name, payloadID, showFancyToast);
 
+	local useLegacyArt = RAFUtil.DoesRAFVersionUseLegacyArt(rafVersion);
 	if showFancyToast then
+		frame.FancyBackground:SetAtlas(useLegacyArt and frame.legacyFancyToastAtlas or frame.fancyToastAtlas, TextureKitConstants.UseAtlasSize);
 		frame.StandardBackground:SetShown(false);
 		frame.FancyBackground:SetShown(true);
 		frame.Icon:SetPoint("LEFT", frame, "LEFT", 34, -5);
 	else
+		frame.StandardBackground:SetAtlas(useLegacyArt and frame.legacyStandardToastAtlas or frame.standardToastAtlas, TextureKitConstants.UseAtlasSize);
 		frame.StandardBackground:SetShown(true);
 		frame.FancyBackground:SetShown(false);
 		frame.Icon:SetPoint("LEFT", frame, "LEFT", 35, -3);
 	end
+
+	if not useLegacyArt then
+		local textureKitRegionFormatStrings = {
+			Watermark = "recruitafriend_%s_watermark_small"
+		};
+		SetupTextureKitOnRegions(RAFUtil.GetTextureKitForRAFVersion(rafVersion), frame, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+		local xOffset = showFancyToast and -38 or -36;
+		local yOffset = showFancyToast and -13 or -10;
+		frame.Watermark:SetPoint("RIGHT", frame, "RIGHT", xOffset, yOffset);
+	end
+	frame.Watermark:SetShown(not useLegacyArt);
 
 	if type == Enum.WoWEntitlementType.GameTime then
 		frame.Title:SetTextColor(HEIRLOOM_BLUE_COLOR:GetRGBA());
@@ -669,9 +683,11 @@ function EntitlementDelivered_OnClick(self, button, down)
 	end
 
 	if (self.type == Enum.WoWEntitlementType.Item) then
-		local slot = SearchBagsForItem(self.payloadID);
-		if (slot >= 0) then
-			OpenBag(slot);
+		if self.payloadID then
+			local slot = SearchBagsForItem(self.payloadID);
+			if (slot >= 0) then
+				OpenBag(slot);
+			end
 		end
 	elseif (self.type == Enum.WoWEntitlementType.Mount) then
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
@@ -715,7 +731,7 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 		frame.EncounterIcon:SetShown(false);
 	end
 
-	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0) then
+	if (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower) then
 		frame.EncounterIcon:SetShown(true);
 		frame.MissionType:SetShown(false);
 
@@ -730,10 +746,10 @@ function GarrisonMissionAlertFrame_SetUp(frame, missionInfo)
 		end
 
 		frame.EncounterIcon:SetPoint("TOPLEFT", frame, "TOPLEFT", 24, -19);
-	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower) then
 		frame.MissionType:SetSize(50, 50);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 21, -14);
-	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0) then
+	elseif (missionInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower) then
 		frame.MissionType:SetSize(64, 64);
 		frame.MissionType:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -8);
 	end

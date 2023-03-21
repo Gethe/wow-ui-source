@@ -7,12 +7,12 @@ local QuestOffer =
 	Functions =
 	{
 		{
-			Name = "GetHideRequiredItemsOnTurnIn",
+			Name = "GetHideRequiredItems",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "hideRequiredItemsOnTurnIn", Type = "bool", Nilable = false },
+				{ Name = "hideRequiredItems", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -34,8 +34,8 @@ local QuestOffer =
 			LiteralName = "QUEST_ACCEPT_CONFIRM",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "questTitle", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "questTitle", Type = "cstring", Nilable = false },
 			},
 		},
 		{

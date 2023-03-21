@@ -122,7 +122,18 @@ local function Register()
 
 	--Dragonriding High Speed Motion Sickness Option
 	do 
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "DisableAdvancedFlyingVelocityVFX", MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
+		local function GetValue()
+			return not GetCVarBool("DisableAdvancedFlyingVelocityVFX");
+		end
+		
+		local function SetValue(value)
+			SetCVar("DisableAdvancedFlyingVelocityVFX", not value);
+		end
+		
+		local defaultValue = true;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_ADV_FLYING_VEL_VFX", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, defaultValue, GetValue, SetValue);
+		local initializer = Settings.CreateCheckBox(category, setting, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
 		initializer:AddSearchTags(MOTION_SICKNESS_DROPDOWN);
 	end
 

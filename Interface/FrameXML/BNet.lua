@@ -256,9 +256,13 @@ function BNToastMixin:ShowToast()
 			return;
 		end
 
-		local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedAtlas(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, 14, 14, 0, -1);
-		middleLine:SetFormattedText(characterName);
-		middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+		C_Texture.GetTitleIconTexture(accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+			if success then
+				local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, texture, 32, 32, 10);
+				middleLine:SetFormattedText(characterName);
+				middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
+			end
+		end);
 		middleLine:Show();
 
 		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
@@ -415,5 +419,9 @@ end
 
 function BNet_GetValidatedCharacterNameWithClientEmbeddedAtlas(characterName, battleTag, client, texWidth, texHeight, texXOffset, texYOffset)
 	return BNet_GetClientEmbeddedAtlas(client, texWidth, texHeight, texXOffset, texYOffset)..BNet_GetValidatedCharacterName(characterName, battleTag, client);
+end
+
+function BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, battleTag, texture, fileWidth, fileHeight, texWidth, texHeight, texXOffset, texYOffset)
+	return BNet_GetClientEmbeddedTexture(texture, fileWidth, fileHeight, texWidth, texHeight, texXOffset, texYOffset).." "..BNet_GetValidatedCharacterName(characterName, battleTag, client);
 end
 

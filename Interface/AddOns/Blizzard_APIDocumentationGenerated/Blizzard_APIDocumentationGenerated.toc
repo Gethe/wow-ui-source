@@ -1,6 +1,7 @@
 ## Title: Blizzard API Documentation Generated
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
+## AllowLoad: Both
 ## Dependencies: Blizzard_APIDocumentation
 
 # Start documentation files here
@@ -33,6 +34,7 @@ CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
 ConsoleDocumentation.lua
+ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
 CooldownFrameAPIDocumentation.lua
@@ -134,7 +136,6 @@ SimpleStatusBarAPIDocumentation.lua
 SimpleTextureAPIDocumentation.lua
 SimpleTextureBaseAPIDocumentation.lua
 SkillInfoDocumentation.lua
-SocialInfoDocumentation.lua
 SocialQueueDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
@@ -242,6 +243,7 @@ WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
 ZoneAbilityDocumentation.lua
 PerksProgramDocumentation.lua
+AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
 AuctionHouseEnumsDocumentation.lua
@@ -261,6 +263,8 @@ CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
+GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
+GARRISON_TYPEConstantsDocumentation.lua
 GamePadConstDocumentation.lua
 GarrisonConstantsDocumentation.lua
 GossipConstantsDocumentation.lua

@@ -64,10 +64,10 @@ end
 QuestUtil = {};
 
 function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskillLineID, questID)
-	local iconAtlas;
+	local iconAtlas, width, height;
 
 	if inProgress then
-		return "worldquest-questmarker-questionmark", 10, 15;
+		iconAtlas, width, height = "worldquest-questmarker-questionmark", 10, 15;
 	elseif worldQuestType == Enum.QuestTagType.PvP then
 		iconAtlas =  "worldquest-icon-pvp-ffa";
 	elseif worldQuestType == Enum.QuestTagType.PetBattle then
@@ -92,7 +92,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	elseif worldQuestType == Enum.QuestTagType.Threat then
 		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
 	elseif worldQuestType == Enum.QuestTagType.DragonRiderRacing then
-		iconAtlas = "worldquest-icon-race";
+		iconAtlas = "worldquest-icon-race", 16, 16;
 	else
 		if questID then
 			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
@@ -102,12 +102,14 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 		end
 	end
 
-	if not iconAtlas then
-		return "worldquest-questmarker-questbang", 6, 15;
+	if iconAtlas then
+		local info = C_Texture.GetAtlasInfo(iconAtlas);
+		if info then
+			return iconAtlas, width or info.width, height or info.height;
+		end
 	end
 
-	local info = C_Texture.GetAtlasInfo(iconAtlas);
-	return iconAtlas, info and info.width, info and info.height;
+	return "worldquest-questmarker-questbang", 6, 15;
 end
 
 function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)

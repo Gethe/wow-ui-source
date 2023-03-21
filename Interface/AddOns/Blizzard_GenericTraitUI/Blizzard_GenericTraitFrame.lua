@@ -202,17 +202,65 @@ function GenericTraitFrameMixin:GetConfigID()
 	return self.configurationInfo and self.configurationInfo.ID or nil;
 end
 
+function GenericTraitFrameMixin:CheckAndReportCommitOperation()
+	if not C_Traits.IsReadyForCommit() then
+		self:ReportConfigCommitError();
+		return false;
+	end
+
+	return TalentFrameBaseMixin.CheckAndReportCommitOperation(self);
+end
+
 function GenericTraitFrameMixin:AttemptConfigOperation(...)
 	if TalentFrameBaseMixin.AttemptConfigOperation(self, ...) then
 		if not self:CommitConfig() then
 			UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+			self:MarkTreeDirty();
+			return false;
 		end
+
+		return true;
+	else
+		self:MarkTreeDirty();
 	end
+
+	return false;
 end
 
 function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
-	TalentFrameBaseMixin.SetSelection(self, nodeID, entryID );
-	self:ShowPurchaseVisuals(nodeID);
+	if self:ShouldShowConfirmation() then
+		local baseButton = self:GetTalentButtonByNodeID(nodeID);
+		if baseButton and baseButton:IsMaxed() then
+			self:SetSelectionCallback(nodeID, entryID);
+			return;
+		end
+
+		local referenceKey = self;
+		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			StaticPopup_Hide("GENERIC_CONFIRMATION");
+		end
+
+		local cost = self:GetNodeCost(nodeID);
+		local costStrings = self:GetCostStrings(cost);
+		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+
+		local setSelectionCallback = GenerateClosure(self.SetSelectionCallback, self, nodeID, entryID);
+		local customData = {
+			text = costString,
+			callback = setSelectionCallback,
+			referenceKey = self,
+		};
+
+		StaticPopup_ShowCustomGenericConfirmation(customData);
+	else
+		self:SetSelectionCallback(nodeID, entryID);
+	end
+end
+
+function GenericTraitFrameMixin:SetSelectionCallback(nodeID, entryID)
+	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) and (entryID ~= nil) then
+		self:ShowPurchaseVisuals(nodeID);
+	end
 end
 
 function GenericTraitFrameMixin:GetConfigCommitErrorString()
@@ -238,45 +286,46 @@ function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
 end
 
 function GenericTraitFrameMixin:PurchaseRank(nodeID)
-	-- Overrides TalentFrameBaseMixin.
+	if self:ShouldShowConfirmation() then
+		local referenceKey = self;
+		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			StaticPopup_Hide("GENERIC_CONFIRMATION");
+		end
 
-	local referenceKey = self;
-	if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-		StaticPopup_Hide("GENERIC_CONFIRMATION");
+		local cost = self:GetNodeCost(nodeID);
+		local costStrings = self:GetCostStrings(cost);
+		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+
+
+		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
+		local customData = {
+			text = costString,
+			callback = purchaseRankCallback,
+			referenceKey = self,
+		};
+
+		StaticPopup_ShowCustomGenericConfirmation(customData);
+	else
+		self:PurchaseRankCallback(nodeID);
 	end
-
-	local cost = self:GetNodeCost(nodeID);
-	local costStrings = self:GetCostStrings(cost);
-	local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
-
-
-	local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
-	local customData = {
-		text = costString,
-		callback = purchaseRankCallback,
-		referenceKey = self,
-	};
-
-	StaticPopup_ShowCustomGenericConfirmation(customData);
 end
 
-function GenericTraitFrameMixin:PurchaseRankCallback( nodeID )
-	TalentFrameBaseMixin.PurchaseRank(self, nodeID);
-	self:ShowPurchaseVisuals(nodeID);
+function GenericTraitFrameMixin:PurchaseRankCallback(nodeID)
+	if TalentFrameBaseMixin.PurchaseRank(self, nodeID) then
+		self:ShowPurchaseVisuals(nodeID);
+	end
 end
 
 
 function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
-	
 	local treeID = self:GetTalentTreeID();
-	local nodeIDs = C_Traits.GetTreeNodes(self.talentTreeID);
+	local nodeIDs = C_Traits.GetTreeNodes(treeID);
 
 	local firstButton = self:GetTalentButtonByNodeID(nodeIDs[1]);
-	local tutorialInfo = genericTraitFrameTutorials[self.talentTreeID];
+	local tutorialInfo = genericTraitFrameTutorials[treeID];
 	if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
 			HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
 	end
-	
 end
 
 function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
@@ -292,11 +341,15 @@ function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT);
 end
 
+function GenericTraitFrameMixin:ShouldShowConfirmation()
+	return FlagsUtil.IsSet(C_Traits.GetTraitSystemFlags(self:GetConfigID()), Enum.TraitSystemFlag.ShowSpendConfirmation);
+end
+
 GenericTraitFrameCurrencyFrameMixin = { }; 
 function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()
 	local configID = self:GetParent():GetConfigID();
 	if configID then
-		self.uiWidgetSetID = C_Traits.GetTraitSystemWidgetSetID(configID); 
+		self.uiWidgetSetID = C_Traits.GetTraitSystemWidgetSetID(configID);
 	else
 		self.uiWidgetSetID = nil;
 	end
