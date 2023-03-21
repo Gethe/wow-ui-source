@@ -1095,7 +1095,80 @@ function DefaultScaleFrameMixin:UpdateScale()
 	ApplyDefaultScale(self, self.minScale, self.maxScale);
 end
 
-SquareIconButtonMixin = {};
+UIButtonMixin = {}
+
+function UIButtonMixin:OnClick(...)
+	PlaySound(self.onClickSoundKit or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	if self.onClickHandler then
+		self.onClickHandler(self, ...);
+	end
+end
+
+function UIButtonMixin:OnEnter()
+	if self.onEnterHandler and self.onEnterHandler(self) then
+		return;
+	end
+
+	local defaultTooltipAnchor = "ANCHOR_RIGHT";
+	if self:IsEnabled() then
+		if self.tooltipTitle or self.tooltipText then
+			local tooltip = GetAppropriateTooltip();
+			tooltip:SetOwner(self, self.tooltipAnchor or defaultTooltipAnchor, self.tooltipOffsetX, self.tooltipOffsetY);
+
+			if self.tooltipTitle then
+				GameTooltip_SetTitle(tooltip, self.tooltipTitle, self.tooltipTitleColor);
+			end
+
+			if self.tooltipText then
+				local wrap = true;
+				GameTooltip_AddColoredLine(tooltip, self.tooltipText, self.tooltipTextColor or NORMAL_FONT_COLOR, wrap);
+			end
+
+			tooltip:Show();
+		end
+	else
+		if self.disabledTooltip then
+			local tooltip = GetAppropriateTooltip();
+			GameTooltip_ShowDisabledTooltip(tooltip, self, self.disabledTooltip, self.disabledTooltipAnchor or defaultTooltipAnchor, self.disabledTooltipOffsetX, self.disabledTooltipOffsetY);
+		end
+	end
+end
+
+function UIButtonMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
+function UIButtonMixin:SetOnClickHandler(onClickHandler, onClickSoundKit)
+	self.onClickHandler = onClickHandler;
+	self.onClickSoundKit = onClickSoundKit;
+end
+
+function UIButtonMixin:SetOnEnterHandler(onEnterHandler)
+	self.onEnterHandler = onEnterHandler;
+end
+
+function UIButtonMixin:SetTooltipInfo(tooltipTitle, tooltipText)
+	self.tooltipTitle = tooltipTitle;
+	self.tooltipText = tooltipText;
+end
+
+function UIButtonMixin:SetTooltipAnchor(tooltipAnchor, tooltipOffsetX, tooltipOffsetY)
+	self.tooltipAnchor = tooltipAnchor;
+	self.tooltipOffsetX = tooltipOffsetX;
+	self.tooltipOffsetY = tooltipOffsetY;
+end
+
+function UIButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor, disabledTooltipOffsetX, disabledTooltipOffsetY)
+	self.disabledTooltip = disabledTooltip;
+	self.disabledTooltipAnchor = disabledTooltipAnchor;
+	self.disabledTooltipOffsetX = disabledTooltipOffsetX;
+	self.disabledTooltipOffsetY = disabledTooltipOffsetY;
+	self:SetMotionScriptsWhileDisabled(disabledTooltip ~= nil);
+end
+
+SquareIconButtonMixin = CreateFromMixins(UIButtonMixin);
 
 function SquareIconButtonMixin:OnLoad()
 	if self.icon then
@@ -1103,6 +1176,9 @@ function SquareIconButtonMixin:OnLoad()
 	elseif self.iconAtlas then
 		self:SetAtlas(self.iconAtlas);
 	end
+	
+	self.tooltipOffsetX = -8;
+	self.tooltipOffsetY = -8;
 end
 
 function SquareIconButtonMixin:SetIcon(icon)
@@ -1111,15 +1187,6 @@ end
 
 function SquareIconButtonMixin:SetAtlas(atlas)
 	self.Icon:SetAtlas(atlas);
-end
-
-function SquareIconButtonMixin:SetOnClickHandler(onClickHandler)
-	self.onClickHandler = onClickHandler;
-end
-
-function SquareIconButtonMixin:SetTooltipInfo(tooltipTitle, tooltipText)
-	self.tooltipTitle = tooltipTitle;
-	self.tooltipText = tooltipText;
 end
 
 function SquareIconButtonMixin:OnMouseDown()
@@ -1131,31 +1198,6 @@ end
 
 function SquareIconButtonMixin:OnMouseUp()
 	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
-end
-
-function SquareIconButtonMixin:OnEnter()
-	if self.tooltipTitle then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
-		GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
-
-		if self.tooltipText then
-			local wrap = true;
-			GameTooltip_AddNormalLine(GameTooltip, self.tooltipText, wrap);
-		end
-
-		GameTooltip:Show();
-	end
-end
-
-function SquareIconButtonMixin:OnLeave()
-	GameTooltip_Hide();
-end
-
-function SquareIconButtonMixin:OnClick(...)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if self.onClickHandler then
-		self.onClickHandler(self, ...);
-	end
 end
 
 function SquareIconButtonMixin:SetEnabledState(enabled)

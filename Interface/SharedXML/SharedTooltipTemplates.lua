@@ -95,6 +95,15 @@ function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, overrideColor or HIGHLIGHT_FONT_COLOR, wrap)
 end
 
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
+	tooltip:SetOwner(owner, tooltipAnchor);
+
+	local wrap = true;
+	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
+
+	tooltip:Show();
+end
+
 function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
 	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
 end

@@ -45,6 +45,12 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture atlas="UI-CharacterCreate-PadLock" setAllPoints="true"/>
+				<Texture parentKey="TooltipAnchor">
+					<Size x="20" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<HighlightTexture atlas="UI-CharacterCreate-PadLock" alpha="0.1" alphaMode="ADD" setAllPoints="true"/>
@@ -1114,6 +1120,8 @@
 							<OnUpdate>
 								GlueParent_DeathKnightButtonSwap(self);
 							</OnUpdate>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</Button>
 					<Frame name="CharacterSelectCharacterFrame" inherits="TooltipBackdropTemplate">
@@ -1261,7 +1269,7 @@
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" motionScriptsWhileDisabled="true" text="CREATE_NEW_CHARACTER">
+							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="-18" y="15"/>
@@ -1270,15 +1278,6 @@
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
-									<OnEnter>
-										if (self.tooltip) then
-											GlueTooltip:SetOwner(self);
-											GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-										end
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
 									<OnMouseDown>
 										self.down = true;
 									</OnMouseDown>
@@ -1291,6 +1290,8 @@
 									<OnClick>
 										CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, true);
 									</OnClick>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
 									<OnEnable/>
@@ -1315,7 +1316,7 @@
 									</OnUpdate>
 								</Scripts>
 							</Button>
-							<Button name="CharSelectUndeleteCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
+							<Button name="CharSelectUndeleteCharacterButton" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true">
 								<Size x="52" y="45"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CharSelectCreateCharacterButton" relativePoint="RIGHT" x="-10" y="0"/>
@@ -1330,13 +1331,6 @@
 									</Layer>
 								</Layers>
 								<Scripts>
-									<OnEnter>
-										GlueTooltip:SetOwner(self);
-										GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-									</OnEnter>
-									<OnLeave>
-										GlueTooltip:Hide();
-									</OnLeave>
 									<OnClick>
 										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 										CharacterSelect_StartCharacterUndelete();
@@ -1350,6 +1344,8 @@
 									<OnUpdate>
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
 									<OnEnable/>
@@ -1968,24 +1964,8 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-570"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad inherit="prepend">
-								ServerAlert_OnLoad(self);
-								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
-								if ( not C_Login.IsLauncherLogin() ) then
-									ServerAlert_Disable(self);
-								end
-							</OnLoad>
-							<OnEvent>
-								if ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
-									if ( C_Login.IsLauncherLogin() ) then
-										ServerAlert_Enable(self);
-									else
-										ServerAlert_Disable(self);
-									end
-								else
-									ServerAlert_OnEvent(self, event, ...);
-								end
-							</OnEvent>
+							<OnLoad inherit="prepend" function="CharacterSelectServerAlert_OnLoad"/>
+							<OnEvent function="CharacterSelectServerAlert_OnEvent"/>
 							<OnShow>
 								AccountUpgradePanel_UpdateExpandState();
 							</OnShow>
@@ -2042,6 +2022,7 @@
 				</KeyValues>
 				<Size x="255" y="60"/>
 				<Anchors>
+					<!-- Anchor is also conditionally updated in lua -->
 					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<Layers>

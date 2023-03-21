@@ -155,6 +155,11 @@ function GlueParent_UpdateDialogs()
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
 
+		if (ACCOUNT_SAVE_KICK_ERROR_CODE and AccountSaveFrame and errorCategory == "WOW" and errorID == ACCOUNT_SAVE_KICK_ERROR_CODE) then
+			-- If client is kicked due to account save success, allow the Account Save Frame to handle messaging if it's loaded
+			return;
+		end
+
 		local isHTML = false;
 		local hasURL = false;
 		local useGenericURL = false;

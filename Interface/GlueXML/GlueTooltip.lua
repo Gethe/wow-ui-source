@@ -3,6 +3,8 @@ GLUETOOLTIP_HPADDING = 20;
 
 function GlueTooltip_OnLoad(self)
 	self.Clear = GlueTooltip_Clear;
+	-- For compatibility with shared code
+	self.ClearLines = GlueTooltip_Clear;
 	self.SetFont = GlueTooltip_SetFont;
 	self.AddLine = GlueTooltip_AddLine;
 	self.SetText = GlueTooltip_SetText;

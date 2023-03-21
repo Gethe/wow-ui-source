@@ -58,6 +58,7 @@ FontStyles.xml
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\CustomBindingButtonMixin.lua
 ..\SharedXML\PixelUtil.lua
+..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
 MixinUtil.lua
 ..\SharedXML\LinkUtil.lua

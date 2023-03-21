@@ -37,6 +37,7 @@ GlueCheck.lua
 ..\SharedXML\LinkUtil.lua
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
+..\SharedXML\StringUtil.lua
 ..\SharedXML\Dump.lua
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
