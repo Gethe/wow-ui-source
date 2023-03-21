@@ -348,7 +348,9 @@ function RecruitAFriendFrameMixin:UpdateRAFInfo(rafInfo)
 		end
 
 		self.claimInProgress = rafInfo.claimInProgress;
-		self:UpdateNextReward(latestRAFVersionInfo.nextReward);
+		if latestRAFVersionInfo.nextReward then
+			self:UpdateNextReward(latestRAFVersionInfo.nextReward);
+		end
 
 		RecruitAFriendRewardsFrame:SetUpTabs(rafInfo);
 		RecruitAFriendRewardsFrame:Refresh();
@@ -439,7 +441,7 @@ function RecruitAFriendFrameMixin:HasActivityRewardToClaim()
 end
 
 function RecruitAFriendFrameMixin:ShouldShowRewardTutorial()
-	local hasRafRewardToClaim = self.rafInfo and self.rafInfo.nextReward and self.rafInfo.nextReward.canClaim;
+	local hasRafRewardToClaim = self.rafInfo and (#self.rafInfo.versions > 0) and self:AreAnyRewardsAffordable();
 	return not self:IsShown() and not self.shownRewardTutorial and (hasRafRewardToClaim or self:HasActivityRewardToClaim());
 end
 
@@ -1055,6 +1057,10 @@ end
 
 function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 	self.rewardPool:ReleaseAll();
+
+	if not rewards then
+		return;
+	end
 
 	local lastRewardFrame;
 	for index, rewardInfo in ipairs(rewards) do	
