@@ -111,6 +111,7 @@ KioskModeSplash.xml
 CharacterServicesShared.lua
 CharacterServices.xml
 CharacterServicesPaidFactionChange.xml
+CharacterServicesPaidRaceChange.xml
 CharacterServicesCharacterSelector.xml
 ..\..\Interface_Wrath\GlueXML\CharacterCreate.xml
 PromotionFrame.xml

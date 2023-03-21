@@ -109,6 +109,7 @@ AccountReactivate.xml
 KioskModeSplash.xml
 CharacterServicesShared.lua
 CharacterServicesPaidFactionChange.xml
+CharacterServicesPaidRaceChange.xml
 CharacterServicesCharacterSelector.xml
 CharacterServices.xml
 ..\..\Interface_Vanilla\GlueXML\CharacterCreate.xml

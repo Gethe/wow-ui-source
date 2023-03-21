@@ -48,6 +48,16 @@ function CharacterCreateEnumerateRaces()
 			if (currentFaction ~= raceData.factionInternalName and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
 				disable = false;
 			end
+		elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
+			local _, currentFaction = C_PaidServices.GetCurrentFaction();
+			if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
+				currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+			end
+			local currentRace = C_PaidServices.GetCurrentRaceID();
+			local currentClass = C_PaidServices.GetCurrentClassID();
+			if (currentFaction == raceData.factionInternalName and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
+				disable = false;
+			end
 		elseif isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictRace(CharacterUpgradeFlow.data.boostType, raceData.raceID) then
 			disable = true;
 			button.tooltip = CHAR_CREATE_NO_BOOST;
@@ -296,9 +306,9 @@ function CharacterCreateMixin:ClearVASInfo()
 end
 
 function CharacterCreateMixin:BeginVASTransaction()
-	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		local noIsValidateOnly = false;
-		C_CharacterServices.AssignPFCDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+		C_CharacterServices.AssignRaceOrFactionChangeDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly, self.vasType);
 	end
 end
 
@@ -400,7 +410,7 @@ function CharacterCreate_Okay()
 
 	if CharacterCreateFrame.paidServiceType then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
-	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if( Kiosk.IsEnabled() ) then

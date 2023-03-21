@@ -56,7 +56,7 @@
 		</Scripts>
 	</Button>
 	<!-- CharacterButton scripts may occassionally be disabled for Character Services purposes. -->
-	<Button name="CharSelectCharacterButtonTemplate" virtual="true" hidden="true">
+	<Button name="CharSelectCharacterButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="256" y="70"/>
 		<HitRectInsets>
 			<AbsInset left="0" right="0" top="0" bottom="15"/>
