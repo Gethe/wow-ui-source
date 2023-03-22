@@ -343,6 +343,7 @@ function FriendsFrame_OnShow()
 	end
 
 	FriendsFrame_Update();
+	FriendsTabHeaderTab1:OnClick();
 end
 
 function FriendsFrame_Update()
@@ -613,7 +614,7 @@ function FriendsList_Update(forceUpdate)
 		end);
 		if elementData then
 			FriendsFrame_SelectFriend(elementData.buttonType, elementData.id);
-		else
+		elseif FriendsFrameSendMessageButton ~= nil then
 			FriendsFrameSendMessageButton:Disable();
 		end
 	end
@@ -927,8 +928,9 @@ function FriendsFrame_SelectFriend(friendType, id)
 
 	UpdateButtonSelection(oldFriendType, oldFriendId, false);
 	UpdateButtonSelection(friendType, id, true);
-
-	FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, id));
+	if FriendsFrameSendMessageButton ~= nil then 
+		FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, id));
+	end
 end
 
 function FriendsFrame_SelectSquelched(squelchType, index)
@@ -1293,7 +1295,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 		return true;
 	else
 		-- Otherwise show more detailed info about them
-		return false;
+		return FORCE_RICH_PRESENCE;
 	end;
 end
 

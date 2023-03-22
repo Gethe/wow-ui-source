@@ -29,12 +29,12 @@ function FlightMap_FlightPathDataProviderMixin:RefreshAllData(fromOnShow)
 	if not self.startingMapID then
 		self.startingMapID = mapID;
 	end
-	local isMapLayerTransition = self.startingMapID ~= mapID;
+	self.isMapLayerTransition = self.startingMapID ~= mapID;
 
 	local taxiNodes = C_TaxiMap.GetAllTaxiNodes(mapID);
 	for i, taxiNodeData in ipairs(taxiNodes) do
 		-- Only show map transition points when on a different map from the one you started viewing.
-		if (isMapLayerTransition or not taxiNodeData.isMapLayerTransition) then
+		if (self.isMapLayerTransition or not taxiNodeData.isMapLayerTransition) then
 			self:AddFlightNode(taxiNodeData);
 
 			if taxiNodeData.textureKit == "FlightMaster_Bastion" then
@@ -52,6 +52,7 @@ end
 
 function FlightMap_FlightPathDataProviderMixin:OnHide()
 	self.startingMapID = nil;
+	self.isMapLayerTransition = nil;
 end
 
 local function OnRelease(framePool, frame)
@@ -77,22 +78,25 @@ function FlightMap_FlightPathDataProviderMixin:HighlightRouteToPin(pin)
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
 
 		-- Exit-only flight points don't show a preview.
-		if startPin == nil then
+		-- Map transition routes should skip over original map nodes, since they cannot be shown on current map.
+		if startPin == nil and not self.isMapLayerTransition then
 			return;
 		end
 
-		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
+		if startPin ~= nil then
+			local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
-		local lineContainer = self.highlightLinePool:Acquire();
-		lineContainer.Fill:SetThickness(self.lineThickness);
+			local lineContainer = self.highlightLinePool:Acquire();
+			lineContainer.Fill:SetThickness(self.lineThickness);
 
-		lineContainer.Fill:SetStartPoint("CENTER", startPin);
-		lineContainer.Fill:SetEndPoint("CENTER", destinationPin);
+			lineContainer.Fill:SetStartPoint("CENTER", startPin);
+			lineContainer.Fill:SetEndPoint("CENTER", destinationPin);
 
-		lineContainer:Show();
+			lineContainer:Show();
 
-		startPin:Show();
-		destinationPin:Show();
+			startPin:Show();
+			destinationPin:Show();
+		end
 	end
 end
 
@@ -109,14 +113,17 @@ function FlightMap_FlightPathDataProviderMixin:RemoveRouteToPin(pin)
 		local startPin = self.slotIndexToPin[sourceSlotIndex];
 
 		-- Exit-only flight points don't show a preview.
-		if startPin == nil then
+		-- Map transition routes should skip over original map nodes, since they cannot be shown on current map.
+		if startPin == nil and not self.isMapLayerTransition then
 			return;
 		end
 
-		local destinationPin = self.slotIndexToPin[destinationSlotIndex];
+		if startPin ~= nil then
+			local destinationPin = self.slotIndexToPin[destinationSlotIndex];
 
-		startPin:SetShown(startPin:GetTaxiNodeState() ~= Enum.FlightPathState.Unreachable);
-		destinationPin:SetShown(destinationPin:GetTaxiNodeState() ~= Enum.FlightPathState.Unreachable);
+			startPin:SetShown(startPin:GetTaxiNodeState() ~= Enum.FlightPathState.Unreachable or startPin.taxiNodeData.isMapLayerTransition);
+			destinationPin:SetShown(destinationPin:GetTaxiNodeState() ~= Enum.FlightPathState.Unreachable or destinationPin.taxiNodeData.isMapLayerTransition);
+		end;
 	end
 end
 
@@ -136,7 +143,7 @@ function FlightMap_FlightPathDataProviderMixin:ShowBackgroundRoutesFromCurrent()
 				if not startPin or not destinationPin then
 					return; -- Incorrect flight data, will look broken until the data is adjusted
 				end
-				
+
 				if startPin:ShouldShowOutgoingFlightPathPreviews() and destinationPin:GetTaxiNodeState() == Enum.FlightPathState.Reachable and not startPin.linkedPins[destinationPin] and not destinationPin.linkedPins[startPin] then
 					startPin.linkedPins[destinationPin] = true;
 					destinationPin.linkedPins[startPin] = true;

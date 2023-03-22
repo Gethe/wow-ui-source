@@ -65,7 +65,21 @@ function Professions.IsCraftingMinimized()
 	return isCraftingMinimized;
 end
 
-function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID)
+-- This is wrapped in a function because the implementation backing "required" here is likely to change
+-- after a planned slot description refactor.
+function Professions.IsReagentSlotRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.required;
+end
+
+function Professions.IsReagentSlotBasicRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic and Professions.IsReagentSlotRequired(reagentSlotSchematic);
+end
+
+function Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying and Professions.IsReagentSlotRequired(reagentSlotSchematic);
+end
+
+function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
 	if difficultyText and difficultyText ~= "" then
@@ -85,6 +99,18 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 		local atlasSize = 26;
 		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
 		GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
+	end
+
+	-- The requirement items should already be loaded because the schematic form loaded every item associated with every slot.
+	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(item:GetItemID());
+	for index, requiredItemID in ipairs(requirements) do
+		local requiredItem = Item:CreateFromItemID(requiredItemID);
+		local itemName = requiredItem:GetItemName();
+		if transaction:HasAllocatedItemID(requiredItemID) then
+			GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+		else
+			GameTooltip_AddErrorLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+		end
 	end
 end
 
@@ -152,13 +178,13 @@ function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
 	return items;
 end
 
-function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID)
+function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID, transaction)
 	local item = elementData.item;
 		
 	local colorData = item:GetItemQualityColor();
 	GameTooltip_SetTitle(tooltip, item:GetItemName(), colorData.color);
 	
-	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID);
+	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction);
 
 	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 	if count <= 0 then
@@ -182,23 +208,25 @@ function Professions.EraseRecraftingTransitionData()
 end
 
 function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
+	local locked, lockedReason = false, nil;
 	local slotInfo = reagentSlotSchematic.slotInfo;
-	local locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
-	if not locked then
-		local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
-		while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
-			categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
-		end
+	if slotInfo then
+		locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
+		if not locked then
+			local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
+			while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
+				categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
+			end
 
-		if categoryInfo and categoryInfo.skillLineCurrentLevel then
-			local requiredSkillRank = slotInfo.requiredSkillRank;
-			locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
-			if locked then
-				lockedReason = OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank);
+			if categoryInfo and categoryInfo.skillLineCurrentLevel then
+				local requiredSkillRank = slotInfo.requiredSkillRank;
+				locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
+				if locked then
+					lockedReason = OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank);
+				end
 			end
 		end
 	end
-
 	return locked, lockedReason;
 end
 
@@ -429,25 +457,37 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 	end
 end
 
-function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly, recraftItemGUID, suppressInstruction)
+function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, exchangeOnly, recraftItemGUID, suppressInstruction, transaction)
+	local reagentType = reagentSlotSchematic.reagentType;
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local item = Item:CreateFromItemID(itemID);
 		local colorData = item:GetItemQualityColor();
 		GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color, false);
 	
-		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID);
+		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID, transaction);
 
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			if exchangeOnly then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_EXCHANGE);
 			else
-				local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
-				GameTooltip_AddInstructionLine(GameTooltip, instruction);
+				local instruction;
+				if reagentType == Enum.CraftingReagentType.Finishing then
+					instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				elseif not Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+					instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				end
+
+				if instruction then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddInstructionLine(GameTooltip, instruction);
+				end
 			end
 		end
 	else
+		local slotText = reagentSlotSchematic.slotInfo.slotText;
+		
 		local title;
 		if reagentType == Enum.CraftingReagentType.Finishing then
 			title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
@@ -457,7 +497,15 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 
 		GameTooltip_SetTitle(GameTooltip, title, nil, false);
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			local instruction;
+			if reagentType == Enum.CraftingReagentType.Finishing then
+				instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+				instruction = REQUIRED_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			else
+				instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			end
+
 			GameTooltip_AddInstructionLine(GameTooltip, instruction);
 		end
 	end

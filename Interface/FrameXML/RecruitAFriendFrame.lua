@@ -441,7 +441,7 @@ function RecruitAFriendFrameMixin:HasActivityRewardToClaim()
 end
 
 function RecruitAFriendFrameMixin:ShouldShowRewardTutorial()
-	local hasRafRewardToClaim = self.rafInfo and self.rafInfo.nextReward and self.rafInfo.nextReward.canClaim;
+	local hasRafRewardToClaim = self.rafInfo and (#self.rafInfo.versions > 0) and self:AreAnyRewardsAffordable();
 	return not self:IsShown() and not self.shownRewardTutorial and (hasRafRewardToClaim or self:HasActivityRewardToClaim());
 end
 

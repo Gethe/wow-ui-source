@@ -456,15 +456,36 @@ end
 local SELECTION_PADDING = 2;
 
 function EditModeSystemMixin:GetSelectionOffset(point, forYOffset)
+	local function GetLeftOffset()
+		return select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
+	end
+	local function GetRightOffset()
+		return select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
+	end
+	local function GetTopOffset()
+		return select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
+	end
+	local function GetBottomOffset()
+		return select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
+	end
+
 	local offset;
 	if point == "LEFT" then
-		offset = select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
+		offset = GetLeftOffset();
 	elseif point == "RIGHT" then
-		offset = select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
+		offset = GetRightOffset();
 	elseif point == "TOP" then
-		offset = select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
+		offset = GetTopOffset();
 	elseif point == "BOTTOM" then
-		offset = select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
+		offset = GetBottomOffset();
+	elseif point == "TOPLEFT" then
+		offset = forYOffset and GetTopOffset() or GetLeftOffset();
+	elseif point == "TOPRIGHT" then
+		offset = forYOffset and GetTopOffset() or GetRightOffset();
+	elseif point == "BOTTOMLEFT" then
+		offset = forYOffset and GetBottomOffset() or GetLeftOffset();
+	elseif point == "BOTTOMRIGHT" then
+		offset = forYOffset and GetBottomOffset() or GetRightOffset();
 	else
 		-- Center
 		local selectionCenterX, selectionCenterY = self.Selection:GetCenter();
@@ -504,14 +525,21 @@ function EditModeSystemMixin:GetCombinedCenterOffset(frame)
 end
 
 function EditModeSystemMixin:GetSnapOffsets(frameInfo)
-	local offsetX, offsetY = self:GetCombinedCenterOffset(frameInfo.frame);
-	if frameInfo.isHorizontal then
-		local forYOffsetNo = false;
+	local forYOffsetNo = false;
+	local forYOffsetYes = true;
+	local offsetX, offsetY;
+	if frameInfo.isCornerSnap then
 		offsetX = self:GetCombinedSelectionOffset(frameInfo, forYOffsetNo);
-	else
-		local forYOffsetYes = true;
 		offsetY = self:GetCombinedSelectionOffset(frameInfo, forYOffsetYes);
+	else
+		offsetX, offsetY = self:GetCombinedCenterOffset(frameInfo.frame);
+		if frameInfo.isHorizontal then
+			offsetX = self:GetCombinedSelectionOffset(frameInfo, forYOffsetNo);
+		else
+			offsetY = self:GetCombinedSelectionOffset(frameInfo, forYOffsetYes);
+		end
 	end
+
 	return offsetX, offsetY;
 end
 
@@ -638,6 +666,10 @@ function EditModeSystemMixin:ClearHighlight()
 end
 
 function EditModeSystemMixin:HighlightSystem()
+	if self.isDragging then
+		self:OnDragStop();
+	end
+
 	self:SetMovable(false);
 	self:AnchorSelectionFrame();
 	self.Selection:ShowHighlighted();
@@ -687,12 +719,15 @@ function EditModeSystemMixin:OnDragStart()
 		end
 		self:ClearFrameSnap();
 		self:StartMoving();
+		self.isDragging = true;
 	end
 end
 
 function EditModeSystemMixin:OnDragStop()
 	if self:CanBeMoved() then
 		self:StopMovingOrSizing();
+		self.isDragging = false;
+
 		if EditModeManagerFrame:IsSnapEnabled() then
 			EditModeMagnetismManager:ApplyMagnetism(self);
 		end
@@ -918,14 +953,14 @@ function EditModeActionBarSystemMixin:UseSettingAltName(setting)
 	return false;
 end
 
-local function enterQuickKeybindMode()
+local function EnterQuickKeybindMode()
 	EditModeManagerFrame:ClearSelectedSystem();
 	EditModeManagerFrame:SetEditModeLockState("hideSelections");
 	HideUIPanel(EditModeManagerFrame);
 	QuickKeybindFrame:Show();
 end
 
-local function openActionBarSettings()
+local function OpenActionBarSettings()
 	EditModeManagerFrame:ClearSelectedSystem();
 	EditModeManagerFrame:SetEditModeLockState("hideSelections");
 	HideUIPanel(EditModeManagerFrame);
@@ -938,7 +973,7 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 	local quickKeybindModeButton = extraButtonPool:Acquire();
 	quickKeybindModeButton.layoutIndex = 4;
 	quickKeybindModeButton:SetText(QUICK_KEYBIND_MODE);
-	quickKeybindModeButton:SetOnClickHandler(enterQuickKeybindMode);
+	quickKeybindModeButton:SetOnClickHandler(EnterQuickKeybindMode);
 	quickKeybindModeButton:Show();
 
 	if self.systemIndex ~= Enum.EditModeActionBarSystemIndices.StanceBar
@@ -947,7 +982,7 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 		local actionBarSettingsButton = extraButtonPool:Acquire();
 		actionBarSettingsButton.layoutIndex = 5;
 		actionBarSettingsButton:SetText(HUD_EDIT_MODE_ACTION_BAR_SETTINGS);
-		actionBarSettingsButton:SetOnClickHandler(openActionBarSettings);
+		actionBarSettingsButton:SetOnClickHandler(OpenActionBarSettings);
 		actionBarSettingsButton:Show();
 	end
 
@@ -955,6 +990,28 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 end
 
 EditModeUnitFrameSystemMixin = {};
+
+local function OpenRaidFrameSettings()
+	EditModeManagerFrame:ClearSelectedSystem();
+	EditModeManagerFrame:SetEditModeLockState("hideSelections");
+	HideUIPanel(EditModeManagerFrame);
+	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
+end
+
+function EditModeUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid
+		or (self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames)) then
+		local raidFrameSettingsButton = extraButtonPool:Acquire();
+		raidFrameSettingsButton.layoutIndex = 4;
+		raidFrameSettingsButton:SetText(HUD_EDIT_MODE_RAID_FRAME_SETTINGS);
+		raidFrameSettingsButton:SetOnClickHandler(OpenRaidFrameSettings);
+		raidFrameSettingsButton:Show();
+	end
+
+	return true;
+end
 
 function EditModeUnitFrameSystemMixin:ShouldResetSettingsDialogAnchors(oldSelectedSystemFrame)
 	return true;

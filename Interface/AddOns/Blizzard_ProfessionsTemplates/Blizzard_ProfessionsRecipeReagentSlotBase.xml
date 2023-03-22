@@ -38,6 +38,15 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CropFrame" scale=".45" atlas="Professions-ChoiceReagent-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+						
 					<Layer level="OVERLAY" textureSubLevel="7">
 						<Texture parentKey="HighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" alpha="0.5" hidden="true">
 							<Size x="48" y="48"/>

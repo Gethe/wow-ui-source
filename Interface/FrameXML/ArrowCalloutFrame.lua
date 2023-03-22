@@ -61,6 +61,7 @@ ArrowCalloutMixin = {};
 function ArrowCalloutMixin:OnLoad()
 	self:RegisterEvent("SHOW_ARROW_CALLOUT");
 	self:RegisterEvent("HIDE_ARROW_CALLOUT");
+	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 	self.currentCallouts = { }; 
 	self.calloutPool = CreateFramePoolCollection();
 	self.calloutPool:CreatePool("FRAME", self, "ArrowCalloutContainerTemplate");
@@ -69,7 +70,14 @@ function ArrowCalloutMixin:OnLoad()
 end 
 
 function ArrowCalloutMixin:OnEvent(event, ...)
-	if (event == "SHOW_ARROW_CALLOUT") then 
+	if(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
+		local previousTarget, currentTarget = ...;
+		if(currentTarget) then 
+			C_ArrowCalloutManager.SetWorldLootObjectCalloutFromGUID(currentTarget); 
+		else 
+			C_ArrowCalloutManager.HideWorldLootObjectCallout(); 
+		end		
+	elseif (event == "SHOW_ARROW_CALLOUT") then 
 		local calloutInfo = ...;
 		self:Setup(calloutInfo); 
 	elseif (event == "HIDE_ARROW_CALLOUT")then
@@ -137,6 +145,17 @@ function ArrowCalloutMixin:OnKeyDown(key)
 	else
 		self:SetPropagateKeyboardInput(true);
 	end 
+end
+
+function ArrowCalloutMixin:OnGamePadButtonDown(key)
+	if(key == "PAD4" and self.calloutPool:GetNumActive() > 0) then 
+		C_ArrowCalloutManager.SwapWorldLootObjectCallout();
+	else 
+		local keybind = GetBindingFromClick(key);
+		if(keybind) then 
+			RunBinding(keybind);
+		end 
+	end
 end
 
 ArrowCalloutContainerMixin = { }

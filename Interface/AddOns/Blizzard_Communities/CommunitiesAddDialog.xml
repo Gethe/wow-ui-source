@@ -84,7 +84,7 @@
 								</Anchors>
 							</Texture>
 						</Layer>
-						<Layer level="BACKGROUND">
+						<Layer level="BORDER" textureSubLevel="-1">
 							<Texture parentKey="Mid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
 								<Size x="0" y="32"/>
 								<Anchors>

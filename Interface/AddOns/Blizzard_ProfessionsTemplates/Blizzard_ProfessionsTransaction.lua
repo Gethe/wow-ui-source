@@ -187,9 +187,19 @@ function ProfessionsRecipeTransactionMixin:GetQuantityRequiredInSlot(slotIndex)
 	return reagentSlotSchematic.quantityRequired;
 end
 
+function ProfessionsRecipeTransactionMixin:IsSlotRequired(slotIndex)
+	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
+	return reagentSlotSchematic.required;
+end
+
 function ProfessionsRecipeTransactionMixin:IsSlotBasicReagentType(slotIndex)
 	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
 	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
+end
+
+function ProfessionsRecipeTransactionMixin:IsSlotModifyingRequired(slotIndex)
+	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
+	return Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 end
 
 function ProfessionsRecipeTransactionMixin:AccumulateAllocations(slotIndex)
@@ -405,6 +415,16 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedReagent(reagent)
 	return false;
 end
 
+function ProfessionsRecipeTransactionMixin:AreAllRequirementsAllocated(item)
+	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(item:GetItemID());
+	for index, requiredItemID in ipairs(requirements) do
+		if not self:HasAllocatedItemID(requiredItemID) then
+			return false;
+		end
+	end
+	return true;
+end
+
 function ProfessionsRecipeTransactionMixin:HasAllocatedItemID(itemID)
 	local reagent = Professions.CreateCraftingReagentByItemID(itemID);
 	return self:HasAllocatedReagent(reagent);
@@ -558,7 +578,7 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()
 
 	for slotIndex, reagentTbl in self:Enumerate() do
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
-		if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+		if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
 			local quantityRequired = reagentSlotSchematic.quantityRequired;
 			local allocations = self:GetAllocations(slotIndex);
 			for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do

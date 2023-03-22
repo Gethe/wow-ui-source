@@ -1,3 +1,5 @@
+local forceinsecure = forceinsecure;
+
 AddonCompartmentMixin = { };
 
 function AddonCompartmentMixin:OnLoad()
@@ -14,6 +16,7 @@ function AddonCompartmentMixin:OnLoad()
 			info.icon = GetAddOnMetadata(addon, "IconTexture") or GetAddOnMetadata(addon, "IconAtlas");
 			info.notCheckable = true;
 			info.func = function()
+				forceinsecure();
 				_G[addonCompartmentFunc](name);
 			end;
 			table.insert(self.registeredAddons, info);
@@ -47,7 +50,7 @@ function AddonCompartmentDropDown_Initialize(self, level)
 	local addonCompartment = self:GetParent();
 
 	if addonCompartment.registeredAddons then
-		table.sort(addonCompartment.registeredAddons, function(infoA, infoB) return strcmputf8i(infoA.text, infoB.text) < 0; end);
+		table.sort(addonCompartment.registeredAddons, function(infoA, infoB) return strcmputf8i(StripHyperlinks(infoA.text), StripHyperlinks(infoB.text)) < 0; end);
 
 		for _, info in ipairs(addonCompartment.registeredAddons) do
 			UIDropDownMenu_AddButton(info, level);

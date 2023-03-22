@@ -445,6 +445,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetReagentRequirementItemIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetReagentSlotStatus",
 			Type = "Function",
 

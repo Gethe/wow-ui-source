@@ -215,6 +215,7 @@ local TradeSkillUITypes =
 				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "orderSource", Type = "CraftingOrderReagentSource", Nilable = true },
+				{ Name = "required", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -203,7 +203,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		GetNumQuestLogRewardSpells(questID) > 0) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID)) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end
@@ -460,7 +460,8 @@ function GameTooltip_OnHide(self)
 	end
 	self:SetPadding(0, 0, 0, 0);
 
-	self.info = nil;
+	self:ClearHandlerInfo();
+
 	if self.StatusBar then
 		self.StatusBar:ClearWatch();
 	end
@@ -522,7 +523,7 @@ end
 
 function GameTooltip_ShowCompareItem(self, anchorFrame)
 	local tooltip = self or GameTooltip;
-	local tooltipData = tooltip.info and tooltip.info.tooltipData;
+	local tooltipData = tooltip:GetPrimaryTooltipData();
 	local comparisonItem = TooltipComparisonManager:CreateComparisonItem(tooltipData);
 	TooltipComparisonManager:CompareItem(comparisonItem, tooltip, anchorFrame);
 end
@@ -702,7 +703,7 @@ function GameTooltip_AddQuest(self, questID)
 			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
 			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
-			if (questLogIndex) then 
+			if (questLogIndex) then
 				questDescription = select(2, GetQuestLogQuestText(questLogIndex));
 				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 			end
@@ -848,26 +849,43 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, 
 	return false;
 end
 
-function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
-	local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(rewardIndex, questID);
-	if garrFollowerID then
+function EmbeddedItemTooltip_SetSpellByFirstQuestReward(self, questID)
+	local spells = C_QuestInfoSystem.GetQuestRewardSpells(questID);
+	if spells and spells[1] then
+		return EmbeddedItemTooltip_SetSpellByQuestReward(self, spells[1], questID);
+	end
+
+	return false;
+end
+
+function EmbeddedItemTooltip_SetSpellByQuestReward(self, spellID, questID)
+	local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
+	if not spellInfo then
+		return false;
+	end
+
+	if spellInfo.garrFollowerID then
 		self:Show();
 		EmbeddedItemTooltip_PrepareForFollower(self);
-		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(garrFollowerID);
+		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(spellInfo.garrFollowerID);
 		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);
 		EmbeddedItemTooltip_UpdateSize(self);
 		return true;
-	elseif name and texture then
+	elseif spellInfo.name and spellInfo.texture then
 		self.itemID = nil;
 		self.spellID = spellID;
 
 		self:Show();
 		EmbeddedItemTooltip_PrepareForSpell(self);
+
+		local isPet = nil;
+		local showSubtext = true;
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
+		self.Tooltip:SetSpellByID(spellID, isPet, showSubtext);
+
 		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
-		self.Icon:SetTexture(texture);
+		self.Icon:SetTexture(spellInfo.texture);
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 		EmbeddedItemTooltip_UpdateSize(self);
 		return true;
@@ -931,11 +949,8 @@ function GameTooltipDataMixin:OnLoad()
 end
 
 function GameTooltipDataMixin:RefreshData()
-	if self.info and self.info.getterName then
-		self.info.tooltipData = nil;
-		self:ProcessInfo(self.info);
-	end
 	self.shouldRefreshData = false;
+	self:RebuildFromTooltipInfo();
 end
 
 function GameTooltipDataMixin:RefreshDataNextUpdate()
@@ -945,7 +960,10 @@ end
 
 function GameTooltipDataMixin:OnEvent(event, ...)
 	if event == "TOOLTIP_DATA_UPDATE" then
-		self:RefreshDataNextUpdate();
+		local dataInstanceID = ...;
+		if not dataInstanceID or self:HasDataInstanceID(dataInstanceID) then
+			self:RefreshDataNextUpdate();
+		end
 	end
 end
 
@@ -959,7 +977,7 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType)
 		self:SetObjectTooltipPosition();
 	end
 
-	local oldInfo = self.info;
+	local oldInfo = self:GetPrimaryTooltipInfo();
 	local tooltipData = C_TooltipInfo.GetWorldCursor();
 	if tooltipData then
 		local tooltipInfo = {
@@ -972,7 +990,7 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType)
 		-- user just moused off an in-world object, either fade or hide
 		if oldInfo.fadeOut then
 			-- clear the info so we don't touch this tooltip again
-			self.info = nil;
+			self:ClearHandlerInfo();
 			self:FadeOut();
 		else
 			self:Hide();

@@ -346,19 +346,33 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 	if transaction:IsManuallyAllocated() then
 		-- If manually allocated, we can only accumulate the reagents currently allocated.
 		for index, allocations in transaction:EnumerateAllAllocations() do
-			if transaction:IsSlotBasicReagentType(index) then
+			if transaction:IsSlotRequired(index) then
+				--[[ This is correct for both basic and modified-required because this
+				accumulates allocated reagents only, which is correct for the case of
+				modifying-required slots.]]--
 				ClampAllocations(allocations);
 			end
 		end
 	else
-		-- If automatically allocated, we can accumulate every compatible reagent regardless of what
-		-- is currently allocated.
+		--[[ If automatically allocated, we can accumulate every compatible reagent regardless of what
+		is currently allocated. Note, this is not the case for modifying-required slots; those
+		need to only account for what is allocated, which is accounted for below.]]--
 		for index, reagents in transaction:EnumerateAllSlotReagents() do
 			if transaction:IsSlotBasicReagentType(index) then
 				local quantity = AccumulateOp(reagents, function(reagent)
 					return Professions.GetReagentQuantityInPossession(reagent);
 				end);
 
+				local quantityMax = transaction:GetQuantityRequiredInSlot(index);
+				ClampInvervals(quantity, quantityMax);
+			elseif transaction:IsSlotModifyingRequired(index) then
+				local quantity = AccumulateOp(reagents, function(reagent)
+					-- Only include the allocated reagents for modifying-required slots.
+					if transaction:IsReagentAllocated(index, reagent) then
+						return Professions.GetReagentQuantityInPossession(reagent);
+					end
+					return 0;
+				end);
 				local quantityMax = transaction:GetQuantityRequiredInSlot(index);
 				ClampInvervals(quantity, quantityMax);
 			end
@@ -368,7 +382,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 	-- Optionals and finishers are included unless the current reagent matches
 	-- a recrafting modification.
 	for index, allocations in transaction:EnumerateAllAllocations() do
-		if not transaction:IsSlotBasicReagentType(index) then
+		if not transaction:IsSlotRequired(index) then
 			local allocs = allocations:SelectFirst();
 			if allocs then
 				local clamp = true;
@@ -688,9 +702,9 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	end
 	self.RecipeList.NoResultsText:SetShown(dataProvider:IsEmpty());
 
-	-- Because we're rebuilding the data provider, we need to either make an initial selection or
-	-- reselect the recipe we previously had selected. If we've selected a recipe from another profession
-	-- we ignore any previous selection.
+	--[[ Because we're rebuilding the data provider, we need to either make an initial selection or
+	reselect the recipe we previously had selected. If we've selected a recipe from another profession
+	we ignore any previous selection.--]]
 
 	local currentRecipeInfo = nil;
 	local openRecipeID = professionInfo.openRecipeID;

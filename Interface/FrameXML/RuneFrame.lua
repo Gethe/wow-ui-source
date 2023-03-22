@@ -141,7 +141,12 @@ function RuneButtonMixin:OnLoad()
 end
 
 function RuneButtonMixin:UpdateSpec(specIndex)
-	local specArtType = ArtTypeBySpec[specIndex];
+	local specArtType = (specIndex ~= nil) and ArtTypeBySpec[specIndex] or nil;
+	if specArtType == nil then
+		-- If player hasn't chosen a Specialization yet, default their runes to "Frost"
+		-- This will be replaced by a "Base" rune set once it's available
+		specArtType = "Frost";
+	end
 
 	local cdSwipeAtlas = C_Texture.GetAtlasInfo(RuneArtSet.cooldownSwipe:format(specArtType));
 	self.Cooldown:SetSwipeTexture(cdSwipeAtlas.file or cdSwipeAtlas.filename);
@@ -256,11 +261,11 @@ function RuneButtonMixin:ShowAsOnCooldown(start, duration, previousState)
 	self.cooldownEndingStartTime = (start + duration) - self.cooldownEndingOffsetSeconds;
 	local isBeforeCooldownEndStartTime = timeNowFloored < math.floor(self.cooldownEndingStartTime);
 
-	if isBeforeCooldownEndStartTime and self.CooldownEndingAnim:IsPlaying() then
+	if (previousState == nil) or (isBeforeCooldownEndStartTime and self.CooldownEndingAnim:IsPlaying()) then
 		self:SkipToFinalAnimState(self.CooldownEndingAnim);
 	end
 
-	if previousState == RuneButtonMixin.VisualState.Ready or (previousState == RuneButtonMixin.VisualState.CooldownEnding and isBeforeCooldownEndStartTime) then
+	if (previousState == nil) or (previousState == RuneButtonMixin.VisualState.Ready) or (previousState == RuneButtonMixin.VisualState.CooldownEnding and isBeforeCooldownEndStartTime) then
 		self.EmptyAnim:Restart();
 		self.visualState = RuneButtonMixin.VisualState.Empty;
 		self.isNewlyDepleted = true;
@@ -325,6 +330,13 @@ end
 function RuneButtonMixin.CompareRuneButtons(runeAButton, runeBButton)
 	local runeAState = runeAButton.visualState;
 	local runeBState = runeBButton.visualState;
+
+	if runeAState == nil or runeBState == nil then
+		if runeAState == nil and runeBState == nil then
+			return runeAButton.runeIndex > runeBButton.runeIndex;
+		end
+		return runeAState ~= nil;
+	end
 
 	if runeAState ~= runeBState then
 		return runeAState > runeBState;

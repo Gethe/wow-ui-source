@@ -85,6 +85,7 @@ PlayerInfoDocumentation.lua
 PlayerInteractionManagerDocumentation.lua
 PlayerLocationDocumentation.lua
 PvpInfoDocumentation.lua
+QuestInfoSystemDocumentation.lua
 QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
@@ -145,6 +146,7 @@ SpellActivationOverlayDocumentation.lua
 SpellBookDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
+StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 TTSSettingsDocumentation.lua
 TaxiMapDocumentation.lua
@@ -276,6 +278,7 @@ ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
 LootConstantsDocumentation.lua
+MapConstantsDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua

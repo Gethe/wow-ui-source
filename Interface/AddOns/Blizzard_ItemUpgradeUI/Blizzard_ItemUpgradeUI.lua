@@ -1,3 +1,6 @@
+local UpgradeDropdownMinWidth = 95;
+local UpgradeDropdownMaxWidth = 120;
+
 UIPanelWindows["ItemUpgradeFrame"] = { area = "left", pushable = 0};
 
 function ItemUpgradeFrame_Show()
@@ -28,7 +31,7 @@ function ItemUpgradeMixin:OnLoad()
 
 	self.Dropdown = self.ItemInfo.Dropdown;
 	UIDropDownMenu_Initialize(self.Dropdown, GenerateClosure(self.InitDropdown, self));
-	UIDropDownMenu_SetWidth(self.Dropdown, 95);
+	UIDropDownMenu_SetWidth(self.Dropdown, UpgradeDropdownMinWidth);
 end
 
 function ItemUpgradeMixin:OnShow()
@@ -154,6 +157,8 @@ function ItemUpgradeMixin:Update(fromDropDown)
 		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
 	end
 
+	UIDropDownMenu_MatchTextWidth(self.Dropdown, UpgradeDropdownMinWidth, UpgradeDropdownMaxWidth);
+
 	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
 	self.upgradeInfo.targetQualityColor = self.targetUpgradeLevelInfo and ITEM_QUALITY_COLORS[self.targetUpgradeLevelInfo.displayQuality].color;
 
@@ -258,6 +263,8 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 	self.UpgradeCostFrame:Clear();
 	self.PlayerCurrencies:Clear();
 
+	local insufficientCostNames = {};
+
 	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables();
 	for currencyID, currencyCost in pairs(currencyCostTable) do
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
@@ -265,6 +272,7 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 		if currencyCost > currencyInfo.quantity then
 			buttonDisabledState = true;
 			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost, RED_FONT_COLOR);
+			table.insert(insufficientCostNames, currencyInfo.name);
 		else
 			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost);
 		end
@@ -278,11 +286,25 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 		if itemCost > itemCount then
 			buttonDisabledState = true;
 			self.UpgradeCostFrame:AddItem(itemID, itemCost, RED_FONT_COLOR);
+			table.insert(insufficientCostNames, C_Item.GetItemNameByID(itemID));
 		else
 			self.UpgradeCostFrame:AddItem(itemID, itemCost);
 		end
 
 		self.PlayerCurrencies:AddItem(itemID);
+	end
+
+	local numInsufficientCosts = #insufficientCostNames;
+	if not failureMessage or failureMessage == "" and numInsufficientCosts > 0 then
+		local insufficientCostTooltip;
+		if numInsufficientCosts == 1 then
+			insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY:format(insufficientCostNames[1]);
+		elseif numInsufficientCosts == 2 then
+			insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_TWO:format(insufficientCostNames[1], insufficientCostNames[2]);
+		else
+			insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_MULTIPLE;
+		end
+		self.UpgradeButton:SetDisabledTooltip(insufficientCostTooltip);
 	end
 
 	self:UpdateButtonAndArrowStates(buttonDisabledState, showRightPreview);
@@ -737,6 +759,7 @@ function ItemUpgradeItemInfoMixin:Setup(upgradeInfo, canUpgrade)
 	if not upgradeInfo then
 		self.MissingItemText:Show();
 		self.ItemName:Hide();
+		self.UpgradeProgress:Hide();
 		self.UpgradeTo:Hide();
 		self.Dropdown:Hide();
 	else
@@ -744,6 +767,16 @@ function ItemUpgradeItemInfoMixin:Setup(upgradeInfo, canUpgrade)
 
 		self.ItemName:SetText(upgradeInfo.itemQualityColor:WrapTextInColorCode(upgradeInfo.name));
 		self.ItemName:Show();
+
+		local currentItemLevel = C_ItemUpgrade.GetItemUpgradeCurrentLevel();
+		if upgradeInfo.customUpgradeString then
+			self.UpgradeProgress:SetText(ITEM_UPGRADE_PROGRESS_LEVEL_FORMAT_STRING:format(
+				upgradeInfo.customUpgradeString, upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade, currentItemLevel, upgradeInfo.minItemLevel, upgradeInfo.maxItemLevel));
+		else
+			self.UpgradeProgress:SetText(ITEM_UPGRADE_PROGRESS_LEVEL_FORMAT:format(
+				upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade, currentItemLevel, upgradeInfo.minItemLevel, upgradeInfo.maxItemLevel));
+		end
+		self.UpgradeProgress:Show();
 
 		self.UpgradeTo:SetShown(canUpgrade);
 		self.Dropdown:SetShown(canUpgrade);

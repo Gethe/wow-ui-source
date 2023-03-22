@@ -95,6 +95,7 @@ local SpellBook =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "glyphID", Type = "number", Nilable = true },
 			},
 
 			Returns =

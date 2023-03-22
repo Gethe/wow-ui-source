@@ -6,29 +6,11 @@
 		<Color r="0.902" g="0.788" b="0.671"/>
 	</Font>
 
-	<Button name="QuestInfoRewardSpellCodeTemplate" virtual="true">
+	<Button name="QuestInfoRewardSpellCodeTemplate" mixin="QuestInfoRewardSpellCodeMixin" virtual="true">
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if ( QuestInfoFrame.questLog ) then
-					GameTooltip:SetQuestLogRewardSpell(self.rewardSpellIndex);
-				else
-					GameTooltip:SetQuestRewardSpell(self.rewardSpellIndex);
-				end
-			</OnEnter>
-			<OnClick>
-				if ( IsModifiedClick("CHATLINK") ) then
-					if ( QuestInfoFrame.questLog ) then
-						ChatEdit_InsertLink(GetQuestLogSpellLink(self.rewardSpellIndex));
-					else
-						ChatEdit_InsertLink(GetQuestSpellLink(self.rewardSpellIndex));
-					end
-				end
-			</OnClick>
-			<OnLeave>
-				GameTooltip:Hide();
-				ResetCursor();
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
 

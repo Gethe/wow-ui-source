@@ -1,3 +1,18 @@
+MICRO_BUTTONS = {
+	"CharacterMicroButton",
+	"SpellbookMicroButton",
+	"TalentMicroButton",
+	"AchievementMicroButton",
+	"QuestLogMicroButton",
+	"GuildMicroButton",
+	"LFDMicroButton",
+	"EJMicroButton",
+	"CollectionsMicroButton",
+	"MainMenuMicroButton",
+	"HelpMicroButton",
+	"StoreMicroButton",
+}
+
 MicroMenuPositionEnum = {
 	BottomLeft = 1;
 	BottomRight = 2;

@@ -554,7 +554,11 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	-- Update health bar
 	healthBar:SetWidth(118);
-	healthBar:SetHeight(20);
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then 
+		healthBar:SetHeight(32);
+	else 
+		healthBar:SetHeight(20);
+	end
 	healthBar:SetPoint("TOPLEFT", 91, -40);
 
 	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -8, 6);
@@ -617,7 +621,11 @@ function PlayerFrame_ToPlayerArt(self)
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
 
 	-- Update health bar
-	healthBar:SetHeight(20);
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then
+		healthBar:SetHeight(32);
+	else 
+		healthBar:SetHeight(20);
+	end
 	healthBar:SetWidth(124);
 	healthBar:SetPoint("TOPLEFT", 85, -40);
 

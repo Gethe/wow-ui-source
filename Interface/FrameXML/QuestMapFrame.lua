@@ -62,6 +62,19 @@ function QuestLogMixin:HideCampaignOverview(campaignID)
 	QuestScrollFrame:Show();
 end
 
+function QuestLogMixin:OnHighlightedQuestPOIChange(questID)
+	local poiButton = QuestPOI_FindButton(self.QuestsFrame.Contents, questID);
+	if poiButton then
+		QuestPOIButton_EvaluateManagedHighlight(poiButton);
+	end
+end
+
+function QuestLogMixin:OnMapPinClick(pin, questID)
+	if self.DetailsFrame.questID ~= questID then
+		QuestMapFrame_ShowQuestDetails(questID);
+	end
+end
+
 QuestLogHeaderCodeMixin = {};
 
 function QuestLogHeaderCodeMixin:GetButtonType()
@@ -145,8 +158,14 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
 
+	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("MapCanvas.QuestPin.OnClick", self.OnMapPinClick, self);
+
 	self.completedCriteria = {};
-	QuestPOI_Initialize(QuestScrollFrame.Contents);
+	local onCreateFunc = nil;
+	local useHighlightManager = true;
+	QuestPOI_Initialize(QuestScrollFrame.Contents, onCreateFunc, useHighlightManager);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
 	UIDropDownMenu_SetInitializeFunction(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize);
 	UIDropDownMenu_SetDisplayMode(QuestMapQuestOptionsDropDown, "MENU");

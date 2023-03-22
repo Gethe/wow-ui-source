@@ -210,11 +210,14 @@ end
 	getterArgs		: Optional table of arguments for the C_TooltipInfo call.
 	tooltipData		: In some places code already has this data, so it can set this key and leave the getterName nil.
 	append			: If true, the tooltip will not be cleared and the backdrop style (Azerite and Corrupted) will not be set.
+	appendSpacer	: If true and append is true, will add a blank line before appending
 	compareItem		: If true, an item comparison will start automatically.
 	excludeLines	: Table of line types to exclude from the tooltip.
 	linePreCall		: Callback for each line before it's added.
 	linePostCall	: Callback for each line after it's added.
 	tooltipPostCall : Callback for the tooltip after it has processed the info.
+	rebuildPreCall	: Callback before the tooltip is rebuilt from a TOOLTIP_DATA_UPDATE. Only checked for primary info in the case of multiple.
+	rebuildPostCall	: Callback after the tooltip is rebuilt from a TOOLTIP_DATA_UPDATE. Only checked for primary info in the case of multiple.
 ]]--
 
 function CreateBaseTooltipInfo(getterName, ...)
@@ -224,8 +227,6 @@ function CreateBaseTooltipInfo(getterName, ...)
 	};
 	return tooltipInfo;
 end
-
-local SurfaceArgs = TooltipUtil.SurfaceArgs;
 
 TooltipDataHandlerMixin = { };
 
@@ -249,7 +250,6 @@ function TooltipDataHandlerMixin:InternalProcessInfo(info)
 		end
 	end
 	
-	self.info = info;
 	local tooltipData = info.tooltipData;
 	if not tooltipData then
 		if not info.append then
@@ -257,22 +257,31 @@ function TooltipDataHandlerMixin:InternalProcessInfo(info)
 		end
 		return false;
 	end
-	
+
 	if not info.append then
+		self.infoList = { };
 		self:ClearLines();
+	elseif not self.infoList then
+		-- infoList will be missing in append mode if the tooltip needs to start with non-data text
+		self.infoList = { };
 	end
 	
-	SurfaceArgs(tooltipData);
+	table.insert(self.infoList, info);
+	self.processingInfo = info;
 	
 	local tooltipType = tooltipData.type;
 	if ProcessTooltipPreCalls(tooltipType, self, tooltipData) then
 		return false;
 	end
 
+	if info.append and info.appendSpacer then
+		GameTooltip_AddBlankLineToTooltip(self);
+	end
+
 	self:ProcessLines();
 
-	if self.info.tooltipPostCall then
-		self.info.tooltipPostCall(self);
+	if self.processingInfo.tooltipPostCall then
+		self.processingInfo.tooltipPostCall(self);
 	end
 
 	ProcessTooltipPostCalls(tooltipType, self, tooltipData);
@@ -287,7 +296,7 @@ function TooltipDataHandlerMixin:InternalProcessInfo(info)
 end
 
 function TooltipDataHandlerMixin:ProcessLines()
-	local info = self.info;
+	local info = self.processingInfo;
 	local excludeLines = info.excludeLines;
 	local linePreCall = info.linePreCall;
 	local linePostCall = info.linePostCall;
@@ -297,8 +306,6 @@ function TooltipDataHandlerMixin:ProcessLines()
 end
 
 function TooltipDataHandlerMixin:ProcessLineData(lineData, excludeLines, linePreCall, linePostCall)
-	SurfaceArgs(lineData);
-
 	local lineConsumed = excludeLines and tContains(excludeLines, lineData.type) or false;
 	if not lineConsumed and linePreCall then
 		lineConsumed = linePreCall(self, lineData);
@@ -331,23 +338,101 @@ function TooltipDataHandlerMixin:AddLineDataText(lineData)
 	end
 end
 
-function TooltipDataHandlerMixin:SetInfoBackdropStyle(backdropStyle)
-	if self.info then
-		self.info.backdropStyle = backdropStyle;
+
+function TooltipDataHandlerMixin:ClearHandlerInfo()
+	self.infoList = nil;
+	self.processingInfo = nil;
+end
+
+function TooltipDataHandlerMixin:RebuildFromTooltipInfo()
+	local oldPrimaryInfo = self:GetPrimaryTooltipInfo();
+	if not oldPrimaryInfo then
+		return;
+	end
+
+	local infoList = self.infoList;
+	self.infoList = { };
+	
+	if oldPrimaryInfo.rebuildPreCall then
+		local skipRebuild = oldPrimaryInfo.rebuildPreCall(self);
+		if skipRebuild then
+			return;
+		end
+	end
+
+	for i, info in ipairs(infoList) do
+		-- Remove cached data if there's a getter, otherwise assume that data is complete
+		if info.getterName then
+			info.tooltipData = nil;
+		end
+		-- It's bad if append is set for the primary info and the rebuild wasn't handled by the rebuildPreCall
+		-- Usually that mean the tooltip was started with AddLine instead of SetX
+		-- Clear it out so at least the tooltip doesn't duplicate
+		if i == 1 then
+			info.append = false;
+		end
+		self:ProcessInfo(info);
+	end
+
+	if oldPrimaryInfo.rebuildPostCall then
+		oldPrimaryInfo.rebuildPostCall(self);
 	end
 end
 
-function TooltipDataHandlerMixin:GetTooltipData()
-	if self.info then
-		return self.info.tooltipData;
+function TooltipDataHandlerMixin:GetPrimaryTooltipInfo()
+	return self.infoList and self.infoList[1];
+end
+
+function TooltipDataHandlerMixin:GetProcessingTooltipInfo()
+	return self.processingInfo;
+end
+
+function TooltipDataHandlerMixin:SetInfoBackdropStyle(backdropStyle)
+	local info = self:GetPrimaryTooltipInfo();
+	if info then
+		info.backdropStyle = backdropStyle;
 	end
-	return nil;
+end
+
+function TooltipDataHandlerMixin:GetPrimaryTooltipData()
+	local info = self:GetPrimaryTooltipInfo();
+	return info and info.tooltipData;
+end
+
+-- to be deprecated
+function TooltipDataHandlerMixin:GetTooltipData()
+	return self:GetPrimaryTooltipData();
 end
 
 function TooltipDataHandlerMixin:IsTooltipType(tooltipType)
-	return self.info and self.info.tooltipData and self.info.tooltipData.type == tooltipType;
+	local primaryInfo = self:GetPrimaryTooltipInfo();
+	return primaryInfo and primaryInfo.tooltipData and primaryInfo.tooltipData.type == tooltipType;
 end
 
+function TooltipDataHandlerMixin:HasDataInstanceID(dataInstanceID)
+	if self.infoList then
+		for i, info in ipairs(self.infoList) do
+			if info.tooltipData and info.tooltipData.dataInstanceID == dataInstanceID then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
+function TooltipDataHandlerMixin:AppendInfo(...)
+	local tooltipInfo = CreateBaseTooltipInfo(...);
+	tooltipInfo.append = true;
+	self:ProcessInfo(tooltipInfo);
+end
+
+function TooltipDataHandlerMixin:AppendInfoWithSpacer(...)
+	local tooltipInfo = CreateBaseTooltipInfo(...);
+	tooltipInfo.append = true;
+	tooltipInfo.appendSpacer = true;
+	self:ProcessInfo(tooltipInfo);
+end
+		
 do
 	local accessors = {
 		SetMerchantItem = "GetMerchantItem",
@@ -402,8 +487,6 @@ do
 		SetPetAction = "GetPetAction",
 		SetConduit = "GetConduit",
 		SetCompanionPet = "GetCompanionPet",
-		SetQuestLogRewardSpell = "GetQuestLogRewardSpell",
-		SetQuestRewardSpell = "GetQuestRewardSpell",
 		SetPossession = "GetPossession",
 		SetAchievementByID = "GetAchievementByID",
 		SetEnhancedConduit = "GetEnhancedConduit",

@@ -109,15 +109,6 @@ local TooltipInfoShared =
 			},
 		},
 		{
-			Name = "TooltipData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "lines", Type = "table", InnerType = "TooltipDataLine", Nilable = false },
-				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
-			},
-		},
-		{
 			Name = "TooltipDataArg",
 			Type = "Structure",
 			Fields =
@@ -129,14 +120,6 @@ local TooltipInfoShared =
 				{ Name = "boolVal", Type = "bool", Nilable = true },
 				{ Name = "colorVal", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "guidVal", Type = "WOWGUID", Nilable = true },
-			},
-		},
-		{
-			Name = "TooltipDataLine",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
 			},
 		},
 	},

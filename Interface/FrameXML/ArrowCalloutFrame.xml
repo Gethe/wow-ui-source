@@ -188,6 +188,7 @@ UI_shared.xsd">
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnGamePadButtonDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

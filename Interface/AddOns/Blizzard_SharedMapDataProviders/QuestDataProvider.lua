@@ -22,15 +22,28 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
 	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
+	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 end
 
 function QuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
-	self:GetMap():UnregisterCallback("SetBounty", self.SetBounty, self);
-	self:GetMap():UnregisterCallback("PingQuestID", self.OnPingQuestID, self);
+	self:GetMap():UnregisterCallback("SetBounty", self);
+	self:GetMap():UnregisterCallback("PingQuestID", self);
+	EventRegistry:UnregisterCallback("SetHighlightedQuestPOI", self);
+	EventRegistry:UnregisterCallback("ClearHighlightedQuestPOI", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+end
+
+function QuestDataProviderMixin:OnHighlightedQuestPOIChange(questID)
+	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
+		if pin.questID == questID then
+			QuestPOIButton_EvaluateManagedHighlight(pin);
+			break;
+		end
+	end	
 end
 
 function QuestDataProviderMixin:OnPingQuestID(...)
@@ -245,6 +258,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	end
 
 	QuestPOI_UpdateButtonStyle(pin);
+	QuestPOIButton_EvaluateManagedHighlight(pin);
 
 	MapPinHighlight_CheckHighlightPin(pin:GetHighlightType(), pin, pin.NormalTexture);
 
@@ -297,17 +311,20 @@ function QuestPinMixin:OnMouseEnter()
 		end
 	end
 	GameTooltip:Show();
-	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", questID);
-    EventRegistry:TriggerEvent("QuestPin.OnEnter", self, questID);
+	QuestPOIHighlightManager:SetHighlight(questID);
+    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
 	GameTooltip:Hide();
-	self:GetMap():TriggerEvent("ClearHighlightedQuestPOI");
+	QuestPOIHighlightManager:ClearHighlight();
 end
 
 function QuestPinMixin:OnMouseClickAction(button)
 	QuestPOIButton_OnClick(self, button);
+	if not IsModifierKeyDown() then
+		EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnClick", self, self.questID);
+	end
 end
 
 function QuestPinMixin:AssignQuestNumber(questNumber)

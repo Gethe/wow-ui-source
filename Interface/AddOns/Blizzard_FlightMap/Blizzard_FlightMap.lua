@@ -25,6 +25,9 @@ function FlightMapMixin:OnLoad()
 
 	self:SetupTitle();
 
+	self:SetShouldNavigateOnClick(true);
+	self:SetShouldNavigateIgnoreZoneMapPositionData(true);
+
 	self:SetShouldZoomInOnClick(true);
 	self:SetShouldPanOnClick(false);
 

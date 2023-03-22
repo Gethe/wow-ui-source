@@ -688,21 +688,6 @@ local TooltipInfo =
 			},
 		},
 		{
-			Name = "GetQuestLogRewardSpell",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellIndex", Type = "luaIndex", Nilable = false },
-				{ Name = "questID", Type = "number", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
 			Name = "GetQuestLogSpecialItem",
 			Type = "Function",
 
@@ -725,20 +710,6 @@ local TooltipInfo =
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "omitTitle", Type = "bool", Nilable = true },
 				{ Name = "ignoreActivePlayer", Type = "bool", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
-			Name = "GetQuestRewardSpell",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1259,6 +1230,10 @@ local TooltipInfo =
 			Type = "Event",
 			LiteralName = "TOOLTIP_DATA_UPDATE",
 			Documentation = { "Sends an update to the UI that a sparse or cache lookup has resolved" },
+			Payload =
+			{
+				{ Name = "dataInstanceID", Type = "number", Nilable = true },
+			},
 		},
 	},
 

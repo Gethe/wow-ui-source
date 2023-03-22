@@ -60,7 +60,7 @@ function SetItemRef(link, text, button, chatFrame)
 					C_FriendList.SendWho(WHO_TAG_EXACT..name);
 				end
 
-			elseif ( button == "RightButton" and (not isGMLink) ) then
+			elseif ( button == "RightButton" and (not isGMLink) and FriendsFrame_ShowDropdown) then
 				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame, nil, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
 			else
 				ChatFrame_SendTell(name, chatFrame);
@@ -449,6 +449,10 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
 		return;
+	elseif ( strsub(link, 1, 5) == "addon" ) then
+		-- local links only
+		EventRegistry:TriggerEvent("SetItemRef", link, text, button, chatFrame);
+		return;
 	end
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
@@ -832,9 +836,10 @@ end
 
 function ItemRefTooltipMixin:SetHyperlink(...)
 	-- it's the same hyperlink as current data, close instead
-	if self.info and self.info.getterName == "GetHyperlink" then
+	local info = self:GetPrimaryTooltipInfo();
+	if info and info.getterName == "GetHyperlink" then
 		local getterArgs = {...};
-		if tCompare(self.info.getterArgs, getterArgs) then
+		if tCompare(info.getterArgs, getterArgs) then
 			self:Hide();
 			return false;
 		end

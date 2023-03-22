@@ -369,8 +369,12 @@ function PaperDoll_IsEquippedSlot(slot)
 	if ( slot ) then
 		slot = tonumber(slot);
 		if ( slot ) then
+                        if (EQUIPPED_FIRST and EQUIPPED_LAST) then 
+		         	return slot >= EQUIPPED_FIRST and slot <= EQUIPPED_LAST;
+                        else
 			return slot >= INVSLOT_FIRST_EQUIPPED and slot <= INVSLOT_LAST_EQUIPPED;
-		end
+		        end
+	       end
 	end
 	return false;
 end
@@ -1178,15 +1182,10 @@ function Mastery_OnEnter(statFrame)
 	if (primaryTalentTree) then
 		local masterySpell, masterySpell2 = GetSpecializationMasterySpells(primaryTalentTree);
 		if (masterySpell) then
-			local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", masterySpell);
-			tooltipInfo.append = true;
-			GameTooltip:ProcessInfo(tooltipInfo);
+			GameTooltip:AppendInfo("GetSpellByID", masterySpell);
 		end
 		if (masterySpell2) then
-			GameTooltip:AddLine(" ");
-			local tooltipInfo = CreateBaseTooltipInfo("GetSpellByID", masterySpell2);
-			tooltipInfo.append = true;
-			GameTooltip:ProcessInfo(tooltipInfo);
+			GameTooltip:AppendInfoWithSpacer("GetSpellByID", masterySpell2);
 		end
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(format(STAT_MASTERY_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_MASTERY)), masteryBonus), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -2758,8 +2757,4 @@ PaperDollItemSlotButtonMixin = {}
 
 function PaperDollItemSlotButtonMixin:GetItemContextMatchResult()
 	return ItemButtonUtil.GetItemContextMatchResultForItem(ItemLocation:CreateFromEquipmentSlot(self:GetID()));
-end
-
-function PaperDollItemSlotButtonMixin:GetSlotAndBagID()
-	return self:GetID(), 0;
 end

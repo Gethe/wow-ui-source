@@ -27,6 +27,9 @@ function ProfessionsReagentSlotMixin:Reset()
 end
 
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
+	local isModifyingRequired = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	self.Button:SetModifyingRequired(isModifyingRequired);
+
 	self:SetTransaction(transaction);
 	self:SetReagentSlotSchematic(reagentSlotSchematic);
 
@@ -35,6 +38,31 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			local item = Item:CreateFromItemID(reagent.itemID);
 			self.continuableContainer:AddContinuable(item);
 		end
+	end
+	
+	if isModifyingRequired then
+		local scale = .65;
+		self.Button:SetNormalAtlas("itemupgrade_greenplusicon", false);
+		self.Button:GetNormalTexture():SetScale(scale);
+	
+		self.Button:SetPushedAtlas("itemupgrade_greenplusicon_pressed", false);
+		self.Button:GetPushedTexture():SetScale(scale);
+	
+		self.Button:ClearHighlightTexture();
+
+		self.Button:SetCropOverlayShown(true);
+	else	
+		local scale = 1;
+	
+		self.Button:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
+		self.Button:GetNormalTexture():SetScale(scale);
+
+		self.Button:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+		self.Button:GetPushedTexture():SetScale(scale);
+		
+		self.Button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
+
+		self.Button:SetCropOverlayShown(false);
 	end
 
 	local function OnItemsLoaded()
@@ -68,6 +96,8 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			else
 				self.Button:SetItem(reagent.itemID);
 			end
+		elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+			InitButton();
 		elseif reagentType == Enum.CraftingReagentType.Modifying or reagentType == Enum.CraftingReagentType.Finishing then
 			self.Name:Hide();
 
@@ -132,44 +162,59 @@ end
 
 function ProfessionsReagentSlotMixin:UpdateAllocationText()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
-	if reagentSlotSchematic and reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
-		-- First try only allocations
-		local foundMultiple, foundIndex = self:GetAllocationDetails();
+	if not reagentSlotSchematic then
+		return;
+	end
 
-		-- Then include inventory if necessary
-		if not foundMultiple and not foundIndex then
-			foundMultiple, foundIndex = self:GetInventoryDetails();
-		end
+	if not Professions.IsReagentSlotRequired(reagentSlotSchematic) then
+		return;
+	end
 
-		local quantity = 0;
-		if self.overrideQuantity then
-			quantity = self.overrideQuantity;
+	-- First try only allocations
+	local foundMultiple, foundIndex = self:GetAllocationDetails();
+
+	local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	if isModifyingRequiredSlot and not foundIndex then
+		-- Only allocations are allowed to be considered when displaying the text for a modifying-required reagent slot.
+		return;
+	end
+
+	-- Then include inventory if necessary
+	if not foundMultiple and not foundIndex then
+		foundMultiple, foundIndex = self:GetInventoryDetails();
+	end
+
+	local quantity = 0;
+	if self.overrideQuantity then
+		quantity = self.overrideQuantity;
+	else
+		if foundMultiple then
+			quantity = TRADESKILL_QUANTITY_MULTIPLE;
 		else
-			if foundMultiple then
-				quantity = TRADESKILL_QUANTITY_MULTIPLE;
+			if foundIndex then
+				local reagent = reagentSlotSchematic.reagents[foundIndex];
+				quantity = Professions.GetReagentQuantityInPossession(reagent);
 			else
-				if foundIndex then
-					local reagent = reagentSlotSchematic.reagents[foundIndex];
-					quantity = Professions.GetReagentQuantityInPossession(reagent);
-				else
-					quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
-				end
+				quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 			end
 		end
-
-		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired);
-		local reagent = reagentSlotSchematic.reagents[1];
-		local reagentName;
-		if reagent.currencyID then
-			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
-			reagentName = currencyInfo and currencyInfo.name or UNKNOWN;
-		else
-			local item = Item:CreateFromItemID(reagent.itemID);
-			reagentName = item:GetItemName();
-		end
-		
-		self:SetNameText(("%s %s"):format(quantityText, reagentName or ""));
 	end
+
+	local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired);
+	-- If this is a modifying-required reagent and an allocation was found, this will select the correct reagent whereas
+	-- other basic slots with reagents sharing the same name would have all been selected correctly using the first index,
+	-- because the names all were identical.
+	local reagent = reagentSlotSchematic.reagents[foundIndex or 1];
+	local reagentName;
+	if reagent.currencyID then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
+		reagentName = currencyInfo and currencyInfo.name or UNKNOWN;
+	else
+		local item = Item:CreateFromItemID(reagent.itemID);
+		reagentName = item:GetItemName() or UNKNOWN;
+	end
+	
+	self:SetNameText(("%s %s"):format(quantityText, reagentName));
 end
 
 function ProfessionsReagentSlotMixin:GetAllocationDetails()
@@ -255,6 +300,19 @@ function ProfessionsReagentSlotMixin:SetOriginalItem(item)
 	self.originalItem = item;
 end
 
+function ProfessionsReagentSlotMixin:ApplySlotInfo()
+	local reagentSlotSchematic = self:GetReagentSlotSchematic();
+	local slotInfo = reagentSlotSchematic.slotInfo;
+	local slotText = slotInfo and slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX;
+
+	if Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(0, reagentSlotSchematic.quantityRequired);
+		self:SetNameText(("%s %s"):format(quantityText, slotText));
+	else
+		self:SetNameText(slotText);
+	end
+end
+
 function ProfessionsReagentSlotMixin:SetItem(item)
 	ItemButtonMixin.Reset(self.Button);
 	self.item = item;
@@ -265,9 +323,7 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 		self.Button.InputOverlay.AddIcon:Hide();
 		self:SetNameText(item:GetItemName());
 	else
-		local reagentSlotSchematic = self:GetReagentSlotSchematic();
-		local slotInfo = reagentSlotSchematic.slotInfo;
-		self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
+		self:ApplySlotInfo();
 	end
 
 	if self:IsOriginalItemSet() then
@@ -290,9 +346,7 @@ function ProfessionsReagentSlotMixin:SetCurrency(currencyID)
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
 		self:SetNameText(currencyInfo and currencyInfo.name or UNKNOWN);
 	else
-		local reagentSlotSchematic = self:GetReagentSlotSchematic();
-		local slotInfo = reagentSlotSchematic.slotInfo;
-		self:SetNameText(slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX);
+		self:ApplySlotInfo();
 	end
 
 	self.UndoButton:Hide();

@@ -45,7 +45,7 @@ local function copyTableWithTypeCheck(tab, name, tableCopies)
 				copy[k] = copyTableWithTypeCheck(v, name, tableCopies);
 			end
 		elseif ( type(v) == "userdata" ) then
-			error(format("Cannot import userdata into secure capsule (importing %s)", name));
+			error(format("Secure Capsule: Cannot import userdata into secure capsule (importing %s)", name));
 		else
 			copy[k] = v;
 		end
@@ -74,15 +74,23 @@ end
 --Local functions for retaining.
 -------------------------------
 
+local function RetainHelper(name, toTable, fromTable)
+	if ( toTable[name] ) then
+		error(format("Secure Capsule: Duplicate key retention \"%s\"", name));
+	end
+
+	if ( type(fromTable[name]) == "table" ) then
+		toTable[name] = copyTableWithTypeCheck(fromTable[name], name);
+	elseif ( type(fromTable[name]) == "userdata" ) then
+		error(format("Secure Capsule: Cannot import userdata into secure capsule (importing %s)", name));
+	else
+		toTable[name] = fromTable[name];
+	end
+end
+
 --Retains a copy of name
 local function retain(name)
-	if ( type(_G[name]) == "table" ) then
-		contents[name] = copyTableWithTypeCheck(_G[name], name);
-	elseif ( type(_G[name]) == "userdata" ) then
-		error(format("Cannot import userdata into secure capsule (importing %s)", name));
-	else
-		contents[name] = _G[name];
-	end
+	RetainHelper(name, contents, _G);
 end
 
 --Takes name and removes it from the global environment (note: make sure that nothing else has saved off a copy)
@@ -105,11 +113,24 @@ local function retainenum(name)
 end
 
 local function takeenum(name)
-	if (not contents["Enum"]) then
+	if ( not contents["Enum"] ) then
 		contents["Enum"] = {};
 	end
 	contents["Enum"][name] = _G.Enum[name];
 	_G.Enum[name] = nil;
+end
+
+-- Used to retain only certain keys from a table
+local function retainfromtable(tblName, keyName)
+	if ( type(_G[tblName]) ~= "table" ) then
+		error(format("Secure Capsule: Cannot retain from table; %s is not a table.", tblName));
+	end
+
+	if ( not contents[tblName] ) then
+		contents[tblName] = {};
+	end
+
+	RetainHelper(keyName, contents[tblName], _G[tblName]);
 end
 
 -------------------------------
@@ -127,6 +148,9 @@ take("CreateForbiddenFrame");
 retain("IsGMClient");
 retain("IsOnGlueScreen");
 retain("math");
+retain("max");
+retain("ceil");
+retain("floor");
 retain("table");
 retain("string");
 retain("bit");
@@ -146,13 +170,13 @@ retain("assert");
 retain("strtrim");
 retain("getfenv");
 retain("setfenv");
+retain("setmetatable");
 retain("pcall");
 retain("pack");
 retain("LoadURLIndex");
 retain("C_Container");
 retain("GetCursorPosition");
 retain("GetRealmName");
-retain("PlaySound");
 retain("SetPortraitToTexture");
 retain("SetPortraitTexture");
 retain("getmetatable");
@@ -167,7 +191,9 @@ retain("C_PlayerInfo");
 retain("IsModifiedClick");
 retain("GetTime");
 retain("UnitAffectingCombat");
+retain("C_CVar");
 retain("GetCVar");
+retain("GetCVarBool");
 retain("GMError");
 retain("GetMouseFocus");
 retain("LOCALE_enGB");
@@ -189,7 +215,6 @@ retain("Vector3D_ScaleBy");
 retain("Vector3D_CalculateNormalFromYawPitch");
 retain("Vector3D_CalculateYawPitchFromNormal");
 retain("DeltaLerp");
-retain("SOUNDKIT");
 retain("GetScreenWidth");
 retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
@@ -217,12 +242,27 @@ retain("CopyValuesAsKeys");
 retain("securecallfunction");
 retain("secureexecuterange");
 retain("rawset");
+retain("format");
 retain("UNKNOWN");
 retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
-retain("securecallfunction");
+retain("PlaySound");
+retain("SOUNDKIT");
+retain("TableUtil");
+retain("CreateFromMixins");
+retain("UnitIsUnit");
+retain("SECONDS_PER_DAY");
+retain("DAY_ONELETTER_ABBR");
+retain("SECONDS_PER_HOUR");
+retain("HOUR_ONELETTER_ABBR");
+retain("SECONDS_PER_MIN");
+retain("MINUTE_ONELETTER_ABBR");
+retain("SECOND_ONELETTER_ABBR");
+retain("SecondsToTimeAbbrev");
+retain("HIGHLIGHT_FONT_COLOR");
+retain("NORMAL_FONT_COLOR");
 
 -- Require move
 retain("tInvert");
@@ -553,7 +593,6 @@ retain("LARGE_NUMBER_SEPERATOR");
 retain("DECIMAL_SEPERATOR");
 retain("TOOLTIP_DEFAULT_COLOR");
 retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-retain("ACCEPT");
 retain("CANCEL");
 retain("CREATE_AUCTION");
 retain("CONTINUE");
@@ -645,6 +684,21 @@ retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
 retainenum("ValidateNameResult");
+
+-- For Private Auras
+retainfromtable("AuraUtil", "DefaultAuraCompare");
+retainfromtable("C_ChatInfo", "GetColorForChatType");
+retain("SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD");
+retain("SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD");
+retain("SMALLER_AURA_DURATION_FONT");
+retain("SMALLER_AURA_DURATION_OFFSET_Y");
+retain("DEFAULT_AURA_DURATION_FONT");
+retain("DebuffTypeColor");
+retain("DebuffTypeSymbol");
+retain("BUFF_DURATION_WARNING_TIME");
+retain("C_FunctionContainers");
+retain("C_UnitAuras");
+take("C_UnitAurasPrivate");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

@@ -165,6 +165,8 @@ local ItemUpgrade =
 				{ Name = "displayQuality", Type = "number", Nilable = false },
 				{ Name = "currUpgrade", Type = "number", Nilable = false },
 				{ Name = "maxUpgrade", Type = "number", Nilable = false },
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+				{ Name = "maxItemLevel", Type = "number", Nilable = false },
 				{ Name = "upgradeLevelInfos", Type = "table", InnerType = "ItemUpgradeLevelInfo", Nilable = false },
 				{ Name = "customUpgradeString", Type = "string", Nilable = true },
 			},

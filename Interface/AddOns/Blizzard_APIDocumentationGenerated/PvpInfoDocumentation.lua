@@ -985,6 +985,11 @@ local PvpInfo =
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
 		},
 		{
+			Name = "PlayerJoinedPvpMatch",
+			Type = "Event",
+			LiteralName = "PLAYER_JOINED_PVP_MATCH",
+		},
+		{
 			Name = "PostMatchCurrencyRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_CURRENCY_REWARD_UPDATE",
@@ -1041,11 +1046,6 @@ local PvpInfo =
 			{
 				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = false },
 			},
-		},
-		{
-			Name = "PvpRolePopupJoinedMatch",
-			Type = "Event",
-			LiteralName = "PVP_ROLE_POPUP_JOINED_MATCH",
 		},
 		{
 			Name = "PvpRolePopupShow",
@@ -1388,6 +1388,7 @@ local PvpInfo =
 				{ Name = "ratingChange", Type = "number", Nilable = false },
 				{ Name = "prematchMMR", Type = "number", Nilable = false },
 				{ Name = "mmrChange", Type = "number", Nilable = false },
+				{ Name = "postmatchMMR", Type = "number", Nilable = false },
 				{ Name = "talentSpec", Type = "string", Nilable = false },
 				{ Name = "honorLevel", Type = "number", Nilable = false },
 				{ Name = "roleAssigned", Type = "number", Nilable = false },

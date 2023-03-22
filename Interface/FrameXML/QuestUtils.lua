@@ -92,7 +92,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	elseif worldQuestType == Enum.QuestTagType.Threat then
 		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
 	elseif worldQuestType == Enum.QuestTagType.DragonRiderRacing then
-		iconAtlas = "worldquest-icon-race", 16, 16;
+		iconAtlas = "worldquest-icon-race";
 	else
 		if questID then
 			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
@@ -489,11 +489,8 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	end
 
 	-- spells
-	local numQuestSpellRewards = GetNumQuestLogRewardSpells(questID);
-	if numQuestSpellRewards > 0 and not tooltip.ItemTooltip:IsShown() then
-		if not EmbeddedItemTooltip_SetSpellByQuestReward(tooltip.ItemTooltip, 1, questID) then
-			showRetrievingData = true;
-		end
+	if not tooltip.ItemTooltip:IsShown() and EmbeddedItemTooltip_SetSpellByFirstQuestReward(tooltip.ItemTooltip, questID) then
+		showRetrievingData = true;
 	end
 
 	-- atLeastShowAzerite: show azerite if nothing else is awarded

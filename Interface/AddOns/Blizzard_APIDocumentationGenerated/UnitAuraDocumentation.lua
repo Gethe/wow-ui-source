@@ -13,14 +13,16 @@ local UnitAura =
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "cstring", Nilable = false },
-				{ Name = "globalXOfsFromCenter", Type = "uiUnit", Nilable = false },
-				{ Name = "globalYOfsFromCenter", Type = "uiUnit", Nilable = false },
+				{ Name = "auraIndex", Type = "number", Nilable = false },
 				{ Name = "useCompactAura", Type = "bool", Nilable = false },
+				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
+				{ Name = "iconAnchor", Type = "AnchorBinding", Nilable = false },
+				{ Name = "durationAnchor", Type = "AnchorBinding", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "anchorID", Type = "number", Nilable = false },
+				{ Name = "anchorID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -104,6 +106,16 @@ local UnitAura =
 			Arguments =
 			{
 				{ Name = "anchorID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPrivateWarningTextAnchor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
+				{ Name = "anchor", Type = "AnchorBinding", Nilable = true },
 			},
 		},
 		{

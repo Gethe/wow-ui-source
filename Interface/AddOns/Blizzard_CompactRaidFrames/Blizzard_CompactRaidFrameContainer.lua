@@ -124,6 +124,8 @@ end
 
 --Internally used functions
 function CompactRaidFrameContainerMixin:TryUpdate()
+	CompactPartyFrame_RefreshMembers();
+
 	if self:ReadyToUpdate() then
 		self:LayoutFrames();
 	end

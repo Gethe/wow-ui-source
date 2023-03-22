@@ -12,6 +12,10 @@ local textureKitRegionExpandBackgroundFormatStrings = {
 	["Background"] = "%s-background"
 };
 
+local textureKitRegionExpandSpaceOverlayFormatStrings = {
+	["Overlay"] = "%s-background-space-overlay"
+};
+
 local defaultAtlases = {
 	["BG1"] = "legioninvasion-title-bg",
 	["BG2"] = "legioninvasion-title-bg",
@@ -49,6 +53,15 @@ local scenarioTextureKitOffsets = {
 		footerXOffset = 0, 
 		footerYOffset = -40, 
 		backgroundXPadding = 20, 
+		topperBackgroundYPadding = 5,
+		footerBackgroundYPadding = -5,
+	},
+	["darkmoon-score"] = {
+		topperXOffset = 0, 
+		topperYOffset = 34,
+		footerXOffset = 0, 
+		footerYOffset = -40, 
+		backgroundXPadding = -50, 
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
 	},
@@ -390,6 +403,10 @@ function EventToastScenarioBaseToastMixin:SetupTextureKitOffsets(uiTextureKit)
 	self.Background:ClearAllPoints(); 
 	self.Background:SetPoint("TOPLEFT", self, "TOPLEFT", textureKitOffsets.backgroundXPadding, -textureKitOffsets.topperBackgroundYPadding);
 	self.Background:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -textureKitOffsets.backgroundXPadding, textureKitOffsets.footerBackgroundYPadding);
+
+	self.Overlay:ClearAllPoints(); 
+	self.Overlay:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -textureKitOffsets.topperBackgroundYPadding);
+	self.Overlay:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, textureKitOffsets.footerBackgroundYPadding);
 end
 
 function EventToastScenarioBaseToastMixin:Setup(toastInfo)
@@ -412,6 +429,7 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandBackgroundFormatStrings, TextureKitConstants.SetVisibility, false);
+		SetupTextureKitOnRegions(toastInfo.uiTextureKit, self, textureKitRegionExpandSpaceOverlayFormatStrings, TextureKitConstants.SetVisibility, false);
 		self:SetupTextureKitOffsets(toastInfo.uiTextureKit);
 	elseif(usesBGTextures) then 
 		SetupAtlasesOnRegions(self, defaultAtlases, true);

@@ -839,17 +839,24 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
 		local reagentType = reagentSlotSchematic.reagentType;
-
-		local slots = self.reagentSlots[reagentType];
+		-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
+		local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+		local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
+		
+		local slots = self.reagentSlots[sectionType];
 		if not slots then
 			slots = {};
-			self.reagentSlots[reagentType] = slots;
+			self.reagentSlots[sectionType] = slots;
 		end
 
 		local slot = self.reagentSlotPool:Acquire();
-		table.insert(slots, slot);
+		if isModifyingRequiredSlot then
+			table.insert(slots, 1, slot);
+		else
+			table.insert(slots, slot);
+		end
 
-		slot:SetParent(slotParents[reagentType]);
+		slot:SetParent(slotParents[sectionType]);
 		
 		slot.CustomerState:SetShown(false);
 		slot:Init(self.transaction, reagentSlotSchematic);
@@ -946,9 +953,12 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					GameTooltip_AddErrorLine(GameTooltip, lockedReason);
 				else
 					local exchangeOnly = self.transaction:HasModification(reagentSlotSchematic.dataSlotIndex);
-					Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, reagentSlotSchematic.slotInfo.slotText, exchangeOnly, self.transaction:GetAllocationItemGUID(), slot:IsUnallocatable());
+					Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, exchangeOnly, 
+						self.transaction:GetAllocationItemGUID(), slot:IsUnallocatable(), self.transaction);
 
-					slot.Button.InputOverlay.AddIconHighlight:SetShown(not slot:IsUnallocatable());
+					if slot.Button.InputOverlay.AddIcon:IsShown() then
+						slot.Button.InputOverlay.AddIconHighlight:SetShown(not slot:IsUnallocatable());
+					end
 				end
 				GameTooltip:Show();
 			end);
@@ -997,10 +1007,30 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							end
 							
 							flyout.OnElementEnterImplementation = function(elementData, tooltip)
-								Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetAllocationItemGUID());
+								Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetAllocationItemGUID(), self.transaction);
 							end
+							
+							flyout.OnElementEnabledImplementation = function(button, elementData)
+								local item = elementData.item;
+								if not self.transaction:AreAllRequirementsAllocated(item) then
+									return false;
+								end
 
-							flyout.OnElementEnabledImplementation = nil;
+								local quantity = nil;
+								if item then
+									if item:GetItemGUID() then
+										quantity = item:GetStackCount();
+									else
+										quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+									end
+								end
+
+								if quantity and quantity < reagentSlotSchematic.quantityRequired then
+									return false;
+								end
+
+								return true;
+							end
 
 							flyout:Init(slot.Button, self.transaction);
 							flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);

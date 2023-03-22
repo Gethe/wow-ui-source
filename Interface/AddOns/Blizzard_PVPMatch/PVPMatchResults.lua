@@ -536,9 +536,9 @@ function PVPMatchResultsRatingMixin:Init(rating, ratingChange)
 		C_PvP.GetTeamInfo(1), 
 	};
 	if C_PvP.IsRatedSoloShuffle() then
-		-- For Rated Solo Shuffle your MMR is always first, followed by the match average
+		-- For Rated Solo Shuffle your MMR is always first, followed by the average of players with your LFG Role
 		self.friendlyMMR = BATTLEGROUND_YOUR_PERSONAL_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[1].ratingMMR));
-		self.enemyMMR = BATTLEGROUND_MATCH_AVERAGE_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[2].ratingMMR));
+		self.enemyMMR = BATTLEGROUND_ROLE_AVERAGE_MMV:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(teamInfos[2].ratingMMR));
 	else
 		local factionIndex = GetBattlefieldArenaFaction();
 		local enemyFactionIndex = (factionIndex+1)%2;

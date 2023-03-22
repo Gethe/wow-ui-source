@@ -5,6 +5,33 @@
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="1" type="number"/>
 		</KeyValues>
+		<Frames>
+			<Button name="$parentPet1" inherits="CompactUnitFrameTemplate" parentArray="petUnitFrames">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember5" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet2" inherits="CompactUnitFrameTemplate" parentArray="petUnitFrames">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentPet1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet3" inherits="CompactUnitFrameTemplate" parentArray="petUnitFrames">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentPet2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet4" inherits="CompactUnitFrameTemplate" parentArray="petUnitFrames">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentPet3" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPet5" inherits="CompactUnitFrameTemplate" parentArray="petUnitFrames">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentPet4" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad function="CompactPartyFrame_OnLoad"/>
 			<OnEvent function="CompactPartyFrame_RefreshMembers"/>

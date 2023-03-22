@@ -695,18 +695,25 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType ~= Enum.CraftingReagentType.Finishing then
-			local slots = reagentTypes[reagentType];
+			-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
+			local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+			local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
+
+			local slots = reagentTypes[sectionType];
 			if not slots then
 				slots = {};
-				reagentTypes[reagentType] = slots;
+				reagentTypes[sectionType] = slots;
 			end
-
 			local hasAnyAllocation = transaction:HasAllocations(slotIndex);
 
 			local slot = self.reagentSlotPool:Acquire();
-			table.insert(slots, slot);
+			if isModifyingRequiredSlot then
+				table.insert(slots, 1, slot);
+			else
+				table.insert(slots, slot);
+			end
 
-			slot:SetParent(slotParents[reagentType]);
+			slot:SetParent(slotParents[sectionType]);
 
 			slot:Init(transaction, reagentSlotSchematic);
 			slot:Show();
@@ -869,7 +876,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 				slot.Button:SetScript("OnEnter", function()
 					GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 					local suppressInstruction = committed or slot.originalItem;
-					Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, reagentSlotSchematic.slotInfo.slotText, nil, nil, suppressInstruction);
+					Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, nil, nil, suppressInstruction, self.transaction);
 					GameTooltip:Show();
 				end);
 				
@@ -903,9 +910,13 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								end
 								
 								flyout.OnElementEnterImplementation = function(elementData, tooltip)
-									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID);
+									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction);
 								end
 	
+								flyout.OnElementEnabledImplementation = function(button, elementData)
+									return self.transaction:AreAllRequirementsAllocated(elementData.item);
+								end
+
 								flyout:Init(slot.Button, self.transaction);
 								flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 							end

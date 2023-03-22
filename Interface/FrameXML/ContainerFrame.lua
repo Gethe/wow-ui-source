@@ -1607,7 +1607,7 @@ function ContainerFrameItemButtonMixin:UpdateQuestItem(isQuestItem, questID, isA
 end
 
 function ContainerFrameItemButtonMixin:UpdateNewItem(quality)
-	if(not self.BattlepayItemTexture or self.NewItemTexture) then 
+	if(not self.BattlepayItemTexture and not self.NewItemTexture) then 
 		return; 
 	end 
 

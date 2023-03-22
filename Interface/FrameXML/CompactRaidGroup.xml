@@ -48,7 +48,7 @@
 			<Frame name="$parentBorderFrame" parentKey="borderFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMember1" relativePoint="TOPLEFT" x="-3" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMember5" relativePoint="BOTTOMRIGHT" x="8" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMember5" relativePoint="BOTTOMRIGHT" x="8" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

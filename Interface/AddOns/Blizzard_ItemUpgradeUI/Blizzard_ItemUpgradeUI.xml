@@ -270,9 +270,15 @@
 							</Anchors>
 						</FontString>
 
+						<FontString parentKey="UpgradeProgress" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+						</FontString>
+
 						<FontString parentKey="UpgradeTo" inherits="GameFontHighlight" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-10"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.UpgradeProgress" relativePoint="BOTTOMLEFT" y="-10"/>
 							</Anchors>
 						</FontString>
 					</Layer>
