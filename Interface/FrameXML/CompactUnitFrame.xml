@@ -105,6 +105,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true"/>
 	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -170,9 +171,22 @@
 			<Button name="$parentBuff6" inherits="CompactBuffTemplate"/>
 			<Button name="$parentBuff7" inherits="CompactBuffTemplate"/>
 			<Button name="$parentBuff8" inherits="CompactBuffTemplate"/>
-			<Button name="$parentDebuff1" inherits="CompactDebuffTemplate"/>
-			<Button name="$parentDebuff2" inherits="CompactDebuffTemplate"/>
-			<Button name="$parentDebuff3" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff1" parentKey="Debuff1" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff2" parentKey="Debuff2" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff3" parentKey="Debuff3" inherits="CompactDebuffTemplate"/>
+			<Frame parentKey="PrivateAuraAnchor1" inherits="CompactUnitPrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="PrivateAuraAnchor2" inherits="CompactUnitPrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PrivateAuraAnchor1" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
 			<Button name="$parentDispelDebuff1" inherits="CompactDispelDebuffTemplate"/>
 			<Button name="$parentDispelDebuff2" inherits="CompactDispelDebuffTemplate"/>
 			<Button name="$parentDispelDebuff3" inherits="CompactDispelDebuffTemplate"/>

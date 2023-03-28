@@ -152,11 +152,10 @@ function SettingsListElementInitializer:GetSetting()
 end
 
 function SettingsListElementInitializer:IsNewTagShown()
-	return self.newTagShown;
-end
-
-function SettingsListElementInitializer:SetNewTagShown(shown)
-	self.newTagShown = shown;
+	local setting = self:GetSetting();
+	if setting then
+		return setting:IsNewTagShown();
+	end
 end
 
 function SettingsListElementInitializer:SetSettingIntercept(interceptFunction)

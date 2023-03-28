@@ -1268,6 +1268,7 @@ local PvpInfo =
 				{ Name = "columnHeaderID", Type = "number", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "tooltipTitle", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 			},
 		},

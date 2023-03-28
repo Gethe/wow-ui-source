@@ -487,6 +487,11 @@ local function Register()
 		monitorSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
 		
 		Settings.CreateDropDown(category, monitorSetting, GetOptions, OPTION_TOOLTIP_PRIMARY_MONITOR);
+
+		local function UpdateSettingFromCVar()
+			monitorSetting:SetValue(getValue());
+		end
+		CVarCallbackRegistry:RegisterCallback("gxMonitor", UpdateSettingFromCVar);
 	end
 
 	-- Display Mode

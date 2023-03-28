@@ -688,6 +688,10 @@ function EditModeSystemMixin:SelectSystem()
 	end
 end
 
+function EditModeSystemMixin:SetSelectionShown(shown)
+	self.Selection:SetShown(shown);
+end
+
 function EditModeSystemMixin:OnEditModeEnter()
 	if not self.defaultHideSelection then
 		self:HighlightSystem();
@@ -1895,6 +1899,11 @@ function EditModeObjectiveTrackerSystemMixin:UpdateSystemSettingHeight()
 	ObjectiveTracker_UpdateHeight();
 end
 
+function EditModeObjectiveTrackerSystemMixin:UpdateSystemSettingOpacity()
+	self.editModeOpacity = self:GetSettingValue(Enum.EditModeObjectiveTrackerSetting.Opacity);
+	ObjectiveTracker_UpdateOpacity();
+end
+
 function EditModeObjectiveTrackerSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -1905,6 +1914,8 @@ function EditModeObjectiveTrackerSystemMixin:UpdateSystemSetting(setting, entire
 
 	if setting == Enum.EditModeObjectiveTrackerSetting.Height and self:HasSetting(Enum.EditModeObjectiveTrackerSetting.Height) then
 		self:UpdateSystemSettingHeight();
+	elseif setting == Enum.EditModeObjectiveTrackerSetting.Opacity and self:HasSetting(Enum.EditModeObjectiveTrackerSetting.Opacity) then
+		self:UpdateSystemSettingOpacity();
 	end
 
 	self:ClearDirtySetting(setting);

@@ -950,12 +950,17 @@ end
 BuffFramePrivateAuraAnchorMixin = {};
 
 function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
+	if unit == self.unit then
+		return;
+	end
+	self.unit = unit;
+
 	if self.anchorID then
 		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
+		self.anchorID = nil;
 	end
 
 	if unit then
-		local useCompactAura = false;
 		local iconAnchor =
 		{
 			point = "CENTER",
@@ -972,6 +977,21 @@ function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
 			offsetX = 0,
 			offsetY = 0,
 		};
-		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(unit, self.auraIndex, useCompactAura, self, iconAnchor, durationAnchor);
+
+		local privateAnchorArgs = {};
+		privateAnchorArgs.unitToken = unit;
+		privateAnchorArgs.auraIndex = self.auraIndex;
+		privateAnchorArgs.parent = self;
+		privateAnchorArgs.showCountdownFrame = false;
+		privateAnchorArgs.showCountdownNumbers = false;
+		privateAnchorArgs.iconInfo =
+		{
+			iconAnchor = iconAnchor,
+			iconWidth = self.Icon:GetWidth(),
+			iconHeight = self.Icon:GetHeight(),
+		};
+		privateAnchorArgs.durationAnchor = durationAnchor;
+
+		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
 	end
 end

@@ -3,6 +3,30 @@ local UnitConstants =
 	Tables =
 	{
 		{
+			Name = "AddPrivateAuraAnchorArgs",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "auraIndex", Type = "number", Nilable = false },
+				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
+				{ Name = "showCountdownFrame", Type = "bool", Nilable = false },
+				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
+				{ Name = "iconInfo", Type = "PrivateAuraIconInfo", Nilable = true },
+				{ Name = "durationAnchor", Type = "AnchorBinding", Nilable = true },
+			},
+		},
+		{
+			Name = "PrivateAuraIconInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "iconAnchor", Type = "AnchorBinding", Nilable = false },
+				{ Name = "iconWidth", Type = "uiUnit", Nilable = false },
+				{ Name = "iconHeight", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitAuraUpdateInfo",
 			Type = "Structure",
 			Fields =
@@ -21,7 +45,10 @@ local UnitConstants =
 				{ Name = "anchorID", Type = "number", Nilable = false },
 				{ Name = "unitToken", Type = "string", Nilable = false },
 				{ Name = "auraIndex", Type = "number", Nilable = false },
-				{ Name = "useCompactAura", Type = "bool", Nilable = false },
+				{ Name = "showCountdownFrame", Type = "bool", Nilable = false },
+				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
+				{ Name = "iconWidth", Type = "uiUnit", Nilable = true },
+				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
 			},
 		},
 	},

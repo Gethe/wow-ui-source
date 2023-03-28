@@ -164,6 +164,8 @@ function EditModeSettingSliderMixin:OnLoad()
 
 	self.cbrHandles = EventUtil.CreateCallbackHandleContainer();
 	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
+	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractStart, self.OnSliderInteractStart, self);
+	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractEnd, self.OnSliderInteractEnd, self);	
 end
 
 function EditModeSettingSliderMixin:SetupSetting(settingData)
@@ -211,6 +213,14 @@ function EditModeSettingSliderMixin:OnSliderValueChanged(value)
 	if not self.initInProgress then
 		EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
 	end
+end
+
+function EditModeSettingSliderMixin:OnSliderInteractStart()
+	EditModeSystemSettingsDialog:OnSettingInteractStart(self.setting);
+end
+
+function EditModeSettingSliderMixin:OnSliderInteractEnd()
+	EditModeSystemSettingsDialog:OnSettingInteractEnd(self.setting);
 end
 
 EditModeSettingCheckboxMixin = {};

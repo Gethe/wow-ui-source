@@ -127,8 +127,8 @@ Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
 Import("SOUNDKIT");
 
-BalanceEnabled = nil;
-BalanceAmount = 0;
+local BalanceEnabled = nil;
+local BalanceAmount = 0;
 
 local CURRENCY_UNKNOWN = 0;
 local CURRENCY_USD = 1;
@@ -336,6 +336,14 @@ local currencySpecific = {
 
 local function currencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
+	if currency == 0 or C_StoreSecure.GetLastProductListResponseError() ~= 0 then
+		-- If currency hasn't been updated yet, this is fine, it will be updated eventually.
+		-- If there was an error updating currency, this is also fine, it will either remain broken for
+		-- the remainder of the session or will eventually update.
+		return nil;
+	end
+
+	-- If the currency has been set to a non-zero value and there was no error, then this assert still needs to check that the formatting data exists.
 	local info = currencySpecific[currency];
 	assert(info ~= nil, ("Missing currency info for currency ID '%d', bpay product list status '%d'"):format(currency, C_StoreSecure.GetLastProductListResponseError()));
 	return info;
@@ -360,21 +368,63 @@ function WowTokenRedemptionFrame_OnLoad(self)
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 end
 
-
-function GetBalanceString()
+function GetBalanceString(amount)
 	local info = currencyInfo();
-	return info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0);
+	if info then
+		amount = amount or C_WowTokenSecure.GetBalanceRedeemAmount();
+		return info.currencyFormat(amount, 0);
+	end
+
+	return "";
+end
+
+local function CheckAwaitCurrencyIDBeforeUpdate(self)
+	local currencyID = C_StoreSecure.GetCurrencyID();
+	if currencyID == 0 and C_StoreSecure.GetLastProductListResponseError() == 0 then
+		-- If the error status is ok, but there's no currency, the currency id may not have been updated yet.
+		self:RegisterEvent("STORE_PRODUCTS_UPDATED");
+
+		-- Just in case this hasn't actually been requested yet or there was an error in an earlier response
+		-- make another attempt to force the currency update:
+		C_StoreSecure.GetProductList();
+		return true;
+	end
+
+	return false;
 end
 
 function WowTokenRedemptionFrame_Update(self)
 	BalanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-	if (BalanceEnabled) then
+	if BalanceEnabled and not CheckAwaitCurrencyIDBeforeUpdate(self) then
 		C_WowTokenSecure.SetBalanceAmountString(GetBalanceString());
 		WowTokenRedemptionFrame_EnableBalance(self);
+		WowTokenRedemptionFrame_UpdateRedeemBalance(self);
 	else
 		self:SetWidth(325);
 		self.RightInset:Hide();
 		self.RightDisplay:Hide();
+	end
+end
+
+function WowTokenRedemptionFrame_UpdateRedeemBalance(self)
+	local currentBalance, _, canRedeem, cannotRedeemReason = C_WowTokenSecure.GetBalanceRedemptionInfo();
+	if (canRedeem) then
+		WowTokenRedemptionFrame_EnableBalance(self);
+		self.RightDisplay.Format:SetText(HTML_START_CENTERED..GetBalanceRedemptionString()..HTML_END);
+		self.RightDisplay.Spinner:Hide();
+		self.RightDisplay.Format:Show();
+		self.RightDisplay.RedeemButton:Enable();
+	else
+		WowTokenRedemptionFrame_DisableBalance(self);
+		-- Right now, near cap is the only reason the server will send us cannot accept here.
+		-- Have a good (but not perfect) default in case reasons are added before we patch the UI with a better message.
+		if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
+			self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT:format(GetBalanceString(currentBalance))..HTML_END);
+		else
+			self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEMPTION_UNAVAILABLE..HTML_END);
+		end
+		self.RightDisplay.Spinner:Hide();
+		self.RightDisplay.Format:Show();
 	end
 end
 
@@ -386,7 +436,7 @@ function WowTokenRedemptionFrame_EnableBalance(self)
 	self.RightDisplay.Image:SetDesaturated(false);
 	self.RightDisplay.Image:SetAlpha(1);
 	self.RightDisplay.Description:SetFontObject("GameFontHighlight");
-	self.RightDisplay.Description:SetText(string.format(TOKEN_REDEEM_BALANCE_DESCRIPTION, GetBalanceString()));
+	self.RightDisplay.Description:SetText(TOKEN_REDEEM_BALANCE_DESCRIPTION:format(GetBalanceString()));
 	self.RightDisplay.RedeemButton:Enable();
 end
 
@@ -453,15 +503,15 @@ end
 function GetBalanceRedemptionString()
 	local currentBalance, addedBalance, canRedeem = C_WowTokenSecure.GetBalanceRedemptionInfo();
 
-	local info = currencyInfo();
-	local balanceStr = info.currencyFormat(currentBalance, 0);
-	local addedStr = info.currencyFormat(currentBalance + addedBalance, 0);
+	local balanceStr = GetBalanceString(currentBalance);
+	local addedStr = GetBalanceString(currentBalance + addedBalance);
 
-	return string.format(TOKEN_REDEEM_BALANCE_FORMAT, balanceStr, addedStr);
+	return TOKEN_REDEEM_BALANCE_FORMAT:format(balanceStr, addedStr);
 end
 
 function WowTokenRedemptionFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	CheckAwaitCurrencyIDBeforeUpdate(self);
 end
 
 function WowTokenRedemptionFrame_OnHide(self)
@@ -488,8 +538,7 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 				C_WowTokenSecure.CanRedeemForBalance();
 				self.RightDisplay.Format:Hide();
 				self.RightDisplay.Spinner:Show();
-				local info = currencyInfo();
-				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
+				self.RightDisplay.RedeemButton:SetText(TOKEN_REDEEM_BALANCE_BUTTON_LABEL:format(GetBalanceString()));
 			end
 		end
 		self:Show();
@@ -499,28 +548,11 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 		self.LeftDisplay.Format:Show();
 		self.LeftDisplay.RedeemButton:Enable();
 	elseif (event == "TOKEN_REDEEM_BALANCE_UPDATED") then
-		local currentBalance, _, canRedeem, cannotRedeemReason = C_WowTokenSecure.GetBalanceRedemptionInfo();
-		if (canRedeem) then
-			WowTokenRedemptionFrame_EnableBalance(self);
-			self.RightDisplay.Format:SetText(HTML_START_CENTERED..GetBalanceRedemptionString()..HTML_END);
-			self.RightDisplay.Spinner:Hide();
-			self.RightDisplay.Format:Show();
-			self.RightDisplay.RedeemButton:Enable();
-		else
-			WowTokenRedemptionFrame_DisableBalance(self);
-			-- Right now, near cap is the only reason the server will send us cannot accept here.
-			-- Have a good (but not perfect) default in case reasons are added before we patch the UI with a better message.
-			if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
-				local info = currencyInfo();
-				local amountStr = info.currencyFormat(currentBalance, 0);
-				self.RightDisplay.Format:SetText(HTML_START_CENTERED..string.format(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT, amountStr)..HTML_END);
-			else
-				self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEMPTION_UNAVAILABLE..HTML_END);
-			end
-			self.RightDisplay.Spinner:Hide();
-			self.RightDisplay.Format:Show();
-		end
+		WowTokenRedemptionFrame_UpdateRedeemBalance(self);
 	elseif (event == "TOKEN_STATUS_CHANGED") then
+		WowTokenRedemptionFrame_Update(self);
+	elseif event == "STORE_PRODUCTS_UPDATED" then
+		self:UnregisterEvent("STORE_PRODUCTS_UPDATED");
 		WowTokenRedemptionFrame_Update(self);
 	end
 end
@@ -704,7 +736,7 @@ dialogs = {
 		title = TOKEN_CONFIRMATION_TITLE,
 		description = TOKEN_REDEEM_BALANCE_CONFIRMATION_DESCRIPTION,
 		formatDesc = true,
-		descFormatArgs = function() local info = currencyInfo(); return { info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0) }; end,
+		descFormatArgs = function() return { GetBalanceString(); }; end,
 		confirmationDesc = nil, -- Now set in reaction to an event
 		confDescIsFunction = true,
 		button1 = ACCEPT,
@@ -734,9 +766,7 @@ dialogs = {
 		title = TOKEN_COMPLETE_TITLE,
 		description = TOKEN_COMPLETE_BALANCE_DESCRIPTION,
 		formatDesc = true,
-		descFormatArgs = function()
-			return { GetBalanceString() };
-		end,
+		descFormatArgs = function() return { GetBalanceString() }; end,
 		button1 = OKAY,
 		button1OnClick = function(self) self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },

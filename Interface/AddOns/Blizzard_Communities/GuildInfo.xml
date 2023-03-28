@@ -163,6 +163,7 @@
 		<Frames>
 			<ScrollFrame name="$parentMOTDScrollFrame" parentKey="MOTDScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
+					<!--Thumb cannot fit, so the choice was made to make it appear like a stepper.-->
 					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
 					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
 					<KeyValue key="scrollBarX" value="6" type="number"/>
@@ -246,11 +247,10 @@
 			</Button>
 			<ScrollFrame parentKey="DetailsFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>
-					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
 					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
 					<KeyValue key="scrollBarX" value="6" type="number"/>
-					<KeyValue key="scrollBarTopY" value="-29" type="number"/>
-					<KeyValue key="scrollBarBottomY" value="33" type="number"/>
+					<KeyValue key="scrollBarTopY" value="0" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="-1" type="number"/>
 				</KeyValues>
 				<Size x="246" y="93"/>
 				<Anchors>

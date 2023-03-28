@@ -74,7 +74,6 @@ function ScrollFrame_OnLoad(self)
 
 		self.ScrollBar = CreateFrame("EventFrame", nil, self, scrollBarTemplate);
 		self.ScrollBar:SetHideIfUnscrollable(self.scrollBarHideIfUnscrollable);
-		self.ScrollBar:SetHideThumbIfThumbExceedsTrack(self.scrollBarHideThumbIfThumbExceedsTrack);
 		self.ScrollBar:SetHideTrackIfThumbExceedsTrack(self.scrollBarHideTrackIfThumbExceedsTrack);
 		self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", left, top);
 		self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", left, bottom);
@@ -148,9 +147,9 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 end
 
 function InputScrollFrame_OnLoad(self)
-	self.scrollBarX = -13;
-	self.scrollBarTopY = -11;
-	self.scrollBarBottomY = 9;
+	self.scrollBarX = -10;
+	self.scrollBarTopY = -1;
+	self.scrollBarBottomY = -3;
 	self.scrollBarHideIfUnscrollable = true;
 
 	ScrollFrame_OnLoad(self);
@@ -177,10 +176,13 @@ function InputScrollFrame_OnTextChanged(self)
 		self.Instructions:Show();
 	end
 	scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
-	if ( scrollFrame.ScrollBar:IsShown() ) then
-		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
-	else
-		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
+
+	if scrollFrame.ScrollBar then
+		if ( scrollFrame.ScrollBar:IsShown() ) then
+			scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
+		else
+			scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
+		end
 	end
 end
 

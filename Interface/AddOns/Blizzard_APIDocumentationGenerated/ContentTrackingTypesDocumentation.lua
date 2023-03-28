@@ -62,6 +62,7 @@ local ContentTrackingTypes =
 				{ Name = "targetType", Type = "ContentTrackingTargetType", Nilable = false },
 				{ Name = "targetID", Type = "number", Nilable = false },
 				{ Name = "targetSubInfo", Type = "number", Nilable = true },
+				{ Name = "waypointText", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -82,7 +83,7 @@ local ContentTrackingTypes =
 			Fields =
 			{
 				{ Name = "creatureName", Type = "cstring", Nilable = false },
-				{ Name = "zoneName", Type = "cstring", Nilable = false },
+				{ Name = "zoneName", Type = "cstring", Nilable = true },
 				{ Name = "currencyType", Type = "number", Nilable = true },
 				{ Name = "cost", Type = "BigUInteger", Nilable = true },
 			},

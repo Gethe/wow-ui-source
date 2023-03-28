@@ -373,14 +373,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 			if strlen(statColumn.name) > 0 then
 				column = tableBuilder:AddColumn();
 				local sortType = "stat"..columnIndex;
-				if cellStatTemplate == "PVPSoloShuffleCellStatTemplate" then
-					-- Keeping a similar style to the "BATTLEGROUND_RATING" column where the tooltip is just the column name
-					local tooltipTitle, tooltipText = statColumn.tooltip, nil;
-					column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, tooltipTitle);
-				else
-					local tooltipTitle, tooltipText = statColumn.name, statColumn.tooltip;
-					column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, tooltipTitle, tooltipText);
-				end
+				column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, statColumn.tooltipTitle, statColumn.tooltip);
 				column:ConstrainToHeader(textPadding);
 				column:ConstructCells("FRAME", cellStatTemplate, statColumn.pvpStatID, useAlternateColor);
 			end

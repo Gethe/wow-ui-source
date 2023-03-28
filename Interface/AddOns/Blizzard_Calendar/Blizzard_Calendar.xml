@@ -945,11 +945,11 @@
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<KeyValues>
-							<KeyValue key="hideTrack" value="true" type="boolean"/>
+							<KeyValue key="minThumbExtent" value="17" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-5" y="-14"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT" x="-5" y="12"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-5" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT" x="-5" y="-1"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>

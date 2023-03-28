@@ -7,18 +7,42 @@ function AddonCompartmentMixin:OnLoad()
 
 	local addonCount = GetNumAddOns();
 	for addon = 1, addonCount do
-		local addonCompartmentFunc = GetAddOnEnableState(nil, addon) > 0 and GetAddOnMetadata(addon, "AddonCompartmentFunc");
-		if addonCompartmentFunc then
-			local name, title, notes, loadable, reason, security = GetAddOnInfo(addon);
-
+		local addonEnabled = GetAddOnEnableState(nil, addon) > 0;
+		local addonCompartmentFunc = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFunc");
+		local name, title, notes, loadable, reason, security = GetAddOnInfo(addon);
+		if addonEnabled and addonCompartmentFunc and (loadable or reason == "DEMAND_LOADED") then
 			local info = UIDropDownMenu_CreateInfo();
 			info.text = title;
-			info.icon = GetAddOnMetadata(addon, "IconTexture") or GetAddOnMetadata(addon, "IconAtlas");
+			info.icon = C_AddOns.GetAddOnMetadata(addon, "IconTexture") or C_AddOns.GetAddOnMetadata(addon, "IconAtlas");
 			info.notCheckable = true;
-			info.func = function()
+			info.registerForRightClick = true;
+
+			local function CallAddonGlobalFunc(addonCompartmentFunc, addonName, ...)
 				forceinsecure();
-				_G[addonCompartmentFunc](name);
+				if reason == "DEMAND_LOADED" and not IsAddOnLoaded(addonName) then
+					LoadAddOn(addonName);
+				end
+				_G[addonCompartmentFunc](addonName, ...);
+			end
+
+			info.func = function(btn, arg1, arg2, checked, mouseButton)
+				CallAddonGlobalFunc(addonCompartmentFunc, name, mouseButton);
 			end;
+
+			local onEnterGlobal = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFuncOnEnter");
+			if onEnterGlobal then
+				info.funcOnEnter = function()
+					CallAddonGlobalFunc(onEnterGlobal, name);
+				end
+			end
+
+			local onLeaveGlobal = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFuncOnLeave");
+			if onLeaveGlobal then
+				info.funcOnLeave = function()
+					CallAddonGlobalFunc(onLeaveGlobal, name);
+				end
+			end
+
 			table.insert(self.registeredAddons, info);
 		end
 	end

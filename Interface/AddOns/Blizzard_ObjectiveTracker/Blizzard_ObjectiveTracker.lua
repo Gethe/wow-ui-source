@@ -815,6 +815,12 @@ function ObjectiveTracker_UpdateHeight()
 	end
 end
 
+function ObjectiveTracker_UpdateOpacity()
+	local self = ObjectiveTrackerFrame;
+	local alpha = (self.editModeOpacity or 0) / 100;
+	self.NineSlice:SetAlpha(alpha);
+end
+
 function ObjectiveTracker_OnShow(self)
 	UIParentManagedFrameMixin.OnShow(self);
 	ObjectiveTracker_UpdateHeight();
@@ -1068,6 +1074,7 @@ function ObjectiveTracker_Collapse()
 	ObjectiveTrackerFrame.BlocksFrame:Hide();
 	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:SetCollapsed(true);
 	ObjectiveTrackerFrame.HeaderMenu.Title:Show();
+	ObjectiveTracker_UpdateBackground();
 end
 
 function ObjectiveTracker_Expand()
@@ -1075,6 +1082,7 @@ function ObjectiveTracker_Expand()
 	ObjectiveTrackerFrame.BlocksFrame:Show();
 	ObjectiveTrackerFrame.HeaderMenu.MinimizeButton:SetCollapsed(false);
 	ObjectiveTrackerFrame.HeaderMenu.Title:Hide();
+	ObjectiveTracker_UpdateBackground();
 end
 
 function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
@@ -1457,6 +1465,7 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 	end
 
 	ObjectiveTracker_ReorderModules();
+	ObjectiveTracker_UpdateBackground();
 	ObjectiveTracker_UpdatePOIs();
 	ObjectiveTracker_AnimateHeaders(currentHeaders);
 
@@ -1476,6 +1485,23 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 
 	if tracker:IsInDefaultPosition() then
 		UIParent_ManageFramePositions();
+	end
+end
+
+function ObjectiveTracker_UpdateBackground()
+	local lastBlock;
+	for index, module in ipairs_reverse(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
+		if module.topBlock then
+			lastBlock = module.lastBlock;
+			break;
+		end
+	end
+
+	if lastBlock and not ObjectiveTrackerFrame.collapsed then
+		ObjectiveTrackerFrame.NineSlice:Show();
+		ObjectiveTrackerFrame.NineSlice:SetPoint("BOTTOM", lastBlock, "BOTTOM", 0, -10);
+	else
+		ObjectiveTrackerFrame.NineSlice:Hide();
 	end
 end
 

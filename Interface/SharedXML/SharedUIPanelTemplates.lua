@@ -263,11 +263,14 @@ function SearchBoxTemplate_OnTextChanged(self)
 	InputBoxInstructions_OnTextChanged(self);
 end
 
+function SearchBoxTemplate_ClearText(self)
+	self:SetText("");
+	self:ClearFocus();
+end
+
 function SearchBoxTemplateClearButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local editBox = self:GetParent();
-	editBox:SetText("");
-	editBox:ClearFocus();
+	SearchBoxTemplate_ClearText(self:GetParent());
 end
 
 PanelTabButtonMixin = {};
@@ -2853,6 +2856,277 @@ end
 
 function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
 	self.editBoxIconSelector = iconSelector;
+end
+
+SearchBoxListElementMixin = {};
+
+function SearchBoxListElementMixin:OnEnter()
+	self:GetParent():SetSearchPreviewSelection(self:GetID());
+end
+
+function SearchBoxListElementMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+end
+
+-- SearchBoxListMixin was refactored out of EncounterJournal for use in Professions but is not complete. It doesn't
+-- provide any interface for handling the bar progress updates.
+SearchBoxListMixin = {};
+
+function SearchBoxListMixin:OnLoad()
+	SearchBoxTemplate_OnLoad(self);
+
+	self.searchButtons = {};
+
+	local function SetupButton(button, index)
+		button:SetFrameStrata("DIALOG");
+		button:SetFrameLevel(self:GetFrameLevel() + 10);
+		button:SetID(index);
+		button:Hide();
+	end
+
+	local buttonFirst = CreateFrame("BUTTON", nil, self, self.buttonTemplate);
+	buttonFirst:SetPoint("TOPLEFT", self.searchPreviewContainer, "TOPLEFT");
+	buttonFirst:SetPoint("BOTTOMRIGHT", self.searchPreviewContainer, "BOTTOMRIGHT");
+	SetupButton(buttonFirst, 1);
+	table.insert(self.searchButtons, buttonFirst);
+
+	local buttonsMax = math.max(1, self.buttonCount or 5);
+	local buttonIndex = 2;
+	local buttonLast = buttonFirst;
+	while buttonIndex <= buttonsMax do
+		local button = CreateFrame("BUTTON", nil, self, self.buttonTemplate);
+		button:SetPoint("TOPLEFT", buttonLast, "BOTTOMLEFT");
+		button:SetPoint("TOPRIGHT", buttonLast, "BOTTOMRIGHT");
+		SetupButton(button, buttonIndex);
+
+		table.insert(self.searchButtons, button);
+		buttonIndex = buttonIndex + 1;
+		buttonLast = button;
+	end
+
+	self.showAllResults = CreateFrame("BUTTON", nil, self, self.showAllButtonTemplate);
+	self.showAllResults:SetPoint("LEFT", buttonFirst, "LEFT");
+	self.showAllResults:SetPoint("RIGHT", buttonFirst, "RIGHT");
+	self.showAllResults:SetPoint("TOP", buttonLast, "BOTTOM");
+	local showAllResultsIndex =  #self.searchButtons + 1;
+	SetupButton(self.showAllResults, showAllResultsIndex);
+	self.allResultsIndex = showAllResultsIndex;
+
+	local bar = self.searchProgress.bar;
+	bar:SetStatusBarColor(0, .6, 0, 1);
+	bar:SetMinMaxValues(0, 1000);
+	bar:SetValue(0);
+	bar:GetStatusBarTexture():SetDrawLayer("BORDER");
+
+	bar:SetScript("OnHide", function()
+		bar:SetValue(0);
+		bar.previousResults = nil;
+	end);
+	
+	self.HasStickyFocus = function()
+		return DoesAncestryInclude(self, GetMouseFocus());
+	end
+	self.selectedIndex = 1;
+end
+
+function SearchBoxListMixin:HideSearchPreview()
+	self.searchProgress:Hide();
+	self.showAllResults:Hide();
+
+	for index, button in ipairs(self.searchButtons) do
+		button:Hide();
+	end
+
+	self.searchPreviewContainer:Hide();
+end
+
+function SearchBoxListMixin:HideSearchProgress()
+	self.searchProgress:Hide();
+	self:FixSearchPreviewBottomBorder();
+end
+
+function SearchBoxListMixin:Close()
+	self:HideSearchPreview();
+	self:ClearFocus();
+end
+
+function SearchBoxListMixin:Clear()
+	self.clearButton:Click();
+end
+
+function SearchBoxListMixin:IsSearchPreviewShown()
+	return self.searchPreviewContainer:IsShown();
+end
+
+function SearchBoxListMixin:SetSearchResultsFrame(frame)
+	self.searchResultsFrame = frame;
+end
+
+function SearchBoxListMixin:OnShow()
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+end
+
+function SearchBoxListMixin:IsCurrentTextValidForSearch()
+	return self:IsTextValidForSearch(self:GetText());
+end
+
+function SearchBoxListMixin:IsTextValidForSearch(text)
+	return strlen(text) >= (self.minCharacters or 1);
+end
+
+function SearchBoxListMixin:OnTextChanged()
+	SearchBoxTemplate_OnTextChanged(self);
+
+	local text = self:GetText();
+	if not self:IsTextValidForSearch(text) then
+		self:HideSearchPreview();
+		return false, text;
+	end
+	
+	self:SetSearchPreviewSelection(1);
+
+	return true, text;
+end
+
+function SearchBoxListMixin:GetButtons()
+	return self.searchButtons;
+end
+
+function SearchBoxListMixin:GetAllResultsButton()
+	return self.showAllResults;
+end
+
+function SearchBoxListMixin:GetSearchButtonCount()
+	return #self:GetButtons();
+end
+
+function SearchBoxListMixin:UpdateSearchPreview(finished, dbLoaded, numResults)
+	local lastShown = self;
+	if self.searchButtons[numResults] then
+		lastShown = self.searchButtons[numResults];
+	end
+
+	self.showAllResults:Hide();
+	self.searchProgress:Hide();
+	if not finished then
+		self.searchProgress:SetPoint("TOP", lastShown, "BOTTOM", 0, 0);
+
+		if dbLoaded then
+			self.searchProgress.loading:Hide();
+			self.searchProgress.bar:Show();
+		else
+			self.searchProgress.loading:Show();
+			self.searchProgress.bar:Hide();
+		end
+
+		self.searchProgress:Show();
+	elseif not self.searchButtons[numResults] then
+		self.showAllResults.text:SetText(SEARCH_RESULTS_SHOW_COUNT:format(numResults));
+		self.showAllResults:Show();
+	end
+
+	self:FixSearchPreviewBottomBorder();
+	self.searchPreviewContainer:Show();
+end
+
+function SearchBoxListMixin:FixSearchPreviewBottomBorder()
+	local lastShownButton = nil;
+	if self.showAllResults:IsShown() then
+		lastShownButton = self.showAllResults;
+	elseif self.searchProgress:IsShown() then
+		lastShownButton = self.searchProgress;
+	else
+		for index, button in ipairs(self:GetButtons()) do
+			if button:IsShown() then
+				lastShownButton = button;
+			end
+		end
+	end
+
+	if lastShownButton ~= nil then
+		self.searchPreviewContainer.botRightCorner:SetPoint("BOTTOM", lastShownButton, "BOTTOM", 0, -8);
+		self.searchPreviewContainer.botLeftCorner:SetPoint("BOTTOM", lastShownButton, "BOTTOM", 0, -8);
+	else
+		self:HideSearchPreview();
+	end
+end
+
+function SearchBoxListMixin:SetSearchPreviewSelection(selectedIndex)
+	local numShown = 0;
+	for index, button in ipairs(self:GetButtons()) do
+		button.selectedTexture:Hide();
+
+		if button:IsShown() then
+			numShown = numShown + 1;
+		end
+	end
+
+	if self.showAllResults:IsShown() then
+		numShown = numShown + 1;
+	end
+	self.showAllResults.selectedTexture:Hide();
+
+	if numShown == 0 then
+		selectedIndex = 1;
+	elseif selectedIndex > numShown then
+		-- Wrap under to the beginning.
+		selectedIndex = 1;
+	elseif selectedIndex < 1 then
+		-- Wrap over to the end;
+		selectedIndex = numShown;
+	end
+
+	self.selectedIndex = selectedIndex;
+
+	if selectedIndex == self.allResultsIndex then
+		self.showAllResults.selectedTexture:Show();
+	else
+		self.searchButtons[selectedIndex].selectedTexture:Show();
+	end
+end
+
+function SearchBoxListMixin:SetSearchPreviewSelectionToAllResults()
+	self:SetSearchPreviewSelection(self.allResultsIndex);
+end
+
+function SearchBoxListMixin:OnEnterPressed()
+	if self.selectedIndex > self.allResultsIndex or self.selectedIndex < 0 then
+		return;
+	elseif self.selectedIndex == self.allResultsIndex then
+		if self.showAllResults:IsShown() then
+			self.showAllResults:Click();
+		end
+	else
+		local preview = self.searchButtons[self.selectedIndex];
+		if preview:IsShown() then
+			preview:Click();
+		end
+	end
+
+	self:HideSearchPreview();
+end
+
+function SearchBoxListMixin:OnKeyDown(key)
+	if key == "UP" then
+		self:SetSearchPreviewSelection(self.selectedIndex - 1);
+	elseif key == "DOWN" then
+		self:SetSearchPreviewSelection(self.selectedIndex + 1);
+	end
+end
+
+function SearchBoxListMixin:OnFocusLost()
+	SearchBoxTemplate_OnEditFocusLost(self);
+	self:HideSearchPreview();
+end
+
+function SearchBoxListMixin:OnFocusGained()
+	SearchBoxTemplate_OnEditFocusGained(self);
+
+	if self.searchResultsFrame then
+		self.searchResultsFrame:Hide();
+	end
+
+	self:SetSearchPreviewSelection(1);
 end
 
 RingedFrameWithTooltipMixin = {};

@@ -853,7 +853,7 @@ CharacterCreateNavForwardButtonMixin = {};
 
 function CharacterCreateNavForwardButtonMixin:OnLoad_NavForward()
 	EventRegistry:RegisterCallback("CharacterCreate.AddNavBlocker", function()
-		if GetMouseMotionFocus() == self then
+		if self:IsMouseMotionFocus() then
 			self:OnLeave();
 			self:OnEnter();
 		end

@@ -12,7 +12,6 @@
 			<KeyValue key="minThumbExtent" value="10" type="number"/>
 			<KeyValue key="hideTrack" value="false" type="boolean"/>
 			<KeyValue key="hideTrackIfThumbExceedsTrack" value="false" type="boolean"/>
-			<KeyValue key="hideThumbIfThumbExceedsTrack" value="false" type="boolean"/>
 			<KeyValue key="thumbAnchor" value="TOPLEFT" type="string"/>
 			<KeyValue key="panRepeatTime" value=".1" type="number"/>
 			<KeyValue key="panDelay" value=".5" type="number"/>

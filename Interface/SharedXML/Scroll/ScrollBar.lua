@@ -230,11 +230,6 @@ function ScrollBarMixin:SetHideIfUnscrollable(hide)
 	self:Update();
 end
 
-function ScrollBarMixin:SetHideThumbIfThumbExceedsTrack(hide)
-	self.hideThumbIfThumbExceedsTrack = hide;
-	self:Update();
-end
-
 function ScrollBarMixin:SetHideTrackIfThumbExceedsTrack(hide)
 	self.hideTrackIfThumbExceedsTrack = hide;
 	self:Update();
@@ -282,9 +277,9 @@ function ScrollBarMixin:Update()
 
 	thumb:SetPoint(self:GetThumbAnchor(), self:GetTrack(), self:GetThumbAnchor(), x, y);
 	
-	-- hideTrack, hideThumbIfThumbExceedsTrack and hideTrackIfThumbExceedsTrack are not expected to be enabled unless
+	-- hideTrack and hideTrackIfThumbExceedsTrack are not expected to be enabled unless
 	-- the thumb's cannot appear correctly when it's extent is clamped to the track's extent.
-	local showThumb = hasScrollableExtent and not (clampedThumb and self.hideThumbIfThumbExceedsTrack);
+	local showThumb = hasScrollableExtent and not clampedThumb;
 	thumb:SetShown(showThumb);
 	thumb:SetEnabled(scrollEnabled);
 
@@ -306,7 +301,7 @@ function ScrollBarMixin:DisableControls()
 end
 
 function ScrollBarMixin:CanCursorStepInDirection(direction)
-	local c = self:SelectCursorComponent();
+	local c = self:SelectCursorComponent(self:GetEffectiveScale());
 	if direction ==  ScrollControllerMixin.Directions.Decrease then
 		if self.isHorizontal then
 			return c < self:GetUpper(self:GetThumb());
@@ -430,7 +425,7 @@ function ScrollBarMixin:OnThumbMouseDown(button, buttonName)
 
 	self.requireInternalScope = true;
 	
-	local c = self:SelectCursorComponent();
+	local c = self:SelectCursorComponent(self:GetEffectiveScale());
 	local scrollPercentage = self:GetScrollPercentage();
 	local extentRemaining = self:GetTrackExtent() - self:GetFrameExtent(self:GetThumb());
 	
@@ -448,7 +443,7 @@ function ScrollBarMixin:OnThumbMouseDown(button, buttonName)
 	end
 
 	self:SetScript("OnUpdate", function()
-		local c = Clamp(self:SelectCursorComponent(), min, max);
+		local c = Clamp(self:SelectCursorComponent(self:GetEffectiveScale()), min, max);
 		local scrollPercentage;
 		if self.isHorizontal then
 			scrollPercentage = PercentageBetween(c, min, max);

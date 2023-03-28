@@ -192,6 +192,7 @@ function CompactUnitFrame_SetUnit(frame, unit)
 			end
 		end
 		CompactUnitFrame_UpdateAll(frame);
+		CompactUnitFrame_UpdatePrivateAuras(frame);
 	end
 end
 
@@ -1363,6 +1364,7 @@ do
 			end);
 
 			CompactUnitFrame_HideAllDebuffs(frame, frameNum);
+			CompactUnitFrame_UpdatePrivateAuras(frame);
 		end
 
 		if buffsChanged then
@@ -1519,6 +1521,31 @@ function CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, aura)
 	dispellDebuffFrame:Show();
 	dispellDebuffFrame.icon:SetTexture("Interface\\RaidFrame\\Raid-Icon-Debuff"..aura.dispelName);
 	dispellDebuffFrame.auraInstanceID = aura.auraInstanceID;
+end
+
+function CompactUnitFrame_UpdatePrivateAuras(frame)
+	if not frame.PrivateAuraAnchors then
+		return;
+	end
+
+	for _, auraAnchor in ipairs(frame.PrivateAuraAnchors) do
+		auraAnchor:SetUnit(frame.displayedUnit);
+	end
+
+	local lastShownDebuff;
+	for i = 3, 1, -1 do
+		local debuff = frame["Debuff"..i];
+		if debuff:IsShown() then
+			lastShownDebuff = debuff;
+			break;
+		end
+	end
+	frame.PrivateAuraAnchor1:ClearAllPoints();
+	if lastShownDebuff then
+		frame.PrivateAuraAnchor1:SetPoint("BOTTOMLEFT", lastShownDebuff, "BOTTOMRIGHT", 0, 0);
+	else
+		frame.PrivateAuraAnchor1:SetPoint("BOTTOMLEFT", frame.Debuff1, "BOTTOMLEFT", 0, 0);
+	end
 end
 
 --Dropdown
@@ -1722,6 +1749,13 @@ function DefaultCompactUnitFrameSetup(frame)
 		frame.debuffFrames[i].baseSize = buffSize;
 		frame.debuffFrames[i].maxHeight = maxDebuffSize;
 		--frame.debuffFrames[i]:SetSize(11, 11);
+	end
+
+	if frame.PrivateAuraAnchors then
+		for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
+			local size = min(buffSize + BOSS_DEBUFF_SIZE_INCREASE, maxDebuffSize);
+			privateAuraAnchor:SetSize(size, size);
+		end
 	end
 
 	frame.dispelDebuffFrames[1]:SetPoint("TOPRIGHT", -3, -2);
@@ -2168,4 +2202,46 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 	end
 
 	frame.healthBar.border:UpdateSizes();
+end
+
+
+CompactUnitPrivateAuraAnchorMixin = {};
+
+function CompactUnitPrivateAuraAnchorMixin:SetUnit(unit)
+	if unit == self.unit then
+		return;
+	end
+	self.unit = unit;
+
+	if self.anchorID then
+		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
+		self.anchorID = nil;
+	end
+
+	if unit then
+		local iconAnchor =
+		{
+			point = "CENTER",
+			relativeTo = self,
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
+		};
+
+		local privateAnchorArgs = {};
+		privateAnchorArgs.unitToken = unit;
+		privateAnchorArgs.auraIndex = self.auraIndex;
+		privateAnchorArgs.parent = self;
+		privateAnchorArgs.showCountdownFrame = true;
+		privateAnchorArgs.showCountdownNumbers = false;
+		privateAnchorArgs.iconInfo =
+		{
+			iconAnchor = iconAnchor,
+			iconWidth = self:GetWidth(),
+			iconHeight = self:GetHeight(),
+		};
+		privateAnchorArgs.durationAnchor = nil;
+
+		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
+	end
 end

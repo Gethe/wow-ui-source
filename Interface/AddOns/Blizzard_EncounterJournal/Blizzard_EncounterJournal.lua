@@ -18,9 +18,6 @@ local EJ_NUM_INSTANCE_PER_ROW = 4;
 
 local EJ_MAX_SECTION_MOVE = 320;
 
-local EJ_NUM_SEARCH_PREVIEWS = 5;
-local EJ_SHOW_ALL_SEARCH_RESULTS_INDEX = EJ_NUM_SEARCH_PREVIEWS + 1;
-
 local EJ_TIER_INDEX_SHADOWLANDS = 9;
 
 AJ_MAX_NUM_SUGGESTIONS = 3;
@@ -440,6 +437,15 @@ function EncounterJournal_OnLoad(self)
 		ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, scrollBar);
 	end
 
+	do
+		EncounterJournal.searchBox:SetSearchResultsFrame(EncounterJournal.searchResults);
+		EncounterJournal.searchBox:SetScript("OnTextChanged", EncounterJournalSearchBox_OnTextChanged);
+		EncounterJournal.searchBox:SetScript("OnEditFocusGained", EncounterJournalSearchBox_OnEditFocusGained);
+		EncounterJournal.searchBox:SetScript("OnHide", EncounterJournalSearchBox_OnHide);
+		EncounterJournal.searchBox.searchProgress.bar:SetScript("OnUpdate", 
+			EncounterJournalSearchBoxSearchProgressBar_OnUpdate);
+	end
+
 	local homeData = {
 		name = HOME,
 		OnClick = function()
@@ -660,9 +666,7 @@ function EncounterJournal_OnHide(self)
 	self:UnregisterEvent("SPELL_TEXT_UPDATE");
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-	if self.searchBox.clearButton then
-		self.searchBox.clearButton:Click();
-	end
+	self.searchBox:Clear();
 	EJ_EndSearch();
 	self.shouldDisplayDifficulty = nil;
 end
@@ -766,7 +770,7 @@ function EncounterJournal_OnEvent(self, event, ...)
 
 			if EncounterJournal.searchResults:IsShown() then
 				EncounterJournal_SearchUpdate();
-			elseif EncounterJouranl_IsSearchPreviewShown() then
+			elseif EncounterJournal.searchBox:IsSearchPreviewShown() then
 				EncounterJournal_UpdateSearchPreview();
 			end
 		else
@@ -1975,8 +1979,7 @@ function EncounterJournal_ClearDetails()
 	EncounterJournal_HideCreatures(clearDisplayInfo);
 
 	EncounterJournal.searchResults:Hide();
-	EncounterJournal_HideSearchPreview();
-	EncounterJournal.searchBox:ClearFocus();
+	EncounterJournal.searchBox:Close();
 end
 
 function EncounterJournal_TabClicked(self, button)
@@ -2263,8 +2266,7 @@ function EncounterJournal_ShowFullSearch()
 	EncounterJournal.searchResults.TitleText:SetText(string.format(ENCOUNTER_JOURNAL_SEARCH_RESULTS, EncounterJournal.searchBox:GetText(), numResults));
 	EncounterJournal.searchResults:Show();
 	EncounterJournal_SearchUpdate();
-	EncounterJournal_HideSearchPreview();
-	EncounterJournal.searchBox:ClearFocus();
+	EncounterJournal.searchBox:Close();
 end
 
 function EncounterJournal_RestartSearchTracking()
@@ -2275,8 +2277,7 @@ function EncounterJournal_RestartSearchTracking()
 		EncounterJournal.searchBox:SetScript("OnUpdate", EncounterJournalSearchBox_OnUpdate);
 
 		--Since we just restarted the search we hide the progress bar until the search delay is done.
-		EncounterJournal.searchBox.searchProgress:Hide();
-		EncounterJournal_FixSearchPreviewBottomBorder();
+		EncounterJournal.searchBox:HideSearchProgress();
 	end
 end
 
@@ -2309,23 +2310,6 @@ function EncounterJournalSearchBox_OnUpdate(self, elapsed)
 	end
 end
 
-function EncounterJournalSearchBoxSearchProgressBar_OnLoad(self)
-	self:SetStatusBarColor(0, .6, 0, 1);
-	self:SetMinMaxValues(0, 1000);
-	self:SetValue(0);
-	self:GetStatusBarTexture():SetDrawLayer("BORDER");
-end
-
-function EncounterJournalSearchBoxSearchProgressBar_OnShow(self)
-	self:SetScript("OnUpdate", EncounterJournalSearchBoxSearchProgressBar_OnUpdate);
-end
-
-function EncounterJournalSearchBoxSearchProgressBar_OnHide(self)
-	self:SetScript("OnUpdate", nil);
-	self:SetValue(0);
-	self.previousResults = nil;
-end
-
 -- If the searcher does not finish within the update delay then a search progress bar is displayed that
 -- will fill until the search is finished and then display the search preview results.
 function EncounterJournalSearchBoxSearchProgressBar_OnUpdate(self, elapsed)
@@ -2339,7 +2323,7 @@ function EncounterJournalSearchBoxSearchProgressBar_OnUpdate(self, elapsed)
 
 	--If we don't already have the max number of search previews keep checking if
 	--we have new results we can display (unless we are delaying updates).
-	if (self.previousResults == nil) or (self.previousResults < EJ_NUM_SEARCH_PREVIEWS) and
+	if (self.previousResults == nil) or (self.previousResults < EncounterJournal.searchBox:GetSearchButtonCount()) and
 		(EncounterJournal.searchBox.searchPreviewUpdateDelay == nil) then
 		local numResults = EJ_GetNumSearchResults();
 		if (self.previousResults == nil and numResults > 0) or (numResults ~= self.previousResults) then
@@ -2352,28 +2336,47 @@ function EncounterJournalSearchBoxSearchProgressBar_OnUpdate(self, elapsed)
 	if self:GetValue() >= maxValue then
 		self:SetScript("OnUpdate", nil);
 		self:SetValue(0);
-		EncounterJournal.searchBox.searchProgress:Hide();
+		EncounterJournal.searchBox:HideSearchProgress();
 		EncounterJournal_ShowSearch();
 	end
 end
 
+function EncounterJournalSearchBox_OnTextChanged(editBox)
+	local valid, text = SearchBoxListMixin.OnTextChanged(editBox);
+	if valid then
+		EJ_SetSearch(text);
+		EncounterJournal_RestartSearchTracking();
+	else
+		EJ_ClearSearch();
+		EncounterJournal.searchResults:Hide();
+	end
+end
+
+function EncounterJournalSearchBox_OnEditFocusGained(editBox)
+	SearchBoxListMixin.OnFocusGained(editBox);
+
+	EncounterJournal_UpdateSearchPreview();
+end
+
+function EncounterJournalSearchBox_OnHide(editBox)
+	editBox.searchPreviewUpdateDelay = nil;
+	editBox:SetScript("OnUpdate", nil);
+end
+
 function EncounterJournal_UpdateSearchPreview()
-	if strlen(EncounterJournal.searchBox:GetText()) < MIN_CHARACTER_SEARCH then
-		EncounterJournal_HideSearchPreview();
+	if not EncounterJournal.searchBox:IsCurrentTextValidForSearch() then
+		EncounterJournal.searchBox:HideSearchPreview();
 		EncounterJournal.searchResults:Hide();
 		return;
 	end
 
 	local numResults = EJ_GetNumSearchResults();
-
 	if numResults == 0 and EJ_IsSearchFinished() then
-		EncounterJournal_HideSearchPreview();
+		EncounterJournal.searchBox:HideSearchPreview();
 		return;
 	end
 
-	local lastShown = EncounterJournal.searchBox;
-	for index = 1, EJ_NUM_SEARCH_PREVIEWS do
-		local button = EncounterJournal.searchBox.searchPreview[index];
+	for index, button in ipairs(EncounterJournal.searchBox:GetButtons()) do
 		if index <= numResults then
 			local spellID, name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
 			button.spellID = spellID;
@@ -2385,192 +2388,22 @@ function EncounterJournal_UpdateSearchPreview()
 			end
 			button:SetID(index);
 			button:Show();
-			lastShown = button;
 		else
 			button:Hide();
 		end
 	end
 
-	EncounterJournal.searchBox.showAllResults:Hide();
-	EncounterJournal.searchBox.searchProgress:Hide();
-	if not EJ_IsSearchFinished() then
-		EncounterJournal.searchBox.searchProgress:SetPoint("TOP", lastShown, "BOTTOM", 0, 0);
-
-		-- If there are no items to search then the search DB isn't loaded yet.
-		if EJ_GetSearchSize() == 0 then
-			EncounterJournal.searchBox.searchProgress.loading:Show();
-			EncounterJournal.searchBox.searchProgress.bar:Hide();
-		else
-			EncounterJournal.searchBox.searchProgress.loading:Hide();
-			EncounterJournal.searchBox.searchProgress.bar:Show();
-		end
-
-		EncounterJournal.searchBox.searchProgress:Show();
-	elseif numResults > EJ_NUM_SEARCH_PREVIEWS then
-		EncounterJournal.searchBox.showAllResults.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, numResults));
-		EncounterJournal.searchBox.showAllResults:Show();
-	end
-
-	EncounterJournal_FixSearchPreviewBottomBorder();
-	EncounterJournal.searchBox.searchPreviewContainer:Show();
-end
-
-function EncounterJournal_FixSearchPreviewBottomBorder()
-	local lastShownButton = nil;
-	if EncounterJournal.searchBox.showAllResults:IsShown() then
-		lastShownButton = EncounterJournal.searchBox.showAllResults;
-	elseif EncounterJournal.searchBox.searchProgress:IsShown() then
-		lastShownButton = EncounterJournal.searchBox.searchProgress;
-	else
-		for index = 1, EJ_NUM_SEARCH_PREVIEWS do
-			local button = EncounterJournal.searchBox.searchPreview[index];
-			if button:IsShown() then
-				lastShownButton = button;
-			end
-		end
-	end
-
-	if lastShownButton ~= nil then
-		EncounterJournal.searchBox.searchPreviewContainer.botRightCorner:SetPoint("BOTTOM", lastShownButton, "BOTTOM", 0, -8);
-		EncounterJournal.searchBox.searchPreviewContainer.botLeftCorner:SetPoint("BOTTOM", lastShownButton, "BOTTOM", 0, -8);
-	else
-		EncounterJournal_HideSearchPreview();
-	end
-end
-
-function EncounterJouranl_IsSearchPreviewShown()
-	return EncounterJournal.searchBox.searchPreviewContainer:IsShown();
-end
-
-function EncounterJournal_HideSearchPreview()
-	EncounterJournal.searchBox.showAllResults:Hide();
-	EncounterJournal.searchBox.searchProgress:Hide();
-
-	local index = 1;
-	local unusedButton = EncounterJournal.searchBox.searchPreview[index];
-	while unusedButton do
-		unusedButton:Hide();
-		index = index + 1;
-		unusedButton = EncounterJournal.searchBox.searchPreview[index];
-	end
-
-	EncounterJournal.searchBox.searchPreviewContainer:Hide();
+	local dbLoaded = EJ_GetSearchSize() > 0;
+	EncounterJournal.searchBox:UpdateSearchPreview(EJ_IsSearchFinished(), dbLoaded, numResults);
 end
 
 function EncounterJournal_ClearSearch()
 	EncounterJournal.searchResults:Hide();
-	EncounterJournal_HideSearchPreview();
-end
-
-function EncounterJournalSearchBox_OnLoad(self)
-	SearchBoxTemplate_OnLoad(self);
-	self.HasStickyFocus = function()
-		local ancestry = EncounterJournal.searchBox;
-		return DoesAncestryInclude(ancestry, GetMouseFocus());
-	end
-	self.selectedIndex = 1;
-end
-
-function EncounterJournalSearchBox_OnShow(self)
-	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
-end
-
-function EncounterJournalSearchBox_OnHide(self)
-	self.searchPreviewUpdateDelay = nil;
-	self:SetScript("OnUpdate", nil);
-end
-
-function EncounterJournalSearchBox_OnTextChanged(self)
-	SearchBoxTemplate_OnTextChanged(self);
-
-	local text = self:GetText();
-	if strlen(text) < MIN_CHARACTER_SEARCH then
-		EJ_ClearSearch();
-		EncounterJournal_HideSearchPreview();
-		EncounterJournal.searchResults:Hide();
-		return;
-	end
-
-	EncounterJournal_SetSearchPreviewSelection(1);
-	EJ_SetSearch(text);
-	EncounterJournal_RestartSearchTracking();
-end
-
-function EncounterJournalSearchBox_OnEnterPressed(self)
-	if self.selectedIndex > EJ_SHOW_ALL_SEARCH_RESULTS_INDEX or self.selectedIndex < 0 then
-		return;
-	elseif self.selectedIndex == EJ_SHOW_ALL_SEARCH_RESULTS_INDEX then
-		if EncounterJournal.searchBox.showAllResults:IsShown() then
-			EncounterJournal.searchBox.showAllResults:Click();
-		end
-	else
-		local preview = EncounterJournal.searchBox.searchPreview[self.selectedIndex];
-		if preview:IsShown() then
-			preview:Click();
-		end
-	end
-
-	EncounterJournal_HideSearchPreview();
-end
-
-function EncounterJournalSearchBox_OnKeyDown(self, key)
-	if key == "UP" then
-		EncounterJournal_SetSearchPreviewSelection(EncounterJournal.searchBox.selectedIndex - 1);
-	elseif key == "DOWN" then
-		EncounterJournal_SetSearchPreviewSelection(EncounterJournal.searchBox.selectedIndex + 1);
-	end
-end
-
-function EncounterJournalSearchBox_OnFocusLost(self)
-	SearchBoxTemplate_OnEditFocusLost(self);
-	EncounterJournal_HideSearchPreview();
-end
-
-function EncounterJournalSearchBox_OnFocusGained(self)
-	SearchBoxTemplate_OnEditFocusGained(self);
-	EncounterJournal.searchResults:Hide();
-	EncounterJournal_SetSearchPreviewSelection(1);
-	EncounterJournal_UpdateSearchPreview();
+	EncounterJournal.searchBox:HideSearchPreview();
 end
 
 function EncounterJournalSearchBoxShowAllResults_OnEnter(self)
-	EncounterJournal_SetSearchPreviewSelection(EJ_SHOW_ALL_SEARCH_RESULTS_INDEX);
-end
-
-function EncounterJournal_SetSearchPreviewSelection(selectedIndex)
-	local searchBox = EncounterJournal.searchBox;
-	local numShown = 0;
-	for index = 1, EJ_NUM_SEARCH_PREVIEWS do
-		searchBox.searchPreview[index].selectedTexture:Hide();
-
-		if searchBox.searchPreview[index]:IsShown() then
-			numShown = numShown + 1;
-		end
-	end
-
-	if searchBox.showAllResults:IsShown() then
-		numShown = numShown + 1;
-	end
-
-	searchBox.showAllResults.selectedTexture:Hide();
-
-	if numShown == 0 then
-		selectedIndex = 1;
-	elseif selectedIndex > numShown then
-		-- Wrap under to the beginning.
-		selectedIndex = 1;
-	elseif selectedIndex < 1 then
-		-- Wrap over to the end;
-		selectedIndex = numShown;
-	end
-
-	searchBox.selectedIndex = selectedIndex;
-
-	if selectedIndex == EJ_SHOW_ALL_SEARCH_RESULTS_INDEX then
-		searchBox.showAllResults.selectedTexture:Show();
-	else
-		searchBox.searchPreview[selectedIndex].selectedTexture:Show();
-	end
+	EncounterJournal.searchBox:SetSearchPreviewSelectionToAllResults();
 end
 
 function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)

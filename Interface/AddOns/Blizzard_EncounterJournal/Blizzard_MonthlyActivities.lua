@@ -582,6 +582,7 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 				pendingComplete = self.pendingComplete[activity.ID],
 				thresholdMax = self.thresholdMax,
 				restricted = restricted,
+				uiPriority = activity.uiPriority,
 			});
 		end
 	end
@@ -595,6 +596,11 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 		-- But sort already completed to the bottom
 		if a.completed ~= b.completed then
 			return b.completed;
+		end
+
+		-- Sort by data driven ui priority field
+		if a.uiPriority ~= b.uiPriority then
+			return a.uiPriority > b.uiPriority;
 		end
 	
 		-- Then sort by points descending

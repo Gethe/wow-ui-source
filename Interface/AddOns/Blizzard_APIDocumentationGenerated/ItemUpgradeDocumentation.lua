@@ -29,6 +29,50 @@ local ItemUpgrade =
 			Type = "Function",
 		},
 		{
+			Name = "GetHighWatermarkForItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false, Documentation = { "Item ID, Link, or Name" } },
+			},
+
+			Returns =
+			{
+				{ Name = "characterHighWatermark", Type = "number", Nilable = false },
+				{ Name = "accountHighWatermark", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHighWatermarkForSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemRedundancySlot", Type = "number", Nilable = false, Documentation = { "Must be an Enum.ItemRedundancySlot value" } },
+			},
+
+			Returns =
+			{
+				{ Name = "characterHighWatermark", Type = "number", Nilable = false },
+				{ Name = "accountHighWatermark", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHighWatermarkSlotForItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false, Documentation = { "Item ID, Link, or Name" } },
+			},
+
+			Returns =
+			{
+				{ Name = "itemRedundancySlot", Type = "number", Nilable = false, Documentation = { "Enum.ItemRedundancySlot value" } },
+			},
+		},
+		{
 			Name = "GetItemHyperlink",
 			Type = "Function",
 
@@ -137,12 +181,25 @@ local ItemUpgrade =
 	Tables =
 	{
 		{
+			Name = "ItemUpgradeCostDiscountInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isDiscounted", Type = "bool", Nilable = false },
+				{ Name = "discountHighWatermark", Type = "number", Nilable = false },
+				{ Name = "isPartialTwoHandDiscount", Type = "bool", Nilable = false },
+				{ Name = "isAccountWideDiscount", Type = "bool", Nilable = false },
+				{ Name = "doesCurrentCharacterMeetHighWatermark", Type = "bool", Nilable = false, Documentation = { "Reflects whether current character meets discount's high watermark, even if discount itself is account-wide" } },
+			},
+		},
+		{
 			Name = "ItemUpgradeCurrencyCost",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "discountInfo", Type = "ItemUpgradeCostDiscountInfo", Nilable = false },
 			},
 		},
 		{
@@ -152,6 +209,7 @@ local ItemUpgrade =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "discountInfo", Type = "ItemUpgradeCostDiscountInfo", Nilable = false },
 			},
 		},
 		{
@@ -163,6 +221,7 @@ local ItemUpgrade =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "itemUpgradeable", Type = "bool", Nilable = false },
 				{ Name = "displayQuality", Type = "number", Nilable = false },
+				{ Name = "highWatermarkSlot", Type = "number", Nilable = false },
 				{ Name = "currUpgrade", Type = "number", Nilable = false },
 				{ Name = "maxUpgrade", Type = "number", Nilable = false },
 				{ Name = "minItemLevel", Type = "number", Nilable = false },

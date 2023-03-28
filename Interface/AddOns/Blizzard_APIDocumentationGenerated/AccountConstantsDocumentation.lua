@@ -68,7 +68,7 @@ local AccountConstants =
 		{
 			Name = "AccountStateFlags",
 			Type = "Enumeration",
-			NumValues = 34,
+			NumValues = 35,
 			MinValue = 0,
 			MaxValue = 2147483648,
 			Fields =
@@ -107,6 +107,7 @@ local AccountConstants =
 				{ Name = "AccountNotificationsLoaded", Type = "AccountStateFlags", EnumValue = 1073741824 },
 				{ Name = "RafRecruiterAcceptancesLoaded", Type = "AccountStateFlags", EnumValue = 2147483648 },
 				{ Name = "AccountWowlabsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
+				{ Name = "AccountUpgradeComplete", Type = "AccountStateFlags", EnumValue = 0 },
 			},
 		},
 	},

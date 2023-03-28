@@ -194,7 +194,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<EventFrame name="SettingsAdvancedQualitySectionTemplate" mixin="SettingsAdvancedQualitySectionMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -258,7 +258,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			
+
 		</Frames>
 	</EventFrame>
 </Ui>

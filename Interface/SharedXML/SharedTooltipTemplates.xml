@@ -8,8 +8,8 @@
 	<Texture name="TooltipTextureTemplate" hidden="true" virtual="true">
 		<Size x="12" y="12"/>
 	</Texture>
-	
-	<GameTooltip name="SharedTooltipTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
+
+	<GameTooltip name="SharedTooltipArtTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameTooltipHeaderText" type="string"/>
 			<KeyValue key="textRight1Font" value="GameTooltipHeaderText" type="string"/>
@@ -78,6 +78,9 @@
 				<Texture name="$parentTexture30" inherits="TooltipTextureTemplate"/>
 			</Layer>
 		</Layers>
+	</GameTooltip>
+	
+	<GameTooltip name="SharedTooltipTemplate" inherits="SharedTooltipArtTemplate" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad function="SharedTooltip_OnLoad"/>
 			<OnHide function="SharedTooltip_OnHide"/>

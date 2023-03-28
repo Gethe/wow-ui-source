@@ -1,4 +1,11 @@
 
+local function IsTalentTutorialEnabled()
+	if GetCVarBool("hideTalentTutorials") then
+		return false;
+	end
+	return true;
+end
+
 function AddSpecAndTalentTutorials()
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
 		TutorialManager:AddWatcher(Class_StarterTalentWatcher:new(), true);
@@ -10,7 +17,7 @@ function AddSpecAndTalentTutorials()
 		TutorialManager:AddTutorial(Class_ChangeSpec:new());
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) then
+	if IsTalentTutorialEnabled() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) then
 		TutorialManager:AddTutorial(Class_TalentPoints:new(), nil, playerIsDracthyr);
 	end
 end

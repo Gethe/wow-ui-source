@@ -412,7 +412,7 @@ end
 local QUEST_INFO_SPELL_REWARD_ORDERING = {
 	Enum.QuestCompleteSpellType.Follower,
 	Enum.QuestCompleteSpellType.Companion,
-	Enum.QuestCompleteSpellType.TradeSkill,
+	Enum.QuestCompleteSpellType.Tradeskill,
 	Enum.QuestCompleteSpellType.Ability,
 	Enum.QuestCompleteSpellType.Aura,
 	Enum.QuestCompleteSpellType.Spell,
@@ -422,7 +422,7 @@ local QUEST_INFO_SPELL_REWARD_ORDERING = {
 local QUEST_INFO_SPELL_REWARD_TO_HEADER = {
 	[Enum.QuestCompleteSpellType.Follower] = REWARD_FOLLOWER,
 	[Enum.QuestCompleteSpellType.Companion] = REWARD_COMPANION,
-	[Enum.QuestCompleteSpellType.TradeSkill] = REWARD_TRADESKILL_SPELL,
+	[Enum.QuestCompleteSpellType.Tradeskill] = REWARD_TRADESKILL_SPELL,
 	[Enum.QuestCompleteSpellType.Ability] = REWARD_ABILITY,
 	[Enum.QuestCompleteSpellType.Aura] = REWARD_AURA,
 	[Enum.QuestCompleteSpellType.Spell] = REWARD_SPELL,
@@ -433,7 +433,7 @@ local function GetRewardSpellBucketType(spellInfo)
 	if spellInfo.type and spellInfo.type ~= Enum.QuestCompleteSpellType.LegacyBehavior then
 		return spellInfo.type;
 	elseif spellInfo.isTradeskillSpell then
-		return Enum.QuestCompleteSpellType.TradeSkill;
+		return Enum.QuestCompleteSpellType.Tradeskill;
 	elseif spellInfo.isBoostSpell then
 		return Enum.QuestCompleteSpellType.Ability;
 	elseif spellInfo.garrFollowerID then

@@ -247,6 +247,10 @@ function Professions.AccumulateReagentsInPossession(reagents)
 end
 
 local function CanShowBar(professionInfo)
+	if Professions.IsCraftingMinimized() then
+		return false;
+	end
+
 	if C_TradeSkillUI.IsRuneforging() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() then
 		return false;
 	end
@@ -1242,6 +1246,10 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 end
 
 function Professions.OnRecipeListSearchTextChanged(text)
+	if strcmputf8i(C_TradeSkillUI.GetRecipeItemNameFilter(), text) == 0 then
+		return;
+	end
+
 	local range = 2;
 	local minLevel, maxLevel;
 	local approxLevel = text:match("^~(%d+)");
@@ -1386,6 +1394,38 @@ function Professions.DoesSchematicIncludeReagentQualities(recipeSchematic)
 		end
 	end
 	return false;
+end
+
+function Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl)
+	local removedModifications = {};
+	local itemMods = transaction:GetRecraftItemMods();
+	if itemMods then
+		-- Remove allocations that exist on the original item from the allocations table,
+		-- and insert any items that no longer exist on the original item into the removed table.
+		for dataSlotIndex, modification in ipairs(itemMods) do
+			if modification.itemID > 0 then
+				local modRemoved = true;
+
+				for reagentInfoIndex, craftingReagentInfo in ipairs_reverse(craftingReagentTbl) do
+					local itemIDMatch = craftingReagentInfo.itemID == modification.itemID;
+					if itemIDMatch then
+						modRemoved = false;
+					end
+
+					if itemIDMatch and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
+						table.remove(craftingReagentTbl, reagentInfoIndex);
+						break;
+					end
+				end
+
+				if modRemoved then
+					table.insert(removedModifications, modification);
+				end
+			end
+		end
+	end
+
+	return removedModifications;
 end
 
 function Professions.GetProfessionType(professionInfo)

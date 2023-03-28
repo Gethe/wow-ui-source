@@ -26,9 +26,34 @@ function ProfessionsReagentSlotMixin:Reset()
 	self:SetAddIconDesaturated(false);
 end
 
+function ProfessionsReagentSlotMixin:SetSlotBehaviorModifyingRequired(isModifyingRequired)
+	if isModifyingRequired then
+		local scale = .65;
+		self.Button:SetNormalAtlas("itemupgrade_greenplusicon", false);
+		self.Button:GetNormalTexture():SetScale(scale);
+
+		self.Button:SetPushedAtlas("itemupgrade_greenplusicon_pressed", false);
+		self.Button:GetPushedTexture():SetScale(scale);
+
+		self.Button:ClearHighlightTexture();
+
+		self.Button:SetCropOverlayShown(true);
+	else	
+		local scale = 1;
+		self.Button:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
+		self.Button:GetNormalTexture():SetScale(scale);
+
+		self.Button:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+		self.Button:GetPushedTexture():SetScale(scale);
+		
+		self.Button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
+	end
+end
+
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 	local isModifyingRequired = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 	self.Button:SetModifyingRequired(isModifyingRequired);
+	self.Button:SetCropOverlayShown(isModifyingRequired);
 
 	self:SetTransaction(transaction);
 	self:SetReagentSlotSchematic(reagentSlotSchematic);
@@ -40,30 +65,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		end
 	end
 	
-	if isModifyingRequired then
-		local scale = .65;
-		self.Button:SetNormalAtlas("itemupgrade_greenplusicon", false);
-		self.Button:GetNormalTexture():SetScale(scale);
-	
-		self.Button:SetPushedAtlas("itemupgrade_greenplusicon_pressed", false);
-		self.Button:GetPushedTexture():SetScale(scale);
-	
-		self.Button:ClearHighlightTexture();
-
-		self.Button:SetCropOverlayShown(true);
-	else	
-		local scale = 1;
-	
-		self.Button:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
-		self.Button:GetNormalTexture():SetScale(scale);
-
-		self.Button:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
-		self.Button:GetPushedTexture():SetScale(scale);
-		
-		self.Button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
-
-		self.Button:SetCropOverlayShown(false);
-	end
+	self:SetSlotBehaviorModifyingRequired(isModifyingRequired);
 
 	local function OnItemsLoaded()
 		self.Name:Show();
@@ -170,10 +172,16 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		return;
 	end
 
+	-- For a modifying-required reagent slot, if the current allocation is the currently installed modification
+	-- we want to avoid displaying x/y quantity and instead display only the name of the current modification. This
+	-- will be done in ApplySlotInfo(), so we return early here.
+	local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	if isModifyingRequiredSlot and self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
+		return;
+	end
+	
 	-- First try only allocations
 	local foundMultiple, foundIndex = self:GetAllocationDetails();
-
-	local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 	if isModifyingRequiredSlot and not foundIndex then
 		-- Only allocations are allowed to be considered when displaying the text for a modifying-required reagent slot.
 		return;
@@ -305,7 +313,8 @@ function ProfessionsReagentSlotMixin:ApplySlotInfo()
 	local slotInfo = reagentSlotSchematic.slotInfo;
 	local slotText = slotInfo and slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX;
 
-	if Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+	local isModifyingRequired = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	if isModifyingRequired and not self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
 		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(0, reagentSlotSchematic.quantityRequired);
 		self:SetNameText(("%s %s"):format(quantityText, slotText));
 	else
@@ -319,16 +328,33 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 	self.currencyID = nil;
 
 	if item then
+		self:SetSlotBehaviorModifyingRequired(false);
+
 		self.Button:SetItem(item:GetItemID());
 		self.Button.InputOverlay.AddIcon:Hide();
 		self:SetNameText(item:GetItemName());
 	else
+		if self.Button:IsModifyingRequired() then
+			self:SetSlotBehaviorModifyingRequired(true);
+		end
+
 		self:ApplySlotInfo();
 	end
 
 	if self:IsOriginalItemSet() then
 		self.UndoButton:Hide();
 	else
+		self.UndoButton:ClearAllPoints();
+
+		-- TEMP. The undo button needs to be accounted for in the compact slot layout. Until that change is made
+		-- the button is being moved so it doesn't overlap with another slot.
+		local reagentSlotSchematic = self:GetReagentSlotSchematic();
+		if self.Button:IsModifyingRequired() or reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+			self.UndoButton:SetPoint("LEFT", self.Name, "RIGHT", 0, 0);
+		else
+			self.UndoButton:SetPoint("TOPLEFT", 6, -41);
+		end
+
 		self.UndoButton:Show();
 	end
 

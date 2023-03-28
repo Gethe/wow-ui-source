@@ -79,12 +79,15 @@ local function RetainHelper(name, toTable, fromTable)
 		error(format("Secure Capsule: Duplicate key retention \"%s\"", name));
 	end
 
-	if ( type(fromTable[name]) == "table" ) then
-		toTable[name] = copyTableWithTypeCheck(fromTable[name], name);
-	elseif ( type(fromTable[name]) == "userdata" ) then
+	local fromVal = fromTable[name];
+	local fromType = type(fromVal);
+
+	if ( fromType == "table" ) then
+		toTable[name] = copyTableWithTypeCheck(fromVal, name);
+	elseif ( fromType == "userdata" ) then
 		error(format("Secure Capsule: Cannot import userdata into secure capsule (importing %s)", name));
 	else
-		toTable[name] = fromTable[name];
+		toTable[name] = fromVal;
 	end
 end
 
@@ -139,14 +142,7 @@ end
 
 --If storing off Lua functions, be careful that they don't in turn call any other Lua functions that may have been swapped out.
 
---For store
-if ( IsGMClient() ) then
-	retain("HideGMOnly");
-end
-take("C_StoreSecure");
-take("CreateForbiddenFrame");
-retain("IsGMClient");
-retain("IsOnGlueScreen");
+-- Generic utils
 retain("math");
 retain("max");
 retain("ceil");
@@ -171,32 +167,27 @@ retain("strtrim");
 retain("getfenv");
 retain("setfenv");
 retain("setmetatable");
+retain("getmetatable");
+retain("issecure");
+retain("forceinsecure");
 retain("pcall");
 retain("pack");
-retain("LoadURLIndex");
-retain("C_Container");
-retain("GetCursorPosition");
-retain("GetRealmName");
-retain("SetPortraitToTexture");
-retain("SetPortraitTexture");
-retain("getmetatable");
-retain("BACKPACK_CONTAINER");
-retain("NUM_BAG_SLOTS");
-retain("NUM_TOTAL_EQUIPPED_BAG_SLOTS");
-retain("RAID_CLASS_COLORS");
-retain("CLASS_ICON_TCOORDS");
-retain("C_Timer");
-retain("C_ModelInfo");
-retain("C_PlayerInfo");
+retain("securecallfunction");
+retain("secureexecuterange");
+retain("rawset");
+retain("format");
+retain("Round");
+retain("tinsert");
+retain("IsGMClient");
+retain("IsOnGlueScreen");
 retain("IsModifiedClick");
 retain("GetTime");
-retain("UnitAffectingCombat");
-retain("C_CVar");
+retain("SafePack");
 retain("GetCVar");
 retain("GetCVarBool");
-retain("GMError");
-retain("GetMouseFocus");
+retain("UnitAffectingCombat");
 retain("LOCALE_enGB");
+retain("GetMouseFocus");
 retain("CreateFrame");
 retain("CreateCounter");
 retain("Lerp");
@@ -219,35 +210,17 @@ retain("GetScreenWidth");
 retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
 retain("GetScreenDPIScale");
-retain("IsTrialAccount");
-retain("IsVeteranTrialAccount");
-retain("C_StorePublic");
-retain("C_Club");
 retain("UnitFactionGroup");
 retain("strlenutf8");
 retain("UnitRace");
 retain("UnitSex");
-retain("GetURLIndexAndLoadURL");
-retain("GetUnscaledFrameRect");
-retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
-retain("Round");
-retain("IsCharacterNPERestricted");
-retain("GetScaledCursorPosition");
 retain("CreateInterpolator");
 retain("ApproximatelyEqual");
 retain("GenerateClosure");
 retain("WithinRangeExclusive");
 retain("TextureKitConstants");
 retain("CopyValuesAsKeys");
-retain("securecallfunction");
-retain("secureexecuterange");
-retain("rawset");
-retain("format");
 retain("UNKNOWN");
-retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
-retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
-retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
-retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
 retain("PlaySound");
 retain("SOUNDKIT");
 retain("TableUtil");
@@ -263,6 +236,66 @@ retain("SECOND_ONELETTER_ABBR");
 retain("SecondsToTimeAbbrev");
 retain("HIGHLIGHT_FONT_COLOR");
 retain("NORMAL_FONT_COLOR");
+retain("GREEN_FONT_COLOR");
+retain("RED_FONT_COLOR");
+retain("DISABLED_FONT_COLOR");
+retain("NineSliceLayouts");
+retain("NineSliceUtil");
+retain("NineSlicePanelMixin");
+retain("ColorMixin");
+retain("CreateColor");
+retain("GetThreatStatusColor");
+retain("GetItemInfo");
+retain("GetSpellInfo");
+retain("UnitTokenFromGUID");
+retain("UnitName");
+retain("UnitPlayerControlled");
+retain("UnitCanAttack");
+retain("UnitIsPVP");
+retain("UnitReaction");
+retain("C_Timer");
+retain("C_CVar");
+
+-- For tooltips
+retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+retain("BattlePetToolTip_Show");
+retain("SharedTooltip_SetBackdropStyle");
+retain("C_TooltipInfo");
+retain("C_Item");
+
+--For store
+if ( IsGMClient() ) then
+	retain("HideGMOnly");
+end
+take("C_StoreSecure");
+take("CreateForbiddenFrame");
+retain("LoadURLIndex");
+retain("C_Container");
+retain("GetCursorPosition");
+retain("GetRealmName");
+retain("SetPortraitToTexture");
+retain("SetPortraitTexture");
+retain("BACKPACK_CONTAINER");
+retain("NUM_BAG_SLOTS");
+retain("NUM_TOTAL_EQUIPPED_BAG_SLOTS");
+retain("RAID_CLASS_COLORS");
+retain("CLASS_ICON_TCOORDS");
+retain("C_ModelInfo");
+retain("C_PlayerInfo");
+retain("GMError");
+retain("IsTrialAccount");
+retain("IsVeteranTrialAccount");
+retain("C_StorePublic");
+retain("C_Club");
+retain("GetURLIndexAndLoadURL");
+retain("GetUnscaledFrameRect");
+retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
+retain("IsCharacterNPERestricted");
+retain("GetScaledCursorPosition");
+retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
 
 -- Require move
 retain("tInvert");
@@ -527,6 +560,12 @@ take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
 take("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 take("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
 take("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
+retain("TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT");
+retain("TOOLTIP_UPDATE_TIME");
+retain("PVP_BOUNTY_REWARD_TITLE");
+retain("QUEST_REWARDS");
+retain("ISLAND_QUEUE_REWARD_FOR_WINNING");
+retain("CONTRIBUTION_REWARD_TOOLTIP_TEXT");
 
 
 -- For Battle.net Token
@@ -592,7 +631,6 @@ retain("OKAY");
 retain("LARGE_NUMBER_SEPERATOR");
 retain("DECIMAL_SEPERATOR");
 retain("TOOLTIP_DEFAULT_COLOR");
-retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 retain("CANCEL");
 retain("CREATE_AUCTION");
 retain("CONTINUE");
@@ -656,8 +694,6 @@ retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
 retain("COMMUNITY_TYPE_UNAVAILABLE");
 retain("CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL");
 
-retain("RED_FONT_COLOR");
-
 --Lua enums
 retain("LE_TOKEN_RESULT_SUCCESS");
 retain("LE_TOKEN_RESULT_ERROR_OTHER");
@@ -684,6 +720,8 @@ retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
 retainenum("ValidateNameResult");
+retainenum("TooltipDataLineType");
+retainenum("TooltipDataType");
 
 -- For Private Auras
 retainfromtable("AuraUtil", "DefaultAuraCompare");

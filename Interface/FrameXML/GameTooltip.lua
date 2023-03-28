@@ -1,3 +1,96 @@
+---------------
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
+if tbl then
+	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
+	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+	tbl.type = tbl.SecureCapsuleGet("type");
+	tbl.unpack = tbl.SecureCapsuleGet("unpack");
+	tbl.error = tbl.SecureCapsuleGet("error");
+	tbl.pcall = tbl.SecureCapsuleGet("pcall");
+	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+
+	local function CleanFunction(f)
+		return function(...)
+			local prevfenv = tbl.getfenv(f);
+			local fenvSet = tbl.pcall(tbl.setfenv, f, tbl);
+			local function HandleCleanFunctionCallArgs(success, ...)
+				if fenvSet then
+					tbl.setfenv(f, prevfenv);
+				end
+				if success then
+					return ...;
+				else
+					tbl.error("Error in secure capsule function execution: "..select(1, ...));
+				end
+			end
+			return HandleCleanFunctionCallArgs(tbl.pcall(f, ...));
+		end
+	end
+
+	local function CleanTable(t, tableCopies)
+		if not tableCopies then
+			tableCopies = {};
+		end
+
+		local cleaned = {};
+		tableCopies[t] = cleaned;
+
+		for k, v in tbl.pairs(t) do
+			if tbl.type(v) == "table" then
+				if ( tableCopies[v] ) then
+					cleaned[k] = tableCopies[v];
+				else
+					cleaned[k] = CleanTable(v, tableCopies);
+				end
+			elseif tbl.type(v) == "function" then
+				cleaned[k] = CleanFunction(v);
+			else
+				cleaned[k] = v;
+			end
+		end
+		return cleaned;
+	end
+
+	local function Import(name)
+		local skipTableCopy = true;
+		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+		if tbl.type(val) == "function" then
+			tbl[name] = CleanFunction(val);
+		elseif tbl.type(val) == "table" then
+			tbl[name] = CleanTable(val);
+		else
+			tbl[name] = val;
+		end
+	end
+
+	Import("math");
+	Import("string");
+	Import("QUEST_REWARDS");
+	Import("NORMAL_FONT_COLOR");
+	Import("CONTRIBUTION_REWARD_TOOLTIP_TEXT");
+	Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("ISLAND_QUEUE_REWARD_FOR_WINNING");
+	Import("UnitPlayerControlled");
+	Import("UnitCanAttack");
+	Import("UnitIsPVP");
+	Import("UnitReaction");
+	Import("HIGHLIGHT_FONT_COLOR");
+	Import("TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT");
+	Import("TOOLTIP_UPDATE_TIME");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+
+	setfenv(1, tbl);
+end
+----------------
+
+local envTbl = tbl or _G;
+
 TooltipConstants = {
 	WrapText = true,
 }
@@ -336,7 +429,7 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.shownMoneyFrames = 0;
 	end
 	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
-	local moneyFrame = _G[name];
+	local moneyFrame = envTbl[name];
 	if ( not moneyFrame ) then
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
 		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
@@ -377,7 +470,7 @@ function GameTooltip_ClearMoney(self)
 
 	local moneyFrame;
 	for i=1, self.shownMoneyFrames do
-		moneyFrame = _G[self:GetName().."MoneyFrame"..i];
+		moneyFrame = envTbl[self:GetName().."MoneyFrame"..i];
 		if(moneyFrame) then
 			moneyFrame:Hide();
 			MoneyFrame_SetType(moneyFrame, "STATIC");
@@ -432,7 +525,7 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 
 function GameTooltip_OnShow(self)
 	-- Do not show HUD tooltips when in edit mode with the HUD tooltip section enabled, to prevent layering issues.
-	if (EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
+	if (EditModeManagerFrame and GameTooltipDefaultContainer and EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
 		local relativeTo = select(2, self:GetPoint());
 		if (relativeTo == GameTooltipDefaultContainer) then
 			self:Hide();

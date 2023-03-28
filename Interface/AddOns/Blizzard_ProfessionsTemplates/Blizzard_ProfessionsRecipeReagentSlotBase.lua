@@ -48,6 +48,10 @@ function ProfessionsReagentSlotButtonMixin:SetModifyingRequired(isModifyingRequi
 	self.isModifyingRequired = isModifyingRequired;
 end
 
+function ProfessionsReagentSlotButtonMixin:IsModifyingRequired()
+	return self.isModifyingRequired;
+end
+
 function ProfessionsReagentSlotButtonMixin:UpdateOverlay()
 	if self.locked then
 		self.InputOverlay.LockedIcon:Show();

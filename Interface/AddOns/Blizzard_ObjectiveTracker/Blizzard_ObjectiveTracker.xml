@@ -351,6 +351,17 @@
 			<KeyValue key="layoutIndex" value="50" type="number"/>
 		</KeyValues>
 		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="common-opacity-background" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-30"/>
+					<Anchor point="TOPRIGHT" x="5"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</Frame>
 			<Frame name="ObjectiveTrackerBlocksFrame" parentKey="BlocksFrame" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>

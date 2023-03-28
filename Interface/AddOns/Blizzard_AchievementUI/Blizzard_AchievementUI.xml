@@ -1516,12 +1516,22 @@
 				<FontString parentKey="PlaceholderHiddenDescription" inherits="AchievementDescriptionFont" hidden="true"/>
 			</Layer>
 
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\TutorialFrame\TutorialFrameBackground">
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" file="Interface\AchievementFrame\UI-Achievement-AchievementBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
 						<Anchor point="BOTTOMRIGHT" x="-16" y="16"/>
 					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BackgroundBlackCover">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.75"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">

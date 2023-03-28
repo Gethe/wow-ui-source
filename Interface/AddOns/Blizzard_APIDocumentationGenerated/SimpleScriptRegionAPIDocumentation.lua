@@ -304,6 +304,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "IsMouseMotionFocus",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isMouseMotionFocus", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMouseOver",
 			Type = "Function",
 

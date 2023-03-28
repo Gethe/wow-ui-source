@@ -12,12 +12,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
-				{ Name = "auraIndex", Type = "number", Nilable = false },
-				{ Name = "useCompactAura", Type = "bool", Nilable = false },
-				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
-				{ Name = "iconAnchor", Type = "AnchorBinding", Nilable = false },
-				{ Name = "durationAnchor", Type = "AnchorBinding", Nilable = true },
+				{ Name = "args", Type = "AddPrivateAuraAnchorArgs", Nilable = false },
 			},
 
 			Returns =

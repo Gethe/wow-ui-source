@@ -32,20 +32,58 @@ MinimalSliderWithSteppersMixin = CreateFromMixins(CallbackRegistryMixin);
 MinimalSliderWithSteppersMixin:GenerateCallbackEvents(
 	{
 		"OnValueChanged",
-		"OnMouseUp",
+		"OnInteractStart",
+		"OnInteractEnd",
 	}
 );
 
 MinimalSliderWithSteppersMixin.Label = EnumUtil.MakeEnum("Left", "Right", "Top", "Min", "Max");
 
+local interactionFlags = {
+	Hover = 1,
+	Click = 2,
+};
+
 function MinimalSliderWithSteppersMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
-	
+
+	self.InteractionFlags = CreateFromMixins(FlagsMixin);
+	self.InteractionFlags:OnLoad();
+
 	local forward = false;
 	self.Back:SetScript("OnClick", GenerateClosure(self.OnStepperClicked, self, forward));
 
 	local backward = true;
 	self.Forward:SetScript("OnClick", GenerateClosure(self.OnStepperClicked, self, backward));
+
+	local function OnMouseDown(slider)
+		if slider:IsEnabled() then
+			self:SetInteractionFlag(interactionFlags.Click);
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		end
+	end
+	self.Slider:SetScript("OnMouseDown", OnMouseDown);
+
+	local function OnMouseUp(slider)
+		if slider:IsEnabled() then
+			self:ClearInteractionFlag(interactionFlags.Click);
+		end
+	end
+	self.Slider:SetScript("OnMouseUp", OnMouseUp);
+
+	local function OnEnter(slider)
+		if slider:IsEnabled() then
+			self:SetInteractionFlag(interactionFlags.Hover);
+		end
+	end
+	self.Slider:SetScript("OnEnter", OnEnter);
+
+	local function OnLeave(slider)
+		if slider:IsEnabled() then
+			self:ClearInteractionFlag(interactionFlags.Hover);
+		end
+	end
+	self.Slider:SetScript("OnLeave", OnLeave);	
 end
 
 function MinimalSliderWithSteppersMixin:OnStepperClicked(forward)
@@ -58,12 +96,6 @@ function MinimalSliderWithSteppersMixin:OnStepperClicked(forward)
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
-local function OnMouseDown(slider)
-	if slider:IsEnabled() then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	end
 end
 
 function MinimalSliderWithSteppersMixin:Init(value, minValue, maxValue, steps, formatters)
@@ -80,7 +112,22 @@ function MinimalSliderWithSteppersMixin:Init(value, minValue, maxValue, steps, f
 		self:TriggerEvent(MinimalSliderWithSteppersMixin.Event.OnValueChanged, value);
 	end
 	self.Slider:SetScript("OnValueChanged", OnValueChanged);
-	self.Slider:SetScript("OnMouseDown", OnMouseDown);
+end
+
+function MinimalSliderWithSteppersMixin:SetInteractionFlag(flag)
+	local wasAnySet = self.InteractionFlags:IsAnySet();
+	self.InteractionFlags:Set(flag);
+	if not wasAnySet then
+		self:TriggerEvent(MinimalSliderWithSteppersMixin.Event.OnInteractStart);
+	end
+end
+
+function MinimalSliderWithSteppersMixin:ClearInteractionFlag(flag)
+	local wasAnySet = self.InteractionFlags:IsAnySet();
+	self.InteractionFlags:Clear(flag);
+	if wasAnySet and not self.InteractionFlags:IsAnySet() then
+		self:TriggerEvent(MinimalSliderWithSteppersMixin.Event.OnInteractEnd);
+	end
 end
 
 function MinimalSliderWithSteppersMixin:FormatValue(value)

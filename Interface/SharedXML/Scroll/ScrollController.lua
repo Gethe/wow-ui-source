@@ -57,9 +57,10 @@ function ScrollDirectionMixin:GetLower(frame)
 	return self.isHorizontal and frame:GetRight() or frame:GetBottom();
 end
 
-function ScrollDirectionMixin:SelectCursorComponent()
-	local x, y = GetScaledCursorPosition();
-	return self.isHorizontal and x or y;
+function ScrollDirectionMixin:SelectCursorComponent(parentScale)
+	local x, y = GetCursorPosition();
+	local c = self.isHorizontal and x or y;
+	return c / parentScale;
 end
 
 function ScrollDirectionMixin:SelectPointComponent(frame)

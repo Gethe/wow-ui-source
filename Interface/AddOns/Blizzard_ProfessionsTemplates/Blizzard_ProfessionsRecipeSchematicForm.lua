@@ -658,8 +658,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.OutputIcon:SetScript("OnUpdate", function() 
 			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel());
 		end);
-
 	end);
+
 	self.OutputIcon:SetScript("OnLeave", function()
 		GameTooltip_Hide(); 
 		self.OutputIcon:SetScript("OnUpdate", nil);

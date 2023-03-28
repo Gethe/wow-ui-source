@@ -120,20 +120,21 @@ function PrivateAuraMixin:OnLoad()
 	self.Symbol:Hide();
 	local color = DebuffTypeColor["none"];
 	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+	self.DebuffBorder:ClearAllPoints();
+	self.DebuffBorder:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", -1, 0);
+	self.DebuffBorder:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", 1, 0);
 	self.DebuffBorder:Show();
 	self.TempEnchantBorder:Hide();
 end
 
 function PrivateAuraMixin:OnEnter()
-	--[[
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
-	GameTooltip:SetUnitAura(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
-	]]
+	PrivateAurasTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+	PrivateAurasTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
+	PrivateAurasTooltip:SetUnitPrivateAura(self.unit, self.auraInfo.auraInstanceID);
 end
 
 function PrivateAuraMixin:OnLeave()
-	--GameTooltip:Hide();
+	PrivateAurasTooltip:Hide();
 end
 
 function PrivateAuraMixin:OnUpdate()
@@ -158,10 +159,9 @@ function PrivateAuraMixin:OnUpdate()
 		end
 	end
 
-	--[[
-	if GameTooltip:IsOwned(self) and not self:GetID() then
-		GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
-	end]]
+	if self:IsMouseMotionFocus() then
+		PrivateAurasTooltip:SetUnitPrivateAura(self.unit, self.auraInfo.auraInstanceID);
+	end
 end
 
 function PrivateAuraMixin:UpdateExpirationTime(auraInfo)
@@ -187,9 +187,10 @@ function PrivateAuraMixin:UpdateExpirationTime(auraInfo)
 	end
 end
 
-function PrivateAuraMixin:Update(auraInfo, unit)
+function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 	self.auraInfo = auraInfo;
-	self.unit = auraInfo;
+	self.unit = unit;
+	self.anchorInfo = anchorInfo;
 
 	local color;
 	if auraInfo.dispelName then
@@ -216,10 +217,17 @@ function PrivateAuraMixin:Update(auraInfo, unit)
 		self.Count:Hide();
 	end
 
-	--[[
-	if GameTooltip:IsOwned(self) then
-		GameTooltip:SetUnitAura(self.unit, auraInfo.index, self:GetFilter());
-	end]]
+	if anchorInfo.showCountdownFrame and auraInfo.expirationTime and auraInfo.expirationTime ~= 0 then
+		local startTime = auraInfo.expirationTime - auraInfo.duration;
+		CooldownFrame_Set(self.Cooldown, startTime, auraInfo.duration, true);
+		self.Cooldown:SetHideCountdownNumbers(not anchorInfo.showCountdownNumbers);
+	else
+		CooldownFrame_Clear(self.Cooldown);
+	end
+
+	if self:IsMouseMotionFocus() then
+		PrivateAurasTooltip:SetUnitPrivateAura(self.unit, self.auraInfo.auraInstanceID);
+	end
 end
 
 function PrivateAuraMixin:UpdateDuration(timeLeft)
@@ -237,10 +245,14 @@ function PrivateAuraMixin:UpdateDuration(timeLeft)
 end
 
 
+local unitWatchers = {};
+
 -- Base private aura watcher for a particular unit
 local PrivateAuraUnitWatcher = {};
 
 function PrivateAuraUnitWatcher:Init(unit)
+	assert(not unitWatchers[unit], "PrivateAuraUnitWatcher: Tried to instantiate for unit that already has a watcher.");
+
 	self.unit = unit;
 	self.anchors = {};
 	self.debuffFramePool = CreateFramePool("FRAME", nil, "PrivateAuraTemplate");
@@ -339,8 +351,11 @@ function PrivateAuraUnitWatcher:SetUpAnchor(privateAnchor)
 	if auraInfo then
 		local debuffFrame = self.debuffFramePool:Acquire();
 		C_UnitAurasPrivate.AnchorPrivateAura(debuffFrame, debuffFrame.Icon, debuffFrame.Duration, privateAnchor.anchorID);
+		if privateAnchor.iconWidth and privateAnchor.iconHeight then
+			debuffFrame.Icon:SetSize(privateAnchor.iconWidth, privateAnchor.iconHeight);
+		end
 		debuffFrame:Show();
-		debuffFrame:Update(auraInfo, self.unit);
+		debuffFrame:Update(auraInfo, self.unit, privateAnchor);
 	end
 end
 
@@ -352,7 +367,13 @@ function PrivateAuraUnitWatcher:UpdateAllAnchors()
 end
 
 function PrivateAuraUnitWatcher:MarkDirty()
-	C_Timer.After(0, function() self:UpdateAllAnchors() end);
+	if not self.isDirty then
+		self.isDirty = true;
+		C_Timer.After(0, function()
+			self.isDirty = false;
+			self:UpdateAllAnchors();
+		end);
+	end
 end
 
 function PrivateAuraUnitWatcher:AddAnchor(anchor)
@@ -366,17 +387,15 @@ function PrivateAuraUnitWatcher:AddAnchor(anchor)
 end
 
 function PrivateAuraUnitWatcher:RemoveAnchor(anchorID)
-	if not self.anchors[anchor.anchorID] then
+	if not self.anchors[anchorID] then
 		return false;
 	end
 
-	self.anchors[anchor.anchorID] = nil;
+	self.anchors[anchorID] = nil;
 	self:MarkDirty();
 	return true;
 end
 
-
-local unitWatchers = {};
 
 local function AddPrivateAnchor(anchor)
 	local unit = anchor.unitToken;
@@ -390,7 +409,7 @@ end
 C_UnitAurasPrivate.SetPrivateAuraAnchorAddedCallback(AddPrivateAnchor);
 
 local function RemovePrivateAnchor(anchorID)
-	for _, watcher in ipairs(unitWatchers) do
+	for _, watcher in pairs(unitWatchers) do
 		if watcher:RemoveAnchor(anchorID) then
 			return;
 		end

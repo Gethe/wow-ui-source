@@ -5,7 +5,7 @@ NUM_TOTAL_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots + Constants.Inve
 CONTAINER_OFFSET_Y = 85;
 CONTAINER_OFFSET_X = -4;
 
-CONTAINER_WIDTH = 178;
+local CONTAINER_WIDTH = 178;
 local CONTAINER_SPACING = 8;
 local ITEM_SPACING_X = 5;
 local ITEM_SPACING_Y = 5;
@@ -225,7 +225,6 @@ local function CloseBackpack_Individual()
 end
 
 function CloseBackpack()
-	if DISALLOW_BACKPACK then return end
 	if ContainerFrameSettingsManager:IsUsingCombinedBags() then
 		return CloseBackpack_Combined();
 	else
@@ -263,7 +262,6 @@ function IsBagOpen(id)
 end
 
 function OpenBackpack()
-	if DISALLOW_BACKPACK then return end
 	if not ContainerFrame_AllowedToOpenBags() then
 		return;
 	end
@@ -282,9 +280,7 @@ function UpdateNewItemList(containerFrame)
 	local id = containerFrame:GetID()
 
 	for i, itemButton in containerFrame:EnumerateValidItems() do
-		if itemButton then
 		C_NewItems.RemoveNewItem(id, itemButton:GetID());
-	end
 	end
 end
 
@@ -580,12 +576,10 @@ end
 do
 	local function iterator(container, index)
 		index = index + 1;
-		if container.Items then
 			if index <= container:GetBagSize() then
 				return index, container.Items[index];
 			end
 		end
-	end
 
 	function BaseContainerFrameMixin:EnumerateValidItems()
 		return iterator, self, 0;
@@ -600,7 +594,7 @@ function BaseContainerFrameMixin:UpdateSearchResults()
 	end
 end
 
-function ContainerFrameBase_OnEvent(self, event, ...)
+function ContainerFrame_OnEvent(self, event, ...)
 	if event == "BAG_OPEN" then
 		local bagID = ...;
 		if self:GetID() == bagID then
@@ -652,7 +646,7 @@ function ContainerFrameBase_OnEvent(self, event, ...)
 	end
 end
 
-function ContainerFrameBase_OnLoad(self)
+function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
 	self:RegisterEvent("BAG_CLOSED");
 	self:RegisterEvent("QUEST_ACCEPTED");
@@ -687,7 +681,7 @@ function ContainerFrame_OnHide(self)
 	self:CloseTutorial();
 end
 
-function ContainerFrameBase_OnShow(self)
+function ContainerFrame_OnShow(self)
 	EventRegistry:TriggerEvent("ContainerFrame.OpenBag", self);
 
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
@@ -893,17 +887,17 @@ do
 		local itemsToLayout = {};
 
 		for i, itemButton in self:EnumerateValidItems() do
-			table.insert(itemsToLayout, itemButton);
+				table.insert(itemsToLayout, itemButton);
 
-			-- NOTE: This workaround has to do with the fact that banks are not using combined inventory yet, so this
-			-- is the most ideal place to update the itemSlot id.
-			if requiresIDAssignment then
-				itemButton:SetID(bagSize - i + 1);
-				itemButton:SetBagID(self:GetBagID());
+				-- NOTE: This workaround has to do with the fact that banks are not using combined inventory yet, so this
+				-- is the most ideal place to update the itemSlot id.
+				if requiresIDAssignment then
+					itemButton:SetID(bagSize - i + 1);
+					itemButton:SetBagID(self:GetBagID());
+				end
+
+				itemButton:Show();
 			end
-
-			itemButton:Show();
-		end
 
 		UpdateItemSort(itemsToLayout);
 
@@ -972,12 +966,10 @@ function ContainerFrameMixin:AddItemsForRefresh()
 	self.refresh = refresh;
 
 	for i, itemButton in self:EnumerateValidItems() do
-		if itemButton then
 		local item = Item:CreateFromBagAndSlot(itemButton:GetBagID(), itemButton:GetID());
 		if not item:IsItemEmpty() then
 			refresh:AddContinuable(item);
 		end
-	end
 	end
 
 	refresh:ContinueOnLoad(function()
@@ -1000,7 +992,6 @@ function ContainerFrameMixin:UpdateItems()
 	local shouldDoTutorialChecks = ContainerFrame_ShouldDoTutorialChecks();
 
 	for i, itemButton in self:EnumerateValidItems() do
-	if itemButton then
 		local bagID = itemButton:GetBagID();
 
 		local info = C_Container.GetContainerItemInfo(bagID, itemButton:GetID());
@@ -1044,7 +1035,6 @@ function ContainerFrameMixin:UpdateItems()
 			shouldDoTutorialChecks = false;
 		end
 	    end
-	end
 end
 
 function ContainerFrameMixin:UpdateIfShown()
@@ -1055,11 +1045,9 @@ end
 
 function ContainerFrameMixin:UpdateCooldowns()
 	for i, itemButton in self:EnumerateValidItems() do
-		if itemButton then
 		local info = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID());
 		local texture = info and info.iconFileID;
 		itemButton:UpdateCooldown(texture);
-	end
 	end
 end
 
@@ -1146,7 +1134,7 @@ local function GetInitialContainerFrameOffsetX()
 	return EditModeUtil:GetRightActionBarWidth() + 10;
 end
 
-function GetContainerScale()
+local function GetContainerScale()
 	local containerFrameOffsetX = GetInitialContainerFrameOffsetX();
 	local xOffset, yOffset, screenHeight, freeScreenHeight, leftMostPoint, column;
 	local screenWidth = GetScreenWidth();
@@ -1196,6 +1184,38 @@ function GetContainerScale()
 	end
 
 	return math.max(containerScale, CONTAINER_SCALE);
+end
+
+function UpdateContainerFrameAnchors()
+	local containerScale = GetContainerScale();
+	local screenHeight = GetScreenHeight() / containerScale;
+	-- Adjust the start anchor for bags depending on the multibars
+	local xOffset = GetInitialContainerFrameOffsetX() / containerScale;
+	local yOffset = CONTAINER_OFFSET_Y / containerScale;
+	-- freeScreenHeight determines when to start a new column of bags
+	local freeScreenHeight = screenHeight - yOffset;
+	local previousBag;
+	local firstBagInMostRecentColumn;
+	for index, frame in ipairs(ContainerFrameSettingsManager:GetBagsShown()) do
+		frame:SetScale(containerScale);
+		frame:ClearAllPoints();
+		if index == 1 then
+			-- First bag
+			frame:SetPoint("BOTTOMRIGHT", frame:GetParent(), "BOTTOMRIGHT", -xOffset, yOffset);
+			firstBagInMostRecentColumn = frame;
+		elseif (freeScreenHeight < frame:GetHeight()) or previousBag:IsCombinedBagContainer() then
+			-- Start a new column
+			freeScreenHeight = screenHeight - yOffset;
+			frame:SetPoint("BOTTOMRIGHT", firstBagInMostRecentColumn, "BOTTOMLEFT", -11, 0);
+			firstBagInMostRecentColumn = frame;
+		else
+			-- Anchor to the previous bag
+			frame:SetPoint("BOTTOMRIGHT", previousBag, "TOPRIGHT", 0, CONTAINER_SPACING);
+		end
+
+		previousBag = frame;
+		freeScreenHeight = freeScreenHeight - frame:GetHeight();
+	end
 end
 
 function ContainerFrameItemButton_GetDebugReportInfo(self)
@@ -1411,7 +1431,7 @@ end
 
 function ContainerFrameItemButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self:RegisterForDrag("LeftButton", "RightButton");
+	self:RegisterForDrag("LeftButton");
 
 	self.UpdateTooltip = ContainerFrameItemButtonMixin.OnUpdate;
 	self.timeSinceUpgradeCheck = 0;
@@ -1464,19 +1484,12 @@ function ContainerFrameItemButtonMixin:OnUpdate()
 
 	C_NewItems.RemoveNewItem(self:GetBagID(), self:GetID());
 
-	if(self.NewItemTexture) then 
 	self.NewItemTexture:Hide();
-	end 
-
-	if(self.BattlepayItemTexture) then
 	self.BattlepayItemTexture:Hide();
-	end 
 
-	if(self.flashAnim and self.newitemglowAnim) then
 	if ( self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying() ) then
 		self.flashAnim:Stop();
 		self.newitemglowAnim:Stop();
-	end
 	end
 
 	ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
@@ -1538,14 +1551,12 @@ function ContainerFrameItemButtonMixin:OnModifiedClick(button)
 	end
 	if ( not CursorHasItem() and IsModifiedClick("SPLITSTACK") ) then
 		local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
-		if(info) then 
-			local itemCount = info.stackCount;
-			local locked = info.isLocked;
+		local itemCount = info and info.stackCount;
+		local locked = info and info.isLocked;
 		if ( not locked and itemCount and itemCount > 1) then
 			self.SplitStack = SplitStack;
 			StackSplitFrame:OpenStackSplitFrame(itemCount, self, "BOTTOMRIGHT", "TOPRIGHT");
 		end
-	end
 	end
 end
 
@@ -1699,7 +1710,7 @@ function ContainerFrameItemButtonMixin:SetIsExtended(isExtended)
 end
 
 function ContainerFrameItemButtonMixin:IsExtended()
-	return self.isExtended;
+		return self.isExtended;
 end
 
 function ContainerFrameItemButtonMixin:UpdateExtended()
@@ -1733,22 +1744,6 @@ function ContainerFrameItemButtonMixin:CheckForTutorials(couldHaveTutorial, item
 	end
 
 	return false;
-end
-
-function ContainerFrameItemButtonMixin:UpdateHotkeys()
-    local hotkey = self.HotKey;
-    local key;
-	if self.commandName then
-		key = GetBindingKey( self.commandName );
-		local text = GetBindingText(key, 0);
-		if ( text == "" ) then
-			hotkey:SetText(RANGE_INDICATOR);
-			hotkey:Hide();
-		else
-			hotkey:SetText(text);
-			hotkey:Show();
-		end
-    end
 end
 
 ContainerFramePortraitButtonMixin = {};
@@ -1802,7 +1797,7 @@ function ContainerFramePortraitButtonMixin:OnLeave()
 end
 
 function ContainerFramePortraitButtonMixin:OnShow()
-	if ( self:GetID() == 0 and not HIDE_CONTAINER_FRAME_HELPTIP) then
+	if ( self:GetID() == 0 ) then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_BAG_CHANGES) then
 			local helpTipInfo = {
 				text = TUTORIAL_HUD_REVAMP_BAG_CHANGES,
@@ -2115,9 +2110,6 @@ function ContainerFrameSettingsManager:OnAddonLoaded(addonName)
 end
 
 function ContainerFrameSettingsManager:IsUsingCombinedBags(optionalID)
-if USING_COMBINED_BAGS then 
-return true; 
-end
 	if optionalID then
 		if not ContainerFrame_IsGenericHeldBag(optionalID) or ContainerFrame_IsBankBag(optionalID) then
 			return false;

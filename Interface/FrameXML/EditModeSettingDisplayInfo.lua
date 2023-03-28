@@ -453,6 +453,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 		},
+		-- Opacity
+		{
+			setting = Enum.EditModeObjectiveTrackerSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_OBJECTIVE_TRACKER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
 	},
 
 	[Enum.EditModeSystem.MicroMenu] =

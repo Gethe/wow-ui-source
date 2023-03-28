@@ -7,6 +7,22 @@ local ContentTracking =
 	Functions =
 	{
 		{
+			Name = "GetBestMapForTrackable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "trackableType", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "trackableID", Type = "number", Nilable = false },
+				{ Name = "ignoreWaypoint", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentTrackingTarget",
 			Type = "Function",
 
@@ -89,12 +105,27 @@ local ContentTracking =
 
 			Arguments =
 			{
-				{ Name = "creatureID", Type = "number", Nilable = false },
+				{ Name = "collectableEntryID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "vendorTrackingInfo", Type = "VendorTrackingInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTrackable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTrackable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -156,6 +187,15 @@ local ContentTracking =
 
 	Events =
 	{
+		{
+			Name = "CollectableEntryUpdate",
+			Type = "Event",
+			LiteralName = "COLLECTABLE_ENTRY_UPDATE",
+			Payload =
+			{
+				{ Name = "collectableEntryID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "ContentTrackingUpdate",
 			Type = "Event",

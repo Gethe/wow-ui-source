@@ -563,13 +563,14 @@ function CurrencyHorizontalLayoutFrameMixin:GetQuantityFontString()
 		self.quantityPool = CreateFontStringPool(self, "ARTWORK", 0, (self.quantityFontObject or "GameFontHighlight"));
 	end
 	local fontString = self.quantityPool:Acquire();
+	fontString.quantityInfo = nil;
 	self:AddToLayout(fontString);
 	return fontString;
 end
 
 function CurrencyHorizontalLayoutFrameMixin:GetIconFrame()
 	if not self.iconPool then
-		self.iconPool = CreateFramePool("FRAME", self, "CurrencyLayoutFrameIconTemplate");
+		self.iconPool = CreateFramePool("FRAME", self, (self.iconFrameObject or "CurrencyLayoutFrameIconTemplate"));
 	end
 	local frame = self.iconPool:Acquire();
 	self:AddToLayout(frame);
@@ -613,15 +614,19 @@ function CurrencyHorizontalLayoutFrameMixin:AddCurrency(currencyID, overrideAmou
 		if fontString.layoutIndex > 1  then
 			fontString.leftPadding = self.currencySpacing;
 		end
+
+		return fontString, frame;
 	end
+
+	return nil;
 end
 
 function CurrencyHorizontalLayoutFrameMixin:AddItem(itemID, overrideAmount, color)
 	local height = self.fixedHeight;
+	local includeBank = true;
 	-- quantity
 	local fontString = self:GetQuantityFontString();
 	fontString:SetHeight(height);
-	local includeBank = true;
 	local amountString = BreakUpLargeNumbers(overrideAmount or GetItemCount(itemID, includeBank));
 	fontString:SetText(amountString);
 	color = color or HIGHLIGHT_FONT_COLOR;
@@ -636,4 +641,6 @@ function CurrencyHorizontalLayoutFrameMixin:AddItem(itemID, overrideAmount, colo
 	if fontString.layoutIndex > 1  then
 		fontString.leftPadding = self.currencySpacing;
 	end
+
+	return fontString, frame;
 end

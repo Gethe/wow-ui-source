@@ -12,7 +12,7 @@ local QuestConstants =
 			{
 				{ Name = "LegacyBehavior", Type = "QuestCompleteSpellType", EnumValue = 0 },
 				{ Name = "Follower", Type = "QuestCompleteSpellType", EnumValue = 1 },
-				{ Name = "TradeSkill", Type = "QuestCompleteSpellType", EnumValue = 2 },
+				{ Name = "Tradeskill", Type = "QuestCompleteSpellType", EnumValue = 2 },
 				{ Name = "Ability", Type = "QuestCompleteSpellType", EnumValue = 3 },
 				{ Name = "Aura", Type = "QuestCompleteSpellType", EnumValue = 4 },
 				{ Name = "Spell", Type = "QuestCompleteSpellType", EnumValue = 5 },

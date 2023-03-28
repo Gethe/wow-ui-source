@@ -315,6 +315,20 @@ function AddonList_InitButton(entry, addonIndex)
 	end
 
 	local titleText = title or name;
+
+	local iconTexture = C_AddOns.GetAddOnMetadata(addonIndex, "IconTexture");
+	local iconAtlas = C_AddOns.GetAddOnMetadata(addonIndex, "IconAtlas");
+
+	if not iconTexture and not iconAtlas then
+		iconTexture = [[Interface\ICONS\INV_Misc_QuestionMark]];
+	end
+
+	if iconTexture then
+		titleText = CreateSimpleTextureMarkup(iconTexture, 20, 20) .. " " .. titleText;
+	elseif iconAtlas then
+		titleText = CreateAtlasMarkup(iconAtlas, 20, 20) .. " " .. titleText;
+	end
+
 	if ADDON_ACTIONS_BLOCKED[name] then
 		titleText = titleText .. CreateSimpleTextureMarkup([[Interface\DialogFrame\DialogIcon-AlertNew-16]], 16, 16);
 	end

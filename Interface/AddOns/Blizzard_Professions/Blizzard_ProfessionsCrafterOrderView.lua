@@ -761,23 +761,12 @@ function ProfessionsCrafterOrderViewMixin:RecraftOrder()
     local predicate = function(reagentTbl, slotIndex)
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent and not self.reagentSlotProvidedByCustomer[slotIndex];
 	end
-    local craftingReagentTbl = self.OrderDetails.SchematicForm.transaction:CreateCraftingReagentInfoTblIf(predicate);
-    local itemMods = self.OrderDetails.SchematicForm.transaction:GetRecraftItemMods();
-    if itemMods then
-        for dataSlotIndex, modification in ipairs(itemMods) do
-            if modification.itemID > 0 then
-                for _, craftingReagentInfo in ipairs(craftingReagentTbl) do
-                    if (craftingReagentInfo.itemID == modification.itemID) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
-                        -- If the modification still exists in the same position, set it's quantity to 0 to inform the server
-                        -- not to modify this reagent.
-                        craftingReagentInfo.quantity = 0;
-                        break;
-                    end
-                end
-            end
-        end
-    end
-    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl);
+
+	local transaction = self.OrderDetails.SchematicForm.transaction;
+    local craftingReagentTbl = transaction:CreateCraftingReagentInfoTblIf(predicate);
+	local removedModifications = Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
+
+    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl, removedModifications);
 	self.CraftingOutputLog:StartListening();
 end
 

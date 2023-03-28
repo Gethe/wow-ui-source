@@ -493,6 +493,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.ObjectiveTracker] = {
 		settings = {
 			[Enum.EditModeObjectiveTrackerSetting.Height] = 40,
+			[Enum.EditModeObjectiveTrackerSetting.Opacity] = 0,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",
@@ -1064,6 +1065,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 	[Enum.EditModeSystem.ObjectiveTracker] = {
 		settings = {
 			[Enum.EditModeObjectiveTrackerSetting.Height] = 40,
+			[Enum.EditModeObjectiveTrackerSetting.Opacity] = 0,
 		},
 		anchorInfo = {
 			point = "TOPRIGHT",

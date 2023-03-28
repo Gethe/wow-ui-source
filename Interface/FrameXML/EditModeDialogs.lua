@@ -464,6 +464,24 @@ function EditModeSystemSettingsDialogMixin:OnSettingValueChanged(setting, value)
 	end
 end
 
+function EditModeSystemSettingsDialogMixin:OnSettingInteractStart(setting)
+	if self.attachedToSystem then
+		local settings = self.attachedToSystem.settingDisplayInfoMap[setting];
+		if settings and settings.hideSystemSelectionOnInteract then
+			self.attachedToSystem:SetSelectionShown(false);
+		end
+	end
+end
+
+function EditModeSystemSettingsDialogMixin:OnSettingInteractEnd(setting)
+	if self.attachedToSystem then
+		local settings = self.attachedToSystem.settingDisplayInfoMap[setting];
+		if settings and settings.hideSystemSelectionOnInteract then
+			self.attachedToSystem:SetSelectionShown(true);
+		end	
+	end
+end
+
 function EditModeSystemSettingsDialogMixin:RevertChanges()
 	if self.attachedToSystem then
 		EditModeManagerFrame:RevertSystemChanges(self.attachedToSystem);
