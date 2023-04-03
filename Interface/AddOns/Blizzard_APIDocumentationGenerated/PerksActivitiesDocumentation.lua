@@ -201,7 +201,7 @@ local PerksActivities =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "thresholdID", Type = "number", Nilable = false },
+				{ Name = "thresholdOrderIndex", Type = "number", Nilable = false },
 				{ Name = "currencyAwardAmount", Type = "number", Nilable = false },
 				{ Name = "requiredContributionAmount", Type = "number", Nilable = false },
 				{ Name = "pendingReward", Type = "bool", Nilable = false },
