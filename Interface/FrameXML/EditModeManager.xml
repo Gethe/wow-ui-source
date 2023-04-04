@@ -23,7 +23,7 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
-			<Button parentKey="Tutorial" inherits="MainHelpPlateButton" mixin="EditModeManagerTutorialMixin">
+			<Button parentKey="Tutorial" frameLevel="2" inherits="MainHelpPlateButton" mixin="EditModeManagerTutorialMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-20" y="20"/>
 				</Anchors>
@@ -36,7 +36,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton, EditModeUnsavedChangesCheckerTemplate">
+			<Button parentKey="CloseButton" frameLevel="2" inherits="UIPanelCloseButton, EditModeUnsavedChangesCheckerTemplate">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>

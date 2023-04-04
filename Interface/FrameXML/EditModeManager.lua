@@ -2167,13 +2167,13 @@ EditModeManagerTutorialMixin = {};
 
 local HelpTipInfos = {
 	[1] = { text = EDIT_MODE_HELPTIPS_LAYOUTS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown",
-			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, useParentStrata = true },
 	[2] = { text = EDIT_MODE_HELPTIPS_SHOW_HIDDEN_FRAMES, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings",
-			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, useParentStrata = true },
 	[3] = { text = EDIT_MODE_HELPTIPS_ADVANCED_OPTIONS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="EnableAdvancedOptionsCheckButton",
-			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, useParentStrata = true },
 	[4] = { text = EDIT_MODE_HELPTIPS_SELECT_FRAMES, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true,
-			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, },
+			cvarBitfield = "closedInfoFrames", bitfieldFlag = LE_FRAME_TUTORIAL_EDIT_MODE_MANAGER, useParentStrata = true },
 };
 
 function EditModeManagerTutorialMixin:OnLoad()
@@ -2209,11 +2209,10 @@ end
 
 function EditModeManagerTutorialMixin:ShowHelpTip()
 	local helpTipInfo = HelpTipInfos[self.currentTipIndex];
-	if(helptipInfo) then 
-	local relativeRegion = helpTipInfo.relativeRegionParentKey and EditModeManagerFrame[helpTipInfo.relativeRegionParentKey] or EditModeManagerFrame;
-
-	HelpTip:Show(self, helpTipInfo, relativeRegion);
-end
+	if helpTipInfo then
+		local relativeRegion = helpTipInfo.relativeRegionParentKey and EditModeManagerFrame[helpTipInfo.relativeRegionParentKey] or EditModeManagerFrame;
+		HelpTip:Show(self, helpTipInfo, relativeRegion);
+	end
 end
 
 function EditModeManagerTutorialMixin:ProgressHelpTips()

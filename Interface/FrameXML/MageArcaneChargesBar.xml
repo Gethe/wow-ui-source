@@ -83,8 +83,8 @@
 				<Alpha childKey="FrameGlow" fromAlpha=".7" toAlpha="0" startDelay=".97" duration=".2" order="1"/>
 				<Alpha childKey="FBArcaneFX" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 				<FlipBook childKey="FBArcaneFX" duration="1" flipBookRows="5" flipBookColumns="6" flipBookFrames="28" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
-				<Alpha childKey="ArcaneIcon" fromAlpha="0" toAlpha="0" startDelay="0" duration=".47" order="1"/>
-				<Alpha childKey="ArcaneIcon" fromAlpha="0" toAlpha="1" startDelay=".47" duration=".13" order="1"/>
+				<Alpha childKey="ArcaneIcon" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ArcaneIcon" fromAlpha=".5" toAlpha="1" startDelay=".47" duration=".13" order="1"/>
 				<Alpha childKey="ArcaneFlare" fromAlpha="0" toAlpha="0" duration=".23" order="1"/>
 				<Alpha childKey="ArcaneFlare" fromAlpha="0" toAlpha="1" startDelay=".23" duration=".23" order="1"/>
 				<Alpha childKey="ArcaneFlare" fromAlpha="1" toAlpha=".65" startDelay=".46" duration=".27" order="1"/>
@@ -101,13 +101,13 @@
 				<Alpha childKey="ArcaneTriangle" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".53" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="deactivateAnim" looping="NONE" setToFinalAlpha="true">
-				<Alpha childKey="FrameGlow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
-				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="1" startDelay=".17" duration=".07" order="1"/>
-				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="0" startDelay=".24" duration=".47" order="1"/>
-				<Alpha childKey="ArcaneIcon" fromAlpha="1" toAlpha="0" duration=".3" order="1"/>
-				<Alpha childKey="ArcaneFlare" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
-				<Alpha childKey="ArcaneOuterFX" fromAlpha="1" toAlpha="1" duration=".3" order="1"/>
-				<Alpha childKey="ArcaneOuterFX" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".47" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha="0" toAlpha="1" duration=".08" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="1" startDelay=".08" duration=".035" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="0" startDelay=".12" duration=".235" order="1"/>
+				<Alpha childKey="ArcaneIcon" fromAlpha="1" toAlpha="0" duration=".15" order="1"/>
+				<Alpha childKey="ArcaneFlare" fromAlpha="1" toAlpha="0" duration=".25" order="1"/>
+				<Alpha childKey="ArcaneOuterFX" fromAlpha="1" toAlpha="1" duration=".15" order="1"/>
+				<Alpha childKey="ArcaneOuterFX" fromAlpha="1" toAlpha="0" startDelay=".15" duration=".235" order="1"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>

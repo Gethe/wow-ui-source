@@ -297,13 +297,23 @@ local function Register()
 	CreateKeybindingInitializers(category, layout);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
-	end
+end
 
 SettingsRegistrar:AddRegistrant(Register);
 
--- Temporary fix to restore access to CG bindings. Will be removed shortly with a proper
--- regeneration technique.
-EventUtil.ContinueOnAddOnLoaded("CameraGuy", function()
+EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(o, ...)
+	local name, containsBindings = ...;
+	if not retained.layout then
+		--[[ We have not created any initial bindings. 
+		The initial bindings will include the addon's bindings.]]--
+		return;
+	end
+
+	if not containsBindings then
+		-- No bindings, no need to continue.
+		return;
+	end
+
 	-- Flush out every initializer from the layout.
 	local initializers = retained.layout:GetInitializers();
 	wipe(initializers);
@@ -312,9 +322,7 @@ EventUtil.ContinueOnAddOnLoaded("CameraGuy", function()
 	for index, initializer in ipairs(retained.initializers) do
 		retained.layout:AddInitializer(initializer);
 	end
-	
+
 	-- Create new bindings.
 	CreateKeybindingInitializers(retained.category, retained.layout);
-
-	retained = nil;
 end);

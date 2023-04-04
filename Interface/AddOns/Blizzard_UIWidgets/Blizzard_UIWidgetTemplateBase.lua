@@ -120,8 +120,8 @@ local function GetTextColorForEnabledState(enabledState, overrideNormalFontColor
 		return HIGHLIGHT_FONT_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Green then
 		return GREEN_FONT_COLOR;
-	elseif enabledState == Enum.WidgetEnabledState.Gold then
-		return CHALLENGE_MODE_TOAST_TITLE_COLOR;
+	elseif enabledState == Enum.WidgetEnabledState.Artifact then
+		return ARTIFACT_GOLD_COLOR;
 	elseif enabledState == Enum.WidgetEnabledState.Black then
 		return BLACK_FONT_COLOR;
 	else

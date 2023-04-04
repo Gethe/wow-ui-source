@@ -336,6 +336,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetProfessionInfoByRecipeID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ProfessionInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetProfessionInfoBySkillLineID",
 			Type = "Function",
 

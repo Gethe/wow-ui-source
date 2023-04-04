@@ -58,7 +58,12 @@ function PROFESSION_RECIPE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 			C_TradeSkillUI.SetRecipeTracked(GetRecipeID(block), track, IsRecraftBlock(block));
 		else
 			if not IsRecraftBlock(block) then
-				C_TradeSkillUI.OpenRecipe(GetRecipeID(block));
+				local recipeID = GetRecipeID(block);
+				if C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
+					C_TradeSkillUI.OpenRecipe(recipeID)
+				else
+					Professions.InspectRecipe(recipeID);
+				end
 			end
 		end
 	else

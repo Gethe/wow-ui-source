@@ -104,6 +104,7 @@ function RuneFrameMixin:OnLeave()
 end
 
 
+local DefaultArtType = "Default";
 local ArtTypeBySpec = {
 	[1] = "Blood",
 	[2] = "Frost",
@@ -143,9 +144,8 @@ end
 function RuneButtonMixin:UpdateSpec(specIndex)
 	local specArtType = (specIndex ~= nil) and ArtTypeBySpec[specIndex] or nil;
 	if specArtType == nil then
-		-- If player hasn't chosen a Specialization yet, default their runes to "Frost"
-		-- This will be replaced by a "Base" rune set once it's available
-		specArtType = "Frost";
+		-- If player hasn't chosen a Specialization yet, use Default rune set
+		specArtType = DefaultArtType;
 	end
 
 	local cdSwipeAtlas = C_Texture.GetAtlasInfo(RuneArtSet.cooldownSwipe:format(specArtType));

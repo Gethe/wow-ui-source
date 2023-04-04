@@ -149,11 +149,7 @@ end
 
 function ItemMixin:IsItemInPlayersControl()
 	local itemLocation = self:GetItemLocation();
-	if itemLocation and C_Item.DoesItemExist(itemLocation) then
-		return true;
-	end
-
-	return false;
+	return itemLocation and C_Item.DoesItemExist(itemLocation);
 end
 
 -- Item API

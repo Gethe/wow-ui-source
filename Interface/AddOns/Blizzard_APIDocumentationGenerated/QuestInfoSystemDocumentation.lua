@@ -36,6 +36,20 @@ local QuestInfoSystem =
 			},
 		},
 		{
+			Name = "GetQuestShouldToastCompletion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldToast", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasQuestRewardSpells",
 			Type = "Function",
 

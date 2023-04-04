@@ -207,6 +207,7 @@ StaticPopup.xml
 ..\SharedXML\DialogUtil.lua
 ..\SharedXML\Settings\GameplaySettingsGroup.lua
 ..\SharedXML\Settings\Settings.xml
+..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
 SettingDefinitions\Definitions.xml
 QuickKeybind.xml
 TutorialFrame.xml

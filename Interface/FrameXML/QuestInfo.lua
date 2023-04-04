@@ -589,13 +589,19 @@ function QuestInfo_ShowRewards()
 	end
 
 	for index, spellID in ipairs(spellRewards) do
-		local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
-		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
+		if spellID and spellID > 0 then
+			local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
+			local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
 
-		-- only allow the spell reward if user can learn it
-		if spellInfo and spellInfo.texture and not knownSpell and (not spellInfo.isBoostSpell or IsCharacterNewlyBoosted()) and (not spellInfo.garrFollowerID or not C_Garrison.IsFollowerCollected(spellInfo.garrFollowerID)) then
-			spellInfo.spellID = spellID;
-			AddSpellToBucket(spellRewardBuckets, spellInfo);
+			-- only allow the spell reward if user can learn it
+			if spellInfo and spellInfo.texture and not knownSpell and (not spellInfo.isBoostSpell or IsCharacterNewlyBoosted()) and (not spellInfo.garrFollowerID or not C_Garrison.IsFollowerCollected(spellInfo.garrFollowerID)) then
+				spellInfo.spellID = spellID;
+				AddSpellToBucket(spellRewardBuckets, spellInfo);
+			end
+		else
+			if ProcessExceptionClient then
+				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, index));
+			end
 		end
 	end
 

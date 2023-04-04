@@ -83,7 +83,7 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		if buttonName == "LeftButton" and not self.committed then
 			HelpTip:Hide(self, CRAFTING_ORDER_TUTORIAL_RECRAFT);
 
-			local flyout = ToggleProfessionsItemFlyout(self.RecraftSlot.InputSlot, ProfessionsCustomerOrdersFrame);
+			local flyout = ToggleProfessionsItemFlyout(self.RecraftSlot.InputSlot, self);
 			if flyout then
 				local function OnFlyoutItemSelected(o, flyout, elementData)
 					local itemLocation = C_Item.GetItemLocation(elementData.itemGUID);
@@ -885,7 +885,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 						if buttonName == "LeftButton" then
 							HelpTip:Hide(self, CRAFTING_ORDER_TUTORIAL_OPTIONAL_REAGENTS);
 
-							local flyout = ToggleProfessionsItemFlyout(slot.Button, ProfessionsCustomerOrdersFrame);
+							local flyout = ToggleProfessionsItemFlyout(slot.Button, self);
 							if flyout then
 								local function OnFlyoutItemSelected(o, flyout, elementData)
 									local item = elementData.item;
@@ -913,8 +913,8 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction);
 								end
 	
-								flyout.OnElementEnabledImplementation = function(button, elementData)
-									return self.transaction:AreAllRequirementsAllocated(elementData.item);
+								flyout.OnElementEnabledImplementation = function(button, elementData, displayCount)
+									return (displayCount > 0) and self.transaction:AreAllRequirementsAllocated(elementData.item);
 								end
 
 								flyout:Init(slot.Button, self.transaction);

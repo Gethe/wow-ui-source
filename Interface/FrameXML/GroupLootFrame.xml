@@ -420,6 +420,19 @@
 				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
 				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
 			</Button>
+			<Button parentKey="TransmogButton" inherits="LootRollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.GreedButton" relativePoint="CENTER" x="0" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.tooltipText=TRANSMOGRIFICATION;
+					</OnLoad>
+				</Scripts>
+				<NormalTexture atlas="lootroll-toast-icon-transmog-up"/>
+				<HighlightTexture atlas="lootroll-toast-icon-transmog-highlight" alphaMode="ADD"/>
+				<PushedTexture atlas="lootroll-toast-icon-transmog-down"/>
+			</Button>
 			<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
 				<Size x="190" y="8"/>
 				<Anchors>

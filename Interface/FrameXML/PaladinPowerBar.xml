@@ -60,32 +60,32 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="activateAnim" setToFinalAlpha="true">
-				<Alpha smoothing="NONE" childKey="FX" duration=".3" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".3" smoothing="NONE" childKey="FX" duration=".5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha startDelay="0" smoothing="NONE" childKey="Blur" duration=".27" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".27" smoothing="NONE" childKey="Blur" duration=".53" order="1" fromAlpha="1" toAlpha="0"/>
-				<Translation smoothing="OUT" childKey="Blur" duration=".8" order="1" offsetX="0" offsetY="2"/>
-				<Alpha startDelay=".1" smoothing="NONE" childKey="Glow" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".23" smoothing="NONE" childKey="Glow" duration=".57" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha smoothing="NONE" childKey="ActiveTexture" duration=".1" order="1" fromAlpha="0" toAlpha="0"/>
-				<Alpha startDelay=".1" smoothing="NONE" childKey="ActiveTexture" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="FX" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="FX" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".5" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".53" order="1"/>
+				<Translation childKey="Blur" offsetX="0" offsetY="2" duration=".8" order="1" smoothing="OUT" />
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" startDelay=".1" duration=".23" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".23" duration=".57" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="0" duration=".1" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="1" startDelay=".1" duration=".23" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="readyAnim" looping="NONE" setToFinalAlpha="true">
-				<Alpha smoothing="NONE" childKey="FX" duration=".3" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".3" smoothing="NONE" childKey="FX" duration=".37" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha startDelay="0" smoothing="NONE" childKey="Blur" duration=".33" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".3" smoothing="NONE" childKey="Blur" duration=".37" order="1" fromAlpha="1" toAlpha="0"/>
-				<Translation smoothing="NONE" childKey="Blur" duration=".67" order="1" offsetX="0" offsetY="3"/>
-				<Alpha startDelay="0" smoothing="NONE" childKey="Glow" duration=".13" order="1" fromAlpha="0" toAlpha="0"/>
-				<Alpha startDelay=".13" smoothing="NONE" childKey="Glow" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".23" smoothing="NONE" childKey="Glow" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FX" fromAlpha="0" toAlpha="1" duration=".3" order="1"/>
+				<Alpha childKey="FX" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".37" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="1" duration=".33" order="1"/>
+				<Alpha childKey="Blur" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".37" order="1"/>
+				<Translation childKey="Blur" offsetX="0" offsetY="3" duration=".67" order="1" smoothing="NONE" />
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="0" duration=".13" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" startDelay=".13" duration=".23" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".23" duration=".3" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="readyLoopAnim" looping="REPEAT" setToFinalAlpha="true">
-				<Alpha smoothing="NONE" childKey="Glow" duration=".5" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".5" smoothing="NONE" childKey="Glow" duration=".83" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".5" duration=".83" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="depleteAnim" looping="NONE">
-				<FlipBook smoothing="NONE" childKey="DepleteFlipbook" duration=".87" order="1" flipBookRows="5" flipBookColumns="6" flipBookFrames="26" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				<FlipBook childKey="DepleteFlipbook" duration=".87" flipBookRows="5" flipBookColumns="6" flipBookFrames="26" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -142,22 +142,22 @@
 				<Alpha duration=".5" order="1" fromAlpha="0" toAlpha="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="activateAnim" setToFinalAlpha="true">
-				<Alpha smoothing="NONE" childKey="Glow" duration=".1" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".1" smoothing="NONE" childKey="Glow" duration=".2" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".3" smoothing="NONE" childKey="Glow" duration=".37" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha smoothing="NONE" childKey="ActiveTexture" duration=".1" order="1" fromAlpha="0" toAlpha="0"/>
-				<Alpha startDelay=".1" smoothing="NONE" childKey="ActiveTexture" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration=".1" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="1" startDelay=".1" duration=".2" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".37" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="0" duration=".1" order="1"/>
+				<Alpha childKey="ActiveTexture" fromAlpha="0" toAlpha="1" startDelay=".1" duration=".23" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="readyAnim" setToFinalAlpha="true">
-				<Alpha startDelay="0" smoothing="NONE" childKey="ThinGlow" duration=".67" order="1" fromAlpha="1" toAlpha=".7"/>
+				<Alpha childKey="ThinGlow" fromAlpha="1" toAlpha=".7" duration=".67" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="readyLoopAnim" looping="REPEAT" setToFinalAlpha="true">
-				<Alpha smoothing="NONE" childKey="ThinGlow" duration=".5" order="1" fromAlpha=".7" toAlpha="1"/>
-				<Alpha startDelay=".5" smoothing="NONE" childKey="ThinGlow" duration=".83" order="1" fromAlpha="1" toAlpha=".7"/>
+				<Alpha childKey="ThinGlow" fromAlpha=".7" toAlpha="1" duration=".5" order="1"/>
+				<Alpha childKey="ThinGlow" fromAlpha="1" toAlpha=".7" startDelay=".5" duration=".83" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="depleteAnim" setToFinalAlpha="true">
-				<Alpha startDelay="0" smoothing="NONE" childKey="Glow" duration=".37" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".37" smoothing="NONE" childKey="Glow" duration=".33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" startDelay=".37" duration=".33" order="1"/>
 			</AnimationGroup>
 		</Animations>
 		<Frames>

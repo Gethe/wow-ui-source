@@ -98,8 +98,8 @@
 			<AnimationGroup parentKey="unchargedEmptyToUnchargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
 				<Alpha childKey="SlashFBUncharged" fromAlpha="0" toAlpha="1" duration="0"  order="1"/>
 				<FlipBook childKey="SlashFBUncharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
-				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha="0" duration=".27"  order="1"/>
-				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha=".5" duration=".1"  order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
 				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
 				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
 				<Alpha childKey="BGInactive" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
@@ -114,10 +114,10 @@
 				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
 				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
 				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
-				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha="0" duration=".27" order="1"/>
-				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
-				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
-				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="0" startDelay=".37" duration=".13" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha=".5" toAlpha="0" startDelay=".37" duration=".13" order="1"/>
 				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="unchargedEmptyToChargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
@@ -133,23 +133,23 @@
 				<FlipBook childKey="SlashFBCharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
 				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
 				<Alpha childKey="ChargedFrameActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
-				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha="0" duration=".27" order="1"/>
-				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
-				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
-				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="0" startDelay=".37" duration=".13" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="IconCharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha=".5" toAlpha="0" startDelay=".37" duration=".13" order="1"/>
 				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" duration=".47" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="chargedEmptyToUnchargedFull" setToFinalAlpha="true" parentArray="transitionAnims">
 				<Alpha childKey="SlashFBUncharged" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 				<FlipBook childKey="SlashFBUncharged" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
-				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha="0" duration=".27" order="1"/>
-				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="IconUncharged" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
 				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
 				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
 				<Alpha childKey="BGGlow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
 				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".4" order="1"/>
-				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
-				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha="1" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ChargedFrameInactive" fromAlpha=".5" toAlpha="0" startDelay=".17" duration=".33" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="chargedEmptyToUnchargedEmpty" setToFinalAlpha="true" parentArray="transitionAnims">
 				<Alpha childKey="ChargedFrameGlow" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>

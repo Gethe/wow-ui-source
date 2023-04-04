@@ -1,3 +1,29 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+Import("table");
+Import("select");
+Import("ipairs");
+Import("math");
+
+end
+---------------
+
 DataProviderMixin = CreateFromMixins(CallbackRegistryMixin);
 
 DataProviderMixin:GenerateCallbackEvents(
@@ -119,7 +145,7 @@ function DataProviderMixin:RemoveIndexRange(minIndex, maxIndex)
 	maxIndex = math.min(self:GetSize(), maxIndex);
 	while maxIndex >= minIndex do
 		local elementData = self.collection[maxIndex];
-		tremove(self.collection, maxIndex);
+		table.remove(self.collection, maxIndex);
 		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, maxIndex);
 		maxIndex = maxIndex - 1;
 	end

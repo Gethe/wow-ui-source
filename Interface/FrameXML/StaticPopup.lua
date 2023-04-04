@@ -708,8 +708,6 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	OnAccept = function(self, data)
 		if ( data == "LootWindow" ) then
 			MasterLooterFrame_GiveMasterLoot();
-		elseif ( data == "LootHistory" ) then
-			LootHistoryDropDown_GiveMasterLoot();
 		end
 	end,
 	timeout = 0,

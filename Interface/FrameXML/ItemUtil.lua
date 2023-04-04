@@ -184,6 +184,10 @@ function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
 	end
 end
 
+function ItemUtil.GetItemHyperlink(itemID)
+	return select(2, GetItemInfo(itemID));
+end
+
 function ItemUtil.PickupBagItem(itemLocation)
 	local bag, slot = itemLocation:GetBagAndSlot();
 	if bag and slot then

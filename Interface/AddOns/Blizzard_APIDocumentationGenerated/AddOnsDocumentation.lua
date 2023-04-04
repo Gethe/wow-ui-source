@@ -32,6 +32,7 @@ local AddOns =
 			Payload =
 			{
 				{ Name = "addOnName", Type = "cstring", Nilable = false },
+				{ Name = "containsBindings", Type = "bool", Nilable = false },
 			},
 		},
 		{

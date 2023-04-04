@@ -36,7 +36,6 @@ local ContentTracking =
 			{
 				{ Name = "targetType", Type = "ContentTrackingTargetType", Nilable = false },
 				{ Name = "targetID", Type = "number", Nilable = false },
-				{ Name = "targetSubInfo", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -46,7 +45,6 @@ local ContentTracking =
 			Arguments =
 			{
 				{ Name = "journalEncounterID", Type = "number", Nilable = false },
-				{ Name = "difficultyID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -111,6 +109,22 @@ local ContentTracking =
 			Returns =
 			{
 				{ Name = "vendorTrackingInfo", Type = "VendorTrackingInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "IsNavigable",
+			Type = "Function",
+			Documentation = { "Returns if the trackable is either on your current map, or if we're able to determine a route to that map from your location via waypoints." },
+
+			Arguments =
+			{
+				{ Name = "trackableType", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "trackableID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isNavigable", Type = "bool", Nilable = false },
 			},
 		},
 		{

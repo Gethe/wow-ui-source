@@ -16,6 +16,14 @@ local LFGConstants =
 				{ Name = "PvP", Type = "LFGListFilter", EnumValue = 8 },
 			},
 		},
+		{
+			Name = "GroupFinderConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MAX_GROUP_FINDER_ACTIVITIES", Type = "number", Value = 41 },
+			},
+		},
 	},
 };
 

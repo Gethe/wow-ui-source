@@ -333,6 +333,7 @@ info.iconTooltipBackdropStyle = [nil, TABLE] -- Optional Backdrop style of the t
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
+info.registerForAnyClick [nil, true] -- Register dropdown buttons for any clicks
 ]]
 
 function UIDropDownMenu_CreateInfo()
@@ -443,7 +444,9 @@ function UIDropDownMenu_AddButton(info, level)
 	invisibleButton:Hide();
 	button:Enable();
 
-	if ( info.registerForRightClick ) then
+	if ( info.registerForAnyClick ) then
+		button:RegisterForClicks("AnyUp");
+	elseif ( info.registerForRightClick ) then
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	else
 		button:RegisterForClicks("LeftButtonUp");

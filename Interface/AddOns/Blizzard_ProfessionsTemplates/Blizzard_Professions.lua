@@ -427,7 +427,7 @@ function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	return quantities;
 end
 
-function Professions.SetupQualityReagentTooltip(slot, transaction)
+function Professions.SetupQualityReagentTooltip(slot, transaction, noInstruction)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
@@ -452,7 +452,7 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
 		end
 
-		if not slot:IsUnallocatable() then
+		if not slot:IsUnallocatable() and not noInstruction then
 			if not blankLineAdded then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
@@ -571,7 +571,11 @@ function Professions.CanAllocateReagents(transaction, slotIndex)
 	return false;
 end
 
-local function HandleReagentLink(link)
+function Professions.InspectRecipe(recipeID)
+	InspectRecipeFrame:Open(recipeID);
+end
+
+function Professions.HandleReagentLink(link)
 	if not HandleModifiedItemClick(link) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		return false, link;
@@ -589,12 +593,12 @@ end
 
 function Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic)
 	local link = C_TradeSkillUI.GetRecipeFixedReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex);
-	return HandleReagentLink(link);
+	return Professions.HandleReagentLink(link);
 end
 
 function Professions.HandleQualityReagentItemLink(recipeID, reagentSlotSchematic, qualityIndex)
 	local link = C_TradeSkillUI.GetRecipeQualityReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex, qualityIndex);
-	return HandleReagentLink(link);
+	return Professions.HandleReagentLink(link);
 end
 
 function Professions.FindFirstQualityAllocated(transaction, reagentSlotSchematic)

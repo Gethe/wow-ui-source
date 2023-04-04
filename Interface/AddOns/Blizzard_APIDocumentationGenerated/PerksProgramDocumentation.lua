@@ -326,7 +326,7 @@ local PerksProgram =
 				{ Name = "rewardAmount", Type = "number", Nilable = false },
 				{ Name = "monthRewarded", Type = "string", Nilable = true },
 				{ Name = "activityMonthID", Type = "number", Nilable = false },
-				{ Name = "activityThresholdID", Type = "number", Nilable = false },
+				{ Name = "thresholdOrderIndex", Type = "number", Nilable = false },
 			},
 		},
 		{

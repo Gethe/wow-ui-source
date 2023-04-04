@@ -133,7 +133,7 @@ function ItemUpgradeMixin:Update(fromDropDown)
 		self.Arrow:Hide();
 		self.upgradeAnimationsInProgress = false;
 		self.targetUpgradeLevel = nil;
-		self.insufficientCosts = nil;
+		self.insufficientCostInfo = nil;
 		return;
 	end
 
@@ -204,7 +204,7 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 	local buttonDisabledState = true;
 
-	self.insufficientCosts = nil;
+	self.insufficientCostInfo = nil;
 
 	self.UpgradeButton:SetDisabledTooltip();
 
@@ -310,20 +310,64 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 			color = GREEN_FONT_COLOR;
 		end
 
-		local quantityStringInstance = self.UpgradeCostFrame:AddItem(itemID, itemCostEntry.cost, color);
-		quantityStringInstance.costInfo = { GetCostName = GetName, discountInfo = itemCostEntry.discountInfo, highWatermarkSlot = self.upgradeInfo.highWatermarkSlot };
+		local seasonSourceString = self:GetSeasonSourceStringForCostItem(itemID, self.upgradeInfo);
 
-		self.PlayerCurrencies:AddItem(itemID);
+		local quantityStringInstance, iconFrameInstance = self.UpgradeCostFrame:AddItem(itemID, itemCostEntry.cost, color);
+		quantityStringInstance.costInfo = { GetCostName = GetName, discountInfo = itemCostEntry.discountInfo, highWatermarkSlot = self.upgradeInfo.highWatermarkSlot };
+		iconFrameInstance.costSourceString = seasonSourceString;
+
+		local _, playerOwnedIconFrameInstance = self.PlayerCurrencies:AddItem(itemID);
+		playerOwnedIconFrameInstance.costSourceString = seasonSourceString;
 	end
 
 	if #insufficientCosts > 0 then
-		self.insufficientCosts = insufficientCosts;
+		self.insufficientCostInfo = { insufficientCosts = insufficientCosts };
+		self.insufficientCostInfo.canAnyCostsBeDowngradedTo = self:CanAnyCostsBeDowngradedTo(insufficientCosts, self.upgradeInfo);
 	end
 
 	self:UpdateButtonAndArrowStates(buttonDisabledState, showRightPreview);
 
 	self.UpgradeCostFrame:Show();
 	self.PlayerCurrencies:Show();
+end
+
+function ItemUpgradeMixin:GetSeasonSourceStringForCostItem(itemID, upgradeInfo)
+	if not upgradeInfo.upgradeCostTypesForSeason or #upgradeInfo.upgradeCostTypesForSeason == 0 then
+		return nil;
+	end
+
+	for _, costType in ipairs(upgradeInfo.upgradeCostTypesForSeason) do
+		if costType.itemID == itemID then
+			return costType.sourceString;
+		end
+	end
+
+	return nil;
+end
+
+function ItemUpgradeMixin:CanAnyCostsBeDowngradedTo(insufficientCosts, upgradeInfo)
+	if not upgradeInfo.upgradeCostTypesForSeason or #upgradeInfo.upgradeCostTypesForSeason == 0 then
+		return false;
+	end
+
+	-- Cost items of a higher order index can be downgraded to lower order index items
+	-- So determine if any insufficient cost items could be gained via downgrading
+	local highestOrderIndex = -1;
+	local itemIDToOrderIndex = {};
+	for _, costType in ipairs(upgradeInfo.upgradeCostTypesForSeason) do
+		if costType.orderIndex > highestOrderIndex then
+			highestOrderIndex = costType.orderIndex;
+		end
+		itemIDToOrderIndex[costType.itemID] = costType.orderIndex;
+	end
+
+	for _, insufficientCost in ipairs(insufficientCosts) do
+		if insufficientCost.itemID and itemIDToOrderIndex[insufficientCost.itemID] and itemIDToOrderIndex[insufficientCost.itemID] < highestOrderIndex then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 -- compare 2 strings finding numeric differences
@@ -469,8 +513,8 @@ function ItemUpgradeMixin:GetUpgradeInfo()
 	return self.upgradeInfo;
 end
 
-function ItemUpgradeMixin:GetInsufficientCostsTable()
-	return self.insufficientCosts;
+function ItemUpgradeMixin:GetInsufficientCostInfo()
+	return self.insufficientCostInfo;
 end
 
 function ItemUpgradeMixin:InitDropdown()
@@ -572,19 +616,34 @@ function ItemUpgradeButtonMixin:OnClick()
 end
 
 function ItemUpgradeButtonMixin:GetDisabledTooltip()
-	local insufficientCosts = self:GetUpgradeFrame():GetInsufficientCostsTable();
-	if self.disabledTooltip or not insufficientCosts or #insufficientCosts == 0 then
+	local insufficientCostinfo = self:GetUpgradeFrame():GetInsufficientCostInfo();
+
+	if self.disabledTooltip or not insufficientCostinfo or not insufficientCostinfo.insufficientCosts or #insufficientCostinfo.insufficientCosts == 0 then
 		return DisabledTooltipButtonMixin.GetDisabledTooltip(self);
 	end
 
+	local insufficientCosts = insufficientCostinfo.insufficientCosts;
 	local numInsufficientCosts = #insufficientCosts;
+
+	local anyCostNamesNotLoaded = false;
+	for _, cost in ipairs(insufficientCosts) do
+		cost.name = cost.GetName();
+		if cost.name == nil then
+			anyCostNamesNotLoaded = true;
+		end
+	end
+
 	local insufficientCostTooltip;
-	if numInsufficientCosts == 1 then
-		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY:format(insufficientCosts[1].GetName());
-	elseif numInsufficientCosts == 2 then
-		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_TWO:format(insufficientCosts[1].GetName(), insufficientCosts[2].GetName());
+	if not anyCostNamesNotLoaded and numInsufficientCosts == 1 then
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY:format(insufficientCosts[1].name);
+	elseif not anyCostNamesNotLoaded and numInsufficientCosts == 2 then
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_TWO:format(insufficientCosts[1].name, insufficientCosts[2].name);
 	else
 		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_MULTIPLE;
+	end
+
+	if insufficientCostinfo.canAnyCostsBeDowngradedTo then
+		insufficientCostTooltip = ("%s|n%s"):format(insufficientCostTooltip, ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_DOWNGRADE);
 	end
 
 	return insufficientCostTooltip, self.disabledTooltipAnchor;
@@ -888,6 +947,10 @@ function ItemUpgradeCostQuantityMixin:OnEnter()
 	local discountInfo = self.costInfo.discountInfo;
 	local costName = self.costInfo.GetCostName();
 
+	if not costName then
+		return;
+	end
+
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT");
 	-- Darker backing so this tooltip is readable over the embedded item tooltips
@@ -935,7 +998,7 @@ end
 
 ItemUpgradeCostIconMixin = {};
 
-function CurrencyLayoutFrameIconMixin:OnEnter()
+function ItemUpgradeCostIconMixin:OnEnter()
 	if self.currencyID or self.itemID then
 		local tooltip = GameTooltip;
 		tooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -943,10 +1006,20 @@ function CurrencyLayoutFrameIconMixin:OnEnter()
 
 		if self.currencyID then
 			tooltip:SetCurrencyByID(self.currencyID);
+			tooltip:Show();
 		elseif self.itemID then
-			tooltip:SetItemByID(self.itemID);
+			local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.itemID);
+			tooltipInfo.excludeLines = {
+					Enum.TooltipDataLineType.SellPrice,
+					Enum.TooltipDataLineType.ItemBinding,
+			};
+			tooltipInfo.tooltipPostCall = function(tooltipInstance)
+				if self.costSourceString and self.costSourceString ~= "" then
+					GameTooltip_AddBlankLineToTooltip(tooltipInstance);
+					GameTooltip_AddNormalLine(tooltipInstance, self.costSourceString);
+				end
+			end
+			tooltip:ProcessInfo(tooltipInfo);
 		end
-
-		tooltip:Show();
 	end
 end

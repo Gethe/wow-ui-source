@@ -412,6 +412,7 @@
 			<Frame parentKey="PlayerCurrencies" inherits="CurrencyHorizontalLayoutFrameTemplate">
 				<KeyValues>
 					<KeyValue key="fixedHeight" value="12" type="number"/>
+					<KeyValue key="iconFrameObject" value="ItemUpgradeCostIconTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5"/>

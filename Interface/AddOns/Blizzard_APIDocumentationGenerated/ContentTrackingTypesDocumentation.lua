@@ -61,7 +61,6 @@ local ContentTrackingTypes =
 				{ Name = "trackableID", Type = "number", Nilable = false },
 				{ Name = "targetType", Type = "ContentTrackingTargetType", Nilable = false },
 				{ Name = "targetID", Type = "number", Nilable = false },
-				{ Name = "targetSubInfo", Type = "number", Nilable = true },
 				{ Name = "waypointText", Type = "string", Nilable = false },
 			},
 		},
@@ -71,8 +70,10 @@ local ContentTrackingTypes =
 			Fields =
 			{
 				{ Name = "encounterName", Type = "cstring", Nilable = false },
+				{ Name = "journalEncounterID", Type = "number", Nilable = true },
 				{ Name = "instanceName", Type = "cstring", Nilable = false },
-				{ Name = "subText", Type = "cstring", Nilable = false },
+				{ Name = "subText", Type = "cstring", Nilable = true },
+				{ Name = "difficultyID", Type = "number", Nilable = true },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
 				{ Name = "groupFinderActivityID", Type = "number", Nilable = true },
 			},

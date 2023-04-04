@@ -236,6 +236,11 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	end
 
 	local function InitControlDropDown(control, setting, name, tooltip, options)
+		if not setting then
+			control:Hide();
+			return
+		end
+
 		local dropDown = control.DropDown;
 		control.Text:SetText(name);
 
@@ -262,6 +267,11 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	end
 
 	local function InitControlSlider(control, setting, name, tooltip, options)
+		if not setting then
+			control:Hide();
+			return
+		end
+
 		control.Text:SetText(name);
 
 		local function OnSliderValueChanged(o, value)
@@ -355,6 +365,8 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
 	InitControlSlider(	self.EnvironmentDetail, settingEnvironmentDetail,	ENVIRONMENT_DETAIL, OPTION_TOOLTIP_ENVIRONMENT_DETAIL, options);
 	InitControlSlider(	self.GroundClutter, settingGroundClutter,	GROUND_CLUTTER, OPTION_TOOLTIP_GROUND_CLUTTER, options);
+
+	GraphicsOverrides.AdjustAdvancedQualityControls(self, settings, raid, InitControlDropDown, AddValidatedSettingOption, AddRecommended);
 end
 
 SettingsAdvancedQualitySectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
@@ -897,37 +909,8 @@ local function Register()
 		settings[cvar] = CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue);
 	end
 	
-	local advSettings = {};
-	AddAdvancedQualitySetting(advSettings, category, "graphicsQuality", GRAPHICS_QUALITY, "PROXY_GRAPHICS_QUALITY");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsShadowQuality", SHADOW_QUALITY, "PROXY_SHADOW_QUALITY");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsLiquidDetail", LIQUID_DETAIL, "PROXY_LIQUID_DETAIL");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsParticleDensity", PARTICLE_DENSITY, "PROXY_PARTICLE_DENSITY", 1);
-	AddAdvancedQualitySetting(advSettings, category, "graphicsSSAO", SSAO_LABEL, "PROXY_SSAO");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsDepthEffects", DEPTH_EFFECTS, "PROXY_DEPTH_EFFECTS");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_COMPUTE_EFFECTS");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsOutlineMode", OUTLINE_MODE, "PROXY_OUTLINE_MODE");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsTextureResolution", TEXTURE_DETAIL, "PROXY_TEXTURE_RESOLUTION");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsSpellDensity", SPELL_DENSITY, "PROXY_SPELL_DENSITY");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_PROJECTED_TEXTURES");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsViewDistance", FARCLIP, "PROXY_VIEW_DISTANCE");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_ENVIRONMENT_DETAIL");
-	AddAdvancedQualitySetting(advSettings, category, "graphicsGroundClutter", GROUND_CLUTTER, "PROXY_GROUND_CLUTTER");
-	
-	local advRaidSettings = {};
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsQuality", GRAPHICS_QUALITY, "PROXY_RAID_GRAPHICS_QUALITY");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsShadowQuality", SHADOW_QUALITY, "PROXY_RAID_SHADOW_QUALITY");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsLiquidDetail", LIQUID_DETAIL, "PROXY_RAID_LIQUID_DETAIL");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsParticleDensity", PARTICLE_DENSITY, "PROXY_RAID_PARTICLE_DENSITY");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsSSAO", SSAO_LABEL, "PROXY_RAID_SSAO");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsDepthEffects", DEPTH_EFFECTS, "PROXY_RAID_DEPTH_EFFECTS");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_RAID_COMPUTE_EFFECTS");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsOutlineMode", OUTLINE_MODE, "PROXY_RAID_OUTLINE_MODE");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsTextureResolution", TEXTURE_DETAIL, "PROXY_RAID_TEXTURE_RESOLUTION");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsSpellDensity", SPELL_DENSITY, "PROXY_RAID_SPELL_DENSITY");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_RAID_PROJECTED_TEXTURES");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsViewDistance", FARCLIP, "PROXY_RAID_VIEW_DISTANCE");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_RAID_ENVIRONMENT_DETAIL");
-	AddAdvancedQualitySetting(advRaidSettings, category, "raidGraphicsGroundClutter", GROUND_CLUTTER, "PROXY_RAID_GROUND_CLUTTER");
+	local advSettings = GraphicsOverrides.CreateAdvancedSettingsTable(category, AddAdvancedQualitySetting);
+	local advRaidSettings = GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, AddAdvancedQualitySetting);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
 	local raidGraphicsSetting = Settings.GetSetting("PROXY_RAID_GRAPHICS_QUALITY");
@@ -1141,21 +1124,7 @@ local function Register()
 
 	-- Physics Interaction
 	do
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, NO_ENVIRONMENT_INTERACTION);
-			container:Add(1, PLAYER_ONLY_INTERACTION);
-			container:Add(2, PLAYER_AND_NPC_INTERACTION);
-			return container:GetData();
-		end
-
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("physicsLevel", Settings.VarType.Number);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_PHYSICS_LEVEL", Settings.DefaultVarLocation,
-			Settings.VarType.Number, PHYSICS_INTERACTION, getDefaultValue(), getValue, nil, commitValue);
-		setting:SetCommitFlags(Settings.CommitFlag.ClientRestart);
-
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_PHYSICS_OPTIONS);
+		GraphicsOverrides.CreatePhysicsInteractionSetting(category);
 	end
 
 	-- Graphics Card

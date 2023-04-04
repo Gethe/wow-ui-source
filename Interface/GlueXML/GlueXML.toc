@@ -127,6 +127,7 @@ GlueTooltip.xml
 ..\SharedXML\DialogUtil.lua
 
 ..\SharedXML\Settings\Settings.xml
+..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
 SettingDefinitions\Definitions.xml
 
 ..\SharedXML\AddonList.xml

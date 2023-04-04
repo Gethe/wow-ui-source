@@ -173,16 +173,12 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameLevelCount
 
 	self:SetSize(sizeX, sizeY);
 
-	self.ShowAnim:Play();
+	self:ApplyCurrentAlpha();
 
 	self:UpdatePosition();
 	self:UpdateSupertrackedHighlight();
 
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_VIGNETTE", frameLevelCount);
-end
-
-function VignettePinMixin:OnReleased()
-	self.ShowAnim:Stop();
 end
 
 function VignettePinMixin:IsUnique()
@@ -220,14 +216,23 @@ function VignettePinMixin:UpdateFogOfWar(vignetteInfo)
 	self.HighlightTexture:SetDesaturation(vignetteInfo.inFogOfWar and 1 or .75);
 end
 
+function VignettePinMixin:OnCanvasScaleChanged() -- override
+	local position = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
+	-- Do not update things that could show the pin, if we have no valid position on the map.
+	if position then
+		self:ApplyCurrentScale();
+		self:ApplyCurrentAlpha();
+	end
+end
+
 function VignettePinMixin:UpdatePosition(bestUniqueVignette)
 	local showPin = false;
 	local position = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
 	if position then
 		self:SetPosition(position:GetXY());
-		showPin = not self:IsUnique() or bestUniqueVignette;
+		showPin = self:GetAlpha() > 0.05 and (not self:IsUnique() or bestUniqueVignette);
 	end
-	
+
 	self:SetShown(showPin);
 end
 

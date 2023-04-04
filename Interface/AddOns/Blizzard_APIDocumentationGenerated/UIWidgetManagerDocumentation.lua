@@ -800,11 +800,11 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "Disabled", Type = "WidgetEnabledState", EnumValue = 0 },
-				{ Name = "Enabled", Type = "WidgetEnabledState", EnumValue = 1 },
+				{ Name = "Yellow", Type = "WidgetEnabledState", EnumValue = 1 },
 				{ Name = "Red", Type = "WidgetEnabledState", EnumValue = 2 },
 				{ Name = "White", Type = "WidgetEnabledState", EnumValue = 3 },
 				{ Name = "Green", Type = "WidgetEnabledState", EnumValue = 4 },
-				{ Name = "Gold", Type = "WidgetEnabledState", EnumValue = 5 },
+				{ Name = "Artifact", Type = "WidgetEnabledState", EnumValue = 5 },
 				{ Name = "Black", Type = "WidgetEnabledState", EnumValue = 6 },
 			},
 		},
@@ -1365,6 +1365,9 @@ local UIWidgetManager =
 				{ Name = "barTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "barTextFontType", Type = "UIWidgetFontType", Nilable = false },
 				{ Name = "barTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "textEnabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "textFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },

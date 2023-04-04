@@ -176,6 +176,8 @@ MonthlyActivitiesRewardCurrencyMixin = { };
 function MonthlyActivitiesRewardCurrencyMixin:SetCurrentPoints(points)
 	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
 
+	self.PendingGlow:SetShown(aboveThreshold and self.thresholdInfo.pendingReward);
+
 	local initialSet = self.aboveThreshold == nil;
 	if self.aboveThreshold == aboveThreshold then
 		return;
@@ -194,7 +196,6 @@ function MonthlyActivitiesRewardCurrencyMixin:SetCurrentPoints(points)
 	self.DiamondComplete:SetShown(aboveThreshold);
 	self.Points:SetShown(not aboveThreshold);
 	self.EarnedCheckmark:SetShown(aboveThreshold);
-	self.PendingGlow:SetShown(aboveThreshold and self.thresholdInfo.pendingReward);
 end
 
 function MonthlyActivitiesRewardCurrencyMixin:SetThresholdInfo(thresholdInfo)

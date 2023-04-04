@@ -3,4 +3,6 @@
 
 do
 	TooltipUtil.SurfaceArgs = nop;
+
+	GetAddOnMetadata = C_AddOns.GetAddOnMetadata;
 end

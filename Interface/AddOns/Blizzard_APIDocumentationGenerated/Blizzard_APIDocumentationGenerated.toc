@@ -25,6 +25,7 @@ BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
 CalendarDocumentation.lua
+CameraDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
@@ -37,7 +38,6 @@ ConsoleDocumentation.lua
 ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
-CooldownFrameAPIDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
@@ -49,6 +49,8 @@ EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
+FrameAPICooldownDocumentation.lua
+FrameAPIFogOfWarFrameDocumentation.lua
 GMTicketInfoDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
@@ -182,7 +184,6 @@ AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 ArtifactUIDocumentation.lua
 CVarDocumentation.lua
-CameraDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua
 ClassColorDocumentation.lua
@@ -209,6 +210,7 @@ ItemInteractionUIDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
+LootHistoryDocumentation.lua
 LootJournalDocumentation.lua
 LoreTextDocumentation.lua
 MailInfoDocumentation.lua

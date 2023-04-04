@@ -228,6 +228,7 @@ local ItemUpgrade =
 				{ Name = "maxItemLevel", Type = "number", Nilable = false },
 				{ Name = "upgradeLevelInfos", Type = "table", InnerType = "ItemUpgradeLevelInfo", Nilable = false },
 				{ Name = "customUpgradeString", Type = "string", Nilable = true },
+				{ Name = "upgradeCostTypesForSeason", Type = "table", InnerType = "ItemUpgradeSeasonalCostType", Nilable = false },
 			},
 		},
 		{
@@ -242,6 +243,16 @@ local ItemUpgrade =
 				{ Name = "currencyCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeCurrencyCost", Nilable = false },
 				{ Name = "itemCostsToUpgrade", Type = "table", InnerType = "ItemUpgradeItemCost", Nilable = false },
 				{ Name = "failureMessage", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "ItemUpgradeSeasonalCostType",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "sourceString", Type = "string", Nilable = true },
 			},
 		},
 		{

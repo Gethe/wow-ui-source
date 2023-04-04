@@ -746,7 +746,7 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 
 	local enableShare = not isQuestDisabled and C_QuestLog.IsPushableQuest(questID) and IsInGroup();
 	QuestMapFrame.DetailsFrame.ShareButton:SetEnabled(enableShare);
-	QuestLogPopupDetailFrame.ShareButton:Enable(enableShare);
+	QuestLogPopupDetailFrame.ShareButton:SetEnabled(enableShare);
 end
 
 function QuestMapFrame_ReturnFromQuestDetails()

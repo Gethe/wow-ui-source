@@ -97,7 +97,7 @@ Import("SecureMixin");
 Import("CreateFromSecureMixins");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("GetURLIndexAndLoadURL");
+
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -290,7 +290,6 @@ Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
 Import("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
 Import("STORE_CATEGORY_VETERAN_DISABLED_TOOLTIP");
 Import("TOOLTIP_DEFAULT_COLOR");
-Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
 Import("CHARACTER_UPGRADE_POPUP_LATER");
 Import("CHARACTER_UPGRADE_READY");
@@ -452,6 +451,14 @@ local currencyMult = 100;
 local selectedCategoryID;
 local selectedEntryID;
 local selectedPageNum = 1;
+
+function StoreFrame_SetSelectedPageNum(pageNum)
+	selectedPageNum = pageNum;
+end
+
+function StoreFrame_GetSelectedPageNum()
+	return selectedPageNum;
+end
 
 --DECIMAL_SEPERATOR = ",";
 --LARGE_NUMBER_SEPERATOR = ".";
@@ -1637,8 +1644,9 @@ function StoreFrame_CheckAndUpdateEntryID(isSplash)
 
 	if (not isSplash) then
 		local found = false;
+		local selectedPage = StoreFrame_GetSelectedPageNum();
 		for i=1, NUM_STORE_PRODUCT_CARDS do
-			local entryID = products[i + NUM_STORE_PRODUCT_CARDS * (selectedPageNum - 1)];
+			local entryID = products[i + NUM_STORE_PRODUCT_CARDS * (selectedPage - 1)];
 			if ( entryID and selectedEntryID == entryID) then
 				found = true;
 				break;
@@ -1715,17 +1723,26 @@ function StoreFrame_FilterEntries(entries)
 	return filteredEntries;
 end
 
+local function HasChildrenProductGroups(groupID, productGroups)
+	for _, productGroup in ipairs(productGroups) do
+		if productGroup and productGroup.parentGroupID == groupID then
+			return true;
+		end
+	end
+	return false;
+end
+
 local function GetProductGroups()
 	local productGroups = C_StoreSecure.GetProductGroups();
 	local filteredProductGroups = {};
+	for _, productGroup in ipairs(productGroups) do
+		local groupID = productGroup.groupID;
+		local products = C_StoreSecure.GetProducts(groupID);
 
-	for _, groupId in ipairs(productGroups) do
-		local products = C_StoreSecure.GetProducts(groupId);
-		if #StoreFrame_FilterEntries(products) ~= 0 then
-			table.insert(filteredProductGroups, groupId);
+		if (#StoreFrame_FilterEntries(products) ~= 0) or HasChildrenProductGroups(groupID, productGroups) then
+			table.insert(filteredProductGroups, groupID);
 		end
 	end
-
 	return filteredProductGroups;
 end
 
@@ -1802,7 +1819,8 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 	StoreFrame_CheckAndUpdateEntryID(false);
 
 	local pageInfo = StoreFrame_GetPageInfo(entries);
-	local startIndex = pageInfo[selectedPageNum];
+	local selectedPage = StoreFrame_GetSelectedPageNum();
+	local startIndex = pageInfo[selectedPage];
 	local showGlobalBuyButton = true;
 
 	for index = startIndex, #entries do
@@ -1830,14 +1848,15 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 	-- set up the buy buttons and paging buttons
 	if #entries > 1 then
 		local numPages = #pageInfo;
-		self.PageText:SetText(string.format(BLIZZARD_STORE_PAGE_NUMBER, selectedPageNum, numPages));
+		local selectedPage = StoreFrame_GetSelectedPageNum();
+		self.PageText:SetText(string.format(BLIZZARD_STORE_PAGE_NUMBER, selectedPage, numPages));
 
 		if numPages > 1 then
 			self.PageText:Show();
 			self.NextPageButton:Show();
 			self.PrevPageButton:Show();
-			self.PrevPageButton:SetEnabled(selectedPageNum ~= 1);
-			self.NextPageButton:SetEnabled(selectedPageNum ~= numPages);
+			self.PrevPageButton:SetEnabled(selectedPage ~= 1);
+			self.NextPageButton:SetEnabled(selectedPage ~= numPages);
 		else
 			self.PageText:Hide();
 			self.NextPageButton:Hide();
@@ -2112,45 +2131,6 @@ function StoreCategoryFrame_SetGroupID(self, groupID)
 	end
 end
 
-function StoreFrame_UpdateCategories(self)
-	local categories = GetProductGroups();
-
-	for i = 1, #categories do
-		local frame = self.CategoryFrames[i];
-		local groupID = categories[i];
-		if ( not frame ) then
-			frame = CreateForbiddenFrame("Button", nil, self, "StoreCategoryTemplate");
-
-			--[[
-				WARNING: ScopeModifiers don't work for templates!
-				These functions will fail to load properly if this template is instantiated outside
-				of the initial LoadAddon call because we'll have lost the scoped modifiers and the
-				reference to the addon environment if we instantiate them later.
-
-				We have to manually set these scripts (below) for them to work properly.
-			--]]
-
-			frame:SetScript("OnEnter", StoreCategory_OnEnter);
-			frame:SetScript("OnLeave", StoreCategory_OnLeave);
-			frame:SetScript("OnClick", StoreCategory_OnClick);
-			frame:SetPoint("TOPLEFT", self.CategoryFrames[i - 1], "BOTTOMLEFT", 0, 0);
-
-			self.CategoryFrames[i] = frame;
-		end
-
-		StoreCategoryFrame_SetGroupID(frame, groupID);
-
-		frame:Show();
-	end
-
-	self.BrowseNotice:ClearAllPoints();
-	self.BrowseNotice:SetPoint("TOP", self.CategoryFrames[#categories], "BOTTOM", 0, -15);
-
-	for i = #categories + 1, #self.CategoryFrames do
-		self.CategoryFrames[i]:Hide();
-	end
-end
-
 function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
 	self:RegisterEvent("STORE_PURCHASE_LIST_UPDATED");
@@ -2263,7 +2243,6 @@ end
 function StoreFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_PRODUCTS_UPDATED" ) then
 		StoreFrame_UpdateSelectedCategory();
-		StoreFrame_UpdateCategories(self);
 
 		if self:IsShown() then
 			C_StoreSecure.RequestAllDynamicPriceInfo();
@@ -2517,8 +2496,7 @@ function StoreFrame_UpdateCoverState()
 end
 
 local function SetStoreCategoryFromAttribute(category)
-	StoreFrame_UpdateCategories(StoreFrame);
-	selectedPageNum = 1;
+	StoreFrame_SetSelectedPageNum(1);
 	StoreFrame_SetSelectedCategoryID(category);
 	StoreFrame_SetCategory();
 end
@@ -2902,7 +2880,7 @@ function StoreFrame_CheckForFree(self, event)
 end
 
 function StoreFramePrevPageButton_OnClick(self)
-	selectedPageNum = selectedPageNum - 1;
+	StoreFrame_SetSelectedPageNum(StoreFrame_GetSelectedPageNum() - 1);
 	selectedEntryID = nil;
 	StoreFrame_SetCategory();
 
@@ -2910,13 +2888,13 @@ function StoreFramePrevPageButton_OnClick(self)
 end
 
 function StoreFrame_SetPage(page)
-	selectedPageNum = page;
+	StoreFrame_SetSelectedPageNum(page);
 	selectedEntryID = nil;
 	StoreFrame_SetCategory();
 end
 
 function StoreFrameNextPageButton_OnClick(self)
-	selectedPageNum = selectedPageNum + 1;
+	StoreFrame_SetSelectedPageNum(StoreFrame_GetSelectedPageNum() + 1);
 	selectedEntryID = nil;
 	StoreFrame_SetCategory();
 
@@ -3854,39 +3832,6 @@ function StoreProductCard_HideModel(self)
 	if self.Shadows then
 		self.Shadows:Hide();
 	end
-end
-
-function StoreCategory_OnEnter(self)
-	if self.disabledTooltip then
-	 	StoreTooltip:ClearAllPoints();
-		StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
-		StoreTooltip_Show("", self.disabledTooltip);
-	else
-		self.HighlightTexture:Show();
-	end
-end
-
-function StoreCategory_OnLeave(self)
-	self.HighlightTexture:Hide();
-	StoreTooltip:Hide();
-end
-
-function StoreCategory_OnClick(self,button,down)
-	if self:GetID() == StoreFrame_GetSelectedCategoryID() then
-		-- category hasn't changed
-		return;
-	end
-
-	selectedEntryID = nil;
-	StoreFrame_SetSelectedCategoryID(self:GetID());
-
-	StoreFrame_UpdateCategories(StoreFrame);
-
-	selectedPageNum = 1;
-	StoreFrame_SetCategory(self:GetID());
-
-	StoreProductCard_UpdateAllStates();
-	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
 end
 
 ----------------------------------
@@ -5369,15 +5314,6 @@ function ServicesLogoutPopupCancelButton_OnClick(self)
 	ServicesLogoutPopup:Hide();
 end
 
-StoreTooltipBackdropMixin = {};
-
-function StoreTooltipBackdropMixin:StoreTooltipOnLoad()
-	NineSliceUtil.DisableSharpening(self);
-
-	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
-	self:SetCenterColor(bgR, bgG, bgB, 1);
-end
-
 --------------------------------------
 local priceUpdateTimer, currentPollTimeSeconds;
 
@@ -5416,35 +5352,4 @@ function StoreFrameBuyButton_OnClick(self)
 	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
 end
 
-StoreBulletPointMixin = {};
 
-function StoreBulletPointMixin:OnLoad()
-	BulletPointWithTextureMixin.OnLoad(self);
-	self.Text:SetFontObject("GameFontNormalMed1");
-	self.Text:SetTextColor(1, 0.84, 0.55);
-end
-
-function StoreBulletPointMixin:OnHyperlinkEnter()
-	local grandparent = self:GetParent():GetParent();
-	local onEnterScript = grandparent:GetScript("OnEnter");
-	if onEnterScript then
-		onEnterScript(grandparent);
-	end
-end
-
-function StoreBulletPointMixin:OnHyperlinkLeave()
-	local grandparent = self:GetParent():GetParent();
-	local onLeaveScript = grandparent:GetScript("OnLeave");
-	if onLeaveScript then
-		onLeaveScript(grandparent);
-	end
-end
-
-function StoreBulletPointMixin:OnHyperlinkClick(link)
-	local grandparent = self:GetParent():GetParent();
-	if not grandparent:IsEnabled() then
-		return;
-	end
-
-	GetURLIndexAndLoadURL(self, link);
-end

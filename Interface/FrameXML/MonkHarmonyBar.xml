@@ -69,33 +69,33 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="activate" setToFinalAlpha="true">
-				<FlipBook smoothing="NONE" childKey="FB_Wind_FX" duration=".57" order="1" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
-				<Alpha smoothing="NONE" childKey="FX_OuterGlow" duration=".17" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".17" smoothing="NONE" childKey="FX_OuterGlow" duration=".1" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".18" smoothing="NONE" childKey="FX_OuterGlow" duration=".65" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha smoothing="NONE" childKey="Chi_Icon" duration=".4" order="1" fromAlpha="0" toAlpha="0"/>
-				<Alpha startDelay=".4" smoothing="NONE" childKey="Chi_Icon" duration=".43" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha smoothing="NONE" childKey="Chi_FX_2" duration=".4" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".4" smoothing="NONE" childKey="Chi_FX_2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation startDelay="0" smoothing="NONE" childKey="Chi_FX_2" duration=".43" order="1" degrees="-65">
+				<FlipBook childKey="FB_Wind_FX" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="FX_OuterGlow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="FX_OuterGlow" fromAlpha="1" toAlpha="1" startDelay=".17" duration=".1" order="1"/>
+				<Alpha childKey="FX_OuterGlow" fromAlpha="1" toAlpha="0" startDelay=".18" duration=".65" order="1"/>
+				<Alpha childKey="Chi_Icon" fromAlpha="0" toAlpha="0" duration=".4" order="1"/>
+				<Alpha childKey="Chi_Icon" fromAlpha="0" toAlpha="1" startDelay=".4" duration=".43" order="1"/>
+				<Alpha childKey="Chi_FX_2" fromAlpha="0" toAlpha="1" duration=".4" order="1"/>
+				<Alpha childKey="Chi_FX_2" fromAlpha="1" toAlpha="0" startDelay=".4" duration=".43" order="1"/>
+				<Rotation childKey="Chi_FX_2" degrees="-65" duration=".43" order="1">
 					<Origin point="CENTER"/>
 				</Rotation>
-				<Alpha smoothing="NONE" childKey="Chi_BG_Active" duration=".15" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay="0" smoothing="NONE" childKey="Chi_BG" duration=".17" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".17" smoothing="NONE" childKey="Chi_BG" duration=".1" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha smoothing="NONE" childKey="Chi_BG_Glow" duration=".17" order="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha startDelay=".17" smoothing="NONE" childKey="Chi_BG_Glow" duration=".33" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".5" smoothing="NONE" childKey="Chi_BG_Glow" duration=".33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Chi_BG_Active" fromAlpha="0" toAlpha="1" duration=".15" order="1"/>
+				<Alpha childKey="Chi_BG" fromAlpha="1" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="Chi_BG" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".1" order="1"/>
+				<Alpha childKey="Chi_BG_Glow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="Chi_BG_Glow" fromAlpha="1" toAlpha="1" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="Chi_BG_Glow" fromAlpha="1" toAlpha="0" startDelay=".5" duration=".33" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="deactivate" setToFinalAlpha="true">
-				<Alpha startDelay="0" smoothing="NONE" childKey="FX_OuterGlow" duration=".33" order="1" fromAlpha="1" toAlpha="1"/>
-				<Alpha startDelay=".33" smoothing="NONE" childKey="FX_OuterGlow" duration=".17" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha startDelay="0" smoothing="NONE" childKey="FX_Smoke" duration=".3" order="1" fromAlpha="1" toAlpha="1"/>
-				<Translation smoothing="NONE" childKey="FX_Smoke" duration=".5" order="1" offsetX="0" offsetY="5"/>
-				<Alpha startDelay=".3" smoothing="NONE" childKey="FX_Smoke" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha smoothing="NONE" childKey="Chi_Icon" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha startDelay="0" smoothing="NONE" childKey="Chi_Deplete" duration=".5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Rotation smoothing="NONE" childKey="Chi_Deplete" duration=".5" order="1" degrees="-30">
+				<Alpha childKey="FX_OuterGlow" fromAlpha="1" toAlpha="1" duration=".33" order="1"/>
+				<Alpha childKey="FX_OuterGlow" fromAlpha="1" toAlpha="0" startDelay=".33" duration=".17" order="1"/>
+				<Alpha childKey="FX_Smoke" fromAlpha="1" toAlpha="1" duration=".3" order="1"/>
+				<Translation childKey="FX_Smoke" offsetX="0" offsetY="5" duration=".5" order="1"/>
+				<Alpha childKey="FX_Smoke" fromAlpha="1" toAlpha="0" startDelay=".3" duration=".2" order="1"/>
+				<Alpha childKey="Chi_Icon" fromAlpha="1" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="Chi_Deplete" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+				<Rotation childKey="Chi_Deplete" degrees="-30" duration=".5" order="1">
 					<Origin point="CENTER"/>
 				</Rotation>
 			</AnimationGroup>

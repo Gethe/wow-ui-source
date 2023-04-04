@@ -88,7 +88,7 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	self.Bar:Setup(widgetContainer, widgetInfo);
 	self.Bar:SetTooltipLocation(widgetInfo.tooltipLoc);
 
-	self.Label:SetText(widgetInfo.text);
+	self.Label:Setup(widgetInfo.text, widgetInfo.textFontType, widgetInfo.textSizeType, widgetInfo.textEnabledState);
 
 	local labelWidth = 0;
 	local labelHeight = 0;

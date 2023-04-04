@@ -426,6 +426,19 @@ local function ShouldProcessReagentSlotAllocation(transaction, slotIndex)
 	return not transaction:IsRecraft() or not transaction:IsModificationUnchangedAtSlotIndex(slotIndex);
 end
 
+local function CreateBadAllocationAssertMessage(item, itemLocation)
+	local recipeInfo = ProfessionsFrame and ProfessionsFrame.CraftingPage.SchematicForm:GetRecipeInfo();
+	local recipeID = recipeInfo and recipeInfo.recipeID or -1;
+
+	return ("Item location invalid: GUID %s, ITEM ID %d, RECIPE ID %d, BAG ID %d, SLOT INDEX %d, EQUIP SLOT INDEX %d"):format(
+		item.itemGUID or "INVALID",
+		item.debugItemID or -1,
+		recipeID or -1,
+		itemLocation.bagID or -1, 
+		itemLocation.slotIndex or -1, 
+		itemLocation.equipmentSlotIndex or -1);
+end
+
 function ProfessionsCraftingPageMixin:GetCraftableCount()
 	local transaction = self.SchematicForm:GetTransaction();
 	local intervals = math.huge;
@@ -509,10 +522,27 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
 		if salvageItem then
-			local quantity = salvageItem:GetStackCount();
-			if quantity then
-			local recipeSchematic = transaction:GetRecipeSchematic();
-				ClampInvervals(quantity, recipeSchematic.quantityMax); 
+			-- Exposing some information to investigate an exception related to invalid salvage allocation.
+			local success = true;
+			do
+				local itemLocation = salvageItem:GetItemLocation();
+				if itemLocation and not salvageItem.assertShown then
+					success = xpcall(C_Item.DoesItemExist, CallErrorHandler, itemLocation);
+					assertsafe(success, CreateBadAllocationAssertMessage(salvageItem, itemLocation));
+					if not success then
+						salvageItem.assertShown = true;
+						local recipeSchematic = transaction:GetRecipeSchematic();
+						ClampInvervals(0, recipeSchematic.quantityMax); 
+					end
+				end
+			end
+
+			if success then
+				local quantity = salvageItem:GetStackCount();
+				if quantity then
+					local recipeSchematic = transaction:GetRecipeSchematic();
+					ClampInvervals(quantity, recipeSchematic.quantityMax); 
+				end
 			end
 		end
 	elseif transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
@@ -890,8 +920,6 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	end
 
 	self:Init(professionInfo);
-
-	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
 
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
 

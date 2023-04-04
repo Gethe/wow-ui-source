@@ -15,7 +15,7 @@ function AddonCompartmentMixin:OnLoad()
 			info.text = title;
 			info.icon = C_AddOns.GetAddOnMetadata(addon, "IconTexture") or C_AddOns.GetAddOnMetadata(addon, "IconAtlas");
 			info.notCheckable = true;
-			info.registerForRightClick = true;
+			info.registerForAnyClick = true;
 
 			local function CallAddonGlobalFunc(addonCompartmentFunc, addonName, ...)
 				forceinsecure();
@@ -48,6 +48,8 @@ function AddonCompartmentMixin:OnLoad()
 	end
 
 	self:UpdateDisplay();
+
+	UIDropDownMenu_SetAnchor(self.DropDown, 0, 0, "TOPRIGHT", self, "BOTTOMRIGHT");
 end
 
 function AddonCompartmentMixin:OnClick()

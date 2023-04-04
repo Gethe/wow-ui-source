@@ -37,7 +37,7 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	
 	local enabled = count > 0;
 	if onElementEnabledImplementation then
-		enabled = onElementEnabledImplementation(self, elementData);
+		enabled = onElementEnabledImplementation(self, elementData, count);
 	end
 	self.enabled = enabled;
 	self:DesaturateHierarchy(enabled and 0 or 1);
@@ -48,6 +48,7 @@ ProfessionsItemFlyoutMixin = CreateFromMixins(CallbackRegistryMixin);
 ProfessionsItemFlyoutMixin:GenerateCallbackEvents(
 {
     "ItemSelected",
+    "ShiftClicked",
 });
 
 local ProfessionsItemFlyoutEvents = {
@@ -82,9 +83,13 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 		button:SetScript("OnLeave", GameTooltip_Hide);
 
 		button:SetScript("OnClick", function()
-			if button.enabled then
-				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
-				CloseProfessionsItemFlyout();
+			if IsShiftKeyDown() then
+				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ShiftClicked, self, elementData);
+			else
+				if button.enabled then
+					self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
+					CloseProfessionsItemFlyout();
+				end
 			end
 		end);
 	end);
