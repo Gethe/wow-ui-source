@@ -580,11 +580,18 @@ function QuestInfo_ShowRewards()
 
 	for rewardSpellIndex = 1, numSpellRewards do
 		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = spellGetter(rewardSpellIndex);
-		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
 
-		-- only allow the spell reward if user can learn it
-		if ( texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
-			numQuestSpellRewards = numQuestSpellRewards + 1;
+		if spellID and spellID > 0 then
+			local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
+
+			-- only allow the spell reward if user can learn it
+			if ( texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
+				numQuestSpellRewards = numQuestSpellRewards + 1;
+			end
+		else
+			if ProcessExceptionClient then
+				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, rewardSpellIndex));
+			end
 		end
 	end
 
@@ -712,25 +719,33 @@ function QuestInfo_ShowRewards()
 
 		for rewardSpellIndex = 1, numSpellRewards do
 			local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = spellGetter(rewardSpellIndex);
-			local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
-			if texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) then
-				if ( isTradeskillSpell ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL, rewardSpellIndex);
-				elseif ( isBoostSpell ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
-				elseif ( garrFollowerID ) then
-					local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
-					if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_COMPANION, rewardSpellIndex);
+
+			if spellID and spellID > 0 then
+				local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
+
+				if texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) then
+					if ( isTradeskillSpell ) then
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL, rewardSpellIndex);
+					elseif ( isBoostSpell ) then
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
+					elseif ( garrFollowerID ) then
+						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
+						if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
+							AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_COMPANION, rewardSpellIndex);
+						else
+							AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
+						end
+					elseif ( isSpellLearned ) then
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_SPELL, rewardSpellIndex);
+					elseif ( genericUnlock ) then
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_UNLOCK, rewardSpellIndex);
 					else
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
+						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_AURA, rewardSpellIndex);
 					end
-				elseif ( isSpellLearned ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_SPELL, rewardSpellIndex);
-				elseif ( genericUnlock ) then
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_UNLOCK, rewardSpellIndex);
-				else
-					AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_AURA, rewardSpellIndex);
+				end
+			else
+				if ProcessExceptionClient then
+					ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, rewardSpellIndex));
 				end
 			end
 		end
