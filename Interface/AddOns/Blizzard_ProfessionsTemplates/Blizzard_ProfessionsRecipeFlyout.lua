@@ -25,15 +25,17 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	-- Stackable items would all normally be accumulated, however in the case of salvage targets, the stacks
 	-- cannot be combined because the craft API requires a specific item guid target, and that prevents us from
 	-- merging multiple item stacks together to fulfill the reagent count requirement.
-	local accumulateInventory = not itemLocation or (item:IsStackable() and not elementData.onlyCountStack);
+	local count = 0;
+	local forceAccumulateInventory = elementData.forceAccumulateInventory;
+	local accumulateInventory = forceAccumulateInventory or not itemLocation or (item:IsStackable() and not elementData.onlyCountStack);
 	if accumulateInventory then
 		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 	elseif itemLocation then
 		count = C_Item.GetStackCount(itemLocation);
 	end
 
-	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
-	self:SetItemButtonCount(stackable and count or 1);
+	local showCount = forceAccumulateInventory or C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
+	self:SetItemButtonCount(showCount and count or 1);
 	
 	local enabled = count > 0;
 	if onElementEnabledImplementation then
@@ -47,6 +49,7 @@ ProfessionsItemFlyoutMixin = CreateFromMixins(CallbackRegistryMixin);
 
 ProfessionsItemFlyoutMixin:GenerateCallbackEvents(
 {
+    "UndoClicked",
     "ItemSelected",
     "ShiftClicked",
 });
@@ -94,6 +97,13 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 		end);
 	end);
 
+	self.UndoItem:SetScript("OnClick", function(button, buttonName, down)
+		if not IsShiftKeyDown() then
+			self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.UndoClicked, self);
+			CloseProfessionsItemFlyout();
+		end
+	end);
+
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
@@ -105,10 +115,9 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ProfessionsItemFlyoutEvents);
 	
 	self:UnregisterEvents();
+	self:ClearHandlers();
 
 	self.owner = nil;
-	self.OnElementEnterImplementation = nil;
-	self.OnElementEnabledImplementation = nil;
 	--[[
 		NOTE: OnHide triggers when the frame is no longer visible, not when it is no longer shown.
 		This frame may become non-visible because its parent gets hidden, but it may itself still be shown.
@@ -117,6 +126,13 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	]]
 	self:Hide();
 	self:SetParent(nil);
+end
+
+function ProfessionsItemFlyoutMixin:ClearHandlers()
+	self.GetElementsImplementation = nil;
+	self.OnElementEnterImplementation = nil;
+	self.OnElementEnabledImplementation = nil;
+	self.GetUndoElementImplementation = nil;
 end
 
 function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
@@ -150,6 +166,14 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 		self.HideUnownedCheckBox:SetChecked(hideUnavailableCvar);
 	end
 
+	local undoElement = nil;
+	if self.GetUndoElementImplementation then
+		undoElement = self.GetUndoElementImplementation();
+	end
+	local hasUndoElement = undoElement ~= nil;
+	self.UndoItem:SetShown(hasUndoElement);
+	self.UndoButton:SetShown(hasUndoElement);
+
 	local hideUnavailable;
 	if cannotModifyHideUnavailable then
 		-- Determined in data, supercedes player preference.
@@ -166,6 +190,11 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 		self.Text:Hide();
 		
 		local continuableContainer = ContinuableContainer:Create();
+
+		if undoElement then
+			continuableContainer:AddContinuable(undoElement);
+		end
+
 		continuableContainer:AddContinuables(elements.items);
 		continuableContainer:ContinueOnLoad(function()
 			local rows = math.min(MaxRows, math.ceil(count / MaxColumns));
@@ -193,6 +222,11 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 				totalHeight = totalHeight + 25;
 			end
 
+			if hasUndoElement then
+				self.UndoItem:SetItem(undoElement:GetItemID());
+				totalHeight = totalHeight + 50;
+			end
+
 			self.ScrollBar:SetShown(canShowScrollBar);
 
 			local dataProvider = CreateDataProvider();
@@ -204,10 +238,14 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 					itemGUID = elements.itemGUIDs and elements.itemGUIDs[index] or nil,
 					itemLocation = elements.itemLocation and elements.itemLocation[index] or nil,
 					onlyCountStack = elements.onlyCountStack,
+					forceAccumulateInventory = elements.forceAccumulateInventory,
 				};
 				dataProvider:Insert(elementData);
 			end
 			self.ScrollBox:SetDataProvider(dataProvider);
+
+			self.ScrollBox:ClearAllPoints();
+			self.ScrollBox:SetPoint("TOPLEFT", 15, hasUndoElement and -65 or -15);
 
 			self:SetSize(totalWidth, totalHeight);
 		end);

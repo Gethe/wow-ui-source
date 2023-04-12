@@ -18,7 +18,7 @@
 		</ButtonText>
 		<NormalTexture atlas="ui-hud-minimap-button"/>
 		<PushedTexture atlas="ui-hud-minimap-button-down"/>
-		<HighlightTexture atlas="ui-hud-minimap-button" alphaMode="ADD"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alpha="0.5" alphaMode="ADD"/>
 		<Frames>
 			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
 				<Scripts>

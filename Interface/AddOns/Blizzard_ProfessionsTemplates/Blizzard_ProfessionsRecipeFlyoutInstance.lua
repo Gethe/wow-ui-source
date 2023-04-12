@@ -8,6 +8,7 @@ end
 
 function OpenProfessionsItemFlyout(owner, parent)
 	-- Avoiding parenting to a scaled item slot (recraft).
+	flyout:ClearHandlers();
 	flyout:SetParent(parent);
 	flyout:SetPoint("TOPLEFT", owner, "TOPRIGHT", 5, 0);
 	flyout:SetFrameStrata("HIGH");

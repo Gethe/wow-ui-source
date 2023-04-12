@@ -438,6 +438,13 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 	end
 end
 
+function MainMenuBarMicroButtonMixin:OnShow()
+	MicroMenuContainer:Layout();
+end
+
+function MainMenuBarMicroButtonMixin:OnHide()
+	MicroMenuContainer:Layout();
+end
 
 CharacterMicroButtonMixin = {};
 

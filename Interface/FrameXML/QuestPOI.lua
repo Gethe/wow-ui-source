@@ -193,7 +193,7 @@ end
 
 function QuestPOI_GetQuestCompleteAtlas(poiButton)
 	local isLegendaryQuest = C_QuestLog.IsLegendaryQuest(poiButton.questID);
-	return isLegendaryQuest and "UI-QuestIcon-TurnIn-Legendary" or "UI-QuestIcon-TurnIn-Normal";
+	return isLegendaryQuest and "UI-QuestPoiLegendary-QuestBangTurnIn" or "UI-QuestIcon-TurnIn-Normal";
 end
 
 function QuestPOI_SetNumber(poiButton)

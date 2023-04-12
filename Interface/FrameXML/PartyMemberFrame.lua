@@ -406,7 +406,7 @@ function PartyMemberFrameMixin:VoiceActivityNotificationCreatedCallback(notifica
 end
 
 function PartyMemberFrameMixin:UpdateMember()
-	if not ShouldShowPartyFrames() then
+	if not PartyFrame:ShouldShow() then
 		self:Hide();
 		PartyFrame:UpdatePartyMemberBackground();
 		return;
@@ -668,7 +668,7 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 	elseif event == "READY_CHECK_FINISHED" then
 		if UnitExists(self:GetUnit()) then
 			local finishTime = DEFAULT_READY_CHECK_STAY_TIME;
-			if not ShouldShowPartyFrames() then
+			if not PartyFrame:ShouldShow() then
 				finishTime = 0;
 			end
 			ReadyCheck_Finish(self.ReadyCheck, finishTime);

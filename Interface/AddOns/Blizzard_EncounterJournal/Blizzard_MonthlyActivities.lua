@@ -456,9 +456,9 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	-- Gather info based on all activities, thresholds, and pending rewards that will affect how they are all displayed
 	local pendingRewards = C_PerksProgram.GetPendingChestRewards();
 
-	local function HasPendingReward(thresholdID)
+	local function HasPendingReward(thresholdOrderIndex)
 		for _, reward in pairs(pendingRewards) do
-			if reward.activityMonthID == activitiesInfo.activePerksMonth and reward.activityThresholdID == thresholdID then
+			if reward.activityMonthID == activitiesInfo.activePerksMonth and reward.thresholdOrderIndex == thresholdOrderIndex then
 				return true;
 			end
 		end
@@ -467,7 +467,7 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 
 	local thresholdMax = 0;
 	for _, thresholdInfo in pairs(activitiesInfo.thresholds) do
-		thresholdInfo.pendingReward = HasPendingReward(thresholdInfo.thresholdID);
+		thresholdInfo.pendingReward = HasPendingReward(thresholdInfo.thresholdOrderIndex);
 
 		if thresholdInfo.requiredContributionAmount > thresholdMax then
 			thresholdMax = thresholdInfo.requiredContributionAmount;
@@ -768,17 +768,29 @@ function MonthlyActivitiesFrameMixin:SetRewardsEarnedAndCollected(allRewardsEarn
 end
 
 function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName)
-	local monthInfo = C_Calendar.GetMonthInfo();
+	-- Get numDaysThisMonth by adjusting current time forward by one month, then back one day.
+	local tempCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	tempCalendarTime.monthDay = 1;
+	tempCalendarTime = C_DateAndTime.AdjustTimeByMonths(tempCalendarTime, 1);
+	tempCalendarTime = C_DateAndTime.AdjustTimeByDays(tempCalendarTime, -1);
+	local numDaysThisMonth = tempCalendarTime.monthDay;
+
+	local totalSecondsInMonth = numDaysThisMonth * SECONDS_PER_DAY;
+
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	local daysLeft = numDaysThisMonth - currentCalendarTime.monthDay;
+	local hoursLeft = 24 - currentCalendarTime.hour;
+	local minutesLeft = 60 - currentCalendarTime.minute;
+	local secondsRemaining = (daysLeft * SECONDS_PER_DAY) + (hoursLeft * SECONDS_PER_HOUR) + (minutesLeft * SECONDS_PER_MIN);
+	local text = MonthlyActivitiesFrameMixin.TimeLeftFormatter:Format(secondsRemaining);
+
+	self.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(text));
 
 	if displayMonthName and #displayMonthName > 0 then
 		self.Month:SetText(displayMonthName);
 	else
-		self.Month:SetText(ACTIVITIES_MONTH_NAMES[monthInfo.month]);
+		self.Month:SetText(ACTIVITIES_MONTH_NAMES[currentCalendarTime.month]);
 	end
-
-	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
-	local daysLeft = monthInfo.numDays - currentCalendarTime.monthDay;
-	self.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(daysLeft));
 end
 
 function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
@@ -789,6 +801,18 @@ function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
 		scrollBox:ScrollToElementDataByPredicate(SelectElement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 	end
 end
+
+MonthlyActivitiesFrameMixin.TimeLeftFormatter = CreateFromMixins(SecondsFormatterMixin);
+MonthlyActivitiesFrameMixin.TimeLeftFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, false, true);
+MonthlyActivitiesFrameMixin.TimeLeftFormatter:SetStripIntervalWhitespace(true);
+function MonthlyActivitiesFrameMixin.TimeLeftFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
+end
+
+function MonthlyActivitiesFrameMixin.TimeLeftFormatter:GetDesiredUnitCount(seconds)
+	return 2;
+end
+
 
 -- External API
 function MonthlyActivitiesFrame_OpenFrame()

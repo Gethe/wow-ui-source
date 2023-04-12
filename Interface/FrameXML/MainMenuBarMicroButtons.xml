@@ -23,6 +23,8 @@
 		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter" inherit="append"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnHide method="OnHide" inherit="append"/>
 			<OnEnable>
 				self:SetAlpha(1);
 			</OnEnable>
@@ -251,7 +253,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnShow function="MicroButton_KioskModeDisable"/>
+					<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 					<OnEvent method="OnEvent"/>
 					<OnClick function="ToggleStoreUI"/>
 				</Scripts>

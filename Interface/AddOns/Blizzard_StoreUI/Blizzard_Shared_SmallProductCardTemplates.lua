@@ -120,7 +120,7 @@ function SmallStoreCardMixin:Layout()
 	self.SelectedTexture:SetPoint("CENTER", self, "CENTER", 0, 0);
 
 	self.UpgradeArrow:ClearAllPoints();
-	self.UpgradeArrow:SetPoint("BOTTOMRIGHT", self.IconBorder, "BOTTOMRIGHT", -3, 4);
+	self.UpgradeArrow:SetPoint("TOPRIGHT", self.IconBorder, "TOPRIGHT", -3, -4);
 
 	self.HighlightTexture:ClearAllPoints();
 	self.HighlightTexture:SetPoint("CENTER", self, "CENTER", 0, 0);

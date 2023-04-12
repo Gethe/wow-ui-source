@@ -235,15 +235,6 @@ function UIDropDownMenuButton_ShouldShowIconTooltip(self)
 	return false;
 end
 
-function UIDropDownMenuButtonIcon_OnClick(self, mouseButton)
-	local button = self:GetParent();
-	if not button then
-		return;
-	end
-
-	UIDropDownMenuButton_OnClick(button, mouseButton);
-end
-
 function UIDropDownMenuButtonIcon_OnEnter(self)
 	local button = self:GetParent();
 	if not button then

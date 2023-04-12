@@ -263,6 +263,8 @@ function EditModeSystemMixin:ApplySystemAnchor()
 		if self.isPlayerFrameBottomManagedFrame then
 			self:UpdateSystemSettingFrameSize();
 		end
+
+		self:OnAppliedSystemAnchor();
 	end
 
 	self:ClearAllPoints();
@@ -743,6 +745,11 @@ function EditModeSystemMixin:GetSystemName()
 	return (self.addSystemIndexToName and self.systemIndex) and self.systemNameString:format(self.systemIndex) or self.systemNameString;
 end
 
+-- Override this as needed to do things after system anchor has been applied
+-- This will also be called when all frames are finished updating their anchors in case you depend on other system's anchors also being setup
+function EditModeSystemMixin:OnAppliedSystemAnchor()
+end
+
 EditModeActionBarSystemMixin = {};
 
 function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
@@ -765,8 +772,8 @@ function EditModeActionBarSystemMixin:OnEditModeExit()
 	self:UpdateVisibility();
 end
 
-function EditModeActionBarSystemMixin:ApplySystemAnchor()
-	EditModeSystemMixin.ApplySystemAnchor(self);
+function EditModeActionBarSystemMixin:OnAppliedSystemAnchor()
+	EditModeSystemMixin.OnAppliedSystemAnchor(self);
 	self:UpdateSpellFlyoutDirection();
 end
 
@@ -1511,8 +1518,8 @@ end
 
 EditModeEncounterBarSystemMixin = {};
 
-function EditModeEncounterBarSystemMixin:ApplySystemAnchor()
-	EditModeSystemMixin.ApplySystemAnchor(self);
+function EditModeEncounterBarSystemMixin:OnAppliedSystemAnchor()
+	EditModeSystemMixin.OnAppliedSystemAnchor(self);
 	self:Layout();
 end
 
@@ -1838,8 +1845,8 @@ function EditModeLootFrameSystemMixin:OnDragStart()
 	EditModeSystemMixin.OnDragStart(self);
 end
 
-function EditModeLootFrameSystemMixin:ApplySystemAnchor()
-	EditModeSystemMixin.ApplySystemAnchor(self);
+function EditModeLootFrameSystemMixin:OnAppliedSystemAnchor()
+	EditModeSystemMixin.OnAppliedSystemAnchor(self);
 
 	-- If we aren't in the default position then we'll want the frame to call it's regular visibility methods rather than UI Panel ones
 	-- This is so that if it is in the default position it will be treated as a UI panel and things can push around but if it's got a custom position then it won't be treated like a UI Panel
@@ -1921,8 +1928,8 @@ function EditModeObjectiveTrackerSystemMixin:UpdateSystemSetting(setting, entire
 	self:ClearDirtySetting(setting);
 end
 
-function EditModeObjectiveTrackerSystemMixin:ApplySystemAnchor()
-	EditModeSystemMixin.ApplySystemAnchor(self);
+function EditModeObjectiveTrackerSystemMixin:OnAppliedSystemAnchor()
+	EditModeSystemMixin.OnAppliedSystemAnchor(self);
 
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MOVED);
 end
@@ -1942,8 +1949,8 @@ function EditModeMicroMenuSystemMixin:OnEditModeExit()
 	QueueStatusFrame:Update();
 end
 
-function EditModeMicroMenuSystemMixin:ApplySystemAnchor()
-	EditModeSystemMixin.ApplySystemAnchor(self);
+function EditModeMicroMenuSystemMixin:OnAppliedSystemAnchor()
+	EditModeSystemMixin.OnAppliedSystemAnchor(self);
 
 	self:Layout();
 end

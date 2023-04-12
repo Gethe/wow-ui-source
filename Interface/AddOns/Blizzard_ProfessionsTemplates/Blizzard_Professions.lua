@@ -58,7 +58,12 @@ end
 
 local isCraftingMinimized = false;
 function Professions.SetCraftingMinimized(minimized)
+	local changed = isCraftingMinimized ~= minimized;
 	isCraftingMinimized = minimized;
+
+	if changed then
+		EventRegistry:TriggerEvent("ProfessionsFrame.Minimized");
+	end
 end
 
 function Professions.IsCraftingMinimized()

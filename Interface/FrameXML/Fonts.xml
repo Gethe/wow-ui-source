@@ -1434,7 +1434,7 @@
 
 	<FontFamily name="MailFont_Large" virtual="true">
 		<Member alphabet="roman">
-			<Font font="Fonts\MORPHEUS.ttf" height="15"/>
+			<Font font="Fonts\FRIZQT__.TTF" height="15"/>
 		</Member>
 		<Member alphabet="korean">
 			<Font font="Fonts\2002.ttf" height="14" spacing="7"/>
@@ -1446,7 +1446,7 @@
 			<Font font="Fonts\blei00d.ttf" height="15"/>
 		</Member>
 		<Member alphabet="russian">
-			<Font font="Fonts\MORPHEUS_CYR.TTF" height="15"/>
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="15"/>
 		</Member>
 	</FontFamily>
 

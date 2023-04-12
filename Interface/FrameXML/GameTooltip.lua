@@ -10,22 +10,20 @@ if tbl then
 	tbl.error = tbl.SecureCapsuleGet("error");
 	tbl.pcall = tbl.SecureCapsuleGet("pcall");
 	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
 
 	local function CleanFunction(f)
 		return function(...)
-			local prevfenv = tbl.getfenv(f);
-			local fenvSet = tbl.pcall(tbl.setfenv, f, tbl);
 			local function HandleCleanFunctionCallArgs(success, ...)
-				if fenvSet then
-					tbl.setfenv(f, prevfenv);
-				end
 				if success then
 					return ...;
 				else
-					tbl.error("Error in secure capsule function execution: "..select(1, ...));
+					tbl.error("Error in secure capsule function execution: "..(...));
 				end
 			end
-			return HandleCleanFunctionCallArgs(tbl.pcall(f, ...));
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
 		end
 	end
 
@@ -85,6 +83,14 @@ if tbl then
 	Import("PVP_BOUNTY_REWARD_TITLE");
 	Import("PVP_BOUNTY_REWARD_TITLE");
 
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
 	setfenv(1, tbl);
 end
 ----------------
@@ -722,7 +728,10 @@ function GameTooltip_AddWidgetSet(self, widgetSetID, verticalPadding)
 	self.widgetContainer:RegisterForWidgetSet(widgetSetID, WidgetLayout);
 
 	if self.widgetContainer.shownWidgetCount > 0 then
-		GameTooltip_InsertFrame(self, self.widgetContainer, verticalPadding);
+		local heightUsed = GameTooltip_InsertFrame(self, self.widgetContainer, verticalPadding);
+		-- overflow
+		local widgetHeight = self.widgetContainer:GetHeight() + (verticalPadding or 0);
+		return heightUsed - widgetHeight;
 	end
 end
 
@@ -779,7 +788,7 @@ function GameTooltip_AddQuest(self, questID)
 		GameTooltip_SetTitle(GameTooltip, title);
 		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
 	else
-		GameTooltip_SetTitle(GameTooltip, title);
+		GameTooltip_SetTitle(GameTooltip, title, NORMAL_FONT_COLOR);
 	end
 
 	if (self.isCombatAllyQuest or C_QuestLog.GetQuestType(questID) == Enum.QuestTag.CombatAlly) then

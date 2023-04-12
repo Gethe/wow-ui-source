@@ -1,7 +1,7 @@
 
 ScriptAnimatedEffectControllerMixin = {};
 
-function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution)
+function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, target, onEffectFinish, onEffectResolution, scaleMultiplier)
 	self.modelScene = modelScene;
 	self.effectID = effectID;
 	self.initialEffectID = effectID;
@@ -9,6 +9,7 @@ function ScriptAnimatedEffectControllerMixin:Init(modelScene, effectID, source, 
 	self.target = target;
 	self.onEffectFinish = onEffectFinish;
 	self.onEffectResolution = onEffectResolution;
+	self.scaleMultiplier = scaleMultiplier;
 
 	self.activeBehaviors = {};
 	self.effectCount = 0;
@@ -47,7 +48,7 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 
 	self.effectCount = self.effectCount + 1;
 
-	self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self);
+	self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self, self.scaleMultiplier);
 
 	local effect = self:GetEffect();
 	if effect.startBehavior then

@@ -22,6 +22,7 @@ if tbl then
 	Import("ipairs");
 	Import("Round");
 	Import("LE_MODEL_BLEND_OPERATION_NONE");
+	Import("GetFontStringMetatable");
 end
 --------------------------------------------------
 
@@ -57,7 +58,7 @@ function ShrinkUntilTruncateFontStringMixin:SetText(text)
 		self:SetFontObject(self.fontObjectsToTry[1]);
 	end
 
-	getmetatable(self).__index.SetText(self, text);
+	GetFontStringMetatable().__index.SetText(self, text);
 	self:ApplyFontObjects();
 end
 
@@ -69,7 +70,7 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 		self:SetFontObject(self.fontObjectsToTry[1]);
 	end
 
-	getmetatable(self).__index.SetFormattedText(self, format, ...);
+	GetFontStringMetatable().__index.SetFormattedText(self, format, ...);
 	self:ApplyFontObjects();
 end
 
@@ -79,12 +80,12 @@ AutoScalingFontStringMixin = { }
 local DEFAULT_AUTO_SCALING_MIN_LINE_HEIGHT = 10;
 
 function AutoScalingFontStringMixin:SetText(text)
-	getmetatable(self).__index.SetText(self, text);
+	GetFontStringMetatable().__index.SetText(self, text);
 	self:ScaleTextToFit();
 end
 
 function AutoScalingFontStringMixin:SetFormattedText(format, ...)
-	getmetatable(self).__index.SetFormattedText(self, format, ...);
+	GetFontStringMetatable().__index.SetFormattedText(self, format, ...);
 	self:ScaleTextToFit();
 end
 

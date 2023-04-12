@@ -72,6 +72,7 @@ local function SelectCategoryGroupID(groupID)
 	StoreProductCard_UpdateAllStates();
 end
 
+
 CategoryTreeScrollContainerMixin = {};
 function CategoryTreeScrollContainerMixin:OnLoad()
 	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
@@ -93,6 +94,18 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 		end
 	end
 
+	local function SetParentCollapsedState(node, button)
+		if button.ParentIndicator then
+			local childCount = node:GetSize();
+			button.ParentIndicator:SetShown(childCount > 0);
+			if node:IsCollapsed() then
+				button.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Closed");
+			else
+				button.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+			end
+		end
+	end
+
 	local function CategoryInit(button, node)
 		local data = node:GetData();
 		local groupID = data.groupID;
@@ -101,11 +114,12 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 
 		if isTopLevelCategory then
 			button.Icon:SetTexture(productGroupInfo.texture);
+			SetParentCollapsedState(node, button);
 		end
 		button.Text:SetText(productGroupInfo.groupName);		
 
 		local disabled = StoreFrame_IsProductGroupDisabled(groupID);
-		button:SetEnabled(StoreFrame_GetSelectedCategoryID() ~= groupID and not disabled);
+		button:SetEnabled(not disabled);
 		button.Category:SetDesaturated(disabled);
 		button.Text:SetFontObject(disabled and "GameFontDisable" or "GameFontNormal");
 		if isTopLevelCategory then
@@ -195,7 +209,7 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 					if parentGroupID == 0 then
 						self:ExpandSelectFirstChild(node, dataProvider);
 					else
-						ExpandParentOfChild(node, dataProvider);						
+						ExpandParentOfChild(node, dataProvider);
 						SelectCategoryGroupID(data.groupID);
 					end
 				end
@@ -212,6 +226,10 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 					parentFrame.SelectedTexture:SetShown(true);
 				end
 			end
+			for _, frame in self.ScrollBox:EnumerateFrames() do
+				local node = frame:GetElementData();
+				SetParentCollapsedState(node, frame);
+			end
 		end
 	end;
 	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
@@ -220,14 +238,18 @@ end
 
 function CategoryTreeScrollContainerMixin:ExpandSelectFirstChild(node, dataProvider)
 	node:SetCollapsed(false);
+	local parentFrame = self.ScrollBox:FindFrame(node);	
+	parentFrame.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+
 	local firstChildNode = node.nodes[1];
 	self.selectionBehavior:SelectElementData(firstChildNode);
 	local data = firstChildNode:GetData();
 	SelectCategoryGroupID(data.groupID);
 end
 
-function CategoryTreeScrollContainerMixin:OnShow()
-	self:UpdateCategories();
+function CategoryTreeScrollContainerMixin:OnHide()
+	self.selectionBehavior:ClearSelections();
+	self.ScrollBox:ClearDataProvider();
 end
 
 function CategoryTreeScrollContainerMixin:OnEvent(event, ...)

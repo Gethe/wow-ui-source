@@ -350,6 +350,16 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Edge" atlas="questlog_line_scrollbar" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="25" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="25" y="3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<ScrollChild>
 					<Frame parentKey="Contents" inherits="VerticalLayoutFrame">
 						<Size x="258" y="454"/>
@@ -416,7 +426,7 @@
 					<Frame parentKey="DetailFrame">
 						<Anchors>
 							<Anchor point="TOPLEFT" />
-							<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="2">

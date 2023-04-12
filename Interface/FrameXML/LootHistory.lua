@@ -33,7 +33,7 @@ function LootHistoryElementMixin:OnLeave()
 end
 
 function LootHistoryElementMixin:SetTooltip()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -6);
 
 	local item = Item:CreateFromItemLink(self.dropInfo.itemHyperlink);
 	local itemQuality = item:GetItemQuality();
@@ -132,6 +132,7 @@ function LootHistoryElementMixin:Init(dropInfo)
 			self.PendingRollInfo.CurrentWinnerText:SetText(LOOT_HISTORY_CURRENT_WINNER:format(leaderName, dropInfo.currentLeader.roll));
 		else
 			self.PendingRollInfo.CurrentWinnerText:SetText(nil);
+			self.PendingRollInfo.WaitDot1:SetPoint("RIGHT", self.PendingRollInfo.CurrentWinnerText, "LEFT", -3, -1);
 		end
 	end
 
@@ -374,7 +375,7 @@ function LootHistoryFrameMixin:SetupEncounterDropDown()
 		end
 	end
 
-	local totalWidth = 236;
+	local totalWidth = 239;
 	local dropDownEdgeWidth = 16;
 	UIDropDownMenu_SetWidth(self.EncounterDropDown, totalWidth - dropDownEdgeWidth);
 	UIDropDownMenu_JustifyText(self.EncounterDropDown, "RIGHT");

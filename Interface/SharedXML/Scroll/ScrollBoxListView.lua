@@ -91,9 +91,15 @@ function ScrollBoxListViewMixin:CreateTemplateInfoForTemplate(frameTemplate)
 end
 
 function ScrollBoxListViewMixin:AssignAccessors(frame, elementData)
+	-- Should always return the data stored in the data provider.
 	frame.GetElementData = function(self)
 		return elementData;
 	end;
+	
+	--[[ Provides a standard accessor to the underlying user data. If your view wraps the 
+	user data in any way, you should reimplement this function accordingly. As an example, 
+	see ScrollBoxListTreeListViewMixin:AssignAccessors().]]--
+	frame.GetData = frame.GetElementData;
 
 	frame.ElementDataMatches = function(self, elementData)
 		return self:GetElementData() == elementData;
@@ -111,6 +117,7 @@ end
 
 function ScrollBoxListViewMixin:UnassignAccessors(frame)
 	frame.GetElementData = nil;
+	frame.GetData = nil;
 	frame.ElementDataMatches = nil;
 	frame.GetOrderIndex = nil;
 	frame.SetOrderIndex = nil;

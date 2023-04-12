@@ -128,6 +128,7 @@
 							<KeyValue key="progressBarSizeX" value="336" type="number"/>
 							<KeyValue key="progressBarSizeY" value="336" type="number"/>
 							<KeyValue key="isDetailedView" value="true" type="boolean"/>
+							<KeyValue key="animEffectScaleMultiplier" value="1.5" type="number"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-75"/>
@@ -454,6 +455,13 @@
 					</Frame>
 				</Frames>
 			</Frame>
+
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="4000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ButtonsParent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ButtonsParent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</ModelScene>
 		</Frames>
 	</Frame>
 </Ui>

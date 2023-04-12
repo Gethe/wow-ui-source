@@ -1903,14 +1903,8 @@ function EncounterJournal_FocusSectionCallback(self)
 	if self.cbCount > 0 then
 		local _, _, _, _, anchorY = self:GetPoint(1);
 		local scrollFrame = self:GetParent():GetParent();
-		if ( self.isOverview ) then
-			-- +4 puts the scrollbar all the way at the bottom when going to the last section
-			anchorY = scrollFrame:GetBottom() - self.descriptionBG:GetBottom() + 4;
-		else
-			anchorY = abs(anchorY);
-			anchorY = anchorY - scrollFrame:GetHeight()/2;
-		end
-		scrollFrame.ScrollBar:SetValue(anchorY);
+		anchorY = abs(anchorY) - (scrollFrame:GetHeight() / 2);
+		scrollFrame:SetVerticalScroll(anchorY);
 		self:SetScript("OnUpdate", nil);
 	end
 	self.cbCount = self.cbCount + 1;

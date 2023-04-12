@@ -5009,8 +5009,7 @@ function ShouldShowArenaParty()
 end
 
 function ShouldShowPartyFrames()
-	local partyFramesShown = ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
-	return partyFramesShown and not EditModeManagerFrame:UseRaidStylePartyFrames();
+	return ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
 end
 
 function ShouldShowRaidFrames()

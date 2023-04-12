@@ -403,6 +403,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.reagentSlot);
 
+			-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
             if not self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] or not reagentInfo.isBasicReagent then
                 allocations:Clear();
                 self.reagentSlotProvidedByCustomer[reagentInfo.reagentSlot] = true;
@@ -413,18 +414,30 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         end
     end
 
-    for reagentType, slots in pairs(self.OrderDetails.SchematicForm.reagentSlots) do
+	-- Avoid using the reagentType index because the reagentSlots now contain
+	-- multiple different reagent types (i.e. modifying-required + basic)
+    for _, slots in pairs(self.OrderDetails.SchematicForm.reagentSlots) do
         for _, slot in ipairs(slots) do
+			local reagentType = slot:GetReagentType();
+			local reagentSlotSchematic = slot:GetReagentSlotSchematic();
             local providedByCustomer = self.reagentSlotProvidedByCustomer[slot:GetSlotIndex()];
             if providedByCustomer then
                 slot:SetUnallocatable(true);
                 slot:SetOverrideNameColor(HIGHLIGHT_FONT_COLOR);
 				slot:SetShowOnlyRequired(true);
-				if reagentType ~= Enum.CraftingReagentType.Optional then
+
+				if reagentSlotSchematic.required then
 					slot:SetCheckmarkShown(true);
+					slot:SetCheckmarkTooltipText(PROFESSIONS_CUSTOMER_ORDER_REAGENT_PROVIDED);
+					slot:SetCheckmarkAtlas("Professions-Icon-Customer");
 				end
-				slot:SetCheckmarkTooltipText(PROFESSIONS_CUSTOMER_ORDER_REAGENT_PROVIDED);
-            end
+			else
+				if reagentSlotSchematic.required then
+					slot:SetCheckmarkShown(true);
+					slot:SetCheckmarkTooltipText(PROFESSIONS_CUSTOMER_ORDER_REAGENT_NOTPROVIDED);
+					slot:SetCheckmarkAtlas("Professions-Icon-Crafter");
+				end
+			end
 
             if self.order.orderState == Enum.CraftingOrderState.Created then
                 slot:SetUnallocatable(true);
@@ -524,7 +537,7 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
         enabled = false;
         errorReason = PROFESSIONS_CRAFTER_OUT_OF_CLAIMS_FMT:format(claimInfo.hoursToRecharge);
     elseif not recipeInfo or not recipeInfo.learned or (self.order.isRecraft and not C_CraftingOrders.OrderCanBeRecrafted(self.order.orderID)) then
-        enabled = false;
+		enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_UNLEARNED;
     elseif not self.hasOptionalReagentSlots then
         enabled = false;
@@ -594,7 +607,7 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
     if Professions.IsRecipeOnCooldown(self.order.spellID) then
         enabled = false;
         errorReason = PROFESSIONS_RECIPE_COOLDOWN;
-    elseif not transaction:HasAllocatedReagentRequirements() then
+    elseif not transaction:HasMetAllRequirements() then
         enabled = false;
         errorReason = PROFESSIONS_INSUFFICIENT_REAGENTS;
     elseif self.order.minQuality and self.OrderDetails.SchematicForm.Details:GetProjectedQuality() and self.order.minQuality > self.OrderDetails.SchematicForm.Details:GetProjectedQuality() then
@@ -625,6 +638,23 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
     self.OrderInfo.CommissionTitleMoneyDisplayFrame:SetAmount(order.tipAmount);
     self.OrderInfo.ConsortiumCutMoneyDisplayFrame:SetAmount(order.consortiumCut);
     self.OrderInfo.FinalTipMoneyDisplayFrame:SetAmount(order.tipAmount - order.consortiumCut);
+
+	local warningText, atlas;
+	if self.order.reagentState == Enum.CraftingOrderReagentsType.All then
+		warningText = PROFESSIONS_CUSTOMER_ORDER_REAGENTS_ALL;
+		atlas = "Professions-Icon-Customer";
+	elseif self.order.reagentState == Enum.CraftingOrderReagentsType.Some then
+		warningText = PROFESSIONS_CUSTOMER_ORDER_REAGENTS_SOME;
+		atlas = "Professions_Icon_Warning";
+	elseif self.order.reagentState == Enum.CraftingOrderReagentsType.None then
+		warningText = PROFESSIONS_CUSTOMER_ORDER_REAGENTS_NONE;
+		atlas = "Professions_Icon_Warning";
+	end
+	self.OrderInfo.OrderReagentsWarning.Icon:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.OrderInfo.OrderReagentsWarning.Text:SetText(warningText);
+	local warningWidth = self.OrderInfo.OrderReagentsWarning.Text:GetStringWidth();
+	self.OrderInfo.OrderReagentsWarning.Text:SetWidth(math.min(warningWidth, 220));
+
     self.OrderDetails.FulfillmentForm.NoteEditBox.ScrollingEditBox:SetText("");
 	self.OrderDetails.FulfillmentForm.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
 	self.DeclineOrderDialog.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
@@ -737,8 +767,13 @@ function ProfessionsCrafterOrderViewMixin:SetOrderState(orderState)
 
     self.OrderInfo.StartOrderButton:ClearAllPoints();
     local xOfs = showDeclineOrderButton and -70 or 0;
-    local yOfs = showDeclineOrderButton and 8 or 125;
+    local yOfs = showDeclineOrderButton and 8 or 55;
     self.OrderInfo.StartOrderButton:SetPoint("BOTTOM", self.OrderInfo, "BOTTOM", xOfs, yOfs);
+
+	-- Sits above StartOrderButton with a fixed x position because the x position of the StartOrderButton
+	-- changes between private and public order.
+	self.OrderInfo.OrderReagentsWarning:ClearAllPoints();
+	self.OrderInfo.OrderReagentsWarning:SetPoint("BOTTOMLEFT", self.OrderInfo, "BOTTOMLEFT", 20, yOfs + 35);
 
 	self:UpdateMinimumQualityIcon();
 end
@@ -764,9 +799,14 @@ function ProfessionsCrafterOrderViewMixin:RecraftOrder()
 
 	local transaction = self.OrderDetails.SchematicForm.transaction;
     local craftingReagentTbl = transaction:CreateCraftingReagentInfoTblIf(predicate);
-	local removedModifications = Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
+	
+	-- Not passing any removed modifications since the server resolves this when handling overrides or
+	-- swapping between prerequisite reagents of different seasons. If we do need to pass these, the
+	-- implementation in PrepareRecipeRecraft won't be applicable anyways since we aren't accounting
+	-- for unmodified reagent slots.
+	Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 
-    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl, removedModifications);
+    C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl);
 	self.CraftingOutputLog:StartListening();
 end
 

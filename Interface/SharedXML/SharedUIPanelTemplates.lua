@@ -648,7 +648,7 @@ end
 function NumericInputSpinnerMixin:SetEnabled(enable)
 	self.IncrementButton:SetEnabled(enable);
 	self.DecrementButton:SetEnabled(enable);
-	getmetatable(self).__index.SetEnabled(self, enable);
+	GetEditBoxMetatable().__index.SetEnabled(self, enable);
 end
 
 function NumericInputSpinnerMixin:Enable()

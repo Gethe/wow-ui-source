@@ -141,6 +141,15 @@ local ItemUpgrade =
 			},
 		},
 		{
+			Name = "IsItemBound",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBound", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetItemUpgradeFromCursorItem",
 			Type = "Function",
 		},

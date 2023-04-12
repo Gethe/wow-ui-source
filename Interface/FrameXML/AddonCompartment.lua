@@ -26,20 +26,20 @@ function AddonCompartmentMixin:OnLoad()
 			end
 
 			info.func = function(btn, arg1, arg2, checked, mouseButton)
-				CallAddonGlobalFunc(addonCompartmentFunc, name, mouseButton);
+				CallAddonGlobalFunc(addonCompartmentFunc, name, mouseButton, btn);
 			end;
 
 			local onEnterGlobal = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFuncOnEnter");
 			if onEnterGlobal then
-				info.funcOnEnter = function()
-					CallAddonGlobalFunc(onEnterGlobal, name);
+				info.funcOnEnter = function(btn)
+					CallAddonGlobalFunc(onEnterGlobal, name, btn);
 				end
 			end
 
 			local onLeaveGlobal = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFuncOnLeave");
 			if onLeaveGlobal then
-				info.funcOnLeave = function()
-					CallAddonGlobalFunc(onLeaveGlobal, name);
+				info.funcOnLeave = function(btn)
+					CallAddonGlobalFunc(onLeaveGlobal, name, btn);
 				end
 			end
 
@@ -50,6 +50,16 @@ function AddonCompartmentMixin:OnLoad()
 	self:UpdateDisplay();
 
 	UIDropDownMenu_SetAnchor(self.DropDown, 0, 0, "TOPRIGHT", self, "BOTTOMRIGHT");
+
+	self:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		GameTooltip_SetTitle(GameTooltip, ADDONS);
+		GameTooltip:Show();
+	end);
+
+	self:SetScript("OnLeave", function()
+		GameTooltip:Hide();
+	end);
 end
 
 function AddonCompartmentMixin:OnClick()
@@ -72,13 +82,19 @@ function AddonCompartmentDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, AddonCompartmentDropDown_Initialize, "MENU");
 end
 
-function AddonCompartmentDropDown_Initialize(self, level)
-	local addonCompartment = self:GetParent();
+function AddonCompartmentDropDown_Initialize(self, level, menuList)
+	if level == 1 then
+		local addonCompartment = self:GetParent();
 
-	if addonCompartment.registeredAddons then
-		table.sort(addonCompartment.registeredAddons, function(infoA, infoB) return strcmputf8i(StripHyperlinks(infoA.text), StripHyperlinks(infoB.text)) < 0; end);
+		if addonCompartment.registeredAddons then
+			table.sort(addonCompartment.registeredAddons, function(infoA, infoB) return strcmputf8i(StripHyperlinks(infoA.text), StripHyperlinks(infoB.text)) < 0; end);
 
-		for _, info in ipairs(addonCompartment.registeredAddons) do
+			for _, info in ipairs(addonCompartment.registeredAddons) do
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	elseif menuList ~= nil then
+		for _, info in ipairs(menuList) do
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end

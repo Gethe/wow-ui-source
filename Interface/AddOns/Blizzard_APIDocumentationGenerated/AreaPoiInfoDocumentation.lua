@@ -63,6 +63,7 @@ local AreaPoiInfo =
 			Returns =
 			{
 				{ Name = "isTimed", Type = "bool", Nilable = false },
+				{ Name = "hideTimerInTooltip", Type = "bool", Nilable = true },
 			},
 		},
 	},
@@ -95,6 +96,7 @@ local AreaPoiInfo =
 				{ Name = "factionID", Type = "number", Nilable = true },
 				{ Name = "isPrimaryMapForPOI", Type = "bool", Nilable = false },
 				{ Name = "isAlwaysOnFlightmap", Type = "bool", Nilable = false },
+				{ Name = "addPaddingAboveWidgets", Type = "bool", Nilable = true },
 			},
 		},
 	},

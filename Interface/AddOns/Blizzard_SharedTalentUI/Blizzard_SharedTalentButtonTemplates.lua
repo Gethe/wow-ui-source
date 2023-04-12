@@ -1009,7 +1009,7 @@ function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxM
 	if (fxIDs) then
 		animEffectControllers = {};
 		for _, fxID in ipairs(fxIDs) do
-			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self));
+			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self, nil, nil, self.animEffectScaleMultiplier));
 		end
 	end
 

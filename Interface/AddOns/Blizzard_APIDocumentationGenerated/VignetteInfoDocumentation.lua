@@ -101,6 +101,7 @@ local VignetteInfo =
 				{ Name = "type", Type = "VignetteType", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
+				{ Name = "addPaddingAboveWidgets", Type = "bool", Nilable = true },
 			},
 		},
 	},

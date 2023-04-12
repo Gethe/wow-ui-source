@@ -142,7 +142,7 @@ function GroupLootFrame_DisableLootButton(button)
 end
 
 function GroupLootFrame_OnShow(self)
-	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, canTransmog, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired = GetLootRollItemInfo(self.rollID);
+	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(self.rollID);
 	if (name == nil) then
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 		return;

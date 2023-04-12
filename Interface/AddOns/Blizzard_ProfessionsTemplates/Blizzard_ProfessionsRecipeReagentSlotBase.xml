@@ -94,18 +94,6 @@
 				</Frames>
 			</ItemButton>
 
-			<Button parentKey="UndoButton" hidden="true" inherits="IconButtonTemplate">
-				<KeyValues>
-					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
-					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
-					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="25" y="25"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
-
 			<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate" motionScriptsWhileDisabled="true" hidden="true">
 				<Size x="23" y="23"/>
 				<Anchors>

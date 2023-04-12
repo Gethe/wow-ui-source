@@ -69,6 +69,37 @@ local ContentTracking =
 			},
 		},
 		{
+			Name = "GetObjectiveText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetType", Type = "ContentTrackingTargetType", Nilable = false },
+				{ Name = "targetID", Type = "number", Nilable = false },
+				{ Name = "includeHyperlinks", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "objectiveText", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTitle",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "trackableType", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "trackableID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "title", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTrackablesOnMap",
 			Type = "Function",
 
@@ -219,6 +250,16 @@ local ContentTracking =
 				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "isTracked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TrackableInfoUpdate",
+			Type = "Event",
+			LiteralName = "TRACKABLE_INFO_UPDATE",
+			Payload =
+			{
+				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
 			},
 		},
 	},

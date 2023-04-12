@@ -610,9 +610,11 @@ function ItemUpgradeButtonMixin:OnClick()
 		color = {upgradeInfo.itemQualityColor:GetRGBA()},
 		link = C_ItemUpgrade.GetItemHyperlink(),
 		itemFrameOnEnter = StaticPopupItemOnEnter,
+		isItemBound = C_ItemUpgrade.IsItemBound(),
+		costString = upgradeFrame:GetUpgradeCostString(),
 	};
 
-	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", upgradeFrame:GetUpgradeCostString(), "", data);
+	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", nil, nil, data);
 end
 
 function ItemUpgradeButtonMixin:GetDisabledTooltip()
@@ -625,19 +627,11 @@ function ItemUpgradeButtonMixin:GetDisabledTooltip()
 	local insufficientCosts = insufficientCostinfo.insufficientCosts;
 	local numInsufficientCosts = #insufficientCosts;
 
-	local anyCostNamesNotLoaded = false;
-	for _, cost in ipairs(insufficientCosts) do
-		cost.name = cost.GetName();
-		if cost.name == nil then
-			anyCostNamesNotLoaded = true;
-		end
-	end
-
 	local insufficientCostTooltip;
-	if not anyCostNamesNotLoaded and numInsufficientCosts == 1 then
-		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY:format(insufficientCosts[1].name);
-	elseif not anyCostNamesNotLoaded and numInsufficientCosts == 2 then
-		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_TWO:format(insufficientCosts[1].name, insufficientCosts[2].name);
+	if numInsufficientCosts == 1 then
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY:format(insufficientCosts[1].GetName());
+	elseif numInsufficientCosts == 2 then
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_TWO:format(insufficientCosts[1].GetName(), insufficientCosts[2].GetName());
 	else
 		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_MULTIPLE;
 	end
@@ -934,7 +928,13 @@ end
 local DualSlotHighWatermarkSlots = {
 	[Enum.ItemRedundancySlot.Trinket] = ITEM_UPGRADE_DISCOUNT_ITEM_TYPE_TRINKET,
 	[Enum.ItemRedundancySlot.Finger] = ITEM_UPGRADE_DISCOUNT_ITEM_TYPE_FINGER,
-	[Enum.ItemRedundancySlot.OnehandWeapon] = ITEM_UPGRADE_DISCOUNT_ITEM_TYPE_ONE_HANDED_WEAPON,
+};
+
+local WeaponSetHighWatermarkSlots = {
+	Enum.ItemRedundancySlot.Twohand,
+	Enum.ItemRedundancySlot.OnehandWeapon,
+	Enum.ItemRedundancySlot.MainhandWeapon,
+	Enum.ItemRedundancySlot.Offhand,
 };
 
 ItemUpgradeCostQuantityMixin = {};
@@ -962,8 +962,9 @@ function ItemUpgradeCostQuantityMixin:OnEnter()
 		GameTooltip_AddColoredLine(tooltip, ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE, LIGHTBLUE_FONT_COLOR);
 	end
 
-	if discountInfo.isPartialTwoHandDiscount then
-		-- 2H weapons can receive a partial discount if player has upgraded 1H weapons
+	if discountInfo.isPartialTwoHandDiscount or tContains(WeaponSetHighWatermarkSlots, self.costInfo.highWatermarkSlot) then
+		-- 2H weapons can receive a partial discount if player has upgraded 1H weapons, & all weapons benefit from the highest ilvl "set" of all weapon slots (set = one 2H, two 1H, or main + offhand)
+		-- Both are conveyed using the same "discount due to a weapon set" tooltip language for now for simplicity
 		local tooltipTemplate = discountInfo.doesCurrentCharacterMeetHighWatermark
 							and ITEM_UPGRADE_DISCOUNT_TOOLTIP_PARTIAL_TWO_HAND_CURRENT_CHARACTER
 							or ITEM_UPGRADE_DISCOUNT_TOOLTIP_PARTIAL_TWO_HAND_OTHER_CHARACTER;

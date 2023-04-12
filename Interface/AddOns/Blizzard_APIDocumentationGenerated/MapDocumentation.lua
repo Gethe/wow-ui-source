@@ -247,6 +247,27 @@ local Map =
 			},
 		},
 		{
+			Name = "GetMapHighlightPulseInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "fileDataID", Type = "fileID", Nilable = false },
+				{ Name = "atlasID", Type = "textureAtlas", Nilable = false },
+				{ Name = "texturePercentageX", Type = "number", Nilable = false },
+				{ Name = "texturePercentageY", Type = "number", Nilable = false },
+				{ Name = "textureX", Type = "number", Nilable = false },
+				{ Name = "textureY", Type = "number", Nilable = false },
+				{ Name = "scrollChildX", Type = "number", Nilable = false },
+				{ Name = "scrollChildY", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMapInfo",
 			Type = "Function",
 

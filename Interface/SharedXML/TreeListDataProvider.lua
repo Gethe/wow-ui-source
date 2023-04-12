@@ -139,7 +139,9 @@ function TreeListNodeMixin:SetCollapsed(collapsed, affectChildren, skipInvalidat
 end
 
 function TreeListNodeMixin:ToggleCollapsed(affectChildren, skipInvalidate)
-	self:SetCollapsed(not self:IsCollapsed(), affectChildren, skipInvalidate);
+	local newCollapsed = not self:IsCollapsed();
+	self:SetCollapsed(newCollapsed, affectChildren, skipInvalidate);
+	return newCollapsed;
 end
 
 function TreeListNodeMixin:IsCollapsed()

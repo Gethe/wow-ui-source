@@ -16,15 +16,15 @@
 			<ItemButton parentKey="Item" registerForClicks="LeftButtonUp, RightButtonUp">
 				<!-- Override ItemButton to have no normal texture -->
 				<NormalTexture/>
-				<Size x="47" y="47"/>
+				<Size x="48" y="48"/>
 				<Anchors>
-					<Anchor point="LEFT" x="8" y="0"/>
+					<Anchor point="LEFT" x="6" y="0"/>
 				</Anchors>
 			</ItemButton>
 			<Frame parentKey="WinningRollInfo">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -36,7 +36,7 @@
 						</FontString>
 						<Texture parentKey="Check" atlas="lootroll-icon-checkmark" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.WinningRoll" relativePoint="LEFT" x="-2" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.WinningRoll" relativePoint="LEFT" x="-4" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -45,7 +45,7 @@
 			<Frame parentKey="PendingRollInfo">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -53,17 +53,17 @@
 							<Color color="DISABLED_FONT_COLOR"/>
 							<Size x="0" y="0"/>
 							<Anchors>
-								<Anchor point="RIGHT"/>
+								<Anchor point="RIGHT" x="-2"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="WaitDot1" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true">
+						<Texture parentKey="WaitDot1" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.CurrentWinnerText" relativePoint="LEFT" x="-5" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrentWinnerText" relativePoint="LEFT" x="-8" y="-1"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="WaitDot2" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true">
+						<Texture parentKey="WaitDot2" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.WaitDot1" relativePoint="LEFT" x="-2" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.WaitDot1" relativePoint="LEFT" x="-3" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -80,7 +80,7 @@
 			<Frame parentKey="AllPassedInfo">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -94,7 +94,7 @@
 						<Texture parentKey="Icon" atlas="lootroll-icon-checkmark" useAtlasSize="false">
 							<Size x="15" y="13"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.AllPassedText" relativePoint="LEFT" x="-2" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.AllPassedText" relativePoint="LEFT" x="-4" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -125,12 +125,12 @@
 				<FontString parentKey="ItemName" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 					<Size x="150" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="2" y="-2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="6" y="-2"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="BorderFrame" atlas="looting_itemcard_stroke_normal" useAtlasSize="false" setAllPoints="true"/>
+				<Texture parentKey="BorderFrame" atlas="lootroll-itementry-background" useAtlasSize="false" setAllPoints="false"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -150,7 +150,7 @@
 					<Color color="HIGHLIGHT_FONT_COLOR"/>
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="0"/>
+						<Anchor point="TOPLEFT" x="3" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -161,7 +161,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="RollIcon">
-					<Size x="15" y="13"/>
+					<Size x="14" y="14"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
@@ -186,21 +186,21 @@
 	</Frame>
 	
 	<Frame name="LootHistoryFrame" mixin="LootHistoryFrameMixin" inherits="DefaultPanelFlatTemplate" movable="true" resizable="true" registerForDrag="LeftButton" clampedToScreen="true" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
-		<Size x="256" y="590"/>
+		<Size x="261" y="590"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="280" y="180"/>
 		</Anchors>
 		<ResizeBounds>
 			<minResize>
-				<AbsDimension x="256" y="300"/>
+				<AbsDimension x="261" y="300"/>
 			</minResize>
 			<MaxResize>
-				<AbsDimension x="256" y="800"/>
+				<AbsDimension x="261" y="800"/>
 			</MaxResize>
 		</ResizeBounds>
 		<KeyValues>
 			<KeyValue key="panelMaxHeight" value="590" type="number"/>
-			<KeyValue key="panelWidth" value="256" type="number"/>
+			<KeyValue key="panelWidth" value="261" type="number"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -215,21 +215,21 @@
 			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="7" y="-90"/>
+					<Anchor point="TOPLEFT" x="6" y="-90"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="238" y="4"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="2"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
 				</Anchors>
 			</EventFrame>
 			
 			<Frame parentKey="EncounterDropDown" inherits="UIDropDownMenuTemplate" parentArray="uncommittedRegions">
-				<Size x="236" y="28"/>
+				<Size x="239" y="28"/>
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-32"/>
+					<Anchor point="TOP" x="1" y="-32"/>
 				</Anchors>
 			</Frame>
 

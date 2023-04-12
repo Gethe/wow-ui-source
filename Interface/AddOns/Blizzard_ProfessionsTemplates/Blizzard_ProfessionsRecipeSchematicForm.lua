@@ -943,14 +943,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			end
 			slot.Button:SetLocked(locked);
 
-			slot.UndoButton:SetScript("OnClick", function(button)
-				AllocateModification(slotIndex, reagentSlotSchematic);
-
-				slot:RestoreOriginalItem();
-
-				self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
-			end);
-
 			slot.Button:SetScript("OnEnter", function()
 				GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 
@@ -987,6 +979,23 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					if buttonName == "LeftButton" then
 						local flyout = ToggleProfessionsItemFlyout(slot.Button, self);
 						if flyout then
+							local function OnUndoClicked(o, flyout)
+								AllocateModification(slotIndex, reagentSlotSchematic);
+								
+								slot:RestoreOriginalItem();
+								
+								self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
+							end
+							
+							local function OnFlyoutItemShiftClicked(o, flyout, elementData)
+								local item = elementData.item;
+								local itemLink = ItemUtil.GetItemHyperlink(item:GetItemID());
+								local handled, link = Professions.HandleReagentLink(itemLink);
+								if not handled then
+									Professions.TriggerReagentClickedEvent(link);
+								end
+							end
+
 							local function OnFlyoutItemSelected(o, flyout, elementData)
 								local item = elementData.item;
 								
@@ -1014,10 +1023,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								end
 							end
 
+							flyout.GetUndoElementImplementation = function(self)
+								if not slot:IsOriginalItemSet() then
+									return slot:GetOriginalItem();
+								end
+							end
+
 							flyout.GetElementsImplementation = function(self, filterAvailable)
 								local itemIDs = Professions.ExtractItemIDsFromCraftingReagents(reagentSlotSchematic.reagents);
 								local items = Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable);
-								local elementData = {items = items};
+								local elementData = {items = items, forceAccumulateInventory = true};
 								return elementData;
 							end
 							
@@ -1049,17 +1064,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 							flyout:Init(slot.Button, self.transaction);
 							flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
-
-							local function OnFlyoutItemShiftClicked(o, flyout, elementData)
-								local item = elementData.item;
-								local itemLink = ItemUtil.GetItemHyperlink(item:GetItemID());
-								local handled, link = Professions.HandleReagentLink(itemLink);
-								if not handled then
-									Professions.TriggerReagentClickedEvent(link);
-								end
-							end
-
 							flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ShiftClicked, OnFlyoutItemShiftClicked, slot);
+							flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.UndoClicked, OnUndoClicked, slot);
 						end
 					elseif buttonName == "RightButton" then
 						if self.transaction:HasAllocations(slotIndex) then
@@ -1257,8 +1263,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						tooltip:SetItemByGUID(elementData.itemGUID);
 						tooltip:Show();
 					end
-	
-					flyout.OnElementEnabledImplementation = nil;
 	
 					local canModifyFilter = false;
 					flyout:Init(self.enchantSlot.Button, self.transaction, canModifyFilter);

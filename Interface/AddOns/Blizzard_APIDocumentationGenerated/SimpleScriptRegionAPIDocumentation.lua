@@ -28,6 +28,15 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "EnableMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enable", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "EnableMouseWheel",
 			Type = "Function",
 

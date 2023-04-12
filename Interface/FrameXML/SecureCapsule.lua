@@ -256,6 +256,8 @@ retain("UnitReaction");
 retain("C_Timer");
 retain("C_CVar");
 retain("C_XMLUtil");
+retain("GetFontStringMetatable");
+retain("pcallwithenv");
 
 -- For tooltips
 retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");

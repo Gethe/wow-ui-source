@@ -1153,8 +1153,15 @@ local function QuestLogQuests_GetPOIButton(displayState, info, isDisabledQuest, 
 end
 
 local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
+	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
+	local questTagID = tagInfo and tagInfo.tagID;
+
 	if isComplete then
-		return "COMPLETED";
+		if questTagID == Enum.QuestTag.Legendary then
+			return "COMPLETED_LEGENDARY";
+		else
+			return "COMPLETED";
+		end
 	end
 
 	-- At this point, we know the quest is not complete, no need to check it any more.
@@ -1172,9 +1179,6 @@ local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
 			end
 		end
 	end
-
-	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
-	local questTagID = tagInfo and tagInfo.tagID;
 
 	if questTagID == Enum.QuestTag.Account then
 		local factionGroup = GetQuestFactionGroup(questID);
@@ -1231,11 +1235,11 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local isComplete = C_QuestLog.IsComplete(questID);
 	local tagID = QuestLogQuests_GetBestTagID(questID, info, isComplete);
-	local tagCoords = QuestUtils_GetQuestTagTextureCoords(tagID);
-	button.TagTexture:SetShown(tagCoords ~= nil);
+	local tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+	button.TagTexture:SetShown(tagAtlas ~= nil);
 
-	if tagCoords then
-		button.TagTexture:SetTexCoord(unpack(tagCoords));
+	if tagAtlas then
+		button.TagTexture:SetAtlas(tagAtlas, TextureKitConstants.UseAtlasSize);
 		button.TagTexture:SetDesaturated(C_QuestLog.IsQuestDisabledForSession(questID));
 	end
 
@@ -1600,7 +1604,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 
 		local overrideQuestTag = tagInfo.tagID;
-		if ( QuestUtils_GetQuestTagTextureCoords(tagInfo.tagID) ) then
+		if ( QuestUtils_GetQuestTagAtlas(tagInfo.tagID) ) then
 			if ( tagInfo.tagID == Enum.QuestTag.Account and factionGroup ) then
 				overrideQuestTag = "ALLIANCE";
 				if ( factionGroup == LE_QUEST_FACTION_HORDE ) then

@@ -409,8 +409,8 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="QuestNPCModelTextFrame" hidden="true" useParentLevel="true">
-				<Size x="198" y="64"/>
+			<Frame name="QuestNPCModelTextFrame" useParentLevel="true">
+				<Size x="198" y="84"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" relativePoint="BOTTOMLEFT" y="12"/>
 				</Anchors>
@@ -454,22 +454,26 @@
 				</Layers>
 				<Frames>
 					<ScrollFrame name="QuestNPCModelTextScrollFrame" inherits="ScrollFrameTemplate" useParentLevel="true">
+						<Size x="178" y="74"/>
 						<KeyValues>
-							<KeyValue key="noScrollBar" value="true" type="boolean"/>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="-4" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-1" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-5" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-6"/>
-							<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+							<Anchor point="TOPLEFT" x="10" y="-3"/>
 						</Anchors>
 						<ScrollChild>
 							<Frame name="QuestNPCModelTextScrollChildFrame">
-								<Size x="178" y="0"/>
+								<Size x="178" y="1"/>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
-											<Size x="178" y="0"/>
+											<Size x="178"/>
 											<Anchors>
 												<Anchor point="TOPLEFT"/>
+												<Anchor point="TOPRIGHT" x="-5"/>
 											</Anchors>
 											<Color r="0.96875" g="0.8984375" b="0.578125"/>
 										</FontString>

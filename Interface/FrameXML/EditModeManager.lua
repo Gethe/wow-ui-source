@@ -1072,6 +1072,14 @@ function EditModeManagerFrameMixin:UpdateSystems()
 		self:UpdateSystem(systemFrame);
 	end
 	secureexecuterange(self.registeredSystemFrames, callUpdateSystem);
+
+	-- After we have finished updating all systems we need to call OnAppliedSystemAnchor on each of them since
+	-- some systems depend on the systems they're anchored to being setup before they can accurately get their own
+	-- screen position
+	local function callOnAppliedSystemAnchor(index, systemFrame)
+		systemFrame:OnAppliedSystemAnchor();
+	end
+	secureexecuterange(self.registeredSystemFrames, callOnAppliedSystemAnchor);
 end
 
 function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)

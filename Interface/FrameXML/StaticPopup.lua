@@ -349,7 +349,7 @@ StaticPopupDialogs["CONFIRM_PURCHASE_ITEM_DELAYED"] = {
 }
 
 StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
-	text = CONFIRM_UPGRADE_ITEM,
+	text = "",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
@@ -358,8 +358,12 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	OnCancel = function()
 		ItemUpgradeFrame:Update();
 	end,
-	OnShow = function()
-
+	OnShow = function(self, data)
+		if data.isItemBound then
+			self.text:SetText(CONFIRM_UPGRADE_ITEM:format(data.costString));
+		else
+			self.text:SetText(CONFIRM_UPGRADE_ITEM_BIND:format(data.costString));
+		end
 	end,
 	OnHide = function()
 

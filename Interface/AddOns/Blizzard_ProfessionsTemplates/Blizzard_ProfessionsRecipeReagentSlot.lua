@@ -5,7 +5,6 @@ function ProfessionsReagentSlotMixin:Reset()
 	self:SetAllocateIconShown(false);
 	self.unallocatable = nil;
 	self.originalItem = nil;
-	self.UndoButton:Hide();
 	self.CustomerState:Hide();
 	self.Button:Reset();
 	if self.continuableContainer then
@@ -69,7 +68,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 
 	local function OnItemsLoaded()
 		self.Name:Show();
-
+		
 		local function InitButton()
 			local allocations = transaction:GetAllocations(self:GetSlotIndex());
 			for index, allocation in allocations:Enumerate() do
@@ -308,6 +307,10 @@ function ProfessionsReagentSlotMixin:SetOriginalItem(item)
 	self.originalItem = item;
 end
 
+function ProfessionsReagentSlotMixin:GetOriginalItem(item)
+	return self.originalItem;
+end
+
 function ProfessionsReagentSlotMixin:ApplySlotInfo()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	local slotInfo = reagentSlotSchematic.slotInfo;
@@ -341,23 +344,6 @@ function ProfessionsReagentSlotMixin:SetItem(item)
 		self:ApplySlotInfo();
 	end
 
-	if self:IsOriginalItemSet() then
-		self.UndoButton:Hide();
-	else
-		self.UndoButton:ClearAllPoints();
-
-		-- TEMP. The undo button needs to be accounted for in the compact slot layout. Until that change is made
-		-- the button is being moved so it doesn't overlap with another slot.
-		local reagentSlotSchematic = self:GetReagentSlotSchematic();
-		if self.Button:IsModifyingRequired() or reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
-			self.UndoButton:SetPoint("LEFT", self.Name, "RIGHT", 0, 0);
-		else
-			self.UndoButton:SetPoint("TOPLEFT", 6, -41);
-		end
-
-		self.UndoButton:Show();
-	end
-
 	self:Update();
 end
 
@@ -375,14 +361,17 @@ function ProfessionsReagentSlotMixin:SetCurrency(currencyID)
 		self:ApplySlotInfo();
 	end
 
-	self.UndoButton:Hide();
-
 	self:Update();
 end
 
 function ProfessionsReagentSlotMixin:GetSlotIndex()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	return reagentSlotSchematic.slotIndex;
+end
+
+function ProfessionsReagentSlotMixin:GetReagentType()
+	local reagentSlotSchematic = self:GetReagentSlotSchematic();
+	return reagentSlotSchematic.reagentType;
 end
 
 function ProfessionsReagentSlotMixin:SetTransaction(transaction)
@@ -447,6 +436,10 @@ end
 
 function ProfessionsReagentSlotMixin:SetCheckmarkShown(shown)
 	self.Checkmark:SetShown(shown);
+end
+
+function ProfessionsReagentSlotMixin:SetCheckmarkAtlas(atlas)
+	self.Checkmark.Check:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 end
 
 function ProfessionsReagentSlotMixin:SetCheckmarkTooltipText(text)

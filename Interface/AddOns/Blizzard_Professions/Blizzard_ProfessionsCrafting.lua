@@ -574,11 +574,12 @@ function ProfessionsCraftingPageMixin:SetCreateButtonTooltipText(tooltipText)
 	self.CreateAllButton.tooltipText = tooltipText;
 end
 
-local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
+local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "PrerequisiteReagents", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
 
 local FailValidationTooltips = {
 	[FailValidationReason.Cooldown] = PROFESSIONS_RECIPE_COOLDOWN,
 	[FailValidationReason.InsufficientReagents] = PROFESSIONS_INSUFFICIENT_REAGENTS,
+	[FailValidationReason.PrerequisiteReagents] = PROFESSIONS_PREREQUISITE_REAGENTS,
 	[FailValidationReason.Requirement] = PROFESSIONS_MISSING_REQUIREMENT,
 	[FailValidationReason.LockedReagentSlot] = PROFESSIONS_INSUFFICIENT_REAGENT_SLOTS,
 	[FailValidationReason.RecraftOptionalReagentLimit] = PROFESSIONS_UNIQUE_EQUIP_LIMITATION_DISC,
@@ -600,13 +601,16 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 	if anyRequirementMissing then
 		return FailValidationReason.Requirement;
 	end
+	
+	if not transaction:HasMetPrerequisiteRequirements() then
+		return FailValidationReason.PrerequisiteReagents;
+	end
 
 	if not isRuneforging and countMax <= 0 then
 		return FailValidationReason.InsufficientReagents;
 	end
 	
-	local validAllocations = transaction:HasAllocatedReagentRequirements();
-	if not validAllocations then
+	if not transaction:HasMetAllRequirements() then
 		return FailValidationReason.InsufficientReagents;
 	end
 
@@ -1048,8 +1052,33 @@ function ProfessionsCraftingPageMixin:CreateAll()
 end
 
 function ProfessionsCraftingPageMixin:Create()
-	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-	self:CreateInternal(currentRecipeInfo.recipeID, self.CreateMultipleInputBox:GetValue(), self.SchematicForm:GetCurrentRecipeLevel());
+	local function InvokeCreate()
+		local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+		self:CreateInternal(currentRecipeInfo.recipeID, self.CreateMultipleInputBox:GetValue(), self.SchematicForm:GetCurrentRecipeLevel());
+	end
+
+	local canContinue = true;
+	local transaction = self.SchematicForm:GetTransaction();
+	if transaction:IsRecraft() then
+		local itemIDs = TableUtil.Transform(transaction:CreateCraftingReagentInfoTbl(), function(craftingReagentInfo)
+			return craftingReagentInfo.itemID;
+		end);
+
+		local warnings = C_TradeSkillUI.GetRecraftRemovalWarnings(transaction:GetRecraftAllocation(), itemIDs);
+		canContinue = #warnings == 0;
+		if not canContinue then
+			local referenceKey = self;
+			if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+				local data = { text = warnings[1], callback = InvokeCreate, showAlert = true};
+				StaticPopup_ShowCustomGenericConfirmation(data);
+			end
+		end
+	end
+
+	if canContinue then
+		InvokeCreate();
+	end
+	
 end
 
 function ProfessionsCraftingPageMixin:ConfigureInventorySlots(info)

@@ -41,7 +41,6 @@ end
 
 function AllocationsMixin:Clear()
 	self.allocs = {};
-
 	self:OnChanged();
 end
 
@@ -331,9 +330,7 @@ end
 function ProfessionsRecipeTransactionMixin:SanitizeOptionalAllocations()
 	for index, allocations in ipairs_reverse(self.allocationTbls) do
 		local reagentSlotSchematic = self:GetReagentSlotSchematic(index);
-		if (reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent) and
-			(reagentSlotSchematic.reagentType ~= Enum.CraftingReagentType.Basic) then
-
+		if not reagentSlotSchematic.required then
 			self:SanitizeAllocationsInternal(index, allocations);
 		end
 	end
@@ -560,7 +557,23 @@ function ProfessionsRecipeTransactionMixin:HasModification(dataSlotIndex)
 	return false;
 end
 
-function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()
+function ProfessionsRecipeTransactionMixin:HasMetAllRequirements()
+	if not self:HasMetSalvageRequirements() then
+		return false;
+	end
+
+	if not self:HasMetQuantityRequirements() then
+		return false;
+	end
+
+	if not self:HasMetPrerequisiteRequirements() then
+		return false;
+	end
+
+	return true;
+end
+
+function ProfessionsRecipeTransactionMixin:HasMetSalvageRequirements()
 	if self:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		if not self.salvageItem then
 			return false;
@@ -576,9 +589,12 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()
 		return quantity >= quantityRequired;
 	end
 
+	return true;
+end
+
+function ProfessionsRecipeTransactionMixin:HasMetQuantityRequirements()
 	for slotIndex, reagentTbl in self:Enumerate() do
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
-		-- Verify quantity required
 		if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
 			local quantityRequired = reagentSlotSchematic.quantityRequired;
 			local allocations = self:GetAllocations(slotIndex);
@@ -593,9 +609,15 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()
 				return false;
 			end
 		end
+	end
 
-		-- Verify all reagents dependencies/requirements are met
+	return true;
+end
+
+function ProfessionsRecipeTransactionMixin:HasMetPrerequisiteRequirements()
+	for slotIndex, reagentTbl in self:Enumerate() do
 		local allocations = self:GetAllocations(slotIndex);
+		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
 		for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
 			local allocation = allocations:FindAllocationByReagent(reagent);
 			if allocation and not self:AreAllRequirementsAllocatedByItemID(reagent.itemID) then
@@ -603,7 +625,7 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedReagentRequirements()
 			end
 		end
 	end
-
+	
 	return true;
 end
 

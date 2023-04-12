@@ -295,8 +295,8 @@ function TableUtil.Transform(tbl, op)
 	local result = {};
 	for k, v in pairs(tbl) do
 		table.insert(result, op(v));
-		return result;
 	end
+	return result;
 end
 
 function ContainsIf(tbl, pred)

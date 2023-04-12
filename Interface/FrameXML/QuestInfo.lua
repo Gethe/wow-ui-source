@@ -151,7 +151,7 @@ function QuestInfo_ShowTitle()
 end
 
 function QuestInfo_ShowType()
-	local questTypeMarkup = QuestUtils_GetQuestTypeTextureMarkupString(C_QuestLog.GetSelectedQuest());
+	local questTypeMarkup = QuestUtils_GetQuestTypeIconMarkupString(C_QuestLog.GetSelectedQuest());
 	local showType = questTypeMarkup ~= nil;
 
 	QuestInfoQuestType:SetShown(showType);

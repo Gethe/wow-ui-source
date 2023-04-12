@@ -10,22 +10,20 @@ if tbl then
 	tbl.error = tbl.SecureCapsuleGet("error");
 	tbl.pcall = tbl.SecureCapsuleGet("pcall");
 	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
 
 	local function CleanFunction(f)
 		return function(...)
-			local prevfenv = tbl.getfenv(f);
-			local fenvSet = tbl.pcall(tbl.setfenv, f, tbl);
 			local function HandleCleanFunctionCallArgs(success, ...)
-				if fenvSet then
-					tbl.setfenv(f, prevfenv);
-				end
 				if success then
 					return ...;
 				else
-					tbl.error("Error in secure capsule function execution: "..select(1, ...));
+					tbl.error("Error in secure capsule function execution: "..(...));
 				end
 			end
-			return HandleCleanFunctionCallArgs(tbl.pcall(f, ...));
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
 		end
 	end
 
@@ -68,6 +66,14 @@ if tbl then
 	Import("GetTime");
 	Import("assert");
 
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
 	setfenv(1, tbl);
 end
 ----------------

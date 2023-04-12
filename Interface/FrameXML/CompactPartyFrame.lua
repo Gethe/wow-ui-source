@@ -1,3 +1,7 @@
+local function ShouldShowCompactPartyFrame()
+	return ShouldShowPartyFrames() and EditModeManagerFrame:UseRaidStylePartyFrames();
+end
+
 function CompactPartyFrame_OnLoad(self)
 	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
 	self.updateLayoutFunc = CompactPartyFrame_UpdateLayout;
@@ -27,10 +31,7 @@ function CompactPartyFrame_UpdateVisibility()
 		return;
 	end
 
-	local isInArena = IsActiveBattlefieldArena();
-	local groupFramesShown = (IsInGroup() and (isInArena or not IsInRaid())) or EditModeManagerFrame:ArePartyFramesForcedShown();
-	local showCompactPartyFrame = groupFramesShown and EditModeManagerFrame:UseRaidStylePartyFrames();
-	CompactPartyFrame:SetShown(showCompactPartyFrame);
+	CompactPartyFrame:SetShown(ShouldShowCompactPartyFrame());
 	PartyFrame:UpdatePaddingAndLayout();
 end
 

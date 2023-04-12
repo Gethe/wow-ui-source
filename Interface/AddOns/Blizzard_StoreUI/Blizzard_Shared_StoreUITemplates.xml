@@ -656,14 +656,20 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="1">
+					<Texture parentKey="ParentIndicator" atlas="campaign_headericon_closed" hidden="true">
+						<Size x="16" y="16" />
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="RIGHT" x="-6" y="2" />
+						</Anchors>
+					</Texture>
 					<Texture parentKey="SelectedTexture" inherits="store-category-selected" hidden="true" alphaMode="ADD">
-						<Size x="168" y="34" />
+						<Size x="162" y="34" />
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="2" />
 						</Anchors>
 					</Texture>
 					<Texture parentKey="HighlightTexture" inherits="store-category-hover" hidden="true" alphaMode="ADD">
-						<Size x="168" y="34" />
+						<Size x="162" y="34" />
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="2" />
 						</Anchors>
@@ -720,13 +726,13 @@
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="1">
 					<Texture parentKey="SelectedTexture" inherits="store-category-selected" hidden="true" alphaMode="ADD">
-						<Size x="158" y="26" />
+						<Size x="148" y="26" />
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="1" />
 						</Anchors>
 					</Texture>
 					<Texture parentKey="HighlightTexture" inherits="store-category-hover" hidden="true" alphaMode="ADD">
-						<Size x="158" y="26" />
+						<Size x="148" y="26" />
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="1" />
 						</Anchors>

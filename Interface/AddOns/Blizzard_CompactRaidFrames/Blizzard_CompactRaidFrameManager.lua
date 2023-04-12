@@ -15,7 +15,6 @@ MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 
 function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
-	self.container:SetParent(self);
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");

@@ -1082,7 +1082,7 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 end
 
 function CompactUnitFrame_UpdateReadyCheck(frame)
-	if ( not frame.readyCheckIcon or frame.readyCheckDecay and GetReadyCheckTimeLeft() <= 0 ) then
+	if ( not frame.readyCheckIcon or frame.optionTable.hideReadyCheckIcon or frame.readyCheckDecay and GetReadyCheckTimeLeft() <= 0 ) then
 		return;
 	end
 
@@ -1103,7 +1103,7 @@ function CompactUnitFrame_UpdateReadyCheck(frame)
 end
 
 function CompactUnitFrame_FinishReadyCheck(frame)
-	if ( not frame.readyCheckIcon)  then
+	if ( not frame.readyCheckIcon or frame.optionTable.hideReadyCheckIcon )  then
 		return;
 	end
 	if ( frame:IsVisible() ) then
@@ -1837,6 +1837,7 @@ DefaultCompactMiniFrameOptions = {
 	--displayStatusText = true,
 	displayHealPrediction = true,
 	--displayDispelDebuffs = true,
+	hideReadyCheckIcon = true,
 }
 
 DefaultCompactMiniFrameSetUpOptions = {

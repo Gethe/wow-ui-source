@@ -657,6 +657,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetRecraftRemovalWarnings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "replacedItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "warnings", Type = "table", InnerType = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRemainingRecasts",
 			Type = "Function",
 
