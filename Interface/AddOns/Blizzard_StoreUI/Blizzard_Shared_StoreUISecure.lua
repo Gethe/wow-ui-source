@@ -449,7 +449,6 @@ local GUILD_TRANSFER_PRODUCT_ID = 476;
 local currencyMult = 100;
 
 local selectedCategoryID;
-local selectedEntryID;
 local selectedPageNum = 1;
 
 function StoreFrame_SetSelectedPageNum(pageNum)
@@ -1645,8 +1644,10 @@ function StoreFrame_CheckAndUpdateEntryID(isSplash)
 	if (not isSplash) then
 		local found = false;
 		local selectedPage = StoreFrame_GetSelectedPageNum();
+		local selectedEntryID = StoreFrame_GetSelectedEntryID();
 		for i=1, NUM_STORE_PRODUCT_CARDS do
 			local entryID = products[i + NUM_STORE_PRODUCT_CARDS * (selectedPage - 1)];
+
 			if ( entryID and selectedEntryID == entryID) then
 				found = true;
 				break;
@@ -1655,7 +1656,7 @@ function StoreFrame_CheckAndUpdateEntryID(isSplash)
 			end
 		end
 		if (not found) then
-			selectedEntryID = nil;
+			StoreFrame_SetSelectedEntryID(nil);
 		end
 	end
 end
@@ -2454,6 +2455,7 @@ function StoreFrame_UpdateBuyButton()
 	end
 	self.BuyButton:SetText(text);
 
+	local selectedEntryID = StoreFrame_GetSelectedEntryID();
 	if not selectedEntryID then
 		self.BuyButton:Disable();
 		self.BuyButton.PulseAnim:Stop();
@@ -2881,7 +2883,7 @@ end
 
 function StoreFramePrevPageButton_OnClick(self)
 	StoreFrame_SetSelectedPageNum(StoreFrame_GetSelectedPageNum() - 1);
-	selectedEntryID = nil;
+	StoreFrame_SetSelectedEntryID(nil);
 	StoreFrame_SetCategory();
 
 	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
@@ -2889,13 +2891,13 @@ end
 
 function StoreFrame_SetPage(page)
 	StoreFrame_SetSelectedPageNum(page);
-	selectedEntryID = nil;
+	StoreFrame_SetSelectedEntryID(nil);
 	StoreFrame_SetCategory();
 end
 
 function StoreFrameNextPageButton_OnClick(self)
 	StoreFrame_SetSelectedPageNum(StoreFrame_GetSelectedPageNum() + 1);
-	selectedEntryID = nil;
+	StoreFrame_SetSelectedEntryID(nil);
 	StoreFrame_SetCategory();
 
 	PlaySound(SOUNDKIT.UI_IG_STORE_PAGE_NAV_BUTTON);
@@ -3273,6 +3275,7 @@ end
 local InstructionsShowing = false;
 
 function StoreVASValidationFrame_GetProductInfo(self)
+	local selectedEntryID = StoreFrame_GetSelectedEntryID();
 	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
 	self.productID = entryInfo.productID;
 	self.productInfo = C_StoreSecure.GetProductInfo(self.productID);
@@ -4961,6 +4964,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		return;
 	end
 
+	local selectedEntryID = StoreFrame_GetSelectedEntryID();
 	local entryInfo = C_StoreSecure.GetEntryInfo(selectedEntryID);
 
 	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService) then
@@ -5339,15 +5343,17 @@ function StoreFrame_CheckMarketPriceUpdates()
 	end
 end
 
+local storeSelectedEntryID;
 function StoreFrame_SetSelectedEntryID(entryID)
-	selectedEntryID = entryID;
+	storeSelectedEntryID = entryID;
 end
 
 function StoreFrame_GetSelectedEntryID()
-	return selectedEntryID;
+	return storeSelectedEntryID;
 end
 
 function StoreFrameBuyButton_OnClick(self)
+	local selectedEntryID = StoreFrame_GetSelectedEntryID();
 	StoreFrame_BeginPurchase(selectedEntryID);
 	PlaySound(SOUNDKIT.UI_IG_STORE_BUY_BUTTON);
 end

@@ -51,6 +51,17 @@ local UnitConstants =
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
 			},
 		},
+		{
+			Name = "UnitPrivateAuraAppliedSoundInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "soundFileName", Type = "string", Nilable = true },
+				{ Name = "soundFileID", Type = "number", Nilable = true },
+			},
+		},
 	},
 };
 

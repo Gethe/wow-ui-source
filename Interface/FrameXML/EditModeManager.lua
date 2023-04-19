@@ -165,6 +165,10 @@ function EditModeManagerFrameMixin:OnDragStop()
 	self:StopMovingOrSizing();
 end
 
+function EditModeManagerFrameMixin:OnUpdate()
+	self:InvokeOnAnyEditModeSystemAnchorChanged();
+end
+
 local function callOnEditModeEnter(index, systemFrame)
 	systemFrame:OnEditModeEnter();
 end
@@ -195,6 +199,7 @@ function EditModeManagerFrameMixin:ExitEditMode()
 	self:RevertAllChanges();
 	self:HideSystemSelections();
 	self.AccountSettings:OnEditModeExit();
+	self:InvokeOnAnyEditModeSystemAnchorChanged(true);
 	C_EditMode.OnEditModeExit();
     EventRegistry:TriggerEvent("EditMode.Exit");
 	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
@@ -396,6 +401,8 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
 
 		EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
 	end
+
+	EditModeManagerFrame:OnEditModeSystemAnchorChanged();
 end
 
 function EditModeManagerFrameMixin:MirrorSetting(system, systemIndex, setting, value)
@@ -935,6 +942,26 @@ function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts
 
 	self.layoutApplyInProgress = false;
 	self:UpdateActionBarPositions();
+
+	local forceInvokeYes = true;
+	self:InvokeOnAnyEditModeSystemAnchorChanged(forceInvokeYes);
+end
+
+function EditModeManagerFrameMixin:OnEditModeSystemAnchorChanged()
+	self.editModeSystemAnchorDirty = true;
+end
+
+function EditModeManagerFrameMixin:InvokeOnAnyEditModeSystemAnchorChanged(force)
+	if not force and not self.editModeSystemAnchorDirty then
+		return;
+	end
+
+	local function callOnAnyEditModeSystemAnchorChanged(index, systemFrame)
+		systemFrame:OnAnyEditModeSystemAnchorChanged();
+	end
+	secureexecuterange(self.registeredSystemFrames, callOnAnyEditModeSystemAnchorChanged);
+
+	self.editModeSystemAnchorDirty = nil;
 end
 
 function EditModeManagerFrameMixin:GetLayouts()
@@ -1072,14 +1099,6 @@ function EditModeManagerFrameMixin:UpdateSystems()
 		self:UpdateSystem(systemFrame);
 	end
 	secureexecuterange(self.registeredSystemFrames, callUpdateSystem);
-
-	-- After we have finished updating all systems we need to call OnAppliedSystemAnchor on each of them since
-	-- some systems depend on the systems they're anchored to being setup before they can accurately get their own
-	-- screen position
-	local function callOnAppliedSystemAnchor(index, systemFrame)
-		systemFrame:OnAppliedSystemAnchor();
-	end
-	secureexecuterange(self.registeredSystemFrames, callOnAppliedSystemAnchor);
 end
 
 function EditModeManagerFrameMixin:UpdateSystem(systemFrame, forceFullUpdate)
@@ -2236,18 +2255,7 @@ end
 
 EditModeLootFrameCheckButtonMixin = {};
 
-function EditModeLootFrameCheckButtonMixin:OnEnter()
-	if not self:ShouldEnable() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddNormalLine(GameTooltip, HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP);
-		GameTooltip:Show();
-	end
-end
-
-function EditModeLootFrameCheckButtonMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
+-- Override
 function EditModeLootFrameCheckButtonMixin:ShouldEnable()
 	return GetCVar("lootUnderMouse") ~= "1";
 end

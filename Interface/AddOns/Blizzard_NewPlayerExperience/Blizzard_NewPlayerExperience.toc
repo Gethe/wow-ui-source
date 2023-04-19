@@ -3,6 +3,8 @@
 ## LoadOnDemand: 1
 ## RequiredDep: Blizzard_TutorialManager
 
+Blizzard_TutorialKeyboardMouseFrame.xml
+
 Blizzard_TutorialData.lua
 Blizzard_TutorialWatchers.lua
 Blizzard_TutorialServices.lua

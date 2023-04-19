@@ -26,7 +26,9 @@ function WidgetCenterDisplayFrameMixin:Setup(displayInfo)
 
 	self:Show(); 
 	self.TitleContainer.Title:SetText(displayInfo.title); 
-	self.TitleContainer:Hide();
+	local hasTitleText = displayInfo.title and displayInfo.title ~= "";
+	self.TitleContainer:SetShown(hasTitleText);
+
 	if(not self.TitleContainer:IsShown()) then 
 		self.WidgetContainer:ClearAllPoints(); 
 		self.WidgetContainer:SetPoint("TOPLEFT", self);
@@ -65,17 +67,20 @@ function WidgetCenterDisplayFrameMixin:Setup(displayInfo)
 end 
 
 function WidgetCenterDisplayFrameMixin:SetupButtons(displayInfo)
-	if(displayInfo.extraButtonText) then 
+	local hasExtraButtonText = displayInfo.extraButtonText and displayInfo.extraButtonText ~= "";
+	local hasCloseButtonText = displayInfo.closeButtonText and displayInfo.closeButtonText ~= "";
+
+	if(hasExtraButtonText) then 
 		self.ExtraButton:SetText(displayInfo.extraButtonText);
 	end
 
-	if(displayInfo.closeButtonText) then 
+	if(hasCloseButtonText) then 
 		self.CloseButton:SetText(displayInfo.closeButtonText);
 	else 
 		self.CloseButton:SetText(CLOSE);
 	end
 
-	self.ExtraButton:SetShown(displayInfo.extraButtonText); 
+	self.ExtraButton:SetShown(hasExtraButtonText); 
 	self.ExtraButton:ClearAllPoints(); 
 	self.CloseButton:ClearAllPoints();
 

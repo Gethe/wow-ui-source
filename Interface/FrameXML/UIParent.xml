@@ -35,6 +35,9 @@
 	</Frame>
 
 	<Frame name="UIParentManagedFrameTemplate" mixin="UIParentManagedFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isManagedFrame" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>

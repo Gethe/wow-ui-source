@@ -15,7 +15,7 @@ if tbl then
 	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
 
 	local function CleanFunction(f)
-		return function(...)
+		local f = function(...)
 			local function HandleCleanFunctionCallArgs(success, ...)
 				if success then
 					return ...;
@@ -25,6 +25,8 @@ if tbl then
 			end
 			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
 		end
+		setfenv(f, tbl);
+		return f;
 	end
 
 	local function CleanTable(t, tableCopies)
@@ -532,6 +534,16 @@ function TooltipDataHandlerMixin:AppendInfoWithSpacer(...)
 	tooltipInfo.appendSpacer = true;
 	self:ProcessInfo(tooltipInfo);
 end
+
+function AddTooltipDataAccessor(handler, accessor, getterName)
+	handler[accessor] = function(self, ...)
+		local tooltipInfo = {
+			getterName = getterName,
+			getterArgs = { ... };
+		};
+		return self:ProcessInfo(tooltipInfo);
+	end	
+end
 		
 do
 	local accessors = {
@@ -607,7 +619,6 @@ do
 		SetQuestPartyProgress = "GetQuestPartyProgress",
 		SetHyperlink = "GetHyperlink",
 		SetUnitAura = "GetUnitAura",
-		SetUnitPrivateAura = "GetUnitPrivateAura",
 		SetUnitBuff = "GetUnitBuff",
 		SetUnitDebuff = "GetUnitDebuff",
 		SetMinimapMouseover = "GetMinimapMouseover",
@@ -621,12 +632,6 @@ do
 
 	local handler = TooltipDataHandlerMixin;
 	for accessor, getterName in pairs(accessors) do
-		handler[accessor] = function(self, ...)
-			local tooltipInfo = {
-				getterName = getterName,
-				getterArgs = { ... };
-			};
-			return self:ProcessInfo(tooltipInfo);
-		end	
+		AddTooltipDataAccessor(handler, accessor, getterName);
 	end
 end

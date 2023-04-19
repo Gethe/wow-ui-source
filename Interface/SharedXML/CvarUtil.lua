@@ -34,6 +34,11 @@ function GetCVarDefault(name)
 	return C_CVar.GetCVarDefault(name);
 end
 
+function GetCVarNumberOrDefault(name)
+	local number = tonumber(GetCVar(name));
+	return number or tonumber(GetCVarDefault(name));
+end
+
 -- Assumes every value stored in the cvar is of the same type. The purpose
 -- of using this accessor is to add type strictness to avoid scenarios where
 -- nil is implicitly converted to "0" or false and to relieve the callsites of

@@ -310,7 +310,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 		end
 	end
 
-	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	self.ScrollBox:ForEachFrame(function(button, elementData)
 		button:SetExpanded(self.expandedDisplay);
 	end);

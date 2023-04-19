@@ -15,7 +15,7 @@ tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
 tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
 
 local function CleanFunction(f)
-	return function(...)
+	local f = function(...)
 		local function HandleCleanFunctionCallArgs(success, ...)
 			if success then
 				return ...;
@@ -25,6 +25,8 @@ local function CleanFunction(f)
 		end
 		return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
 	end
+	setfenv(f, tbl);
+	return f;
 end
 
 local function CleanTable(t, tableCopies)
@@ -87,6 +89,7 @@ Import("tInvert");
 Import("TableUtil");
 Import("AuraUtil");
 Import("GetTime");
+Import("ColorMixin");
 Import("CreateFromMixins");
 Import("SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD");
 Import("SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD");
@@ -106,6 +109,7 @@ Import("DebuffTypeSymbol");
 Import("UnitIsUnit");
 Import("GetCVarBool");
 Import("PlaySound");
+Import("PlaySoundFile");
 Import("SOUNDKIT");
 Import("BUFF_DURATION_WARNING_TIME");
 Import("HIGHLIGHT_FONT_COLOR");
@@ -116,8 +120,11 @@ Import("C_UnitAuras");
 Import("C_UnitAurasPrivate");
 Import("C_Timer");
 Import("C_ChatInfo");
+Import("C_TooltipInfo");
 
 ----------------
+
+AddTooltipDataAccessor(GameTooltipDataMixin, "SetUnitPrivateAura", "GetUnitPrivateAura");
 
 -- This is largely a modified copy of AuraButtonMixin
 PrivateAuraMixin = {};
@@ -311,6 +318,13 @@ function PrivateAuraUnitWatcher:HandleUpdateInfo(updateInfo)
 	if updateInfo.addedAuras then
 		if self:AddAuras(updateInfo.addedAuras) then
 			aurasChanged = true;
+		end
+
+		for _, aura in ipairs(updateInfo.addedAuras) do
+			local appliedSounds = C_UnitAurasPrivate.GetAuraAppliedSoundsForSpell(self.unit, aura.spellId);
+			for _, sound in pairs(appliedSounds) do
+				PlaySoundFile(sound.soundFileName or sound.soundFileID);
+			end
 		end
 	end
 

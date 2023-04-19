@@ -825,13 +825,22 @@ function TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...)
 	if event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_COMMUNITIES_CHANNEL" then
 		local localID = tostring(arg8);
 		local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(localID);
-		return C_TTSSettings.GetChannelEnabled(channelInfo);
+		if not channelInfo then
+			local channelName = arg9;
+			channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(channelName);
+		end
+
+		if channelInfo then
+			return C_TTSSettings.GetChannelEnabled(channelInfo);
+		end
 	end
 
 	local typeGroup = ChatTypeGroupInverted[event];
 	if typeGroup and TextToSpeechFrame_GetChatTypeEnabled(typeGroup) then
 		return true;
 	end
+
+	return false;
 end
 
 local chatTypesWithTtsFormat = {

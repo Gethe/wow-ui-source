@@ -63,6 +63,10 @@ function StoreCardMixin:OnLoad()
 	self.basePoint = { self.NormalPrice:GetPoint(1) };
 end
 
+function StoreCardMixin:OnShow()
+	self:UpdateState();
+end
+
 function StoreCardMixin:OnEnter()
 	local entryInfo = self:GetEntryInfo();
 	local productDecorator = entryInfo.sharedData.productDecorator;
@@ -239,10 +243,13 @@ function StoreCardMixin:ShowTooltip()
 end
 
 function StoreCardMixin:UpdateState()
-	-- No product associated with this card
-	if (self:GetID() == 0 or not self:IsShown()) then return end;
-
-	self.SelectedTexture:SetShown(self:GetID() == StoreFrame_GetSelectedEntryID());
+	if (not self:IsShown()) then
+		return;
+	end
+	local cardEntryID = self:GetID();
+	local selectedEntryID = StoreFrame_GetSelectedEntryID();
+	local isShown = (cardEntryID ~= 0) and cardEntryID == selectedEntryID;
+	self.SelectedTexture:SetShown(isShown);
 end
 
 function StoreCardMixin:Layout()
@@ -600,10 +607,13 @@ function StoreProductCardItem_OnLeave(self)
 	card:OnLeave();
 
 	-- No product associated with this card
-	if (card:GetID() == 0 or not card:IsShown()) then return end;
+	if (not card:IsShown()) then return end;
 
 	if ( card.SelectedTexture ) then
-		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID);
+		local cardEntryID = card:GetID() == 0;
+		local selectedEntryID = StoreFrame_GetSelectedEntryID();
+		local isShown = (cardEntryID ~= 0) and cardEntryID == selectedEntryID;
+		card.SelectedTexture:SetShown(isShown);
 	end
 
 	if self.hasItemTooltip then

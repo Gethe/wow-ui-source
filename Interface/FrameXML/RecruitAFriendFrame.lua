@@ -936,6 +936,10 @@ end
 
 RecruitAFriendClaimOrViewRewardButtonMixin = {};
 
+function RecruitAFriendClaimOrViewRewardButtonMixin:OnLoad()
+	self:SetEnabled(false);
+end
+
 function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 	if self.haveUnclaimedReward then
 		if RecruitAFriendFrame.RewardClaiming.NextRewardButton:IsUnwrapAnimating() then
@@ -1209,6 +1213,10 @@ function RecruitAFriendRewardButtonMixin:SetTooltipOwner()
 end
 
 function RecruitAFriendRewardButtonMixin:OnEnter()
+	if not self.rewardInfo then
+		return;
+	end
+
 	self:SetTooltipOwner();
 
 	GameTooltip:SetItemByID(self.rewardInfo.itemID);

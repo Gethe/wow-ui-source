@@ -66,9 +66,9 @@ function StoreBulletPointMixin:OnHyperlinkClick(link)
 end
 
 local function SelectCategoryGroupID(groupID)
+	StoreFrame_SetSelectedPageNum(1);
 	StoreFrame_SetSelectedCategoryID(groupID);
 	StoreFrame_SetCategory(groupID);
-	StoreFrame_SetSelectedPageNum(1);
 	StoreProductCard_UpdateAllStates();
 end
 
@@ -100,8 +100,10 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 			button.ParentIndicator:SetShown(childCount > 0);
 			if node:IsCollapsed() then
 				button.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Closed");
+				button.ParentIndicator:SetDesaturation(0);
 			else
 				button.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+				button.ParentIndicator:SetDesaturation(1);
 			end
 		end
 	end

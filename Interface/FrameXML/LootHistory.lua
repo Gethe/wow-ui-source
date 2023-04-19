@@ -1,5 +1,5 @@
 
--- Instantiated when LootHistoryFrame is loaded
+-- Instantiated when GroupLootHistoryFrame is loaded
 local tooltipLinePool = nil;
 
 LootHistoryElementMixin = {};
@@ -347,7 +347,8 @@ end
 
 function LootHistoryFrameMixin:InitRegions()
 	self.ResizeButton:SetScript("OnMouseDown", function()
-		self:StartSizing("BOTTOM");
+		local alwaysStartFromMouse = true;
+		self:StartSizing("BOTTOM", alwaysStartFromMouse);
 	end);
 	self.ResizeButton:SetScript("OnMouseUp", function()
 		self:StopMovingOrSizing();
@@ -473,11 +474,11 @@ function LootHistoryFrameMixin:DoFullRefresh()
 end
 
 function ToggleLootHistoryFrame()
-	LootHistoryFrame:SetShown(not LootHistoryFrame:IsShown());
+	GroupLootHistoryFrame:SetShown(not GroupLootHistoryFrame:IsShown());
 end
 
 function SetLootHistoryFrameToEncounter(encounterID)
-	if LootHistoryFrame.selectedEncounterID == encounterID then
+	if GroupLootHistoryFrame.selectedEncounterID == encounterID then
 		return;
 	end
 
@@ -491,7 +492,7 @@ function SetLootHistoryFrameToEncounter(encounterID)
 	end
 
 	if encounterFound then
-		LootHistoryFrame:OpenToEncounter(encounterID);
-		LootHistoryFrame:Show();
+		GroupLootHistoryFrame:OpenToEncounter(encounterID);
+		GroupLootHistoryFrame:Show();
 	end
 end

@@ -1,7 +1,7 @@
 
 local type = type;
 
-local LOCAL_CHECK_Frame = CreateFrame("Frame");
+local LOCAL_CHECK_Frame = CopyTable(GetFrameMetatable().__index);
 
 -- The "modified attribute" takes the form of: modifier-name-button
 -- The modifier is one of "shift-", "ctrl-", "alt-", and the button is a number from 1 through 5.

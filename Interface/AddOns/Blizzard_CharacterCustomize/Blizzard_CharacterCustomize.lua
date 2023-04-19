@@ -1110,10 +1110,15 @@ function CharCustomizeMixin:OnEvent(event, ...)
 	end
 end
 
+function CharCustomizeMixin:OnShow()
+	EventRegistry:TriggerEvent("CharCustomize.OnShow", self);
+end
+
 function CharCustomizeMixin:OnHide()
 	local clearSavedChoices = true;
 	self:ResetCustomizationPreview(clearSavedChoices);
 	self:SaveSeenChoices();
+    EventRegistry:TriggerEvent("CharCustomize.OnHide", self);
 end
 
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)

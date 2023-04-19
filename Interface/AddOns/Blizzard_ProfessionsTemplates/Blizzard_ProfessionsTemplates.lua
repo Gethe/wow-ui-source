@@ -32,7 +32,7 @@ ProfessionsTableConstants.Quality =
 };
 ProfessionsTableConstants.Reagents = 
 {
-	Width = 100,
+	Width = 90,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,

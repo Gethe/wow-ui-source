@@ -553,8 +553,8 @@ local LOW_PRIORITY_TRACKING_SPELLS = {
 
 local TRACKING_SPELL_OVERRIDE_TEXTURES = {
 	[43308] = "professions_tracking_fish";-- Find Fish
-	[2580] = "professions-crafting-orders-icon"; -- Find Minerals 1
-	[8388] = "professions-crafting-orders-icon"; -- Find Minerals 2
+	[2580] = "professions_tracking_ore"; -- Find Minerals 1
+	[8388] = "professions_tracking_ore"; -- Find Minerals 2
 	[2383] = "professions_tracking_herb"; -- Find Herbs 1
 	[8387] = "professions_tracking_herb"; -- Find Herbs 2
 };

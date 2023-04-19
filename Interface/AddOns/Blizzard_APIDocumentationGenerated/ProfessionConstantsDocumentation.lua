@@ -184,6 +184,17 @@ local ProfessionConstants =
 			},
 		},
 		{
+			Name = "ItemRecraftFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "ItemRecraftFlagInvalid", Type = "ItemRecraftFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "Profession",
 			Type = "Enumeration",
 			NumValues = 15,

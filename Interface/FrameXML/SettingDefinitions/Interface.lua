@@ -124,9 +124,9 @@ local function Register()
 	do
 		local normalScale = 1.0;
 		local function GetValue()
-			local hScale = tonumber(GetCVar("NamePlateHorizontalScale"));
-			local vScale = tonumber(GetCVar("NamePlateVerticalScale"));
-			local cScale = tonumber(GetCVar("NamePlateClassificationScale"));
+			local hScale = GetCVarNumberOrDefault("NamePlateHorizontalScale");
+			local vScale = GetCVarNumberOrDefault("NamePlateVerticalScale");
+			local cScale = GetCVarNumberOrDefault("NamePlateClassificationScale");
 			return not (ApproximatelyEqual(hScale, normalScale) and ApproximatelyEqual(vScale, normalScale) and ApproximatelyEqual(cScale, normalScale));
 		end
 		

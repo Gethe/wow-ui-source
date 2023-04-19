@@ -603,7 +603,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		sourceTextIsForNextRank = true;
 	end
 
-	if (not (mimimized or self.isInspection)) and sourceText then
+	if (not (mimimized or self.isInspection or isRecraft)) and sourceText then
 		if sourceTextIsForNextRank then
 			self.RecipeSourceButton.Text:SetText(TRADESKILL_NEXT_RANK_HEADER);
 		else
@@ -1046,13 +1046,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 									return false;
 								end
 
+								local recraftAllocation = self.transaction:GetRecraftAllocation();
+								if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+									return false;
+								end
+
 								local quantity = nil;
-								if item then
-									if item:GetItemGUID() then
-										quantity = item:GetStackCount();
-									else
-										quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID());
-									end
+								if item:GetItemGUID() then
+									quantity = item:GetStackCount();
+								else
+									quantity = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 								end
 
 								if quantity and quantity < reagentSlotSchematic.quantityRequired then

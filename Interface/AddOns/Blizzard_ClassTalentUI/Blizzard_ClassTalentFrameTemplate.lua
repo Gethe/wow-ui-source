@@ -201,7 +201,7 @@ function ClassTalentFrameMixin:GetSpecID()
 	if self:IsInspecting() then
 		local inspectUnit = self:GetInspectUnit();
 		if inspectUnit then
-			GetInspectSpecialization(inspectUnit);
+			return GetInspectSpecialization(inspectUnit);
 		else
 			return select(3, self:GetInspectString());
 		end

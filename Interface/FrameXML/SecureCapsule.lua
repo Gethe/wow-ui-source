@@ -136,6 +136,30 @@ local function retainfromtable(tblName, keyName)
 	RetainHelper(keyName, contents[tblName], _G[tblName]);
 end
 
+-- Used to take only certain keys from a table
+local function takefromtable(tblName, keyName)
+	local tbl = _G[tblName];
+	if ( type(tbl) ~= "table" ) then
+		error(format("Secure Capsule: Cannot take from table; %s is not a table.", tblName));
+	end
+
+	if ( not contents[tblName] ) then
+		contents[tblName] = {};
+	end
+
+	RetainHelper(keyName, contents[tblName], tbl);
+	tbl[keyName] = nil;
+end
+
+local function removefromtable(tblName, keyName)
+	local tbl = _G[tblName];
+	if ( type(tbl) ~= "table" ) then
+		error(format("Secure Capsule: Cannot remove from table; %s is not a table.", tblName));
+	end
+
+	tbl[keyName] = nil;
+end
+
 -------------------------------
 --Things we actually want to save
 -------------------------------
@@ -222,6 +246,7 @@ retain("TextureKitConstants");
 retain("CopyValuesAsKeys");
 retain("UNKNOWN");
 retain("PlaySound");
+retain("PlaySoundFile");
 retain("SOUNDKIT");
 retain("TableUtil");
 retain("CreateFromMixins");
@@ -740,6 +765,7 @@ retain("BUFF_DURATION_WARNING_TIME");
 retain("C_FunctionContainers");
 retain("C_UnitAuras");
 take("C_UnitAurasPrivate");
+removefromtable("C_TooltipInfo", "GetUnitPrivateAura");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

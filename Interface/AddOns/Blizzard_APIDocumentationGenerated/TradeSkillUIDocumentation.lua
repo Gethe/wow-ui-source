@@ -882,6 +882,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "IsRecraftReagentValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRuneforging",
 			Type = "Function",
 

@@ -185,10 +185,10 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="LootHistoryFrame" mixin="LootHistoryFrameMixin" inherits="DefaultPanelFlatTemplate" movable="true" resizable="true" registerForDrag="LeftButton" clampedToScreen="true" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+	<Frame name="GroupLootHistoryFrame" mixin="LootHistoryFrameMixin" inherits="DefaultPanelFlatTemplate" movable="true" resizable="true" registerForDrag="LeftButton" clampedToScreen="true" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
 		<Size x="261" y="590"/>
 		<Anchors>
-			<Anchor point="BOTTOM" x="280" y="180"/>
+			<Anchor point="TOPLEFT" x="150" y="-150"/>
 		</Anchors>
 		<ResizeBounds>
 			<minResize>

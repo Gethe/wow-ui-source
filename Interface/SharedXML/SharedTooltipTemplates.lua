@@ -15,7 +15,7 @@ if tbl then
 	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
 
 	local function CleanFunction(f)
-		return function(...)
+		local f = function(...)
 			local function HandleCleanFunctionCallArgs(success, ...)
 				if success then
 					return ...;
@@ -25,6 +25,8 @@ if tbl then
 			end
 			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
 		end
+		setfenv(f, tbl);
+		return f;
 	end
 
 	local function CleanTable(t, tableCopies)
@@ -72,6 +74,7 @@ if tbl then
 	Import("RED_FONT_COLOR");
 	Import("DISABLED_FONT_COLOR");
 	Import("SharedTooltip_SetBackdropStyle");
+	Import("Round");
 
 
 	if tbl.getmetatable(tbl) == nil then
@@ -241,8 +244,8 @@ function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 	verticalPadding = verticalPadding or 0;
 
 	local textSpacing = tooltipFrame:GetCustomLineSpacing() or 2;
-	local textHeight = envTbl[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
-	local neededHeight = frame:GetHeight() + verticalPadding ;
+	local textHeight = Round(envTbl[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight());
+	local neededHeight = Round(frame:GetHeight() + verticalPadding);
 	local numLinesNeeded = math.ceil(neededHeight / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);

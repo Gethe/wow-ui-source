@@ -15,7 +15,7 @@ if tbl then
 	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
 
 	local function CleanFunction(f)
-		return function(...)
+		local f = function(...)
 			local function HandleCleanFunctionCallArgs(success, ...)
 				if success then
 					return ...;
@@ -25,6 +25,8 @@ if tbl then
 			end
 			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
 		end
+		setfenv(f, tbl);
+		return f;
 	end
 
 	local function CleanTable(t, tableCopies)
@@ -91,5 +93,5 @@ end
 function CooldownFrame_SetDisplayAsPercentage(self, percentage)
 	local seconds = 100;	-- any number, really
 	self:Pause();
-	self:SetCooldown(GetTime() - seconds * percentage, seconds);
+	self:SetCooldown(GetTime() - (seconds * Saturate(percentage)), seconds);
 end

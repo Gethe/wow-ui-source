@@ -3,7 +3,7 @@
 
 	<Frame name="EditModeCheckButtonTemplate" inherits="ResizeCheckButtonBehaviorTemplate" mixin="EditModeCheckButtonMixin" virtual="true">
 		<Frames>
-			<CheckButton parentKey="Button">
+			<CheckButton parentKey="Button" motionScriptsWhileDisabled="true" mixin="EditModeCheckButtonButtonMixin">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -14,15 +14,15 @@
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 				<Scripts>
-					<OnClick>
-						self:GetParent():OnCheckButtonClick();
-					</OnClick>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</CheckButton>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlightMedium">
+				<FontString parentKey="Label" wordwrap="false" justifyH="LEFT" inherits="GameFontHighlightMedium">
 					<Size y="32"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="5"/>
@@ -32,10 +32,12 @@
 		</Layers>
 		<Scripts>
 			<OnShow method="EditModeCheckButton_OnShow" inherit="append"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="EditModeManagerSettingCheckButtonTemplate" inherits="EditModeCheckButtonTemplate" virtual="true">
+	<Frame name="EditModeManagerSettingCheckButtonTemplate" inherits="EditModeCheckButtonTemplate" mixin="EditModeManagerSettingCheckButtonMixin" virtual="true">
 		<Size x="225" y="32"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -44,6 +46,9 @@
 			<KeyValue key="fixedWidth" value="225" type="number"/>
 			<KeyValue key="fixedHeight" value="32" type="number"/>
 		</KeyValues>
+		<Scripts>
+			<OnLoad method="EditModeManagerSettingCheckButton_OnLoad" inherit="append"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="EditModeManagerSettingsOptionsContainerTemplate" inherits="GridLayoutFrame" virtual="true">

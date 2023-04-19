@@ -4727,7 +4727,8 @@ function ChatEdit_UpdateHeader(editBox)
 	end
 
 	local info;
-	if ( type == "VOICE_TEXT" ) then
+	if ( type == "VOICE_TEXT" and VoiceTranscription_GetChatTypeAndInfo ) then
+		-- This can occur after loading ChatFrame.lua and before loading VoiceChatTranscriptionFrame.lua due to loading screen event signals, so nil check is required before calling the function.
 		type, info = VoiceTranscription_GetChatTypeAndInfo();
 	else
 		info = ChatTypeInfo[type];

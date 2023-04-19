@@ -170,7 +170,6 @@ function WorldMapMixin:AddStandardDataProviders()
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);
 	worldQuestDataProvider:SetUsesSpellEffect(true);
 	worldQuestDataProvider:SetCheckBounties(true);
-	worldQuestDataProvider:SetMarkActiveQuests(true);
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();

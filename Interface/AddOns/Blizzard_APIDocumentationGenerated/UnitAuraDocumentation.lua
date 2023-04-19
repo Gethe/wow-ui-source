@@ -21,6 +21,29 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "AddPrivateAuraAppliedSound",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sound", Type = "UnitPrivateAuraAppliedSoundInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "AuraIsPrivate",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPrivate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
 

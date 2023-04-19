@@ -1538,10 +1538,10 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString name="$parentTitle" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title">
-									<Size x="320" y="10"/>
+								<FontString name="$parentTitle" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title" mixin="AutoScalingFontStringMixin">
+									<Size x="320" y="35"/>
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-72"/>
+										<Anchor point="TOP" x="0" y="-48"/>
 									</Anchors>
 								</FontString>
 							</Layer>

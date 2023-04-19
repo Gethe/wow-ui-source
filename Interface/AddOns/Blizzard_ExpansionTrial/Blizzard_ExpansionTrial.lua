@@ -105,6 +105,7 @@ function ExpansionTrialCheckPointDialogMixin:OnButtonClick()
 	else
 		SetStoreUIShown(true);
 		StoreFrame_SetGamesCategory();
+		C_ExpansionTrial.OnTrialLevelUpDialogClicked();
 	end
 
 	BaseExpandableDialogMixin.OnCloseClick(self);
@@ -147,6 +148,7 @@ function ExpansionTrialCheckPointDialogMixin:SetupCheckpoints()
 		EventRegistry:RegisterFrameEventAndCallback("PLAYER_LEVEL_CHANGED", function(f, oldLevel, newLevel, hasRealLevelChanged)
 			if hasRealLevelChanged and newLevel == GameLimitedMode_GetLevelLimit() then
 				self:ShowDialogType(self.ReachedLevelLimit);
+				C_ExpansionTrial.OnTrialLevelUpDialogShown();
 			end
 		end);
 
@@ -155,6 +157,7 @@ function ExpansionTrialCheckPointDialogMixin:SetupCheckpoints()
 				C_Timer.After(2, function()
 					self:ShowDialogType(self.GainedBankedLevel);
 					self:UpdateBasePlayerLevel();
+					C_ExpansionTrial.OnTrialLevelUpDialogShown();
 				end);
 			end
 		end);
@@ -162,6 +165,7 @@ function ExpansionTrialCheckPointDialogMixin:SetupCheckpoints()
 		EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
 			if self:HasHitLevelLimit(UnitLevel("player")) then
 				self:ShowDialogType(self.ReachedLevelLimit);
+				C_ExpansionTrial.OnTrialLevelUpDialogShown();
 			end
 		end);
 

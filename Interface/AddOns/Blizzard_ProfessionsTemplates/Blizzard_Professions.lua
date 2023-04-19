@@ -117,6 +117,11 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 			GameTooltip_AddErrorLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
 		end
 	end
+
+	local recraftAllocation = transaction:GetRecraftAllocation();
+	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+		GameTooltip_AddErrorLine(tooltip, PROFESSIONS_DISALLOW_DOWNGRADE);
+	end
 end
 
 local CraftingAccessibleBags = 

@@ -569,6 +569,7 @@
 
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnMouseWheel method="OnMouseWheel"/>
 			<OnEvent method="OnEvent"/>

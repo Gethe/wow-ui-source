@@ -6,7 +6,7 @@
 			<Anchor point="TOP" y="-100"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="500" type="number"/>
+			<KeyValue key="fixedWidth" value="510" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -120,10 +120,10 @@
 					<ScrollFrame parentKey="SettingsContainer" inherits="ResizeLayoutFrame, ScrollFrameTemplate" hidden="true" >
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
-							<KeyValue key="fixedWidth" value="450" type="number"/>
+							<KeyValue key="fixedWidth" value="470" type="number"/>
 							<KeyValue key="maximumHeight" value="325" type="number"/>
 							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
-							<KeyValue key="scrollBarX" value="-16" type="number"/>
+							<KeyValue key="scrollBarX" value="-15" type="number"/>
 							<KeyValue key="scrollBarTopY" value="-5" type="number"/>
 						</KeyValues>
 						<ScrollChild>
@@ -213,8 +213,8 @@
 									<KeyValue key="layoutTextureKit" value="OptionsFrame" type="string"/>
 								</KeyValues>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="-15" y="15"/>
-									<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+									<Anchor point="TOPLEFT" x="-16" y="15"/>
+									<Anchor point="BOTTOMRIGHT" x="16" y="-15"/>
 								</Anchors>
 							</Frame>
 
@@ -368,11 +368,8 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP" type="global"/>
 								</KeyValues>
-								<Scripts>
-									<OnEnter method="OnEnter"/>
-									<OnLeave method="OnLeave"/>
-								</Scripts>
 							</Frame>
 						</Frames>
 					</ScrollFrame>
@@ -427,6 +424,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

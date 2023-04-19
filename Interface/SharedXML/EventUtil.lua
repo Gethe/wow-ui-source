@@ -56,9 +56,7 @@ function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
 		return;
 	end
 
-	-- Do not want to restrict the event handler based on if it contains bindings. Here to be explicit.
-	local containsBindings = nil;
-	EventUtil.RegisterOnceFrameEventAndCallback("ADDON_LOADED", callback, addOnName, containsBindings);
+	EventUtil.RegisterOnceFrameEventAndCallback("ADDON_LOADED", callback, addOnName);
 end
 
 -- ... are optional event arguments that are required to match before the callback is invoked.

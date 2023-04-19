@@ -37,19 +37,28 @@ function ProfessionsCustomerOrderFormMixin:InitPaymentContainer()
 	self.PaymentContainer.TipMoneyInputFrame.CopperBox:Hide();
 
 	self.PaymentContainer.ListOrderButton:SetScript("OnClick", function()
-		local itemIDs = TableUtil.Transform(self.transaction:CreateCraftingReagentInfoTbl(), function(craftingReagentInfo)
-			return craftingReagentInfo.itemID;
-		end);
-
-		local removalWarnings = C_TradeSkillUI.GetRecraftRemovalWarnings(self.transaction:GetRecraftAllocation(), itemIDs);
-		local hasRemovalWarning = #removalWarnings > 0;
+		local recraftAllocation = self.transaction:GetRecraftAllocation();
 		local warning = nil;
-		if hasRemovalWarning then
-			warning = removalWarnings[1];
-		elseif self:OrderCouldReduceQuality() then
-			warning = CRAFTING_ORDER_RECRAFT_WARNING2;
-		elseif self.order.unusableBOP then
-			warning = PROFESSIONS_ORDER_UNUSABLE_WARNING;
+		local hasRemovalWarning = nil;
+
+		if recraftAllocation then 
+			local itemIDs = TableUtil.Transform(self.transaction:CreateCraftingReagentInfoTbl(), function(craftingReagentInfo)
+				return craftingReagentInfo.itemID;
+			end);
+		
+			local removalWarnings = C_TradeSkillUI.GetRecraftRemovalWarnings(self.transaction:GetRecraftAllocation(), itemIDs);
+			hasRemovalWarning = #removalWarnings > 0;
+			if hasRemovalWarning then
+				warning = removalWarnings[1];
+			end
+		end
+		
+		if not warning then
+			if self:OrderCouldReduceQuality() then
+				warning = CRAFTING_ORDER_RECRAFT_WARNING2;
+			elseif self.order.unusableBOP then
+				warning = PROFESSIONS_ORDER_UNUSABLE_WARNING;
+			end
 		end
 	
 		if warning then
@@ -71,7 +80,7 @@ function ProfessionsCustomerOrderFormMixin:InitPaymentContainer()
 				StaticPopup_ShowCustomGenericConfirmation(customData);
 			end
 		else
-			ListOrder();
+			self:ListOrder();
 		end
 	end);
 
@@ -393,10 +402,14 @@ function ProfessionsCustomerOrderFormMixin:InitCurrentListings()
 	self.CurrentListings.tableBuilder:SetColumnHeaderOverlap(2);
 	self.CurrentListings.tableBuilder:SetHeaderContainer(self.CurrentListings.OrderList.HeaderContainer);
 	self.CurrentListings.tableBuilder:SetTableMargins(5, 5);
-	self.CurrentListings.tableBuilder:SetTableWidth(PTC.Tip.Width + PTC.Reagents.Width);
+	self.CurrentListings.tableBuilder:SetTableWidth(230);
 
 	self.CurrentListings.tableBuilder:AddFillColumn(self.CurrentListings, PTC.NoPadding, 1.0, PTC.Tip.LeftCellPadding,
 										  	PTC.Tip.RightCellPadding, ProfessionsSortOrder.Tip, "ProfessionsCrafterTableCellActualCommissionTemplate");
+
+	self.CurrentListings.tableBuilder:AddFixedWidthColumn(self.CurrentListings, PTC.NoPadding, PTC.Reagents.Width, PTC.Reagents.LeftCellPadding,
+										  	 PTC.Reagents.RightCellPadding, ProfessionsSortOrder.Reagents, "ProfessionsCrafterTableCellReagentsTemplate");
+
 	self.CurrentListings.tableBuilder:Arrange();
 
 	local function OnDataRangeChanged(sortPending, indexBegin, indexEnd)
@@ -941,7 +954,21 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								end
 	
 								flyout.OnElementEnabledImplementation = function(button, elementData, displayCount)
-									return (displayCount > 0) and self.transaction:AreAllRequirementsAllocated(elementData.item);
+									if displayCount <= 0 then
+										return false;
+									end
+
+									local item = elementData.item;
+									if not self.transaction:AreAllRequirementsAllocated(item) then
+										return false;
+									end
+
+									local recraftAllocation = transaction:GetRecraftAllocation();
+									if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+										return false;
+									end
+
+									return true;
 								end
 
 								flyout:Init(slot.Button, self.transaction);

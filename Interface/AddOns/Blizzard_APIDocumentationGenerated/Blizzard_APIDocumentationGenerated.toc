@@ -199,6 +199,7 @@ CovenantsDocumentation.lua
 CraftingOrderUIDocumentation.lua
 DateAndTimeDocumentation.lua
 EncounterJournalDocumentation.lua
+ExpansionTrialDocumentation.lua
 FriendListDocumentation.lua
 GarrisonInfoDocumentation.lua
 InGameNavigationDocumentation.lua

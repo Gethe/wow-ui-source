@@ -824,7 +824,7 @@ function GuildBankPopupFrameMixin:OnShow()
 	if ( space < self:GetWidth() + GUILD_BANK_POPUP_FRAME_MINIMUM_PADDING ) then
 		self:SetPoint("TOPRIGHT", GuildBankFrame, "TOPRIGHT", -10, -30);
 	else
-		self:SetPoint("TOPLEFT", GuildBankFrame, "TOPRIGHT", 38, 0);
+		self:SetPoint("TOPLEFT", GuildBankFrame, "TOPRIGHT", 38, 9);
 	end
 
 	self.BorderBox.IconSelectorEditBox:SetFocus();
