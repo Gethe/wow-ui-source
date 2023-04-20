@@ -584,6 +584,7 @@ function EncounterJournal_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	EncounterJournal_LootUpdate();
+	C_EncounterJournal.OnOpen();
 
 	if not self.lootJournalView then
 		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_POWERS);
@@ -669,6 +670,7 @@ function EncounterJournal_OnHide(self)
 	self.searchBox:Clear();
 	EJ_EndSearch();
 	self.shouldDisplayDifficulty = nil;
+	C_EncounterJournal.OnClose();
 end
 
 function EncounterJournal_IsSuggestTabSelected(self)
@@ -2481,6 +2483,7 @@ function EJSuggestTab_GetPlayerTierIndex()
 end
 
 function EJ_ContentTab_OnClick(self)
+	C_EncounterJournal.SetTab(self:GetID());
 	EJ_ContentTab_Select(self:GetID());
 end
 

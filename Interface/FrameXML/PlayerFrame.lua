@@ -791,7 +791,7 @@ local function AnchorCastBarToPlayerFrame()
 	local castBarScale = PlayerCastingBarFrame:GetScale();
 
 	local xOffset = -24 / castBarScale;
-	local yOffset = 20 * playerFrameScale;
+	local yOffset = 12 * playerFrameScale;
 	if PlayerFrameBottomManagedFramesContainer:IsShown() then
 		yOffset = yOffset - (PlayerFrameBottomManagedFramesContainer:GetHeight() * playerFrameScale);
 	end

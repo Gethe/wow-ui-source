@@ -1470,7 +1470,7 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
 		PlayerFrame_AttachCastBar();
 		self:UpdateSystemSettingBarSize();
 		EditModeManagerFrame:OnSystemPositionChange(self);
-	elseif not self:IsInDefaultPosition() then
+	elseif not self:IsInDefaultPosition() and self.attachedToPlayerFrame then
 		-- If we aren't locked to the player frame and we aren't in our default position then
 		-- try to detach from the player frame and break any connections.
 		-- Only do this when not in our default position since our default position is in the UIParent bottom layout frame 
@@ -1479,7 +1479,6 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
 		self:UpdateSystemSettingBarSize();
 		PlayerFrame_DetachCastBar();
 		self:BreakFrameSnap();
-		EditModeManagerFrame:OnSystemPositionChange(self);
 	end
 end
 

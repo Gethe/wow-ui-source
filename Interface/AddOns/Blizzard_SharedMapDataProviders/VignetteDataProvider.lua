@@ -54,6 +54,9 @@ end
 
 function VignetteDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate(self:GetPinTemplate());
+	if self.fyrakkFlightPin then
+		self.fyrakkFlightPin:Remove();
+	end
 	self:InitializeAllTrackingTables();
 end
 
@@ -87,7 +90,7 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 				existingPin:UpdateSupertrackedHighlight();
 			else
 				vignetteInfo.dataProvider = self;
-				local pin = self:GetMap():AcquirePin(pinTemplate, vignetteGUID, vignetteInfo, self:GetMap():GetNumActivePinsByTemplate(pinTemplate));
+				local pin = self:GetPin(vignetteGUID, vignetteInfo);
 				self.vignetteGuidsToPins[vignetteGUID] = pin;
 				if pin:IsUnique() then
 					self:AddUniquePin(pin);
@@ -100,7 +103,7 @@ function VignetteDataProviderMixin:RefreshAllData(fromOnShow)
 		if pin:IsUnique() then
 			self:RemoveUniquePin(pin);
 		end
-		self:GetMap():RemovePin(pin);
+		pin:Remove();
 		self.vignetteGuidsToPins[vignetteGUID] = nil;
 	end
 end
@@ -166,6 +169,22 @@ function VignetteDataProviderMixin:RemoveUniquePin(pin)
 	end
 end
 
+function VignetteDataProviderMixin:GetPin(vignetteGUID, vignetteInfo)
+	if vignetteInfo.type == Enum.VignetteType.FyrakkFlight then
+		if self.fyrakkFlightPin then
+			self.fyrakkFlightPin:OnAcquired(vignetteGUID, vignetteInfo);
+		else
+			self.fyrakkFlightPin = self:GetMap():AcquirePin("FyrakkFlightVignettePinTemplate", vignetteGUID, vignetteInfo);
+		end
+		return self.fyrakkFlightPin;
+	else
+		local pinTemplate = self:GetPinTemplate();
+		-- GetNumActivePinsByTemplate will return the number right now, before this pin is added
+		local frameIndex = self:GetMap():GetNumActivePinsByTemplate(pinTemplate) + 1;
+		return self:GetMap():AcquirePin(pinTemplate, vignetteGUID, vignetteInfo, frameIndex);
+	end
+end
+
 --[[ Pin ]]--
 VignettePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
@@ -173,7 +192,7 @@ function VignettePinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
 end
 
-function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameLevelCount)
+function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
 	self.dataProvider = vignetteInfo.dataProvider;
 	self.vignetteGUID = vignetteGUID;
 	self.name = vignetteInfo.name;
@@ -181,27 +200,36 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameLevelCount
 	self.isUnique = vignetteInfo.isUnique;
 	self.vignetteID = vignetteInfo.vignetteID;
 	self.widgetSetID = vignetteInfo.widgetSetID;
-
+	self.vignetteInfo = vignetteInfo;
+	
 	self:EnableMouseMotion(self.hasTooltip);
 
-	self.vignetteInfo = vignetteInfo;
-
-	self.Texture:SetAtlas(vignetteInfo.atlasName, true);
-	self.HighlightTexture:SetAtlas(vignetteInfo.atlasName, true);
-
-	local sizeX, sizeY = self.Texture:GetSize();
-	self.HighlightTexture:SetSize(sizeX, sizeY);
+	self:ApplyTextures();
 
 	self:UpdateFogOfWar(vignetteInfo);
-
-	self:SetSize(sizeX, sizeY);
 
 	self:ApplyCurrentAlpha();
 
 	self:UpdatePosition();
 	self:UpdateSupertrackedHighlight();
 
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_VIGNETTE", frameLevelCount);
+	self:SetFrameLevelType(frameIndex);
+end
+
+function VignettePinMixin:ApplyTextures()
+	local atlasName = self.vignetteInfo.atlasName;
+
+	self.Texture:SetAtlas(atlasName, true);
+	self.HighlightTexture:SetAtlas(atlasName, true);
+
+	local sizeX, sizeY = self.Texture:GetSize();
+	self.HighlightTexture:SetSize(sizeX, sizeY);
+	
+	self:SetSize(sizeX, sizeY);
+end
+
+function VignettePinMixin:SetFrameLevelType(frameIndex)
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_VIGNETTE", frameIndex);
 end
 
 function VignettePinMixin:IsUnique()
@@ -356,4 +384,59 @@ function VignettePinMixin:DisplayTorghastTooltip()
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
 	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
 	return true;
+end
+
+function VignettePinMixin:Remove()
+	self:GetMap():RemovePin(self);
+end
+
+--[[ Fyakk Flight Pin ]]--
+
+FyrakkFlightVignettePinMixin = CreateFromMixins(VignettePinMixin)
+
+function FyrakkFlightVignettePinMixin:OnLoad()
+	-- set up rotation vectors
+	for i, texture in ipairs(self.Textures) do
+		-- all have a CENTER point only
+		local _, _, _, x, y = texture:GetPoint(1);
+		local w, h = texture:GetSize();
+		texture.rotationVector = CreateVector2D(0.5 - (x / w), 0.5 - (y / h));
+	end
+	
+	self.Anim:Play();
+	
+	VignettePinMixin.OnLoad(self);
+end
+		
+function FyrakkFlightVignettePinMixin:ApplyTextures()
+	-- fixed textures
+end
+
+function FyrakkFlightVignettePinMixin:UpdateFogOfWar(vignetteInfo)
+	-- doesn't need fog of war
+end
+
+function FyrakkFlightVignettePinMixin:SetFrameLevelType()
+	-- set it at the top of vignette range
+	self:UseFrameLevelTypeFromRangeTop("PIN_FRAME_LEVEL_VIGNETTE");
+end
+
+function FyrakkFlightVignettePinMixin:UpdatePosition()
+	local showPin = false;
+	local position, facing = C_VignetteInfo.GetVignettePosition(self.vignetteGUID, self:GetMap():GetMapID());
+	if position then
+		self:SetPosition(position:GetXY());
+		if facing then
+			for i, texture in ipairs(self.Textures) do
+				texture:SetRotation(facing, texture.rotationVector);
+			end
+		end
+		showPin = true;
+	end
+
+	self:SetShown(showPin);
+end
+
+function FyrakkFlightVignettePinMixin:Remove()
+	self:Hide();
 end

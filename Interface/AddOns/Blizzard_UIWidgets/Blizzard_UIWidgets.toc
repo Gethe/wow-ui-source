@@ -58,6 +58,8 @@ Blizzard_UIWidgetTemplateFillUpFrames.lua
 Blizzard_UIWidgetTemplateFillUpFrames.xml
 Blizzard_UIWidgetTemplateTextWithSubtext.lua
 Blizzard_UIWidgetTemplateTextWithSubtext.xml
+Blizzard_UIWidgetTemplateItemDisplay.lua
+Blizzard_UIWidgetTemplateItemDisplay.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

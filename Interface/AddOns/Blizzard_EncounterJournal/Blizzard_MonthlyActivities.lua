@@ -141,6 +141,9 @@ MonthlyActivitiesThresholdMixin = { };
 
 function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	self.RewardCurrency:SetCurrentPoints(points);
+
+	self.LineIncomplete:SetShown(not aboveThreshold and self.showLine);
+	self.LineComplete:SetShown(aboveThreshold and self.showLine);
 	
 	local initialSet = self.aboveThreshold == nil;
 	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
@@ -149,9 +152,6 @@ function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	end
 
 	self.aboveThreshold = aboveThreshold;
-
-	self.LineIncomplete:SetShown(not aboveThreshold and self.showLine);
-	self.LineComplete:SetShown(aboveThreshold and self.showLine);
 
 	if not initialSet and aboveThreshold and self.thresholdInfo.itemReward then
 		GlobalFXDialogModelScene:AddEffect(163, self.RewardItem);
@@ -663,7 +663,7 @@ function MonthlyActivitiesFrameMixin:SetCurrentPoints(curValue, barValue)
 		thresholdFrame:SetCurrentPoints(barValue);
 	end
 
-	self.ThresholdBar.Text:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
+	self.ThresholdBar.TextContainer.ProgressText:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
 	self.ThresholdBar.BarEnd:SetShown(barValue > 0);
 
 	local allRewardsEarned = barValue >= self.thresholdMax;

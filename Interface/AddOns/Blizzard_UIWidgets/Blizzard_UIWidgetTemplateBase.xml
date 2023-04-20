@@ -332,4 +332,66 @@
 			</Cooldown>
 		</Frames>
 	</Frame>
+
+	<Frame name="UIWidgetBaseItemTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseItemTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ItemName" inherits="GameTooltipHeaderText" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InfoText" inherits="GameTooltipText" justifyV="MIDDLE" mixin="UIWidgetBaseTextMixin">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay2" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<GameTooltip name="$parentTooltip" parentKey="Tooltip" inherits="GameTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="IsEmbedded" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" y="10"/>
+				</Anchors>
+			</GameTooltip>
+		</Frames>
+	</Frame>
 </Ui>

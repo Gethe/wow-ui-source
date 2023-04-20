@@ -424,6 +424,13 @@ function MapCanvasPinMixin:UseFrameLevelType(pinFrameLevelType, index)
 	self.pinFrameLevelIndex = index;
 end
 
+function MapCanvasPinMixin:UseFrameLevelTypeFromRangeTop(pinFrameLevelType, index)
+	self.pinFrameLevelType = pinFrameLevelType;
+	local range = self:GetMap():GetPinFrameLevelsManager():GetFrameLevelRange(pinFrameLevelType);
+	index = range - (index or 1) + 1;
+	self.pinFrameLevelIndex = index;
+end
+
 function MapCanvasPinMixin:GetFrameLevelType(pinFrameLevelType)
 	return self.pinFrameLevelType or "PIN_FRAME_LEVEL_DEFAULT";
 end

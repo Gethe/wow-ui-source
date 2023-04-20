@@ -97,6 +97,7 @@ Import("SecureMixin");
 Import("CreateFromSecureMixins");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
+Import("Vector3DMixin");
 
 
 --GlobalStrings
