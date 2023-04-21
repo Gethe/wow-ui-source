@@ -291,18 +291,7 @@ end
 function SetCharacterRace(id)
 	CharacterCreate.selectedRace = id;
 
-	for i=1, CharacterCreate.numRaces, 1 do
-		local button = _G["CharacterCreateRaceButton"..i];
-		if ( button.raceID == id ) then
-			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText(button.tooltip);
-			button:SetChecked(1);
-			button:LockHighlight();
-		else
-			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText("");
-			button:SetChecked(0);
-			button:UnlockHighlight();
-		end
-	end
+	UpdateCharacterRaceLabelText();
 
 	--twain SetSelectedRace(id);
 	-- Set Faction
@@ -376,6 +365,19 @@ function SetCharacterRace(id)
 	-- Hair customization stuff
 	CharacterCreate_UpdateFacialHairCustomization();
 	CharacterCreate_UpdateCustomizationOptions();
+end
+
+function UpdateCharacterRaceLabelText()
+	for i=1, CharacterCreate.numRaces, 1 do
+		local button = _G["CharacterCreateRaceButton"..i];
+		if ( button.raceID == CharacterCreate.selectedRace ) then
+			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText(button.tooltip);
+			button:SetChecked(1);
+		else
+			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText("");
+			button:SetChecked(nil);
+		end
+	end
 end
 
 function SetDefaultClass()
@@ -508,6 +510,12 @@ function SetCharacterGender(sex)
 	fileString = strupper(fileString);
 	local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
 	CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	UpdateCharacterRaceLabelText();
+	-- Update class labels to reflect gender change
+	-- Set Class
+	local classData = C_CharacterCreation.GetSelectedClass();
+	CharacterCreateClassLabel:SetText(classData.name);
+	CharacterCreateEnumerateClasses(); -- Update class tooltips.
 end
 
 function CharacterCustomization_Left(id)

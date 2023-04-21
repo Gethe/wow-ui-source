@@ -67,7 +67,7 @@ function RealmList_Update()
 
 			--Update RealmType
 			local realmType = "";
-			if (seasonID) then
+			if (seasonID and SEASON_NAMES[seasonID] ~= nil) then
 				realmType = SEASON_NAMES[seasonID] .. " ";
 			end
 			if ( isPvP and isRP ) then
