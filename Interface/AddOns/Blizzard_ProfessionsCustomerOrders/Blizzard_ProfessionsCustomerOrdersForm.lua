@@ -971,25 +971,34 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									return true;
 								end
 
+								flyout.GetElementValidImplementation = function(button, elementData)
+									return self.transaction:AreAllRequirementsAllocated(elementData.item);
+								end
+
 								flyout:Init(slot.Button, self.transaction);
 								flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
 								flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.UndoClicked, OnUndoClicked, slot);
 							end
-						elseif buttonName == "RightButton" and not slot.originalItem then
-							transaction:ClearAllocations(slotIndex);
+						elseif buttonName == "RightButton" then
+							-- Normally you cannot remove the reagent if it is the original item unless you are replacing it with another
+							-- reagent, however, in the case of infusions with dependent reagents, if a dependent reagent is changed to something
+							-- the infusion cannot be supported on, we need to be able to explicly remove it from the order.
+							if not slot.originalItem or not transaction:AreAllRequirementsAllocatedByItemID(slot.originalItem:GetItemID()) then
+								transaction:ClearAllocations(slotIndex);
 
-							slot:ClearItem();
+								slot:ClearItem();
 
-							if not reagentSlotSchematic.required then
-								-- Add icon not shown for modified + required reagents. This already
-								-- displays a single large add icon.
-								slot.Button.InputOverlay.AddIcon:Show();
+								if not reagentSlotSchematic.required then
+									-- Add icon not shown for modified + required reagents. This already
+									-- displays a single large add icon.
+									slot.Button.InputOverlay.AddIcon:Show();
+								end
+
+								slot:SetHighlightShown(false);
+								self.changedOptionalReagents = self.changedOptionalReagents - 1;
+
+								self:UpdateListOrderButton();
 							end
-
-							slot:SetHighlightShown(false);
-							self.changedOptionalReagents = self.changedOptionalReagents - 1;
-
-							self:UpdateListOrderButton();
 						end
 					end
 				end);

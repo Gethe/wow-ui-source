@@ -5,8 +5,10 @@ function FlightMap_ZoneSummaryDataProvider:OnShow()
 end
 
 function FlightMap_ZoneSummaryDataProvider:OnHide()
-	self.ticker:Cancel();
-	self.ticker = nil;
+	if self.ticker then
+		self.ticker:Cancel();
+		self.ticker = nil;
+	end
 
 	self:HideGameTooltip();
 end

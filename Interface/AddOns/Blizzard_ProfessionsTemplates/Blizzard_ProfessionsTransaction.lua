@@ -522,10 +522,22 @@ function ProfessionsRecipeTransactionMixin:HasRecraftAllocation()
 	return self.recraftItemGUID ~= nil or self.recraftOrderID ~= nil;
 end
 
+function ProfessionsRecipeTransactionMixin:ClearModification(dataSlotIndex)
+	local modificationTable = self:GetModificationTable();
+	local modification = modificationTable and modificationTable[dataSlotIndex]
+	if modification then
+		modification.itemID = 0;
+	end
+end
+
+function ProfessionsRecipeTransactionMixin:GetModificationTable()
+	return self.recraftExpectedItemMods or self.recraftItemMods;
+end
+
 function ProfessionsRecipeTransactionMixin:GetModification(dataSlotIndex)
 	-- If expected item mods have been set then we've sent off the transaction to the
 	-- server and we're waiting for the item mods to be officially stamped onto the item.
-	return self:GetModificationInternal(dataSlotIndex, self.recraftExpectedItemMods or self.recraftItemMods);
+	return self:GetModificationInternal(dataSlotIndex, self:GetModificationTable());
 end
 
 function ProfessionsRecipeTransactionMixin:GetModificationAtSlotIndex(slotIndex)
@@ -546,8 +558,8 @@ function ProfessionsRecipeTransactionMixin:GetOriginalModification(dataSlotIndex
 	return self:GetModificationInternal(dataSlotIndex, self.recraftItemMods);
 end
 
-function ProfessionsRecipeTransactionMixin:GetModificationInternal(dataSlotIndex, itemMods)
-	return itemMods and itemMods[dataSlotIndex] or nil;
+function ProfessionsRecipeTransactionMixin:GetModificationInternal(dataSlotIndex, modificationTable)
+	return modificationTable and modificationTable[dataSlotIndex] or nil;
 end
 
 function ProfessionsRecipeTransactionMixin:HasModification(dataSlotIndex)

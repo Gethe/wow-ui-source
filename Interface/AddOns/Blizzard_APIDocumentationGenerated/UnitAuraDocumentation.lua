@@ -28,6 +28,11 @@ local UnitAura =
 			{
 				{ Name = "sound", Type = "UnitPrivateAuraAppliedSoundInfo", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "privateAuraSoundID", Type = "number", Nilable = true },
+			},
 		},
 		{
 			Name = "AuraIsPrivate",
@@ -124,6 +129,15 @@ local UnitAura =
 			Arguments =
 			{
 				{ Name = "anchorID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RemovePrivateAuraAppliedSound",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "privateAuraSoundID", Type = "number", Nilable = false },
 			},
 		},
 		{

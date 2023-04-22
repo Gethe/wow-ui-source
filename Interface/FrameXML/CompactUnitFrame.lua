@@ -2246,3 +2246,48 @@ function CompactUnitPrivateAuraAnchorMixin:SetUnit(unit)
 		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
 	end
 end
+
+CompactAuraTooltipMixin = {};
+
+function CompactAuraTooltipMixin:UpdateTooltip()
+	-- Implement this
+end
+
+function CompactAuraTooltipMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
+	self:UpdateTooltip();
+
+	local function RunOnUpdate()
+		if ( GameTooltip:IsOwned(self) ) then
+			self:UpdateTooltip();
+		end
+	end
+	self:SetScript("OnUpdate", RunOnUpdate);
+end
+
+function CompactAuraTooltipMixin:OnLeave()
+	GameTooltip:Hide();
+	self:SetScript("OnUpdate", nil);
+end
+
+CompactDebuffMixin = CreateFromMixins(CompactAuraTooltipMixin);
+
+function CompactDebuffMixin:UpdateTooltip()
+	if ( self.isBossBuff ) then
+		GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
+	else
+		GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
+	end
+end
+
+CompactBuffMixin = CreateFromMixins(CompactAuraTooltipMixin);
+
+function CompactBuffMixin:UpdateTooltip()
+	GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
+end
+
+CompactDispelDebuffMixin = CreateFromMixins(CompactAuraTooltipMixin);
+
+function CompactDispelDebuffMixin:UpdateTooltip()
+	GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, "RAID");
+end

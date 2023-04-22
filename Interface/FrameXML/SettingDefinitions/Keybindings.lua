@@ -1,3 +1,6 @@
+local securecallfunction = securecallfunction;
+local type = type;
+
 do
 	if StaticPopupDialogs then
 		StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
@@ -138,7 +141,6 @@ local function CreateSearchableSettings(redirectCategory)
 		if not cat then
 			tinsert(bindingsCategories[BINDING_HEADER_OTHER], {bindingIndex, action});
 		else
-			cat = _G[cat] or cat;
 			if not bindingsCategories[cat] then
 				bindingsCategories[cat] = {};
 			end
@@ -161,6 +163,15 @@ local function CreateSearchableSettings(redirectCategory)
 
 	fakeCategory.redirectCategory = redirectCategory;
 	Settings.RegisterCategory(fakeCategory, SETTING_GROUP_GAMEPLAY);
+end
+
+local function GetBindingCategoryName(cat)
+	local loc = _G[cat];
+	if type(loc) == "string" then
+		return loc;
+	end
+
+	return cat;
 end
 
 local retained = {};
@@ -200,7 +211,7 @@ local function CreateKeybindingInitializers(category, layout)
 		if not cat then
 			tinsert(bindingsCategories[BINDING_HEADER_OTHER].bindings, {bindingIndex, action});
 		else
-			cat = _G[cat] or cat;
+			cat = securecallfunction(GetBindingCategoryName, cat);
 			AddBindingCategory(cat);
 
 			if strsub(action, 1, 6) == "HEADER" then

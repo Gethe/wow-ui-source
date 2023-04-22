@@ -1,4 +1,5 @@
 ﻿CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
+CHAR_CUSTOMIZE_LOCK_WIDTH = 24;
 
 local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
@@ -856,9 +857,8 @@ function CharCustomizeSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, d
 	end
 
 	if self:GetParent().popoutHasALockedChoice then
-		width = width + 24;
+		width = width + CHAR_CUSTOMIZE_LOCK_WIDTH;
 	end
-
 	self:SetWidth(Round(width));
 end
 
@@ -968,7 +968,6 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 		self:SetShowAsNew(false);
 		return;
 	end
-
 	self.name = selectionData.name;
 	self.index = index;
 	self.lockedText = selectionData.isLocked and selectionData.lockedText;
@@ -1016,6 +1015,13 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 	end
 
 	self.LockIcon:SetShown(selectionData.isLocked);
+	if self.selectable then
+		if selectionData.isLocked then
+			self.SelectionName:SetPoint("RIGHT", -CHAR_CUSTOMIZE_LOCK_WIDTH, 0);		
+		else
+			self.SelectionName:SetPoint("RIGHT", 0, 0);
+		end
+	end
 
 	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
 end

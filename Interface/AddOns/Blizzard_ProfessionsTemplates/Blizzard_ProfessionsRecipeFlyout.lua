@@ -5,7 +5,7 @@ local HideUnavailableCvar = "professionsFlyoutHideUnowned";
 
 ProfessionsItemFlyoutButtonMixin = {};
 
-function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation)
+function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation, onElementValidImplementation)
 	local item = elementData.item;
 	local itemLocation = elementData.itemLocation;
 	if not itemLocation then
@@ -37,10 +37,20 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	local showCount = forceAccumulateInventory or C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
 	self:SetItemButtonCount(showCount and count or 1);
 	
-	local enabled = count > 0;
+	local valid = (onElementValidImplementation == nil) or onElementValidImplementation(self, elementData);
+	local enabled = valid and count > 0;
 	if onElementEnabledImplementation then
 		enabled = onElementEnabledImplementation(self, elementData, count);
 	end
+
+	if valid then
+		SetItemButtonTextureVertexColor(self, 1, 1, 1);
+		SetItemButtonNormalTextureVertexColor(self, 1, 1, 1);
+	else
+		SetItemButtonTextureVertexColor(self, 0.9, 0, 0);
+		SetItemButtonNormalTextureVertexColor(self, 0.9, 0, 0);
+	end
+
 	self.enabled = enabled;
 	self:DesaturateHierarchy(enabled and 0 or 1);
 end
@@ -75,7 +85,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	local spacing = 3;
 	view:SetPadding(padding, padding, padding, padding, spacing, spacing);
 	view:SetElementInitializer("ProfessionsItemFlyoutButtonTemplate", function(button, elementData)
-		button:Init(elementData, self.OnElementEnabledImplementation);
+		button:Init(elementData, self.OnElementEnabledImplementation, self.GetElementValidImplementation);
 
 		button:SetScript("OnEnter", function(button)
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
@@ -132,6 +142,7 @@ function ProfessionsItemFlyoutMixin:ClearHandlers()
 	self.GetElementsImplementation = nil;
 	self.OnElementEnterImplementation = nil;
 	self.OnElementEnabledImplementation = nil;
+	self.GetElementValidImplementation = nil;
 	self.GetUndoElementImplementation = nil;
 end
 

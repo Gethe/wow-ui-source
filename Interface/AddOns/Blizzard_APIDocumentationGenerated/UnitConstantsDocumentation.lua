@@ -60,6 +60,7 @@ local UnitConstants =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "soundFileName", Type = "string", Nilable = true },
 				{ Name = "soundFileID", Type = "number", Nilable = true },
+				{ Name = "outputChannel", Type = "string", Nilable = true },
 			},
 		},
 	},

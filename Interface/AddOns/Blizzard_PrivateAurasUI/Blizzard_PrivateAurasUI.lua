@@ -323,7 +323,7 @@ function PrivateAuraUnitWatcher:HandleUpdateInfo(updateInfo)
 		for _, aura in ipairs(updateInfo.addedAuras) do
 			local appliedSounds = C_UnitAurasPrivate.GetAuraAppliedSoundsForSpell(self.unit, aura.spellId);
 			for _, sound in pairs(appliedSounds) do
-				PlaySoundFile(sound.soundFileName or sound.soundFileID);
+				PlaySoundFile(sound.soundFileName or sound.soundFileID, sound.outputChannel);
 			end
 		end
 	end

@@ -497,7 +497,7 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	end
 
 	-- Build UI - rewards text or threshold bar at the top, activities list below
-	self:UpdateTime(activitiesInfo.displayMonthName);
+	self:UpdateTime(activitiesInfo.displayMonthName, activitiesInfo.secondsRemaining);
 	self:SetThresholds(activitiesInfo.thresholds, earnedThresholdAmount, thresholdMax);
 	self:SetActivities(activitiesInfo.activities, retainScrollPosition);
 	self.FilterList:UpdateFilters();
@@ -767,23 +767,8 @@ function MonthlyActivitiesFrameMixin:SetRewardsEarnedAndCollected(allRewardsEarn
 	end
 end
 
-function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName)
-	-- Get numDaysThisMonth by adjusting current time forward by one month, then back one day.
-	local tempCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
-	tempCalendarTime.monthDay = 1;
-	tempCalendarTime = C_DateAndTime.AdjustTimeByMonths(tempCalendarTime, 1);
-	tempCalendarTime = C_DateAndTime.AdjustTimeByDays(tempCalendarTime, -1);
-	local numDaysThisMonth = tempCalendarTime.monthDay;
-
-	local totalSecondsInMonth = numDaysThisMonth * SECONDS_PER_DAY;
-
-	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
-	local daysLeft = numDaysThisMonth - currentCalendarTime.monthDay;
-	local hoursLeft = 24 - currentCalendarTime.hour;
-	local minutesLeft = 60 - currentCalendarTime.minute;
-	local secondsRemaining = (daysLeft * SECONDS_PER_DAY) + (hoursLeft * SECONDS_PER_HOUR) + (minutesLeft * SECONDS_PER_MIN);
+function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName, secondsRemaining)
 	local text = MonthlyActivitiesFrameMixin.TimeLeftFormatter:Format(secondsRemaining);
-
 	self.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(text));
 
 	if displayMonthName and #displayMonthName > 0 then

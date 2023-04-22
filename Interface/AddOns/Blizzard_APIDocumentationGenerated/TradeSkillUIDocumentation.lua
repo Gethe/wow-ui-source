@@ -759,6 +759,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "IsEnchantTargetValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsNPCCrafting",
 			Type = "Function",
 

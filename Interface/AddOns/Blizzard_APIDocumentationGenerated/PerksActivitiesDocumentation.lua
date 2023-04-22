@@ -134,6 +134,7 @@ local PerksActivities =
 			{
 				{ Name = "activePerksMonth", Type = "number", Nilable = false },
 				{ Name = "displayMonthName", Type = "cstring", Nilable = false },
+				{ Name = "secondsRemaining", Type = "time_t", Nilable = false },
 				{ Name = "activities", Type = "table", InnerType = "PerksActivityInfo", Nilable = false },
 				{ Name = "thresholds", Type = "table", InnerType = "PerksActivityThresholdInfo", Nilable = false },
 			},

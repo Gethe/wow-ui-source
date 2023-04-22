@@ -443,6 +443,11 @@ function TalentFrameBaseMixin:GetPanViewCornerPosition()
 	local left = self.ButtonsParent:GetLeft();
 	local top = self.ButtonsParent:GetTop();
 	local scale = self.ButtonsParent:GetScale();
+
+	if left == nil or top == nil or scale == nil then
+		return 1, 1;
+	end
+
 	return left * scale, top * scale;
 end
 

@@ -3,7 +3,7 @@ local MAW_BUFF_MAX_DISPLAY = 44;
 function ShouldShowMawBuffs()
 	local _, icon, count = UnitAura("player", 1, "MAW");
 	local hasMawBuff = icon;
-	return IsInJailersTower() or hasMawBuff;
+	return IsInJailersTower() or hasMawBuff or false;
 end
 
 MawBuffsContainerMixin = {};

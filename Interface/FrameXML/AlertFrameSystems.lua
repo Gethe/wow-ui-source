@@ -391,7 +391,7 @@ function AchievementAlertFrame_OnClick (self, button, down)
 
 	if not AchievementFrame:IsShown() then
 		CloseAllWindows();
-		ShowUIPanel(AchievementFrame);
+		AchievementFrame_ToggleAchievementFrame();
 	end
 
 	local _, _, _, achCompleted = GetAchievementInfo(id);

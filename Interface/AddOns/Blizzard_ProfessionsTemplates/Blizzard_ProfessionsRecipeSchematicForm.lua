@@ -1011,10 +1011,13 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 									self:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
 								end
-
+								
+								-- The existing modification should never produce a warning, and we only want a warning if the new
+								-- allocation would deallocate the modification.
 								local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-								local allocate = not (modification and self.transaction:HasAllocatedItemID(modification.itemID));
-								if allocate then
+								local isIdenticalToModification = modification and (modification.itemID == item:GetItemID());
+								local wouldDeallocateModification = modification and self.transaction:HasAllocatedItemID(modification.itemID);
+								if isIdenticalToModification or not wouldDeallocateModification then
 									AllocateFlyoutItem();
 								else
 									local modItem = Item:CreateFromItemID(modification.itemID);
@@ -1063,6 +1066,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 								end
 
 								return true;
+							end
+							
+							flyout.GetElementValidImplementation = function(button, elementData)
+								return self.transaction:AreAllRequirementsAllocated(elementData.item);
 							end
 
 							flyout:Init(slot.Button, self.transaction);
@@ -1266,7 +1273,15 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						tooltip:SetItemByGUID(elementData.itemGUID);
 						tooltip:Show();
 					end
-	
+					
+					flyout.OnElementEnabledImplementation = function(button, elementData)
+						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID());
+					end
+					
+					flyout.GetElementValidImplementation = function(button, elementData)
+						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID());
+					end
+
 					local canModifyFilter = false;
 					flyout:Init(self.enchantSlot.Button, self.transaction, canModifyFilter);
 					flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);

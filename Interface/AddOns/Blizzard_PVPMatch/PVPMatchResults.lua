@@ -380,8 +380,10 @@ function PVPMatchResultsMixin:OnUpdate()
 		self:UpdateLeaveButton();
 	end
 
-	local forceNewDataProvider = false;
-	PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
+	if C_PvP.IsActiveBattlefield() then
+		local forceNewDataProvider = false;
+		PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
+	end
 end
 
 local scoreWidgetSetID = 249;
