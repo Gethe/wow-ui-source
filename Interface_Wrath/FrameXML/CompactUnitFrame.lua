@@ -6,6 +6,10 @@ DISTANCE_THRESHOLD_SQUARED = 250*250;
 CUF_NAME_SECTION_SIZE = 15;
 CUF_AURA_BOTTOM_OFFSET = 2;
 
+--Used by CompactUnitFrame_SetHideHealth
+HEALTH_BAR_HIDE_REASON_SETUP = 1;
+HEALTH_BAR_HIDE_REASON_UNIT_DEAD = 2;
+
 function CompactUnitFrame_OnLoad(self)
 	-- Names are required for concatenation of compact unit frame names. Search for
 	-- Name.."HealthBar" for examples. This is ignored by nameplates.
@@ -314,13 +318,11 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
 		CompactUnitFrame_UpdateLevel(frame);
 	elseif (UnitIsGameObject(frame.displayedUnit) ) then -- Interactable GameObject
-		CompactUnitFrame_HideHealth(frame);
+		CompactUnitFrame_SetHideHealth(frame, true, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
 		CompactUnitFrame_UpdateName(frame);
-		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
-		CompactUnitFrame_UpdateWidgetSet(frame);
 	end
 end
 
@@ -369,8 +371,11 @@ function CompactUnitFrame_UpdateVisible(frame)
 		frame.unitExists = true;
 		frame:Show();
 	else
-		frame:Hide();
 		frame.unitExists = false;
+
+		if ( not UnitIsGameObject(frame.displayedUnit) ) then -- Interactable GameObject nameplates stay visible after death
+			frame:Hide();
+		end
 	end
 end
 
@@ -397,15 +402,13 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	end
 
 	local r, g, b;
+	local unitIsConnected = UnitIsConnected(frame.unit);
+	local unitIsDead = unitIsConnected and UnitIsDead(frame.unit);
+	local unitIsPlayer = UnitIsPlayer(frame.unit) or UnitIsPlayer(frame.displayedUnit);
 
-	if ( not UnitIsConnected(frame.unit) ) then
+	if ( not unitIsConnected or (unitIsDead and not unitIsPlayer) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
-	elseif (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) then
-		--Color it gray
-		r, g, b = 0.5, 0.5, 0.5;
-		-- Also hide the health bar
-		frame.hideHealthbar = true;
 	else
 		if ( frame.optionTable.healthBarColorOverride ) then
 			local healthBarColorOverride = frame.optionTable.healthBarColorOverride;
@@ -445,12 +448,26 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 
 		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
 	end
+
+	-- Update whether healthbar is hidden due to being dead - only applies to non-player nameplates
+	local hideHealthBecauseDead = unitIsDead and not unitIsPlayer;
+	CompactUnitFrame_SetHideHealth(frame, hideHealthBecauseDead, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
 end
 
-function CompactUnitFrame_HideHealth(frame)
-	frame:Show();
-	frame.hideHealthbar = true;
-	frame.healthBar:SetShown(false);
+function CompactUnitFrame_SetHideHealth(frame, hideHealth, reason)
+	assert(reason);
+	
+	if ( hideHealth ) then
+		frame.hideHealthBarMask = bit.bor(frame.hideHealthBarMask or 0, reason);
+	else
+		frame.hideHealthBarMask = bit.band(frame.hideHealthBarMask or 0, bit.bnot(reason));
+	end
+
+	frame.healthBar:SetShown(not CompactUnitFrame_GetHideHealth(frame));
+end
+
+function CompactUnitFrame_GetHideHealth(frame)
+	return frame.hideHealthBarMask and frame.hideHealthBarMask > 0 or false;
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)
@@ -1644,7 +1661,9 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 			end
 		end
 
-		frame.healthBar:SetShown(not setupOptions.hideHealthbar);
+		frame.hideHealthBarMask = 0; -- Clear out mask of any old values
+		CompactUnitFrame_SetHideHealth(frame, setupOptions.hideHealthbar, HEALTH_BAR_HIDE_REASON_SETUP); -- Populate with setup option
+
 		frame.healthBar:SetHeight(setupOptions.healthBarHeight);
 
 		frame.selectionHighlight:SetParent(frame.healthBar);

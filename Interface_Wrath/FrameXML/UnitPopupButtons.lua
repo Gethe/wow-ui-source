@@ -121,8 +121,8 @@ function UnitPopupRaidDifficultyButtonMixin:GetButtons()
 	return { 
 		UnitPopupRaidDifficulty1ButtonMixin,
 		UnitPopupRaidDifficulty2ButtonMixin, 
-		--UnitPopupRaidDifficulty3ButtonMixin, 
-		--UnitPopupRaidDifficulty4ButtonMixin,
+		UnitPopupRaidDifficulty3ButtonMixin, 
+		UnitPopupRaidDifficulty4ButtonMixin,
 	}
 end 
 
@@ -160,6 +160,24 @@ end
 
 function UnitPopupRaidDifficulty2ButtonMixin:GetDifficultyID()
 	return DIFFICULTY_RAID25_NORMAL;
+end
+
+UnitPopupRaidDifficulty3ButtonMixin = CreateFromMixins(UnitPopupRaidDifficulty1ButtonMixin);
+function UnitPopupRaidDifficulty3ButtonMixin:GetText()
+	return RAID_DIFFICULTY3; 
+end 
+
+function UnitPopupRaidDifficulty3ButtonMixin:GetDifficultyID()
+	return DIFFICULTY_RAID10_HEROIC;
+end
+
+UnitPopupRaidDifficulty4ButtonMixin = CreateFromMixins(UnitPopupRaidDifficulty1ButtonMixin);
+function UnitPopupRaidDifficulty4ButtonMixin:GetText()
+	return RAID_DIFFICULTY4; 
+end 
+
+function UnitPopupRaidDifficulty4ButtonMixin:GetDifficultyID()
+	return DIFFICULTY_RAID25_HEROIC;
 end
 
 

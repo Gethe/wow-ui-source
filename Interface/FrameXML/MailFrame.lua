@@ -23,9 +23,7 @@ function MailFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 	PanelTemplates_SetTab(self, 1);
 	-- Register for events
-	self:RegisterEvent("MAIL_SHOW");
 	self:RegisterEvent("MAIL_INBOX_UPDATE");
-	self:RegisterEvent("MAIL_CLOSED");
 	self:RegisterEvent("MAIL_SEND_INFO_UPDATE");
 	self:RegisterEvent("MAIL_SEND_SUCCESS");
 	self:RegisterEvent("MAIL_FAILED");
@@ -48,24 +46,7 @@ function MailFrame_UpdateTrialState(self)
 end
 
 function MailFrame_OnEvent(self, event, ...)
-	if ( event == "MAIL_SHOW" ) then
-		ShowUIPanel(MailFrame);
-		if ( not MailFrame:IsShown() ) then
-			CloseMail();
-			return;
-		end
-
-		-- Update the roster so auto-completion works
-		if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
-			C_GuildInfo.GuildRoster();
-		end
-
-		OpenAllBags(self);
-		SendMailFrame_Update();
-		MailFrameTab_OnClick(nil, 1);
-		CheckInbox();
-		DoEmote("READ", nil, true);
-	elseif ( event == "MAIL_INBOX_UPDATE" ) then
+	if ( event == "MAIL_INBOX_UPDATE" ) then
 		InboxFrame_Update();
 		OpenMail_Update();
 	elseif ( event == "MAIL_SEND_INFO_UPDATE" ) then
@@ -84,12 +65,6 @@ function MailFrame_OnEvent(self, event, ...)
 		if ( InboxNextPageButton:IsEnabled() ) then
 			InboxGetMoreMail();
 		end
-	elseif ( event == "MAIL_CLOSED" ) then
-		CancelEmote();
-		HideUIPanel(MailFrame);
-		CloseAllBags(self);
-		SendMailFrameLockSendMail:Hide();
-		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 	elseif ( event == "CLOSE_INBOX_ITEM" ) then
 		local mailID = ...;
 		if ( mailID == InboxFrame.openMailID ) then
@@ -107,6 +82,33 @@ function MailFrame_OnEvent(self, event, ...)
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		MailFrame_UpdateTrialState(self);
 	end
+end
+
+function MailFrame_Show()
+	ShowUIPanel(MailFrame);
+	if ( not MailFrame:IsShown() ) then
+		CloseMail();
+		return;
+	end
+
+	-- Update the roster so auto-completion works
+	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
+		C_GuildInfo.GuildRoster();
+	end
+
+	OpenAllBags(self);
+	SendMailFrame_Update();
+	MailFrameTab_OnClick(nil, 1);
+	CheckInbox();
+	DoEmote("READ", nil, true);
+end
+
+function MailFrame_Hide()
+	CancelEmote();
+	HideUIPanel(MailFrame);
+	CloseAllBags(self);
+	SendMailFrameLockSendMail:Hide();
+	StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
 end
 
 function MailFrame_OnMouseWheel(self, value)

@@ -165,7 +165,7 @@ UI_shared.xsd">
 	<Button name="HelpOpenWebTicketButton" parent="CharacterMicroButton" hidden="true">
 		<Size x="34" y="35"/>
 		<Anchors>
-			<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPLEFT" x="9" y="6"/>
+			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="20"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>

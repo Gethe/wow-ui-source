@@ -189,7 +189,7 @@ local BattlePet =
 			LiteralName = "PET_BATTLE_PVP_DUEL_REQUESTED",
 			Payload =
 			{
-				{ Name = "fullName", Type = "string", Nilable = false },
+				{ Name = "fullName", Type = "cstring", Nilable = false },
 			},
 		},
 		{

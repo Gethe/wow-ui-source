@@ -1433,6 +1433,37 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<Frame name="$parentCensorDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentChatBubblesDropDown" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="CENSOR_SOURCE_EXCLUDE">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnShow function="InterfaceOptionsSocialPanelCensorDropDown_OnShow"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			
             <CheckButton name="$parentOnlineFriends" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="TOPRIGHT" x="260" y="0"/>
@@ -1634,56 +1665,9 @@
 					<OnClick function="InterfaceOptionsSocialPanelRedockChat_OnClick"/>
 				</Scripts>
 			</Button>
-			<CheckButton name="$parentEnableTwitter" parentKey="EnableTwitter" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowToastWindow" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="LoginStatus" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" text="SOCIAL_TWITTER_STATUS_NOT_CONNECTED">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="28" y="-6"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "enableTwitter";
-						self.setFunc = Twitter_SetEnabled;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self.Text:SetWidth(180);
-						self.Text:SetPoint("LEFT", self, "RIGHT", 18, 1);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<Button name="$parentTwitterLoginButton" parentKey="TwitterLoginButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_SIGN_IN"  hidden="true">
-				<Size x="100" y="21"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.EnableTwitter.LoginStatus" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="Twitter_LoginButton_OnClick"/>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsSocialPanel_OnLoad"/>
-			<OnShow function="Twitter_Update"/>
 			<OnHide function="InterfaceOptionsSocialPanel_OnHide"/>
 			<OnEvent function="InterfaceOptionsSocialPanel_OnEvent"/>
 		</Scripts>
@@ -3327,9 +3311,6 @@
           <Anchor point="BOTTOM" x="-1" y="3"/>
         </Anchors>
         <Scripts>
-          <OnLoad>
-            C_Social.RegisterSocialBrowser(self);
-          </OnLoad>
           <OnShow>
             PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
           </OnShow>

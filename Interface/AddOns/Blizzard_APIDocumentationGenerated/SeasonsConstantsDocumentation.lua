@@ -5,13 +5,14 @@ local SeasonsConstants =
 		{
 			Name = "SeasonID",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "NoSeason", Type = "SeasonID", EnumValue = 0 },
 				{ Name = "SeasonOfMastery", Type = "SeasonID", EnumValue = 1 },
+				{ Name = "Placeholder", Type = "SeasonID", EnumValue = 2 },
 			},
 		},
 	},

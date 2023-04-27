@@ -22,11 +22,24 @@ function EquipmentManager_UpdateFreeBagSpace ()
 		local _, bagType = C_Container.GetContainerNumFreeSlots(i);
 		local freeSlots = C_Container.GetContainerFreeSlots(i);
 		if ( freeSlots ) then
+			if (not bagSlots[i]) then
+				bagSlots[i] = {};
+			end
+
+			-- Reset all EMPTY bag slots
+			for index, flag in next, bagSlots[i] do
+				if (flag == SLOT_EMPTY) then
+					bagSlots[i][index] = nil;
+				end
+			end
+
 			for index, slot in ipairs(freeSlots) do
 				if ( bagSlots[i] and not bagSlots[i][slot] and bagType == 0 ) then -- Don't overwrite locked slots, don't reset empty slots to empty, only use normal bags
 					bagSlots[i][slot] = SLOT_EMPTY;
 				end
 			end
+		else
+			bagSlots[i] = nil;
 		end
 	end
 end

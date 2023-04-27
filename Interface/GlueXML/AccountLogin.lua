@@ -3,7 +3,7 @@ local function ShouldShowRegulationOverlay()
 end
 
 function AccountLogin_OnLoad(self)
-	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
+	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
 
 	SetLoginScreenModel(LoginBackgroundModel);

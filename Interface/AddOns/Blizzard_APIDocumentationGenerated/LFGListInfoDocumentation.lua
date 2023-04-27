@@ -268,7 +268,7 @@ local LFGListInfo =
 			LiteralName = "LFG_LIST_SEARCH_FAILED",
 			Payload =
 			{
-				{ Name = "reason", Type = "string", Nilable = true },
+				{ Name = "reason", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -334,8 +334,8 @@ local LFGListInfo =
 			Fields =
 			{
 				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
+				{ Name = "duration", Type = "time_t", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = false },
 			},
 		},
@@ -357,9 +357,9 @@ local LFGListInfo =
 				{ Name = "searchResultID", Type = "number", Nilable = false },
 				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "leaderName", Type = "string", Nilable = true },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "comment", Type = "string", Nilable = false },
-				{ Name = "voiceChat", Type = "string", Nilable = false },
+				{ Name = "name", Type = "kstringLfgListSearch", Nilable = false },
+				{ Name = "comment", Type = "kstringLfgListSearch", Nilable = false },
+				{ Name = "voiceChat", Type = "kstringLfgListSearch", Nilable = false },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },
 				{ Name = "hasSelf", Type = "bool", Nilable = false },
@@ -370,7 +370,7 @@ local LFGListInfo =
 				{ Name = "isDelisted", Type = "bool", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
 				{ Name = "isWarMode", Type = "bool", Nilable = false },
-				{ Name = "age", Type = "number", Nilable = false },
+				{ Name = "age", Type = "time_t", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },
 			},
 		},

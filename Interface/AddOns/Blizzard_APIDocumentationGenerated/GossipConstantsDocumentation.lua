@@ -80,12 +80,13 @@ local GossipConstants =
 		{
 			Name = "GossipOptionRecFlags",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "QuestLabelPrepend", Type = "GossipOptionRecFlags", EnumValue = 1 },
+				{ Name = "HideOptionIDFromClient", Type = "GossipOptionRecFlags", EnumValue = 2 },
 			},
 		},
 	},

@@ -7,10 +7,10 @@ local GuildInfoShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "backgroundColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "borderColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "emblemColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "emblemFilename", Type = "string", Nilable = false },
+				{ Name = "backgroundColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "borderColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "emblemColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "emblemFilename", Type = "cstring", Nilable = false },
 				{ Name = "emblemStyle", Type = "number", Nilable = false },
 			},
 		},

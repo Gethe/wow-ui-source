@@ -39,12 +39,12 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "rankOrder", Type = "number", Nilable = false },
+				{ Name = "rankOrder", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -53,7 +53,7 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = true },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -67,7 +67,7 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "rankOrder", Type = "number", Nilable = false },
+				{ Name = "rankOrder", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -94,13 +94,27 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "rankOrder", Type = "number", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "rankOrder", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "isGuildRankAssignmentAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MemberExistsByName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "exists", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -111,7 +125,7 @@ local GuildInfo =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
-				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
@@ -125,7 +139,7 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -134,8 +148,8 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "rankOrder", Type = "number", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "rankOrder", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -144,8 +158,8 @@ local GuildInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "note", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "note", Type = "cstring", Nilable = false },
 				{ Name = "isPublic", Type = "bool", Nilable = false },
 			},
 		},
@@ -184,10 +198,10 @@ local GuildInfo =
 			LiteralName = "GUILD_INVITE_REQUEST",
 			Payload =
 			{
-				{ Name = "inviter", Type = "string", Nilable = false },
-				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "inviter", Type = "cstring", Nilable = false },
+				{ Name = "guildName", Type = "cstring", Nilable = false },
 				{ Name = "guildAchievementPoints", Type = "number", Nilable = false },
-				{ Name = "oldGuildName", Type = "string", Nilable = false },
+				{ Name = "oldGuildName", Type = "cstring", Nilable = false },
 				{ Name = "isNewGuild", Type = "bool", Nilable = true },
 				{ Name = "bkgColorR", Type = "number", Nilable = true },
 				{ Name = "bkgColorG", Type = "number", Nilable = true },
@@ -198,7 +212,7 @@ local GuildInfo =
 				{ Name = "emblemColorR", Type = "number", Nilable = true },
 				{ Name = "emblemColorG", Type = "number", Nilable = true },
 				{ Name = "emblemColorB", Type = "number", Nilable = true },
-				{ Name = "emblemFilename", Type = "string", Nilable = true },
+				{ Name = "emblemFilename", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -207,7 +221,7 @@ local GuildInfo =
 			LiteralName = "GUILD_MOTD",
 			Payload =
 			{
-				{ Name = "motdText", Type = "string", Nilable = false },
+				{ Name = "motdText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -268,7 +282,7 @@ local GuildInfo =
 			LiteralName = "PLAYER_GUILD_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{

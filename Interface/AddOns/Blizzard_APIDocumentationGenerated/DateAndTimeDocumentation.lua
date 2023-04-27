@@ -57,7 +57,7 @@ local DateAndTime =
 
 			Arguments =
 			{
-				{ Name = "epoch", Type = "number", Nilable = false },
+				{ Name = "epoch", Type = "BigUInteger", Nilable = false },
 			},
 
 			Returns =
@@ -80,7 +80,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "seconds", Type = "number", Nilable = false },
+				{ Name = "seconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -89,7 +89,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "seconds", Type = "number", Nilable = false },
+				{ Name = "seconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -98,7 +98,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "serverTimeLocal", Type = "number", Nilable = false },
+				{ Name = "serverTimeLocal", Type = "time_t", Nilable = false },
 			},
 		},
 	},

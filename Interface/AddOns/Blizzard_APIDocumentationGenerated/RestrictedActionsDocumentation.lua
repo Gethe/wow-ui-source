@@ -16,8 +16,8 @@ local RestrictedActions =
 			LiteralName = "ADDON_ACTION_BLOCKED",
 			Payload =
 			{
-				{ Name = "isTainted", Type = "string", Nilable = false },
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "isTainted", Type = "cstring", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -26,8 +26,8 @@ local RestrictedActions =
 			LiteralName = "ADDON_ACTION_FORBIDDEN",
 			Payload =
 			{
-				{ Name = "isTainted", Type = "string", Nilable = false },
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "isTainted", Type = "cstring", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -36,7 +36,7 @@ local RestrictedActions =
 			LiteralName = "MACRO_ACTION_BLOCKED",
 			Payload =
 			{
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -45,7 +45,7 @@ local RestrictedActions =
 			LiteralName = "MACRO_ACTION_FORBIDDEN",
 			Payload =
 			{
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 	},

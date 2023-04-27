@@ -17,6 +17,18 @@ end
 
 function PRCCharacterSelectBlock:SetResultsShown(shown)
 	self.frame.ResultsFrame:SetShown(shown);
+
+	if shown then
+		local result = self:GetResult();
+		if result.selectedCharacterGUID then
+			local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
+			hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
+			isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
+			factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
+			-- race
+			self.frame.ResultsFrame.CurrentRaceLabel:SetText(raceName);
+		end
+	end
 end
 
 function DoesClientThinkTheCharacterIsEligibleForPRC(characterID)
@@ -87,7 +99,7 @@ end
 
 PaidRaceChangeFlow = Mixin(
 	{
-		FinishLabel = PFC_FLOW_FINISH_LABEL,
+		FinishLabel = PRC_FLOW_FINISH_LABEL,
 		AutoCloseAfterFinish = true,
 
 		Steps = {

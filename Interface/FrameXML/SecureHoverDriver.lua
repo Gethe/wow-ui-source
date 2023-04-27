@@ -23,7 +23,7 @@ local COUNT_INDEX = 3;
 local BOUNDING_INDEX = 4;
 local FRAME_INDEX = BOUNDING_INDEX + 4;
 
-local LOCAL_CHECK_Frame = CreateFrame("Frame");
+local LOCAL_CHECK_Frame = CopyTable(GetFrameMetatable().__index);
 
 -- Create a new set, possibly re-using an existing array
 local function RectSet_Create(l, r, b, t, TTL, S)

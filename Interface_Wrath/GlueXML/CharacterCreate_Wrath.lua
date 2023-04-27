@@ -1,5 +1,6 @@
 MAX_RACES = 10;
 MAX_CLASSES_PER_RACE = 10;
+SHOW_UNAVAILABLE_CLASSES = true;
 
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",

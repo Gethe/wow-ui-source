@@ -2182,7 +2182,7 @@ function GearManagerDialog_OnShow (self)
 	self:RegisterEvent("EQUIPMENT_SETS_CHANGED");
 	C_EquipmentSet.ClearIgnoredSlotsForSave();
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN);
-	GearManagerDialogClose:SetPoint("TOPRIGHT", 2.2, 0);
+	GearManagerDialogClose:SetPoint("TOPRIGHT", 2.2, 0)
 	
 	PaperDollFrameItemPopoutButton_ShowAll();
 	

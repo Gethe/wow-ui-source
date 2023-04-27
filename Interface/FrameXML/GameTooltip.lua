@@ -887,33 +887,6 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
 	return false;
 end
 
-function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
-	local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(rewardIndex, questID);
-	if garrFollowerID then
-		self:Show();
-		EmbeddedItemTooltip_PrepareForFollower(self);
-		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(garrFollowerID);
-		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);
-		EmbeddedItemTooltip_UpdateSize(self);
-		return true;
-	elseif name and texture then
-		self.itemID = nil;
-		self.spellID = spellID;
-
-		self:Show();
-		EmbeddedItemTooltip_PrepareForSpell(self);
-		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
-		SetItemButtonQuality(self, LE_ITEM_QUALITY_COMMON);
-		SetItemButtonCount(self, 0);
-		self.Icon:SetTexture(texture);
-		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
-		EmbeddedItemTooltip_UpdateSize(self);
-		return true;
-	end
-	return false;
-end
-
 function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
 	local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
 	if name and texture then
@@ -925,11 +898,11 @@ function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 
 		local displayQuantity;
-		name, texture, displayQuantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);		
+		name, texture, displayQuantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
 		self.Tooltip:SetCurrencyByID(currencyID, quantity);
 		SetItemButtonQuality(self, quality, currencyID);
 		self.Icon:SetTexture(texture);
-		SetItemButtonCount(self, displayQuantity); 
+		SetItemButtonCount(self, displayQuantity);
 
 		self:Show();
 		EmbeddedItemTooltip_UpdateSize(self);

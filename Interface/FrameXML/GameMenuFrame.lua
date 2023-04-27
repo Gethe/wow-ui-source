@@ -9,8 +9,7 @@ function GameMenuFrame_OnShow(self)
 end
 
 function GameMenuFrame_UpdateVisibleButtons(self)
-	local height = 272;
-	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
+	local height = 242;
 
 	local storeIsRestricted = IsTrialAccount();
 	if ( C_StorePublic.IsEnabled() and C_StorePublic.HasPurchaseableProducts() and not storeIsRestricted ) then

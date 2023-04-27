@@ -124,7 +124,7 @@
 					</OnEnterPressed>
 				</Scripts>
 			</EditBox>
-			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
+			<ScrollFrame parentKey="Description" inherits="UIPanelInputScrollFrameTemplate">
 				<Size x="350" y="50"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.DescriptionLabel" x="4" y="-10"/>
@@ -137,7 +137,7 @@
 				</KeyValues>
 				<Scripts>
 					<OnLoad>
-						InputScrollFrame_OnLoad(self);
+						UIPanelInputScrollFrame_OnLoad(self);
 						self.EditBox.nextEditBox = self:GetParent().NameEdit;
 					</OnLoad>
 				</Scripts>

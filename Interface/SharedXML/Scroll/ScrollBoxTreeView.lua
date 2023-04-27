@@ -1,3 +1,24 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+end
+---------------
+
 ScrollBoxListTreeListViewMixin = CreateFromMixins(ScrollBoxListLinearViewMixin);
 
 function ScrollBoxListTreeListViewMixin:Init(indent, top, bottom, left, right, spacing)
@@ -15,6 +36,24 @@ end
 
 function ScrollBoxListTreeListViewMixin:GetElementIndent()
 	return self.indent;
+end
+
+function ScrollBoxListTreeListViewMixin:AssignAccessors(frame, elementData)
+	ScrollBoxListViewMixin.AssignAccessors(self, frame, elementData);
+
+	frame.GetData = function(self)
+		return elementData:GetData();
+	end;
+
+	frame.IsCollapsed = function(self)
+		return elementData:IsCollapsed();
+	end;
+end
+
+function ScrollBoxListTreeListViewMixin:UnassignAccessors(frame)
+	ScrollBoxListViewMixin.UnassignAccessors(self, frame, elementData);
+
+	frame.IsCollapsed = nil;
 end
 
 function ScrollBoxListTreeListViewMixin:GetLayoutFunction()

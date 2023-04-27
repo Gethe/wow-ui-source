@@ -3049,7 +3049,6 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
-
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = AREA_SPIRIT_HEAL,
 	button1 = CHOOSE_LOCATION,

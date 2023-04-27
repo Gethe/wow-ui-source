@@ -12,7 +12,7 @@ local XMLUtil =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -42,11 +42,11 @@ local XMLUtil =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
 				{ Name = "width", Type = "number", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "keyValues", Type = "table", InnerType = "XMLTemplateKeyValue", Nilable = false },
-				{ Name = "inherits", Type = "string", Nilable = true },
+				{ Name = "inherits", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -54,10 +54,10 @@ local XMLUtil =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "key", Type = "string", Nilable = false },
-				{ Name = "keyType", Type = "string", Nilable = false },
-				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = false },
+				{ Name = "key", Type = "cstring", Nilable = false },
+				{ Name = "keyType", Type = "cstring", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -65,8 +65,8 @@ local XMLUtil =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "type", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
 			},
 		},
 	},

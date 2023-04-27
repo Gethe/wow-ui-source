@@ -363,6 +363,16 @@ function UIParent_OnHide(self)
 	end
 end
 
+function UIParent_OnUpdate(self, elapsed)
+	FCF_OnUpdate(elapsed);
+	ButtonPulse_OnUpdate(elapsed);
+	UnitPopup_OnUpdate(elapsed);
+	AnimatedShine_OnUpdate(elapsed);
+	AutoCastShine_OnUpdate(nil, elapsed);
+	BattlefieldFrame_OnUpdate(elapsed);
+	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
+end
+
 -- Addons --
 
 local FailedAddOnLoad = {};

@@ -15,7 +15,7 @@ local SimpleRegionAPI =
 
 			Returns =
 			{
-				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -28,7 +28,7 @@ local SimpleRegionAPI =
 
 			Returns =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 				{ Name = "sublayer", Type = "number", Nilable = false },
 			},
 		},
@@ -119,7 +119,7 @@ local SimpleRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -128,7 +128,7 @@ local SimpleRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 				{ Name = "sublevel", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
@@ -168,7 +168,7 @@ local SimpleRegionAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 	},

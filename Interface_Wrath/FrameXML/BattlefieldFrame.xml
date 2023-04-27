@@ -65,7 +65,7 @@
 		<Scripts>
 			<OnLoad>
 				self.scrollBarHideable = true;
-				ScrollFrame_OnLoad(self);
+				UIPanelScrollFrame_OnLoad(self);
 				ScrollFrame_OnScrollRangeChanged(self);
 				local scrollBar = _G[self:GetName().."ScrollBar"];
 				self.scrollBarBackground:SetParent(scrollBar);

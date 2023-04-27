@@ -12,7 +12,7 @@ local BattleNet =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -27,7 +27,7 @@ local BattleNet =
 			Arguments =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "wowAccountGUID", Type = "string", Nilable = true },
+				{ Name = "wowAccountGUID", Type = "WOWGUID", Nilable = true },
 			},
 
 			Returns =
@@ -41,8 +41,8 @@ local BattleNet =
 
 			Arguments =
 			{
-				{ Name = "friendIndex", Type = "number", Nilable = false },
-				{ Name = "wowAccountGUID", Type = "string", Nilable = true },
+				{ Name = "friendIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "wowAccountGUID", Type = "WOWGUID", Nilable = true },
 			},
 
 			Returns =
@@ -56,8 +56,8 @@ local BattleNet =
 
 			Arguments =
 			{
-				{ Name = "friendIndex", Type = "number", Nilable = false },
-				{ Name = "accountIndex", Type = "number", Nilable = false },
+				{ Name = "friendIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "accountIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -71,7 +71,7 @@ local BattleNet =
 
 			Arguments =
 			{
-				{ Name = "friendIndex", Type = "number", Nilable = false },
+				{ Name = "friendIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -85,7 +85,7 @@ local BattleNet =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -142,7 +142,7 @@ local BattleNet =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "gameAccountID", Type = "number", Nilable = true },
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
 				{ Name = "clientProgram", Type = "string", Nilable = false },
 				{ Name = "isOnline", Type = "bool", Nilable = false },
 				{ Name = "isGameBusy", Type = "bool", Nilable = false },
@@ -158,7 +158,7 @@ local BattleNet =
 				{ Name = "areaName", Type = "string", Nilable = true },
 				{ Name = "characterLevel", Type = "number", Nilable = true },
 				{ Name = "richPresence", Type = "string", Nilable = true },
-				{ Name = "playerGuid", Type = "string", Nilable = true },
+				{ Name = "playerGuid", Type = "WOWGUID", Nilable = true },
 				{ Name = "isWowMobile", Type = "bool", Nilable = false },
 				{ Name = "canSummon", Type = "bool", Nilable = false },
 				{ Name = "hasFocus", Type = "bool", Nilable = false },

@@ -9,7 +9,7 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" registerForDrag="LeftButton" clampedToScreen="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
 		<Size x="126" y="124" />
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-380" y="-280"/>

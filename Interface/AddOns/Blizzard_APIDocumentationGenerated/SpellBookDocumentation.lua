@@ -6,6 +6,21 @@ local SpellBook =
 
 	Functions =
 	{
+		{
+			Name = "GetSpellLinkFromSpellID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "glyphID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "spellLink", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -45,7 +60,7 @@ local SpellBook =
 			LiteralName = "PLAYER_TOTEM_UPDATE",
 			Payload =
 			{
-				{ Name = "totemSlot", Type = "number", Nilable = false },
+				{ Name = "totemSlot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -98,9 +113,9 @@ local SpellBook =
 			LiteralName = "UNIT_SPELLCAST_SENT",
 			Payload =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "target", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "cstring", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},

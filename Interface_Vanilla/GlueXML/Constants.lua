@@ -152,6 +152,15 @@ CALENDAR_FULLDATE_MONTH_NAMES = {
 	FULLDATE_MONTH_DECEMBER,
 }
 
+-- These are purposely different for Classic Era and TBC
+characterCopyRegions = {
+	[81] = NORTH_AMERICA,
+	[82] = KOREA,
+	[83] = EUROPE,
+	[84] = TAIWAN,
+	[85] = CHINA,
+};
+
 SEASON_NAMES = {
 	[Enum.SeasonID.SeasonOfMastery]					= SEASON_OF_MASTERY_REALM_TYPE,
 };

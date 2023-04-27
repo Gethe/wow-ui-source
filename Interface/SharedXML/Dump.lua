@@ -216,7 +216,6 @@ end
 
 local function DevTools_Write(self, msg)
 	GetScrollingMessageFrame():AddMessage(msg);
-	PrintToDebugWindow(msg);
 end
 
 local DevTools_DumpValue;

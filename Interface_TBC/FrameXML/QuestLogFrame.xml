@@ -109,7 +109,7 @@
 				if ( self.rewardType == "item" ) then
 					GameTooltip:SetQuestLogItem(self.type, self:GetID());
 				elseif ( self.rewardType == "spell" ) then
-					GameTooltip:SetQuestLogRewardSpell(self:GetID());
+					GameTooltip:SetSpellByID(self:GetID());
 				end
 			</OnEnter>
 			<OnClick>

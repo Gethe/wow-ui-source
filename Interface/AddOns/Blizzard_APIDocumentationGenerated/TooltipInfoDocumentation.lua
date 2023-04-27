@@ -29,6 +29,10 @@ local TooltipInfo =
 			Type = "Event",
 			LiteralName = "TOOLTIP_DATA_UPDATE",
 			Documentation = { "Sends an update to the UI that a sparse or cache lookup has resolved" },
+			Payload =
+			{
+				{ Name = "dataInstanceID", Type = "number", Nilable = true },
+			},
 		},
 	},
 

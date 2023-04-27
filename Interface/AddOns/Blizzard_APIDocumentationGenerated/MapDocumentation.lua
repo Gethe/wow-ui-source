@@ -17,7 +17,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -27,7 +27,7 @@ local Map =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -69,7 +69,7 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -107,12 +107,12 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "layerIndex", Type = "number", Nilable = false },
+				{ Name = "layerIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "textures", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "textures", Type = "table", InnerType = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -214,8 +214,8 @@ local Map =
 
 			Returns =
 			{
-				{ Name = "fileDataID", Type = "number", Nilable = false },
-				{ Name = "atlasID", Type = "string", Nilable = false },
+				{ Name = "fileDataID", Type = "fileID", Nilable = false },
+				{ Name = "atlasID", Type = "textureAtlas", Nilable = false },
 				{ Name = "texturePercentageX", Type = "number", Nilable = false },
 				{ Name = "texturePercentageY", Type = "number", Nilable = false },
 				{ Name = "textureX", Type = "number", Nilable = false },
@@ -247,6 +247,7 @@ local Map =
 				{ Name = "uiMapID", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "ignoreZoneMapPositionData", Type = "bool", Nilable = true },
 			},
 
 			Returns =
@@ -292,14 +293,14 @@ local Map =
 			Arguments =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "overrideUiMapID", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -328,12 +329,12 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -343,13 +344,13 @@ local Map =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "mapPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "mapPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "continentID", Type = "number", Nilable = false },
-				{ Name = "worldPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "worldPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -404,84 +405,12 @@ local Map =
 	Tables =
 	{
 		{
-			Name = "MapCanvasPosition",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "None", Type = "MapCanvasPosition", EnumValue = 0 },
-				{ Name = "BottomLeft", Type = "MapCanvasPosition", EnumValue = 1 },
-				{ Name = "BottomRight", Type = "MapCanvasPosition", EnumValue = 2 },
-				{ Name = "TopLeft", Type = "MapCanvasPosition", EnumValue = 3 },
-				{ Name = "TopRight", Type = "MapCanvasPosition", EnumValue = 4 },
-			},
-		},
-		{
-			Name = "UIMapFlag",
-			Type = "Enumeration",
-			NumValues = 17,
-			MinValue = 1,
-			MaxValue = 65536,
-			Fields =
-			{
-				{ Name = "NoHighlight", Type = "UIMapFlag", EnumValue = 1 },
-				{ Name = "ShowOverlays", Type = "UIMapFlag", EnumValue = 2 },
-				{ Name = "ShowTaxiNodes", Type = "UIMapFlag", EnumValue = 4 },
-				{ Name = "GarrisonMap", Type = "UIMapFlag", EnumValue = 8 },
-				{ Name = "FallbackToParentMap", Type = "UIMapFlag", EnumValue = 16 },
-				{ Name = "NoHighlightTexture", Type = "UIMapFlag", EnumValue = 32 },
-				{ Name = "ShowTaskObjectives", Type = "UIMapFlag", EnumValue = 64 },
-				{ Name = "NoWorldPositions", Type = "UIMapFlag", EnumValue = 128 },
-				{ Name = "HideArchaeologyDigs", Type = "UIMapFlag", EnumValue = 256 },
-				{ Name = "Deprecated", Type = "UIMapFlag", EnumValue = 512 },
-				{ Name = "HideIcons", Type = "UIMapFlag", EnumValue = 1024 },
-				{ Name = "HideVignettes", Type = "UIMapFlag", EnumValue = 2048 },
-				{ Name = "ForceAllOverlayExplored", Type = "UIMapFlag", EnumValue = 4096 },
-				{ Name = "FlightMapShowZoomOut", Type = "UIMapFlag", EnumValue = 8192 },
-				{ Name = "FlightMapAutoZoom", Type = "UIMapFlag", EnumValue = 16384 },
-				{ Name = "ForceOnNavbar", Type = "UIMapFlag", EnumValue = 32768 },
-				{ Name = "AlwaysAllowUserWaypoints", Type = "UIMapFlag", EnumValue = 65536 },
-			},
-		},
-		{
-			Name = "UIMapSystem",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "World", Type = "UIMapSystem", EnumValue = 0 },
-				{ Name = "Taxi", Type = "UIMapSystem", EnumValue = 1 },
-				{ Name = "Adventure", Type = "UIMapSystem", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "UIMapType",
-			Type = "Enumeration",
-			NumValues = 7,
-			MinValue = 0,
-			MaxValue = 6,
-			Fields =
-			{
-				{ Name = "Cosmic", Type = "UIMapType", EnumValue = 0 },
-				{ Name = "World", Type = "UIMapType", EnumValue = 1 },
-				{ Name = "Continent", Type = "UIMapType", EnumValue = 2 },
-				{ Name = "Zone", Type = "UIMapType", EnumValue = 3 },
-				{ Name = "Dungeon", Type = "UIMapType", EnumValue = 4 },
-				{ Name = "Micro", Type = "UIMapType", EnumValue = 5 },
-				{ Name = "Orphan", Type = "UIMapType", EnumValue = 6 },
-			},
-		},
-		{
 			Name = "MapBannerInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 			},
 		},
@@ -491,8 +420,8 @@ local Map =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "linkedUiMapID", Type = "number", Nilable = false },
 			},
@@ -503,7 +432,7 @@ local Map =
 			Fields =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "mapType", Type = "UIMapType", Nilable = false },
 				{ Name = "parentMapID", Type = "number", Nilable = false },
 			},
@@ -515,7 +444,7 @@ local Map =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
 				{ Name = "relativeHeightIndex", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -523,8 +452,8 @@ local Map =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "fileDataID", Type = "number", Nilable = false },
-				{ Name = "atlasID", Type = "string", Nilable = false },
+				{ Name = "fileDataID", Type = "fileID", Nilable = false },
+				{ Name = "atlasID", Type = "textureAtlas", Nilable = false },
 				{ Name = "texturePercentageX", Type = "number", Nilable = false },
 				{ Name = "texturePercentageY", Type = "number", Nilable = false },
 				{ Name = "textureX", Type = "number", Nilable = false },

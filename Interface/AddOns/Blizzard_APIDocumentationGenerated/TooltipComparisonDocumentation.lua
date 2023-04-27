@@ -34,8 +34,8 @@ local TooltipComparison =
 			Fields =
 			{
 				{ Name = "method", Type = "TooltipComparisonMethod", Nilable = false, Default = "Single" },
-				{ Name = "item", Type = "table", Nilable = false },
-				{ Name = "additionalItems", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "item", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "additionalItems", Type = "table", InnerType = "TooltipComparisonItem", Nilable = false },
 			},
 		},
 	},

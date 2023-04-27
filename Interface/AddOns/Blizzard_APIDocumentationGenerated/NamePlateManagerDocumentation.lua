@@ -16,7 +16,7 @@ local NamePlateManager =
 			LiteralName = "FORBIDDEN_NAME_PLATE_CREATED",
 			Payload =
 			{
-				{ Name = "namePlateFrame", Type = "table", Nilable = false },
+				{ Name = "namePlateFrame", Type = "NamePlateFrame", Nilable = false },
 			},
 		},
 		{
@@ -43,7 +43,7 @@ local NamePlateManager =
 			LiteralName = "NAME_PLATE_CREATED",
 			Payload =
 			{
-				{ Name = "namePlateFrame", Type = "table", Nilable = false },
+				{ Name = "namePlateFrame", Type = "NamePlateFrame", Nilable = false },
 			},
 		},
 		{

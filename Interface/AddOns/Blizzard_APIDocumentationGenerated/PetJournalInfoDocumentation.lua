@@ -26,7 +26,7 @@ local PetJournalInfo =
 			LiteralName = "COMPANION_UPDATE",
 			Payload =
 			{
-				{ Name = "companionType", Type = "string", Nilable = true },
+				{ Name = "companionType", Type = "cstring", Nilable = true },
 			},
 		},
 	},

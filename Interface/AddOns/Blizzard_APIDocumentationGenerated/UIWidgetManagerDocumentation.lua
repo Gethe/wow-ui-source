@@ -469,7 +469,7 @@ local UIWidgetManager =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "leadingText", Type = "string", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },

@@ -72,6 +72,10 @@ function AudioOptionsSoundPanel_OnLoad (self)
 	self.options = SoundPanelOptions;
 	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsPanel_Refresh);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
+
+	if not ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		AudioOptionsSoundPanelEnableDSPs:Hide();
+	end
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)

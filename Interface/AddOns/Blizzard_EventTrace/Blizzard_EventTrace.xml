@@ -290,10 +290,10 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-8"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -317,10 +317,10 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-8"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -381,10 +381,10 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-8"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>

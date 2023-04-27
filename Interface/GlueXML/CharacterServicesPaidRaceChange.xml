@@ -13,8 +13,18 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="CustomizeLabel" inherits="GameFontNormal" justifyH="LEFT" text="PFC_FLOW_CUSTOMIZE_CHARACTER_STEP">
+						<FontString parentKey="CurrentRaceLabel" inherits="GameFontNormalMed3" justifyH="LEFT">
 							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="CustomizeLabel" inherits="GameFontNormal" justifyH="LEFT" text="PRC_FLOW_CUSTOMIZE_CHARACTER_STEP">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CurrentRaceLabel" relativePoint="BOTTOMLEFT" y="-38"/>
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>

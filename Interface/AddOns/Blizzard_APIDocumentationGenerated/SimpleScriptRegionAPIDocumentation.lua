@@ -28,6 +28,15 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "EnableMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enable", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "EnableMouseWheel",
 			Type = "Function",
 
@@ -46,7 +55,7 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -59,8 +68,8 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -74,7 +83,7 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -87,7 +96,7 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -100,10 +109,10 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
-				{ Name = "width", Type = "number", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -116,7 +125,7 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -129,10 +138,10 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
-				{ Name = "width", Type = "number", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -141,13 +150,13 @@ local SimpleScriptRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "script", Type = "function", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = false },
 			},
 		},
 		{
@@ -161,8 +170,8 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -188,7 +197,7 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "top", Type = "number", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -202,7 +211,7 @@ local SimpleScriptRegionAPI =
 
 			Returns =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -211,7 +220,7 @@ local SimpleScriptRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptName", Type = "string", Nilable = false },
+				{ Name = "scriptName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -233,8 +242,8 @@ local SimpleScriptRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
-				{ Name = "script", Type = "function", Nilable = false },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
 			},
 		},
@@ -304,15 +313,28 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "IsMouseMotionFocus",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isMouseMotionFocus", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMouseOver",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "offsetTop", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "offsetBottom", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "offsetLeft", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "offsetRight", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "offsetTop", Type = "uiUnit", Nilable = false, Default = 0 },
+				{ Name = "offsetBottom", Type = "uiUnit", Nilable = false, Default = 0 },
+				{ Name = "offsetLeft", Type = "uiUnit", Nilable = false, Default = 0 },
+				{ Name = "offsetRight", Type = "uiUnit", Nilable = false, Default = 0 },
 			},
 
 			Returns =
@@ -410,7 +432,7 @@ local SimpleScriptRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "parent", Type = "table", Nilable = true },
+				{ Name = "parent", Type = "SimpleFrame", Nilable = true },
 			},
 		},
 		{
@@ -428,8 +450,8 @@ local SimpleScriptRegionAPI =
 
 			Arguments =
 			{
-				{ Name = "scriptTypeName", Type = "string", Nilable = false },
-				{ Name = "script", Type = "function", Nilable = true },
+				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
+				{ Name = "script", Type = "luaFunction", Nilable = true },
 			},
 		},
 		{

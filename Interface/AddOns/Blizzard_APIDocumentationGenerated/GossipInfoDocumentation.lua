@@ -145,7 +145,7 @@ local GossipInfo =
 
 			Returns =
 			{
-				{ Name = "gossipText", Type = "string", Nilable = false },
+				{ Name = "gossipText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -173,7 +173,18 @@ local GossipInfo =
 			Arguments =
 			{
 				{ Name = "optionID", Type = "number", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = true },
+				{ Name = "text", Type = "cstring", Nilable = true },
+				{ Name = "confirmed", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "SelectOptionByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "optionID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = true },
 				{ Name = "confirmed", Type = "bool", Nilable = true },
 			},
 		},
@@ -222,7 +233,7 @@ local GossipInfo =
 			LiteralName = "GOSSIP_SHOW",
 			Payload =
 			{
-				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
 			},
 		},
 	},
@@ -273,13 +284,13 @@ local GossipInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "gossipOptionID", Type = "number", Nilable = false },
+				{ Name = "gossipOptionID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "status", Type = "GossipOptionStatus", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = true },
 				{ Name = "flags", Type = "number", Nilable = false },
-				{ Name = "overrideIconID", Type = "number", Nilable = true },
+				{ Name = "overrideIconID", Type = "fileID", Nilable = true },
 				{ Name = "selectOptionWhenOnlyOption", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 			},
@@ -291,7 +302,7 @@ local GossipInfo =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "inBattleMap", Type = "bool", Nilable = false },
 			},
 		},

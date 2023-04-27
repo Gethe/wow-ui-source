@@ -12,7 +12,7 @@ local LossOfControl =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -26,8 +26,8 @@ local LossOfControl =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -50,7 +50,7 @@ local LossOfControl =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -68,7 +68,7 @@ local LossOfControl =
 			LiteralName = "LOSS_OF_CONTROL_ADDED",
 			Payload =
 			{
-				{ Name = "effectIndex", Type = "number", Nilable = false },
+				{ Name = "effectIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -77,8 +77,8 @@ local LossOfControl =
 			LiteralName = "LOSS_OF_CONTROL_COMMENTATOR_ADDED",
 			Payload =
 			{
-				{ Name = "victim", Type = "string", Nilable = false },
-				{ Name = "effectIndex", Type = "number", Nilable = false },
+				{ Name = "victim", Type = "WOWGUID", Nilable = false },
+				{ Name = "effectIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -87,7 +87,7 @@ local LossOfControl =
 			LiteralName = "LOSS_OF_CONTROL_COMMENTATOR_UPDATE",
 			Payload =
 			{
-				{ Name = "victim", Type = "string", Nilable = false },
+				{ Name = "victim", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -114,9 +114,9 @@ local LossOfControl =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "locType", Type = "string", Nilable = false },
+				{ Name = "locType", Type = "cstring", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "displayText", Type = "string", Nilable = false },
+				{ Name = "displayText", Type = "cstring", Nilable = false },
 				{ Name = "iconTexture", Type = "number", Nilable = false },
 				{ Name = "startTime", Type = "number", Nilable = true },
 				{ Name = "timeRemaining", Type = "number", Nilable = true },

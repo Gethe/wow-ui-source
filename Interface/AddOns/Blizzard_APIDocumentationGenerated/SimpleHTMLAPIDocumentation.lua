@@ -15,7 +15,7 @@ local SimpleHTMLAPI =
 
 			Returns =
 			{
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -24,14 +24,14 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -40,12 +40,12 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -58,7 +58,7 @@ local SimpleHTMLAPI =
 
 			Returns =
 			{
-				{ Name = "format", Type = "string", Nilable = false },
+				{ Name = "format", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -67,7 +67,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
@@ -81,12 +81,12 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -95,12 +95,12 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -109,7 +109,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
@@ -126,7 +126,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
@@ -141,12 +141,12 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -155,7 +155,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 			},
 
 			Returns =
@@ -185,10 +185,10 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
-				{ Name = "fontFile", Type = "string", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
-				{ Name = "flags", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
+				{ Name = "fontFile", Type = "cstring", Nilable = false },
+				{ Name = "height", Type = "uiFontHeight", Nilable = false },
+				{ Name = "flags", Type = "TBFFlags", Nilable = false },
 			},
 		},
 		{
@@ -197,8 +197,8 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -207,7 +207,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "format", Type = "string", Nilable = false },
+				{ Name = "format", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -216,7 +216,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 				{ Name = "wordWrap", Type = "bool", Nilable = false },
 			},
 		},
@@ -226,8 +226,8 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
-				{ Name = "justifyH", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
+				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -236,8 +236,8 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
-				{ Name = "justifyV", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
+				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 		{
@@ -246,11 +246,11 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -259,7 +259,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
 			},
@@ -270,8 +270,8 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
-				{ Name = "spacing", Type = "number", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
+				{ Name = "spacing", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -280,7 +280,7 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "ignoreMarkup", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -290,11 +290,11 @@ local SimpleHTMLAPI =
 
 			Arguments =
 			{
-				{ Name = "textType", Type = "string", Nilable = false },
+				{ Name = "textType", Type = "HTMLTextType", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 	},

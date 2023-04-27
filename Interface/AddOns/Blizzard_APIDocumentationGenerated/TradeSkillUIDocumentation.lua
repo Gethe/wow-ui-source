@@ -17,7 +17,7 @@ local TradeSkillUI =
 			Payload =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
-				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 				{ Name = "baseRecipeID", Type = "number", Nilable = true },
 			},
 		},

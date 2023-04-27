@@ -6,6 +6,21 @@ local AddOns =
 
 	Functions =
 	{
+		{
+			Name = "GetAddOnMetadata",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+				{ Name = "variable", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -16,7 +31,8 @@ local AddOns =
 			LiteralName = "ADDON_LOADED",
 			Payload =
 			{
-				{ Name = "addOnName", Type = "string", Nilable = false },
+				{ Name = "addOnName", Type = "cstring", Nilable = false },
+				{ Name = "containsBindings", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -34,7 +50,7 @@ local AddOns =
 			LiteralName = "SAVED_VARIABLES_TOO_LARGE",
 			Payload =
 			{
-				{ Name = "addOnName", Type = "string", Nilable = false },
+				{ Name = "addOnName", Type = "cstring", Nilable = false },
 			},
 		},
 	},

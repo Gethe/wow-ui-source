@@ -7,9 +7,9 @@ local SimpleHTMLShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "align", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
+				{ Name = "type", Type = "HTMLTextType", Nilable = false },
+				{ Name = "align", Type = "TBFStyleFlags", Nilable = false },
 			},
 		},
 	},

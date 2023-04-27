@@ -31,7 +31,7 @@ local QuestTaskInfo =
 
 			Returns =
 			{
-				{ Name = "questTitle", Type = "string", Nilable = false },
+				{ Name = "questTitle", Type = "cstring", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = true },
 				{ Name = "capped", Type = "bool", Nilable = true },
 				{ Name = "displayAsObjective", Type = "bool", Nilable = true },

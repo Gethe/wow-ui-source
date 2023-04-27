@@ -93,7 +93,16 @@ end
 function CharacterCreateEnumerateClasses()
 	local classes = C_CharacterCreation.GetAvailableClasses();
 
-	CharacterCreate.numClasses = #classes;
+	local numDisplayClasses = 0;
+	local displayClasses = {};
+	for index, classData in pairs(classes) do
+		if (SHOW_UNAVAILABLE_CLASSES or classData.enabled) then
+			numDisplayClasses = numDisplayClasses + 1;
+			displayClasses[#displayClasses+1] = index;
+		end
+	end
+	CharacterCreate.numClasses = numDisplayClasses;
+	
 	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
 		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
 		return;
@@ -102,10 +111,12 @@ function CharacterCreateEnumerateClasses()
 	local isBoostedCharacter = CharacterUpgrade_IsCreatedCharacterUpgrade() or CharacterUpgrade_IsCreatedCharacterTrialBoost();
 	local coords;
 	local button;
-	for index, classData in pairs(classes) do
+	for index, classIndex in ipairs(displayClasses) do
+		local classData = classes[classIndex];
 		coords = CLASS_ICON_TCOORDS[strupper(classData.fileName)];
 		_G["CharacterCreateClassButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateClassButton"..index];
+		button:Show();
 
 		local disable = true;
 		if (CharacterCreateFrame:HasService()) then
@@ -121,13 +132,16 @@ function CharacterCreateEnumerateClasses()
 			button.tooltip = classData.name;
 		end
 
-		if (disable) then
-			button:Disable();
-			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Show();
-		else
-			button:Enable();
-			_G["CharacterCreateClassButton"..index.."DisableTexture"]:Hide();
+		if (SHOW_UNAVAILABLE_CLASSES) then
+			if (disable) then
+				button:Disable();
+				_G["CharacterCreateClassButton"..index.."DisableTexture"]:Show();
+			else
+				button:Enable();
+				_G["CharacterCreateClassButton"..index.."DisableTexture"]:Hide();
+			end
 		end
+
 		button.classID = classData.classID;
 	end
 	for i=CharacterCreate.numClasses+1, MAX_CLASSES_PER_RACE, 1 do
@@ -418,7 +432,6 @@ function CharacterCreate_Okay()
 		else
 			KioskModeSplash:SetAutoEnterWorld(false)
 		end
-
 		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
 	end
 end
@@ -438,7 +451,9 @@ function CharacterClass_OnClick(self, id)
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 	C_CharacterCreation.SetSelectedClass(id);
 	SetCharacterClass(id);
-	SetCharacterRace(C_CharacterCreation.GetSelectedRace());
+	if (SHOW_UNAVAILABLE_CLASSES) then
+		SetCharacterRace(C_CharacterCreation.GetSelectedRace());
+	end
 end
 
 function CharacterRace_OnClick(self, id)

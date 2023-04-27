@@ -13,7 +13,7 @@ GLUE_SECONDARY_SCREENS = {
 	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
 	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
 	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
-	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["options"] = 		{ frame = "SettingsPanel",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
@@ -154,6 +154,11 @@ function GlueParent_UpdateDialogs()
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
+
+		if (ACCOUNT_SAVE_KICK_ERROR_CODE and AccountSaveFrame and errorCategory == "WOW" and errorID == ACCOUNT_SAVE_KICK_ERROR_CODE) then
+			-- If client is kicked due to account save success, allow the Account Save Frame to handle messaging if it's loaded
+			return;
+		end
 
 		local isHTML = false;
 		local hasURL = false;
