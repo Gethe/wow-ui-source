@@ -270,7 +270,9 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	seconds = roundUp and ceil(seconds) or floor(seconds);
 	maxCount = maxCount or 2;
 
-	local threshold = 1.0
+	-- When limited to a single term, use a higher threshold of 1.5 min/hr/day.
+	-- If there are at least 2 terms, the higher threshold is unnecessary.
+	local threshold = maxCount > 1 and 1.0 or 1.5
 
 	if ( seconds >= SECONDS_PER_DAY * threshold ) then
 		count = count + 1;
@@ -362,7 +364,7 @@ end
 -- Deprecated. See SecondsFormatter for intended replacement
 function SecondsToTimeAbbrev(seconds)
 	local tempTime;
-	local threshold = 1.0
+	local threshold = 1.5
 	if ( seconds >= SECONDS_PER_DAY * threshold ) then
 		tempTime = ceil(seconds / SECONDS_PER_DAY);
 		return DAY_ONELETTER_ABBR, tempTime;
