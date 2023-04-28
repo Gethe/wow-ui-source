@@ -105,6 +105,7 @@ ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGen
 ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -248,6 +249,9 @@ ChatTypeGroup["COMBAT_MISC_INFO"] = {
 };
 ChatTypeGroup["ACHIEVEMENT"] = {
 	"CHAT_MSG_ACHIEVEMENT";
+};
+ChatTypeGroup["GUILD_ACHIEVEMENT"] = {
+	"CHAT_MSG_GUILD_ACHIEVEMENT";
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -3412,15 +3416,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			self:AddMessage(arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
-			if (C_Social.IsSocialEnabled()) then
-				local achieveID = GetAchievementInfoFromHyperlink(arg1);
-				if (achieveID) then
-					local isGuildAchievement = select(12, GetAchievementInfo(achieveID));
-					if (isGuildAchievement) then
-						message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
-					end
-				end
-			end
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
