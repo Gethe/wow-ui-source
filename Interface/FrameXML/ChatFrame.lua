@@ -2088,16 +2088,6 @@ SlashCmdList["GUILD_INFO"] = function(msg)
 	GuildInfo();
 end
 
-SlashCmdList["GUILD_ROSTER"] = function(msg)
-	if ( IsInGuild() ) then
-		GuildFrame_LoadUI();
-		if ( GuildFrame ) then
-			GuildFrameTab2:Click();
-			ShowUIPanel(GuildFrame);
-		end
-	end
-end
-
 --SlashCmdList["GUILD_HELP"] = function(msg)
 --	ChatFrame_DisplayGuildHelp(DEFAULT_CHAT_FRAME);
 --end
@@ -2717,6 +2707,14 @@ SlashCmdList["COUNTDOWN"] = function(msg)
 	end
 end
 
+SlashCmdList["EDITMODE"] = function(msg)
+	if EditModeManagerFrame:CanEnterEditMode() then
+		ShowUIPanel(EditModeManagerFrame);
+	else
+		ChatFrame_DisplaySystemMessageInPrimary(ERROR_SLASH_EDITMODE_CANNOT_ENTER);
+	end
+end
+
 function ChatFrame_SetupListProxyTable(list)
 	if ( getmetatable(list) ) then
 		return;
@@ -2819,7 +2817,6 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("CLUB_REMOVED");
 	self:RegisterEvent("UPDATE_INSTANCE_INFO");
 	self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
-	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
 	self:RegisterEvent("CHAT_SERVER_RECONNECTED");
 	self:RegisterEvent("BN_CONNECTED");
@@ -2844,6 +2841,9 @@ function ChatFrame_OnLoad(self)
 		ChatFrame_UpdateChatFrames();
 	end
 	Settings.SetOnValueChangedCallback("chatStyle", OnValueChanged);
+
+	local noMouseWheel = not GetCVarBool("chatMouseScroll");
+	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self, self.ScrollBar, noMouseWheel);
 end
 
 function ChatFrame_UpdateChatFrames()
@@ -3313,13 +3313,6 @@ function ChatFrame_ConfigEventHandler(self, event, ...)
 				end
 			end
 		end
-		return true;
-	elseif ( event == "VARIABLES_LOADED" ) then
-		if ( GetCVarBool("chatMouseScroll") ) then
-			self:SetScript("OnMouseWheel", FloatingChatFrame_OnMouseScroll);
-			self:EnableMouseWheel(true);
-		end
-		self:UnregisterEvent("VARIABLES_LOADED");
 		return true;
 	end
 end
@@ -4734,7 +4727,8 @@ function ChatEdit_UpdateHeader(editBox)
 	end
 
 	local info;
-	if ( type == "VOICE_TEXT" ) then
+	if ( type == "VOICE_TEXT" and VoiceTranscription_GetChatTypeAndInfo ) then
+		-- This can occur after loading ChatFrame.lua and before loading VoiceChatTranscriptionFrame.lua due to loading screen event signals, so nil check is required before calling the function.
 		type, info = VoiceTranscription_GetChatTypeAndInfo();
 	else
 		info = ChatTypeInfo[type];

@@ -51,6 +51,7 @@
 ..\SharedXML\ButtonGroup.lua
 ..\SharedXML\Frame\EventFrame.xml
 ..\SharedXML\Frame\EventButton.xml
+..\SharedXML\Frame\EventScrollFrame.xml
 ..\SharedXML\Frame\EventEditBox.xml
 ..\SharedXML\DataProvider.lua
 ..\SharedXML\Interpolator.lua
@@ -60,6 +61,8 @@
 ..\SharedXML\Scroll\ScrollController.lua
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\MinimalScrollBar.xml
+..\SharedXML\Scroll\TrimScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
@@ -77,6 +80,7 @@ GlueLocalization.xml
 ..\SharedXML\Backdrop.xml
 ..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\LayoutFrame.xml
+..\SharedXML\ScrollDefine.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\Tabs\MinimalTab.xml
@@ -89,14 +93,8 @@ GlueButtons.xml
 GlueContextMenu.xml
 
 ..\SharedXML\DataProviders.xml
-..\SharedXML\Scroll\TrimScrollBar.xml
-..\SharedXML\Scroll\MinimalScrollBar.xml
 ..\SharedXML\ButtonTray\ButtonTrayUtil.lua
 ..\SharedXML\ButtonTray\ButtonTray.xml
-..\SharedXML\HybridScrollFrame.xml
-..\SharedXML\TemplatedList.xml
-..\SharedXML\ScrollList.xml
-..\SharedXML\PagedList.xml
 ..\SharedXML\Vector2D.lua
 ..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
@@ -108,7 +106,7 @@ GlueContextMenu.xml
 ..\SharedXML\FrameStack.lua
 ..\SharedXML\AnimationTemplates.xml
 ..\SharedXML\Selector\Blizzard_SelectorUI.xml
-..\SharedXML\Selector\Blizzard_GridSelectorUI.xml
+..\SharedXML\Selector\Blizzard_ScrollBoxSelector.lua
 ..\SharedXML\Selector\Blizzard_ScrollBoxSelector.xml
 
 
@@ -129,6 +127,7 @@ GlueTooltip.xml
 ..\SharedXML\DialogUtil.lua
 
 ..\SharedXML\Settings\Settings.xml
+..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
 SettingDefinitions\Definitions.xml
 
 ..\SharedXML\AddonList.xml
@@ -146,6 +145,7 @@ CharacterServices.xml
 CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
+CharacterServicesPaidRaceChange.xml
 SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

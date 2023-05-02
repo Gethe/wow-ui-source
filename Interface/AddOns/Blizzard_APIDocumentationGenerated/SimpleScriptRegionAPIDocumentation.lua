@@ -28,6 +28,15 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "EnableMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enable", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "EnableMouseWheel",
 			Type = "Function",
 
@@ -301,6 +310,19 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMouseMotionFocus",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isMouseMotionFocus", Type = "bool", Nilable = false },
 			},
 		},
 		{

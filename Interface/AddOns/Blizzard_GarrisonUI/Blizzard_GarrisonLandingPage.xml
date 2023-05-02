@@ -295,10 +295,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-5" y="9"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-23" y="-3"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-17" y="-8"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-17" y="10"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
@@ -515,10 +515,10 @@
 									<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-25" y="-6"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-11"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="8"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>

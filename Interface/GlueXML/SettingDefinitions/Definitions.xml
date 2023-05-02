@@ -8,4 +8,5 @@
 	<Script file="..\..\SharedXML\SettingDefinitions\Network.lua"/>
 	<Script file="..\..\SharedXML\SettingDefinitions\Mac.lua"/>
 	<Script file="Mac.lua"/>
+	<Script file="..\..\SharedXML\SettingDefinitions\New.lua"/>
 </Ui>

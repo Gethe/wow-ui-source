@@ -62,6 +62,19 @@ function QuestLogMixin:HideCampaignOverview(campaignID)
 	QuestScrollFrame:Show();
 end
 
+function QuestLogMixin:OnHighlightedQuestPOIChange(questID)
+	local poiButton = QuestPOI_FindButton(self.QuestsFrame.Contents, questID);
+	if poiButton then
+		QuestPOIButton_EvaluateManagedHighlight(poiButton);
+	end
+end
+
+function QuestLogMixin:OnMapPinClick(pin, questID)
+	if self.DetailsFrame.questID ~= questID then
+		QuestMapFrame_ShowQuestDetails(questID);
+	end
+end
+
 QuestLogHeaderCodeMixin = {};
 
 function QuestLogHeaderCodeMixin:GetButtonType()
@@ -145,11 +158,21 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
 
+	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("MapCanvas.QuestPin.OnClick", self.OnMapPinClick, self);
+
 	self.completedCriteria = {};
-	QuestPOI_Initialize(QuestScrollFrame.Contents);
+	local onCreateFunc = nil;
+	local useHighlightManager = true;
+	QuestPOI_Initialize(QuestScrollFrame.Contents, onCreateFunc, useHighlightManager);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
 	UIDropDownMenu_SetInitializeFunction(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize);
 	UIDropDownMenu_SetDisplayMode(QuestMapQuestOptionsDropDown, "MENU");
+
+	QuestMapFrame.DetailsFrame.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(o, xrange, yrange)
+		QuestMapFrame_AdjustPathButtons();
+	end);
 end
 
 local function QuestMapFrame_DoFullUpdate()
@@ -603,6 +626,7 @@ end
 
 function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID);
+	QuestMapFrame_PingQuestID(questID);
 
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	C_QuestLog.SetSelectedQuest(questID);
@@ -610,7 +634,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
-	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
+	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:ScrollToBegin();
 
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
@@ -722,7 +746,7 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 
 	local enableShare = not isQuestDisabled and C_QuestLog.IsPushableQuest(questID) and IsInGroup();
 	QuestMapFrame.DetailsFrame.ShareButton:SetEnabled(enableShare);
-	QuestLogPopupDetailFrame.ShareButton:Enable(enableShare);
+	QuestLogPopupDetailFrame.ShareButton:SetEnabled(enableShare);
 end
 
 function QuestMapFrame_ReturnFromQuestDetails()
@@ -1102,7 +1126,7 @@ local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if info.questSortType == QuestSortType.Normal then
+		if info.questSortType == QuestSortType.Normal or info.questSortType == QuestSortType.Legendary then
 			table.insert(infos, info);
 		end
 	end
@@ -1129,8 +1153,15 @@ local function QuestLogQuests_GetPOIButton(displayState, info, isDisabledQuest, 
 end
 
 local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
+	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
+	local questTagID = tagInfo and tagInfo.tagID;
+
 	if isComplete then
-		return "COMPLETED";
+		if questTagID == Enum.QuestTag.Legendary then
+			return "COMPLETED_LEGENDARY";
+		else
+			return "COMPLETED";
+		end
 	end
 
 	-- At this point, we know the quest is not complete, no need to check it any more.
@@ -1148,9 +1179,6 @@ local function QuestLogQuests_GetBestTagID(questID, info, isComplete)
 			end
 		end
 	end
-
-	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
-	local questTagID = tagInfo and tagInfo.tagID;
 
 	if questTagID == Enum.QuestTag.Account then
 		local factionGroup = GetQuestFactionGroup(questID);
@@ -1207,11 +1235,11 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local isComplete = C_QuestLog.IsComplete(questID);
 	local tagID = QuestLogQuests_GetBestTagID(questID, info, isComplete);
-	local tagCoords = QuestUtils_GetQuestTagTextureCoords(tagID);
-	button.TagTexture:SetShown(tagCoords ~= nil);
+	local tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
+	button.TagTexture:SetShown(tagAtlas ~= nil);
 
-	if tagCoords then
-		button.TagTexture:SetTexCoord(unpack(tagCoords));
+	if tagAtlas then
+		button.TagTexture:SetAtlas(tagAtlas, TextureKitConstants.UseAtlasSize);
 		button.TagTexture:SetDesaturated(C_QuestLog.IsQuestDisabledForSession(questID));
 	end
 
@@ -1576,7 +1604,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 
 		local overrideQuestTag = tagInfo.tagID;
-		if ( QuestUtils_GetQuestTagTextureCoords(tagInfo.tagID) ) then
+		if ( QuestUtils_GetQuestTagAtlas(tagInfo.tagID) ) then
 			if ( tagInfo.tagID == Enum.QuestTag.Account and factionGroup ) then
 				overrideQuestTag = "ALLIANCE";
 				if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
@@ -1808,10 +1836,6 @@ end
 -- ***** POPUP DETAIL FRAME
 -- *****************************************************************************************************
 
-function QuestLogPopupDetailFrame_OnLoad(self)
-	self.ScrollFrame.ScrollBar:SetPoint("TOPLEFT", self.ScrollFrame, "TOPRIGHT", 6, -14);
-end
-
 function QuestLogPopupDetailFrame_OnHide(self)
 	self.questID = nil;
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
@@ -1848,7 +1872,7 @@ end
 function QuestLogPopupDetailFrame_Update(resetScrollBar)
 	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogPopupDetailFrame.ScrollFrame.ScrollChild)
 	if ( resetScrollBar ) then
-		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:SetValue(0);
+		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:ScrollToBegin();
 	end
 end
 

@@ -1,19 +1,14 @@
-HonorBarMixin = CreateFromMixins(StatusTrackingBarMixin);
+local barAtlas = "UI-HUD-ExperienceBar-Fill-Honor";
+local gainFlareAtlas = "UI-HUD-ExperienceBar-Flare-Faction-Orange-2x-Flipbook";
+local levelUpAtlas = "UI-HUD-ExperienceBar-Fill-Honor-2x-Flipbook";
 
-function HonorBarMixin:GetPriority()
-	return self.priority; 
-end
-
-function HonorBarMixin:ShouldBeVisible()
-	return IsWatchingHonorAsXP() or C_PvP.IsActiveBattlefield() or IsInActiveWorldPVP();
-end
+HonorBarMixin = {};
 
 function HonorBarMixin:Update()
 	local current = UnitHonor("player");
 	local maxHonor = UnitHonorMax("player");
 	local level = UnitHonorLevel("player");
 	self:SetBarValues(current, 0, maxHonor, level);
-	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Honor");
 end
 
 function HonorBarMixin:UpdateOverlayFrameText()
@@ -27,7 +22,7 @@ function HonorBarMixin:UpdateOverlayFrameText()
 	self:SetBarText(HONOR_BAR:format(current, maxHonor));
 end
 
-function HonorBarMixin:OnLoad() 
+function HonorBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
@@ -37,7 +32,9 @@ function HonorBarMixin:OnLoad()
 	self.StatusBar.OnFinishedCallback = function(...)
 		self.StatusBar:OnAnimFinished(...);
 	end
-	self.priority = 2; 
+
+	self.StatusBar:SetBarTexture(barAtlas);
+	self.StatusBar:SetAnimationTextures(gainFlareAtlas, levelUpAtlas);
 end
 
 function HonorBarMixin:OnEvent(event, ...)
@@ -52,17 +49,17 @@ function HonorBarMixin:OnEvent(event, ...)
 	end
 end
 
-function HonorBarMixin:UpdateTick() 
+function HonorBarMixin:UpdateTick()
 	return;
 end
 
-function HonorBarMixin:OnShow() 
+function HonorBarMixin:OnShow()
 	return;
 end
 
 function HonorBarMixin:OnEnter()
 	self:UpdateOverlayFrameText();
-	self:ShowText(); 
+	self:ShowText();
 	return;
 end
 

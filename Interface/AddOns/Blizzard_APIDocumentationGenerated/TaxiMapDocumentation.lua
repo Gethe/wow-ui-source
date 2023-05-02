@@ -124,6 +124,7 @@ local TaxiMap =
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "useSpecialIcon", Type = "bool", Nilable = false },
 				{ Name = "specialIconCostString", Type = "string", Nilable = true },
+				{ Name = "isMapLayerTransition", Type = "bool", Nilable = false },
 			},
 		},
 	},

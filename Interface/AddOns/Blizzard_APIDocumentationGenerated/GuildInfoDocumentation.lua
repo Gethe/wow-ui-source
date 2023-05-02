@@ -118,6 +118,20 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "MemberExistsByName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "exists", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "QueryGuildMemberRecipes",
 			Type = "Function",
 

@@ -7,6 +7,29 @@ local PartyPoseUI =
 	Functions =
 	{
 		{
+			Name = "ExtraAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "partyPoseID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPartyPoseInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "PartyPoseInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPartyPoseInfoByMapID",
 			Type = "Function",
 
@@ -20,10 +43,34 @@ local PartyPoseUI =
 				{ Name = "info", Type = "PartyPoseInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "HasExtraAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "partyPoseID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasExtraAction", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "ShowPartyPoseUI",
+			Type = "Event",
+			LiteralName = "SHOW_PARTY_POSE_UI",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "won", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -40,6 +87,8 @@ local PartyPoseUI =
 				{ Name = "defeatModelSceneID", Type = "number", Nilable = false },
 				{ Name = "victorySoundKitID", Type = "number", Nilable = false },
 				{ Name = "defeatSoundKitID", Type = "number", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
+				{ Name = "titleText", Type = "string", Nilable = true },
 			},
 		},
 	},

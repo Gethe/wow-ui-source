@@ -134,6 +134,7 @@ local PerksActivities =
 			{
 				{ Name = "activePerksMonth", Type = "number", Nilable = false },
 				{ Name = "displayMonthName", Type = "cstring", Nilable = false },
+				{ Name = "secondsRemaining", Type = "time_t", Nilable = false },
 				{ Name = "activities", Type = "table", InnerType = "PerksActivityInfo", Nilable = false },
 				{ Name = "thresholds", Type = "table", InnerType = "PerksActivityThresholdInfo", Nilable = false },
 			},
@@ -174,6 +175,8 @@ local PerksActivities =
 				{ Name = "thresholdContributionAmount", Type = "number", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "tracked", Type = "bool", Nilable = false },
+				{ Name = "supersedes", Type = "number", Nilable = false },
+				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "requirementsList", Type = "table", InnerType = "PerksActivityRequirement", Nilable = false },
 				{ Name = "criteriaList", Type = "table", InnerType = "PerksActivityCriteria", Nilable = false },
 				{ Name = "tagNames", Type = "table", InnerType = "string", Nilable = false },

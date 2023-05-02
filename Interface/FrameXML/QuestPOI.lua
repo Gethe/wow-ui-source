@@ -4,12 +4,43 @@ local QUEST_POI_ICON_SIZE = 0.125;
 QUEST_POI_COLOR_BLACK = 0;
 QUEST_POI_COLOR_YELLOW = 0.5;
 
-function QuestPOI_Initialize(parent, onCreateFunc)
+QuestPOIHighlightManager = { };
+
+function QuestPOIHighlightManager:SetHighlight(questID)
+	if not questID or self.questID == questID then
+		return;
+	end
+	if self.questID then
+		self.ClearHighlight();
+	end
+	self.questID = questID;
+	EventRegistry:TriggerEvent("SetHighlightedQuestPOI", questID);
+end
+
+function QuestPOIHighlightManager:ClearHighlight()
+	if not self.questID then
+		return;
+	end
+	local oldID = self.questID;
+	self.questID = nil;	
+	EventRegistry:TriggerEvent("ClearHighlightedQuestPOI", oldID);
+end
+
+function QuestPOIHighlightManager:HasHighlight()
+	return self.questID ~= nil;
+end
+
+function QuestPOIHighlightManager:GetQuestID()
+	return self.questID;
+end
+
+function QuestPOI_Initialize(parent, onCreateFunc, useHighlightManager)
 	parent.poiTable = {
 		["numeric"] = { };
 		["completed"] = { };
 	};
 	parent.poiOnCreateFunc = onCreateFunc;
+	parent.useHighlightManager = useHighlightManager;
 end
 
 function QuestPOI_ResetUsage(parent)
@@ -162,7 +193,7 @@ end
 
 function QuestPOI_GetQuestCompleteAtlas(poiButton)
 	local isLegendaryQuest = C_QuestLog.IsLegendaryQuest(poiButton.questID);
-	return isLegendaryQuest and "UI-QuestIcon-TurnIn-Legendary" or "UI-QuestIcon-TurnIn-Normal";
+	return isLegendaryQuest and "UI-QuestPoiLegendary-QuestBangTurnIn" or "UI-QuestIcon-TurnIn-Normal";
 end
 
 function QuestPOI_SetNumber(poiButton)
@@ -309,6 +340,9 @@ local function QuestPOI_GetButtonInternal(parent, questID, style, index)
 	poiButton.used = true;
 	poiButton.poiParent = parent;
 	poiButton.pingWorldMap = false;
+	if parent.useHighlightManager then
+		QuestPOIButton_EvaluateManagedHighlight(poiButton);
+	end
 
 	return poiButton;
 end
@@ -416,16 +450,40 @@ function QuestPOIButton_OnClick(self)
 end
 
 function QuestPOIButton_OnEnter(self)
-	if not self:IsEnabled() then
+	if self.style == "disabled" then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE);
 		GameTooltip_AddNormalLine(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT);
 		GameTooltip:Show();
+	else
+		if self:GetParent().useHighlightManager then
+			QuestPOIHighlightManager:SetHighlight(self.questID);
+		else
+			self.HighlightTexture:Show();
+		end
 	end
 end
 
 function QuestPOIButton_OnLeave(self)
 	if GameTooltip:GetOwner() == self then
 		GameTooltip:Hide();
+	end
+	if self:GetParent().useHighlightManager then
+		QuestPOIHighlightManager:ClearHighlight();
+	else
+		self.HighlightTexture:Hide();
+	end
+end
+
+function QuestPOIButton_EvaluateManagedHighlight(self)
+	if self.questID == QuestPOIHighlightManager:GetQuestID() then
+		if self.style == "disabled" then
+			return;
+		end
+		self.HighlightTexture:Show();
+	else
+		if self.style == "disabled" or not self:IsMouseOver() then
+			self.HighlightTexture:Hide();
+		end	
 	end
 end

@@ -602,7 +602,7 @@ end
 function EventTracePanelMixin:SetLoggingPaused(paused)
 	self.isLoggingPaused = paused;
 
-	self:LogMessage(paused and EVENTTRACE_LOG_START or EVENTTRACE_LOG_PAUSE);
+	self:LogMessage(paused and EVENTTRACE_LOG_PAUSE or EVENTTRACE_LOG_START);
 	self:UpdatePlaybackButton();
 end
 

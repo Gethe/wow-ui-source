@@ -26,8 +26,9 @@ function PvPTalentSlotButtonMixin:OnEvent(event)
 end
 
 function PvPTalentSlotButtonMixin:GetSelectedTalent()
-	if (self:IsInspecting()) then
-		return C_SpecializationInfo.GetInspectSelectedPvpTalent(self:GetInspectUnit(), self.slotIndex);
+	local inspectUnit = self:GetInspectUnit();
+	if (inspectUnit) then
+		return C_SpecializationInfo.GetInspectSelectedPvpTalent(inspectUnit, self.slotIndex);
 	end
 
 	return self.predictedSetting:Get();
@@ -74,8 +75,9 @@ function PvPTalentSlotButtonMixin:Update()
 		error("Slot must be setup with a slot index first.");
 	end
 
-	if (self:IsInspecting()) then
-		local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(self:GetInspectUnit(), self.slotIndex);
+	local inspectUnit = self:GetInspectUnit();
+	if (inspectUnit) then
+		local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(inspectUnit, self.slotIndex);
 		if (selectedTalentID) then
 			local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
 			SetPortraitToTexture(self.Texture, selectedTalentInfo.icon);

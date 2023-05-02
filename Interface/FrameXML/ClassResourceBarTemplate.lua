@@ -1,6 +1,6 @@
 --[[ 
 --------------------------- KeyValues --------------------------------
-	tooltip1, tooltip2 [string] - Builds the mouseover tooltip1
+	tooltip1, tooltip2 [global] - Builds the mouseover tooltip1
 	class [string] - The string name of the class
 	spec [string] - Spec name of the class
 	powerToken [string] = power token of the resource
@@ -11,6 +11,7 @@
 	resourceBarMixin [global] - override the default inherited mixin: ClassPowerBar
 	resourcePointTemplate [string] - template for the horizontal layout frame to instantiate from
 	resourcePointSetupFunc [global] - function on the resource point for any custom setup
+	resourcePointReleaseFunc [global] - function on the resource point for any custom on-release reset logic
 	showTooltip [boolean] - show the tooltip on the mouseover
 	showBarFunc [global] - custom function for whether or not the bar should show
 	requiredShownLevel [number] - If the bar needs a certain level to show this will handle showing the bar on level up, etc
@@ -18,8 +19,10 @@
 ClassResourceBarMixin = {};
 
 function ClassResourceBarMixin:OnLoad()
-	self.classResourceButtonPool = CreateFramePool("FRAME", self, self.resourcePointTemplate);
-	self.classResourceButtonTable = { };
+	if self.usePooledResourceButtons then
+		self.classResourceButtonPool = CreateFramePool("FRAME", self, self.resourcePointTemplate, self.resourcePointReleaseFunc);
+		self.classResourceButtonTable = { };
+	end
 
 	if(self.powerToken) then
 		if(self.powerToken2) then
@@ -31,7 +34,7 @@ function ClassResourceBarMixin:OnLoad()
 	if(self.showTooltip) then
 		self:SetTooltip(self.tooltip1, self.tooltip2);
 	end
-	self.maxUsablePoints = 5;
+	self.maxUsablePoints = self.maxUsablePoints or 5;
 	self.resourceBarMixin.OnLoad(self);
 end
 
@@ -107,29 +110,31 @@ function ClassResourceBarMixin:UpdateMaxPower()
 	self.unit = self.unit or self:GetParent():GetParent().unit or "player";
 	self.maxUsablePoints = UnitPowerMax(self.unit, self.powerType);
 
-	-- Avoid resetting resource buttons if max points hasn't changed
-	if oldMaxPoints and self.maxUsablePoints == oldMaxPoints and self.classResourceButtonTable and #self.classResourceButtonTable == self.maxUsablePoints then
-		return;
-	end
-
-	self.classResourceButtonPool:ReleaseAll();
-	self.classResourceButtonTable = { };
-	
-	for i = 1, self.maxUsablePoints do
-		local resourcePoint = self.classResourceButtonPool:Acquire();
-		self.classResourceButtonTable[i] = resourcePoint;
-		if(self.resourcePointSetupFunc) then
-			self.resourcePointSetupFunc(resourcePoint);
+	if self.usePooledResourceButtons then
+		-- Avoid resetting resource buttons if max points hasn't changed
+		if oldMaxPoints and self.maxUsablePoints == oldMaxPoints and self.classResourceButtonTable and #self.classResourceButtonTable == self.maxUsablePoints then
+			return;
 		end
-		resourcePoint.layoutIndex = i;
-		resourcePoint:Show();
+
+		self.classResourceButtonPool:ReleaseAll();
+		self.classResourceButtonTable = { };
+	
+		for i = 1, self.maxUsablePoints do
+			local resourcePoint = self.classResourceButtonPool:Acquire();
+			self.classResourceButtonTable[i] = resourcePoint;
+			if(self.resourcePointSetupFunc) then
+				self.resourcePointSetupFunc(resourcePoint);
+			end
+			resourcePoint.layoutIndex = i;
+			resourcePoint:Show();
+		end
+	
+		self:Layout();
+
+		-- Since we just re-acquired all the resource buttons, make sure they all get the current power state applied to them
+		-- Very important since it's possible for max to update either without or after other power update events
+		self:UpdatePower();
 	end
-
-	self:Layout();
-
-	-- Since we just re-acquired all the resource buttons, make sure they all get the current power state applied to them
-	-- Very important since it's possible for max to update either without or after other power update events
-	self:UpdatePower();
 end
 
 --To be overriden in inherited class

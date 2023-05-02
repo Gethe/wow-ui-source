@@ -296,6 +296,13 @@
 					</KeyValues>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Overlay" hidden="true" alphaMode="BLEND">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="BannerFrame" alpha="0" setAllPoints="true" hidden="true">

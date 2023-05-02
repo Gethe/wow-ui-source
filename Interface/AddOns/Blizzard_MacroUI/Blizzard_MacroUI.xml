@@ -111,7 +111,7 @@
 					<OnClick function="MacroEditButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<ScrollFrame name="MacroFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame name="MacroFrameScrollFrame" inherits="MacroFrameScrollFrameTemplate">
 				<Size x="286" y="85"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacroFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT" x="11" y="-13"/>

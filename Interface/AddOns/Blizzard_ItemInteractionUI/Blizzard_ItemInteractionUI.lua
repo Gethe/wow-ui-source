@@ -1,6 +1,12 @@
 UIPanelWindows["ItemInteractionFrame"] = {area = "left", pushable = 3, showFailedFunc = C_ItemInteraction.Reset, };
 
-StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION"] = {
+local staticPopupNames = {
+	Confirmation = "ITEM_INTERACTION_CONFIRMATION",
+	ConfirmationDelayed = "ITEM_INTERACTION_CONFIRMATION_DELAYED",
+	ConfirmationDelayedWithChargeInfo = "ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO",
+}
+
+StaticPopupDialogs[staticPopupNames.Confirmation] = {
 	text = "",
 	button1 = "",
 	button2 = CANCEL,
@@ -21,7 +27,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION"] = {
 	hasItemFrame = 1,
 };
 
-StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED"] = {
+StaticPopupDialogs[staticPopupNames.ConfirmationDelayed] = {
 	text = "",
 	button1 = "",
 	button2 = CANCEL,
@@ -47,7 +53,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED"] = {
 };
 
 
-StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
+StaticPopupDialogs[staticPopupNames.ConfirmationDelayedWithChargeInfo] = {
 	text = "",
 	subText = "",
 	button1 = "",
@@ -169,8 +175,8 @@ function ItemInteractionMixin:OnEvent(event, ...)
 		end
 	elseif (event == "ITEM_INTERACTION_CHARGE_INFO_UPDATED" or event == "CURRENCY_DISPLAY_UPDATE") then
 		-- We need to display a recharge time right after we use our final charge.
-		if (self:UsesCharges()) then
-			self:UpdateCharges();
+		if (self:UsesCharges() or self:CostsCurrency()) then
+			self:UpdateCostFrame();
 		end
 	elseif (event == "UNIT_SPELLCAST_START") then
 		local unitTag, lineID, spellID = ...;
@@ -552,12 +558,12 @@ function ItemInteractionMixin:InteractWithItem()
 		if (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConfirmationHasDelay)) then
 			if (self:UsesCharges()) then
 				data.subText = self:GetChargeConfirmationText();
-				StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO", textArg1, textArg2, data);
+				StaticPopup_Show(staticPopupNames.ConfirmationDelayedWithChargeInfo, textArg1, textArg2, data);
 			else
-				StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED", textArg1, textArg2, data);
+				StaticPopup_Show(staticPopupNames.ConfirmationDelayed, textArg1, textArg2, data);
 			end
 		else
-			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION", textArg1, textArg2, data);
+			StaticPopup_Show(staticPopupNames.Confirmation, textArg1, textArg2, data);
 		end
 	else
 		self:CompleteItemInteraction();
@@ -649,7 +655,9 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	end
 	self:UpdateActionButtonState();
 
-	StaticPopup_Hide("ITEM_INTERACTION_CONFIRMATION");
+	for _, staticPopupName in pairs(staticPopupNames) do
+		StaticPopup_Hide(staticPopupName);
+	end
 end
 
 function ItemInteractionMixin:SetupEquipmentFlyout(setup)

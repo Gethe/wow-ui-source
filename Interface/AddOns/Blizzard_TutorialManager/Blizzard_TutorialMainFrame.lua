@@ -24,14 +24,12 @@ function TutorialMainFrameMixin:OnLoad()
 
 	self.Content = nil;
 	self.Position = self.FramePositions.Default;
-	self.Alpha = 0;
 	self.State = self.States.Hidden;
-	self.IsUpdating = false;
+	self.wasShown = false;
 
 	self.Timer = nil;
 
 	self.DesiredContent = nil;
-	self.DesiredAlpha = nil;
 	self.DesiredPosition = nil;
 
 	Dispatcher:RegisterEvent("CINEMATIC_START", self);
@@ -40,12 +38,18 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialMainFrameMixin:CINEMATIC_START()
-	self:Hide();
+	if self:IsShown() then
+		self.wasShown = true;
+		self:Hide();
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialMainFrameMixin:CINEMATIC_STOP()
-	self:Show();
+	if self.wasShown then
+		self.wasShown = false;
+		self:Show();
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -76,20 +80,6 @@ function TutorialMainFrameMixin:HideTutorial(id)
 		if (self.Timer) then
 			self.Timer:Cancel();
 		end
-	end
-end
-
-function TutorialMainFrameMixin:_HookUpdate()
-	if (not self.IsUpdating) then
-		self:SetScript("OnUpdate", self.UpdateAnimation);
-		self.IsUpdating = true;
-	end
-end
-
-function TutorialMainFrameMixin:_UnhookUpdate()
-	if (self.IsUpdating) then
-		self:SetScript("OnUpdate", ResizeLayoutMixin.OnUpdate);
-		self.IsUpdating = false;
 	end
 end
 
@@ -147,79 +137,62 @@ function TutorialMainFrameMixin:_SetDesiredPosition(position)
 	end
 end
 
-local fadeInTime = 0.25;
-local fadeOutTime = 0.25;
-function TutorialMainFrameMixin:UpdateAnimation(elapsed)
-	ResizeLayoutMixin.OnUpdate(self, elapsed);
-	local currentAlpha = self:GetAlpha();
-
-	if (currentAlpha < self.DesiredAlpha) then
-		self.State = self.States.AnimatingIn;
-	elseif (currentAlpha > self.DesiredAlpha) then
-		self.State = self.States.AnimatingOut;
-	end
-
-	self.elapsedTime = self.elapsedTime and self.elapsedTime + elapsed or 0;
-
-	if (self.State == self.States.AnimatingOut) then
-		self.Alpha = 1 - math.min(1, (self.elapsedTime / fadeOutTime));
-		if (self.Alpha == 0) then
-			self.elapsedTime = nil;
-			self.State = self.States.Hidden;
-		end
-	elseif (self.State == self.States.AnimatingIn) then
-		self.Alpha = math.min(1, (self.elapsedTime / fadeInTime));
-		if (self.Alpha == 1) then
-			self.elapsedTime = nil;
-			self.State = self.States.Visible;
-		end
-	else
-		error("ERROR - NPE Tutorial Main Frame updating but not animating");
-	end
-	self:SetAlpha(self.Alpha);
-
-	-- When an animation is complete
-	if ((self.State == self.States.Hidden) or (self.State == self.States.Visible)) then
-		local unhook = true;
-
-		if (self.State == self.States.Hidden) then
-			if (self.DesiredContent) then
-				self:_SetContent();
-				unhook = false;
-			end
-
-			if (self.DesiredPosition) then
-				self:_SetPosition();
-				unhook = false;
-			end
-		end
-
-		if (unhook) then
-			self:_UnhookUpdate();
-		end
-	end
-end
-
 function TutorialMainFrameMixin:_AnimateIn()
-	if (self:GetAlpha() < 1) then
-		self.DesiredAlpha = 1;
-		self:_HookUpdate();
-	else
-		self.State = self.States.Visible;
-		self.DesiredContent = nil;
-		self:_UnhookUpdate();
+	if self.fadeInModelUpdater then
+		self.fadeInModelUpdater:Cancel();
 	end
+	self:Show();
+	
+	local data = {object = self, alphaStart = 0.0, alphaEnd = 1.0};
+	local function Update(data)
+		local alphaGain = Lerp(data.alphaStart, data.alphaEnd, 0.1);
+		data.object:SetAlpha(Clamp(data.object:GetAlpha() + alphaGain, 0, 1));
+	end
+	local function IsComplete(data)
+		if math.abs(data.object:GetAlpha() - data.alphaEnd) < 0.01 then
+			data.object:SetAlpha(data.alphaEnd);
+			return true;
+		end
+		return false;
+	end
+	local function Finish(data)
+		self.State = self.States.Visible;
+		data.object.DesiredContent = nil;
+		self.fadeInModelUpdater = nil; 
+	end
+	self.fadeInModelUpdater = CreateObjectUpdater(data, Update, IsComplete, Finish);
 end
 
 function TutorialMainFrameMixin:_AnimateOut()
-	if (self:GetAlpha() > 0) then
-		self.DesiredAlpha = 0;
-		self:_HookUpdate();
-	else
-		self.State = self.States.Hidden;
-		self.DesiredAlpha = nil;
-		self:_UnhookUpdate();
+	if self.fadeOutModelUpdater then
+		self.fadeOutModelUpdater:Cancel();
 	end
+
+	local data = {object = self, alphaStart = 1.0, alphaEnd = 0.0};
+	local function Update(data)
+		local alphaGain = Lerp(data.alphaStart, data.alphaEnd, 0.1);
+		data.object:SetAlpha(Clamp(data.object:GetAlpha() - alphaGain, 0, 1));
+	end
+	local function IsComplete(data)
+		if math.abs(data.object:GetAlpha() - data.alphaEnd) < 0.01 then
+			data.object:SetAlpha(data.alphaEnd);
+			return true;
+		end
+		return false;
+	end
+	local function Finish(data)
+		self.State = self.States.Hidden;
+		data.object:Hide();
+		self.fadeOutModelUpdater = nil;
+		if (self.DesiredContent) then
+			self:_SetContent();
+		end
+
+		if (self.DesiredPosition) then
+			self:_SetPosition();
+		end
+	end
+	self.fadeOutModelUpdater = CreateObjectUpdater(data, Update, IsComplete, Finish);
 end
 
 
@@ -259,58 +232,6 @@ function TutorialSingleKeyMixin:_SetContent(content)
 end
 
 function TutorialSingleKeyMixin:HideTutorial(id)
-	self:_AnimateOut();
-	if (self.Timer) then
-		self.Timer:Cancel();
-	end
-end
-
-
--- ------------------------------------------------------------------------------------------------------------
-TutorialWalkMixin = CreateFromMixins(TutorialMainFrameMixin);
-function TutorialWalkMixin:OnLoad()
-	TutorialMainFrameMixin.OnLoad(self);
-end
-
-function TutorialWalkMixin:SetKeybindings()
-	local binds = {
-		"MOVEFORWARD",
-		"TURNLEFT",
-		"MOVEBACKWARD",
-		"TURNRIGHT",
-	}
-
-	for i, v in pairs(binds) do
-		local container = self.ContainerFrame[v];
-		if container then
-			local fontString = container.KeyBind;
-			local key = GetBindingKey(v);
-			local bindingText;
-			if key == "LEFT" then
-				bindingText = NPEV2_LEFT_ARROW;
-			elseif key == "RIGHT" then
-				bindingText = NPEV2_RIGHT_ARROW;
-			elseif key ~= "" then
-				bindingText = GetBindingText(key, 1);
-			else
-				fontString:SetText("");
-			end
-
-			if (bindingText and (bindingText ~= "")) then
-				fontString:SetText(bindingText);
-			end
-		end
-	end
-end
-
-function TutorialWalkMixin:_SetContent(content)
-	self:SetKeybindings();
-	self:MarkDirty();
-	self.ContainerFrame:MarkDirty();
-	self:_AnimateIn();
-end
-
-function TutorialWalkMixin:HideTutorial(id)
 	self:_AnimateOut();
 	if (self.Timer) then
 		self.Timer:Cancel();

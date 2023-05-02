@@ -102,6 +102,9 @@ SPEC_MONK_WINDWALKER = 3;
 SPEC_PALADIN_RETRIBUTION = 3;
 SPEC_MAGE_ARCANE = 1;
 SPEC_SHAMAN_RESTORATION = 3;
+SPEC_DRUID_BALANCE = 1;
+SPEC_DRUID_FERAL = 2;
+SPEC_DRUID_GUARDIAN = 3;
 
 TALENT_SORT_ORDER = {
 	"spec1",
@@ -693,36 +696,33 @@ SCENARIO_FLAG_DEPRECATED3			= 0x00000008;
 LUA_WARNING_TREAT_AS_ERROR = 0;
 
 -- Quest Tags
-QUEST_ICONS_FILE = "Interface\\QuestFrame\\QuestTypeIcons";
-QUEST_ICONS_FILE_WIDTH = 128;
-QUEST_ICONS_FILE_HEIGHT = 64;
-
-QUEST_TAG_TCOORDS = {
-	["COMPLETED"] = { 0.140625, 0.28125, 0, 0.28125 },
-	["DAILY"] = { 0.28125, 0.421875, 0, 0.28125 },
-	["WEEKLY"] = { 0.28125, 0.421875, 0.5625, 0.84375 },
-	["FAILED"] = { 0.84375, 0.984375, 0.28125, 0.5625 },
-	["STORY"] = { 0.703125, 0.84375, 0.28125, 0.5625 },
-	["ALLIANCE"] = { 0.421875, 0.5625, 0.28125, 0.5625 },
-	["HORDE"] = { 0.5625, 0.703125, 0.28125, 0.5625 },
-	["EXPIRING_SOON"] = { 0.84375, 0.984375, 0.5625, 0.84375 },
-	["EXPIRING"] = { 0.703125, 0.84375, 0.5625, 0.84375 },
-	[Enum.QuestTag.Dungeon] = { 0.421875, 0.5625, 0, 0.28125 },
-	[Enum.QuestTag.Scenario] = { 0.5625, 0.703125, 0, 0.28125 },
-	[Enum.QuestTag.Account] = { 0.84375, 0.984375, 0, 0.28125 },
-	[Enum.QuestTag.Legendary] = { 0, 0.140625, 0.28125, 0.5625 },
-	[Enum.QuestTag.Group] = { 0.140625, 0.28125, 0.28125, 0.5625 },
-	[Enum.QuestTag.PvP] = { 0.28125, 0.421875, 0.28125, 0.5625 },
-	[Enum.QuestTag.Heroic] = { 0, 0.140625, 0.5625, 0.84375 },
+QUEST_TAG_ATLAS = {
+	["COMPLETED"] = "questlog-questtypeicon-quest",
+	["COMPLETED_LEGENDARY"] = "questlog-questtypeicon-legendaryturnin",
+	["DAILY"] = "questlog-questtypeicon-daily",
+	["WEEKLY"] = "questlog-questtypeicon-weekly",
+	["FAILED"] = "questlog-questtypeicon-questfailed",
+	["STORY"] = "questlog-questtypeicon-story",
+	["ALLIANCE"] = "questlog-questtypeicon-alliance",
+	["HORDE"] = "questlog-questtypeicon-horde",
+	["EXPIRING_SOON"] = "questlog-questtypeicon-expiringsoon",
+	["EXPIRING"] = "questlog-questtypeicon-expiring",
+	[Enum.QuestTag.Dungeon] = "questlog-questtypeicon-dungeon",
+	[Enum.QuestTag.Scenario] = "questlog-questtypeicon-scenario",
+	[Enum.QuestTag.Account] = "questlog-questtypeicon-account",
+	[Enum.QuestTag.Legendary] = "questlog-questtypeicon-legendary",
+	[Enum.QuestTag.Group] = "questlog-questtypeicon-group",
+	[Enum.QuestTag.PvP] = "questlog-questtypeicon-pvp",
+	[Enum.QuestTag.Heroic] = "questlog-questtypeicon-heroic",
 	-- same texture for all raids
-	[Enum.QuestTag.Raid] = { 0.703125, 0.84375, 0, 0.28125 },
-	[Enum.QuestTag.Raid10] = { 0.703125, 0.84375, 0, 0.28125 },
-	[Enum.QuestTag.Raid25] = { 0.703125, 0.84375, 0, 0.28125 },
+	[Enum.QuestTag.Raid] = "questlog-questtypeicon-raid",
+	[Enum.QuestTag.Raid10] = "questlog-questtypeicon-raid",
+	[Enum.QuestTag.Raid25] = "questlog-questtypeicon-raid",
 };
 
-WORLD_QUEST_TYPE_TCOORDS = {
-	[Enum.QuestTagType.Dungeon] = { 0.421875, 0.5625, 0, 0.28125 },
-	[Enum.QuestTagType.Raid] = { 0.703125, 0.84375, 0, 0.28125 },
+WORLD_QUEST_TYPE_ATLAS = {
+	[Enum.QuestTagType.Dungeon] = "questlog-questtypeicon-dungeon",
+	[Enum.QuestTagType.Raid] = "questlog-questtypeicon-raid",
 };
 
 -- MATCH CONDITIONS

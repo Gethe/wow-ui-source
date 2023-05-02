@@ -4,38 +4,40 @@ local AZERITE_XP_BAR_EVENTS = {
 	"CVAR_UPDATE",
 	"BAG_UPDATE",
 };
-AzeriteBarMixin = CreateFromMixins(StatusTrackingBarMixin);
 
-function AzeriteBarMixin:ShouldBeVisible()
-	local isMaxLevel = C_AzeriteItem.IsAzeriteItemAtMaxLevel();
-	if isMaxLevel then
-		return false;
-	end
+local barAtlas = "UI-HUD-ExperienceBar-Fill-ArtifactPower";
+local gainFlareAtlas = "UI-HUD-ExperienceBar-Flare-ArtifactPower-2x-Flipbook";
+local levelUpAtlas = "UI-HUD-ExperienceBar-Fill-ArtifactPower-2x-Flipbook";
+
+AzeriteBarMixin = {};
+
+function AzeriteBarMixin:GetLevel()
 	local azeriteItem = C_AzeriteItem.FindActiveAzeriteItem();
-	return azeriteItem and azeriteItem:IsEquipmentSlot() and C_AzeriteItem.IsAzeriteItemEnabled(azeriteItem);
+	if not azeriteItem then
+		return nil;
+	end
+
+	if C_AzeriteItem.IsUnlimitedLevelingUnlocked() then
+		return C_AzeriteItem.GetUnlimitedPowerLevel(azeriteItem);
+	end
+
+	return C_AzeriteItem.GetPowerLevel(azeriteItem);
 end
 
 function AzeriteBarMixin:Update()
-	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem(); 
-	
-	if (not azeriteItemLocation) then 
-		return; 
-	end
-	
-	local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation); 
-	
-	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
-		self.xp, self.totalLevelXP = 0, 1;
-		self.currentLevel = -1;
+	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	local xp, totalLevelXp;
+	if not azeriteItemLocation or AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+		xp, totalLevelXp = 0, 1;
+		self.level = -1;
 	else
-		self.xp, self.totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation);
-		self.currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation); 
+		xp, totalLevelXp = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation);
+		self.level = self:GetLevel();
 	end
-	self.xpToNextLevel = self.totalLevelXP - self.xp; 
+	self.xpToNextLevel = totalLevelXp - xp;
 
-	self:SetBarValues(self.xp, 0, self.totalLevelXP);
+	self:SetBarValues(xp, 0, totalLevelXp, self.level);
 	self:UpdatePointsTooltip();
-	self:Show();
 end
 
 function AzeriteBarMixin:UpdateOverlayFrameText()
@@ -52,9 +54,10 @@ function AzeriteBarMixin:AnimatedValueChangedCallback()
 end
 
 function AzeriteBarMixin:OnLoad()
-	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-ArtifactPower");
+	self.StatusBar:SetBarTexture(barAtlas);
+	self.StatusBar:SetAnimationTextures(gainFlareAtlas, levelUpAtlas);
 	self.StatusBar:SetOnAnimatedValueChangedCallback(function() self:AnimatedValueChangedCallback(); end)
-	self.priority = 0;
+	self.StatusBar:SetIsMaxLevelFunctionOverride(function() return C_AzeriteItem.IsAzeriteItemAtMaxLevel(); end);
 end
 
 function AzeriteBarMixin:OnEvent(event, ...)
@@ -77,7 +80,7 @@ end
 
 function AzeriteBarMixin:OnShow() 
 	FrameUtil.RegisterFrameForEvents(self, AZERITE_XP_BAR_EVENTS);
-	self:UpdateTextVisibility(); 
+	self:UpdateTextVisibility();
 end
 
 function AzeriteBarMixin:OnHide()
@@ -85,9 +88,11 @@ function AzeriteBarMixin:OnHide()
 end
 
 function AzeriteBarMixin:OnEnter()
-	self:ShowText(); 
+	self:ShowText();
 	self:UpdateOverlayFrameText();
-	if self.currentLevel == -1 then
+
+	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 		GameTooltip:SetText(HEART_OF_AZEROTH_MISSING_ERROR, HIGHLIGHT_FONT_COLOR:GetRGB());
 	else
@@ -98,7 +103,9 @@ end
 function AzeriteBarMixin:OnLeave()
 	self:HideText();
 	GameTooltip_Hide();
-	if self.currentLevel ~= -1 then
+
+	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
 		self:CancelItemLoadCallback();
 	end
 end
@@ -110,14 +117,14 @@ function AzeriteBarMixin:CancelItemLoadCallback()
 	end
 end
 
-function AzeriteBarMixin:SetupPointsTooltip() 
-	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem(); 
-	local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation); 
-	
+function AzeriteBarMixin:SetupPointsTooltip()
+	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
+	local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation);
+
 	self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
-		local azeriteItemName = azeriteItem:GetItemName(); 
+		local azeriteItemName = azeriteItem:GetItemName();
 		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-		GameTooltip:SetText(AZERITE_POWER_TOOLTIP_TITLE:format(self.currentLevel, self.xpToNextLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
+		GameTooltip:SetText(AZERITE_POWER_TOOLTIP_TITLE:format(self.level, self.xpToNextLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
 		GameTooltip:AddLine(AZERITE_POWER_TOOLTIP_BODY:format(azeriteItemName));
 		GameTooltip:Show();
 	end);

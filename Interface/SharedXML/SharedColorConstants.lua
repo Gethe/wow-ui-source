@@ -12,18 +12,6 @@ FACTION_BAR_COLORS =
 	FACTION_GREEN_COLOR,
 };
 
-FACTION_BAR_Textures =
-{
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Red",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Red",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Orange",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Yellow",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
-	"UI-HUD-ExperienceBar-Fill-Reputation-Faction-Green",
-};
-
 MATERIAL_TEXT_COLOR_TABLE = 
 {
 	["Default"] = DEFAULT_MATERIAL_TEXT_COLOR,
@@ -58,6 +46,12 @@ PLAYER_FACTION_COLORS_HEX =
 { 
 	[0] = PLAYER_FACTION_COLOR_HORDE:GenerateHexColor(), 
 	[1] = PLAYER_FACTION_COLOR_ALLIANCE:GenerateHexColor(), 
+};
+
+PLAYER_FACTION_BRIGHT_COLORS = 
+{ 
+	[0] = PVP_SCOREBOARD_HORDE_CELL_COLOR, 
+	[1] = PVP_SCOREBOARD_ALLIANCE_CELL_COLOR,
 };
 
 COVENANT_COLORS = 

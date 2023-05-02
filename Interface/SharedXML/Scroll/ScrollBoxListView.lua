@@ -1,3 +1,29 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+Import("C_XMLUtil");
+Import("tinsert");
+Import("ipairs");
+Import("math");
+
+end
+---------------
+
 local InvalidationReason = EnumUtil.MakeEnum("DataProviderReassigned", "DataProviderContentsChanged");
 
 ScrollBoxListViewMixin = CreateFromMixins(ScrollBoxViewMixin, CallbackRegistryMixin);
@@ -65,9 +91,15 @@ function ScrollBoxListViewMixin:CreateTemplateInfoForTemplate(frameTemplate)
 end
 
 function ScrollBoxListViewMixin:AssignAccessors(frame, elementData)
+	-- Should always return the data stored in the data provider.
 	frame.GetElementData = function(self)
 		return elementData;
 	end;
+	
+	--[[ Provides a standard accessor to the underlying user data. If your view wraps the 
+	user data in any way, you should reimplement this function accordingly. As an example, 
+	see ScrollBoxListTreeListViewMixin:AssignAccessors().]]--
+	frame.GetData = frame.GetElementData;
 
 	frame.ElementDataMatches = function(self, elementData)
 		return self:GetElementData() == elementData;
@@ -85,6 +117,7 @@ end
 
 function ScrollBoxListViewMixin:UnassignAccessors(frame)
 	frame.GetElementData = nil;
+	frame.GetData = nil;
 	frame.ElementDataMatches = nil;
 	frame.GetOrderIndex = nil;
 	frame.SetOrderIndex = nil;
@@ -488,6 +521,8 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 	if not self:IsVirtualized() then
 		CheckDataIndicesReturn(1, size);
 	end
+
+	self:RecalculateExtent(scrollBox, stride, spacing); --prevents the assert in GetElementExtent
 
 	local dataIndexBegin;
 	local scrollOffset = scrollBox:GetDerivedScrollOffset();

@@ -1,5 +1,11 @@
 local MAW_BUFF_MAX_DISPLAY = 44;
 
+function ShouldShowMawBuffs()
+	local _, icon, count = UnitAura("player", 1, "MAW");
+	local hasMawBuff = icon;
+	return IsInJailersTower() or hasMawBuff or false;
+end
+
 MawBuffsContainerMixin = {};
 
 function MawBuffsContainerMixin:OnLoad()
@@ -28,7 +34,7 @@ function MawBuffsContainerMixin:OnShow()
 end
 
 function MawBuffsContainerMixin:Update()
-	if not IsInJailersTower() and not self.fromFrameManager then
+	if not ShouldShowMawBuffs() then
 		self:Hide();
 		self.buffCount = 0;
 		return;
@@ -263,11 +269,4 @@ end
 function MawBuffMixin:OnLeave()
 	GameTooltip_Hide(); 
 	self.HighlightBorder:Hide(); 
-end
-
-MawBuffsBelowMinimapFrameMixin = { };
-function MawBuffsBelowMinimapFrameMixin:OnShow()
-	self.Container.fromFrameManager = true;
-	self.Container:Update();
-	UIParentManagedFrameMixin.OnShow(self);
 end

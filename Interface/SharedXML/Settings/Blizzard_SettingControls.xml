@@ -2,6 +2,14 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SettingControls.lua"/>
 
+	<Texture name="HoverBackgroundTemplate" virtual="true" hidden="true">
+		<Anchors>
+			<Anchor relativeKey="$parent.$parent" point="TOPLEFT"/>
+			<Anchor relativeKey="$parent.$parent" point="BOTTOMRIGHT" x="-5"/>
+		</Anchors>
+		<Color a="0.1" r="1" g="1" b="1"/>
+	</Texture>
+
 	<Frame name="SettingsListSectionHeaderTemplate" mixin="SettingsListSectionHeaderMixin" virtual="true">
 		<Size y="45"/>
 		<Layers>
@@ -27,6 +35,11 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-80"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="HoverBackground" inherits="HoverBackgroundTemplate"/>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
@@ -42,6 +55,11 @@
 
 	<CheckButton name="SettingsCheckBoxTemplate" mixin="SettingsCheckBoxMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="30" y="29"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HoverBackground" inherits="HoverBackgroundTemplate"/>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>

@@ -1004,26 +1004,11 @@
 									<Anchor point="BOTTOMRIGHT" x="0" y="60"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-								<KeyValues>
-									<KeyValue key="hideBackground" value="true" type="boolean"/>
-								</KeyValues>
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="-5" y="-4"/>
-									<Anchor point="BOTTOMRIGHT" x="-5" y="8"/>
+									<Anchor point="TOPRIGHT" x="-14" y="-9"/>
+									<Anchor point="BOTTOMRIGHT" x="-14" y="12"/>
 								</Anchors>
-								<Layers>
-									<Layer level="BORDER">
-										<Texture file="Interface\Glues\CharacterCreate\Frame-Sides">
-											<Size x="16" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="-8" y="-1"/>
-												<Anchor point="BOTTOMLEFT" x="-8" y="1"/>
-											</Anchors>
-											<TexCoords left="0.5" right="1" top="0" bottom="1"/>
-										</Texture>
-									</Layer>
-								</Layers>
 							</EventFrame>
 							<Button name="CharSelectChangeRealmButton" inherits="GlueButtonSmallTemplate" text="CHANGE_REALM">
 								<Anchors>
@@ -1971,10 +1956,10 @@
 					<Anchor point="TOPLEFT" x="18" y="-66"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="6" y="5"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="6" y="-6"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="11" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="11" y="-1"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>

@@ -46,7 +46,8 @@ local VignetteInfo =
 
 			Returns =
 			{
-				{ Name = "vignettePosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "vignettePosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "vignetteFacing", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -101,6 +102,7 @@ local VignetteInfo =
 				{ Name = "type", Type = "VignetteType", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
+				{ Name = "addPaddingAboveWidgets", Type = "bool", Nilable = true },
 			},
 		},
 	},

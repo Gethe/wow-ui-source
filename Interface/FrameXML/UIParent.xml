@@ -25,7 +25,6 @@
 				UnitPopup_OnUpdate(elapsed);
 				AnimatedShine_OnUpdate(elapsed);
 				AutoCastShine_OnUpdate(nil, elapsed);
-				LFRBrowseFrame_OnUpdateAlways(elapsed);
 				HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
@@ -36,6 +35,9 @@
 	</Frame>
 
 	<Frame name="UIParentManagedFrameTemplate" mixin="UIParentManagedFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isManagedFrame" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>

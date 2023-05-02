@@ -389,8 +389,10 @@ function AchievementAlertFrame_OnClick (self, button, down)
 		return;
 	end
 
-	CloseAllWindows();
-	ShowUIPanel(AchievementFrame);
+	if not AchievementFrame:IsShown() then
+		CloseAllWindows();
+		AchievementFrame_ToggleAchievementFrame();
+	end
 
 	local _, _, _, achCompleted = GetAchievementInfo(id);
 	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then

@@ -21,6 +21,9 @@ local TEXT_OVERRIDE = {
 local TIME_LEFT_FRAME_WIDTH = 200;
 LOSS_OF_CONTROL_TIME_OFFSET = 6;
 
+local ALERT_FADE_DELAY = 1;
+local ALERT_FADE_TIME = 0.5;
+
 local DISPLAY_TYPE_FULL = 2;
 local DISPLAY_TYPE_ALERT = 1;
 local DISPLAY_TYPE_NONE = 0;
@@ -33,6 +36,12 @@ function LossOfControlFrame_OnLoad(self)
 	-- figure out some string widths - our base width is for under 10 seconds which should be almost all loss of control durations
 	self.TimeLeft.baseNumberWidth = self.TimeLeft.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	self.TimeLeft.secondsWidth = self.TimeLeft.SecondsText:GetStringWidth();
+
+	self.Anim:SetScript("OnFinished", function()
+		if (self.Cooldown:GetCooldownDuration() > 0) then
+			self.Cooldown:Show();
+		end
+	end);
 end
 
 function LossOfControlFrame_OnEvent(self, event, ...)
@@ -51,6 +60,7 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 			return;
 		end
 		if ( eventIndex == LOSS_OF_CONTROL_ACTIVE_INDEX ) then
+			self.fadeDelayTime = nil;
 			self.fadeTime = nil;
 			LossOfControlFrame_SetUpDisplay(self, true);
 		end
@@ -79,10 +89,17 @@ function LossOfControlFrame_OnUpdate(self, elapsed)
 	RaidNotice_UpdateSlot(self.TimeLeft.NumberText, timeLeftTimings, elapsed);
 	RaidNotice_UpdateSlot(self.TimeLeft.SecondsText, timeLeftTimings, elapsed);
 
-	-- handle alert type
-	if(self.fadeTime) then
+	-- handle alert fade timing
+	if(self.fadeDelayTime) then
+		self.fadeDelayTime = self.fadeDelayTime - elapsed;
+		if(self.fadeDelayTime < 0) then
+			self.fadeDelayTime = nil;
+		end
+	end
+
+	if(self.fadeTime and not self.fadeDelayTime) then
 		self.fadeTime = self.fadeTime - elapsed;
-		self:SetAlpha(max(self.fadeTime*2, 0.0));
+		self:SetAlpha(Saturate(self.fadeTime / ALERT_FADE_TIME));
 		if(self.fadeTime < 0) then
 			self:Hide();
 		else
@@ -92,11 +109,12 @@ function LossOfControlFrame_OnUpdate(self, elapsed)
 	else
 		self:SetAlpha(1.0);
 	end
-	LossOfControlFrame_UpdateDisplay(self);	
+	LossOfControlFrame_UpdateDisplay(self);
 end
 
 function LossOfControlFrame_OnHide(self)
 	self.fadeTime = nil;
+	self.fadeDelayTime = nil;
 	self.priority = nil;
 end
 
@@ -151,7 +169,8 @@ function LossOfControlFrame_SetUpDisplay(self, animate, data)
 		-- show
 		if ( animate ) then
 			if ( displayType == DISPLAY_TYPE_ALERT ) then
-				self.fadeTime = 1.5;
+				self.fadeDelayTime = ALERT_FADE_DELAY;
+				self.fadeTime = ALERT_FADE_TIME;
 			end
 			self.Anim:Stop();
 			self.AbilityName.scrollTime = 0;

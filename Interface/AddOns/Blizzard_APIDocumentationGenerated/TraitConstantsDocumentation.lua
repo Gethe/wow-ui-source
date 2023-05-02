@@ -290,6 +290,7 @@ local TraitConstants =
 				{ Name = "COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID", Type = "number", Value = 384255 },
 				{ Name = "INSPECT_TRAIT_CONFIG_ID", Type = "number", Value = -1 },
 				{ Name = "STARTER_BUILD_TRAIT_CONFIG_ID", Type = "number", Value = -2 },
+				{ Name = "VIEW_TRAIT_CONFIG_ID", Type = "number", Value = -3 },
 			},
 		},
 	},

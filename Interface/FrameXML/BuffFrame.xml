@@ -2,11 +2,8 @@
 ..\FrameXML\UI.xsd">
 	<Script file="BuffFrame.lua"/>
 
-	<Button name="AuraButtonTemplate" mixin="AuraButtonMixin" virtual="true">
+	<Frame name="AuraButtonArtTemplate" virtual="true">
 		<Size x="30" y="40"/>
-		<!-- <KeyValues>
-			<KeyValue key="isExample" value="false" type="boolean"/>
-		</KeyValues> -->
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp">
@@ -47,6 +44,13 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<!-- If you make changes to this, consider making the same changes to PrivateAuraTemplate -->
+	<Button name="AuraButtonTemplate" inherits="AuraButtonArtTemplate" mixin="AuraButtonMixin" virtual="true">
+		<!-- <KeyValues>
+			<KeyValue key="isExample" value="false" type="boolean"/>
+		</KeyValues> -->
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
@@ -66,6 +70,29 @@
 			<KeyValue key="addIconsToRight" value="false" type="boolean"/>
 			<KeyValue key="addIconsToTop" value="false" type="boolean"/>
 		</KeyValues>
+	</Frame>
+
+	<!-- Used for automatic anchoring of private auras -->
+	<Frame name="BuffFramePrivateAuraAnchorTemplate" mixin="BuffFramePrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true">
+		<Size x="30" y="40"/>
+		<KeyValues>
+			<KeyValue key="isAuraAnchor" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Icon">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Duration">
+				<!-- This size is an estimate; we don't know how large the text will actually be since it is set in private aura secure code -->
+				<Size x="29" y="11"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="AuraFrameTemplate" inherits="EditModeAuraFrameSystemTemplate" mixin="AuraFrameMixin"  virtual="true">
@@ -143,7 +170,20 @@
 			<KeyValue key="maxAuras" value="DEBUFF_MAX_DISPLAY" type="global"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.DebuffFrame" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_DEBUFF_FRAME_LABEL" type="global"/>
-		</KeyValues> 
+			<KeyValue key="doNotAnchorDisabledFrames" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="privateAuraAnchor1" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor2" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>
 		</Scripts>

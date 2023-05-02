@@ -1105,10 +1105,10 @@
 									</OnShow>
 								</Scripts>
 							</Frame>
-							<EventFrame parentKey="SpecificScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+							<EventFrame parentKey="SpecificScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-27" y="-87"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="22"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-92"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-22" y="27"/>
 								</Anchors>
 							</EventFrame>
 							<Frame parentKey="BonusFrame" hidden="true">

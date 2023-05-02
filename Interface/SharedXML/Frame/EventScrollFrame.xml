@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI_shared.xsd">
+	<Script file="EventScrollFrame.lua"/>
+
+		<ScrollFrame name="EventScrollFrame" mixin="EventScrollFrameMixin" enableMouse="true" intrinsic="true">
+			<Scripts>
+				<OnLoad method="OnLoad_Intrinsic"/>
+				<OnVerticalScroll method="OnVerticalScroll_Intrinsic" intrinsicOrder="precall"/>
+				<OnHorizontalScroll method="OnHorizontalScroll_Intrinsic" intrinsicOrder="precall"/>
+				<OnScrollRangeChanged method="OnScrollRangeChanged_Intrinsic" intrinsicOrder="precall"/>
+				<OnMouseWheel method="OnMouseWheel_Intrinsic" intrinsicOrder="precall"/>
+				<OnSizeChanged method="OnSizeChanged_Intrinsic" intrinsicOrder="postcall"/>
+			</Scripts>
+		</ScrollFrame>
+</Ui>

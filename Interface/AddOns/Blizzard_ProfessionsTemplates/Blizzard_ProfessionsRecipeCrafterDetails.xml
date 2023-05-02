@@ -112,6 +112,16 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="BackgroundMinimized" atlas="Professions-MinimizedView-QualityPane-Bg" useAtlasSize="false" hidden="true">
+					<Size x="315" y="105"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			
 				<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER">
 					<Size x="350" y="20"/>
 					<KeyValues>

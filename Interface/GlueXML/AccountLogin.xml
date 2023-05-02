@@ -16,7 +16,7 @@
 		</Scripts>
 	</EditBox>
 
-	<Button name="AccountNameButton" virtual="true">
+	<Button name="AccountNameButtonTemplate" mixin="AccountNameMixin" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -28,10 +28,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnClick function="WoWAccountSelectButton_OnClick"/>
-			<OnDoubleClick function="WoWAccountSelectButton_OnDoubleClick"/>
-		</Scripts>
 		<ButtonText>
 			<Anchors>
 				<Anchor point="LEFT" x="2" y="2"/>
@@ -462,62 +458,12 @@
 											<KeyValue key="backdropColorAlpha" value="0" type="number"/>
 										</KeyValues>
 										<Frames>
-											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
+											<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 												<Anchors>
-													<Anchor point="TOPLEFT" x="12" y="-6"/>
+													<Anchor point="TOPLEFT" x="10" y="-7"/>
+													<Anchor point="BOTTOMRIGHT" x="10" y="-1"/>
 												</Anchors>
-											</Button>
-											<Button parentKey="Button2" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button1" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<Button parentKey="Button3" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button2" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<Button parentKey="Button4" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button3" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<Button parentKey="Button5" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button4" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<Button parentKey="Button6" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button5" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<Button parentKey="Button7" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button6" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<Button parentKey="Button8" parentArray="Buttons" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.Button7" relativePoint="BOTTOMLEFT"/>
-												</Anchors>
-											</Button>
-											<ScrollFrame parentKey="ScrollFrame" name="WoWAccountSelectDialogScrollFrame" inherits="GlueScrollFrameTemplate">
-												<Size x="219" y="162"/>
-												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="0" y="-6"/>
-													</Anchor>
-												</Anchors>
-												<Scripts>
-													<OnVerticalScroll function="WoWAccountSelect_OnVerticalScroll"/>
-												</Scripts>
-												<ScrollChild>
-													<Frame parentKey="ChildFrame">
-														<Size x="510" y="395"/>
-													</Frame>
-												</ScrollChild>
-											</ScrollFrame>
+											</Frame>
 										</Frames>
 									</Frame>
 									<Button parentKey="AcceptButton" inherits="GlueButtonTemplate" text="ACCEPT_GLUE">

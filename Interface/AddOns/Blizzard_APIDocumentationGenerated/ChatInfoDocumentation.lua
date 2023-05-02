@@ -179,6 +179,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetColorForChatType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chatType", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+			},
+		},
+		{
 			Name = "GetGeneralChannelID",
 			Type = "Function",
 

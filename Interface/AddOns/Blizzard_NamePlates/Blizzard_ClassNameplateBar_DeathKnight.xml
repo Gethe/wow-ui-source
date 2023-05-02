@@ -1,52 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
     <Script file="Blizzard_ClassNameplateBar_DeathKnight.lua"/>
-    <Button name="ClassNameplateBarDeathKnightRuneButton" inherits="RuneButtonIndividualTemplate" virtual="true">
-		<Size x="16" y="16"/>
-        <!-- Parent template has a tooltip, we don't want to show tooltips on this frame. -->
-        <Scripts>
-			<OnLoad function="ClassNameplateBarDeathKnightRuneButton_OnLoad" />
-            <OnEnter/>
-            <OnLeave/>
-        </Scripts>
-    </Button>
 
-    <Frame name="DeathKnightResourceOverlayFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarDeathKnight" ignoreParentScale="true">
-        <Size x="98" y="20"/>
-        <Frames>
-            <Button parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT" x="0" y="4"/>
-                </Anchors>
-            </Button>
-            <Button parentKey="Rune2" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Rune1" relativePoint="RIGHT" x="0" y="0"/>
-                </Anchors>
-            </Button>
-            <Button parentKey="Rune3" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Rune2" relativePoint="RIGHT" x="0" y="0"/>
-                </Anchors>
-            </Button>
-            <Button parentKey="Rune4" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Rune3" relativePoint="RIGHT" x="0" y="0"/>
-                </Anchors>
-            </Button>
-            <Button parentKey="Rune5" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Rune4" relativePoint="RIGHT" x="0" y="0"/>
-                </Anchors>
-            </Button>
-            <Button parentKey="Rune6" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Rune5" relativePoint="RIGHT" x="0" y="0"/>
-                </Anchors>
-            </Button>
-        </Frames>
+    <Frame name="DeathKnightResourceOverlayFrame" inherits="ClassNameplateBarFrame, RuneFrameTemplate" mixin="ClassNameplateBar, ClassNameplateBarDeathKnight" ignoreParentScale="true">
+        <Size x="130" y="24" />
         <KeyValues>
-            <KeyValue key="scale" value="1"/>
+            <KeyValue key="scale" value="0.65" type="number"/>
+            <KeyValue key="class" value="DEATHKNIGHT" type="string"/>
+            <KeyValue key="powerToken" value="RUNES" type="string"/>
+            <KeyValue key="paddingOverride" value="-8" type="number"/>
+            <KeyValue key="spacing" value="-0.5" type="number"/>
         </KeyValues>
     </Frame>
 </Ui>

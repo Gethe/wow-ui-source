@@ -21,14 +21,62 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
+	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
+	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 end
 
 function QuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
-	self:GetMap():UnregisterCallback("SetBounty", self.SetBounty, self);
+	self:GetMap():UnregisterCallback("SetBounty", self);
+	self:GetMap():UnregisterCallback("PingQuestID", self);
+	EventRegistry:UnregisterCallback("SetHighlightedQuestPOI", self);
+	EventRegistry:UnregisterCallback("ClearHighlightedQuestPOI", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
+end
+
+function QuestDataProviderMixin:OnHighlightedQuestPOIChange(questID)
+	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
+		if pin.questID == questID then
+			QuestPOIButton_EvaluateManagedHighlight(pin);
+			break;
+		end
+	end	
+end
+
+function QuestDataProviderMixin:OnPingQuestID(...)
+	self:PingQuestID(...);
+end
+
+function QuestDataProviderMixin:PingQuestID(questID)
+	if self.pingPin then
+		self.pingPin:Stop();
+	end
+
+	local questPin;
+	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
+		if pin.questID == questID then
+			questPin = pin;
+			break;
+		end
+	end
+
+	if not questPin then
+		return;
+	end
+
+	if not self.pingPin then
+		self.pingPin = self:GetMap():AcquirePin("MapPinPingTemplate");
+		self.pingPin.dataProvider = self;
+		self.pingPin:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_PING");
+		self.pingPin:SetNumLoops(2);
+	end
+
+	self.pingPin:SetID(questID);
+	local x, y = questPin:GetPosition()
+	self.pingPin:PlayAt(x, y);
 end
 
 function QuestDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
@@ -78,6 +126,9 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self.usedQuestNumbers = self.usedQuestNumbers or {};
 	self.pinsMissingNumbers = self.pinsMissingNumbers or {};
 
+	local pingQuestID = self.pingPin and self.pingPin:GetID();
+	local foundQuestToPing = false;
+
 	local pinsToQuantize = { };
 
 	local mapInfo = C_Map.GetMapInfo(mapID);
@@ -88,6 +139,10 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		if self:ShouldShowQuest(questID, mapInfo.mapType, doesMapShowTaskObjectives, isMapIndicatorQuest) then
 			local pin = self:AddQuest(questID, x, y, frameLevelOffset, isWaypoint);
 			table.insert(pinsToQuantize, pin);
+			if questID == pingQuestID then
+				self.pingPin:SetPosition(x, y);
+				foundQuestToPing = true;
+			end
 		end
 	end
 
@@ -95,6 +150,10 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		for i, info in ipairs(questsOnMap) do
 			CheckAddQuest(info.questID, info.x, info.y, info.isMapIndicatorQuest, i);
 		end
+	end
+
+	if pingQuestID and not foundQuestToPing then
+		self.pingPin:Stop();
 	end
 
 	local waypointQuestID = QuestMapFrame_GetFocusedQuestID() or C_SuperTrack.GetSuperTrackedQuestID();
@@ -199,6 +258,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	end
 
 	QuestPOI_UpdateButtonStyle(pin);
+	QuestPOIButton_EvaluateManagedHighlight(pin);
 
 	MapPinHighlight_CheckHighlightPin(pin:GetHighlightType(), pin, pin.NormalTexture);
 
@@ -251,17 +311,20 @@ function QuestPinMixin:OnMouseEnter()
 		end
 	end
 	GameTooltip:Show();
-	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", questID);
-    EventRegistry:TriggerEvent("QuestPin.OnEnter", self, questID);
+	QuestPOIHighlightManager:SetHighlight(questID);
+    EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
 	GameTooltip:Hide();
-	self:GetMap():TriggerEvent("ClearHighlightedQuestPOI");
+	QuestPOIHighlightManager:ClearHighlight();
 end
 
 function QuestPinMixin:OnMouseClickAction(button)
 	QuestPOIButton_OnClick(self, button);
+	if not IsModifierKeyDown() then
+		EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnClick", self, self.questID);
+	end
 end
 
 function QuestPinMixin:AssignQuestNumber(questNumber)

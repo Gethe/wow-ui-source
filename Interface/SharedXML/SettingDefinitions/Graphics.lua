@@ -80,10 +80,11 @@ local function CreateQualitySliderSetting(cvar, label, proxyName, tooltip)
 	return {setting = setting, initializer = initializer, cvar = cvar};
 end
 
-SettingsAdvancedQualitySectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
+SettingsAdvancedQualityControlsMixin = {};
 
-function SettingsAdvancedQualitySectionMixin:Init(initializer)
-	SettingsExpandableSectionMixin.Init(self, initializer);
+function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
+
+	self.cbrHandles = cbrHandles;
 
 	local function AddRecommended(container, cvar)
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
@@ -103,15 +104,24 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 		return data;
 	end
 
-	self.cbrHandles = Settings.CreateCallbackHandleContainer();
-
-	local data = initializer.data;
-	local raid = data.raid;
-	local settings = data.settings;
+	local settingGraphicsQuality = settings["graphicsQuality"] or settings["raidGraphicsQuality"];
+	local settingShadowQuality = settings["graphicsShadowQuality"] or settings["raidGraphicsShadowQuality"];
+	local settingLiquidDetail = settings["graphicsLiquidDetail"] or settings["raidGraphicsLiquidDetail"];
+	local settingParticleDensity = settings["graphicsParticleDensity"] or settings["raidGraphicsParticleDensity"];
+	local settingSSAO = settings["graphicsSSAO"] or settings["raidGraphicsSSAO"];
+	local settingDepthEffects = settings["graphicsDepthEffects"] or settings["raidGraphicsDepthEffects"];
+	local settingComputeEffects = settings["graphicsComputeEffects"] or settings["raidGraphicsComputeEffects"];
+	local settingOutlineMode = settings["graphicsOutlineMode"] or settings["raidGraphicsOutlineMode"];
+	local settingTextureResolution = settings["graphicsTextureResolution"] or settings["raidGraphicsTextureResolution"];
+	local settingSpellDensity = settings["graphicsSpellDensity"] or settings["raidGraphicsSpellDensity"];
+	local settingProjectedTextures = settings["graphicsProjectedTextures"] or settings["raidGraphicsProjectedTextures"];
+	local settingViewDistance = settings["graphicsViewDistance"] or settings["raidGraphicsViewDistance"];
+	local settingEnvironmentDetail = settings["graphicsEnvironmentDetail"] or settings["raidGraphicsEnvironmentDetail"];
+	local settingGroundClutter = settings["graphicsGroundClutter"] or settings["raidGraphicsGroundClutter"];
 
 	local function GetShadowQualityOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[1]:GetVariable();
+		local variable = settingShadowQuality:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_SHADOW_QUALITY_LOW);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_SHADOW_QUALITY_FAIR);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM);
@@ -124,7 +134,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetLiquidDetailOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[2]:GetVariable();
+		local variable = settingLiquidDetail:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_LIQUID_DETAIL_LOW);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_LIQUID_DETAIL_FAIR);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM);
@@ -135,7 +145,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetParticleDensityOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[3]:GetVariable();
+		local variable = settingParticleDensity:GetVariable();
 		local data = AddValidatedSettingOption(container, variable, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW);
@@ -149,7 +159,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetSSAOOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[4]:GetVariable();
+		local variable = settingSSAO:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM);
@@ -161,7 +171,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetDepthEffectOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[5]:GetVariable();
+		local variable = settingDepthEffects:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_DEPTH_EFFECTS_LOW);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM);
@@ -172,7 +182,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetComputeEffectOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[6]:GetVariable();
+		local variable = settingComputeEffects:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_COMPUTE_EFFECTS_MEDIUM);
@@ -184,7 +194,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetOutlineModeOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[7]:GetVariable();
+		local variable = settingOutlineMode:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_MEDIUM);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_HIGH);
@@ -194,7 +204,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetTextureResolutionOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[8]:GetVariable();
+		local variable = settingTextureResolution:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_TEXTURE_DETAIL_LOW);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
@@ -204,7 +214,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetSpellDensityOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[9]:GetVariable();
+		local variable = settingSpellDensity:GetVariable();
 		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_ONLY_ESSENTIAL, VIDEO_OPTIONS_SPELL_DENSITY_ONLY_ESSENTIAL);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SOME, VIDEO_OPTIONS_SPELL_DENSITY_SOME);
 		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_HALF, VIDEO_OPTIONS_SPELL_DENSITY_HALF);
@@ -217,7 +227,7 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 
 	local function GetProjectedTexturesOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settings[10]:GetVariable();
+		local variable = settingProjectedTextures:GetVariable();
 		local data = AddValidatedSettingOption(container, variable, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
 		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_ENABLED);
@@ -226,6 +236,11 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function InitControlDropDown(control, setting, name, tooltip, options)
+		if not setting then
+			control:Hide();
+			return
+		end
+
 		local dropDown = control.DropDown;
 		control.Text:SetText(name);
 
@@ -252,6 +267,11 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	end
 
 	local function InitControlSlider(control, setting, name, tooltip, options)
+		if not setting then
+			control:Hide();
+			return
+		end
+
 		control.Text:SetText(name);
 
 		local function OnSliderValueChanged(o, value)
@@ -274,16 +294,37 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 		self.cbrHandles:SetOnValueChangedCallback(setting:GetVariable(), OnSettingValueChanged);
 	end
 
-	do
-		local function SetControlsEnabled(enabled)
-			for index = 1, 10 do
-				local control = self.Controls[index];
-				control.DropDown:SetEnabled_(enabled);
+	local function InitControlCheckBoxSlider(control, cbSetting, sliderSetting, cbName, cbTooltip, name, tooltip, options)
+		InitControlSlider(control, sliderSetting, name, tooltip, options);
+
+		function OnCheckBoxValueChanged(o, value)
+			cbSetting:SetValue(value);
+
+			if value then
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+			else 
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			end
 
-			for index = 11, 13 do
-				local control = self.Controls[index];
-				control.SliderWithSteppers:SetEnabled_(enabled);
+			control.SliderWithSteppers:SetEnabled_(value);
+		end
+		
+		local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbName, cbTooltip);
+		control.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
+		control:SetTooltipFunc(cbInitTooltip);
+		control:SetCustomTooltipAnchoring(self.CheckBox, "ANCHOR_TOP", 0, 0);
+		self.cbrHandles:RegisterCallback(control.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, OnCheckBoxValueChanged);
+	end
+
+	do
+		local function SetControlsEnabled(enabled)
+			for _, control in pairs(self.Controls) do
+				if control.DropDown then
+					control.DropDown:SetEnabled_(enabled);
+				end
+				if control.SliderWithSteppers then
+					control.SliderWithSteppers:SetEnabled_(enabled);
+				end
 			end
 		end
 
@@ -299,26 +340,55 @@ function SettingsAdvancedQualitySectionMixin:Init(initializer)
 		end
 	end
 	
-	InitControlDropDown(self.Control1, settings[1], SHADOW_QUALITY, OPTION_TOOLTIP_SHADOW_QUALITY, GetShadowQualityOptions);
-	InitControlDropDown(self.Control2, settings[2], LIQUID_DETAIL, OPTION_TOOLTIP_LIQUID_DETAIL, GetLiquidDetailOptions);
-	InitControlDropDown(self.Control3, settings[3], PARTICLE_DENSITY, OPTION_TOOLTIP_PARTICLE_DENSITY, GetParticleDensityOptions);
-	InitControlDropDown(self.Control4, settings[4], SSAO_LABEL, OPTION_TOOLTIP_SSAO, GetSSAOOptions);
-	InitControlDropDown(self.Control5, settings[5], DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
-	InitControlDropDown(self.Control6, settings[6], COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
-	InitControlDropDown(self.Control7, settings[7], OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
-	InitControlDropDown(self.Control8, settings[8], TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GetTextureResolutionOptions);
-	InitControlDropDown(self.Control9, settings[9], SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
-	InitControlDropDown(self.Control10, settings[10], PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
-	
 	local minValue, maxValue, step = 0, 9, 1;
 	local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 	options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
 
-	InitControlSlider(self.Control11, settings[11], FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
-	InitControlSlider(self.Control12, settings[12], ENVIRONMENT_DETAIL, OPTION_TOOLTIP_ENVIRONMENT_DETAIL, options);
-	InitControlSlider(self.Control13, settings[13], GROUND_CLUTTER, OPTION_TOOLTIP_GROUND_CLUTTER, options);
+	if raid then
+		InitControlCheckBoxSlider(self.GraphicsQuality, Settings.GetSetting(RaidSettingsEnabledCVar), settingGraphicsQuality, SETTINGS_RAID_GRAPHICS_QUALITY, RAID_SETTINGS_ENABLED_TOOLTIP, SETTINGS_RAID_GRAPHICS_QUALITY, OPTION_TOOLTIP_RAID_GRAPHICS_QUALITY, options);
+	else
+		InitControlSlider(self.GraphicsQuality, settingGraphicsQuality, BASE_GRAPHICS_QUALITY, OPTION_TOOLTIP_GRAPHICS_QUALITY, options);
+	end
+	self.GraphicsQuality:SetCustomTooltipAnchoring(self.GraphicsQuality, "ANCHOR_TOP", 0, 0);
+	self.GraphicsQuality.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.GraphicsQuality.SliderWithSteppers, "ANCHOR_TOP", 0, 0);
 
-	self:EvaluateVisibility(data.expanded);
+	InitControlDropDown(self.ShadowQuality, settingShadowQuality, SHADOW_QUALITY, OPTION_TOOLTIP_SHADOW_QUALITY, GetShadowQualityOptions);
+	InitControlDropDown(self.LiquidDetail, settingLiquidDetail, LIQUID_DETAIL, OPTION_TOOLTIP_LIQUID_DETAIL, GetLiquidDetailOptions);
+	InitControlDropDown(self.ParticleDensity, settingParticleDensity, PARTICLE_DENSITY, OPTION_TOOLTIP_PARTICLE_DENSITY, GetParticleDensityOptions);
+	InitControlDropDown(self.SSAO, settingSSAO,	SSAO_LABEL, OPTION_TOOLTIP_SSAO, GetSSAOOptions);
+	InitControlDropDown(self.DepthEffects, settingDepthEffects, DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
+	InitControlDropDown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
+	InitControlDropDown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
+	InitControlDropDown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GetTextureResolutionOptions);
+	InitControlDropDown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
+	InitControlDropDown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
+	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
+	InitControlSlider(	self.EnvironmentDetail, settingEnvironmentDetail,	ENVIRONMENT_DETAIL, OPTION_TOOLTIP_ENVIRONMENT_DETAIL, options);
+	InitControlSlider(	self.GroundClutter, settingGroundClutter,	GROUND_CLUTTER, OPTION_TOOLTIP_GROUND_CLUTTER, options);
+
+	GraphicsOverrides.AdjustAdvancedQualityControls(self, settings, raid, InitControlDropDown, AddValidatedSettingOption, AddRecommended);
+end
+
+SettingsAdvancedQualitySectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
+
+function SettingsAdvancedQualitySectionMixin:Init(initializer)
+	self.tabsGroup = CreateRadioButtonGroup();
+
+	self.tabsGroup:AddButtons({self.BaseTab, self.RaidTab});
+	self.tabsGroup:SelectAtIndex(1);
+	self.tabsGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.OnTabSelected, self);
+
+	local data = initializer.data;
+	local raid = data.raid;
+	local settings = data.settings;
+	local raidSettings = data.raidSettings;
+
+	self.cbrHandles = Settings.CreateCallbackHandleContainer();
+
+	self.BaseQualityControls:Init(settings, false, self.cbrHandles);
+	self.RaidQualityControls:Init(raidSettings, true, self.cbrHandles);
+
+	self:EvaluateVisibility(self.BaseTab);
 end
 
 function SettingsAdvancedQualitySectionMixin:Release(initializer)
@@ -330,25 +400,29 @@ function SettingsAdvancedQualitySectionMixin:CalculateHeight()
 	return initializer:GetExtent();
 end
 
-function SettingsAdvancedQualitySectionMixin:OnExpandedChanged(expanded)
-	self:EvaluateVisibility(expanded);
+function SettingsAdvancedQualitySectionMixin:OnTabSelected(tab, tabIndex)
+	self:EvaluateVisibility(tab);
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 end
 
-function SettingsAdvancedQualitySectionMixin:EvaluateVisibility(expanded)
-	for index, frame in ipairs(self.Controls) do
-		frame:SetShown(expanded);
-	end
-
-	if expanded then
-		self.Button.Right:SetAtlas("Options_ListExpand_Right_Expanded", TextureKitConstants.UseAtlasSize);
-	else
-		self.Button.Right:SetAtlas("Options_ListExpand_Right", TextureKitConstants.UseAtlasSize);
-	end
+function SettingsAdvancedQualitySectionMixin:EvaluateVisibility(tab)
+	self.BaseQualityControls:SetShown(tab == self.BaseTab);
+	self.RaidQualityControls:SetShown(tab == self.RaidTab);
 end
 
 SettingsAdvancedSliderMixin = CreateFromMixins(DefaultTooltipMixin);
 
 function SettingsAdvancedSliderMixin:OnLoad()
+	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
+	DefaultTooltipMixin.OnLoad(self);
+	self:SetCustomTooltipAnchoring(self.SliderWithSteppers, "ANCHOR_TOPLEFT", -40, 0);
+
+	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
+end
+
+SettingsAdvancedCheckBoxSliderMixin = CreateFromMixins(DefaultTooltipMixin);
+
+function SettingsAdvancedCheckBoxSliderMixin:OnLoad()
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
 	DefaultTooltipMixin.OnLoad(self);
 	self:SetCustomTooltipAnchoring(self.SliderWithSteppers, "ANCHOR_TOPLEFT", -40, 0);
@@ -366,24 +440,24 @@ function SettingsAdvancedDropdownMixin:OnLoad()
 	self.DropDown.Button:InitDefaultTooltipScriptHandlers();
 end
 
-local SettingsAdvancedQualitySectionInitializer = CreateFromMixins(SettingsExpandableSectionInitializer, SettingsSearchableElementMixin);
+local SettingsAdvancedQualitySectionInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);
 
 function SettingsAdvancedQualitySectionInitializer:GetExtent()
-	local reservedHeight = 40;
-	if self.data.expanded then
-		local templateHeight = 26;
-		local spacing = 10;
-		local count = #self.data.settings;
-		return reservedHeight + (templateHeight * count) + ((count - 1) * spacing);
+	local reservedHeight = 65;
+	local templateHeight = 26;
+	local spacing = 10;
+	local count = 0;
+	for _, setting in pairs(self.data.settings) do
+		count = count + 1;
 	end
-	return reservedHeight;
+	return reservedHeight + (templateHeight * count) + ((count - 1) * spacing);
 end
 
-function CreateAdvancedQualitySectionInitializer(name, settings, raid, expanded)
+function CreateAdvancedQualitySectionInitializer(name, settings, raidSettings)
 	local initializer = CreateFromMixins(SettingsAdvancedQualitySectionInitializer, SettingsElementHierarchyMixin);
 	initializer:Init("SettingsAdvancedQualitySectionTemplate");
-	initializer.data = {name=name, settings=settings, raid=raid, expanded=expanded};
-	initializer:AddSearchTags(SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS, 
+	initializer.data = {name=name, settings=settings, raidSettings=raidSettings};
+	initializer:AddSearchTags(BASE_GRAPHICS_QUALITY, SETTINGS_RAID_GRAPHICS_QUALITY, SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS, 
 		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
 	return initializer;
 end
@@ -425,6 +499,11 @@ local function Register()
 		monitorSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
 		
 		Settings.CreateDropDown(category, monitorSetting, GetOptions, OPTION_TOOLTIP_PRIMARY_MONITOR);
+
+		local function UpdateSettingFromCVar()
+			monitorSetting:SetValue(getValue());
+		end
+		CVarCallbackRegistry:RegisterCallback("gxMonitor", UpdateSettingFromCVar);
 	end
 
 	-- Display Mode
@@ -826,116 +905,31 @@ local function Register()
 	end
 	
 	-- Graphics Quality
-	local settingToCvars = {
-		["PROXY_SHADOW_QUALITY"] = "graphicsShadowQuality",
-		["PROXY_LIQUID_DETAIL"] = "graphicsLiquidDetail",
-		["PROXY_PARTICLE_DENSITY"] = "graphicsParticleDensity",
-		["PROXY_SSAO"] = "graphicsSSAO",
-		["PROXY_DEPTH_EFFECTS"] = "graphicsDepthEffects",
-		["PROXY_COMPUTE_EFFECTS"] = "graphicsComputeEffects",
-		["PROXY_OUTLINE_MODE"] = "graphicsOutlineMode",
-		["PROXY_TEXTURE_RESOLUTION"] = "graphicsTextureResolution",
-		["PROXY_SPELL_DENSITY"] = "graphicsSpellDensity",
-		["PROXY_PROJECTED_TEXTURES"] = "graphicsProjectedTextures",
-		["PROXY_VIEW_DISTANCE"] = "graphicsViewDistance",
-		["PROXY_ENVIRONMENT_DETAIL"] = "graphicsEnvironmentDetail",
-		["PROXY_GROUND_CLUTTER"] = "graphicsGroundClutter",
-
-		["PROXY_RAID_SHADOW_QUALITY"] = "raidGraphicsShadowQuality",
-		["PROXY_RAID_LIQUID_DETAIL"] = "raidGraphicsLiquidDetail",
-		["PROXY_RAID_PARTICLE_DENSITY"] = "raidGraphicsParticleDensity",
-		["PROXY_RAID_SSAO"] = "raidGraphicsSSAO",
-		["PROXY_RAID_DEPTH_EFFECTS"] = "raidGraphicsDepthEffects",
-		["PROXY_RAID_COMPUTE_EFFECTS"] = "raidGraphicsComputeEffects",
-		["PROXY_RAID_OUTLINE_MODE"] = "raidGraphicsOutlineMode",
-		["PROXY_RAID_TEXTURE_RESOLUTION"] = "raidGraphicsTextureResolution",
-		["PROXY_RAID_SPELL_DENSITY"] = "raidGraphicsSpellDensity",
-		["PROXY_RAID_PROJECTED_TEXTURES"] = "raidGraphicsProjectedTextures",
-		["PROXY_RAID_VIEW_DISTANCE"] = "raidGraphicsViewDistance",
-		["PROXY_RAID_ENVIRONMENT_DETAIL"] = "raidGraphicsEnvironmentDetail",
-		["PROXY_RAID_GROUND_CLUTTER"] = "raidGraphicsGroundClutter",
-	};
-	
-	local advSettings = {};
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsShadowQuality", SHADOW_QUALITY, "PROXY_SHADOW_QUALITY"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsLiquidDetail", LIQUID_DETAIL, "PROXY_LIQUID_DETAIL"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsParticleDensity", PARTICLE_DENSITY, "PROXY_PARTICLE_DENSITY", 1));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsSSAO", SSAO_LABEL, "PROXY_SSAO"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsDepthEffects", DEPTH_EFFECTS, "PROXY_DEPTH_EFFECTS"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_COMPUTE_EFFECTS"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsOutlineMode", OUTLINE_MODE, "PROXY_OUTLINE_MODE"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsTextureResolution", TEXTURE_DETAIL, "PROXY_TEXTURE_RESOLUTION"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsSpellDensity", SPELL_DENSITY, "PROXY_SPELL_DENSITY"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_PROJECTED_TEXTURES"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsViewDistance", FARCLIP, "PROXY_VIEW_DISTANCE"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_ENVIRONMENT_DETAIL"));
-	table.insert(advSettings, CreateAdvancedQualitySetting(category, "graphicsGroundClutter", GROUND_CLUTTER, "PROXY_GROUND_CLUTTER"));
-	
-	local advRaidSettings = {};
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsShadowQuality", SHADOW_QUALITY, "PROXY_RAID_SHADOW_QUALITY"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsLiquidDetail", LIQUID_DETAIL, "PROXY_RAID_LIQUID_DETAIL"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsParticleDensity", PARTICLE_DENSITY, "PROXY_RAID_PARTICLE_DENSITY"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsSSAO", SSAO_LABEL, "PROXY_RAID_SSAO"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsDepthEffects", DEPTH_EFFECTS, "PROXY_RAID_DEPTH_EFFECTS"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_RAID_COMPUTE_EFFECTS"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsOutlineMode", OUTLINE_MODE, "PROXY_RAID_OUTLINE_MODE"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsTextureResolution", TEXTURE_DETAIL, "PROXY_RAID_TEXTURE_RESOLUTION"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsSpellDensity", SPELL_DENSITY, "PROXY_RAID_SPELL_DENSITY"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_RAID_PROJECTED_TEXTURES"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsViewDistance", FARCLIP, "PROXY_RAID_VIEW_DISTANCE"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_RAID_ENVIRONMENT_DETAIL"));
-	table.insert(advRaidSettings, CreateAdvancedQualitySetting(category, "raidGraphicsGroundClutter", GROUND_CLUTTER, "PROXY_RAID_GROUND_CLUTTER"));
-	
-	local graphicsSetting = nil;
-	local graphicsInitializer = nil;
-	do
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("graphicsQuality", Settings.VarType.Number);
-		local commitValue = setValue;
-		graphicsSetting = Settings.RegisterProxySetting(category, "PROXY_GRAPHICS_QUALITY", Settings.DefaultVarLocation, 
-			Settings.VarType.Number, GRAPHICS_QUALITY, getDefaultValue(), getValue, nil, commitValue);
-		graphicsSetting:SetCommitFlags(Settings.CommitFlag.Apply);
-		
-		local minValue, maxValue, step = 0, 9, 1;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
-
-		graphicsInitializer = Settings.CreateSlider(category, graphicsSetting, options, OPTION_TOOLTIP_GRAPHICS_QUALITY);
+	function AddAdvancedQualitySetting(settings, category, cvar, name, proxyName, minQualityValue)
+		settings[cvar] = CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue);
 	end
-
-	local advInitializer = CreateAdvancedQualitySectionInitializer(ADVANCED_LABEL, advSettings, false, true);
-	layout:AddInitializer(advInitializer);
+	
+	local advSettings = GraphicsOverrides.CreateAdvancedSettingsTable(category, AddAdvancedQualitySetting);
+	local advRaidSettings = GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, AddAdvancedQualitySetting);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
-	local raidGraphicsSetting = nil;
-	local raidGraphicsInitializer = nil;
-	do
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("raidGraphicsQuality", Settings.VarType.Number);
-		local commitValue = setValue;
-		raidGraphicsSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_GRAPHICS_QUALITY", Settings.DefaultVarLocation, 
-			Settings.VarType.Number, SETTINGS_RAID_GRAPHICS_QUALITY, getDefaultValue(), getValue, nil, commitValue);
-		
-		local minValue, maxValue, step = 0, 9, 1;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
-		
-		raidGraphicsInitializer = CreateSettingsCheckBoxSliderInitializer(
-			raidSetting, SETTINGS_RAID_GRAPHICS_QUALITY, RAID_SETTINGS_ENABLED_TOOLTIP,
-			raidGraphicsSetting, options, SETTINGS_RAID_GRAPHICS_QUALITY, OPTION_TOOLTIP_RAID_GRAPHICS_QUALITY);
-		raidGraphicsInitializer:SetSetting(raidSetting); -- FIXME COMBO CONTROL WITH SETTING PREREQ
-	
-		layout:AddInitializer(raidGraphicsInitializer);
-	end
+	local raidGraphicsSetting = Settings.GetSetting("PROXY_RAID_GRAPHICS_QUALITY");
+
+	local advInitializer = CreateAdvancedQualitySectionInitializer(GRAPHICS_QUALITY, advSettings, advRaidSettings);
+	layout:AddInitializer(advInitializer);
 
 	local function OnGCChanged(settings, value, raid)
-		for index, setting in ipairs(settings) do
+		for cvar, setting in pairs(settings) do
 			local variable = setting:GetVariable();
-			local cvar = settingToCvars[variable];
-			local newIndex = GetGraphicsCVarValueForQualityLevel(cvar, value, raid);
-			newIndex = setting.minQualityValue > newIndex and setting.minQualityValue or newIndex;
-			setting:SetValue(newIndex);
+			if cvar ~= "graphicsQuality" and cvar ~= "raidGraphicsQuality" then
+				local newIndex = GetGraphicsCVarValueForQualityLevel(cvar, value, raid);
+				newIndex = setting.minQualityValue > newIndex and setting.minQualityValue or newIndex;
+				setting:SetValue(newIndex);
+			end
 		end
 	end;
 
+	local graphicsSetting = Settings.GetSetting("PROXY_GRAPHICS_QUALITY");
 	local function OnGraphicsQualityChanged(o, s, value)
 		local raid = false;
 		OnGCChanged(advSettings, value, raid);
@@ -943,15 +937,14 @@ local function Register()
 
 	Settings.SetOnValueChangedCallback(graphicsSetting:GetVariable(), OnGraphicsQualityChanged);
 
-	local advRaidInitializer = CreateAdvancedQualitySectionInitializer(RAID_SETTINGS, advRaidSettings, true);
-	advRaidInitializer:SetParentInitializer(raidGraphicsInitializer);
-	layout:AddInitializer(advRaidInitializer);
-
 	local function OnRaidGraphicsQualityChanged(o, s, value)
 		local raid = true;
 		OnGCChanged(advRaidSettings, value, raid);
 	end;
 	Settings.SetOnValueChangedCallback(raidGraphicsSetting:GetVariable(), OnRaidGraphicsQualityChanged);
+
+	-- Advanced
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(ADVANCED_LABEL));
 
 	-- Triple Buffering
 	do
@@ -1131,21 +1124,7 @@ local function Register()
 
 	-- Physics Interaction
 	do
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, NO_ENVIRONMENT_INTERACTION);
-			container:Add(1, PLAYER_ONLY_INTERACTION);
-			container:Add(2, PLAYER_AND_NPC_INTERACTION);
-			return container:GetData();
-		end
-
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("physicsLevel", Settings.VarType.Number);
-		local commitValue = setValue;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_PHYSICS_LEVEL", Settings.DefaultVarLocation,
-			Settings.VarType.Number, PHYSICS_INTERACTION, getDefaultValue(), getValue, nil, commitValue);
-		setting:SetCommitFlags(Settings.CommitFlag.ClientRestart);
-
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_PHYSICS_OPTIONS);
+		GraphicsOverrides.CreatePhysicsInteractionSetting(category);
 	end
 
 	-- Graphics Card
@@ -1257,8 +1236,26 @@ local function Register()
 	do
 		local minValue, maxValue, step = 0.0, 2.0, .1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, RoundToOneTenth);
-		Settings.SetupCVarSlider(category, "ResampleSharpness", options, RESAMPLE_SHARPNESS, OPTION_TOOLTIP_SHARPNESS);
+
+		-- Override formatter, getValue, setValue, defaultValue to reverse the bar direction
+		-- so that the maxValue is on the left and the minValue is on the right, by subtracting value from maxValue.
+		local function RoundToOneTenthReversed(value)
+			return RoundToOneTenth(maxValue - value);
+		end
+
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, RoundToOneTenthReversed);
+
+		local cvar = "ResampleSharpness";
+		local getValue, setValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
+
+		local getValueReversed = function() return maxValue - getValue(); end;
+		local commitValueReversed = function(value) return setValue(maxValue - value) end;
+		local defaultValueReversed = maxValue - tonumber(GetCVarDefault(cvar));
+
+		local setting = Settings.RegisterProxySetting(category, "PROXY_RESAMPLE_SHARPNESS", Settings.DefaultVarLocation,
+			Settings.VarType.Number, RESAMPLE_SHARPNESS, defaultValueReversed, getValueReversed, nil, commitValueReversed);
+
+		Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_SHARPNESS);
 	end
 
 	-- Contrast

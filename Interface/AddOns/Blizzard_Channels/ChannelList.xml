@@ -2,15 +2,12 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="ChannelList.lua"/>
 
-	<ScrollFrame name="ChannelListTemplate" mixin="ChannelListMixin" inherits="UIPanelScrollFrameCodeTemplate" virtual="true">
-		<Frames>
-			<Slider parentKey="ScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
-				</Anchors>
-			</Slider>
-		</Frames>
+	<ScrollFrame name="ChannelListTemplate" mixin="ChannelListMixin" inherits="ScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="scrollBarX" value="3" type="number"/>
+			<KeyValue key="scrollBarTopY" value="-1" type="number"/>
+			<KeyValue key="scrollBarBottomY" value="3" type="number"/>
+		</KeyValues>
 		<ScrollChild>
 			<Frame parentKey="Child">
 				<Size x="175" y="0"/>

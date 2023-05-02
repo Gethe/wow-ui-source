@@ -1,7 +1,6 @@
 -----
 --A note on nomenclature:
 --LFD is used for Dungeon-specific functions and values
---LFR is used for Raid-specific functions and values
 --LFG is used for for generic functions/values that may be used for LFD, LFR, and any other LF_ system we may implement in the future.
 ------
 
@@ -341,7 +340,6 @@ end
 
 function LFG_UpdateFindGroupButtons()
 	LFDQueueFrameFindGroupButton_Update();
-	LFRQueueFrameFindGroupButton_Update();
 	RaidFinderFrameFindRaidButton_Update();
 end
 
@@ -356,9 +354,6 @@ function LFG_UpdateFramesIfShown()
 	if ( LFDParentFrame:IsVisible() ) then
 		LFDQueueFrame_Update();
 		LFDQueueFrameRandom_UpdateFrame();
-	end
-	if ( LFRParentFrame:IsVisible() ) then
-		LFRQueueFrame_Update();
 	end
 end
 
@@ -457,7 +452,6 @@ function LFG_UpdateAllRoleCheckboxes()
 			LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS);
 	end
 
-	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFR, nil, LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
 	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid, RaidFinderQueueFrameRoleButtonTank, RaidFinderQueueFrameRoleButtonHealer, RaidFinderQueueFrameRoleButtonDPS, RaidFinderQueueFrameRoleButtonLeader);
 end
 
@@ -486,15 +480,6 @@ function LFG_UpdateRolesChangeable()
 		LFG_DisableRoleButton(LFDQueueFrameRoleButtonLeader, true);
 	else
 		LFG_UpdateAvailableRoles(LFDQueueFrameRoleButtonTank, LFDQueueFrameRoleButtonHealer, LFDQueueFrameRoleButtonDPS, LFDQueueFrameRoleButtonLeader);
-	end
-
-	mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
-	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
-		LFG_DisableRoleButton(LFRQueueFrameRoleButtonTank, true);
-		LFG_DisableRoleButton(LFRQueueFrameRoleButtonHealer, true);
-		LFG_DisableRoleButton(LFRQueueFrameRoleButtonDPS, true);
-	else
-		LFG_UpdateAvailableRoles(LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
 	end
 
 	mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
@@ -1068,10 +1053,6 @@ function LFDGetNumDungeons()
 	return #LFDDungeonList;
 end
 
-function LFRGetNumDungeons()
-	return #LFRRaidList;
-end
-
 function LFGIsIDHeader(id)
 	return id < 0;
 end
@@ -1086,7 +1067,6 @@ function LFGDungeonList_Setup()
 		LFGLockList = GetLFGLockList();
 
 		LFDQueueFrame_Update();
-		LFRQueueFrame_Update();
 		return true;
 	end
 	return false;

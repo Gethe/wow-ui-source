@@ -2,6 +2,14 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ChatFrame.lua"/>
 	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="LOW" toplevel="true" hidden="true" virtual="true">
+		<Frames>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				ChatFrame_OnLoad(self);

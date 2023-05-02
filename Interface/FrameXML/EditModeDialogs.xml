@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<Frame name="EditModeDialogTemplate" virtual="true" mixin="EditModeDialogMixin">
+	<Frame name="EditModeDialogTemplate" enableMouse="true" virtual="true" mixin="EditModeDialogMixin">
 		<Scripts>
 			<OnLoad method="EditModeDialog_OnLoad"/>
 		</Scripts>

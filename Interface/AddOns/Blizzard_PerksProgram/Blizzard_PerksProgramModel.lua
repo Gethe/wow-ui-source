@@ -136,7 +136,8 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 		local useNativeForm = PerksProgramFrame:GetUseNativeForm();
 		if forceSceneChange or useNativeForm ~= modelScene.useNativeForm then
 			modelScene.useNativeForm = useNativeForm;
-			actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
+			local holdBowString = true;
+			actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm, holdBowString);
 		else
 			if autodress then
 				actor:Dress();

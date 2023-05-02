@@ -37,6 +37,21 @@ local DateAndTime =
 			},
 		},
 		{
+			Name = "AdjustTimeByMonths",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "date", Type = "CalendarTime", Nilable = false },
+				{ Name = "months", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "newDate", Type = "CalendarTime", Nilable = false },
+			},
+		},
+		{
 			Name = "CompareCalendarTime",
 			Type = "Function",
 

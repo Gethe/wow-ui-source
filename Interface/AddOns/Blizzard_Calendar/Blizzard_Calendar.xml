@@ -591,14 +591,11 @@
 							<KeyValue key="fontName" value="GameFontNormalSmallLeft" type="string"/>
 						</KeyValues>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
-						<KeyValues>
-							<KeyValue key="hideBackground" value="true" type="boolean"/>
-						</KeyValues>
-											<Anchors>
-							<Anchor point="TOPRIGHT" x="-3" y="-3"/>
-							<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
-											</Anchors>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-8" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="-8" y="3"/>
+						</Anchors>
 					</EventFrame>
 				</Frames>
 				<Scripts>
@@ -946,13 +943,13 @@
 							<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 						<KeyValues>
-							<KeyValue key="hideBackground" value="true" type="boolean"/>
+							<KeyValue key="minThumbExtent" value="17" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-2" y="-1"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="TOPRIGHT" x="-5" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollingEditBox" relativePoint="BOTTOMRIGHT" x="-5" y="-1"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -1213,11 +1210,11 @@
 					<Anchor point="TOPLEFT" x="20" y="-26"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-						<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="4" y="14"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="4"/>
-						</Anchors>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="9" y="9"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="9" y="5"/>
+				</Anchors>
 			</EventFrame>
 			<Button name="CalendarEventPickerCloseButton" inherits="CalendarEventButtonTemplate" text="CLOSE">
 				<Anchors>
@@ -1274,11 +1271,11 @@
 					<Anchor point="TOPLEFT" x="20" y="-26"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-						<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" y="14"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT"/>
-						</Anchors>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="9"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
+				</Anchors>
 			</EventFrame>
 			<Button name="CalendarTexturePickerCancelButton" inherits="CalendarEventButtonTemplate" text="CANCEL">
 				<Anchors>

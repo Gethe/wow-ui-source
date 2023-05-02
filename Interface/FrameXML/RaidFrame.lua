@@ -89,7 +89,6 @@ end
 function RaidParentFrame_SetView(tab)
 	RaidParentFrame.selectTab = tab;
 	if ( tab == 1 ) then
-		LFRParentFrame:Hide();
 		ClaimRaidFrame(RaidParentFrame);
 		RaidFrame:Show();
 		PanelTemplates_Tab_OnClick(RaidParentFrameTab1, RaidParentFrame);
@@ -97,8 +96,6 @@ function RaidParentFrame_SetView(tab)
 		if ( RaidFrame:GetParent() == RaidParentFrame ) then
 			RaidFrame:Hide();
 		end
-		LFRParentFrame:Show();
-		LFRFrame_SetActiveTab(LFRParentFrame.activeTab);
 		PanelTemplates_Tab_OnClick(RaidParentFrameTab2, RaidParentFrame);
 	end
 end

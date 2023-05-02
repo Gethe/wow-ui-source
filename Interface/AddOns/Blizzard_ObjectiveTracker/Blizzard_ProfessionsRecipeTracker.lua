@@ -58,7 +58,12 @@ function PROFESSION_RECIPE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 			C_TradeSkillUI.SetRecipeTracked(GetRecipeID(block), track, IsRecraftBlock(block));
 		else
 			if not IsRecraftBlock(block) then
-				C_TradeSkillUI.OpenRecipe(GetRecipeID(block));
+				local recipeID = GetRecipeID(block);
+				if C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
+					C_TradeSkillUI.OpenRecipe(recipeID)
+				else
+					Professions.InspectRecipe(recipeID);
+				end
 			end
 		end
 	else
@@ -105,21 +110,42 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 				local blockName = isRecraft and PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(recipeSchematic.name) or recipeSchematic.name;
 				self:SetBlockHeader(block, blockName);
 
+				local eligibleSlots = {};
 				for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-					if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic then
+					if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
+						if Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+							table.insert(eligibleSlots, 1, {slotIndex = slotIndex, reagentSlotSchematic = reagentSlotSchematic});
+						else
+							table.insert(eligibleSlots, {slotIndex = slotIndex, reagentSlotSchematic = reagentSlotSchematic});
+						end
+					end
+				end
+
+				for idx, tbl in ipairs(eligibleSlots) do
+					local slotIndex = tbl.slotIndex;
+					local reagentSlotSchematic = tbl.reagentSlotSchematic;
+					if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
 						local reagent = reagentSlotSchematic.reagents[1];
 						local quantityRequired = reagentSlotSchematic.quantityRequired;
 						local quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 						local name = nil;
-						if reagent.itemID then
-							local item = Item:CreateFromItemID(reagent.itemID);
-							name = item:GetItemName();
-						elseif reagent.currencyID then
-							local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
-							if currencyInfo then
-								name = currencyInfo.name;
+
+						if Professions.IsReagentSlotBasicRequired(reagentSlotSchematic) then
+							if reagent.itemID then
+								local item = Item:CreateFromItemID(reagent.itemID);
+								name = item:GetItemName();
+							elseif reagent.currencyID then
+								local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
+								if currencyInfo then
+									name = currencyInfo.name;
+								end
+							end
+						elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+							if reagentSlotSchematic.slotInfo then
+								name = reagentSlotSchematic.slotInfo.slotText;
 							end
 						end
+						
 
 						if name then
 							local text = PROFESSIONS_TRACKER_REAGENT_FORMAT:format(PROFESSIONS_TRACKER_REAGENT_COUNT_FORMAT:format(quantity, quantityRequired), name)
@@ -190,7 +216,7 @@ function ProfessionsRecipeTracking_Initialize()
 		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(not IsRecrafting)) do
 			if not C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
 				local track = false;
-				C_TradeSkillUI.SetRecipeTracked(recipeID, track, isRecraft);
+				C_TradeSkillUI.SetRecipeTracked(recipeID, track, not IsRecrafting);
 			end
 		end
 	end

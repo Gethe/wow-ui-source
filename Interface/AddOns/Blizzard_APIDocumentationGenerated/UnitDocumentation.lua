@@ -6,6 +6,20 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "GetClassIDFromSpecID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNegativeCorruptionEffectInfo",
 			Type = "Function",
 
@@ -1668,9 +1682,9 @@ local Unit =
 		{
 			Name = "PowerType",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 29,
 			MinValue = -2,
-			MaxValue = 23,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "HealthCost", Type = "PowerType", EnumValue = -2 },
@@ -1698,7 +1712,10 @@ local Unit =
 				{ Name = "RuneBlood", Type = "PowerType", EnumValue = 20 },
 				{ Name = "RuneFrost", Type = "PowerType", EnumValue = 21 },
 				{ Name = "RuneUnholy", Type = "PowerType", EnumValue = 22 },
-				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 23 },
+				{ Name = "AlternateQuest", Type = "PowerType", EnumValue = 23 },
+				{ Name = "AlternateEncounter", Type = "PowerType", EnumValue = 24 },
+				{ Name = "AlternateMount", Type = "PowerType", EnumValue = 25 },
+				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 26 },
 			},
 		},
 		{

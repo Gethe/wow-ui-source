@@ -343,12 +343,14 @@ do
 		if self.Score then
 			self.Score:RegisterForWidgetSet(partyPoseData.partyPoseInfo.widgetSetID, WidgetsLayout);
 		end
+		local partyPoseText = partyPoseData.partyPoseInfo.titleText;
+		partyPoseText = (partyPoseText and partyPoseText ~= "") and partyPoseText or nil; 
 
 		if (partyPoseData.playerWon) then
-			self.TitleText:SetText(PARTY_POSE_VICTORY);
+			self.TitleText:SetText(partyPoseText or PARTY_POSE_VICTORY);
 			self:SetModelScene(partyPoseData.partyPoseInfo.victoryModelSceneID, partyPoseData.themeData.partyCategory, forceUpdate);
 		else
-			self.TitleText:SetText(PARTY_POSE_DEFEAT);
+			self.TitleText:SetText(partyPoseText or PARTY_POSE_DEFEAT);
 			self:SetModelScene(partyPoseData.partyPoseInfo.defeatModelSceneID, partyPoseData.themeData.partyCategory, forceUpdate);
 		end
 
@@ -365,16 +367,29 @@ do
 end
 
 function PartyPoseMixin:GetPartyPoseData(mapID, winner)
-	local winnerFactionGroup = PLAYER_FACTION_GROUP[winner];
 	local playerFactionGroup = UnitFactionGroup("player");
 	local partyPoseData = {};
 	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
-	partyPoseData.playerWon = (winnerFactionGroup == playerFactionGroup);
+	--winner is a faction string for warfronts & islands.. Otherwise it is a boolean. 
+	partyPoseData.playerWon = (type(winner) == "string") and (PLAYER_FACTION_GROUP[winner] == playerFactionGroup) or winner;
+	return partyPoseData;
+end
+
+function PartyPoseMixin:GetPartyPoseDataFromPartyPoseID(partyPoseID, winner)
+	local playerFactionGroup = UnitFactionGroup("player");
+	local partyPoseData = {};
+	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByID(partyPoseID)
+	--winner is a faction string for warfronts & islands.. Otherwise it is a boolean. 
+	partyPoseData.playerWon = (type(winner) == "string") and (PLAYER_FACTION_GROUP[winner] == playerFactionGroup) or winner;
 	return partyPoseData;
 end
 
 function PartyPoseMixin:LoadScreen(mapID, winner)
 	self:LoadPartyPose(self:GetPartyPoseData(mapID, winner));
+end
+
+function PartyPoseMixin:LoadScreenByPartyPoseID(partyPoseID, winner)
+	self:LoadPartyPose(self:GetPartyPoseDataFromPartyPoseID(partyPoseID, winner));
 end
 
 function PartyPoseMixin:ReloadPartyPose()
@@ -386,7 +401,7 @@ function PartyPoseMixin:ReloadPartyPose()
 end
 
 function PartyPoseMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, whileDead = 1, ignoreControlLost = true, checkFit = 1 };
+	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, whileDead = 1, ignoreControlLost = true, checkFit = 1, yOffset = -100 };
 	self.ModelScene.shadowPool = CreateTexturePool(self.ModelScene, "BORDER", 1, "PartyPoseModelShadowTextureTemplate");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("PLAYER_LEAVING_WORLD");

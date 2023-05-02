@@ -75,6 +75,12 @@ function CompactUnitFrameProfiles:ApplyOptions(options)
 	
 	--Update the container in case sizes and such changed.
 	CompactRaidFrameContainer:TryUpdate();
+
+	-- Update settings raid frame preview if it exists.
+	if RaidFrameSettingsPreviewFrame then
+		DefaultCompactUnitFrameSetup(RaidFrameSettingsPreviewFrame);
+		CompactUnitFrame_UpdateAll(RaidFrameSettingsPreviewFrame);
+	end
 end
 
 function CompactUnitFrameProfiles:GenerateRaidManagerSetting(optionName)

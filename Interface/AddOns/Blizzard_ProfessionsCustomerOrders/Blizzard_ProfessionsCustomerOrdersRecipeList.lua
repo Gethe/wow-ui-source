@@ -1,5 +1,5 @@
 
-ProfessionsCustomerOrdersRecipeListElementMixin = CreateFromMixins(ScrollListLineMixin, TableBuilderRowMixin);
+ProfessionsCustomerOrdersRecipeListElementMixin = CreateFromMixins(TableBuilderRowMixin);
 
 function ProfessionsCustomerOrdersRecipeListElementMixin:OnLoad()
 	self:RegisterEvent("CRAFTINGORDERS_CUSTOMER_FAVORITES_CHANGED");

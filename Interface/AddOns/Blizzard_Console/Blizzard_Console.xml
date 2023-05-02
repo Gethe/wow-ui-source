@@ -269,7 +269,7 @@
 						<Texture parentKey="Background">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-1" y="2" />
-								<Anchor point="BOTTOMRIGHT" x="1" y="-2" />
+								<Anchor point="BOTTOMRIGHT" x="20" y="-2" />
 							</Anchors>
 							<Color r=".1" g=".1" b=".1" a=".8"/>
 						</Texture>
@@ -302,44 +302,6 @@
 							</AnimationGroup>
 						</Animations>
 					</Frame>
-					<Slider parentKey="ScrollBar" frameLevel="9500" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1">
-						<Size x="15" y="0"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="15" y="8"/>
-							<Anchor point="BOTTOMRIGHT" x="15" y="-8" />
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Background">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="1" y="-7" />
-										<Anchor point="BOTTOMRIGHT" x="0" y="7" />
-									</Anchors>
-									<Color r=".1" g=".1" b=".1" a=".8"/>
-								</Texture>
-								<Texture parentKey="BorderLeft">
-									<Size x="1" />
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="0" y="0" />
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="0" />
-									</Anchors>
-									<Color r="1" g="1" b="1" a="1"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnValueChanged>
-								if userInput then
-									local min, max = self:GetMinMaxValues();
-									self:GetParent():SetScrollOffset(max - value);
-								end
-							</OnValueChanged>
-						</Scripts>
-						<ThumbTexture file="Interface\Buttons\UI-ScrollBar-Knob">
-							<Size x="24" y="24"/>
-							<TexCoords left="0.05" right="0.95" top="0.05" bottom="0.95"/>
-						</ThumbTexture>
-					</Slider>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -352,7 +314,12 @@
 					<OnHyperlinkClick function="BlizzardConsoleMessageFrame_OnHyperlinkClick"/>
 				</Scripts>
 			</ScrollingMessageFrame>
-
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameLevel="9500">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-30"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="22"/>
+				</Anchors>
+			</EventFrame>
 			<Frame parentKey="AutoComplete" inherits="DeveloperConsoleAutoCompleteTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="-8" />

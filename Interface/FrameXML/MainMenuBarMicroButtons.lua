@@ -1,4 +1,4 @@
-local MICRO_BUTTONS = {
+MICRO_BUTTONS = {
 	"CharacterMicroButton",
 	"SpellbookMicroButton",
 	"TalentMicroButton",
@@ -11,7 +11,14 @@ local MICRO_BUTTONS = {
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 	"StoreMicroButton",
-	}
+}
+
+MicroMenuPositionEnum = {
+	BottomLeft = 1;
+	BottomRight = 2;
+	TopLeft = 3;
+	TopRight = 4;
+};
 
 DISPLAYED_COMMUNITIES_INVITATIONS = {};
 local PERFORMANCE_BAR_UPDATE_INTERVAL = 1;
@@ -70,24 +77,16 @@ end
 
 --Positioning and visual states
 function ResetMicroMenuPosition()
-	if EditModeManagerFrame:IsEditModeActive() then
-		MicroMenu:HighlightSystem();
-	end
-
-	MicroMenu:SetParent(UIParent);
+	MicroMenu:SetParent(MicroMenuContainer);
 	MicroMenu.stride = MicroMenu.numButtons;
 
 	local forceFullUpdate = true;
-	EditModeManagerFrame:UpdateSystem(MicroMenu, forceFullUpdate);
+	EditModeManagerFrame:UpdateSystem(MicroMenuContainer, forceFullUpdate);
 
 	UpdateMicroButtons();
 end
 
 function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, isStacked)
-	if EditModeManagerFrame:IsEditModeActive() then
-		MicroMenu:ClearHighlight();
-	end
-
 	MicroMenu:SetScale(1);
 	MicroMenu:SetParent(parent);
 
@@ -439,6 +438,13 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 	end
 end
 
+function MainMenuBarMicroButtonMixin:OnShow()
+	MicroMenuContainer:Layout();
+end
+
+function MainMenuBarMicroButtonMixin:OnHide()
+	MicroMenuContainer:Layout();
+end
 
 CharacterMicroButtonMixin = {};
 
@@ -1348,28 +1354,141 @@ function MicroMenuMixin:GetEdgeButton(rightMost, topMost)
 	end
 end
 
-function MicroMenuMixin:UpdateHelpTicketButtonAnchor()
+function MicroMenuMixin:UpdateHelpTicketButtonAnchor(position)
 	if not HelpOpenWebTicketButton then
 		return;
 	end
 
 	-- Update help button anchor so it stays on screen
-	local scale = self:GetScale();
-	local centerX, centerY = self:GetCenter();
-	centerX = centerX * scale;
-	centerY = centerY * scale;
-
-	local halfScreenWidth = GetScreenWidth() / 2;
-	local halfScreenHeight = GetScreenHeight() / 2;
-	local isOnLeftSideOfScreen = centerX < halfScreenWidth;
-	local isOnBottomSideOfScreen = centerY < halfScreenHeight;
+	local isOnBottomSideOfScreen, isOnLeftSideOfScreen;
+	if position == MicroMenuPositionEnum.BottomLeft then
+		isOnBottomSideOfScreen, isOnLeftSideOfScreen = true, true;
+	elseif position == MicroMenuPositionEnum.BottomRight then
+		isOnBottomSideOfScreen, isOnLeftSideOfScreen = true, false;
+	elseif position == MicroMenuPositionEnum.TopLeft then
+		isOnBottomSideOfScreen, isOnLeftSideOfScreen = false, true;
+	elseif position == MicroMenuPositionEnum.TopRight then
+		isOnBottomSideOfScreen, isOnLeftSideOfScreen = false, false;
+	end
 
 	local relativeTo = self:GetEdgeButton(isOnLeftSideOfScreen, isOnBottomSideOfScreen);
 	local offsetY = isOnBottomSideOfScreen and 25 or -25;
 	HelpOpenWebTicketButton:SetPoint("CENTER", relativeTo, "CENTER", 0, offsetY);
 end
 
+function MicroMenuMixin:UpdateQueueStatusAnchors(position)
+	if QueueStatusButton then
+		QueueStatusButton:UpdatePosition(position, self.isHorizontal);
+	end
+
+	if QueueStatusFrame then
+		QueueStatusFrame:UpdatePosition(position, self.isHorizontal);
+	end
+end
+
+function MicroMenuMixin:AnchorToMenuContainer(position)
+	if self:GetParent() ~= MicroMenuContainer then
+		-- If micro menu isn't parented to the default container then don't do anything
+		-- It is temporarily being overridden to be positioned somewhere else
+		return;
+	end
+
+	local point;
+	if position == MicroMenuPositionEnum.BottomLeft then
+		point = "BOTTOMLEFT";
+	elseif position == MicroMenuPositionEnum.BottomRight then
+		point = "BOTTOMRIGHT";
+	elseif position == MicroMenuPositionEnum.TopLeft then
+		point = "TOPLEFT";
+	elseif position == MicroMenuPositionEnum.TopRight then
+		point = "TOPRIGHT";
+	end
+	self:ClearAllPoints();
+	self:SetPoint(point, MicroMenuContainer, point, 0, 0);
+end
+
+function MicroMenuMixin:SetQueueStatusScale(scale)
+	if QueueStatusButton then
+		QueueStatusButton:SetScale(scale);
+	end
+
+	self:UpdateQueueStatusAnchors(MicroMenuContainer:GetPosition());
+end
+
 function MicroMenuMixin:Layout()
 	GridLayoutFrameMixin.Layout(self);
-	self:UpdateHelpTicketButtonAnchor();
+
+	local position = MicroMenuContainer:GetPosition();
+	self:AnchorToMenuContainer(position);
+	self:UpdateQueueStatusAnchors(position);
+	self:UpdateHelpTicketButtonAnchor(position);
+end
+
+MicroMenuContainerMixin = {};
+
+-- Manually wrote a layout method since we want to resize even around hidden frames
+-- Also some custom logic for when the micro menu isn't parented to the container
+function MicroMenuContainerMixin:Layout()
+	local isHorizontal = MicroMenu.isHorizontal;
+
+	local width, height = 0, 0;
+	local function AddFrameSize(frame, includeOffset)
+		local frameScale = frame:GetScale();
+
+		if isHorizontal then
+			width = width + frame:GetWidth() * frameScale;
+			if includeOffset then
+				local point, relativeTo, relativePoint, offsetX, offsetY = frame:GetPoint(1);
+				width = width + math.abs(offsetX * frameScale);
+			end
+
+			height = math.max(height, frame:GetHeight() * frameScale);
+		else
+			width = math.max(width, frame:GetWidth() * frameScale);
+
+			height = height + frame:GetHeight() * frameScale;
+			if includeOffset then
+				local point, relativeTo, relativePoint, offsetX, offsetY = frame:GetPoint(1);
+				height = height + math.abs(offsetY * frameScale);
+			end
+		end
+	end
+
+	if MicroMenu then
+		if MicroMenu:GetParent() ~= self then
+			-- Don't update size if micro menu parented to container
+			-- This is a temporary override and we don't want to resize while the menu is gone
+			return;
+		end
+
+		MicroMenu:Layout();
+		AddFrameSize(MicroMenu);
+	end
+
+	if QueueStatusButton then
+		local includeOffsetYes = true;
+		AddFrameSize(QueueStatusButton, includeOffsetYes);
+	end
+
+	self:SetSize(math.max(width, 1), math.max(height, 1));
+end
+
+function MicroMenuContainerMixin:GetPosition()
+	local centerX, centerY = self:GetCenter();
+	local halfScreenWidth = UIParent:GetWidth() / 2;
+	local halfScreenHeight = UIParent:GetHeight() / 2;
+
+	if centerY < halfScreenHeight then
+		if centerX < halfScreenWidth then
+			return MicroMenuPositionEnum.BottomLeft;
+		else
+			return MicroMenuPositionEnum.BottomRight;
+		end
+	else
+		if centerX < halfScreenWidth then
+			return MicroMenuPositionEnum.TopLeft;
+		else
+			return MicroMenuPositionEnum.TopRight;
+		end
+	end
 end

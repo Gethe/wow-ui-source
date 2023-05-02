@@ -92,6 +92,20 @@ local Item =
 			},
 		},
 		{
+			Name = "DoesItemMatchTrackJump",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesTrackJump", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAppliedItemTransmogInfo",
 			Type = "Function",
 

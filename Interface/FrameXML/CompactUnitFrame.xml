@@ -26,7 +26,7 @@
 			<OnClick function="PassClickToParent"/>
 		</Scripts>
 	</Button>
-	<Button name="CompactDebuffTemplate" inherits="CompactAuraTemplate" parentArray="debuffFrames" virtual="true">
+	<Button name="CompactDebuffTemplate" inherits="CompactAuraTemplate" parentArray="debuffFrames" mixin="CompactDebuffMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" parentKey="border" file="Interface\Buttons\UI-Debuff-Overlays">
@@ -43,45 +43,17 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					if ( self.isBossBuff ) then
-						GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
-					else
-						GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
-					end
-				end
-			</OnUpdate>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-					if ( self.isBossBuff ) then
-						GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
-					else
-						GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
-					end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="CompactBuffTemplate" inherits="CompactAuraTemplate" parentArray="buffFrames" virtual="true">
+	<Button name="CompactBuffTemplate" inherits="CompactAuraTemplate" parentArray="buffFrames" mixin="CompactBuffMixin" virtual="true">
 		<Scripts>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
-				end
-			</OnUpdate>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, self.filter);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="CompactDispelDebuffTemplate" parentArray="dispelDebuffFrames" virtual="true">
+	<Button name="CompactDispelDebuffTemplate" parentArray="dispelDebuffFrames" mixin="CompactDispelDebuffMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" parentKey="icon">
@@ -91,20 +63,11 @@
 		</Layers>
 		<Scripts>
 			<OnClick function="PassClickToParent"/>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, "RAID");
-				end
-			</OnUpdate>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().displayedUnit, self.auraInstanceID, "RAID");
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
+	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true"/>
 	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -165,9 +128,27 @@
 			<Button name="$parentBuff1" inherits="CompactBuffTemplate"/>
 			<Button name="$parentBuff2" inherits="CompactBuffTemplate"/>
 			<Button name="$parentBuff3" inherits="CompactBuffTemplate"/>
-			<Button name="$parentDebuff1" inherits="CompactDebuffTemplate"/>
-			<Button name="$parentDebuff2" inherits="CompactDebuffTemplate"/>
-			<Button name="$parentDebuff3" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentBuff4" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff5" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff6" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff7" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff8" inherits="CompactBuffTemplate"/>
+			<Button name="$parentDebuff1" parentKey="Debuff1" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff2" parentKey="Debuff2" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff3" parentKey="Debuff3" inherits="CompactDebuffTemplate"/>
+			<Frame parentKey="PrivateAuraAnchor1" inherits="CompactUnitPrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="PrivateAuraAnchor2" inherits="CompactUnitPrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PrivateAuraAnchor1" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
 			<Button name="$parentDispelDebuff1" inherits="CompactDispelDebuffTemplate"/>
 			<Button name="$parentDispelDebuff2" inherits="CompactDispelDebuffTemplate"/>
 			<Button name="$parentDispelDebuff3" inherits="CompactDispelDebuffTemplate"/>

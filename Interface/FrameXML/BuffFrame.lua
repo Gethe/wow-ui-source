@@ -40,7 +40,7 @@ local CollapseAndExpandButton_ExpandDirection_Up = CollapseAndExpandButton_Expan
 
 AuraContainerMixin = {};
 
-function AuraContainerMixin:UpdateGridLayout(auras)
+function AuraContainerMixin:UpdateGridLayout(auras, doNotAnchorDisabledFrames)
 	local newLayoutInfo = {
 		isHorizontal = self.isHorizontal;
 		iconStride = self.iconStride;
@@ -125,6 +125,10 @@ function AuraContainerMixin:UpdateGridLayout(auras)
 		iconPoint = newLayoutInfo.addIconsToRight and "LEFT" or "RIGHT";
 	end
 
+	if doNotAnchorDisabledFrames then
+		auras = tFilter(auras, function(f) return f.hasValidInfo or f.isExample or f.isAuraAnchor; end, true);
+	end
+
 	for index, aura in ipairs(auras) do
 		aura:SetScale(self.iconScale or 1);
 		aura:SetSize(auraWidth, auraHeight);
@@ -160,6 +164,9 @@ function AuraFrameMixin:AuraFrame_OnLoad()
 	for i = 1, self.maxAuras, 1 do
 		local auraFrame = CreateFrame("BUTTON", nil, self.AuraContainer, "AuraButtonTemplate");
 		table.insert(self.auraFrames, auraFrame);
+	end
+	for _, anchorframe in ipairs(self.PrivateAuraAnchors or {}) do
+		table.insert(self.auraFrames, anchorframe);
 	end
 	self:UpdateGridLayout();
 end
@@ -206,28 +213,32 @@ function AuraFrameMixin:UpdateAuraButtons()
 	local isExpanded = self:IsExpanded();
 	local nextAuraInfoIndex = 1;
 	for _, auraFrame in ipairs(self.auraFrames) do
-		auraFrame.isExample = false;
+		if not auraFrame.isAuraAnchor then
+			auraFrame.isExample = false;
 
-		if not self.auraInfo then
-			auraFrame:Hide();
-		else
-			-- Get the auraInfo for the next showable aura
-			local auraInfo;
-			while nextAuraInfoIndex <= #self.auraInfo do
-				local potentialAuraInfo = self.auraInfo[nextAuraInfoIndex];
-				nextAuraInfoIndex = nextAuraInfoIndex + 1;
+			auraFrame.hasValidInfo = false;
+			if not self.auraInfo then
+				auraFrame:Hide();
+			else
+				-- Get the auraInfo for the next showable aura
+				local auraInfo;
+				while nextAuraInfoIndex <= #self.auraInfo do
+					local potentialAuraInfo = self.auraInfo[nextAuraInfoIndex];
+					nextAuraInfoIndex = nextAuraInfoIndex + 1;
 
-				-- Aura is only showable if we're expanded or the aura isn't hidden when collapsed
-				if isExpanded or not potentialAuraInfo.hideUnlessExpanded then
-					auraInfo = potentialAuraInfo;
-					break;
+					-- Aura is only showable if we're expanded or the aura isn't hidden when collapsed
+					if isExpanded or not potentialAuraInfo.hideUnlessExpanded then
+						auraInfo = potentialAuraInfo;
+						break;
+					end
 				end
-			end
 
-			-- If we found a showable aura then set the button to that aura and show it, otherwise hide the button 
-			auraFrame:SetShown(auraInfo ~= nil);
-			if auraInfo then
-				auraFrame:Update(auraInfo);
+				-- If we found a showable aura then set the button to that aura and show it, otherwise hide the button 
+				auraFrame:SetShown(auraInfo ~= nil);
+				if auraInfo then
+					auraFrame.hasValidInfo = true;
+					auraFrame:Update(auraInfo);
+				end
 			end
 		end
 	end
@@ -244,25 +255,34 @@ function AuraFrameMixin:TryEditModeUpdateAuraButtons()
 			local iconDataProviderNumIcons = self.iconDataProvider:GetNumIcons();
 
 			for index, auraFrame in ipairs(self.auraFrames) do
-				auraFrame.isExample = true;
-				auraFrame:UpdateAuraType(self.exampleAuraType);
-				auraFrame.Duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
-				auraFrame.Duration:SetFormattedText(SecondsToTimeAbbrev(index * 60));
-				auraFrame.Duration:Show();
-				auraFrame.Icon:SetTexture(self.iconDataProvider:GetIconByIndex(math.random(1, iconDataProviderNumIcons)));
-				auraFrame:Show();
+				if auraFrame.isAuraAnchor then
+					auraFrame:Hide();
+				else
+					auraFrame.isExample = true;
+					auraFrame:UpdateAuraType(self.exampleAuraType);
+					auraFrame.Duration:SetFontObject(DEFAULT_AURA_DURATION_FONT);
+					auraFrame.Duration:SetFormattedText(SecondsToTimeAbbrev(index * 60));
+					auraFrame.Duration:Show();
+					auraFrame.Icon:SetTexture(self.iconDataProvider:GetIconByIndex(math.random(1, iconDataProviderNumIcons)));
+					auraFrame:Show();
+				end
 			end
 
 			self.hasInitializedForEditMode = true;
 		end
 	else
+		if self.hasInitializedForEditMode then
+			for _, auraFrame in ipairs(self.PrivateAuraAnchors or {}) do
+				auraFrame:Show();
+			end
+		end
 		self.hasInitializedForEditMode = false;
 	end
 	return self.hasInitializedForEditMode;
 end
 
 function AuraFrameMixin:UpdateGridLayout()
-	self.AuraContainer:UpdateGridLayout(self.auraFrames);
+	self.AuraContainer:UpdateGridLayout(self.auraFrames, self.doNotAnchorDisabledFrames);
 	self:UpdateAuraContainerAnchor();
 end
 
@@ -460,6 +480,22 @@ function DebuffFrameMixin:OnLoad()
 	self.maxAuras = DEBUFF_MAX_DISPLAY;
 end
 
+function DebuffFrameMixin:Update() -- Override
+	AuraFrameMixin.Update(self);
+	local unit = PlayerFrame.unit;
+	if unit ~= self.unit then
+		for _, anchor in ipairs(self.PrivateAuraAnchors) do
+			anchor:SetUnit(unit);
+		end
+	end
+	self.unit = unit;
+end
+
+function DebuffFrameMixin:UpdateAuraButtons()  -- Override
+	AuraFrameMixin.UpdateAuraButtons(self);
+	self:UpdateGridLayout();
+end
+
 function DebuffFrameMixin:UpdateAuras()
 	AuraFrameMixin.UpdateAuras(self);
 
@@ -577,6 +613,7 @@ function DebuffFrameMixin:UpdateAuraContainerAnchor()
 	end
 end
 
+-- If you make changes to this, consider making the same changes to PrivateAuraMixin
 AuraButtonMixin = { };
 
 function AuraButtonMixin:OnLoad()
@@ -908,4 +945,53 @@ function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
 	end
 
 	self:Show();
+end
+
+BuffFramePrivateAuraAnchorMixin = {};
+
+function BuffFramePrivateAuraAnchorMixin:SetUnit(unit)
+	if unit == self.unit then
+		return;
+	end
+	self.unit = unit;
+
+	if self.anchorID then
+		C_UnitAuras.RemovePrivateAuraAnchor(self.anchorID);
+		self.anchorID = nil;
+	end
+
+	if unit then
+		local iconAnchor =
+		{
+			point = "CENTER",
+			relativeTo = self.Icon,
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
+		};
+		local durationAnchor =
+		{
+			point = "CENTER",
+			relativeTo = self.Duration,
+			relativePoint = "CENTER",
+			offsetX = 0,
+			offsetY = 0,
+		};
+
+		local privateAnchorArgs = {};
+		privateAnchorArgs.unitToken = unit;
+		privateAnchorArgs.auraIndex = self.auraIndex;
+		privateAnchorArgs.parent = self;
+		privateAnchorArgs.showCountdownFrame = false;
+		privateAnchorArgs.showCountdownNumbers = false;
+		privateAnchorArgs.iconInfo =
+		{
+			iconAnchor = iconAnchor,
+			iconWidth = self.Icon:GetWidth(),
+			iconHeight = self.Icon:GetHeight(),
+		};
+		privateAnchorArgs.durationAnchor = durationAnchor;
+
+		self.anchorID = C_UnitAuras.AddPrivateAuraAnchor(privateAnchorArgs);
+	end
 end

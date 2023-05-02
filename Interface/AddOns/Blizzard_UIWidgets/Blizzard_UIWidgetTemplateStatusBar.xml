@@ -95,7 +95,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Label" inherits="GameFontHighlight" >
+				<FontString parentKey="Label" inherits="GameFontHighlight" mixin="UIWidgetBaseTextMixin">
 					<Anchors>
 						<Anchor point="TOP" y="-3"/>
 					</Anchors>

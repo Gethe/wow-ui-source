@@ -1,5 +1,5 @@
 
-ProfessionsCustomerOrderListElementMixin = CreateFromMixins(ScrollListLineMixin, TableBuilderRowMixin);
+ProfessionsCustomerOrderListElementMixin = CreateFromMixins(TableBuilderRowMixin);
 
 function ProfessionsCustomerOrderListElementMixin:OnLineEnter()
 	self.HighlightTexture:Show();

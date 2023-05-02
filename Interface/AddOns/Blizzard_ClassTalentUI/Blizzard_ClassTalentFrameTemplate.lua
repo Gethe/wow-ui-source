@@ -104,7 +104,12 @@ end
 function ClassTalentFrameMixin:UpdateFrameTitle()
 	local tabID = self:GetTab();
 	if self:IsInspecting() then
-		self:SetTitle(TALENTS_INSPECT_FORMAT:format(UnitName(self:GetInspectUnit())));
+		local inspectUnit = self:GetInspectUnit();
+		if inspectUnit then
+			self:SetTitle(TALENTS_INSPECT_FORMAT:format(UnitName(self:GetInspectUnit())));
+		else
+			self:SetTitle(TALENTS_LINK_FORMAT:format(self:GetSpecName(), self:GetClassName()));
+		end
 	elseif tabID == self.specTabID then
 		self:SetTitle(SPECIALIZATION);
 	else -- tabID == self.talentTabID
@@ -126,24 +131,111 @@ function ClassTalentFrameMixin:LockInspect()
 	end
 end
 
-function ClassTalentFrameMixin:SetInspecting(inspectUnit)
+function ClassTalentFrameMixin:SetInspectUnit(inspectUnit)
+	local inspectString = nil;
+	local inspectStringLevel = nil;
+	self:SetInspecting(inspectUnit, inspectString, inspectStringLevel);
+end
+
+function ClassTalentFrameMixin:SetInspectString(inspectString, inspectStringLevel)
+	local inspectUnit = nil;
+	self:SetInspecting(inspectUnit, inspectString, inspectStringLevel);
+end
+
+function ClassTalentFrameMixin:SetInspecting(inspectUnit, inspectString, inspectStringLevel)
 	self.inspectUnit = inspectUnit;
+	self.inspectString = inspectString;
+
+	if inspectString then
+		local success, specID = self.TalentsTab:ViewLoadout(inspectString, inspectStringLevel);
+		if not success then
+			self:SetInspecting(nil, nil, nil);
+			return;
+		end
+
+		self.inspectStringSpecID = specID;
+		self.inspectStringClassID = GetClassIDFromSpecID(specID);
+	else
+		self.inspectStringSpecID = nil;
+		self.inspectStringClassID = nil;
+	end
+
 	self:UpdateTabs();
 	self.TalentsTab:UpdateInspecting();
 
-	if inspectUnit then
+	if inspectUnit or inspectString then
 		self:SetTab(self.talentTabID);
 	else
 		self:UpdateFrameTitle();
 	end
+
+	self:UpdatePortrait();
 end
 
 function ClassTalentFrameMixin:IsInspecting()
-	return self.inspectUnit ~= nil;
+	return (self.inspectUnit ~= nil) or (self.inspectString ~= nil);
 end
 
 function ClassTalentFrameMixin:GetInspectUnit()
 	return self.inspectUnit;
+end
+
+function ClassTalentFrameMixin:GetInspectString()
+	return self.inspectString, self.inspectStringClassID, self.inspectStringSpecID;
+end
+
+function ClassTalentFrameMixin:GetClassID()
+	if self:IsInspecting() then
+		local inspectUnit = self:GetInspectUnit();
+		if inspectUnit then
+			return select(3, UnitClass(inspectUnit));
+		else
+			return select(2, self:GetInspectString());
+		end
+	end
+
+	return PlayerUtil.GetClassID();
+end
+
+function ClassTalentFrameMixin:GetSpecID()
+	if self:IsInspecting() then
+		local inspectUnit = self:GetInspectUnit();
+		if inspectUnit then
+			return GetInspectSpecialization(inspectUnit);
+		else
+			return select(3, self:GetInspectString());
+		end
+	end
+
+	return PlayerUtil.GetCurrentSpecID();
+end
+
+function ClassTalentFrameMixin:GetUnitSex()
+	-- If we're inspecting via string, use the player's sex.
+	local unit = (self:IsInspecting() and self:GetInspectUnit()) or "player";
+	return UnitSex(unit);
+end
+
+function ClassTalentFrameMixin:GetClassName()
+	if self:IsInspecting() then
+		local inspectUnit = self:GetInspectUnit();
+		if inspectUnit then
+			local className = UnitClass(inspectUnit);
+			return className;
+		else
+			local classID = select(2, self:GetInspectString());
+			local classInfo = C_CreatureInfo.GetClassInfo(classID);
+			return classInfo.className;
+		end
+	end
+
+	return PlayerUtil.GetClassName();
+end
+
+function ClassTalentFrameMixin:GetSpecName()
+	local unitSex = self:GetUnitSex();
+	local specID = self:GetSpecID();
+	return select(2, GetSpecializationInfoByID(specID, unitSex));
 end
 
 function ClassTalentFrameMixin:CheckConfirmClose()
@@ -153,12 +245,13 @@ function ClassTalentFrameMixin:CheckConfirmClose()
 end
 
 function ClassTalentFrameMixin:UpdatePortrait()
-	local masteryIndex = GetSpecialization();
-	if (masteryIndex == nil) then
-		self:SetPortraitToClassIcon(PlayerUtil.GetClassFile());
-	else
-		local _, _, _, icon = GetSpecializationInfo(masteryIndex);
+	local specID = self:GetSpecID();
+	local specIcon = specID and PlayerUtil.GetSpecIconBySpecID(specID, self:GetInspectUnit() or "player") or nil;
+	if specIcon then
 		self:SetPortraitTexCoord(0, 1, 0, 1);
-		self:SetPortraitToAsset(icon);
+		self:SetPortraitToAsset(specIcon);
+	else
+		local classID = self:GetClassID();
+		self:SetPortraitToClassIcon(C_CreatureInfo.GetClassInfo(classID).classFile);
 	end
 end

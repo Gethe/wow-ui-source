@@ -15,38 +15,37 @@ function EditModeUtil:IsBottomAnchoredActionBar(systemFrame)
 		or (systemFrame == MainMenuBarVehicleLeaveButton);
 end
 
+local function GetBarsLayoutSize(barHeirarchy, getWidth)
+	for _, bar in ipairs(barHeirarchy) do
+		if bar and bar:IsVisible()
+			and (not bar.IsInitialized or bar:IsInitialized())
+			and (not bar.IsInDefaultPosition or bar:IsInDefaultPosition())
+			then
+			local offset, size;
+			if getWidth then
+				offset = select(4, bar:GetPoint(1));
+				size = bar:GetWidth();
+			else -- getHeight
+				offset = select(5, bar:GetPoint(1));
+				size = bar:GetHeight();
+			end
+			return math.abs(offset) + size;
+		end
+	end
+
+	return 0;
+end
+
 function EditModeUtil:GetRightActionBarWidth()
-	local offset = 0;
-	if MultiBar3_IsVisible and MultiBar3_IsVisible() and MultiBarRight:IsInDefaultPosition() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarRight:GetPoint(1);
-		offset = (MultiBarRight:GetScale() * MultiBarRight:GetWidth()) - offsetX; -- Subtract x offset since it will be a negative value due to us anchoring to the right side and anchoring towards the middle
-	end
-
-	if MultiBar4_IsVisible and MultiBar4_IsVisible() and MultiBarLeft:IsInDefaultPosition() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = MultiBarLeft:GetPoint(1);
-		offset = offset + (MultiBarLeft:GetScale() * MultiBarLeft:GetWidth()) - offsetX;
-	end
-
-	return offset;
+	local barHeirarchy = { MultiBarLeft, MultiBarRight };
+	local getWidthYes = true;
+	return GetBarsLayoutSize(barHeirarchy, getWidthYes);
 end
 
 function EditModeUtil:GetBottomActionBarHeight()
-	local actionBarHeight = 0;
-
-	if OverrideActionBar and OverrideActionBar:IsShown() then
-		actionBarHeight = actionBarHeight + OverrideActionBar:GetBottomAnchoredHeight();
-	else
-		actionBarHeight = actionBarHeight + MainMenuBar:GetBottomAnchoredHeight();
-		actionBarHeight = actionBarHeight + (MultiBarBottomLeft and MultiBarBottomLeft:GetBottomAnchoredHeight() or 0);
-		actionBarHeight = actionBarHeight + (MultiBarBottomRight and MultiBarBottomRight:GetBottomAnchoredHeight() or 0);
-	end
-
-	actionBarHeight = actionBarHeight + (StanceBar and StanceBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + (PetActionBar and PetActionBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + (PossessActionBar and PossessActionBar:GetBottomAnchoredHeight() or 0);
-	actionBarHeight = actionBarHeight + (MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:GetBottomAnchoredHeight() or 0);
-
-	return actionBarHeight;
+	local barHeirarchy = { MainMenuBarVehicleLeaveButton, PossessActionBar, PetActionBar, StanceBar, OverrideActionBar, MultiBarBottomRight, MultiBarBottomLeft, MainMenuBar };
+	local getWidthNo = false;
+	return GetBarsLayoutSize(barHeirarchy, getWidthNo);
 end
 
 function EditModeUtil:GetRightContainerAnchor()
@@ -73,6 +72,7 @@ EditModeMagnetismManager.magneticFrames = {};
 
 -- Default magnetism range
 EditModeMagnetismManager.magnetismRange = 8;
+EditModeMagnetismManager.sqrMagnetismRange = EditModeMagnetismManager.magnetismRange * EditModeMagnetismManager.magnetismRange;
 
 function EditModeMagnetismManager:UpdateUIParentPoints()
 	self.uiParentCenterX, self.uiParentCenterY = UIParent:GetCenter();
@@ -86,6 +86,7 @@ end
 
 function EditModeMagnetismManager:SetMagnetismRange(magnetismRange)
 	self.magnetismRange = magnetismRange;
+	self.sqrMagnetismRange = magnetismRange * magnetismRange;
 end
 
 function EditModeMagnetismManager:RegisterFrame(frame)
@@ -134,8 +135,8 @@ function EditModeMagnetismManager:GetEligibleMagneticFrames(systemFrame)
 	return eligibleFrames;
 end
 
-function EditModeMagnetismManager:GetMagneticFrameInfoTable(frame, point, relativePoint, distance, offset, isHorizontal)
-	return { frame = frame, point = point, relativePoint = relativePoint, distance = distance, offset = offset, isHorizontal = isHorizontal };
+function EditModeMagnetismManager:GetMagneticFrameInfoTable(frame, point, relativePoint, distance, offset, isHorizontal, isCornerSnap)
+	return { frame = frame, point = point, relativePoint = relativePoint, distance = distance, offset = offset, isHorizontal = isHorizontal, isCornerSnap = isCornerSnap };
 end
 
 function EditModeMagnetismManager:CheckReplaceMagneticFrame(currentFrame, frame, point, relativePoint, distance, offset, isHorizontal)
@@ -212,10 +213,75 @@ function EditModeMagnetismManager:FindClosestLine(systemFrame, verticalLines)
 	return closestDistance, closestPoint, closestOffset;
 end
 
--- Finds up to 2 frames or grid lines that are within magnetic range of systemFrame
+function EditModeMagnetismManager:IsPotentialMagneticCornerFrame(frame)
+	return frame and frame.GetScaledSelectionSides;
+end
+
+function EditModeMagnetismManager:ShouldReplaceClosestCorner(closestSqrDistance, cornerSqrDistance)
+	return cornerSqrDistance <= self.sqrMagnetismRange and (not closestSqrDistance or cornerSqrDistance < closestSqrDistance);
+end
+
+-- Attempts to get a MagneticFrameInfoTable for a corner snap between the input frame and relativeToFrameInfo
+-- If no corner is within range will return nil
+function EditModeMagnetismManager:GetMagneticCornerFrameInfo(frame, relativeToFrameInfo)
+	if not self:IsPotentialMagneticCornerFrame(frame) or not relativeToFrameInfo or not self:IsPotentialMagneticCornerFrame(relativeToFrameInfo.frame) then
+		return nil;
+	end
+
+	local frameLeft, frameRight, frameBottom, frameTop = frame:GetScaledSelectionSides();
+	local framePoints = {
+		TOPLEFT = { x = frameLeft, y = frameTop };
+		TOPRIGHT = { x = frameRight, y = frameTop };
+		BOTTOMLEFT = { x = frameLeft, y = frameBottom };
+		BOTTOMRIGHT = { x = frameRight, y = frameBottom };
+	};
+
+	local relativeToFrameLeft, relativeToFrameRight, relativeToFrameBottom, relativeToFrameTop = relativeToFrameInfo.frame:GetScaledSelectionSides();
+	local relativeToFramePoints = {
+		TOPLEFT = { x = relativeToFrameLeft, y = relativeToFrameTop };
+		TOPRIGHT = { x = relativeToFrameRight, y = relativeToFrameTop };
+		BOTTOMLEFT = { x = relativeToFrameLeft, y = relativeToFrameBottom };
+		BOTTOMRIGHT = { x = relativeToFrameRight, y = relativeToFrameBottom };
+	};
+
+	local closestPoint, closestRelativePoint, closestSqrDistance;
+	local cornerSqrDistance;
+	for framePointName, framePointPosition in pairs(framePoints) do
+		for relativeToFramePointName, relativeToFramePointPosition in pairs(relativeToFramePoints) do
+			-- Exclude diagonal corner connections
+			if not ((framePointName == "TOPLEFT" and relativeToFramePointName == "BOTTOMRIGHT")
+				 or (framePointName == "TOPRIGHT" and relativeToFramePointName == "BOTTOMLEFT")
+				 or (framePointName == "BOTTOMLEFT" and relativeToFramePointName == "TOPRIGHT")
+				 or (framePointName == "BOTTOMRIGHT" and relativeToFramePointName == "TOPLEFT")) then
+
+				-- Check if this corner is closer
+				cornerSqrDistance = CalculateDistanceSq(framePointPosition.x, framePointPosition.y, relativeToFramePointPosition.x, relativeToFramePointPosition.y);
+				if self:ShouldReplaceClosestCorner(closestSqrDistance, cornerSqrDistance) then
+					closestPoint, closestRelativePoint, closestSqrDistance = framePointName, relativeToFramePointName, cornerSqrDistance;
+				end
+			end
+		end
+	end
+
+	if closestSqrDistance then
+		local offset = 0;
+		local isCornerSnap = true;
+		return self:GetMagneticFrameInfoTable(relativeToFrameInfo.frame, closestPoint, closestRelativePoint, math.sqrt(closestSqrDistance), offset, relativeToFrameInfo.isHorizontal, isCornerSnap);
+	end
+
+	return nil;
+end
+
+-- Finds up to 3 frames or grid lines that are within magnetic range of systemFrame
 function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 	local eligibleFrames = self:GetEligibleMagneticFrames(systemFrame);
 	local magneticHorizontalFrame, magneticVerticalFrame;
+
+	-- Also track magnetic frames which can potentially be corner snapped to so we can look for corner snap opportunities even if
+	-- the closest horizontal or vertical frames cannot be corner snapped to (like UIParent).
+	-- We do this since we want to prioritize corner snaps when possible.
+	local potentialMagneticHorizontalCornerFrame, potentialMagneticVerticalCornerFrame;
+
 	local distance, point, relativePoint, offset;
 	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
 
@@ -242,6 +308,9 @@ function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 			offset = 0;
 		end
 
+		if self:IsPotentialMagneticCornerFrame(frame) then
+			potentialMagneticHorizontalCornerFrame = self:CheckReplaceMagneticFrame(potentialMagneticHorizontalCornerFrame, frame, point, relativePoint, distance, offset, horizontalYes);
+		end
 		magneticHorizontalFrame = self:CheckReplaceMagneticFrame(magneticHorizontalFrame, frame, point, relativePoint, distance, offset, horizontalYes);
 	end
 
@@ -268,20 +337,36 @@ function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 			offset = 0;
 		end
 
+		if self:IsPotentialMagneticCornerFrame(frame) then
+			potentialMagneticVerticalCornerFrame = self:CheckReplaceMagneticFrame(potentialMagneticVerticalCornerFrame, frame, point, relativePoint, distance, offset, horizontalNo);
+		end
 		magneticVerticalFrame = self:CheckReplaceMagneticFrame(magneticVerticalFrame, frame, point, relativePoint, distance, offset, horizontalNo);
 	end
 
+	-- Check for magnetic corners
+	local magneticHorizontalCornerFrameInfo = self:GetMagneticCornerFrameInfo(systemFrame, potentialMagneticHorizontalCornerFrame);
+	local magneticVerticalCornerFrameInfo = self:GetMagneticCornerFrameInfo(systemFrame, potentialMagneticVerticalCornerFrame);
+	local magneticCornerFrame;
+	if magneticHorizontalCornerFrameInfo and (not magneticVerticalCornerFrameInfo or magneticHorizontalCornerFrameInfo.distance < magneticVerticalCornerFrameInfo.distance) then
+		magneticCornerFrame = magneticHorizontalCornerFrameInfo;
+	elseif magneticVerticalCornerFrameInfo then
+		magneticCornerFrame = magneticVerticalCornerFrameInfo;
+	end
+
 	-- Return the magnetic horizontal and vertical frames (these can be nil if none is found)
-	return magneticHorizontalFrame, magneticVerticalFrame;
+	return magneticHorizontalFrame, magneticVerticalFrame, magneticCornerFrame;
 end
 
 function EditModeMagnetismManager:ApplyMagnetism(systemFrame)
-	local magneticHorizontalFrame, magneticVerticalFrame = self:FindMagneticFrames(systemFrame);
+	local magneticHorizontalFrame, magneticVerticalFrame, magneticCornerFrame = self:FindMagneticFrames(systemFrame);
 
-	if magneticHorizontalFrame or magneticVerticalFrame then
+	if magneticHorizontalFrame or magneticVerticalFrame or magneticCornerFrame then
 		systemFrame:ClearAllPoints();
 
-		if magneticHorizontalFrame and magneticVerticalFrame and magneticHorizontalFrame.frame == magneticVerticalFrame.frame then
+		if magneticCornerFrame then
+			-- Prioritize snapping to the corner of another frame
+			systemFrame:SnapToFrame(magneticCornerFrame);
+		elseif magneticHorizontalFrame and magneticVerticalFrame and magneticHorizontalFrame.frame == magneticVerticalFrame.frame then
 			-- This can only happen if both magnetic frames are UIParent
 			-- If one of the frames is a center alignment (systemFrame is going to be snapped to one of UIParent's center lines) then ignore the other one
 			if magneticHorizontalFrame.point == "CENTER" then

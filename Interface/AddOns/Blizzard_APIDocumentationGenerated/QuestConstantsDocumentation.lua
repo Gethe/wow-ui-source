@@ -3,6 +3,24 @@ local QuestConstants =
 	Tables =
 	{
 		{
+			Name = "QuestCompleteSpellType",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "LegacyBehavior", Type = "QuestCompleteSpellType", EnumValue = 0 },
+				{ Name = "Follower", Type = "QuestCompleteSpellType", EnumValue = 1 },
+				{ Name = "Tradeskill", Type = "QuestCompleteSpellType", EnumValue = 2 },
+				{ Name = "Ability", Type = "QuestCompleteSpellType", EnumValue = 3 },
+				{ Name = "Aura", Type = "QuestCompleteSpellType", EnumValue = 4 },
+				{ Name = "Spell", Type = "QuestCompleteSpellType", EnumValue = 5 },
+				{ Name = "Unlock", Type = "QuestCompleteSpellType", EnumValue = 6 },
+				{ Name = "Companion", Type = "QuestCompleteSpellType", EnumValue = 7 },
+			},
+		},
+		{
 			Name = "QuestTagType",
 			Type = "Enumeration",
 			NumValues = 17,

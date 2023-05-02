@@ -373,7 +373,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Button name="QueueStatusButton" mixin="QueueStatusButtonMixin" parent="MicroButtonAndBagsBar" hidden="true">
+	<Button name="QueueStatusButton" mixin="QueueStatusButtonMixin" parent="MicroMenuContainer" hidden="true">
 		<Size x="45" y="45"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="-45" y="4"/>

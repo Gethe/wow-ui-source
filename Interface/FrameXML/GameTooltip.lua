@@ -1,3 +1,104 @@
+---------------
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
+if tbl then
+	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
+	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+	tbl.type = tbl.SecureCapsuleGet("type");
+	tbl.unpack = tbl.SecureCapsuleGet("unpack");
+	tbl.error = tbl.SecureCapsuleGet("error");
+	tbl.pcall = tbl.SecureCapsuleGet("pcall");
+	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
+
+	local function CleanFunction(f)
+		local f = function(...)
+			local function HandleCleanFunctionCallArgs(success, ...)
+				if success then
+					return ...;
+				else
+					tbl.error("Error in secure capsule function execution: "..(...));
+				end
+			end
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
+		end
+		setfenv(f, tbl);
+		return f;
+	end
+
+	local function CleanTable(t, tableCopies)
+		if not tableCopies then
+			tableCopies = {};
+		end
+
+		local cleaned = {};
+		tableCopies[t] = cleaned;
+
+		for k, v in tbl.pairs(t) do
+			if tbl.type(v) == "table" then
+				if ( tableCopies[v] ) then
+					cleaned[k] = tableCopies[v];
+				else
+					cleaned[k] = CleanTable(v, tableCopies);
+				end
+			elseif tbl.type(v) == "function" then
+				cleaned[k] = CleanFunction(v);
+			else
+				cleaned[k] = v;
+			end
+		end
+		return cleaned;
+	end
+
+	local function Import(name)
+		local skipTableCopy = true;
+		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+		if tbl.type(val) == "function" then
+			tbl[name] = CleanFunction(val);
+		elseif tbl.type(val) == "table" then
+			tbl[name] = CleanTable(val);
+		else
+			tbl[name] = val;
+		end
+	end
+
+	Import("math");
+	Import("string");
+	Import("QUEST_REWARDS");
+	Import("NORMAL_FONT_COLOR");
+	Import("CONTRIBUTION_REWARD_TOOLTIP_TEXT");
+	Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("ISLAND_QUEUE_REWARD_FOR_WINNING");
+	Import("UnitPlayerControlled");
+	Import("UnitCanAttack");
+	Import("UnitIsPVP");
+	Import("UnitReaction");
+	Import("HIGHLIGHT_FONT_COLOR");
+	Import("TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT");
+	Import("TOOLTIP_UPDATE_TIME");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+	Import("PVP_BOUNTY_REWARD_TITLE");
+
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
+	setfenv(1, tbl);
+end
+----------------
+
+local envTbl = tbl or _G;
+
 TooltipConstants = {
 	WrapText = true,
 }
@@ -203,7 +304,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		GetNumQuestLogRewardSpells(questID) > 0) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID)) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end
@@ -336,7 +437,7 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.shownMoneyFrames = 0;
 	end
 	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
-	local moneyFrame = _G[name];
+	local moneyFrame = envTbl[name];
 	if ( not moneyFrame ) then
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
 		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
@@ -377,7 +478,7 @@ function GameTooltip_ClearMoney(self)
 
 	local moneyFrame;
 	for i=1, self.shownMoneyFrames do
-		moneyFrame = _G[self:GetName().."MoneyFrame"..i];
+		moneyFrame = envTbl[self:GetName().."MoneyFrame"..i];
 		if(moneyFrame) then
 			moneyFrame:Hide();
 			MoneyFrame_SetType(moneyFrame, "STATIC");
@@ -432,7 +533,7 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 
 function GameTooltip_OnShow(self)
 	-- Do not show HUD tooltips when in edit mode with the HUD tooltip section enabled, to prevent layering issues.
-	if (EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
+	if (EditModeManagerFrame and GameTooltipDefaultContainer and EditModeManagerFrame:IsEditModeActive() and GameTooltipDefaultContainer:IsShown()) then
 		local relativeTo = select(2, self:GetPoint());
 		if (relativeTo == GameTooltipDefaultContainer) then
 			self:Hide();
@@ -460,7 +561,8 @@ function GameTooltip_OnHide(self)
 	end
 	self:SetPadding(0, 0, 0, 0);
 
-	self.info = nil;
+	self:ClearHandlerInfo();
+
 	if self.StatusBar then
 		self.StatusBar:ClearWatch();
 	end
@@ -522,7 +624,7 @@ end
 
 function GameTooltip_ShowCompareItem(self, anchorFrame)
 	local tooltip = self or GameTooltip;
-	local tooltipData = tooltip.info and tooltip.info.tooltipData;
+	local tooltipData = tooltip:GetPrimaryTooltipData();
 	local comparisonItem = TooltipComparisonManager:CreateComparisonItem(tooltipData);
 	TooltipComparisonManager:CompareItem(comparisonItem, tooltip, anchorFrame);
 end
@@ -628,7 +730,10 @@ function GameTooltip_AddWidgetSet(self, widgetSetID, verticalPadding)
 	self.widgetContainer:RegisterForWidgetSet(widgetSetID, WidgetLayout);
 
 	if self.widgetContainer.shownWidgetCount > 0 then
-		GameTooltip_InsertFrame(self, self.widgetContainer, verticalPadding);
+		local heightUsed = GameTooltip_InsertFrame(self, self.widgetContainer, verticalPadding);
+		-- overflow
+		local widgetHeight = self.widgetContainer:GetHeight() + (verticalPadding or 0);
+		return heightUsed - widgetHeight;
 	end
 end
 
@@ -685,7 +790,7 @@ function GameTooltip_AddQuest(self, questID)
 		GameTooltip_SetTitle(GameTooltip, title);
 		GameTooltip_AddQuestTimeToTooltip(GameTooltip, questID);
 	else
-		GameTooltip_SetTitle(GameTooltip, title);
+		GameTooltip_SetTitle(GameTooltip, title, NORMAL_FONT_COLOR);
 	end
 
 	if (self.isCombatAllyQuest or C_QuestLog.GetQuestType(questID) == Enum.QuestTag.CombatAlly) then
@@ -702,7 +807,7 @@ function GameTooltip_AddQuest(self, questID)
 			GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 		elseif (not questCompleted and self.shouldShowObjectivesAsStatusBar) then
 			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
-			if (questLogIndex) then 
+			if (questLogIndex) then
 				questDescription = select(2, GetQuestLogQuestText(questLogIndex));
 				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 			end
@@ -848,26 +953,43 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID, 
 	return false;
 end
 
-function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
-	local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(rewardIndex, questID);
-	if garrFollowerID then
+function EmbeddedItemTooltip_SetSpellByFirstQuestReward(self, questID)
+	local spells = C_QuestInfoSystem.GetQuestRewardSpells(questID);
+	if spells and spells[1] then
+		return EmbeddedItemTooltip_SetSpellByQuestReward(self, spells[1], questID);
+	end
+
+	return false;
+end
+
+function EmbeddedItemTooltip_SetSpellByQuestReward(self, spellID, questID)
+	local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
+	if not spellInfo then
+		return false;
+	end
+
+	if spellInfo.garrFollowerID then
 		self:Show();
 		EmbeddedItemTooltip_PrepareForFollower(self);
-		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(garrFollowerID);
+		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(spellInfo.garrFollowerID);
 		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);
 		EmbeddedItemTooltip_UpdateSize(self);
 		return true;
-	elseif name and texture then
+	elseif spellInfo.name and spellInfo.texture then
 		self.itemID = nil;
 		self.spellID = spellID;
 
 		self:Show();
 		EmbeddedItemTooltip_PrepareForSpell(self);
+
+		local isPet = nil;
+		local showSubtext = true;
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
+		self.Tooltip:SetSpellByID(spellID, isPet, showSubtext);
+
 		SetItemButtonQuality(self, Enum.ItemQuality.Common);
 		SetItemButtonCount(self, 0);
-		self.Icon:SetTexture(texture);
+		self.Icon:SetTexture(spellInfo.texture);
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 		EmbeddedItemTooltip_UpdateSize(self);
 		return true;
@@ -931,11 +1053,8 @@ function GameTooltipDataMixin:OnLoad()
 end
 
 function GameTooltipDataMixin:RefreshData()
-	if self.info and self.info.getterName then
-		self.info.tooltipData = nil;
-		self:ProcessInfo(self.info);
-	end
 	self.shouldRefreshData = false;
+	self:RebuildFromTooltipInfo();
 end
 
 function GameTooltipDataMixin:RefreshDataNextUpdate()
@@ -945,7 +1064,10 @@ end
 
 function GameTooltipDataMixin:OnEvent(event, ...)
 	if event == "TOOLTIP_DATA_UPDATE" then
-		self:RefreshDataNextUpdate();
+		local dataInstanceID = ...;
+		if not dataInstanceID or self:HasDataInstanceID(dataInstanceID) then
+			self:RefreshDataNextUpdate();
+		end
 	end
 end
 
@@ -959,7 +1081,7 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType)
 		self:SetObjectTooltipPosition();
 	end
 
-	local oldInfo = self.info;
+	local oldInfo = self:GetPrimaryTooltipInfo();
 	local tooltipData = C_TooltipInfo.GetWorldCursor();
 	if tooltipData then
 		local tooltipInfo = {
@@ -972,7 +1094,7 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType)
 		-- user just moused off an in-world object, either fade or hide
 		if oldInfo.fadeOut then
 			-- clear the info so we don't touch this tooltip again
-			self.info = nil;
+			self:ClearHandlerInfo();
 			self:FadeOut();
 		else
 			self:Hide();

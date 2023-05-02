@@ -7,6 +7,48 @@ local UnitAura =
 	Functions =
 	{
 		{
+			Name = "AddPrivateAuraAnchor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "args", Type = "AddPrivateAuraAnchorArgs", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "anchorID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "AddPrivateAuraAppliedSound",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sound", Type = "UnitPrivateAuraAppliedSoundInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "privateAuraSoundID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "AuraIsPrivate",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPrivate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
 
@@ -78,6 +120,34 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "isFiltered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RemovePrivateAuraAnchor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "anchorID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RemovePrivateAuraAppliedSound",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "privateAuraSoundID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPrivateWarningTextAnchor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
+				{ Name = "anchor", Type = "AnchorBinding", Nilable = true },
 			},
 		},
 		{

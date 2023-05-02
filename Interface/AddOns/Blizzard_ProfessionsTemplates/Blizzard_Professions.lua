@@ -56,7 +56,35 @@ function Professions.ExtractItemIDsFromCraftingReagents(reagents)
 	return tbl;
 end
 
-function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID)
+local isCraftingMinimized = false;
+function Professions.SetCraftingMinimized(minimized)
+	local changed = isCraftingMinimized ~= minimized;
+	isCraftingMinimized = minimized;
+
+	if changed then
+		EventRegistry:TriggerEvent("ProfessionsFrame.Minimized");
+	end
+end
+
+function Professions.IsCraftingMinimized()
+	return isCraftingMinimized;
+end
+
+-- This is wrapped in a function because the implementation backing "required" here is likely to change
+-- after a planned slot description refactor.
+function Professions.IsReagentSlotRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.required;
+end
+
+function Professions.IsReagentSlotBasicRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic and Professions.IsReagentSlotRequired(reagentSlotSchematic);
+end
+
+function Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying and Professions.IsReagentSlotRequired(reagentSlotSchematic);
+end
+
+function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
 	if difficultyText and difficultyText ~= "" then
@@ -76,6 +104,23 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 		local atlasSize = 26;
 		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
 		GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
+	end
+
+	-- The requirement items should already be loaded because the schematic form loaded every item associated with every slot.
+	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(item:GetItemID());
+	for index, requiredItemID in ipairs(requirements) do
+		local requiredItem = Item:CreateFromItemID(requiredItemID);
+		local itemName = requiredItem:GetItemName();
+		if transaction:HasAllocatedItemID(requiredItemID) then
+			GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+		else
+			GameTooltip_AddErrorLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+		end
+	end
+
+	local recraftAllocation = transaction:GetRecraftAllocation();
+	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+		GameTooltip_AddErrorLine(tooltip, PROFESSIONS_DISALLOW_DOWNGRADE);
 	end
 end
 
@@ -143,13 +188,13 @@ function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
 	return items;
 end
 
-function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID)
+function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID, transaction)
 	local item = elementData.item;
 		
 	local colorData = item:GetItemQualityColor();
 	GameTooltip_SetTitle(tooltip, item:GetItemName(), colorData.color);
 	
-	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID);
+	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction);
 
 	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 	if count <= 0 then
@@ -173,23 +218,25 @@ function Professions.EraseRecraftingTransitionData()
 end
 
 function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
+	local locked, lockedReason = false, nil;
 	local slotInfo = reagentSlotSchematic.slotInfo;
-	local locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
-	if not locked then
-		local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
-		while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
-			categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
-		end
+	if slotInfo then
+		locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
+		if not locked then
+			local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
+			while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
+				categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
+			end
 
-		if categoryInfo and categoryInfo.skillLineCurrentLevel then
-			local requiredSkillRank = slotInfo.requiredSkillRank;
-			locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
-			if locked then
-				lockedReason = OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank);
+			if categoryInfo and categoryInfo.skillLineCurrentLevel then
+				local requiredSkillRank = slotInfo.requiredSkillRank;
+				locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
+				if locked then
+					lockedReason = OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank);
+				end
 			end
 		end
 	end
-
 	return locked, lockedReason;
 end
 
@@ -210,6 +257,10 @@ function Professions.AccumulateReagentsInPossession(reagents)
 end
 
 local function CanShowBar(professionInfo)
+	if Professions.IsCraftingMinimized() then
+		return false;
+	end
+
 	if C_TradeSkillUI.IsRuneforging() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() then
 		return false;
 	end
@@ -386,7 +437,7 @@ function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	return quantities;
 end
 
-function Professions.SetupQualityReagentTooltip(slot, transaction)
+function Professions.SetupQualityReagentTooltip(slot, transaction, noInstruction)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
@@ -411,7 +462,7 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
 		end
 
-		if not slot:IsUnallocatable() then
+		if not slot:IsUnallocatable() and not noInstruction then
 			if not blankLineAdded then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
@@ -420,25 +471,37 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 	end
 end
 
-function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly, recraftItemGUID, suppressInstruction)
+function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, exchangeOnly, recraftItemGUID, suppressInstruction, transaction)
+	local reagentType = reagentSlotSchematic.reagentType;
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local item = Item:CreateFromItemID(itemID);
 		local colorData = item:GetItemQualityColor();
 		GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color, false);
 	
-		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID);
+		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID, transaction);
 
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			if exchangeOnly then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_EXCHANGE);
 			else
-				local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
-				GameTooltip_AddInstructionLine(GameTooltip, instruction);
+				local instruction;
+				if reagentType == Enum.CraftingReagentType.Finishing then
+					instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				elseif not Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+					instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				end
+
+				if instruction then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddInstructionLine(GameTooltip, instruction);
+				end
 			end
 		end
 	else
+		local slotText = reagentSlotSchematic.slotInfo.slotText;
+		
 		local title;
 		if reagentType == Enum.CraftingReagentType.Finishing then
 			title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
@@ -448,7 +511,15 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, sl
 
 		GameTooltip_SetTitle(GameTooltip, title, nil, false);
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			local instruction;
+			if reagentType == Enum.CraftingReagentType.Finishing then
+				instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+				instruction = REQUIRED_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			else
+				instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			end
+
 			GameTooltip_AddInstructionLine(GameTooltip, instruction);
 		end
 	end
@@ -510,7 +581,11 @@ function Professions.CanAllocateReagents(transaction, slotIndex)
 	return false;
 end
 
-local function HandleReagentLink(link)
+function Professions.InspectRecipe(recipeID)
+	InspectRecipeFrame:Open(recipeID);
+end
+
+function Professions.HandleReagentLink(link)
 	if not HandleModifiedItemClick(link) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		return false, link;
@@ -528,12 +603,12 @@ end
 
 function Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic)
 	local link = C_TradeSkillUI.GetRecipeFixedReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex);
-	return HandleReagentLink(link);
+	return Professions.HandleReagentLink(link);
 end
 
 function Professions.HandleQualityReagentItemLink(recipeID, reagentSlotSchematic, qualityIndex)
 	local link = C_TradeSkillUI.GetRecipeQualityReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex, qualityIndex);
-	return HandleReagentLink(link);
+	return Professions.HandleReagentLink(link);
 end
 
 function Professions.FindFirstQualityAllocated(transaction, reagentSlotSchematic)
@@ -1185,6 +1260,10 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 end
 
 function Professions.OnRecipeListSearchTextChanged(text)
+	if strcmputf8i(C_TradeSkillUI.GetRecipeItemNameFilter(), text) == 0 then
+		return;
+	end
+
 	local range = 2;
 	local minLevel, maxLevel;
 	local approxLevel = text:match("^~(%d+)");
@@ -1213,33 +1292,28 @@ function Professions.OnRecipeListSearchTextChanged(text)
 	end
 end
 
-function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider, forCraftingOrders)
-	if reagentSlots then
-		local stride = 4;
-		local spacingX = forCraftingOrders and 35 or -5;
+
+function Professions.LayoutReagentSlots(slots, slotContainer, spacingX, spacingY, stride, direction)
+	if slots then
 		local spacingY = -5;
-		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRightVertical, stride, spacingX, spacingY);
-		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 1, -23);
-		AnchorUtil.GridLayout(reagentSlots, anchor, layout);
-		reagentsContainer:Layout();
+		local layout = AnchorUtil.CreateGridLayout(direction, stride, spacingX, spacingY);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		AnchorUtil.GridLayout(slots, anchor, layout);
+		slotContainer:Layout();
 	end
+end
 
-	do
-		local optionalShown = optionalReagentsSlots and #optionalReagentsSlots > 0;
-		if optionalShown then
-			local stride = 4;
-			local spacing = 3;
-			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40, 40);
-			local anchor = CreateAnchor("TOPLEFT", optionalReagentsContainer, "TOPLEFT", 1, -23);
-			AnchorUtil.GridLayout(optionalReagentsSlots, anchor, layout);
-			optionalReagentsContainer:Layout();
-		end
-		optionalReagentsContainer:SetShown(optionalShown);
-
-		if divider then
-			divider:SetShown(optionalShown);
-		end
+function Professions.LayoutAndShowReagentSlotContainer(slots, slotContainer)
+	local slotsShown = slots and #slots > 0;
+	if slotsShown then
+		local stride = 4;
+		local spacing = 3;
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40, 40);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		AnchorUtil.GridLayout(slots, anchor, layout);
+		slotContainer:Layout();
 	end
+	slotContainer:SetShown(slotsShown);
 end
 
 function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer)
@@ -1334,6 +1408,38 @@ function Professions.DoesSchematicIncludeReagentQualities(recipeSchematic)
 		end
 	end
 	return false;
+end
+
+function Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl)
+	local removedModifications = {};
+	local itemMods = transaction:GetRecraftItemMods();
+	if itemMods then
+		-- Remove allocations that exist on the original item from the allocations table,
+		-- and insert any items that no longer exist on the original item into the removed table.
+		for dataSlotIndex, modification in ipairs(itemMods) do
+			if modification.itemID > 0 then
+				local modRemoved = true;
+
+				for reagentInfoIndex, craftingReagentInfo in ipairs_reverse(craftingReagentTbl) do
+					local itemIDMatch = craftingReagentInfo.itemID == modification.itemID;
+					if itemIDMatch then
+						modRemoved = false;
+					end
+
+					if itemIDMatch and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
+						table.remove(craftingReagentTbl, reagentInfoIndex);
+						break;
+					end
+				end
+
+				if modRemoved then
+					table.insert(removedModifications, modification);
+				end
+			end
+		end
+	end
+
+	return removedModifications;
 end
 
 function Professions.GetProfessionType(professionInfo)

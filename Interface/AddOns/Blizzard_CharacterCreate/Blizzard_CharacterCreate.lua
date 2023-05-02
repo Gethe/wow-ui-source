@@ -78,7 +78,7 @@ function CharacterCreateMixin:OnLoad()
 
 	CharCustomizeFrame:AttachToParentFrame(self);
 
-	self.navBlockers = {};
+	self:ResetNavBlockers();
 
 	self.ForwardButton.tooltip = function()
 		return self.currentNavBlocker and RED_FONT_COLOR:WrapTextInColorCode(self.currentNavBlocker.error);
@@ -148,7 +148,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			showError = errorCode;
 		end
 	elseif event == "CHAR_CREATE_BEGIN_ANIMATIONS" then
-		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+		if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
 			RaceAndClassFrame:PlayClassAnimations();
 		else
 			RaceAndClassFrame:PlayCustomizationAnimation();
@@ -195,6 +195,7 @@ function CharacterCreateMixin:OnShow()
 
 	local instantRotate = true;
 	self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
+	self:ResetNavBlockers();
 
 	self:UpdateRecruitInfo();
 
@@ -258,9 +259,9 @@ function CharacterCreateMixin:ClearVASInfo()
 end
 
 function CharacterCreateMixin:BeginVASTransaction()
-	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+	if self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		local noIsValidateOnly = false;
-		C_CharacterServices.AssignPFCDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly);
+		C_CharacterServices.AssignRaceOrFactionChangeDistribution(self.vasInfo.selectedCharacterGUID, CharacterCreateFrame:GetSelectedName(), noIsValidateOnly, self.vasType);
 	end
 end
 
@@ -470,7 +471,7 @@ end
 function CharacterCreateMixin:SetMode(mode, instantRotate)
 	self:ResetCharacterRotation(mode, instantRotate);
 
-	if self.currentMode == mode then
+	if self:IsMode(mode) then
 		self.creatingCharacter = false;
 		self:UpdateForwardButton();
 		return;
@@ -479,7 +480,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	if mode == CHAR_CREATE_MODE_CLASS_RACE then
 		C_CharacterCreation.SetViewingAlteredForm(false);
 
-		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
+		if self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) then
 			local useBlending = true;
 			RaceAndClassFrame:PlayClassIdleAnimation(useBlending, CLASS_ANIM_WAIT_TIME_SECONDS);
 		else
@@ -492,12 +493,12 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 		self:SetModelDressState(true);
 		C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Awesome);
 
-		if self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
+		if self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) then
 			self.BottomBackgroundOverlay.FadeIn:Play();
 			self:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT);
 		end
 	elseif mode == CHAR_CREATE_MODE_CUSTOMIZE then
-		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+		if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
 			RaceAndClassFrame:PlayCustomizationAnimation();
 
 			C_CharacterCreation.SetBlurEnabled(true);
@@ -540,9 +541,13 @@ function CharacterCreateMixin:UpdateMode(offset)
 	self:SetMode(Clamp(self.currentMode + offset, CHAR_CREATE_MODE_CLASS_RACE, CHAR_CREATE_MODE_ZONE_CHOICE))
 end
 
+function CharacterCreateMixin:IsMode(mode)
+	return self.currentMode == mode;
+end
+
 function CharacterCreateMixin:NavBack()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
-	if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+	if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
 		if( IsKioskGlueEnabled() ) then
 			GlueParent_SetScreen("kioskmodesplash");
 		else
@@ -555,6 +560,7 @@ function CharacterCreateMixin:NavBack()
 	else
 		self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 		self:UpdateMode(-1);
+		self:CheckDynamicNavBlockers();
 	end
 end
 
@@ -581,6 +587,8 @@ function CharacterCreateMixin:AddNavBlocker(navBlocker, priority)
 	table.sort(self.navBlockers, SortBlockers);
 
 	self:RefreshCurrentNavBlocker();
+
+	EventRegistry:TriggerEvent("CharacterCreate.AddNavBlocker");
 end
 
 function CharacterCreateMixin:RemoveNavBlocker(navBlocker)
@@ -593,6 +601,10 @@ function CharacterCreateMixin:RemoveNavBlocker(navBlocker)
 	end
 end
 
+function CharacterCreateMixin:ResetNavBlockers()
+	self.navBlockers = {};
+end
+
 function CharacterCreateMixin:RefreshCurrentNavBlocker()
 	self.currentNavBlocker = self.navBlockers[1];
 	self:UpdateForwardButton();
@@ -600,6 +612,35 @@ end
 
 function CharacterCreateMixin:CanNavForward()
 	return not self.currentNavBlocker and not self.creatingCharacter;
+end
+
+function CharacterCreateMixin:HasMissingCustomizationOptions()
+	return self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) and CharCustomizeFrame:HasMissingOptions();
+end
+
+function CharacterCreateMixin:CheckDynamicNavBlockers()
+	local hasMissingOptions = self:HasMissingCustomizationOptions();
+	self:SetMissingOptionsNavBlockersEnabled(hasMissingOptions);
+
+	if hasMissingOptions then
+		EventRegistry:RegisterCallback("CharCustomize.OnSetCustomizations", self.CheckDynamicNavBlockers, self);
+		EventRegistry:RegisterCallback("CharCustomize.OnCategorySelected", function(owner, hadCategoryChange)
+			if hadCategoryChange then
+				self:SetMissingOptionsNavBlockersEnabled(false);
+			end
+		end, self);
+
+	end
+end
+
+function CharacterCreateMixin:SetMissingOptionsNavBlockersEnabled(enabled)
+	if enabled then
+		CharCustomizeFrame:HighlightNextMissingOption();
+		CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_MISSING_REQUIRED_OPTIONS, MEDIUM_PRIORITY);
+	else
+		CharCustomizeFrame:DisableMissingOptionWarnings();
+		CharacterCreateFrame:RemoveNavBlocker(CHARACTER_CREATION_REQUIREMENTS_MISSING_REQUIRED_OPTIONS);
+	end
 end
 
 function CharacterCreateMixin:GetSelectedName()
@@ -613,7 +654,7 @@ end
 function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
-	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
+	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
@@ -730,15 +771,17 @@ function CharacterCreateMixin:SetCharacterSex(sexID)
 end
 
 function CharacterCreateMixin:NavForward()
+	self:CheckDynamicNavBlockers();
+
 	if self:CanNavForward() then
-		if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+		if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
 			if C_CharacterCreation.IsNewPlayerRestricted() and C_CharacterCreation.GetSelectedClass().classID == EVOKER_CLASS_ID then
 				GlueDialog_Show("EVOKER_NEW_PLAYER_WARNING");
 			else
 				PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 				self:UpdateMode(1);
 			end
-		elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE and ZoneChoiceFrame:ShouldShow() then
+		elseif self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) and ZoneChoiceFrame:ShouldShow() then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			self:UpdateMode(1);
 		else
@@ -752,13 +795,13 @@ end
 function CharacterCreateMixin:UpdateForwardButton()
 	self.ForwardButton:SetEnabled(self:CanNavForward());
 
-	if self.currentMode == CHAR_CREATE_MODE_CLASS_RACE then
+	if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
 		if RaceAndClassFrame.selectedRaceData and not RaceAndClassFrame.selectedRaceData.enabled then
 			self.ForwardButton:UpdateText(PREVIEW, FORWARD_ARROW);
 		else
 			self.ForwardButton:UpdateText(CUSTOMIZE, FORWARD_ARROW);
 		end
-	elseif self.currentMode == CHAR_CREATE_MODE_CUSTOMIZE then
+	elseif self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) then
 		if ZoneChoiceFrame:ShouldShow() then
 			self.ForwardButton:UpdateText(NEXT, FORWARD_ARROW);
 		else
@@ -804,6 +847,17 @@ end
 function CharacterCreateNavButtonMixin:OnClick(button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	CharacterCreateFrame[self.charCreateOnClickMethod](CharacterCreateFrame, button);
+end
+
+CharacterCreateNavForwardButtonMixin = {};
+
+function CharacterCreateNavForwardButtonMixin:OnLoad_NavForward()
+	EventRegistry:RegisterCallback("CharacterCreate.AddNavBlocker", function()
+		if self:IsMouseMotionFocus() then
+			self:OnLeave();
+			self:OnEnter();
+		end
+	end);
 end
 
 CharacterCreateClassButtonMixin = CreateFromMixins(CharCustomizeMaskedButtonMixin);
@@ -1556,7 +1610,7 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		end
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
-	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE then
+	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);

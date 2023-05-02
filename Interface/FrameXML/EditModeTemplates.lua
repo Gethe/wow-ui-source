@@ -164,6 +164,8 @@ function EditModeSettingSliderMixin:OnLoad()
 
 	self.cbrHandles = EventUtil.CreateCallbackHandleContainer();
 	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
+	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractStart, self.OnSliderInteractStart, self);
+	self.cbrHandles:RegisterCallback(self.Slider, MinimalSliderWithSteppersMixin.Event.OnInteractEnd, self.OnSliderInteractEnd, self);	
 end
 
 function EditModeSettingSliderMixin:SetupSetting(settingData)
@@ -213,6 +215,14 @@ function EditModeSettingSliderMixin:OnSliderValueChanged(value)
 	end
 end
 
+function EditModeSettingSliderMixin:OnSliderInteractStart()
+	EditModeSystemSettingsDialog:OnSettingInteractStart(self.setting);
+end
+
+function EditModeSettingSliderMixin:OnSliderInteractEnd()
+	EditModeSystemSettingsDialog:OnSettingInteractEnd(self.setting);
+end
+
 EditModeSettingCheckboxMixin = {};
 
 function EditModeSettingCheckboxMixin:SetupSetting(settingData)
@@ -253,7 +263,54 @@ function EditModeCheckButtonMixin:EditModeCheckButton_OnShow()
 	self.Label:SetFontObject(shouldEnable and "GameFontHighlightMedium" or "GameFontDisableMed2")
 end
 
+function EditModeCheckButtonMixin:OnEnter()
+	local isLabelTruncated = self.Label:IsTruncated();
+	local showDisabledTooltip = not self:ShouldEnable() and self.disabledTooltipText;
+	local showTooltip = isLabelTruncated or showDisabledTooltip;
+
+	if showTooltip then
+		GameTooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+
+		if isLabelTruncated then
+			GameTooltip_AddHighlightLine(GameTooltip, self.Label:GetText());
+		end
+
+		if showDisabledTooltip then
+			GameTooltip_AddNormalLine(GameTooltip, self.disabledTooltipText);
+		end
+
+		GameTooltip:Show();
+	end
+end
+
+function EditModeCheckButtonMixin:OnLeave()
+	if GameTooltip:GetOwner() == self.Button then
+		GameTooltip:Hide();
+	end
+end
+
 -- Override this to change whether we are enabled on show
 function EditModeCheckButtonMixin:ShouldEnable()
 	return true;
+end
+
+EditModeCheckButtonButtonMixin = {};
+
+function EditModeCheckButtonButtonMixin:OnClick()
+	self:GetParent():OnCheckButtonClick();
+end
+
+function EditModeCheckButtonButtonMixin:OnEnter()
+	EditModeCheckButtonMixin.OnEnter(self:GetParent());
+end
+
+function EditModeCheckButtonButtonMixin:OnLeave()
+	EditModeCheckButtonMixin.OnLeave(self:GetParent());
+end
+
+EditModeManagerSettingCheckButtonMixin = {};
+
+function EditModeManagerSettingCheckButtonMixin:EditModeManagerSettingCheckButton_OnLoad()
+	local width = self:GetWidth() - self.Button:GetWidth() - select(4, self.Label:GetPoint(1));
+	self.Label:SetWidth(width);
 end

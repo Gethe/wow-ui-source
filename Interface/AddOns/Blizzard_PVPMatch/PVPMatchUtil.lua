@@ -1,15 +1,15 @@
 PVPMatchUtil = {
 	RowColors = {
-		CreateColor(0.52, 0.075, 0.18), -- Horde
-		CreateColor(0.72, 0.37, 1.0),	-- Horde Alternate
-		CreateColor(0.11, 0.26, 0.51),	-- Alliance
-		CreateColor(0.85, 0.71, 0.26),	-- Alliance Alternate
+		PVP_SCOREBOARD_HORDE_ROW_COLOR,
+		PVP_SCOREBOARD_HORDE_ALT_ROW_COLOR,
+		PVP_SCOREBOARD_ALLIANCE_ROW_COLOR,
+		PVP_SCOREBOARD_ALLIANCE_ALT_ROW_COLOR,
 	},
 	CellColors = {
-		CreateColor(1.0, 0.1, 0.1),		-- Horde
-		CreateColor(0.72, 0.37, 1.0),	-- Horde Alternate
-		CreateColor(0.0, 0.68, 0.94),	-- Alliance
-		CreateColor(1.0, 0.82, 0.0),	-- Alliance Alternate
+		PVP_SCOREBOARD_HORDE_CELL_COLOR,
+		PVP_SCOREBOARD_HORDE_ALT_CELL_COLOR,
+		PVP_SCOREBOARD_ALLIANCE_CELL_COLOR,
+		PVP_SCOREBOARD_ALLIANCE_ALT_CELL_COLOR,
 	},
 };
 
@@ -74,9 +74,18 @@ function PVPMatchUtil.UpdateMatchmakingText(fontString)
 
 		local yourTeamString, enemyTeamString;
 		if C_PvP.IsRatedSoloShuffle() then
-			-- For Rated Solo Shuffle your MMR is always first, followed by the match average
-			yourTeamString = BATTLEGROUND_YOUR_PERSONAL_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[1].ratingMMR)));
-			enemyTeamString = BATTLEGROUND_MATCH_AVERAGE_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[2].ratingMMR)));
+			if PVPMatchUtil.IsActiveMatchComplete() then
+				local localPlayerScoreInfo = C_PvP.GetScoreInfoByPlayerGuid(GetPlayerGuid());
+				local prematchMMR = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(localPlayerScoreInfo.prematchMMR));
+				local postmatchMMR = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(localPlayerScoreInfo.postmatchMMR));
+				yourTeamString = MATCHMAKING_YOUR_UPDATED_MATCHMAKING_VALUE:format(prematchMMR, postmatchMMR);
+			else
+				yourTeamString = BATTLEGROUND_YOUR_PERSONAL_RATING:format(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[1].ratingMMR)));
+			end
+
+			-- For Rated Solo Shuffle the "enemy MMR" we receive is the average MMR of all players with your LFG role.
+			local roleAverageMMR = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(BreakUpLargeNumbers(teamInfos[2].ratingMMR));
+			enemyTeamString = BATTLEGROUND_ROLE_AVERAGE_MMV:format(roleAverageMMR);
 		else
 			local factionIndex = GetBattlefieldArenaFaction();
 			local enemyFactionIndex = (factionIndex+1) % 2;
@@ -98,13 +107,20 @@ function PVPMatchUtil.UpdateDataProvider(scrollBox, forceNewDataProvider)
 		local dataProvider = CreateDataProvider();
 
 		if C_PvP.GetCustomVictoryStatID() == 0 then
-			local useAlternateColor = not C_PvP.IsMatchFactional();
 			for index = 1, scores do 
 				dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
 			end
 		else
+			local isMatchComplete = PVPMatchUtil.IsActiveMatchComplete();
 			for index = 1, scores do 
-				dataProvider:Insert({index=index, backgroundColor=PVPMatchStyle.PurpleColor});
+				if isMatchComplete then
+					local scoreInfo = C_PvP.GetScoreInfo(index);
+					local isLocalPlayer = scoreInfo and IsPlayerGuid(scoreInfo.guid);
+					local backgroundColor = isLocalPlayer and PVP_SCOREBOARD_ALLIANCE_ALT_ROW_COLOR or PVP_SCOREBOARD_HORDE_ALT_ROW_COLOR;
+					dataProvider:Insert({index=index, backgroundColor=backgroundColor});
+				else
+					dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
+				end
 			end
 		end
 
@@ -121,6 +137,9 @@ function PVPMatchUtil.InitScrollBox(scrollBox, scrollBar, tableBuilder)
 		else
 			button:SetUseAlternateColor(elementData.useAlternateColor);
 		end
+	end);
+	view:SetElementResetter(function(button)
+		button.backgroundColor = nil;	
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 

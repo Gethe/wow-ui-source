@@ -163,6 +163,7 @@ function Class_EquipProfessionGear:OnBegin(args)
 	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() self:UpdateState(); end, self);
 	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:UpdateState(); end, self);
 	EventRegistry:RegisterCallback("ProfessionsFrame.TabSet", function() self:UpdateState(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Minimized", function() self:UpdateState(); end, self);
 	EventRegistry:RegisterCallback("Professions.ProfessionSelected", function() self:UpdateState(); end, self);
 	
 	if not C_Container.GetContainerItemID(self.data.Container, self.data.ContainerSlot) then
@@ -301,7 +302,7 @@ function Class_EquipProfessionGear:UpdateState()
 		return;
 	end
 
-	if not IsAnyBagOpen() then
+	if Professions.IsCraftingMinimized() or not IsAnyBagOpen() then
 		self:Reset();
 		return;
 	end

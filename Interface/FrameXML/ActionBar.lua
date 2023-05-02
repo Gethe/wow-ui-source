@@ -119,7 +119,9 @@ function ActionBarMixin:UpdateGridLayout()
 
     -- Need to change where the buttons anchor based on how the bar grows
     local anchorPoint;
-    if self.addButtonsToTop then
+	if self.addButtonsToLeft then 
+		  anchorPoint = "LEFT";
+    elseif self.addButtonsToTop then
         if self.addButtonsToRight then
             anchorPoint = "BOTTOMLEFT";
         else

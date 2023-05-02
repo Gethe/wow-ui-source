@@ -153,36 +153,10 @@
 		</ButtonText>
 		<NormalFont style="QuestFontLeft"/>
 	</Button>
-	<ScrollFrame name="QuestScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+	<ScrollFrame name="QuestScrollFrameTemplate" inherits="ScrollFrameTemplate" virtual="true">
 		<Size x="300" y="403"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="102"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
-				</Texture>
-				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="106"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
-					</Anchors>
-					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="1"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-				</Texture>
-			</Layer>
-		</Layers>
 	</ScrollFrame>
 </Ui>

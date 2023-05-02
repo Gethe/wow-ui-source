@@ -181,6 +181,9 @@
 						<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
 						<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
 						<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+						<Texture parentKey="Background" setAllPoints="true" hidden="true">
+							<Color color="BLACK_FONT_COLOR"/>
+						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
@@ -219,6 +222,7 @@
 								<MaskedTexture childKey="HealAbsorbBar"/>
 								<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
 								<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+							<MaskedTexture childKey="Background"/>
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>

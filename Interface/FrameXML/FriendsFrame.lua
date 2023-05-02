@@ -343,6 +343,7 @@ function FriendsFrame_OnShow()
 	end
 
 	FriendsFrame_Update();
+	FriendsTabHeaderTab1:OnClick();
 end
 
 function FriendsFrame_Update()
@@ -613,7 +614,7 @@ function FriendsList_Update(forceUpdate)
 		end);
 		if elementData then
 			FriendsFrame_SelectFriend(elementData.buttonType, elementData.id);
-		else
+		elseif FriendsFrameSendMessageButton ~= nil then
 			FriendsFrameSendMessageButton:Disable();
 		end
 	end
@@ -927,8 +928,9 @@ function FriendsFrame_SelectFriend(friendType, id)
 
 	UpdateButtonSelection(oldFriendType, oldFriendId, false);
 	UpdateButtonSelection(friendType, id, true);
-
-	FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, id));
+	if FriendsFrameSendMessageButton ~= nil then 
+		FriendsFrameSendMessageButton:SetEnabled(FriendsList_CanWhisperFriend(FriendsFrame.selectedFriendType, id));
+	end
 end
 
 function FriendsFrame_SelectSquelched(squelchType, index)
@@ -1293,7 +1295,7 @@ local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID)
 		return true;
 	else
 		-- Otherwise show more detailed info about them
-		return false;
+		return FORCE_RICH_PRESENCE;
 	end;
 end
 
@@ -1993,7 +1995,14 @@ function FriendsListButtonMixin:OnEnter()
 				end
 				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
 				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
-				text = BNet_GetClientEmbeddedAtlas(gameAccountInfo.clientProgram, 18).." ";
+				text = "";
+				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+					C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 0).." ";
+						end
+					end);
+				end
 				if (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == WOW_PROJECT_ID) then
 					if (gameAccountInfo.realmName == playerRealmName) and (gameAccountInfo.factionName == playerFactionGroup) then
 						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, raceName, className);
@@ -2532,7 +2541,14 @@ function TravelPassDropDown_Initialize(self)
 			end
 		else
 			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = BNet_GetClientEmbeddedAtlas(gameAccountInfo.clientProgram, 18);
+			info.text = "";
+			if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+				C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
+					if success then
+						info.text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 18);
+					end
+				end);
+			end
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
 			info.arg1 = gameAccountInfo.gameAccountID;

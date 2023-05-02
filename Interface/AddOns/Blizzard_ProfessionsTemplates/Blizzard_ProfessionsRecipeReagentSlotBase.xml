@@ -38,6 +38,15 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="CropFrame" scale=".45" atlas="Professions-ChoiceReagent-Frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+						
 					<Layer level="OVERLAY" textureSubLevel="7">
 						<Texture parentKey="HighlightTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" alpha="0.5" hidden="true">
 							<Size x="48" y="48"/>
@@ -84,18 +93,6 @@
 					</Frame>
 				</Frames>
 			</ItemButton>
-
-			<Button parentKey="UndoButton" hidden="true" inherits="IconButtonTemplate">
-				<KeyValues>
-					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
-					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
-					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="25" y="25"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
 
 			<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate" motionScriptsWhileDisabled="true" hidden="true">
 				<Size x="23" y="23"/>

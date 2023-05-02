@@ -44,7 +44,7 @@ local ItemConstants =
 				{ Name = "IndexEquipablespellOffensiveType", Type = "InventoryType", EnumValue = 31 },
 				{ Name = "IndexEquipablespellUtilityType", Type = "InventoryType", EnumValue = 32 },
 				{ Name = "IndexEquipablespellDefensiveType", Type = "InventoryType", EnumValue = 33 },
-				{ Name = "IndexEquipablespellMobilityType", Type = "InventoryType", EnumValue = 34 },
+				{ Name = "IndexEquipablespellWeaponType", Type = "InventoryType", EnumValue = 34 },
 			},
 		},
 		{

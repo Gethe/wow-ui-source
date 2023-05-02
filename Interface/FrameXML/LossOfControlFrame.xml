@@ -21,11 +21,6 @@
 				<Scale childKey="RedLineBottom" duration="0.1" scaleX="0.71" scaleY="1" order="3"/>
 				<Translation childKey="Icon" offsetX="20" offsetY="0" duration="0.1" order="3"/>
 				<Scale childKey="Icon" scaleX="0.75" scaleY="0.75" duration="0.1" order="3"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent().Cooldown:Show();
-					</OnFinished>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Layers>

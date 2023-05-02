@@ -10,7 +10,7 @@
 						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
-				<Texture name="GuildRegistrarFrameBg" atlas="QuestBG-Parchment">
+				<Texture parentKey="Bg" name="GuildRegistrarFrameBg" atlas="QuestBG-Parchment">
 					<Size x="299" y="334"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
@@ -24,31 +24,17 @@
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="102"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-3" y="-59"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
-				</Texture>
-				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="106"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="25"/>
-					</Anchors>
-					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="1"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
+			<!--This scroll bar is for cosmetic purposes; it never scrolls.-->
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Bg" relativePoint="TOPRIGHT" x="8" y="-6"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+				</Anchors>
+			</EventFrame>
+			
 			<Frame name="GuildRegistrarNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>

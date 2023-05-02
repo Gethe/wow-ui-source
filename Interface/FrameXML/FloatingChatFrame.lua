@@ -73,13 +73,17 @@ function FloatingChatFrame_OnLoad(self)
 	UpdateFrameLock(self);
 	UpdateFrameLock(chatTab);
 
+	self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);
+	self.ScrollBar:SetPoint("BOTTOMLEFT", self.ScrollToBottomButton, "TOPLEFT", 0, 2);
+
 	FloatingChatFrame_SetupScrolling(self);
 end
 
 function FloatingChatFrame_UpdateBackgroundAnchors(self)
 	local scrollbarWidth = 0;
 	if self.ScrollBar then
-		scrollbarWidth = self.ScrollBar:GetWidth();
+		-- Width of MinimalScrollBar. Width fails to be evaluated at runtime, likely to frame rect validation issues.
+		scrollbarWidth = 8;
 	end
 
 	local quickButtonHeight = 0;
@@ -88,19 +92,17 @@ function FloatingChatFrame_UpdateBackgroundAnchors(self)
 	end
 
 	self.Background:SetPoint("TOPLEFT", self, "TOPLEFT", -2, 3 + quickButtonHeight);
-	self.Background:SetPoint("TOPRIGHT", self, "TOPRIGHT", 2 + scrollbarWidth, 3 + quickButtonHeight);
+	self.Background:SetPoint("TOPRIGHT", self, "TOPRIGHT", 7 + scrollbarWidth, 3 + quickButtonHeight);
 	self.Background:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -2, -6);
-	self.Background:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 2 + scrollbarWidth, -6);
+	self.Background:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7 + scrollbarWidth, -6);
 end
 
 function FloatingChatFrame_SetupScrolling(self)
 	FloatingChatFrame_UpdateBackgroundAnchors(self);
 
-	self:SetOnScrollChangedCallback(function(messageFrame, offset)
-		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
+	self:AddOnDisplayRefreshedCallback(function()
+		FloatingChatFrame_UpdateScroll(self);
 	end);
-
-	self:SetOnDisplayRefreshedCallback(FloatingChatFrame_UpdateScroll);
 	FloatingChatFrame_UpdateScroll(self);
 end
 
@@ -131,9 +133,6 @@ function FloatingChatFrame_UpdateScroll(self)
 	local isShown = numMessages > 1;
 	self.ScrollBar:SetShown(isShown);
 	if isShown then
-		self.ScrollBar:SetMinMaxValues(1, numMessages);
-		self.ScrollBar:SetValue(numMessages - self:GetScrollOffset());
-
 		-- If the chat frame was already faded in, and something caused the scrollbar to show
 		-- it also needs to update fading in addition to showing.
 		if (self.hasBeenFaded) then
@@ -812,11 +811,6 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 
 		chatFrame = CreateFrame("ScrollingMessageFrame", "ChatFrame"..maxTempIndex, UIParent, "FloatingChatFrameTemplate", maxTempIndex);
 
-		if ( GetCVarBool("chatMouseScroll") ) then
-			chatFrame:SetScript("OnMouseWheel", FloatingChatFrame_OnMouseScroll);
-			chatFrame:EnableMouseWheel(true);
-		end
-
 		maxTempIndex = maxTempIndex + 1;
 	end
 
@@ -1070,9 +1064,9 @@ function FCF_UpdateScrollbarAnchors(chatFrame)
 	if chatFrame.ScrollBar then
 		chatFrame.ScrollBar:ClearAllPoints();
 		chatFrame.ScrollBar:SetPoint("TOPLEFT", chatFrame, "TOPRIGHT", 0, 0);
-
+	
 		if chatFrame.ScrollToBottomButton:IsShown() then
-			chatFrame.ScrollBar:SetPoint("BOTTOM", chatFrame.ScrollToBottomButton, "TOP", 0, 0);
+			chatFrame.ScrollBar:SetPoint("BOTTOMLEFT", chatFrame.ScrollToBottomButton, "TOPLEFT", 0, 2);
 		elseif chatFrame.ResizeButton:IsShown() then
 			chatFrame.ScrollBar:SetPoint("BOTTOM", chatFrame.ResizeButton, "TOP", 0, 0);
 		else
@@ -1126,9 +1120,9 @@ end
 function FCF_FadeInScrollbar(chatFrame)
 	if chatFrame.ScrollBar and chatFrame.ScrollBar:IsShown() then
 		UIFrameFadeIn(chatFrame.ScrollBar, CHAT_FRAME_FADE_TIME, chatFrame.ScrollBar:GetAlpha(), .6);
-
+	
 		if chatFrame.ScrollToBottomButton then
-			UIFrameFadeIn(chatFrame.ScrollToBottomButton, .1, chatFrame.ScrollToBottomButton:GetAlpha(), 1);
+			UIFrameFadeIn(chatFrame.ScrollToBottomButton, .1, chatFrame.ScrollToBottomButton:GetAlpha(), .65);
 		end
 	end
 end
@@ -1136,7 +1130,7 @@ end
 function FCF_FadeOutScrollbar(chatFrame)
 	if chatFrame.ScrollBar and chatFrame.ScrollBar:IsShown() then
 		UIFrameFadeOut(chatFrame.ScrollBar, CHAT_FRAME_FADE_OUT_TIME, chatFrame.ScrollBar:GetAlpha(), 0);
-
+	
 		if chatFrame.ScrollToBottomButton then
 			if UIFrameIsFlashing(chatFrame.ScrollToBottomButton.Flash) then
 				UIFrameFadeRemoveFrame(chatFrame.ScrollToBottomButton);
@@ -1225,7 +1219,7 @@ function FCF_OnUpdate(elapsed)
 			--Items that will always cause the frame to fade in.
 			if ( MOVING_CHATFRAME or chatFrame.ResizeButton:GetButtonState() == "PUSHED" or
 				(chatFrame.isDocked and GENERAL_CHAT_DOCK.overflowButton.list:IsShown()) or
-				(chatFrame.ScrollBar and chatFrame.ScrollBar:IsDraggingThumb())) then
+				(chatFrame.ScrollBar and chatFrame.ScrollBar:IsThumbMouseDown())) then
 				chatFrame.mouseOutTime = 0;
 				if ( not chatFrame.hasBeenFaded ) then
 					FCF_FadeInChatFrame(chatFrame);
@@ -1233,7 +1227,7 @@ function FCF_OnUpdate(elapsed)
 			--Things that will cause the frame to fade in if the mouse is stationary.
 			elseif (chatFrame:IsMouseOver(topOffset, -2, -2, 2) or	--This should be slightly larger than the hit rect insets to give us some wiggle room.
 				(chatFrame.isDocked and QuickJoinToastButton:IsMouseOver()) or
-				(chatFrame.ScrollBar and (chatFrame.ScrollBar:IsDraggingThumb() or chatFrame.ScrollBar:IsMouseOver())) or
+				(chatFrame.ScrollBar and (chatFrame.ScrollBar:IsThumbMouseDown() or chatFrame.ScrollBar:IsMouseOver())) or
 				(chatFrame.ScrollToBottomButton and chatFrame.ScrollToBottomButton:IsMouseOver()) or
 				(chatFrame.buttonFrame:IsMouseOver())) then
 				chatFrame.mouseOutTime = 0;

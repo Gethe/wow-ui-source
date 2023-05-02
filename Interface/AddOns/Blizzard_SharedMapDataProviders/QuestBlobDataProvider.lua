@@ -26,13 +26,13 @@ function QuestBlobDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("ClearHighlightedQuestID", self.OnClearHighlightedQuestID, self);
 	self:GetMap():RegisterCallback("SetFocusedQuestID",self.OnSetFocusedQuestID, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
-	self:GetMap():RegisterCallback("SetHighlightedQuestPOI", self.OnSetHighlightedQuestPOI, self);
-	self:GetMap():RegisterCallback("ClearHighlightedQuestPOI", self.OnClearHighlightedQuestPOI, self);
+	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
+	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 end
 
 function QuestBlobDataProviderMixin:OnRemoved(mapCanvas)
-	self:GetMap():UnregisterCallback("SetHighlightedQuestID", self);
-	self:GetMap():UnregisterCallback("ClearHighlightedQuestID", self);
+	EventRegistry:UnregisterCallback("SetHighlightedQuestID", self);
+	EventRegistry:UnregisterCallback("ClearHighlightedQuestID", self);
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("SetHighlightedQuestPOI", self);
@@ -57,12 +57,8 @@ function QuestBlobDataProviderMixin:OnClearFocusedQuestID(...)
 	self.pin:ClearFocusedQuestID(...);
 end
 
-function QuestBlobDataProviderMixin:OnSetHighlightedQuestPOI(...)
-	self.pin:SetHighlightedQuestPOI(...);
-end
-
-function QuestBlobDataProviderMixin:OnClearHighlightedQuestPOI(...)
-	self.pin:ClearHighlightedQuestPOI(...);
+function QuestBlobDataProviderMixin:OnHighlightedQuestPOIChange(...)
+	self.pin:Refresh();
 end
 
 function QuestBlobDataProviderMixin:OnMapChanged()
@@ -143,6 +139,7 @@ function QuestBlobPinMixin:Refresh()
 
 	self:TryDrawQuest(self.highlightedQuestID);
 	self:TryDrawQuest(self.focusedQuestID);
+	self:TryDrawQuest(QuestPOIHighlightManager:GetQuestID());
 end
 
 function QuestBlobPinMixin:OnMapChanged()
@@ -184,7 +181,7 @@ function QuestBlobPinMixin:ClearHighlightedQuestPOI()
 end
 
 function QuestBlobPinMixin:UpdateTooltip()
-	if self.highlightedQuestPOI then
+	if QuestPOIHighlightManager:HasHighlight() then
 		return;
 	end
 

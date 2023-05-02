@@ -203,7 +203,7 @@
 						<Texture parentKey="SparkDrip1" hidden="false" alpha="0" alphaMode="BLEND" atlas="Insanity-DrippyPurple1">
 							<Size x="20" y="33"/>
 							<Anchors>
-								<Anchor point="CENTER" x="-2" y="0"/>
+								<Anchor point="CENTER" x="-4" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -211,7 +211,7 @@
 						<Texture parentKey="SparkDrip2" hidden="false" alpha="0" alphaMode="BLEND" atlas="Insanity-DrippyPurple1">
 							<Size x="25" y="33"/>
 							<Anchors>
-								<Anchor point="CENTER" x="-8" y="0"/>
+								<Anchor point="CENTER" x="-6" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>

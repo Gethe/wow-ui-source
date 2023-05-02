@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="InstanceDifficulty.lua"/>
 	<Frame name="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin" virtual="true">
-		<Size x="35" y="36"/>
+		<Size x="35.5" y="36.5"/>
 		<Frames>
 			<Frame parentKey="Instance" inherits="VerticalLayoutFrame">
 				<Anchors>
@@ -25,6 +25,7 @@
 						<Texture parentKey="HeroicTexture" atlas="ui-hud-minimap-guildbanner-heroic-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="rightPadding" value="1" type="number"/>
 							</KeyValues>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="7"/>
@@ -33,6 +34,7 @@
 						<Texture parentKey="MythicTexture" atlas="ui-hud-minimap-guildbanner-mythic-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="rightPadding" value="1" type="number"/>
 							</KeyValues>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="7"/>
@@ -42,6 +44,7 @@
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="3" type="number"/>
 								<KeyValue key="align" value="center" type="string"/>
+								<KeyValue key="rightPadding" value="1" type="number"/>
 							</KeyValues>
 							<Anchors>
 								<Anchor point="CENTER" x="-1" y="-7"/>

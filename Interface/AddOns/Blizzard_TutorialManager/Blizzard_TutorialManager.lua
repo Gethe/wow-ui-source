@@ -105,15 +105,19 @@ function TutorialManager:GetTutorial(tutorialKey)
 end
 
 function TutorialManager:Queue(tutorialKey, ...)
-	local tutorial = self:GetTutorial(tutorialKey);
 	self:DebugLog("    QUEUE: "..tutorialKey);
-	TutorialQueue:Add(tutorial, ...);
+	local tutorial = self:GetTutorial(tutorialKey);
+	if tutorial then
+		TutorialQueue:Add(tutorial, ...);
+	end
 end
 
 function TutorialManager:Finished(tutorialKey)
-	local tutorial = self:GetTutorial(tutorialKey);
 	self:DebugLog("    FINISHED: "..tutorialKey);
-	TutorialQueue:NotifyDone(tutorial);
+	local tutorial = self:GetTutorial(tutorialKey);
+	if tutorial then
+		TutorialQueue:NotifyDone(tutorial);
+	end
 end
 
 function TutorialManager:ShutdownTutorial(tutorialKey)

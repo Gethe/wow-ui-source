@@ -3,6 +3,12 @@ local helpTipSystem = "Professions Crafting Helptips";
 
 ProfessionsGearSlotTemplateMixin = CreateFromMixins(PaperDollItemSlotButtonMixin);
 
+CraftingSearchLGMixin = {};
+
+function CraftingSearchLGMixin:Init(recipeInfo)
+	self.Name:SetText(recipeInfo.name);
+	self.Icon:SetTexture(recipeInfo.icon);
+end
 
 ProfessionsCraftingPageMixin = {};
 
@@ -38,9 +44,15 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	self.CreateButton:SetScript("OnClick", GenerateClosure(self.Create, self));
 	self.CreateAllButton:SetScript("OnClick", GenerateClosure(self.CreateAll, self));
 
+	local function SetSearchText(text)
+		self.RecipeList.SearchBox:SetText(text);
+		self.MinimizedSearchBox:SetText(text);
+		Professions.OnRecipeListSearchTextChanged(text);
+	end
+
 	self.RecipeList.SearchBox:SetScript("OnTextChanged", function(editBox)
 		SearchBoxTemplate_OnTextChanged(editBox);
-		Professions.OnRecipeListSearchTextChanged(editBox:GetText());
+		SetSearchText(editBox:GetText());
 	end);
 
 	self.LinkButton:SetScript("OnClick", function()
@@ -115,6 +127,105 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	end);
 
 	self.SchematicForm.postInit = function() self:SchematicPostInit(); end;
+
+	ButtonFrameTemplate_HidePortrait(self.MinimizedSearchResults);
+	self.MinimizedSearchResults:SetTitleOffsets(35);
+
+	local function OnSearchButtonEnter(button, recipeInfo)
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+
+		local allocations = {};
+		local allocationGUID = nil;
+		local recipeLevel = recipeInfo.unlockedRecipeLevel;
+
+		button:SetScript("OnUpdate", function() 
+			GameTooltip:SetRecipeResultItem(recipeInfo.recipeID, allocations, allocationGUID, recipeLevel);
+		end);
+	end
+
+	local function OnSearchButtonLeave(button)
+		GameTooltip_Hide(); 
+		button:SetScript("OnUpdate", nil);
+	end
+
+	local searchView = CreateScrollBoxListLinearView();
+	searchView:SetElementInitializer("CraftingSearchLGTemplate", function(button, recipeInfo)
+		button:Init(recipeInfo);
+
+		button:SetScript("OnEnter", function(button)
+			OnSearchButtonEnter(button, recipeInfo);
+		end);
+
+		button:SetScript("OnLeave", OnSearchButtonLeave);
+
+		button:SetScript("OnClick", function()
+			local skipSelectInList = false;
+			self:SelectRecipe(recipeInfo, skipSelectInList);
+
+			self.MinimizedSearchResults:Hide();
+		end);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.MinimizedSearchResults.ScrollBox, self.MinimizedSearchResults.ScrollBar, searchView);
+
+	self.MinimizedSearchBox:SetScript("OnTextChanged", function(editBox)
+		local valid, text = SearchBoxListMixin.OnTextChanged(editBox);
+		SetSearchText(editBox:GetText());
+
+		self.MinimizedSearchResults:Hide();
+	end);
+
+	self.MinimizedSearchBox:SetScript("OnEditFocusGained", function(editBox)
+		SearchBoxListMixin.OnFocusGained(editBox);
+
+		self:UpdateSearchPreview();
+	end);
+
+	for index, button in ipairs(self.MinimizedSearchBox:GetButtons()) do
+		button:SetScript("OnEnter", function(button)
+			SearchBoxListElementMixin.OnEnter(button);
+			OnSearchButtonEnter(button, button.recipeInfo);
+		end);
+
+		button:SetScript("OnLeave", OnSearchButtonLeave);
+
+		button:SetScript("OnClick", function(button)
+			SearchBoxListElementMixin.OnClick(button);
+
+			self.MinimizedSearchBox:Close();
+
+			local skipSelectInList = false;
+			self:SelectRecipe(button.recipeInfo, skipSelectInList);
+		end);
+
+		local allResultsButton = self.MinimizedSearchBox:GetAllResultsButton();
+		allResultsButton:SetScript("OnClick", function(button)
+			SearchBoxListElementMixin.OnClick(button);
+
+			self.MinimizedSearchBox:Close();
+
+			self.MinimizedSearchResults.ScrollBox:SetDataProvider(self.searchDataProvider);
+			self.MinimizedSearchResults:Show();
+		end);
+	end
+
+	self.MinimizedSearchBox:SetSearchResultsFrame(self.MinimizedSearchResults);
+end
+
+function ProfessionsCraftingPageMixin:SetMaximized()
+	self:Refresh(self.professionInfo);
+
+	self.SchematicForm:ClearAllPoints();
+	self.SchematicForm:SetPoint("TOPLEFT", self.RecipeList, "TOPRIGHT", 2, 0);
+	self.SchematicForm:SetMaximized();
+end
+
+function ProfessionsCraftingPageMixin:SetMinimized()
+	self:Refresh(self.professionInfo);
+
+	self.SchematicForm:ClearAllPoints();
+	self.SchematicForm:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -72);
+	self.SchematicForm:SetMinimized();
 end
 
 function ProfessionsCraftingPageMixin:Cleanup()
@@ -243,6 +354,10 @@ function ProfessionsCraftingPageMixin:Reset()
 end
 
 function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
+	if Professions.IsCraftingMinimized() then
+		return 404;
+	end
+
 	local compact = C_TradeSkillUI.IsNPCCrafting() or C_TradeSkillUI.IsRuneforging();
 	return compact and 786 or 942;
 end
@@ -307,6 +422,23 @@ function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
 	end
 end
 
+local function ShouldProcessReagentSlotAllocation(transaction, slotIndex)
+	return not transaction:IsRecraft() or not transaction:IsModificationUnchangedAtSlotIndex(slotIndex);
+end
+
+local function CreateBadAllocationAssertMessage(item, itemLocation)
+	local recipeInfo = ProfessionsFrame and ProfessionsFrame.CraftingPage.SchematicForm:GetRecipeInfo();
+	local recipeID = recipeInfo and recipeInfo.recipeID or -1;
+
+	return ("Item location invalid: GUID %s, ITEM ID %d, RECIPE ID %d, BAG ID %d, SLOT INDEX %d, EQUIP SLOT INDEX %d"):format(
+		item.itemGUID or "INVALID",
+		item.debugItemID or -1,
+		recipeID or -1,
+		itemLocation.bagID or -1, 
+		itemLocation.slotIndex or -1, 
+		itemLocation.equipmentSlotIndex or -1);
+end
+
 function ProfessionsCraftingPageMixin:GetCraftableCount()
 	local transaction = self.SchematicForm:GetTransaction();
 	local intervals = math.huge;
@@ -316,7 +448,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 	end
 
 	local function ClampAllocations(allocations)
-		for index, allocation in allocations:Enumerate() do
+		for slotIndex, allocation in allocations:Enumerate() do
 			local quantity = Professions.GetReagentQuantityInPossession(allocation:GetReagent());
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
@@ -325,34 +457,54 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	if transaction:IsManuallyAllocated() then
 		-- If manually allocated, we can only accumulate the reagents currently allocated.
-		for index, allocations in transaction:EnumerateAllAllocations() do
-			if transaction:IsSlotBasicReagentType(index) then
+		for slotIndex, allocations in transaction:EnumerateAllAllocations() do
+			if transaction:IsSlotRequired(slotIndex) and ShouldProcessReagentSlotAllocation(transaction, slotIndex) then
+				--[[ This is correct for both basic and modified-required because this
+				accumulates allocated reagents only, which is correct for the case of
+				modifying-required slots. Note that if we're recrafting, we should not
+				process the slot when the modification is unchanged.]]--
 				ClampAllocations(allocations);
 			end
 		end
 	else
-		-- If automatically allocated, we can accumulate every compatible reagent regardless of what
-		-- is currently allocated.
-		for index, reagents in transaction:EnumerateAllSlotReagents() do
-			if transaction:IsSlotBasicReagentType(index) then
+		--[[ If automatically allocated, we can accumulate every compatible reagent regardless of what
+		is currently allocated. Note, this is not the case for modifying-required slots; those
+		need to only account for what is allocated, which is accounted for below.]]--
+		for slotIndex, reagents in transaction:EnumerateAllSlotReagents() do
+			if transaction:IsSlotBasicReagentType(slotIndex) then
 				local quantity = AccumulateOp(reagents, function(reagent)
 					return Professions.GetReagentQuantityInPossession(reagent);
 				end);
 
-				local quantityMax = transaction:GetQuantityRequiredInSlot(index);
+				local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
 				ClampInvervals(quantity, quantityMax);
+			elseif transaction:IsSlotModifyingRequired(slotIndex) then
+				--[[ If we're crafting normally, this slot is treated like a basic slot. However if we're recrafting
+				and the item's current modification is unchanged, then we do not need to require that any item exists
+				in inventory because the existing modification will be unchanged.]]--
+				if ShouldProcessReagentSlotAllocation(transaction, slotIndex) then
+					local quantity = AccumulateOp(reagents, function(reagent)
+						-- Only include the allocated reagents for modifying-required slots.
+						if transaction:IsReagentAllocated(slotIndex, reagent) then
+							return Professions.GetReagentQuantityInPossession(reagent);
+						end
+						return 0;
+					end);
+					local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
+					ClampInvervals(quantity, quantityMax);
+				end
 			end
 		end
 	end
 
 	-- Optionals and finishers are included unless the current reagent matches
 	-- a recrafting modification.
-	for index, allocations in transaction:EnumerateAllAllocations() do
-		if not transaction:IsSlotBasicReagentType(index) then
+	for slotIndex, allocations in transaction:EnumerateAllAllocations() do
+		if not transaction:IsSlotRequired(slotIndex) then
 			local allocs = allocations:SelectFirst();
 			if allocs then
 				local clamp = true;
-				local modification = transaction:GetModificationAtIndex(index);
+				local modification = transaction:GetModificationAtSlotIndex(slotIndex);
 				if modification then
 					local reagent = allocs:GetReagent();
 					if modification.itemID == reagent.itemID then
@@ -370,10 +522,27 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
 		local salvageItem = transaction:GetSalvageAllocation();
 		if salvageItem then
-			local quantity = salvageItem:GetStackCount();
-			if quantity then
-			local recipeSchematic = transaction:GetRecipeSchematic();
-				ClampInvervals(quantity, recipeSchematic.quantityMax); 
+			-- Exposing some information to investigate an exception related to invalid salvage allocation.
+			local success = true;
+			do
+				local itemLocation = salvageItem:GetItemLocation();
+				if itemLocation and not salvageItem.assertShown then
+					success = xpcall(C_Item.DoesItemExist, CallErrorHandler, itemLocation);
+					assertsafe(success, CreateBadAllocationAssertMessage(salvageItem, itemLocation));
+					if not success then
+						salvageItem.assertShown = true;
+						local recipeSchematic = transaction:GetRecipeSchematic();
+						ClampInvervals(0, recipeSchematic.quantityMax); 
+					end
+				end
+			end
+
+			if success then
+				local quantity = salvageItem:GetStackCount();
+				if quantity then
+					local recipeSchematic = transaction:GetRecipeSchematic();
+					ClampInvervals(quantity, recipeSchematic.quantityMax); 
+				end
 			end
 		end
 	elseif transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant) then
@@ -405,11 +574,12 @@ function ProfessionsCraftingPageMixin:SetCreateButtonTooltipText(tooltipText)
 	self.CreateAllButton.tooltipText = tooltipText;
 end
 
-local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
+local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "PrerequisiteReagents", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
 
 local FailValidationTooltips = {
 	[FailValidationReason.Cooldown] = PROFESSIONS_RECIPE_COOLDOWN,
 	[FailValidationReason.InsufficientReagents] = PROFESSIONS_INSUFFICIENT_REAGENTS,
+	[FailValidationReason.PrerequisiteReagents] = PROFESSIONS_PREREQUISITE_REAGENTS,
 	[FailValidationReason.Requirement] = PROFESSIONS_MISSING_REQUIREMENT,
 	[FailValidationReason.LockedReagentSlot] = PROFESSIONS_INSUFFICIENT_REAGENT_SLOTS,
 	[FailValidationReason.RecraftOptionalReagentLimit] = PROFESSIONS_UNIQUE_EQUIP_LIMITATION_DISC,
@@ -431,22 +601,20 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 	if anyRequirementMissing then
 		return FailValidationReason.Requirement;
 	end
+	
+	if not transaction:HasMetPrerequisiteRequirements() then
+		return FailValidationReason.PrerequisiteReagents;
+	end
 
 	if not isRuneforging and countMax <= 0 then
 		return FailValidationReason.InsufficientReagents;
 	end
 	
-	local validAllocations = false;
-	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-		validAllocations = transaction:HasAllocatedSalvageRequirements();
-	else
-		validAllocations = transaction:HasAllocatedReagentRequirements();
-	end
-	if not validAllocations then
+	if not transaction:HasMetAllRequirements() then
 		return FailValidationReason.InsufficientReagents;
 	end
 
-	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 	for _, slot in ipairs(optionalReagentSlots or {}) do
 		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
 		local hasAllocation = transaction:HasAllocations(reagentSlotSchematic.slotIndex);
@@ -613,6 +781,31 @@ local function FindRecipeInfo(dataProvider, recipeID)
 	end
 end
 
+function ProfessionsCraftingPageMixin:UpdateSearchPreview()
+	local dataProviderSize = (self.searchDataProvider ~= nil) and self.searchDataProvider:GetSize() or 0;
+	if dataProviderSize == 0 then
+		self.MinimizedSearchBox:HideSearchPreview();
+		self.MinimizedSearchResults:Hide();
+		return;
+	end
+
+	for index, button in ipairs(self.MinimizedSearchBox:GetButtons()) do
+		if index <= dataProviderSize then
+			local recipeInfo = self.searchDataProvider:Find(index);
+			button.recipeInfo = recipeInfo;
+			button.Name:SetText(recipeInfo.name);
+			button.Icon:SetTexture(recipeInfo.icon);
+			button:Show();
+		else
+			button:Hide();
+		end
+	end
+
+	local finished = true;
+	local dbLoaded = true;
+	self.MinimizedSearchBox:UpdateSearchPreview(finished, dbLoaded, dataProviderSize);
+end
+
 function ProfessionsCraftingPageMixin:Init(professionInfo)
 	-- If we're reinitializing the crafting page due to selecting a recrafting recipe
 	-- then don't modify the recipe list at all and just forward the desired recipe to the
@@ -652,7 +845,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		self.RecipeList:ProfessionChanged();
 	end
 
-	Professions.UpdateRankBarVisibility(self.RankBar, professionInfo);
+	Professions.UpdateRankBarVisibility(self.RankBar, self.professionInfo);
 
 	local searching = self.RecipeList.SearchBox:HasText();
 	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, noStripCategories);
@@ -663,10 +856,33 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		self.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
 	self.RecipeList.NoResultsText:SetShown(dataProvider:IsEmpty());
+	
+	local minimized = Professions.IsCraftingMinimized();
+	if minimized and self.MinimizedSearchBox:IsCurrentTextValidForSearch() then
+		self.searchDataProvider = CreateDataProvider();
+		for index, node in dataProvider:Enumerate() do
+			local elementData = node:GetData();
+			local recipeInfo = elementData.recipeInfo;
+			if recipeInfo and recipeInfo.learned and not (recipeInfo.favoritesInstance or recipeInfo.isRecraft) then
+				self.searchDataProvider:Insert(elementData.recipeInfo);
+			end
+		end
 
-	-- Because we're rebuilding the data provider, we need to either make an initial selection or
-	-- reselect the recipe we previously had selected. If we've selected a recipe from another profession
-	-- we ignore any previous selection.
+		self.MinimizedSearchResults:GetTitleText():SetText(SEARCH_RESULTS_STRING_WITH_COUNT:format(
+			self.MinimizedSearchBox:GetText(), self.searchDataProvider:GetSize()));
+
+		if self.MinimizedSearchBox:HasFocus() then
+			self:UpdateSearchPreview();
+		end
+	end
+	
+	if not minimized then
+		self.searchDataProvider = nil;
+	end
+
+	--[[ Because we're rebuilding the data provider, we need to either make an initial selection or
+	reselect the recipe we previously had selected. If we've selected a recipe from another profession
+	we ignore any previous selection.--]]
 
 	local currentRecipeInfo = nil;
 	local openRecipeID = professionInfo.openRecipeID;
@@ -709,13 +925,42 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 
 	self:Init(professionInfo);
 
-	self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
-
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
+
+	local schematicWidth;
+	local minimized = Professions.IsCraftingMinimized();
+	if minimized then
+		self.RecipeList:Hide();
+		self.MinimizedSearchBox:Show();
+		schematicWidth = 395;
+	else
+		self.RecipeList:Show();
+		self.MinimizedSearchBox:Hide();
+		self.MinimizedSearchResults:Hide();
+
 	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
-	local schematicWidth = useCondensedPanel and 500 or 655;
+		schematicWidth = useCondensedPanel and 500 or 655;
+	end
 	self.SchematicForm:SetWidth(schematicWidth);
 	
+	if minimized then
+		self.SchematicForm.MinimalBackground:SetAtlas("Professions-MinimizedView-Background", TextureKitConstants.UseAtlasSize);
+		self.SchematicForm.MinimalBackground:Show();
+		self.SchematicForm.Background:Hide();
+
+		self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 13);
+
+		self.RecipeList:Hide();
+		self.LinkButton:Hide();
+		self.RankBar:Hide();
+		self:HideInventorySlots();
+	else
+		self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
+		self.SchematicForm.Background:Show();
+		self.SchematicForm.MinimalBackground:Hide();
+
+		self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 7);
+
 	if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then
 		self.RankBar:Update(professionInfo);
 	end
@@ -723,7 +968,10 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	self:ConfigureInventorySlots(professionInfo);
 
 	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
+	end
+
 	self.TutorialButton:SetShown(not isRuneforging);
+
 	if self:IsTutorialShown() then
 		HelpPlate_Hide(false);
 	end
@@ -746,24 +994,9 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 	else
 		if transaction:HasRecraftAllocation() then
 			local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-
-			local itemMods = transaction:GetRecraftItemMods();
-			if itemMods then
-				for dataSlotIndex, modification in ipairs(itemMods) do
-					if modification.itemID > 0 then
-						for _, craftingReagentInfo in ipairs(craftingReagentTbl) do
-							if (craftingReagentInfo.itemID == modification.itemID) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
-								-- If the modification still exists in the same position, set it's quantity to 0 to inform the server
-								-- not to modify this reagent.
-								craftingReagentInfo.quantity = 0;
-								break;
-							end
-						end
-					end
-				end
-			end
+			local removedModifications = Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 			
-			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl);
+			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl, removedModifications);
 			if result then
 				-- Create an expected table of item modifications so that we don't incorrectly deallocate
 				-- an item modification slot on form refresh that has just been installed but hasn't been stamped
@@ -819,8 +1052,33 @@ function ProfessionsCraftingPageMixin:CreateAll()
 end
 
 function ProfessionsCraftingPageMixin:Create()
-	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
-	self:CreateInternal(currentRecipeInfo.recipeID, self.CreateMultipleInputBox:GetValue(), self.SchematicForm:GetCurrentRecipeLevel());
+	local function InvokeCreate()
+		local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
+		self:CreateInternal(currentRecipeInfo.recipeID, self.CreateMultipleInputBox:GetValue(), self.SchematicForm:GetCurrentRecipeLevel());
+	end
+
+	local canContinue = true;
+	local transaction = self.SchematicForm:GetTransaction();
+	if transaction:IsRecraft() then
+		local itemIDs = TableUtil.Transform(transaction:CreateCraftingReagentInfoTbl(), function(craftingReagentInfo)
+			return craftingReagentInfo.itemID;
+		end);
+
+		local warnings = C_TradeSkillUI.GetRecraftRemovalWarnings(transaction:GetRecraftAllocation(), itemIDs);
+		canContinue = #warnings == 0;
+		if not canContinue then
+			local referenceKey = self;
+			if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+				local data = { text = warnings[1], callback = InvokeCreate, showAlert = true};
+				StaticPopup_ShowCustomGenericConfirmation(data);
+			end
+		end
+	end
+
+	if canContinue then
+		InvokeCreate();
+	end
+	
 end
 
 function ProfessionsCraftingPageMixin:ConfigureInventorySlots(info)
@@ -878,14 +1136,16 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		ProfessionsCraftingPage_HelpPlate[i] = nil;
 	end
 
-	table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 271, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
+	if self.RecipeList:IsShown() then
+		table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 271, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
+	end
 
 	if self.SchematicForm.Reagents:IsShown() then
 		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 24;
 		local reagentsLeftPoint = self.SchematicForm.Reagents:GetLeft() - self:GetLeft() - 20;
 		local basicReagentsBoxLeft = reagentsLeftPoint;
 		local basicReagentsBoxTop = reagentsTopPoint;
-		local reagentsBoxWidth = 319;
+		local reagentsBoxWidth = 359;
 		local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
 		local slotCount = slots and #slots or 0;
 		local slotSpacing = (math.max(0, slotCount - 1) * -3);
@@ -904,7 +1164,6 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		table.insert(ProfessionsCraftingPage_HelpPlate, basicReagentsSection);
 
 		if self.SchematicForm.OptionalReagents:IsShown() then
-			local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 			local y = basicReagentsBoxTop - reagentsBoxHeight - 5;
 			local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
 			local slotCount = slots and #slots or 0;
@@ -953,7 +1212,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, qualityMeterSection);
 	end
-	if detailsShown then
+	if detailsShown and not Professions.IsCraftingMinimized() then
 		local statsTopPoint = details:GetTop() - self:GetTop() + 6;
 		local statsLeftPoint = details:GetLeft() - self:GetLeft();
 		local statsBoxWidth = 251;
@@ -984,6 +1243,25 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 30 },
 			HighLightBox = { x = finishingReagentsLeftPoint, y = finishingReagentsTopPoint, width = width, height = 80 },
 			ToolTipDir = "DOWN",
+			ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
+		};
+		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
+	end
+
+	if Professions.IsCraftingMinimized() and self.SchematicForm.FinishingReagents:IsShown() then
+		local finishingReagentsTopPoint = self.SchematicForm.FinishingReagents:GetTop() - self:GetTop();
+		local finishingReagentsLeftPoint = self.SchematicForm.FinishingReagents:GetLeft() - self:GetLeft();
+		local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
+		local slotCount = slots and #slots or 0;
+		local slotSpacing = (math.max(0, slotCount - 1) * -5);
+		local slotWidth = (50 * math.max(3, slotCount));
+		local width = 25 + slotWidth + slotSpacing;
+
+		local finishingReagentsSection =
+		{
+			ButtonPos = { x = finishingReagentsLeftPoint + width - 42, y = finishingReagentsTopPoint + 9},
+			HighLightBox = { x = finishingReagentsLeftPoint - 17, y = finishingReagentsTopPoint + 28, width = width, height = 85 },
+			ToolTipDir = "UP",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
@@ -1046,7 +1324,7 @@ function ProfessionsCraftingPageMixin:SetOverrideCastBarActive(active)
 end
 
 function ProfessionsCraftingPageMixin:SchematicPostInit()
-	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 	for _, slot in ipairs(optionalReagentSlots or {}) do
 		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
 		local hasAllocation = self.SchematicForm.transaction:HasAllocations(reagentSlotSchematic.slotIndex);
@@ -1109,7 +1387,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 	-- New optional reagent helptip
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSION_OPTIONAL_REAGENTS_NEW) then
 		if self.SchematicForm.currentRecipeInfo.supportsCraftingStats then
-			local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 			for _, slot in ipairs(optionalReagentSlots or {}) do
 				local _, haveAnyInPosession = slot:GetInventoryDetails();
 				if haveAnyInPosession and not slot.Button.locked then
@@ -1134,7 +1412,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 	-- Old optional reagent helptip
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_OPTIONAL_REAGENT_CRAFTING) then
 		if not self.SchematicForm.currentRecipeInfo.supportsCraftingStats then
-			local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 			for _, slot in ipairs(optionalReagentSlots or {}) do
 				local _, haveAnyInPosession = slot:GetInventoryDetails();
 				if haveAnyInPosession and not slot.Button.locked then

@@ -49,10 +49,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-40" y="38"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-34" y="-65"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-34" y="33"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-29" y="-70"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-29" y="38"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>

@@ -261,13 +261,10 @@
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-				<KeyValues>
-					<KeyValue key="hideBackground" value="true" type="boolean"/>
-				</KeyValues>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="3"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
 				</Anchors>
 			</EventFrame>
 

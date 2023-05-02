@@ -111,6 +111,8 @@ function PlayerChoiceBaseOptionTemplateMixin:SetMinHeight(minHeight)
 	if not ApproximatelyEqual(desiredOptionHeight, currentOptionHeight, OPTION_HEIGHT_EPSILON) then
 		local fillerHeight = desiredOptionHeight - currentOptionHeight;
 		fillerFrame:SetHeight(fillerFrame:GetHeight() + fillerHeight);
+		-- If filler frame height has changed, we must update layout as other child frames may be anchored below it
+		self:Layout();
 	end
 end
 

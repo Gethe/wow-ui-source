@@ -26,6 +26,10 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnEvent(event, ...)
 	end
 end
 
+function AdventureMap_QuestChoiceDataProviderMixin:OnHide()
+	self:SelectQuestID(nil);
+end
+
 function AdventureMap_QuestChoiceDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_QuestChoicePinTemplate");
 	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_FogPinTemplate");

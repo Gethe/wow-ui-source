@@ -161,6 +161,14 @@ function SettingMixin:GetDefaultValue()
 	return self:GetDefaultValueInternal();
 end
 
+function SettingMixin:IsNewTagShown()
+	return self.newTagShown;
+end
+
+function SettingMixin:SetNewTagShown(shown)
+	self.newTagShown = shown;
+end
+
 CVarSettingMixin = CreateFromMixins(SettingMixin);
 
 function CVarSettingMixin:Init(name, cvar, variableType)

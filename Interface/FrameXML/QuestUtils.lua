@@ -35,25 +35,21 @@ local function IsQuestDungeonQuest_Internal(tagID, worldQuestType)
 	return QUEST_TAG_DUNGEON_TYPES[tagID];
 end
 
-local function CreateQuestIconTextureMarkup(width, height, left, right, top, bottom)
-	return CreateTextureMarkup(QUEST_ICONS_FILE, QUEST_ICONS_FILE_WIDTH, QUEST_ICONS_FILE_HEIGHT, width, height, left, right, top, bottom);
-end
+local function GetQuestTypeIconMarkupStringFromTagData(tagID, worldQuestType, text, iconWidth, iconHeight)
+	local atlasName = QuestUtils_GetQuestTagAtlas(tagID, worldQuestType);
 
-local function GetTextureMarkupStringFromTagData(tagID, worldQuestType, text, iconWidth, iconHeight)
-	local texCoords = QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType);
-
-	if texCoords then
+	if atlasName then
 		-- Use reasonable defaults if nothing is specified
 		iconWidth = iconWidth or 20;
 		iconHeight = iconHeight or 20;
 
-		local textureMarkup = CreateQuestIconTextureMarkup(iconWidth, iconHeight, unpack(texCoords));
-		return string.format("%s %s", textureMarkup, text); -- Convert to localized string to handle dynamic icon placement?
+		local atlasMarkup = CreateAtlasMarkup(atlasName, iconWidth, iconHeight);
+		return string.format("%s %s", atlasMarkup, text); -- Convert to localized string to handle dynamic icon placement?
 	end
 end
 
 local function AddQuestTagTooltipLine(tooltip, tagID, worldQuestType, lineText, iconWidth, iconHeight, color)
-	local tooltipLine = GetTextureMarkupStringFromTagData(tagID, worldQuestType, lineText, iconWidth, iconHeight);
+	local tooltipLine = GetQuestTypeIconMarkupStringFromTagData(tagID, worldQuestType, lineText, iconWidth, iconHeight);
 	if tooltipLine then
 		tooltip:AddLine(tooltipLine, color:GetRGB());
 	end
@@ -92,7 +88,7 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	elseif worldQuestType == Enum.QuestTagType.Threat then
 		iconAtlas = QuestUtil.GetThreatPOIIcon(questID);
 	elseif worldQuestType == Enum.QuestTagType.DragonRiderRacing then
-		iconAtlas = "worldquest-icon-race", 16, 16;
+		iconAtlas = "worldquest-icon-race";
 	else
 		if questID then
 			local theme = C_QuestLog.GetQuestDetailsTheme(questID);
@@ -114,7 +110,7 @@ end
 
 function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
 	if isLegendary then
-		return "Interface/GossipFrame/AvailableLegendaryQuestIcon", false;
+		return "legendaryavailablequesticon", true;
 	elseif isCampaign then
 		return "CampaignAvailableQuestIcon", true;
 	elseif isCovenantCalling then
@@ -145,7 +141,7 @@ function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepe
 	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
 	if isComplete then
 		if isLegendary then
-			return "Interface/GossipFrame/ActiveLegendaryQuestIcon", false;
+			return "legendaryactivequesticon", true;
 		elseif isCampaign then
 			return "CampaignActiveQuestIcon", true;
 		elseif isCovenantCalling then
@@ -157,6 +153,8 @@ function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepe
 
 	if isCampaign or isCovenantCalling then
 		return "CampaignIncompleteQuestIcon", true;
+	elseif isLegendary then
+		return "legendaryincompletequesticon", true;
 	end
 
 	return "Interface/GossipFrame/IncompleteQuestIcon", false;
@@ -308,12 +306,12 @@ function QuestUtil.GetThreatPOIIcon(questID)
 	return theme and theme.poiIcon or "worldquest-icon-nzoth";
 end
 
-function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)
+function QuestUtils_GetQuestTagAtlas(tagID, worldQuestType)
 	if IsQuestWorldQuest_Internal(worldQuestType) then
-		return WORLD_QUEST_TYPE_TCOORDS[worldQuestType];
+		return WORLD_QUEST_TYPE_ATLAS[worldQuestType];
 	end
 
-	return tagID and QUEST_TAG_TCOORDS[tagID];
+	return tagID and QUEST_TAG_ATLAS[tagID];
 end
 
 function QuestUtils_IsQuestWorldQuest(questID)
@@ -329,12 +327,12 @@ function QuestUtils_IsQuestBonusObjective(questID)
 	return C_QuestLog.IsQuestTask(questID) and not QuestUtils_IsQuestWorldQuest(questID);
 end
 
-function QuestUtils_GetQuestTypeTextureMarkupString(questID, iconWidth, iconHeight)
+function QuestUtils_GetQuestTypeIconMarkupString(questID, iconWidth, iconHeight)
 	local info = C_QuestLog.GetQuestTagInfo(questID);
 
 	-- NOTE: For now, only allow dungeon quests to get markup
 	if info and IsQuestDungeonQuest_Internal(info.tagID, info.worldQuestType) then
-		return GetTextureMarkupStringFromTagData(info.tagID, info.worldQuestType, info.tagName, iconWidth, iconHeight);
+		return GetQuestTypeIconMarkupStringFromTagData(info.tagID, info.worldQuestType, info.tagName, iconWidth, iconHeight);
 	end
 end
 
@@ -489,11 +487,8 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	end
 
 	-- spells
-	local numQuestSpellRewards = GetNumQuestLogRewardSpells(questID);
-	if numQuestSpellRewards > 0 and not tooltip.ItemTooltip:IsShown() then
-		if not EmbeddedItemTooltip_SetSpellByQuestReward(tooltip.ItemTooltip, 1, questID) then
-			showRetrievingData = true;
-		end
+	if not tooltip.ItemTooltip:IsShown() and EmbeddedItemTooltip_SetSpellByFirstQuestReward(tooltip.ItemTooltip, questID) then
+		showRetrievingData = true;
 	end
 
 	-- atLeastShowAzerite: show azerite if nothing else is awarded
@@ -665,11 +660,13 @@ function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end
 
-QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling");
+QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary" );
 
 function QuestUtils_GetQuestSortType(questInfo)
 	if questInfo.isCalling then
 		return QuestSortType.Calling;
+	elseif questInfo.isLegendarySort then
+		return QuestSortType.Legendary;
 	elseif questInfo.campaignID and questInfo.campaignID > 0 then
 		if not C_CampaignInfo.SortAsNormalQuest(questInfo.campaignID) then
 			return QuestSortType.Campaign;

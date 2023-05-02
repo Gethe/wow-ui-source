@@ -3996,28 +3996,30 @@ function WardrobeSetsDetailsModelMixin:GetPanAndZoomLimits()
 end
 
 function WardrobeSetsDetailsModelMixin:OnUpdate(elapsed)
-	if ( self.rotating ) then
-		local x = GetCursorPosition();
-		local diff = (x - self.rotateStartCursorX) * MODELFRAME_DRAG_ROTATION_CONSTANT;
-		self.rotateStartCursorX = GetCursorPosition();
-		self.yaw = self.yaw + diff;
-		if ( self.yaw < 0 ) then
-			self.yaw = self.yaw + (2 * PI);
+	if ( IsUnitModelReadyForUI("player") ) then
+		if ( self.rotating ) then
+			local x = GetCursorPosition();
+			local diff = (x - self.rotateStartCursorX) * MODELFRAME_DRAG_ROTATION_CONSTANT;
+			self.rotateStartCursorX = GetCursorPosition();
+			self.yaw = self.yaw + diff;
+			if ( self.yaw < 0 ) then
+				self.yaw = self.yaw + (2 * PI);
+			end
+			if ( self.yaw > (2 * PI) ) then
+				self.yaw = self.yaw - (2 * PI);
+			end
+			self:SetRotation(self.yaw, false);
+		elseif ( self.panning ) then
+			local cursorX, cursorY = GetCursorPosition();
+			local modelX = self:GetPosition();
+			local panSpeedModifier = 100 * sqrt(1 + modelX - self.defaultPosX);
+			local modelY = self.panStartModelY + (cursorX - self.panStartCursorX) / panSpeedModifier;
+			local modelZ = self.panStartModelZ + (cursorY - self.panStartCursorY) / panSpeedModifier;
+			local limits = self:GetPanAndZoomLimits();
+			modelY = Clamp(modelY, limits.panMaxLeft, limits.panMaxRight);
+			modelZ = Clamp(modelZ, limits.panMaxBottom, limits.panMaxTop);
+			self:SetPosition(modelX, modelY, modelZ);
 		end
-		if ( self.yaw > (2 * PI) ) then
-			self.yaw = self.yaw - (2 * PI);
-		end
-		self:SetRotation(self.yaw, false);
-	elseif ( self.panning ) then
-		local cursorX, cursorY = GetCursorPosition();
-		local modelX = self:GetPosition();
-		local panSpeedModifier = 100 * sqrt(1 + modelX - self.defaultPosX);
-		local modelY = self.panStartModelY + (cursorX - self.panStartCursorX) / panSpeedModifier;
-		local modelZ = self.panStartModelZ + (cursorY - self.panStartCursorY) / panSpeedModifier;
-		local limits = self:GetPanAndZoomLimits();
-		modelY = Clamp(modelY, limits.panMaxLeft, limits.panMaxRight);
-		modelZ = Clamp(modelZ, limits.panMaxBottom, limits.panMaxTop);
-		self:SetPosition(modelX, modelY, modelZ);
 	end
 end
 

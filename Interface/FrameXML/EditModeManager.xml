@@ -6,7 +6,7 @@
 			<Anchor point="TOP" y="-100"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="fixedWidth" value="500" type="number"/>
+			<KeyValue key="fixedWidth" value="510" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -23,9 +23,9 @@
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
-			<Button parentKey="Tutorial" inherits="MainHelpPlateButton" mixin="EditModeManagerTutorialMixin">
+			<Button parentKey="Tutorial" frameLevel="2" inherits="MainHelpPlateButton" mixin="EditModeManagerTutorialMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPLEFT" x="-20" y="20"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="MainHelpPlateButtonTooltipText" value="EDIT_MODE_HELPTIP_BUTTON_TOOLTIP" type="global"/>
@@ -36,7 +36,7 @@
 					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton, EditModeUnsavedChangesCheckerTemplate">
+			<Button parentKey="CloseButton" frameLevel="2" inherits="UIPanelCloseButton, EditModeUnsavedChangesCheckerTemplate">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
@@ -45,9 +45,9 @@
 				</Anchors>
 			</Button>
 			<Frame parentKey="LayoutDropdown" inherits="DropDownControlTemplate">
-				<Size x="220" y="30"/>
+				<Size x="220" y="50"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-50"/>
+					<Anchor point="TOPLEFT" x="20" y="-35"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" hidden="true">
@@ -68,40 +68,21 @@
 			<Frame parentKey="ShowGridCheckButton" inherits="EditModeCheckButtonTemplate">
 				<KeyValues>
 					<KeyValue key="labelText" value="HUD_EDIT_MODE_SHOW_GRID" type="global"/>
-					<KeyValue key="fixedWidth" value="110" type="number"/>
+					<KeyValue key="fixedWidth" value="130" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.LayoutDropdown" relativePoint="RIGHT" x="10" y="-5"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="EnableSnapCheckButton" inherits="EditModeCheckButtonTemplate">
-				<KeyValues>
-					<KeyValue key="labelText" value="HUD_EDIT_MODE_ENABLE_SNAP" type="global"/>
-					<KeyValue key="fixedWidth" value="110" type="number"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ShowGridCheckButton" relativePoint="RIGHT" x="5"/>
+					<Anchor point="TOPLEFT" x="20" y="-85"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="GridSpacingSlider" inherits="ResizeLayoutFrame" mixin="EditModeGridSpacingSliderMixin">
 				<Anchors>
-					<Anchor point="TOP" y="-95"/>
+					<Anchor point="LEFT" relativeKey="$parent.ShowGridCheckButton" relativePoint="RIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="RIGHT" text="HUD_EDIT_MODE_GRID_SPACING">
-							<Size y="32"/>
-							<Anchors>
-								<Anchor point="LEFT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Frame parentKey="Slider" inherits="MinimalSliderWithSteppersTemplate" >
 						<Size x="300" y="32"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="5" />
+							<Anchor point="LEFT"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -109,175 +90,289 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="EnableSnapCheckButton" inherits="EditModeCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_EDIT_MODE_ENABLE_SNAP" type="global"/>
+					<KeyValue key="fixedWidth" value="230" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-120"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="EnableAdvancedOptionsCheckButton" inherits="EditModeCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="HUD_EDIT_MODE_ENABLE_ADVANCED_OPTIONS" type="global"/>
+					<KeyValue key="fixedWidth" value="230" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="0" y="-120"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="AccountSettings" inherits="VerticalLayoutFrame" mixin="EditModeAccountSettingsMixin">
 				<Anchors>
-					<Anchor point="TOP" y="-135"/>
+					<Anchor point="TOP" x="0" y="-160"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="-5" type="number"/>
+					<KeyValue key="bottomPadding" value="5" type="number"/>
+				</KeyValues>
 				<Frames>
-					<Frame parentKey="Settings" inherits="ResizeLayoutFrame" hidden="true" >
+					<ScrollFrame parentKey="SettingsContainer" inherits="ResizeLayoutFrame, ScrollFrameTemplate" hidden="true" >
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
-							<KeyValue key="fixedWidth" value="450" type="number"/>
+							<KeyValue key="fixedWidth" value="470" type="number"/>
+							<KeyValue key="maximumHeight" value="325" type="number"/>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="-15" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-5" type="number"/>
 						</KeyValues>
+						<ScrollChild>
+							<Frame parentKey="ScrollChild" inherits="ResizeLayoutFrame">
+								<Frames>
+									<Frame parentKey="BasicOptionsContainer" inherits="EditModeManagerSettingsOptionsContainerTemplate" hidden="true"/>
+									<Frame parentKey="AdvancedOptionsContainer" inherits="VerticalLayoutFrame" hidden="true">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Frames>
+											<!-- Frames -->
+											<Frame parentKey="FramesTitle">
+												<Size x="225" y="32"/>
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="1" type="number"/>
+												</KeyValues>
+												<Layers>
+													<Layer level="ARTWORK">
+														<FontString parentKey="Title" inherits="GameFontNormalLarge" text="HUD_EDIT_MODE_SETTINGS_CATEGORY_TITLE_FRAMES">
+															<Anchors>
+																<Anchor point="LEFT" x="5"/>
+															</Anchors>
+														</FontString>
+													</Layer>
+												</Layers>
+											</Frame>
+											<Frame parentKey="FramesContainer" inherits="EditModeManagerSettingsOptionsContainerTemplate">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="2" type="number"/>
+												</KeyValues>
+											</Frame>
+		
+											<!-- Combat -->
+											<Frame parentKey="CombatTitle">
+												<Size x="225" y="32"/>
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="3" type="number"/>
+												</KeyValues>
+												<Layers>
+													<Layer level="ARTWORK">
+														<FontString parentKey="Title" inherits="GameFontNormalLarge" text="HUD_EDIT_MODE_SETTINGS_CATEGORY_TITLE_COMBAT">
+															<Anchors>
+																<Anchor point="LEFT" x="5"/>
+															</Anchors>
+														</FontString>
+													</Layer>
+												</Layers>
+											</Frame>
+											<Frame parentKey="CombatContainer" inherits="EditModeManagerSettingsOptionsContainerTemplate">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="4" type="number"/>
+												</KeyValues>
+											</Frame>
+		
+											<!-- Misc -->
+											<Frame parentKey="MiscTitle">
+												<Size x="225" y="32"/>
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="5" type="number"/>
+												</KeyValues>
+												<Layers>
+													<Layer level="ARTWORK">
+														<FontString parentKey="Title" inherits="GameFontNormalLarge" text="HUD_EDIT_MODE_SETTINGS_CATEGORY_TITLE_MISC">
+															<Anchors>
+																<Anchor point="LEFT" x="5"/>
+															</Anchors>
+														</FontString>
+													</Layer>
+												</Layers>
+											</Frame>
+											<Frame parentKey="MiscContainer" inherits="EditModeManagerSettingsOptionsContainerTemplate">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="6" type="number"/>
+												</KeyValues>
+											</Frame>
+										</Frames>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
 						<Frames>
-							<Frame parentKey="TargetAndFocus" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="BorderArt" inherits="NineSliceCodeTemplate">
+								<KeyValues>
+									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+									<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+									<KeyValue key="layoutTextureKit" value="OptionsFrame" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="-16" y="15"/>
+									<Anchor point="BOTTOMRIGHT" x="16" y="-15"/>
+								</Anchors>
+							</Frame>
+
+							<!-- Frames Settings -->
+							<Frame parentKey="TargetAndFocus" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_TARGET_AND_FOCUS" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="1" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="1" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
 							</Frame>
-							<Frame parentKey="PartyFrames" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="PetFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_PET_FRAME_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="2" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="PartyFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="3" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="3" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TargetAndFocus" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
 							</Frame>
-							<Frame parentKey="RaidFrames" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_RAID_FRAMES_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.PartyFrames" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="StanceBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.RaidFrames" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="PetActionBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_PET_ACTION_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.StanceBar" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="CastBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOP"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="EncounterBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.CastBar" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="ExtraAbilities" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_EXTRA_ABILITIES_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.EncounterBar" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="PossessActionBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ExtraAbilities" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="BuffFrame" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_BUFF_FRAME_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.PetActionBar" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="DebuffFrame" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_DEBUFF_FRAME_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.BuffFrame" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="TalkingHeadFrame" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_TALKING_HEAD_FRAME_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.PossessActionBar" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="VehicleLeaveButton" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_VEHICLE_LEAVE_BUTTON_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TalkingHeadFrame" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="BossFrames" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="BossFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_BOSS_FRAMES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="4" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="4" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.DebuffFrame" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
 							</Frame>
-							<Frame parentKey="ArenaFrames" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="RaidFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_RAID_FRAMES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="2" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="5" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="ArenaFrames" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_ARENA_FRAMES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Frames" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.VehicleLeaveButton" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
 							</Frame>
-							<Frame parentKey="LootFrame" inherits="EditModeCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
+
+							<!-- Combat Settings -->
+							<Frame parentKey="BuffsAndDebuffs" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_BUFFS_AND_DEBUFFS_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="5" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="1" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ArenaFrames" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-								<Scripts>
-									<OnEnter method="OnEnter"/>
-									<OnLeave method="OnLeave"/>
-								</Scripts>
 							</Frame>
-							<Frame parentKey="HudTooltip" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="CastBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="6" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="2" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="StanceBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_STANCE_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="3" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="ExtraAbilities" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_EXTRA_ABILITIES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="4" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="PetActionBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_PET_ACTION_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="5" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="PossessActionBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_POSSESS_ACTION_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="EncounterBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="7" type="number"/>
+								</KeyValues>
+							</Frame>
+
+							<!-- Misc Settings -->
+							<Frame parentKey="TalkingHeadFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_TALKING_HEAD_FRAME_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="isBasicOption" value="true" type="boolean"/>
+									<KeyValue key="basicLayoutIndex" value="7" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="1" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="StatusTrackingBar2" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_STATUS_TRACKING_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="2" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="VehicleLeaveButton" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_VEHICLE_LEAVE_BUTTON_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="3" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="HudTooltip" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_HUD_TOOLTIP_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="4" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.BossFrames" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
 							</Frame>
-							<Frame parentKey="ReputationBar" inherits="EditModeCheckButtonTemplate">
-								<KeyValues>
-									<KeyValue key="labelText" value="HUD_EDIT_MODE_REPUTATION_BAR_LABEL" type="global"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.LootFrame" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="DurabilityFrame" inherits="EditModeCheckButtonTemplate">
+							<Frame parentKey="DurabilityFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_DURABILITY_FRAME_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="5" type="number"/>
 								</KeyValues>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.HudTooltip" relativePoint="BOTTOMLEFT"/>
-								</Anchors>
+							</Frame>
+							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP" type="global"/>
+								</KeyValues>
 							</Frame>
 						</Frames>
-					</Frame>
+					</ScrollFrame>
 					<Frame parentKey="Expander" inherits="ResizeLayoutFrame">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="2" type="number"/>
@@ -329,6 +424,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

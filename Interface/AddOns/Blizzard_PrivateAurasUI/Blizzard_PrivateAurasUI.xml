@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true" hideFromGlobalEnv="true">
+		<Frame name="PrivateAuraTemplate" inherits="AuraButtonArtTemplate" mixin="PrivateAuraMixin" virtual="true">
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnLoad method="OnLoad"/>
+				<OnUpdate method="OnUpdate"/>
+			</Scripts>
+			<Frames>
+				<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Cooldown>
+			</Frames>
+		</Frame>
+
+		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidBossEmoteFrameTemplate" frameStrata="HIGH"/>
+
+		<GameTooltip name="PrivateAurasTooltip" mixin="GameTooltipDataMixin" inherits="SharedTooltipArtTemplate" parent="UIParent">
+			<KeyValues>
+				<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
+			</KeyValues>
+			<Scripts>
+				<OnLoad>
+					GameTooltip_OnLoad(self);
+					SharedTooltip_OnLoad(self);
+				</OnLoad>
+				<OnShow function="GameTooltip_OnShow"/>
+				<OnHide function="SharedTooltip_OnHide"/>
+				<OnTooltipCleared function="SharedTooltip_ClearInsertedFrames"/>
+				<OnTooltipCleared>
+					GameTooltip_ClearMoney(self);
+					SharedTooltip_ClearInsertedFrames(self);
+				</OnTooltipCleared>
+				<OnEvent method="OnEvent"/>
+			</Scripts>
+		</GameTooltip>
+	</ScopedModifier>
+</Ui>

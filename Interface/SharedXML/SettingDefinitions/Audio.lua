@@ -428,7 +428,7 @@ local function Register()
 	
 	-- Music
 	do
-		local musicSetting, musicInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_SOUNDFX);
+		local musicSetting, musicInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
 
 		-- Loop Music
 		local loopingSetting, loopingInitializer = Settings.SetupCVarCheckBox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
@@ -438,11 +438,13 @@ local function Register()
 		loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 		
 		-- Pet Battle Music
-		local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
-		local function IsModifiable()
-			return musicSetting:GetValue();
+		if C_CVar.GetCVar("Sound_EnablePetBattleMusic") then
+			local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
+			local function IsModifiable()
+				return musicSetting:GetValue();
+			end
+			petBattleInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 		end
-		petBattleInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 	end
 
 	-- Sound Effects

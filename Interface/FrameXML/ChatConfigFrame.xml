@@ -74,6 +74,12 @@
 	<CheckButton name="ChatConfigBaseCheckButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
+			<OnMouseUp>
+				if C_SocialRestrictions.IsChatDisabled() and IsShiftKeyDown() then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
+				end
+			</OnMouseUp>
 			<OnClick>
 				local checked = self:GetChecked();
 				if ( self.func ) then
@@ -549,10 +555,10 @@
 									<Anchor point="BOTTOMRIGHT" x="-28" y="4"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-23" y="-4"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-18" y="-9"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="8"/>
 								</Anchors>
 							</EventFrame>
 							<Button name="$parentDeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
@@ -1461,15 +1467,6 @@
 				<Scripts>
 					<OnClick function="ChatConfigFrameRedockButton_OnClick"/>
 					<OnLoad function="ChatConfigFrameRedockButton_OnLoad"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="ToggleChatButton" inherits="UIPanelButtonTemplate" hidden="true">
-				<Size x="148" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RedockButton" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="ChatConfigFrameToggleChatButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="CombatLogDefaultButton" inherits="UIPanelButtonTemplate" text="COMBATLOG_DEFAULTS">

@@ -336,6 +336,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetProfessionInfoByRecipeID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "ProfessionInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetProfessionInfoBySkillLineID",
 			Type = "Function",
 
@@ -442,6 +456,20 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "bonusText", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetReagentRequirementItemIDs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -629,6 +657,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetRecraftRemovalWarnings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "replacedItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "warnings", Type = "table", InnerType = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRemainingRecasts",
 			Type = "Function",
 
@@ -713,6 +756,21 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "hasFavorites", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEnchantTargetValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -839,6 +897,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "IsRecraftReagentValid",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "valid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRuneforging",
 			Type = "Function",
 
@@ -892,6 +965,7 @@ local TradeSkillUI =
 			{
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+				{ Name = "removedModifications", Type = "table", InnerType = "CraftingItemSlotModification", Nilable = true },
 			},
 
 			Returns =
@@ -908,6 +982,7 @@ local TradeSkillUI =
 				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+				{ Name = "removedModifications", Type = "table", InnerType = "CraftingItemSlotModification", Nilable = true },
 			},
 
 			Returns =

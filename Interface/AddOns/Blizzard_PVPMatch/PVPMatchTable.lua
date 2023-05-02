@@ -26,8 +26,9 @@ end
 
 PVPHeaderMixin = CreateFromMixins(TableBuilderElementMixin);
 
-function PVPHeaderMixin:Init(sortType, tooltipText)
+function PVPHeaderMixin:Init(sortType, tooltipTitle, tooltipText)
 	self.sortType = sortType;
+	self.tooltipTitle = tooltipTitle;
 	self.tooltipText = tooltipText;
 end
 
@@ -41,10 +42,17 @@ function PVPHeaderMixin:OnClick()
 end
 
 function PVPHeaderMixin:OnEnter()
-	local tooltipText = self.tooltipText;
-	if tooltipText then
+	local tooltipTitle, tooltipText = self.tooltipTitle, self.tooltipText;
+	if tooltipTitle or tooltipText then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddColoredLine(GameTooltip, tooltipText, WHITE_FONT_COLOR, true);
+		if tooltipTitle then
+			local wrapText = false;
+			GameTooltip_SetTitle(GameTooltip, tooltipTitle, WHITE_FONT_COLOR, wrapText);
+		end
+		if tooltipText then
+			local wrapText = true;
+			GameTooltip_AddNormalLine(GameTooltip, tooltipText, wrapText);
+		end
 		GameTooltip:Show();
 	end
 end
@@ -119,8 +127,8 @@ end
 
 PVPHeaderStringMixin = CreateFromMixins(PVPHeaderMixin);
 
-function PVPHeaderStringMixin:Init(textID, textAlignment, sortType, tooltipText)
-	PVPHeaderMixin.Init(self, sortType, tooltipText)
+function PVPHeaderStringMixin:Init(textID, textAlignment, sortType, tooltipTitle, tooltipText)
+	PVPHeaderMixin.Init(self, sortType, tooltipTitle, tooltipText)
 	self.textID = textID;
 
 	-- Assign the text to get a reference width.
@@ -252,8 +260,7 @@ function PVPSoloShuffleCellNameMixin:Populate(rowData, dataIndex)
 		self.text:SetText(rowData.name);
 	end
 
-	local color = IsPlayerGuid(rowData.guid) and WHITE_FONT_COLOR or PVPMatchStyle.PurpleColor;
-	self.text:SetVertexColor(color:GetRGB());
+	FormatCellColor(self.text, rowData, self.useAlternateColor);
 end
 
 PVPCellStatMixin = CreateFromMixins(TableBuilderCellMixin);
@@ -306,9 +313,6 @@ PVPSoloShuffleCellStatMixin = CreateFromMixins(PVPCellStatMixin);
 
 function PVPSoloShuffleCellStatMixin:Populate(rowData, dataIndex)
 	PVPCellStatMixin.Populate(self, rowData, dataIndex);
-
-	local color = IsPlayerGuid(rowData.guid) and WHITE_FONT_COLOR or PVPMatchStyle.PurpleColor;
-	self.text:SetVertexColor(color:GetRGB());
 end
 
 PVPNewRatingMixin = CreateFromMixins(TableBuilderCellMixin);
@@ -351,30 +355,53 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local fillCoefficient = 1.0;
 	local namePadding = 4;
 	
-	if C_PvP.IsSoloShuffle() then
-		column:ConstructCells("BUTTON", "PVPSoloShuffleCellNameTemplate");
+	local isSoloShuffle = C_PvP.IsSoloShuffle();
+	if isSoloShuffle then
+		column:ConstructCells("BUTTON", "PVPSoloShuffleCellNameTemplate", useAlternateColor);
 	else
 		column:ConstructCells("BUTTON", "PVPCellNameTemplate", useAlternateColor);
 	end
 	column:SetFillConstraints(fillCoefficient, namePadding);
 
+	local function AddPVPStatColumns(cellStatTemplate)
+		local statColumns = C_PvP.GetMatchPVPStatColumns();
+		table.sort(statColumns, function(lhs,rhs)
+			return lhs.orderIndex < rhs.orderIndex;
+		end);
+
+		for columnIndex, statColumn in ipairs(statColumns) do
+			if strlen(statColumn.name) > 0 then
+				column = tableBuilder:AddColumn();
+				local sortType = "stat"..columnIndex;
+				column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, statColumn.tooltipTitle, statColumn.tooltip);
+				column:ConstrainToHeader(textPadding);
+				column:ConstructCells("FRAME", cellStatTemplate, statColumn.pvpStatID, useAlternateColor);
+			end
+		end
+	end
+
+	if isSoloShuffle then
+		local cellStatTemplate = "PVPSoloShuffleCellStatTemplate";
+		AddPVPStatColumns(cellStatTemplate);
+	end
+
 	if C_PvP.CanDisplayKillingBlows() then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_KILLING_BLOWS, "CENTER", "kills", KILLING_BLOW_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_KILLING_BLOWS, "CENTER", "kills", KILLING_BLOW_TOOLTIP_TITLE, KILLING_BLOW_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "killingBlows", useAlternateColor);
 	end
 	
 	if C_PvP.CanDisplayHonorableKills() then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HONORABLE_KILLS, "CENTER", "hk", HONORABLE_KILLS_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HONORABLE_KILLS, "CENTER", "hk", HONORABLE_KILLS_TOOLTIP_TITLE, HONORABLE_KILLS_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "honorableKills", useAlternateColor);
 	end
 	 
 	if  C_PvP.CanDisplayDeaths() then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", DEATHS, "CENTER", "deaths", DEATHS_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", DEATHS, "CENTER", "deaths", DEATHS_TOOLTIP_TITLE, DEATHS_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "deaths", useAlternateColor);
 	end
@@ -384,32 +411,21 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 
 	if C_PvP.CanDisplayDamage() then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_DAMAGE_DONE, "CENTER", "damage", DAMAGE_DONE_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_DAMAGE_DONE, "CENTER", "damage", DAMAGE_DONE_TOOLTIP_TITLE, DAMAGE_DONE_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "damageDone", useAlternateColor, isAbbreviated, hasTooltip);
 	end
 
 	if C_PvP.CanDisplayHealing() then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HEALING_DONE, "CENTER", "healing", HEALING_DONE_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HEALING_DONE, "CENTER", "healing", HEALING_DONE_TOOLTIP_TITLE, HEALING_DONE_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "healingDone", useAlternateColor, isAbbreviated, hasTooltip);
 	end
 
-	local statColumns = C_PvP.GetMatchPVPStatColumns();
-	table.sort(statColumns, function(lhs,rhs)
-		return lhs.orderIndex < rhs.orderIndex;
-	end);
-
-	local cellStatTemplate = C_PvP.IsSoloShuffle() and "PVPSoloShuffleCellStatTemplate" or "PVPCellStatTemplate";
-	for columnIndex, statColumn in ipairs(statColumns) do
-		if strlen(statColumn.name) > 0 then
-			column = tableBuilder:AddColumn();
-			local sortType = "stat"..columnIndex;
-			column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", statColumn.name, "CENTER", sortType, statColumn.tooltip);
-			column:ConstrainToHeader(textPadding);
-			column:ConstructCells("FRAME", cellStatTemplate, statColumn.pvpStatID, useAlternateColor);
-		end
+	if not isSoloShuffle then
+		local cellStatTemplate = "PVPCellStatTemplate";
+		AddPVPStatColumns(cellStatTemplate);
 	end
 	
 	local mmrPre = false;
@@ -427,32 +443,33 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		end
 	end
 
+	if mmrPre then
+		column = tableBuilder:AddColumn();
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_MATCHMAKING_VALUE, "CENTER", "mmrPre", BATTLEGROUND_MATCHMAKING_VALUE_TOOLTIP_TITLE, BATTLEGROUND_MATCHMAKING_VALUE_TOOLTIP);
+		column:ConstrainToHeader(textPadding);
+		column:ConstructCells("FRAME", "PVPCellStringTemplate", "prematchMMR", useAlternateColor);
+	end
+
 	if ratingPre then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_RATING, "CENTER", "bgratingPre", BATTLEGROUND_RATING);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_RATING, "CENTER", "bgratingPre", BATTLEGROUND_RATING_TOOLTIP_TITLE);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "rating", useAlternateColor);
 	end
 	
 	if ratingPost then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_NEW_RATING, "CENTER", "bgratingPost", BATTLEGROUND_NEW_RATING);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_NEW_RATING, "CENTER", "bgratingPost", BATTLEGROUND_NEW_RATING_TOOLTIP_TITLE, BATTLEGROUND_NEW_RATING_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPNewRatingTemplate", useAlternateColor);
 	end
 
+	local ratingChangeTooltip = isSoloShuffle and RATING_CHANGE_TOOLTIP_SOLO_SHUFFLE or RATING_CHANGE_TOOLTIP;
 	if ratingChange then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_RATING_CHANGE, "CENTER", "bgratingChange", RATING_CHANGE_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_RATING_CHANGE, "CENTER", "bgratingChange", RATING_CHANGE_TOOLTIP_TITLE, ratingChangeTooltip);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "ratingChange", useAlternateColor);
-	end
-
-	if mmrPre then
-		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_MATCHMAKING_VALUE, "CENTER", "mmrPre", BATTLEGROUND_MATCHMAKING_VALUE);
-		column:ConstrainToHeader(textPadding);
-		column:ConstructCells("FRAME", "PVPCellStringTemplate", "prematchMMR", useAlternateColor);
 	end
 
 	tableBuilder:Arrange();

@@ -10,8 +10,18 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="PulseTexture" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="MapPulse" looping="BOUNCE">
+				<Alpha childKey="PulseTexture" duration="0.48" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>

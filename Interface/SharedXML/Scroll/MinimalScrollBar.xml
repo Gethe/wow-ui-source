@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="MinimalScrollBar.lua"/>
-	
+
 	<Frame name="MinimalScrollBarStepperScripts" mixin="MinimalScrollBarStepperScriptsMixin" virtual="true">
 		<Scripts>
 			<OnEnter method="OnEnter"/>
@@ -17,7 +17,8 @@
 		<Size x="8" y="560"/>
 		<KeyValues>
 			<KeyValue key="thumbAnchor" value="TOP" type="string"/>
-			<KeyValue key="minThumbExtent" value="60" type="number"/>
+			<!--Actual minimum is 16 but is inflated for usability.-->
+			<KeyValue key="minThumbExtent" value="23" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Track" enableMouse="true">
@@ -49,36 +50,37 @@
 				<Frames>
 					<EventButton parentKey="Thumb" mixin="MinimalScrollBarThumbScriptsMixin" enableMouse="true">
 						<Size x="8"/>
+						<HitRectInsets>
+							<AbsInset left="-4" right="-4" top="-4" bottom="-4"/>
+						</HitRectInsets>
 						<KeyValues>
-							<KeyValue key="upBeginTexture" value="minimal-scrollbar-thumb-top" type="string"/>
-							<KeyValue key="upMiddleTexture" value="minimal-scrollbar-thumb-middle" type="string"/>
-							<KeyValue key="upEndTexture" value="minimal-scrollbar-thumb-bottom" type="string"/>
-							<KeyValue key="overBeginTexture" value="minimal-scrollbar-thumb-top-over" type="string"/>
-							<KeyValue key="overMiddleTexture" value="minimal-scrollbar-thumb-middle-over" type="string"/>
-							<KeyValue key="overEndTexture" value="minimal-scrollbar-thumb-bottom-over" type="string"/>
-							<KeyValue key="downBeginTexture" value="minimal-scrollbar-thumb-top-down" type="string"/>
-							<KeyValue key="downMiddleTexture" value="minimal-scrollbar-thumb-middle-down" type="string"/>
-							<KeyValue key="downEndTexture" value="minimal-scrollbar-thumb-bottom-down" type="string"/>
+							<KeyValue key="upBeginTexture" value="minimal-scrollbar-small-thumb-top" type="string"/>
+							<KeyValue key="upMiddleTexture" value="minimal-scrollbar-small-thumb-middle" type="string"/>
+							<KeyValue key="upEndTexture" value="minimal-scrollbar-small-thumb-bottom" type="string"/>
+							<KeyValue key="overBeginTexture" value="minimal-scrollbar-small-thumb-top-over" type="string"/>
+							<KeyValue key="overMiddleTexture" value="minimal-scrollbar-small-thumb-middle-over" type="string"/>
+							<KeyValue key="overEndTexture" value="minimal-scrollbar-small-thumb-bottom-over" type="string"/>
+							<KeyValue key="downBeginTexture" value="minimal-scrollbar-small-thumb-top-down" type="string"/>
+							<KeyValue key="downMiddleTexture" value="minimal-scrollbar-small-thumb-middle-down" type="string"/>
+							<KeyValue key="downEndTexture" value="minimal-scrollbar-small-thumb-bottom-down" type="string"/>
 							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
 						</KeyValues>
 						<Layers>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture parentKey="Middle" atlas="minimal-scrollbar-thumb-middle" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" y="-8"/>
-										<Anchor point="BOTTOMRIGHT" y="5"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="2">
-								<Texture parentKey="Begin" atlas="minimal-scrollbar-thumb-top" useAtlasSize="true">
+							<Layer level="ARTWORK">
+								<Texture parentKey="Begin" atlas="minimal-scrollbar-small-thumb-top" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="End" atlas="minimal-scrollbar-thumb-bottom" useAtlasSize="true">
+								<Texture parentKey="End" atlas="minimal-scrollbar-small-thumb-bottom" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="minimal-scrollbar-small-thumb-middle" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Begin" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.End" relativePoint="TOPRIGHT"/>
 									</Anchors>
 								</Texture>
 							</Layer>

@@ -1,48 +1,69 @@
+local DefaulChiSpacing = 3; -- Default spacing between chi orbs
+local TightChiSpacing = 2;	-- Spacing between chi orbs when num orb threshold is reached
+local TightChiSpacingThreshold = 6;	-- Threshold of chi orb counts to start using tight spacing
+
 MonkPowerBar = {};
+
 function MonkPowerBar:UpdatePower()
-	local light = UnitPower("player", Enum.PowerType.Chi);
+	local numChi = UnitPower(self:GetUnit(), Enum.PowerType.Chi);
 	for i = 1, #self.classResourceButtonTable do
-		self.classResourceButtonTable[i]:SetEnergy(i<=light);
+		self.classResourceButtonTable[i]:SetActive(i <= numChi);
 	end
 end
 
-MonkLightEnergyMixin = { }; 
-function MonkLightEnergyMixin:Setup()
-	local maxLight = UnitPowerMax("player", Enum.PowerType.Chi);
-	if ( maxLight == 4 ) then
-		orbOff = "MonkUI-OrbOff";
-		lightOrb = "MonkUI-LightOrb";
-	elseif (maxLight == 5 ) then
-		orbOff = "MonkUI-OrbOff";
-		lightOrb = "MonkUI-LightOrb";
+function MonkPowerBar:UpdateMaxPower()
+	local maxPoints = UnitPowerMax(self:GetUnit(), self.powerType);
+	if maxPoints >= TightChiSpacingThreshold then
+		self.spacing = TightChiSpacing;
 	else
-		orbOff = "MonkUI-OrbOff-small";
-		lightOrb = "MonkUI-LightOrb-small";
+		self.spacing = DefaulChiSpacing;
 	end
-	self.Glow:SetAtlas(lightOrb, true);
-	self.OrbOff:SetAtlas(orbOff, true);
+	ClassResourceBarMixin.UpdateMaxPower(self);
+end
+
+
+MonkLightEnergyMixin = {};
+
+function MonkLightEnergyMixin:Setup()
+	self.active = nil;
+	self:ResetVisuals();
 	self:Show();
 end
 
+function MonkLightEnergyMixin.OnRelease(framePool, self)
+	self:ResetVisuals();
+	FramePool_HideAndClearAnchors(framePool, self);
+end
 
-function MonkLightEnergyMixin:SetEnergy(active)
-	if ( active ) then
-		if (self.deactivate:IsPlaying()) then
-			self.deactivate:Stop();
-		end
+function MonkLightEnergyMixin:SetActive(active)
+	if self.active == active then
+		return;
+	end
 
-		if (not self.active and not self.activate:IsPlaying()) then
-			self.activate:Play();
-			self.active = true;
-		end
+	self.active = active;
+
+	self:ResetVisuals();
+
+	if self.active then
+		self.FB_Wind_FX:SetAlpha(1);
+		self.activate:Restart();
 	else
-		if (self.activate:IsPlaying()) then
-			self.activate:Stop();
-		end
+		self.Chi_BG:SetAlpha(1);
+		self.deactivate:Restart();
+	end
+end
 
-		if (self.active and not self.deactivate:IsPlaying()) then
-			self.deactivate:Play();
-			self.active = false;
+function MonkLightEnergyMixin:ResetVisuals()
+	self.activate:Stop();
+	self.deactivate:Stop();
+
+	self.Chi_Icon:SetAlpha(0);
+	self.Chi_Icon:SetAlpha(0);
+	self.Chi_BG_Active:SetAlpha(0);
+
+	if self.fxTextures then
+		for _, fxTexture in ipairs(self.fxTextures) do
+			fxTexture:SetAlpha(0);
 		end
 	end
 end

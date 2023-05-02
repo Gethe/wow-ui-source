@@ -265,7 +265,7 @@ GlueDialogTypes["BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING"] = {
 	OnCancel = function()
 		local master = CharacterServicesMaster;
 		master.flow:Restart(master);
-	end,	
+	end,
 }
 
 GlueDialogTypes["LEGION_PURCHASE_READY"] = {
@@ -349,6 +349,22 @@ GlueDialogTypes["EVOKER_NEW_PLAYER_CONFIRMATION"] = {
 	end,
 }
 
+local function GlueDialog_SetCustomOnHideScript(self, script)
+	self.customOnHideScript = script;
+end
+
+local function GlueDialog_GetCustomOnHideScript(self)
+	return self.customOnHideScript;
+end
+
+local function GlueDialog_RunCustomOnHideScript(self)
+	local script = GlueDialog_GetCustomOnHideScript(self);
+	GlueDialog_SetCustomOnHideScript(self, nil);
+	if script then
+		script();
+	end
+end
+
 function GlueDialog_EditBoxOnEnterPressed(self)
 	local EditBoxOnEnterPressed, which, dialog;
 	local parent = self:GetParent();
@@ -395,7 +411,7 @@ function GlueDialog_CheckQueuedDialogs()
 	end
 end
 
-function GlueDialog_Show(which, text, data)
+function GlueDialog_Show(which, text, data, customOnHideScript)
 	local dialogInfo = GlueDialogTypes[which];
 	-- Pick a free dialog to use
 	if ( GlueDialog:IsShown() ) then
@@ -404,9 +420,12 @@ function GlueDialog_Show(which, text, data)
 				GlueDialogTypes[GlueDialog.which].OnHide();
 			end
 
+			GlueDialog_RunCustomOnHideScript(GlueDialog);
 			GlueDialog:Hide();
 		end
 	end
+
+	GlueDialog_SetCustomOnHideScript(GlueDialog, customOnHideScript);
 
 	GlueDialogBackground:ClearAllPoints();
 	if dialogInfo.anchorPoint then
@@ -494,7 +513,7 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogButton1:SetWidth(GlueDialogButton1:GetTextWidth() + dialogInfo.buttonTextMargin);
 		GlueDialogButton2:SetWidth(GlueDialogButton2:GetTextWidth() + dialogInfo.buttonTextMargin);
 		GlueDialogButton3:SetWidth(GlueDialogButton3:GetTextWidth() + dialogInfo.buttonTextMargin);
-	else 
+	else
 		GlueDialogButton1:SetWidth(200);
 		GlueDialogButton2:SetWidth(200);
 		GlueDialogButton3:SetWidth(200);
@@ -544,7 +563,7 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogEditBox:ClearAllPoints();
 		if (dialogInfo.editBoxYMargin) then
 			GlueDialogEditBox:SetPoint("TOP", "GlueDialogText", "BOTTOM", 0, -dialogInfo.editBoxYMargin);
-		else 
+		else
 			GlueDialogEditBox:SetPoint("CENTER");
 		end
 	else
@@ -565,7 +584,7 @@ end
 
 function GlueDialog_Resize(self, which)
 	local dialogInfo = GlueDialogTypes[which];
-	
+
 	-- Get the width of the text to aid in determining the width of the dialog
 	local textWidth = 0;
 	if ( dialogInfo.html ) then
@@ -689,7 +708,7 @@ function GlueDialog_OnUpdate(self, elapsed)
 		end
 		self.timeleft = timeleft;
 	end
-	
+
 	local OnUpdate = GlueDialogTypes[which].OnUpdate;
 	if ( OnUpdate ) then
 		OnUpdate(self, elapsed);
@@ -699,6 +718,8 @@ end
 function GlueDialog_OnHide(self)
 --	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	GlueParent_RemoveModalFrame(self);
+
+	GlueDialog_RunCustomOnHideScript(self);
 end
 
 function GlueDialog_OnClick(self, button, down)
@@ -713,7 +734,7 @@ function GlueDialog_OnClick(self, button, down)
 	elseif ( index == 3 ) then
 		func = info.OnAlt or info.OnButton3;
 	end
-	if ( func ) then 
+	if ( func ) then
 		func();
 	end
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);

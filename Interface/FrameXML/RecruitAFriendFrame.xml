@@ -91,7 +91,7 @@
 						<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium">
+				<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium" useAtlasSize="true">
 					<Size x="100" y="100"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-33" y="28"/>
@@ -504,7 +504,7 @@
 								<Anchor relativeKey="$parent.Background" point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium">
+						<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="RIGHT" x="-7" y="-7"/>
 							</Anchors>
@@ -644,6 +644,7 @@
 							<Anchor point="BOTTOM" x="7" y="10"/>
 						</Anchors>
 						 <Scripts>
+							 <OnLoad method="OnLoad" />
 							 <OnClick method="OnClick" />
 						 </Scripts>
 					 </Button>
@@ -706,10 +707,10 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-3"/>
 						</Anchors>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="2"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -768,7 +769,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="Watermark" atlas="recruitafriend_v3_iwatermark_big" alpha="0.75">
+						<Texture parentKey="Watermark" atlas="recruitafriend_v3_iwatermark_big" alpha="0.75" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Picture" relativePoint="BOTTOM" y="-3"/>
 							</Anchors>

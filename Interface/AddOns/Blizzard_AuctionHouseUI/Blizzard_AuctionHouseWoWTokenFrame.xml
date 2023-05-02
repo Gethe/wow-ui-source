@@ -2,10 +2,10 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseWoWTokenFrame.lua"/>
 
-	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="WowTrimScrollBar" virtual="true">
+	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="MinimalScrollBar" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
-			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="-1"/>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-2"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="7"/>
 		</Anchors>
 	</EventFrame>
 	

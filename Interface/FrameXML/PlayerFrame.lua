@@ -554,7 +554,11 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	-- Update health bar
 	healthBar:SetWidth(118);
-	healthBar:SetHeight(20);
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then 
+		healthBar:SetHeight(32);
+	else 
+		healthBar:SetHeight(20);
+	end
 	healthBar:SetPoint("TOPLEFT", 91, -40);
 
 	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -8, 6);
@@ -574,10 +578,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 		TotemFrame:Hide();
 	elseif class == "DEATHKNIGHT" then
 		RuneFrame:Hide();
-	elseif class == "PRIEST" then
-		PriestBarFrame:Hide();
 	end
-	ComboPointPlayerFrame:Setup();
 	EssencePlayerFrame:Setup();
 
 	-- Update other stuff
@@ -620,7 +621,11 @@ function PlayerFrame_ToPlayerArt(self)
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
 
 	-- Update health bar
-	healthBar:SetHeight(20);
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then
+		healthBar:SetHeight(32);
+	else 
+		healthBar:SetHeight(20);
+	end
 	healthBar:SetWidth(124);
 	healthBar:SetPoint("TOPLEFT", 85, -40);
 
@@ -641,10 +646,7 @@ function PlayerFrame_ToPlayerArt(self)
 		TotemFrame:Update(); 
 	elseif (class == "DEATHKNIGHT") then
 		RuneFrame:Show();
-	elseif (class == "PRIEST") then
-		PriestBarFrame_CheckAndShow();
 	end
-	ComboPointPlayerFrame:Setup();
 	EssencePlayerFrame:Setup();
 
 	-- Update other stuff
@@ -785,12 +787,18 @@ end
 --
 
 local function AnchorCastBarToPlayerFrame()
-	PlayerCastingBarFrame:ClearAllPoints()
-	if(PlayerFrameBottomManagedFramesContainer:IsShown() and PlayerFrameBottomManagedFramesContainer:GetHeight() > 0) then
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrameBottomManagedFramesContainer, "BOTTOM", -10, -5);
-	else
-		PlayerCastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 20, 10);
+	local playerFrameScale = PlayerFrame:GetScale();
+	local castBarScale = PlayerCastingBarFrame:GetScale();
+
+	local xOffset = -24 / castBarScale;
+	local yOffset = 12 * playerFrameScale;
+	if PlayerFrameBottomManagedFramesContainer:IsShown() then
+		yOffset = yOffset - (PlayerFrameBottomManagedFramesContainer:GetHeight() * playerFrameScale);
 	end
+	yOffset = yOffset / castBarScale / playerFrameScale;
+
+	PlayerCastingBarFrame:ClearAllPoints();
+	PlayerCastingBarFrame:SetPoint("TOPRIGHT", PlayerFrame, "BOTTOMRIGHT", xOffset, yOffset);
 end
 
 function PlayerFrame_AttachCastBar()

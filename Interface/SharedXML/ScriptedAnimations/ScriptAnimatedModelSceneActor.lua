@@ -59,7 +59,7 @@ local function GetAngleForModel(source, target)
 	return radians;
 end
 
-function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target)
+function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target, scaleMultiplier)
 	self:SetModelByFileID(effectDescription.visual);
 	
 	self:SetPitch(effectDescription.pitchRadians);
@@ -87,7 +87,7 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self.effectDescription = effectDescription;
 	self.trajectory = effectDescription.trajectory;
 	self.duration = effectDescription.duration;
-	self:SetScale(effectDescription.visualScale);
+	self:SetScale(effectDescription.visualScale * (scaleMultiplier or 1.0));
 
 	self:SetParticleOverrideScale(effectDescription.particleOverrideScale);
 

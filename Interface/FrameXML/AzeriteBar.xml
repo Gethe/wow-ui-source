@@ -3,6 +3,9 @@
 	<Script file="AzeriteBar.lua"/>
 	<Frame name="AzeriteBarTemplate" inherits="StatusTrackingBarTemplate" mixin="AzeriteBarMixin" virtual="true">
 		<Size x="804" y="11"/>
+		<KeyValues>
+			<KeyValue key="fadeOutEntireBarAtMaxLevel" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

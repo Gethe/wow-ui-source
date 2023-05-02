@@ -1,0 +1,14 @@
+## Title: Blizzard Private Auras UI
+## LoadOnDemand: 0
+## GuardedAddOn: 1
+..\..\SharedXML\Pools.lua
+..\..\SharedXML\Tooltip\TooltipUtil.lua
+..\..\SharedXML\Tooltip\TooltipDataHandler.lua
+..\..\SharedXML\Tooltip\TooltipDataRules.lua
+..\..\SharedXML\SharedTooltipTemplates.lua
+..\..\FrameXML\GameTooltip.lua
+..\..\FrameXML\FadingFrame.lua
+..\..\FrameXML\RaidWarning.lua
+..\..\FrameXML\Cooldown.lua
+Blizzard_PrivateAurasUI.lua
+Blizzard_PrivateAurasUI.xml

@@ -151,7 +151,7 @@ function QuestInfo_ShowTitle()
 end
 
 function QuestInfo_ShowType()
-	local questTypeMarkup = QuestUtils_GetQuestTypeTextureMarkupString(C_QuestLog.GetSelectedQuest());
+	local questTypeMarkup = QuestUtils_GetQuestTypeIconMarkupString(C_QuestLog.GetSelectedQuest());
 	local showType = questTypeMarkup ~= nil;
 
 	QuestInfoQuestType:SetShown(showType);
@@ -409,40 +409,57 @@ function QuestInfo_GetRewardButton(rewardsFrame, index)
 	return rewardButtons[index];
 end
 
-QUEST_SPELL_REWARD_TYPE_FOLLOWER = 1;
-QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL = 2;
-QUEST_SPELL_REWARD_TYPE_ABILITY = 3;
-QUEST_SPELL_REWARD_TYPE_AURA = 4;
-QUEST_SPELL_REWARD_TYPE_SPELL = 5;
-QUEST_SPELL_REWARD_TYPE_UNLOCK = 6;
-QUEST_SPELL_REWARD_TYPE_COMPANION = 7;
-
-QUEST_INFO_SPELL_REWARD_ORDERING = {
-	QUEST_SPELL_REWARD_TYPE_FOLLOWER,
-	QUEST_SPELL_REWARD_TYPE_COMPANION,
-	QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL,
-	QUEST_SPELL_REWARD_TYPE_ABILITY,
-	QUEST_SPELL_REWARD_TYPE_AURA,
-	QUEST_SPELL_REWARD_TYPE_SPELL,
-	QUEST_SPELL_REWARD_TYPE_UNLOCK,
+local QUEST_INFO_SPELL_REWARD_ORDERING = {
+	Enum.QuestCompleteSpellType.Follower,
+	Enum.QuestCompleteSpellType.Companion,
+	Enum.QuestCompleteSpellType.Tradeskill,
+	Enum.QuestCompleteSpellType.Ability,
+	Enum.QuestCompleteSpellType.Aura,
+	Enum.QuestCompleteSpellType.Spell,
+	Enum.QuestCompleteSpellType.Unlock,
 };
 
-QUEST_INFO_SPELL_REWARD_TO_HEADER = {
-	[QUEST_SPELL_REWARD_TYPE_FOLLOWER] = REWARD_FOLLOWER,
-	[QUEST_SPELL_REWARD_TYPE_COMPANION] = REWARD_COMPANION,
-	[QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL] = REWARD_TRADESKILL_SPELL,
-	[QUEST_SPELL_REWARD_TYPE_ABILITY] = REWARD_ABILITY,
-	[QUEST_SPELL_REWARD_TYPE_AURA] = REWARD_AURA,
-	[QUEST_SPELL_REWARD_TYPE_SPELL] = REWARD_SPELL,
-	[QUEST_SPELL_REWARD_TYPE_UNLOCK] = REWARD_UNLOCK,
+local QUEST_INFO_SPELL_REWARD_TO_HEADER = {
+	[Enum.QuestCompleteSpellType.Follower] = REWARD_FOLLOWER,
+	[Enum.QuestCompleteSpellType.Companion] = REWARD_COMPANION,
+	[Enum.QuestCompleteSpellType.Tradeskill] = REWARD_TRADESKILL_SPELL,
+	[Enum.QuestCompleteSpellType.Ability] = REWARD_ABILITY,
+	[Enum.QuestCompleteSpellType.Aura] = REWARD_AURA,
+	[Enum.QuestCompleteSpellType.Spell] = REWARD_SPELL,
+	[Enum.QuestCompleteSpellType.Unlock] = REWARD_UNLOCK,
 };
 
-local function AddSpellToBucket(spellBuckets, type, rewardSpellIndex)
-	if not spellBuckets[type] then
-		spellBuckets[type] = {};
+local function GetRewardSpellBucketType(spellInfo)
+	if spellInfo.type and spellInfo.type ~= Enum.QuestCompleteSpellType.LegacyBehavior then
+		return spellInfo.type;
+	elseif spellInfo.isTradeskillSpell then
+		return Enum.QuestCompleteSpellType.Tradeskill;
+	elseif spellInfo.isBoostSpell then
+		return Enum.QuestCompleteSpellType.Ability;
+	elseif spellInfo.garrFollowerID then
+		local followerInfo = C_Garrison.GetFollowerInfo(spellInfo.garrFollowerID);
+		if followerInfo and followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
+			return Enum.QuestCompleteSpellType.Companion;
+		else
+			return Enum.QuestCompleteSpellType.Follower;
+		end
+	elseif spellInfo.isSpellLearned then
+		return Enum.QuestCompleteSpellType.Spell;
+	elseif spellInfo.genericUnlock then
+		return Enum.QuestCompleteSpellType.Unlock;
 	end
 
-	table.insert(spellBuckets[type], rewardSpellIndex);
+	return Enum.QuestCompleteSpellType.Aura;
+end
+
+local function AddSpellToBucket(buckets, spellInfo)
+	local subType = GetRewardSpellBucketType(spellInfo);
+
+	if not buckets[subType] then
+		buckets[subType] = {};
+	end
+
+	table.insert(buckets[subType], spellInfo);
 end
 
 local function QuestInfo_ShowRewardAsItemCommon(questItem, index, questLogQueryFunction)
@@ -520,10 +537,11 @@ local function QuestInfo_ShowRewardAsCurrency(questItem, index, isChoice)
 end
 
 function QuestInfo_ShowRewards()
+	local questID = QuestInfoFrame.questLog and C_QuestLog.GetSelectedQuest() or GetQuestID();
+
 	local numQuestRewards = 0;
 	local numQuestChoices = 0;
 	local numQuestCurrencies = 0;
-	local numQuestSpellRewards = 0;
 	local money = 0;
 	local skillName;
 	local skillPoints;
@@ -533,16 +551,13 @@ function QuestInfo_ShowRewards()
 	local artifactCategory;
 	local honor = 0;
 	local playerTitle;
-	local totalHeight = 0;
-	local numSpellRewards = 0;
+	local spellRewards = C_QuestInfoSystem.GetQuestRewardSpells(questID) or {};
+	local spellRewardBuckets = {};
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
 	local hasWarModeBonus = false;
 	local majorFactionRepRewards;
 
-	local spellGetter;
-	local questID;
 	if ( QuestInfoFrame.questLog ) then
-		questID = C_QuestLog.GetSelectedQuest();
 		if C_QuestLog.ShouldShowQuestRewards(questID) then
 			numQuestRewards = GetNumQuestLogRewards();
 			numQuestChoices = GetNumQuestLogChoices(questID, true);
@@ -554,13 +569,10 @@ function QuestInfo_ShowRewards()
 			honor = GetQuestLogRewardHonor();
 			playerTitle = GetQuestLogRewardTitle();
 			ProcessQuestLogRewardFactions();
-			numSpellRewards = GetNumQuestLogRewardSpells();
-			spellGetter = GetQuestLogRewardSpell;
 			hasWarModeBonus = C_QuestLog.QuestHasWarModeBonus(questID)
 			majorFactionRepRewards = C_QuestLog.GetQuestLogMajorFactionReputationRewards(questID);
 		end
 	else
-		questID = GetQuestID();
 		if ( QuestFrameRewardPanel:IsShown() or C_QuestLog.ShouldShowQuestRewards(questID) ) then
 			numQuestRewards = GetNumQuestRewards();
 			numQuestChoices = GetNumQuestChoices();
@@ -571,32 +583,30 @@ function QuestInfo_ShowRewards()
 			artifactXP, artifactCategory = GetRewardArtifactXP();
 			honor = GetRewardHonor();
 			playerTitle = GetRewardTitle();
-			numSpellRewards = GetNumRewardSpells();
-			spellGetter = GetRewardSpell;
 			hasWarModeBonus = C_QuestLog.QuestCanHaveWarModeBonus(questID);
 			majorFactionRepRewards = C_QuestOffer.GetQuestOfferMajorFactionReputationRewards();
 		end
 	end
 
-	for rewardSpellIndex = 1, numSpellRewards do
-		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = spellGetter(rewardSpellIndex);
-
+	for index, spellID in ipairs(spellRewards) do
 		if spellID and spellID > 0 then
+			local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
 			local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
 
 			-- only allow the spell reward if user can learn it
-			if ( texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
-				numQuestSpellRewards = numQuestSpellRewards + 1;
+			if spellInfo and spellInfo.texture and not knownSpell and (not spellInfo.isBoostSpell or IsCharacterNewlyBoosted()) and (not spellInfo.garrFollowerID or not C_Garrison.IsFollowerCollected(spellInfo.garrFollowerID)) then
+				spellInfo.spellID = spellID;
+				AddSpellToBucket(spellRewardBuckets, spellInfo);
 			end
 		else
 			if ProcessExceptionClient then
-				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, rewardSpellIndex));
+				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, index));
 			end
 		end
 	end
 
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
-	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 and artifactXP == 0 and honor == 0 and not majorFactionRepRewards ) then
+	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and #spellRewards == 0 and artifactXP == 0 and honor == 0 and not majorFactionRepRewards ) then
 		rewardsFrame:Hide();
 		return nil;
 	end
@@ -714,49 +724,13 @@ function QuestInfo_ShowRewards()
 	rewardsFrame.WarModeBonusFrame:Hide();
 
 	-- Setup spell rewards
-	if ( numQuestSpellRewards > 0 ) then
-		local spellBuckets = {};
-
-		for rewardSpellIndex = 1, numSpellRewards do
-			local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = spellGetter(rewardSpellIndex);
-
-			if spellID and spellID > 0 then
-				local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
-
-				if texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) then
-					if ( isTradeskillSpell ) then
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL, rewardSpellIndex);
-					elseif ( isBoostSpell ) then
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_ABILITY, rewardSpellIndex);
-					elseif ( garrFollowerID ) then
-						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
-						if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
-							AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_COMPANION, rewardSpellIndex);
-						else
-							AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_FOLLOWER, rewardSpellIndex);
-						end
-					elseif ( isSpellLearned ) then
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_SPELL, rewardSpellIndex);
-					elseif ( genericUnlock ) then
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_UNLOCK, rewardSpellIndex);
-					else
-						AddSpellToBucket(spellBuckets, QUEST_SPELL_REWARD_TYPE_AURA, rewardSpellIndex);
-					end
-				end
-			else
-				if ProcessExceptionClient then
-					ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, rewardSpellIndex));
-				end
-			end
-		end
-
+	if #spellRewards > 0 then
 		for orderIndex, spellBucketType in ipairs(QUEST_INFO_SPELL_REWARD_ORDERING) do
-			local spellBucket = spellBuckets[spellBucketType];
+			local spellBucket = spellRewardBuckets[spellBucketType];
 			if spellBucket then
-				for i, rewardSpellIndex in ipairs(spellBucket) do
-					local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = spellGetter(rewardSpellIndex);
+				for i, spellInfo in ipairs(spellBucket) do
 					-- hideSpellLearnText is a quest flag
-					if i == 1 and not hideSpellLearnText then
+					if i == 1 and not spellInfo.hideSpellLearnText then
 						local header = rewardsFrame.spellHeaderPool:Acquire();
 						header:SetText(QUEST_INFO_SPELL_REWARD_TO_HEADER[spellBucketType]);
 						if rewardsFrame.spellHeaderPool.textR and rewardsFrame.spellHeaderPool.textG and rewardsFrame.spellHeaderPool.textB then
@@ -772,9 +746,9 @@ function QuestInfo_ShowRewards()
 					end
 
 					local anchorFrame;
-					if garrFollowerID then
+					if spellInfo.garrFollowerID then
 						local followerFrame = rewardsFrame.followerRewardPool:Acquire();
-						local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
+						local followerInfo = C_Garrison.GetFollowerInfo(spellInfo.garrFollowerID);
 						followerFrame.Name:SetText(followerInfo.name);
 
 						local adventureCompanion = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower;
@@ -787,15 +761,15 @@ function QuestInfo_ShowRewards()
 							followerFrame.PortraitFrame:SetupPortrait(followerInfo);
 							followerFrame.Class:SetAtlas(followerInfo.classAtlas);
 						end
-						followerFrame.ID = garrFollowerID;
+						followerFrame.ID = spellInfo.garrFollowerID;
 						followerFrame:Show();
 
 						anchorFrame = followerFrame;
 					else
 						local spellRewardFrame = rewardsFrame.spellRewardPool:Acquire();
-						spellRewardFrame.Icon:SetTexture(texture);
-						spellRewardFrame.Name:SetText(name);
-						spellRewardFrame.rewardSpellIndex = rewardSpellIndex;
+						spellRewardFrame.Icon:SetTexture(spellInfo.texture);
+						spellRewardFrame.Name:SetText(spellInfo.name);
+						spellRewardFrame.rewardSpellID = spellInfo.spellID;
 						spellRewardFrame:Show();
 
 						anchorFrame = spellRewardFrame;
@@ -823,7 +797,7 @@ function QuestInfo_ShowRewards()
 	if ( numQuestRewards > 0 or numQuestCurrencies > 0 or money > 0 or xp > 0 or honor > 0 or majorFactionRepRewards or hasChanceForQuestSessionBonusReward ) then
 		-- receive text, will either say "You will receive" or "You will also receive"
 		local questItemReceiveText = rewardsFrame.ItemReceiveText;
-		if ( numQuestChoices > 0 or numQuestSpellRewards > 0 or playerTitle ) then
+		if ( numQuestChoices > 0 or #spellRewards > 0 or playerTitle ) then
 			questItemReceiveText:SetText(REWARD_ITEMS);
 		else
 			questItemReceiveText:SetText(REWARD_ITEMS_ONLY);
@@ -1159,4 +1133,24 @@ end
 
 function QuestInfoReputationRewardButtonMixin:OnLeave()
 	GameTooltip_Hide();
+end
+
+QuestInfoRewardSpellCodeMixin = {};
+
+function QuestInfoRewardSpellCodeMixin:OnEnter()
+	local isPet = nil;
+	local showSubtext = true;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetSpellByID(self.rewardSpellID, isPet, showSubtext);
+end
+
+function QuestInfoRewardSpellCodeMixin:OnLeave()
+	GameTooltip:Hide();
+	ResetCursor();
+end
+
+function QuestInfoRewardSpellCodeMixin:OnClick()
+	if IsModifiedClick("CHATLINK") then
+		ChatEdit_InsertLink(GetSpellLink(self.rewardSpellID));
+	end
 end

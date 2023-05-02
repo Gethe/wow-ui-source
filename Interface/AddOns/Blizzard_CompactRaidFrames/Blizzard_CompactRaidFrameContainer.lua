@@ -21,6 +21,7 @@ function CompactRaidFrameContainerMixin:OnLoad()
 		tinsert(self.units, "raid"..i);
 	end
 	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_PET");
 	
@@ -57,6 +58,8 @@ function CompactRaidFrameContainerMixin:OnEvent(event, ...)
 				self:TryUpdate();
 			end
 		end
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:TryUpdate();
 	end
 end
 
@@ -124,6 +127,8 @@ end
 
 --Internally used functions
 function CompactRaidFrameContainerMixin:TryUpdate()
+	CompactPartyFrame_RefreshMembers();
+
 	if self:ReadyToUpdate() then
 		self:LayoutFrames();
 	end

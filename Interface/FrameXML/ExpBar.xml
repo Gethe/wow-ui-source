@@ -4,6 +4,10 @@
 	<Script file="ExpBar.lua"/>
 	<Frame name="ExpStatusBarTemplate" useParentLevel="true" inherits="StatusTrackingBarTemplate" hidden="true" mixin="ExpBarMixin" virtual="true">
 		<Size x="804" y="11"/>
+		<KeyValues>
+			<KeyValue key="fadeOutEntireBarAtMaxLevel" value="true" type="boolean"/>
+			<KeyValue key="isExpBar" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="ExhaustionLevelFillBar" atlas="UI-HUD-ExperienceBar-Fill-Prediction">

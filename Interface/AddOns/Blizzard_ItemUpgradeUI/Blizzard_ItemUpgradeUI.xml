@@ -4,6 +4,20 @@
 		<Size x="220"/>
 	</FontString>
 
+	<FontString name="ItemUpgradeCostQuantityTemplate" mixin="ItemUpgradeCostQuantityMixin" inherits="GameFontHighlight" enableMouse="true" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</FontString>
+
+	<Frame name="ItemUpgradeCostIconTemplate" mixin="ItemUpgradeCostIconMixin" inherits="CurrencyLayoutFrameIconTemplate" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
 	<GameTooltip name="ItemUpgradeTooltipTemplate" inherits="SharedTooltipTemplate" mixin="ItemUpgradePreviewMixin" virtual="true">
 		<Size x="240" y="190"/>
 		<KeyValues>
@@ -270,9 +284,15 @@
 							</Anchors>
 						</FontString>
 
+						<FontString parentKey="UpgradeProgress" inherits="GameFontHighlight">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+						</FontString>
+
 						<FontString parentKey="UpgradeTo" inherits="GameFontHighlight" text="ITEM_UPGRADE_FRAME_UPGRADE_TO">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-10"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.UpgradeProgress" relativePoint="BOTTOMLEFT" y="-10"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -364,6 +384,10 @@
 			</Button>
 
 			<Frame parentKey="UpgradeCostFrame" inherits="CurrencyHorizontalLayoutFrameTemplate">
+				<KeyValues>
+					<KeyValue key="quantityFontObject" value="ItemUpgradeCostQuantityTemplate" type="string"/>
+					<KeyValue key="iconFrameObject" value="ItemUpgradeCostIconTemplate" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.UpgradeButton" relativePoint="TOP" y="12"/>
 				</Anchors>
@@ -388,6 +412,7 @@
 			<Frame parentKey="PlayerCurrencies" inherits="CurrencyHorizontalLayoutFrameTemplate">
 				<KeyValues>
 					<KeyValue key="fixedHeight" value="12" type="number"/>
+					<KeyValue key="iconFrameObject" value="ItemUpgradeCostIconTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.PlayerCurrenciesBorder" x="-5"/>

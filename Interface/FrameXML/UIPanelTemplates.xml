@@ -1999,6 +1999,8 @@
 			<KeyValue key="fixedHeight" value="16" type="number"/>
 			<KeyValue key="spacing" value="0" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="quantityFontObject" value="GameFontHighlight" type="string"/>
+			<KeyValue key="iconFrameObject" value="CurrencyLayoutFrameIconTemplate" type="string"/>
 		</KeyValues>
 		<Size x="100" y="16"/>
 	</Frame>

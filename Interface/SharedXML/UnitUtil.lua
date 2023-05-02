@@ -55,6 +55,15 @@ function PlayerUtil.GetSpecNameBySpecID(specID, playerSex)
 	return "";
 end
 
+function PlayerUtil.GetSpecIconBySpecID(specID, playerSex)
+	playerSex = playerSex or UnitSex("player");
+	if playerSex then
+		return select(4, GetSpecializationInfoByID(specID, playerSex));
+	end
+
+	return nil;
+end
+
 function PlayerUtil.ShouldUseNativeFormInModelScene()
 	local _, raceFilename = UnitRace("player");
 	return (raceFilename and (raceFilename ~= "Dracthyr" and raceFilename ~= "Worgen")) or C_UnitAuras.WantsAlteredForm("player");
@@ -78,6 +87,10 @@ end
 function PlayerUtil.GetClassFile()
 	local classInfo = PlayerUtil.GetClassInfo();
 	return classInfo.classFile;
+end
+
+function PlayerUtil.GetClassColor()
+	return C_ClassColor.GetClassColor(PlayerUtil.GetClassFile());
 end
 
 function PlayerUtil.CanUseClassTalents()

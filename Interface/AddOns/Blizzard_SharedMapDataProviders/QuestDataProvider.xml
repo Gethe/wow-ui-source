@@ -17,8 +17,8 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightTexture" alphaMode="ADD">
+			<Layer level="OVERLAY">
+				<Texture parentKey="HighlightTexture" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>

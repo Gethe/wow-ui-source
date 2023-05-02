@@ -66,10 +66,10 @@
 					<Anchor point="BOTTOM" x="0" y="3"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="4" y="6"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="4" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="9" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="9" y="4"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
@@ -77,7 +77,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="ResultsText" inherits="GameFontNormal" hidden="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.ScrollFrame" relativePoint="TOP" x="0" y="-45"/>
+						<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="TOP" x="0" y="-45"/>
 						<Anchor point="LEFT" x="45"/>
 						<Anchor point="RIGHT" x="-67"/>
 					</Anchors>

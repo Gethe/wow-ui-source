@@ -132,6 +132,20 @@ local ClassTalents =
 			},
 		},
 		{
+			Name = "GetTraitTreeForSpec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "treeID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "HasUnspentTalentPoints",
 			Type = "Function",
 
@@ -157,6 +171,16 @@ local ClassTalents =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
 				{ Name = "importError", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "InitializeViewLoadout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -266,6 +290,20 @@ local ClassTalents =
 			{
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "configID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "ViewLoadout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entries", Type = "table", InnerType = "ImportLoadoutEntryInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 	},

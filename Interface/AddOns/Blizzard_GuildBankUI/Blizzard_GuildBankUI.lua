@@ -45,6 +45,8 @@ function GuildBankFrameMixin:OnLoad()
 	self:UpdateTabard();
 	self.TopTileStreaks:Hide();
 	self.Bg:Hide();
+
+	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self.Log.MessageFrame, self.Log.ScrollBar);
 end
 
 function GuildBankFrameMixin:OnEvent(event, ...)
@@ -75,10 +77,9 @@ function GuildBankFrameMixin:OnEvent(event, ...)
 	elseif ( event == "GUILDBANKLOG_UPDATE" ) then
 		if ( self.mode == "log" ) then
 			GuildBankFrame_UpdateLog();
-		else
+		elseif ( self.mode == "moneylog") then
 			GuildBankFrame_UpdateMoneyLog();
 		end
-		GuildBankLogScroll();
 	elseif ( event == "GUILDTABARD_UPDATE" ) then
 		self:UpdateTabard();
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
@@ -588,7 +589,6 @@ function GuildBankFrameTabMixin:OnClick(button, down)
 	local id = self:GetID();
 	local guildBankFrame = self:GetParent();
 	local messageFrame = guildBankFrame.Log.MessageFrame;
-	local transactionsScroll = guildBankFrame.Log.TransactionsScrollFrame;
 	PanelTemplates_SetTab(guildBankFrame, id);
 	if ( id == 1 ) then
 		--Bank
@@ -597,17 +597,13 @@ function GuildBankFrameTabMixin:OnClick(button, down)
 	elseif ( id == 2 ) then
 		--Log
 		messageFrame:Clear();
-		transactionsScroll:Hide();
 		guildBankFrame.mode = "log";
 		QueryGuildBankLog(GetCurrentGuildBankTab());
-		transactionsScroll.ScrollBar:SetValue(0);
 	elseif ( id == 3 ) then
 		--Money log
 		messageFrame:Clear();
-		transactionsScroll:Hide();
 		guildBankFrame.mode = "moneylog";
 		QueryGuildBankLog(MAX_GUILDBANK_TABS + 1);
-		transactionsScroll.ScrollBar:SetValue(0);
 	else
 		--Tab Info
 		guildBankFrame.mode = "tabinfo";
@@ -754,7 +750,7 @@ function GuildBankFrame_UpdateLog()
 	local tab = GetCurrentGuildBankTab();
 	local numTransactions = GetNumGuildBankTransactions(tab);
 	local type, name, itemLink, count, tab1, tab2, year, month, day, hour;
-	
+
 	local msg;
 	GuildBankMessageFrame:Clear();
 	for i=1, numTransactions, 1 do
@@ -780,7 +776,6 @@ function GuildBankFrame_UpdateLog()
 			GuildBankMessageFrame:AddMessage( msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)) );
 		end
 	end
-	FauxScrollFrame_Update(GuildBankTransactionsScrollFrame, numTransactions, MAX_TRANSACTIONS_SHOWN, GUILDBANK_TRANSACTION_HEIGHT );
 end
 
 function GuildBankFrame_UpdateMoneyLog()
@@ -815,21 +810,7 @@ function GuildBankFrame_UpdateMoneyLog()
 		end
 		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)) );
 	end
-	FauxScrollFrame_Update(GuildBankTransactionsScrollFrame, numTransactions, MAX_TRANSACTIONS_SHOWN, GUILDBANK_TRANSACTION_HEIGHT );
 end
-
-function GuildBankLogScroll()
-	local offset = FauxScrollFrame_GetOffset(GuildBankTransactionsScrollFrame);
-	local numTransactions = 0;
-	if ( GuildBankFrame.mode == "log" ) then
-		numTransactions = GetNumGuildBankTransactions(GetCurrentGuildBankTab());
-	elseif ( GuildBankFrame.mode == "moneylog" ) then
-		numTransactions = GetNumGuildBankMoneyTransactions();
-	end
-	GuildBankMessageFrame:SetScrollOffset(offset);
-	FauxScrollFrame_Update(GuildBankTransactionsScrollFrame, numTransactions, MAX_TRANSACTIONS_SHOWN, GUILDBANK_TRANSACTION_HEIGHT );
-end
-
 
 GuildBankPopupFrameMixin = {};
 
@@ -843,7 +824,7 @@ function GuildBankPopupFrameMixin:OnShow()
 	if ( space < self:GetWidth() + GUILD_BANK_POPUP_FRAME_MINIMUM_PADDING ) then
 		self:SetPoint("TOPRIGHT", GuildBankFrame, "TOPRIGHT", -10, -30);
 	else
-		self:SetPoint("TOPLEFT", GuildBankFrame, "TOPRIGHT", 38, 0);
+		self:SetPoint("TOPLEFT", GuildBankFrame, "TOPRIGHT", 38, 9);
 	end
 
 	self.BorderBox.IconSelectorEditBox:SetFocus();

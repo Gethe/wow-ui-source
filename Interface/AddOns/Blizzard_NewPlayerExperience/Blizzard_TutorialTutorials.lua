@@ -42,12 +42,22 @@ function Class_Intro_KeyboardMouse:OnBegin()
 		TutorialManager:Finished(self:Name());
 		return;
 	end
+	Dispatcher:RegisterEvent("CINEMATIC_START", self);
+	Dispatcher:RegisterEvent("CINEMATIC_STOP", self);
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 	self:HideScreenTutorial();
 	self.LaunchTimer = C_Timer.NewTimer(4,
 		function()
 			self:LaunchMouseKeyboardFrame();
 		end);
+end
+
+function Class_Intro_KeyboardMouse:CINEMATIC_START()
+	TutorialKeyboardMouseFrame_Frame:Hide();
+end
+
+function Class_Intro_KeyboardMouse:CINEMATIC_STOP()
+	TutorialKeyboardMouseFrame_Frame:Show();
 end
 
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
@@ -82,6 +92,8 @@ function Class_Intro_KeyboardMouse:OnComplete()
 	if self.GlowTimer then
 		self.GlowTimer:Cancel();
 	end
+	Dispatcher:UnregisterEvent("CINEMATIC_START", self);
+	Dispatcher:UnregisterEvent("CINEMATIC_STOP", self);
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
 	EventRegistry:UnregisterCallback("TutorialKeyboardMouseFrame.Closed", self);
 	self:HideMouseKeyboardTutorial();

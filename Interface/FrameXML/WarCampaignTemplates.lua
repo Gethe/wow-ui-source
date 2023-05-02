@@ -41,8 +41,8 @@ function CampaignTooltipMixin:SetWarCampaign(campaign)
 				if (not EmbeddedItemTooltip_SetItemByQuestReward(self.ItemTooltip, 1, campaignChapterInfo.rewardQuestID)) then
 					self.ItemTooltip:Hide();
 				end
-			elseif ( GetNumQuestLogRewardSpells(campaignChapterInfo.rewardQuestID) > 0 ) then
-				if (not EmbeddedItemTooltip_SetSpellByQuestReward(self.ItemTooltip, 1, campaignChapterInfo.rewardQuestID)) then
+			elseif C_QuestInfoSystem.HasQuestRewardSpells(campaignChapterInfo.rewardQuestID) then
+				if not EmbeddedItemTooltip_SetSpellByFirstQuestReward(self.ItemTooltip, campaignChapterInfo.rewardQuestID) then
 					self.ItemTooltip:Hide();
 				end
 			else

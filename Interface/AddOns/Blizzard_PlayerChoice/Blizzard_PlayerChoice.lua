@@ -159,8 +159,6 @@ local PLAYER_CHOICE_FRAME_EVENTS = {
 local function GetActiveMawBuffContainer()
 	if ScenarioBlocksFrame and ScenarioBlocksFrame.MawBuffsBlock:IsShown() then
 		return ScenarioBlocksFrame.MawBuffsBlock.Container;
-	elseif MawBuffsBelowMinimapFrame:IsShown() then
-		return MawBuffsBelowMinimapFrame.Container;
 	end
 end
 

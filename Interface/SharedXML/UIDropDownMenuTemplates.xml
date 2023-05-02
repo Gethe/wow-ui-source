@@ -68,7 +68,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
-				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
+				<Texture parentKey="Icon" name="$parentIcon" hidden="true" enableMouseMotion="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="RIGHT">
@@ -76,13 +76,8 @@
 						</Anchor>
 					</Anchors>
 					<Scripts>
-						<OnEnter function="UIDropDownMenuButtonIcon_OnEnter"/>
-						<OnLeave function="UIDropDownMenuButtonIcon_OnLeave"/>
-						<OnMouseUp>
-							if ( button == "LeftButton" ) then
-								UIDropDownMenuButtonIcon_OnClick(self, button);
-							end
-						</OnMouseUp>
+						<OnEnter function="UIDropDownMenuButtonIcon_OnEnter" autoEnableInput="false"/>
+						<OnLeave function="UIDropDownMenuButtonIcon_OnLeave" autoEnableInput="false"/>
 					</Scripts>
 				</Texture>
 			</Layer>

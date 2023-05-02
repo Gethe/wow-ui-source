@@ -141,6 +141,9 @@ MonthlyActivitiesThresholdMixin = { };
 
 function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	self.RewardCurrency:SetCurrentPoints(points);
+
+	self.LineIncomplete:SetShown(not aboveThreshold and self.showLine);
+	self.LineComplete:SetShown(aboveThreshold and self.showLine);
 	
 	local initialSet = self.aboveThreshold == nil;
 	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
@@ -149,9 +152,6 @@ function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	end
 
 	self.aboveThreshold = aboveThreshold;
-
-	self.LineIncomplete:SetShown(not aboveThreshold and self.showLine);
-	self.LineComplete:SetShown(aboveThreshold and self.showLine);
 
 	if not initialSet and aboveThreshold and self.thresholdInfo.itemReward then
 		GlobalFXDialogModelScene:AddEffect(163, self.RewardItem);
@@ -176,6 +176,8 @@ MonthlyActivitiesRewardCurrencyMixin = { };
 function MonthlyActivitiesRewardCurrencyMixin:SetCurrentPoints(points)
 	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
 
+	self.PendingGlow:SetShown(aboveThreshold and self.thresholdInfo.pendingReward);
+
 	local initialSet = self.aboveThreshold == nil;
 	if self.aboveThreshold == aboveThreshold then
 		return;
@@ -194,7 +196,6 @@ function MonthlyActivitiesRewardCurrencyMixin:SetCurrentPoints(points)
 	self.DiamondComplete:SetShown(aboveThreshold);
 	self.Points:SetShown(not aboveThreshold);
 	self.EarnedCheckmark:SetShown(aboveThreshold);
-	self.PendingGlow:SetShown(aboveThreshold and self.thresholdInfo.pendingReward);
 end
 
 function MonthlyActivitiesRewardCurrencyMixin:SetThresholdInfo(thresholdInfo)
@@ -455,9 +456,9 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	-- Gather info based on all activities, thresholds, and pending rewards that will affect how they are all displayed
 	local pendingRewards = C_PerksProgram.GetPendingChestRewards();
 
-	local function HasPendingReward(thresholdID)
+	local function HasPendingReward(thresholdOrderIndex)
 		for _, reward in pairs(pendingRewards) do
-			if reward.activityMonthID == activitiesInfo.activePerksMonth and reward.activityThresholdID == thresholdID then
+			if reward.activityMonthID == activitiesInfo.activePerksMonth and reward.thresholdOrderIndex == thresholdOrderIndex then
 				return true;
 			end
 		end
@@ -466,7 +467,7 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 
 	local thresholdMax = 0;
 	for _, thresholdInfo in pairs(activitiesInfo.thresholds) do
-		thresholdInfo.pendingReward = HasPendingReward(thresholdInfo.thresholdID);
+		thresholdInfo.pendingReward = HasPendingReward(thresholdInfo.thresholdOrderIndex);
 
 		if thresholdInfo.requiredContributionAmount > thresholdMax then
 			thresholdMax = thresholdInfo.requiredContributionAmount;
@@ -496,7 +497,7 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	end
 
 	-- Build UI - rewards text or threshold bar at the top, activities list below
-	self:UpdateTime(activitiesInfo.displayMonthName);
+	self:UpdateTime(activitiesInfo.displayMonthName, activitiesInfo.secondsRemaining);
 	self:SetThresholds(activitiesInfo.thresholds, earnedThresholdAmount, thresholdMax);
 	self:SetActivities(activitiesInfo.activities, retainScrollPosition);
 	self.FilterList:UpdateFilters();
@@ -582,6 +583,7 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 				pendingComplete = self.pendingComplete[activity.ID],
 				thresholdMax = self.thresholdMax,
 				restricted = restricted,
+				uiPriority = activity.uiPriority,
 			});
 		end
 	end
@@ -595,6 +597,11 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 		-- But sort already completed to the bottom
 		if a.completed ~= b.completed then
 			return b.completed;
+		end
+
+		-- Sort by data driven ui priority field
+		if a.uiPriority ~= b.uiPriority then
+			return a.uiPriority > b.uiPriority;
 		end
 	
 		-- Then sort by points descending
@@ -656,7 +663,7 @@ function MonthlyActivitiesFrameMixin:SetCurrentPoints(curValue, barValue)
 		thresholdFrame:SetCurrentPoints(barValue);
 	end
 
-	self.ThresholdBar.Text:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
+	self.ThresholdBar.TextContainer.ProgressText:SetText(MONTHLY_ACTIVITIES_PROGRESS_TEXT:format(barValue, self.thresholdMax));
 	self.ThresholdBar.BarEnd:SetShown(barValue > 0);
 
 	local allRewardsEarned = barValue >= self.thresholdMax;
@@ -760,18 +767,15 @@ function MonthlyActivitiesFrameMixin:SetRewardsEarnedAndCollected(allRewardsEarn
 	end
 end
 
-function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName)
-	local monthInfo = C_Calendar.GetMonthInfo();
+function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName, secondsRemaining)
+	local text = MonthlyActivitiesFrameMixin.TimeLeftFormatter:Format(secondsRemaining);
+	self.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(text));
 
 	if displayMonthName and #displayMonthName > 0 then
 		self.Month:SetText(displayMonthName);
 	else
-		self.Month:SetText(ACTIVITIES_MONTH_NAMES[monthInfo.month]);
+		self.Month:SetText(ACTIVITIES_MONTH_NAMES[currentCalendarTime.month]);
 	end
-
-	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
-	local daysLeft = monthInfo.numDays - currentCalendarTime.monthDay;
-	self.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(daysLeft));
 end
 
 function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
@@ -782,6 +786,18 @@ function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
 		scrollBox:ScrollToElementDataByPredicate(SelectElement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 	end
 end
+
+MonthlyActivitiesFrameMixin.TimeLeftFormatter = CreateFromMixins(SecondsFormatterMixin);
+MonthlyActivitiesFrameMixin.TimeLeftFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, false, true);
+MonthlyActivitiesFrameMixin.TimeLeftFormatter:SetStripIntervalWhitespace(true);
+function MonthlyActivitiesFrameMixin.TimeLeftFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
+end
+
+function MonthlyActivitiesFrameMixin.TimeLeftFormatter:GetDesiredUnitCount(seconds)
+	return 2;
+end
+
 
 -- External API
 function MonthlyActivitiesFrame_OpenFrame()

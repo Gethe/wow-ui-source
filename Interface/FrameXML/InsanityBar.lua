@@ -62,9 +62,20 @@ end
 function InsanityPowerBar:UpdatePower()
 	if (self.insane) then
 		local insanity = UnitPower("player", Enum.PowerType.Insanity);
-		local playerFrameManaBar = PlayerFrame_GetManaBar();
-		local tentacleWidth = 7 + insanity / 100 * playerFrameManaBar:GetWidth(); -- Tentacles start 7 pixels left of the insanity bar
-		self.InsanityOn.Tentacles:SetWidth(tentacleWidth);
+		local maxInsanity = UnitPowerMax("player", Enum.PowerType.Insanity);
+		local insanityPercent = maxInsanity > 0 and (insanity / maxInsanity) or 0;
+		local powerBarWidth = PlayerFrame_GetManaBar():GetWidth();
+
+		-- Tentacles start 7 pixels left of the power bar.
+		-- Think this is to make the tentacles appear like they are wrapping around the bottom of the power bar and the right side of the portrait.
+		local tentacleWidth = 7 + (insanityPercent * powerBarWidth);
+
+		self.InsanityOn.Tentacles:SetWidth(tentacleWidth > 0 and tentacleWidth or 1);
 		self.InsanityOn.Tentacles:SetTexCoord(0, tentacleWidth / self.fullTentacleWidth, 0, 1);
+
+		-- Turn off spark drip when bar gets too short so drip doesn't look janky going onto the player portrait
+		local showSparkDrip = tentacleWidth > 10;
+		self.InsanitySpark.SparkDrip1:SetShown(showSparkDrip);
+		self.InsanitySpark.SparkDrip2:SetShown(showSparkDrip);
 	end
 end

@@ -439,11 +439,11 @@ function MultiCastActionButton_OnLoad(self)
 	-- setup action button stuff
 	self.buttonType = "MULTICASTACTIONBUTTON";
 	self.buttonIndex = self:GetID();
-	ActionBarActionButtonMixin.OnLoad(self);
+	ActionBarActionButtonDerivedMixin.OnLoad(self);
 end
 
 function MultiCastActionButton_OnEvent(self, event, ...)
-	ActionBarActionButtonMixin.OnEvent(self, event, ...);
+	ActionBarActionButtonDerivedMixin.OnEvent(self, event, ...);
 	if ( event == "MODIFIER_STATE_CHANGED" ) then
 		if ( IsModifiedClick("SHOWMULTICASTFLYOUT") and self:IsMouseOver() ) then
 			MultiCastActionButton_OnEnter(self);
@@ -479,7 +479,7 @@ function MultiCastActionButton_Update(self, id, index, slot)
 		self:Hide();
 	else
 		self:UpdateAction();
-		ActionBarActionButtonMixin.Update(self);
+		ActionBarActionButtonDerivedMixin.Update(self);
 		self:UpdateHotkeys(self.buttonType);
 
 		-- fixup textures

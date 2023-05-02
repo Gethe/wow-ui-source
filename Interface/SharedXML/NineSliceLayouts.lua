@@ -338,6 +338,19 @@ NineSliceLayouts =
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Glues-NineSlice-Center", x = -8, y = 10, x1 = 8, y1 = -7, },
 	};
 
+	DarkmoonBasicSmallContainerLayout =
+	{
+		["TopRightCorner"] = { atlas = "DarkmoonBasicSmallContainer-NineSlice-CornerTopRight" },
+		["TopLeftCorner"] = { atlas = "DarkmoonBasicSmallContainer-NineSlice-CornerTopLeft" },
+		["BottomLeftCorner"] = { atlas = "DarkmoonBasicSmallContainer-NineSlice-CornerBottomLeft" },
+		["BottomRightCorner"] = { atlas = "DarkmoonBasicSmallContainer-NineSlice-CornerBottomRight" },
+		["TopEdge"] = { atlas = "_DarkmoonBasicSmallContainer-NineSlice-EdgeTop" },
+		["BottomEdge"] = { atlas = "_DarkmoonBasicSmallContainer-NineSlice-EdgeBottom" },
+		["LeftEdge"] = { atlas = "!DarkmoonBasicSmallContainer-NineSlice-EdgeLeft" },
+		["RightEdge"] = { atlas = "!DarkmoonBasicSmallContainer-NineSlice-EdgeRight" },
+		["Center"] = { layer = "BACKGROUND", atlas = "DarkmoonBasicSmallContainer-NineSlice-Center", x = -56, y = 59, x1 = 56, y1 = -59, },
+	};
+
 	TooltipMixedLayout =
 	{
 		["TopRightCorner"] = { atlas = "Tooltip-Glues-NineSlice-CornerTopRight" },

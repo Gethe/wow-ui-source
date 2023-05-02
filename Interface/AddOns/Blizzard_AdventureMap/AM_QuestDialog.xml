@@ -101,101 +101,17 @@
 				</Scripts>
 			</Button>
 
-			<ScrollFrame parentKey="Details" inherits="UIPanelScrollFrameCodeTemplate">
+			<ScrollFrame parentKey="Details" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarX" value="10" type="number"/>
+					<KeyValue key="scrollBarTopY" value="6" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="-6" type="number"/>
+				</KeyValues>
 				<Size x="253" y="212"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="-50"/>
 				</Anchors>
-
-				<KeyValues>
-					<KeyValue key="scrollBarHideable" value="true" type="boolean" />
-				</KeyValues>
-
-				<Frames>
-					<Slider parentKey="ScrollBar">
-						<Size x="16" y="0"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-6"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
-						</Anchors>
-
-						<Frames>
-							<Button parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										local parent = self:GetParent();
-										local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-										parent:SetValue(parent:GetValue() - scrollStep);
-										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										local parent = self:GetParent();
-										local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-										parent:SetValue(parent:GetValue() + scrollStep);
-										PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="24" y="48"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-4" y="17"/>
-									</Anchors>
-									<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
-								</Texture>
-								<Texture parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="24" y="64"/>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
-									</Anchors>
-									<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
-								</Texture>
-								<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
-									</Anchors>
-									<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK" textureSubLevel="-1">
-								<Texture parentKey="Background">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Top" x="3" />
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" x="-3"/>
-									</Anchors>
-									<Color r="0" g="0" b="0" a="1"/>
-								</Texture>
-							</Layer>
-						</Layers>
-
-						<Scripts>
-							<OnValueChanged>
-								self:GetParent():SetVerticalScroll(value);
-							</OnValueChanged>
-						</Scripts>
-
-						<ThumbTexture parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-							<Size x="18" y="24"/>
-							<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-						</ThumbTexture>
-					</Slider>
-				</Frames>
-
 				<ScrollChild>
 					<Frame parentKey="Child">
 						<Size x="255" y="1"/>
