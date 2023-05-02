@@ -2659,6 +2659,8 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
 end
 
 function CharacterServicesMaster_OnCharacterListUpdate()
+	CharacterServicesMaster_UpdateServiceButton();
+
     CharacterServicesMaster.pendingGuid = nil;
     local automaticBoostType = C_CharacterServices.GetAutomaticBoost();
 	local startAutomatically = automaticBoostType ~= nil;

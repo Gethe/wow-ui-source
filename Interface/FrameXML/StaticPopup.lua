@@ -1724,12 +1724,6 @@ StaticPopupDialogs["CAMP"] = {
 	OnAccept = function(self)
 		CancelLogout();
 	end,
-	OnHide = function(self)
-		if ( self.timeleft > 0 ) then
-			CancelLogout();
-			self:Hide();
-		end
-	end,
 	timeout = 20,
 	whileDead = 1,
 	hideOnEscape = 1

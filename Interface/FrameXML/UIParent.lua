@@ -1653,6 +1653,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_QUITING" ) then
 		StaticPopup_Show("QUIT");
 	elseif ( event == "LOGOUT_CANCEL" ) then
+		CancelLogout();
 		StaticPopup_Hide("CAMP");
 		StaticPopup_Hide("QUIT");
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
