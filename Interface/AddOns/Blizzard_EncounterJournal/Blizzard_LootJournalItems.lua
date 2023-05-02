@@ -74,12 +74,9 @@ local LJ_ITEMSET_BOTTOM_BUFFER = 4;
 
 function LootJournalItemSetsMixin:Refresh()
 	self.dirty = true;
-	local offset = self.scrollBar:GetValue();
-	if ( offset == 0 ) then
-		self:UpdateList();
-	else
-		self.scrollBar:SetValue(0);
-	end
+
+	self:UpdateList();
+
 	if ( self.ClassButton ) then
 		self:UpdateClassButtonText();
 	end
@@ -170,7 +167,9 @@ function LootJournalItemSetsMixin:SetClassAndSpecFilters(newClassFilter, newSpec
 			end
 		end
 		self:GetParent():SetClassAndSpecFilters(newClassFilter, newSpecFilter);
-		self.scrollBar:SetValue(0);
+
+		self.ScrollBar:ScrollToBegin();
+
 		self:Refresh();
 	end
 
@@ -276,14 +275,15 @@ do
 end
 
 function LootJournalItemSetsMixin:OnLoad()
-	local scrollBar = self.scrollBar;
-	scrollBar.trackBG:SetAlpha(0.25);
-	scrollBar:ClearAllPoints();
-	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -2, -16);
-	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -2, 17);
+	local view = CreateScrollBoxListLinearView(LJ_ITEMSET_Y_OFFSET, 0, LJ_ITEMSET_X_OFFSET, 0, LJ_ITEMSET_BUTTON_SPACING);
 
-	self.update = LootJournalItemSetsMixin.UpdateList;	
-	HybridScrollFrame_CreateButtons(self, "LootJournalItemSetButtonTemplate", LJ_ITEMSET_X_OFFSET, -LJ_ITEMSET_Y_OFFSET, "TOPLEFT", nil, nil, -LJ_ITEMSET_BUTTON_SPACING);
+	local configureItemButton = GenerateClosure(self.ConfigureItemButton, self);
+	local function Initializer(frame, elementData)
+		frame:Init(elementData, configureItemButton);
+	end
+	view:SetElementInitializer("LootJournalItemSetButtonTemplate", Initializer);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function LootJournalItemSetsMixin:OnShow()
@@ -301,15 +301,16 @@ end
 function LootJournalItemSetsMixin:OnEvent(event, ...)
 	if ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		local itemID = ...;
-		for i = 1, #self.buttons do
-			local itemButtons = self.buttons[i].ItemButtons;
+
+		self.ScrollBox:ForEachFrame(function(frame, elementData)
+			local itemButtons = frame.ItemButtons;
 			for j = 1, #itemButtons do
-				if ( itemButtons[j].itemID == itemID ) then
+				if itemButtons[j].itemID == itemID then
 					self:ConfigureItemButton(itemButtons[j]);
 					return;
 				end
 			end
-		end
+		end);
 	end
 end
 
@@ -359,38 +360,32 @@ function LootJournalItemSetsMixin:UpdateList()
 		table.sort(self.itemSets, SortItemSets);
 	end
 
-	local buttons = self.buttons;
-	local offset = HybridScrollFrame_GetOffset(self);
-
-	for i = 1, #buttons do
-		local button = buttons[i];
-		local index = offset + i;
-		if ( index <= #self.itemSets ) then
-			button:Show();
-			button.SetName:SetText(self.itemSets[index].name);
-			button.ItemLevel:SetFormattedText(ITEM_LEVEL, self.itemSets[index].itemLevel);
-			local items = C_LootJournal.GetItemSetItems(self.itemSets[index].setID);
-			table.sort(items, SortItemSetItems);
-			for j = 1, #items do
-				local itemButton = button.ItemButtons[j];
-				if ( not itemButton ) then
-					itemButton = CreateFrame("BUTTON", nil, button, "LootJournalItemSetItemButtonTemplate");
-					itemButton:SetPoint("LEFT", button.ItemButtons[j-1], "RIGHT", 5, 0);
-				end
-				itemButton.Icon:SetTexture(items[j].icon);
-				itemButton.itemID = items[j].itemID;
-				itemButton:Show();
-				self:ConfigureItemButton(itemButton);
-			end
-			for j = #items + 1, #button.ItemButtons do
-				button.ItemButtons[j].itemID = nil;
-				button.ItemButtons[j]:Hide();
-			end
-		else
-			button:Hide();
-		end
-	end
-
-	local totalHeight = #self.itemSets * buttons[1]:GetHeight() + (#self.itemSets - 1) * LJ_ITEMSET_BUTTON_SPACING + LJ_ITEMSET_Y_OFFSET + LJ_ITEMSET_BOTTOM_BUFFER;
-	HybridScrollFrame_Update(self, totalHeight, self:GetHeight());
+	local dataProvider = CreateDataProvider(self.itemSets);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
+
+LootJournalItemSetButtonMixin = {};
+
+function LootJournalItemSetButtonMixin:Init(elementData, configureItemButton)
+	self.SetName:SetText(elementData.name);
+	self.ItemLevel:SetFormattedText(ITEM_LEVEL, elementData.itemLevel);
+	local items = C_LootJournal.GetItemSetItems(elementData.setID);
+	table.sort(items, SortItemSetItems);
+	for j = 1, #items do
+		local itemButton = self.ItemButtons[j];
+		if ( not itemButton ) then
+			itemButton = CreateFrame("BUTTON", nil, self, "LootJournalItemSetItemButtonTemplate");
+			itemButton:SetPoint("LEFT", self.ItemButtons[j-1], "RIGHT", 5, 0);
+		end
+		itemButton.Icon:SetTexture(items[j].icon);
+		itemButton.itemID = items[j].itemID;
+		itemButton:Show();
+		configureItemButton(itemButton);
+	end
+	for j = #items + 1, #self.ItemButtons do
+		self.ItemButtons[j].itemID = nil;
+		self.ItemButtons[j]:Hide();
+	end
+end
+
+			

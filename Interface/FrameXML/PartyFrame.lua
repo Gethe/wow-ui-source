@@ -21,6 +21,10 @@ function PartyFrameMixin:OnEvent(event, ...)
 	self:Layout();
 end
 
+function PartyFrameMixin:ShouldShow()
+	return ShouldShowPartyFrames() and not EditModeManagerFrame:UseRaidStylePartyFrames();
+end
+
 function PartyFrameMixin:InitializePartyMemberFrames()
 	local memberFramesToSetup = {};
 	
@@ -34,7 +38,7 @@ function PartyFrameMixin:InitializePartyMemberFrames()
 		 memberFrame:SetPoint("TOPLEFT");
 		 memberFrame.layoutIndex = i;
 		 memberFramesToSetup[i] = memberFrame;
-		 memberFrame:SetShown(ShouldShowPartyFrames());
+		 memberFrame:SetShown(self:ShouldShow());
 	end
 	self:Layout();
 	for _, frame in ipairs(memberFramesToSetup) do 
@@ -55,7 +59,7 @@ function PartyFrameMixin:UpdatePartyMemberBackground()
 		return;
 	end
 
-	if not ShouldShowPartyFrames() or not EditModeManagerFrame:ShouldShowPartyFrameBackground() then
+	if not self:ShouldShow() or not EditModeManagerFrame:ShouldShowPartyFrameBackground() then
 		self.Background:Hide();
 		return;
 	end
@@ -84,7 +88,7 @@ function PartyFrameMixin:HidePartyFrames()
 end
 
 function PartyFrameMixin:UpdatePaddingAndLayout()
-	local showPartyFrames = ShouldShowPartyFrames();
+	local showPartyFrames = self:ShouldShow();
 	if showPartyFrames then
 		self.leftPadding = nil;
 		self.rightPadding = nil;
@@ -109,7 +113,7 @@ function PartyFrameMixin:UpdatePaddingAndLayout()
 end
 
 function PartyFrameMixin:UpdatePartyFrames()
-	local showPartyFrames = ShouldShowPartyFrames();
+	local showPartyFrames = self:ShouldShow();
 	for memberFrame in self.PartyMemberFramePool:EnumerateActive() do
 		if showPartyFrames then
 			memberFrame:Show();

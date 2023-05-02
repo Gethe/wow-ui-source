@@ -135,6 +135,14 @@ function MapCanvasPinFrameLevelsManagerMixin:GetFrameLevelStart(frameLevelType)
 	return definition.startLevel;
 end
 
+function MapCanvasPinFrameLevelsManagerMixin:GetFrameLevelRange(frameLevelType)
+	local definition = self.definitions[frameLevelType] or self.definitions["PIN_FRAME_LEVEL_DEFAULT"];
+	if definition.overrideType then
+		definition = self.definitions[definition.overrideType];
+	end
+	return definition.range;
+end
+
 function MapCanvasPinFrameLevelsManagerMixin:GetValidFrameLevel(frameLevelType, optionalIndex)
 	local definition;
 	if frameLevelType == "PIN_FRAME_LEVEL_TOPMOST" then

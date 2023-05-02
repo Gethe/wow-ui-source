@@ -144,36 +144,6 @@ local Loot =
 			LiteralName = "LOOT_CLOSED",
 		},
 		{
-			Name = "LootHistoryAutoShow",
-			Type = "Event",
-			LiteralName = "LOOT_HISTORY_AUTO_SHOW",
-			Payload =
-			{
-				{ Name = "rollID", Type = "number", Nilable = false },
-				{ Name = "isMasterLoot", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "LootHistoryFullUpdate",
-			Type = "Event",
-			LiteralName = "LOOT_HISTORY_FULL_UPDATE",
-		},
-		{
-			Name = "LootHistoryRollChanged",
-			Type = "Event",
-			LiteralName = "LOOT_HISTORY_ROLL_CHANGED",
-			Payload =
-			{
-				{ Name = "historyIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "LootHistoryRollComplete",
-			Type = "Event",
-			LiteralName = "LOOT_HISTORY_ROLL_COMPLETE",
-		},
-		{
 			Name = "LootItemAvailable",
 			Type = "Event",
 			LiteralName = "LOOT_ITEM_AVAILABLE",

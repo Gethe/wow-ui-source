@@ -3,6 +3,9 @@
 	<Script file="Blizzard_MacroIconSelector.lua"/>
 
 	<Frame name="MacroPopupFrame" mixin="MacroPopupFrameMixin" inherits="IconSelectorPopupFrameTemplate" toplevel="true" frameStrata="HIGH" parent="MacroFrame" movable="true" enableMouse="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+		</Anchors>
 		<KeyValues>
 			<KeyValue key="editBoxHeaderText" value="MACRO_POPUP_TEXT" type="global"/>
 		</KeyValues>

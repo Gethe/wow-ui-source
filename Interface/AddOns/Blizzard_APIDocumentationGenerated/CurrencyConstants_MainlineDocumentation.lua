@@ -28,9 +28,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 62,
+			NumValues = 63,
 			MinValue = 0,
-			MaxValue = 61,
+			MaxValue = 62,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -94,7 +94,8 @@ local CurrencyConstants_Mainline =
 				{ Name = "CatalystCraft", Type = "CurrencySource", EnumValue = 58 },
 				{ Name = "ProfessionInitialAward", Type = "CurrencySource", EnumValue = 59 },
 				{ Name = "PlayerTraitRefund", Type = "CurrencySource", EnumValue = 60 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 61 },
+				{ Name = "AccountHwmUpdate", Type = "CurrencySource", EnumValue = 61 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 62 },
 			},
 		},
 	},

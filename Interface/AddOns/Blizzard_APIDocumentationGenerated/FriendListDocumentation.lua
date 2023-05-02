@@ -492,6 +492,20 @@ local FriendList =
 			LiteralName = "MUTELIST_UPDATE",
 		},
 		{
+			Name = "NewMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "NEW_MATCHMAKING_PARTY_INVITE",
+		},
+		{
+			Name = "RejectedMatchmakingPartyInvite",
+			Type = "Event",
+			LiteralName = "REJECTED_MATCHMAKING_PARTY_INVITE",
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "WhoListUpdate",
 			Type = "Event",
 			LiteralName = "WHO_LIST_UPDATE",

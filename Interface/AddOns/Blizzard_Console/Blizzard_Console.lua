@@ -28,9 +28,7 @@ function DeveloperConsoleMixin:OnLoad()
 	self.commandCircularBuffer = CreateCircularBuffer(MAX_NUM_COMMAND_HISTORY);
 	self:ResetCommandHistoryIndex();
 
-	self.MessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
-		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
-	end);
+	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self.MessageFrame, self.ScrollBar);
 
 	self.MessageFrame:SetOnTextCopiedCallback(function(messageFrame, text, numCharsCopied)
 		messageFrame.CopyNoticeFrame.Anim:Stop();
@@ -148,7 +146,6 @@ function DeveloperConsoleMixin:AddMessage(message, colorType)
 	self:AddMessageInternal(message, r, g, b, colorType);
 
 	table.insert(self.savedVars.messageHistory, { message, colorType });
-	self:UpdateScrollbar();
 end
 
 function DeveloperConsoleMixin:AddMessageInternal(message, r, g, b, colorType)
@@ -270,12 +267,6 @@ function DeveloperConsoleMixin:OnEditBoxUpdate()
 	if self:ShouldEditBoxTakeFocus() then
 		self.EditBox:SetFocus();
 	end
-end
-
-function DeveloperConsoleMixin:UpdateScrollbar()
-	local numMessages = self.MessageFrame:GetNumMessages();
-	self.MessageFrame.ScrollBar:SetMinMaxValues(1, numMessages);
-	self.MessageFrame.ScrollBar:SetValue(numMessages - self.MessageFrame:GetScrollOffset());
 end
 
 function DeveloperConsoleMixin:ValidateHeight(newHeight)
@@ -447,7 +438,6 @@ do
 					local color = C_Console.GetColorFromType(colorType);
 					local r, g, b = color:GetRGB();
 					self.MessageFrame:BackFillMessage(message, r, g, b, colorType);
-					self:UpdateScrollbar();
 				end
 			end
 		end);

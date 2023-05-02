@@ -156,6 +156,24 @@
 						</Scripts>
 						<!-- Anchored Dynamically -->
 					</Button>
+
+					<Frame parentKey="OrderReagentsWarning" inherits="ResizeLayoutFrame">
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Icon">
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
 					<Button parentKey="DeclineOrderButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_DECLINE_ORDER">
 						<Size x="140" y="22"/>
 						<Anchors>
@@ -243,7 +261,7 @@
 						<KeyValues>
 							<KeyValue key="showTrackRecipe" value="false" type="boolean"/>
 							<KeyValue key="canShowFavoriteButton" value="false" type="boolean"/>
-							<KeyValue key="forCratingOrders" value="true" type="boolean"/>
+							<KeyValue key="forCraftingOrders" value="true" type="boolean"/>
 						</KeyValues>
 					</Frame>
 

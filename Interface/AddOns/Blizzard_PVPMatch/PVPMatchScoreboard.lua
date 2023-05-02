@@ -8,7 +8,7 @@ PVPMatchScoreboardMixin = {};
 
 function PVPMatchScoreboardMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PVP_MATCH_ACTIVE");
+	self:RegisterEvent("PLAYER_JOINED_PVP_MATCH");
 
 	self.ScrollBox = self.Content.ScrollBox;
 	self.ScrollBar = self.Content.ScrollBar;
@@ -75,7 +75,7 @@ function PVPMatchScoreboardMixin:ShutdownPrivate()
 end
 
 function PVPMatchScoreboardMixin:OnEvent(event, ...)
-	if event == "PVP_MATCH_ACTIVE" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Active) then
+	if event == "PLAYER_JOINED_PVP_MATCH" or (event == "PLAYER_ENTERING_WORLD" and C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Active) then
 		self:Init();
 	elseif event == "PLAYER_LEAVING_WORLD" or event == "PVP_MATCH_COMPLETE" then
 		self:ShutdownPrivate();

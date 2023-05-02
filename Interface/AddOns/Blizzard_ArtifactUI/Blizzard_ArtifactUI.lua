@@ -266,24 +266,28 @@ end
 function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
 	if self:IsVisible() then
 		local itemInfo = C_Container.GetContainerItemInfo(bag, slot);
-		local itemLink = itemInfo.hyperlink;
-		local itemID = itemInfo.itemID;
+		if itemInfo then
+			local itemLink = itemInfo.hyperlink;
+			local itemID = itemInfo.itemID;
 
-		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
-			self.PerksTab:ShowHighlightForRelicItemID(itemID, itemLink);
-			self.PerksTab.TitleContainer:RefreshRelicHighlights(itemID, itemLink);
+			if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+				self.PerksTab:ShowHighlightForRelicItemID(itemID, itemLink);
+				self.PerksTab.TitleContainer:RefreshRelicHighlights(itemID, itemLink);
+			end
 		end
 	end
 end
 
 function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
 	local itemInfo = C_Container.GetContainerItemInfo(bag, slot);
-	local itemLink = itemInfo.hyperlink;
-	local itemID = itemInfo.itemID;
+	if itemInfo then
+		local itemLink = itemInfo.hyperlink;
+		local itemID = itemInfo.itemID;
 
-	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
-		self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);
-		self.PerksTab.TitleContainer:RefreshRelicHighlights();
+		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
+			self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);
+			self.PerksTab.TitleContainer:RefreshRelicHighlights();
+		end
 	end
 end
 

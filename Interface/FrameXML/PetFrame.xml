@@ -2,12 +2,12 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
 	<!-- Note that pet frame uses target of target frame assets/uses TargetofTarget for the frameType, and this is intentional. -->
-	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate" parent="PlayerFrame">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="48" type="number"/>
 			<KeyValue key="leftPadding" value="15" type="number"/>
-			<KeyValue key="bottomPadding" value="-8" type="number"/>
+			<KeyValue key="bottomPadding" value="-3" type="number"/>
 			<KeyValue key="frameType" value="TargetofTarget" type="string"/>
 		</KeyValues>
 		<HitRectInsets>
@@ -174,7 +174,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>

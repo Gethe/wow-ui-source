@@ -7,7 +7,7 @@ local ItemListState = {
 };
 
 
-AuctionHouseItemListLineMixin = CreateFromMixins(ScrollListLineMixin, TableBuilderRowMixin);
+AuctionHouseItemListLineMixin = CreateFromMixins(TableBuilderRowMixin);
 
 function AuctionHouseItemListLineMixin:OnClick(button)
 	-- Overrides register for right click as well, ensure this is a left click. 
@@ -27,8 +27,7 @@ function AuctionHouseItemListLineMixin:OnLineLeave()
 end
 
 function AuctionHouseItemListLineMixin:GetItemList()
-	local scrollFrame = self:GetParent():GetParent();
-	return scrollFrame:GetParent();
+	return self:GetParent():GetParent():GetParent();
 end
 
 function AuctionHouseItemListLineMixin:GetRowData()

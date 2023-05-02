@@ -1,14 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_ScrollBoxSelector.lua"/>
-
+	<!--Lua include required in .toc as it requires the shared copy-->
 	<Frame name="ScrollBoxSelectorTemplate" mixin="ScrollBoxSelectorMixin" inherits="SelectorTemplate" virtual="true">
 		<Size x="494" y="375"/>
 		<Frames>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="TOPRIGHT" x="5" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="5" y="5"/>
 				</Anchors>
 			</EventFrame>
 

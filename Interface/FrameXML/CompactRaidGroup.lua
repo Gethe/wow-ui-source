@@ -3,6 +3,7 @@ function CompactRaidGroup_OnLoad(self)
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self.applyFunc = CompactRaidGroup_ApplyFunctionToAllFrames;
+	self.updateLayoutFunc = CompactRaidGroup_UpdateLayout;
 end
 
 function CompactRaidGroup_OnEvent(self, event, ...)
@@ -131,5 +132,5 @@ end
 function CompactRaidGroup_UpdateBorder(frame)	
 	local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.isParty);
 	frame.borderFrame:SetShown(displayBorder);
-	CompactRaidGroup_UpdateLayout(frame);
+	frame:updateLayoutFunc();
 end

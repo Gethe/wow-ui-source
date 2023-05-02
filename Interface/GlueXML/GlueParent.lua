@@ -158,6 +158,10 @@ local function IsHigherPriorityError(errorID, currentErrorID)
 	return true;
 end
 
+local function GlueParent_ShowLastErrorDialog(which, text, data)
+	GlueDialog_Show(which, text, data, C_Login.ClearLastError);
+end
+
 local currentlyShowingErrorID = nil;
 function GlueParent_UpdateDialogs()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
@@ -251,13 +255,13 @@ function GlueParent_UpdateDialogs()
 			end
 
 			if ( isHTML ) then
-				GlueDialog_Show("OKAY_HTML", localizedString);
+				GlueParent_ShowLastErrorDialog("OKAY_HTML", localizedString);
 			elseif ( hasURL ) then
-				GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+				GlueParent_ShowLastErrorDialog("OKAY_WITH_URL", localizedString, urlTag);
 			elseif ( useGenericURL ) then
-				GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
+				GlueParent_ShowLastErrorDialog("OKAY_WITH_GENERIC_URL", localizedString);
 			else
-				GlueDialog_Show("OKAY", localizedString);
+				GlueParent_ShowLastErrorDialog("OKAY", localizedString);
 			end
 			currentlyShowingErrorID = errorID;
 

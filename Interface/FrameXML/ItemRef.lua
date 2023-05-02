@@ -60,7 +60,7 @@ function SetItemRef(link, text, button, chatFrame)
 					C_FriendList.SendWho(WHO_TAG_EXACT..name);
 				end
 
-			elseif ( button == "RightButton" and (not isGMLink) ) then
+			elseif ( button == "RightButton" and (not isGMLink) and FriendsFrame_ShowDropdown) then
 				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame, nil, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
 			else
 				ChatFrame_SendTell(name, chatFrame);
@@ -172,8 +172,8 @@ function SetItemRef(link, text, button, chatFrame)
 		LoadURLIndex(tonumber(index));
 		return;
 	elseif ( strsub(link, 1, 11) == "lootHistory" ) then
-		local _, rollID = strsplit(":", link);
-		LootHistoryFrame_ToggleWithRoll(LootHistoryFrame, tonumber(rollID), chatFrame);
+		local _, encounterID = strsplit(":", link);
+		SetLootHistoryFrameToEncounter(tonumber(encounterID));
 		return;
 	elseif ( strsub(link, 1, 13) == "battlePetAbil" ) then
 		local _, abilityID, maxHealth, power, speed = strsplit(":", link);
@@ -420,12 +420,26 @@ function SetItemRef(link, text, button, chatFrame)
 		DisplayPvpRatingLink(link);
 		return;
 	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
-		ShowUIPanel(ChatConfigFrame);
+		Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
 		return;
 	elseif ( strsub(link, 1, 6) == "layout" ) then
 		local fixedLink = GetFixedLink(text);
 		if not HandleModifiedItemClick(fixedLink) then
 			EditModeManagerFrame:OpenAndShowImportLayoutLinkDialog(fixedLink);
+		end
+		return;
+	elseif (strsub(link, 1, 11) == "talentbuild") then
+		local fixedLink = GetFixedLink(text);
+		if not HandleModifiedItemClick(fixedLink) then
+			local specID, level, inspectString = string.split(":", linkData);
+			level = tonumber(level);
+
+			ClassTalentFrame_LoadUI();
+
+			ClassTalentFrame:SetInspectString(inspectString, level);
+			if not ClassTalentFrame:IsShown() then
+				ShowUIPanel(ClassTalentFrame);
+			end
 		end
 		return;
 	elseif ( strsub(link, 1, 13) == "perksactivity" ) then
@@ -434,6 +448,10 @@ function SetItemRef(link, text, button, chatFrame)
 			EncounterJournal_LoadUI();
 		end
 		MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
+		return;
+	elseif ( strsub(link, 1, 5) == "addon" ) then
+		-- local links only
+		EventRegistry:TriggerEvent("SetItemRef", link, text, button, chatFrame);
 		return;
 	end
 	if ( IsModifiedClick() ) then
@@ -485,6 +503,8 @@ function GetFixedLink(text, quality)
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 7) == "layout" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 12) == "talentbuild" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		end
 	end
@@ -816,9 +836,10 @@ end
 
 function ItemRefTooltipMixin:SetHyperlink(...)
 	-- it's the same hyperlink as current data, close instead
-	if self.info and self.info.getterName == "GetHyperlink" then
+	local info = self:GetPrimaryTooltipInfo();
+	if info and info.getterName == "GetHyperlink" then
 		local getterArgs = {...};
-		if tCompare(self.info.getterArgs, getterArgs) then
+		if tCompare(info.getterArgs, getterArgs) then
 			self:Hide();
 			return false;
 		end

@@ -84,7 +84,7 @@
 								</Anchors>
 							</Texture>
 						</Layer>
-						<Layer level="BACKGROUND">
+						<Layer level="BORDER" textureSubLevel="-1">
 							<Texture parentKey="Mid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
 								<Size x="0" y="32"/>
 								<Anchors>
@@ -173,7 +173,7 @@
 			</Scripts>
 		</Frame>
 		<Frame name="CommunitiesCreateDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesCreateDialogMixin" hidden="true">
-			<Size x="412" y="375"/>
+			<Size x="412" y="395"/>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
@@ -309,7 +309,7 @@
 					</Scripts>
 				</EditBox>
 				<ScrollFrame parentKey="DescriptionFrame" inherits="InputScrollFrameTemplate">
-					<Size x="0" y="50"/>
+					<Size x="0" y="70"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-8"/>

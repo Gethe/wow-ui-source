@@ -177,3 +177,68 @@ end
 function ClearCachedAreaPOIsForPlayer()
 	areaPOICache = {};
 end
+
+--[[ Pin Ping ]]--
+MapPinPingMixin = CreateFromMixins(MapCanvasPinMixin);
+
+function MapPinPingMixin:OnLoad()
+	self:SetScalingLimits(1, 0.65, 0.65);
+	self.numLoops = 1;
+end
+
+function MapPinPingMixin:SetNumLoops(numLoops)
+	self.numLoops = numLoops;
+end
+
+function MapPinPingMixin:SetID(id)
+	self.id = id;
+end
+
+function MapPinPingMixin:GetID(id)
+	return self.id;
+end
+
+function MapPinPingMixin:PlayAt(x, y)
+	if x and y then
+		self:Show();
+		self:SetPosition(x, y);
+		self.currentLoop = self.numLoops;
+		self:PlayLoop();
+	else
+		self:Stop();
+	end
+end
+
+function MapPinPingMixin:PlayLoop()
+	self.currentLoop = self.currentLoop - 1;
+	self.DriverAnimation:Play();
+	self.ScaleAnimation:Play();	
+end
+
+function MapPinPingMixin:HasLoopsLeft()
+	return self.currentLoop > 0;
+end
+
+function MapPinPingMixin:Stop()
+	self.currentLoop = 0;
+	self.DriverAnimation:Stop();
+	self.ScaleAnimation:Stop();
+	self:Clear();
+end
+
+function MapPinPingMixin:Clear()
+	self:Hide();
+	self.id = nil;
+end
+
+MapPinPingDriverAnimationMixin = {};
+
+function MapPinPingDriverAnimationMixin:OnFinished()
+	local ping = self:GetParent();
+	ping.ScaleAnimation:Stop();
+	if ping:HasLoopsLeft() then
+		ping:PlayLoop();
+	else
+		ping:Clear();
+	end
+end

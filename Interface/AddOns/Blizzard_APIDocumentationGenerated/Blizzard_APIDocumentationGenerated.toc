@@ -25,6 +25,7 @@ BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
 BrowserDocumentation.lua
 CalendarDocumentation.lua
+CameraDocumentation.lua
 ChatBubblesDocumentation.lua
 ChatInfoDocumentation.lua
 CinematicDocumentation.lua
@@ -37,7 +38,6 @@ ConsoleDocumentation.lua
 ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
 ContributionCollectorDocumentation.lua
-CooldownFrameAPIDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
@@ -49,8 +49,11 @@ EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
+FrameAPICooldownDocumentation.lua
+FrameAPIFogOfWarFrameDocumentation.lua
 GMTicketInfoDocumentation.lua
 GamePadDocumentation.lua
+GameRulesDocumentation.lua
 GlyphInfoDocumentation.lua
 GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
@@ -84,6 +87,7 @@ PlayerInfoDocumentation.lua
 PlayerInteractionManagerDocumentation.lua
 PlayerLocationDocumentation.lua
 PvpInfoDocumentation.lua
+QuestInfoSystemDocumentation.lua
 QuestLineInfoDocumentation.lua
 QuestLogDocumentation.lua
 QuestOfferDocumentation.lua
@@ -144,6 +148,7 @@ SpellActivationOverlayDocumentation.lua
 SpellBookDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
+StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 TTSSettingsDocumentation.lua
 TaxiMapDocumentation.lua
@@ -179,7 +184,6 @@ AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 ArtifactUIDocumentation.lua
 CVarDocumentation.lua
-CameraDocumentation.lua
 ChallengeModeInfoDocumentation.lua
 ChromieTimeUIDocumentation.lua
 ClassColorDocumentation.lua
@@ -195,6 +199,7 @@ CovenantsDocumentation.lua
 CraftingOrderUIDocumentation.lua
 DateAndTimeDocumentation.lua
 EncounterJournalDocumentation.lua
+ExpansionTrialDocumentation.lua
 FriendListDocumentation.lua
 GarrisonInfoDocumentation.lua
 InGameNavigationDocumentation.lua
@@ -206,6 +211,7 @@ ItemInteractionUIDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
+LootHistoryDocumentation.lua
 LootJournalDocumentation.lua
 LoreTextDocumentation.lua
 MailInfoDocumentation.lua
@@ -275,6 +281,7 @@ ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
 LootConstantsDocumentation.lua
+MapConstantsDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelSceneDocumentation.lua
 NamePlateDocumentation.lua
@@ -316,9 +323,9 @@ UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
-VehicleConstantsDocumentation.lua
 VignetteConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
+WowLabsConstantsDocumentation.lua
 AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua

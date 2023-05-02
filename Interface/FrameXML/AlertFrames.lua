@@ -669,13 +669,13 @@ function AlertFrameMixin:OnEvent(event, ...)
 		NewMountAlertSystem:AddAlert(mountID);
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID = ...;
-		if QuestUtils_IsQuestWorldQuest(questID) then
+		if C_QuestInfoSystem.GetQuestShouldToastCompletion(questID) then
 			WorldQuestCompleteAlertSystem:AddAlert(self:BuildQuestData(questID));
 		end
 	elseif ( event == "QUEST_LOOT_RECEIVED" ) then
 		local questID, rewardItemLink = ...;
 		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
-		if QuestUtils_IsQuestWorldQuest(questID) then
+		if C_QuestInfoSystem.GetQuestShouldToastCompletion(questID) then
 			WorldQuestCompleteAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		else
 			-- May be invasion reward

@@ -55,24 +55,16 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="ItemTextScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+			<ScrollFrame name="ItemTextScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="7" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-33" y="-83"/>
 					<Anchor point="BOTTOMLEFT" x="25" y="6"/>
 				</Anchors>
-				<Frames>
-					<Slider name="$parentScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate" parentKey="ScrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ItemTextFrame" relativePoint="TOPRIGHT" x="-27" y="-79"/>
-							<Anchor point="BOTTOMLEFT" relativeTo="ItemTextFrame" relativePoint="BOTTOMRIGHT" x="-27" y="22"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.scrollStep = 30;
-							</OnLoad>
-						</Scripts>
-					</Slider>
-				</Frames>
 				<ScrollChild>
 					<Frame name="ItemTextPageScrollChild">
 						<Size x="10" y="10"/>

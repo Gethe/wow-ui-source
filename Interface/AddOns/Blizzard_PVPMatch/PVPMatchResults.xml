@@ -155,10 +155,10 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<EventFrame parentKey="scrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="scrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-22" y="-3"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="123"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-17" y="-8"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-17" y="128"/>
 						</Anchors>
 					</EventFrame>
 					

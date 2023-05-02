@@ -210,23 +210,24 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 			child:Layout();
 		end
 
+		local childScale = child:GetScale();
+
 		local childWidth, childHeight = child:GetSize();
-		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
-		if (child.expand) then
-			hasExpandableChild = true;
-		end
-
-		-- Expand child width if it is set to expand and we also have an expandToWidth value.
-		if (child.expand and expandToWidth) then
-			childWidth = expandToWidth - leftPadding - rightPadding - frameLeftPadding - frameRightPadding;
-			child:SetWidth(childWidth);
-			childHeight = child:GetHeight();
-		end
-
 		if self.respectChildScale then
-			local childScale = child:GetScale();
 			childWidth = childWidth * childScale;
 			childHeight = childHeight * childScale;
+		end
+
+		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
+
+		-- Expand child width if it is set to expand and we also have an expandToWidth value.
+		if child.expand then
+			hasExpandableChild = true;
+
+			if expandToWidth then
+				childWidth = expandToWidth - leftPadding - rightPadding - frameLeftPadding - frameRightPadding;
+				child:SetWidth(childWidth);
+			end
 		end
 
 		childrenWidth = math.max(childrenWidth, childWidth + leftPadding + rightPadding);
@@ -238,16 +239,24 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 		-- Set child position
 		child:ClearAllPoints();
 		topOffset = topOffset + topPadding;
+		topOffset = self.respectChildScale and topOffset / childScale or topOffset;
 		if (child.align == "right") then
 			local rightOffset = frameRightPadding + rightPadding;
+			rightOffset = self.respectChildScale and rightOffset / childScale or rightOffset;
 			child:SetPoint("TOPRIGHT", -rightOffset, -topOffset);
 		elseif (child.align == "center") then
 			local leftOffset = (frameLeftPadding - frameRightPadding + leftPadding - rightPadding) / 2;
+			leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
 			child:SetPoint("TOP", leftOffset, -topOffset);
 		else
 			local leftOffset = frameLeftPadding + leftPadding;
+			leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
 			child:SetPoint("TOPLEFT", leftOffset, -topOffset);
 		end
+		-- If you adjusted the offset due to respecting child scale then undo that adjustment since the next frame may have a different scale
+		topOffset = self.respectChildScale and topOffset * childScale or topOffset;
+
+		-- Determine topOffset for next frame
 		topOffset = topOffset + childHeight + bottomPadding + spacing;
 	end
 
@@ -364,6 +373,7 @@ function ResizeLayoutMixin:Layout()
 	if left and right and top and bottom then
 		local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
 		local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
+
 		self:SetSize(width, height);
 	end
 
@@ -430,6 +440,10 @@ function GridLayoutFrameMixin:ShouldUpdateLayout(layoutChildren)
     if not self:IsShown() then
         return false;
     end
+
+	if self.alwaysUpdateLayout then
+		return true;
+	end
 
     if self.oldGridSettings == nil then
         return true;

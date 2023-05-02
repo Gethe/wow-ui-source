@@ -4,14 +4,12 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to check in PlayerFrame.lua if these values get set there as well.
 		IMPORTANT-->
-	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModeUnitFrameSystemTemplate" parent="UIParent">
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModePlayerFrameSystemTemplate" parent="UIParent">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
 		</HitRectInsets>
 		<KeyValues>
-			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Player" type="global"/>
-			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PLAYER_FRAME_LABEL" type="global"/>
 			<KeyValue key="disablePortraitMask" value="true" type="boolean"/>
 			<KeyValue key="frameType" value="Player" type="string"/>
 		</KeyValues>
@@ -111,6 +109,9 @@
 												<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
 												<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
 												<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+												<Texture parentKey="Background" setAllPoints="true" hidden="true">
+													<Color color="BLACK_FONT_COLOR"/>
+												</Texture>
 											</Layer>
 											<Layer level="ARTWORK">
 												<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
@@ -149,6 +150,7 @@
 														<MaskedTexture childKey="HealAbsorbBar"/>
 														<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
 														<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+													<MaskedTexture childKey="Background"/>
 													</MaskedTextures>
 												</MaskTexture>
 											</Layer>
@@ -420,12 +422,15 @@
 		<KeyValues>
 			<KeyValue key="layoutParent" value="PlayerFrameBottomManagedFramesContainer" type="global"/>
 			<KeyValue key="align" value="center" type="string"/>
+			<KeyValue key="isPlayerFrameBottomManagedFrame" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 
 	<Frame name="PlayerFrameManagedContainerTemplate" parent="PlayerFrame" inherits="VerticalLayoutFrame" mixin="UIParentManagedFrameContainerMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="spacing" value="2" type="number"/>
+			<KeyValue key="respectChildScale" value="true" type="boolean"/>
+			<KeyValue key="minimumHeight" value="1" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="BottomManagedLayoutContainer" inherits="HorizontalLayoutFrame">

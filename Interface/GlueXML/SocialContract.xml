@@ -74,14 +74,10 @@
 					</SimpleHTML>
 				</Frames>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-				<KeyValues>
-					<KeyValue key="hideBackground" value="true" type="boolean"/>
-					<KeyValue key="hideBackplate" value="true" type="boolean"/>
-				</KeyValues>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMRIGHT" x="1" y="20"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="1" y="-7"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMRIGHT" x="-5" y="15"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="-5" y="-2"/>
 				</Anchors>		
 			</EventFrame>					
 			<Button parentKey="AcceptButton" mixin="SocialContractAcceptButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="SOCIAL_CONTRACT_ACCEPT_BUTTON">

@@ -304,12 +304,6 @@
 								<Anchor point="RIGHT" relativeKey="$parent.BarFill" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="Text" inherits="GameFontHighlight" text="650 / 1,000" justifyV="MIDDLE">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.barBackground" x="-30" y="0"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -332,6 +326,12 @@
 									<Size x="0" y="0"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeKey="$parent.$parent.barBackground" x="15" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="ProgressText" inherits="GameFontHighlight" text="650 / 1,000" justifyV="MIDDLE">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.barBackground" x="-30" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>

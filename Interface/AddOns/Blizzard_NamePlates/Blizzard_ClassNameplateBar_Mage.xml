@@ -2,32 +2,14 @@
 ..\..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar_Mage.lua"/>
   
-	<Frame name="ClassNameplateBarArcaneChargeFrame" mixin="ClassNameplateBarArcaneChargeMixin" virtual="true">
-		<Size x="22" y="22"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="ChargeTexture" atlas="Mage-ArcaneCharge" useAtlasSize="false" alpha="0.3" texelSnappingBias="0.0" snapToPixelGrid="false" />
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
-				<Alpha parentKey="AlphaAnim" childKey="ChargeTexture" fromAlpha="0.3" toAlpha="1" duration="0.2"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
-				<Alpha parentKey="AlphaAnim" childKey="ChargeTexture" fromAlpha="1" toAlpha="0.3" duration="0.2"/>
-			</AnimationGroup>
-		</Animations>
-	</Frame>
-		
 	<Frame name="ClassNameplateBarMageFrame" inherits="MageArcaneChargesFrameTemplate" mixin="ClassNameplateBar, ClassNameplateBarMage" ignoreParentScale="true">
 		<Size x="82" y="20"/>
 		<KeyValues>
-			<KeyValue key="resourcePointTemplate" value="ClassNameplateBarArcaneChargeFrame" type="string"/>
-			<KeyValue key="resourcePointSetupFunc" value="ArcaneChargeMixin.Setup" type="global"/>
-			<KeyValue key="showBarFunc" value="ClassNameplateBarMage.Setup" type="global"/>
-			<KeyValue key="spacing" value="-1" type="number"/>
+			<KeyValue key="scale" value="0.7"/>
+			<KeyValue key="resourceBarMixin" value="ClassNameplateBar" type="global"/>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="paddingOverride" value="-10" type="number"/>
+			<KeyValue key="spacing" value="10" type="number"/>
 		</KeyValues>
 	</Frame>
 </Ui>
-
-

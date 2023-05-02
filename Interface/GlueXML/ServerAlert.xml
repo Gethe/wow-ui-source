@@ -12,23 +12,20 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate" hidden="true"/>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
+			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarTemplate" value="MinimalScrollBar" type="string"/>
+					<KeyValue key="scrollBarX" value="6" type="number"/>
+					<KeyValue key="scrollBarTopY" value="2" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="15" y="-46"/>
 					<Anchor point="BOTTOMRIGHT" x="-35" y="13"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						GlueScrollFrame_OnScrollRangeChanged(self);
-					</OnLoad>
-					<OnScrollRangeChanged>
-						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-						if (floor(self:GetVerticalScrollRange()) > 0) then
-							self.updated = 1;
-						end
-					</OnScrollRangeChanged>
-				</Scripts>
 				<ScrollChild>
 					<SimpleHTML parentKey="Text" name="$parentText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
 						<Size x="300" y="10"/>

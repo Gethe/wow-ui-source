@@ -40,6 +40,13 @@
 				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="170" y="24"/>
 				</FontString>
+				<Texture parentKey="Highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" x="-5"/>
+					</Anchors>
+					<Color a="0.1" r="1" g="1" b="1"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -67,6 +74,8 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

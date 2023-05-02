@@ -198,12 +198,25 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
 
 	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+
+	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then 
+		self.HealthBar:SetSize(74, 20);
+	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -19);
+		self.HealthBar.Background:Show(); 
+	self:UpdateHealthBarTextAnchors();
+
+	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", false);
+		self.HealthBar.HealthBarMask:SetSize(120, 24);
+	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -22, 3);
+	else 
 	self.HealthBar:SetWidth(70);
 	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+		self.HealthBar.Background:Hide(); 
 	self:UpdateHealthBarTextAnchors();
 
 	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
 	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
+	end
 
 	self.ManaBar:SetWidth(74);
 	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -30);
@@ -393,7 +406,7 @@ function PartyMemberFrameMixin:VoiceActivityNotificationCreatedCallback(notifica
 end
 
 function PartyMemberFrameMixin:UpdateMember()
-	if not ShouldShowPartyFrames() then
+	if not PartyFrame:ShouldShow() then
 		self:Hide();
 		PartyFrame:UpdatePartyMemberBackground();
 		return;
@@ -655,7 +668,7 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 	elseif event == "READY_CHECK_FINISHED" then
 		if UnitExists(self:GetUnit()) then
 			local finishTime = DEFAULT_READY_CHECK_STAY_TIME;
-			if not ShouldShowPartyFrames() then
+			if not PartyFrame:ShouldShow() then
 				finishTime = 0;
 			end
 			ReadyCheck_Finish(self.ReadyCheck, finishTime);

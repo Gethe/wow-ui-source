@@ -10,18 +10,6 @@ local function ShouldDisplayDisabled()
 	return not C_SocialRestrictions.IsMuted() and C_SocialRestrictions.IsChatDisabled();
 end
 
-local function SetChatButtonGlowEnabled(enabled)
-	GlowEmitterFactory:SetShown(ChatConfigFrame.ToggleChatButton, enabled, GlowEmitterMixin.Anims.FadeAnim);
-end
-
-local function EnableChatButtonGlow()
-	SetChatButtonGlowEnabled(true);
-end
-
-local function DisableChatButtonGlow()
-	SetChatButtonGlowEnabled(false);
-end
-
 --Chat options
 --NEW_CHAT_TYPE - Add a new chat type to one of the below sections so that people can change it in the Chat Config.
 CHAT_CONFIG_CHAT_LEFT = {
@@ -30,24 +18,18 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("SAY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "SAY"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[2] = {
 		type = "EMOTE",
 		checked = function () return IsListeningForMessageType("EMOTE"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "EMOTE"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[3] = {
 		type = "YELL",
 		checked = function () return IsListeningForMessageType("YELL"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "YELL"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[4] = {
 		text = GUILD_CHAT,
@@ -55,8 +37,6 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("GUILD"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[5] = {
 		text = OFFICER_CHAT,
@@ -64,8 +44,6 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("OFFICER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "OFFICER"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[6] = {
 		type = "GUILD_ACHIEVEMENT",
@@ -82,8 +60,6 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[9] = {
 		type = "BN_WHISPER",
@@ -91,64 +67,48 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("BN_WHISPER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_WHISPER"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[10] = {
 		type = "PARTY",
 		checked = function () return IsListeningForMessageType("PARTY"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[11] = {
 		type = "PARTY_LEADER",
 		checked = function () return IsListeningForMessageType("PARTY_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PARTY_LEADER"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[12] = {
 		type = "RAID",
 		checked = function () return IsListeningForMessageType("RAID"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[13] = {
 		type = "RAID_LEADER",
 		checked = function () return IsListeningForMessageType("RAID_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_LEADER"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[14] = {
 		type = "RAID_WARNING",
 		checked = function () return IsListeningForMessageType("RAID_WARNING"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[15] = {
 		type = "INSTANCE_CHAT",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 	[16] = {
 		type = "INSTANCE_CHAT_LEADER",
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
 		disabled = ShouldDisplayDisabled;
-		onEnterCallback = EnableChatButtonGlow;
-		onLeaveCallback = DisableChatButtonGlow;
 	},
 };
 
@@ -170,8 +130,6 @@ do
 				end
 			end;
 			disabled = ShouldDisplayDisabled;
-			onEnterCallback = EnableChatButtonGlow;
-			onLeaveCallback = DisableChatButtonGlow;
 		};
 		table.insert(CHAT_CONFIG_CHAT_LEFT, transcriptionConfig);
 	end
@@ -1600,10 +1558,6 @@ local function UpdateDefaultButtons(combatLogSelected, textToSpeechSelected)
 	local showChatButtons = not combatLogSelected and not textToSpeechSelected;
 	ChatConfigFrame.DefaultButton:SetShown(showChatButtons);
 	ChatConfigFrame.RedockButton:SetShown(showChatButtons);
-	ChatConfigFrame.ToggleChatButton:SetShown(showChatButtons and not C_SocialRestrictions.IsMuted());
-	if showChatButtons then
-		ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(C_SocialRestrictions.IsChatDisabled());
-	end
 end
 
 function ChatConfigCategory_UpdateEnabled()
@@ -2232,18 +2186,7 @@ function ChatConfigFrameRedockButton_OnLoad(self)
 	self:SetWidth(self:GetTextWidth() + 31);
 end
 
-function ChatConfigFrameToggleChatButton_OnClick()
-	local newDisabled = not C_SocialRestrictions.IsChatDisabled();
-	if newDisabled then
-		StaticPopup_Show("CHAT_CONFIG_DISABLE_CHAT");
-	else
-		C_SocialRestrictions.SetChatDisabled(newDisabled);
-		ChatConfigFrame_OnChatDisabledChanged(newDisabled);
-	end
-end
-
 function ChatConfigFrame_OnChatDisabledChanged(disabled)
-	ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled);
 	ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled);
 	ChatConfig_UpdateCheckboxes(ChatConfigChatSettingsLeft);
 	
@@ -2270,12 +2213,6 @@ function ChatConfigFrame_ReplaceChatConfigLeftTooltips(disabled)
 			tbl.tooltip = nil;
 		end
 	end
-end
-
-function ChatConfigFrameToggleChatButton_UpdateAccountChatDisabled(disabled)
-	local button = ChatConfigFrame.ToggleChatButton;
-	button:SetText(disabled and RESTRICT_CHAT_CONFIG_ENABLE or RESTRICT_CHAT_CONFIG_DISABLE);
-	button:SetWidth(button:GetTextWidth() + 31);
 end
 
 ChatWindowTabMixin = {};

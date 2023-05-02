@@ -1040,9 +1040,13 @@ end
 
 function ClubFinderOptionsMixin:SetType(isGuildType)
 	if(isGuildType) then
-		self:SetupGuildFinderOptions();
+		if CommunitiesFrame.GuildFinderFrame:IsShown() then
+			self:SetupGuildFinderOptions();
+		end
 	else
-		self:SetupCommunityFinderOptions();
+		if CommunitiesFrame.CommunityFinderFrame:IsShown() then
+			self:SetupCommunityFinderOptions();
+		end
 	end
 
 	self.ClubFilterDropdown:SetLanguageFlags(C_ClubFinder.GetPlayerApplicantLocaleFlags());

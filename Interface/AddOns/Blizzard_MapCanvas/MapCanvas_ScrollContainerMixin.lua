@@ -106,9 +106,12 @@ function MapCanvasScrollControllerMixin:OnMouseUp(button)
 	if button == "LeftButton" then
 		if isClick then
 			if not self:GetMap():ProcessCanvasClickHandlers(button, self:NormalizeUIPosition(cursorX, cursorY)) then
+				local navigationSuccessful = false;
 				if self:ShouldNavigateOnClick() then
-					self:GetMap():NavigateToCursor(self:GetNormalizedCursorPosition());
-				elseif self:ShouldZoomInOnClick() then
+					navigationSuccessful = self:GetMap():NavigateToCursor(self:ShouldNavigateIgnoreZoneMapPositionData());
+				end
+
+				if (not navigationSuccessful and self:ShouldZoomInOnClick()) then
 					self:TryPanOrZoomOnClick();
 				end
 			end
@@ -123,9 +126,11 @@ function MapCanvasScrollControllerMixin:OnMouseUp(button)
 	elseif button == "RightButton" then
 		if isClick and not self:GetMap():ProcessCanvasClickHandlers(button, self:NormalizeUIPosition(cursorX, cursorY)) then
 			if self:IsMouseOver() then
-				if self:ShouldNavigateOnClick() then
+				if (self:ShouldNavigateOnClick() and not self:ShouldNavigateIgnoreZoneMapPositionData()) then
 					self:GetMap():NavigateToParentMap();
-				elseif self:ShouldZoomInOnClick() then
+				end
+
+				if self:ShouldZoomInOnClick() then
 					self:ZoomOut();
 				end
 			end
@@ -526,6 +531,15 @@ end
 
 function MapCanvasScrollControllerMixin:ShouldNavigateOnClick()
 	return not not self.shouldNavigateOnClick;
+end
+
+-- Optional limiter related to shouldNavigateOnClick checks.
+function MapCanvasScrollControllerMixin:SetShouldNavigateIgnoreZoneMapPositionData(ignoreZoneMapPositionData)
+	self.ignoreZoneMapPositionData = ignoreZoneMapPositionData;
+end
+
+function MapCanvasScrollControllerMixin:ShouldNavigateIgnoreZoneMapPositionData()
+	return not not self.ignoreZoneMapPositionData;
 end
 
 function MapCanvasScrollControllerMixin:SetShouldPanOnClick(shouldPanOnClick)

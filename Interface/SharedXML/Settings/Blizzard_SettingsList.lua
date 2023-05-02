@@ -72,7 +72,7 @@ function SettingsListMixin:OnLoad()
 	local scrollBoxAnchors = 
 	{
 		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", 10, -2),
-		CreateAnchor("BOTTOMRIGHT", -20, 10);
+		CreateAnchor("BOTTOMRIGHT", -20, -2);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchors, scrollBoxAnchors);
 	
@@ -95,7 +95,9 @@ end
 function SettingsListMixin:Display(initializers)
 	local dataProvider = CreateDataProvider();
 	for key, initializer in EnumerateTaintedKeysTable(initializers) do
-		dataProvider:Insert(initializer)
+		if initializer:ShouldShow() then
+			dataProvider:Insert(initializer);
+		end
 	end
 
 	securecallfunction(self.ScrollBox.SetDataProvider, self.ScrollBox, dataProvider);

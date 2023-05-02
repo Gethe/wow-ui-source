@@ -1,11 +1,11 @@
-ArtifactBarMixin = CreateFromMixins(StatusTrackingBarMixin);
+local barAtlas = "UI-HUD-ExperienceBar-Fill-ArtifactPower";
+local gainFlareAtlas = "UI-HUD-ExperienceBar-Flare-ArtifactPower-2x-Flipbook";
+local levelUpAtlas = "UI-HUD-ExperienceBar-Fill-ArtifactPower-2x-Flipbook";
 
-function ArtifactBarMixin:GetPriority()
-	return self.priority; 
-end
+ArtifactBarMixin = {};
 
-function ArtifactBarMixin:ShouldBeVisible()
-	return HasArtifactEquipped() and not C_ArtifactUI.IsEquippedArtifactMaxed() and not C_ArtifactUI.IsEquippedArtifactDisabled();
+function ArtifactBarMixin:IsArtifactMaxed()
+	return HasArtifactEquipped() and C_ArtifactUI.IsEquippedArtifactMaxed();
 end
 
 function ArtifactBarMixin:Update()
@@ -17,7 +17,7 @@ function ArtifactBarMixin:Update()
 			local numPointsAvailableToSpend, xp, xpForNextPoint = ArtifactBarGetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier);
 
 			self:SetBarValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + artifactPointsSpent);
-	
+
 			self.StatusBar.artifactItemID = artifactItemID;
 			self.xp = xp;
 			self.totalXP = artifactTotalXP;
@@ -54,9 +54,11 @@ function ArtifactBarMixin:OnLoad()
 	self:RegisterEvent("ARTIFACT_XP_UPDATE");
 	self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
 	self:RegisterEvent("CVAR_UPDATE");
-	self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-ArtifactPower");
-	self.priority = 4;
+
+	self.StatusBar:SetBarTexture(barAtlas);
+	self.StatusBar:SetAnimationTextures(gainFlareAtlas, levelUpAtlas);
 	self.StatusBar:SetOnAnimatedValueChangedCallback(self:AnimatedValueChangedCallback());
+	self.StatusBar:SetIsMaxLevelFunctionOverride(function() return self:IsArtifactMaxed(); end);
 end
 
 function ArtifactBarMixin:OnEvent(event, ...)
@@ -72,8 +74,8 @@ function ArtifactBarMixin:OnEvent(event, ...)
 	end
 end
 
-function ArtifactBarMixin:OnShow() 
-	self:UpdateTextVisibility(); 
+function ArtifactBarMixin:OnShow()
+	self:UpdateTextVisibility();
 end
 
 function ArtifactBarMixin:OnEnter()

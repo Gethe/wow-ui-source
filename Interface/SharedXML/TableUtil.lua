@@ -1,3 +1,28 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+	Import("table");
+	Import("math");
+	Import("ipairs");
+	Import("pairs");
+end
+---------------
+
 local tRemove = table.remove;
 local tInsert = table.insert;
 local tWipe = table.wipe;
@@ -255,14 +280,6 @@ function TableUtil.Execute(tbl, op)
 	end
 end
 
-function TableUtil.Map(tbl, op)
-	local result = {};
-	for k, v in pairs(tbl) do
-		table.insert(result, op(v));
-	end
-	return result;
-end
-
 function TableUtil.ExecuteUntil(tbl, op)
 	for k, v in pairs(tbl) do
 		local operationResult = op(v);
@@ -272,6 +289,14 @@ function TableUtil.ExecuteUntil(tbl, op)
 	end
 
 	return nil;
+end
+
+function TableUtil.Transform(tbl, op)
+	local result = {};
+	for k, v in pairs(tbl) do
+		table.insert(result, op(v));
+	end
+	return result;
 end
 
 function ContainsIf(tbl, pred)

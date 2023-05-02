@@ -7,7 +7,7 @@ local POPUP_EXPIRATION_TIME = 5;
 function PVPReadyPopupMixin:OnLoad()
 	self:RegisterEvent("PVP_ROLE_POPUP_SHOW");
 	self:RegisterEvent("PVP_ROLE_POPUP_HIDE");
-	self:RegisterEvent("PVP_ROLE_POPUP_JOINED_MATCH");
+	self:RegisterEvent("PLAYER_JOINED_PVP_MATCH");
 	self.RolePool = CreateFramePool("FRAME", self, "PvpRoleButtonWithCountTemplate");
 end		
 
@@ -16,7 +16,7 @@ function PVPReadyPopupMixin:OnEvent(event, ...)
 		self.startHide = false;	
 		local readyCheckInfo = ...;
 		self:Setup(readyCheckInfo); 
-	elseif(event == "PVP_ROLE_POPUP_JOINED_MATCH") then 
+	elseif(event == "PLAYER_JOINED_PVP_MATCH") then 
 		if(self:IsShown()) then 
 			StaticPopupSpecial_Hide(PVPReadyPopup);
 		end		

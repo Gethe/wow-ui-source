@@ -25,6 +25,9 @@ function FlightMapMixin:OnLoad()
 
 	self:SetupTitle();
 
+	self:SetShouldNavigateOnClick(true);
+	self:SetShouldNavigateIgnoreZoneMapPositionData(true);
+
 	self:SetShouldZoomInOnClick(true);
 	self:SetShouldPanOnClick(false);
 
@@ -54,6 +57,7 @@ function FlightMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(FlightMap_AreaPOIProviderMixin));
 	self:AddDataProvider(CreateFromMixins(FlightMap_VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(MapHighlightDataProviderMixin));
 
 	local groupMembersDataProvider = CreateFromMixins(GroupMembersDataProviderMixin);
 	groupMembersDataProvider:SetUnitPinSize("player", 0);
@@ -74,6 +78,7 @@ function FlightMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER_ABOVE_FLIGHT");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_HIGHLIGHT");
 end
 
 function FlightMapMixin:OnShow()

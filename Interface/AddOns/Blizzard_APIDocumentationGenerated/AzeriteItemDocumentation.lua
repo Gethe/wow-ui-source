@@ -118,6 +118,15 @@ local AzeriteItem =
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsUnlimitedLevelingUnlocked",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUnlimitedLevelingUnlocked", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

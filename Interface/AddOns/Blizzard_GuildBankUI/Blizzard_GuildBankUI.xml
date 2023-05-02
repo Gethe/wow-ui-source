@@ -680,9 +680,12 @@
 				</Anchors>
 				<Frames>
 					<ScrollingMessageFrame name="GuildBankMessageFrame" parentKey="MessageFrame" inherits="InlineHyperlinkFrameTemplate">
+						<KeyValues>
+							<KeyValue key="constrainRangeToText" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="688" y="304" />
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Log" relativePoint="TOPLEFT" x="28" y="-64" />
+							<Anchor point="TOPLEFT" relativeKey="$parent.Log" relativePoint="TOPLEFT" x="24" y="-64" />
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -694,35 +697,12 @@
 							</OnLoad>
 						</Scripts>
 					</ScrollingMessageFrame>
-					<ScrollFrame name="GuildBankTransactionsScrollFrame" parentKey="TransactionsScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
-						<Size x="688" y="304" />
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT" x="-43" y="-64" />
+							<Anchor point="TOPLEFT" relativeKey="$parent.MessageFrame" relativePoint="TOPRIGHT" x="6" y="0" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.MessageFrame" relativePoint="BOTTOMRIGHT" x="5" y="3" />
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="256" />
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5" />
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0" />
-								</Texture>
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="106" />
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2" />
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625" />
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(self, offset, GUILDBANK_TRANSACTION_HEIGHT, GuildBankLogScroll)
-							</OnVerticalScroll>
-						</Scripts>
-					</ScrollFrame>
+					</EventFrame>
 				</Frames>
 			</Frame>
 			<Frame name="GuildBankInfo" parentKey="Info" hidden="true">
@@ -749,29 +729,16 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<ScrollFrame name="GuildBankInfoScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
-						<Size x="691" y="306" />
+					<ScrollFrame name="GuildBankInfoScrollFrame" parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="4" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-2" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="3" type="number"/>
+						</KeyValues>
+						<Size x="691" y="306"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-16" y="12" />
+							<Anchor point="TOPLEFT" x="-9" y="12" />
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="256" />
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="4" />
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0" />
-								</Texture>
-								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size x="31" y="106" />
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-3" />
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625" />
-								</Texture>
-							</Layer>
-						</Layers>
 						<Scripts>
 							<OnMouseDown>
 								if ( CanEditGuildTabInfo(GetCurrentGuildBankTab()) ) then
@@ -832,6 +799,9 @@
 	</Frame>
 
 	<Frame name="GuildBankPopupFrame" mixin="GuildBankPopupFrameMixin" inherits="IconSelectorPopupFrameTemplate" parent="GuildBankFrame" enableMouse="true" hidden="true" frameLevel="50">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+		</Anchors>
 		<KeyValues>
 			<KeyValue key="editBoxHeaderText" value="GUILDBANK_POPUP_TEXT" type="global"/>
 		</KeyValues>

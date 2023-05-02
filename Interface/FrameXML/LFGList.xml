@@ -1199,13 +1199,10 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-						<KeyValues>
-							<KeyValue key="hideBackground" value="true" type="boolean"/>
-						</KeyValues>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="11" y="-4"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="11" y="4"/>
 						</Anchors>
 					</EventFrame>
 					<Frame parentKey="SearchingSpinner" inherits="LoadingSpinnerTemplate">
@@ -1466,13 +1463,10 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-						<KeyValues>
-							<KeyValue key="hideBackground" value="true" type="boolean"/>
-						</KeyValues>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="11" y="-4"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="11" y="1"/>
 						</Anchors>
 					</EventFrame>
 					<Button parentKey="RemoveEntryButton" inherits="LFGListMagicButtonTemplate" text="GROUP_FINDER_DELIST">
@@ -1697,13 +1691,10 @@
 											<Anchor point="BOTTOMRIGHT" x="-45" y="50"/>
 										</Anchors>
 									</Frame>
-									<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
-										<KeyValues>
-											<KeyValue key="hideBackground" value="true" type="boolean"/>
-										</KeyValues>
+									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
-											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-5"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 										</Anchors>
 									</EventFrame>
 									<Frame parentKey="BorderFrame" inherits="TooltipBackdropTemplate" useParentLevel="true"> <!--Because there isn't an easy way to change the bounds of a scroll frame-->

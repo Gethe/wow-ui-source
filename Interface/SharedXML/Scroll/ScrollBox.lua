@@ -1,3 +1,28 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+	Import("CopyValuesAsKeys");
+	Import("GenerateClosure");
+	Import("ApproximatelyEqual");
+	Import("WithinRangeExclusive");
+end
+---------------
+
 -- Common event definitions as a work-around for derivation problems with CallbackRegistryMixin.
 BaseScrollBoxEvents =
 {
@@ -211,14 +236,6 @@ end
 
 function ScrollBoxBaseMixin:ScrollToEnd(noInterpolation)
 	self:SetScrollPercentage(1, noInterpolation);
-end
-
-function ScrollBoxBaseMixin:IsAtBegin()
-	return ApproximatelyEqual(self:GetScrollPercentage(), 0);
-end
-
-function ScrollBoxBaseMixin:IsAtEnd()
-	return ApproximatelyEqual(self:GetScrollPercentage(), 1);
 end
 
 function ScrollBoxBaseMixin:SetScrollPercentage(scrollPercentage, noInterpolation)

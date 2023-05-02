@@ -1,4 +1,4 @@
-local function ExtractColorValueFromHex(str, index)
+function ExtractColorValueFromHex(str, index)
 	return tonumber(str:sub(index, index + 1), 16) / 255;
 end
 
@@ -52,7 +52,9 @@ end
 function GetClassColoredTextForUnit(unit, text)
 	local classFilename = select(2, UnitClass(unit));
 	local color = GetClassColorObj(classFilename);
-	return color:WrapTextInColorCode(text);
+	if(color) then 
+		return color:WrapTextInColorCode(text);
+	end
 end
 
 function GetFactionColor(factionGroupTag)

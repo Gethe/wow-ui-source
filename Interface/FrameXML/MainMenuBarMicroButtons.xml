@@ -23,6 +23,8 @@
 		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter" inherit="append"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnHide method="OnHide" inherit="append"/>
 			<OnEnable>
 				self:SetAlpha(1);
 			</OnEnable>
@@ -35,10 +37,17 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="MicroMenu" inherits="GridLayoutFrame, EditModeMicroMenuSystemTemplate" parent="UIParent" mixin="MicroMenuMixin">
+	<Frame name="MicroMenuContainer" inherits="EditModeMicroMenuSystemTemplate" parent="UIParent" mixin="MicroMenuContainerMixin">
 		<Size x="1" y="1"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" relativeTo="MicroButtonAndBagsBar"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="MicroMenu" inherits="GridLayoutFrame" parent="MicroMenuContainer" mixin="MicroMenuMixin">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="childXPadding" value="1" type="number"/>
@@ -244,7 +253,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnShow function="MicroButton_KioskModeDisable"/>
+					<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
 					<OnEvent method="OnEvent"/>
 					<OnClick function="ToggleStoreUI"/>
 				</Scripts>

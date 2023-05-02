@@ -24,9 +24,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 30,
+			NumValues = 31,
 			MinValue = 0,
-			MaxValue = 29,
+			MaxValue = 30,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -59,6 +59,7 @@ local TooltipInfoShared =
 				{ Name = "RestrictedLevel", Type = "TooltipDataLineType", EnumValue = 27 },
 				{ Name = "EquipSlot", Type = "TooltipDataLineType", EnumValue = 28 },
 				{ Name = "ItemName", Type = "TooltipDataLineType", EnumValue = 29 },
+				{ Name = "Separator", Type = "TooltipDataLineType", EnumValue = 30 },
 			},
 		},
 		{
@@ -108,15 +109,6 @@ local TooltipInfoShared =
 			},
 		},
 		{
-			Name = "TooltipData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "lines", Type = "table", InnerType = "TooltipDataLine", Nilable = false },
-				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
-			},
-		},
-		{
 			Name = "TooltipDataArg",
 			Type = "Structure",
 			Fields =
@@ -128,14 +120,6 @@ local TooltipInfoShared =
 				{ Name = "boolVal", Type = "bool", Nilable = true },
 				{ Name = "colorVal", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "guidVal", Type = "WOWGUID", Nilable = true },
-			},
-		},
-		{
-			Name = "TooltipDataLine",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
 			},
 		},
 	},

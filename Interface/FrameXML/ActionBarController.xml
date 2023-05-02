@@ -7,11 +7,15 @@
 	<Include file="AzeriteBar.xml"/>
 	<Include file="ArtifactBar.xml"/>
 	<Include file="HonorBar.xml"/>
+	<Include file="ActionBarConstants.lua"/>
+	<Include file="ActionButton.lua"/>
+	<Include file="ActionButtonOverrides.lua"/>
 	<Include file="ActionButtonTemplate.xml"/>
 	<Include file="ActionBarTemplate.xml"/>
-	<Include file="MainMenuBar.xml"/>
-	<Include file="StatusTrackingBar.xml"/>
 	<Include file="MultiActionBars.xml"/>
+	<Include file="MainMenuBar.xml"/>
+	<Include file="CustomActionBarOverlays.xml"/>
+	<Include file="StatusTrackingBar.xml"/>
 	<Include file="OverrideActionBar.xml"/>
 	<Include file="StanceBar.xml"/>
 	<Include file="ExtraActionBar.xml"/>

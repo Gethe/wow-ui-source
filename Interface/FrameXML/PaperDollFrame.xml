@@ -515,10 +515,10 @@
 									</OnShow>
 								</Scripts>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="0"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-5"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="4"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -541,10 +541,10 @@
 									<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-27"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="23"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="17"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="30"/>
 								</Anchors>
 							</EventFrame>
 
@@ -814,6 +814,9 @@
     </Frame>
 
 	<Frame name="GearManagerPopupFrame" mixin="GearManagerPopupFrameMixin" inherits="IconSelectorPopupFrameTemplate" parent="PaperDollFrame" enableMouse="true" hidden="true" frameLevel="50">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+		</Anchors>
 		<KeyValues>
 			<KeyValue key="editBoxHeaderText" value="GEARSETS_POPUP_TEXT" type="global"/>
 		</KeyValues>

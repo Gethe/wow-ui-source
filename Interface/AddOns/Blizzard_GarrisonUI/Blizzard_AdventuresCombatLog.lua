@@ -83,16 +83,15 @@ function AdventuresCombatLogMixin:OnLoad()
 	self.CombatLogMessageFrame:SetFontObject(ChatFontNormal);
 	self.CombatLogMessageFrame:SetIndentedWordWrap(true);
 	self.CombatLogMessageFrame:SetJustifyH("LEFT");
-	self.CombatLogMessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
-		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
-	end);
-	self.CombatLogMessageFrame.ScrollBar.trackBG:Show();
+
 	self.damageTypeKeys = {};
 	local damageClassStrings = C_Garrison.GetAutoCombatDamageClassValues();
 
 	for _, damageClassString in ipairs(damageClassStrings) do
 		self.damageTypeKeys[damageClassString.damageClassValue] = damageClassString.locString;
 	end
+
+	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self.CombatLogMessageFrame, self.ScrollBar);
 end
 
 function AdventuresCombatLogMixin:Clear()
@@ -106,11 +105,12 @@ function AdventuresCombatLogMixin:AddCombatRound(roundIndex, currentRound, total
 	end
 end
 
-function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex, totalRounds) 
-	self.CombatLogMessageFrame:AddMessage(" ");
+function AdventuresCombatLogMixin:AddCombatRoundHeader(roundIndex, totalRounds)
+	if roundIndex > 1 then
+		self.CombatLogMessageFrame:AddMessage(" ");
+	end
 	self.CombatLogMessageFrame:AddMessage(COVENANT_MISSIONS_COMBAT_LOG_ROUND:format(roundIndex, totalRounds), ADVENTURES_COMBAT_LOG_YELLOW:GetRGB());
 	self.CombatLogMessageFrame:AddMessage(" ");
-	self:UpdateScrollbar();
 end
 
 function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
@@ -128,13 +128,11 @@ function AdventuresCombatLogMixin:AddCombatEvent(combatLogEvent)
 
 		self.CombatLogMessageFrame:AddMessage(logEntry, textColor:GetRGB());
 	end
-	self:UpdateScrollbar();
 end
 
 function AdventuresCombatLogMixin:AddVictoryState(winState)
 	local winStateText = winState and COVENANT_MISSIONS_COMBAT_LOG_VICTORY or COVENANT_MISSIONS_COMBAT_LOG_LOSS;
 	self.CombatLogMessageFrame:AddMessage(winStateText, ADVENTURES_COMBAT_LOG_YELLOW:GetRGB());
-	self:UpdateScrollbar();
 end
 
 function AdventuresCombatLogMixin:GetCompleteScreen()
@@ -148,11 +146,4 @@ function AdventuresCombatLogMixin:GetNameAtBoardIndex(boardIndex)
 		
 	local frame = self:GetCompleteScreen():GetFrameFromBoardIndex(boardIndex);
 	return frame and frame:GetName() or "";
-end
-
-function AdventuresCombatLogMixin:UpdateScrollbar()
-	local numMessages = self.CombatLogMessageFrame:GetNumMessages();
-	local maxValue = math.max(numMessages, 1);
-	self.CombatLogMessageFrame.ScrollBar:SetMinMaxValues(1, maxValue);
-	self.CombatLogMessageFrame.ScrollBar:SetValue(maxValue - self.CombatLogMessageFrame:GetScrollOffset());
 end

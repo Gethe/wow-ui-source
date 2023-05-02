@@ -14,6 +14,8 @@ UIDROPDOWNMENU_MENU_VALUE = nil;
 UIDROPDOWNMENU_SHOW_TIME = 2;
 -- Default dropdown text height
 UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = nil;
+-- Default dropdown width padding
+UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING = 25;
 -- List of open menus
 OPEN_DROPDOWNMENUS = {};
 
@@ -176,7 +178,7 @@ function UIDropDownMenuButton_OnEnter(self)
 		local level =  self:GetParent():GetID() + 1;
 		local listFrame = _G["DropDownList"..level];
 		if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint(1)) ~= self ) then
-			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
+			ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self, nil, self.menuListDisplayMode);
 		end
 	else
 		CloseDropDownMenus(self:GetParent():GetID() + 1);
@@ -233,15 +235,6 @@ function UIDropDownMenuButton_ShouldShowIconTooltip(self)
 	return false;
 end
 
-function UIDropDownMenuButtonIcon_OnClick(self, mouseButton)
-	local button = self:GetParent();
-	if not button then
-		return;
-	end
-
-	UIDropDownMenuButton_OnClick(button, mouseButton);
-end
-
 function UIDropDownMenuButtonIcon_OnEnter(self)
 	local button = self:GetParent();
 	if not button then
@@ -290,6 +283,7 @@ info.isTitle = [nil, true]  --  If it's a title the button is disabled and the f
 info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
 info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
 info.hasArrow = [nil, true]  --  Show the expand arrow for multilevel menus
+info.arrowXOffset = [nil, NUMBER] -- Number of pixels to shift the button's icon to the left or right (positive numbers shift right, negative numbers shift left).
 info.hasColorSwatch = [nil, true]  --  Show color swatch or not, for color selection
 info.r = [1 - 255]  --  Red color value of the color swatch
 info.g = [1 - 255]  --  Green color value of the color swatch
@@ -315,6 +309,7 @@ info.arg1 = [ANYTHING] -- This is the first argument used by info.func
 info.arg2 = [ANYTHING] -- This is the second argument used by info.func
 info.fontObject = [FONT] -- font object replacement for Normal and Highlight
 info.menuList = [TABLE] -- This contains an array of info tables to be displayed as a child menu
+info.menuListDisplayMode = [nil, "MENU"] -- If menuList is set, show the sub drop down with an override display mode.
 info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
 info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
 info.topPadding = [nil, NUMBER] -- Extra spacing between buttons.
@@ -329,6 +324,7 @@ info.iconTooltipBackdropStyle = [nil, TABLE] -- Optional Backdrop style of the t
 info.mouseOverIcon = [TEXTURE] -- An override icon when a button is moused over.
 info.ignoreAsMenuSelection [nil, true] -- Never set the menu text/icon to this, even when this button is checked
 info.registerForRightClick [nil, true] -- Register dropdown buttons for right clicks
+info.registerForAnyClick [nil, true] -- Register dropdown buttons for any clicks
 ]]
 
 function UIDropDownMenu_CreateInfo()
@@ -439,7 +435,9 @@ function UIDropDownMenu_AddButton(info, level)
 	invisibleButton:Hide();
 	button:Enable();
 
-	if ( info.registerForRightClick ) then
+	if ( info.registerForAnyClick ) then
+		button:RegisterForClicks("AnyUp");
+	elseif ( info.registerForRightClick ) then
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	else
 		button:RegisterForClicks("LeftButtonUp");
@@ -550,9 +548,11 @@ function UIDropDownMenu_AddButton(info, level)
 	button.arg1 = info.arg1;
 	button.arg2 = info.arg2;
 	button.hasArrow = info.hasArrow;
+	button.arrowXOffset = info.arrowXOffset;
 	button.hasColorSwatch = info.hasColorSwatch;
 	button.notCheckable = info.notCheckable;
 	button.menuList = info.menuList;
+	button.menuListDisplayMode = info.menuListDisplayMode;
 	button.tooltipWhileDisabled = info.tooltipWhileDisabled;
 	button.noTooltipWhileEnabled = info.noTooltipWhileEnabled;
 	button.tooltipOnButton = info.tooltipOnButton;
@@ -575,6 +575,7 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	local expandArrow = _G[listFrameName.."Button"..index.."ExpandArrow"];
+	expandArrow:SetPoint("RIGHT", info.arrowXOffset or 0, 0);
 	expandArrow:SetShown(info.hasArrow);
 	expandArrow:SetEnabled(not info.disabled);
 
@@ -1019,7 +1020,7 @@ function HideDropDownMenu(level)
 	listFrame:Hide();
 end
 
-function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay)
+function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay, overrideDisplayMode)
 	if ( not level ) then
 		level = 1;
 	end
@@ -1152,7 +1153,8 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			_G[listFrameName.."MenuBackdrop"]:Hide();
 		else
 			-- Change list box appearance depending on display mode
-			if ( dropDownFrame and dropDownFrame.displayMode == "MENU" ) then
+			local displayMode = overrideDisplayMode or (dropDownFrame and dropDownFrame.displayMode) or nil;
+			if ( displayMode == "MENU" ) then
 				_G[listFrameName.."Backdrop"]:Hide();
 				_G[listFrameName.."MenuBackdrop"]:Show();
 			else
@@ -1331,19 +1333,29 @@ function UIDropDownMenu_ClearCustomFrames(self)
 	end
 end
 
+function UIDropDownMenu_MatchTextWidth(frame, minWidth, maxWidth)
+	local frameName = frame:GetName();
+	local newWidth = GetChild(frame, frameName, "Text"):GetUnboundedStringWidth() + UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING;
+	
+	if minWidth or maxWidth then
+		newWidth = Clamp(newWidth, minWidth or newWidth, maxWidth or newWidth);
+	end
+
+	UIDropDownMenu_SetWidth(frame, newWidth);
+end
+
 function UIDropDownMenu_SetWidth(frame, width, padding)
 	local frameName = frame:GetName();
 	GetChild(frame, frameName, "Middle"):SetWidth(width);
-	local defaultPadding = 25;
 	if ( padding ) then
 		frame:SetWidth(width + padding);
 	else
-		frame:SetWidth(width + defaultPadding + defaultPadding);
+		frame:SetWidth(width + UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING + UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING);
 	end
 	if ( padding ) then
 		GetChild(frame, frameName, "Text"):SetWidth(width);
 	else
-		GetChild(frame, frameName, "Text"):SetWidth(width - defaultPadding);
+		GetChild(frame, frameName, "Text"):SetWidth(width - UIDROPDOWNMENU_DEFAULT_WIDTH_PADDING);
 	end
 	frame.noResize = 1;
 end

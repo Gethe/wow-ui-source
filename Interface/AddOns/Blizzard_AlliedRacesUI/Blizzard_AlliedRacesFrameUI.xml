@@ -182,7 +182,12 @@
 					<Anchor point="TOPRIGHT" relativeTo="AlliedRacesFrame"  x="-26" y="-1"/>
 				</Anchors>
 				<Frames>
-					<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+					<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="8" type="number"/>
+							<KeyValue key="scrollBarTopY" value="48" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-1" type="number"/>
+						</KeyValues>
 						<Size x="330" y="520"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="AlliedRacesFrame" x="-25" y="-36"/>
@@ -221,19 +226,6 @@
 								</Layers>
 							</Frame>
 						</ScrollChild>
-						<Frames>
-							<Slider parentKey="ScrollBar" inherits="MinimalScrollBarWithBorderTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="38"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
-								</Anchors>
-							</Slider>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								ScrollFrame_OnLoad(self);
-							</OnLoad>
-						</Scripts>
 					</ScrollFrame>
 				</Frames>
 				<Layers>

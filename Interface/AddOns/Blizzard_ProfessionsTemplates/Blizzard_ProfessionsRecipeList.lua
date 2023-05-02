@@ -125,10 +125,9 @@ function ProfessionsRecipeListMixin:OnLoad()
 				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo, self);
 				
 				if newRecipeID then
-				self.previousRecipeID = newRecipeID;
+					self.previousRecipeID = newRecipeID;
+				end
 			end
-			end
-
 		end
 	end;
 
@@ -365,7 +364,6 @@ function ProfessionsRecipeListRecipeMixin:OnEnter()
 		GameTooltip_AddHighlightLine(GameTooltip, name, wrap);
 		GameTooltip:Show();
 	end
-
 
 	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, recipeID, name, iconID);
 end

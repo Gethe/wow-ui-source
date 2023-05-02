@@ -1353,378 +1353,7 @@
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-
-	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
-		<Size x="20" y="0" />
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-17"/>
-			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="17"/>
-		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="24" y="48"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="18"/>
-					</Anchors>
-					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
-				</Texture>
-				<Texture parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="24" y="64"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-3" y="-16"/>
-					</Anchors>
-					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="Background">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Top" x="3" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" x="-3"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Slider>
-	<Slider name="UIPanelScrollBarTrimTemplate" virtual="true">
-		<Size x="20" y="0"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBG" setAllPoints="true" hidden="true">
-					<Color r="0" g="0" b="0" a=".85"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTop" parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="24" y="48"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-4" y="17"/>
-					</Anchors>
-					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
-				</Texture>
-				<Texture name="$parentBottom" parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="24" y="64"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
-					</Anchors>
-					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
-				</Texture>
-				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnValueChanged>
-				self:GetParent():SetVerticalScroll(value);
-			</OnValueChanged>
-		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-			<Size x="18" y="24"/>
-			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-		</ThumbTexture>
-	</Slider>
-	<Slider name="UIPanelScrollBarTemplateLightBorder" virtual="true">
-		<Size x="16" y="0"/>
-		<Frames>
-			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame name="$parentBorder" inherits="TooltipBorderBackdropTemplate">
-				<Size x="24" y="0"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" x="-5" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollDownButton" x="5" y="-3"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
-				</KeyValues>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnValueChanged>
-				self:GetParent():SetVerticalScroll(value);
-			</OnValueChanged>
-		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-			<Size x="16" y="24"/>
-			<TexCoords left="0.25" right="0.75" top="0.125" bottom="0.875"/>
-		</ThumbTexture>
-	</Slider>
-	<Slider name="MinimalScrollBarTemplate" virtual="true">
-		<Size x="22" y="0"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentTrack" parentKey="trackBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="17"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" x="0" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="-15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnValueChanged>
-				self:GetParent():SetVerticalScroll(value);
-			</OnValueChanged>
-		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-			<Size x="18" y="24"/>
-			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-		</ThumbTexture>
-	</Slider>
-	<Slider name="MinimalScrollBarWithBorderTemplate" virtual="true">
-		<Size x="22" y="0"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Track">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="17"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" x="0" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() - scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="-15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent();
-						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
-						parent:SetValue(parent:GetValue() + scrollStep);
-						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame parentKey="ScrollUpBorder" inherits="TooltipBorderBackdropTemplate">
-				<Size x="24" y="0"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollUpButton" x="5" y="-3"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="ScrollDownBorder" inherits="TooltipBorderBackdropTemplate">
-				<Size x="24" y="0"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollDownButton" x="-5" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
-				</KeyValues>
-			</Frame>
-			<Frame parentKey="Border" inherits="TooltipBorderBackdropTemplate">
-				<Size x="24" y="0"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
-				</KeyValues>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnValueChanged>
-				self:GetParent():SetVerticalScroll(value);
-			</OnValueChanged>
-		</Scripts>
-		<ThumbTexture parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
-			<Size x="18" y="24"/>
-			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
-		</ThumbTexture>
-	</Slider>
-	<ScrollFrame name="UIPanelScrollFrameTemplate2" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTop" parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="256"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentScrollBarScrollUpButton" relativePoint="TOPLEFT" x="-8" y="5"/>
-					</Anchors>
-					<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentBottom" parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size x="31" y="106"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentScrollBarScrollDownButton" relativePoint="BOTTOMLEFT" x="-8" y="-2"/>
-					</Anchors>
-					<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-				</Texture>
-				<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-	</ScrollFrame>
-	<!-- This is a scrollframe with no border and a black texture for a track -->
-	<ScrollFrame name="MinimalScrollFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" virtual="true">
-		<Frames>
-			<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="17"/>
-				</Anchors>
-			</Slider>
-		</Frames>
-	</ScrollFrame>
-
-	<ScrollFrame name="FauxScrollFrameTemplateLight" virtual="true">
-		<Frames>
-			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplateLightBorder">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
-				</Anchors>
-			</Slider>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				ScrollFrame_OnLoad(self);
-			</OnLoad>
-			<OnScrollRangeChanged function=""/>
-			<OnVerticalScroll>
-				local scrollbar = _G[self:GetName().."ScrollBar"];
-				scrollbar:SetValue(offset);
-
-				local min, max = scrollbar:GetMinMaxValues();
-				if ( offset == 0 ) then
-					_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-				else
-					_G[scrollbar:GetName().."ScrollUpButton"]:Enable();
-				end
-				if ((scrollbar:GetValue() - max) == 0) then
-					_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-				else
-					_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
-				end
-			</OnVerticalScroll>
-			<OnMouseWheel>
-				ScrollFrameTemplate_OnMouseWheel(self, delta);
-			</OnMouseWheel>
-		</Scripts>
-		<ScrollChild>
-			<Frame name="$parentScrollChildFrame">
-				<Size x="300" y="334"/>
-			</Frame>
-		</ScrollChild>
-	</ScrollFrame>
-
+	
 	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">
 		<Size x="31" y="20"/>
 		<Layers>
@@ -2751,7 +2380,7 @@
 
 	<Button name="AlphaHighlightButtonTemplate" mixin="AlphaHighlightButtonMixin" virtual="true">
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="UpdateHighlightForState"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
@@ -3105,6 +2734,335 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="BottomPopupScrollBoxTemplate" frameStrata="DIALOG" virtual="true">
+		<Size x="600" y="400"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="7"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.7" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-7"/>
+						<Anchor point="LEFT" x="60"/>
+						<Anchor point="RIGHT" x="-60"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRightCorner" inherits="UI-Frame-TopCornerRightSimple">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopBorder" inherits="_UI-Frame-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0" />
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0" />
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture name="$parentTopLeftCorner2" inherits="UI-Frame-TopCornerLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="-20"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRightCorner2" inherits="UI-Frame-TopCornerRightSimple">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="-20"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopBorder2" inherits="_UI-Frame-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner2" relativePoint="TOPRIGHT" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner2" relativePoint="TOPLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="7" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner2" x="1" y="-28"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" x="-20" y="1"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				--always on top
+				self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+			</OnShow>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<EditBox name="SearchBoxListTemplate" inherits="SearchBoxTemplate" mixin="SearchBoxListMixin" letters="40" virtual="true">
+		<KeyValues>
+			<!--<KeyValue key="buttonTemplate" value="" type="string"/>-->
+			<!--<KeyValue key="showAllButtonTemplate" value="" type="string"/>-->
+		</KeyValues>
+		<Size x="210" y="20"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-10" y="-32"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="searchPreviewContainer" hidden="true" frameStrata="DIALOG">
+				<Size x="0" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="botLeftCorner" inherits="UI-Frame-BotCornerLeft">
+							<Anchors>
+								<Anchor point="LEFT" x="-7" y="0"/>
+								<Anchor point="BOTTOM" x="0" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="botRightCorner" inherits="UI-Frame-BotCornerRight">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-5"/>
+								<Anchor point="RIGHT" x="4" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="1" />
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="topBorder" inherits="_UI-Frame-Bot">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentSearchProgress" parentKey="searchProgress" hidden="true" frameStrata="DIALOG">
+				<Size x="0" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT"/>
+					<Anchor point="RIGHT" relativePoint="RIGHT"/>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background" atlas="_search-rowbg">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentLoading" parentKey="loading">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="text" text="SEARCH_LOADING_TEXT" hidden="false">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" x="16" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="spinner" inherits="LoadingSpinnerTemplate" hidden="false">
+								<Size x="40" y="40"/>
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<StatusBar name="$parentBar" parentKey="bar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="barBackground">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+									<Color r="0" g="0" b="0" a=".4"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="barBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+									<Size x="16" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-6" y="5"/>
+										<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+									</Anchors>
+									<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+								</Texture>
+								<Texture parentKey="barBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+									<Size x="16" y="0"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="6" y="5"/>
+										<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+									</Anchors>
+									<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+								</Texture>
+								<Texture parentKey="barBorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+									<Size x="16"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.barBorderLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.barBorderRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+					</StatusBar>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						--always on top
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnTextChanged method="OnTextChanged"/>
+			<OnEnterPressed method="OnEnterPressed"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnEditFocusLost method="OnFocusLost"/>
+			<OnEditFocusGained method="OnFocusGained"/>
+		</Scripts>
+	</EditBox>
+
+	<Texture name="_SearchBarSm" file="Interface\EncounterJournal\UI-EncounterJournalTextures_Tile" virtual="true" horizTile="true" >
+		<Size x="64" y="27"/>
+		<TexCoords left="0.00000000" right="1.00000000" top="0.16601563" bottom="0.21875000"/>
+	</Texture>
+
+	<Texture name="UI-Common-SearchIconFrameLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="38" y="38"/>
+		<TexCoords left="0.89843750" right="0.97265625" top="0.21386719" bottom="0.25097656"/>
+	</Texture>
+
+	<Texture name="UI-Common-SearchBarHighlightLg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="47"/>
+		<TexCoords left="0.00195313" right="0.50195313" top="0.80468750" bottom="0.85058594"/>
+	</Texture>
+
+	<Button name="SearchBoxListAllButtonTemplate" mixin="SearchBoxListElementMixin" virtual="true">
+		<Size x="275" y="24"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="selectedTexture" atlas="search-highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text" text="ENCOUNTER">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture inherits="_SearchBarSm"/>
+		<PushedTexture inherits="_SearchBarSm"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+	
 	<Frame name="RingedFrameWithTooltipTemplate" mixin="RingedFrameWithTooltipMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>

@@ -33,7 +33,7 @@
 		</Layers>
 	</Button>
 
-	<Button name="LootJournalItemSetButtonTemplate" virtual="true">
+	<Button name="LootJournalItemSetButtonTemplate" mixin="LootJournalItemSetButtonMixin" virtual="true">
 		<Size x="744" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -88,7 +88,7 @@
 					<OnLoad function="LootJournalItemsClassDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<ScrollFrame parentKey="ItemSetsFrame" inherits="MinimalHybridScrollFrameTemplate" hidden="true" mixin="LootJournalItemSetsMixin">
+			<Frame parentKey="ItemSetsFrame" hidden="true" mixin="LootJournalItemSetsMixin">
 				<Size x="762" y="332"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="0" y="3"/>
@@ -107,6 +107,18 @@
 							</OnMouseDown>
 						</Scripts>
 					</DropDownToggleButton>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="MEDIUM">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="5"/>
+						</Anchors>
+					</EventFrame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -114,7 +126,7 @@
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
 				</Scripts>
-			</ScrollFrame>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

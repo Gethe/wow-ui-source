@@ -9,7 +9,7 @@
 	<Script file="..\..\SharedXML\SettingDefinitions\Mac.lua"/>
 	<Script file="Mac.lua"/>
 	<Include file="Controls.xml"/>
-	<Script file="Interface.lua"/>
+	<Include file="Interface.xml"/>
 	<Script file="Combat.lua"/>
 	<Script file="ActionBars.lua"/>
 	<Include file="Social.lua"/>
@@ -17,4 +17,5 @@
 	<Script file="Accessibility.lua"/>
 	<Include file="Colorblind.xml"/>
 	<Include file="TextToSpeech.xml"/>
+	<Script file="..\..\SharedXML\SettingDefinitions\New.lua"/>
 </Ui>

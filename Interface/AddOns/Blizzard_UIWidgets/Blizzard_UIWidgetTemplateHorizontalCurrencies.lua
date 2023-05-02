@@ -23,7 +23,7 @@ function UIWidgetTemplateHorizontalCurrenciesMixin:Setup(widgetInfo, widgetConta
 		currencyFrame:Show();
 
 		local tooltipEnabledState = currencyInfo.isCurrencyMaxed and Enum.WidgetEnabledState.Red or Enum.WidgetEnabledState.White;
-		currencyFrame:Setup(widgetContainer, currencyInfo, Enum.WidgetEnabledState.Enabled, tooltipEnabledState);
+		currencyFrame:Setup(widgetContainer, currencyInfo, Enum.WidgetEnabledState.Yellow, tooltipEnabledState);
 		currencyFrame:SetTooltipLocation(widgetInfo.tooltipLoc);
 
 		if previousCurrencyFrame then

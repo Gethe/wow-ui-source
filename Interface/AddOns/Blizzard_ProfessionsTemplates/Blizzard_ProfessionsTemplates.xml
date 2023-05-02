@@ -141,7 +141,6 @@
 			<Frame parentKey="TipMoneyDisplayFrame" inherits="MoneyDisplayFrameTemplate" setAllPoints="true">
 				<KeyValues>
 					<KeyValue key="hideCopper" value="true" type="boolean"/>
-					<KeyValue key="leftAlign" value="true" type="boolean"/>
 					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>

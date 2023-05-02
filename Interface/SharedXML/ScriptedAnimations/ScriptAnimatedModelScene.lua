@@ -146,8 +146,8 @@ function ScriptAnimatedModelSceneMixin:GetPixelsPerSceneUnit()
 	return self.pixelsPerSceneUnit;
 end
 
-function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEffectFinish, onEffectResolution)
-	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution);
+function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEffectFinish, onEffectResolution, scaleMultiplier)
+	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, effectID, source, target, onEffectFinish, onEffectResolution, scaleMultiplier);
 
 	local function StartEffectController()
 		effectController:StartEffect();
@@ -158,8 +158,8 @@ function ScriptAnimatedModelSceneMixin:AddEffect(effectID, source, target, onEff
 	return effectController; 
 end
 
-function ScriptAnimatedModelSceneMixin:AddDynamicEffect(dynamicEffectDescription, source, target, onEffectFinish, onEffectResolution)
-	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, dynamicEffectDescription.effectID, source, target, onEffectFinish, onEffectResolution);
+function ScriptAnimatedModelSceneMixin:AddDynamicEffect(dynamicEffectDescription, source, target, onEffectFinish, onEffectResolution, scaleMultiplier)
+	local effectController = CreateAndInitFromMixin(ScriptAnimatedEffectControllerMixin, self, dynamicEffectDescription.effectID, source, target, onEffectFinish, onEffectResolution, scaleMultiplier);
 
 	local function StartEffectController()
 		effectController:SetSoundEnabled(dynamicEffectDescription.soundEnabled);
@@ -172,7 +172,7 @@ function ScriptAnimatedModelSceneMixin:AddDynamicEffect(dynamicEffectDescription
 	return effectController; 
 end
 
-function ScriptAnimatedModelSceneMixin:InternalAddEffect(effectID, source, target, effectController)
+function ScriptAnimatedModelSceneMixin:InternalAddEffect(effectID, source, target, effectController, scaleMultiplier)
 	local effect = ScriptedAnimationEffectsUtil.GetEffectByID(effectID);
 
 	local actor = self:AcquireActor();
@@ -181,7 +181,7 @@ function ScriptAnimatedModelSceneMixin:InternalAddEffect(effectID, source, targe
 		Mixin(actor, ScriptAnimatedModelSceneActorMixin);
 	end
 
-	actor:SetEffect(effect, source, target);
+	actor:SetEffect(effect, source, target, scaleMultiplier);
 	actor:Show();
 
 	if not tContains(self.effectControllers, effectController) then

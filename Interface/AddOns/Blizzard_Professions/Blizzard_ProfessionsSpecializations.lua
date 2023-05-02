@@ -411,6 +411,7 @@ function ProfessionsSpecFrameMixin:InstantiateTalentButton(nodeID, xPos, yPos) -
 	local entryInfo = (activeEntryID ~= nil) and self:GetAndCacheEntryInfo(activeEntryID) or nil;
 	local talentType = (entryInfo ~= nil) and entryInfo.type or nil;
 	local function InitTalentButton(newTalentButton)
+		newTalentButton:Reset();
 		newTalentButton:SetNodeID(nodeID);
 		newTalentButton:SetAndApplySize(newTalentButton.iconSize, newTalentButton.iconSize);
 		TalentButtonUtil.ApplyPosition(newTalentButton, self, xPos, yPos)
@@ -707,6 +708,7 @@ function ProfessionsSpecFrameMixin:GetRootNodeID()
 end
 
 function ProfessionsSpecFrameMixin:SetDetailedPanel(pathID)
+	self:GetDetailedPanelPath():Reset();
 	self:GetDetailedPanelPath():SetNodeID(pathID);
 
 	self:InitDetailedPanelPerks();
@@ -906,11 +908,15 @@ function ProfessionsSpecFrameMixin:PlayDialLockInAnimation()
 	local delay = 1.15;
 	self:StartShake(delay);
 	PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_DIAL_LOCKIN);
+
+	EventRegistry:TriggerEvent("ProfessionsSpecializations.LockInPath", self:GetDetailedPanelNodeID());
 end
 
 function ProfessionsSpecFrameMixin:PlayCompleteDialAnimation()
 	self.DetailedView.Path.CompleteDialAnimation:Restart();
 	PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_FINISHED);
+
+	EventRegistry:TriggerEvent("ProfessionsSpecializations.CompletePath", self:GetDetailedPanelNodeID());
 end
 
 function ProfessionsSpecFrameMixin:SetTitle()

@@ -1,3 +1,88 @@
+---------------
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
+if tbl then
+	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
+	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+	tbl.type = tbl.SecureCapsuleGet("type");
+	tbl.unpack = tbl.SecureCapsuleGet("unpack");
+	tbl.error = tbl.SecureCapsuleGet("error");
+	tbl.pcall = tbl.SecureCapsuleGet("pcall");
+	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
+
+	local function CleanFunction(f)
+		local f = function(...)
+			local function HandleCleanFunctionCallArgs(success, ...)
+				if success then
+					return ...;
+				else
+					tbl.error("Error in secure capsule function execution: "..(...));
+				end
+			end
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
+		end
+		setfenv(f, tbl);
+		return f;
+	end
+
+	local function CleanTable(t, tableCopies)
+		if not tableCopies then
+			tableCopies = {};
+		end
+
+		local cleaned = {};
+		tableCopies[t] = cleaned;
+
+		for k, v in tbl.pairs(t) do
+			if tbl.type(v) == "table" then
+				if ( tableCopies[v] ) then
+					cleaned[k] = tableCopies[v];
+				else
+					cleaned[k] = CleanTable(v, tableCopies);
+				end
+			elseif tbl.type(v) == "function" then
+				cleaned[k] = CleanFunction(v);
+			else
+				cleaned[k] = v;
+			end
+		end
+		return cleaned;
+	end
+
+	local function Import(name)
+		local skipTableCopy = true;
+		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+		if tbl.type(val) == "function" then
+			tbl[name] = CleanFunction(val);
+		elseif tbl.type(val) == "table" then
+			tbl[name] = CleanTable(val);
+		else
+			tbl[name] = val;
+		end
+	end
+
+	Import("max");
+	Import("PlaySound");
+	Import("SOUNDKIT");
+	Import("format");
+	Import("C_UnitAuras");
+
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
+	setfenv(1, tbl);
+end
+----------------
+
 RAID_NOTICE_DEFAULT_HOLD_TIME = 10.0;
 RAID_NOTICE_FADE_IN_TIME = 0.2;
 RAID_NOTICE_FADE_OUT_TIME = 3.0;
@@ -51,18 +136,32 @@ end
 
 function RaidNotice_OnUpdate( noticeFrame, elapsedTime )
 	local inUse = false;
-	if ( noticeFrame.slot1:IsShown() ) then
+	local slot1Shown = noticeFrame.slot1:IsShown();
+	local slot2Shown = noticeFrame.slot2:IsShown();
+
+	if ( slot1Shown ) then
 		RaidNotice_UpdateSlot( noticeFrame.slot1, noticeFrame.timings, elapsedTime, true );
 		inUse = true;
 	end
 
-	if ( noticeFrame.slot2:IsShown() ) then
+	if ( slot2Shown ) then
 		RaidNotice_UpdateSlot( noticeFrame.slot2, noticeFrame.timings, elapsedTime, true );
 		inUse = true;
 	end
 	
 	if ( not inUse ) then
 		noticeFrame:Hide();
+	end
+
+	if ( noticeFrame.controlPrivateAnchor ) then
+		PrivateRaidBossEmoteFrameAnchor:ClearAllPoints();
+		if ( slot2Shown ) then
+			PrivateRaidBossEmoteFrameAnchor:SetPoint("TOP", noticeFrame, "BOTTOM", 0, 0);
+		elseif ( slot1Shown ) then
+			PrivateRaidBossEmoteFrameAnchor:SetPoint("TOP", noticeFrame.slot2, "TOP", 0, 0);
+		else
+			PrivateRaidBossEmoteFrameAnchor:SetPoint("TOP", noticeFrame.slot1, "TOP", 0, 0);
+		end
 	end
 end
 
@@ -142,7 +241,6 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 		local body = format(text, playerName, playerName);	--No need for pflag, monsters can't be afk, dnd, or GMs.
 		local info = ChatTypeInfo[event];
 		RaidNotice_AddMessage( self, body, info, displayTime );
---		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );
 		if ( playSound ) then
 			if ( event == "RAID_BOSS_WHISPER" ) then
 				PlaySound(SOUNDKIT.UI_RAID_BOSS_WHISPER_WARNING);
@@ -153,4 +251,19 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 	elseif ( event == "CLEAR_BOSS_EMOTES" ) then
 		RaidNotice_Clear(self);
 	end
+end
+
+
+PrivateRaidBossEmoteFrameAnchorMixin = {};
+
+function PrivateRaidBossEmoteFrameAnchorMixin:OnLoad()
+	local anchor =
+	{
+		point = "TOP",
+		relativeTo = self,
+		relativePoint = "TOP",
+		offsetX = 0,
+		offsetY = 0,
+	};
+	C_UnitAuras.SetPrivateWarningTextAnchor(self, anchor);
 end

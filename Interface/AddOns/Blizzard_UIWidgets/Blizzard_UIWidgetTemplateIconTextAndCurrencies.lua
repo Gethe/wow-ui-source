@@ -20,7 +20,7 @@ function UIWidgetTemplateIconTextAndCurrenciesMixin:Setup(widgetInfo, widgetCont
 	SetupTextureKitOnRegions(widgetInfo.textureKit, self, textureKitRegions);
 	self.Text:SetText(widgetInfo.text);
 	local enabledState = widgetInfo.enabledState;
-	if widgetInfo.enabledState == Enum.WidgetEnabledState.Enabled then
+	if widgetInfo.enabledState == Enum.WidgetEnabledState.Yellow then
 		enabledState = Enum.WidgetEnabledState.White;
 	end
 	self.Text:SetEnabledState(enabledState);

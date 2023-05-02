@@ -13,6 +13,7 @@ ItemButtonUtil.ItemContextEnum = {
 	RunecarverScrapping = 10,
 	ItemConversion = 11,
 	ItemRecrafting = 12,
+	JumpUpgradeTrack = 13,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -63,6 +64,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.MythicKeystone;
 	elseif ItemUpgradeFrame and ItemUpgradeFrame:IsShown() then
 		return ItemButtonUtil.ItemContextEnum.UpgradableItem;
+	elseif C_Spell.TargetSpellJumpsUpgradeTrack() then
+		return ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack;
 	end
 	return nil;
 end
@@ -137,6 +140,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 				end
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack then
+			return C_Item.DoesItemMatchTrackJump(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end
@@ -182,6 +187,10 @@ function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
 		itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 		return itemName, itemTexture, quantity, itemRarity, itemLink;
 	end
+end
+
+function ItemUtil.GetItemHyperlink(itemID)
+	return select(2, GetItemInfo(itemID));
 end
 
 function ItemUtil.PickupBagItem(itemLocation)

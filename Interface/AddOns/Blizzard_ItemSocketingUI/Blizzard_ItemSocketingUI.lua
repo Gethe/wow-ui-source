@@ -30,13 +30,12 @@ function ItemSocketingFrame_OnLoad(self)
 	self:RegisterEvent("SOCKET_INFO_ACCEPT");
 	self:RegisterEvent("SOCKET_INFO_SUCCESS");
 	self:RegisterEvent("SOCKET_INFO_FAILURE");
-	ItemSocketingScrollFrameScrollBarScrollUpButton:SetPoint("BOTTOM", ItemSocketingScrollFrameScrollBar, "TOP", 0, 1);
-	ItemSocketingScrollFrameScrollBarScrollDownButton:SetPoint("TOP", ItemSocketingScrollFrameScrollBar, "BOTTOM", 0, -3);
-	ItemSocketingScrollFrameTop:SetPoint("TOP", ItemSocketingScrollFrameScrollBarScrollUpButton, "TOP", -2, 3);
-	ItemSocketingScrollFrameScrollBar:SetPoint("TOPLEFT", ItemSocketingScrollFrame, "TOPRIGHT", 7.9999995231628, -18);
-	ItemSocketingScrollFrameScrollBar:SetHeight(221);
 	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
 	ButtonFrameTemplate_HideButtonBar(self);
+
+	self.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(scrollFrame, xrange, yrange)
+		ItemSocketingSocketButton_OnScrollRangeChanged(scrollFrame);
+	end);
 end
 
 function ItemSocketingFrame_OnEvent(self, event, ...)

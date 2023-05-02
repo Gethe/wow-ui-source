@@ -338,7 +338,7 @@ function ScriptErrorsFrameMixin:ShowNext()
 end
 
 local function IsErrorCVarEnabled(errorTypeCVar)
-	return InGlue() or GetCVarBool(errorTypeCVar);
+	return IsOnGlueScreen() or GetCVarBool(errorTypeCVar);
 end
 
 local function DisplayMessageInternal(errorTypeCVar, warnType, msg, messageType)

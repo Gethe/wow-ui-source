@@ -459,7 +459,6 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
@@ -467,6 +466,65 @@
 		<HighlightTexture atlas="heartofazeroth-list-item-highlight" alphaMode="ADD"/>
 	</Button>
 
+	<Button name="AzeriteEssenceHeaderButtonTemplate" mixin="AzeriteEssenceHeaderButtonMixin" virtual="true">
+		<Size x="180" y="22"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Middle" file="Interface\Buttons\CollapsibleHeader">
+					<Size x="0" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Left" file="Interface\Buttons\CollapsibleHeader">
+					<Size x="76" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT" x="-20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\Buttons\CollapsibleHeader">
+					<Size x="76" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT" x="20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ExpandedIcon" inherits="Char-Stat-Minus">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CollapsedIcon" inherits="Char-Stat-Plus">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" text="OTHER_ROLES">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ExpandedIcon" relativePoint="RIGHT" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.Middle:SetPoint("LEFT", 21, -1);
+				self.Middle:SetPoint("RIGHT", -19, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Middle:SetPoint("LEFT", 20, 0);
+				self.Middle:SetPoint("RIGHT", -20, 0);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+	
 	<Frame name="AzeriteEssenceStarsAnimationFrameTemplate" parentArray="StarsAnimations" useParentLevel="true" virtual="true">
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-1">
@@ -609,83 +667,30 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemModelScene"/>
 				</Anchors>
 			</Frame>
-			<ScrollFrame parentKey="EssenceList" inherits="HybridScrollFrameTemplate" mixin="AzeriteEssenceListMixin">
+			
+			<Frame parentKey="EssenceList" mixin="AzeriteEssenceListMixin">
 				<Size x="185" y="250"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" x="2" y="-3"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" x="-26" y="2"/>
 				</Anchors>
 				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="MEDIUM">
+						<Size x="185" y="250"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="2"/>
+						</Anchors>
+					</EventFrame>
 					<ModelScene parentKey="LearnEssenceModelScene" inherits="NonInteractableModelSceneMixinTemplate" frameStrata="HIGH" hidden="true">
 						<Size x="650" y="650"/>
 					</ModelScene>
-					<Slider parentKey="ScrollBar" inherits="HybridScrollBarTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
-						</Anchors>
-					</Slider>
-					<Button parentKey="HeaderButton" hidden="true">
-						<Size x="180" y="18"/>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Middle" file="Interface\Buttons\CollapsibleHeader">
-									<Size x="0" y="18"/>
-									<Anchors>
-										<Anchor point="LEFT" x="20" y="0"/>
-										<Anchor point="RIGHT" x="-20" y="0"/>
-									</Anchors>
-									<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
-								</Texture>
-							</Layer>
-							<Layer level="BORDER">
-								<Texture parentKey="Left" file="Interface\Buttons\CollapsibleHeader">
-									<Size x="76" y="18"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT" x="-20" y="0"/>
-									</Anchors>
-									<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
-								</Texture>
-								<Texture parentKey="Right" file="Interface\Buttons\CollapsibleHeader">
-									<Size x="76" y="18"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT" x="20" y="0"/>
-									</Anchors>
-									<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="ExpandedIcon" inherits="Char-Stat-Minus">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="CollapsedIcon" inherits="Char-Stat-Plus">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Left" x="10" y="0"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Name" inherits="GameFontNormal" text="OTHER_ROLES">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.ExpandedIcon" relativePoint="RIGHT" x="12" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								self:GetParent():GetParent():ToggleHeader();
-							</OnClick>
-							<OnMouseDown>
-								self.Middle:SetPoint("LEFT", 21, -1);
-								self.Middle:SetPoint("RIGHT", -19, -1);
-							</OnMouseDown>
-							<OnMouseUp>
-								self.Middle:SetPoint("LEFT", 20, 0);
-								self.Middle:SetPoint("RIGHT", -20, 0);
-							</OnMouseUp>
-						</Scripts>
-					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -693,7 +698,7 @@
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
 				</Scripts>
-			</ScrollFrame>
+			</Frame>
 			<Frame parentKey="DisabledFrame" frameLevel="2000">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>

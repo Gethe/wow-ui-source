@@ -368,49 +368,17 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="ItemSocketingScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<EventScrollFrame parentKey="ScrollFrame" name="ItemSocketingScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarX" value="-14" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="1" type="number"/>
+				</KeyValues>
 				<Size x="269" y="258"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-74"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentBottom" file="Interface\Common\UI-Goldborder" >
-							<Size x="30" y="32"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-4"/>
-							</Anchors>
-							<TexCoords left="0.00390625" right="0.12109375" top="0.00781250" bottom="0.25781250"/>	
-						</Texture>
-						<Texture name="$parentTop" file="Interface\Common\UI-Goldborder" >
-							<Size x="30" y="32"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="1"/>
-							</Anchors>
-							<TexCoords left="0.00390625" right="0.12109375" top="0.27343750" bottom="0.52343750"/>	
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\UI-Goldborder-!tile" vertTile="true" >
-							<Size x="30" y="128"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeTo="$parentTop" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
-							</Anchors>
-							<TexCoords left="0.09375000" right="0.32812500" top="0.00000000" bottom="1.00000000"/>	
-						</Texture>
-						
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = 1;
-						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self, 0, 0);
-					</OnLoad>
-					<OnScrollRangeChanged>
-						ScrollFrame_OnScrollRangeChanged(self, 0, yrange);
-						ItemSocketingSocketButton_OnScrollRangeChanged(self);
-					</OnScrollRangeChanged>
-				</Scripts>
 				<ScrollChild>
 					<Frame name="ItemSocketingScrollChild">
 						<Size x="259" y="254"/>
@@ -423,7 +391,7 @@
 						</Frames>
 					</Frame>
 				</ScrollChild>
-			</ScrollFrame>
+			</EventScrollFrame>
 			<Button name="ItemSocketingSocket1" parentArray="Sockets" inherits="ItemSocketingSocketButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="ItemSocketingFrame" x="100" y="99"/>

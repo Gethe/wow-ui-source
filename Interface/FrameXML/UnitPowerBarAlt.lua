@@ -495,6 +495,12 @@ function UnitPowerBarAltStatus_ToggleFrame(self)
 	end
 end
 
+EncounterBarMixin = {};
+
+function EncounterBarMixin:HasContentShowing()
+	return PlayerPowerBarAlt:IsShown() or UIWidgetPowerBarContainerFrame:HasAnyWidgetsShowing();
+end
+
 PlayerPowerBarAltMixin = {};
 
 function PlayerPowerBarAltMixin:OnLoad()

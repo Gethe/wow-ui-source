@@ -104,6 +104,11 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			local option = {};
 			option.value = selectionSentinelID;
 			option.text = info.text;
+
+			if info.isInSubDropDown then
+				option.level = 2;
+			end
+
 			table.insert(options, option);
 
 			selectionSentinelID = selectionSentinelID + 1;
@@ -118,6 +123,14 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 	end
 
 	local function CustomSetupFunction(dropDownButtonInfo, standardFunc)
+		local originalFunc = standardFunc;
+		local originalDropDownButtonInfo = nil;
+
+		local sentinelkey, sentinelInfo = self:GetSentinelKeyInfoFromSelectionID(dropDownButtonInfo.value);
+		if sentinelInfo and sentinelInfo.isList then
+			originalDropDownButtonInfo = CopyTable(dropDownButtonInfo);
+		end
+
 		dropDownButtonInfo.fontObject = self.dropDownOptionFont;
 		dropDownButtonInfo.tooltipBackdropStyle = self.dropdownTooltipBackdropStyle;
 		dropDownButtonInfo.iconTooltipBackdropStyle = self.dropdownTooltipBackdropStyle;
@@ -126,7 +139,6 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 		local hasRightClickCallback = (self.rightClickCallback ~= nil);
 		dropDownButtonInfo.registerForRightClick = hasRightClickCallback;
 		if hasRightClickCallback then
-			local originalFunc = standardFunc;
 			standardFunc = function (button, arg1, arg2, checked, mouseButton)
 				if mouseButton == "RightButton" then
 					local shouldCallDefault = self.rightClickCallback(dropDownButtonInfo.value);
@@ -141,7 +153,6 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			dropDownButtonInfo.func = standardFunc;
 		end
 
-		local sentinelkey, sentinelInfo = self:GetSentinelKeyInfoFromSelectionID(dropDownButtonInfo.value);
 		if sentinelInfo then
 			dropDownButtonInfo.colorCode = sentinelInfo.colorCode;
 			dropDownButtonInfo.tooltipText = sentinelInfo.tooltipText;
@@ -170,6 +181,24 @@ function DropDownLoadSystemMixin:UpdateSelectionOptions()
 			else
 				dropDownButtonInfo.notCheckable = true;
 				dropDownButtonInfo.leftPadding = 6;
+			end
+
+			if sentinelInfo.isList then
+				dropDownButtonInfo.func = nop;
+				dropDownButtonInfo.ignoreAsMenuSelection = true;
+				dropDownButtonInfo.hasArrow = true;
+				dropDownButtonInfo.arrowXOffset = -10;
+				dropDownButtonInfo.menuListDisplayMode = "MENU";
+				dropDownButtonInfo.menuList = {};
+
+				for i, sentinelKeyInfo in ipairs(sentinelInfo.sentinelKeyInfos) do
+					local subDropDownInfo = CopyTable(originalDropDownButtonInfo);
+					subDropDownInfo.value = sentinelKeyInfo.value;
+					subDropDownInfo.level = dropDownButtonInfo.level + 1;
+
+					CustomSetupFunction(subDropDownInfo, originalFunc);
+					table.insert(dropDownButtonInfo.menuList, subDropDownInfo);
+				end
 			end
 		else
 			dropDownButtonInfo.colorCode = self.dropDownOptionColorCode;
@@ -250,6 +279,28 @@ end
 function DropDownLoadSystemMixin:AddSentinelValue(sentinelKeyInfo)
 	local sentinelKey = self:GetNextSentinelKey();
 	self.sentinelKeyToInfo[sentinelKey] = sentinelKeyInfo;
+
+	self:UpdateSelectionOptions();
+end
+
+-- sentinelKeyInfo keys:
+-- .sentinelKeyInfos: A list of sentinelKeyInfo structs as defined above.
+-- .text: The dropdown text for this special selection option.
+-- .icon: An optional icon used for this special selection option.
+-- .disabledCallback: Should return whether selection is disabled and tooltip content to show if it is.
+--						() => [isDisabled, tooltipTitle, tooltipText, tooltipWarning]
+function DropDownLoadSystemMixin:AddSentinelSubDropDown(sentinelListInfo)
+	sentinelListInfo.isList = true;
+
+	local sentinelKey = self:GetNextSentinelKey();
+	self.sentinelKeyToInfo[sentinelKey] = sentinelListInfo;
+
+	for i, sentinelKeyInfo in ipairs(sentinelListInfo.sentinelKeyInfos) do
+		sentinelKeyInfo.isInSubDropDown = true;
+
+		local subSentinelKey = self:GetNextSentinelKey();
+		self.sentinelKeyToInfo[subSentinelKey] = sentinelKeyInfo;
+	end
 
 	self:UpdateSelectionOptions();
 end

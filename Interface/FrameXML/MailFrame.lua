@@ -727,8 +727,6 @@ function OpenMail_Update()
 	OpenMailScrollFrame:SetHeight(scrollHeight);
 	OpenMailScrollChildFrame:SetHeight(scrollHeight);
 	OpenMailHorizontalBarLeft:SetPoint("TOPLEFT", "OpenMailFrame", "BOTTOMLEFT", 2, 39 + areay);
-	OpenScrollBarBackgroundTop:SetHeight(min(scrollHeight, 256));
-	OpenScrollBarBackgroundTop:SetTexCoord(0, 0.484375, 0, min(scrollHeight, 256) / 256);
 	OpenStationeryBackgroundLeft:SetHeight(scrollHeight);
 	OpenStationeryBackgroundLeft:SetTexCoord(0, 1.0, 0, min(scrollHeight, 256) / 256);
 	OpenStationeryBackgroundRight:SetHeight(scrollHeight);
@@ -1062,8 +1060,6 @@ function SendMailFrame_Update()
 	SendMailScrollFrame:SetHeight(scrollHeight);
 	SendMailScrollChildFrame:SetHeight(scrollHeight);
 	SendMailHorizontalBarLeft2:SetPoint("TOPLEFT", "SendMailFrame", "BOTTOMLEFT", 2, 184 + areay);
-	SendScrollBarBackgroundTop:SetHeight(min(scrollHeight, 256));
-	SendScrollBarBackgroundTop:SetTexCoord(0, 0.484375, 0, min(scrollHeight, 256) / 256);
 	SendStationeryBackgroundLeft:SetHeight(min(scrollHeight, 256));
 	SendStationeryBackgroundLeft:SetTexCoord(0, 1.0, 0, min(scrollHeight, 256) / 256);
 	SendStationeryBackgroundRight:SetHeight(min(scrollHeight, 256));

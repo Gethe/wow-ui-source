@@ -69,6 +69,19 @@ local SimpleAnimGroupAPI =
 			},
 		},
 		{
+			Name = "GetElapsed",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "elapsedSec", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLoopState",
 			Type = "Function",
 

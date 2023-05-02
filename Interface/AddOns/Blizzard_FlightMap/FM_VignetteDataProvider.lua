@@ -15,7 +15,7 @@ FlightMap_VignettePinMixin = CreateFromMixins(VignettePinMixin);
 function FlightMap_VignettePinMixin:OnLoad()
 	VignettePinMixin.OnLoad(self);
 
-	self:SetAlphaLimits(2.0, 0.0, 1.0);
+	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
 
 	self:SetNudgeTargetFactor(0.015);
 	self:SetNudgeZoomedOutFactor(1.0);

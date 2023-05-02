@@ -2,7 +2,11 @@ ClassNameplateBarDracthyr = { };
 
 function ClassNameplateBarDracthyr:OnLoad()
 	ClassResourceBarMixin.OnLoad(self);
-end 
+end
+
+function ClassNameplateBarDracthyr:Setup()
+	ClassResourceBarMixin.Setup(self);
+end
 
 function ClassNameplateBarDracthyr:SetupDracthyr()
 	self:ShowNameplateBar();
@@ -15,4 +19,4 @@ end
 
 function ClassNameplateBarDracthyr:UpdatePower()
 	EssencePowerBar.UpdatePower(self);
-end 
+end

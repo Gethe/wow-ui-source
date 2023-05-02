@@ -115,29 +115,29 @@ function Multibar_EmptyFunc (show)
 end
 
 function MultiBar1_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_2");
+	return IsMultibarVisible(1);
 end
 
 function MultiBar2_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_3");
+	return IsMultibarVisible(2);
 end
 
 function MultiBar3_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_4");
+	return IsMultibarVisible(3);
 end
 
 function MultiBar4_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_5");
+	return IsMultibarVisible(4);
 end
 
 function MultiBar5_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_6");
+	return IsMultibarVisible(5);
 end
 
 function MultiBar6_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_7");
+	return IsMultibarVisible(6);
 end
 
 function MultiBar7_IsVisible()
-	return Settings.GetValue("PROXY_SHOW_ACTIONBAR_8");
+	return IsMultibarVisible(7);
 end

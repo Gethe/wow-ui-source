@@ -3,13 +3,25 @@ local issecure = issecure;
 local type = type;
 local pairs = pairs;
 local select = select;
+local error = error;
+local format = string.format;
 
 --Create a local version of this function just so we don't have to worry about changes
-local function copyTable(tab)
+local function copyTable(tab, tableCopies)
+	if not tableCopies then
+		tableCopies = {};
+	end
+
 	local copy = {};
+	tableCopies[tab] = copy;
+
 	for k, v in pairs(tab) do
 		if ( type(v) == "table" ) then
-			copy[k] = copyTable(v);
+			if ( tableCopies[v] ) then
+				copy[k] = tableCopies[v];
+			else
+				copy[k] = copyTable(v, tableCopies);
+			end
 		else
 			copy[k] = v;
 		end
@@ -17,14 +29,42 @@ local function copyTable(tab)
 	return copy;
 end
 
-function SecureCapsuleGet(name)
+local function copyTableWithTypeCheck(tab, name, tableCopies)
+	if not tableCopies then
+		tableCopies = {};
+	end
+
+	local copy = {};
+	tableCopies[tab] = copy;
+
+	for k, v in pairs(tab) do
+		if ( type(v) == "table" ) then
+			if ( tableCopies[v] ) then
+				copy[k] = tableCopies[v];
+			else
+				copy[k] = copyTableWithTypeCheck(v, name, tableCopies);
+			end
+		elseif ( type(v) == "userdata" ) then
+			error(format("Secure Capsule: Cannot import userdata into secure capsule (importing %s)", name));
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end
+
+function SecureCapsuleGet(name, skipTableCopy)
 	if ( not issecure() ) then
 		return;
 	end
 
 	if ( type(contents[name]) == "table" ) then
-		--Segment the users
-		return copyTable(contents[name]);
+		--Segment the users, unless otherwise requested (likely segmented in its own sanitization)
+		if skipTableCopy then
+			return contents[name];
+		else
+			return copyTable(contents[name]);
+		end
 	else
 		return contents[name];
 	end
@@ -34,18 +74,31 @@ end
 --Local functions for retaining.
 -------------------------------
 
+local function RetainHelper(name, toTable, fromTable)
+	if ( toTable[name] ) then
+		error(format("Secure Capsule: Duplicate key retention \"%s\"", name));
+	end
+
+	local fromVal = fromTable[name];
+	local fromType = type(fromVal);
+
+	if ( fromType == "table" ) then
+		toTable[name] = copyTableWithTypeCheck(fromVal, name);
+	elseif ( fromType == "userdata" ) then
+		error(format("Secure Capsule: Cannot import userdata into secure capsule (importing %s)", name));
+	else
+		toTable[name] = fromVal;
+	end
+end
+
 --Retains a copy of name
 local function retain(name)
-	if ( type(_G[name]) == "table" ) then
-		contents[name] = copyTable(_G[name]);
-	else
-		contents[name] = _G[name];
-	end
+	RetainHelper(name, contents, _G);
 end
 
 --Takes name and removes it from the global environment (note: make sure that nothing else has saved off a copy)
 local function take(name)
-	contents[name] = _G[name];
+	retain(name);
 	_G[name] = nil;
 end
 
@@ -63,11 +116,48 @@ local function retainenum(name)
 end
 
 local function takeenum(name)
-	if (not contents["Enum"]) then
+	if ( not contents["Enum"] ) then
 		contents["Enum"] = {};
 	end
 	contents["Enum"][name] = _G.Enum[name];
 	_G.Enum[name] = nil;
+end
+
+-- Used to retain only certain keys from a table
+local function retainfromtable(tblName, keyName)
+	if ( type(_G[tblName]) ~= "table" ) then
+		error(format("Secure Capsule: Cannot retain from table; %s is not a table.", tblName));
+	end
+
+	if ( not contents[tblName] ) then
+		contents[tblName] = {};
+	end
+
+	RetainHelper(keyName, contents[tblName], _G[tblName]);
+end
+
+-- Used to take only certain keys from a table
+local function takefromtable(tblName, keyName)
+	local tbl = _G[tblName];
+	if ( type(tbl) ~= "table" ) then
+		error(format("Secure Capsule: Cannot take from table; %s is not a table.", tblName));
+	end
+
+	if ( not contents[tblName] ) then
+		contents[tblName] = {};
+	end
+
+	RetainHelper(keyName, contents[tblName], tbl);
+	tbl[keyName] = nil;
+end
+
+local function removefromtable(tblName, keyName)
+	local tbl = _G[tblName];
+	if ( type(tbl) ~= "table" ) then
+		error(format("Secure Capsule: Cannot remove from table; %s is not a table.", tblName));
+	end
+
+	tbl[keyName] = nil;
 end
 
 -------------------------------
@@ -76,15 +166,11 @@ end
 
 --If storing off Lua functions, be careful that they don't in turn call any other Lua functions that may have been swapped out.
 
---For store
-if ( IsGMClient() ) then
-	retain("HideGMOnly");
-end
-take("C_StoreSecure");
-take("CreateForbiddenFrame");
-retain("IsGMClient");
-retain("IsOnGlueScreen");
+-- Generic utils
 retain("math");
+retain("max");
+retain("ceil");
+retain("floor");
 retain("table");
 retain("string");
 retain("bit");
@@ -102,32 +188,36 @@ retain("wipe");
 retain("error");
 retain("assert");
 retain("strtrim");
-retain("LoadURLIndex");
-retain("C_Container");
-retain("GetCursorPosition");
-retain("GetRealmName");
-retain("PlaySound");
-retain("SetPortraitToTexture");
-retain("SetPortraitTexture");
+retain("getfenv");
+retain("setfenv");
+retain("setmetatable");
 retain("getmetatable");
-retain("BACKPACK_CONTAINER");
-retain("NUM_BAG_SLOTS");
-retain("NUM_TOTAL_EQUIPPED_BAG_SLOTS");
-retain("RAID_CLASS_COLORS");
-retain("CLASS_ICON_TCOORDS");
-retain("C_Timer");
-retain("C_ModelInfo");
-retain("C_PlayerInfo");
+retain("issecure");
+retain("forceinsecure");
+retain("pcall");
+retain("pack");
+retain("securecallfunction");
+retain("secureexecuterange");
+retain("rawset");
+retain("format");
+retain("Round");
+retain("tinsert");
+retain("IsGMClient");
+retain("IsOnGlueScreen");
 retain("IsModifiedClick");
 retain("GetTime");
-retain("UnitAffectingCombat");
+retain("SafePack");
 retain("GetCVar");
-retain("GMError");
-retain("GetMouseFocus");
+retain("GetCVarBool");
+retain("UnitAffectingCombat");
 retain("LOCALE_enGB");
+retain("GetMouseFocus");
 retain("CreateFrame");
+retain("CreateCounter");
 retain("Lerp");
 retain("Clamp");
+retain("ClampMod");
+retain("NegateIf");
 retain("PercentageBetween");
 retain("Saturate");
 retain("GetCursorDelta");
@@ -140,26 +230,110 @@ retain("Vector3D_ScaleBy");
 retain("Vector3D_CalculateNormalFromYawPitch");
 retain("Vector3D_CalculateYawPitchFromNormal");
 retain("DeltaLerp");
-retain("SOUNDKIT");
 retain("GetScreenWidth");
 retain("GetScreenHeight");
 retain("GetPhysicalScreenSize");
 retain("GetScreenDPIScale");
+retain("UnitFactionGroup");
+retain("strlenutf8");
+retain("UnitRace");
+retain("UnitSex");
+retain("CreateInterpolator");
+retain("ApproximatelyEqual");
+retain("GenerateClosure");
+retain("WithinRangeExclusive");
+retain("TextureKitConstants");
+retain("CopyValuesAsKeys");
+retain("UNKNOWN");
+retain("PlaySound");
+retain("PlaySoundFile");
+retain("SOUNDKIT");
+retain("TableUtil");
+retain("CreateFromMixins");
+retain("UnitIsUnit");
+retain("SECONDS_PER_DAY");
+retain("DAY_ONELETTER_ABBR");
+retain("SECONDS_PER_HOUR");
+retain("HOUR_ONELETTER_ABBR");
+retain("SECONDS_PER_MIN");
+retain("MINUTE_ONELETTER_ABBR");
+retain("SECOND_ONELETTER_ABBR");
+retain("SecondsToTimeAbbrev");
+retain("HIGHLIGHT_FONT_COLOR");
+retain("NORMAL_FONT_COLOR");
+retain("GREEN_FONT_COLOR");
+retain("RED_FONT_COLOR");
+retain("DISABLED_FONT_COLOR");
+retain("NineSliceLayouts");
+retain("NineSliceUtil");
+retain("NineSlicePanelMixin");
+retain("ColorMixin");
+retain("CreateColor");
+retain("GetThreatStatusColor");
+retain("GetItemInfo");
+retain("GetSpellInfo");
+retain("UnitTokenFromGUID");
+retain("UnitName");
+retain("UnitPlayerControlled");
+retain("UnitCanAttack");
+retain("UnitIsPVP");
+retain("UnitReaction");
+retain("C_Timer");
+retain("C_CVar");
+retain("C_XMLUtil");
+retain("GetFontStringMetatable");
+retain("pcallwithenv");
+
+-- For tooltips
+retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+retain("BattlePetToolTip_Show");
+retain("SharedTooltip_SetBackdropStyle");
+retain("C_TooltipInfo");
+retain("C_Item");
+
+--For store
+if ( IsGMClient() ) then
+	retain("HideGMOnly");
+end
+take("C_StoreSecure");
+take("CreateForbiddenFrame");
+retain("LoadURLIndex");
+retain("C_Container");
+retain("GetCursorPosition");
+retain("GetRealmName");
+retain("SetPortraitToTexture");
+retain("SetPortraitTexture");
+retain("BACKPACK_CONTAINER");
+retain("NUM_BAG_SLOTS");
+retain("NUM_TOTAL_EQUIPPED_BAG_SLOTS");
+retain("RAID_CLASS_COLORS");
+retain("CLASS_ICON_TCOORDS");
+retain("C_ModelInfo");
+retain("C_PlayerInfo");
+retain("GMError");
 retain("IsTrialAccount");
 retain("IsVeteranTrialAccount");
 retain("C_StorePublic");
 retain("C_Club");
-retain("UnitFactionGroup");
-retain("FrameUtil");
-retain("strlenutf8");
-retain("UnitRace");
-retain("UnitSex");
 retain("GetURLIndexAndLoadURL");
 retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
-retain("Round");
 retain("IsCharacterNPERestricted");
-retain("securecallfunction");
+retain("GetScaledCursorPosition");
+retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
+retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
+retain("Vector3DMixin");
+
+-- Require move
+retain("tInvert");
+retain("tContains");
+
+-- Investigate loading these from the .tocs and adding preambles
+retain("FrameUtil");
+retain("EnumUtil");
+retain("FlagsUtil");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -415,6 +589,12 @@ take("BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT");
 take("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 take("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
 take("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
+retain("TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT");
+retain("TOOLTIP_UPDATE_TIME");
+retain("PVP_BOUNTY_REWARD_TITLE");
+retain("QUEST_REWARDS");
+retain("ISLAND_QUEUE_REWARD_FOR_WINNING");
+retain("CONTRIBUTION_REWARD_TOOLTIP_TEXT");
 
 
 -- For Battle.net Token
@@ -480,8 +660,6 @@ retain("OKAY");
 retain("LARGE_NUMBER_SEPERATOR");
 retain("DECIMAL_SEPERATOR");
 retain("TOOLTIP_DEFAULT_COLOR");
-retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-retain("ACCEPT");
 retain("CANCEL");
 retain("CREATE_AUCTION");
 retain("CONTINUE");
@@ -545,8 +723,6 @@ retain("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
 retain("COMMUNITY_TYPE_UNAVAILABLE");
 retain("CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL");
 
-retain("RED_FONT_COLOR");
-
 --Lua enums
 retain("LE_TOKEN_RESULT_SUCCESS");
 retain("LE_TOKEN_RESULT_ERROR_OTHER");
@@ -573,6 +749,24 @@ retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
 retainenum("ValidateNameResult");
+retainenum("TooltipDataLineType");
+retainenum("TooltipDataType");
+
+-- For Private Auras
+retainfromtable("AuraUtil", "DefaultAuraCompare");
+retainfromtable("C_ChatInfo", "GetColorForChatType");
+retain("SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD");
+retain("SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD");
+retain("SMALLER_AURA_DURATION_FONT");
+retain("SMALLER_AURA_DURATION_OFFSET_Y");
+retain("DEFAULT_AURA_DURATION_FONT");
+retain("DebuffTypeColor");
+retain("DebuffTypeSymbol");
+retain("BUFF_DURATION_WARNING_TIME");
+retain("C_FunctionContainers");
+retain("C_UnitAuras");
+take("C_UnitAurasPrivate");
+removefromtable("C_TooltipInfo", "GetUnitPrivateAura");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

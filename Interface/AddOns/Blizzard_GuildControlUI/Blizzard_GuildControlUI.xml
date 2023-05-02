@@ -290,7 +290,7 @@
 					<Button name="$parentPurchaseButton" inherits="UIPanelButtonTemplate" text="BANKSLOTPURCHASE" parentKey="button">
 						<Size x="124" y="21"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentCostMoneyFrame" relativePoint="RIGHT" x="12" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentCostMoneyFrame" relativePoint="RIGHT" x="6" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -427,7 +427,12 @@
 							<Anchor point="TOP" x="0" y="-45"/>
 						</Anchors>
 						<Frames>
-							<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate2" parentKey="scrollFrame">
+							<ScrollFrame name="$parentScrollFrame" inherits="ScrollFrameTemplate" parentKey="scrollFrame">
+								<KeyValues>
+									<KeyValue key="scrollBarX" value="8" type="number"/>
+									<KeyValue key="scrollBarTopY" value="-4" type="number"/>
+									<KeyValue key="scrollBarBottomY" value="1" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="8" y="-8"/>
 									<Anchor point="BOTTOMRIGHT" x="-24" y="8"/>

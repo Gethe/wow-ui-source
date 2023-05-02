@@ -215,6 +215,7 @@ local TradeSkillUITypes =
 				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "orderSource", Type = "CraftingOrderReagentSource", Nilable = true },
+				{ Name = "required", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -315,6 +316,7 @@ local TradeSkillUITypes =
 			{
 				{ Name = "profession", Type = "Profession", Nilable = true },
 				{ Name = "professionID", Type = "number", Nilable = false },
+				{ Name = "sourceCounter", Type = "number", Nilable = false },
 				{ Name = "professionName", Type = "cstring", Nilable = false },
 				{ Name = "expansionName", Type = "cstring", Nilable = false },
 				{ Name = "skillLevel", Type = "number", Nilable = false },

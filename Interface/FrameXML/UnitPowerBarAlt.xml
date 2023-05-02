@@ -202,7 +202,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EncounterBar" parent="UIParent" inherits="VerticalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeEncounterBarSystemTemplate" frameStrata="MEDIUM" fixedFrameStrata="true" frameLevel="70" fixedFrameLevel="true">
+	<Frame name="EncounterBar" parent="UIParent" inherits="VerticalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeEncounterBarSystemTemplate" mixin="EncounterBarMixin" frameStrata="MEDIUM" fixedFrameStrata="true" frameLevel="70" fixedFrameLevel="true">
 		<Size x="250" y="30"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -210,8 +210,6 @@
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="6" type="number"/>
 			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
-			<KeyValue key="minimumWidth" value="230" type="number"/>
-			<KeyValue key="minimumHeight" value="30" type="number"/>
 		</KeyValues>
 	</Frame>
 

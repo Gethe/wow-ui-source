@@ -131,10 +131,10 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-4" y="2"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-4" y="-5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="-7"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-8" y="1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

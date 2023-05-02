@@ -1,11 +1,15 @@
-ExpBarMixin = CreateFromMixins(StatusTrackingBarMixin);
+local unrestedBarAtlas = "UI-HUD-ExperienceBar-Fill-Experience";
+local unrestedGainFlareAtlas = "UI-HUD-ExperienceBar-Flare-XP-2x-Flipbook";
+local unrestedLevelUpAtlas = "UI-HUD-ExperienceBar-Fill-Experience-2x-Flipbook";
 
-function ExpBarMixin:GetPriority()
-	return self.priority;
-end
+local restedBarAtlas = "UI-HUD-ExperienceBar-Fill-Rested";
+local restedGainFlareAtlas = "UI-HUD-ExperienceBar-Flare-Rested-2x-Flipbook";
+local restedLevelUpAtlas = "UI-HUD-ExperienceBar-Fill-Rested-2x-Flipbook";
 
-function ExpBarMixin:ShouldBeVisible()
-	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled();
+ExpBarMixin = {};
+
+function ExpBarMixin:GetMaxLevel()
+	return GetMaxLevelForPlayerExpansion();
 end
 
 function ExpBarMixin:IsCapped()
@@ -27,19 +31,17 @@ function ExpBarMixin:GetLevelData()
 end
 
 function ExpBarMixin:Update()
-	local currXP, nextXP, level = self:GetLevelData();
-	local minBar, maxBar = 0, nextXP;
-
+	local level;
+	self.currXP, self.maxBar, level = self:GetLevelData();
 	if self:IsCapped() then
-		self:SetBarValues(1, 0, 1, level);
-		self.StatusBar:ProcessChangesInstantly();
-		self.StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Experience");
-	else
-		self:SetBarValues(currXP, minBar, maxBar, level);
-	end
+		local isRested = false;
+		self:UpdateStatusBarTextures(isRested);
 
-	self.currXP = currXP;
-	self.maxBar = maxBar;
+		self:SetBarValues(1, 0, 1, level, self:GetMaxLevel());
+	else
+		local minBar = 0;
+		self:SetBarValues(self.currXP, minBar, self.maxBar, level, self:GetMaxLevel());
+	end
 
 	self:UpdateCurrentText();
 end
@@ -56,7 +58,6 @@ function ExpBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
-	self.priority = 3;
 end
 
 function ExpBarMixin:OnEvent(event, ...)
@@ -76,7 +77,7 @@ end
 
 function ExpBarMixin:OnEnter()
 	TextStatusBar_UpdateTextString(self);
-	self:ShowText(self);
+	self:ShowText();
 	self:UpdateCurrentText();
 
 	if GameLimitedMode_IsBankedXPActive() then
@@ -114,7 +115,14 @@ function ExpBarMixin:UpdateTick()
 	self.ExhaustionTick:UpdateExhaustionColor();
 end
 
-ExhaustionTickMixin = { }
+function ExpBarMixin:UpdateStatusBarTextures(isRested)
+	self.StatusBar:SetBarTexture(isRested and restedBarAtlas or unrestedBarAtlas);
+	self.StatusBar:SetAnimationTextures(isRested and restedGainFlareAtlas or unrestedGainFlareAtlas,
+		isRested and restedLevelUpAtlas or unrestedLevelUpAtlas);
+end
+
+ExhaustionTickMixin = {};
+
 function ExhaustionTickMixin:ExhaustionToolTipText()
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
 	if(not exhaustionStateID) then
@@ -195,9 +203,11 @@ end
 function ExhaustionTickMixin:UpdateExhaustionColor()
 	local exhaustionStateID = GetRestState();
 	if ( exhaustionStateID == 1 ) then
-		self:GetParent().StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Rested");
+		local isRested = true;
+		self:GetParent():UpdateStatusBarTextures(isRested);
 	elseif ( exhaustionStateID == 2 ) then
-		self:GetParent().StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Experience");
+		local isRested = false;
+		self:GetParent():UpdateStatusBarTextures(isRested);
 	end
 end
 
@@ -205,7 +215,9 @@ function ExhaustionTickMixin:OnEvent(event, ...)
 	if (IsRestrictedAccount()) then
 		local rlevel = GetRestrictedAccountData();
 		if (UnitLevel("player") >= rlevel) then
-			self:GetParent().StatusBar:SetStatusBarTexture("UI-HUD-ExperienceBar-Fill-Rested");
+			local isRested = true;
+			self:GetParent():UpdateStatusBarTextures(isRested);
+
 			self:Hide();
 			self:GetParent().ExhaustionLevelFillBar:Hide();
 			self:UnregisterAllEvents();

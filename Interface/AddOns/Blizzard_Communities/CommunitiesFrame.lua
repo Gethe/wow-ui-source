@@ -1609,8 +1609,8 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame:SetSize(814, 426);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame.CommunitiesList, "TOPRIGHT", 31, -44);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -32, 28);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 10, -11);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 10, -17);
+		communitiesFrame.Chat.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 15, 1);
+		communitiesFrame.Chat.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 10, -25);
 		communitiesFrame.Chat.InsetFrame:Show();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("TOPLEFT", communitiesFrame.Chat, "BOTTOMLEFT", -4, -4);
@@ -1633,8 +1633,8 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame:SetSize(322, 406);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame, "TOPLEFT", 13, -67);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -35, 36);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 8, -10);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 8, 7);
+		communitiesFrame.Chat.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 13, 0);
+		communitiesFrame.Chat.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 13, -4);
 		communitiesFrame.Chat.InsetFrame:Hide();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMLEFT", communitiesFrame, "BOTTOMLEFT", 10, 0);

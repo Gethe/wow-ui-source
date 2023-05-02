@@ -1303,6 +1303,7 @@ local QuestLog =
 				{ Name = "isAutoComplete", Type = "bool", Nilable = false },
 				{ Name = "overridesSortOrder", Type = "bool", Nilable = false },
 				{ Name = "readyForTranslation", Type = "bool", Nilable = false, Default = true },
+				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
 			},
 		},
 		{

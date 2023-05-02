@@ -130,6 +130,14 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "OnClose",
+			Type = "Function",
+		},
+		{
+			Name = "OnOpen",
+			Type = "Function",
+		},
+		{
 			Name = "ResetSlotFilter",
 			Type = "Function",
 		},
@@ -158,6 +166,15 @@ local EncounterJournal =
 			Arguments =
 			{
 				{ Name = "filterSlot", Type = "ItemSlotFilterType", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTab",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tabIdx", Type = "number", Nilable = false },
 			},
 		},
 	},

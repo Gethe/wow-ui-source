@@ -1,28 +1,47 @@
 MagePowerBar = {};
 
 function MagePowerBar:UpdatePower()
-	local power = UnitPower("player", Enum.PowerType.ArcaneCharges, true);
-
-	for i = 1, power do
-		local charge =  self.classResourceButtonTable[i];
-		if (charge and not charge.on) then
-			charge.on = true;
-			charge.TurnOff:Stop();
-			charge.TurnOn:Play();
-		end
-	end
-	for i = power + 1, #self.classResourceButtonTable do
-		local charge = self.classResourceButtonTable[i];
-		if (charge and charge.on) then
-			charge.on = false;
-			charge.TurnOn:Stop();
-			charge.TurnOff:Play();
-		end
+	local numCharges = UnitPower(self:GetUnit(), self.powerType, true);
+	for i = 1, #self.classResourceButtonTable do
+		self.classResourceButtonTable[i]:SetActive(i <= numCharges);
 	end
 end
 
+
 ArcaneChargeMixin = { };
+
 function ArcaneChargeMixin:Setup()
-	self.on = false;
-	self.ChargeTexture:SetAlpha(0.3);
-end		
+	self.isActive = nil;
+	self:ResetVisuals();
+	self:Show();
+end
+
+function ArcaneChargeMixin.OnRelease(framePool, self)
+	self:ResetVisuals();
+	FramePool_HideAndClearAnchors(framePool, self);
+end
+
+function ArcaneChargeMixin:SetActive(isActive)
+	if self.isActive == isActive then
+		return;
+	end
+
+	self.isActive = isActive;
+
+	self:ResetVisuals();
+
+	if self.isActive then
+		self.activateAnim:Restart();
+	else
+		self.deactivateAnim:Restart();
+	end
+end
+
+function ArcaneChargeMixin:ResetVisuals()
+	self.activateAnim:Stop();
+	self.deactivateAnim:Stop();
+
+	for _, fxTexture in ipairs(self.fxTextures) do
+		fxTexture:SetAlpha(0);
+	end
+end

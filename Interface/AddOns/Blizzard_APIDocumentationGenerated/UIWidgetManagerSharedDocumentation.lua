@@ -48,9 +48,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -79,6 +79,8 @@ local UIWidgetManagerShared =
 				{ Name = "UnitPowerBar", Type = "UIWidgetVisualizationType", EnumValue = 23 },
 				{ Name = "FillUpFrames", Type = "UIWidgetVisualizationType", EnumValue = 24 },
 				{ Name = "TextWithSubtext", Type = "UIWidgetVisualizationType", EnumValue = 25 },
+				{ Name = "WorldLootObject", Type = "UIWidgetVisualizationType", EnumValue = 26 },
+				{ Name = "ItemDisplay", Type = "UIWidgetVisualizationType", EnumValue = 27 },
 			},
 		},
 	},

@@ -1,6 +1,6 @@
 EditModeSettingDisplayInfoManager = {};
 
-local function showAsPercentage(value)
+local function ShowAsPercentage(value)
 	local roundToNearestInteger = true;
 	return FormatPercentage(value / 100, roundToNearestInteger);
 end
@@ -66,7 +66,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 200,
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 
 		-- Icon Padding
@@ -130,6 +130,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_MINIMAP_ROTATE_MINIMAP,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
+
+		-- Size
+		{
+			setting = Enum.EditModeMinimapSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_MINIMAP_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
 	},
 
 	-- Cast Bar Settings
@@ -144,13 +156,20 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 150,
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 
 		-- Lock To Player Frame
 		{
 			setting = Enum.EditModeCastBarSetting.LockToPlayerFrame,
 			name = HUD_EDIT_MODE_SETTING_CAST_BAR_LOCK_TO_PLAYER_FRAME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Cast Time
+		{
+			setting = Enum.EditModeCastBarSetting.ShowCastTime,
+			name = HUD_EDIT_MODE_SETTING_CAST_BAR_SHOW_CAST_TIME,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 	},
@@ -309,7 +328,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 200,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 	},
 
@@ -370,7 +389,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 200,
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 
 		-- IconPadding
@@ -434,6 +453,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 		},
+		-- Opacity
+		{
+			setting = Enum.EditModeObjectiveTrackerSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_OBJECTIVE_TRACKER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
 	},
 
 	[Enum.EditModeSystem.MicroMenu] =
@@ -469,6 +500,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 100,
 			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Size
+		{
+			setting = Enum.EditModeMicroMenuSetting.EyeSize,
+			name = HUD_EDIT_MODE_SETTING_MICRO_MENU_EYE_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
 			formatter = showAsPercentage,
@@ -510,7 +553,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 200,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 	},
 
@@ -530,7 +573,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 200,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 	},
 };

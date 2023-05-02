@@ -6,6 +6,21 @@ local AddOns =
 
 	Functions =
 	{
+		{
+			Name = "GetAddOnMetadata",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+				{ Name = "variable", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -17,6 +32,7 @@ local AddOns =
 			Payload =
 			{
 				{ Name = "addOnName", Type = "cstring", Nilable = false },
+				{ Name = "containsBindings", Type = "bool", Nilable = false },
 			},
 		},
 		{

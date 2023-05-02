@@ -19,13 +19,14 @@
 			<KeyValue key="commandNamePrefix" value="ACTION" type="string"/>
 			<KeyValue key="isHorizontal" value="true" type="boolean"/>
 			<KeyValue key="numRows" value="1" type="number"/>
-			<KeyValue key="numButtons" value="12" type="number"/>
-			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+			<KeyValue key="numButtons" value="MAIN_MENU_BAR_NUM_BUTTONS" type="global"/>
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
 			<KeyValue key="noSpacers" value="true" type="boolean"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
+			<KeyValue key="hideEndCaps" value="MAIN_MENU_BAR_HIDE_END_CAPS" type="global"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
 		</KeyValues>
 
 		<Layers>
@@ -163,6 +164,7 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
 				</KeyValues>
 				<Scripts>
 					<OnLoad method="OnLoad" inherit="prepend"/>

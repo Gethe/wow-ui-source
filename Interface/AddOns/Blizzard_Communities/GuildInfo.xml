@@ -161,7 +161,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentMOTDScrollFrame" parentKey="MOTDScrollFrame" inherits="MinimalScrollFrameTemplate">
+			<ScrollFrame name="$parentMOTDScrollFrame" parentKey="MOTDScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<!--Thumb cannot fit, so the choice was made to make it appear like a stepper.-->
+					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarX" value="6" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-9" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="7" type="number"/>
+				</KeyValues>
 				<Size x="246" y="46"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHeader2" relativePoint="BOTTOMLEFT" x="14" y="-1"/>
@@ -179,15 +187,6 @@
 						</FontString>
 					</SimpleHTML>
 				</ScrollChild>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = true;
-						self.noScrollThumb = true;
-						ScrollBar_AdjustAnchors(self.ScrollBar, 3, -2);
-						self.ScrollBar:Hide();
-						ScrollFrame_OnLoad(self);
-					</OnLoad>
-				</Scripts>
 			</ScrollFrame>
 			<!-- id is what controls the challenge type. buttons not necessarily in order by id. -->
 			<Frame name="$parentChallenge1" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="1">
@@ -246,18 +245,17 @@
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
 			</Button>
-			<ScrollFrame parentKey="DetailsFrame" inherits="MinimalScrollFrameTemplate">
+			<ScrollFrame parentKey="DetailsFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarX" value="6" type="number"/>
+					<KeyValue key="scrollBarTopY" value="0" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="-1" type="number"/>
+				</KeyValues>
 				<Size x="246" y="93"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHeader3" relativePoint="BOTTOMLEFT" x="14" y="-1"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = true;
-						ScrollBar_AdjustAnchors(self.ScrollBar, 1, -2);
-						self.ScrollBar:Hide();
-					</OnLoad>
-				</Scripts>
 				<ScrollChild>
 					<Frame>
 						<Size x="246" y="60"/>
@@ -318,7 +316,12 @@
 					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
 				</KeyValues>
 				<Frames>
-					<ScrollFrame parentKey="ScrollFrame" inherits="MinimalScrollFrameTemplate">
+					<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarX" value="6" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="4" y="-4"/>
 							<Anchor point="BOTTOMRIGHT" x="-26" y="4"/>
@@ -408,7 +411,7 @@
 					<KeyValue key="backdropColorAlpha" value="0.9" type="number"/>
 				</KeyValues>
 				<Frames>
-					<ScrollFrame parentKey="ScrollFrame" inherits="MinimalScrollFrameTemplate">
+					<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="8" y="-4"/>
 							<Anchor point="TOPRIGHT" x="-25" y="-4"/>

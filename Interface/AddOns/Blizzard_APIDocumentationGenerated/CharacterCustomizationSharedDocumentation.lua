@@ -90,6 +90,7 @@ local CharacterCustomizationShared =
 				{ Name = "isNew", Type = "bool", Nilable = false },
 				{ Name = "swatchColor1", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "swatchColor2", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "soundKit", Type = "number", Nilable = true },
 				{ Name = "isLocked", Type = "bool", Nilable = false },
 				{ Name = "lockedText", Type = "string", Nilable = true },
 			},

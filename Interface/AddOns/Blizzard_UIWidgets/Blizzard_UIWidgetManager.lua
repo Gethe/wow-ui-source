@@ -43,12 +43,16 @@ function UIWidgetContainerMixin:OnLoad()
 	end
 end
 
+function UIWidgetContainerMixin:OnShow()
+	self:UpdateWidgetLayout();
+end
+
 function UIWidgetContainerMixin:OnEvent(event, ...)
 	if event == "UPDATE_ALL_UI_WIDGETS" then
 		self:ProcessAllWidgets();
 	elseif event == "UPDATE_UI_WIDGET" then
 		local widgetInfo = ...;
-		if (widgetInfo.widgetSetID == self.widgetSetID) and (not widgetInfo.unit or (widgetInfo.unit == self.attachedToUnit)) then
+		if self:IsRegisteredForWidgetSet(widgetInfo.widgetSetID) and (not widgetInfo.unit or (widgetInfo.unit == self.attachedToUnit)) then
 			self:ProcessWidget(widgetInfo.widgetID, widgetInfo.widgetType);
 		end
 	end
@@ -270,6 +274,15 @@ function UIWidgetContainerMixin:UnregisterForWidgetSet()
 	self:UnregisterEvent("UPDATE_UI_WIDGET");
 
 	UIWidgetManager:OnWidgetContainerUnregistered(self);
+end
+
+-- Pass in nil to check if we are registered to any widget set
+function UIWidgetContainerMixin:IsRegisteredForWidgetSet(widgetSetID)
+	if widgetSetID then
+		return self.widgetSetID == widgetSetID;
+	else
+		return self.widgetSetID ~= nil;
+	end
 end
 
 function UIWidgetContainerMixin:RegisterTimerWidget(widgetID, widgetFrame)
@@ -519,6 +532,11 @@ function UIWidgetContainerMixin:HasAnyWidgetsShowing()
 end
 
 function UIWidgetContainerMixin:UpdateWidgetLayout()
+	if not self:IsRegisteredForWidgetSet() then
+		-- We aren't registered for a widget set, nothing to layout
+		return;
+	end
+
 	local sortedWidgets = {};
 	for _, widget in pairs(self.widgetFrames) do
 		table.insert(sortedWidgets, widget);

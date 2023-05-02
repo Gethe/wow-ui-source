@@ -759,7 +759,8 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 
 		if ( QuestUtils_IsQuestWorldQuest(questID) ) then
 			local info = C_QuestLog.GetQuestTagInfo(questID);
-			local inProgress = questLogIndex ~= nil;
+			-- Always have the WQ icon show ! instead of ?
+			local inProgress = false;
 			QuestUtil.SetupWorldQuestButton(block.TrackedQuest, info, inProgress, isSuperTracked, nil, nil, isTrackedWorldQuest);
 
 			block.TrackedQuest:SetScale(.9);

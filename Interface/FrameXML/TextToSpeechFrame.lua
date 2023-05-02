@@ -1,5 +1,6 @@
 local playbackActive = false;
 local queuedMessages = {};
+local queuedMessageTimer = nil;
 
 local DefaultLegacySettings =  {
 	playSoundSeparatingChatLineBreaks = true,
@@ -100,10 +101,48 @@ local function literalize(str)
 	return str:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%0");
 end
 
+function TextToSpeech_StartPlayNextQueuedMessageTimer()
+	if not queuedMessageTimer then
+		queuedMessageTimer = C_Timer.NewTicker(1, function()
+			if UIParent:IsShown() then
+				TextToSpeech_PlayNextQueuedMessage();
+			end
+		end);
+	end
+end
+
+function TextToSpeech_PlayNextQueuedMessage()
+	if queuedMessageTimer then
+		queuedMessageTimer:Cancel();
+		queuedMessageTimer = nil;
+	end
+	if #queuedMessages > 0 then
+		local queuedMessage = table.remove(queuedMessages, 1);
+
+		-- Add short delay for message sound if enabled, otherwise play next immediately
+		if ( C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks) ) then
+			playbackActive = true;
+			C_Timer.After(1, function()
+				playbackActive = false;
+				TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
+			end);
+		else
+			TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
+		end
+	end
+end
+
 function TextToSpeech_Speak(text, voice)
 	-- Queue messages
-	if playbackActive then
+	local uiHidden = not UIParent:IsShown();
+	local shouldQueue = playbackActive or uiHidden;
+	if shouldQueue then
 		table.insert(queuedMessages, {text=text, voice=voice});
+
+		if uiHidden then
+			TextToSpeech_StartPlayNextQueuedMessageTimer();
+		end
+
 		return;
 	end
 
@@ -322,20 +361,7 @@ function TextToSpeechFrame_OnEvent(self, event, ...)
 			PlaySound(SOUNDKIT.UI_VOICECHAT_TTSMESSAGE);
 		end
 
-		if #queuedMessages > 0 then
-			local queuedMessage = table.remove(queuedMessages, 1);
-
-			-- Add short delay for message sound if enabled, otherwise play next immediately
-			if ( C_TTSSettings.GetSetting(Enum.TtsBoolSetting.PlaySoundSeparatingChatLineBreaks) ) then
-				playbackActive = true;
-				C_Timer.After(1, function()
-					playbackActive = false;
-					TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
-				end);
-			else
-				TextToSpeech_Speak(queuedMessage.text, queuedMessage.voice);
-			end
-		end
+		TextToSpeech_PlayNextQueuedMessage();
 	else
 		self.loadedEvents[event] = true;
 	end
@@ -537,7 +563,7 @@ function TextToSpeechFrameTtsVoicePicker_OnShow(self)
 
 	local scrollBarShown = dataProvider:GetSize() > maxVisibleLines;
 	self.ScrollBar:SetShown(scrollBarShown);
-	self.ScrollBox:SetPoint("BOTTOMRIGHT", (scrollBarShown and -25 or 0), 0);
+	self.ScrollBox:SetPoint("BOTTOMRIGHT", (scrollBarShown and -20 or 0), 0);
 	self.ScrollBox:SetDataProvider(dataProvider);
 end
 
@@ -799,13 +825,22 @@ function TextToSpeechFrame_IsEventNarrationEnabled(frame, event, ...)
 	if event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_COMMUNITIES_CHANNEL" then
 		local localID = tostring(arg8);
 		local channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(localID);
-		return C_TTSSettings.GetChannelEnabled(channelInfo);
+		if not channelInfo then
+			local channelName = arg9;
+			channelInfo = C_ChatInfo.GetChannelInfoFromIdentifier(channelName);
+		end
+
+		if channelInfo then
+			return C_TTSSettings.GetChannelEnabled(channelInfo);
+		end
 	end
 
 	local typeGroup = ChatTypeGroupInverted[event];
 	if typeGroup and TextToSpeechFrame_GetChatTypeEnabled(typeGroup) then
 		return true;
 	end
+
+	return false;
 end
 
 local chatTypesWithTtsFormat = {

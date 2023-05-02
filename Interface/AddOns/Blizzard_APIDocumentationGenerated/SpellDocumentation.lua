@@ -57,6 +57,15 @@ local Spell =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "TargetSpellJumpsUpgradeTrack",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "jumpsUpgradeTrack", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

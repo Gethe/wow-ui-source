@@ -247,7 +247,7 @@ function QueueStatusButtonMixin:OnClick(button)
 end
 
 function QueueStatusButtonMixin:CheckTutorials()
-	if not self:IsShown() then
+	if not self:IsShown() or EditModeManagerFrame:IsEditModeActive() then
 		return;
 	end
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES) then
@@ -261,7 +261,7 @@ function QueueStatusButtonMixin:CheckTutorials()
 			alignment = HelpTip.Alignment.Center,
 			acknowledgeOnHide = true,
 		};
-		HelpTip:Show(UIParent, helpTipInfo, self);
+		HelpTip:Show(self, helpTipInfo, self);
 	end
 end
 
@@ -272,6 +272,8 @@ function QueueStatusButtonMixin:OnShow()
 
 	self.Eye:StartInitialAnimation();
 	EventRegistry:TriggerEvent("QueueStatusButton.OnShow");
+
+	MicroMenuContainer:Layout();
 end
 
 function QueueStatusButtonMixin:OnHide()
@@ -319,6 +321,72 @@ function QueueStatusButtonMixin:OnGlowPulse()
 	end
 
 	return playSounds;
+end
+
+function QueueStatusButtonMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
+	-- Position button so that it is facing towards the center of the screen to avoid it going offscreen
+	local point, relativeTo, relativePoint, offsetX, offsetY;
+
+	self:ClearAllPoints();
+	if MicroMenu:GetParent() == MicroMenuContainer then
+		-- Micro menu is in default container. Anchor to the micro menu
+		relativeTo = MicroMenu;
+
+		if isMenuHorizontal then
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 15, 0;
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", -15, 0;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 15, 0;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", -15, 0;
+			end
+		else
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 0, 15;
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", 0, 15;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 0, -15;
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", 0, -15;
+			end
+		end
+	else
+		-- Micro menu isn't in it's normal container so don't anchor to it and instead anchor relative to the container
+		relativeTo = MicroMenuContainer;
+		offsetX, offsetY = 0, 0;
+
+		if isMenuHorizontal then
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint = "TOPLEFT", "TOPLEFT";
+			end
+		else
+			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+				point, relativePoint = "TOPLEFT", "TOPLEFT";
+			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
+			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
+			end
+		end
+	end
+
+	-- Make sure to account for scale since it can be changed via edit mode
+	local scale = self:GetScale();
+	offsetX = offsetX / scale;
+	offsetY = offsetY / scale;
+
+	self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 end
 
 ----------------------------------------------
@@ -562,6 +630,16 @@ function QueueStatusFrameMixin:Update()
 		end
 	end
 
+	-- NOTICE: Keep this as the last possible entry
+	-- If you're in edit mode and there are no other entries then add one for edit mode so the eye shows
+	if ( nextEntry <= 1 and EditModeManagerFrame:IsEditModeActive() ) then
+		local entry = self:GetEntry(nextEntry);
+		QueueStatusEntry_SetMinimalDisplay(entry, HUD_EDIT_MODE_TITLE, QUEUED_STATUS_IN_PROGRESS);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+	end
+
 	QueueStatusFrame_SortAndAnchorEntries(self);
 
 	--Update the size of this frame to fit everything
@@ -582,6 +660,35 @@ function QueueStatusFrameMixin:Update()
 	end
 
 	QueueStatusButton.Eye:SetStaticMode(makeEyeStatic);
+end
+
+function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
+	-- Position frame so that it is facing towards the center of the screen to avoid it going offscreen
+	local point, relativePoint, offsetX, offsetY;
+	if isMenuHorizontal then
+		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 0, 25;
+		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", 0, 25;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+			point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 0, -25;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", 0, -25;
+		end
+	else
+		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 25, 0;
+		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", -25, 0;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+			point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 25, 0;
+		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", -25, 0;
+		end
+	end
+
+	self:ClearAllPoints();
+	self:SetPoint(point, QueueStatusButton, relativePoint, offsetX, offsetY);
 end
 
 ----------------------------------------------

@@ -163,16 +163,11 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-6"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-45"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="2"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
-					</Layer>
-				</Layers>
 			</EventFrame>
 			<Frame parentKey="EntryDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>

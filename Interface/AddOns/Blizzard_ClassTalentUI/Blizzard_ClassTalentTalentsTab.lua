@@ -191,6 +191,8 @@ function ClassTalentTalentsTabMixin:UpdateClassVisuals()
 	end
 
 	self:UpdateAllTalentButtonPositions();
+
+	self:UpdateSpecBackground();
 end
 
 function ClassTalentTalentsTabMixin:UpdateSpecBackground()
@@ -499,9 +501,18 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		return disabled, title, text, warning;
 	end
 
-	local function ExportCallback()
+	local function ClipboardExportCallback()
 		CopyToClipboard(self:GetLoadoutExportString());
 		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT, YELLOW_FONT_COLOR:GetRGB());
+	end
+
+	local function ChatLinkCallback()
+		local linkDisplayText = ("[%s]"):format(TALENT_BUILD_CHAT_LINK_TEXT:format(PlayerUtil.GetSpecName(), PlayerUtil.GetClassName()));
+		local linkText = LinkUtil.FormatLink("talentbuild", linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
+		local chatLink = PlayerUtil.GetClassColor():WrapTextInColorCode(linkText);
+		if not ChatEdit_InsertLink(chatLink) then
+			ChatFrame_OpenChat(chatLink);
+		end
 	end
 
 	local function ExportDisabledCallback()
@@ -519,15 +530,32 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 		disabledCallback = ImportDisabledCallback,
 	};
 
-	local exportSentinelInfo = {
-		text = TALENT_FRAME_DROP_DOWN_EXPORT,
+	self.LoadoutDropDown:AddSentinelValue(importSentinelInfo);
+
+	local copyToClipboardSentinelInfo = {
+		text = TALENT_FRAME_DROP_DOWN_EXPORT_CLIPBOARD,
 		colorCode = WHITE_FONT_COLOR_CODE,
-		callback = ExportCallback,
+		callback = ClipboardExportCallback,
 		disabledCallback = ExportDisabledCallback,
 	};
 
-	self.LoadoutDropDown:AddSentinelValue(importSentinelInfo);
-	self.LoadoutDropDown:AddSentinelValue(exportSentinelInfo);
+	local chatLinkSentinelInfo = {
+		text = TALENT_FRAME_DROP_DOWN_EXPORT_CHAT_LINK,
+		colorCode = WHITE_FONT_COLOR_CODE,
+		callback = ChatLinkCallback,
+		disabledCallback = ExportDisabledCallback,
+	};
+
+	local exportSentinelListInfo = {
+		text = TALENT_FRAME_DROP_DOWN_EXPORT,
+		colorCode = WHITE_FONT_COLOR_CODE,
+		sentinelKeyInfos = {
+			copyToClipboardSentinelInfo,
+			chatLinkSentinelInfo,
+		},
+		disabledCallback = ExportDisabledCallback,
+	};
+	self.LoadoutDropDown:AddSentinelSubDropDown(exportSentinelListInfo);
 
 	local function LoadConfiguration(configID, isUserInput)
 		if isUserInput then
@@ -739,8 +767,13 @@ end
 
 function ClassTalentTalentsTabMixin:RefreshConfigID()
 	if self:IsInspecting() then
-		local forceUpdate = true;
-		self:SetConfigID(Constants.TraitConsts.INSPECT_TRAIT_CONFIG_ID, forceUpdate);
+		if self:GetInspectUnit() then
+			local forceUpdate = true;
+			self:SetConfigID(Constants.TraitConsts.INSPECT_TRAIT_CONFIG_ID, forceUpdate);
+		else
+			local forceUpdate = true;
+			self:SetConfigID(Constants.TraitConsts.VIEW_TRAIT_CONFIG_ID, forceUpdate);
+		end
 	else
 		local activeConfigID = C_ClassTalents.GetActiveConfigID() or self.configIDs[1];
 		self:SetConfigID(activeConfigID);
@@ -1180,6 +1213,7 @@ function ClassTalentTalentsTabMixin:UpdateInspecting()
 	self.InspectCopyButton:SetShown(isInspecting);
 
 	self.PvPTalentSlotTray:SetPoint("RIGHT", self.BottomBar, "RIGHT", isInspecting and -24 or -114, 0);
+	self.PvPTalentSlotTray:SetShown(not isInspecting or (self:GetInspectUnit() ~= nil));
 
 	self.SearchBox:ClearAllPoints();
 	if isInspecting then
@@ -1205,48 +1239,34 @@ function ClassTalentTalentsTabMixin:GetInspectUnit()
 	return self:GetClassTalentFrame():GetInspectUnit();
 end
 
+function ClassTalentTalentsTabMixin:GetInspectString()
+	-- Overrides TalentFrameBaseMixin.
+
+	return self:GetClassTalentFrame():GetInspectString();
+end
+
 function ClassTalentTalentsTabMixin:CopyInspectLoadout()
-	local loadoutString = C_Traits.GenerateInspectImportString(self:GetInspectUnit());
-	if loadoutString ~= "" then
+	local loadoutString = self:GetInspectUnit() and C_Traits.GenerateInspectImportString(self:GetInspectUnit()) or self:GetInspectString();
+	if loadoutString and (loadoutString ~= "") then
 		CopyToClipboard(loadoutString);
 		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT, YELLOW_FONT_COLOR:GetRGB());
 	end
 end
 
-function ClassTalentTalentsTabMixin:GetUnitSex()
-	local unit = self:IsInspecting() and self:GetInspectUnit() or "player";
-	return UnitSex(unit);
-end
-
 function ClassTalentTalentsTabMixin:GetClassID()
-	if self:IsInspecting() then
-		return select(3, UnitClass(self:GetInspectUnit()));
-	end
-
-	return PlayerUtil.GetClassID();
+	return self:GetClassTalentFrame():GetClassID();
 end
 
 function ClassTalentTalentsTabMixin:GetClassName()
-	if self:IsInspecting() then
-		local className = UnitClass(self:GetInspectUnit());
-		return className;
-	end
-
-	return PlayerUtil.GetClassName();
+	return self:GetClassTalentFrame():GetClassName();
 end
 
 function ClassTalentTalentsTabMixin:GetSpecID()
-	if self:IsInspecting() then
-		return GetInspectSpecialization(self:GetInspectUnit());
-	end
-
-	return PlayerUtil.GetCurrentSpecID();
+	return self:GetClassTalentFrame():GetSpecID();
 end
 
 function ClassTalentTalentsTabMixin:GetSpecName()
-	local unitSex = self:GetUnitSex();
-	local specID = self:GetSpecID();
-	return select(2, GetSpecializationInfoByID(specID, unitSex));
+	return self:GetClassTalentFrame():GetSpecName();
 end
 
 function ClassTalentTalentsTabMixin:GetDefinitionInfoForEntry(entryID)

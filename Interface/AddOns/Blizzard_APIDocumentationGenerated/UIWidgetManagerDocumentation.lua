@@ -198,6 +198,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetItemDisplayVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "ItemDisplayVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetObjectiveTrackerWidgetSetID",
 			Type = "Function",
 
@@ -546,6 +560,31 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "ItemDisplayTextDisplayStyle",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "WorldQuestReward", Type = "ItemDisplayTextDisplayStyle", EnumValue = 0 },
+				{ Name = "ItemNameAndInfoText", Type = "ItemDisplayTextDisplayStyle", EnumValue = 1 },
+				{ Name = "ItemNameOnlyCentered", Type = "ItemDisplayTextDisplayStyle", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ItemDisplayTooltipEnabledType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Enabled", Type = "ItemDisplayTooltipEnabledType", EnumValue = 0 },
+				{ Name = "Disabled", Type = "ItemDisplayTooltipEnabledType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "SpellDisplayBorderColor",
 			Type = "Enumeration",
 			NumValues = 9,
@@ -576,19 +615,6 @@ local UIWidgetManager =
 				{ Name = "Debuff", Type = "SpellDisplayIconDisplayType", EnumValue = 1 },
 				{ Name = "Circular", Type = "SpellDisplayIconDisplayType", EnumValue = 2 },
 				{ Name = "NoBorder", Type = "SpellDisplayIconDisplayType", EnumValue = 3 },
-			},
-		},
-		{
-			Name = "SpellDisplayIconSizeType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Small", Type = "SpellDisplayIconSizeType", EnumValue = 0 },
-				{ Name = "Medium", Type = "SpellDisplayIconSizeType", EnumValue = 1 },
-				{ Name = "Large", Type = "SpellDisplayIconSizeType", EnumValue = 2 },
 			},
 		},
 		{
@@ -800,12 +826,26 @@ local UIWidgetManager =
 			Fields =
 			{
 				{ Name = "Disabled", Type = "WidgetEnabledState", EnumValue = 0 },
-				{ Name = "Enabled", Type = "WidgetEnabledState", EnumValue = 1 },
+				{ Name = "Yellow", Type = "WidgetEnabledState", EnumValue = 1 },
 				{ Name = "Red", Type = "WidgetEnabledState", EnumValue = 2 },
 				{ Name = "White", Type = "WidgetEnabledState", EnumValue = 3 },
 				{ Name = "Green", Type = "WidgetEnabledState", EnumValue = 4 },
-				{ Name = "Gold", Type = "WidgetEnabledState", EnumValue = 5 },
+				{ Name = "Artifact", Type = "WidgetEnabledState", EnumValue = 5 },
 				{ Name = "Black", Type = "WidgetEnabledState", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "WidgetIconSizeType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Small", Type = "WidgetIconSizeType", EnumValue = 0 },
+				{ Name = "Medium", Type = "WidgetIconSizeType", EnumValue = 1 },
+				{ Name = "Large", Type = "WidgetIconSizeType", EnumValue = 2 },
+				{ Name = "Standard", Type = "WidgetIconSizeType", EnumValue = 3 },
 			},
 		},
 		{
@@ -1231,6 +1271,28 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "ItemDisplayVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "itemInfo", Type = "UIWidgetItemInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo",
 			Type = "Structure",
 			Fields =
@@ -1365,6 +1427,9 @@ local UIWidgetManager =
 				{ Name = "barTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "barTextFontType", Type = "UIWidgetFontType", Nilable = false },
 				{ Name = "barTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "textEnabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "textFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1580,6 +1645,22 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "UIWidgetItemInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "stackCount", Type = "number", Nilable = true },
+				{ Name = "overrideItemName", Type = "string", Nilable = true },
+				{ Name = "infoText", Type = "string", Nilable = true },
+				{ Name = "overrideTooltip", Type = "string", Nilable = true },
+				{ Name = "textDisplayStyle", Type = "ItemDisplayTextDisplayStyle", Nilable = false },
+				{ Name = "tooltipEnabled", Type = "bool", Nilable = false },
+				{ Name = "iconSizeType", Type = "WidgetIconSizeType", Nilable = false },
+				{ Name = "infoTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
+			},
+		},
+		{
 			Name = "UIWidgetSetInfo",
 			Type = "Structure",
 			Fields =
@@ -1597,7 +1678,7 @@ local UIWidgetManager =
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "stackDisplay", Type = "number", Nilable = false },
-				{ Name = "iconSizeType", Type = "SpellDisplayIconSizeType", Nilable = false },
+				{ Name = "iconSizeType", Type = "WidgetIconSizeType", Nilable = false },
 				{ Name = "iconDisplayType", Type = "SpellDisplayIconDisplayType", Nilable = false },
 				{ Name = "textShownState", Type = "SpellDisplayTextShownStateType", Nilable = false },
 				{ Name = "borderColor", Type = "SpellDisplayBorderColor", Nilable = false },

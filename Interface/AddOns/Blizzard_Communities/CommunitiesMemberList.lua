@@ -310,7 +310,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 		end
 	end
 
-	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	self.ScrollBox:ForEachFrame(function(button, elementData)
 		button:SetExpanded(self.expandedDisplay);
 	end);
@@ -1113,11 +1113,7 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			local raceInfo = C_CreatureInfo.GetRaceInfo(memberInfo.race);
 			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
 			if raceInfo and classInfo then
-				if(clubInfo and clubInfo.clubType == Enum.ClubType.Character and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
-					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FACTION_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className, FACTION_LABELS[memberInfo.faction]), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
-				else 
-					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
-				end
+				GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 			end
 		end
 
@@ -1129,6 +1125,11 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 
 		if memberInfo.memberNote then
 			GameTooltip:AddLine(COMMUNITY_MEMBER_NOTE_FORMAT:format(memberInfo.memberNote), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		end
+
+		if(clubInfo and clubInfo.clubType ~= Enum.ClubType.BattleNet and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip:AddLine(COMMUNITY_MEMBER_LIST_CROSS_FACTION:format(PLAYER_FACTION_BRIGHT_COLORS[memberInfo.faction]:GenerateHexColorMarkup() .. FACTION_LABELS[memberInfo.faction]), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		end
 
 		GameTooltip:Show();
@@ -1177,7 +1178,7 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		return;
 	end
 
-	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType == Enum.ClubType.Character and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
+	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType ~= Enum.ClubType.BattleNet and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
 	self.FactionButton:SetShown(shouldShowFactionIcon and not self.isInvitation);
 
 	if clubInfo.clubType == Enum.ClubType.BattleNet then

@@ -11,6 +11,10 @@ ACTION_BUTTON_SHOW_GRID_REASON_CVAR = 1;
 ACTION_BUTTON_SHOW_GRID_REASON_EVENT = 2;
 ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION = 4;
 
+ActionButtonBindingHighlightCallbackRegistry = CreateFromMixins(CallbackRegistryMixin);
+ActionButtonBindingHighlightCallbackRegistry:SetUndefinedEventsAllowed(true);
+ActionButtonBindingHighlightCallbackRegistry:OnLoad();
+
 function MarkNewActionHighlight(action)
 	ACTION_HIGHLIGHT_MARKS[action] = true;
 end
@@ -293,8 +297,9 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
 		end
     end
 
+	self.bindingAction = actionButtonType..id;
     local hotkey = self.HotKey;
-    local key = GetBindingKey(actionButtonType..id) or
+    local key = GetBindingKey(self.bindingAction) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
 	local text = GetBindingText(key, 1);
@@ -495,7 +500,12 @@ function ActionBarActionButtonMixin:UpdateUsable()
 	if self.LevelLinkLockIcon then
 		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
 	end
+	self:EvaluateState(); 
 end
+
+function ActionBarActionButtonMixin:EvaluateState() 
+return;
+end 
 
 function ActionBarActionButtonMixin:UpdateProfessionQuality()
 	if IsItemAction(self.action) then
@@ -1182,6 +1192,9 @@ function ActionBarActionButtonMixin:OnEnter()
 	ActionBarButtonEventsFrame.tooltipOwner = self;
 	ActionBarActionEventsFrame.tooltipOwner = self;
 	self:UpdateFlyout();
+	if self.bindingAction then
+		ActionButtonBindingHighlightCallbackRegistry:TriggerEvent(self.bindingAction, true);
+	end
 end
 
 function ActionBarActionButtonMixin:OnLeave()
@@ -1189,6 +1202,9 @@ function ActionBarActionButtonMixin:OnLeave()
 	ActionBarButtonEventsFrame.tooltipOwner = nil;
 	ActionBarActionEventsFrame.tooltipOwner = nil;
 	self:UpdateFlyout();
+	if self.bindingAction then
+		ActionButtonBindingHighlightCallbackRegistry:TriggerEvent(self.bindingAction, false);
+	end
 end
 
 BaseActionButtonMixin = {}

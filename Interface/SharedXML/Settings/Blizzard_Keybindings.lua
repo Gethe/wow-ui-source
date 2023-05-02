@@ -285,6 +285,63 @@ function KeyBindingFrameBindingTemplateMixin:OnEvent()
 	end
 end
 
+function KeyBindingFrameBindingTemplateMixin:OnHighlightBinding(showHighlight)
+	self.Highlight:SetShown(showHighlight);
+end
+
+function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
+	local bindingIndex = self.initializer.data.bindingIndex;
+	local action = GetBinding(bindingIndex);
+	
+	local actionButton = string.match(action, "^ACTIONBUTTON(%d+)");
+	if actionButton then
+		return GetActionButtonForID(actionButton);
+	end
+
+	local multiActionBar, multiActionButton = string.match(action, "^MULTIACTIONBAR(%d+)BUTTON(%d+)");
+	if multiActionBar and multiActionButton then
+		local bars = {
+			MultiBarBottomLeft, 
+			MultiBarBottomRight,
+			MultiBarRight, 		
+			MultiBarLeft, 		
+			MultiBar5, 			
+			MultiBar6, 			
+			MultiBar7, 			
+		};
+		local bar = bars[tonumber(multiActionBar)];
+		local button = bar.actionButtons[tonumber(multiActionButton)];
+		return button;
+	end
+
+	local petActionButton = string.match(action, "^BONUSACTIONBUTTON(%d+)");
+	if petActionButton then
+		return _G["PetActionButton" .. petActionButton];
+	end
+
+	local stanceActionButton = string.match(action, "^SHAPESHIFTBUTTON(%d+)");
+	if stanceActionButton then
+		return _G["StanceButton" .. stanceActionButton];
+	end
+
+	return nil;
+end
+
+function KeyBindingFrameBindingTemplateMixin:OnEnter()
+	local highlightFrame = self:DetermineHighlightFrame();
+	if highlightFrame then
+		self.highlightFrame = highlightFrame;
+		highlightFrame:EnableDrawLayer("HIGHLIGHT");
+	end
+end
+
+function KeyBindingFrameBindingTemplateMixin:OnLeave()
+	if self.highlightFrame then
+		self.highlightFrame:DisableDrawLayer("HIGHLIGHT");
+		self.highlightFrame = nil;
+	end
+end
+
 function KeyBindingFrameBindingTemplateMixin:UpdateBindingState(initializer)
 	local bindingIndex = initializer.data.bindingIndex;
 	local action, category, binding1, binding2 = GetBinding(bindingIndex);
@@ -371,6 +428,11 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 	self.cbrHandles:RegisterCallback(EventRegistry, "Settings.UpdateKeybinds", self.RenewBindings, self);
 
 	self:UpdateBindingState(initializer);
+
+	if self.highlightHandle then
+		self.highlightHandle:Unregister();
+	end
+	self.highlightHandle = ActionButtonBindingHighlightCallbackRegistry:RegisterCallbackWithHandle(action, self.OnHighlightBinding, self);
 end
 
 function KeyBindingFrameBindingTemplateMixin:ReparentBindingsToInputBlocker(inputBlocker)

@@ -27,4 +27,12 @@
 			<OnFinished method="Hide"/>
 		</Scripts>
 	</AnimationGroup>
+
+	<Frame name="EasyFrameAnimationsTemplate" mixin="EasyFrameAnimationsMixin" enableMouseClicks="true" virtual="true">
+		<Scripts>
+			<OnShow method="PlayAnims"/>
+			<OnMouseDown method="PlayAnims"/>
+			<OnHide method="StopAnims"/>
+		</Scripts>
+	</Frame>
 </Ui>

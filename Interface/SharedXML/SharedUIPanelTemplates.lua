@@ -1,3 +1,4 @@
+
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;
 PANEL_INSET_RIGHT_OFFSET = -6;
@@ -179,160 +180,6 @@ function UIPanelCloseButton_SetBorderShown(self, shown)
 	end
 end
 
--- Scrollframe functions
-function ScrollFrame_OnLoad(self)
-	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
-	scrollbar:SetMinMaxValues(0, 0);
-	scrollbar:SetValue(0);
-	self.offset = 0;
-
-	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
-	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
-
-	scrollDownButton:Disable();
-	scrollUpButton:Disable();
-
-	if ( self.scrollBarHideable ) then
-		scrollbar:Hide();
-		scrollDownButton:Hide();
-		scrollUpButton:Hide();
-	else
-		scrollDownButton:Disable();
-		scrollUpButton:Disable();
-		scrollDownButton:Show();
-		scrollUpButton:Show();
-	end
-	if ( self.noScrollThumb ) then
-		(scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"]):Hide();
-	end
-end
-
-function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
-	scrollBar = scrollBar or self.ScrollBar or _G[self:GetName() .. "ScrollBar"];
-	local scrollStep = scrollBar.scrollStep or scrollBar:GetHeight() / 2
-	if ( value > 0 ) then
-		scrollBar:SetValue(scrollBar:GetValue() - scrollStep);
-	else
-		scrollBar:SetValue(scrollBar:GetValue() + scrollStep);
-	end
-end
-
-function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
-	local name = self:GetName();
-	local scrollbar = self.ScrollBar or _G[name.."ScrollBar"];
-	if ( not yrange ) then
-		yrange = self:GetVerticalScrollRange();
-	end
-
-	-- Accounting for very small ranges
-	yrange = floor(yrange);
-
-	local value = min(scrollbar:GetValue(), yrange);
-	scrollbar:SetMinMaxValues(0, yrange);
-	scrollbar:SetValue(value);
-
-	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
-	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
-	local thumbTexture = scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"];
-
-	if ( yrange == 0 ) then
-		if ( self.scrollBarHideable ) then
-			scrollbar:Hide();
-			scrollDownButton:Hide();
-			scrollUpButton:Hide();
-			thumbTexture:Hide();
-		else
-			scrollDownButton:Disable();
-			scrollUpButton:Disable();
-			scrollDownButton:Show();
-			scrollUpButton:Show();
-			if ( not self.noScrollThumb ) then
-				thumbTexture:Show();
-			end
-		end
-	else
-		scrollDownButton:Show();
-		scrollUpButton:Show();
-		scrollbar:Show();
-		if ( not self.noScrollThumb ) then
-			thumbTexture:Show();
-		end
-		-- The 0.005 is to account for precision errors
-		if ( yrange - value > 0.005 ) then
-			scrollDownButton:Enable();
-		else
-			scrollDownButton:Disable();
-		end
-	end
-
-	-- Hide/show scrollframe borders
-	local top = self.Top or name and _G[name.."Top"];
-	local bottom = self.Bottom or name and _G[name.."Bottom"];
-	local middle = self.Middle or name and _G[name.."Middle"];
-	if ( top and bottom and self.scrollBarHideable ) then
-		if ( self:GetVerticalScrollRange() == 0 ) then
-			top:Hide();
-			bottom:Hide();
-		else
-			top:Show();
-			bottom:Show();
-		end
-	end
-	if ( middle and self.scrollBarHideable ) then
-		if ( self:GetVerticalScrollRange() == 0 ) then
-			middle:Hide();
-		else
-			middle:Show();
-		end
-	end
-end
-
-function ScrollBar_AdjustAnchors(scrollBar, topAdj, bottomAdj, xAdj)
-	-- assumes default anchoring of topleft-topright, bottomleft-bottomright
-	local topY = 0;
-	local bottomY = 0;
-	local point, parent, refPoint, x, y;
-	for i = 1, 2 do
-		point, parent, refPoint, x, y = scrollBar:GetPoint(i);
-		if ( point == "TOPLEFT" ) then
-			topY = y;
-		elseif ( point == "BOTTOMLEFT" ) then
-			bottomY = y;
-		end
-	end
-	xAdj = xAdj or 0;
-	topAdj = topAdj or 0;
-	bottomAdj = bottomAdj or 0;
-	scrollBar:SetPoint("TOPLEFT", parent, "TOPRIGHT", x + xAdj, topY + topAdj);
-	scrollBar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", x + xAdj, bottomY + bottomAdj);
-end
-
-function ScrollBar_Disable(scrollBar)
-	scrollBar:Disable();
-	local scrollDownButton = scrollBar.ScrollDownButton or _G[scrollBar:GetName().."ScrollDownButton"];
-	if scrollDownButton then
-		scrollDownButton:Disable();
-	end
-	local scrollUpButton = scrollBar.ScrollUpButton or _G[scrollBar:GetName().."ScrollUpButton"];
-	if scrollUpButton then
-		scrollUpButton:Disable();
-	end
-end
-
-function ScrollBar_Enable(scrollBar)
-	scrollBar:Enable();
-	local currValue = scrollBar:GetValue();
-	local minVal, maxVal = scrollBar:GetMinMaxValues();
-	local scrollDownButton = scrollBar.ScrollDownButton or _G[scrollBar:GetName().."ScrollDownButton"];
-	if scrollDownButton and currValue < maxVal then
-		scrollDownButton:Enable();
-	end
-	local scrollUpButton = scrollBar.ScrollUpButton or _G[scrollBar:GetName().."ScrollUpButton"];
-	if scrollUpButton and currValue > minVal then
-		scrollUpButton:Enable();
-	end
-end
-
 function HideParentPanel(self)
 	HideUIPanel(self:GetParent());
 end
@@ -416,11 +263,14 @@ function SearchBoxTemplate_OnTextChanged(self)
 	InputBoxInstructions_OnTextChanged(self);
 end
 
+function SearchBoxTemplate_ClearText(self)
+	self:SetText("");
+	self:ClearFocus();
+end
+
 function SearchBoxTemplateClearButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	local editBox = self:GetParent();
-	editBox:SetText("");
-	editBox:ClearFocus();
+	SearchBoxTemplate_ClearText(self:GetParent());
 end
 
 PanelTabButtonMixin = {};
@@ -798,7 +648,7 @@ end
 function NumericInputSpinnerMixin:SetEnabled(enable)
 	self.IncrementButton:SetEnabled(enable);
 	self.DecrementButton:SetEnabled(enable);
-	getmetatable(self).__index.SetEnabled(self, enable);
+	GetEditBoxMetatable().__index.SetEnabled(self, enable);
 end
 
 function NumericInputSpinnerMixin:Enable()
@@ -2746,16 +2596,29 @@ end
 
 AlphaHighlightButtonMixin = {};
 
-function AlphaHighlightButtonMixin:OnLoad()
-	self:SetHighlightAtlas(self.NormalTexture:GetAtlas());
+function AlphaHighlightButtonMixin:UpdateHighlightForState()
+	self:SetHighlightAtlas(self:GetHighlightForState());
+end
+
+function AlphaHighlightButtonMixin:GetHighlightForState()
+	if self.isPressed then
+		return self.PushedTexture:GetAtlas();
+	end
+
+	return self.NormalTexture:GetAtlas();
 end
 
 function AlphaHighlightButtonMixin:OnMouseDown()
-	self:SetHighlightAtlas(self.PushedTexture:GetAtlas());
+	self:SetPressed(true);
 end
 
 function AlphaHighlightButtonMixin:OnMouseUp()
-	self:SetHighlightAtlas(self.NormalTexture:GetAtlas());
+	self:SetPressed(false);
+end
+
+function AlphaHighlightButtonMixin:SetPressed(pressed)
+	self.isPressed = pressed;
+	self:UpdateHighlightForState();
 end
 
 NumericInputBoxMixin = {};
@@ -2800,7 +2663,7 @@ function IconSelectorPopupFrameTemplateMixin:OnLoad()
 		button:SetIconTexture(icon);
 	end
 	self.IconSelector:SetSetupCallback(IconButtonInitializer);
-	self.IconSelector:AdjustScrollBarOffsets(0, 18, -1);
+	self.IconSelector:AdjustScrollBarOffsets(-14, -4, 6);
 
 	self.BorderBox.OkayButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
@@ -2993,6 +2856,277 @@ end
 
 function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
 	self.editBoxIconSelector = iconSelector;
+end
+
+SearchBoxListElementMixin = {};
+
+function SearchBoxListElementMixin:OnEnter()
+	self:GetParent():SetSearchPreviewSelection(self:GetID());
+end
+
+function SearchBoxListElementMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+end
+
+-- SearchBoxListMixin was refactored out of EncounterJournal for use in Professions but is not complete. It doesn't
+-- provide any interface for handling the bar progress updates.
+SearchBoxListMixin = {};
+
+function SearchBoxListMixin:OnLoad()
+	SearchBoxTemplate_OnLoad(self);
+
+	self.searchButtons = {};
+
+	local function SetupButton(button, index)
+		button:SetFrameStrata("DIALOG");
+		button:SetFrameLevel(self:GetFrameLevel() + 10);
+		button:SetID(index);
+		button:Hide();
+	end
+
+	local buttonFirst = CreateFrame("BUTTON", nil, self, self.buttonTemplate);
+	buttonFirst:SetPoint("TOPLEFT", self.searchPreviewContainer, "TOPLEFT");
+	buttonFirst:SetPoint("BOTTOMRIGHT", self.searchPreviewContainer, "BOTTOMRIGHT");
+	SetupButton(buttonFirst, 1);
+	table.insert(self.searchButtons, buttonFirst);
+
+	local buttonsMax = math.max(1, self.buttonCount or 5);
+	local buttonIndex = 2;
+	local buttonLast = buttonFirst;
+	while buttonIndex <= buttonsMax do
+		local button = CreateFrame("BUTTON", nil, self, self.buttonTemplate);
+		button:SetPoint("TOPLEFT", buttonLast, "BOTTOMLEFT");
+		button:SetPoint("TOPRIGHT", buttonLast, "BOTTOMRIGHT");
+		SetupButton(button, buttonIndex);
+
+		table.insert(self.searchButtons, button);
+		buttonIndex = buttonIndex + 1;
+		buttonLast = button;
+	end
+
+	self.showAllResults = CreateFrame("BUTTON", nil, self, self.showAllButtonTemplate);
+	self.showAllResults:SetPoint("LEFT", buttonFirst, "LEFT");
+	self.showAllResults:SetPoint("RIGHT", buttonFirst, "RIGHT");
+	self.showAllResults:SetPoint("TOP", buttonLast, "BOTTOM");
+	local showAllResultsIndex =  #self.searchButtons + 1;
+	SetupButton(self.showAllResults, showAllResultsIndex);
+	self.allResultsIndex = showAllResultsIndex;
+
+	local bar = self.searchProgress.bar;
+	bar:SetStatusBarColor(0, .6, 0, 1);
+	bar:SetMinMaxValues(0, 1000);
+	bar:SetValue(0);
+	bar:GetStatusBarTexture():SetDrawLayer("BORDER");
+
+	bar:SetScript("OnHide", function()
+		bar:SetValue(0);
+		bar.previousResults = nil;
+	end);
+	
+	self.HasStickyFocus = function()
+		return DoesAncestryInclude(self, GetMouseFocus());
+	end
+	self.selectedIndex = 1;
+end
+
+function SearchBoxListMixin:HideSearchPreview()
+	self.searchProgress:Hide();
+	self.showAllResults:Hide();
+
+	for index, button in ipairs(self.searchButtons) do
+		button:Hide();
+	end
+
+	self.searchPreviewContainer:Hide();
+end
+
+function SearchBoxListMixin:HideSearchProgress()
+	self.searchProgress:Hide();
+	self:FixSearchPreviewBottomBorder();
+end
+
+function SearchBoxListMixin:Close()
+	self:HideSearchPreview();
+	self:ClearFocus();
+end
+
+function SearchBoxListMixin:Clear()
+	self.clearButton:Click();
+end
+
+function SearchBoxListMixin:IsSearchPreviewShown()
+	return self.searchPreviewContainer:IsShown();
+end
+
+function SearchBoxListMixin:SetSearchResultsFrame(frame)
+	self.searchResultsFrame = frame;
+end
+
+function SearchBoxListMixin:OnShow()
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
+end
+
+function SearchBoxListMixin:IsCurrentTextValidForSearch()
+	return self:IsTextValidForSearch(self:GetText());
+end
+
+function SearchBoxListMixin:IsTextValidForSearch(text)
+	return strlen(text) >= (self.minCharacters or 1);
+end
+
+function SearchBoxListMixin:OnTextChanged()
+	SearchBoxTemplate_OnTextChanged(self);
+
+	local text = self:GetText();
+	if not self:IsTextValidForSearch(text) then
+		self:HideSearchPreview();
+		return false, text;
+	end
+	
+	self:SetSearchPreviewSelection(1);
+
+	return true, text;
+end
+
+function SearchBoxListMixin:GetButtons()
+	return self.searchButtons;
+end
+
+function SearchBoxListMixin:GetAllResultsButton()
+	return self.showAllResults;
+end
+
+function SearchBoxListMixin:GetSearchButtonCount()
+	return #self:GetButtons();
+end
+
+function SearchBoxListMixin:UpdateSearchPreview(finished, dbLoaded, numResults)
+	local lastShown = self;
+	if self.searchButtons[numResults] then
+		lastShown = self.searchButtons[numResults];
+	end
+
+	self.showAllResults:Hide();
+	self.searchProgress:Hide();
+	if not finished then
+		self.searchProgress:SetPoint("TOP", lastShown, "BOTTOM", 0, 0);
+
+		if dbLoaded then
+			self.searchProgress.loading:Hide();
+			self.searchProgress.bar:Show();
+		else
+			self.searchProgress.loading:Show();
+			self.searchProgress.bar:Hide();
+		end
+
+		self.searchProgress:Show();
+	elseif not self.searchButtons[numResults] then
+		self.showAllResults.text:SetText(SEARCH_RESULTS_SHOW_COUNT:format(numResults));
+		self.showAllResults:Show();
+	end
+
+	self:FixSearchPreviewBottomBorder();
+	self.searchPreviewContainer:Show();
+end
+
+function SearchBoxListMixin:FixSearchPreviewBottomBorder()
+	local lastShownButton = nil;
+	if self.showAllResults:IsShown() then
+		lastShownButton = self.showAllResults;
+	elseif self.searchProgress:IsShown() then
+		lastShownButton = self.searchProgress;
+	else
+		for index, button in ipairs(self:GetButtons()) do
+			if button:IsShown() then
+				lastShownButton = button;
+			end
+		end
+	end
+
+	if lastShownButton ~= nil then
+		self.searchPreviewContainer.botRightCorner:SetPoint("BOTTOM", lastShownButton, "BOTTOM", 0, -8);
+		self.searchPreviewContainer.botLeftCorner:SetPoint("BOTTOM", lastShownButton, "BOTTOM", 0, -8);
+	else
+		self:HideSearchPreview();
+	end
+end
+
+function SearchBoxListMixin:SetSearchPreviewSelection(selectedIndex)
+	local numShown = 0;
+	for index, button in ipairs(self:GetButtons()) do
+		button.selectedTexture:Hide();
+
+		if button:IsShown() then
+			numShown = numShown + 1;
+		end
+	end
+
+	if self.showAllResults:IsShown() then
+		numShown = numShown + 1;
+	end
+	self.showAllResults.selectedTexture:Hide();
+
+	if numShown == 0 then
+		selectedIndex = 1;
+	elseif selectedIndex > numShown then
+		-- Wrap under to the beginning.
+		selectedIndex = 1;
+	elseif selectedIndex < 1 then
+		-- Wrap over to the end;
+		selectedIndex = numShown;
+	end
+
+	self.selectedIndex = selectedIndex;
+
+	if selectedIndex == self.allResultsIndex then
+		self.showAllResults.selectedTexture:Show();
+	else
+		self.searchButtons[selectedIndex].selectedTexture:Show();
+	end
+end
+
+function SearchBoxListMixin:SetSearchPreviewSelectionToAllResults()
+	self:SetSearchPreviewSelection(self.allResultsIndex);
+end
+
+function SearchBoxListMixin:OnEnterPressed()
+	if self.selectedIndex > self.allResultsIndex or self.selectedIndex < 0 then
+		return;
+	elseif self.selectedIndex == self.allResultsIndex then
+		if self.showAllResults:IsShown() then
+			self.showAllResults:Click();
+		end
+	else
+		local preview = self.searchButtons[self.selectedIndex];
+		if preview:IsShown() then
+			preview:Click();
+		end
+	end
+
+	self:HideSearchPreview();
+end
+
+function SearchBoxListMixin:OnKeyDown(key)
+	if key == "UP" then
+		self:SetSearchPreviewSelection(self.selectedIndex - 1);
+	elseif key == "DOWN" then
+		self:SetSearchPreviewSelection(self.selectedIndex + 1);
+	end
+end
+
+function SearchBoxListMixin:OnFocusLost()
+	SearchBoxTemplate_OnEditFocusLost(self);
+	self:HideSearchPreview();
+end
+
+function SearchBoxListMixin:OnFocusGained()
+	SearchBoxTemplate_OnEditFocusGained(self);
+
+	if self.searchResultsFrame then
+		self.searchResultsFrame:Hide();
+	end
+
+	self:SetSearchPreviewSelection(1);
 end
 
 RingedFrameWithTooltipMixin = {};

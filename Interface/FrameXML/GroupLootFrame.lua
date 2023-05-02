@@ -142,7 +142,7 @@ function GroupLootFrame_DisableLootButton(button)
 end
 
 function GroupLootFrame_OnShow(self)
-	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired = GetLootRollItemInfo(self.rollID);
+	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(self.rollID);
 	if (name == nil) then
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 		return;
@@ -168,13 +168,22 @@ function GroupLootFrame_OnShow(self)
 		GroupLootFrame_DisableLootButton(self.NeedButton);
 		self.NeedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonNeed];
 	end
-	if ( canGreed) then
-		GroupLootFrame_EnableLootButton(self.GreedButton);
-		self.GreedButton.reason = nil;
+
+	if ( canTransmog ) then
+		self.TransmogButton:Show();
+		self.GreedButton:Hide();
 	else
-		GroupLootFrame_DisableLootButton(self.GreedButton);
-		self.GreedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonGreed];
+		self.TransmogButton:Hide();
+		self.GreedButton:Show();
+		if ( canGreed) then
+			GroupLootFrame_EnableLootButton(self.GreedButton);
+			self.GreedButton.reason = nil;
+		else
+			GroupLootFrame_DisableLootButton(self.GreedButton);
+			self.GreedButton.reason = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonGreed];
+		end
 	end
+
 	self.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 

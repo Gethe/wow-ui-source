@@ -9,7 +9,7 @@ function AccountLoginEditBoxBehaviorMixin:OnKeyDown(key)
 end
 
 function AccountLogin_OnLoad(self)
-	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
+	local version, internalVersion, date, _, versionType, buildType = GetBuildInfo();
 	self.UI.ClientVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
 
 	SetLoginScreenModel(LoginBackgroundModel);
@@ -229,67 +229,71 @@ end
 -- Account select
 -- =============================================================
 
+AccountNameMixin = {};
+
+function AccountNameMixin:Init(elementData)
+	self:SetText(elementData.name);
+	self:SetSelected(elementData.selected);
+end
+
+function AccountNameMixin:SetSelected(selected)
+	self.BGHighlight:SetShown(selected);
+end
+
+function WoWAccountSelect_UpdateSelection(self)
+	self.Background.Container.ScrollBox:ForEachFrame(function(button, elementData)
+		button:SetSelected(elementData.index == self.selectedAccount);
+	end);
+end
+
 function WoWAccountSelect_OnLoad(self)
-	self.Background.Container.ScrollFrame.offset = 0
+	local view = CreateScrollBoxListLinearView();
+
+	local function Initializer(button, elementData)
+		button:Init(elementData);
+		button:SetSelected(self.selectedAccount == elementData.index);
+
+		button:SetScript("OnClick", function()
+			self.selectedAccount = elementData.index;
+			WoWAccountSelect_UpdateSelection(self);
+		end);
+
+		button:SetScript("OnDoubleClick", function()
+			WoWAccountSelect_SelectAccount(elementData.index);
+		end);
+	end
+	view:SetElementInitializer("AccountNameButtonTemplate", Initializer);
+
+	self.Background.Container.ScrollBox:Init(view);
 end
 
 function WoWAccountSelect_OnShow(self)
 	AccountLogin.UI.AccountEditBox:SetFocus();
 	AccountLogin.UI.AccountEditBox:ClearFocus();
 	self.selectedAccount = 1;
-	WoWAccountSelect_Update();
-end
-
-function WoWAccountSelectButton_OnClick(self)
-	AccountLogin.UI.WoWAccountSelectDialog.selectedAccount = self.index;
-	WoWAccountSelect_Update();
-end
-
-function WoWAccountSelectButton_OnDoubleClick(self)
-	WoWAccountSelect_SelectAccount(self.index);
+	WoWAccountSelect_Update(self);
 end
 
 function WoWAccountSelect_SelectAccount(selectedIndex)
-	AccountLogin.UI.WoWAccountSelectDialog:Hide();
-
 	local dialog = AccountLogin.UI.WoWAccountSelectDialog;
+	dialog:Hide();
+
 	C_Login.SelectGameAccount(dialog.gameAccounts[selectedIndex]);
 end
 
-function WoWAccountSelect_OnVerticalScroll(self, offset)
-	local scrollbar = _G[self:GetName().."ScrollBar"];
-	scrollbar:SetValue(offset);
-	AccountLogin.UI.WoWAccountSelectDialog.Background.Container.ScrollFrame.offset = floor((offset / ACCOUNTNAME_BUTTON_HEIGHT) + 0.5);
-	WoWAccountSelect_Update();
-end
-
-function WoWAccountSelect_Update()
-	local self = AccountLogin.UI.WoWAccountSelectDialog;
+function WoWAccountSelect_Update(self)
 	self.gameAccounts = C_Login.GetGameAccounts();
-	local offset = self.Background.Container.ScrollFrame.offset;
-	for index=1, MAX_ACCOUNTNAME_DISPLAYED do
-		local button = self.Background.Container.Buttons[index];
-		local name = self.gameAccounts[index + offset];
-		button:SetButtonState("NORMAL");
-		button.BGHighlight:Hide();
-		if ( name ) then
-			button.index = index + offset;
-			button:SetText(name);
-			button:Show();
-			if ( index + offset == self.selectedAccount ) then
-				button.BGHighlight:Show();
-			end
-		else
-			button:Hide();
-		end
+
+	local dataProvider = CreateDataProvider();
+	for index, name in ipairs(self.gameAccounts) do
+		dataProvider:Insert({index = index, name = name});
 	end
+	self.Background.Container.ScrollBox:SetDataProvider(dataProvider);
 
 	self.Background:SetSize(275, 265);
 	self.Background.AcceptButton:SetPoint("BOTTOMLEFT", 15, 12);
 	self.Background.CancelButton:SetPoint("BOTTOMRIGHT", -15, 12);
 	self.Background.Container:SetPoint("BOTTOMRIGHT", -16, 36);
-
-	GlueScrollFrame_Update(self.Background.Container.ScrollFrame, #self.gameAccounts, MAX_ACCOUNTNAME_DISPLAYED, ACCOUNTNAME_BUTTON_HEIGHT);
 end
 
 function WoWAccountSelect_OnKeyDown(self, key)
@@ -297,10 +301,10 @@ function WoWAccountSelect_OnKeyDown(self, key)
 		WoWAccountSelect_OnCancel(self);
 	elseif ( key == "UP" ) then
 		self.selectedAccount = max(1, self.selectedAccount - 1);
-		WoWAccountSelect_Update()
+		WoWAccountSelect_UpdateSelection(self);
 	elseif ( key == "DOWN" ) then
 		self.selectedAccount = min(#self.gameAccounts, self.selectedAccount + 1);
-		WoWAccountSelect_Update()
+		WoWAccountSelect_UpdateSelection(self);
 	elseif ( key == "ENTER" ) then
 		WoWAccountSelect_SelectAccount(self.selectedAccount);
 	elseif ( key == "PRINTSCREEN" ) then

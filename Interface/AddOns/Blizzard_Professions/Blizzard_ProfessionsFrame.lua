@@ -32,10 +32,6 @@ local helptipSystemName = "Professions";
 
 ProfessionsMixin = {};
 
-function ProfessionsMixin:InitializeButtons()
-	self.CloseButton:SetScript("OnClick", function() self:CheckConfirmClose(); end);
-end
-
 function ProfessionsMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsFrameEvents);
 
@@ -46,7 +42,19 @@ function ProfessionsMixin:OnLoad()
 	self.specializationsTabID = self:AddNamedTab(PROFESSIONS_SPECIALIZATIONS_TAB_NAME, self.SpecPage);
 	self.craftingOrdersTabID = self:AddNamedTab(PROFESSIONS_CRAFTING_ORDERS_TAB_NAME, self.OrdersPage);
 
-	self:InitializeButtons();
+	self.CloseButton:SetScript("OnClick", GenerateClosure(self.CheckConfirmClose, self));
+
+	local function OnMaximize(frame)
+		self:SetMaximized();
+	end
+
+	self.MaximizeMinimize:SetOnMaximizedCallback(OnMaximize);
+
+	local function OnMinimize(frame)
+		self:SetMinimized();
+	end
+
+	self.MaximizeMinimize:SetOnMinimizedCallback(OnMinimize);
 
 	self:RegisterEvent("OPEN_RECIPE_RESPONSE");
 
@@ -54,6 +62,41 @@ function ProfessionsMixin:OnLoad()
 		local useLastSkillLine = false;
 		self:SetProfessionInfo(info, useLastSkillLine);
 	 end, self);
+end
+
+function ProfessionsMixin:ApplyDesiredWidth()
+	local selectedPage = self:GetElementsForTab(self.recipesTabID)[1];
+	local pageWidth = selectedPage:GetDesiredPageWidth();
+
+	self.currentPageWidth = pageWidth;
+	self:SetWidth(self.currentPageWidth);
+	UpdateUIPanelPositions(self);
+end
+
+function ProfessionsMixin:SetMaximized()
+	Professions.SetCraftingMinimized(false);
+
+	self.CraftingPage:SetMaximized();
+
+	self:UpdateTabs();
+
+	self:ApplyDesiredWidth();
+end
+
+function ProfessionsMixin:SetMinimized()
+	Professions.SetCraftingMinimized(true);
+
+	self.CraftingPage:SetMinimized();
+
+	self:UpdateTabs();
+
+	self:ApplyDesiredWidth();
+end
+
+function ProfessionsMixin:SetTabsShown(shown)
+	for _, tabID in ipairs(self:GetTabSet()) do
+		self.TabSystem:SetTabShown(tabID, shown);
+	end
 end
 
 function ProfessionsMixin:OnEvent(event, ...)
@@ -140,8 +183,10 @@ end
 function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 	local professionIDChanged = (not self.professionInfo) or (self.professionInfo.professionID ~= professionInfo.professionID);
 	if professionIDChanged then
+		local sourceChanged = (not self.professionInfo) or self.professionInfo.sourceCounter ~= professionInfo.sourceCounter;
 		local professionChanged = (not self.professionInfo) or (self.professionInfo.profession ~= professionInfo.profession);
-		local useNewSkillLine = professionChanged or not useLastSkillLine;
+		local forceSkillLineChange = sourceChanged or professionChanged;
+		local useNewSkillLine = forceSkillLineChange or not useLastSkillLine;
 		if not useNewSkillLine then
 			return;
 		end
@@ -208,9 +253,7 @@ function ProfessionsMixin:UpdateTabs()
 	end
 
 	local onlyShowRecipes = not Professions.InLocalCraftingMode() or C_TradeSkillUI.IsRuneforging();
-	for _, tabID in ipairs(self:GetTabSet()) do
-		self.TabSystem:SetTabShown(tabID, not onlyShowRecipes);
-	end
+	self:SetTabsShown(not (onlyShowRecipes or Professions.IsCraftingMinimized()));
 
 	local recipesTab = self:GetTabButton(self.recipesTabID);
 	recipesTab.Text:SetText(recipeTabName[self.professionType]);
@@ -291,6 +334,8 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	local isCraftingOrderTab = (tabID == self.craftingOrdersTabID);
 	local isRecipesTab = (tabID == self.recipesTabID);
 
+	self.MaximizeMinimize:SetShown(isRecipesTab);
+
 	local previousTab = self:GetTab();
 
 	local hasPendingSpecChanges = self.SpecPage:HasAnyConfigChanges();
@@ -326,7 +371,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 				helpTipInfo = unspentPointsHelpTipInfo;
 			end
 			if helpTipInfo then
-				HelpTip:Show(self, helpTipInfo, specializationTab);
+				HelpTip:Show(specializationTab, helpTipInfo, specializationTab);
 			end
 		end
 	end

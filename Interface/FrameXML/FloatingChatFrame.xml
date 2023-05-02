@@ -11,7 +11,7 @@
 						<Anchor point="TOPLEFT" x="-2" y="3"/>
 						<Anchor point="TOPRIGHT" x="2" y="3"/>
 						<Anchor point="BOTTOMLEFT" x="-2" y="-6"/>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -456,13 +456,13 @@
 				</Frames>
 			</Frame>
 			<Button parentKey="ScrollToBottomButton" alpha="0">
-				<Size x="24" y="24"/>
+				<Size x="17" y="15"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ResizeButton" relativePoint="TOPRIGHT" x="0" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ResizeButton" relativePoint="TOPRIGHT" x="-2" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Flash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
+						<Texture parentKey="Flash" atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -471,28 +471,16 @@
 						self:GetParent():ScrollToBottom();
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
-				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<NormalTexture atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true"/>
+				<PushedTexture atlas="minimal-scrollbar-arrow-returntobottom-down" useAtlasSize="true"/>
+				<HighlightTexture atlas="minimal-scrollbar-arrow-returntobottom-over" useAtlasSize="true"/>
+				<DisabledTexture atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true"/>
 			</Button>
-			<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1" alpha="0">
-				<Size x="22" y="0"/>
-				<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" atlas="chatframe-scrollbar-knob" useAtlasSize="true"/>
-				<Scripts>
-					<OnValueChanged>
-						if userInput then
-							local min, max = self:GetMinMaxValues();
-							self:GetParent():SetScrollOffset(max - value);
-						end
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
 			<EditBox name="$parentEditBox" inherits="ChatFrameEditBoxTemplate" parentKey="editBox">
 				<Size x="5" y="32"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="-5" y="-2"/>
-					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="RIGHT" x="5" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

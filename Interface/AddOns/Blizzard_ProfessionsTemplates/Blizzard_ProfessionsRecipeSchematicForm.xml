@@ -78,6 +78,12 @@
 				</Anchors>
 			</Frame>
 
+			<Frame parentKey="FinishingReagents" inherits="ProfessionsReagentContainerTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="PROFESSIONS_CRAFTING_FINISHING_HEADER" type="global"/>
+				</KeyValues>
+			</Frame>
+			
 			<Frame parentKey="Stars">
 				<Size x="52" y="16"/>
 				<Frames>
@@ -172,15 +178,14 @@
 		
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="OutputText" inherits="GameFontHighlightMed2" justifyH="LEFT">
+				<FontString parentKey="OutputText" inherits="GameFontHighlightMed2" justifyV="TOP" justifyH="LEFT">
 					<Size x="400" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.OutputIcon" relativePoint="RIGHT" x="14" y="0"/>
-						<Anchor point="TOP" x="0" y="-32"/>
+						<Anchor point="LEFT" relativeKey="$parent.OutputIcon" relativePoint="RIGHT" x="14" y="17"/>
 					</Anchors>
 				</FontString>
 
-				<FontString parentKey="RecraftingOutputText" inherits="GameFontHighlightMed2" justifyH="LEFT">
+				<FontString parentKey="RecraftingOutputText" inherits="GameFontHighlightMed2" justifyV="TOP" justifyH="LEFT">
 					<Size x="400" y="1"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="28" y="-32"/>
@@ -214,6 +219,10 @@
 				
 				<FontString parentKey="Cooldown" inherits="GameFontRedSmall" justifyH="LEFT">
 					<Size x="400" y="0"/>
+				</FontString>
+
+				<FontString parentKey="MinimizedCooldown" inherits="GameFontRedSmall" justifyH="LEFT">
+					<Size x="250" y="0"/>
 				</FontString>
 				
 				<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyV="TOP" justifyH="LEFT">

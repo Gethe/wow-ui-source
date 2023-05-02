@@ -247,25 +247,19 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip)
 				GameTooltip_AddBlankLineToTooltip(tooltip);
 			end
 
-			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
-			tooltipInfo.append = true;
-			tooltip:ProcessInfo(tooltipInfo);
+			tooltip:AppendInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
 		end
 
 		local nextEntry = self.nodeInfo.nextEntry;
 		if nextEntry and self.nodeInfo.ranksPurchased > 0 then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
-			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
-			tooltipInfo.append = true;
-			tooltip:ProcessInfo(tooltipInfo);
+			tooltip:AppendInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
 		end
 	elseif self.entryID then
 		-- If this tooltip isn't coming from a node, we can't know what rank to show other than 1.
 		local rank = 1;
-		local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", self.entryID, rank);
-		tooltipInfo.append = true;
-		tooltip:ProcessInfo(tooltipInfo);
+		tooltip:AppendInfo("GetTraitEntry", self.entryID, rank);
 	end
 end
 
@@ -1015,7 +1009,7 @@ function TalentButtonArtMixin:InternalPlayAnimEffects(animEffectControllers, fxM
 	if (fxIDs) then
 		animEffectControllers = {};
 		for _, fxID in ipairs(fxIDs) do
-			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self));
+			table.insert(animEffectControllers, fxModelScene:AddEffect(fxID, self, self, nil, nil, self.animEffectScaleMultiplier));
 		end
 	end
 

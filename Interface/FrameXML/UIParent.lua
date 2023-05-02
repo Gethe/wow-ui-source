@@ -84,7 +84,7 @@ UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoff
 UIPanelWindows["ChromieTimeFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["PVPMatchScoreboard"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -125,	whileDead = 1,	ignoreControlLost = true, };
 UIPanelWindows["PVPMatchResults"] =				{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 1,	ignoreControlLost = true, };
-UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["PlayerChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16,	yoffset = -41,	whileDead = 0, allowOtherPanels = 1, ignoreControlLost = true };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
@@ -455,6 +455,9 @@ function UIParent_OnLoad(self)
 	-- Event(s) for Warfronts
 	self:RegisterEvent("WARFRONT_COMPLETED");
 
+	-- Event(s) for Party Pose
+	self:RegisterEvent("SHOW_PARTY_POSE_UI");
+
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
 
@@ -567,6 +570,10 @@ end
 
 function WarfrontsPartyPose_LoadUI()
 	UIParentLoadAddOn("Blizzard_WarfrontsPartyPoseUI");
+end
+
+function MatchCelebrationPartyPose_LoadUI()
+	UIParentLoadAddOn("Blizzard_MatchCelebrationPartyPoseUI");
 end
 
 function AlliedRaces_LoadUI()
@@ -702,10 +709,6 @@ function GMChatFrame_LoadUI(...)
 			GMChatFrame_OnEvent(GMChatFrame, ...);
 		end
 	end
-end
-
-function GuildFrame_LoadUI()
-	UIParentLoadAddOn("Blizzard_GuildUI");
 end
 
 function EncounterJournal_LoadUI()
@@ -899,6 +902,10 @@ function OrderHall_CheckCommandBar()
 end
 
 function ShowMacroFrame()
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
 		MacroFrame_Show();
@@ -906,7 +913,7 @@ function ShowMacroFrame()
 end
 
 function InspectAchievements (unit)
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -915,7 +922,7 @@ function InspectAchievements (unit)
 end
 
 function ToggleAchievementFrame(stats)
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -926,13 +933,16 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame(suggestedTab, inspectUnit)
+        if ( DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
 	if not inspectUnit and not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
 		return;
 	end
 
 	ClassTalentFrame_LoadUI();
 
-	ClassTalentFrame:SetInspecting(inspectUnit);
+	ClassTalentFrame:SetInspectUnit(inspectUnit);
 	if not ClassTalentFrame:IsShown() then
 		ShowUIPanel(ClassTalentFrame);
 	else
@@ -952,6 +962,9 @@ function InClickBindingMode()
 end
 
 function ToggleBattlefieldMap()
+	if DISALLOW_FRAME_TOGGLING then 
+		return
+	end
 	BattlefieldMap_LoadUI();
 	if ( BattlefieldMapFrame ) then
 		BattlefieldMapFrame:Toggle();
@@ -966,7 +979,7 @@ function ToggleTimeManager()
 end
 
 function ToggleCalendar()
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -981,7 +994,7 @@ function IsCommunitiesUIDisabledByTrialAccount()
 end
 
 function ToggleGuildFrame()
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1002,11 +1015,6 @@ function ToggleGuildFrame()
 		end
 
 		ToggleCommunitiesFrame();
-	elseif ( IsInGuild() ) then
-		GuildFrame_LoadUI();
-		if ( GuildFrame_Toggle ) then
-			GuildFrame_Toggle();
-		end
 	else
 		ToggleGuildFinder();
 	end
@@ -1035,7 +1043,7 @@ local function ToggleClubFinderBasedOnType(isGuildType)
 end
 
 function ToggleGuildFinder()
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1048,7 +1056,7 @@ function ToggleGuildFinder()
 end
 
 function ToggleCommunityFinder()
-	if (IsKioskModeEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1061,7 +1069,7 @@ function ToggleCommunityFinder()
 end
 
 function ToggleLFDParentFrame()
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1127,8 +1135,8 @@ function CanShowEncounterJournal()
 end
 
 function ToggleEncounterJournal()
-	if ( Kiosk.IsEnabled() ) then
-		return false;
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
 	end
 
 	if ( not CanShowEncounterJournal() ) then
@@ -1146,6 +1154,10 @@ function ToggleEncounterJournal()
 end
 
 function ToggleCommunitiesFrame()
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+
 	Communities_LoadUI();
 	ToggleFrame(CommunitiesFrame);
 end
@@ -1161,6 +1173,10 @@ COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
 
 function ToggleCollectionsJournal(tabIndex)
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+	
 	if Kiosk.IsEnabled() then
 		return;
 	end
@@ -1175,6 +1191,10 @@ function ToggleCollectionsJournal(tabIndex)
 end
 
 function SetCollectionsJournalShown(shown, tabIndex)
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+	
 	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
@@ -1191,13 +1211,17 @@ function SetCollectionsJournalShown(shown, tabIndex)
 end
 
 function ToggleToyCollection(autoPageToCollectedToyID)
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+
 	CollectionsJournal_LoadUI();
 	ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 end
 
 function TogglePVPUI()
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1208,7 +1232,7 @@ function TogglePVPUI()
 end
 
 function ToggleStoreUI()
-	if (AreAllPanelsDisallowed() or Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1223,7 +1247,7 @@ function ToggleStoreUI()
 end
 
 function SetStoreUIShown(shown)
-	if (Kiosk.IsEnabled()) then
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 
@@ -1280,11 +1304,21 @@ function ToggleMajorFactionRenown()
 end
 
 function ToggleExpansionLandingPage()
-	if (not ExpansionLandingPage) then
-		ExpansionLandingPage_LoadUI();
+	if(TRAIT_SYSTEM_OVERRIDE_MAP) then 
+		GenericTraitUI_LoadUI();
+
+		local currentMapID = select(8, GetInstanceInfo());
+		GenericTraitFrame:SetSystemID(TRAIT_SYSTEM_OVERRIDE_MAP[currentMapID]);
+
+		ToggleFrame(GenericTraitFrame);
+	else
+		if (not ExpansionLandingPage) then
+			ExpansionLandingPage_LoadUI();
+		end
+		ToggleFrame(ExpansionLandingPage);
 	end
-	ToggleFrame(ExpansionLandingPage);
 end
+
 
 function OpenDeathRecapUI(id)
 	if (not DeathRecapFrame) then
@@ -1511,9 +1545,11 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 		end
+                if (not IGNORE_DEATH_REQUIREMENTS) then
 		if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
 			StaticPopup_Show("DEATH");
 		end
+                end
 	elseif ( event == "SELF_RES_SPELL_CHANGED" ) then
 		if ( StaticPopup_Visible("DEATH") ) then
 			StaticPopup_Show("DEATH"); --If we're already showing a death prompt, we should refresh it.
@@ -1617,6 +1653,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_QUITING" ) then
 		StaticPopup_Show("QUIT");
 	elseif ( event == "LOGOUT_CANCEL" ) then
+		CancelLogout();
 		StaticPopup_Hide("CAMP");
 		StaticPopup_Hide("QUIT");
 	elseif ( event == "LOOT_BIND_CONFIRM" ) then
@@ -1709,13 +1746,16 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
+			if not UnitIsDeadOrGhost("player") then
 			if not PlayerChoiceFrame then
 				PlayerChoice_LoadUI();
 			end
 			PlayerChoiceToggle_TryShow();
 			PlayerChoiceTimeRemaining:TryShow();
 		end
+		end
 
+	    if (not IGNORE_DEATH_REQUIREMENTS) then 
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
@@ -1724,6 +1764,7 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
+        end
 
 		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
 		if ( not alreadyShowingSummonPopup and C_SummonInfo.GetSummonConfirmTimeLeft() > 0 ) then
@@ -2433,6 +2474,11 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
+	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
+		local hyperlink = ...;
+		GameTooltip_ShowEventHyperlink(hyperlink);
+	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
+		GameTooltip_HideEventHyperlink();
 	elseif (event == "RETURNING_PLAYER_PROMPT") then
 		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
@@ -2444,11 +2490,11 @@ function UIParent_OnEvent(self, event, ...)
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
 		end
-	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
-		local hyperlink = ...;
-		GameTooltip_ShowEventHyperlink(hyperlink);
-	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
-		GameTooltip_HideEventHyperlink();
+	elseif event == "SHOW_PARTY_POSE_UI" then 
+		MatchCelebrationPartyPose_LoadUI(); 
+		local partyPoseID, won = ...;
+		MatchCelebrationPartyPoseFrame:LoadScreenByPartyPoseID(partyPoseID, won);
+		ShowUIPanel(MatchCelebrationPartyPoseFrame);
 	end
 end
 
@@ -3370,7 +3416,7 @@ function CloseSpecialWindows()
 	return found;
 end
 
-function CloseWindows(ignoreCenter, frameToIgnore)
+function CloseWindows(ignoreCenter, frameToIgnore, context)
 	-- This function will close all frames that are not the current frame
 	local leftFrame = GetUIPanel("left");
 	local centerFrame = GetUIPanel("center");
@@ -3378,15 +3424,18 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	local doublewideFrame = GetUIPanel("doublewide");
 	local fullScreenFrame = GetUIPanel("fullscreen");
 	local found = leftFrame or centerFrame or rightFrame or doublewideFrame or fullScreenFrame;
+	local ignoreControlLostLeft =  ( leftFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( leftFrame, "ignoreControlLost" ) )
+	local ignoreControlLostRight =  ( rightFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( rightFrame, "ignoreControlLost" ) )
+	local ignoreControlLostCenter =  ( centerFrame ~= nil and context == "lossOfControl" and GetUIPanelAttribute( centerFrame, "ignoreControlLost" ) )
 
-	if ( not frameToIgnore or frameToIgnore ~= leftFrame ) then
+	if ( ( not frameToIgnore or frameToIgnore ~= leftFrame ) and not ignoreControlLostLeft ) then
 		HideUIPanel(leftFrame, UIPANEL_SKIP_SET_POINT);
 	end
-
+	
 	HideUIPanel(fullScreenFrame, UIPANEL_SKIP_SET_POINT);
 	HideUIPanel(doublewideFrame, UIPANEL_SKIP_SET_POINT);
 
-	if ( not frameToIgnore or frameToIgnore ~= centerFrame ) then
+	if ( ( not frameToIgnore or frameToIgnore ~= centerFrame ) and not ignoreControlLostCenter ) then
 		if ( centerFrame ) then
 			local area = GetUIPanelAttribute(centerFrame, "area");
 			if ( area ~= "center" or not ignoreCenter ) then
@@ -3395,7 +3444,7 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 		end
 	end
 
-	if ( not frameToIgnore or frameToIgnore ~= rightFrame ) then
+	if ( ( not frameToIgnore or frameToIgnore ~= rightFrame ) and not ignoreControlLostRight ) then
 		if ( rightFrame ) then
 			HideUIPanel(rightFrame, UIPANEL_SKIP_SET_POINT);
 		end
@@ -3408,17 +3457,14 @@ function CloseWindows(ignoreCenter, frameToIgnore)
 	return found;
 end
 
+-- When the player loses control we close all UIs, unless they're handled below
 function CloseAllWindows_WithExceptions()
-	-- When the player loses control we close all UIs, unless they're handled below
-	local centerFrame = GetUIPanel("center");
-	local ignoreCenter = (centerFrame and GetUIPanelAttribute(centerFrame, "ignoreControlLost")) or IsOptionFrameOpen();
-
-	CloseAllWindows(ignoreCenter);
+	CloseAllWindows(IsOptionFrameOpen(), "lossOfControl");
 end
 
-function CloseAllWindows(ignoreCenter)
+function CloseAllWindows(ignoreCenter, context)
 	local bagsVisible = CloseAllBags();
-	local windowsVisible = CloseWindows(ignoreCenter);
+	local windowsVisible = CloseWindows(ignoreCenter, nil, context );
 	local anyClosed = (bagsVisible or windowsVisible);
 	if (anyClosed and CanAutoSetGamePadCursorControl(false)) then
 		SetGamePadCursorControl(false);
@@ -4045,7 +4091,7 @@ function ToggleGameMenu()
 		TimeManagerFrameCloseButton:Click();
 	elseif ( MultiCastFlyoutFrame:IsShown() ) then
 		MultiCastFlyoutFrame_Hide(MultiCastFlyoutFrame, true);
-	elseif (SpellFlyout:IsShown() ) then
+	elseif (not DISALLOW_SPELL_FLYOUTS and SpellFlyout:IsShown() ) then
 		SpellFlyout:Hide();
 	elseif ( securecall("FCFDockOverflow_CloseLists") ) then
 	elseif ( securecall("CloseMenus") ) then
@@ -4062,6 +4108,7 @@ function ToggleGameMenu()
 	elseif ( securecall("BFAMissionFrame_EscapePressed") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
+	elseif(MatchCelebrationPartyPoseFrame and MatchCelebrationPartyPoseFrame:IsShown()) then
 	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then
 	elseif ( ClassTalentFrame and ClassTalentFrame:IsShown() ) then
 		ClassTalentFrame:CheckConfirmClose();
@@ -4073,7 +4120,7 @@ function ToggleGameMenu()
 	elseif ( LootFrame:IsShown() ) then
 		-- if we're here, LootFrame was opened under the mouse (cvar "lootUnderMouse") so it didn't get closed by CloseAllWindows
 		LootFrame:Hide();
-	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
+	elseif ( C_SpectatingUI and not C_SpectatingUI.IsSpectating() and ClearTarget() and (not UnitIsCharmed("player")) ) then
 	elseif ( OpacityFrame:IsShown() ) then
 		OpacityFrame:Hide();
 	elseif ( SplashFrame:IsShown() ) then
@@ -4082,6 +4129,7 @@ function ToggleGameMenu()
 		ChallengesKeystoneFrame:Hide();
 	elseif ( CanAutoSetGamePadCursorControl(false) and (not IsModifierKeyDown()) ) then
 		SetGamePadCursorControl(false);
+	elseif(ALLOW_PLAYER_CHOICE_ON_GAME_MENU_TOGGLE and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then
 	elseif(ReportFrame and ReportFrame:IsShown()) then
 		ReportFrame:Hide();
 	else
@@ -4962,8 +5010,7 @@ function ShouldShowArenaParty()
 end
 
 function ShouldShowPartyFrames()
-	local partyFramesShown = ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
-	return partyFramesShown and not EditModeManagerFrame:UseRaidStylePartyFrames();
+	return ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
 end
 
 function ShouldShowRaidFrames()

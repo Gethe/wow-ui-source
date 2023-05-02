@@ -88,15 +88,19 @@ end
 function EssencePointButtonMixin:AnimOut()
 	if(self.EssenceFull:IsShown() or self.EssenceFilling:IsShown() or self.EssenceFillDone:IsShown()) then 
 		self.EssenceDepleting:Show();
-		if(not self.EssenceFilling.FillingAnim:IsPlaying()) then
+		if(self.EssenceFilling.FillingAnim:IsPlaying()) then
+			-- No depletion anim if we're filling (depletion art is for a full essence),
+			-- but we do need to set ourselves to the final frame to get all element alphas correct.
+			self.EssenceFilling.FillingAnim:Stop();
+			self.EssenceFilling.CircleAnim:Stop();
+			self.EssenceDepleting.AnimIn:Play(false, self.EssenceDepleting.AnimIn:GetDuration());
+		else
 			self.EssenceDepleting.AnimIn:Play();
 		end
 		self.EssenceFilling:Hide(); 
 		self.EssenceEmpty:Hide(); 
 		self.EssenceFillDone:Hide();
 		self.EssenceFull:Hide(); 
-		self.EssenceFilling.FillingAnim:Stop();
-		self.EssenceFilling.CircleAnim:Stop();
 		self:SetScript("OnUpdate", nil);
 	end 
 end

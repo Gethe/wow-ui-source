@@ -336,7 +336,7 @@ end
 function EditModeSystemSettingsDialogMixin:AttachToSystemFrame(systemFrame)
 	self.resetDialogAnchors = systemFrame:ShouldResetSettingsDialogAnchors(self.attachedToSystem);
 	self.attachedToSystem = systemFrame;
-	self.Title:SetText(systemFrame.systemName);
+	self.Title:SetText(systemFrame:GetSystemName());
 	self:UpdateDialog(systemFrame);
 	self:Show();
 end
@@ -461,6 +461,24 @@ end
 function EditModeSystemSettingsDialogMixin:OnSettingValueChanged(setting, value)
 	if self.attachedToSystem then
 		EditModeManagerFrame:OnSystemSettingChange(self.attachedToSystem, setting, value);
+	end
+end
+
+function EditModeSystemSettingsDialogMixin:OnSettingInteractStart(setting)
+	if self.attachedToSystem then
+		local settings = self.attachedToSystem.settingDisplayInfoMap[setting];
+		if settings and settings.hideSystemSelectionOnInteract then
+			self.attachedToSystem:SetSelectionShown(false);
+		end
+	end
+end
+
+function EditModeSystemSettingsDialogMixin:OnSettingInteractEnd(setting)
+	if self.attachedToSystem then
+		local settings = self.attachedToSystem.settingDisplayInfoMap[setting];
+		if settings and settings.hideSystemSelectionOnInteract then
+			self.attachedToSystem:SetSelectionShown(true);
+		end	
 	end
 end
 

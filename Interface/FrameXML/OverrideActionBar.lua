@@ -104,7 +104,7 @@ end
 
 function OverrideActionBarMixin:OnShow()
 	if EditModeManagerFrame:IsEditModeActive() then
-		EditModeManagerFrame:ExitEditMode();
+		HideUIPanel(EditModeManagerFrame);
 	end
 
 	self:UpdateMicroButtons();
@@ -292,20 +292,6 @@ function OverrideActionBarMixin:UpdateXpBar(newLevel)
 		self.xpBar:SetMinMaxValues(min(0, currXP), nextXP);
 		self.xpBar:SetValue(currXP);
 	end
-end
-
-function OverrideActionBarMixin:GetBottomAnchoredHeight()
-	local height = 0;
-	if self:IsShown() then
-		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint(1);
-		height = self:GetHeight() + offsetY;
-
-		if self.xpBar:IsShown() then
-			height =  height + self.xpBar:GetHeight();
-		end
-	end
-
-	return height;
 end
 
 function OverrideActionBarMixin:IsShownOverride()

@@ -1,3 +1,27 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+Import("table");
+Import("ipairs");
+
+end
+---------------
+
 TreeListDataProviderConstants =
 {
 	Collapsed = true,
@@ -38,6 +62,10 @@ end
 
 function TreeListNodeMixin:GetSize()
 	return #self.nodes;
+end
+
+function TreeListNodeMixin:GetFirstNode()
+	return self.nodes[1];
 end
 
 function TreeListNodeMixin:Flush()
@@ -111,7 +139,9 @@ function TreeListNodeMixin:SetCollapsed(collapsed, affectChildren, skipInvalidat
 end
 
 function TreeListNodeMixin:ToggleCollapsed(affectChildren, skipInvalidate)
-	self:SetCollapsed(not self:IsCollapsed(), affectChildren, skipInvalidate);
+	local newCollapsed = not self:IsCollapsed();
+	self:SetCollapsed(newCollapsed, affectChildren, skipInvalidate);
+	return newCollapsed;
 end
 
 function TreeListNodeMixin:IsCollapsed()
@@ -181,6 +211,10 @@ end
 
 function TreeListDataProviderMixin:GetChildrenNodes()
 	return self.node:GetNodes();
+end
+
+function TreeListDataProviderMixin:GetFirstChildNode()
+	return self:GetChildrenNodes()[1];
 end
 
 function TreeListDataProviderMixin:GetRootNode()

@@ -5,16 +5,16 @@
 		<Size x="512" y="80"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentSlot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true" parentKey="slot1">
+				<FontString parentKey="slot1" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
 					<Size x="800" y="0"/>
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentSlot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true" parentKey="slot2">
+				<FontString parentKey="slot2" inherits="GameFontNormalHuge" justifyH="CENTER" hidden="true">
 					<Size x="800" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentSlot1" relativePoint="BOTTOM"/>
+						<Anchor point="TOP" relativeKey="$parent.slot1" relativePoint="BOTTOM"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -54,9 +54,22 @@
 	</Frame>
 
 	<Frame name="RaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<KeyValues>
+			<KeyValue key="controlPrivateAnchor" value="true" type="boolean"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM"/>
 		</Anchors>
+	</Frame>
+
+	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size x="512" y="80"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="RaidBossEmoteFrame" relativePoint="TOP"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 </Ui>

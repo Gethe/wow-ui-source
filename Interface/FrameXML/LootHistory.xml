@@ -1,295 +1,282 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LootHistory.lua"/>
-	<Button name="LootHistoryItemTemplate" virtual="true">
-		<Size x="177" y="36"/>
-		<HitRectInsets>
-			<AbsInset left="20" right="0" top="0" bottom="0"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<!--RollWindow-ItemDivider-->
-				<Texture parentKey="Divider" file="Interface\LootFrame\LootToast">
-					<Size x="181" y="38"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="1"/>
-					</Anchors>
-					<TexCoords left="0.00097656" right="0.17773438" top="0.74218750" bottom="0.89062500"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="3">
-				<Texture parentKey="Icon">
-					<Size x="28" y="28"/>
-					<Anchors>
-						<Anchor point="LEFT" x="23" y="-2"/>
-					</Anchors>
-				</Texture>
-				<!--SmallItemNameBorder-Left-->
-				<Texture parentKey="NameBorderLeft" file="Interface\LootFrame\LootToast">
-					<Size x="16" y="32"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
-					</Anchors>
-					<TexCoords left="0.79101563" right="0.80664063" top="0.57421875" bottom="0.69921875"/>
-				</Texture>
-				<Texture parentKey="NameBorderRight" file="Interface\LootFrame\LootToast">
-					<Size x="16" y="32"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="0" y="-2"/>
-					</Anchors>
-					<TexCoords left="0.73242188" right="0.74804688" top="0.80859375" bottom="0.93359375"/>
-				</Texture>
-				<Texture parentKey="NameBorderMid" file="Interface\LootFrame\LootToast">
-					<Size x="16" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-					<TexCoords left="0.75" right="0.764648438" top="0.80859375" bottom="0.93359375"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<!--SmallItemIcon-Border-->
-				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
-					<Size x="30" y="30"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>
-				</Texture>
-				<FontString parentKey="ItemName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPLEFT" x="2" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="WinnerRoll" inherits="GameFontNormalSmall" justifyH="RIGHT">
-					<Size x="24" y="16"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="WinnerRollType">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.WinnerRoll" relativePoint="LEFT" x="2" y="-1"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="WinnerName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="LEFT" x="2" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.WinnerRollType" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="ActiveHighlight" file="Interface\LootFrame\LootHistory-NewItemGlow" alpha="0.7">
-					<Size x="128" y="32"/>
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.NameBorderMid" relativePoint="BOTTOM" x="2" y="-12"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="ToggleButton">
-				<Size x="14" y="14"/>
-				<Anchors>
-					<Anchor point="LEFT" x="5" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						LootHistoryFrame_ToggleRollExpanded(LootHistoryFrame, self:GetParent().rollID);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP"/>
-				<PushedTexture file="Interface\Buttons\UI-MinusButton-Down"/>
-				<DisabledTexture file="Interface\Buttons\UI-MinusButton-Disabled"/>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
-			</Button>
-		</Frames>
+
+	<Frame name="LootHistoryElementTemplate" mixin="LootHistoryElementMixin" virtual="true">
+		<Size x="218" y="58"/>
 		<Scripts>
-			<OnEnter>
-				if ( self.itemLink ) then
-					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-					GameTooltip:SetHyperlink(self.itemLink);
-					GameTooltip:Show();
-				end
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-			<OnClick>
-				if ( self.itemLink and IsModifiedClick("CHATLINK") ) then
-					HandleModifiedItemClick(self.itemLink);
-				end
-			</OnClick>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
-	</Button>
-	<Button name="LootHistoryPlayerTemplate" virtual="true">
-		<Size x="177" y="16"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="AlternatingBG">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" x="10" y="0"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.08"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="RollText" inherits="GameFontNormalSmall" justifyH="RIGHT" text="94">
-					<Size x="24" y="16"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-2" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="PlayerName" inherits="GameFontNormalSmall" justifyH="LEFT" text="PLAYERNAME">
-					<Anchors>
-						<Anchor point="LEFT" x="25" y="0"/>
-						<!--Anchored in OnLoad because the RollIcon frame isn't loaded yet.
-						<Anchor point="RIGHT" relativeKey="$parent.RollIcon" relativePoint="LEFT" x="-2" y="0"/>-->
-					</Anchors>
-				</FontString>
-				<Texture parentKey="WinMark" file="Interface\Buttons\UI-CheckBox-Check">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.PlayerName" relativePoint="LEFT" x="-1" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame parentKey="RollIcon">
-				<Size x="16" y="16"/>
+			<ItemButton parentKey="Item" registerForClicks="LeftButtonUp, RightButtonUp">
+				<!-- Override ItemButton to have no normal texture -->
+				<NormalTexture/>
+				<Size x="48" y="48"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.RollText" relativePoint="LEFT" x="2" y="-1"/>
+					<Anchor point="LEFT" x="6" y="0"/>
+				</Anchors>
+			</ItemButton>
+			<Frame parentKey="WinningRollInfo">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Texture" setAllPoints="true"/>
+						<FontString parentKey="WinningRoll" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Check" atlas="lootroll-icon-checkmark" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.WinningRoll" relativePoint="LEFT" x="-4" y="0"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.tooltip ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
+			</Frame>
+			<Frame parentKey="PendingRollInfo">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrentWinnerText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+							<Color color="DISABLED_FONT_COLOR"/>
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-2"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="WaitDot1" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrentWinnerText" relativePoint="LEFT" x="-8" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="WaitDot2" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.WaitDot1" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="WaitAnim" looping="REPEAT">
+						<Alpha childKey="WaitDot1" startDelay="0.65" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="WaitDot2" startDelay="0.50" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="WaitDot1" startDelay="0.50" duration="0.15" order="3" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="WaitDot2" startDelay="0.50" duration="0.15" order="4" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="AllPassedInfo">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="AllPassedText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" text="LOOT_HISTORY_ALL_PASSED">
+							<Color color="RED_FONT_COLOR"/>
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Icon" atlas="lootroll-icon-checkmark" useAtlasSize="false">
+							<Size x="15" y="13"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.AllPassedText" relativePoint="LEFT" x="-4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PlayerRoll" frameStrata="HIGH" frameLevel="550">
+				<Size x="37" y="33"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Item" relativePoint="TOPLEFT" x="5" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PlayerRollIcon">
+							<Size x="37" y="33"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.PlayerName:SetPoint("RIGHT", self.RollIcon, "LEFT", -2, 0);
-				self:RegisterForClicks("RightButtonUp");
-			</OnLoad>
-			<OnClick function="LootHistoryPlayerFrame_OnClick"/>
-		</Scripts>
-	</Button>
-	<Frame name="LootHistoryFrame" movable="true" resizable="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate" hidden="true">
-		<Size x="210" y="175"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="280" y="180"/>
-		</Anchors>
-		<ResizeBounds>
-			<minResize>
-				<AbsDimension x="210" y="103"/>
-			</minResize>
-		</ResizeBounds>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="NameFrame" atlas="looting_itemcard_bg" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="LootIcon" file="Interface\Minimap\Tracking\Banker">
-					<Size x="18" y="18"/>
+				<FontString parentKey="ItemName" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="150" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Label" inherits="GameFontNormal" text="LOOT_ROLLS">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.LootIcon" relativePoint="RIGHT" x="3" y="1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="6" y="-2"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="Divider" file="Interface\Common\UI-TooltipDivider">
-					<Size x="0" y="8"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BorderFrame" atlas="lootroll-itementry-background" useAtlasSize="false" setAllPoints="false"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LootHistoryPassedHeaderPaddingTemplate" virtual="true">
+		<Size x="218" y="12"/>
+	</Frame>
+
+	<Frame name="LootHistoryPassedHeaderTemplate" virtual="true">
+		<Size x="218" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormalMed2" text="LOOT_HISTORY_PASSED">
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-20"/>
-						<Anchor point="TOPRIGHT" x="-4" y="-20"/>
+						<Anchor point="TOPLEFT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="LootHistoryRollTooltipLineTemplate" inherits="ResizeLayoutFrame" mixin="LootHistoryRollTooltipLineMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RollIcon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RollText" inherits="GameFontNormal">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RollIcon" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PlayerName" inherits="GameFontHighlight">
+					<Size x="0" y="0"/>
+					<!-- Anchored dynamically -->
+				</FontString>
+				<Texture parentKey="Check" atlas="lootroll-icon-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.PlayerName" relativePoint="RIGHT" x="-2" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+	</Frame>
+	
+	<Frame name="GroupLootHistoryFrame" mixin="LootHistoryFrameMixin" inherits="DefaultPanelFlatTemplate" movable="true" resizable="true" registerForDrag="LeftButton" clampedToScreen="true" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size x="261" y="590"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="150" y="-150"/>
+		</Anchors>
+		<ResizeBounds>
+			<minResize>
+				<AbsDimension x="261" y="300"/>
+			</minResize>
+			<MaxResize>
+				<AbsDimension x="261" y="800"/>
+			</MaxResize>
+		</ResizeBounds>
+		<KeyValues>
+			<KeyValue key="panelMaxHeight" value="590" type="number"/>
+			<KeyValue key="panelWidth" value="261" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<!-- OnUpdate set dynamically -->
+		</Scripts>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
-			<Button parentKey="DragButton">
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CloseButton" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" x="6" y="-90"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="238" y="4"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						self:GetParent():StartMoving();
-					</OnDragStart>
-					<OnDragStop>
-						self:GetParent():StopMovingOrSizing();
-					</OnDragStop>
-				</Scripts>
-			</Button>
-			<Button parentKey="ResizeButton">
-				<Size x="32" y="16"/>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="7"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
 				</Anchors>
-				<Scripts>
-					<OnMouseDown>
-						self:GetParent():StartSizing("BOTTOM");
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():StopMovingOrSizing();
-					</OnMouseUp>
-				</Scripts>
-				<NormalTexture file="Interface\RaidFrame\Raid-Move-Down"/>
-			</Button>
-			<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			</EventFrame>
+			
+			<Frame parentKey="EncounterDropDown" inherits="UIDropDownMenuTemplate" parentArray="uncommittedRegions">
+				<Size x="239" y="28"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOMLEFT" x="0" y="1"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-28" y="7"/>
+					<Anchor point="TOP" x="1" y="-32"/>
 				</Anchors>
-				<ScrollChild>
-					<Frame parentKey="ScrollChild">
-						<Size x="1" y="1"/>
-					</Frame>
-				</ScrollChild>
+			</Frame>
+
+			<Frame parentKey="Timer">
+				<Size x="238" y="13"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.EncounterDropDown" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="ScrollBarBackground">
+						<Texture parentKey="Background" atlas="lootroll-timer-background" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Fill" atlas="lootroll-timer-fill" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBar.ScrollUpButton" relativePoint="TOPLEFT" x="-2" y="2"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar.ScrollDownButton" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+								<Anchor point="LEFT" x="2" y="0"/>
 							</Anchors>
-							<Color r="0" g="0" b="0"/>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" atlas="lootroll-timer-border" setAllPoints="true"/>
+					</Layer>
 				</Layers>
-			</ScrollFrame>
+			</Frame>
+			
+			<Button parentKey="ResizeButton" frameStrata="HIGH" frameLevel="600">
+				<Size x="32" y="12"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="lootroll-resizehandle" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Button>
 		</Frames>
-		<Scripts>
-			<OnLoad function="LootHistoryFrame_OnLoad" inherit="prepend"/>
-			<OnEvent function="LootHistoryFrame_OnEvent"/>
-			<OnHide function="LootHistoryFrame_OnHide"/>
-		</Scripts>
-	</Frame>
-	<Frame name="LootHistoryDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="LootHistoryDropDown_OnLoad"/>
-		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoInfoString" inherits="GameFontNormal" text="LOOT_HISTORY_INFO_TEXT" justifyH="CENTER" justifyV="TOP">
+					<Size x="200" y="0"/>
+					<Color color="DISABLED_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-42"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

@@ -8,11 +8,6 @@ AzeriteEssenceUIMixin:GenerateCallbackEvents(
 	"OnHide",
 });
 
-local ESSENCE_BUTTON_HEIGHT = 41;
-local ESSENCE_HEADER_HEIGHT = 21;
-local ESSENCE_BUTTON_OFFSET = 1;
-local ESSENCE_LIST_PADDING = 3;
-
 local LOCKED_FONT_COLOR = CreateColor(0.5, 0.447, 0.4);
 local LOCKED_ICON_COLOR = CreateColor(.898, .804, .722);
 local UNLOCK_LEVEL_TEXT_COLOR = CreateColor(0.051, 0.251, 0.373);
@@ -591,16 +586,54 @@ end
 AzeriteEssenceListMixin  = { };
 
 function AzeriteEssenceListMixin:OnLoad()
-	self.ScrollBar.doNotHide = true;
-	self.update = function() self:Refresh(); end
-	self.dynamic = function(...) return self:CalculateScrollOffset(...); end
-	HybridScrollFrame_CreateButtons(self, "AzeriteEssenceButtonTemplate", 4, -ESSENCE_LIST_PADDING, "TOPLEFT", "TOPLEFT", 0, -ESSENCE_BUTTON_OFFSET, "TOP", "BOTTOM");
-	self.HeaderButton:SetParent(self.ScrollChild);
-
 	self:RegisterEvent("VARIABLES_LOADED");
 	self.collapsed = GetCVarBool("otherRolesAzeriteEssencesHidden");
 
 	self:CheckAndSetUpLearnEffect();
+
+	local topPadding = 3;
+	local leftPadding = 4;
+	local rightPadding = 2;
+	local spacing = 1;
+	local view = CreateScrollBoxListLinearView(topPadding, 0, leftPadding, rightPadding, spacing);
+
+	local function OnHeaderClick()
+		self:ToggleHeader();
+	end
+
+	local function HeaderInitializer(button, essenceInfo)
+		button:SetExpanded(self:ShouldShowInvalidEssences());
+
+		button:SetScript("OnClick", OnHeaderClick);
+	end
+
+	local function OnButtonClick(button, buttonName)
+		if buttonName == "LeftButton" then
+			local linkedToChat = IsModifiedClick("CHATLINK") and HandleModifiedItemClick(C_AzeriteEssence.GetEssenceHyperlink(button.essenceID, button.rank));
+			if not linkedToChat then
+				self:SetPendingEssence(button.essenceID);
+			end
+		elseif buttonName == "RightButton" then
+			C_AzeriteEssence.ClearPendingActivationEssence();
+		end
+	end
+
+	local function ButtonInitializer(button, essenceInfo)
+		local parent = self:GetParent();
+		button:Init(essenceInfo, parent:IsAzeriteItemEnabled(), parent:GetSlotEssences());
+		
+		button:SetScript("OnClick", OnButtonClick);
+	end
+
+	view:SetElementFactory(function(factory, essenceInfo)
+		if essenceInfo.isHeader then
+			factory("AzeriteEssenceHeaderButtonTemplate", HeaderInitializer);
+		else
+			factory("AzeriteEssenceButtonTemplate", ButtonInitializer);
+		end
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function AzeriteEssenceListMixin:OnShow()
@@ -697,6 +730,7 @@ end
 
 function AzeriteEssenceListMixin:ForceOpenHeader()
 	self.collapsed = false;
+	self:Refresh();
 end
 
 function AzeriteEssenceListMixin:ShouldShowInvalidEssences()
@@ -729,29 +763,19 @@ function AzeriteEssenceListMixin:OnEssenceChanged(essenceID)
 			if headerIndex and index > headerIndex and not self:ShouldShowInvalidEssences() then
 				self:ForceOpenHeader();
 			end
-			-- scroll to the essence
-			local getHeightFunc = function(index)
-				if index == headerIndex then
-					return ESSENCE_HEADER_HEIGHT + ESSENCE_BUTTON_OFFSET;
-				else
-					return ESSENCE_BUTTON_HEIGHT + ESSENCE_BUTTON_OFFSET;
-				end
-			end
-			HybridScrollFrame_ScrollToIndex(self, index, getHeightFunc);
-			-- find the button
-			for i, button in ipairs(self.buttons) do
-				if button.essenceID == essenceID then
-					self.learnEssenceButton = button;
-					break;
-				end
-			end
+
+			local foundEssenceInfo = self.ScrollBox:ScrollToElementDataByPredicate(function(essenceInfo)
+				return essenceInfo.ID == essenceID;
+			end);
+
+			self.learnEssenceButton = self.ScrollBox:FindFrame(foundEssenceInfo);
 			break;
 		end
 	end
 
 	if self.learnEssenceButton then
-		-- disable the scrollbar
-		ScrollBar_Disable(self.scrollBar);
+		self.ScrollBar:DisableControls();
+
 		-- play glow
 		self.learnEssenceButton.Glow.Anim:Play();
 		self.learnEssenceButton.Glow2.Anim:Play();
@@ -782,116 +806,31 @@ function AzeriteEssenceListMixin:CleanUpLearnEssence()
 	self:Refresh();
 end
 
-function AzeriteEssenceListMixin:CalculateScrollOffset(offset)
-	local usedHeight = 0;
-	local essences = self:GetCachedEssences();
-	for i = 1, self:GetNumViewableEssences() do
-		local essence = essences[i];
-		local height;
-		if essence.isHeader then
-			height = ESSENCE_HEADER_HEIGHT + ESSENCE_BUTTON_OFFSET;
-		else
-			height = ESSENCE_BUTTON_HEIGHT + ESSENCE_BUTTON_OFFSET;
-		end
-		if ( usedHeight + height >= offset ) then
-			return i - 1, offset - usedHeight;
-		else
-			usedHeight = usedHeight + height;
-		end
-	end
-	return 0, 0;
-end
-
 function AzeriteEssenceListMixin:Refresh()
-	local essences = self:GetCachedEssences();
-	local numEssences = self:GetNumViewableEssences();
+	local shallow = true;
+	local essenceInfos = CopyTable(self:GetCachedEssences(), shallow);
+	local skipIndex = self:GetNumViewableEssences() + 1;
+	while essenceInfos[skipIndex] do
+		essenceInfos[skipIndex] = nil;
+		skipIndex = skipIndex + 1;
+	end
+
+	local dataProvider = CreateDataProvider(essenceInfos);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	self:UpdateMouseOverTooltip();
 
 	local parent = self:GetParent();
 	local isAzeriteItemEnabled = parent:IsAzeriteItemEnabled();
-	local slotEssences = parent:GetSlotEssences();
-	local pendingEssenceID = C_AzeriteEssence.GetPendingActivationEssence();
-
-	local hasUnlockedEssence = false;
-
-	self.HeaderButton:Hide();
-	local offset = HybridScrollFrame_GetOffset(self);
-
-	local totalHeight = numEssences * (ESSENCE_BUTTON_HEIGHT + ESSENCE_BUTTON_OFFSET) + ESSENCE_LIST_PADDING * 2;
-	if self:HasHeader() then
-		totalHeight = totalHeight + ESSENCE_HEADER_HEIGHT - ESSENCE_BUTTON_HEIGHT;
-	end
-
-	for i, button in ipairs(self.buttons) do
-		local index = offset + i;
-		if index <= numEssences then
-			local essenceInfo = essences[index];
-			if essenceInfo.isHeader then
-				button:SetHeight(ESSENCE_HEADER_HEIGHT);
-				button:Hide();
-				self.HeaderButton:SetPoint("BOTTOM", button, 0, 0);
-				self.HeaderButton:Show();
-				if self:ShouldShowInvalidEssences() then
-					self.HeaderButton.ExpandedIcon:Show();
-					self.HeaderButton.CollapsedIcon:Hide();
-				else
-					self.HeaderButton.ExpandedIcon:Hide();
-					self.HeaderButton.CollapsedIcon:Show();
-				end
-			else
-				button:SetHeight(ESSENCE_BUTTON_HEIGHT);
-				button.Icon:SetTexture(essenceInfo.icon);
-				button.Name:SetText(essenceInfo.name);
-				local activatedMarker;
-				if essenceInfo.unlocked then
-					local color = isAzeriteItemEnabled and  ITEM_QUALITY_COLORS[essenceInfo.rank + 1] or LOCKED_FONT_COLOR;	-- min shown quality is uncommon
-					button.Name:SetTextColor(color.r, color.g, color.b);
-					button.Icon:SetDesaturated(not essenceInfo.valid or not isAzeriteItemEnabled);
-					button.Icon:SetVertexColor((isAzeriteItemEnabled and HIGHLIGHT_FONT_COLOR or LOCKED_ICON_COLOR):GetRGB());
-					button.IconCover:SetShown(not isAzeriteItemEnabled);
-					button.Background:SetAtlas("heartofazeroth-list-item");
-					button.Background:SetDesaturated(not isAzeriteItemEnabled);
-					local essenceSlot = slotEssences[essenceInfo.ID];
-					if essenceSlot then
-						if essenceSlot == Enum.AzeriteEssenceSlot.MainSlot then
-							activatedMarker = button.ActivatedMarkerMain;
-						else
-							activatedMarker = button.ActivatedMarkerPassive;
-						end
-					end
-					hasUnlockedEssence = true;
-				else
-					button.Name:SetTextColor(LOCKED_FONT_COLOR:GetRGB());
-					button.Icon:SetDesaturated(true);
-					button.Icon:SetVertexColor(LOCKED_FONT_COLOR:GetRGB());
-					button.IconCover:Show();
-					button.Background:SetAtlas("heartofazeroth-list-item-uncollected");
-					button.Background:SetDesaturated(not isAzeriteItemEnabled);
-				end
-				button.PendingGlow:SetShown(essenceInfo.ID == pendingEssenceID and isAzeriteItemEnabled);
-				button.essenceID = essenceInfo.ID;
-				button.rank = essenceInfo.rank;
-				button:Show();
-
-				local desaturation = (not isAzeriteItemEnabled) and 1 or 0;
-
-				for _, marker in ipairs(button.ActivatedMarkers) do
-					marker:SetShown(marker == activatedMarker);
-					marker:DesaturateHierarchy(desaturation);
-				end
-			end
-		else
-			button:Hide();
-		end
-	end
-
-	HybridScrollFrame_Update(self, totalHeight, self:GetHeight());
-	self:UpdateMouseOverTooltip();
-
 	parent.RightInset.Background:SetDesaturated(not isAzeriteItemEnabled);
 
 	if parent:ShouldPlayReveal() and not parent:IsRevealInProgress() then
-		ScrollBar_Disable(self.scrollBar);
-		if hasUnlockedEssence then
+		self.ScrollBar:DisableControls();
+		
+		local anyUnlocked = dataProvider:ContainsByPredicate(function(essenceInfo)
+			return essenceInfo.unlocked;
+		end);
+		if anyUnlocked then
 			local helpTipInfo = {
 				text = AZERITE_ESSENCE_TUTORIAL_FIRST_ESSENCE,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -908,13 +847,12 @@ function AzeriteEssenceListMixin:Refresh()
 end
 
 function AzeriteEssenceListMixin:UpdateMouseOverTooltip()
-	for i, button in ipairs(self.buttons) do
-		-- need to check shown for when mousing over button covered by header
-		if button:IsMouseOver() and button:IsShown() then
+	-- need to check shown for when mousing over button covered by header
+	self.ScrollBox:ForEachFrame(function(button, essenceInfo)
+		if button:IsMouseOver() and not essenceInfo.isHeader then
 			button:OnEnter();
-			return;
 		end
-	end
+	end);
 end
 
 AzeriteEssenceButtonMixin  = { };
@@ -925,17 +863,56 @@ function AzeriteEssenceButtonMixin:OnEnter()
 	GameTooltip:Show();
 end
 
-function AzeriteEssenceButtonMixin:OnClick(mouseButton)
-	if mouseButton == "LeftButton" then
-		local linkedToChat = false;
-		if ( IsModifiedClick("CHATLINK") ) then
-			linkedToChat = HandleModifiedItemClick(C_AzeriteEssence.GetEssenceHyperlink(self.essenceID, self.rank));
+function AzeriteEssenceButtonMixin:Init(essenceInfo, isAzeriteItemEnabled, slotEssences)
+	self.Icon:SetTexture(essenceInfo.icon);
+	self.Name:SetText(essenceInfo.name);
+	local activatedMarker;
+	if essenceInfo.unlocked then
+		local color = isAzeriteItemEnabled and ITEM_QUALITY_COLORS[essenceInfo.rank + 1] or LOCKED_FONT_COLOR;	-- min shown quality is uncommon
+		self.Name:SetTextColor(color.r, color.g, color.b);
+		self.Icon:SetDesaturated(not essenceInfo.valid or not isAzeriteItemEnabled);
+		self.Icon:SetVertexColor((isAzeriteItemEnabled and HIGHLIGHT_FONT_COLOR or LOCKED_ICON_COLOR):GetRGB());
+		self.IconCover:SetShown(not isAzeriteItemEnabled);
+		self.Background:SetAtlas("heartofazeroth-list-item");
+		self.Background:SetDesaturated(not isAzeriteItemEnabled);
+		local essenceSlot = slotEssences[essenceInfo.ID];
+		if essenceSlot then
+			if essenceSlot == Enum.AzeriteEssenceSlot.MainSlot then
+				activatedMarker = self.ActivatedMarkerMain;
+			else
+				activatedMarker = self.ActivatedMarkerPassive;
+			end
 		end
-		if ( not linkedToChat ) then
-			self:GetParent():GetParent():SetPendingEssence(self.essenceID);
-		end
-	elseif mouseButton == "RightButton" then
-		C_AzeriteEssence.ClearPendingActivationEssence();
+	else
+		self.Name:SetTextColor(LOCKED_FONT_COLOR:GetRGB());
+		self.Icon:SetDesaturated(true);
+		self.Icon:SetVertexColor(LOCKED_FONT_COLOR:GetRGB());
+		self.IconCover:Show();
+		self.Background:SetAtlas("heartofazeroth-list-item-uncollected");
+		self.Background:SetDesaturated(not isAzeriteItemEnabled);
+	end
+		
+	local pendingEssenceID = C_AzeriteEssence.GetPendingActivationEssence();
+	self.PendingGlow:SetShown(essenceInfo.ID == pendingEssenceID and isAzeriteItemEnabled);
+	self.essenceID = essenceInfo.ID;
+	self.rank = essenceInfo.rank;
+
+	local desaturation = isAzeriteItemEnabled and 0 or 1;
+	for _, marker in ipairs(self.ActivatedMarkers) do
+		marker:SetShown(marker == activatedMarker);
+		marker:DesaturateHierarchy(desaturation);
+	end
+end
+
+AzeriteEssenceHeaderButtonMixin = { };
+
+function AzeriteEssenceHeaderButtonMixin:SetExpanded(expanded)
+	if expanded then
+		self.ExpandedIcon:Show();
+		self.CollapsedIcon:Hide();
+	else
+		self.ExpandedIcon:Hide();
+		self.CollapsedIcon:Show();
 	end
 end
 

@@ -859,18 +859,13 @@
 							</StatusBar>
 						</Frames>
 					</Frame>
-					<ScrollFrame name="$parentHistoryScroll" inherits="MinimalScrollFrameTemplate" parentKey="historyScroll">
+					<ScrollFrame name="$parentHistoryScroll" inherits="ScrollFrameTemplate" parentKey="historyScroll">
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentHistoryTitle" relativePoint="BOTTOM" y="-12"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = true;
-								local name = self:GetName();
-								_G[name.."ScrollBar"]:Hide();
-								_G[name.."ScrollBarTrack"]:Hide();
-							</OnLoad>
-						</Scripts>
 						<ScrollChild>
 							<Frame name="$parentChild" parentKey="child" >
 								<Anchors>
@@ -964,19 +959,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<ScrollFrame name="$parentHelpScroll" inherits="MinimalScrollFrameTemplate">
+					<ScrollFrame name="$parentHelpScroll" inherits="ScrollFrameTemplate">
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="400" y="120"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = true;
-								local name = self:GetName();
-								_G[name.."ScrollBar"]:Hide();
-								_G[name.."ScrollBarTrack"]:Hide();
-							</OnLoad>
-						</Scripts>
 						<ScrollChild>
 							<Frame>
 								<Size x="400" y="120"/>

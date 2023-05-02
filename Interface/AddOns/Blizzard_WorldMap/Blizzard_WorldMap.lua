@@ -170,7 +170,6 @@ function WorldMapMixin:AddStandardDataProviders()
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);
 	worldQuestDataProvider:SetUsesSpellEffect(true);
 	worldQuestDataProvider:SetCheckBounties(true);
-	worldQuestDataProvider:SetMarkActiveQuests(true);
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
@@ -198,7 +197,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_PING");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");

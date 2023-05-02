@@ -457,7 +457,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 	DefaultCompactNamePlatePlayerFrameSetUpOptions.hideHealthbar = self.playerHideHealthandPowerBar;
 
-	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
+	local namePlateVerticalScale = GetCVarNumberOrDefault("NamePlateVerticalScale");
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
 	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
@@ -482,13 +482,13 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	local personalNamePlateClickThrough = GetCVarBool("NameplatePersonalClickThrough");
 	C_NamePlate.SetNamePlateSelfClickThrough(personalNamePlateClickThrough);
 
-	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
+	local horizontalScale = GetCVarNumberOrDefault("NamePlateHorizontalScale");
 	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale * Lerp(1.1, 1.0, clampedZeroBasedScale), self.baseNamePlateHeight);
 
-	local classificationScale = tonumber(GetCVar("NamePlateClassificationScale"));
-	local maxClassificationScale = tonumber(GetCVar("NamePlateMaximumClassificationScale"));
+	local classificationScale = GetCVarNumberOrDefault("NamePlateClassificationScale");
+	local maxClassificationScale = GetCVarNumberOrDefault("NamePlateMaximumClassificationScale");
 	DefaultCompactNamePlateFrameSetUpOptions.classificationScale = classificationScale;
 	DefaultCompactNamePlateFrameSetUpOptions.maxClassificationScale = maxClassificationScale;
 

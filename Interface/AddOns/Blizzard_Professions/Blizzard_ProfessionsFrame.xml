@@ -8,7 +8,12 @@
 		<Size x="1" y="658"/>
 		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
-
+			<Frame parentKey="MaximizeMinimize" inherits="MaximizeMinimizeButtonFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			
 			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
 				<KeyValues>
 					<KeyValue key="minTabWidth" value="100" type="number"/>

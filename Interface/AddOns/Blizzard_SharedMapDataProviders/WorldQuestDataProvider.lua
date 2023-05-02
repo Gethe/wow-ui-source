@@ -154,11 +154,15 @@ function WorldQuestDataProviderMixin:PingQuestID(questID)
 	end
 
 	if not self.pingPin then
-		self.pingPin = self:GetMap():AcquirePin("WorldQuestPingPinTemplate");
+		self.pingPin = self:GetMap():AcquirePin("MapPinPingTemplate");
 		self.pingPin.dataProvider = self;
+		self.pingPin:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_PING");
 	end
 
-	self.pingPin:Play(questID);
+	self.pingPin:SetID(questID);
+	local mapID = self:GetMap():GetMapID();
+	local x, y = C_TaskQuest.GetQuestLocation(questID, mapID);
+	self.pingPin:PlayAt(x, y);
 end
 
 function WorldQuestDataProviderMixin:OnEvent(event, ...)
@@ -226,7 +230,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 							pin.numObjectives = info.numObjectives;	-- Fix for quests with sequenced objectives
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 
-							if self.pingPin and self.pingPin:IsAttachedToQuest(info.questId) then
+							if self.pingPin and self.pingPin:GetID() == info.questId then
 								self.pingPin:SetPosition(info.x, info.y);
 							end
 						else
@@ -239,7 +243,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	for questId in pairs(pinsToRemove) do
-		if self.pingPin and self.pingPin:IsAttachedToQuest(questId) then
+		if self.pingPin and self.pingPin:GetID() == questId then
 			self.pingPin:Stop();
 		end
 
@@ -534,49 +538,4 @@ function WorldQuestSpellEffectPinMixin:CastSpell(questID)
 			self:SetSpellVisualKit(spellVisualKitID);
 		end
 	end
-end
-
---[[ World Quest Ping Pin ]]--
-WorldQuestPingPinMixin = CreateFromMixins(MapCanvasPinMixin);
-
-function WorldQuestPingPinMixin:OnLoad()
-	self:SetScalingLimits(1, 0.65, 0.65);
-	self:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
-end
-
-function WorldQuestPingPinMixin:Play(questID)
-	local mapID = self:GetMap():GetMapID();
-	local x, y = C_TaskQuest.GetQuestLocation(questID, mapID);
-	if x and y then
-		self:Show();
-		self:SetPosition(x, y);
-		self.DriverAnimation:Play();
-		self.ScaleAnimation:Play();
-		self.questID = questID;
-	else
-		self:Stop();
-	end
-end
-
-function WorldQuestPingPinMixin:Stop()
-	self.DriverAnimation:Stop();
-	self.ScaleAnimation:Stop();
-	self:Clear();
-end
-
-function WorldQuestPingPinMixin:Clear()
-	self:Hide();
-	self.questID = nil;
-end
-
-function WorldQuestPingPinMixin:IsAttachedToQuest(questID)
-	return self.questID == questID;
-end
-
-WorldQuestPinPingDriverAnimationMixin = {};
-
-function WorldQuestPinPingDriverAnimationMixin:OnFinished()
-	local ping = self:GetParent();
-	ping.ScaleAnimation:Stop();
-	ping:Clear();
 end

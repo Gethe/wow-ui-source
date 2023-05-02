@@ -265,6 +265,6 @@ end
 --This is an API for players and addon authors to continue to be able to select by index rather than ID
 function SelectGossipOption(index)
 	if (GossipFrame and GossipFrame:IsShown()) then
-		GossipFrame:SelectOptionByIndex(index);
+		GossipFrame:SelectGossipOption(index);
 	end 
 end

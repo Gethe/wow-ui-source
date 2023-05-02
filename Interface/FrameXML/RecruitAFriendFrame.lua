@@ -883,7 +883,9 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:Update(selectedRAFVersionIn
 	self.haveUnclaimedReward = self.nextReward and self.nextReward.canClaim;
 	self.numAffordableRewards = selectedRAFVersionInfo.numAffordableRewards;
 	
-	self:SetShown(self.haveUnclaimedReward);
+	local isShown = self.haveUnclaimedReward;
+	
+	self:SetShown(isShown);
 	if self.autoClaimRewards and self.numAffordableRewards <= 0 then
 		self.autoClaimRewards = false;
 	end
@@ -891,10 +893,9 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:Update(selectedRAFVersionIn
 	self:UpdateUnclaimedRewardsAnim();
 
 	self:SetText(self.numAffordableRewards == 1 and CLAIM_REWARD or RAF_CLAIM_MULTIPLE_REWARDS:format(self.numAffordableRewards));
-	
-	if self:IsMouseOver() and not self:IsEnabled() and not self.disabledTooltipShowing then
+	if isShown and self:IsMouseOver() and not self:IsEnabled() and not self.disabledTooltipShowing then
 		self:OnEnter();
-	elseif not self:IsShown() or self:IsEnabled() and self.disabledTooltipShowing then
+	elseif not isShown or self:IsEnabled() and self.disabledTooltipShowing then
 		self:HideDisabledTooltip();
 	end
 
@@ -935,6 +936,10 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:ClaimNextReward()
 end
 
 RecruitAFriendClaimOrViewRewardButtonMixin = {};
+
+function RecruitAFriendClaimOrViewRewardButtonMixin:OnLoad()
+	self:SetEnabled(false);
+end
 
 function RecruitAFriendClaimOrViewRewardButtonMixin:OnClick()
 	if self.haveUnclaimedReward then
@@ -1209,6 +1214,10 @@ function RecruitAFriendRewardButtonMixin:SetTooltipOwner()
 end
 
 function RecruitAFriendRewardButtonMixin:OnEnter()
+	if not self.rewardInfo then
+		return;
+	end
+
 	self:SetTooltipOwner();
 
 	GameTooltip:SetItemByID(self.rewardInfo.itemID);

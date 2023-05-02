@@ -64,6 +64,8 @@ function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
 end
 
 function CastingBarMixin:UpdateShownState(desiredShow)
+	self:UpdateCastTimeTextShown();
+
 	if self.isInEditMode then
 		-- If we are in edit mode then override and just show
 		self:StopFinishAnims();
@@ -158,6 +160,7 @@ end
 function CastingBarAnim_OnInterruptSparkAnimFinish(self)
 	local castingBar = self:GetParent();
 	castingBar:SetValue(castingBar.maxValue);
+	castingBar:UpdateCastTimeText();
 	castingBar:HideSpark();
 end
 
@@ -230,6 +233,7 @@ function CastingBarMixin:OnEvent(event, ...)
 		self.maxValue = (endTime - startTime) / 1000;
 		self:SetMinMaxValues(0, self.maxValue);
 		self:SetValue(self.value);
+		self:UpdateCastTimeText();
 		if ( self.Text ) then
 			self.Text:SetText(text);
 		end
@@ -285,6 +289,7 @@ function CastingBarMixin:OnEvent(event, ...)
 			end
 			if not self.reverseChanneling and not self.channeling then
 				self:SetValue(self.maxValue);
+				self:UpdateCastTimeText();
 			end
 
 			self:PlayFadeAnim();
@@ -388,6 +393,7 @@ function CastingBarMixin:OnEvent(event, ...)
 
 		self:SetMinMaxValues(0, self.maxValue);
 		self:SetValue(self.value);
+		self:UpdateCastTimeText();
 		if ( self.Text ) then
 			self.Text:SetText(text);
 		end
@@ -440,6 +446,7 @@ function CastingBarMixin:OnEvent(event, ...)
 			self.maxValue = (endTime - startTime) / 1000;
 			self:SetMinMaxValues(0, self.maxValue);
 			self:SetValue(self.value);
+			self:UpdateCastTimeText();
 		end
 	elseif ( event == "UNIT_SPELLCAST_INTERRUPTIBLE" or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
 		self:UpdateInterruptibleState(event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
@@ -480,6 +487,7 @@ function CastingBarMixin:OnUpdate(elapsed)
 		end
 		if ( self.value >= self.maxValue ) then
 			self:SetValue(self.maxValue);
+			self:UpdateCastTimeText();
 			if (not self.reverseChanneling) then
 				self:FinishSpell();
 			else
@@ -492,6 +500,7 @@ function CastingBarMixin:OnUpdate(elapsed)
 			return;
 		end
 		self:SetValue(self.value);
+		self:UpdateCastTimeText();
 		if ( self.Flash ) then
 			self.Flash:Hide();
 		end
@@ -502,6 +511,7 @@ function CastingBarMixin:OnUpdate(elapsed)
 			return;
 		end
 		self:SetValue(self.value);
+		self:UpdateCastTimeText();
 		if ( self.Flash ) then
 			self.Flash:Hide();
 		end
@@ -527,6 +537,7 @@ end
 function CastingBarMixin:FinishSpell()
 	if self.maxValue and not self.reverseChanneling and not self.channeling then
 		self:SetValue(self.maxValue);
+		self:UpdateCastTimeText();
 	end
 	local barTypeInfo = self:GetTypeInfo(self.barType);
 	self:SetStatusBarTexture(barTypeInfo.full);
@@ -693,6 +704,40 @@ function CastingBarMixin:UpdateIsShown()
 		local desiredShowFalse = false;
 		self:UpdateShownState(desiredShowFalse);
 	end
+end
+
+function CastingBarMixin:SetCastTimeTextShown(showCastTime)
+	self.showCastTimeSetting = showCastTime;
+	self:UpdateCastTimeTextShown();
+end
+
+function CastingBarMixin:UpdateCastTimeTextShown()
+	if not self.CastTimeText then
+		return;
+	end
+
+	local showCastTime = self.showCastTimeSetting and (self.casting or self.isInEditMode);
+	self.CastTimeText:SetShown(showCastTime);
+	if showCastTime and self.isInEditMode and not self.CastTimeText.text then
+		self:UpdateCastTimeText();
+	end
+end
+
+function CastingBarMixin:UpdateCastTimeText()
+	if not self.CastTimeText then
+		return;
+	end
+
+	local seconds = 0;
+	if self.casting then
+		local min, max = self:GetMinMaxValues();
+		seconds = max - self:GetValue();
+	elseif self.isInEditMode then
+		seconds = 10;
+	end
+
+	local text = string.format(CAST_BAR_CAST_TIME, seconds);
+	self.CastTimeText:SetText(text);
 end
 
 function CastingBarMixin:SetAndUpdateShowCastbar(showCastbar)

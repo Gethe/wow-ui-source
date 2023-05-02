@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_UIWidgetCenterDisplayFrame.lua"/>
-	<Frame name="UIWidgetCenterDisplayFrame" mixin="WidgetCenterDisplayFrameMixin" parent="UIParent" inherits="ResizeLayoutFrame" hidden="true">
+	<Frame name="UIWidgetCenterDisplayFrame" mixin="WidgetCenterDisplayFrameMixin" parent="UIParent" inherits="ResizeLayoutFrame" frameStrata="DIALOG" hidden="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="Dialog" type="string"/>
 		</KeyValues>
@@ -50,11 +50,14 @@
 					<Anchor point="TOP" relativeKey="$parent.TitleContainer" relativePoint="BOTTOM" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="CloseButton" mixin="UIWidgetCenterDisplayFrameButtonMixin" inherits="UIPanelButtonTemplate" text="CLOSE">
-				<Size x="185" y="25"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="30"/>
-				</Anchors>
+			<Button parentKey="ExtraButton" mixin="UIWidgetCenterDisplayFrameExtraButtonMixin" inherits="UIPanelButtonTemplate" hidden="true">
+				<Size x="100" y="25"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" mixin="UIWidgetCenterDisplayFrameButtonMixin" inherits="UIPanelButtonTemplate">
+				<Size x="100" y="25"/>
 				<Scripts>
 					<OnClick method="OnClick"/>
 				</Scripts>

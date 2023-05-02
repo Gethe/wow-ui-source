@@ -1,8 +1,0 @@
-## Title: Blizzard Guild UI
-## LoadOnDemand: 1
-Blizzard_GuildUI.xml
-Blizzard_GuildRoster.xml
-Blizzard_GuildNews.xml
-Blizzard_GuildRewards.xml
-Blizzard_GuildInfo.xml
-Localization.lua

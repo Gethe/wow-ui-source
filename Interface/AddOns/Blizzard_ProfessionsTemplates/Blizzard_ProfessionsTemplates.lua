@@ -14,7 +14,7 @@ ProfessionsTableConstants.Tip =
 	Width = 130,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
-	RightCellPadding = ProfessionsTableConstants.NoPadding,
+	RightCellPadding = 25,
 };
 ProfessionsTableConstants.NumAvailable = 
 {
@@ -32,7 +32,7 @@ ProfessionsTableConstants.Quality =
 };
 ProfessionsTableConstants.Reagents = 
 {
-	Width = 100,
+	Width = 90,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
@@ -88,7 +88,7 @@ ProfessionsTableConstants.Status =
 };
 ProfessionsTableConstants.CustomerName = 
 {
-	Width = 130,
+	Width = 160,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,

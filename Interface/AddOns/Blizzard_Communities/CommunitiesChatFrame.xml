@@ -9,39 +9,6 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
-				<Frames>
-					<Slider parentKey="ScrollBar" obeyStepOnDrag="true" valueStep="1" minValue="0" maxValue="1" inherits="HybridScrollBarBackgroundTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-9"/>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-17"/>
-						</Anchors>
-						<Frames>
-							<Button parentKey="ScrollUp" registerForClicks="LeftButtonDown" inherits="UIPanelScrollUpButtonTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():GetParent():ScrollByAmount(3);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button parentKey="ScrollDown" registerForClicks="LeftButtonDown" inherits="UIPanelScrollDownButtonTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():GetParent():ScrollByAmount(-3);
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-						<Scripts>
-							<OnValueChanged function="CommunitiesChatFrameScrollBar_OnValueChanged"/>
-						</Scripts>
-					</Slider>
-				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetFading(false);
@@ -50,9 +17,6 @@
 						self:SetHyperlinksEnabled(true);
 						self:SetTextCopyable(true);
 						self:SetIndentedWordWrap(true);
-						self:SetOnScrollChangedCallback(function(messageFrame, offset)
-							messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
-						end);
 					</OnLoad>
 					<OnHyperlinkClick>
 						SetItemRef(link, text, button, nil);
@@ -62,6 +26,7 @@
 					</OnMouseWheel>
 				</Scripts>
 			</ScrollingMessageFrame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH"/>
 			<Button name="JumpToUnreadButton" inherits="UIPanelButtonTemplate" text="COMMUNITIES_FRAME_JUMP_TO_UNREAD" hidden="true">
 				<Size x="120" y="22"/>
 				<Anchors>

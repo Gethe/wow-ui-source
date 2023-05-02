@@ -601,7 +601,6 @@ function LFDQueueFrameFindGroupButton_Update()
 		else
 			LFDQueueFrameFindGroupButton:Disable();
 		end
-		LFRQueueFrameNoLFRWhileLFDLeaveQueueButton:Enable();
 	else
 		LFDQueueFrameFindGroupButton:Disable();
 		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then

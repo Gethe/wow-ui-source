@@ -34,6 +34,11 @@ function GetCVarDefault(name)
 	return C_CVar.GetCVarDefault(name);
 end
 
+function GetCVarNumberOrDefault(name)
+	local number = tonumber(GetCVar(name));
+	return number or tonumber(GetCVarDefault(name));
+end
+
 -- Assumes every value stored in the cvar is of the same type. The purpose
 -- of using this accessor is to add type strictness to avoid scenarios where
 -- nil is implicitly converted to "0" or false and to relieve the callsites of
@@ -112,14 +117,18 @@ function CVarCallbackRegistry:OnEvent(event, ...)
 end
 
 function CVarCallbackRegistry:GetCVarValue(cvar)
-	if self.cachable[cvar] and not self.cvarValueCache[cvar] then
-		self.cvarValueCache[cvar] = GetCVar(cvar);
+	local value = self.cvarValueCache[cvar];
+	if value then
+		return value;
 	end
 
-	if self.cvarValueCache[cvar] then
-		return self.cvarValueCache[cvar];
+	value = GetCVar(cvar);
+
+	if self.cachable[cvar] then
+		self.cvarValueCache[cvar] = value;
 	end
-	return GetCVar(cvar);
+
+	return value;
 end
 
 function CVarCallbackRegistry:GetCVarValueBool(cvar)

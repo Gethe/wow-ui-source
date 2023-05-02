@@ -73,13 +73,13 @@ function QuestFrame_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_ITEM_UPDATE" ) then
 		if ( QuestFrameDetailPanel:IsShown() ) then
 			QuestInfo_ShowRewards();
-			QuestDetailScrollFrameScrollBar:SetValue(0);
+			QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
 		elseif ( QuestFrameProgressPanel:IsShown() ) then
 			QuestFrameProgressItems_Update()
-			QuestProgressScrollFrameScrollBar:SetValue(0);
+			QuestProgressScrollFrame.ScrollBar:ScrollToBegin();
 		elseif ( QuestFrameRewardPanel:IsShown() ) then
 			QuestInfo_ShowRewards();
-			QuestRewardScrollFrameScrollBar:SetValue(0);
+			QuestRewardScrollFrame.ScrollBar:ScrollToBegin();
 		end
 	elseif ( event == "QUEST_LOG_UPDATE" ) then
 		-- just update if at greeting panel
@@ -90,7 +90,7 @@ function QuestFrame_OnEvent(self, event, ...)
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
-			QuestDetailScrollFrameScrollBar:SetValue(0);
+			QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
 		end
 		return;
 	end
@@ -125,7 +125,7 @@ function QuestFrameRewardPanel_OnShow()
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameRewardPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame, QuestFrameCompleteQuestButton, material);
-	QuestRewardScrollFrameScrollBar:SetValue(0);
+	QuestRewardScrollFrame.ScrollBar:ScrollToBegin();
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitTurnIn();
 	if (questPortrait ~= 0) then
 		local questPortraitMount = 0;
@@ -293,7 +293,7 @@ function QuestFrameProgressItems_Update()
 	for i=buttonIndex, MAX_REQUIRED_ITEMS do
 		_G[questItemName..i]:Hide();
 	end
-	QuestProgressScrollFrameScrollBar:SetValue(0);
+	QuestProgressScrollFrame.ScrollBar:ScrollToBegin();
 end
 
 function QuestFrameGreetingPanel_OnLoad(self)
@@ -442,13 +442,12 @@ function QuestFrame_UpdatePortraitText(text)
 	if (text and text ~= "") then
 		QuestNPCModelTextFrame:Show();
 		QuestNPCModelText:SetText(text);
-		QuestNPCModelText:SetWidth(178);
-		if (QuestNPCModelText:GetHeight() > QuestNPCModelTextScrollFrame:GetHeight()) then
-			QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight()+10);
-			QuestNPCModelText:SetWidth(162);
-		else
-			QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight());
-		end
+
+		RunNextFrame(function()
+			-- This is to prevent pqj characters with descenders from clipping along the bottom.
+			-- RunNextFrame is a workaround for the rect being invalid, causing nothing to appear.
+			QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight() + 10);
+		end);
 	else
 		QuestNPCModelTextFrame:Hide();
 	end
@@ -526,7 +525,9 @@ function QuestFrameDetailPanel_OnShow()
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
 	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
-	QuestDetailScrollFrameScrollBar:SetValue(0);
+	
+	QuestDetailScrollFrame.ScrollBar:ScrollToBegin();
+
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then
 		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);

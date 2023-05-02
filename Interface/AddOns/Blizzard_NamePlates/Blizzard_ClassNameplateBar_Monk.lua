@@ -1,34 +1,30 @@
+--------------------------------------------------------------------------------
+--
+-- ClassNameplateBarWindwalkerMonk
+--
+--------------------------------------------------------------------------------
+
+
 ClassNameplateBarWindwalkerMonk = {};
 
 function ClassNameplateBarWindwalkerMonk:OnLoad()
-	self.class = "MONK";
-	self.spec = SPEC_MONK_WINDWALKER;
-	self.powerToken = "CHI";
+	ClassResourceBarMixin.OnLoad(self);
+end
 
-	for i = 1, #self.Chi do
-		self.Chi[i].on = false;
-	end
-	ClassNameplateBar.OnLoad(self);
+function ClassNameplateBarWindwalkerMonk:Setup()
+	ClassResourceBarMixin.Setup(self);
+end
+
+function ClassNameplateBarWindwalkerMonk:OnEvent(event, ...)
+	ClassResourceBarMixin.OnEvent(self, event, ...);
 end
 
 function ClassNameplateBarWindwalkerMonk:UpdateMaxPower()
-	local maxOrbs = UnitPowerMax("player", Enum.PowerType.Chi);
-	self.Chi6:SetShown(maxOrbs == 6);
-	self:SetWidth(self.Chi1:GetWidth() * maxOrbs);
+	MonkPowerBar.UpdateMaxPower(self);
 end
 
 function ClassNameplateBarWindwalkerMonk:UpdatePower()
-	local chi = UnitPower("player", Enum.PowerType.Chi);
-	for i = 1, min(chi, #self.Chi) do
-		if (not self.Chi[i].on) then
-			self:TurnOn(self.Chi[i], self.Chi[i].Orb, 1);
-		end
-	end
-	for i = chi + 1, #self.Chi do
-		if (self.Chi[i].on) then
-			self:TurnOff(self.Chi[i], self.Chi[i].Orb, 0);
-		end
-	end
+	MonkPowerBar.UpdatePower(self);
 end
 
 
