@@ -69,12 +69,6 @@ function QuestLogMixin:OnHighlightedQuestPOIChange(questID)
 	end
 end
 
-function QuestLogMixin:OnMapPinClick(pin, questID)
-	if self.DetailsFrame.questID ~= questID then
-		QuestMapFrame_ShowQuestDetails(questID);
-	end
-end
-
 QuestLogHeaderCodeMixin = {};
 
 function QuestLogHeaderCodeMixin:GetButtonType()
@@ -160,7 +154,6 @@ function QuestMapFrame_OnLoad(self)
 
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
-	EventRegistry:RegisterCallback("MapCanvas.QuestPin.OnClick", self.OnMapPinClick, self);
 
 	self.completedCriteria = {};
 	local onCreateFunc = nil;
