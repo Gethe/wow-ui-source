@@ -47,11 +47,15 @@ GlueCheck.lua
 ..\SharedXML\Frame\EventEditBox.xml
 ..\SharedXML\DataProviders.xml
 ..\SharedXML\Interpolator.lua
+..\SharedXML\ButtonStateBehavior.lua
 ..\SharedXML\Slider\MinimalSlider.xml
 ..\SharedXML\Scroll\ScrollUtil.lua
 ..\SharedXML\Scroll\ScrollController.lua
 ..\SharedXML\Scroll\ScrollBox.xml
 ..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\MinimalScrollBar.xml
+..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\ClassicTrimScrollBar.xml
 ..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\Dump.lua
 ..\SharedXML\VASErrorLookup.lua
@@ -96,9 +100,6 @@ GlueContextMenu.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\GameTooltipTemplate.xml
 ..\SharedXML\FrameStack.lua
-..\SharedXML\Scroll\TrimScrollBar.xml
-..\SharedXML\Scroll\ClassicTrimScrollBar.xml
-..\SharedXML\Scroll\MinimalScrollBar.xml
 
 ##New stuff!!!
 GlueAddons.lua

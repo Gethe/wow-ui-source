@@ -15,11 +15,18 @@ function ControlsOverrides.AdjustCameraSettings(category)
 	end
 
 	-- Follow Terrain
-	Settings.SetupCVarCheckBox(category, "cameraTerrainTilt", FOLLOW_TERRAIN, nil);
+	Settings.SetupCVarCheckBox(category, "cameraTerrainTilt", FOLLOW_TERRAIN, OPTION_TOOLTIP_FOLLOW_TERRAIN);
 
 	-- Head Bob
-	Settings.SetupCVarCheckBox(category, "cameraBobbing", HEAD_BOB, nil);
+	Settings.SetupCVarCheckBox(category, "cameraBobbing", HEAD_BOB, OPTION_TOOLTIP_HEAD_BOB);
 
 	-- Smart Pivot
 	Settings.SetupCVarCheckBox(category, "cameraPivot", SMART_PIVOT, nil);
+end
+
+function ControlsOverrides.SetupAutoDismountSetting(category)
+	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
+		-- Auto Dismount
+		Settings.SetupCVarCheckBox(category, "autoDismountFlying", AUTO_DISMOUNT_FLYING_TEXT, OPTION_TOOLTIP_AUTO_DISMOUNT_FLYING);
+	end
 end

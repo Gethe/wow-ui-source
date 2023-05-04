@@ -8,8 +8,15 @@ CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 
-CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
+
+function GetChatTimestampFormat()
+	local value = Settings.GetValue("showTimestamps");
+	if value ~= "none" then
+		return value;
+	end
+	return nil;
+end
 
 ChatFrameUtil = {};
 
@@ -3638,8 +3645,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				end
 
 				--Add Timestamps
-				if ( CHAT_TIMESTAMP_FORMAT ) then
-					outMsg = BetterDate(CHAT_TIMESTAMP_FORMAT, msgTime)..outMsg;
+				local chatTimestampFmt = GetChatTimestampFormat();
+				if ( chatTimestampFmt ) then
+					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
 				end
 				
 				return outMsg;

@@ -83,6 +83,11 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
 			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 
+			if GetClassicExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTIBLE", unit);
+				self:RegisterUnitEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", unit);
+			end
+
 			CastingBarFrame_OnEvent(self, "PLAYER_ENTERING_WORLD")
 		else
 			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
@@ -94,6 +99,11 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:UnregisterEvent("UNIT_SPELLCAST_START");
 			self:UnregisterEvent("UNIT_SPELLCAST_STOP");
 			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
+
+			if GetClassicExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+				self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+			end
 
 			self:Hide();
 		end

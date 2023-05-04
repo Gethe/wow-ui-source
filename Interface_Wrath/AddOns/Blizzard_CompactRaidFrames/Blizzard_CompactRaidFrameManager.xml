@@ -322,7 +322,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InterfaceOptionsFrame_OpenToCategory(COMPACT_UNIT_FRAME_PROFILES_LABEL);
+								Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								--ToggleRaidFrame();
 							</OnClick>

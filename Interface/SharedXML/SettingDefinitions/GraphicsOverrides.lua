@@ -55,3 +55,12 @@ function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings
 	initDropDownFunc(parentElement.DepthEffects, settingSunshafts, SUNSHAFTS, OPTION_TOOLTIP_SUNSHAFTS, GetSunshaftsOptions);
 	parentElement.DepthEffects:Show();
 end
+
+function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution, addValidatedSettingOptionFunc, addRecommendedFunc)
+	local container = Settings.CreateControlTextContainer();
+	local variable = settingTextureResolution:GetVariable();
+	addValidatedSettingOptionFunc(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_TEXTURE_DETAIL_LOW);
+	addValidatedSettingOptionFunc(container, variable, raid, 1, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
+	addRecommendedFunc(container, variable);
+	return container:GetData();
+end

@@ -1433,10 +1433,12 @@ function BlizzardOptionsPanel_UpdateDebuffFrames()
 	frame = TargetFrame;
 	TargetFrame_UpdateAuras(frame);
 	TargetofTarget_Update(frame.totFrame);
+	TargetofTarget_UpdateDebuffs(frame.totFrame);
 	-- Focus frame and its target-of-target
 	frame = FocusFrame;
 	TargetFrame_UpdateAuras(frame);
 	TargetofTarget_Update(frame.totFrame);
+	TargetofTarget_UpdateDebuffs(frame.totFrame);
 	-- Party frames and their pets
 	for i = 1, MAX_PARTY_MEMBERS do
 		if ( UnitExists("party"..i) ) then

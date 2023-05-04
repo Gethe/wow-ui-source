@@ -324,61 +324,7 @@ local function Register()
 
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
 
-	-- Raid Frame Preview
-	do
-		local data = { };
-		local initializer = Settings.CreatePanelInitializer("RaidFramePreviewTemplate", data);
-		layout:AddInitializer(initializer);
-	end
-
-	-- Incoming Heals
-	if C_CVar.GetCVar("raidFramesDisplayIncomingHeals") then
-		Settings.SetupCVarCheckBox(category, "raidFramesDisplayIncomingHeals", COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION);
-	end
-
-	-- Power Bars
-	Settings.SetupCVarCheckBox(category, "raidFramesDisplayPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
-
-	-- Aggro Highlight
-	if C_CVar.GetCVar("raidFramesDisplayAggroHighlight") then
-		Settings.SetupCVarCheckBox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
-	end
-
-	-- Class Colors
-	Settings.SetupCVarCheckBox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
-
-	-- Pets
-	Settings.SetupCVarCheckBox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
-
-	-- Main Tank and Assist
-	Settings.SetupCVarCheckBox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
-
-	do
-		-- Debuffs
-		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
-
-		-- Only Dispellable Debuffs
-		local function IsModifiable()
-			return debuffSetting:GetValue();
-		end
-
-		local _, initializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
-		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
-	end
-
-	-- Health Text
-	do 
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
-			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
-			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
-			container:Add("perc", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropDown(category, "raidFramesHealthText", Settings.VarType.String, GetOptions, COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
-	end
+	InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

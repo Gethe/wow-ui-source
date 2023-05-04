@@ -293,6 +293,17 @@ function LFGBrowseSearchEntry_Update(self)
 		activityText = string.format(activityString, #activitiesToDisplay);
 	end
 
+	local matchesFilters = true;	
+	if( #LFGBrowseFrame.ActivityDropDown.selectedValues > 0) then
+		matchesFilters = false;
+		for i=1, #searchResultInfo.activityIDs do
+			if (LFGBrowseActivityDropDown_ValueIsSelected(LFGBrowseFrame.ActivityDropDown, searchResultInfo.activityIDs[i])) then
+				matchesFilters = true;
+				break;
+			end
+		end
+	end
+
 	local leaderClassFileName = select(3, C_LFGList.GetSearchResultLeaderInfo(self.resultID));
 	local nameColor = NORMAL_FONT_COLOR;
 	if (leaderClassFileName) then
@@ -300,7 +311,7 @@ function LFGBrowseSearchEntry_Update(self)
 	end
 	local levelColor = GRAY_FONT_COLOR;
 	local activityColor = LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR;
-	if ( searchResultInfo.isDelisted ) then
+	if ( searchResultInfo.isDelisted or not matchesFilters) then
 		nameColor = LFGBROWSE_DELISTED_FONT_COLOR;
 		levelColor = LFGBROWSE_DELISTED_FONT_COLOR;
 		activityColor = LFGBROWSE_DELISTED_FONT_COLOR;

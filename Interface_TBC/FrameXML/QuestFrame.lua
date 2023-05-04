@@ -750,12 +750,17 @@ function QuestFrameDetailPanel_OnUpdate(self, elapsed)
 end
 
 function QuestDetailAcceptButton_OnClick()
-	if ( QuestFrame.autoQuest ) then
-		AcknowledgeAutoAcceptQuest();
+	if ( GetClassicExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING and QuestFlagsPVP() ) then
+		QuestFrame.dialog = StaticPopup_Show("CONFIRM_ACCEPT_PVP_QUEST");
 	else
-		AcceptQuest();
+		if ( QuestFrame.autoQuest ) then
+			AcknowledgeAutoAcceptQuest();
+		else
+			AcceptQuest();
+		end
 	end
 end
+
 
 function QuestDetailDeclineButton_OnClick()
 	DeclineQuest();

@@ -1048,6 +1048,24 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitSpellcastInterruptible",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_INTERRUPTIBLE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastNotInterruptible",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitSpellcastStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_START",

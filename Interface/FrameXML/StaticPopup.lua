@@ -4448,6 +4448,56 @@ StaticPopupDialogs["ON_WORLD_PVP_QUEUE"] = {
 	hideOnEscape = false,
 };
 
+StaticPopupDialogs["RAID_PROFILE_DELETION"] = {
+	text = CONFIRM_COMPACT_UNIT_FRAME_PROFILE_DELETION,
+	button1 = DELETE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local newProfile = GetRaidProfileName(1);
+		if ( newProfile == self.data.profile ) then
+			newProfile = GetRaidProfileName(2);
+		end
+		CompactUnitFrameProfiles_ActivateRaidProfile(newProfile);
+		DeleteRaidProfile(self.data.profile);
+		self.data.cbObject:OnDeleted();
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["RAID_PROFILE_NEW"] = {
+	text = CREATE_NEW_COMPACT_UNIT_FRAME_PROFILE,
+	button1 = CREATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local newProfileName = strtrim(self.editBox:GetText());
+		CompactUnitFrameProfiles_CreateProfile(newProfileName);
+		self.data.cbObject:OnAdded(newProfileName);
+	end,
+	EditBoxOnTextChanged = function(self)
+		if ( strtrim(self:GetText()) == "" ) then
+			self:GetParent().button1:Disable();
+		else
+			self:GetParent().button1:Enable();
+		end
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local newProfileName = strtrim(self:GetParent().editBox:GetText());
+		CompactUnitFrameProfiles_CreateProfile(newProfileName);
+		self:GetParent().data.cbObject:OnAdded(newProfileName);
+		self:GetParent():Hide();
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 31
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

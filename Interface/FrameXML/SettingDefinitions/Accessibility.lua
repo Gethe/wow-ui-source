@@ -9,10 +9,7 @@ local function Register()
 	Settings.SetupCVarCheckBox(category, "movieSubtitle", CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
 	
 	-- Alternate Full Screen Effects
-	do
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "overrideScreenFlash", ALTERNATE_SCREEN_EFFECTS, OPTION_TOOLTIP_ALTERNATE_SCREEN_EFFECTS);
-		initializer:AddSearchTags(ALTERNATE_SCREEN_EFFECTS_SEARCH_TAG);
-	end
+	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
 
 	if C_CVar.GetCVar("empowerTapControls") then
 		-- Quest Text Contrast

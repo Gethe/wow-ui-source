@@ -60,8 +60,7 @@ local function Register()
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
 	end
 
-	-- Auto Dismount
-	Settings.SetupCVarCheckBox(category, "autoDismountFlying", AUTO_DISMOUNT_FLYING_TEXT, OPTION_TOOLTIP_AUTO_DISMOUNT_FLYING);
+	ControlsOverrides.SetupAutoDismountSetting(category);
 
 	-- Auto Cancel AFK
 	Settings.SetupCVarCheckBox(category, "autoClearAFK", CLEAR_AFK, OPTION_TOOLTIP_CLEAR_AFK);
