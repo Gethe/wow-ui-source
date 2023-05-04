@@ -644,6 +644,10 @@ function ItemButtonMixin:GetBagID()
 	return self.bagID;
 end
 
+function ItemButtonMixin:GetSlotAndBagID()
+	return self:GetID(), self:GetBagID();
+end
+
 function ItemButtonMixin:OnUpdateItemContextMatching(bagID)
 	if self:GetBagID() == bagID then
 		self:UpdateItemContextMatching();
