@@ -314,19 +314,19 @@ function Class_TutorialBase:Complete(...)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function Class_TutorialBase:Interrupt(interruptedBy)
-	if (not self.IsActive) then return; end
+function Class_TutorialBase:Interrupt(interruptedBy, forceInterrupt)
+	if forceInterrupt or self.IsActive then
+		if (interruptedBy) then
+			self:DebugLog("Interrupt", "interrupted by " .. Class_TutorialBase:ColorDebugText(interruptedBy.class.name));
+		else
+			self:DebugLog("Interrupted");
+		end
 
-	if (interruptedBy) then
-		self:DebugLog("Interrupt", "interrupted by " .. Class_TutorialBase:ColorDebugText(interruptedBy.class.name));
-	else
-		self:DebugLog("Interrupted");
+		if (self.OnInterrupt) then
+			self:OnInterrupt(interruptedBy)
+		end
+		self:_Shutdown();
 	end
-
-	if (self.OnInterrupt) then
-		self:OnInterrupt(interruptedBy)
-	end
-	self:_Shutdown();
 end
 
 -- ------------------------------------------------------------------------------------------------------------

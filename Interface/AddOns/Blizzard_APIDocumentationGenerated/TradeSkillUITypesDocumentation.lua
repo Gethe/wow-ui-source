@@ -371,6 +371,7 @@ local TradeSkillUITypes =
 				{ Name = "hasSingleItemOutput", Type = "bool", Nilable = false, Default = false },
 				{ Name = "qualityItemIDs", Type = "table", InnerType = "number", Nilable = true },
 				{ Name = "qualityIlvlBonuses", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "alwaysUsesLowestQuality", Type = "bool", Nilable = false, Default = false },
 				{ Name = "maxQuality", Type = "number", Nilable = true },
 				{ Name = "qualityIDs", Type = "table", InnerType = "number", Nilable = true },
 				{ Name = "canCreateMultiple", Type = "bool", Nilable = false, Default = true },

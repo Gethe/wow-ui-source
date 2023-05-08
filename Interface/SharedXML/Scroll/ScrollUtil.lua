@@ -21,6 +21,7 @@ if tbl then
 
 	Import("assert");
 	Import("NegateIf");
+	Import("Saturate");
 end
 ----------------
 
@@ -204,6 +205,19 @@ function ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollBar)
 	end
 
 	scrollFrame:SetScript("OnVerticalScroll", onVerticalScroll);
+	
+	scrollFrame.GetPanExtent = function(self)
+		return self.panExtent;
+	end
+
+	scrollFrame.SetPanExtent = function(self, panExtent)
+		self.panExtent = panExtent;
+	end
+	
+	-- 30 is used in the absence of accurate individual element extents.
+	-- Anything larger will require multiple scrolls of the mouse, but shouldn't 
+	-- be too much friction to be annoying.
+	scrollFrame:SetPanExtent(30);
 
 	local onScrollRangeChanged = function(scrollFrame, hScrollRange, vScrollRange)
 		onVerticalScroll(scrollFrame, scrollFrame:GetVerticalScroll());
@@ -216,7 +230,11 @@ function ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollBar)
 
 		scrollBar:SetVisibleExtentPercentage(visibleExtentPercentage);
 
-		local panExtentPercentage = .3;
+		local panExtentPercentage = 0;
+		local verticalScrollRange = scrollFrame:GetVerticalScrollRange();
+		if verticalScrollRange > 0 then
+			panExtentPercentage = Saturate(scrollFrame:GetPanExtent() / verticalScrollRange);
+		end
 		scrollBar:SetPanExtentPercentage(panExtentPercentage);
 	end;
 

@@ -877,6 +877,9 @@ function ObjectiveTracker_Initialize(self)
 	ProfessionsRecipeTracking_Initialize();
 
 	self.initialized = true;
+
+	-- calls that depend on self.initialized
+	ObjectiveTracker_UpdateBackground();
 end
 
 function ObjectiveTracker_OnFocusedQuestChanged(self)
@@ -1490,10 +1493,12 @@ end
 
 function ObjectiveTracker_UpdateBackground()
 	local lastBlock;
-	for index, module in ipairs_reverse(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
-		if module.topBlock then
-			lastBlock = module.lastBlock;
-			break;
+	if ObjectiveTrackerFrame.initialized then
+		for index, module in ipairs_reverse(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
+			if module.topBlock then
+				lastBlock = module.lastBlock;
+				break;
+			end
 		end
 	end
 
