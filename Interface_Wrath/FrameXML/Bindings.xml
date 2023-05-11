@@ -369,18 +369,12 @@
 		ActionBar_PageUp();
 	</Binding>
 	<Binding name="TOGGLEACTIONBARLOCK" category="BINDING_HEADER_ACTIONBAR">
-		if ( LOCK_ACTIONBAR == "1" ) then
-			LOCK_ACTIONBAR = "0";
-		else
-			LOCK_ACTIONBAR = "1";
-		end
+		local locked = Settings.GetValue("lockActionBars");
+		Settings.SetValue("lockActionBars", not locked);
 	</Binding>
 	<Binding name="TOGGLEAUTOSELFCAST" category="BINDING_HEADER_ACTIONBAR">
-		if ( GetCVar("autoSelfCast") == "1" ) then
-			SetCVar("autoSelfCast", "0");
-		else
-			SetCVar("autoSelfCast", "1");
-		end
+		local selfCast = Settings.GetValue("autoSelfCast");
+		Settings.SetValue("lockActionBars", not selfCast);
 	</Binding>
 
 	<!-- Multicast bindings header="MULTICASTFUNCTIONS" -->

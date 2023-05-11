@@ -23,7 +23,7 @@
 				ActionButton_UpdateState(self, button, down);
 			</PostClick>
 			<OnDragStart>
-				if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION") ) then
+				if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION") ) then
 				PickupAction(self.action);
 				ActionButton_UpdateState(self);
 				ActionButton_UpdateFlash(self);

@@ -2247,7 +2247,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 		if (productInfo.sharedData.vasServiceType == Enum.VasServiceType.CharacterTransfer or productInfo.sharedData.vasServiceType == Enum.VasServiceType.FactionChange ) then
 			disclaimer = string.format(disclaimer, VAS_QUEUE_SEVERAL_MINUTES);
 		end
-		self.Disclaimer:SetTextColor(0, 0, 0);
+		self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		self.Disclaimer:SetText(HTML_START_CENTERED..disclaimer..HTML_END);
 		self.Disclaimer:Show();
 	end

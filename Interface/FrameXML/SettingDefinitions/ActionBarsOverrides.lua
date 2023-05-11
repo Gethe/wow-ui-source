@@ -59,6 +59,17 @@ end
 
 function ActionBarsOverrides.AdjustActionBarSettings(category)
 	-- Always Show Action Bars
-	Settings.SetupCVarCheckBox(category, "alwaysShowActionBars", ALWAYS_SHOW_MULTIBARS_TEXT, OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS);
-
+	local defaultValue = false;
+	local function GetValue()
+		return GetCVarBool("alwaysShowActionBars");
+	end
+		
+	local function SetValue(value)
+		SetCVar("alwaysShowActionBars", value);
+		MultiActionBar_UpdateGridVisibility();
+	end
+		
+	local setting = Settings.RegisterProxySetting(category, "PROXY_ALWAYS_SHOW_ACTION_BARS", Settings.DefaultVarLocation, 
+		Settings.VarType.Boolean, ALWAYS_SHOW_MULTIBARS_TEXT, defaultValue, GetValue, SetValue);
+	Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ALWAYS_SHOW_MULTIBARS);
 end

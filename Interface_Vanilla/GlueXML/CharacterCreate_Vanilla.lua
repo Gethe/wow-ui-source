@@ -128,7 +128,9 @@ end
 function SetDefaultClass()
 	-- In Classic, changing race will default the Class to the first available one (i.e. Warrior).
 	local classID = _G["CharacterCreateClassButton1"].classID;
-	C_CharacterCreation.SetSelectedClass(classID);
+	if ( classID ) then
+		C_CharacterCreation.SetSelectedClass(classID);
+	end
 
 	-- This should be the same as the classID above. Just making sure we stay consistent!
 	local classData = C_CharacterCreation.GetSelectedClass();
@@ -196,12 +198,14 @@ function SetCharacterGender(sex)
 
 	-- Update right hand race portrait to reflect gender change
 	-- Set Race
-	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
-	CharacterCreateRaceLabel:SetText(race);
-	fileString = strupper(fileString);
-	local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
-	CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-	UpdateCharacterRaceLabelText();
+	if (CharacterCreate.selectedRace > 0) then
+		local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
+		CharacterCreateRaceLabel:SetText(race);
+		fileString = strupper(fileString);
+		local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
+		CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		UpdateCharacterRaceLabelText();
+	end
 	-- Update class labels to reflect gender change
 	-- Set Class
 	local classData = C_CharacterCreation.GetSelectedClass();

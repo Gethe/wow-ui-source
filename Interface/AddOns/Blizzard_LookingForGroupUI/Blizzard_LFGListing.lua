@@ -970,7 +970,10 @@ function LFGListingActivityView_InitActivityButton(button, elementData)
 				local isInstanceLockShared = instance.redirectedDifficultyID == activityInfo.redirectedDifficultyID;
 				local isInstanceInProgressOrCompleted = (instance.encountersCompleted > 0) and (instance.encountersTotal > 0);
 
-				if (isInstanceInProgressOrCompleted and (isSameInstanceDifficulty or isInstanceLockShared)) then
+				--since normal and heroic versions of the same raid share a lockout, we want to display the lockout warning for both versions
+				local isEquivalentDynamicDifficulty = (activityInfo.redirectedDifficultyID == GetEquivalentDynamicDifficultyID(instance.redirectedDifficultyID));
+
+				if (isInstanceInProgressOrCompleted and (isSameInstanceDifficulty or isInstanceLockShared or isEquivalentDynamicDifficulty)) then
 					button.InstanceLockWarningIcon.encountersCompleted = instance.encountersCompleted;
 					button.InstanceLockWarningIcon.encountersTotal = instance.encountersTotal;
 					button.InstanceLockWarningIcon:Show();

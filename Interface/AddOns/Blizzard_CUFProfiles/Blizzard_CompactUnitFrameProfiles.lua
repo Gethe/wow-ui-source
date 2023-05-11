@@ -295,12 +295,7 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 		profileType = instanceType;
 		enemyType = "PvP";
 	elseif ( instanceType == "pvp" ) then
-		if ( IsRatedBattleground() ) then
-			numPlayers = 10;
-		else
-			numPlayers = countMap[maxPlayers];
-		end
-		
+		numPlayers = countMap[maxPlayers];
 		profileType = instanceType;
 		enemyType = "PvP";
 	else

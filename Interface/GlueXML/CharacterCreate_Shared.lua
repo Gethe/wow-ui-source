@@ -209,7 +209,7 @@ function CharacterCreateMixin:OnShow()
 	CharacterCreateEnumerateClasses();
 	SetDefaultClass();
 
-	SetCharacterGender(C_CharacterCreation.GetSelectedSex())
+	SetCharacterGender(C_CharacterCreation.GetSelectedSex());
 	
 	C_CharacterCreation.SetCharacterCreateFacing(-15);
 
@@ -549,11 +549,13 @@ end
 
 function SetDefaultRace()
 	local defaultRace = C_CharacterCreation.GetSelectedRace();
-	if (not CharacterCreate_isRaceEnabled(defaultRace)) then
-		defaultRace = CharacterCreate_getRandomValidRace();
-		C_CharacterCreation.SetSelectedRace(defaultRace);
+	if (defaultRace > 0 ) then
+		if(not CharacterCreate_isRaceEnabled(defaultRace)) then
+			defaultRace = CharacterCreate_getRandomValidRace();
+			C_CharacterCreation.SetSelectedRace(defaultRace);
+		end
+		SetCharacterRace(defaultRace);
 	end
-	SetCharacterRace(defaultRace);
 end
 
 function GetDefaultClass()

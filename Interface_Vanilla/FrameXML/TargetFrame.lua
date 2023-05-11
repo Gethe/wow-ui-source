@@ -24,6 +24,8 @@ local PLAYER_UNITS = {
 	pet = true,
 };
 
+CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
+
 function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -94,6 +96,14 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		end
 	end
 	SecureUnitButton_OnLoad(self, self.unit, showmenu);
+
+	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
+end
+
+function TargetFrame_OnCVarChanged (self, cvar, cvarValue)
+	if( cvar == "showTargetOfTarget" and self.totFrame ) then
+		TargetofTarget_Update(self.totFrame);
+	end
 end
 
 function TargetFrame_Update (self)
@@ -910,7 +920,7 @@ end
 function TargetofTarget_Update(self, elapsed)
 	local show;
 	local parent = self:GetParent();
-	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
 		if ( not self:IsShown() ) then
 			self:Show();
 			if ( parent.spellbar ) then
@@ -935,7 +945,7 @@ end
 
 function TargetofTarget_UpdateDebuffs(self)
 	local parent = self:GetParent();
-	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
 		RefreshDebuffs(self, self.unit, nil, nil, true);
 	end
 end

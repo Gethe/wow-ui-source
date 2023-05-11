@@ -104,13 +104,8 @@ function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
 	self.frame.ControlsFrame.TransferRealmEditbox:Initialize(results, wasFromRewind);
 end
 
-function PCTDestinationSelectBlock:UpdateVisibleState()
-	self.frame.ControlsFrame.TransferRealmLabel:ClearAllPoints();
-end
-
 function PCTDestinationSelectBlock:SetState(state)
 	self.state = state;
-	self:UpdateVisibleState();
 	self:CheckUpdate();
 end
 
@@ -119,7 +114,6 @@ function PCTDestinationSelectBlock:GetState()
 end
 
 function PCTDestinationSelectBlock:CheckUpdate()
-	self:UpdateVisibleState();
 	CharacterServicesMaster_Update();
 end
 

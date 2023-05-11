@@ -369,7 +369,7 @@ function PetActionButton_OnModifiedClick (self, button)
 end
 
 function PetActionButton_OnDragStart (self)
-	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
+	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(false);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();
