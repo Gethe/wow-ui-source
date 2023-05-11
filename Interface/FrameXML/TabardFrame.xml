@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
   <Script file="TabardModelControlButtonMixin.lua"/>
 	<Script file="TabardFrame.lua"/>
-  
+
 	<Frame name="TabardFrameCustomizeTemplate" virtual="true">
 		<Size x="164" y="20"/>
 		<Layers>
@@ -75,11 +75,11 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="TabardFramePortrait">
-            <Size x="60" y="60"/>
-            <Anchors>
-                <Anchor point="TOPLEFT" x="7" y="-6"/>
-            </Anchors>
-        </Texture>
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="TabardFrameOuterFrameTopLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
@@ -195,14 +195,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-      
 			<TabardModel name="TabardModel" mixin="TabardModelFrameMixin">
-        <Size x="303" y="317"/>
-        <Anchors>
-            <Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM" x="0" y="38"/>
-        </Anchors>
+				<Size x="303" y="317"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM" x="0" y="38"/>
+				</Anchors>
 				<Frames>
-          
 					<Button name="TabardCharacterModelRotateLeftButton" mixin="TabardModelControlRotateButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
@@ -215,7 +213,7 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-          
+
 					<Button name="TabardCharacterModelRotateRightButton" mixin="TabardModelControlRotateButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
@@ -228,14 +226,13 @@
 						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
 					</Button>
-          
 				</Frames>
 				<Scripts>
-          <OnLoad method="OnLoad"/>
-          <OnUpdate method="OnUpdate"/>
-        </Scripts>
-      </TabardModel>
-      
+					<OnLoad method="OnLoad"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</TabardModel>
+
 			<Frame name="TabardFrameCostFrame" inherits="TooltipBackdropTemplate">
 				<Size x="170" y="23"/>
 				<Anchors>
@@ -265,10 +262,10 @@
 								MoneyFrame_SetType(self, "STATIC");
 							</OnLoad>
 						</Scripts>
-					</Frame>					
+					</Frame>
 				</Frames>
 			</Frame>
-      
+
 			<Frame name="TabardFrameCustomizationFrame">
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -328,7 +325,7 @@
 						<Scripts>
 							<OnLoad>
 								TabardFrameCustomization5Text:SetText(EMBLEM_BACKGROUND);
-							</OnLoad>	
+							</OnLoad>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -336,7 +333,7 @@
 					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
-      
+
 			<Frame name="TabardFrameMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
@@ -355,7 +352,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" relativePoint="BOTTOMLEFT" x="175" y="8"/>
 				</Anchors>
 			</Frame>
-      
+
 			<Button name="TabardFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="80" y="22"/>
 				<Anchors>
@@ -367,7 +364,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-      
+
 			<Button name="TabardFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="80" y="22"/>
 				<Anchors>
@@ -377,7 +374,6 @@
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
 			</Button>
-    
 		</Frames>
 		<Scripts>
 			<OnLoad function="TabardFrame_OnLoad"/>

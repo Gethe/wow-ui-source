@@ -109,10 +109,10 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 end
 
 function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
-	if isLegendary then
-		return "legendaryavailablequesticon", true;
-	elseif isCampaign then
+	if isCampaign then
 		return "CampaignAvailableQuestIcon", true;
+	elseif isLegendary then
+		return "legendaryavailablequesticon", true;		
 	elseif isCovenantCalling then
 		return "CampaignAvailableDailyQuestIcon", true;
 	elseif frequency == Enum.QuestFrequency.Daily then

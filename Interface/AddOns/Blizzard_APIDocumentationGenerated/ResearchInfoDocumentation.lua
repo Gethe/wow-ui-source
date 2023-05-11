@@ -81,11 +81,6 @@ local ResearchInfo =
 			LiteralName = "RESEARCH_ARTIFACT_DIG_SITE_UPDATED",
 		},
 		{
-			Name = "ResearchArtifactHistoryReady",
-			Type = "Event",
-			LiteralName = "RESEARCH_ARTIFACT_HISTORY_READY",
-		},
-		{
 			Name = "ResearchArtifactUpdate",
 			Type = "Event",
 			LiteralName = "RESEARCH_ARTIFACT_UPDATE",

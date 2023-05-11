@@ -50,7 +50,7 @@ end
 
 function UIWidgetTemplateUnitPowerBarMixin:SetValue(barValue)
 	if self.range >= 0 then
-		local fillPercentage = barValue / self.range;
+		local fillPercentage = (barValue - self.barMin) / self.range;
 		local fillFinalWidth = max(self.insetAmount + (fillPercentage * self.fillWidth), 1);
 		local fillFinalPercentage = fillFinalWidth / self.fillTotalWidth
 		self.Fill:SetWidth(fillFinalWidth);

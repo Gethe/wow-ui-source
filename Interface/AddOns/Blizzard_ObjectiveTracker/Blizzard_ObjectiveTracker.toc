@@ -12,4 +12,5 @@ Blizzard_BonusObjectiveTracker.xml
 Blizzard_ScenarioObjectiveTracker.xml
 Blizzard_ProfessionsRecipeTracker.lua
 Blizzard_MonthlyActivitiesObjectiveTracker.lua
+Blizzard_AdventureObjectiveTracker.lua
 Blizzard_ObjectiveTrackerUIWidgetContainer.xml

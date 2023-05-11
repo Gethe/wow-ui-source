@@ -163,6 +163,7 @@ local ScenarioInfo =
 				{ Name = "type", Type = "number", Nilable = false },
 				{ Name = "area", Type = "string", Nilable = false },
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "scenarioID", Type = "number", Nilable = false },
 			},
 		},
 		{

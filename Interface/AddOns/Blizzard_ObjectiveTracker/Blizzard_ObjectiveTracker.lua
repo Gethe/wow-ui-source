@@ -30,34 +30,38 @@ OBJECTIVE_TRACKER_COLOR = {
 
 
 -- these are generally from events
-OBJECTIVE_TRACKER_UPDATE_QUEST						= 0x00001;
-OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED				= 0x00002;
-OBJECTIVE_TRACKER_UPDATE_TASK_ADDED					= 0x00004;
-OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED			= 0x00008;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO					= 0x00010;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE			= 0x00020;
-OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT				= 0x00040;
-OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED			= 0x00080;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED		= 0x00100;
-OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED		= 0x00200;
-OBJECTIVE_TRACKER_UPDATE_MOVED						= 0x80000;
+OBJECTIVE_TRACKER_UPDATE_QUEST						= 0x000001;
+OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED				= 0x000002;
+OBJECTIVE_TRACKER_UPDATE_TASK_ADDED					= 0x000004;
+OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED			= 0x000008;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO					= 0x000010;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE			= 0x000020;
+OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT				= 0x000040;
+OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED			= 0x000080;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED		= 0x000100;
+OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED		= 0x000200;
+OBJECTIVE_TRACKER_UPDATE_MOVED						= 0x080000;
 -- these are for the specific module ONLY!
-OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST				= 0x00400;
-OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x00800;
-OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE		= 0x01000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST			= 0x02000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x04000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS			= 0x20000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE	= 0x40000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_MONTHLY_ACTIVITIES	= 0x80000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST				= 0x000400;
+OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x000800;
+OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE		= 0x001000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST			= 0x002000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x004000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x008000;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x010000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_UI_WIDGETS			= 0x020000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_PROFESSION_RECIPE	= 0x040000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_MONTHLY_ACTIVITIES  = 0x080000;  -- This probably shouldn't match OBJECTIVE_TRACKER_UPDATE_MOVED
+OBJECTIVE_TRACKER_UPDATE_MODULE_ADVENTURE          	= 0x100000;
+OBJECTIVE_TRACKER_UPDATE_TARGET_INFO				= 0x200000;
+OBJECTIVE_TRACKER_UPDATE_TRANSMOG_COLLECTED         = 0x400000;
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFFFFFF;
 
 OBJECTIVE_TRACKER_UPDATE_REASON = OBJECTIVE_TRACKER_UPDATE_ALL;		-- default
 OBJECTIVE_TRACKER_UPDATE_ID = 0;
+OBJECTIVE_TRACKER_UPDATE_SUB_INFO = nil; -- included for completeness
 
 -- speed optimizations
 local floor = math.floor;
@@ -790,7 +794,8 @@ function ObjectiveTracker_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	UIDropDownMenu_Initialize(self.BlockDropDown, nil, "MENU");
-	QuestPOI_Initialize(self.BlocksFrame, function(self) self:SetScale(0.9); self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); end );
+
+	self.BlocksFrame:Init(function(self) self:SetScale(0.9); self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); end);
 end
 
 function ObjectiveTracker_UpdateHeight()
@@ -836,11 +841,13 @@ function ObjectiveTracker_Initialize(self)
 						ACHIEVEMENT_TRACKER_MODULE,
 						PROFESSION_RECIPE_TRACKER_MODULE,
 						MONTHLY_ACTIVITIES_TRACKER_MODULE,
+						ADVENTURE_TRACKER_MODULE,
 	};
 	self.MODULES_UI_ORDER = {	SCENARIO_CONTENT_TRACKER_MODULE,
 								UI_WIDGET_TRACKER_MODULE,
 								CAMPAIGN_QUEST_TRACKER_MODULE,
 								QUEST_TRACKER_MODULE,
+								ADVENTURE_TRACKER_MODULE,
 								BONUS_OBJECTIVE_TRACKER_MODULE,
 								WORLD_QUEST_TRACKER_MODULE,
 								ACHIEVEMENT_TRACKER_MODULE,
@@ -849,7 +856,6 @@ function ObjectiveTracker_Initialize(self)
 	};
 
 	self:RegisterEvent("QUEST_LOG_UPDATE");
-	self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 	self:RegisterEvent("PERKS_ACTIVITIES_TRACKED_UPDATED");
 	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
@@ -869,6 +875,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("WAYPOINT_UPDATE");
+	self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED");
 	self.watchMoneyReasons = 0;
 
 	WorldMapFrame:RegisterCallback("SetFocusedQuestID", ObjectiveTracker_OnFocusedQuestChanged, self);
@@ -877,6 +884,9 @@ function ObjectiveTracker_Initialize(self)
 	ProfessionsRecipeTracking_Initialize();
 
 	self.initialized = true;
+
+	-- calls that depend on self.initialized
+	ObjectiveTracker_UpdateBackground();
 end
 
 function ObjectiveTracker_OnFocusedQuestChanged(self)
@@ -908,13 +918,6 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 				end
 			end
 		end
-	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
-		local achievementID, added = ...;
-		if ( added ) then
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED, achievementID);
-		else
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
-		end
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
 		local questID, added = ...;
 		if ( added ) then
@@ -939,7 +942,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "SCENARIO_BONUS_VISIBILITY_UPDATE") then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 	elseif ( event == "SUPER_TRACKING_CHANGED" ) then
-		ObjectiveTracker_UpdateSuperTrackedQuest(self);
+		ObjectiveTracker_UpdateSuperTracking(self);
 	elseif ( event == "ZONE_CHANGED" ) then
 		local lastMapID = C_Map.GetBestMapForUnit("player");
 		if ( lastMapID ~= self.lastMapID ) then
@@ -985,6 +988,9 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		ObjectiveTracker_Update();
 	elseif ( event == "WAYPOINT_UPDATE" ) then
 		ObjectiveTracker_Update();
+	elseif ( event == "TRANSMOG_COLLECTION_SOURCE_ADDED") then
+		local transmogSourceId = ...;
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TRANSMOG_COLLECTED, transmogSourceId);
 	end
 end
 
@@ -1012,6 +1018,17 @@ end
 function ObjectiveTrackerHeaderMixin:PlayAddAnimation()
 	self.animating = true;
 	self.HeaderOpenAnim:Restart();
+end
+
+
+ObjectiveTrackerLineMixin = {};
+
+function ObjectiveTrackerLineMixin:OnLoad()
+	self.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
+end
+
+function ObjectiveTrackerLineMixin:OnHyperlinkClick(link, text, button)
+	SetItemRef(link, text, button);
 end
 
 -- *****************************************************************************************************
@@ -1372,13 +1389,11 @@ local function ObjectiveTracker_AnimateHeaders(previouslyVisibleHeaders)
 	end
 end
 
-function ObjectiveTracker_UpdateSuperTrackedQuest(self)
-	local questID = C_SuperTrack.GetSuperTrackedQuestID();
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
-	QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
+function ObjectiveTracker_UpdateSuperTracking(self)
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED);
 end
 
-function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
+function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged, subInfo)
 	local tracker = ObjectiveTrackerFrame;
 
 	if not reason or reason == OBJECTIVE_TRACKER_UPDATE_ALL or reason == OBJECTIVE_TRACKER_UPDATE_MOVED then
@@ -1423,6 +1438,7 @@ function ObjectiveTracker_Update(reason, id, moduleWhoseCollapseChanged)
 
 	OBJECTIVE_TRACKER_UPDATE_REASON = reason or OBJECTIVE_TRACKER_UPDATE_ALL;
 	OBJECTIVE_TRACKER_UPDATE_ID = id;
+	OBJECTIVE_TRACKER_UPDATE_SUB_INFO = subInfo;
 
 	tracker.BlocksFrame.currentBlock = nil;
 	tracker.BlocksFrame.contentsHeight = 0;
@@ -1490,10 +1506,12 @@ end
 
 function ObjectiveTracker_UpdateBackground()
 	local lastBlock;
-	for index, module in ipairs_reverse(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
-		if module.topBlock then
-			lastBlock = module.lastBlock;
-			break;
+	if ObjectiveTrackerFrame.initialized then
+		for index, module in ipairs_reverse(ObjectiveTrackerFrame.MODULES_UI_ORDER) do
+			if module.topBlock then
+				lastBlock = module.lastBlock;
+				break;
+			end
 		end
 	end
 
@@ -1598,11 +1616,10 @@ function ObjectiveTracker_UpdatePOIs()
 	end
 
 	local blocksFrame = ObjectiveTrackerFrame.BlocksFrame;
-	QuestPOI_ResetUsage(blocksFrame);
+	blocksFrame:ResetUsage();
 
 	local showPOIs = GetCVarBool("questPOI");
 	if ( not showPOIs ) then
-		QuestPOI_HideUnusedButtons(blocksFrame);
 		return;
 	end
 
@@ -1613,8 +1630,7 @@ function ObjectiveTracker_UpdatePOIs()
 		end
 	end
 
-	QuestPOI_SelectButtonByQuestID(blocksFrame, C_SuperTrack.GetSuperTrackedQuestID());
-	QuestPOI_HideUnusedButtons(blocksFrame);
+	blocksFrame:SelectSuperTrackedButton();
 end
 
 QuestHeaderMixin = {};

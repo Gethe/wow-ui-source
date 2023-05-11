@@ -149,7 +149,7 @@ function BonusObjectiveTracker_UpdatePOIs(self, numPOINumeric)
 	local usedBlocks = self:GetActiveBlocks();
 	for questID, block in pairs(usedBlocks) do
 		if block.isThreatQuest then
-			local poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "threat", nil);
+			local poiButton = ObjectiveTrackerFrame.BlocksFrame:GetButtonForQuest(questID, POIButtonUtil.Style.QuestThreat, nil);
 			if poiButton then
 				local topLine = block.lines[0] or block.lines[1];
 				poiButton:SetPoint("TOPRIGHT", topLine, "TOPLEFT", 18, 0);
@@ -173,7 +173,7 @@ function BonusObjectiveTracker_TrackWorldQuest(questID, watchType)
 		lastTrackedQuestID = questID;
 	end
 
-	if watchType == Enum.QuestWatchType.Automatic or C_SuperTrack.GetSuperTrackedQuestID() == 0 then
+	if watchType == Enum.QuestWatchType.Automatic or not C_SuperTrack.GetSuperTrackedQuestID() then
 		C_SuperTrack.SetSuperTrackedQuestID(questID);
 	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);

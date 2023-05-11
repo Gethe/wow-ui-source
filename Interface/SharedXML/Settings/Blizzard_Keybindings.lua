@@ -310,8 +310,10 @@ function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
 			MultiBar7, 			
 		};
 		local bar = bars[tonumber(multiActionBar)];
-		local button = bar.actionButtons[tonumber(multiActionButton)];
-		return button;
+		if bar.actionButtons then
+			local button = bar.actionButtons[tonumber(multiActionButton)];
+			return button;
+		end
 	end
 
 	local petActionButton = string.match(action, "^BONUSACTIONBUTTON(%d+)");

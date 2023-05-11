@@ -68,9 +68,9 @@ function GroupMembersPinMixin:OnLoad()
 	self:SetIgnoreGlobalPinScale(true);
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_GROUP_MEMBER");
 
-	self:SetPlayerPingTexture(1, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);
-	self:SetPlayerPingTexture(2, "Interface\\minimap\\UI-Minimap-Ping-Expand", 32, 32);
-	self:SetPlayerPingTexture(3, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
+	self:SetPlayerPingTexture(Enum.PingTextureType.Center, "Interface\\minimap\\UI-Minimap-Ping-Center", 32, 32);
+	self:SetPlayerPingTexture(Enum.PingTextureType.Expand, "Interface\\minimap\\UI-Minimap-Ping-Expand", 32, 32);
+	self:SetPlayerPingTexture(Enum.PingTextureType.Rotation, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
 
 	self:SetMouseOverUnitExcluded("player", true);
 	self:SetPinTexture("player", "Interface\\WorldMap\\WorldMapArrow");

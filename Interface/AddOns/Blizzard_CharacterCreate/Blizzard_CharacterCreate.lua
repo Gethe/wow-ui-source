@@ -1612,6 +1612,9 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		return (currentFaction ~= faction and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
 	elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		local _, currentFaction = C_PaidServices.GetCurrentFaction();
+		if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
+			currentFaction = select(29, GetCharacterInfoByGUID(CharacterCreateFrame.vasInfo.selectedCharacterGUID));
+		end
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
 		local currentClass = C_PaidServices.GetCurrentClassID();

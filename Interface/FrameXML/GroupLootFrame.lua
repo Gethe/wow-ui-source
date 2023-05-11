@@ -1,7 +1,8 @@
-NUM_GROUP_LOOT_FRAMES = 4;
+local NUM_GROUP_LOOT_FRAMES = 4;
 
 function GroupLootContainer_OnLoad(self)
 	self.rollFrames = {};
+	self.waitingRolls = {};
 	self.reservedSize = 100;
 	GroupLootContainer_CalcMaxIndex(self);
 
@@ -44,13 +45,19 @@ function GroupLootContainer_RemoveFrame(self, frame)
 		end
 	end
 
+	frame:Hide();
 	if ( idx ) then
 		self.rollFrames[idx] = nil;
 		if ( idx == self.maxIndex ) then
 			GroupLootContainer_CalcMaxIndex(self);
 		end
+
+		if #self.waitingRolls > 0 then
+			local newRoll = self.waitingRolls[1];
+			table.remove(self.waitingRolls, 1);
+			GroupLootContainer_AddRoll(newRoll.rollID, newRoll.rollTime);
+		end
 	end
-	frame:Hide();
 	GroupLootContainer_Update(self);
 end
 
@@ -88,6 +95,26 @@ function GroupLootContainer_Update(self)
 	end
 end
 
+function GroupLootContainer_AddRoll(rollID, rollTime)
+	if not GroupLootContainer_OpenNewFrame(rollID, rollTime) then
+		table.insert(GroupLootContainer.waitingRolls, { rollID = rollID, rollTime = rollTime });
+	end
+end
+
+function GroupLootContainer_OpenNewFrame(rollID, rollTime)
+	for i=1, NUM_GROUP_LOOT_FRAMES do
+		local frame = _G["GroupLootFrame"..i];
+		if ( not frame:IsShown() ) then
+			frame.rollID = rollID;
+			frame.rollTime = rollTime;
+			frame.Timer:SetMinMaxValues(0, rollTime);
+			GroupLootContainer_AddFrame(GroupLootContainer, frame);
+			return true;
+		end
+	end
+	return false;
+end
+
 function GroupLootDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, nil, "MENU");
 	self.initialize = GroupLootDropDown_Initialize;
@@ -115,20 +142,6 @@ function GroupLootDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
-function GroupLootFrame_OpenNewFrame(id, rollTime)
-	local frame;
-	for i=1, NUM_GROUP_LOOT_FRAMES do
-		frame = _G["GroupLootFrame"..i];
-		if ( not frame:IsShown() ) then
-			frame.rollID = id;
-			frame.rollTime = rollTime;
-			frame.Timer:SetMinMaxValues(0, rollTime);
-			GroupLootContainer_AddFrame(GroupLootContainer, frame);
-			return;
-		end
-	end
-end
-
 function GroupLootFrame_EnableLootButton(button)
 	button:Enable();
 	button:SetAlpha(1.0);
@@ -140,6 +153,13 @@ function GroupLootFrame_DisableLootButton(button)
 	button:SetAlpha(0.35);
 	SetDesaturation(button:GetNormalTexture(), true);
 end
+
+local groupLootFrameEvents =
+{
+	"CANCEL_LOOT_ROLL",
+	"CANCEL_ALL_LOOT_ROLLS",
+	"MAIN_SPEC_NEED_ROLL",
+}
 
 function GroupLootFrame_OnShow(self)
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(self.rollID);
@@ -185,25 +205,79 @@ function GroupLootFrame_OnShow(self)
 	end
 
 	self.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
+
+	FrameUtil.RegisterFrameForEvents(self, groupLootFrameEvents);
+end
+
+function GroupLootFrame_OnHide(self)
+	GroupLootFrame_StopNeedAnimation(self);
+	FrameUtil.UnregisterFrameForEvents(self, groupLootFrameEvents);
+end
+
+function GroupLootFrame_Remove(self)
+	if self:IsShown() then
+		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+		StaticPopup_Hide("CONFIRM_LOOT_ROLL", self.rollID);
+	end
 end
 
 function GroupLootFrame_OnEvent(self, event, ...)
-	if ( event == "CANCEL_LOOT_ROLL" ) then
+	if event == "CANCEL_LOOT_ROLL" then
 		local arg1 = ...;
-		if ( arg1 == self.rollID ) then
-			GroupLootContainer_RemoveFrame(GroupLootContainer, self);
-			StaticPopup_Hide("CONFIRM_LOOT_ROLL", self.rollID);
+		if arg1 == self.rollID then
+			GroupLootFrame_Remove(self);
+		end
+	elseif event == "CANCEL_ALL_LOOT_ROLLS" then
+		GroupLootFrame_Remove(self);
+	elseif event == "MAIN_SPEC_NEED_ROLL" then
+		local rollID, roll, isWinning = ...;
+		if rollID == self.rollID then
+			GroupLootFrame_StartNeedAnimation(self, roll, isWinning);
 		end
 	end
 end
 
 function GroupLootFrame_OnUpdate(self, elapsed)
-	local left = GetLootRollTimeLeft(self:GetParent().rollID);
-	local min, max = self:GetMinMaxValues();
+	if self.NeedRollAnim.Animation:IsPlaying() then
+		return;
+	end
+
+	local left = GetLootRollTimeLeft(self.rollID);
+	local min, max = self.Timer:GetMinMaxValues();
 	if ( (left < min) or (left > max) ) then
 		left = min;
 	end
-	self:SetValue(left);
+	self.Timer:SetValue(left);
+end
+
+function GroupLootFrame_StartNeedAnimation(self, roll, isWinning)
+	self.Timer:SetValue(0);
+	for _, button in ipairs(self.LootButtons) do
+		button:Hide();
+	end
+
+	PlaySound(isWinning and SOUNDKIT.UI_NEED_ROLL_POSITIVE or SOUNDKIT.UI_NEED_ROLL_NEGATIVE);
+
+	self.NeedRollAnim:Show();
+	local color = isWinning and GREEN_FONT_COLOR or RED_FONT_COLOR;
+	self.NeedRollAnim.RollNumber:SetText(color:WrapTextInColorCode(roll));
+	self.NeedRollAnim.Animation:Restart();
+
+	self.NeedRollAnimFinishedCallback = C_FunctionContainers.CreateCallback(function() GroupLootFrame_Remove(self); end);
+	C_Timer.After(5, self.NeedRollAnimFinishedCallback);
+end
+
+function GroupLootFrame_StopNeedAnimation(self)
+	for _, button in ipairs(self.LootButtons) do
+		button:Show();
+	end
+
+	self.NeedRollAnim:Hide();
+	self.NeedRollAnim.Animation:Stop();
+	if self.NeedRollAnimFinishedCallback then
+		self.NeedRollAnimFinishedCallback:Cancel();
+		self.NeedRollAnimFinishedCallback = nil;
+	end
 end
 
 function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID)

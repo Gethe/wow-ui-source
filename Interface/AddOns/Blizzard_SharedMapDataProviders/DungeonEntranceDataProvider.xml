@@ -2,5 +2,9 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="DungeonEntranceDataProvider.lua"/>
 
-	<Frame name="DungeonEntrancePinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" enableMouseClicks="true" mixin="DungeonEntrancePinMixin" virtual="true" />
+	<Frame name="DungeonEntrancePinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" enableMouseClicks="true" mixin="DungeonEntrancePinMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

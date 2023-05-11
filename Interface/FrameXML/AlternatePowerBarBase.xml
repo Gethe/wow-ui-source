@@ -1,0 +1,49 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AlternatePowerBarBase.lua"/>
+
+	<StatusBar name="AlternatePowerBarBaseTemplate" mixin="AlternatePowerBarBaseMixin" inherits="TextStatusBar" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerName" value="MANA" type="string" />
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString name="$parentText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LeftText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="LEFT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="RIGHT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="PowerBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+					</Anchors>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</StatusBar>
+
+	<StatusBar name="PlayerFrameAlternatePowerBarBaseTemplate" inherits="AlternatePowerBarBaseTemplate" parent="PlayerFrameAlternatePowerBarArea" useParentLevel="true" virtual="true">
+		<Size x="124" y="9"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="85" y="-73"/>
+		</Anchors>
+	</StatusBar>
+</Ui>

@@ -1,8 +1,8 @@
 PowerBarColor = {};
-PowerBarColor["MANA"] =				{ r = 0.00, g = 0.00, b = 1.00, atlasElementName="Mana" };
+PowerBarColor["MANA"] =				{ r = 0.00, g = 0.00, b = 1.00, atlasElementName="Mana", hasClassResourceVariant = true };
 PowerBarColor["RAGE"] =				{ r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true, atlasElementName="Rage" };
 PowerBarColor["FOCUS"] =			{ r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true, atlasElementName="Focus" };
-PowerBarColor["ENERGY"] =			{ r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true, atlasElementName="Energy" };
+PowerBarColor["ENERGY"] =			{ r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true, atlasElementName="Energy", hasClassResourceVariant = true };
 PowerBarColor["COMBO_POINTS"] =		{ r = 1.00, g = 0.96, b = 0.41 };
 PowerBarColor["RUNES"] =			{ r = 0.50, g = 0.50, b = 0.50 };
 PowerBarColor["RUNIC_POWER"] =		{ r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true, atlasElementName="RunicPower" };
@@ -16,9 +16,11 @@ PowerBarColor["ARCANE_CHARGES"] =	{ r = 0.10, g = 0.10, b = 0.98 };
 PowerBarColor["FURY"] =				{ r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
 PowerBarColor["PAIN"] =				{ r = 255/255, g = 156/255, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
 -- vehicle colors
-PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
-PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };
+PowerBarColor["AMMOSLOT"] = 		{ r = 0.80, g = 0.60, b = 0.00 };
+PowerBarColor["FUEL"] = 			{ r = 0.0, g = 0.55, b = 0.5 };
+-- alternate power bar colors
 PowerBarColor["STAGGER"] = { {r = 0.52, g = 1.0, b = 0.52}, {r = 1.0, g = 0.98, b = 0.72}, {r = 1.0, g = 0.42, b = 0.42},};
+PowerBarColor["EBON_MIGHT"] = { r = 0.75, g = 0.47, b = 0.1, atlas = "Unit_Evoker_EbonMight_Fill" };
 
 -- these are mostly needed for a fallback case (in case the code tries to index a power token that is missing from the table,
 -- it will try to index by power type instead)
@@ -598,7 +600,15 @@ function UnitFrameManaBar_UpdateType(manaBar)
 
 	if (info) then
 		if (manaBar.unitFrame.frameType and info.atlasElementName) then
-			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText.."-Bar-"..info.atlasElementName;
+			
+			-- Some player spec/classes use a third "alternate" bar, requiring their primary bar to use slightly different bar art
+			-- Very few bars have this ClassResource variant so far, hence the hasClassResourceVariant check which for now is much cheaper than constant GetAtlasInfo nil checks
+			local classResourceText = "";
+			if(manaBar.unitFrame.frameType == "Player" and manaBar.unitFrame.state == "player" and manaBar.unitFrame.activeAlternatePowerBar and info.hasClassResourceVariant) then
+				classResourceText = "-ClassResource";
+			end
+
+			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText..classResourceText.."-Bar-"..info.atlasElementName;
 			manaBar:SetStatusBarTexture(manaBarTexture);
 		elseif (info.atlas) then
 			manaBar:SetStatusBarTexture(info.atlas);

@@ -39,14 +39,19 @@
 								<Anchor point="CENTER" x="-2" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Player-PortraitOn" useAtlasSize="true">
+						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Player-PortraitOn" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="AlternatePowerFrameTexture" atlas="UI-HUD-UnitFrame-Player-PortraitOn-ClassResource" useAtlasSize="true" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-1.5"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FrameFlash" atlas="UI-HUD-UnitFrame-Player-PortraitOn-InCombat" useAtlasSize="true" hidden="true">
+						<Texture parentKey="FrameFlash" atlas="UI-HUD-UnitFrame-Player-PortraitOn-InCombat" useAtlasSize="true" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="CENTER" x="-1.5" y="1"/>
 							</Anchors>
@@ -235,6 +240,8 @@
 										</Frames>
 									</StatusBar>
 								</Frames>
+							</Frame>
+							<Frame parentKey="AlternatePowerBarArea" name="PlayerFrameAlternatePowerBarArea" setAllPoints="true" useParentLevel="true" hidden="true">
 							</Frame>
 						</Frames>
 					</Frame>

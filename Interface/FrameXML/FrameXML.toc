@@ -135,6 +135,14 @@ ObjectAPI\Quest.lua
 ObjectAPI\UiMapPoint.lua
 ObjectAPI\CovenantCalling.lua
 
+ContentTracking\ContentTrackingManager.lua
+ContentTracking\ContentTrackingElement.xml
+
+POIButton\POIButtonHighlightManager.lua
+POIButton\POIButton.xml
+POIButton\POIButtonOwner.xml
+POIButton\POIButtonUtil.lua
+
 ## add new modules below here
 ..\SharedXML\Backdrop.xml
 ChatBubbleTemplates.xml
@@ -172,6 +180,7 @@ RenownRewardUtil.lua
 RewardTrackTemplates.xml
 TitleUtil.lua
 CollectionsUtil.lua
+ProfessionsUtil.lua
 ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 CurrencyContainer.lua
@@ -207,7 +216,7 @@ StaticPopup.xml
 ..\SharedXML\DialogUtil.lua
 ..\SharedXML\Settings\GameplaySettingsGroup.lua
 ..\SharedXML\Settings\Settings.xml
-..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
+..\FrameXML\SettingDefinitions\OverrideDefinitions.xml
 SettingDefinitions\Definitions.xml
 QuickKeybind.xml
 TutorialFrame.xml
@@ -319,7 +328,6 @@ PaperDollFrame.xml
 ReputationFrame.xml
 FriendshipStatusBar.xml
 QuestFrame.xml
-QuestPOI.xml
 QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml
@@ -389,8 +397,10 @@ EssenceFramePlayer.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
+AlternatePowerBarBase.xml
 AlternatePowerBar.xml
 MonkStaggerBar.xml
+EvokerEbonMightBar.xml
 BossBannerToast.xml
 EventToastManager.xml
 AnimationSystem.lua
@@ -398,6 +408,7 @@ EquipmentManager.lua
 CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
+CompactArenaFrame.xml
 RolePoll.xml
 SpellFlyout.xml
 PaladinPowerBar.xml
@@ -432,7 +443,6 @@ ActionStatus.xml
 WeeklyReward.lua
 PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
-ArenaUI.xml
 FramerateFrame.xml
 ClassTalentHelper.lua
 MotionSickness.xml

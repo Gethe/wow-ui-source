@@ -264,10 +264,10 @@ function QUEST_TRACKER_MODULE:UpdatePOISingle(quest)
 		local poiButton;
 
 		if isComplete then
-			poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "normal", nil);
+			poiButton = ObjectiveTrackerFrame.BlocksFrame:GetButtonForQuest(questID, POIButtonUtil.Style.QuestComplete, nil);
 		elseif  hasLocalPOI or (shouldShowWaypoint and C_QuestLog.GetNextWaypoint(questID) ~= nil) then
 			self.numPOINumeric = self.numPOINumeric + 1;
-			poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "numeric", self.numPOINumeric);
+			poiButton = ObjectiveTrackerFrame.BlocksFrame:GetButtonForQuest(questID, POIButtonUtil.Style.Numeric, self.numPOINumeric);
 		end
 
 		if poiButton then
@@ -279,10 +279,6 @@ end
 function QUEST_TRACKER_MODULE:UpdatePOIs(numPOINumeric)
 	self.numPOINumeric = numPOINumeric;
 	self:EnumQuestWatchData(self.UpdatePOISingle);
-
-	QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, C_SuperTrack.GetSuperTrackedQuestID());
-	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
-
 	return self.numPOINumeric;
 end
 

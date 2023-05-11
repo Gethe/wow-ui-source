@@ -39,6 +39,13 @@ end
 --[[ Pin ]]--
 DungeonEntrancePinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE");
 
+function DungeonEntrancePinMixin:OnLoad()
+	BaseMapPoiPinMixin.OnLoad(self);
+
+	self:SetNudgeSourceRadius(1);
+	self:SetNudgeSourceMagnitude(2, 2);
+end
+
 function DungeonEntrancePinMixin:OnAcquired(dungeonEntranceInfo) -- override
 	BaseMapPoiPinMixin.OnAcquired(self, dungeonEntranceInfo);
 

@@ -142,9 +142,6 @@ function TooltipUtil.FindLinesFromData(lineTypeTable, tooltipData)
 		local lineTypes = tInvert(lineTypeTable);
 
 		for i, lineData in ipairs(tooltipData.lines) do
-			if not lineData.type then
-				TooltipUtil.SurfaceArgs(lineData);
-			end
 			if lineTypes[lineData.type] then
 				tinsert(resultTable, lineData);
 			end

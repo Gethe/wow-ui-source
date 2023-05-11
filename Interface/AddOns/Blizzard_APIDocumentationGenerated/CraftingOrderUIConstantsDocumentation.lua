@@ -47,7 +47,7 @@ local CraftingOrderUIConstants =
 			Fields =
 			{
 				{ Name = "claimsRemaining", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "hoursToRecharge", Type = "number", Nilable = true },
+				{ Name = "secondsToRecharge", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -80,6 +80,65 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 			return;
 		end
 
+		-- Add whisper option
+		do
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = WHISPER_MESSAGE;
+
+			local whisperStatus = self:GetWhisperCustomerStatus();
+
+			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
+				info.func = function()
+					ChatFrame_SendTell(self.order.customerName);
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				if whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
+					info.tooltipText = PROF_ORDER_CANT_WHISPER_OFFLINE;
+				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction then
+					info.tooltipText = PROF_ORDER_CANT_WHISPER_WRONG_FACTION;
+				end
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+
+		-- Add "Add Friend" option
+		do
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = ADD_FRIEND;
+
+			-- Use the same status as whisper for now; if the player is offline, we can't easily check their faction
+			local whisperStatus = self:GetWhisperCustomerStatus();
+			local alreadyIsFriend = C_FriendList.IsFriend(self.order.customerGuid);
+
+			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper and not alreadyIsFriend then
+				info.func = function()
+					C_FriendList.AddFriend(self.order.customerName);
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				if alreadyIsFriend then
+					info.tooltipText = ALREADY_FRIEND_FMT:format(self.order.customerName);
+				elseif whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
+					info.tooltipText = PROF_ORDER_CANT_ADD_FRIEND_OFFLINE;
+				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild then
+					-- CanWhisperGuild means we can whisper the player despite them being cross-faction because they are in our guild
+					info.tooltipText = PROF_ORDER_CANT_ADD_FRIEND_WRONG_FACTION;
+				end
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+
 		-- Add ignore option
 		do
 			local canIgnore = self.order.orderState == Enum.CraftingOrderState.Created and not C_FriendList.IsIgnoredByGuid(self.order.customerGuid);
@@ -110,33 +169,6 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 				info.tooltipOnButton = true;
 				info.tooltipTitle = "";
 				info.tooltipText = self.order.orderState ~= Enum.CraftingOrderState.Created and PROF_ORDER_CANT_IGNORE_IN_PROGRESS or PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
-			end
-			info.isNotRadio = true;
-			info.notCheckable = true;
-			UIDropDownMenu_AddButton(info, level);
-		end
-
-		-- Add whisper option
-		do
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = WHISPER_MESSAGE;
-
-			local whisperStatus = self:GetWhisperCustomerStatus();
-
-			if whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper then
-				info.func = function()
-					ChatFrame_SendTell(self.order.customerName);
-				end
-			else
-				info.disabled = true;
-				info.tooltipWhileDisabled = true;
-				info.tooltipOnButton = true;
-				info.tooltipTitle = "";
-				if whisperStatus == Enum.ChatWhisperTargetStatus.Offline then
-					info.tooltipText = PROF_ORDER_CANT_WHISPER_OFFLINE;
-				elseif whisperStatus == Enum.ChatWhisperTargetStatus.WrongFaction then
-					info.tooltipText = PROF_ORDER_CANT_WHISPER_WRONG_FACTION;
-				end
 			end
 			info.isNotRadio = true;
 			info.notCheckable = true;
@@ -554,7 +586,7 @@ function ProfessionsCrafterOrderViewMixin:UpdateStartOrderButton()
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_OWN;
     elseif claimInfo and self.order.orderType == Enum.CraftingOrderType.Public and claimInfo.claimsRemaining <= 0 and Professions.GetCraftingOrderRemainingTime(self.order.expirationTime) > Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
         enabled = false;
-        errorReason = PROFESSIONS_CRAFTER_OUT_OF_CLAIMS_FMT:format(claimInfo.hoursToRecharge);
+        errorReason = PROFESSIONS_CRAFTER_OUT_OF_CLAIMS_FMT:format(SecondsToTime(claimInfo.secondsToRecharge));
     elseif not recipeInfo or not recipeInfo.learned or (self.order.isRecraft and not C_CraftingOrders.OrderCanBeRecrafted(self.order.orderID)) then
 		enabled = false;
         errorReason = PROFESSIONS_CRAFTER_CANT_CLAIM_UNLEARNED;

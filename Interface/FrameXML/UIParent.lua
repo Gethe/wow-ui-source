@@ -1808,7 +1808,7 @@ function UIParent_OnEvent(self, event, ...)
 		local pendingLootRollIDs = GetActiveLootRollIDs();
 
 		for i=1, #pendingLootRollIDs do
-			GroupLootFrame_OpenNewFrame(pendingLootRollIDs[i], GetLootRollTimeLeft(pendingLootRollIDs[i]));
+			GroupLootContainer_AddRoll(pendingLootRollIDs[i], C_Loot.GetLootRollDuration(pendingLootRollIDs[i]));
 		end
 		OrderHall_CheckCommandBar();
 
@@ -1941,7 +1941,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		UIParent.isOutOfControl = nil;
 	elseif ( event == "START_LOOT_ROLL" ) then
-		GroupLootFrame_OpenNewFrame(arg1, arg2);
+		GroupLootContainer_AddRoll(arg1, arg2);
 	elseif ( event == "CONFIRM_LOOT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");

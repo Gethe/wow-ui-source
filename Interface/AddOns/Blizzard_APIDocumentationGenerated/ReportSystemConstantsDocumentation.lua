@@ -42,6 +42,18 @@ local ReportSystemConstants =
 			},
 		},
 		{
+			Name = "ReportSubComplaintTypes",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Inappropriate", Type = "ReportSubComplaintTypes", EnumValue = 0 },
+				{ Name = "Advertising", Type = "ReportSubComplaintTypes", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "ReportType",
 			Type = "Enumeration",
 			NumValues = 16,

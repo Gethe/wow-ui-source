@@ -55,6 +55,3 @@ function TutorialQueue:Status()
 	end
 	TutorialManager:DebugLog("---------------END---------------")
 end
-
--- ------------------------------------------------------------------------------------------------------------
-TutorialQueue:Initialize();

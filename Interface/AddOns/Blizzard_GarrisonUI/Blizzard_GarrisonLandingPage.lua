@@ -545,7 +545,7 @@ function GarrisonLandingPageReportList_UpdateItems()
 
 	local availableString = garrTypeID == Enum.GarrisonType.Type_9_0_Garrison and COVENANT_MISSIONS_AVAILABLE or GARRISON_LANDING_AVAILABLE;
 	GarrisonLandingPageReport.Available.Text:SetFormattedText(availableString, #GarrisonLandingPageReport.List.AvailableItems);
-	
+
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
 		GarrisonLandingPageReportList_Update();
 	else
@@ -583,7 +583,7 @@ function GarrisonLandingPageReportList_InitButtonAvailable(button, elementData)
 	button.EncounterIcon:SetShown(item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower);
 
 	button.MissionTypeIcon:SetAtlas(item.typeAtlas);
-	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0) then
+	if (item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower) then
 		button.MissionTypeIcon:SetSize(40, 40);
 		button.MissionTypeIcon:SetPoint("TOPLEFT", 5, -3);
 	elseif item.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
@@ -752,7 +752,7 @@ function GarrisonLandingPageReportList_Update()
 	local items = GarrisonLandingPageReportMission_FilterOutCombatAllyMissions(C_Garrison.GetLandingPageItems(garrTypeID));
 	Garrison_SortMissions(items);
 	GarrisonLandingPageReport.List.items = items;
-	
+
 	if #items == 0 then
 		local emptyMissionText = GarrisonLandingPageReport:GetParent().garrTypeID == Enum.GarrisonType.Type_9_0_Garrison and COVENANT_MISSIONS_EMPTY_IN_PROGRESS or GARRISON_EMPTY_IN_PROGRESS_LIST;
 		GarrisonLandingPageReport.List.EmptyMissionText:SetText(emptyMissionText);

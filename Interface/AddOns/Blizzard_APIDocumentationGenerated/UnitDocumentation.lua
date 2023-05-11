@@ -320,6 +320,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDistanceSquared",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "distance", Type = "number", Nilable = false },
+				{ Name = "checkedDistance", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitInPartyShard",
 			Type = "Function",
 
@@ -331,6 +346,21 @@ local Unit =
 			Returns =
 			{
 				{ Name = "inPartyShard", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInRange",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inRange", Type = "bool", Nilable = false },
+				{ Name = "checkedRange", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1167,6 +1197,16 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDistanceCheckUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_DISTANCE_CHECK_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "isInDistance", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitFaction",
 			Type = "Event",
 			LiteralName = "UNIT_FACTION",
@@ -1218,6 +1258,16 @@ local Unit =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInRangeUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_IN_RANGE_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false },
 			},
 		},
 		{

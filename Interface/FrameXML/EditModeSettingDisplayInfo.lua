@@ -239,6 +239,19 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
+		-- View Arena Size
+		{
+			setting = Enum.EditModeUnitFrameSetting.ViewArenaSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.ViewArenaSize.Two, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_TWO},
+				{value = Enum.ViewArenaSize.Three, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_THREE},
+				{value = Enum.ViewArenaSize.Five, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_FIVE},
+			},
+		},
+
 		-- Frame Width
 		{
 			setting = Enum.EditModeUnitFrameSetting.FrameWidth,

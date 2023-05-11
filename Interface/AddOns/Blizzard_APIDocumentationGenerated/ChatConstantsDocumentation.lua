@@ -53,14 +53,15 @@ local ChatConstants =
 		{
 			Name = "ChatWhisperTargetStatus",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "CanWhisper", Type = "ChatWhisperTargetStatus", EnumValue = 0 },
-				{ Name = "Offline", Type = "ChatWhisperTargetStatus", EnumValue = 1 },
-				{ Name = "WrongFaction", Type = "ChatWhisperTargetStatus", EnumValue = 2 },
+				{ Name = "CanWhisperGuild", Type = "ChatWhisperTargetStatus", EnumValue = 1 },
+				{ Name = "Offline", Type = "ChatWhisperTargetStatus", EnumValue = 2 },
+				{ Name = "WrongFaction", Type = "ChatWhisperTargetStatus", EnumValue = 3 },
 			},
 		},
 		{

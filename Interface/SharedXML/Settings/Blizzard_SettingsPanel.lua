@@ -600,13 +600,15 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 		local redirectCategory = category.redirectCategory or category;
 		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical then
 			for _, initializer in layout:EnumerateInitializers() do
-				local result = initializer:MatchesSearchTags(words);
-				if result and initializer:ShouldShow() then
-					if not matches[result] then
-						matches[result] = {};
-					end
+				if not initializer:IsSearchIgnoredInLayout(layout) then
+					local result = initializer:MatchesSearchTags(words);
+					if result and initializer:ShouldShow() then
+						if not matches[result] then
+							matches[result] = {};
+						end
 
-					table.insert(matches[result], { initializer = initializer, category = redirectCategory });
+						table.insert(matches[result], { initializer = initializer, category = redirectCategory });
+					end
 				end
 			end
 		end

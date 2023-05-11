@@ -297,12 +297,18 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
+			if (C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sources[i].sourceID) ) then
+				name = name..CreateAtlasMarkup("checkmark-minimal", 15, 15, 0, -2);
+			end
 			GameTooltip_AddColoredDoubleLine(tooltip, name, sourceText, nameColor, sourceColor);
 		end
 		GameTooltip_AddBlankLineToTooltip(tooltip);
+		CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID); 
 		GameTooltip_AddColoredLine(tooltip, WARDROBE_TOOLTIP_CYCLE, GRAY_FONT_COLOR);
 		canCycle = true;
 	else
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID);
 		if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
 			useError = sources[headerIndex].useError;
 		end
@@ -328,6 +334,17 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	return headerIndex, canCycle;
 end
 
+function CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sourceID)
+	if ( C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
+		if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sourceID) ) then
+			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		else
+			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_TRACKABLE_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		end
+	else
+		GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0, 120, 150, 180)..CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+	end
+end
 -- if the sourceID is not collectable, this will try to find a collectable one that has the same appearance
 -- returns: preferredSourceID, hasAllDataAvailable, canCollect
 -- if all data was not available, calling this after TRANSMOG_COLLECTION_ITEM_UPDATE and TRANSMOG_SOURCE_COLLECTABILITY_UPDATE events may result in a better sourceID returned

@@ -3,6 +3,9 @@
 	<Script file="LFGFrame.lua"/>
 	<Button name="LFGRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="48" y="48"/>
+		<KeyValues>
+			<KeyValue key="permDisabledCoverAlpha" value="0.7" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
@@ -82,6 +85,88 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
+	
+	<Button name="LFGRoleButtonWithShortageRewardTemplate" inherits="LFGRoleButtonTemplate" mixin="LFGRoleButtonWithShortageRewardMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<KeyValues>
+			<KeyValue key="permDisabledCoverAlpha" value="0.5" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="shortageBorder" file="Interface\Common\GoldRing" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconPulse" alphaMode="ADD" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" alpha="0">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EdgePulse" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="false" alpha="0">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPulse" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="RoleShortagePulseModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="incentiveIcon" hidden="true">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="border" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING" setAllPoints="true">
+							<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="texture">
+							<Size x="10" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.border" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRoleIconIncentive_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RoleShortagePulseAnim" looping="REPEAT" setToFinalAlpha="true" mixin="LFGRoleShortagePulseAnimMixin">
+				<Alpha childKey="IconPulse" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconPulse" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="EdgePulse" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="EdgePulse" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnLoop method="OnLoop"/>
+					<OnStop method="OnStop"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+
 	<Button name="LFGRoleButtonWithBackgroundTemplate" inherits="LFGRoleButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">

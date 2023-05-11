@@ -141,6 +141,3 @@ function TutorialRangeManager:Shutdown()
 	self.WatchList = {};
 	self:_Update();
 end
-
--- ------------------------------------------------------------------------------------------------------------
-TutorialRangeManager:Initialize();

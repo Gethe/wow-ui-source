@@ -109,8 +109,8 @@ function ProfessionsCraftingOrderPageMixin:InitButtons()
 		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 		local claimInfo = C_CraftingOrders.GetOrderClaimInfo(self.professionInfo.profession);
 		local tooltipText;
-		if claimInfo.hoursToRecharge then
-			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_REFRESH_TOOLTIP:format(claimInfo.claimsRemaining, claimInfo.hoursToRecharge);
+		if claimInfo.secondsToRecharge then
+			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_REFRESH_TOOLTIP:format(claimInfo.claimsRemaining, SecondsToTime(claimInfo.secondsToRecharge));
 		else
 			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_TOOLTIP:format(claimInfo.claimsRemaining);
 		end

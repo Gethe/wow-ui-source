@@ -19,6 +19,7 @@ local SLIDE_DATA = { startHeight = 0, endHeight = 68, duration = 0.4, onFinishFu
 
 function AutoQuestPopupTracker_OnFreeBlock(block)
 	block.init = nil;
+	block.questID = nil;
 end
 
 local function AutoQuestPopupTracker_ShouldDisplayQuest(questID, owningModule)
@@ -60,6 +61,10 @@ local function AutoQuestPopupTracker_UpdateQuestIcon(questID, popUpType, blockCo
 	end
 end
 
+local function MakeBlockKey(questID, popupType)
+	return questID .. popupType;
+end
+
 function AutoQuestPopupTracker_Update(owningModule)
 	if( SplashFrame:IsShown() ) then
 		return;
@@ -74,9 +79,10 @@ function AutoQuestPopupTracker_Update(owningModule)
 		if AutoQuestPopupTracker_ShouldDisplayQuest(questID, owningModule) then
 			local questTitle = C_QuestLog.GetTitleForQuestID(questID);
 			if ( questTitle and questTitle ~= "" ) then
-				local block = owningModule:GetBlock(questID, "ScrollFrame", "AutoQuestPopUpBlockTemplate");
+				local block = owningModule:GetBlock(MakeBlockKey(questID, popUpType), "ScrollFrame", "AutoQuestPopUpBlockTemplate");
 				-- fixed height, just add the block right away
 				block.height = 68;
+				block.questID = questID;
 				if ( ObjectiveTracker_AddBlock(block) ) then
 					if ( not block.init ) then
 						local blockContents = block.ScrollChild;
@@ -144,10 +150,10 @@ end
 function AutoQuestPopUpTracker_OnMouseUp(block, button, upInside)
 	if button == "LeftButton" and upInside then
 		if ( block.popUpType == "OFFER" ) then
-			ShowQuestOffer(block.id);
+			ShowQuestOffer(block.questID);
 		else
-			ShowQuestComplete(block.id);
+			ShowQuestComplete(block.questID);
 		end
-		AutoQuestPopupTracker_RemovePopUp(block.id);
+		AutoQuestPopupTracker_RemovePopUp(block.questID);
 	end
 end

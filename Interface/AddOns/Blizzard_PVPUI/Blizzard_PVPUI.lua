@@ -207,11 +207,26 @@ end
 
 function PVPUIFrame_UpdateRolesChangeable()
 	PVPUIFrame_UpdateAvailableRoles(HonorFrame.TankIcon, HonorFrame.HealerIcon, HonorFrame.DPSIcon);
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
+
 	PVPUIFrame_UpdateAvailableRoles(ConquestFrame.TankIcon, ConquestFrame.HealerIcon, ConquestFrame.DPSIcon);
+	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleIcons);
+
+	EventRegistry:TriggerEvent("PVPUI.AvailablePVPRolesUpdated");
 end
 
 function PVPUIFrame_UpdateAvailableRoles(tankButton, healButton, dpsButton)
 	return LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton);
+end
+
+function PVPUIFrame_UpdateRoleShortages(roleShortageBonus, roleButtons)
+	for index, roleButton in ipairs(roleButtons) do
+		local roleHasShortage = (roleShortageBonus ~= nil) and tContains(roleShortageBonus.validRoles, roleButton.role);
+		-- Always use the "rare" coin icon for PVP Call to Arms
+		local incentiveIndex = roleHasShortage and LFG_ROLE_SHORTAGE_RARE or nil;
+		LFG_SetRoleIconIncentive(roleButton, incentiveIndex);
+		roleButton:EnableRoleShortagePulseAnim(roleButton:IsEnabled() and roleHasShortage);
+	end
 end
 
 function PVPUIFrame_UpdateSelectedRoles()
@@ -224,7 +239,7 @@ function PVPUIFrame_UpdateSelectedRoles()
 	ConquestFrame.DPSIcon.checkButton:SetChecked(dps);
 end
 
-function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRewards, currencyRewards)
+function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRewards, currencyRewards, roleShortageBonus)
 	local itemID, currencyID;
 	local rewardTexture, rewardQuantity;
 	rewardFrame.conquestAmount = 0;
@@ -270,6 +285,9 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 			rewardTexture = "Interface\\Icons\\xp_icon"
 		end
 	end
+
+	rewardFrame.RoleShortageBonus:Init(roleShortageBonus);
+	rewardFrame:RefreshRoleShortageBonus();
 
 	if rewardTexture then
 		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
@@ -616,6 +634,8 @@ function HonorFrame_SetType(value)
 		HonorFrame.SpecificScrollBar:Hide();
 		HonorFrame.BonusFrame:Show();
 	end
+
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
 end
 
 function HonorFrame_UpdateQueueButtons()
@@ -711,6 +731,13 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	HonorFrame.QueueButton.tooltip = disabledReason;
+end
+
+function HonorFrame_GetSelectedModeRoleShortageBonus()
+	local selectedButton = (HonorFrame.type == "bonus") and HonorFrame.BonusFrame.selectedButton;
+	if selectedButton then
+		return selectedButton.Reward.RoleShortageBonus.rewardInfo;
+	end
 end
 
 function HonorFrame_Queue()
@@ -1028,6 +1055,7 @@ function HonorFrameBonusFrame_SelectButton(button)
 	end
 	button.SelectedTexture:Show();
 	HonorFrame.BonusFrame.selectedButton = button;
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
 	HonorFrame_UpdateQueueButtons();
 end
 
@@ -1392,7 +1420,15 @@ function ConquestFrame_SelectButton(button)
 	end
 	button.SelectedTexture:Show();
 	ConquestFrame.selectedButton = button;
+	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleIcons);
 	ConquestFrame_UpdateJoinButton();
+end
+
+function ConquestFrame_GetSelectedModeRoleShortageBonus()
+	local selectedButton = ConquestFrame.selectedButton;
+	if selectedButton then
+		return selectedButton.Reward.RoleShortageBonus.rewardInfo;
+	end
 end
 
 function ConquestFrameButton_OnClick(self, button)
@@ -1509,7 +1545,14 @@ local function AddPVPRewardCurrency(tooltip, currencyID, amount)
 	end
 end
 
-function PVPStandardRewardTemplate_OnEnter(self)
+PVPStandardRewardMixin = CreateFromMixins(CallbackRegistryMixin);
+
+function PVPStandardRewardMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+	self:AddDynamicEventMethod(EventRegistry, "PVPUI.AvailablePVPRolesUpdated", self.OnAvailablePVPRolesUpdated);
+end
+
+function PVPStandardRewardMixin:OnEnter()
 	if (not self.Icon:IsShown()) then
 		return;
 	end
@@ -1536,9 +1579,40 @@ function PVPStandardRewardTemplate_OnEnter(self)
 	EmbeddedItemTooltip:Show();
 end
 
-function PVPRewardTemplate_OnLeave(self)
+function PVPStandardRewardMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
 	self.UpdateTooltip = nil;
+end
+
+function PVPStandardRewardMixin:OnAvailablePVPRolesUpdated()
+	self:RefreshRoleShortageBonus();
+end
+
+function PVPStandardRewardMixin:RefreshRoleShortageBonus()
+	if not self.RoleShortageBonus:HasRewardInfo() then
+		self.RoleShortageBonus:Hide();
+		return;
+	end
+
+	-- The Enlistment Bonus appears in the same location as the Role Shortage Bonus.
+	-- They should never be active at the same time, but let's prioritize displaying the Enlistment Bonus just in case.
+	local showingEnlistmentBonus = self.EnlistmentBonus:IsShown();
+	if showingEnlistmentBonus then
+		self.RoleShortageBonus:Hide();
+		return;
+	end
+
+	local playerCanQueueForBonus = false;	
+	local playerClassID = PlayerUtil.GetClassID();
+	for specIndex = 1, GetNumSpecializationsForClassID(playerClassID) do
+		local specID, specName, specDescription, specIcon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(playerClassID, specIndex);
+		if tContains(self.RoleShortageBonus.rewardInfo.validRoles, role) then
+			playerCanQueueForBonus = true;
+			break;
+		end
+	end
+
+	self.RoleShortageBonus:SetShown(playerCanQueueForBonus);
 end
 
 function PVPRewardEnlistmentBonus_OnEnter(self)
@@ -2301,4 +2375,41 @@ PVPTalentPrestigeLevelDialogCloseButtonMixin = {};
 
 function PVPTalentPrestigeLevelDialogCloseButtonMixin:OnClick()
 	UserActionClosePVPTalentPrestigeLevelDialog(self:GetParent());
+end
+
+PVPRewardRoleShortageBonusMixin = {};
+
+function PVPRewardRoleShortageBonusMixin:Init(rewardInfo)
+	self.rewardInfo = rewardInfo;
+
+	if rewardInfo then
+		local iconTexture = C_Item.GetItemIconByID(rewardInfo.rewardItemID);
+		self.Icon:SetTexture(iconTexture or QUESTION_MARK_ICON);
+
+		self.rewardInfo.rewardSpell = Spell:CreateFromSpellID(rewardInfo.rewardSpellID);
+	end
+end
+
+function PVPRewardRoleShortageBonusMixin:HasRewardInfo()
+	return self.rewardInfo ~= nil;
+end
+
+function PVPRewardRoleShortageBonusMixin:OnEnter()
+	if self.rewardInfo then
+		self.rewardInfo.rewardSpell:ContinueOnSpellLoad(GenerateClosure(self.RefreshTooltip, self));
+	end
+end
+
+function PVPRewardRoleShortageBonusMixin:RefreshTooltip()
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(EmbeddedItemTooltip, BATTLEGROUND_HOLIDAY, NORMAL_FONT_COLOR);
+	GameTooltip_AddHighlightLine(EmbeddedItemTooltip, self.rewardInfo.rewardSpell:GetSpellDescription(), false);
+
+	GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+	EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.rewardInfo.rewardItemID);		
+	EmbeddedItemTooltip:Show();
+end
+
+function PVPRewardRoleShortageBonusMixin:OnLeave()
+	EmbeddedItemTooltip:Hide();
 end

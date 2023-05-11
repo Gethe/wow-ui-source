@@ -249,7 +249,7 @@ function AuraFrameMixin:TryEditModeUpdateAuraButtons()
 		if not self.hasInitializedForEditMode then
 			if not self.iconDataProvider then
 				local spellIconsOnly = true;
-				self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell, spellIconsOnly);
+				self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spellbook, spellIconsOnly);
 			end
 
 			local iconDataProviderNumIcons = self.iconDataProvider:GetNumIcons();

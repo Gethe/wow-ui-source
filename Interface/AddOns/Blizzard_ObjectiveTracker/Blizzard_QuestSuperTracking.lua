@@ -12,7 +12,7 @@ end
 
 function SuperTrackEventMixin:CheckUpdateSuperTracked()
 	local superTrackQuestID = C_SuperTrack.GetSuperTrackedQuestID();
-	if superTrackQuestID > 0 and superTrackQuestID == self.superTrackQuestID then
+	if superTrackQuestID and superTrackQuestID == self.superTrackQuestID then
 		if C_QuestLog.ReadyForTurnIn(superTrackQuestID) and not self.isComplete then
 			QuestSuperTracking_ChooseClosestQuest();
 		end
@@ -22,7 +22,7 @@ end
 function SuperTrackEventMixin:CacheCurrentSuperTrackInfo()
 	self.superTrackQuestID = C_SuperTrack.GetSuperTrackedQuestID();
 	self.isComplete = nil;
-	if self.superTrackQuestID > 0 then
+	if self.superTrackQuestID then
 		self.isComplete = C_QuestLog.ReadyForTurnIn(self.superTrackQuestID);
 		self.uiMapID, self.worldQuests, self.worldQuestsElite, self.dungeons, self.treasures = C_QuestLog.GetQuestAdditionalHighlights(self.superTrackQuestID);
 	end
@@ -88,7 +88,7 @@ function QuestSuperTracking_OnPOIUpdate()
 		if C_QuestLog.GetQuestIDForQuestWatchIndex(1) == PENDING_QUEST_ID then
 			C_SuperTrack.SetSuperTrackedQuestID(PENDING_QUEST_ID);
 		end
-	elseif C_SuperTrack.GetSuperTrackedQuestID() == 0 then
+	elseif not C_SuperTrack.GetSuperTrackedQuestID() then
 		-- otherwise pick something if we're not supertrack anything
 		QuestSuperTracking_ChooseClosestQuest();
 	end
@@ -148,7 +148,7 @@ end
 
 function QuestSuperTracking_IsSuperTrackedQuestValid()
 	local trackedQuestID = C_SuperTrack.GetSuperTrackedQuestID();
-	if trackedQuestID == 0 then
+	if not trackedQuestID then
 		return false;
 	end
 

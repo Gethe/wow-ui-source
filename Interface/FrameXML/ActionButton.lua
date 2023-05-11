@@ -214,7 +214,6 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");		not updating cooldown from lua anymore, see SetActionUIButton
 	self:RegisterEvent("SPELL_UPDATE_CHARGES");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
 	self:RegisterEvent("TRADE_SKILL_CLOSE");
 	self:RegisterEvent("ARCHAEOLOGY_CLOSED");
@@ -226,6 +225,8 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
+
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PET_STABLE_UPDATE");
 	self:RegisterEvent("PET_STABLE_SHOW");
@@ -256,6 +257,64 @@ end
 
 function ActionBarActionEventsFrameMixin:UnregisterFrame(frame)
 	self.frames[frame] = nil;
+end
+
+ActionBarButtonUpdateFrameMixin = {};
+
+function ActionBarButtonUpdateFrameMixin:OnLoad()
+	self.frames = {};
+end
+
+function ActionBarButtonUpdateFrameMixin:OnUpdate(elapsed)
+	for k, frame in pairs(self.frames) do
+		frame:OnUpdate(elapsed);
+	end
+end
+
+function ActionBarButtonUpdateFrameMixin:RegisterFrame(frame)
+	self.frames[frame] = frame;
+end
+
+function ActionBarButtonUpdateFrameMixin:UnregisterFrame(frame)
+	self.frames[frame] = nil;
+end
+
+ActionBarButtonRangeCheckFrameMixin = {};
+
+function ActionBarButtonRangeCheckFrameMixin:OnLoad()
+	self.actions = {};
+	self:RegisterEvent("ACTION_RANGE_CHECK_UPDATE");
+end
+
+function ActionBarButtonRangeCheckFrameMixin:OnEvent(event, ...)
+	local action, inRange, checksRange = ...;
+
+	-- pass event down to the buttons
+	local frames = self.actions[action];
+	if frames then
+		for k, frame in pairs(frames) do
+			frame:OnEvent(event, ...);
+		end
+	end
+end
+
+function ActionBarButtonRangeCheckFrameMixin:RegisterFrame(action, frame)
+	if not self.actions[action] then
+		self.actions[action] = {};
+	end
+	if self.actions[action][frame] then
+		return;
+	end
+	self.actions[action][frame] = frame;
+	C_ActionBar.EnableActionRangeCheck(action, true);
+end
+
+function ActionBarButtonRangeCheckFrameMixin:UnregisterFrame(action, frame)
+	if not self.actions[action] or not self.actions[action][frame] then
+		return;
+	end
+	self.actions[action][frame] = nil;
+	C_ActionBar.EnableActionRangeCheck(action, false);
 end
 
 ActionBarActionButtonMixin = {};
@@ -342,7 +401,13 @@ end
 function ActionBarActionButtonMixin:UpdateAction(force)
 	local action = self:CalculateAction();
 	if ( action ~= self.action or force ) then
+		if self.action then
+			ActionBarButtonRangeCheckFrame:UnregisterFrame(self.action, self);
+		end
 		self.action = action;
+		if self.action and self:IsVisible() then
+			ActionBarButtonRangeCheckFrame:RegisterFrame(self.action, self);
+		end
 		SetActionUIButton(self, action, self.cooldown);
 		self:Update();
 
@@ -419,13 +484,11 @@ function ActionBarActionButtonMixin:Update()
 	if ( texture ) then
 		icon:SetTexture(texture);
 		icon:Show();
-		self.rangeTimer = -1;
 		self:UpdateCount();
 	else
 		self.Count:SetText("");
 		icon:Hide();
 		buttonCooldown:Hide();
-		self.rangeTimer = nil;
 		local hotkey = self.HotKey;
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
@@ -712,12 +775,10 @@ end
 function ActionButton_ShowOverlayGlow(button)
 	ActionButton_SetupOverlayGlow(button);
 
-	if button.SpellActivationAlert.animOut:IsPlaying() then
-		button.SpellActivationAlert.animOut:Stop();
-	end
-
 	if not button.SpellActivationAlert:IsShown() then
-		button.SpellActivationAlert.animIn:Play();
+		button.SpellActivationAlert:Show();
+		button.SpellActivationAlert.ProcStartAnim:Play();
+
 	end
 end
 
@@ -727,14 +788,12 @@ function ActionButton_HideOverlayGlow(button)
 		return;
 	end
 
-	if button.SpellActivationAlert.animIn:IsPlaying() then
-		button.SpellActivationAlert.animIn:Stop();
+	if button.SpellActivationAlert.ProcStartAnim:IsPlaying() then
+		button.SpellActivationAlert.ProcStartAnim:Stop();
 	end
 
 	if button:IsVisible() then
-		button.SpellActivationAlert.animOut:Play();
-	else
-		button.SpellActivationAlert.animOut:OnFinished();	--We aren't shown anyway, so we'll instantly hide it.
+ 		button.SpellActivationAlert:Hide();
 	end
 end
 
@@ -744,6 +803,7 @@ function ActionBarOverlayGlowAnimOutMixin:OnFinished()
 	local frame = self:GetParent();
 	frame:Hide();
 end
+
 
 ActionBarOverlayGlowAnimInMixin = {};
 
@@ -778,23 +838,20 @@ end
 
 ActionBarButtonSpellActivationAlertMixin = {};
 
-function ActionBarButtonSpellActivationAlertMixin:OnUpdate(elapsed)
-	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01);
-	local cooldown = self:GetParent().cooldown;
-	-- we need some threshold to avoid dimming the glow during the gdc
-	-- (using 1500 exactly seems risky, what if casting speed is slowed or something?)
-	if(cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000) then
-		self:SetAlpha(0.5);
-	else
-		self:SetAlpha(1.0);
+function ActionBarButtonSpellActivationAlertMixin:OnHide()
+	if ( self.ProcLoop:IsPlaying() ) then
+		self.ProcLoop:Stop();
 	end
 end
 
-function ActionBarButtonSpellActivationAlertMixin:OnHide()
-	if ( self.animOut:IsPlaying() ) then
-		self.animOut:Stop();
-		self.animOut:OnFinished();
-	end
+ActionButtonInterruptAnimInMixin = {};
+function ActionButtonInterruptAnimInMixin:OnFinished()
+	self:GetParent():GetParent():Hide();
+end 
+
+ActionBarButtonSpellActivationAlertProcStartAnimMixin = { }; 
+function ActionBarButtonSpellActivationAlertProcStartAnimMixin:OnFinished()
+	self:GetParent().ProcLoop:Play();
 end
 
 function ActionBarActionButtonMixin:OnEvent(event, ...)
@@ -819,12 +876,12 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		self:UpdateHotkeys(self.buttonType);
-	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
-		self.rangeTimer = -1;
+	-- All event handlers below this line are only set when the button has an action
 	elseif ( event == "UNIT_FLAGS" or event == "UNIT_AURA" or event == "PET_BAR_UPDATE" ) then
 		-- Pet actions can also change the state of action buttons.
 		self.flashDirty = true;
 		self.stateDirty = true;
+		self:CheckNeedsUpdate();
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) ) then
@@ -896,6 +953,17 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "SPELL_UPDATE_ICON" ) then
 		self:Update();
+	elseif ( event == "ACTION_RANGE_CHECK_UPDATE" ) then
+		local inRange, checksRange = select(2, ...);
+		ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
+	elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then 
+		local _, _, spellID = ...; 
+		if(spellID) then 
+			local actionType, id, subType = GetActionInfo(self.action);
+			if(id == spellID) then 
+				self:PlaySpellInterruptedAnim(); 
+			end		
+		end
 	end
 end
 
@@ -914,6 +982,18 @@ function ActionBarActionButtonMixin:SetTooltip()
 		self.UpdateTooltip = self.SetTooltip;
 	else
 		self.UpdateTooltip = nil;
+	end
+end
+
+function ActionBarActionButtonMixin:CheckNeedsUpdate()
+	local needsUpdate = (self.stateDirty or self.flashDirty or self:IsFlashing()) and self:IsVisible();
+	if (needsUpdate ~= self.needsUpdate) then
+		if needsUpdate then
+			ActionBarButtonUpdateFrame:RegisterFrame(self);
+		else
+			ActionBarButtonUpdateFrame:UnregisterFrame(self);
+		end
+		self.needsUpdate = needsUpdate;
 	end
 end
 
@@ -950,21 +1030,29 @@ function ActionBarActionButtonMixin:OnUpdate(elapsed)
 		self.flashtime = flashtime;
 	end
 
-	-- Handle range indicator
-	local rangeTimer = self.rangeTimer;
-	if ( rangeTimer ) then
-		rangeTimer = rangeTimer - elapsed;
+	self:CheckNeedsUpdate();
+end
 
-		if ( rangeTimer <= 0 ) then
-			local valid = IsActionInRange(self.action);
-			local checksRange = (valid ~= nil);
-			local inRange = checksRange and valid;
-			ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
-			rangeTimer = TOOLTIP_UPDATE_TIME;
-		end
-
-		self.rangeTimer = rangeTimer;
+function ActionBarActionButtonMixin:OnShow()
+	self:CheckNeedsUpdate();
+	if self.action then
+		ActionBarButtonRangeCheckFrame:RegisterFrame(self.action, self);
 	end
+end
+
+function ActionBarActionButtonMixin:OnHide()
+	self:CheckNeedsUpdate();
+	if self.action then
+		ActionBarButtonRangeCheckFrame:UnregisterFrame(self.action, self);
+	end
+end
+
+function ActionBarActionButtonMixin:PlaySpellInterruptedAnim()
+	--Hide if it's already showing to clear the anim. 
+	if(self.InterruptDisplay:IsShown()) then 
+		self.InterruptDisplay:Hide(); 
+	end		
+	self.InterruptDisplay:Show(); 
 end
 
 -- Shared between the action bar and the pet bar.
@@ -1032,12 +1120,14 @@ function ActionBarActionButtonMixin:StartFlash()
 	self.flashing = 1;
 	self.flashtime = 0;
 	self:UpdateState();
+	self:CheckNeedsUpdate();
 end
 
 function ActionBarActionButtonMixin:StopFlash()
 	self.flashing = 0;
 	self.Flash:Hide();
 	self:UpdateState();
+	self:CheckNeedsUpdate();
 end
 
 function ActionBarActionButtonMixin:IsFlashing()
@@ -1334,4 +1424,16 @@ function SmallActionButtonMixin:UpdateButtonArt(hideDivider)
 	-- Gotta set these texture sizes here since BaseActionButtonMixin.UpdateButtonArt changes their size
 	self.NormalTexture:SetSize(35, 35);
 	self.PushedTexture:SetSize(35, 35);
+end
+
+ActionButtonInterruptFrameMixin = { };
+
+function ActionButtonInterruptFrameMixin:OnShow() 
+	self.Base.AnimIn:Play();
+	self.Highlight.AnimIn:Play();
+end 
+
+function ActionButtonInterruptFrameMixin:OnHide()
+	self.Base.AnimIn:Stop();
+	self.Highlight.AnimIn:Stop();
 end

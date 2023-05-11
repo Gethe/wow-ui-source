@@ -119,7 +119,6 @@ GlueParent.xml
 ..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
-..\SharedXML\DressUpModelFrameMixin.lua
 ..\SharedXML\CharacterModelFrameMixin.lua
 ..\SharedXML\HelpTip.xml
 GlueDialog.xml

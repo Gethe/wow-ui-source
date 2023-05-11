@@ -474,23 +474,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	-- If the item we're creating has no quality then default to using the lowest quality
 	-- reagents. If so, also hide the check box so that the player doesn't reactivate the option for no benefit.
-	local shouldAllocateUnconfigurable = false;
-	local shouldAllocateBest = Professions.ShouldAllocateBestQualityReagents();
-	do
-		local function CountTable(tbl)
-			return tbl and #tbl or 0;
-		end
-
-		local anyVariations = 
-			CountTable(recipeInfo.qualityIDs) > 1 or 
-			CountTable(recipeInfo.qualityIlvlBonuses) > 1 or 
-			CountTable(recipeInfo.qualityItemIDs) > 1;
-		if not anyVariations then
-			shouldAllocateBest = false;
-			shouldAllocateUnconfigurable = true;
-		end
-	end
-
+	local alwaysUsesLowestQuality = recipeInfo.alwaysUsesLowestQuality;
+	local shouldAllocateBest = not alwaysUsesLowestQuality and Professions.ShouldAllocateBestQualityReagents();
+	
 	if newTransaction or not self.transaction:IsManuallyAllocated() then
 		self.transaction:SanitizeOptionalAllocations();
 		-- Unless the allocation has been manually changed, the 'best quality reagent' option is used to
@@ -611,7 +597,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 
 		self.RecipeSourceButton:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(self.RecipeSourceButton, "ANCHOR_RIGHT");
+			GameTooltip:SetOwner(self.RecipeSourceButton.Text, "ANCHOR_RIGHT");
 			GameTooltip:SetCustomWordWrapMinWidth(350);
 			GameTooltip_AddHighlightLine(GameTooltip, sourceText);
 			GameTooltip:Show();
@@ -1274,12 +1260,17 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						tooltip:Show();
 					end
 					
+					local function IsEnchantTargetValid(elementData)
+						local reagents = self.transaction:CreateCraftingReagentInfoTbl();
+						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID(), reagents);
+					end
+
 					flyout.OnElementEnabledImplementation = function(button, elementData)
-						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID());
+						return IsEnchantTargetValid(elementData);
 					end
 					
 					flyout.GetElementValidImplementation = function(button, elementData)
-						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID());
+						return IsEnchantTargetValid(elementData);
 					end
 
 					local canModifyFilter = false;
@@ -1395,7 +1386,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	self:UpdateRecraftSlot(operationInfo);
 
-	local shouldShowAllocateBestQuality = (not mimimized) and (not shouldAllocateUnconfigurable) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
+	local shouldShowAllocateBestQuality = (not mimimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
 	self.AllocateBestQualityCheckBox:SetShown(shouldShowAllocateBestQuality);
 	if shouldShowAllocateBestQuality then
 		self.AllocateBestQualityCheckBox:SetChecked(shouldAllocateBest);

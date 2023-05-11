@@ -22,6 +22,8 @@
 		extraRightMarginPadding = 0,			--  extra padding on the right side of the helptip
 		acknowledgeOnHide = false,				-- whether to treat a hide as an acknowledge
 		handlesGlobalMouseEventCallback	= nil,	-- if a helptip is tied to a drop down set a global mouse callback on the helptip info
+		appendFrame = nil,						-- if a helptip needs a custom display you can append your own frame to the text
+		appendFrameYOffset = nil,				-- the offset for the vertical anchor for appendFrame
 	}
 ]]--
 
@@ -341,6 +343,13 @@ function HelpTipTemplateMixin:OnHide()
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 
 	local info = self.info;
+	local appendFrame = info.appendFrame;
+	if appendFrame then
+		appendFrame:Hide();
+		appendFrame:ClearAllPoints();
+		appendFrame:SetParent(UIParent);
+	end
+
 	if info.onHideCallback then
 		info.onHideCallback(self.acknowledged, info.callbackArg);
 	end
@@ -517,8 +526,30 @@ function HelpTipTemplateMixin:Layout()
 	-- set height based on the text
 	self:ApplyText();
 	self.Text:SetWidth(textWidth);
-	self.Text:SetPoint("LEFT", textOffsetX, textOffsetY);
+
+	local info = self.info;
+	local appendFrame = info.appendFrame;
+	self.Text:ClearAllPoints();
+	if appendFrame then
+		self.Text:SetPoint("TOPLEFT", textOffsetX, textOffsetY - 16);
+	else
+		self.Text:SetPoint("LEFT", textOffsetX, textOffsetY);
+	end
+
 	height = height + self.Text:GetHeight();
+
+	if appendFrame then
+		appendFrame:ClearAllPoints();
+		appendFrame:SetParent(self);
+
+		local anchorOffset = info.appendFrameYOffset or 0;
+		appendFrame:SetPoint("TOP", self.Text, "BOTTOM", 0, anchorOffset);
+		appendFrame:SetPoint("LEFT", self.Text, "LEFT");
+		appendFrame:SetPoint("RIGHT", self.Text, "RIGHT");
+		appendFrame:Show();
+		height = (height + appendFrame:GetHeight()) - anchorOffset;
+	end
+
 	if pointInfo.arrowRotation == HelpTip.ArrowRotation.Left or pointInfo.arrowRotation == HelpTip.ArrowRotation.Right then
 		height = max(height, HelpTip.minimumHeight);
 	end

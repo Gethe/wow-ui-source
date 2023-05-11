@@ -51,6 +51,7 @@ local SPEC_FORMAT_STRINGS = {
 	[581] = "demonhunter-vengeance",
 	[1467] = "evoker-devastation",
 	[1468] = "evoker-preservation",
+	[1473] = "evoker-augmentation",
 }
 
 ClassTalentSpecTabMixin={}

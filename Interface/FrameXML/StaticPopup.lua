@@ -1724,6 +1724,9 @@ StaticPopupDialogs["CAMP"] = {
 	OnAccept = function(self)
 		CancelLogout();
 	end,
+	OnCancel = function(self)
+		CancelLogout();
+	end,
 	timeout = 20,
 	whileDead = 1,
 	hideOnEscape = 1

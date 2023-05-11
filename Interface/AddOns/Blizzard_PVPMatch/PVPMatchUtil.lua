@@ -22,7 +22,7 @@ function PVPMatchUtil.InSoloShuffleBrawl()
 end
 
 function PVPMatchUtil.IsActiveMatchComplete()
-	return C_PvP.GetActiveMatchState() == Enum.PvPMatchState.Complete;
+	return C_PvP.IsMatchComplete();
 end
 
 function PVPMatchUtil.GetColorIndex(factionIndex, useAlternateColor)

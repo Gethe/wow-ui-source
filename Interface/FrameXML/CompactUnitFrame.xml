@@ -197,6 +197,8 @@
 			<OnLoad function="CompactUnitFrame_OnLoad"/>
 			<OnEnter function="UnitFrame_OnEnter"/>
 			<OnLeave function="UnitFrame_OnLeave"/>
+			<OnShow function="CompactUnitFrame_OnShow"/>
+			<OnHide function="CompactUnitFrame_OnHide"/>
 		</Scripts>
 	</Button>
 </Ui>

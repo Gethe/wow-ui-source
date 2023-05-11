@@ -361,7 +361,7 @@
 					</Layer>
 				</Layers>
 				<ScrollChild>
-					<Frame parentKey="Contents" inherits="VerticalLayoutFrame">
+					<Frame parentKey="Contents" inherits="VerticalLayoutFrame, POIButtonOwnerTemplate">
 						<Size x="258" y="454"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>

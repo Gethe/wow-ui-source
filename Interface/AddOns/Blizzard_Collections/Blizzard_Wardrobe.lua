@@ -1180,6 +1180,13 @@ function WardrobeCollectionFrameMixin:OnShow()
 		self:SetTab(self.selectedCollectionTab);
 	end
 	self:UpdateTabButtons();
+
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK) and WardrobeCollectionFrame.fromSuggestedContent) then
+		--skip showing info tutorial if we came from suggested content and haven't seen the tracking tutorial
+	elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
+		HelpTip:Show(WardrobeCollectionFrame.InfoButton, WardrobeCollectionFrame.InfoButton.helpTipInfo);
+		TrackingInterfaceShortcutsFrame.NewAlert:ValidateIsShown();
+	end
 end
 
 function WardrobeCollectionFrameMixin:OnHide()
@@ -1371,6 +1378,12 @@ function WardrobeCollectionFrameMixin:GetSearchType()
 	return self.activeFrame.searchType;
 end
 
+function WardrobeCollectionFrameMixin:ShowItemTrackingHelptipOnShow()
+	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK)) then
+		self.fromSuggestedContent = true;
+	end
+end
+
 WardrobeItemsCollectionSlotButtonMixin = { }
 
 function WardrobeItemsCollectionSlotButtonMixin:OnClick()
@@ -1523,6 +1536,10 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			return;
 		end
 
+		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
+			return;
+		end
+
 		local sets = C_TransmogSets.GetAllSets();
 		local hasCollected = false;
 		if (sets) then
@@ -1550,7 +1567,7 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			return;
 		end
 
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK)) then
+		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 			return;
 		end
 
@@ -1601,7 +1618,6 @@ function WardrobeItemsCollectionMixin:OnShow()
 	self:UpdateSlotButtons();
 
 	-- tab tutorial
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true);
 	self:CheckHelpTip();
 end
 
@@ -2033,6 +2049,16 @@ function WardrobeItemsCollectionMixin:GetCameraVariation()
 	return nil;
 end
 
+function WardrobeItemsCollectionMixin:OnUpdate()
+	if (self.trackingModifierDown and not ContentTrackingUtil.IsTrackingModifierDown()) or (not self.trackingModifierDown and ContentTrackingUtil.IsTrackingModifierDown()) then
+		for i, model in ipairs(self.Models) do
+			model:UpdateTrackingDisabledOverlay();
+		end
+		self:RefreshAppearanceTooltip();
+	end
+	self.trackingModifierDown = ContentTrackingUtil.IsTrackingModifierDown();
+end
+
 function WardrobeItemsCollectionMixin:UpdateItems()
 	local isArmor;
 	local cameraID;
@@ -2057,7 +2083,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 
 	local tutorialAnchorFrame;
 	local checkTutorialFrame = self.transmogLocation:IsAppearance() and not C_Transmog.IsAtTransmogNPC()
-								and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK);
+								and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK) and WardrobeCollectionFrame.fromSuggestedContent;
 
 	local baseSourceID, baseVisualID, appliedSourceID, appliedVisualID, pendingSourceID, pendingVisualID, hasPendingUndo;
 	local effectiveCategory;
@@ -2115,6 +2141,8 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 				end
 			end
 			model.visualInfo = visualInfo;
+			model:UpdateContentTracking();
+			model:UpdateTrackingDisabledOverlay();
 
 			-- state at the transmogrifier
 			local transmogStateAtlas;
@@ -2158,9 +2186,9 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 				model:OnEnter();
 			end
 
-			-- find potential tutorial anchor in the 1st row
+			-- find potential tutorial anchor for trackable item
 			if ( checkTutorialFrame ) then
-				if ( i < self.NUM_COLS and not WardrobeCollectionFrame.tutorialVisualID and visualInfo.isCollected and not visualInfo.isHideVisual ) then
+				if ( not WardrobeCollectionFrame.tutorialVisualID and not visualInfo.isCollected and not visualInfo.isHideVisual and model:HasTrackableSource()) then
 					tutorialAnchorFrame = model;
 				elseif ( WardrobeCollectionFrame.tutorialVisualID and WardrobeCollectionFrame.tutorialVisualID == visualInfo.visualID ) then
 					tutorialAnchorFrame = model;
@@ -2196,10 +2224,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 	self:UpdateProgressBar();
 	-- tutorial
 	if ( checkTutorialFrame ) then
-		if ( C_TransmogCollection.HasFavorites() ) then
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
-			tutorialAnchorFrame = nil;
-		elseif ( tutorialAnchorFrame ) then
+		if ( tutorialAnchorFrame ) then
 			if ( not WardrobeCollectionFrame.tutorialVisualID ) then
 				WardrobeCollectionFrame.tutorialVisualID = tutorialAnchorFrame.visualInfo.visualID;
 			end
@@ -2210,17 +2235,18 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 	end
 	if ( tutorialAnchorFrame ) then
 		local helpTipInfo = {
-			text = TRANSMOG_MOUSE_CLICK_TUTORIAL,
+			text = WARDROBE_TRACKING_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
 			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-			onAcknowledgeCallback = function() WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
+			targetPoint = HelpTip.Point.RightEdgeCenter,
+			onAcknowledgeCallback = function() WardrobeCollectionFrame.fromSuggestedContent = nil;
+											   WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
 			acknowledgeOnHide = true,
 		};
 		HelpTip:Show(self, helpTipInfo, tutorialAnchorFrame);
 	else
-		HelpTip:Hide(self, TRANSMOG_MOUSE_CLICK_TUTORIAL);
+		HelpTip:Hide(self, WARDROBE_TRACKING_TUTORIAL);
 	end
 end
 
@@ -2447,8 +2473,60 @@ function WardrobeItemsModelMixin:OnModelLoaded()
 	end
 end
 
-function WardrobeItemsModelMixin:OnMouseDown(button)
+function WardrobeItemsModelMixin:UpdateContentTracking()
+	self:ClearTrackables();
+
+	if ( self.visualInfo ) then
+		local itemsCollectionFrame = self:GetParent();
+		if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
+			-- TODO:: Handle illusions.
+		else
+			local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.visualInfo.visualID, itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame.transmogLocation);
+			for i, sourceInfo in ipairs(sources) do
+				self:AddTrackable(Enum.ContentTrackingType.Appearance, sourceInfo.sourceID);
+			end
+		end
+	end
+
+	self:UpdateTrackingCheckmark();
+end
+
+function WardrobeItemsModelMixin:UpdateTrackingDisabledOverlay()
+	self.DisabledOverlay:SetShown(ContentTrackingUtil.IsTrackingModifierDown() and not self:HasTrackableSource());
+end
+
+function WardrobeItemsModelMixin:GetSourceInfoForTracking()
+	if ( not self.visualInfo ) then
+		return nil;
+	end
+
 	local itemsCollectionFrame = self:GetParent();
+	if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
+		-- TODO:: Handle illusions.
+		return nil;
+	else
+		local sourceIndex = WardrobeCollectionFrame.tooltipSourceIndex or 1;
+		local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.visualInfo.visualID, itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame.transmogLocation);
+		local index = CollectionWardrobeUtil.GetValidIndexForNumSources(sourceIndex, #sources);
+		return sources[index];
+	end
+
+	return nil;
+end
+
+function WardrobeItemsModelMixin:OnMouseDown(button)
+	if ( self.visualInfo and not self.visualInfo.isCollected ) then
+		local sourceInfo = self:GetSourceInfoForTracking();
+		if ( sourceInfo ) then
+			if ( self:CheckTrackableClick(button, Enum.ContentTrackingType.Appearance, sourceInfo.sourceID) ) then
+				self:UpdateContentTracking();
+				return;
+			end
+		end
+	end
+
+	local itemsCollectionFrame = self:GetParent();
+	itemsCollectionFrame:RefreshAppearanceTooltip();
 	if ( IsModifiedClick("CHATLINK") ) then
 		local link;
 		if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
@@ -2772,6 +2850,46 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 	C_TransmogCollection.SetIsAppearanceFavorite(visualID, set);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
 	HelpTip:Hide(WardrobeCollectionFrame.ItemsCollectionFrame, TRANSMOG_MOUSE_CLICK_TUTORIAL);
+end
+
+-- ***** TUTORIAL
+WardrobeCollectionTutorialMixin = { }
+
+function WardrobeCollectionTutorialMixin:OnLoad()
+
+	self.helpTipInfo = {
+		text = WARDROBE_SHORTCUTS_TUTORIAL_1,
+		buttonStyle = HelpTip.ButtonStyle.None,
+		targetPoint = HelpTip.Point.BottomEdgeLeft,
+		alignment = HelpTip.Alignment.Left,
+		offsetX = 32,
+		offsetY = 16,
+		appendFrame = TrackingInterfaceShortcutsFrame,
+		appendFrameYOffset = 15,
+	};
+
+end
+
+function WardrobeCollectionTutorialMixin:OnEnter()
+	HelpTip:Show(self, self.helpTipInfo);
+	TrackingInterfaceShortcutsFrame.NewAlert:ValidateIsShown();
+end
+
+function WardrobeCollectionTutorialMixin:OnLeave()
+	HelpTip:Hide(self, WARDROBE_SHORTCUTS_TUTORIAL_1);
+	TrackingInterfaceShortcutsFrame.NewAlert:ClearAlert();
+end
+
+AlertTrackingFeatureMixin = CreateFromMixins(NewFeatureLabelMixin);
+
+function AlertTrackingFeatureMixin:ClearAlert()
+	NewFeatureLabelMixin.ClearAlert(self);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE, true);
+	CollectionsMicroButton_SetAlertShown(false);
+end
+
+function AlertTrackingFeatureMixin:ValidateIsShown()
+	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE));
 end
 
 -- ***** WEAPON DROPDOWN

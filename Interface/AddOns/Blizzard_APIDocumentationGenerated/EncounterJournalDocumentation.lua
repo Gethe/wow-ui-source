@@ -21,6 +21,23 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "GetEncounterJournalLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "linkType", Type = "JournalLinkTypes", Nilable = false },
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "displayText", Type = "string", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEncountersOnMap",
 			Type = "Function",
 

@@ -362,7 +362,7 @@ function LFG_PermanentlyDisableRoleButton(button)
 	button:Disable();
 	SetDesaturation(button:GetNormalTexture(), true);
 	button.cover:Show();
-	button.cover:SetAlpha(0.7);
+	button.cover:SetAlpha(button.permDisabledCoverAlpha);
 	button.checkButton:Hide();
 	button.checkButton:Disable();
 	button.checkButton:SetChecked(false);
@@ -2211,4 +2211,77 @@ function LFGRoleButton_LockReasonsTextTable(dungeonID, roleID, textTable)
 	end
 
 	return textTable;
+end
+
+LFGRoleButtonWithShortageRewardMixin = {};
+
+function LFGRoleButtonWithShortageRewardMixin:OnLoad()
+	LFGRoleButtonTemplate_OnLoad(self);
+
+	if self.onClick then
+		self.checkButton.onClick = self.onClick;
+	end
+	
+	self:SetUpIconPulseAnim();
+	self.enableAnim = false;
+end
+
+function LFGRoleButtonWithShortageRewardMixin:OnShow()
+	self.RoleShortagePulseAnim:SetPlaying(self.enableAnim);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:OnHide()
+	self.RoleShortagePulseAnim:SetPlaying(false);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:SetUpIconPulseAnim()
+	self.IconPulse:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-ROLES");
+	self.IconPulse:SetTexCoord(GetTexCoordsForRole(self.role));
+end
+
+function LFGRoleButtonWithShortageRewardMixin:EnableRoleShortagePulseAnim(enableAnim)
+	self.enableAnim = enableAnim;	
+	local playAnim = self:IsVisible() and enableAnim;
+	if playAnim and self.RoleShortagePulseAnim:IsPlaying() then
+		self:RestartRoleShortagePulseAnim();
+		return;
+	end
+	
+	self.RoleShortagePulseAnim:SetPlaying(playAnim);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:RestartRoleShortagePulseAnim()
+	self:CancelPulseEffect();
+	self.RoleShortagePulseAnim:Restart();
+end
+
+function LFGRoleButtonWithShortageRewardMixin:TryPlayPulseEffect()
+	if not self:IsVisible() or not self.RoleShortagePulseAnim:IsPlaying() then
+		return;
+	end
+
+	local roleShortageEffectID, effectSpeed = 164, 0.17;
+	self.RoleShortagePulseModelScene:SetEffectSpeed(effectSpeed);
+	self.RoleShortagePulseModelScene:AddEffect(roleShortageEffectID, self);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:CancelPulseEffect()
+	if self.effectTimer then
+		self.effectTimer:Cancel();
+	end
+
+	self.RoleShortagePulseModelScene:ClearEffects();
+end
+
+LFGRoleShortagePulseAnimMixin = {};
+
+function LFGRoleShortagePulseAnimMixin:OnLoop()
+	local parentFrame = self:GetParent();
+	-- Play the pulse effect when the role icon is at its brightest
+	local pulseEffectDelay = 0.9;
+	parentFrame.effectTimer = C_Timer.NewTimer(pulseEffectDelay, GenerateClosure(parentFrame.TryPlayPulseEffect, parentFrame));
+end
+
+function LFGRoleShortagePulseAnimMixin:OnStop()
+	self:GetParent():CancelPulseEffect();
 end

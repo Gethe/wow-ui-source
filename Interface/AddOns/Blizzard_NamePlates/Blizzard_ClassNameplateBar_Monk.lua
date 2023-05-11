@@ -68,7 +68,7 @@ function ClassNameplateBarBrewmasterMonk:UpdatePower()
 
 	local _, maxstagger = self:GetMinMaxValues();
 	local percent = currstagger/maxstagger;
-	local info = PowerBarColor[BREWMASTER_POWER_BAR_NAME];
+	local info = PowerBarColor[self.powerToken];
 
 	if (percent > STAGGER_YELLOW_TRANSITION and percent < STAGGER_RED_TRANSITION) then
 		info = info[STAGGER_YELLOW_INDEX];

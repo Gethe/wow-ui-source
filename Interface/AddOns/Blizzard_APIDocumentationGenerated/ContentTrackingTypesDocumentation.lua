@@ -16,6 +16,19 @@ local ContentTrackingTypes =
 			},
 		},
 		{
+			Name = "ContentTrackingResult",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Success", Type = "ContentTrackingResult", EnumValue = 0 },
+				{ Name = "DataPending", Type = "ContentTrackingResult", EnumValue = 1 },
+				{ Name = "Failure", Type = "ContentTrackingResult", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ContentTrackingTargetType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -71,6 +84,7 @@ local ContentTrackingTypes =
 			{
 				{ Name = "encounterName", Type = "cstring", Nilable = false },
 				{ Name = "journalEncounterID", Type = "number", Nilable = true },
+				{ Name = "journalInstanceID", Type = "number", Nilable = true },
 				{ Name = "instanceName", Type = "cstring", Nilable = false },
 				{ Name = "subText", Type = "cstring", Nilable = true },
 				{ Name = "difficultyID", Type = "number", Nilable = true },

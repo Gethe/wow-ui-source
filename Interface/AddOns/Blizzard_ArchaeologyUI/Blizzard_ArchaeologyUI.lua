@@ -61,7 +61,6 @@ function ArchaeologyFrame_OnLoad(self)
 	self.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
 	self.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);
 	self:RegisterEvent("RESEARCH_ARTIFACT_UPDATE");
-	self:RegisterEvent("RESEARCH_ARTIFACT_HISTORY_READY");
 	self:RegisterEvent("RESEARCH_ARTIFACT_COMPLETE");
 	self:RegisterEvent("RESEARCH_ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
@@ -161,8 +160,6 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 			self.artifactPage.glow:SetFrameLevel(self:GetFrameLevel()+3);
 			self.artifactPage.glow.completeAnim:Play();
 		end
-	elseif event == "RESEARCH_ARTIFACT_HISTORY_READY" then
-		self.currentFrame:UpdateFrame();
 	elseif event == "BAG_UPDATE_DELAYED" then
 		if self:IsShown() and self.artifactPage:IsShown() then
 			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
@@ -187,7 +184,7 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 			self.completedPage.currData.raceIndex = 1;
 			self.completedPage.currData.projectIndex = 1;
 			self.completedPage.currData.onRare = true;
-			RequestArtifactCompletionHistory();
+			self.currentFrame:UpdateFrame();
 		else
 			self.currentFrame.currentPage = 1;
 			self.currentFrame:UpdateFrame();
@@ -655,7 +652,7 @@ function ArchaeologyFrame_OnTabClick(self)
 		archFrame.currentFrame = archFrame.completedPage;
 		archFrame.currentFrame.raceFilter = 0;
 		ArchaeologyFrame.factionIcon:Hide();
-		RequestArtifactCompletionHistory();
+		ArchaeologyFrame.currentFrame:UpdateFrame();
 	end
 end
 

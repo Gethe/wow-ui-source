@@ -58,6 +58,18 @@ function UIWidgetContainerMixin:OnEvent(event, ...)
 	end
 end
 
+function UIWidgetContainerMixin:MarkDirtyLayout()
+	self.dirtyLayout = true;
+
+	-- To optimize performance, only set OnUpdate while marked dirty.
+	self:SetScript("OnUpdate", UIWidgetContainerMixin.OnUpdate);
+end
+
+function UIWidgetContainerMixin:MarkCleanLayout()
+	self.dirtyLayout = false;
+	self:SetScript("OnUpdate", nil);
+end
+
 function UIWidgetContainerMixin:OnUpdate(elapsed)
 	-- Handle layout updates
 	if self.dirtyLayout then
@@ -373,7 +385,7 @@ function UIWidgetContainerMixin:RemoveWidget(widgetID)
 	self.widgetFrames[widgetID] = nil;
 
 	-- The layout is dirty
-	self.dirtyLayout = true;
+	self:MarkDirtyLayout();
 end
 
 local function ResetWidget(pool, widgetFrame)
@@ -494,7 +506,7 @@ function UIWidgetContainerMixin:ProcessWidget(widgetID, widgetType)
 	local needsLayout = (oldOrderIndex ~= widgetFrame.orderIndex) or (oldLayoutDirection ~= widgetFrame.layoutDirection);
 	if needsLayout then
 		-- Either this is a new widget or either orderIndex or layoutDirection changed. In either case layout needs to be run
-		self.dirtyLayout = true;
+		self:MarkDirtyLayout();
 	end
 end
 
@@ -534,6 +546,7 @@ end
 function UIWidgetContainerMixin:UpdateWidgetLayout()
 	if not self:IsRegisteredForWidgetSet() then
 		-- We aren't registered for a widget set, nothing to layout
+		self:MarkCleanLayout();
 		return;
 	end
 
@@ -546,7 +559,7 @@ function UIWidgetContainerMixin:UpdateWidgetLayout()
 
 	self.numWidgetsShowing = #sortedWidgets;
 	self:layoutFunc(sortedWidgets);
-	self.dirtyLayout = false;
+	self:MarkCleanLayout();
 end
 
 UIWidgetManagerMixin = {};

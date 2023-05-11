@@ -384,9 +384,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 18,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 17,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -406,6 +406,7 @@ local EditModeManagerShared =
 				{ Name = "SortPlayersBy", Type = "EditModeUnitFrameSetting", EnumValue = 14 },
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 				{ Name = "FrameSize", Type = "EditModeUnitFrameSetting", EnumValue = 16 },
+				{ Name = "ViewArenaSize", Type = "EditModeUnitFrameSetting", EnumValue = 17 },
 			},
 		},
 		{
@@ -475,6 +476,19 @@ local EditModeManagerShared =
 				{ Name = "Role", Type = "SortPlayersBy", EnumValue = 0 },
 				{ Name = "Group", Type = "SortPlayersBy", EnumValue = 1 },
 				{ Name = "Alphabetical", Type = "SortPlayersBy", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ViewArenaSize",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Two", Type = "ViewArenaSize", EnumValue = 0 },
+				{ Name = "Three", Type = "ViewArenaSize", EnumValue = 1 },
+				{ Name = "Five", Type = "ViewArenaSize", EnumValue = 2 },
 			},
 		},
 		{

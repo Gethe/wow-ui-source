@@ -1158,7 +1158,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseRaidStylePartyFrames()
 	UpdateRaidAndPartyFrames();
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
 	self:UpdateSelectionVerticalState();
 	self:UpdateSystemSettingFrameSize();
 end
@@ -1253,8 +1253,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingSortPlayersBy()
 		CompactRaidFrameContainer:SetFlowSortFunction(sortFunc);
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
-		CompactPartyFrame_SetFlowSortFunction(sortFunc);
-	end 
+		CompactPartyFrame:SetFlowSortFunction(sortFunc);
+	end
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingRowSize()
@@ -1282,6 +1282,10 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameSize()
 	end
 
 	self:SetScale(self:GetSettingValue(Enum.EditModeUnitFrameSetting.FrameSize) / 100);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingViewArenaSize()
+	self:RefreshMembers();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1323,7 +1327,9 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
 		self:UpdateSystemSettingRowSize();
 	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameSize) then
-		self:UpdateSystemSettingFrameSize()
+		self:UpdateSystemSettingFrameSize();
+	elseif setting == Enum.EditModeUnitFrameSetting.ViewArenaSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewArenaSize) then
+		self:UpdateSystemSettingViewArenaSize();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1350,19 +1356,50 @@ end
 
 EditModeArenaUnitFrameSystemMixin = {};
 
-function EditModeArenaUnitFrameSystemMixin:OnEditModeExit()
-	EditModeSystemMixin.OnEditModeExit(self);
-
-	self:SetIsInEditMode(false);
-	self:Update();
+local function OpenPvpFrameSettings()
+	EditModeManagerFrame:ClearSelectedSystem();
+	EditModeManagerFrame:SetEditModeLockState("hideSelections");
+	HideUIPanel(EditModeManagerFrame);
+	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, PVP_FRAMES_LABEL);
 end
 
 function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
 	self.isInEditMode = isInEditMode;
-	for index, unitFrame in ipairs(ArenaEnemyMatchFramesContainer.UnitFrames) do
-		unitFrame.isInEditMode = isInEditMode;
-		unitFrame:GetPetFrame().isInEditMode = isInEditMode;
+
+	for _, memberUnitFrame in ipairs(self.memberUnitFrames) do
+		local castingBarFrame = memberUnitFrame.CastingBarFrame;
+		if castingBarFrame then
+			castingBarFrame.isInEditMode = isInEditMode;
+			castingBarFrame:UpdateShownState();
+		end
+
+		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
+		if ccRemoverFrame then
+			ccRemoverFrame:SetIsInEditMode(isInEditMode);
+		end
 	end
+
+	self.PreMatchFramesContainer:SetIsInEditMode(isInEditMode);
+
+	self:RefreshMembers();
+
+	if isInEditMode then
+		self:HighlightSystem();
+	else
+		self:ClearHighlight();
+	end
+end
+
+function EditModeArenaUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+
+	local raidFrameSettingsButton = extraButtonPool:Acquire();
+	raidFrameSettingsButton.layoutIndex = 4;
+	raidFrameSettingsButton:SetText(HUD_EDIT_MODE_PVP_FRAME_SETTINGS);
+	raidFrameSettingsButton:SetOnClickHandler(OpenPvpFrameSettings);
+	raidFrameSettingsButton:Show();
+
+	return true;
 end
 
 EditModeMinimapSystemMixin = {};

@@ -78,12 +78,12 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		if ( unitMatches ) then
 			if ( event == "UNIT_MAXHEALTH" ) then
 				CompactUnitFrame_UpdateMaxHealth(self);
-				CompactUnitFrame_UpdateHealth(self);
-				CompactUnitFrame_UpdateHealPrediction(self);
+				CompactUnitFrame_SetHealthDirty(self);
+				CompactUnitFrame_SetHealPredictionDirty(self);
 			elseif ( event == "UNIT_HEALTH" ) then
-				CompactUnitFrame_UpdateHealth(self);
+				CompactUnitFrame_SetHealthDirty(self);
 				CompactUnitFrame_UpdateStatusText(self);
-				CompactUnitFrame_UpdateHealPrediction(self);
+				CompactUnitFrame_SetHealPredictionDirty(self);
 			elseif ( event == "UNIT_MAXPOWER" ) then
 				CompactUnitFrame_UpdateMaxPower(self);
 				CompactUnitFrame_UpdatePower(self);
@@ -94,7 +94,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdatePower(self);
 				CompactUnitFrame_UpdatePowerColor(self);
 			elseif ( event == "UNIT_NAME_UPDATE" ) then
-				CompactUnitFrame_UpdateHealth(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
+				CompactUnitFrame_SetHealthDirty(self);		--This may signify that the unit is a new pet who replaced an old pet, and needs a health update
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_AURA" ) then
 				local unitAuraUpdateInfo = arg2;
@@ -116,7 +116,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdatePowerColor(self);
 				CompactUnitFrame_UpdateStatusText(self);
 			elseif ( event == "UNIT_HEAL_PREDICTION" ) then
-				CompactUnitFrame_UpdateHealPrediction(self);
+				CompactUnitFrame_SetHealPredictionDirty(self);
 			elseif ( event == "UNIT_PET" ) then
 				CompactUnitFrame_UpdateAll(self);
 			elseif ( event == "READY_CHECK_CONFIRM" ) then
@@ -126,9 +126,9 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			elseif ( event == "UNIT_OTHER_PARTY_CHANGED" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
 			elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
-				CompactUnitFrame_UpdateHealPrediction(self);
+				CompactUnitFrame_SetHealPredictionDirty(self);
 			elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
-				CompactUnitFrame_UpdateHealPrediction(self);
+				CompactUnitFrame_SetHealPredictionDirty(self);
 			elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 				CompactUnitFrame_UpdateStatusText(self);
 			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS" ) then
@@ -142,6 +142,10 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateClassificationIndicator(self);
 			elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
+			elseif ( event == "UNIT_IN_RANGE_UPDATE" ) then
+				CompactUnitFrame_UpdateInRange(self);
+			elseif ( event == "UNIT_DISTANCE_CHECK_UPDATE" ) then
+				CompactUnitFrame_UpdateDistance(self);
 			end
 		end
 
@@ -153,16 +157,54 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 	end
 end
 
---DEBUG FIXME - We should really try to avoid having OnUpdate on every frame. An event when going in/out of range would be greatly preferred.
+function CompactUnitFrame_SetAurasDirty(self)
+	self.aurasDirty = true;
+	CompactUnitFrame_CheckNeedsUpdate(self);
+end
+
+function CompactUnitFrame_SetHealthDirty(self)
+	self.healthDirty = true;
+	CompactUnitFrame_CheckNeedsUpdate(self);
+end
+
+function CompactUnitFrame_SetHealPredictionDirty(self)
+	self.healPredictionDirty = true;
+	CompactUnitFrame_CheckNeedsUpdate(self);
+end
+
+function CompactUnitFrame_CheckNeedsUpdate(self)
+	-- Performance optimization to reduce UI update time in large raids:
+	-- Avoid having OnUpdate registered unless absolutely necessary to process some deferred or periodic event.
+	-- If the frame specifies a custom OnUpdate, assume they always want it called (for now).
+	local needsUpdate = self.OnUpdate or self.readyCheckDecay or self.aurasDirty or self.healthDirty or self.healPredictionDirty;
+	if (needsUpdate ~= self.needsUpdate) then
+		local onUpdate = self.OnUpdate or CompactUnitFrame_OnUpdate;
+		self:SetScript("OnUpdate", needsUpdate and onUpdate or nil);
+		self.needsUpdate = needsUpdate;
+	end
+end
+
 function CompactUnitFrame_OnUpdate(self, elapsed)
-	CompactUnitFrame_UpdateInRange(self);
-	CompactUnitFrame_UpdateDistance(self);
 	CompactUnitFrame_CheckReadyCheckDecay(self, elapsed);
 
 	if self.aurasDirty then
 		CompactUnitFrame_UpdateAuras(self);
 		self.aurasDirty = false;
 	end
+
+	-- This is frequent and expensive, update once per frame at most.
+	if self.healthDirty then
+		CompactUnitFrame_UpdateHealth(self);
+		self.healthDirty = false;
+	end
+
+	-- This is frequent and expensive, update once per frame at most.
+	if self.healPredictionDirty then
+		CompactUnitFrame_UpdateHealPrediction(self);
+		self.healPredictionDirty = false;
+	end
+
+	CompactUnitFrame_CheckNeedsUpdate(self);
 end
 
 --Externally accessed functions
@@ -228,7 +270,7 @@ end
 
 function CompactUnitFrame_SetOptionTable(frame, optionTable)
 	frame.optionTable = optionTable;
-	frame.aurasDirty = true;
+	CompactUnitFrame_SetAurasDirty(frame);
 end
 
 function CompactUnitFrame_RegisterEvents(frame)
@@ -237,8 +279,7 @@ function CompactUnitFrame_RegisterEvents(frame)
 
 	CompactUnitFrame_UpdateUnitEvents(frame);
 
-	local onUpdate = frame.OnUpdate or CompactUnitFrame_OnUpdate;
-	frame:SetScript("OnUpdate", onUpdate);
+	CompactUnitFrame_CheckNeedsUpdate(frame);
 end
 
 function CompactUnitFrame_UpdateUnitEvents(frame)
@@ -271,11 +312,33 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_FLAGS", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_GAINS_VEHICLE_DATA", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_LOSES_VEHICLE_DATA", unit, displayedUnit);
+
+	-- Only register these while visible since C++ does extra work to send these events while any frame is registered for them.
+	if frame:IsVisible() then
+		frame:RegisterUnitEvent("UNIT_IN_RANGE_UPDATE", unit, displayedUnit);
+		frame:RegisterUnitEvent("UNIT_DISTANCE_CHECK_UPDATE", unit, displayedUnit);
+	else
+		frame:UnregisterEvent("UNIT_IN_RANGE_UPDATE");
+		frame:UnregisterEvent("UNIT_DISTANCE_CHECK_UPDATE");
+	end
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)
 	frame:SetScript("OnEvent", nil);
 	frame:SetScript("OnUpdate", nil);
+end
+
+function CompactUnitFrame_OnShow(frame)
+	CompactUnitFrame_UpdateUnitEvents(frame);
+
+	if frame.displayedUnit then
+		CompactUnitFrame_UpdateInRange(frame);
+		CompactUnitFrame_UpdateDistance(frame);
+	end
+end
+
+function CompactUnitFrame_OnHide(frame)
+	CompactUnitFrame_UpdateUnitEvents(frame);
 end
 
 function CompactUnitFrame_SetUpClicks(frame)
@@ -295,17 +358,17 @@ end
 
 function CompactUnitFrame_SetMaxBuffs(frame, numBuffs)
 	frame.maxBuffs = numBuffs;
-	frame.aurasDirty = true;
+	CompactUnitFrame_SetAurasDirty(frame);
 end
 
 function CompactUnitFrame_SetMaxDebuffs(frame, numDebuffs)
 	frame.maxDebuffs = numDebuffs;
-	frame.aurasDirty = true;
+	CompactUnitFrame_SetAurasDirty(frame);
 end
 
 function CompactUnitFrame_SetMaxDispelDebuffs(frame, numDispelDebuffs)
 	frame.maxDispelDebuffs = numDispelDebuffs;
-	frame.aurasDirty = true;
+	CompactUnitFrame_SetAurasDirty(frame);
 end
 
 function CompactUnitFrame_SetUpdateAllEvent(frame, updateAllEvent, updateAllFilter)
@@ -335,6 +398,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateAggroFlash(frame);
 		CompactUnitFrame_UpdateHealthBorder(frame);
 		CompactUnitFrame_UpdateInRange(frame);
+		CompactUnitFrame_UpdateDistance(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateHealPrediction(frame);
 		CompactUnitFrame_UpdateRoleIcon(frame);
@@ -348,6 +412,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateName(frame);
 		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateInRange(frame);
+		CompactUnitFrame_UpdateDistance(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateWidgetSet(frame);
@@ -440,7 +505,8 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			local classColor = RAID_CLASS_COLORS[englishClass];
 			--debug
 			--classColor = RAID_CLASS_COLORS["PRIEST"];
-			if ( (frame.optionTable.allowClassColorsForNPCs or UnitIsPlayer(frame.unit) or UnitTreatAsPlayerForDisplay(frame.unit)) and classColor and frame.optionTable.useClassColors ) then
+			local useClassColors = CompactUnitFrame_GetOptionUseClassColors(frame, frame.optionTable);
+			if ( (frame.optionTable.allowClassColorsForNPCs or UnitIsPlayer(frame.unit) or UnitTreatAsPlayerForDisplay(frame.unit)) and classColor and useClassColors ) then
 				-- Use class colors for players if class color option is turned on
 				r, g, b = classColor.r, classColor.g, classColor.b;
 			elseif ( CompactUnitFrame_IsTapDenied(frame) ) then
@@ -464,7 +530,9 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			end
 		end
 	end
-	if ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b ) then
+
+	local oldR, oldG, oldB = frame.healthBar:GetStatusBarColor();
+	if ( r ~= oldR or g ~= oldG or b ~= oldB ) then
 		frame.healthBar:SetStatusBarColor(r, g, b);
 
 		if (frame.optionTable.colorHealthWithExtendedColors) then
@@ -472,8 +540,6 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 		else
 			frame.selectionHighlight:SetVertexColor(1, 1, 1);
 		end
-
-		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
 	end
 
 	-- Update whether healthbar is hidden due to being dead - only applies to non-player nameplates
@@ -505,7 +571,7 @@ function CompactUnitFrame_UpdateMaxHealth(frame)
 		frame.healthBar:SetMinMaxValues(0, maxHealth);
 	end
 
-	CompactUnitFrame_UpdateHealPrediction(frame);
+	CompactUnitFrame_SetHealPredictionDirty(frame);
 end
 
 function CompactUnitFrame_UpdateHealth(frame)
@@ -831,16 +897,17 @@ function CompactUnitFrame_UpdateStatusText(frame)
 		return;
 	end
 
+	local healthTextOption = CompactUnitFrame_GetOptionHealthText(frame, frame.optionTable);
 	if ( not UnitIsConnected(frame.unit) ) then
 		frame.statusText:SetText(PLAYER_OFFLINE);
 		frame.statusText:Show();
 	elseif ( UnitIsDeadOrGhost(frame.displayedUnit) ) then
 		frame.statusText:SetText(DEAD);
 		frame.statusText:Show();
-	elseif ( frame.optionTable.healthText == "health" ) then
+	elseif ( healthTextOption == "health" ) then
 		frame.statusText:SetText(UnitHealth(frame.displayedUnit));
 		frame.statusText:Show();
-	elseif ( frame.optionTable.healthText == "losthealth" ) then
+	elseif ( healthTextOption == "losthealth" ) then
 		local healthLost = UnitHealthMax(frame.displayedUnit) - UnitHealth(frame.displayedUnit);
 		if ( healthLost > 0 ) then
 			frame.statusText:SetFormattedText(LOST_HEALTH, healthLost);
@@ -848,7 +915,7 @@ function CompactUnitFrame_UpdateStatusText(frame)
 		else
 			frame.statusText:Hide();
 		end
-	elseif ( (frame.optionTable.healthText == "perc") and (UnitHealthMax(frame.displayedUnit) > 0) ) then
+	elseif ( (healthTextOption == "perc") and (UnitHealthMax(frame.displayedUnit) > 0) ) then
 		local perc = math.ceil(100 * (UnitHealth(frame.displayedUnit)/UnitHealthMax(frame.displayedUnit)));
 		frame.statusText:SetFormattedText("%d%%", perc);
 		frame.statusText:Show();
@@ -1108,6 +1175,7 @@ function CompactUnitFrame_FinishReadyCheck(frame)
 	end
 	if ( frame:IsVisible() ) then
 		frame.readyCheckDecay = CUF_READY_CHECK_DECAY_TIME;
+		CompactUnitFrame_CheckNeedsUpdate(frame);
 
 		if ( frame.readyCheckStatus == "waiting" ) then	--If you haven't responded, you are not ready.
 			frame.readyCheckIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
@@ -1548,6 +1616,42 @@ function CompactUnitFrame_UpdatePrivateAuras(frame)
 	end
 end
 
+function CompactUnitFrame_IsPvpFrame(frame)
+	return frame.groupType and frame.groupType == CompactRaidGroupTypeEnum.Arena;
+end
+
+function CompactUnitFrame_GetOptionDisplayPowerBar(frame, options)
+	if CompactUnitFrame_IsPvpFrame(frame) then
+		return options.pvpDisplayPowerBar;
+	else
+		return options.displayPowerBar;
+	end
+end
+
+function CompactUnitFrame_GetOptionDisplayOnlyHealerPowerBars(frame, options)
+	if CompactUnitFrame_IsPvpFrame(frame) then
+		return options.pvpDisplayOnlyHealerPowerBars;
+	else
+		return options.displayOnlyHealerPowerBars;
+	end
+end
+
+function CompactUnitFrame_GetOptionUseClassColors(frame, options)
+	if CompactUnitFrame_IsPvpFrame(frame) then
+		return options.pvpUseClassColors;
+	else
+		return options.useClassColors;
+	end
+end
+
+function CompactUnitFrame_GetOptionHealthText(frame, options)
+	if CompactUnitFrame_IsPvpFrame(frame) then
+		return options.pvpHealthText;
+	else
+		return options.healthText;
+	end
+end
+
 --Dropdown
 function CompactUnitFrameDropDown_Initialize(self)
 	local unit = self:GetParent().unit;
@@ -1619,22 +1723,45 @@ NATIVE_UNIT_FRAME_HEIGHT = 36;
 NATIVE_UNIT_FRAME_WIDTH = 72;
 DefaultCompactUnitFrameSetupOptions = {
 	displayPowerBar = true,
+	displayOnlyHealerPowerBars = false,
 }
 
 function DefaultCompactUnitFrameSetup(frame)
 	local options = DefaultCompactUnitFrameSetupOptions;
 	
-	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.isParty);
-	local frameHeight = EditModeManagerFrame:GetRaidFrameHeight(frame.isParty);
-	local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.isParty);
+	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.groupType);
+	local frameHeight = EditModeManagerFrame:GetRaidFrameHeight(frame.groupType);
+	local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.groupType);
 
 	local componentScale = min(frameHeight / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH);
 
 	frame:SetAlpha(1);
 
 	frame:SetSize(frameWidth, frameHeight);
-	local powerBarHeight = 8;
-	local powerBarUsedHeight = options.displayPowerBar and powerBarHeight or 0;
+
+	if frame.powerBar then
+		local displayPowerBar = CompactUnitFrame_GetOptionDisplayPowerBar(frame, options);
+		local displayOnlyHealerPowerBars = CompactUnitFrame_GetOptionDisplayOnlyHealerPowerBars(frame, options);
+		local role = UnitGroupRolesAssigned(frame.unit);
+		local showPowerBar = displayPowerBar and (not displayOnlyHealerPowerBars or role == "HEALER");
+
+		if showPowerBar then
+			local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.groupType);
+			frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill");
+			frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER");
+			frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");
+
+			frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, displayBorder and -2 or 0);
+			frame.powerBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
+
+			frame.powerBar:Show();
+		else
+			frame.powerBar:Hide();
+		end
+	end
+
+	local isPowerBarShowing = frame.powerBar and frame.powerBar:IsShown();
+	local powerBarUsedHeight = isPowerBarShowing and 8 or 0;
 
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
@@ -1644,23 +1771,6 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill");
 	frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER");
-
-	if ( frame.powerBar ) then
-		if ( options.displayPowerBar ) then
-			if ( displayBorder ) then
-				frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, -2);
-			else
-				frame.powerBar:SetPoint("TOPLEFT", frame.healthBar, "BOTTOMLEFT", 0, 0);
-			end
-			frame.powerBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -1, 1);
-			frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill");
-			frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER");
-			frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");
-			frame.powerBar:Show();
-		else
-			frame.powerBar:Hide();
-		end
-	end
 
 	frame.myHealPrediction:ClearAllPoints();
 	frame.myHealPrediction:SetColorTexture(1,1,1);
@@ -1807,7 +1917,7 @@ function DefaultCompactUnitFrameSetup(frame)
 		frame.vertRightBorder:SetWidth(8);
 		frame.vertRightBorder:Show();
 
-		if ( options.displayPowerBar ) then
+		if ( isPowerBarShowing ) then
 			frame.horizDivider:ClearAllPoints();
 			frame.horizDivider:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, 1 + powerBarUsedHeight);
 			frame.horizDivider:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, 1 + powerBarUsedHeight);
@@ -1840,8 +1950,11 @@ DefaultCompactMiniFrameOptions = {
 	hideReadyCheckIcon = true,
 }
 
+local nativeMiniUnitFrameHeight = 18;
+local nativeMiniUnitFrameHeightRatio = nativeMiniUnitFrameHeight / NATIVE_UNIT_FRAME_HEIGHT;
+
 DefaultCompactMiniFrameSetUpOptions = {
-	height = 18,
+	height = nativeMiniUnitFrameHeight,
 	width = 72,
 	displayBorder = true,
 }
@@ -1849,8 +1962,9 @@ DefaultCompactMiniFrameSetUpOptions = {
 function DefaultCompactMiniFrameSetup(frame)
 	local options = DefaultCompactMiniFrameSetUpOptions;
 	frame:SetAlpha(1);
-	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.isParty) or options.width;
-	frame:SetSize(frameWidth, options.height);
+	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.groupType);
+	local frameHeight = EditModeManagerFrame:GetRaidFrameHeight(frame.groupType) * nativeMiniUnitFrameHeightRatio;
+	frame:SetSize(frameWidth, frameHeight);
 	frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg");
 	frame.background:SetTexCoord(0, 1, 0, 0.53125);
 	frame.healthBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -1);
@@ -2204,7 +2318,6 @@ function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
 
 	frame.healthBar.border:UpdateSizes();
 end
-
 
 CompactUnitPrivateAuraAnchorMixin = {};
 

@@ -5,7 +5,7 @@ local function Register()
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[COMBAT_LABEL]);
 
 	-- Personal Resource Display
-	do
+	if C_CVar.GetCVar("nameplateShowSelf") then
 		local nameplateSetting, nameplateInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowSelf", DISPLAY_PERSONAL_RESOURCE, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE);
 
 		local function IsModifiable()
@@ -31,16 +31,7 @@ local function Register()
 
 	-- Raid Self Highlight
 	do
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, SELF_HIGHLIGHT_MODE_CIRCLE);
-			container:Add(2, SELF_HIGHLIGHT_MODE_OUTLINE);
-			container:Add(1, SELF_HIGHLIGHT_MODE_CIRCLE_AND_OUTLINE);
-			container:Add(-1, OFF);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropDown(category, "findYourselfMode", Settings.VarType.Number, GetOptions, SELF_HIGHLIGHT_OPTION, OPTION_TOOLTIP_SELF_HIGHLIGHT);
+		CombatOverrides.CreateRaidSelfHighlightSetting(category)
 	end
 
 	-- Target of Target
@@ -49,18 +40,18 @@ local function Register()
 	-- Low Agro Flash
 	Settings.SetupCVarCheckBox(category, "doNotFlashLowHealthWarning", FLASH_LOW_HEALTH_WARNING, OPTION_TOOLTIP_FLASH_LOW_HEALTH_WARNING);
 
-	-- Loss of Control Alerts
-	Settings.SetupCVarCheckBox(category, "lossOfControl", LOSS_OF_CONTROL, OPTION_TOOLTIP_LOSS_OF_CONTROL);
+	if C_CVar.GetCVar("lossOfControl") then
+		-- Loss of Control Alerts
+		Settings.SetupCVarCheckBox(category, "lossOfControl", LOSS_OF_CONTROL, OPTION_TOOLTIP_LOSS_OF_CONTROL);
+	end
 
 	-- Scrolling Combat Text
 	do
-		Settings.SetupCVarCheckBox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
-		Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", "Blizzard_CombatText");
+		CombatOverrides.CreateFloatingCombatTextSetting(category);
 	end
 
 	-- Mouseover Cast control
-	do
-
+	if C_CVar.GetCVar("enableMouseoverCast") then
 		local cbSetting = Settings.RegisterCVarSetting(category, "enableMouseoverCast", Settings.VarType.Boolean, ENABLE_MOUSEOVER_CAST);
 
 		local tooltips = {
@@ -161,19 +152,21 @@ local function Register()
 		Settings.SetupModifiedClickDropDown(category, "FOCUSCAST", "ALT", FOCUS_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_FOCUS_CAST_KEY_TEXT);
 	end
 
-	-- Enable Dracthyr Tap Controls (Mirrored in Accessibility)
-	do
+	-- Enable Dracthyr Tap Controls
+	if C_CVar.GetCVar("empowerTapControls") then
 		local function GetTapControlOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);
 			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
 			return container:GetData();
 		end
-		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+		local setting, initializer = Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+		-- Mirrored in Accessibility
+		Settings.EmpoweredTapControlsInitializer = initializer;
 	end
 
 	-- Spell Alert Opacity
-	do
+	if C_CVar.GetCVar("spellActivationOverlayOpacity") then
 		local minValue, maxValue, step = 0, 1, .05;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
@@ -186,7 +179,9 @@ local function Register()
 	end
 
 	-- Hold Button
-	Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
+	if C_CVar.GetCVar("ActionButtonUseKeyHeldSpell") then
+		Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
+	end
 
 	-- Enable Action Targeting
 	do
@@ -203,6 +198,8 @@ local function Register()
 			Settings.VarType.Boolean, ACTION_TARGETING_OPTION, defaultValue, GetValue, SetValue);
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_ACTION_TARGETING);
 	end
+
+	CombatOverrides.AdjustCombatSettings(category);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

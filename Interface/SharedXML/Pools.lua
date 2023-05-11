@@ -229,6 +229,12 @@ function FramePool_HideAndClearAnchors(framePool, frame)
 	frame:ClearAllPoints();
 end
 
+function FramePool_HideAndClearAnchorsWithReset(framePool, frame)
+	frame:Hide();
+	frame:ClearAllPoints();
+	frame:Reset();
+end
+
 function CreateFramePool(frameType, parent, frameTemplate, resetterFunc, forbidden, frameInitFunc)
 	local framePool = CreateFromMixins(FramePoolMixin);
 	framePool:OnLoad(frameType, parent, frameTemplate, resetterFunc or FramePool_HideAndClearAnchors, forbidden, frameInitFunc);

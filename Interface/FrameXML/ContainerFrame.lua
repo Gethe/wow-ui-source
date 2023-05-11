@@ -1230,7 +1230,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 
 	local slot, bag = itemButton:GetSlotAndBagID();
 
-	local info = C_Container.GetContainerItemPurchaseInfo(bag, slot, isEquipped);
+	-- Equipped items won't have a bagID so we just pass 0 and the bag id is actually ignored since the item is equipped
+	local info = C_Container.GetContainerItemPurchaseInfo(bag or 0, slot, isEquipped);
 	local money = info and info.money;
 	local itemCount = info and info.itemCount;
 	local refundSec = info and info.refundSeconds;

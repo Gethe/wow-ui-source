@@ -63,15 +63,9 @@ function QuestLogMixin:HideCampaignOverview(campaignID)
 end
 
 function QuestLogMixin:OnHighlightedQuestPOIChange(questID)
-	local poiButton = QuestPOI_FindButton(self.QuestsFrame.Contents, questID);
+	local poiButton = self.QuestsFrame.Contents:FindButtonByQuestID(questID);
 	if poiButton then
-		QuestPOIButton_EvaluateManagedHighlight(poiButton);
-	end
-end
-
-function QuestLogMixin:OnMapPinClick(pin, questID)
-	if self.DetailsFrame.questID ~= questID then
-		QuestMapFrame_ShowQuestDetails(questID);
+		poiButton:EvaluateManagedHighlight();
 	end
 end
 
@@ -160,12 +154,11 @@ function QuestMapFrame_OnLoad(self)
 
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
-	EventRegistry:RegisterCallback("MapCanvas.QuestPin.OnClick", self.OnMapPinClick, self);
 
 	self.completedCriteria = {};
 	local onCreateFunc = nil;
 	local useHighlightManager = true;
-	QuestPOI_Initialize(QuestScrollFrame.Contents, onCreateFunc, useHighlightManager);
+	QuestScrollFrame.Contents:Init(onCreateFunc, useHighlightManager);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
 	UIDropDownMenu_SetInitializeFunction(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize);
 	UIDropDownMenu_SetDisplayMode(QuestMapQuestOptionsDropDown, "MENU");
@@ -717,7 +710,7 @@ function QuestMapFrame_UpdateSuperTrackedQuest(self)
 	local questID = C_SuperTrack.GetSuperTrackedQuestID();
 	if ( questID ~= QuestMapFrame.DetailsFrame.questID ) then
 		QuestMapFrame_CloseQuestDetails(self:GetParent());
-		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
+		QuestScrollFrame.Contents:SelectButtonByQuestID(questID);
 	end
 end
 
@@ -1140,13 +1133,13 @@ end
 
 local function QuestLogQuests_GetPOIButton(displayState, info, isDisabledQuest, isComplete)
 	if isDisabledQuest then
-		return QuestPOI_GetButton(QuestScrollFrame.Contents, info.questID, "disabled", nil);
+		return QuestScrollFrame.Contents:GetButtonForQuest(info.questID, POIButtonUtil.Style.QuestDisabled, nil);
 	elseif isComplete then
-		return QuestPOI_GetButton(QuestScrollFrame.Contents, info.questID, "normal", nil);
+		return QuestScrollFrame.Contents:GetButtonForQuest(info.questID, POIButtonUtil.Style.QuestComplete, nil);
 	else
 		for index, poiQuestID in ipairs(displayState.poiTable) do
 			if poiQuestID == info.questID then
-				return QuestPOI_GetButton(QuestScrollFrame.Contents, info.questID, "numeric", index);
+				return QuestScrollFrame.Contents:GetButtonForQuest(info.questID, POIButtonUtil.Style.Numeric, index);
 			end
 		end
 	end
@@ -1470,7 +1463,7 @@ function QuestLogQuests_Update(poiTable)
 	QuestScrollFrame.campaignHeaderFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderMinimalFramePool:ReleaseAll();
 	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();
-	QuestPOI_ResetUsage(QuestScrollFrame.Contents);
+	QuestScrollFrame.Contents:ResetUsage();
 	QuestMapFrame:ResetLayoutIndex();
 
 	-- Build the info table, to determine what needs to be displayed
@@ -1523,8 +1516,7 @@ function QuestLogQuests_Update(poiTable)
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, questInfos);
 
 	QuestLogQuests_UpdateBackground(displayState);
-	QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, C_SuperTrack.GetSuperTrackedQuestID());
-	QuestPOI_HideUnusedButtons(QuestScrollFrame.Contents);
+	QuestScrollFrame.Contents:SelectButtonByQuestID(C_SuperTrack.GetSuperTrackedQuestID());
 	QuestScrollFrame.Contents:Layout();
 end
 

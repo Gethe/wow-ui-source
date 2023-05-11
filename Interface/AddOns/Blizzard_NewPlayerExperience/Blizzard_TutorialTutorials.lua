@@ -686,6 +686,8 @@ function Class_UseMinimap:ShowMinimapPrompt()
 end
 
 function Class_UseMinimap:OnInterrupt(interruptedBy)
+	Minimap:Show();
+	MinimapCluster:Show();
 	TutorialManager:Finished(self:Name());
 end
 

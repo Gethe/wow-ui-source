@@ -268,18 +268,15 @@ end
 EncounterBossButtonMixin = {};
 
 function EncounterBossButtonMixin:Init(elementData)
-	local index = elementData.index;
-	local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(index);
-
-	self.link = link;
-	self:SetText(name);
-	self.encounterID = bossID;
+	self.link = elementData.link;
+	self:SetText(elementData.name);
+	self.encounterID = elementData.bossID;
 
 	--Use the boss' first creature as the button icon
-	local bossImage = select(5, EJ_GetCreatureInfo(1, bossID)) or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
+	local bossImage = select(5, EJ_GetCreatureInfo(1, elementData.bossID)) or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 	self.creature:SetTexture(bossImage);
 
-	if (EncounterJournal.encounterID == bossID) then
+	if (EncounterJournal.encounterID == elementData.bossID) then
 		self:LockHighlight();
 	else
 		self:UnlockHighlight();
@@ -975,6 +972,23 @@ local function GetIconIndexForDifficultyID(difficultyID)
 	return IconIndexByDifficulty[difficultyID];
 end
 
+local function PopulateBossDataProvider()
+	local dataProvider = CreateDataProvider();
+
+	local index = 1;
+	while index do
+		local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(index);
+		if bossID and bossID > 0 then
+			dataProvider:Insert({index=index, name=name, description=description, bossID=bossID, rootSectionID=rootSectionID, link=link});
+			index = index + 1;
+		else
+			break;
+		end
+	end
+
+	return dataProvider;
+end
+
 function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EJ_HideNonInstancePanels();
 
@@ -1024,30 +1038,11 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 
 	UpdateDifficultyVisibility();
 
-	local bossIndex = 1;
-	local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
-	local bossButton;
-
-	local hasBossAbilities = false;
-	do
-		local index = 1;
-		local dataProvider = CreateDataProvider();
-		while index do
-			local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(index);
-			if bossID then
-				if not hasBossAbilities then
-					hasBossAbilities = rootSectionID > 0;
-				end
-
-				dataProvider:Insert({index=index});
-				index = index + 1;
-			else
-				index = nil;
-			end
-		end
-
-		self.info.BossesScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-	end
+	local dataProvider = PopulateBossDataProvider();
+	local hasBossAbilities = dataProvider:FindByPredicate(function(elementData)
+		return elementData.rootSectionID > 0;
+	end);
+	self.info.BossesScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, true);
 	--disable model tab and abilities tab, no boss selected
@@ -1154,18 +1149,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.infoFrame.expanded = false;
 
 	do
-		local index = 1;
-		local dataProvider = CreateDataProvider()
-		while index do
-			local bossID = select(3, EJ_GetEncounterInfoByIndex(index));
-			if bossID then
-				dataProvider:Insert({index=index});
-				index = index + 1;
-			else
-				index = nil;
-			end
-		end
-
+		local dataProvider = PopulateBossDataProvider();
 		self.info.BossesScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
 
@@ -2865,6 +2849,7 @@ function EJSuggestFrame_OnLoad(self)
 
 	self:RegisterEvent("AJ_REWARD_DATA_RECEIVED");
 	self:RegisterEvent("AJ_REFRESH_DISPLAY");
+	self:RegisterEvent("AJ_OPEN_COLLECTIONS_ACTION");
 end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
@@ -2878,6 +2863,12 @@ function EJSuggestFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()
+	elseif ( event == "AJ_OPEN_COLLECTIONS_ACTION" ) then
+		if not CollectionsJournal then
+			CollectionsJournal_LoadUI();
+		end
+		WardrobeCollectionFrame:ShowItemTrackingHelptipOnShow();
+		ToggleCollectionsJournal();
 	end
 end
 

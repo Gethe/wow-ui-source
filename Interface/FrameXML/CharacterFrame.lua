@@ -151,16 +151,19 @@ function CharacterFrame_OnShow (self)
 
 	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
 	local playerFrameManaBar = PlayerFrame_GetManaBar();
+	local playerFrameAlternatePowerBar = PlayerFrame_GetAlternatePowerBar();
 	playerFrameHealthBar.showNumeric = true;
 	playerFrameManaBar.showNumeric = true;
-	PlayerFrameAlternateManaBar.showNumeric = true;
-	MonkStaggerBar.showNumeric = true;
+	if playerFrameAlternatePowerBar then
+		playerFrameAlternatePowerBar.showNumeric = true;
+	end
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
 	ShowTextStatusBarText(playerFrameHealthBar);
 	ShowTextStatusBarText(playerFrameManaBar);
-	ShowTextStatusBarText(PlayerFrameAlternateManaBar);
-	ShowTextStatusBarText(MonkStaggerBar);
+	if playerFrameAlternatePowerBar then
+		ShowTextStatusBarText(playerFrameAlternatePowerBar);
+	end
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
 	StatusTrackingBarManager:SetTextLocked(true);
@@ -187,16 +190,19 @@ function CharacterFrame_OnHide (self)
 
 	local playerFrameHealthBar = PlayerFrame_GetHealthBar();
 	local playerFrameManaBar = PlayerFrame_GetManaBar();
+	local playerFrameAlternatePowerBar = PlayerFrame_GetAlternatePowerBar();
 	playerFrameHealthBar.showNumeric = nil;
 	playerFrameManaBar.showNumeric = nil;
-	PlayerFrameAlternateManaBar.showNumeric = nil;
-	MonkStaggerBar.showNumeric = nil;
+	if playerFrameAlternatePowerBar then
+		playerFrameAlternatePowerBar.showNumeric = nil;
+	end
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
 	HideTextStatusBarText(playerFrameHealthBar);
 	HideTextStatusBarText(playerFrameManaBar);
-	HideTextStatusBarText(PlayerFrameAlternateManaBar);
-	HideTextStatusBarText(MonkStaggerBar);
+	if playerFrameAlternatePowerBar then
+		HideTextStatusBarText(playerFrameAlternatePowerBar);
+	end
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
 	StatusTrackingBarManager:SetTextLocked(false);

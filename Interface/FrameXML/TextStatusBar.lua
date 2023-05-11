@@ -1,3 +1,22 @@
+--[[
+--------------------------- Frame Settings --------------------------------
+	pauseUpdates [boolean] - If true, prevents updating of text values and causes bar to hide unless <alwaysShow> is true
+	alwaysShow [boolean] - Force show the bar even when max value is 0 or <pauseUpdates> is true
+	forceShow [boolean] - Force show text despite current <cvar> or lock settings
+	cvar [string] - Name of the cvar that controls whether this bar's text should display, only used if <textLockable> is also true
+	textLockable [boolean] - Determines whether text can be kept visible based on current value of <cvar>
+	forceHideText [boolean] - Prevents text from being shown by calling ShowTextStatusBarText; Does not prevent showing via <forceShow> or <cvar + textLockable>
+
+	powerToken [string] - If not set or value is "MANA", the "BOTH" status text setting shows both numeric and % values, otherwise BOTH shows only numeric
+	showNumeric [boolean] - If true, forces text to show numeric values despite current status text setting; Supercedes <showPercentage>
+	showPercentage [boolean] - If true, forces text to show percentage values despite current status text setting; Does not function if <showNumeric> is also true
+
+	zeroText [string] - Text to show if current value is 0
+	prefix [string] - Prefix text to display before value numbers; Shown if <alwaysPrefix> is true OR <cvar + textLockable> are disabled
+	alwaysPrefix [boolean] - Force show prefix text even if <cvar + textLockable> are enabled
+	capNumericDisplay [boolean] - If true, uses AbbreviateLargeNumbers for both value and max value text; Not used if <numericDisplayTransformFunc> is provided
+	numericDisplayTransformFunc [function(value, valueMax)] - Function for custom formatting of value and max value for numeric text display; Return resulting (valueText, valueMaxText)
+]]
 
 function TextStatusBar_Initialize(self)
 	self:RegisterEvent("CVAR_UPDATE");
@@ -50,6 +69,7 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 		statusFrame.RightText:Hide();
 	end
 	
+	-- Max value is valid and updates aren't paused
 	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( statusFrame.pauseUpdates ) ) then
 		statusFrame:Show();
 		
@@ -65,22 +85,33 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 
 		local valueDisplay = value;
 		local valueMaxDisplay = valueMax;
-		if ( statusFrame.capNumericDisplay ) then
-			valueDisplay = AbbreviateLargeNumbers(value);
-			valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
+
+		-- If custom text transform func provided, use that
+		if ( statusFrame.numericDisplayTransformFunc ) then
+			valueDisplay, valueMaxDisplay = statusFrame.numericDisplayTransformFunc(value, valueMax);
+		-- Otherwise just the usual large number handling
 		else
-			valueDisplay = BreakUpLargeNumbers(value);
-			valueMaxDisplay = BreakUpLargeNumbers(valueMax);
+			if ( statusFrame.capNumericDisplay ) then
+				valueDisplay = AbbreviateLargeNumbers(value);
+				valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
+			else
+				valueDisplay = BreakUpLargeNumbers(value);
+				valueMaxDisplay = BreakUpLargeNumbers(valueMax);
+			end
 		end
 
 		local textDisplay = GetCVar("statusTextDisplay");
+		-- Display settings include showing the value as a percentage
 		if ( value and valueMax > 0 and ( (textDisplay ~= "NUMERIC" and textDisplay ~= "NONE") or statusFrame.showPercentage ) and not statusFrame.showNumeric) then
+			-- Display zero text
 			if ( value == 0 and statusFrame.zeroText ) then
 				textString:SetText(statusFrame.zeroText);
 				statusFrame.isZero = 1;
 				textString:Show();
+			-- Numeric + Percentage
 			elseif ( textDisplay == "BOTH" and not statusFrame.showPercentage) then
 				if( statusFrame.LeftText and statusFrame.RightText ) then
+					-- Only display percentage on left if displaying mana or a non-power value (legacy behavior that should eventually be revisited)
 					if(not statusFrame.powerToken or statusFrame.powerToken == "MANA") then
 						statusFrame.LeftText:SetText(math.ceil((value / valueMax) * 100) .. "%");
 						statusFrame.LeftText:Show();
@@ -92,6 +123,7 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 					valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay .. " / " .. valueMaxDisplay;
 				end
 				textString:SetText(valueDisplay);
+			-- Percentage Only
 			else
 				valueDisplay = math.ceil((value / valueMax) * 100) .. "%";
 				if ( statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) ) ) then
@@ -100,11 +132,13 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 					textString:SetText(valueDisplay);
 				end
 			end
+		-- Display zero text
 		elseif ( value == 0 and statusFrame.zeroText ) then
 			textString:SetText(statusFrame.zeroText);
 			statusFrame.isZero = 1;
 			textString:Show();
 			return;
+		-- Numeric only
 		else
 			statusFrame.isZero = nil;
 			if ( statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) ) ) then
@@ -113,6 +147,7 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 				textString:SetText(valueDisplay.." / "..valueMaxDisplay);
 			end
 		end
+	-- Max value is invalid or updates are paused
 	else
 		textString:Hide();
 		textString:SetText("");

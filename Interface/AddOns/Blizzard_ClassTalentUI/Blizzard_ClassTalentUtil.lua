@@ -17,6 +17,7 @@ local SpecIDToBackgroundAtlas = {
 	-- Evoker
 	[1467] = "talents-background-evoker-devastation",
 	[1468] = "talents-background-evoker-preservation",
+	[1473] = "talents-background-evoker-augmentation",
 
 	-- Hunter
 	[253] = "talents-background-hunter-beastmastery",

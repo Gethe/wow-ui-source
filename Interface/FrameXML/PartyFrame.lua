@@ -89,11 +89,11 @@ end
 
 function PartyFrameMixin:UpdatePaddingAndLayout()
 	local showPartyFrames = self:ShouldShow();
-	if showPartyFrames then
+	if showPartyFrames or not CompactPartyFrame then
 		self.leftPadding = nil;
 		self.rightPadding = nil;
 	else
-		local useHorizontalGroups = EditModeManagerFrame:ShouldRaidFrameUseHorizontalRaidGroups(true);
+		local useHorizontalGroups = EditModeManagerFrame:ShouldRaidFrameUseHorizontalRaidGroups(CompactPartyFrame.groupType);
 
 		if useHorizontalGroups then
 			if CompactPartyFrame.borderFrame:IsShown() then

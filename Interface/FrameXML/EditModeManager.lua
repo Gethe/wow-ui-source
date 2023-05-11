@@ -472,6 +472,21 @@ function EditModeManagerFrameMixin:ArePartyFramesForcedShown()
 	return self:IsEditModeActive() and self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames);
 end
 
+function EditModeManagerFrameMixin:GetNumArenaFramesForcedShown()
+	if self:IsEditModeActive() and self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowArenaFrames) then
+		local viewArenaSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Arena, Enum.EditModeUnitFrameSetting.ViewArenaSize);
+		if viewArenaSize == Enum.ViewArenaSize.Two then
+			return 2;
+		elseif viewArenaSize == Enum.ViewArenaSize.Three then
+			return 3;
+		else
+			return 5;
+		end
+	end
+
+	return 0;
+end
+
 function EditModeManagerFrameMixin:UseRaidStylePartyFrames()
 	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 end
@@ -487,11 +502,11 @@ function EditModeManagerFrameMixin:UpdateRaidContainerFlow()
 	if raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsVertical then
 		orientation = "vertical";
 		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-		maxPerLine = 1;
+		maxPerLine = 5;
 	elseif raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsHorizontal then
 		orientation = "horizontal";
 		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-		maxPerLine = 1;
+		maxPerLine = 5;
 	elseif raidGroupDisplayType == Enum.RaidGroupDisplayType.CombineGroupsVertical then
 		orientation = "vertical";
 		maxPerLine = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RowSize);
@@ -545,28 +560,27 @@ function EditModeManagerFrameMixin:GetNumRaidMembersForcedShown()
 	end
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameWidth(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+function EditModeManagerFrameMixin:GetRaidFrameWidth(systemIndex)
 	local raidFrameWidth = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameWidth);
 	return (raidFrameWidth and raidFrameWidth > 0) and raidFrameWidth or NATIVE_UNIT_FRAME_WIDTH;
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameHeight(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+function EditModeManagerFrameMixin:GetRaidFrameHeight(systemIndex)
 	local raidFrameHeight = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameHeight);
 	return (raidFrameHeight and raidFrameHeight > 0) and raidFrameHeight or NATIVE_UNIT_FRAME_HEIGHT;
 end
 
-function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(forParty)
-	if forParty then
-		return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
-	else
-		return self:DoesSettingValueEqual(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType, Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
+function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(systemIndex)
+	if systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+		return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
+	elseif systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		return self:DoesSettingValueEqual(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType, Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
 	end
+
+	return false;
 end
 
-function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(systemIndex)
 	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.DisplayBorder);
 end
 
@@ -1655,6 +1669,7 @@ function EditModeAccountSettingsMixin:OnEditModeExit()
 	self:ResetTargetAndFocus();
 	self:ResetPartyFrames();
 	self:ResetRaidFrames();
+	self:ResetArenaFrames();
 	self:ResetHudTooltip();
 
 	self:ResetActionBarShown(StanceBar);
@@ -1754,12 +1769,12 @@ function EditModeAccountSettingsMixin:RefreshPartyFrames()
 		PartyFrame:ClearHighlight();
 	end
 
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
 	UpdateRaidAndPartyFrames();
 end
 
 function EditModeAccountSettingsMixin:ResetPartyFrames()
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
 	UpdateRaidAndPartyFrames();
 end
 
@@ -2026,15 +2041,11 @@ end
 
 function EditModeAccountSettingsMixin:RefreshArenaFrames()
 	local showArenaFrames = self.settingsCheckButtons.ArenaFrames:IsControlChecked();
-	if showArenaFrames then
-		ArenaEnemyFramesContainer:SetIsInEditMode(true);
-		ArenaEnemyFramesContainer:HighlightSystem();
-	else
-		ArenaEnemyFramesContainer:SetIsInEditMode(false);
-		ArenaEnemyFramesContainer:ClearHighlight();
-	end
+	CompactArenaFrame:SetIsInEditMode(showArenaFrames);
+end
 
-	ArenaEnemyFramesContainer:Update();
+function EditModeAccountSettingsMixin:ResetArenaFrames()
+	CompactArenaFrame:SetIsInEditMode(false);
 end
 
 function EditModeAccountSettingsMixin:SetLootFrameShown(shown, isUserInput)
