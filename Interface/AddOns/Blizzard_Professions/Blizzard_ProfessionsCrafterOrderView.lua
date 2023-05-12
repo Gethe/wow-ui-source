@@ -398,8 +398,11 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
             end
         end
     end
-	
-    if not self.order.isFulfillable then -- Don't re-use reagents for subsequent recrafts
+
+	-- Don't re-use reagents for subsequent recrafts. When viewing the form after creating the item once,
+	-- the full reagent information will come from the modifications above, because we'll be looking at the
+	-- actual item.
+    if not self.order.isFulfillable then
         for _, reagentInfo in ipairs(self.order.reagents) do
             local allocations = transaction:GetAllocations(reagentInfo.reagentSlot);
 
@@ -413,7 +416,7 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
             reagentSlotToItemID[reagentInfo.reagentSlot] = reagentInfo.reagent.itemID;
         end
     end
-	
+
 	if self:IsRecrafting() then
 		-- After the allocations above, strip any reagents that fail to meet prerequisites. This is a workaround for
 		-- incompatible reagents being part of the original order data because it is not removed until the item is
@@ -421,13 +424,18 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
 		-- correct state.
 		for slotIndex, reagentSlotSchematic in ipairs(self.OrderDetails.SchematicForm.recipeSchematic.reagentSlotSchematics) do
             if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
-                local modification = transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-				local itemID = modification and modification.itemID;
-				if itemID and itemID > 0 and not transaction:AreAllRequirementsAllocatedByItemID(itemID) then
-					transaction:ClearAllocations(slotIndex);
-					transaction:ClearModification(reagentSlotSchematic.dataSlotIndex);
-					self.reagentSlotProvidedByCustomer[slotIndex] = nil;
-					reagentSlotToItemID[slotIndex] = nil;
+				-- Skip any slots where the existing modification was replaced by another customer provided slot.
+				local allocs = transaction:GetAllocations(slotIndex);
+				local alloc = allocs:SelectFirst();
+				if alloc then
+					local reagent = alloc:GetReagent();
+					local itemID = reagent.itemID;
+					if itemID and itemID > 0 and not transaction:AreAllRequirementsAllocatedByItemID(itemID) then
+						transaction:ClearAllocations(slotIndex);
+						transaction:ClearModification(reagentSlotSchematic.dataSlotIndex);
+						self.reagentSlotProvidedByCustomer[slotIndex] = nil;
+						reagentSlotToItemID[slotIndex] = nil;
+					end
 				end
             end
         end

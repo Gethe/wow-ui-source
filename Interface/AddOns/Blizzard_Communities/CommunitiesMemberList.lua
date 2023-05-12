@@ -429,7 +429,7 @@ end
 function CommunitiesMemberListMixin:OnLoad()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CommunitiesMemberListEntryTemplate", function(button, elementData)
-		button:Init(elementData);
+		button:Init(elementData, self.expandedDisplay);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
@@ -817,9 +817,9 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 					return lhsMemberInfo.lastOnlineHour > rhsMemberInfo.lastOnlineHour;
 				end
 			elseif lhsMemberInfo.lastOnlineYear then
-				return false;
-			elseif rhsMemberInfo.lastOnlineYear then
 				return true;
+			elseif rhsMemberInfo.lastOnlineYear then
+				return false;
 			else
 				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 			end
@@ -835,15 +835,15 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 			return lhsSortScore < rhsSortScore;
 		end);
 		return;
+	else
+		CommunitiesUtil.SortMemberInfoWithOverride(self:GetSelectedClubId(), self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+			if self.reverseActiveColumnSort then
+				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
+			else
+				return CompareMembersByAttribute(rhsMemberInfo, lhsMemberInfo, sortAttribute);
+			end
+		end);
 	end
-
-	CommunitiesUtil.SortMemberInfoWithOverride(self:GetSelectedClubId(), self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
-		if self.reverseActiveColumnSort then
-			return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
-		else
-			return CompareMembersByAttribute(rhsMemberInfo, lhsMemberInfo, sortAttribute);
-		end
-	end);
 
 	if self:IsDisplayingProfessions() then
 		self:UpdateProfessionDisplay();
@@ -1033,7 +1033,8 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 	self:UpdateNameFrame();
 end
 
-function CommunitiesMemberListEntryMixin:Init(elementData)
+function CommunitiesMemberListEntryMixin:Init(elementData, expanded)
+	self:SetExpanded(expanded);
 	if elementData.invitationHeaderCount then
 		self:SetHeader(COMMUNITIES_MEMBER_LIST_PENDING_INVITE_HEADER:format(elementData.invitationHeaderCount));
 	elseif elementData.memberInfo then
