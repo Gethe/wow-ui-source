@@ -540,6 +540,542 @@ function ScrollUtil.AddSelectionBehavior(scrollBox, ...)
 	return behavior;
 end
 
+ScrollBoxDragBehavior = {};
+
+-- Returns an unbounded percentage of where the cursor position releative to the frame. It's intentional
+-- for this to be unbounded because we still want a reference as the cursor exceeds the bounds
+-- of the frame (i.e. a return of 1.6 informs us that the cursor is above the frame).
+local function GetCursorIntersectPercentage(frame, cy, cursorHitInsetBottom, cursorHitInsetTop)
+	local bottom = frame:GetBottom() + cursorHitInsetBottom;
+	local height = frame:GetHeight() - (cursorHitInsetBottom - cursorHitInsetTop);
+	return (cy - bottom) / height;
+end
+
+function ScrollBoxDragBehavior:Init(scrollBox)
+	scrollBox.dragBehavior = self;
+	
+	self.dragEnabled = true;
+	self.scrollBox = scrollBox;
+	self.delegate = scrollBox.DragDelegate;
+	self.delegate.pools = CreateFramePoolCollection();
+end
+
+function ScrollBoxDragBehavior:SetDragEnabled(dragEnabled)
+	self.dragEnabled = dragEnabled;
+end
+
+function ScrollBoxDragBehavior:SetDragProperties(dragProperties)
+	self.dragProperties = dragProperties;
+end
+
+function ScrollBoxDragBehavior:GetNotifyDragSource()
+	return self.dragProperties.notifyDragSource;
+end
+
+function ScrollBoxDragBehavior:SetNotifyDragSource(callback)
+	self.dragProperties.notifyDragSource = callback;
+end
+
+function ScrollBoxDragBehavior:GetSourceDragCondition()
+	return self.dragProperties.sourceDragCondition;
+end
+
+function ScrollBoxDragBehavior:SetSourceDragCondition(callback)
+	self.dragProperties.sourceDragCondition = callback;
+end
+
+function ScrollBoxDragBehavior:GetDragRelativeToCursor()
+	return self.dragProperties.dragRelativeToCursor;
+end
+
+function ScrollBoxDragBehavior:SetDragRelativeToCursor(dragRelativeToCursor)
+	self.dragProperties.dragRelativeToCursor = dragRelativeToCursor;
+end
+
+function ScrollBoxDragBehavior:SetNotifyDragCandidates(callback)
+	self.dragProperties.notifyDragCandidates = callback;
+end
+
+function ScrollBoxDragBehavior:GetNotifyDragCandidates()
+	return self.dragProperties.notifyDragCandidates;
+end
+
+function ScrollBoxDragBehavior:SetNotifyDragReceived(callback)
+	self.dragProperties.notifyDragReceived = callback;
+end
+
+function ScrollBoxDragBehavior:GetNotifyDragReceived()
+	return self.dragProperties.notifyDragReceived;
+end
+
+function ScrollBoxDragBehavior:SetReorderable(reorderable)
+	self.dragProperties.reorderable = reorderable;
+end
+
+function ScrollBoxDragBehavior:GetReorderable()
+	return self.dragProperties.reorderable;
+end
+
+function ScrollBoxDragBehavior:GetCursorHitInsets()
+	local cursorHitInsets = self.dragProperties.cursorHitInsets;
+	if not cursorHitInsets then
+		return 0, 0;
+	end
+	
+	local bottom = cursorHitInsets.bottom or 0;
+	local top = cursorHitInsets.top or 0;
+	return bottom, top;
+end
+
+function ScrollBoxDragBehavior:SetCursorHitInsets(bottom, top)
+	self.dragProperties.cursorHitInsets = {bottom = bottom, top = top};
+end
+
+function ScrollBoxDragBehavior:ScrollBoxContainsCursor(cx, cy)
+	return cy <= self.scrollBox:GetTop() and cy >= self.scrollBox:GetBottom()
+		and cx >= self.scrollBox:GetLeft() and cx <= self.scrollBox:GetRight();
+end
+
+function ScrollBoxDragBehavior:AcquireFromPool(template)
+	local templateInfo = C_XMLUtil.GetTemplateInfo(template);
+	local cursorParent = FrameUtil.GetRootParent(self.scrollBox);
+	local pool = self.delegate.pools:GetOrCreatePool(templateInfo.type, cursorParent, template);
+	return pool:Acquire();
+end
+
+function ScrollBoxDragBehavior:AbortDrag()
+	self.delegate:AbortDrag();
+end
+
+function ScrollBoxDragBehavior:Register(cursorFactory, lineFactory, onDragStop, onDragUpdate, dragProperties)
+	self:SetDragProperties(dragProperties or {});
+
+	local dragging = false;
+	local sourceFrame = nil;
+	local sourceElementData = nil;
+	local cursorFrame = nil;
+	local cursorLine = nil;
+	local cursorParent = FrameUtil.GetRootParent(self.scrollBox);
+
+	local lineTemplate, lineInitializer = lineFactory(elementData);
+	local cursorLine = self:AcquireFromPool(lineTemplate);
+	cursorLine:SetParent(self.scrollBox);
+	cursorLine:SetFrameStrata("DIALOG");
+	if lineInitializer then
+		lineInitializer(cursorLine);
+	end
+	
+	local function NotifyDragSource(frame, drag)
+		local notifyDragSource = self:GetNotifyDragSource();
+		if notifyDragSource and dragging then
+			notifyDragSource(frame, drag);
+		end
+	end
+	
+	local function OnDragStopInternal()
+		self.delegate:SetScript("OnUpdate", nil);
+		self.delegate.pools:ReleaseAll();
+		cursorFrame = nil;
+
+		cursorLine:Hide();
+		
+		local dragFrame = self.scrollBox:FindFrame(sourceElementData);
+		if dragFrame then
+			NotifyDragSource(dragFrame, false);
+		end
+
+		local notifyDragCandidates = self:GetNotifyDragCandidates();
+		if notifyDragCandidates then
+			for index, frame in self.scrollBox:EnumerateFrames() do
+				if frame ~= sourceFrame then
+					notifyDragCandidates(frame, false);
+				end
+			end
+		end
+
+		local copyElementData = sourceElementData;
+
+		dragging = false;
+		sourceFrame = nil;
+		sourceElementData = nil;
+
+		-- This drag stop can cause the underlying data provider to change, so we have
+		-- no guarantee that the elementData can be matched beyond this call.
+		onDragStop(copyElementData);
+	end
+	self.delegate:SetScript("OnDragStop", OnDragStopInternal);
+
+	local function OnDragStartInternal(frame)
+		if not self.dragEnabled then
+			return;
+		end
+
+		local sourceDragCondition = self:GetSourceDragCondition();
+		if sourceDragCondition and not sourceDragCondition(frame, frame:GetElementData()) then
+			return;
+		end
+
+		dragging = true;
+		sourceFrame = frame;
+		sourceFrame:InterceptStartDrag(self.delegate);
+
+		sourceElementData = sourceFrame:GetElementData();
+
+		local cursorTemplate, cursorInitializer = cursorFactory(sourceElementData);
+		cursorFrame = self:AcquireFromPool(cursorTemplate);
+		-- Disable any mouse interactions that may have accompanied the template,
+		-- particularly if we're mirroring an element from the list.
+		cursorFrame:SetMouseMotionEnabled(false);
+		-- Cannot be mouse click enabled otherwise it will block the OnReceiveDrag
+		-- of any frame beneath it.
+		cursorFrame:SetMouseClickEnabled(false);
+		cursorFrame:SetFrameStrata("DIALOG");
+		cursorFrame:Show();
+		if cursorInitializer then
+			cursorInitializer(cursorFrame, frame, sourceElementData);
+		end
+
+		NotifyDragSource(frame, dragging);
+
+		local notifyDragCandidates = self:GetNotifyDragCandidates();
+		if notifyDragCandidates then
+			for index, frame in self.scrollBox:EnumerateFrames() do
+				if frame ~= sourceFrame then
+					notifyDragCandidates(frame, dragging);
+				end
+			end
+		end
+
+		local dx, dy = 0, 0;
+		if self:GetDragRelativeToCursor() then
+			local cx, cy = InputUtil.GetCursorPosition(cursorParent);
+			dx = cx - sourceFrame:GetLeft();
+			dy = cy - sourceFrame:GetTop();
+		end
+
+		local sourceElementDataIndex = self.scrollBox:FindFrameElementDataIndex(sourceFrame);
+
+		self.delegate:SetScript("OnUpdate", function()
+			local cx, cy = InputUtil.GetCursorPosition(cursorParent);
+			local x, y = cx - dx, cy - dy;
+
+			cursorFrame:SetPoint("TOPLEFT", x, y - cursorParent:GetHeight());
+			cursorLine:Hide();
+			onDragUpdate(cursorFrame, cursorLine, sourceElementData, sourceElementDataIndex, cx, cy);
+		end);
+	end
+
+	local onSubscribe = function(frame, elementData)
+		frame:RegisterForDrag("LeftButton");
+		frame:SetScript("OnDragStart", OnDragStartInternal);
+		
+		local notifyDragReceived = self:GetNotifyDragReceived();
+		if notifyDragReceived then
+			frame:SetScript("OnReceiveDrag", notifyDragReceived);
+		end
+
+		if elementData == sourceElementData then
+			NotifyDragSource(frame, dragging);
+		else
+			local notifyDragCandidates = self:GetNotifyDragCandidates();
+			if notifyDragCandidates then
+				notifyDragCandidates(frame, dragging);
+			end
+		end
+	end
+
+	local onAcquired = function(o, frame, elementData)
+		onSubscribe(frame, elementData);
+	end;
+	self.scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnAcquiredFrame, onAcquired, onAcquired);
+
+	local onReleased = function(o, frame, elementData)
+		if elementData == sourceElementData then
+			NotifyDragSource(frame, not dragging);
+		end
+
+		frame:ClearAllPoints();
+		frame:Hide();
+		frame:SetScript("OnDragStart", nil);
+		frame:SetScript("OnReceiveDrag", nil);
+	end;
+	self.scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, onReleased, onReleased);
+
+	self.scrollBox:ForEachFrame(onSubscribe);
+end
+
+function CreateScrollBoxDragBehavior(scrollBox)
+	local dragBehavior = CreateFromMixins(ScrollBoxDragBehavior);
+	dragBehavior:Init(scrollBox);
+	return dragBehavior;
+end
+
+DragIntersectionArea =
+{
+	Below = 1,
+	Above = 2,
+	Inside = 3,
+};
+
+local function GetLinearCursorIntersectionArea(p)
+	-- Linear interaction area does not require the cursor to be within the frame bounds. This
+	-- is desirable so that detection can continue when overlapping another frame, but still have
+	-- a different frame be a better candidate.
+	if p < .5 then
+		return DragIntersectionArea.Below;
+	elseif p >= .5 then
+		return DragIntersectionArea.Above;
+	end
+end
+
+function ScrollUtil.AddLinearDragBehavior(scrollBox, cursorFactory, lineFactory, anchoringHandler, dragProperties)
+	local dragBehavior = CreateScrollBoxDragBehavior(scrollBox);
+	local candidateElementData = nil;
+	local candidateElementDataIndex = nil;
+
+	local function OnDragUpdate(cursorFrame, cursorLine, sourceElementData, sourceElementDataIndex, cx, cy)
+		if not dragBehavior:GetReorderable() then
+			return;
+		end
+
+		local candidate = nil;
+		candidateElementDataIndex = nil;
+
+		local containsCursor = dragBehavior:ScrollBoxContainsCursor(cx, cy);
+		if containsCursor then
+			local cursorHitInsetBottom, cursorHitInsetTop = dragBehavior:GetCursorHitInsets();
+			scrollBox:ForEachFrame(function(frame)
+				local elementDataIndex = scrollBox:FindFrameElementDataIndex(frame);
+				if elementDataIndex < sourceElementDataIndex then
+					local p = GetCursorIntersectPercentage(frame, cy, cursorHitInsetBottom, cursorHitInsetTop);
+					local area = GetLinearCursorIntersectionArea(p);
+					if area and area == DragIntersectionArea.Above then
+						candidate = frame;
+						candidateElementDataIndex = elementDataIndex;
+						return ScrollBoxConstants.StopIteration;
+					end
+				elseif elementDataIndex > sourceElementDataIndex then
+					local p = GetCursorIntersectPercentage(frame, cy, cursorHitInsetBottom, cursorHitInsetTop);
+					local area = GetLinearCursorIntersectionArea(p);
+					if area and area == DragIntersectionArea.Below then
+						candidate = frame;
+						candidateElementDataIndex = elementDataIndex;
+					end
+				end
+			end);
+		end
+
+		if candidate then
+			cursorLine:Show();
+			cursorLine:ClearAllPoints();
+
+			local above = candidateElementDataIndex < sourceElementDataIndex;
+			local candidateArea = above and DragIntersectionArea.Above or DragIntersectionArea.Below; 
+			anchoringHandler(cursorLine, candidate, candidateArea);
+		end
+	end
+	
+	local function OnDragStop(sourceElementData)
+		if candidateElementDataIndex then
+			local dataProvider = scrollBox:GetDataProvider();
+			dataProvider:MoveElementDataToIndex(sourceElementData, candidateElementDataIndex);
+		end
+
+		candidateElementData = nil;
+		candidateElementDataIndex = nil;
+	end
+
+	dragBehavior:Register(cursorFactory, lineFactory, OnDragStop, OnDragUpdate, dragProperties);
+	return dragBehavior;
+end
+
+local function GetTreeCursorIntersectionArea(p)
+	-- Tree interaction areas require the cursor to be within the frame bounds.
+	if p < 0 or p > 1 then
+		return nil;
+	end
+
+	if p < .33 then
+		return DragIntersectionArea.Below;
+	elseif p > .66 then
+		return DragIntersectionArea.Above;
+	end
+	return DragIntersectionArea.Inside;
+end
+
+function ScrollUtil.AddTreeDragBehavior(scrollBox, cursorFactory, lineFactory, boxFactory, anchoringHandler, dragProperties)
+	local dragBehavior = CreateScrollBoxDragBehavior(scrollBox);
+	local candidateArea = nil;
+	local candidateElementData = nil;
+
+	local boxTemplate, boxInitializer = boxFactory(elementData);
+	local cursorBox = dragBehavior:AcquireFromPool(boxTemplate);
+	cursorBox:SetParent(scrollBox);
+	cursorBox:SetFrameStrata("DIALOG");
+	if boxInitializer then
+		boxInitializer(cursorBox);
+	end
+	
+	local function OnDragUpdate(cursorFrame, cursorLine, sourceElementData, sourceElementDataIndex, cx, cy)
+		if not dragBehavior:GetReorderable() then
+			return;
+		end
+
+		local candidate = nil;
+		candidateArea = nil;
+		candidateElementData = nil;
+
+		cursorBox:Hide();
+
+		local containsCursor = dragBehavior:ScrollBoxContainsCursor(cx, cy);
+		if containsCursor then
+			local cursorHitInsetBottom, cursorHitInsetTop = dragBehavior:GetCursorHitInsets();
+
+			scrollBox:ForEachFrame(function(frame, elementData)
+				if sourceElementData == elementData then
+					return ScrollBoxConstants.ContinueIteration;
+				end
+
+				local parent = elementData:GetParent();
+				while parent do
+					if parent == sourceElementData then
+						return ScrollBoxConstants.ContinueIteration;
+					end
+					parent = parent:GetParent();
+				end
+
+				local p = GetCursorIntersectPercentage(frame, cy, cursorHitInsetBottom, cursorHitInsetTop);
+				local area = GetTreeCursorIntersectionArea(p);
+				if area then
+					candidate = frame;
+					candidateArea = area;
+					candidateElementData = elementData;
+
+					local elementDataIndex = scrollBox:FindFrameElementDataIndex(frame);
+					if elementDataIndex < sourceElementDataIndex then
+						return ScrollBoxConstants.StopIteration;
+					end
+				end
+			end);
+
+			if candidate then
+				local isInside = candidateArea == DragIntersectionArea.Inside;
+				local candidateFrame = isInside and cursorBox or cursorLine;
+				candidateFrame:Show();
+				candidateFrame:ClearAllPoints();
+				anchoringHandler(candidateFrame, candidate, candidateArea);
+			end
+		end
+	end
+	
+	local function OnDragStop(sourceElementData)
+		if candidateElementData and candidateArea then
+			if candidateArea == DragIntersectionArea.Below then
+				local parent = candidateElementData:GetParent();
+				parent:MoveNodeRelativeTo(sourceElementData, candidateElementData, 1);
+			elseif candidateArea == DragIntersectionArea.Inside then
+				candidateElementData:MoveNode(sourceElementData);
+			elseif candidateArea == DragIntersectionArea.Above then
+				local parent = candidateElementData:GetParent();
+				parent:MoveNodeRelativeTo(sourceElementData, candidateElementData, 0);
+			end
+		end
+
+		cursorBox:Hide();
+
+		candidateArea = nil;
+		candidateElementData = nil;
+	end
+
+	dragBehavior:Register(cursorFactory, lineFactory, OnDragStop, OnDragUpdate, dragProperties);
+	return dragBehavior;
+end
+
+do
+	local function LineFactory(elementData)
+		return "ScrollBoxDragLineTemplate";
+	end
+	
+	local function SourceDragCondition(sourceFrame, sourceElementData)
+		return true;
+	end
+
+	local function NotifyDragSource(sourceFrame, drag)
+		sourceFrame:SetAlpha(drag and .5 or 1);
+		sourceFrame:SetMouseMotionEnabled(not drag);
+	end
+	
+	local function NotifyDragCandidates(candidateFrame, drag)
+		candidateFrame:SetMouseMotionEnabled(not drag);
+	end
+
+	local function GenerateCursorFactory(scrollBox)
+		local function CursorFactory(elementData)
+			local view = scrollBox:GetView();
+			
+			local function CursorInitializer(cursorFrame, candidateFrame, elementData)
+				cursorFrame:SetSize(candidateFrame:GetSize());
+		
+				-- Acquires whatever initialize was assigned to this element from the view.
+				local template, initializer = view:GetFactoryDataFromElementData(elementData);
+				initializer(cursorFrame, elementData);
+			end
+			
+			local template = view:GetFactoryDataFromElementData(elementData);
+			return template, CursorInitializer;
+		end
+		return CursorFactory;
+	end
+
+	local function ConfigureDragBehavior(dragBehavior)
+		dragBehavior:SetSourceDragCondition(SourceDragCondition);
+		dragBehavior:SetNotifyDragSource(NotifyDragSource);
+		dragBehavior:SetNotifyDragCandidates(NotifyDragCandidates);
+		dragBehavior:SetDragRelativeToCursor(true);
+	end
+
+	function ScrollUtil.InitDefaultLinearDragBehavior(scrollBox)
+		local function AnchoringHandler(anchorFrame, candidateFrame, candidateArea)
+			if candidateArea == DragIntersectionArea.Above then
+				anchorFrame:SetPoint("BOTTOMLEFT", candidateFrame, "TOPLEFT", 0, 3);
+				anchorFrame:SetPoint("BOTTOMRIGHT", candidateFrame, "TOPRIGHT", 0, 3);
+			elseif candidateArea == DragIntersectionArea.Below then
+				anchorFrame:SetPoint("TOPLEFT", candidateFrame, "BOTTOMLEFT", 0, -3);
+				anchorFrame:SetPoint("TOPRIGHT", candidateFrame, "BOTTOMRIGHT", 0, -3);
+			end
+		end
+		
+		local dragBehavior = ScrollUtil.AddLinearDragBehavior(scrollBox, GenerateCursorFactory(scrollBox), 
+			LineFactory, AnchoringHandler);
+		ConfigureDragBehavior(dragBehavior);
+		return dragBehavior;
+	end
+	
+	function ScrollUtil.InitDefaultTreeDragBehavior(scrollBox)
+		local function BoxFactory(elementData)
+			return "ScrollBoxDragBoxTemplate";
+		end
+	
+		local function AnchoringHandler(anchorFrame, candidateFrame, candidateArea)
+			if candidateArea == DragIntersectionArea.Above then
+				anchorFrame:SetPoint("BOTTOMLEFT", candidateFrame, "TOPLEFT", 0, 3);
+				anchorFrame:SetPoint("BOTTOMRIGHT", candidateFrame, "TOPRIGHT", 0, 3);
+			elseif candidateArea == DragIntersectionArea.Below then
+				anchorFrame:SetPoint("TOPLEFT", candidateFrame, "BOTTOMLEFT", 0, -3);
+				anchorFrame:SetPoint("TOPRIGHT", candidateFrame, "BOTTOMRIGHT", 0, -3);
+			elseif candidateArea == DragIntersectionArea.Inside then
+				anchorFrame:SetPoint("TOPLEFT", candidateFrame, "TOPLEFT", 5, -5);
+				anchorFrame:SetPoint("BOTTOMRIGHT", candidateFrame, "BOTTOMRIGHT", -5, 5);
+			end
+		end
+	
+		local dragBehavior = ScrollUtil.AddTreeDragBehavior(scrollBox, GenerateCursorFactory(scrollBox), 
+			LineFactory, BoxFactory, AnchoringHandler, dragProperties);
+		ConfigureDragBehavior(dragBehavior);
+		return dragBehavior
+	end
+end
+
 -- Frame must support the OnSizeChanged callback (EventButton).
 function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 	local onSizeChanged = function(o, width, height)

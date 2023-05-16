@@ -1,38 +1,4 @@
 
--- TODO:: Replace these with global strings.
-CONTENT_TRACKING_CHECKMARK_TOOLTIP_TITLE = "Currently tracked";
-ADVENTURE_TRACKING_MODULE_HEADER_TEXT = "Collections";
-ADVENTURE_TRACKING_OPEN_PROFESSION_ERROR_TEXT = "You don't know this profession";
-CONTENT_TRACKING_UNTRACKABLE_ERROR_TEXT = "This item can't be tracked";
-CONTENT_TRACKING_MAXTRACKED_ERROR_TEXT = "Too many items of this type tracked";
-CONTENT_TRACKING_ALREADYTRACKED_ERROR_TEXT = "Already tracked";
-
--- These aren't used in Lua anymore.
--- CONTENT_TRACKING_BOSS_DROP_FORMAT = "Boss Drop: %s in %s (%s)";
--- CONTENT_TRACKING_BOSS_DROP_MINIMAL_FORMAT = "Boss Drop: %s in %s";
--- CONTENT_TRACKING_VENDOR_COST_ZONE_FORMAT = "Vendor: %s in %s. Costs %s";
--- CONTENT_TRACKING_VENDOR_COST_FORMAT = "Vendor: %s. Costs %s";
--- CONTENT_TRACKING_VENDOR_ZONE_FORMAT = "Vendor: %s in %s.";
--- CONTENT_TRACKING_VENDOR_FORMAT = "Vendor: %s.";
--- CONTENT_TRACKING_ACHIEVEMENT_FORMAT = "Achievement: \"%s\"";
--- CONTENT_TRACKING_PROFESSION_FORMAT = "Profession: %s";
-
-CONTENT_TRACKING_CHAT_LINK_ERROR_TEXT = "This can't be linked in chat";
-CONTENT_TRACKING_OPEN_JOURNAL_OPTION = "Open Collection Journal";
-CONTENT_TRACKING_OBJECTIVE_FORMAT = "- %s";
-CONTENT_TRACKING_RETRIEVING_INFO = "|cffff0000Retrieving information...|r";
-CONTENT_TRACKING_LOCATION_UNAVAILABLE = "|cffff0000Location unavailable.|r";
-CONTENT_TRACKING_ROUTE_UNAVAILABLE = "|cffff0000Route unavailable.|r";
-CONTENT_TRACKING_TRACKABLE_TOOLTIP_PROMPT = "<Shift click to track this item>";
-CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT = "<Shift click to stop tracking>";
-CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT = "Tracking unavailable for this item";
-CONTENT_TRACKING_MAP_TOGGLE = "Tracked Items";
-
-WARDROBE_SHORTCUTS_TUTORIAL_1 = "Interface Shortcuts\n\n|cFFFFD200[Right Click]|r\nFavorite an appearance\n\n|cFFFFD200[Ctrl Click]|r\nPreview appearance\n\n";
-WARDROBE_SHORTCUTS_TUTORIAL_2 = "|cFFFFD200[Shift Click]|r";
-WARDROBE_SHORTCUTS_TUTORIAL_3 = "Track or untrack an item\n";
-WARDROBE_TRACKING_TUTORIAL = "You have not collected this appearance yet! Shift Click to begin tracking it."
-
 local ContentTrackingManagerMixin = {};
 
 function ContentTrackingManagerMixin:Init()

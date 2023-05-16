@@ -1163,7 +1163,6 @@ function AchievementTemplateMixin:Init(elementData)
 
 	local noSound = true;
 	if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Achievement, id) ) then
-		self.Label:SetWidth(self.Label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
 		self:SetAsTracked(true, noSound);
 	else
 		self:SetAsTracked(false, noSound);
@@ -1503,6 +1502,8 @@ function AchievementTemplateMixin:SetAsTracked(tracked, noSound)
 	elseif not SelectionBehaviorMixin.IsIntrusiveSelected(self) then
 		self.Tracked:Hide();
 	end
+
+	self.Label:SetWidth(self.Label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
 end
 
 function AchievementTemplateMixin:OnCheckClicked(o, buttonName, down)

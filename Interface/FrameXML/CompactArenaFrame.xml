@@ -2,6 +2,46 @@
 ..\FrameXML\UI.xsd">
 	<Script file="CompactArenaFrame.lua"/>
 	
+	<Cooldown name="ArenaUnitFrameCooldownTemplate" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" mixin="ArenaUnitFrameCooldownMixin" virtual="true">	
+		<SwipeTexture>
+			<Color r="0" g="0" b="0" a="0.8"/>
+		</SwipeTexture>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small_Outline" justifyH="CENTER" justifyV="MIDDLE" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnCooldownDone method="OnCooldownDone"/>
+		</Scripts>
+	</Cooldown>
+
+	<Frame name="ArenaUnitFrameDebuffTemplate" hidden="true" mixin="ArenaUnitFrameDebuffMixin" virtual="true">
+		<Size x="27" y="27"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="0.5"/>
+						<Anchor point="BOTTOMRIGHT" x="0.5" y="0"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+					<Color r="1" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="ArenaUnitFrameCooldownTemplate" setAllPoints="true"/>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="ArenaUnitFrameCcRemoverTemplate" hidden="true" mixin="ArenaUnitFrameCcRemoverMixin" virtual="true">
 		<Size x="27" y="27"/>
 		<Layers>
@@ -10,20 +50,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" mixin="ArenaUnitCcRemoverCooldownMixin" setAllPoints="true">	
-				<SwipeTexture>
-					<Color r="0" g="0" b="0" a="0.8"/>
-				</SwipeTexture>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="CountdownText" inherits="SystemFont_Shadow_Small_Outline" justifyH="CENTER" justifyV="MIDDLE" setAllPoints="true"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnHide method="OnHide"/>
-					<OnCooldownDone method="OnCooldownDone"/>
-				</Scripts>
-			</Cooldown>
+			<Cooldown parentKey="Cooldown" inherits="ArenaUnitFrameCooldownTemplate" setAllPoints="true"/>
 		</Frames>
 		<Scripts>
 			<OnEvent method="OnEvent"/>

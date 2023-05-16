@@ -48,7 +48,7 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 	if ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		LossOfControlFrame_UpdateDisplay(self, false);
 	elseif ( event == "LOSS_OF_CONTROL_ADDED" ) then
-		local eventIndex = ...;
+		local unitToken, eventIndex = ...;
 		local data = C_LossOfControl.GetActiveLossOfControlData(eventIndex);
 		local timeRemaining = data.timeRemaining;
 		local priority = data.priority;
@@ -68,8 +68,8 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 		local cvar, value = ...;
 		if ( cvar == "lossOfControl" ) then
 			if ( value == "1" ) then
-				self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
-				self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+				self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
+				self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
 			else
 				self:UnregisterEvent("LOSS_OF_CONTROL_UPDATE");
 				self:UnregisterEvent("LOSS_OF_CONTROL_ADDED");
@@ -78,8 +78,8 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
 		if ( GetCVarBool("lossOfControl" ) ) then
-			self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
-			self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+			self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
+			self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
 		end
 	end
 end

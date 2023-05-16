@@ -199,7 +199,7 @@ local CraftingOrderUIConstants =
 			Fields =
 			{
 				{ Name = "reagent", Type = "CraftingReagentInfo", Nilable = false },
-				{ Name = "reagentSlot", Type = "luaIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "source", Type = "CraftingOrderReagentSource", Nilable = false },
 				{ Name = "isBasicReagent", Type = "bool", Nilable = false },
 			},

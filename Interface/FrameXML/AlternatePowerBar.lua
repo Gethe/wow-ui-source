@@ -17,7 +17,7 @@ AlternatePowerBarMixin = {};
 function AlternatePowerBarMixin:Initialize()
 	self.frequentUpdates = true;
 
-	AlternatePowerBarBaseMixin.Initialize(self);
+	self.baseMixin.Initialize(self);
 end
 
 function AlternatePowerBarMixin:OnEvent(event, ...)
@@ -37,7 +37,7 @@ function AlternatePowerBarMixin:OnEvent(event, ...)
 		end
 	end
 
-	AlternatePowerBarBaseMixin.OnEvent(self, event, ...);
+	self.baseMixin.OnEvent(self, event, ...);
 end
 
 function AlternatePowerBarMixin:EvaluateUnit()

@@ -26,6 +26,10 @@ function ScrollBoxListTreeListViewMixin:Init(indent, top, bottom, left, right, s
 	self:SetElementIndent(indent);
 end
 
+function ScrollBoxListTreeListViewMixin:InitDefaultDrag(scrollBox)
+	return ScrollUtil.InitDefaultTreeDragBehavior(scrollBox);
+end
+
 function ScrollBoxListTreeListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
 	return self:GetDataProvider():EnumerateUncollapsed(indexBegin, indexEnd);
 end

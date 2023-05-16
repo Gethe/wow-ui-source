@@ -31,9 +31,7 @@ function EvokerEbonMightBarMixin:Initialize()
 		return valueDisplay, valueMaxDisplay;
 	end;
 
-	self.OverflowFill:AddMaskTexture(self.PowerBarMask);
-
-	AlternatePowerBarBaseMixin.Initialize(self);
+	self.baseMixin.Initialize(self);
 end
 
 function EvokerEbonMightBarMixin:OnEvent(event, ...)
@@ -42,7 +40,7 @@ function EvokerEbonMightBarMixin:OnEvent(event, ...)
 		self:OnUnitAuraUpdate(unitToken, auraUpdateInfo);
 	end
 
-	AlternatePowerBarBaseMixin.OnEvent(self, event, ...);
+	self.baseMixin.OnEvent(self, event, ...);
 end
 
 function EvokerEbonMightBarMixin:OnUnitAuraUpdate(unitToken, unitAuraUpdateInfo)
@@ -72,29 +70,6 @@ function EvokerEbonMightBarMixin:UpdateAuraState()
 	end
 end
 
-function EvokerEbonMightBarMixin:UpdatePower()
-	AlternatePowerBarBaseMixin.UpdatePower(self);
-
-	local shouldShowOverflow = self.currentPower and self.currentPower >= self.maxPower;
-	self:SetOverflowVisualsActive(shouldShowOverflow);
-end
-
-function EvokerEbonMightBarMixin:SetOverflowVisualsActive(active)
-	local areVisualsActive = self.OverflowCap:IsShown() or self.overflowAnim:IsPlaying();
-	if areVisualsActive == active then
-		return;
-	end
-
-	self.OverflowCap:SetShown(active);
-	self.OverflowFill:SetShown(active);
-
-	if active then
-		self.overflowAnim:Restart();
-	else
-		self.overflowAnim:Stop();
-	end
-end
-
 function EvokerEbonMightBarMixin:EvaluateUnit()
 	local meetsRequirements = false;
 
@@ -116,7 +91,6 @@ function EvokerEbonMightBarMixin:OnBarDisabled()
 	self:UnregisterEvent("UNIT_AURA");
 
 	self.auraExpirationTime = nil;
-	self:SetOverflowVisualsActive(false);
 end
 
 function EvokerEbonMightBarMixin:GetCurrentPower()
@@ -129,4 +103,40 @@ end
 
 function EvokerEbonMightBarMixin:GetCurrentMinMaxPower()
 	return 0, EbonMightDisplayMax;
+end
+
+
+PlayerFrameEvokerEbonMightBarMixin = {};
+
+function PlayerFrameEvokerEbonMightBarMixin:Initialize()
+	self.OverflowFill:AddMaskTexture(self.PowerBarMask);
+	EvokerEbonMightBarMixin.Initialize(self);
+end
+
+function PlayerFrameEvokerEbonMightBarMixin:UpdatePower()
+	self.baseMixin.UpdatePower(self);
+
+	local shouldShowOverflow = self.currentPower and self.currentPower >= self.maxPower;
+	self:SetOverflowVisualsActive(shouldShowOverflow);
+end
+
+function PlayerFrameEvokerEbonMightBarMixin:SetOverflowVisualsActive(active)
+	local areVisualsActive = self.OverflowCap:IsShown() or self.overflowAnim:IsPlaying();
+	if areVisualsActive == active then
+		return;
+	end
+
+	self.OverflowCap:SetShown(active);
+	self.OverflowFill:SetShown(active);
+
+	if active then
+		self.overflowAnim:Restart();
+	else
+		self.overflowAnim:Stop();
+	end
+end
+
+function PlayerFrameEvokerEbonMightBarMixin:OnBarDisabled()
+	EvokerEbonMightBarMixin.OnBarDisabled(self);
+	self:SetOverflowVisualsActive(false);
 end

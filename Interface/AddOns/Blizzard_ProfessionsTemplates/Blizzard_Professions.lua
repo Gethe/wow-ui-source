@@ -418,19 +418,20 @@ end
 
 function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	local quantities = {0, 0, 0};
-	for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+	local slotIndex = reagentSlotSchematic.slotIndex;
+	for allocationIndex, allocation in transaction:EnumerateAllocations(slotIndex) do
 		local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
 			return Professions.CraftingReagentMatches(reagent, allocation.reagent);
 		end);
 
 		if not index or quantities[index] == nil then
 			local reagent = allocation.reagent;
+			local recipeID = transaction:GetRecipeID();
 			local id = reagent.itemID or reagent.currencyID;
-			assert(false, ("recipeID = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
-				transaction:GetRecipeID(), allocationIndex, 
-				(reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0),
-				(index and index or -1), id)
-			);
+			local foundIndex = index and index or -1;
+			local reagentsSize = (reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0);
+			assert(false, ("Invalid allocation found: recipeID = %d, slotIndex = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
+				recipeID, slotIndex, allocationIndex, foundIndex, reagentsSize, id));
 		end
 		quantities[index] = allocation.quantity;
 	end

@@ -6,12 +6,12 @@ local ccRemoverFrameInitialAnchor =
 	yOffset = -1;
 }
 
-local castingBarFrameInitialAnchor =
+local debuffFrameInitialAnchor =
 {
 	point = "TOPRIGHT";
 	relativePoint = "TOPLEFT";
-	xOffset = -10;
-	yOffset = -5;
+	xOffset = -3;
+	yOffset = -2;
 }
 
 local useClassColorsCvarName = "pvpFramesDisplayClassColor";
@@ -104,15 +104,20 @@ function CompactArenaFrameMixin:OnLoad()
 	self.updateLayoutFunc = self.UpdateLayout;
 
 	for i, memberUnitFrame in ipairs(self.memberUnitFrames) do
-		-- Create casting bars
-		local castingBarFrame = CreateFrame("StatusBar", nil, memberUnitFrame, "ArenaUnitFrameCastingBarTemplate");
-		memberUnitFrame.CastingBarFrame = castingBarFrame;
-		castingBarFrame:SetPoint(castingBarFrameInitialAnchor.point, memberUnitFrame, castingBarFrameInitialAnchor.relativePoint, castingBarFrameInitialAnchor.xOffset, castingBarFrameInitialAnchor.yOffset);
-
-		-- Create CcRemover frames
+		-- Create CcRemover frame
 		local ccRemoverFrame = CreateFrame("Frame", nil, memberUnitFrame, "ArenaUnitFrameCcRemoverTemplate");
 		memberUnitFrame.CcRemoverFrame = ccRemoverFrame;
 		ccRemoverFrame:SetPoint(ccRemoverFrameInitialAnchor.point, memberUnitFrame, ccRemoverFrameInitialAnchor.relativePoint, ccRemoverFrameInitialAnchor.xOffset, ccRemoverFrameInitialAnchor.yOffset);
+
+		-- Create debuff frame
+		local debuffFrame = CreateFrame("Frame", nil, memberUnitFrame, "ArenaUnitFrameDebuffTemplate");
+		memberUnitFrame.DebuffFrame = debuffFrame;
+		debuffFrame:SetPoint(debuffFrameInitialAnchor.point, memberUnitFrame, debuffFrameInitialAnchor.relativePoint, debuffFrameInitialAnchor.xOffset, debuffFrameInitialAnchor.yOffset);
+
+		-- Create casting bar
+		local castingBarFrame = CreateFrame("StatusBar", nil, memberUnitFrame, "ArenaUnitFrameCastingBarTemplate");
+		memberUnitFrame.CastingBarFrame = castingBarFrame;
+		castingBarFrame:SetPoint("TOPRIGHT", debuffFrame, "TOPLEFT", -5, -2);
 	end
 
 	self:RefreshMembers();
@@ -137,45 +142,33 @@ function CompactArenaFrameMixin:UpdateLayout()
 	local width, height = self:GetSize();
 
 	for i, memberUnitFrame in ipairs(self.memberUnitFrames) do
-		local isFirstMemberFrame = i == 1;
-
-		-- Adjust for CcRemoverFrames
 		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
-		if ccRemoverFrame then
+		local debuffFrame = memberUnitFrame.DebuffFrame;
+		local castingBarFrame = memberUnitFrame.CastingBarFrame;
+
+		if ccRemoverFrame and debuffFrame and castingBarFrame then
+
 			-- Adjust ccRemoverFrame anchor to account for the frame border
 			local ccRemoverFrameXOffset = ccRemoverFrameInitialAnchor.xOffset + frameBorderOffset;
 			ccRemoverFrame:ClearAllPoints();
 			ccRemoverFrame:SetPoint(ccRemoverFrameInitialAnchor.point, memberUnitFrame, ccRemoverFrameInitialAnchor.relativePoint, ccRemoverFrameXOffset, ccRemoverFrameInitialAnchor.yOffset);
 
-			-- Adjust frame width to fit ccRemoverFrame
-			-- Also adjust unit frame x offset to fit ccRemoverFrame since it's on the right side of the frame
+			-- AdjustTimeByDays debuff frame anchor to account for the frame border
+			local debuffFrameXOffset = debuffFrameInitialAnchor.xOffset - frameBorderOffset;
+			debuffFrame:ClearAllPoints();
+			debuffFrame:SetPoint(debuffFrameInitialAnchor.point, memberUnitFrame, debuffFrameInitialAnchor.relativePoint, debuffFrameXOffset, debuffFrameInitialAnchor.yOffset);
+
+			-- Adjust frame width to fit various frames
+			-- Only need to adjust if this is the first frame since all subsequent frames will be the same size/layout
+			local isFirstMemberFrame = i == 1;
 			if isFirstMemberFrame then
-				local ccRemoverWidth = ccRemoverFrame:GetWidth();
+				local ccRemoverWidth = ccRemoverFrame:GetWidth() + math.abs(ccRemoverFrameXOffset) - frameBorderOffset;
+				local debuffFrameWidth = debuffFrame:GetWidth() + math.abs(debuffFrameXOffset) - frameBorderOffset;
+				local castingBarXOffset = math.abs(select(4, castingBarFrame:GetPoint(1)));
+				local castingBarFrameWidth = castingBarFrame:GetWidth() + castingBarFrame.BorderShield:GetWidth() + castingBarXOffset;
 
-				-- Undo frameBorderOffset from the ccRemoverFrame's x offset since it's already accounted for on the unit frame
-				ccRemoverWidth = ccRemoverWidth + ccRemoverFrameXOffset - frameBorderOffset;
-
-				width = width + ccRemoverWidth;
+				width = width + ccRemoverWidth + debuffFrameWidth + castingBarFrameWidth;
 				unitFrameXOffset = unitFrameXOffset - ccRemoverWidth;
-			end
-		end
-
-		-- Adjust for CastingBarFrames
-		local castingBarFrame = memberUnitFrame.CastingBarFrame;
-		if castingBarFrame then
-			-- Adjust casting bar anchor to account for the frame border
-			local castingBarFrameXOffset = castingBarFrameInitialAnchor.xOffset - frameBorderOffset;
-			castingBarFrame:ClearAllPoints();
-			castingBarFrame:SetPoint(castingBarFrameInitialAnchor.point, memberUnitFrame, castingBarFrameInitialAnchor.relativePoint, castingBarFrameXOffset, castingBarFrameInitialAnchor.yOffset);
-
-			-- Adjust frame width to fit casting bar
-			if isFirstMemberFrame then
-				local castingBarFrameWidth = (castingBarFrame:GetWidth() + castingBarFrame.BorderShield:GetWidth()) * castingBarFrame:GetScale();
-
-				-- Undo frameBorderOffset from the castingBarFrame's x offset since it's already accounted for on the unit frame
-				castingBarFrameWidth = castingBarFrameWidth - castingBarFrameXOffset - frameBorderOffset;
-
-				width = width + castingBarFrameWidth;
 			end
 		end
 	end
@@ -216,6 +209,10 @@ function CompactArenaFrameMixin:RefreshMembers()
 
 		if memberUnitFrame.CcRemoverFrame then
 			memberUnitFrame.CcRemoverFrame:SetUnit(unitToken);
+		end
+
+		if memberUnitFrame.DebuffFrame then
+			memberUnitFrame.DebuffFrame:SetUnit(unitToken);
 		end
 	end
 
@@ -356,13 +353,13 @@ end
 
 function ArenaUnitFrameCcRemoverMixin:UpdateCooldown()
 	local spellId, startTimeMs, durationMs = C_PvP.GetArenaCrowdControlInfo(self.unitToken);
-	if spellId and startTimeMs ~= 0 and durationMs ~= 0 then
+	if spellId and startTimeMs > 0 and durationMs > 0 then
 		self.Cooldown:SetCooldown(startTimeMs / 1000.0, durationMs / 1000.0);
 	else
 		self.Cooldown:Clear();
 	end
 
-	self.Cooldown:UpdateCountdownText();
+	self.Cooldown:UpdateText();
 end
 
 function ArenaUnitFrameCcRemoverMixin:SetSpellId(spellId)
@@ -407,45 +404,131 @@ function ArenaUnitFrameCcRemoverMixin:UpdateShownState()
 	self:SetShown(self.isInEditMode or self.spellId);
 end
 
-ArenaUnitCcRemoverCooldownMixin = {};
+ArenaUnitFrameCooldownMixin = {};
 
-local ArenaUnitCcRemoverCooldownTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
-ArenaUnitCcRemoverCooldownTimeFormatter:Init(1, SecondsFormatter.Abbreviation.OneLetter, true, true);
-ArenaUnitCcRemoverCooldownTimeFormatter:SetDesiredUnitCount(1);
-ArenaUnitCcRemoverCooldownTimeFormatter:SetStripIntervalWhitespace(true);
+local cooldownTextFormatter = CreateFromMixins(SecondsFormatterMixin);
+cooldownTextFormatter:Init(1, SecondsFormatter.Abbreviation.OneLetter, true, true);
+cooldownTextFormatter:SetDesiredUnitCount(1);
+cooldownTextFormatter:SetStripIntervalWhitespace(true);
 
-function ArenaUnitCcRemoverCooldownMixin:OnHide()
-	self:StopCountdownTextTicker();
-	self.CountdownText:SetText("");
+function ArenaUnitFrameCooldownMixin:OnHide()
+	self:StopUpdateTextTicker();
+	self.Text:SetText("");
 end
 
-function ArenaUnitCcRemoverCooldownMixin:OnCooldownDone()
-	self:StopCountdownTextTicker();
-	self.CountdownText:SetText("");
+function ArenaUnitFrameCooldownMixin:OnCooldownDone()
+	self:StopUpdateTextTicker();
+	self.Text:SetText("");
 end
 
-function ArenaUnitCcRemoverCooldownMixin:UpdateCountdownText()
+function ArenaUnitFrameCooldownMixin:UpdateText()
 	local startTimeMs, durationMs = self:GetCooldownTimes();
 	local currentTimeSeconds = GetTime();
 	local remainingTimeSeconds = (durationMs / 1000.0) - (currentTimeSeconds - (startTimeMs / 1000.0))
 
 	if remainingTimeSeconds > 0 then
-		self.CountdownText:SetText(ArenaUnitCcRemoverCooldownTimeFormatter:Format(remainingTimeSeconds));
+		self.Text:SetText(cooldownTextFormatter:Format(remainingTimeSeconds));
 
-		if not self.countdownTextUpdateTicker and self:IsShown() then
-			self.countdownTextUpdateTicker = C_Timer.NewTicker(1, function() self:UpdateCountdownText() end);
+		if not self.updateTextTicker and self:IsShown() then
+			self.updateTextTicker = C_Timer.NewTicker(1, function() self:UpdateText() end);
 		end
 	else
-		self:StopCountdownTextTicker();
-		self.CountdownText:SetText("");
+		self:StopUpdateTextTicker();
+		self.Text:SetText("");
 	end
 end
 
-function ArenaUnitCcRemoverCooldownMixin:StopCountdownTextTicker()
-	if not self.countdownTextUpdateTicker then
+function ArenaUnitFrameCooldownMixin:StopUpdateTextTicker()
+	if not self.updateTextTicker then
 		return;
 	end
 
-	self.countdownTextUpdateTicker:Cancel();
-	self.countdownTextUpdateTicker = nil;
+	self.updateTextTicker:Cancel();
+	self.updateTextTicker = nil;
+end
+
+ArenaUnitFrameDebuffMixin = {};
+
+local arenaUnitFrameDebuffEvents = {
+	"LOSS_OF_CONTROL_UPDATE",
+	"LOSS_OF_CONTROL_ADDED",
+};
+
+function ArenaUnitFrameDebuffMixin:OnEvent(event, ...)
+	if event == "LOSS_OF_CONTROL_UPDATE" then
+		self:Update();
+	elseif event == "LOSS_OF_CONTROL_ADDED" then
+		local unitToken, eventIndex = ...;
+		local data = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, eventIndex);
+		self:Update(data);
+	end
+end
+
+function ArenaUnitFrameDebuffMixin:SetUnit(unitToken)
+	if unitToken == self.unitToken then
+		return;
+	end
+
+	FrameUtil.UnregisterFrameForEvents(self, arenaUnitFrameDebuffEvents);
+
+	self.unitToken = unitToken;
+	if self.unitToken then
+		FrameUtil.RegisterFrameForUnitEvents(self, arenaUnitFrameDebuffEvents, self.unitToken);
+	end
+
+	self:Update();
+end
+
+function ArenaUnitFrameDebuffMixin:Update(data)
+	if UnitExists(self.unitToken) then
+		-- If we weren't passed in data then go through all our loss of control data and find the one to show
+		-- If we were given input data then we'll just check if the input data is better to show than what we're currently showing
+		if not data then
+			local numLossOfControlEffects = C_LossOfControl.GetActiveLossOfControlDataCountByUnit(self.unitToken) or 0;
+			for i = 1, numLossOfControlEffects, 1 do
+				local lossOfControlData = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, i);
+				if lossOfControlData and (not data or lossOfControlData.priority > data.priority) then
+					data = lossOfControlData;
+				end
+			end
+		end
+
+		if self.shownData and data and self.shownData.priority > data.priority then
+			-- Our existing data is higher priority than the new data so don't update anything
+			return;
+		end
+	else
+		data = nil;
+	end
+
+	self.shownData = data;
+	self:UpdateIcon();
+	self:UpdateCooldown();
+	self:UpdateShownState();
+end
+
+function ArenaUnitFrameDebuffMixin:UpdateIcon()
+	local texture = self.shownData and select(3, GetSpellInfo(self.shownData.spellID)) or QUESTION_MARK_ICON;
+	self.Icon:SetTexture(texture);
+end
+
+function ArenaUnitFrameDebuffMixin:UpdateCooldown()
+	local startTimeSeconds = self.shownData and self.shownData.startTime or 0;
+	local durationSeconds = self.shownData and self.shownData.duration or 0;
+	if startTimeSeconds > 0 and durationSeconds > 0 then
+		self.Cooldown:SetCooldown(startTimeSeconds, durationSeconds);
+	else
+		self.Cooldown:Clear();
+	end
+
+	self.Cooldown:UpdateText();
+end
+
+function ArenaUnitFrameDebuffMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
+end
+
+function ArenaUnitFrameDebuffMixin:UpdateShownState()
+	self:SetShown(self.shownData or self.isInEditMode)
 end

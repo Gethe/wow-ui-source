@@ -226,6 +226,13 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_RETICLE_TARGET", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_RETICLE_CLEAR", "player");
 
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PET_STABLE_UPDATE");
@@ -233,16 +240,39 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
-	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
-	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
+	self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
+	self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
 	self:RegisterEvent("SPELL_UPDATE_ICON");
 end
+
+
+function ActionBarActionEventsFrameMixin:IsSpellcastEvent(event) 
+	if ( event == "UNIT_SPELLCAST_INTERRUPTED" or 
+	event == "UNIT_SPELLCAST_SUCCEEDED" or 
+	event == "UNIT_SPELLCAST_START" or 
+	event == "UNIT_SPELLCAST_STOP" or 
+	event == "UNIT_SPELLCAST_CHANNEL_START" or 
+	event == "UNIT_SPELLCAST_CHANNEL_STOP" or 
+	event == "UNIT_SPELLCAST_RETICLE_TARGET" or 
+	event == "UNIT_SPELLCAST_RETICLE_CLEAR" ) then 
+		return true; 
+	else 
+		return false;
+	end		
+end		
 
 function ActionBarActionEventsFrameMixin:OnEvent(event, ...)
 	if ( event == "UNIT_INVENTORY_CHANGED" ) then
 		local unit = ...;
 		if ( unit == "player" and self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
 			self.tooltipOwner:SetTooltip();
+		end
+	elseif ( self:IsSpellcastEvent(event) ) then 
+		for k, frame in pairs(self.frames) do
+			local _, _, spellID = ...; 
+			if (frame:MatchesActiveButtonSpellID(spellID)) then
+				frame:OnEvent(event, ...);
+			end
 		end
 	else
 		for k, frame in pairs(self.frames) do
@@ -679,6 +709,7 @@ function ActionButton_UpdateCooldown(self)
 		end
 
 		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
+		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, false);
 		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
@@ -688,9 +719,8 @@ function ActionButton_UpdateCooldown(self)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
 		end
 
-		if( locStart > 0 ) then
-			self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone);
-		end
+
+		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, locStart > 0);
 
 		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
 			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
@@ -702,9 +732,15 @@ function ActionButton_UpdateCooldown(self)
 	end
 end
 
-function ActionButtonCooldown_OnCooldownDone(self)
+function ActionButtonCooldown_OnCooldownDone(self, requireCooldownUpdate)
 	self:SetScript("OnCooldownDone", nil);
-	ActionButton_UpdateCooldown(self:GetParent());
+	local cooldownFlash = self:GetParent().CooldownFlash;
+	if(cooldownFlash) then	
+		cooldownFlash:Setup();
+	end		
+	if(requireCooldownUpdate) then 
+		ActionButton_UpdateCooldown(self:GetParent());
+	end
 end
 
 -- Charge Cooldown stuff
@@ -715,6 +751,22 @@ local function CreateChargeCooldownFrame(parent)
 	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
+
+	local fillInfo = C_Texture.GetAtlasInfo("UI-HUD-ActionBar-StackCooldown");
+	if(fillInfo) then 
+		local lowTexCoords =
+		{
+			x = fillInfo.leftTexCoord,
+			y = fillInfo.topTexCoord,
+		};
+		local highTexCoords =
+		{
+			x = fillInfo.rightTexCoord,
+			y = fillInfo.bottomTexCoord,
+		};	
+		cooldown:SetTexCoordRange(lowTexCoords, highTexCoords);
+		cooldown:SetEdgeTexture(fillInfo.file or fillInfo.filename);
+	end 
 
 	cooldown:SetFrameStrata("TOOLTIP");
 
@@ -854,6 +906,15 @@ function ActionBarButtonSpellActivationAlertProcStartAnimMixin:OnFinished()
 	self:GetParent().ProcLoop:Play();
 end
 
+function ActionBarActionButtonMixin:MatchesActiveButtonSpellID(spellID)
+	if(not spellID) then 
+		return false; 
+	end 
+
+	local actionType, id, subType = GetActionInfo(self.action);
+	return id == spellID; 
+end	
+
 function ActionBarActionButtonMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if ((event == "UNIT_INVENTORY_CHANGED" and arg1 == "player") or event == "LEARNED_SPELL_IN_TAB") then
@@ -957,13 +1018,17 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		local inRange, checksRange = select(2, ...);
 		ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
 	elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then 
-		local _, _, spellID = ...; 
-		if(spellID) then 
-			local actionType, id, subType = GetActionInfo(self.action);
-			if(id == spellID) then 
-				self:PlaySpellInterruptedAnim(); 
-			end		
-		end
+			self:PlaySpellInterruptedAnim(); 
+	elseif (event == "UNIT_SPELLCAST_START") then 
+			self:PlaySpellCastAnim(); 
+	elseif (event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED") then 
+			self:StopSpellCastAnim(); 
+	elseif (event == "UNIT_SPELLCAST_CHANNEL_START") then 
+			self:PlaySpellCastAnim(true); 
+	elseif (event == "UNIT_SPELLCAST_RETICLE_TARGET") then
+			self:PlayTargettingReticleAnim();
+	elseif (event == "UNIT_SPELLCAST_RETICLE_CLEAR") then
+			self:StopTargettingReticleAnim();
 	end
 end
 
@@ -1047,7 +1112,49 @@ function ActionBarActionButtonMixin:OnHide()
 	end
 end
 
+function ActionBarActionButtonMixin:ClearReticle()
+	if(self.TargetReticleAnimFrame:IsShown()) then 
+		self.TargetReticleAnimFrame:Hide(); 
+	end 
+end 
+
+function ActionBarActionButtonMixin:ClearInterruptDisplay()
+	if(self.InterruptDisplay:IsShown()) then 
+		self.InterruptDisplay:Hide(); 
+	end	
+end
+
+function ActionBarActionButtonMixin:PlaySpellCastAnim(isChannel)
+	self.cooldown:SetSwipeColor(0, 0, 0, 0);
+	self.hideCooldownFrame = true; 
+	self:ClearInterruptDisplay(); 
+	self:ClearReticle();
+	self.SpellCastAnimFrame:Setup(isChannel); 
+end
+
+function ActionBarActionButtonMixin:PlayTargettingReticleAnim()
+	if(self.InterruptDisplay:IsShown()) then 
+		self.InterruptDisplay:Hide(); 
+	end	
+	self.TargetReticleAnimFrame:Setup(); 
+end
+
+function ActionBarActionButtonMixin:StopTargettingReticleAnim()
+	if (self.TargetReticleAnimFrame:IsShown()) then 
+		self.TargetReticleAnimFrame:Hide(); 
+	end
+end
+
+function ActionBarActionButtonMixin:StopSpellCastAnim(forceStop)
+	if(forceStop) then 
+		self.SpellCastAnimFrame:Hide();
+	elseif(self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then 
+		self.SpellCastAnimFrame:FinishAnimAndPlayBurst(); 
+	end
+end
+
 function ActionBarActionButtonMixin:PlaySpellInterruptedAnim()
+	self:StopSpellCastAnim(true); 
 	--Hide if it's already showing to clear the anim. 
 	if(self.InterruptDisplay:IsShown()) then 
 		self.InterruptDisplay:Hide(); 
@@ -1436,4 +1543,80 @@ end
 function ActionButtonInterruptFrameMixin:OnHide()
 	self.Base.AnimIn:Stop();
 	self.Highlight.AnimIn:Stop();
+end
+
+ActionButtonCastingAnimFrameMixin = { }; 
+
+function ActionButtonCastingAnimFrameMixin:Setup(isChannelCast)
+	local startTime, endTime; 
+
+	if(isChannelCast) then 
+		_, _, _, startTime, endTime = UnitChannelInfo("player");
+	else 
+		_, _, _, startTime, endTime = UnitCastingInfo("player");
+	end 
+	self.EndBurst:Hide(); 
+
+	local fillFrame = self.Fill; 
+	fillFrame.CastFill:ClearAllPoints(); 
+	if(isChannelCast) then 
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true); 
+		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Channel-InnerGlow", true);
+		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
+		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
+	else 
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true); 
+		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
+		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
+		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
+	end
+
+	local totalTimeInSeconds = (endTime - startTime) / 1000;
+	local castingAnim = self.Fill.CastingAnim; 
+	castingAnim.CastFillTranslation:SetDuration(totalTimeInSeconds);
+	castingAnim:Play(); 
+	self:Show(); 
+end
+
+function ActionButtonCastingAnimFrameMixin:OnHide()
+	local parent = self:GetParent(); 
+	parent:ClearReticle();
+	parent.cooldown:SetSwipeColor(0, 0, 0, 1);
+	ActionButton_UpdateCooldown(parent);
+end
+
+function ActionButtonCastingAnimFrameMixin:FinishAnimAndPlayBurst()
+	self.Fill.CastingAnim:Stop();
+	self.Fill.CastingAnim:OnFinished(); 
+end 
+
+ActionButtonCastingAnimationFillMixin = { }; 
+
+function ActionButtonCastingAnimationFillMixin:OnFinished()
+	local endBurst = self:GetParent():GetParent().EndBurst; 
+	endBurst:Show(); 
+	endBurst.FinishCastAnim:Play(); 
+end 
+
+ActionButtonCastingFinishAnimMixin = { }; 
+function ActionButtonCastingFinishAnimMixin:OnFinished()
+	self:GetParent():GetParent():Hide(); 
+	self:GetParent():GetParent():GetParent():StopSpellCastAnim(); 
+end
+
+ActionButtonTargetReticleFrameMixin = { }; 
+function ActionButtonTargetReticleFrameMixin:Setup() 
+	self.HighlightAnim:Play();
+	self:Show(); 
+end
+
+ActionButtonCooldownFlashMixin = { }; 
+function ActionButtonCooldownFlashMixin:Setup()
+	self.FlashAnim:Play();
+	self:Show(); 
+end
+
+ActionButtonCooldownFlashAnimMixin = { }; 
+function ActionButtonCooldownFlashAnimMixin:OnFinished()
+	self:GetParent():Hide(); 
 end

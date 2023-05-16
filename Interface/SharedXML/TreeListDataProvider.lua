@@ -68,6 +68,48 @@ function TreeListNodeMixin:GetFirstNode()
 	return self.nodes[1];
 end
 
+function TreeListNodeMixin:MoveNode(node)
+	local skipInvalidation = true;
+	self.dataProvider:Remove(node, skipInvalidation);
+	local previousParent = node.parent;
+	node.parent = self;
+	
+	self:InsertNode(node);
+
+	self.dataProvider:TriggerEvent(TreeListDataProviderMixin.Event.OnMove, node, previousParent, self);	
+
+	return node;
+end
+
+function TreeListNodeMixin:MoveNodeRelativeTo(node, referenceNode, offset)
+	if not tContains(self.nodes, referenceNode) then
+		error("MoveNodeRelativeToNode requires reference node to exist.");
+	end
+
+	if self:HasSortComparator() then
+		error("MoveNodeRelativeToNode cannot move a node into a sorted node.");
+	end
+
+	local skipInvalidation = true;
+	self.dataProvider:Remove(node, skipInvalidation);
+	local previousParent = node.parent;
+	node.parent = self;
+	
+	local referenceNodeIndex = tIndexOf(self.nodes, referenceNode);
+	local newNodeIndex = referenceNodeIndex + offset;
+	table.insert(self.nodes, newNodeIndex, node);
+	
+	self:Invalidate();
+
+	self.dataProvider:TriggerEvent(TreeListDataProviderMixin.Event.OnMove, node, previousParent, self);	
+
+	return node;
+end
+
+function TreeListNodeMixin:GetParent()
+	return self.parent;
+end
+
 function TreeListNodeMixin:Flush()
 	self.nodes = {};
 	self:Invalidate();
@@ -75,6 +117,10 @@ end
 
 function TreeListNodeMixin:Insert(data)
 	local node = CreateTreeListNode(self.dataProvider, self, data);
+	return self:InsertNode(node);
+end
+
+function TreeListNodeMixin:InsertNode(node)
 	table.insert(self.nodes, node);
 	self:Invalidate();
 
@@ -83,11 +129,13 @@ function TreeListNodeMixin:Insert(data)
 	return node;
 end
 
-function TreeListNodeMixin:Remove(node)
+function TreeListNodeMixin:Remove(node, skipInvalidation)
 	for index, node2 in ipairs(self.nodes) do
 		if node2 == node then
 			local removed = table.remove(self.nodes, index);
-			self:Invalidate();
+			if not skipInvalidation then
+				self:Invalidate();
+			end
 			return removed;
 		end
 	end
@@ -179,6 +227,7 @@ TreeListDataProviderMixin:GenerateCallbackEvents(
 		"OnSizeChanged",
 		"OnRemove",
 		"OnSort",
+		"OnMove",
 	}
 );
 
@@ -254,13 +303,8 @@ function TreeListDataProviderMixin:Insert(data)
 end
 
 function TreeListDataProviderMixin:Remove(node)
-	local index, node2 = self:FindIndex(node);
-	if node2 then
-		local parent = node2.parent;
-		assert(parent ~= nil);
-		if parent then
-			node2.parent:Remove(node);
-		end
+	if node then
+		node.parent:Remove(node);
 	end
 end
 

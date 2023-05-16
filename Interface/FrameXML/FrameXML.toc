@@ -37,6 +37,7 @@
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua

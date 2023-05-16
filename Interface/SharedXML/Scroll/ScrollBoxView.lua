@@ -65,6 +65,9 @@ function ScrollBoxViewMixin:GetScrollBox()
 	return self.scrollBox;
 end
 
+function ScrollBoxViewMixin:InitDefaultDrag(scrollBox)
+end
+
 function ScrollBoxViewMixin:IsExtentValid()
 	return self.extent and self.extent > 1;
 end

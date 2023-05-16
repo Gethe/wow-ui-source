@@ -1377,6 +1377,11 @@ function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
 		if ccRemoverFrame then
 			ccRemoverFrame:SetIsInEditMode(isInEditMode);
 		end
+
+		local debuffFrame = memberUnitFrame.DebuffFrame;
+		if debuffFrame then
+			debuffFrame:SetIsInEditMode(isInEditMode);
+		end
 	end
 
 	self.PreMatchFramesContainer:SetIsInEditMode(isInEditMode);

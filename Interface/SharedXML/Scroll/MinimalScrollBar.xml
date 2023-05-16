@@ -108,7 +108,7 @@
 					<KeyValue key="overTexture" value="minimal-scrollbar-arrow-top-over" type="string"/>
 					<KeyValue key="downTexture" value="minimal-scrollbar-arrow-top-down" type="string"/>
 					<KeyValue key="disabledTexture" value="minimal-scrollbar-arrow-top" type="string"/>
-					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SCROLLBAR_STEP" type="global"/>
 				</KeyValues>
 				<Size x="17" y="11"/>
 				<Layers>
@@ -124,7 +124,7 @@
 					<KeyValue key="overTexture" value="minimal-scrollbar-arrow-bottom-over" type="string"/>
 					<KeyValue key="downTexture" value="minimal-scrollbar-arrow-bottom-down" type="string"/>
 					<KeyValue key="disabledTexture" value="minimal-scrollbar-bottom-top" type="string"/>
-					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SOULBINDS_SCROLLBAR_BUTTON" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SCROLLBAR_STEP" type="global"/>
 				</KeyValues>
 				<Size x="17" y="11"/>
 				<Anchors>

@@ -12,6 +12,11 @@
 			<KeyValue key="topPadding" value="0" type="number"/>
 		</KeyValues>
 	</Frame>
+
+	<StatusBar name="ClassNameplateEbonMightBarFrame" inherits="ClassNameplateAlternatePowerBarBaseTemplate, EvokerEbonMightBarTemplate" mixin="ClassNameplateEbonMightBar">
+		<KeyValues>
+			<KeyValue key="scale" value="1"/>
+			<KeyValue key="unit" value="player" type="string"/>
+		</KeyValues>
+	</StatusBar>
 </Ui>
-
-

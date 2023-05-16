@@ -20,7 +20,7 @@ PowerBarColor["AMMOSLOT"] = 		{ r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = 			{ r = 0.0, g = 0.55, b = 0.5 };
 -- alternate power bar colors
 PowerBarColor["STAGGER"] = { {r = 0.52, g = 1.0, b = 0.52}, {r = 1.0, g = 0.98, b = 0.72}, {r = 1.0, g = 0.42, b = 0.42},};
-PowerBarColor["EBON_MIGHT"] = { r = 0.75, g = 0.47, b = 0.1, atlas = "Unit_Evoker_EbonMight_Fill" };
+PowerBarColor["EBON_MIGHT"] = { r = 0.9, g = 0.55, b = 0.3, atlas = "Unit_Evoker_EbonMight_Fill" };
 
 -- these are mostly needed for a fallback case (in case the code tries to index a power token that is missing from the table,
 -- it will try to index by power type instead)

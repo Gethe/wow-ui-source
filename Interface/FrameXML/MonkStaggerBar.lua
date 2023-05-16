@@ -14,19 +14,19 @@ function MonkStaggerBarMixin:Initialize()
 	self.requiredClass = "MONK";
 	self.requiredSpec = SPEC_MONK_BREWMASTER;
 
-	AlternatePowerBarBaseMixin.Initialize(self);
+	self.baseMixin.Initialize(self);
 end
 
 function MonkStaggerBarMixin:UpdatePower()
 	self:UpdateMinMaxPower();
-	AlternatePowerBarBaseMixin.UpdatePower(self);
+	self.baseMixin.UpdatePower(self);
 	self:UpdateArt();
 end
 
 function MonkStaggerBarMixin:UpdateArt()
 	if not self.currentPower or not self.maxPower then
 		self.overrideArtInfo = nil;
-		AlternatePowerBarBaseMixin.UpdateArt(self);
+		self.baseMixin.UpdateArt(self);
 		return;
 	end
 
@@ -42,7 +42,7 @@ function MonkStaggerBarMixin:UpdateArt()
 	end
 	self.overrideArtInfo = artInfo;
 
-	AlternatePowerBarBaseMixin.UpdateArt(self);
+	self.baseMixin.UpdateArt(self);
 end
 
 function MonkStaggerBarMixin:EvaluateUnit()

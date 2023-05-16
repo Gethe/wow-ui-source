@@ -205,10 +205,6 @@
 			</OnLoad>
 			<OnClick function="CharacterSelectButton_OnClick"/>
 			<OnDoubleClick function="CharacterSelectButton_OnDoubleClick"/>
-			<OnDragStart function="CharacterSelectButton_OnDragStart"/>
-			<OnDragStop function="CharacterSelectButton_OnDragStop"/>
-			<OnMouseDown function="CharacterSelectButton_OnMouseDown"/>
-			<OnMouseUp function="CharacterSelectButton_OnDragStop"/>
 			<OnEnter function="CharacterSelectButton_OnEnter"/>
 			<OnLeave function="CharacterSelectButton_OnLeave"/>
 		</Scripts>

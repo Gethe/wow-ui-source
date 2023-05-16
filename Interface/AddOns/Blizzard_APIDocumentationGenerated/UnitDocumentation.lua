@@ -6,20 +6,6 @@ local Unit =
 	Functions =
 	{
 		{
-			Name = "GetClassIDFromSpecID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "specID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "classID", Type = "number", Nilable = true },
-			},
-		},
-		{
 			Name = "GetNegativeCorruptionEffectInfo",
 			Type = "Function",
 
@@ -1606,6 +1592,28 @@ local Unit =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastReticleClear",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastReticleTarget",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{

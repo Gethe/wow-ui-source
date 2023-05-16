@@ -47,6 +47,8 @@ ScrollBoxConstants =
 	AlignNearest = -1,
 	ScrollBegin = MathUtil.Epsilon,
 	ScrollEnd = (1 - MathUtil.Epsilon),
+	StopIteration = true,
+	ContinueIteration = false,
 };
 
 -- ScrollBoxBaseMixin includes CallbackRegistryMixin but the derived mixins are responsible
@@ -529,6 +531,10 @@ function ScrollBoxListMixin:ForEachFrame(func)
 	self:GetView():ForEachFrame(func);
 end
 
+function ScrollBoxListMixin:ReverseForEachFrame(func)
+	self:GetView():ReverseForEachFrame(func);
+end
+
 function ScrollBoxListMixin:ForEachElementData(func)
 	self:GetView():ForEachElementData(func);
 end
@@ -553,12 +559,20 @@ function ScrollBoxListMixin:FindByPredicate(predicate)
 	return self:GetView():FindByPredicate(predicate);
 end
 
+function ScrollBoxListMixin:FindFrame(elementData)
+	return self:GetView():FindFrame(elementData);
+end
+
 function ScrollBoxListMixin:Find(index)
 	return self:GetView():Find(index);
 end
 
 function ScrollBoxListMixin:FindIndex(elementData)
 	return self:GetView():FindIndex(elementData);
+end
+
+function ScrollBoxListMixin:FindFrameElementDataIndex(frame)
+	return self:GetView():FindFrameElementDataIndex(frame);
 end
 
 function ScrollBoxListMixin:InsertElementData(...)

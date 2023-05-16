@@ -1118,20 +1118,43 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			end
 		end
 	end
+
 	self.RecraftSlot:Init(self.transaction, AnyRecraftablePredicate, function(itemGUID) self:SetRecraftItemGUID(itemGUID); end, self.order.recraftItemHyperlink);
 	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, self.order.minQuality or 1);
 
 	self.minQualityIDs = recipeID and C_TradeSkillUI.GetQualitiesForRecipe(recipeID);
 
-	if not self.committed then
-		Professions.AllocateAllBasicReagents(self.transaction, true);
-	else
+	if self.committed then
 		for _, reagentInfo in ipairs(self.order.reagents) do
-			self.transaction:OverwriteAllocation(reagentInfo.reagentSlot, reagentInfo.reagent, reagentInfo.reagent.quantity);
+			self.transaction:OverwriteAllocation(reagentInfo.slotIndex, reagentInfo.reagent, reagentInfo.reagent.quantity);
 		end
+	else
+		Professions.AllocateAllBasicReagents(self.transaction, true);
 	end
 
 	if self.order.isRecraft then
+		if self.committed then
+			-- After the allocations above, strip any reagents that fail to meet prerequisites. This is a workaround for
+			-- incompatible reagents being part of the original order data because it is not removed until the item is
+			-- actually recreated. Since the crafter cannot modify this slot anyways, it's empty state will be the only
+			-- correct state.
+			for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
+				if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
+					-- Skip any slots where the existing modification was replaced by another customer provided slot.
+					local allocs = self.transaction:GetAllocations(slotIndex);
+					local alloc = allocs:SelectFirst();
+					if alloc then
+						local reagent = alloc:GetReagent();
+						local itemID = reagent.itemID;
+						if itemID and itemID > 0 and not self.transaction:AreAllRequirementsAllocatedByItemID(itemID) then
+							self.transaction:ClearAllocations(slotIndex);
+							self.transaction:ClearModification(reagentSlotSchematic.dataSlotIndex);
+						end
+					end
+				end
+			end
+		end
+
 		self.RecraftRecipeName:Show();
 		self.loader = CreateProfessionsRecipeLoader(recipeSchematic, function()
 			local reagents = nil;

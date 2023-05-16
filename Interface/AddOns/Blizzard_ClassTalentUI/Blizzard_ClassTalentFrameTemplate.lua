@@ -154,7 +154,7 @@ function ClassTalentFrameMixin:SetInspecting(inspectUnit, inspectString, inspect
 		end
 
 		self.inspectStringSpecID = specID;
-		self.inspectStringClassID = GetClassIDFromSpecID(specID);
+		self.inspectStringClassID = C_SpecializationInfo.GetClassIDFromSpecID(specID);
 	else
 		self.inspectStringSpecID = nil;
 		self.inspectStringClassID = nil;

@@ -1,5 +1,6 @@
--- Base mixin for an alternate unit frame power bar
--- This will typically be shown as the 3rd bar, underneath the unit's primary power bar
+----------------- Alternate Power Bar Base -----------------
+
+-- Base mixin for an alternate unit power bar, typically shown as a 3rd bar under the primary power bar
 AlternatePowerBarBaseMixin = {};
 
 function AlternatePowerBarBaseMixin:OnLoad()
@@ -8,19 +9,15 @@ function AlternatePowerBarBaseMixin:OnLoad()
 end
 
 function AlternatePowerBarBaseMixin:Initialize()
-	self.textLockable = 1;
-	self.cvar = "statusText";
-	self.cvarLabel = "STATUS_TEXT_PLAYER";
-	self.capNumericDisplay = true;
-
-	SetTextStatusBarText(self, _G[self:GetName().."Text"])
 	self:UpdateArt();
-	TextStatusBar_Initialize(self);
 
 	local statusBarTexture = self:GetStatusBarTexture();
-	statusBarTexture:AddMaskTexture(self.PowerBarMask);
 	statusBarTexture:SetTexelSnappingBias(0);
 	statusBarTexture:SetSnapToPixelGrid(false);
+
+	if self.PowerBarMask then
+		statusBarTexture:AddMaskTexture(self.PowerBarMask);
+	end
 
 	if self.frequentUpdates then
 		self:SetScript("OnUpdate", self.OnUpdate);
@@ -31,16 +28,6 @@ function AlternatePowerBarBaseMixin:Initialize()
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 
 	self:EvaluateUnit();
-end
-
-function AlternatePowerBarBaseMixin:OnShow()
-	self.pauseUpdates = false;
-	self:UpdatePower();
-	TextStatusBar_UpdateTextString(self);
-end
-
-function AlternatePowerBarBaseMixin:OnHide()
-	self.pauseUpdates = true;
 end
 
 function AlternatePowerBarBaseMixin:OnUpdate()
@@ -66,8 +53,6 @@ function AlternatePowerBarBaseMixin:OnEvent(event, ...)
 			self:UpdateIsAliveState();
 		end
 	end
-
-	TextStatusBar_OnEvent(self, event, ...);
 end
 
 function AlternatePowerBarBaseMixin:SetBarEnabled(enabled)
@@ -80,7 +65,8 @@ function AlternatePowerBarBaseMixin:SetBarEnabled(enabled)
 
 	if self.isEnabled then
 		self:OnBarEnabled();
-		PlayerFrame_OnAlternatePowerBarEnabled(self);
+
+		self:AttachBarToUnitUI();
 
 		if (self:GetUnit() == "player") then
 			self:RegisterEvent("PLAYER_DEAD");
@@ -99,7 +85,7 @@ function AlternatePowerBarBaseMixin:SetBarEnabled(enabled)
 				self:UnregisterEvent("PLAYER_UNGHOST");
 			end
 
-			PlayerFrame_OnAlternatePowerBarDisabled(self);
+			self:RemoveBarFromUnitUI();
 		end
 		self:Hide();
 	end
@@ -119,10 +105,103 @@ function AlternatePowerBarBaseMixin:UpdateMinMaxPower()
 end
 
 function AlternatePowerBarBaseMixin:GetUnit()
-	return self.unit or self:GetParent():GetParent().unit or "player";
+	local unit = self.unit;
+	if not unit then
+		local parent = self:GetParent();
+		local grandParent = parent and parent:GetParent() or nil;
+		unit = grandParent and grandParent.unit or nil;
+	end
+
+	return unit or "player";
 end
 
+-- UI-Context-Specific base mixin functions
+
 function AlternatePowerBarBaseMixin:UpdateArt()
+	-- Implement in a base mixin specific to what kind of unit UI is displaying the bar
+	-- (ex a PlayerFrame-specific base mixin)
+end
+
+function AlternatePowerBarBaseMixin:UpdateIsAliveState()
+	-- Implement in a base mixin specific to what kind of unit UI is displaying the bar
+	-- (ex a PlayerFrame-specific base mixin)
+end
+
+function AlternatePowerBarBaseMixin:AttachBarToUnitUI()
+	-- Implement in a base mixin specific to what kind of unit UI is displaying the bar
+	-- (ex a PlayerFrame-specific base mixin)
+end
+
+function AlternatePowerBarBaseMixin:RemoveBarFromUnitUI()
+	-- Implement in a base mixin specific to what kind of unit UI is displaying the bar
+	-- (ex a PlayerFrame-specific base mixin)
+end
+
+-- Class/Spec/Power-specific mixin functions
+
+function AlternatePowerBarBaseMixin:EvaluateUnit()
+	-- Implement in derived mixins
+	-- Should evalute unit's current class, spec, power type, etc, and SetBarEnabled accordingly
+end
+
+function AlternatePowerBarBaseMixin:OnBarEnabled()
+	-- Implement in derived mixins
+end
+
+function AlternatePowerBarBaseMixin:OnBarDisabled()
+	-- Implement in derived mixins
+end
+
+function AlternatePowerBarBaseMixin:GetCurrentPower()
+	-- Implement in derived mixins
+end
+
+function AlternatePowerBarBaseMixin:GetCurrentMinMaxPower()
+	-- Implement in derived mixins
+end
+
+
+----------------- Player Frame Alternate Power Base -----------------
+
+-- Base mixin for alternate power bars attached to the Player Unit Frame
+PlayerFrameAlternatePowerBarBaseMixin = CreateFromMixins(AlternatePowerBarBaseMixin);
+
+function PlayerFrameAlternatePowerBarBaseMixin:Initialize()
+	self.textLockable = 1;
+	self.cvar = "statusText";
+	self.cvarLabel = "STATUS_TEXT_PLAYER";
+	self.capNumericDisplay = true;
+
+	SetTextStatusBarText(self, _G[self:GetName().."Text"])
+	TextStatusBar_Initialize(self);
+
+	AlternatePowerBarBaseMixin.Initialize(self);
+end
+
+function PlayerFrameAlternatePowerBarBaseMixin:OnShow()
+	self.pauseUpdates = false;
+	self:UpdatePower();
+	TextStatusBar_UpdateTextString(self);
+end
+
+function PlayerFrameAlternatePowerBarBaseMixin:OnHide()
+	self.pauseUpdates = true;
+end
+
+function PlayerFrameAlternatePowerBarBaseMixin:OnEvent(event, ...)
+	AlternatePowerBarBaseMixin.OnEvent(self, event, ...);
+	TextStatusBar_OnEvent(self, event, ...);
+end
+
+function PlayerFrameAlternatePowerBarBaseMixin:AttachBarToUnitUI()
+	PlayerFrame_OnAlternatePowerBarEnabled(self);
+end
+
+function PlayerFrameAlternatePowerBarBaseMixin:RemoveBarFromUnitUI()
+	PlayerFrame_OnAlternatePowerBarDisabled(self);
+end
+
+function PlayerFrameAlternatePowerBarBaseMixin:UpdateArt()
 	local info = self.overrideArtInfo or PowerBarColor[self.powerName];
 	if info then
 		if info.atlasElementName then
@@ -149,30 +228,9 @@ function AlternatePowerBarBaseMixin:UpdateArt()
 	self:UpdateIsAliveState();
 end
 
-function AlternatePowerBarBaseMixin:UpdateIsAliveState()
+function PlayerFrameAlternatePowerBarBaseMixin:UpdateIsAliveState()
 	local playerDeadOrGhost = self:GetUnit() == "player" and (UnitIsDead("player") or UnitIsGhost("player"));
 	local statusBarTexture = self:GetStatusBarTexture();
 	statusBarTexture:SetDesaturated(playerDeadOrGhost);
 	statusBarTexture:SetAlpha(playerDeadOrGhost and 0.5 or 1);
-end
-
-function AlternatePowerBarBaseMixin:EvaluateUnit()
-	-- Implement in derived mixins
-	-- Should evalute unit's current class, spec, power type, etc, and SetBarEnabled accordingly
-end
-
-function AlternatePowerBarBaseMixin:OnBarEnabled()
-	-- Implement in derived mixins
-end
-
-function AlternatePowerBarBaseMixin:OnBarDisabled()
-	-- Implement in derived mixins
-end
-
-function AlternatePowerBarBaseMixin:GetCurrentPower()
-	-- Implement in derived mixins
-end
-
-function AlternatePowerBarBaseMixin:GetCurrentMinMaxPower()
-	-- Implement in derived mixins
 end

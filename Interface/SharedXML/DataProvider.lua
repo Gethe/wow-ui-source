@@ -32,6 +32,7 @@ DataProviderMixin:GenerateCallbackEvents(
 		"OnInsert",
 		"OnRemove",
 		"OnSort",
+		"OnMove",
 	}
 );
 
@@ -65,21 +66,34 @@ function DataProviderMixin:IsEmpty()
 	return self:GetSize() == 0;
 end
 
-function DataProviderMixin:InsertInternal(elementData, hasSortComparator)
-	table.insert(self.collection, elementData);
-	local insertIndex = #self.collection;
-	self:TriggerEvent(DataProviderMixin.Event.OnInsert, insertIndex, elementData, hasSortComparator);
+function DataProviderMixin:InsertInternal(elementData, insertIndex)
+	if insertIndex == nil then
+		table.insert(self.collection, elementData);
+		insertIndex = #self.collection;
+	else
+		table.insert(self.collection, insertIndex, elementData);
+	end
+
+	self:TriggerEvent(DataProviderMixin.Event.OnInsert, insertIndex, elementData, self:HasSortComparator());
+end
+
+function DataProviderMixin:InsertAtIndex(elementData, insertIndex)
+	self:InsertInternal(elementData, insertIndex);
+
+	self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, self:HasSortComparator());
+
+	self:Sort();
 end
 
 function DataProviderMixin:Insert(...)
-	local hasSortComparator = self:HasSortComparator();
 	local count = select("#", ...);
 	for index = 1, count do
-		self:InsertInternal(select(index, ...), hasSortComparator);
+		local value = select(index, ...);
+		self:InsertInternal(value);
 	end
 
 	if count > 0 then
-		self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, hasSortComparator);
+		self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, self:HasSortComparator());
 	end
 
 	self:Sort();
@@ -94,14 +108,29 @@ function DataProviderMixin:InsertTableRange(tbl, minIndex, maxIndex)
 		return;
 	end
 
-	local hasSortComparator = self:HasSortComparator();
 	for index = minIndex, maxIndex do
-		self:InsertInternal(tbl[index], hasSortComparator);
+		self:InsertInternal(tbl[index]);
 	end
 
-	self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, hasSortComparator);
+	self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, self:HasSortComparator());
 
 	self:Sort();
+end
+
+function DataProviderMixin:MoveElementDataToIndex(elementData, newIndex)
+	local currentIndex = self:FindIndex(elementData);
+	if not currentIndex then
+		error("MoveElementDataToIndex requires elementData to exist.");
+	end
+
+	if currentIndex == newIndex then
+		return;
+	end
+
+	self:RemoveIndex(currentIndex);
+	self:InsertAtIndex(elementData, newIndex);
+
+	self:TriggerEvent(DataProviderMixin.Event.OnMove, elementData, currentIndex, newIndex);
 end
 
 function DataProviderMixin:Remove(...)

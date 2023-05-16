@@ -49,6 +49,7 @@ EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
+FrameAPICinematicModelDocumentation.lua
 FrameAPICooldownDocumentation.lua
 FrameAPIFogOfWarFrameDocumentation.lua
 FrameAPISimpleCheckoutDocumentation.lua

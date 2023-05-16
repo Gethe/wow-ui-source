@@ -139,7 +139,17 @@ end
 
 function ScrollBoxListViewMixin:ForEachFrame(func)
 	for index, frame in ipairs(self:GetFrames()) do
-		func(frame, frame:GetElementData());
+		if func(frame, frame:GetElementData()) then
+			return;
+		end
+	end
+end
+
+function ScrollBoxListViewMixin:ReverseForEachFrame(func)
+	for index, frame in ipairs_reverse(self:GetFrames()) do
+		if func(frame, frame:GetElementData()) then
+			return;
+		end
 	end
 end
 
@@ -167,12 +177,29 @@ function ScrollBoxListViewMixin:FindByPredicate(predicate)
 	return self:GetDataProvider():FindByPredicate(predicate);
 end
 
+function ScrollBoxListViewMixin:FindFrame(elementData)
+	for index, frame in ipairs(self:GetFrames()) do
+		if frame:ElementDataMatches(elementData) then
+			return frame;
+		end
+	end
+end
+
 function ScrollBoxListViewMixin:Find(index)
 	return self:GetDataProvider():Find(index);
 end
 
 function ScrollBoxListViewMixin:FindIndex(elementData)
 	return self:GetDataProvider():FindIndex(elementData);
+end
+
+function ScrollBoxListViewMixin:FindFrameElementDataIndex(findFrame)
+	local dataIndexBegin = self:GetDataIndexBegin();
+	for index, frame in ipairs(self:GetFrames()) do
+		if frame == findFrame then
+			return dataIndexBegin + (index - 1);
+		end
+	end
 end
 
 function ScrollBoxListViewMixin:InsertElementData(...)
@@ -387,7 +414,7 @@ function ScrollBoxListViewMixin:SetElementInitializer(frameTemplateOrFrameType, 
 
 	-- For single type factories, we can default to setting the element extent.
 	-- We cannot do this for multiple type factories because the template type can only be known
-	-- after invoking the factory. See GetTemplateFromElementData for details on how this is
+	-- after invoking the factory. See GetFactoryDataFromElementData for details on how this is
 	-- happening.
 	if not self.elementExtent and not self.elementExtentCalculator then
 		local extent = self:CreateTemplateExtent(frameTemplateOrFrameType);
@@ -448,28 +475,26 @@ function ScrollBoxListViewMixin:CalculateFrameExtent(dataIndex, elementData)
 end
 
 do
-	-- Local outside GetTemplateFromElementData to avoid creating an unnecessary closure 
-	-- every time we need to get the template.
+	-- This local factory function allows us to ask for the template and initializer
+	-- without actually creating a frame. This is useful in these cases:
+	-- 1) Asking for the template extents before a frame is created
+	-- 2) Asking for the template and initializer for creating a drag and drop cursor attachment
 	local template;
-	local factory = function(frameTemplate, initializer)
+	local initializer;
+	local factory = function(frameTemplate, frameInitializer)
 		template = frameTemplate;
+		initializer = frameInitializer;
 	end;
 	
-	function ScrollBoxListViewMixin:GetTemplateFromElementData(elementData)
-		-- Asserting that we never attempted to call this function in any context where the element extent or calculator
-		-- was set to expose any unintended execution.
-		assert(self.elementExtent == nil and self.elementExtentCalculator == nil);
-
-		-- When trying to obtain the extent in scenarios where multiple templates are in use, we have to 
-		-- call the factory to obtain the correct template. We don't want to actually produce a frame, we
-		-- only want to capture the template from the call, which we can accomplish with the shim above.
+	function ScrollBoxListViewMixin:GetFactoryDataFromElementData(elementData)
 		self.elementFactory(factory, elementData);
-		return template;
+		return template, initializer;
 	end
 end
 
-function ScrollBoxListViewMixin:CreateTemplateExtentFromElementData(elementData)	
-	return self:CreateTemplateExtent(self:GetTemplateFromElementData(elementData));
+function ScrollBoxListViewMixin:CreateTemplateExtentFromElementData(elementData)
+	local template, initializer = self:GetFactoryDataFromElementData(elementData);
+	return self:CreateTemplateExtent(template);
 end
 
 function ScrollBoxListViewMixin:CreateTemplateExtent(frameTemplate)

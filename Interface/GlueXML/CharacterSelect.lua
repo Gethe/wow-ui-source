@@ -177,12 +177,14 @@ function CharacterSelect_OnLoad(self)
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("CharSelectCharacterButtonTemplate", function(button, elementData)
+	local function Initializer(button, elementData)
 		if elementData.index > 0 then
 			CharacterSelect_InitCharacterButton(button, elementData);
 		end
-	end);
+	end;
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CharSelectCharacterButtonTemplate", Initializer);
 
 	-- Scroll box extends far to the left and then counterpositioned to make space
 	-- for services, service arrows, and locks.
@@ -193,6 +195,49 @@ function CharacterSelect_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
 	
+	do
+		local function CursorFactory(elementData)
+			return "CharSelectCharacterButtonTemplate", Initializer;
+		end
+
+		local function LineFactory(elementData)
+			return "ScrollBoxDragLineTemplate";
+		end
+
+		local function AnchoringHandler(anchorFrame, candidateFrame, candidateArea)
+			local leftX = -3;
+			local rightX = -33;
+			if candidateArea == DragIntersectionArea.Above then
+				local y = 0;
+				anchorFrame:SetPoint("BOTTOMLEFT", candidateFrame, "TOPLEFT", leftX, y);
+				anchorFrame:SetPoint("BOTTOMRIGHT", candidateFrame, "TOPRIGHT", rightX, y);
+			elseif candidateArea == DragIntersectionArea.Below then
+				local y = 15;
+				anchorFrame:SetPoint("TOPLEFT", candidateFrame, "BOTTOMLEFT", leftX, y);
+				anchorFrame:SetPoint("TOPRIGHT", candidateFrame, "BOTTOMRIGHT", rightX, y);
+			end
+		end
+
+		local dragBehavior = ScrollUtil.AddLinearDragBehavior(CharacterSelectCharacterFrame.ScrollBox, CursorFactory, LineFactory, AnchoringHandler);
+		dragBehavior:SetReorderable(true);
+		dragBehavior:SetDragRelativeToCursor(true);
+		dragBehavior:SetCursorHitInsets(14, 0);
+
+		dragBehavior:SetNotifyDragSource(function(sourceFrame, drag)
+			sourceFrame:SetAlpha(drag and .5 or 1);
+			sourceFrame:DesaturateHierarchy(drag and 1 or 0);
+			sourceFrame:SetMouseMotionEnabled(not drag);
+		end);
+
+		dragBehavior:SetNotifyDragCandidates(function(candidateFrame, drag)
+			candidateFrame:SetMouseMotionEnabled(not drag);
+		end);
+
+		dragBehavior:SetSourceDragCondition(function(sourceFrame, sourceElementData)
+			return true;
+		end);
+	end
+
 	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions. 
 	-- When the actual character data arrives, this data provider will be discarded.
 	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(CreateDataProvider());
@@ -329,16 +374,7 @@ function CharacterSelect_OnShow(self)
 end
 
 function CharacterSelect_OnHide(self)
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-	-- the user may have gotten d/c while dragging
-    if CharacterSelect.draggedIndex then
-		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame)
-			return frame.index == CharacterSelect.draggedIndex;
-		end);
-		if draggedButton then
-			CharacterSelectButton_OnDragStop(draggedButton);
-		end
-	end
+	CharacterSelectCharacterFrame.ScrollBox.dragBehavior:AbortDrag();
 
     CharacterSelect_SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
@@ -472,13 +508,6 @@ function CharacterSelect_OnUpdate(self, elapsed)
             GlueDialog_Show(self.undeletePendingRename and "UNDELETE_SUCCEEDED_NAME_TAKEN" or "UNDELETE_SUCCEEDED");
             self.undeleteSucceeded = false;
             self.undeletePendingRename = false;
-        end
-    end
-
-    if ( self.pressDownButton ) then
-        self.pressDownTime = self.pressDownTime + elapsed;
-        if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
-            CharacterSelectButton_OnDragStart(self.pressDownButton);
         end
     end
 
@@ -832,14 +861,11 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 
 	button.upButton:Hide();
 	button.downButton:Hide();
-	if (CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown()) then
-		CharacterSelectButton_DisableDrag(button);
 
-		if (button.padlock) then
-			button.padlock:Hide();
-		end
-	else
-		CharacterSelectButton_EnableDrag(button);
+	local disallowOrderChange = CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown();
+	CharacterSelectCharacterFrame.ScrollBox.dragBehavior:SetDragEnabled(not disallowOrderChange);
+	if disallowOrderChange and button.padlock then
+		button.padlock:Hide();
 	end
 
 	button.characterID = GetCharIDFromIndex(button.index);
@@ -1143,25 +1169,6 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 	local arrowShown = button:IsEnabled() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(elementData.index);
 	CharacterSelect_SetArrowButtonShown(button, arrowShown);
 
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-    if ( CharacterSelect.draggedIndex ) then
-        if ( CharacterSelect.draggedIndex == button.index ) then
-            button:SetAlpha(1);
-            button.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
-            button:LockHighlight();
-            paidServiceButton.texture:SetVertexColor(1, 1, 1);
-            paidServiceButton.GoldBorder:SetVertexColor(1, 1, 1);
-            paidServiceButton.VASIcon:SetVertexColor(1, 1, 1);
-        else
-            button:SetAlpha(0.6);
-            button.buttonText.name:SetPoint("TOPLEFT", DEFAULT_TEXT_OFFSET, -5);
-            button:UnlockHighlight();
-            paidServiceButton.texture:SetVertexColor(0.35, 0.35, 0.35);
-            paidServiceButton.GoldBorder:SetVertexColor(0.35, 0.35, 0.35);
-            paidServiceButton.VASIcon:SetVertexColor(0.35, 0.35, 0.35);
-        end
-    end
-
 	if CharSelectServicesFlowFrame:IsShown() then
 		paidServiceButton:Hide();
 		upgradeIcon:Hide();
@@ -1172,6 +1179,9 @@ end
 
 function CharacterSelect_GetCharactersDataProvider()
 	local dataProvider = CreateDataProviderByIndexCount(GetNumCharacters());
+	dataProvider:RegisterCallback(DataProviderMixin.Event.OnMove, function(o, elementData, oldIndex, newIndex)
+		MoveCharacter(oldIndex, newIndex);
+	end);
 	return dataProvider;
 end
 
@@ -1303,39 +1313,37 @@ function CharacterSelectButton_OnDoubleClick(self)
 end
 
 function CharacterSelectButton_ShowMoveButtons(button)
-    if (CharacterSelect.undeleting or CharacterSelect_IsAccountLocked()) then return end;
-    local numCharacters = GetNumCharacters();
-    if ( numCharacters <= 1 ) then
-	   return;
-    end
-
+	if (CharacterSelect.undeleting or CharacterSelect_IsAccountLocked()) then return end;
+	local numCharacters = GetNumCharacters();
+	if ( numCharacters <= 1 ) then
+		return;
+	end
+	
 	if not CharacterSelect_CanReorderCharacter() then
 		return;
 	end
-
-    if ( not CharacterSelect.draggedIndex ) then
-        button.upButton:Show();
-        button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
-        button.upButton.highlightTexture:SetPoint("CENTER", 0, 0);
-        button.downButton:Show();
-        button.downButton.normalTexture:SetPoint("CENTER", 0, 0);
-        button.downButton.highlightTexture:SetPoint("CENTER", 0, 0);
-        if ( button.index == 1 ) then
-            button.upButton:Disable();
-            button.upButton:SetAlpha(0.35);
-        else
-            button.upButton:Enable();
-            button.upButton:SetAlpha(1);
-        end
-
-        if ( button.index == numCharacters ) then
-            button.downButton:Disable();
-            button.downButton:SetAlpha(0.35);
-        else
-            button.downButton:Enable();
-            button.downButton:SetAlpha(1);
-        end
-    end
+	
+	button.upButton:Show();
+	button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
+	button.upButton.highlightTexture:SetPoint("CENTER", 0, 0);
+	button.downButton:Show();
+	button.downButton.normalTexture:SetPoint("CENTER", 0, 0);
+	button.downButton.highlightTexture:SetPoint("CENTER", 0, 0);
+	if ( button.index == 1 ) then
+	    button.upButton:Disable();
+	    button.upButton:SetAlpha(0.35);
+	else
+	    button.upButton:Enable();
+	    button.upButton:SetAlpha(1);
+	end
+	
+	if ( button.index == numCharacters ) then
+	    button.downButton:Disable();
+	    button.downButton:SetAlpha(0.35);
+	else
+	    button.downButton:Enable();
+	    button.downButton:SetAlpha(1);
+	end
 end
 
 function CharacterSelect_CreateNewCharacter(characterType)
@@ -1589,24 +1597,6 @@ function CharacterSelectScrollUp_OnClick()
 	CharacterSelect_RotateSelection(-1);
 end
 
-function CharacterSelectButton_OnDragUpdate(self)
-    -- FIXME SCROLLBOX REIMPLEMENTATION
-end
-
-function CharacterSelectButton_OnDragStart(self)
-   -- FIXME SCROLLBOX REIMPLEMENTATION
-end
-
-function CharacterSelectButton_OnDragStop(self)
-   -- FIXME SCROLLBOX REIMPLEMENTATION
-end
-
-function CharacterSelectButton_OnMouseDown(self)
-	CharacterSelect.pressDownButton = self;
-	CharacterSelect.pressDownTime = 0;
-end
-
-
 function CharacterSelectButton_OnEnter(self)
 	if ( CharacterSelect.selectedIndex == self:GetElementData().index ) then
 		CharacterSelectButton_ShowMoveButtons(self);
@@ -1618,8 +1608,6 @@ function CharacterSelectButton_OnEnter(self)
 		CharSelectAccountUpgradeButtonPointerFrame:Show();
 		CharSelectAccountUpgradeButtonGlow:Show();
 	end
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-	--CharacterSelect.dragToIndex = self:GetID();
 end
 
 function CharacterSelectButton_OnLeave(self)
@@ -1630,9 +1618,6 @@ function CharacterSelectButton_OnLeave(self)
 	CharSelectAccountUpgradeButtonPointerFrame:Hide();
 	CharSelectAccountUpgradeButtonGlow:Hide();
 	GlueTooltip:Hide();
-
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-	--CharacterSelect.dragToIndex = nil;
 end
 
 function CharacterSelectButton_RotateCharacter(self, direction)
@@ -1649,43 +1634,22 @@ function CharacterSelectButton_DownButtonOnClick(self)
 	CharacterSelectButton_RotateCharacter(self, 1);
 end
 
-function MoveCharacter(originIndex, targetIndex, fromDrag)
+function MoveCharacter(originIndex, targetIndex)
     CharacterSelect.orderChanged = true;
-    if ( targetIndex < 1 ) then
-        targetIndex = #translationTable;
-    elseif ( targetIndex > #translationTable ) then
-        targetIndex = 1;
-    end
-    if ( originIndex == CharacterSelect.selectedIndex ) then
-        CharacterSelect.selectedIndex = targetIndex;
-    elseif ( targetIndex == CharacterSelect.selectedIndex ) then
-        CharacterSelect.selectedIndex = originIndex;
-    end
-    translationTable[originIndex], translationTable[targetIndex] = translationTable[targetIndex], translationTable[originIndex];
+	targetIndex = Wrap(targetIndex, #translationTable);
 
-   -- FIXME SCROLLBOX REIMPLEMENTATION
-   -- update character list
-    if ( fromDrag ) then
-        CharacterSelect.draggedIndex = targetIndex;
-    end
-    UpdateCharacterSelection(CharacterSelect);
-    UpdateCharacterList();
+	local selectedCharacterIndex = translationTable[CharacterSelect.selectedIndex];
+
+	local value = translationTable[originIndex];
+	table.remove(translationTable, originIndex);
+	table.insert(translationTable, targetIndex, value);
+
+	CharacterSelect.selectedIndex = tIndexOf(translationTable, selectedCharacterIndex);
+
+	UpdateCharacterSelection(CharacterSelect);
+	UpdateCharacterList();
 
 	CharacterSelectCharacterFrame.ScrollBox:ScrollToElementDataIndex(targetIndex, ScrollBoxConstants.AlignNearest, ScrollBoxConstants.NoScrollInterpolation);
-end
-
-function CharacterSelectButton_DisableDrag(button)
-    button:SetScript("OnMouseDown", nil);
-    button:SetScript("OnMouseUp", nil);
-    button:SetScript("OnDragStart", nil);
-    button:SetScript("OnDragStop", nil);
-end
-
-function CharacterSelectButton_EnableDrag(button)
-    button:SetScript("OnDragStart", CharacterSelectButton_OnDragStart);
-    button:SetScript("OnDragStop", CharacterSelectButton_OnDragStop);
-    button:SetScript("OnMouseDown", CharacterSelectButton_OnMouseDown);
-    button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
 end
 
 -- translation functions
