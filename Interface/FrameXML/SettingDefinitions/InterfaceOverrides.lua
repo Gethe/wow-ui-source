@@ -226,12 +226,14 @@ local function RefreshSetting(name)
 end
 
 function InterfaceOverrides.RefreshRaidOptions()
-	RefreshSetting("PROXY_RAID_FRAME_POWER_BAR");
 	RefreshSetting("PROXY_RAID_FRAME_CLASS_COLORS");
 	RefreshSetting("PROXY_RAID_FRAME_PETS");
 	RefreshSetting("PROXY_RAID_FRAME_TANK_ASSIST");
 	RefreshSetting("PROXY_RAID_FRAME_BORDER");
 	RefreshSetting("PROXY_RAID_FRAME_SHOW_DEBUFFS");
+	RefreshSetting("PROXY_RAID_FRAME_KEEP_GROUPS_TOGETHER");
+	RefreshSetting("PROXY_RAID_FRAME_KEEP_HORIZONTAL_GROUPS");
+	RefreshSetting("PROXY_RAID_FRAME_SORT_BY");
 	RefreshSetting("PROXY_RAID_FRAME_POWER_BAR");
 	RefreshSetting("PROXY_RAID_FRAME_DISPELLABLE_DEBUFFS");
 	RefreshSetting("PROXY_RAID_HEALTH_TEXT");
@@ -320,6 +322,75 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 
 		layout:AddInitializer(raidProfileInitializer);
 
+	end
+
+	do
+		-- Keep Groups Together
+		local defaultValue = false;
+		local function GetValue()
+			return InterfaceOverrides.GetRaidProfileOption("keepGroupsTogether", defaultValue);
+		end
+		
+		local function SetValue(value)
+			local test = InterfaceOverrides.GetRaidProfileOption("keepGroupsTogether", defaultValue);
+			InterfaceOverrides.SetRaidProfileOption("keepGroupsTogether", value);
+		end
+		
+		local keepGroupsTogetherSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_KEEP_GROUPS_TOGETHER", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_KEEPGROUPSTOGETHER, defaultValue, GetValue, SetValue);
+		local keepGroupsInitializer = Settings.CreateCheckBox(category, keepGroupsTogetherSetting, OPTION_TOOLTIP_KEEP_GROUPS_TOGETHER);
+
+		-- Horizontal Groups
+		local defaultValue = true;
+		local function GetValue()
+			return InterfaceOverrides.GetRaidProfileOption("horizontalGroups", defaultValue);
+		end
+		
+		local function SetValue(value)
+			InterfaceOverrides.SetRaidProfileOption("horizontalGroups", value);
+		end
+
+		local horizontalSetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_KEEP_HORIZONTAL_GROUPS", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_HORIZONTALGROUPS, defaultValue, GetValue, SetValue);
+		local horizontalGroupsInitializer = Settings.CreateCheckBox(category, horizontalSetting, nil);
+
+		local function HorizontalShouldShow()
+			return keepGroupsTogetherSetting:GetValue();
+		end
+
+		horizontalGroupsInitializer:SetParentInitializer(keepGroupsInitializer);
+		horizontalGroupsInitializer:AddShownPredicate(HorizontalShouldShow);
+
+		-- Sort By
+		local defaultValue = "role";
+		local function GetValue()
+			return InterfaceOverrides.GetRaidProfileOption("sortBy", defaultValue);
+		end
+		
+		local function SetValue(value)
+			InterfaceOverrides.SetRaidProfileOption("sortBy", value);
+		end
+
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add("role", RAID_SORT_ROLE, OPTION_RAID_SORT_BY_ROLE);
+			container:Add("group", RAID_SORT_GROUP, OPTION_RAID_SORT_BY_GROUP);
+			container:Add("alphabetical", RAID_SORT_ALPHABETICAL, OPTION_RAID_SORT_BY_ALPHABETICAL);
+			return container:GetData();
+		end
+
+		local sortBySetting = Settings.RegisterProxySetting(category, "PROXY_RAID_FRAME_SORT_BY", Settings.DefaultVarLocation,
+			Settings.VarType.String, COMPACT_UNIT_FRAME_PROFILE_SORTBY, defaultValue, GetValue, SetValue);
+
+
+		local sortByInitializer = Settings.CreateDropDown(category, sortBySetting, GetOptions, TOOLTIP_TEXT);
+
+		local function SortShouldShow()
+			return not keepGroupsTogetherSetting:GetValue();
+		end
+
+		sortByInitializer:SetParentInitializer(keepGroupsInitializer);
+		sortByInitializer:AddShownPredicate(SortShouldShow);
 	end
 
 	do

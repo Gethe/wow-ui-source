@@ -164,6 +164,10 @@ function DataProviderMixin:SetSortComparator(sortComparator, skipSort)
 	end
 end
 
+function DataProviderMixin:ClearSortComparator()
+	self.sortComparator = nil;
+end
+
 function DataProviderMixin:HasSortComparator()
 	return self.sortComparator ~= nil;
 end

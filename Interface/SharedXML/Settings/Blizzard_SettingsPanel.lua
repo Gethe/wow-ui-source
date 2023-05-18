@@ -174,6 +174,8 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 	elseif name == SettingsInbound.OnSettingValueChangedAttribute then
 		local setting, newValue, oldValue, originalValue = SecureUnpackArgs(value);
 		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
+	elseif name == SettingsInbound.RepairDisplayAttribute then
+		self:RepairDisplay();
 	end
 end
 
@@ -742,6 +744,21 @@ function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, orig
 	self.modified[setting] = isModified and setting or nil;
 	securecallfunction(setting.UpdateIgnoreApplyFlag, setting);
 	self:CheckApplyButton();
+
+	SettingsInbound.RepairDisplay();
+end
+
+function SettingsPanelMixin:RepairDisplay()
+	local currentCategory = self:GetCurrentCategory();
+	if currentCategory then
+		local layout = self:GetLayout(currentCategory);
+		local layoutType = layout:GetLayoutType();
+		if layoutType == SettingsLayoutMixin.LayoutType.Vertical then
+			local initializers = securecallfunction(layout.GetInitializers, layout);
+			local settingsList = self:GetSettingsList();
+			securecallfunction(settingsList.RepairDisplay, settingsList, initializers);
+		end
+	end
 end
 
 function SettingsPanelMixin:GetAllCategories()

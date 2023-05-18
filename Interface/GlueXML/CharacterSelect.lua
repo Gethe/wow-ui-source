@@ -898,7 +898,7 @@ function UpdateCharacterList(skipSelect)
     local isAccountLocked = CharacterSelect_IsAccountLocked();
 
     for i=1, characterLimit, 1 do
-        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, _, _, _, _, _, _, isLockedFromOtherChars = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
         local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -931,7 +931,7 @@ function UpdateCharacterList(skipSelect)
 
             if ( CharacterSelect.undeleting ) then
                 nameText:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
-            elseif ( locked ) then
+            elseif ( locked or isLockedFromOtherChars ) then
                 nameText:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
             else
                 nameText:SetText(name);
@@ -1457,9 +1457,9 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
     end
 
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfo(GetCharacterSelection()));
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, _, isLockedFromOtherChars = select(22, GetCharacterInfo(GetCharacterSelection()));
 	local trialBoostUnavailable = (isExpansionTrialCharacter and (isTrialBoostLocked or not IsExpansionTrial())) or (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled()));
-    if (revokedCharacterUpgrade or trialBoostUnavailable) then
+    if (revokedCharacterUpgrade or trialBoostUnavailable or isLockedFromOtherChars) then
         return false;
     end
 

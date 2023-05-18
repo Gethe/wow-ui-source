@@ -363,7 +363,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 end
 
 function CompactUnitFrame_UpdateVisible(frame)
-	if ( UnitExists(frame.unit) or UnitExists(frame.displayedUnit) ) then
+	if ( UnitExists(frame.unit) or UnitExists(frame.displayedUnit) or UnitIsGameObject(frame.displayedUnit) ) then
 		if ( not frame.unitExists ) then
 			frame.newUnit = true;
 		end

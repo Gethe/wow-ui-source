@@ -419,7 +419,7 @@ function InterfaceOptionsFrame_TabOnClick ()
 		InterfaceOptionsFrameAddOns:Show();
 	end
 end
-
+--[[
 function InterfaceOptionsFrame_OpenToCategory (panel)
 	local panelName;
 	if ( type(panel) == "string" ) then
@@ -482,7 +482,7 @@ function InterfaceOptionsFrame_OpenToCategory (panel)
 		end
 	end
 end
-
+]]
 
 ---------------------------------------------------------------------------------------------------
 -- HOWTO: Add new categories of options
@@ -583,7 +583,7 @@ local function AddAddOnCategory(categories, index, frame)
 	end
 	InterfaceCategoryList_Update();
 end
-
+--[[
 function InterfaceOptions_AddCategory (frame, addOn, position)
 	if ( issecure() and ( not addOn ) ) then
 		local parent = frame.parent;
@@ -659,3 +659,4 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 		AddAddOnCategory(categories, position, frame);
 	end
 end
+]]

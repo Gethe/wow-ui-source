@@ -114,7 +114,7 @@ end
 
 function InterfaceOptionsPanel_OnLoad (self)
 	BlizzardOptionsPanel_OnLoad(self, nil, InterfaceOptionsPanel_Cancel, InterfaceOptionsPanel_Default, InterfaceOptionsPanel_Refresh);
-	InterfaceOptions_AddCategory(self);
+	--InterfaceOptions_AddCategory(self);
 end
 
 function InterfaceOptionsPanel_RegisterSetToDefaultFunc(func, self)
