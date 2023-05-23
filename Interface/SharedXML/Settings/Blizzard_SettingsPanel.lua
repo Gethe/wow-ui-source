@@ -176,6 +176,9 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
 	elseif name == SettingsInbound.RepairDisplayAttribute then
 		self:RepairDisplay();
+	elseif name == SettingsInbound.SetCurrentLayout then
+		local layout = SecureUnpackArgs(value);
+		self:SetCurrentLayout(layout);
 	end
 end
 
@@ -749,9 +752,8 @@ function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, orig
 end
 
 function SettingsPanelMixin:RepairDisplay()
-	local currentCategory = self:GetCurrentCategory();
-	if currentCategory then
-		local layout = self:GetLayout(currentCategory);
+	local layout = self.currentLayout;
+	if layout then
 		local layoutType = layout:GetLayoutType();
 		if layoutType == SettingsLayoutMixin.LayoutType.Vertical then
 			local initializers = securecallfunction(layout.GetInitializers, layout);
@@ -824,10 +826,16 @@ function SettingsPanelMixin:DisplayCategory(category)
 	self:DisplayLayout(layout);
 end
 
+function SettingsPanelMixin:SetCurrentLayout(layout)
+	self.currentLayout = layout;
+end
+
 function SettingsPanelMixin:DisplayLayout(layout)
 	if not layout then
 		return;
 	end
+
+	SettingsInbound.SetCurrentLayout(layout);
 
 	local currentCategory = self:GetCurrentCategory();
 	if currentCategory then
