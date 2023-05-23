@@ -716,7 +716,7 @@ function CastingBarMixin:UpdateCastTimeTextShown()
 		return;
 	end
 
-	local showCastTime = self.showCastTimeSetting and (self.casting or self.isInEditMode);
+	local showCastTime = self.showCastTimeSetting and (self.casting or self.channeling or self.isInEditMode);
 	self.CastTimeText:SetShown(showCastTime);
 	if showCastTime and self.isInEditMode and not self.CastTimeText.text then
 		self:UpdateCastTimeText();
@@ -729,9 +729,13 @@ function CastingBarMixin:UpdateCastTimeText()
 	end
 
 	local seconds = 0;
-	if self.casting then
+	if self.casting or self.channeling then
 		local min, max = self:GetMinMaxValues();
-		seconds = max - self:GetValue();
+		if self.casting then
+			seconds = math.max(min, max - self:GetValue());
+		else
+			seconds = math.max(min, self:GetValue());
+		end
 	elseif self.isInEditMode then
 		seconds = 10;
 	end

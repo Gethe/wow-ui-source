@@ -441,7 +441,7 @@
 				<Texture parentKey="Icon">
 					<Size x="20" y="20"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-2" y="-5"/>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>

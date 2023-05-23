@@ -417,10 +417,10 @@ function LootHistoryFrameMixin:UpdateTimer()
 
 	local elapsed = C_LootHistory.GetLootHistoryTime() - self.encounterInfo.startTime;
 	if allRollsFinished or elapsed >= self.encounterInfo.duration or self.encounterInfo.duration == 0 then
-		self.Timer:Hide();
+		self.Timer.Fill:Hide();
 		self:SetScript("OnUpdate", nil);
 	else
-		self.Timer:Show();
+		self.Timer.Fill:Show();
 
 		local fullFillWidth = 234;
 		local pctLeft = 1.0 - (elapsed / self.encounterInfo.duration);

@@ -92,6 +92,43 @@ function SettingsListMixin:GetInputBlocker()
 	return self.ScrollBox.InputBlocker;
 end
 
+-- Used when a setting value change results in other settings needing to have their
+-- visibility changed. For example, checking a bool setting may hide one child, but show
+-- another.
+function SettingsListMixin:RepairDisplay(initializers)
+	-- The order isn't stored on the initializer itself because initializers can be mirrored in
+	-- another settings lists, namely Acessibility.
+	local order = {};
+	for index, initializer in ipairs(initializers) do
+		order[initializer] = index;
+	end
+
+	-- Remove what is no longer intended to be shown.
+	local dataProvider = self.ScrollBox:GetDataProvider();
+	local shown = {};
+	for index, initializer in dataProvider:ReverseEnumerate() do
+		if initializer:ShouldShow() then
+			shown[initializer] = true;
+		else
+			dataProvider:RemoveIndex(index);
+		end
+	end
+
+	-- Add any newly shown, out of position at the end. Will be corrected when sorted.
+	for index, initializer in EnumerateTaintedKeysTable(initializers) do
+		if not shown[initializer] and initializer:ShouldShow() then
+			dataProvider:Insert(initializer);
+		end
+	end
+
+	-- Reorder and sort the list.
+	local function Comparator(e1, e2)
+		return order[e1] < order[e2];
+	end
+	dataProvider:SetSortComparator(Comparator);
+	dataProvider:ClearSortComparator();
+end
+
 function SettingsListMixin:Display(initializers)
 	local dataProvider = CreateDataProvider();
 	for key, initializer in EnumerateTaintedKeysTable(initializers) do

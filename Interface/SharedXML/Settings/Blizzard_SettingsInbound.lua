@@ -20,6 +20,8 @@ SettingsInbound.OnSettingValueChangedAttribute = "on-setting-value-changed";
 SettingsInbound.CreateSettingInitializerAttribute = "create-initializer";
 SettingsInbound.RegisterInitializerAttribute = "register-initializer";
 
+SettingsInbound.RepairDisplayAttribute = "repair-display";
+SettingsInbound.SetCurrentLayoutAttribute = "set-current-layout";
 
 function SettingsInbound.OpenToCategory(categoryID, scrollToElementName)
 	SettingsPanel:SetAttribute(SettingsInbound.OpenToCategoryAttribute, { categoryID, scrollToElementName, });
@@ -82,4 +84,13 @@ end
 
 function SettingsInbound.RegisterInitializer(category, initializer)
 	SettingsPanel:SetAttribute(SettingsInbound.RegisterInitializerAttribute, { category, initializer, });
+end
+
+function SettingsInbound.RepairDisplay()
+	local dummy = true;
+	SettingsPanel:SetAttribute(SettingsInbound.RepairDisplayAttribute, dummy);
+end
+
+function SettingsInbound.SetCurrentLayout(layout)
+	SettingsPanel:SetAttribute(SettingsInbound.SetCurrentLayoutAttribute, layout);
 end

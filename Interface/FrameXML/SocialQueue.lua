@@ -225,7 +225,7 @@ function SocialQueueUtil_SortGroupMembers(members)
 			return lhsPriority < rhsPriority;
 		end
 
-		return strcmputf8i(lhsName, rhsName) <= 0;
+		return strcmputf8i(lhsName, rhsName) < 0;
 	end);
 	return members;
 end

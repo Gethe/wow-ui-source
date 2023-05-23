@@ -129,6 +129,7 @@ local LossOfControl =
 				{ Name = "lockoutSchool", Type = "number", Nilable = false },
 				{ Name = "priority", Type = "number", Nilable = false },
 				{ Name = "displayType", Type = "number", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = true },
 			},
 		},
 	},

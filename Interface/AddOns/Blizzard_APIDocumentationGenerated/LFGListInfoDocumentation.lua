@@ -476,20 +476,6 @@ local LFGListInfo =
 	Tables =
 	{
 		{
-			Name = "LFGEntryPlaystyle",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "None", Type = "LFGEntryPlaystyle", EnumValue = 0 },
-				{ Name = "Standard", Type = "LFGEntryPlaystyle", EnumValue = 1 },
-				{ Name = "Casual", Type = "LFGEntryPlaystyle", EnumValue = 2 },
-				{ Name = "Hardcore", Type = "LFGEntryPlaystyle", EnumValue = 3 },
-			},
-		},
-		{
 			Name = "LFGListDisplayType",
 			Type = "Enumeration",
 			NumValues = 6,

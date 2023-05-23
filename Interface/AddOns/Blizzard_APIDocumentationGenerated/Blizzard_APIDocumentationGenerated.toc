@@ -276,6 +276,7 @@ CharacterCustomizationSharedDocumentation.lua
 ChatConstantsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
+ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
@@ -343,7 +344,6 @@ WeeklyRewardsSharedDocumentation.lua
 WowLabsConstantsDocumentation.lua
 AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
-ContentTrackingTypesDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua
 CovenantSanctumConstantsDocumentation.lua
 CovenantsConstantsDocumentation.lua

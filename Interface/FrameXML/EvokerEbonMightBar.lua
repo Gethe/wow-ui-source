@@ -12,7 +12,7 @@ function EvokerEbonMightBarMixin:Initialize()
 	self.requiredSpec = SPEC_EVOKER_AUGMENTATION;
 	self.frequentUpdates = true;
 	-- Numeric status text only - bar is a timer with an arbitrary max, percentages aren't meaningful
-	self.showNumeric = true;
+	self.disablePercentages = true;
 
 	self.auraExpirationTime = nil;
 

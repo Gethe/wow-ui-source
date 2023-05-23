@@ -11,6 +11,7 @@ function PerksProgramProductsFrameMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH");
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
 	EventRegistry:RegisterCallback("PerksProgram.SortFieldSet", self.SortFieldSet, self);
+	EventRegistry:RegisterCallback("PerksProgram.AllDataRefresh", self.AllDataRefresh, self);
 
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 	self.currencyIconMarkup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 20, 20, 0, 1, 0, 1, 0, 0);
@@ -436,11 +437,15 @@ function PerksProgramProductsFrameMixin:SelectPreviousProduct()
 	end
 end
 
-function PerksProgramProductsFrameMixin:OnShow()
+function PerksProgramProductsFrameMixin:AllDataRefresh()
 	self:UpdateProducts();
 	self.silenceSelectionSounds = true;
 	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData();
 	self.silenceSelectionSounds = false;
+end
+
+function PerksProgramProductsFrameMixin:OnShow()
+	self:AllDataRefresh();
 end
 
 function PerksProgramProductsFrameMixin:GetElementData(perksVendorItemID)

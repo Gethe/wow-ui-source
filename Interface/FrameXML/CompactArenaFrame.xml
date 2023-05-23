@@ -17,7 +17,7 @@
 		</Scripts>
 	</Cooldown>
 
-	<Frame name="ArenaUnitFrameDebuffTemplate" hidden="true" mixin="ArenaUnitFrameDebuffMixin" virtual="true">
+	<Frame name="ArenaUnitFrameDebuffTemplate" ignoreParentAlpha="true" hidden="true" mixin="ArenaUnitFrameDebuffMixin" virtual="true">
 		<Size x="27" y="27"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -39,10 +39,12 @@
 		</Frames>
 		<Scripts>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="ArenaUnitFrameCcRemoverTemplate" hidden="true" mixin="ArenaUnitFrameCcRemoverMixin" virtual="true">
+	<Frame name="ArenaUnitFrameCcRemoverTemplate" ignoreParentAlpha="true" hidden="true" mixin="ArenaUnitFrameCcRemoverMixin" virtual="true">
 		<Size x="27" y="27"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -59,11 +61,11 @@
 		</Scripts>
 	</Frame>
 
-	<StatusBar name="ArenaUnitFrameCastingBarTemplate" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
+	<StatusBar name="ArenaUnitFrameCastingBarTemplate" ignoreParentAlpha="true" inherits="SmallCastingBarFrameTemplate" hidden="true" virtual="true">
 		<Size x="130" y="10"/>
 	</StatusBar>
 
-	<Frame name="ArenaUnitFramePreMatchTemplate" mixin="ArenaUnitFramePreMatchMixin" parentArray="preMatchUnitFrames" hidden="true" virtual="true">
+	<Frame name="PreMatchArenaUnitFrameTemplate" mixin="PreMatchArenaUnitFrameMixin" parentArray="preMatchUnitFrames" hidden="true" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -87,7 +89,7 @@
 			</Layer>
 
 			<Layer level="ARTWORK">
-				<Texture parentKey="RoleIconTexture" file="Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
 					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>
@@ -107,6 +109,50 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SpecNameText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.SpecNameText" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="StealthedArenaUnitFrameTemplate" mixin="StealthedArenaUnitFrameMixin" parentArray="stealthedUnitFrames" alpha="0.55" hidden="true" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTexture" file="Interface\RaidFrame\Raid-Bar-Hp-Bg" setAllPoints="true" ignoreParentAlpha="true">
+					<TexCoords left="0" right="1" top="0" bottom="0.53125"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER">
+				<Texture parentKey="BarTexture" file="Interface\RAIDFRAME\Raid-Bar-Hp-Fill">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK">
+				<Texture parentKey="StealthIcon" file="Interface\ICONS\Ability_Stealth" ignoreParentAlpha="true">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-3" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="NameText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size y="11"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RoleIconTexture" relativePoint="TOPRIGHT" x="1" y="-1"/>
+						<Anchor point="TOPRIGHT" x="-3"/>
 					</Anchors>
 				</FontString>
 			</Layer>

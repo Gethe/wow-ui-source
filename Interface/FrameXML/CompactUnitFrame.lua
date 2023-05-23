@@ -218,6 +218,7 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		frame.isTanking = nil;
 		frame.hideCastbar = frame.optionTable.hideCastbar;
 		frame.healthBar.healthBackground = nil;
+
 		frame:SetAttribute("unit", unit);
 		if ( unit ) then
 			CompactUnitFrame_RegisterEvents(frame);
@@ -335,10 +336,13 @@ function CompactUnitFrame_OnShow(frame)
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateDistance(frame);
 	end
+
+	CompactUnitFrame_OnVisiblityChanged(frame);
 end
 
 function CompactUnitFrame_OnHide(frame)
 	CompactUnitFrame_UpdateUnitEvents(frame);
+	CompactUnitFrame_OnVisiblityChanged(frame);
 end
 
 function CompactUnitFrame_SetUpClicks(frame)
@@ -386,7 +390,7 @@ end
 function CompactUnitFrame_UpdateAll(frame)
 	CompactUnitFrame_UpdateInVehicle(frame);
 	CompactUnitFrame_UpdateVisible(frame);
-	if ( UnitExists(frame.displayedUnit) ) then
+	if ( CompactUnitFrame_UnitExists(frame.displayedUnit) ) then
 		CompactUnitFrame_UpdateMaxHealth(frame);
 		CompactUnitFrame_UpdateHealth(frame);
 		CompactUnitFrame_UpdateMaxPower(frame);
@@ -433,7 +437,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 	if ( shouldTargetVehicle ) then
 		local prefix, id, suffix = string.match(frame.unit, "([^%d]+)([%d]*)(.*)")
 		unitVehicleToken = prefix.."pet"..id..suffix;
-		if ( not UnitExists(unitVehicleToken) ) then
+		if ( not CompactUnitFrame_UnitExists(unitVehicleToken) ) then
 			shouldTargetVehicle = false;
 		end
 	end
@@ -456,7 +460,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 end
 
 function CompactUnitFrame_UpdateVisible(frame)
-	if ( UnitExists(frame.unit) or UnitExists(frame.displayedUnit) ) then
+	if ( CompactUnitFrame_UnitExists(frame.unit) or CompactUnitFrame_UnitExists(frame.displayedUnit) or UnitIsGameObject(frame.displayedUnit) ) then
 		if ( not frame.unitExists ) then
 			frame.newUnit = true;
 		end
@@ -471,6 +475,28 @@ function CompactUnitFrame_UpdateVisible(frame)
 			frame:Hide();
 		end
 	end
+end
+
+function CompactUnitFrame_OnVisiblityChanged(unitFrame)
+	if unitFrame.visibilityChangedCallbacks then
+		for subscribingFrame, callback in pairs(unitFrame.visibilityChangedCallbacks) do
+			callback(subscribingFrame, unitFrame);
+		end
+	end
+end
+
+function CompactUnitFrame_SubscribeToVisibilityChanged(unitFrame, subscribingFrame, visibilityChangedCallback)
+	if not unitFrame.visibilityChangedCallbacks then
+		unitFrame.visibilityChangedCallbacks = {};
+	end
+	unitFrame.visibilityChangedCallbacks[subscribingFrame] = visibilityChangedCallback;
+end
+
+function CompactUnitFrame_UnsubscribeToVisibilityChanged(unitFrame, unsubscribingFrame)
+	if not unitFrame.visibilityChangedCallbacks then
+		return;
+	end
+	unitFrame.visibilityChangedCallbacks[unsubscribingFrame] = nil;
 end
 
 function CompactUnitFrame_IsTapDenied(frame)
@@ -1290,6 +1316,17 @@ function CompactUnitFrame_ClearWidgetSet(frame)
 	end
 end
 
+function CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
+	local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+
+	-- Can't dispell debuffs on pvp frames
+	if type == AuraUtil.AuraUpdateChangedType.Dispel and CompactUnitFrame_IsPvpFrame(frame) then
+		type = AuraUtil.AuraUpdateChangedType.Debuff;
+	end
+
+	return type;
+end
+
 --Other internal functions
 do
 	local function CompactUnitFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
@@ -1311,7 +1348,7 @@ do
 		local batchCount = nil;
 		local usePackedAura = true;
 		local function HandleAura(aura)
-			local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+			local type = CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
 
 			if type == AuraUtil.AuraUpdateChangedType.Debuff then
 				frame.debuffs[aura.auraInstanceID] = aura;
@@ -1319,7 +1356,6 @@ do
 				frame.buffs[aura.auraInstanceID] = aura;
 			elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
 				frame.debuffs[aura.auraInstanceID] = aura;
-				frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
 			end
 		end
 		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful), batchCount, HandleAura, usePackedAura);
@@ -1328,9 +1364,10 @@ do
 	end
 
 	local function CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo)
-		local displayOnlyDispellableDebuffs = frame.optionTable.displayOnlyDispellableDebuffs;
+		local displayOnlyDispellableDebuffs = CompactUnitFrame_GetOptionDisplayOnlyDispellableDebuffs(frame, frame.optionTable);
 		local ignoreBuffs = not frame.buffFrames or not frame.optionTable.displayBuffs or frame.maxBuffs == 0;
-		local ignoreDebuffs = not frame.debuffFrames or not frame.optionTable.displayDebuffs or frame.maxDebuffs == 0;
+		local displayDebuffs = CompactUnitFrame_GetOptionDisplayDebuffs(frame, frame.optionTable);
+		local ignoreDebuffs = not frame.debuffFrames or not displayDebuffs or frame.maxDebuffs == 0;
 		local ignoreDispelDebuffs = ignoreDebuffs or not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0;
 
 		local debuffsChanged = false;
@@ -1345,7 +1382,7 @@ do
 		else
 			if unitAuraUpdateInfo.addedAuras ~= nil then
 				for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
-					local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
+					local type = CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
 					if type == AuraUtil.AuraUpdateChangedType.Debuff then
 						frame.debuffs[aura.auraInstanceID] = aura;
 						debuffsChanged = true;
@@ -1418,6 +1455,11 @@ do
 				if frameNum > maxDebuffs then
 					return true;
 				end
+
+				if CompactUnitFrame_IsAuraInstanceIDBlocked(frame, auraInstanceID) then
+					return false;
+				end
+
 				local debuffFrame = frame.debuffFrames[frameNum];
 				CompactUnitFrame_UtilSetDebuff(debuffFrame, aura);
 				frameNum = frameNum + 1;
@@ -1650,6 +1692,65 @@ function CompactUnitFrame_GetOptionHealthText(frame, options)
 	else
 		return options.healthText;
 	end
+end
+
+function CompactUnitFrame_GetOptionDisplayDebuffs(frame, options)
+	if CompactUnitFrame_IsPvpFrame(frame) then
+		return true;
+	else
+		return options.displayDebuffs;
+	end
+end
+
+function CompactUnitFrame_GetOptionDisplayOnlyDispellableDebuffs(frame, options)
+	if CompactUnitFrame_IsPvpFrame(frame) then
+		return false;
+	else
+		return options.displayOnlyDispellableDebuffs;
+	end
+end
+
+function CompactUnitFrame_AddBlockedAuraInstanceID(unitFrame, blockingFrame, auraInstanceID)
+	if not auraInstanceID then
+		return;
+	end
+
+	if not unitFrame.blockedAuraInstanceIDsTable then
+		unitFrame.blockedAuraInstanceIDsTable = {};
+	end
+
+	if not unitFrame.blockedAuraInstanceIDsTable[blockingFrame] then
+		unitFrame.blockedAuraInstanceIDsTable[blockingFrame] = {};
+	end
+
+	unitFrame.blockedAuraInstanceIDsTable[blockingFrame][auraInstanceID] = true;
+end
+
+function CompactUnitFrame_ClearBlockedAuraInstanceIDs(unitFrame, blockingFrame)
+	if not unitFrame.blockedAuraInstanceIDsTable then
+		return;
+	end
+	unitFrame.blockedAuraInstanceIDsTable[blockingFrame] = nil;
+end
+
+function CompactUnitFrame_IsAuraInstanceIDBlocked(unitFrame, auraInstanceID)
+	if unitFrame.blockedAuraInstanceIDsTable then
+		for _, blockedAuraInstanceIDsTable in pairs(unitFrame.blockedAuraInstanceIDsTable) do
+			if blockedAuraInstanceIDsTable and blockedAuraInstanceIDsTable[auraInstanceID] then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
+function CompactUnitFrame_UnitExists(unitToken)
+	if ArenaUtil.IsArenaUnit(unitToken) then
+		return ArenaUtil.UnitExists(unitToken);
+	end
+
+	return UnitExists(unitToken);
 end
 
 --Dropdown

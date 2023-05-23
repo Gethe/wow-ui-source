@@ -527,7 +527,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 150,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 	},
 

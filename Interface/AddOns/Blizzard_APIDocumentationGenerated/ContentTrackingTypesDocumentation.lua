@@ -60,6 +60,7 @@ local ContentTrackingTypes =
 			Type = "Constants",
 			Values =
 			{
+				{ Name = "MaxTrackedCollectableSources", Type = "number", Value = 15 },
 				{ Name = "MaxTrackedAchievements", Type = "number", Value = 10 },
 			},
 		},

@@ -196,6 +196,12 @@ function CharacterSelect_OnLoad(self)
 	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
 	
 	do
+		local function Initializer(button, elementData)
+			CharacterSelect_InitCharacterButton(button, elementData);
+			button.selection:Hide();
+			button.drag:Show();
+		end
+
 		local function CursorFactory(elementData)
 			return "CharSelectCharacterButtonTemplate", Initializer;
 		end

@@ -276,11 +276,6 @@
 										<Anchor point="TOPLEFT" x="58.5" y="-53.5"/>
 									</Anchors>
 								</Texture>
-								<FontString name="PlayerPVPTimerText" parentKey="PvpTimerText" inherits="GameFontNormalSmall">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="45" y="-82"/>
-									</Anchors>
-								</FontString>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="2">
 								<!-- PVPIcon and PrestigePortrait (and badge) are in the same position. -->
@@ -303,6 +298,13 @@
 										<Anchor point="CENTER" relativeKey="$parent.PrestigePortrait" relativePoint="CENTER"/>
 									</Anchors>
 								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="4">
+								<FontString name="PlayerPVPTimerText" parentKey="PvpTimerText" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.PVPIcon" relativePoint="BOTTOM" x="0" y="2"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>

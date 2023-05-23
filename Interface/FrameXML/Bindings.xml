@@ -1462,6 +1462,9 @@
 	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		DumpMovementCapture();
 	</Binding>
+	<Binding name="COPYTOOLTIP" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TooltipUtil.DebugCopyGameTooltip();
+	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->
 	<Binding name="NEXTVIEW" category="BINDING_HEADER_CAMERA">

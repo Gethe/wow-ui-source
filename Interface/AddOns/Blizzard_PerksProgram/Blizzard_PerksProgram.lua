@@ -207,6 +207,7 @@ end
 function PerksProgramMixin:OnEvent(event, ...)
 	if event == "PERKS_PROGRAM_DATA_REFRESH" then
 		self.vendorItemIDs = C_PerksProgram.GetAvailableVendorItemIDs();
+		EventRegistry:TriggerEvent("PerksProgram.AllDataRefresh");
 	elseif event =="PERKS_PROGRAM_PURCHASE_SUCCESS" then
 		PlaySound(SOUNDKIT.TRADING_POST_UI_PURCHASE_CELEBRATION);
 		if self.purchaseStateTimer then
