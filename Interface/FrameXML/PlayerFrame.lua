@@ -304,6 +304,8 @@ function PlayerFrame_UpdatePvPStatus()
 	local pvpIcon = playerFrameTargetContextual.PVPIcon;
 	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
 	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+	
+	local activePvPBadgeContainer = nil;
 
 	if (UnitIsPVPFreeForAll("player")) then
 		if (PlayerFrame_CanPlayPVPUpdateSound()) then
@@ -317,11 +319,13 @@ function PlayerFrame_UpdatePvPStatus()
 			prestigePortrait:Show();
 			prestigeBadge:Show();
 			pvpIcon:Hide();
+			activePvPBadgeContainer = prestigePortrait;
 		else
 			prestigePortrait:Hide();
 			prestigeBadge:Hide();
 			pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
 			pvpIcon:Show();
+			activePvPBadgeContainer = pvpIcon;
 		end
 
 		PlayerPVPTimerText:Hide();
@@ -348,6 +352,7 @@ function PlayerFrame_UpdatePvPStatus()
 			prestigePortrait:Show();
 			prestigeBadge:Show();
 			pvpIcon:Hide();
+			activePvPBadgeContainer = prestigePortrait;
 		else
 			prestigePortrait:Hide();
 			prestigeBadge:Hide();
@@ -367,6 +372,7 @@ function PlayerFrame_UpdatePvPStatus()
 			end
 
 			pvpIcon:Show();
+			activePvPBadgeContainer = pvpIcon;
 		end
 	else
 		prestigePortrait:Hide();
@@ -374,6 +380,12 @@ function PlayerFrame_UpdatePvPStatus()
 		pvpIcon:Hide();
 		PlayerPVPTimerText:Hide();
 		PlayerPVPTimerText.timeLeft = nil;
+	end
+
+	if activePvPBadgeContainer == prestigePortrait then
+		PlayerPVPTimerText:SetPoint("TOP", prestigePortrait, "BOTTOM", 0, 10);
+	elseif activePvPBadgeContainer == pvpIcon then
+		PlayerPVPTimerText:SetPoint("TOP", pvpIcon, "BOTTOM", 0, 2);
 	end
 end
 
@@ -593,7 +605,6 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
-	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -87);
 	PlayerLevelText:Hide();
 end
 
@@ -661,7 +672,6 @@ function PlayerFrame_ToPlayerArt(self)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
-	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -82);
 end
 
 --
