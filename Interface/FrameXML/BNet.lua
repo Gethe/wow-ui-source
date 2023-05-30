@@ -26,6 +26,7 @@ BNET_CLIENT_D2 = "OSI";
 BNET_CLIENT_COD_VANGUARD = "FORE";
 BNET_CLIENT_DI = "ANBS";
 BNET_CLIENT_ARCLIGHT = "GRY";
+BNET_CLIENT_D4 = "Fen";
 
 --Name can be a realID or plain battletag with no 4 digit number (e.g. Murky McGrill or LichKing).
 function BNet_GetBNetIDAccount(name)
@@ -404,6 +405,8 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-DiabloImmortal";
 	elseif ( client == BNET_CLIENT_ARCLIGHT) then
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-WarcraftArclightRumble";
+	elseif ( client == BNET_CLIENT_D4) then
+		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Diablo4";
 	else
 		textureString = "Interface\\ChatFrame\\UI-ChatIcon-Battlenet";
 	end
@@ -449,6 +452,8 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-DiabloImmortalicon";
 	elseif ( client == BNET_CLIENT_ARCLIGHT) then
 		return "Interface\\FriendsFrame\\Battlenet-WarcraftArclightRumbleicon";
+	elseif ( client == BNET_CLIENT_D4) then
+		return "Interface\\FriendsFrame\\Battlenet-Diablo4icon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end
