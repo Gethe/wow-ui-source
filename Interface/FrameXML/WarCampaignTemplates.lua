@@ -114,8 +114,13 @@ function CampaignHeaderDisplayMixin:SetProgressText(text, color)
 end
 
 function CampaignHeaderDisplayMixin:UpdateJourneyProgressText(state)
-	local text = CampaignUtil.BuildChapterProgressText(self:GetCampaign());
-	self:SetProgressText(text, HIGHLIGHT_FONT_COLOR);
+	local campaign = self:GetCampaign();
+	if campaign:IsContainerCampaign() then
+		self:SetProgressText(CONTAINER_CAMPAIGN_PROGRESS, HIGHLIGHT_FONT_COLOR);
+	else
+		local text = CampaignUtil.BuildChapterProgressText(self:GetCampaign());
+		self:SetProgressText(text, HIGHLIGHT_FONT_COLOR);
+	end
 end
 
 function CampaignHeaderDisplayMixin:UpdateProgress(state)
@@ -159,6 +164,10 @@ function CampaignHeaderDisplayMixin:SetCampaign(campaignID)
 
 	self:UpdateTextureKit();
 
+	if self.CollapseButton then
+		self.CollapseButton:SetShown(not campaign:IsContainerCampaign());
+	end
+
 	local state = campaign:GetState();
 	local isComplete = state == Enum.CampaignState.Complete;
 	self:UpdateComplete(isComplete);
@@ -190,6 +199,11 @@ end
 CampaignHeaderCollapsibleMixin = {};
 
 function CampaignHeaderCollapsibleMixin:OnClick(button)
+	local campaign = self:GetCampaign();
+	if campaign:IsContainerCampaign() then		
+		return;
+	end
+
 	if button == "LeftButton" then
 		local isCollapsed = self:ToggleCollapsed();
 
@@ -225,9 +239,13 @@ end
 CampaignHeaderTooltipableMixin = {};
 
 function CampaignHeaderTooltipableMixin:ShowTooltip()
+	local campaign = self:GetCampaign();
+	if campaign:IsContainerCampaign() then
+		return;
+	end
+	
 	local tooltip = QuestMapLog_GetCampaignTooltip();
-
-	tooltip:SetCampaign(self:GetCampaign());
+	tooltip:SetCampaign(campaign);
 	tooltip:ClearAllPoints();
 	if (tooltip:GetWidth() > UIParent:GetRight() - WorldMapFrame:GetRight()) then
 		tooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);

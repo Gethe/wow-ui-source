@@ -97,9 +97,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -127,6 +127,8 @@ local EditModeManagerShared =
 				{ Name = "EnableSnap", Type = "EditModeAccountSetting", EnumValue = 22 },
 				{ Name = "EnableAdvancedOptions", Type = "EditModeAccountSetting", EnumValue = 23 },
 				{ Name = "ShowPetFrame", Type = "EditModeAccountSetting", EnumValue = 24 },
+				{ Name = "ShowTimerBars", Type = "EditModeAccountSetting", EnumValue = 25 },
+				{ Name = "ShowVehicleSeatIndicator", Type = "EditModeAccountSetting", EnumValue = 26 },
 			},
 		},
 		{
@@ -357,9 +359,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 19,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 18,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -379,6 +381,19 @@ local EditModeManagerShared =
 				{ Name = "Bags", Type = "EditModeSystem", EnumValue = 14 },
 				{ Name = "StatusTrackingBar", Type = "EditModeSystem", EnumValue = 15 },
 				{ Name = "DurabilityFrame", Type = "EditModeSystem", EnumValue = 16 },
+				{ Name = "TimerBars", Type = "EditModeSystem", EnumValue = 17 },
+				{ Name = "VehicleSeatIndicator", Type = "EditModeSystem", EnumValue = 18 },
+			},
+		},
+		{
+			Name = "EditModeTimerBarsSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeTimerBarsSetting", EnumValue = 0 },
 			},
 		},
 		{
@@ -425,6 +440,17 @@ local EditModeManagerShared =
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
 				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
 				{ Name = "Pet", Type = "EditModeUnitFrameSystemIndices", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "EditModeVehicleSeatIndicatorSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeVehicleSeatIndicatorSetting", EnumValue = 0 },
 			},
 		},
 		{

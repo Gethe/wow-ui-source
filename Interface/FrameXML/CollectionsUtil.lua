@@ -257,6 +257,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 		end
 	end
 
+	if warningString then
+		GameTooltip_AddNormalLine(tooltip, warningString);
+	end
+
 	if ( not appearanceCollected ) then
 		if sourceLocation then
 			if sourceDifficulties then
@@ -266,10 +270,6 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			end
 		end
 		GameTooltip_AddColoredLine(tooltip, sourceText, sourceColor);
-	end
-
-	if warningString then
-		GameTooltip_AddNormalLine(tooltip, warningString);
 	end
 
 	local useError;
@@ -412,8 +412,13 @@ end
 function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
 	if transmogLocation and model then
 		local slotID = transmogLocation.slotID;
-		if model:IsGeoReady() and model:IsSlotAllowed(slotID) and not model:IsSlotVisible(slotID) then
-			return TRANSMOG_DRACTHYR_APPEARANCE_INVISIBLE;
+		if model:IsGeoReady() then
+			local slotAllowed = model:IsSlotAllowed(slotID);
+			if slotAllowed and not model:IsSlotVisible(slotID) then
+				return TRANSMOG_DRACTHYR_APPEARANCE_INVISIBLE;
+			elseif not slotAllowed and transmogLocation:GetArmorCategoryID() then
+				return TRANSMOG_SLOT_APPEARANCE_INVISIBLE;
+			end			
 		end
 	end
 	return nil;

@@ -19,13 +19,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	end
 
 	-- Process breathbar onUpdates if the map is up or the ui is hidden
-	local bar;
-	for i=1, MIRRORTIMER_NUMTIMERS do
-		bar = _G["MirrorTimer"..i];
-		if ( bar and bar:IsShown() and not bar:IsVisible() ) then
-			bar:OnUpdate(bar, elapsed);
-		end
-	end
+	MirrorTimerContainer:ForceUpdateTimers();
 
 	-- Process item translation onUpdates if the map is up or the ui is hidden
 	if ( ItemTextFrame:IsShown() and not ItemTextFrame:IsVisible() ) then

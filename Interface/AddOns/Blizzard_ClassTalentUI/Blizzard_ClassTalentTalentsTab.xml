@@ -37,11 +37,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="BlackBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
+				<Texture parentKey="BlackBG" setAllPoints="true">
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 			</Layer>

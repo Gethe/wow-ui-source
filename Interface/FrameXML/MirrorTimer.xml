@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MirrorTimer.lua"/>
-	<Frame name="MirrorTimerTemplate" toplevel="true" parent="UIParent" hidden="true" mixin="MirrorTimerMixin" virtual="true">
+	<Frame name="MirrorTimerTemplate" toplevel="true" hidden="true" parentArray="mirrorTimers" mixin="MirrorTimerMixin" virtual="true">
 		<Size x="206" y="32"/>
 		<Frames>
 			<StatusBar parentKey="StatusBar">
@@ -50,24 +50,37 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="MirrorTimer1" inherits="MirrorTimerTemplate">
+
+	<Frame name="MirrorTimerContainer" parent="UIParent" inherits="EditModeTimerBarsSystemTemplate, VerticalLayoutFrame" mixin="MirrorTimerContainerMixin">
+		<Size x="1" y="1"/>
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-96"/>
+			<Anchor point="TOP" x="0" y="-100"/>
 		</Anchors>
+		<Frames>
+			<Frame inherits="MirrorTimerTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame inherits="MirrorTimerTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame inherits="MirrorTimerTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
-	<Frame name="MirrorTimer2" inherits="MirrorTimerTemplate">
-		<Anchors>
-			<Anchor point="TOP" relativeTo="MirrorTimer1" relativePoint="BOTTOM"/>
-		</Anchors>
-	</Frame>
-	<Frame name="MirrorTimer3" inherits="MirrorTimerTemplate">
-		<Anchors>
-			<Anchor point="TOP" relativeTo="MirrorTimer2" relativePoint="BOTTOM"/>
-		</Anchors>
-	</Frame>
+	
 </Ui>

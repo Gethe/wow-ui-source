@@ -316,8 +316,8 @@
 		<ButtonText parentKey="Text">
 			<Size x="50" y="8"/>
 			<Anchors>
-				<Anchor point="LEFT" relativeKey="$parent.leftTexture" relativePoint="RIGHT" x="0" y="-5"/>
-				<Anchor point="RIGHT" relativeKey="$parent.rightTexture" relativePoint="LEFT" x="0" y="-5"/>
+				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="0" y="-5"/>
+				<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="0" y="-5"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>

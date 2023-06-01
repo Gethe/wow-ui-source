@@ -836,7 +836,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
 		local reagentType = reagentSlotSchematic.reagentType;
 		-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
-		local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+		local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 		local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
 		
 		local slots = self.reagentSlots[sectionType];
@@ -1032,6 +1032,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							flyout.OnElementEnabledImplementation = function(button, elementData)
 								local item = elementData.item;
 								if not self.transaction:AreAllRequirementsAllocated(item) then
+									return false;
+								end
+								
+								local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
+								if self.transaction:HasAllocatedReagent(reagent) then
 									return false;
 								end
 
@@ -1301,11 +1306,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end);
 	end
 
-	local basicSlots;
+	local basicSlots = {};
 	if isSalvage then
-		basicSlots = {self.salvageSlot};
-	else
-		basicSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
+		table.insert(basicSlots, self.salvageSlot);
+	end
+
+	do
+		local addBasics = self:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
+		if addBasics then
+			tAppendAll(basicSlots, addBasics);
+		end
 	end
 
 	local optionalSlots;
@@ -1317,7 +1327,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.OptionalReagents:SetText(PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL);
 	end
 
-	if basicSlots and #basicSlots > 0 then
+	if #basicSlots > 0 then
 		self.Reagents:Show();
 
 		self.Reagents:ClearAllPoints();

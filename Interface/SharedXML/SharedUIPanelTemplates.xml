@@ -1294,7 +1294,7 @@
 				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
 					<Size x="10" y="12"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+						<Anchor point="RIGHT" x="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -2829,8 +2829,8 @@
 			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner2" x="1" y="-28"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" x="-20" y="1"/>
+					<Anchor point="TOPLEFT" x="1" y="-28"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="1"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

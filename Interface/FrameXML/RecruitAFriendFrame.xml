@@ -669,7 +669,7 @@
 					<Frame parentKey="Header">
 						<Size x="320" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="3"/>
+							<Anchor point="TOPLEFT" x="3"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

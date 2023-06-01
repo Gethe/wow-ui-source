@@ -1,84 +1,18 @@
-
-
-
-local numVehicleIndicatorButtons = 0;
-function VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID)
-	if ( vehicleIndicatorID == VehicleSeatIndicator.currSkin ) then
-		return;
-	end
-	
-	if ( vehicleIndicatorID == 0 ) then
-		VehicleSeatIndicator_UnloadTextures();
-		return;
-	end
-	
-	local backgroundTexture, numSeatIndicators = GetVehicleUIIndicator(vehicleIndicatorID);
-	
-	VehicleSeatIndicator.currSkin = vehicleIndicatorID;
-	
-	VehicleSeatIndicatorBackgroundTexture:SetTexture(backgroundTexture);
-	
-	--These have been hard-coded in for now. FIXME (need something returned from GetVehicleUIIndicator that gives height/width)
-	local totalHeight = 128; --VehicleSeatIndicatorBackgroundTexture:GetFileHeight();
-	local totalWidth = 128; --VehicleSeatIndicatorBackgroundTexture:GetFileWidth();
-	VehicleSeatIndicator:SetHeight(totalHeight);
-	VehicleSeatIndicator:SetWidth(totalWidth);
-	
-	for i=1, numSeatIndicators do
-		local button;
-		if ( i > numVehicleIndicatorButtons ) then
-			button = CreateFrame("Button", "VehicleSeatIndicatorButton"..i, VehicleSeatIndicator, "VehicleSeatIndicatorButtonTemplate");
-			button:SetID(i)
-			numVehicleIndicatorButtons = i;
-		else
-			button = _G["VehicleSeatIndicatorButton"..i];
-		end
-		
-		local virtualSeatIndex, xOffset, yOffset = GetVehicleUIIndicatorSeat(vehicleIndicatorID, i);
-		
-		button.virtualID = virtualSeatIndex;
-		button:SetPoint("CENTER", button:GetParent(), "TOPLEFT", xOffset*totalWidth, -yOffset*totalHeight);
-		button:Show();
-	end	
-	
-	for i=numSeatIndicators+1, numVehicleIndicatorButtons do
-		local button = _G["VehicleSeatIndicatorButton"..i];
-		button:Hide();
-	end
-	
-	VehicleSeatIndicator:Show();
-	DurabilityFrame:SetAlerts();
-	VehicleSeatIndicator_Update();
-	
-	UIParent_ManageFramePositions();
+local function VehicleSeatIndicatorDropdown_OnClick()
+	EjectPassengerFromSeat(UIDROPDOWNMENU_MENU_VALUE);
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
-function VehicleSeatIndicator_UnloadTextures()
-	VehicleSeatIndicatorBackgroundTexture:SetTexture(nil);
-	VehicleSeatIndicator:Hide()
-	VehicleSeatIndicator.currSkin = nil;
-	DurabilityFrame:SetAlerts();
-	
-	UIParent_ManageFramePositions();
+local function  VehicleSeatIndicatorDropdown_Initialize()
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = EJECT_PASSENGER;
+	info.func = VehicleSeatIndicatorDropdown_OnClick;
+	UIDropDownMenu_AddButton(info);
 end
 
-local function SeatIndicator_PulseFunc(self, elapsed)
-	return abs(sin(elapsed*360));
-end
+VehicleSeatIndicatorMixin = {};
 
-local SeatIndicator_PulseTable = {
-	totalTime = 2,
-	updateFunc = "SetAlpha",
-	getPosFunc = SeatIndicator_PulseFunc,
-}
-
-function SeatIndicator_Pulse(self, isPlayer)
-	self:Show();
-	self:SetAlpha(0);
-	SetUpAnimation(self, SeatIndicator_PulseTable, self.Hide);
-end
-
-function VehicleSeatIndicator_OnLoad(self)
+function VehicleSeatIndicatorMixin:OnLoad()
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA");
 	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
@@ -87,76 +21,143 @@ function VehicleSeatIndicator_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
-	UIDropDownMenu_Initialize( VehicleSeatIndicatorDropDown, VehicleSeatIndicatorDropDown_Initialize, "MENU");
+	UIDropDownMenu_Initialize(self.DropDown, VehicleSeatIndicatorDropdown_Initialize, "MENU");
+
+	self.buttonPool = CreateFramePool("BUTTON", self, "VehicleSeatIndicatorButtonTemplate");
 end
 
-function VehicleSeatIndicator_OnEvent(self, event, ...)
+function VehicleSeatIndicatorMixin:OnEvent(event, ...)
 	local unitToken = ...;
 	if ( event == "UNIT_ENTERED_VEHICLE" and unitToken == "player" ) then
 		local vehicleIndicatorID = select(4, ...);
-		VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID);
+		self:SetupVehicle(vehicleIndicatorID);
 	elseif ( event == "PLAYER_GAINS_VEHICLE_DATA" and unitToken == "player" ) then
 		local vehicleIndicatorID = select(2, ...);
-		VehicleSeatIndicator_SetUpVehicle(vehicleIndicatorID);
+		self:SetupVehicle(vehicleIndicatorID);
 	elseif ( event == "UNIT_ENTERING_VEHICLE" and unitToken == "player" ) then
 		self.hasPulsedPlayer = false;
 	elseif ( event == "VEHICLE_PASSENGERS_CHANGED" ) then
-		VehicleSeatIndicator_Update();
+		self:Update();
 	elseif ( (event == "UNIT_EXITED_VEHICLE" and unitToken == "player") or
-			 (event == "PLAYER_ENTERING_WORLD" and VehicleSeatIndicator.currSkin and UnitVehicleSeatCount("player") == 0 ) or
+			 (event == "PLAYER_ENTERING_WORLD" and self.currSkin and UnitVehicleSeatCount("player") == 0 ) or
 			 (event == "PLAYER_LOSES_VEHICLE_DATA" and unitToken == "player") ) then
-		VehicleSeatIndicator_UnloadTextures();
+		self:UnloadTextures();
 	end
 end
-function VehicleSeatIndicator_Update()
-	if ( not VehicleSeatIndicator.currSkin ) then
+
+function VehicleSeatIndicatorMixin:Update()
+	if ( not self.currSkin ) then
 		return;
 	end
-	for i=1, numVehicleIndicatorButtons do
-		local button = _G["VehicleSeatIndicatorButton"..i];
+	for _, button in ipairs(self.buttons) do
 		if ( button:IsShown() ) then
 			local controlType, occupantName = UnitVehicleSeatInfo("player", button.virtualID);
 			if ( occupantName ) then
 				button.occupantName = occupantName;
 				if ( occupantName == UnitName("player") ) then
-					_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Show();
-					_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
-					if ( not VehicleSeatIndicator.hasPulsedPlayer ) then
-						SeatIndicator_Pulse(_G["VehicleSeatIndicatorButton"..i.."PulseTexture"], true);
-						VehicleSeatIndicator.hasPulsedPlayer = true;
+					button.PlayerIcon:Show();
+					button.AllyIcon:Hide();
+					if ( not self.hasPulsedPlayer ) then
+						button:Pulse();
+						self.hasPulsedPlayer = true;
 					end
 				else
-					_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
-					_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Show();
+					button.PlayerIcon:Hide();
+					button.AllyIcon:Show();
 				end
 			else
-				_G["VehicleSeatIndicatorButton"..i.."PlayerIcon"]:Hide();
-				_G["VehicleSeatIndicatorButton"..i.."AllyIcon"]:Hide();
+				button.PlayerIcon:Hide();
+				button.AllyIcon:Hide();
 			end
 		end
 	end
 end
 
-function VehicleSeatIndicatorButton_OnClick(self, button)
+function VehicleSeatIndicatorMixin:SetupVehicle(vehicleIndicatorID)
+	if ( vehicleIndicatorID == self.currSkin ) then
+		return;
+	end
+
+	if ( vehicleIndicatorID == 0 ) then
+		self:UnloadTextures();
+		return;
+	end
+
+	local backgroundTexture, numSeatIndicators = GetVehicleUIIndicator(vehicleIndicatorID);
+
+	self.currSkin = vehicleIndicatorID;
+
+	self.BackgroundTexture:SetTexture(backgroundTexture);
+
+	--These have been hard-coded in for now. FIXME (need something returned from GetVehicleUIIndicator that gives height/width)
+	local totalHeight = 128; --self.BackgroundTexture:GetFileHeight();
+	local totalWidth = 128; --self.BackgroundTexture:GetFileWidth();
+	self:SetHeight(totalHeight);
+	self:SetWidth(totalWidth);
+
+	self.buttonPool:ReleaseAll();
+	for i = 1, numSeatIndicators do
+		local virtualSeatIndex, xOffset, yOffset = GetVehicleUIIndicatorSeat(vehicleIndicatorID, i);
+		local button = self.buttonPool:Acquire();
+		button:SetID(i);
+		button.virtualID = virtualSeatIndex;
+		button:SetPoint("CENTER", button:GetParent(), "TOPLEFT", xOffset*totalWidth, -yOffset*totalHeight);
+		button:Show();
+	end
+
+	self:UpdateShownState();
+	DurabilityFrame:SetAlerts();
+	self:Update();
+
+	UIParent_ManageFramePositions();
+end
+
+function VehicleSeatIndicatorMixin:UnloadTextures()
+	self.BackgroundTexture:SetTexture(nil);
+	self.currSkin = nil;
+	self.buttonPool:ReleaseAll();
+	self:UpdateShownState();
+	DurabilityFrame:SetAlerts();
+
+	UIParent_ManageFramePositions();
+end
+
+function VehicleSeatIndicatorMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
+end
+
+function VehicleSeatIndicatorMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode or self.currSkin);
+end
+
+VehicleSeatIndicatorButtonMixin = {};
+
+function VehicleSeatIndicatorButtonMixin:OnLoad()
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self.Highlight:SetAlpha(0.5);
+end
+
+function VehicleSeatIndicatorButtonMixin:OnClick(button)
 	local seatIndex = self.virtualID;
 	if ( button == "RightButton" and CanEjectPassengerFromSeat(seatIndex)) then
-		ToggleDropDownMenu(1, seatIndex, VehicleSeatIndicatorDropDown, self:GetName(), 0, -5);
+		ToggleDropDownMenu(1, seatIndex, VehicleSeatIndicator.DropDown, self:GetName(), 0, -5);
 	else
 		UnitSwitchToVehicleSeat("player", seatIndex);
 	end
 end
 
-function VehicleSeatIndicatorButton_OnEnter(self)
+function VehicleSeatIndicatorButtonMixin:OnEnter()
 	if ( not self:IsEnabled() ) then
 		return;
 	end
-	
+
 	local controlType, occupantName, serverName, ejectable, canSwitchSeats = UnitVehicleSeatInfo("player", self.virtualID);
 	if (serverName and serverName ~= "") then
 		occupantName = format(FULL_PLAYER_NAME, occupantName, serverName);
 	end
-	local highlight = _G[self:GetName().."Highlight"]
-	
+	local highlight = self.Highlight;
+
 	if ( not UnitUsingVehicle("player") ) then	--UnitUsingVehicle also returns true when we are transitioning between seats in a vehicle.
 		highlight:Hide();
 		if ( occupantName ) then
@@ -166,7 +167,7 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 		end
 		return;
 	end
-	
+
 	if ( not canSwitchSeats or not CanSwitchVehicleSeat() ) then
 		highlight:Hide();
 		SetCursor(nil);
@@ -208,19 +209,22 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 	end
 end
 
-function VehicleSeatIndicatorButton_OnLeave(self)
+function VehicleSeatIndicatorButtonMixin:OnLeave()
 	GameTooltip:Hide();
 	SetCursor(nil);
 end
 
-function VehicleSeatIndicatorDropDown_OnClick()
-	EjectPassengerFromSeat(UIDROPDOWNMENU_MENU_VALUE);
-	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+local function SeatIndicator_PulseFunc(self, elapsed)
+	return abs(sin(elapsed*360));
 end
-
-function VehicleSeatIndicatorDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = EJECT_PASSENGER;
-	info.func = VehicleSeatIndicatorDropDown_OnClick;
-	UIDropDownMenu_AddButton(info);
+local SeatIndicator_PulseTable = {
+	totalTime = 2,
+	updateFunc = "SetAlpha",
+	getPosFunc = SeatIndicator_PulseFunc,
+}
+function VehicleSeatIndicatorButtonMixin:Pulse()
+	local pulseTexture = self.PulseTexture;
+	pulseTexture:Show();
+	pulseTexture:SetAlpha(0);
+	SetUpAnimation(pulseTexture, SeatIndicator_PulseTable, pulseTexture.Hide);
 end

@@ -538,7 +538,9 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 end
 
 function CharacterCreateMixin:UpdateMode(offset)
-	self:SetMode(Clamp(self.currentMode + offset, CHAR_CREATE_MODE_CLASS_RACE, CHAR_CREATE_MODE_ZONE_CHOICE))
+	if self.currentMode then
+		self:SetMode(Clamp(self.currentMode + offset, CHAR_CREATE_MODE_CLASS_RACE, CHAR_CREATE_MODE_ZONE_CHOICE))
+	end
 end
 
 function CharacterCreateMixin:IsMode(mode)

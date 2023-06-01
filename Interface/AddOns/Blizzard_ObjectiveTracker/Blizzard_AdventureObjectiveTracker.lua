@@ -118,6 +118,25 @@ function AdventureObjectiveTracker_Untrack(unused_dropDownButton, trackableType,
 	C_ContentTracking.StopTracking(trackableType, id);
 end
 
+function AdventureObjectiveTracker_AnimateReward(trackableID, anchor, posIndex, trackerModule)
+	local info = C_TransmogCollection.GetSourceInfo(trackableID);
+	local icon = C_TransmogCollection.GetSourceIcon(trackableID);
+	local item = Item:CreateFromItemID(info.itemID);
+
+	local rewardData = { };
+	rewardData.posIndex = posIndex
+	rewardData.rewards = { };
+
+	local t = { };
+	t.label = item:GetItemName();
+	t.texture = icon;
+	t.count = 1;
+	t.font = "GameFontHighlightSmall";
+	table.insert(rewardData.rewards, t);
+	
+	AdventureObjectiveTrackerBonusRewardsFrame:AnimateRewardOnAnchor(anchor, rewardData, trackableID, trackerModule);
+end
+
 function ADVENTURE_TRACKER_MODULE:UpdatePOI(trackableType, trackableID)
 	-- TODO:: It's not safe to use id alone here.
 	local block = self:GetExistingBlock(trackableID);
@@ -190,7 +209,6 @@ function ADVENTURE_TRACKER_MODULE:ProcessTrackingEntry(trackableType, trackableI
 		block.objective.FadeOutAnim:SetScript("OnFinished" ,
 			function() 
 				block.module:FreeLine(block, block.objective);
-				C_ContentTracking.StopTracking(block.trackableType, block.id);
 			end
 		);
 
@@ -236,7 +254,18 @@ function ADVENTURE_TRACKER_MODULE:EnumerateTrackables(callback)
 	end
 end
 
-function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableID)
+function ADVENTURE_TRACKER_MODULE:StopTrackingCollectedItems()
+	if not self.collectedIds then
+		return;
+	end
+
+	for trackableId, trackableType in pairs(self.collectedIds) do
+		C_ContentTracking.StopTracking(trackableType, trackableId)
+	end
+	self.collectedIds = nil;
+end
+
+function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableID, trackableType)
 	-- TODO:: It's not safe to use trackableID alone here.
 	local block = self:GetBlock(trackableID);
 
@@ -247,20 +276,26 @@ function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableID)
 		block.objective.CheckFlash.Anim:Play();
 		block.objective.block = block;
 		block.objective.state = "ANIMATING";
+		AdventureObjectiveTracker_AnimateReward(trackableID, block, block.posIndex, self);
+	elseif C_ContentTracking.IsTracking(trackableType, trackableID) then
+		--If no block is found, but we are tracking the item, show animation at the bottom of the objective tracker
+		AdventureObjectiveTracker_AnimateReward(trackableID, ObjectiveTrackerFrame, 0, self);
+		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", ObjectiveTrackerFrame, "BOTTOMLEFT", 20, 16);
 	end
-end
 
-function ADVENTURE_TRACKER_MODULE:IsShowingBlock(trackableID)
-	-- TODO:: It's not safe to use trackableID alone here.
-	local block = self:GetBlock(trackableID);
-	return block and block.objective;
+	if not self.collectedIds then
+		self.collectedIds = { };
+	end
+	self.collectedIds[trackableID] = trackableType;
 end
 
 function ADVENTURE_TRACKER_MODULE:Update()
 	if OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TRANSMOG_COLLECTED then
-		self:OnTrackableItemCollected(OBJECTIVE_TRACKER_UPDATE_ID);
+		self:OnTrackableItemCollected(OBJECTIVE_TRACKER_UPDATE_ID, Enum.ContentTrackingType.Appearance);
 		return;
 	end
+
+	self:StopTrackingCollectedItems();
 
 	self:BeginLayout();
 	self:EnumerateTrackables(GenerateClosure(self.ProcessTrackingEntry, self));

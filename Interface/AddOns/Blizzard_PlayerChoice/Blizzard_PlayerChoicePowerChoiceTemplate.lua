@@ -14,14 +14,18 @@ end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnShow()
 	self:SetAlpha(1);
-	for _, animation in ipairs(self.PassiveAnimations) do
-		animation:Play();
+	if(self.PassiveAnimations) then
+		for _, animation in ipairs(self.PassiveAnimations) do
+			animation:Play();
+		end
 	end
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnHide()
-	for _, animation in ipairs(self.PassiveAnimations) do
-		animation:Stop();
+	if(self.PassiveAnimations) then
+		for _, animation in ipairs(self.PassiveAnimations) do
+			animation:Stop();
+		end
 	end
 	if self.ChoiceSelectedAnimation then
 		self.ChoiceSelectedAnimation:Stop();

@@ -260,7 +260,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	self:RegisterEvent("MIRROR_TIMER_START");
 	self:RegisterEvent("DUEL_REQUESTED");
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
 	self:RegisterEvent("DUEL_INBOUNDS");
@@ -1835,8 +1834,6 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
-	elseif ( event == "MIRROR_TIMER_START" ) then
-		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6);
 	elseif ( event == "DUEL_REQUESTED" ) then
 		StaticPopup_Show("DUEL_REQUESTED", arg1);
 	elseif ( event == "DUEL_OUTOFBOUNDS" ) then

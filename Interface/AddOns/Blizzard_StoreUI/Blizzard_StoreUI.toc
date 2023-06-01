@@ -12,6 +12,7 @@
 ..\..\SharedXML\CallbackRegistry.lua
 ..\..\SharedXML\Interpolator.lua
 ..\..\SharedXML\ButtonStateBehavior.lua
+..\..\SharedXML\InputUtil.lua
 ..\..\SharedXML\Frame\EventButton.lua
 ..\..\SharedXML\Frame\EventFrame.lua
 ..\..\SharedXML\Frame\EventScrollFrame.lua

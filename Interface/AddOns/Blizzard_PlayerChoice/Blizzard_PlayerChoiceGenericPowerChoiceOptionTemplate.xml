@@ -14,11 +14,32 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="GlowBG" alphaMode="ADD">
+				<Texture parentKey="BackgroundFrame">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.CircleBorder"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="ArtworkGlow1" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CircleBorder" x="-25" y="25"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CircleBorder" x="25" y="-25"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArtworkGlow2" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CircleBorder" x="-25" y="25"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CircleBorder" x="25" y="-25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="ArtworkBack">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CircleBorder"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CircleBorder"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -40,12 +61,5 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<Animations>
-			<AnimationGroup parentKey="GlowAnimations" looping="REPEAT" parentArray="PassiveAnimations">
-				<Rotation childKey="GlowBG" duration="30" order="1" degrees="-360"/>
-				<Alpha childKey="GlowBG" smoothing="OUT" duration="1" order="1" fromAlpha="0.70" toAlpha="1"/>
-				<Alpha childKey="GlowBG" smoothing="OUT" startDelay="1" duration="1" order="2" fromAlpha="1" toAlpha="0.70"/>
-			</AnimationGroup>
-		</Animations>
 	</Frame>
 </Ui>

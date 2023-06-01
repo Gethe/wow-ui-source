@@ -43,8 +43,8 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha childKey="Glow" fromAlpha="0" toAlpha="0.15" duration="1" order="1" smoothing="OUT"/>
-							<Alpha childKey="Glow" fromAlpha="0.15" toAlpha="0" duration="1" order="2" smoothing="IN"/>
+							<Alpha fromAlpha="0" toAlpha="0.15" duration="1" order="1" smoothing="OUT"/>
+							<Alpha fromAlpha="0.15" toAlpha="0" duration="1" order="2" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>

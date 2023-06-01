@@ -47,12 +47,12 @@
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="QuickKeybindGlowLarge" atlas="QuickKeybind_BottomBarExtended_Glow" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundLarge" x="0" y="0"/>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="QuickKeybindGlowSmall" atlas="QuickKeybind_BottomBar_Glow" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.BackgroundSmall" x="0" y="0"/>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -72,4 +72,140 @@
 			<OnClick function="QuestObjectiveFindGroup_OnClick"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="BonusObjectiveTrackerRewardTemplate" parentArray="Rewards" virtual="true">
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ItemIcon" hidden="false" alpha="0" file="Interface\Icons\XP_Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ItemBorder" hidden="false" alpha="0" atlas="Objective-ItemBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemIcon" relativePoint="TOPRIGHT" x="2" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" alpha="0" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="76" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ItemIcon" relativePoint="RIGHT" x="6" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ItemOverlay" alpha="0">
+					<Size x="51" y="51"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ItemIcon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" alpha="0" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemIcon" x="5" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Alpha childKey="ItemIcon" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemIcon" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ItemOverlay" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemOverlay" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Label" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Label" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Count" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Count" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ItemBorder" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemBorder" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="BonusObjectiveRewardsFrameTemplate" parent="UIParent" hidden="true" mixin="BonusObjectiveRewardsFrameMixin" virtual="true">
+		<Size x="168" y="128"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RewardsTop" hidden="false" alpha="0" atlas="Rewards-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HeaderTop" hidden="false" alpha="0" atlas="OBJFX_LineGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardsTop" x="50" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RewardsBottom" hidden="false" alpha="0" atlas="Rewards-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardsTop" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="RewardsShadow" hidden="false" alpha="0" atlas="Rewards-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.RewardsBottom" relativePoint="BOTTOM" x="0" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Header" alpha="0" inherits="QuestFont_Outline_Huge" text="REWARDS">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="HeaderGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.HeaderTop" x="-25" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame inherits="BonusObjectiveTrackerRewardTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Scale childKey="RewardsTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="RIGHT"/>
+				</Scale>
+				<Alpha childKey="RewardsTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardsTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Header" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Header" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="HeaderTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+				<Alpha childKey="HeaderTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="HeaderTop" duration="0.25" order="1" offsetX="-30" offsetY="0"/>
+				<Alpha childKey="HeaderTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="HeaderGlow" startDelay="0.05" duration="0.5" order="1" fromScaleX="1" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+				<Alpha childKey="HeaderGlow" startDelay="0.05" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="HeaderGlow" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="HeaderGlow" startDelay="0.05" duration="0.5" order="1" offsetX="-70" offsetY="0"/>
+				<Alpha childKey="RewardsBottom" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Translation parentKey="RewardsBottomAnim" childKey="RewardsBottom" startDelay="0.5" duration="0.35" order="1" offsetX="0" offsetY="-83"/>
+				<Alpha childKey="RewardsBottom" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale parentKey="RewardsShadowAnim" childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromScaleX="0.8" fromScaleY="0.2" toScaleX="0.8" toScaleY="3">
+					<Origin point="TOP"/>
+				</Scale>
+				<Alpha childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardsShadow" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished> 
+						self:GetParent():OnAnimateRewardDone();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 </Ui>

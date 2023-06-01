@@ -589,6 +589,36 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			formatter = ShowAsPercentage,
 		},
 	},
+
+	[Enum.EditModeSystem.TimerBars] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeTimerBarsSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_TIMER_BARS_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleSeatIndicator] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeVehicleSeatIndicatorSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_VEHICLE_SEAT_INDICATOR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

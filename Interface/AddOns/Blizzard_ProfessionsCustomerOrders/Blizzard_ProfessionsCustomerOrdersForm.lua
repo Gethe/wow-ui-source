@@ -763,7 +763,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 		local reagentType = reagentSlotSchematic.reagentType;
 		if reagentType ~= Enum.CraftingReagentType.Finishing then
 			-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
-			local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+			local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 			local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
 
 			local slots = reagentTypes[sectionType];
@@ -991,6 +991,11 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									end
 
 									local item = elementData.item;
+									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
+									if self.transaction:HasAllocatedReagent(reagent) then
+										return false;
+									end
+
 									if not self.transaction:AreAllRequirementsAllocated(item) then
 										return false;
 									end

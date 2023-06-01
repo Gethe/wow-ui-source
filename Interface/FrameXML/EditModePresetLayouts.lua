@@ -575,6 +575,32 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			offsetY = 0,
 		},
 	},
+
+	[Enum.EditModeSystem.TimerBars] = {
+		settings = {
+			[Enum.EditModeTimerBarsSetting.Size] = 0,
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -100,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleSeatIndicator] = {
+		settings = {
+			[Enum.EditModeVehicleSeatIndicatorSetting.Size] = 10,
+		},
+		anchorInfo = {
+			point = "RIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "RIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
 };
 
 EDIT_MODE_CLASSIC_SYSTEM_MAP =
@@ -1141,6 +1167,32 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 	[Enum.EditModeSystem.DurabilityFrame] = {
 		settings = {
 			[Enum.EditModeDurabilityFrameSetting.Size] = 5,
+		},
+		anchorInfo = {
+			point = "RIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "RIGHT",
+			offsetX = 0,
+			offsetY = 0,
+		},
+	},
+
+	[Enum.EditModeSystem.TimerBars] = {
+		settings = {
+			[Enum.EditModeTimerBarsSetting.Size] = 0,
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -100,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleSeatIndicator] = {
+		settings = {
+			[Enum.EditModeTimerBarsSetting.Size] = 5,
 		},
 		anchorInfo = {
 			point = "RIGHT",

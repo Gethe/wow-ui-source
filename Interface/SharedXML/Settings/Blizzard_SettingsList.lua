@@ -43,9 +43,9 @@ SettingsListMixin = {};
 
 function SettingsListMixin:OnLoad()
 	local verticalPad = 10;
-	local pad = 0;
+	local padLeft, padRight = 25, 0;
 	local spacing = 9;
-	local view = CreateScrollBoxListLinearView(verticalPad, verticalPad, pad, pad, spacing);
+	local view = CreateScrollBoxListLinearView(verticalPad, verticalPad, padLeft, padRight, spacing);
 
 	local function Factory(factory, elementData)
 		local function Initializer(frame, elementData)
@@ -71,7 +71,7 @@ function SettingsListMixin:OnLoad()
 
 	local scrollBoxAnchors = 
 	{
-		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", 10, -2),
+		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", -15, -2),
 		CreateAnchor("BOTTOMRIGHT", -20, -2);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchors, scrollBoxAnchors);

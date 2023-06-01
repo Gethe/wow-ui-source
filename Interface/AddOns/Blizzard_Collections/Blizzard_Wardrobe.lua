@@ -929,7 +929,7 @@ local TAB_SETS = 2;
 local TABS_MAX_WIDTH = 185;
 
 local WARDROBE_MODEL_SETUP = {
-	["HEADSLOT"] 		= { useTransmogSkin = false, useTransmogChoices = false, obeyHideInTransmogFlag = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = false } },
+	["HEADSLOT"] 		= { useTransmogSkin = false, useTransmogChoices = false, obeyHideInTransmogFlag = true, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = false } },
 	["SHOULDERSLOT"]	= { useTransmogSkin = true,  useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true  } },
 	["BACKSLOT"]		= { useTransmogSkin = true,  useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true  } },
 	["CHESTSLOT"]		= { useTransmogSkin = true,  useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true  } },
@@ -1737,6 +1737,30 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 		model.visualInfo = nil;
 		end
 	self.illusionWeaponAppearanceID = nil;
+
+	self:EvaluateSlotAllowed();
+end
+
+-- For dracthyr/mechagnome
+function WardrobeItemsCollectionMixin:EvaluateSlotAllowed()
+	local isArmor = self.transmogLocation:GetArmorCategoryID();
+		-- Any model will do, using the 1st
+	local model = self.Models[1];
+	self.slotAllowed = not isArmor or model:IsSlotAllowed(self.transmogLocation:GetSlotID());	
+	if model:IsGeoReady() then
+		self:SetScript("OnUpdate", nil);
+	else
+		-- Not likely to ever hit this, but just in case
+		self:SetScript("OnUpdate", self.OnUpdate);
+	end
+end
+
+function WardrobeItemsCollectionMixin:OnUpdate()
+	local model = self.Models[1];
+	if model:IsGeoReady() then
+		self:EvaluateSlotAllowed();
+		self:UpdateItems();
+	end
 end
 
 function WardrobeItemsCollectionMixin:RefreshCameras()
@@ -2111,6 +2135,9 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 	local matchesCategory = not effectiveCategory or effectiveCategory == self.activeCategory or self.transmogLocation:IsIllusion();
 	local cameraVariation = self:GetCameraVariation();
 
+	-- for disabled slots (dracthyr)
+	local isHeadSlot = self.transmogLocation:GetArmorCategoryID() == Enum.TransmogCollectionType.Head;
+	
 	local pendingTransmogModelFrame = nil;
 	local indexOffset = (self.PagingFrame:GetCurrentPage() - 1) * self.PAGE_SIZE;
 	for i = 1, self.PAGE_SIZE do
@@ -2119,7 +2146,7 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 		local visualInfo = self.filteredVisualsList[index];
 		if ( visualInfo ) then
 			model:Show();
-
+			
 			-- camera
 			if ( self.transmogLocation:IsAppearance() ) then
 				cameraID = C_TransmogCollection.GetAppearanceCameraID(visualInfo.visualID, cameraVariation);
@@ -2181,6 +2208,9 @@ function WardrobeItemsCollectionMixin:UpdateItems()
 			model.Favorite.Icon:SetShown(visualInfo.isFavorite);
 			-- hide visual option
 			model.HideVisual.Icon:SetShown(isAtTransmogrifier and visualInfo.isHideVisual);
+			-- slots not allowed
+			model.SlotInvalidTexture:SetShown(not self.slotAllowed);			
+			model:SetDesaturated(isHeadSlot and not self.slotAllowed);
 
 			if ( GameTooltip:GetOwner() == model ) then
 				model:OnEnter();
@@ -2465,12 +2495,14 @@ function WardrobeItemsModelMixin:OnLoad()
 	local lightValues = { omnidirectional = false, point = CreateVector3D(-1, 1, -1), ambientIntensity = 1.05, ambientColor = CreateColor(1, 1, 1), diffuseIntensity = 0, diffuseColor = CreateColor(1, 1, 1) };
 	local enabled = true;
 	self:SetLight(enabled, lightValues);
+	self.desaturated = false;
 end
 
 function WardrobeItemsModelMixin:OnModelLoaded()
 	if ( self.cameraID ) then
 		Model_ApplyUICamera(self, self.cameraID);
 	end
+	self.desaturated = false;
 end
 
 function WardrobeItemsModelMixin:UpdateContentTracking()
@@ -2611,6 +2643,13 @@ function WardrobeItemsModelMixin:OnUpdate()
 		if self:IsGeoReady() then
 			self:GetParent():SetAppearanceTooltip(self);
 		end
+	end
+end
+
+function WardrobeItemsModelMixin:SetDesaturated(desaturated)
+	if self.desaturated ~= desaturated then
+		self.desaturated = desaturated;
+		self:SetDesaturation((desaturated and 1) or 0);
 	end
 end
 

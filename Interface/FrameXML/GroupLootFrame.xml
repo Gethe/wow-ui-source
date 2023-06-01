@@ -181,7 +181,7 @@
 					<Frame parentKey="InfoFrame">
 						<Size x="135" y="38"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="60" y="-15"/>
+							<Anchor point="TOPLEFT" x="60" y="-15"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">

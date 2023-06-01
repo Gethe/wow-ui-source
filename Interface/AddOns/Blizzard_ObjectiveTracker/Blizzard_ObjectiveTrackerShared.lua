@@ -238,3 +238,126 @@ function QuestObjective_SetupHeader(block, initialLineWidth)
 	block.rightButton = nil;
 	block.lineWidth = initialLineWidth or OBJECTIVE_TRACKER_TEXT_WIDTH;
 end
+
+BonusObjectiveRewardsFrameMixin = {};
+
+function BonusObjectiveRewardsFrameMixin:SetRewardData(data)
+	self.storedData = data;
+end
+
+function BonusObjectiveRewardsFrameMixin:OnAnimateRewardDone()
+	local rewardsFrame = self;
+	-- kill the data
+	local oldPosIndex = self.storedData[rewardsFrame.id].posIndex;
+	self.storedData[rewardsFrame.id] = nil;
+	rewardsFrame.id = nil;
+
+	self:OnAnimateNextReward(rewardsFrame.module, oldPosIndex);
+end
+
+--[[
+	data = {
+		posIndex,							-- position index of the block that awards frame is relevent to 
+		rewards[] = {
+			count,							-- how much of the reward is being granted
+			font,							-- font for the reward name
+			label,							-- item name of the reward
+			texture,						-- item icon
+			overlay							-- overlay icon (can be nil) 
+		},
+
+	}
+]]--
+
+function BonusObjectiveRewardsFrameMixin:AnimateReward(block, data)
+	self:AnimateRewardOnAnchor(block, data, block.id, block.module);
+end
+
+function BonusObjectiveRewardsFrameMixin:AnimateRewardOnAnchor(anchor, data, id, trackerModule)
+	local rewardsFrame = self;
+	if ( not rewardsFrame.id ) then
+		if ( not data ) then
+			return;
+		end
+		if ( not self.storedData) then
+			self.storedData = { };
+		end
+		self.storedData[id] = data;
+		rewardsFrame.module = trackerModule;
+
+		if ( self.HeaderText ) then
+			self.Header:SetText(self.HeaderText);
+		end
+
+		rewardsFrame.id = id;
+		rewardsFrame:SetParent(anchor);
+		rewardsFrame:ClearAllPoints();
+		rewardsFrame:SetPoint("TOPRIGHT", anchor, "TOPLEFT", 10, -4);
+		rewardsFrame:Show();
+		local numRewards = #data.rewards;
+		local contentsHeight = 12 + numRewards * 36;
+		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
+		rewardsFrame.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
+		rewardsFrame.Anim:Play();
+		PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
+		-- configure reward frames
+		for i = 1, numRewards do
+			local rewardItem = rewardsFrame.Rewards[i];
+			if ( not rewardItem ) then
+				rewardItem = CreateFrame("FRAME", nil, rewardsFrame, "BonusObjectiveTrackerRewardTemplate");
+				rewardItem:SetPoint("TOPLEFT", rewardsFrame.Rewards[i-1], "BOTTOMLEFT", 0, -4);
+			end
+			local rewardData = data.rewards[i];
+			if ( rewardData.count > 1 ) then
+				rewardItem.Count:Show();
+				rewardItem.Count:SetText(rewardData.count);
+			else
+				rewardItem.Count:Hide();
+			end
+			rewardItem.Label:SetFontObject(rewardData.font);
+			rewardItem.Label:SetText(rewardData.label);
+			rewardItem.ItemIcon:SetTexture(rewardData.texture);
+			if ( rewardData.overlay ) then
+				rewardItem.ItemOverlay:SetTexture(rewardData.overlay);
+				rewardItem.ItemOverlay:Show();
+			else
+				rewardItem.ItemOverlay:Hide();
+			end
+			rewardItem:Show();
+			if( rewardItem.Anim:IsPlaying() ) then
+				rewardItem.Anim:Stop();
+			end
+			rewardItem.Anim:Play();
+		end
+		-- hide unused reward items
+		for i = numRewards + 1, #rewardsFrame.Rewards do
+			rewardsFrame.Rewards[i]:Hide();
+		end
+	end
+end
+
+function BonusObjectiveRewardsFrameMixin:OnAnimateNextReward(trackerModule, oldPosIndex)
+	local rewardsFrame = self;
+	-- look for another reward to animate and fix positions
+	local nextAnimBlock;
+	for id, data in pairs(self.storedData) do
+		local block = trackerModule:GetExistingBlock(id);
+		-- make sure we're still showing this
+		if ( block ) then
+			nextAnimBlock = block;
+			-- If we have position data and if the block that completed was ahead of this, bring it up
+			if ( data.posIndex and oldPosIndex and data.posIndex > oldPosIndex ) then
+				data.posIndex = data.posIndex - 1;
+			end
+		end
+	end
+	-- update tracker to remove dead bonus objective
+	ObjectiveTracker_Update(trackerModule.updateReasonModule);
+	-- animate if we have something, otherwise clear it all
+	if ( nextAnimBlock ) then
+		self:AnimateReward(nextAnimBlock, self.storedData[nextAnimBlock.id]);
+	else
+		rewardsFrame:Hide();
+		wipe(self.storedData);
+	end
+end

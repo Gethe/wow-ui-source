@@ -23,6 +23,7 @@ if tbl then
 	Import("Saturate");
 	Import("CreateInterpolator");
 	Import("ApproximatelyEqual");
+	Import("InputUtil");
 end
 ----------------
 

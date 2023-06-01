@@ -33,7 +33,7 @@
 					<Layer level="ARTWORK" textureSubLevel="5">
 						<FontString parentKey="Text" inherits="TextStatusBarText" hidden="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.StatusBar" relativePoint="CENTER" x="0" y="1"/>
+								<Anchor point="CENTER" x="0" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

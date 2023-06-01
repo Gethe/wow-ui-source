@@ -402,9 +402,8 @@ end
 
 function SelectionBehaviorMixin:GetSelectedElementData()
 	local selected = {};
-	local dataProvider = self.scrollBox:GetDataProvider();
-	if dataProvider then
-		for index, elementData in dataProvider:Enumerate() do
+	if self.scrollBox:HasDataProvider() then
+		for index, elementData in self.scrollBox:EnumerateDataProviderEntireRange() do
 			if self:IsElementDataSelected(elementData) then
 				table.insert(selected, elementData);
 			end
@@ -419,9 +418,8 @@ end
 
 function SelectionBehaviorMixin:DeselectByPredicate(predicate)
 	local deselected = {};
-	local dataProvider = self.scrollBox:GetDataProvider();
-	if dataProvider then
-		for index, elementData in dataProvider:Enumerate() do
+	if self.scrollBox:HasDataProvider() then
+		for index, elementData in self.scrollBox:EnumerateDataProviderEntireRange() do
 			if predicate(elementData) then
 				self:SetElementDataSelected_Internal(elementData, false);
 				table.insert(deselected, elementData);

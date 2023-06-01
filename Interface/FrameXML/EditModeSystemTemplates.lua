@@ -728,12 +728,14 @@ function EditModeSystemMixin:OnDragStart()
 		end
 		self:ClearFrameSnap();
 		self:StartMoving();
+		EditModeManagerFrame:SetSnapPreviewFrame(self);
 		self.isDragging = true;
 	end
 end
 
 function EditModeSystemMixin:OnDragStop()
 	if self:CanBeMoved() then
+		EditModeManagerFrame:ClearSnapPreviewFrame();
 		self:StopMovingOrSizing();
 		self.isDragging = false;
 
@@ -2228,6 +2230,60 @@ end
 
 function EditModePetFrameSystemMixin:UpdateSystemSettingFrameSize()
 	UpdatePetFrameScale();
+end
+
+EditModeTimerBarsSystemMixin = {};
+
+function EditModeTimerBarsSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeTimerBarsSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeTimerBarsSetting.Size) / 100);
+end
+
+function EditModeTimerBarsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeTimerBarsSetting.Size and self:HasSetting(Enum.EditModeTimerBarsSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeVehicleSeatIndicatorSystemMixin = {};
+
+function EditModeVehicleSeatIndicatorSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeVehicleSeatIndicatorSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeVehicleSeatIndicatorSetting.Size) / 100);
+end
+
+function EditModeVehicleSeatIndicatorSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeVehicleSeatIndicatorSetting.Size and self:HasSetting(Enum.EditModeVehicleSeatIndicatorSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
 end
 
 local EditModeSystemSelectionLayout =

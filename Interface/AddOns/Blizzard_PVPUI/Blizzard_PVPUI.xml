@@ -1152,7 +1152,7 @@
 								<Frames>
 									<Button parentKey="RandomBGButton" inherits="PVPCasualStandardButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
+											<Anchor point="TOP" y="-9"/>
 										</Anchors>
 										<KeyValues>
 											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
@@ -1638,14 +1638,14 @@
 					<Frame parentKey="NewSeasonPopup" frameStrata="HIGH" inherits="PVPSeasonChangesNoticeTemplate">
 						<Size x="570" y="390"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.ConquestFrame" x="108"/>
+							<Anchor point="CENTER" x="108"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="SeasonRewardText" inherits="SystemFont_Med3" text="NEW_PVP_SEASON_REWARD_PREVIEW">
 									<Size x="380" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" y="-14"/>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" y="-14"/>
 									</Anchors>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
 								</FontString>

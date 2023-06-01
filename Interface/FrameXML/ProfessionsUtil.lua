@@ -28,3 +28,52 @@ function ProfessionsUtil.OpenProfessionFrameToRecipe(recipeID)
     end
     return false;
 end
+
+function ProfessionsUtil.CreateRecipeReagentListByPredicate(recipeID, predicate)
+	local reagents = {};
+	local isRecraft = false;
+	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
+	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
+		if predicate(reagentSlotSchematic) then
+			tAppendAll(reagents, reagentSlotSchematic.reagents);
+		end
+	end
+	return reagents;
+end
+
+function ProfessionsUtil.CreateRecipeReagentsForAllBasicReagents(recipeID, predicate)
+	local function IsBasicReagent(reagentSlotSchematic)
+		return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
+	end
+	return ProfessionsUtil.CreateRecipeReagentListByPredicate(recipeID, IsBasicReagent);
+end
+
+-- This is wrapped in a function because the implementation backing "required" here is likely to change
+-- after a planned slot description refactor.
+function ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.required;
+end
+
+function ProfessionsUtil.IsReagentSlotBasicRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic and ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic);
+end
+
+function ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic)
+	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying and ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic);
+end
+
+function ProfessionsUtil.GetReagentQuantityInPossession(reagent)
+	if reagent.itemID then
+		return ItemUtil.GetCraftingReagentCount(reagent.itemID);
+	elseif reagent.currencyID then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
+		return currencyInfo.quantity;
+	end
+	assert(false);
+end
+
+function ProfessionsUtil.AccumulateReagentsInPossession(reagents)
+	return AccumulateOp(reagents, function(reagent)
+		return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+	end);
+end

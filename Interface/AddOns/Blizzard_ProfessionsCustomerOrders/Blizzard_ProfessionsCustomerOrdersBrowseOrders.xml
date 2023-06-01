@@ -49,7 +49,7 @@
 								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
 									<Size x="10" y="12"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+										<Anchor point="RIGHT" x="-5"/>
 									</Anchors>
 								</Texture>
 							</Layer>

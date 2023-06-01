@@ -85,13 +85,12 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 	local function ExpandParentOfChild(childNode, dataProvider)
 		local childData = childNode:GetData();
 		local parentGroupID = childData.parentGroupID;
-		local foundParentNode = dataProvider:FindElementDataByPredicate(function(node)
+
+		local collapsed = false;
+		dataProvider:SetCollapsedByPredicate(collapsed, function(node)
 			local data = node:GetData();
 			return data.groupID == parentGroupID;
-		end);	
-		if foundParentNode then 
-			foundParentNode:SetCollapsed(false);
-		end
+		end);
 	end
 
 	local function SetParentCollapsedState(node, button)
@@ -291,7 +290,7 @@ end
 
 function CategoryTreeScrollContainerMixin:UpdateCategories()
 	local productGroups = C_StoreSecure.GetProductGroups();
-	local dataProvider = CreateLinearizedTreeListDataProvider();
+	local dataProvider = CreateTreeDataProvider();
 	local productGroupMap = {};
 	for _, productGroup in ipairs(productGroups) do
 		local groupID = productGroup.groupID;
@@ -313,13 +312,11 @@ function CategoryTreeScrollContainerMixin:UpdateCategories()
 
 				if parentGroupEntry then
 					productGroupMap[parentGroupID].children[groupID] = productGroup;
-					local foundNode = dataProvider:FindElementDataByPredicate(function(node)
+
+					dataProvider:InsertInParentByPredicate(productGroup, function(node)
 						local data = node:GetData();
 						return data.groupID == parentGroupID;
 					end);
-					if foundNode then
-						foundNode:Insert(productGroup);
-					end
 				end
 			else
 				if productGroupMap[groupID] == nil then

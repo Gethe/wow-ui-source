@@ -302,4 +302,26 @@
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
+
+	<Frame name="EditModeTimerBarsSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeTimerBarsSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.TimerBars" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TIMER_BARS_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeVehicleSeatIndicatorSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeVehicleSeatIndicatorSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.VehicleSeatIndicator" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_VEHICLE_SEAT_INDICATOR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
 </Ui>

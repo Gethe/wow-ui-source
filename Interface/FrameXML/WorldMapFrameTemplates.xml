@@ -126,7 +126,7 @@
 					<MaskTexture parentKey="BackgroundMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMP" vWrapMode="CLAMP">
 					<Size x="72" y="72"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="Background"/>

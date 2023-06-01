@@ -83,7 +83,7 @@
 				<Texture parentKey="SpecPortraitTexture">
 					<Size x="22" y="22"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SpecBorderTexture" x="-31" y="-4"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecPortraitBorderTexture" x="-31" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>

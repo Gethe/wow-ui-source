@@ -2632,7 +2632,7 @@
 						<Texture file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.bottomRightCorner" x="0" y="8"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="8"/>
 							</Anchors>
 							<Color r="0.9" g="0.8" b="0.7" a="1"/>
 						</Texture>

@@ -22,7 +22,9 @@ Import("ipairs");
 end
 ---------------
 
-TreeListDataProviderConstants =
+local explicitParameterMsg = "Parameter 'excludeCollapsed' is required.";
+
+TreeDataProviderConstants =
 {
 	Collapsed = true,
 	Uncollapsed = false,
@@ -30,6 +32,8 @@ TreeListDataProviderConstants =
 	RetainChildCollapse = false,
 	SkipInvalidation = true,
 	DoInvalidation = false,
+	ExcludeCollapsed = true,
+	IncludeCollapsed = false,
 };
 
 local TreeListNodeMixin = {};
@@ -179,7 +183,7 @@ end
 function TreeListNodeMixin:SetCollapsed(collapsed, affectChildren, skipInvalidate)
 	self.collapsed = collapsed;
 	if affectChildren then
-		self:SetChildrenCollapsed(collapsed, TreeListDataProviderConstants.SetChildCollapse, TreeListDataProviderConstants.SkipInvalidation);
+		self:SetChildrenCollapsed(collapsed, TreeDataProviderConstants.SetChildCollapse, TreeDataProviderConstants.SkipInvalidation);
 	end
 	if not skipInvalidate then
 		self:Invalidate();
@@ -196,7 +200,7 @@ function TreeListNodeMixin:IsCollapsed()
 	return self.collapsed;
 end
 
-local function EnumerateTreeListNode(root, includeCollapsed)
+local function EnumerateTreeListNode(root, excludeCollapsed)
 	local stack = {};
 	for _, node in ipairs_reverse(root.nodes) do
 		table.insert(stack, node);
@@ -207,7 +211,7 @@ local function EnumerateTreeListNode(root, includeCollapsed)
 		index = index + 1;
 		local top = table.remove(stack);
 		if top then
-			if includeCollapsed or not top.collapsed then
+			if not excludeCollapsed or not top.collapsed then
 				for _, node in ipairs_reverse(top.nodes) do
 					table.insert(stack, node);
 				end
@@ -216,7 +220,7 @@ local function EnumerateTreeListNode(root, includeCollapsed)
 			return index, top;
 		end
 	end
-
+	
 	return Enumerator;
 end
 
@@ -237,11 +241,11 @@ function TreeListDataProviderMixin:Init()
 	self.node = CreateTreeListNode(self);
 end
 
-local function EnumerateInternal(indexBegin, indexEnd, root, includeCollapsed)
+local function EnumerateInternal(indexBegin, indexEnd, root, excludeCollapsed)
 	indexBegin = indexBegin and (indexBegin - 1) or 0;
 	indexEnd = indexEnd or math.huge;
 
-	local enumerator = EnumerateTreeListNode(root, includeCollapsed);
+	local enumerator = EnumerateTreeListNode(root, excludeCollapsed);
 	local index = indexBegin;
 	while index > 0 do
 		index = index - 1;
@@ -270,32 +274,13 @@ function TreeListDataProviderMixin:GetRootNode()
 	return self.node;
 end
 
-function TreeListDataProviderMixin:Enumerate(indexBegin, indexEnd)
-	local includeCollapsed = true;
-	return EnumerateInternal(indexBegin, indexEnd, self.node, includeCollapsed);
-end
-
-function TreeListDataProviderMixin:EnumerateUncollapsed(indexBegin, indexEnd)
-	local includeCollapsed = false;
-	return EnumerateInternal(indexBegin, indexEnd, self.node, includeCollapsed);
-end
-
 function TreeListDataProviderMixin:Invalidate()
 	local sortPending = false;
 	self:TriggerEvent(DataProviderMixin.Event.OnSizeChanged, sortPending);
 end
 
-function TreeListDataProviderMixin:GetSize()
-	local count = 0;
-	local enumerator = self:EnumerateUncollapsed();
-	while enumerator() do
-		count = count + 1;
-	end
-	return count;
-end
-
 function TreeListDataProviderMixin:IsEmpty()
-	return self:GetSize() == 0;
+	return self:GetSize(TreeDataProviderConstants.IncludeCollapsed) == 0;
 end
 
 function TreeListDataProviderMixin:Insert(data)
@@ -320,57 +305,102 @@ function TreeListDataProviderMixin:Sort()
 	self.node:Sort();
 end
 
-function TreeListDataProviderMixin:FindIndex(node)
-	for index, node2 in self:Enumerate() do
-		if node2 == node then
-			return index, node;
-		end
+function TreeListDataProviderMixin:GetSize(excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local count = 0;
+	local indexBegin, indexEnd = nil, nil;
+	local enumerator = self:Enumerate(indexBegin, indexEnd, excludeCollapsed);
+	while enumerator() do
+		count = count + 1;
+	end
+	return count;
+end
+
+function TreeListDataProviderMixin:SetCollapsedByPredicate(collapsed, predicate)
+	local foundNode = self:FindElementDataByPredicate(predicate, TreeDataProviderConstants.IncludeCollapsed);	
+	if foundNode then 
+		foundNode:SetCollapsed(collapsed);
 	end
 end
 
-function TreeListDataProviderMixin:Find(index)
-	for nodeIndex, node in self:Enumerate() do
+function TreeListDataProviderMixin:InsertInParentByPredicate(node, predicate)
+	local foundNode = self:FindElementDataByPredicate(predicate, TreeDataProviderConstants.IncludeCollapsed);	
+	if foundNode then 
+		foundNode:Insert(node);
+	end
+end
+
+function TreeListDataProviderMixin:EnumerateEntireRange()
+	local indexBegin, indexEnd = nil, nil;
+	return EnumerateInternal(indexBegin, indexEnd, self.node, TreeDataProviderConstants.IncludeCollapsed);
+end
+
+function TreeListDataProviderMixin:Enumerate(indexBegin, indexEnd, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	return EnumerateInternal(indexBegin, indexEnd, self.node, excludeCollapsed);
+end
+
+function TreeListDataProviderMixin:ForEach(func, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local indexBegin, indexEnd = nil, nil;
+	for index, node in self:Enumerate(indexBegin, indexEnd, excludeCollapsed) do
+		func(node);
+	end
+end
+
+function TreeListDataProviderMixin:Find(index, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local indexBegin, indexEnd = nil, nil;
+	for nodeIndex, node in self:Enumerate(indexBegin, indexEnd, excludeCollapsed) do
 		if nodeIndex == index then
 			return node;
 		end
 	end
 end
 
-function TreeListDataProviderMixin:FindByPredicate(predicate)
-	for index, node in self:Enumerate() do
+function TreeListDataProviderMixin:FindIndex(node, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local indexBegin, indexEnd = nil, nil;
+	for index, node2 in self:Enumerate(indexBegin, indexEnd, excludeCollapsed) do
+		if node2 == node then
+			return index, node;
+		end
+	end
+end
+
+function TreeListDataProviderMixin:FindElementDataByPredicate(predicate, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local index, node = self:FindByPredicate(predicate, excludeCollapsed);
+	return node;
+end
+
+function TreeListDataProviderMixin:FindByPredicate(predicate, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local indexBegin, indexEnd = nil, nil;
+	for index, node in self:Enumerate(indexBegin, indexEnd, excludeCollapsed) do
 		if predicate(node) then
 			return index, node;
 		end
 	end
 end
 
-function TreeListDataProviderMixin:FindElementDataByPredicate(predicate)
-	local index, node = self:FindByPredicate(predicate);
-	return node;
-end
-
-function TreeListDataProviderMixin:FindIndexByPredicate(predicate)
-	local index, node = self:FindByPredicate(predicate);
+function TreeListDataProviderMixin:FindIndexByPredicate(predicate, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local index, node = self:FindByPredicate(predicate, excludeCollapsed);
 	return index;
 end
 
-function TreeListDataProviderMixin:ContainsByPredicate(predicate)
-	local index, node = self:FindByPredicate(predicate);
+function TreeListDataProviderMixin:ContainsByPredicate(predicate, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	local index, node = self:FindByPredicate(predicate, excludeCollapsed);
 	return index ~= nil;
-end
-
-function TreeListDataProviderMixin:ForEach(func)
-	for index, node in self:Enumerate() do
-		func(node);
-	end
 end
 
 function TreeListDataProviderMixin:Flush()
 	local oldNode = self.node;
 	self.node = CreateTreeListNode(self);
 
-	local includeCollapsed = true;
-	for index, node in EnumerateTreeListNode(oldNode, includeCollapsed) do
+	for index, node in EnumerateTreeListNode(oldNode) do
 		self:TriggerEvent(TreeListDataProviderMixin.Event.OnRemove, node, index);
 	end
 
@@ -379,39 +409,45 @@ function TreeListDataProviderMixin:Flush()
 end
 
 function TreeListDataProviderMixin:SetAllCollapsed(collapsed)
-	self.node:SetChildrenCollapsed(collapsed, TreeListDataProviderConstants.SetChildCollapse, TreeListDataProviderConstants.SkipInvalidation);
+	self.node:SetChildrenCollapsed(collapsed, TreeDataProviderConstants.SetChildCollapse, TreeDataProviderConstants.SkipInvalidation);
 	self:Invalidate();
 end
 
 function TreeListDataProviderMixin:CollapseAll()
-	self:SetAllCollapsed(TreeListDataProviderConstants.Collapsed);
+	self:SetAllCollapsed(TreeDataProviderConstants.Collapsed);
 end
 
 function TreeListDataProviderMixin:UncollapseAll()
-	self:SetAllCollapsed(TreeListDataProviderConstants.Uncollapsed);
+	self:SetAllCollapsed(TreeDataProviderConstants.Uncollapsed);
 end
 
-function CreateTreeListDataProvider()
-	local dataProvider = CreateFromMixins(TreeListDataProviderMixin);
-	dataProvider:Init();
-	return dataProvider;
-end
+--[[
+Linearizes the uncollapsed elements of the tree so that lookups when ignoring the collapsed
+sections of the list are performant in scroll box. Consistent with TreeListDataProviderMixin,
+query and enumeration APIs' default behavior is to include collapsed nodes in any query or 
+enumeration API. To assert understanding what this returns, the 'excludeCollapsed' argument
+must be provided.
 
--- Linearizes the uncollapsed elements of the tree into an array for quicker indexability.
+This was originally written as an optimization for larger tree data providers, but since the
+performance cost of linearizing the uncollapsed elements of small trees is neglibile by comparison,
+this has become the only variant expected to be used.
+--]]
 LinearizedTreeListDataProviderMixin = CreateFromMixins(TreeListDataProviderMixin);
 
-function LinearizedTreeListDataProviderMixin:EnumerateUncollapsed(indexBegin, indexEnd)
-	local includeCollapsed = false;
-	return CreateTableEnumerator(self:GetLinearized(), indexBegin, indexEnd, includeCollapsed);
+function LinearizedTreeListDataProviderMixin:GetSize(excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	if excludeCollapsed then
+		return #self:GetLinearized();
+	end
+	return TreeListDataProviderMixin.GetSize(self, excludeCollapsed);
 end
 
-function LinearizedTreeListDataProviderMixin:Invalidate()
-	self.linearized = nil;
-	TreeListDataProviderMixin.Invalidate(self);
-end
-
-function LinearizedTreeListDataProviderMixin:GetSize()
-	return #self:GetLinearized();
+function LinearizedTreeListDataProviderMixin:Enumerate(indexBegin, indexEnd, excludeCollapsed)
+	assert(excludeCollapsed ~= nil, explicitParameterMsg);
+	if excludeCollapsed then
+		return CreateTableEnumerator(self:GetLinearized(), indexBegin, indexEnd);
+	end
+	return TreeListDataProviderMixin.Enumerate(self, indexBegin, indexEnd, excludeCollapsed);
 end
 
 function LinearizedTreeListDataProviderMixin:Flush()
@@ -419,11 +455,15 @@ function LinearizedTreeListDataProviderMixin:Flush()
 	TreeListDataProviderMixin.Flush(self);
 end
 
+function LinearizedTreeListDataProviderMixin:Invalidate()
+	self.linearized = nil;
+	TreeListDataProviderMixin.Invalidate(self);
+end
+
 function LinearizedTreeListDataProviderMixin:GetLinearized()
 	if not self.linearized then
 		local linearized = {};
-		local includeCollapsed = false;
-		for index, node in EnumerateTreeListNode(self.node, includeCollapsed) do
+		for index, node in EnumerateTreeListNode(self.node, TreeDataProviderConstants.ExcludeCollapsed) do
 			table.insert(linearized, node);
 		end
 		self.linearized = linearized;
@@ -431,7 +471,7 @@ function LinearizedTreeListDataProviderMixin:GetLinearized()
 	return self.linearized;
 end
 
-function CreateLinearizedTreeListDataProvider()
+function CreateTreeDataProvider()
 	local dataProvider = CreateFromMixins(LinearizedTreeListDataProviderMixin);
 	dataProvider:Init();
 	return dataProvider;

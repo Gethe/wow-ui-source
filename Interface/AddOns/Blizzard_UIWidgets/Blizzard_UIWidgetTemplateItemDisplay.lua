@@ -28,6 +28,7 @@ function UIWidgetTemplateItemDisplayMixin:Setup(widgetInfo, widgetContainer)
 end
 
 function UIWidgetTemplateItemDisplayMixin:OnReset()
+	UIWidgetBaseTemplateMixin.OnReset(self);
 	if self.continuableContainer then
 		self.continuableContainer:Cancel();
 	end

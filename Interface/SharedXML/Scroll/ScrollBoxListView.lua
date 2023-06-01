@@ -153,16 +153,38 @@ function ScrollBoxListViewMixin:ReverseForEachFrame(func)
 	end
 end
 
+function ScrollBoxListViewMixin:EnumerateFrames()
+	return ipairs(self:GetFrames());
+end
+
+function ScrollBoxListViewMixin:FindFrame(elementData)
+	for index, frame in ipairs(self:GetFrames()) do
+		if frame:ElementDataMatches(elementData) then
+			return frame;
+		end
+	end
+end
+ 
+function ScrollBoxListViewMixin:FindFrameElementDataIndex(findFrame)
+	local dataIndexBegin = self:GetDataIndexBegin();
+	for index, frame in ipairs(self:GetFrames()) do
+		if frame == findFrame then
+			return dataIndexBegin + (index - 1);
+		end
+	end
+end
+
+--[[ Accessor warning section
+You must ensure that if the data provider can contain items that are not displayed
+(ex. TreeListDataProvider), you must override these functions in the appropriate view
+(ex. ScrollBoxListView), otherwise the elementData or indices will not be correct.
+--]]
 function ScrollBoxListViewMixin:ForEachElementData(func)
 	self:GetDataProvider():ForEach(func);
 end
 
 function ScrollBoxListViewMixin:ReverseForEachElementData(func)
 	self:GetDataProvider():ReverseForEach(func);
-end
-
-function ScrollBoxListViewMixin:EnumerateFrames()
-	return ipairs(self:GetFrames());
 end
 
 function ScrollBoxListViewMixin:FindElementDataByPredicate(predicate)
@@ -177,14 +199,6 @@ function ScrollBoxListViewMixin:FindByPredicate(predicate)
 	return self:GetDataProvider():FindByPredicate(predicate);
 end
 
-function ScrollBoxListViewMixin:FindFrame(elementData)
-	for index, frame in ipairs(self:GetFrames()) do
-		if frame:ElementDataMatches(elementData) then
-			return frame;
-		end
-	end
-end
-
 function ScrollBoxListViewMixin:Find(index)
 	return self:GetDataProvider():Find(index);
 end
@@ -193,30 +207,45 @@ function ScrollBoxListViewMixin:FindIndex(elementData)
 	return self:GetDataProvider():FindIndex(elementData);
 end
 
-function ScrollBoxListViewMixin:FindFrameElementDataIndex(findFrame)
-	local dataIndexBegin = self:GetDataIndexBegin();
-	for index, frame in ipairs(self:GetFrames()) do
-		if frame == findFrame then
-			return dataIndexBegin + (index - 1);
-		end
-	end
-end
-
-function ScrollBoxListViewMixin:InsertElementData(...)
-	self:GetDataProvider():Insert(...);
-end
-
-function ScrollBoxListViewMixin:InsertElementDataTable(tbl)
-	self:GetDataProvider():InsertTable(tbl);
-end
-
-function ScrollBoxListViewMixin:InsertElementDataTableRange(tbl, indexBegin, indexEnd)
-	self:GetDataProvider():InsertTableRange(tbl, indexBegin, indexEnd);
-end
-
 function ScrollBoxListViewMixin:ContainsElementDataByPredicate(predicate)
 	return self:GetDataProvider():ContainsByPredicate(predicate);
 end
+
+function ScrollBoxListViewMixin:EnumerateDataProviderEntireRange()
+	return self:GetDataProvider():EnumerateEntireRange();
+end
+
+function ScrollBoxListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetDataProvider():Enumerate(indexBegin, indexEnd);
+end
+
+function ScrollBoxListViewMixin:GetDataProviderSize()
+	local dataProvider = self:GetDataProvider();
+	if dataProvider then
+		return dataProvider:GetSize();
+	end
+	return 0;
+end
+
+function ScrollBoxListViewMixin:TranslateElementDataToUnderlyingData(elementData)
+	return elementData;
+end
+
+function ScrollBoxListViewMixin:IsScrollToDataIndexSafe()
+	return true;
+end
+
+function ScrollBoxListViewMixin:PrepareScrollToElementDataByPredicate(predicate)
+	-- Optionally implemented by a derived view to ensure the view can
+	-- locate the required element.
+end
+
+function ScrollBoxListViewMixin:PrepareScrollToElementData(elementData)
+	-- Optionally implemented by a derived view to ensure the view can
+	-- locate the required element.
+end
+
+-- End of accessor warning section
 
 function ScrollBoxListViewMixin:GetDataProvider()
 	return self.dataProvider;
@@ -224,10 +253,6 @@ end
 
 function ScrollBoxListViewMixin:HasDataProvider()
 	return self.dataProvider ~= nil;
-end
-
-function ScrollBoxListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
-	return self:GetDataProvider():Enumerate(indexBegin, indexEnd);
 end
 
 function ScrollBoxListViewMixin:ClearDataProviderInternal()
@@ -247,14 +272,6 @@ end
 function ScrollBoxListViewMixin:ClearDataProvider()
 	self:ClearDataProviderInternal();
 	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
-end
-
-function ScrollBoxListViewMixin:GetDataProviderSize()
-	local dataProvider = self:GetDataProvider();
-	if dataProvider then
-		return dataProvider:GetSize();
-	end
-	return 0;
 end
 
 function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPosition)
@@ -508,12 +525,16 @@ end
 function ScrollBoxListViewMixin:GetPanExtent(spacing)
 	if not self.panExtent and self:HasDataProvider() then
 		for dataIndex, elementData in self:EnumerateDataProvider() do
-			self.panExtent = self:CalculateFrameExtent(dataIndex, elementData) + spacing;
+			self.panExtent = self:CalculateFrameExtent(dataIndex, elementData);
 			break;
 		end
 	end
 
-	return self.panExtent or 0;
+	if not self.panExtent then
+		return 0;
+	end
+
+	return self.panExtent + spacing;
 end
 
 function ScrollBoxListViewMixin:IsVirtualized()
@@ -533,12 +554,7 @@ local function CheckDataIndicesReturn(dataIndexBegin, dataIndexEnd)
 end
 
 function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
-	local dataProvider = self:GetDataProvider();
-	if not dataProvider then
-		return 0, 0;
-	end
-
-	local size = dataProvider:GetSize();
+	local size = self:GetDataProviderSize();
 	if size == 0 then
 		return 0, 0;
 	end
@@ -550,7 +566,7 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 	self:RecalculateExtent(scrollBox, stride, spacing); --prevents the assert in GetElementExtent
 
 	local dataIndexBegin;
-	local scrollOffset = scrollBox:GetDerivedScrollOffset();
+	local scrollOffset = Round(scrollBox:GetDerivedScrollOffset());
 	local upperPadding = scrollBox:GetUpperPadding();
 	local extentBegin = upperPadding;
 	-- For large element ranges (i.e. 10,000+), we're required to use identical element extents 
@@ -570,8 +586,15 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 				dataIndexBegin = dataIndexBegin + stride;
 				local extentWithSpacing = self:GetElementExtent(dataIndexBegin) + spacing;
 				extentBegin = extentBegin + extentWithSpacing;
-			until (extentBegin >= scrollOffset);
+			until (extentBegin > scrollOffset);
 		end
+	end
+
+	-- Addon request to exclude the first element when only spacing is visible.
+	-- This will be revised when per-element spacing support is added.
+	if (spacing > 0) and ((extentBegin - spacing) < scrollOffset) then
+		dataIndexBegin = dataIndexBegin + 1;
+		extentBegin = extentBegin + self:GetElementExtent(dataIndexBegin) + spacing;
 	end
 
 	-- Optimization above for fixed element extents is not necessary here because we do
@@ -621,9 +644,8 @@ function ScrollBoxListViewMixin:RecalculateExtent(scrollBox, stride, spacing)
 
 	local extent = 0;
 	local size = 0;
-	local dataProvider = self:GetDataProvider();
-	if dataProvider then
-		size = dataProvider:GetSize();
+	if self:HasDataProvider() then
+		size = self:GetDataProviderSize();
 		
 		local function CalculateTemplateExtents()
 			self.templateExtents = {};

@@ -32,6 +32,11 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="SlotInvalidTexture" atlas="transmog-icon-unsupported" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
@@ -378,8 +383,8 @@
 				<Frames>
 					<Frame parentKey="FlashFrame" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SetsTab" relativePoint="TOPLEFT" x="0" y="-10"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SetsTab" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" x="0" y="-10"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1062,7 +1067,7 @@
 									<Layer level="ARTWORK">
 										<Texture parentKey="Icon" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5" y="-2"/>
+												<Anchor point="RIGHT" x="-5" y="-2"/>
 											</Anchors>
 										</Texture>
 									</Layer>

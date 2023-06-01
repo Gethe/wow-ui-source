@@ -99,7 +99,7 @@
 						<FontString parentKey="Text" text="" inherits="GameFontNormalHuge2">
 							<Color color="TUTORIAL_FONT_COLOR"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.KEYBIND" relativePoint="RIGHT" x="20" y="0"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="20" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>

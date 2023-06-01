@@ -473,7 +473,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 		for slotIndex, reagents in transaction:EnumerateAllSlotReagents() do
 			if transaction:IsSlotBasicReagentType(slotIndex) then
 				local quantity = AccumulateOp(reagents, function(reagent)
-					return Professions.GetReagentQuantityInPossession(reagent);
+					return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 				end);
 
 				local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
@@ -486,7 +486,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 					local quantity = AccumulateOp(reagents, function(reagent)
 						-- Only include the allocated reagents for modifying-required slots.
 						if transaction:IsReagentAllocated(slotIndex, reagent) then
-							return Professions.GetReagentQuantityInPossession(reagent);
+							return ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 						end
 						return 0;
 					end);
@@ -754,7 +754,7 @@ end
 local function FindFirstRecipe(dataProvider)
 	-- Select an initial recipe. As mentioned above, every recipe in the data provider is the
 	-- first recipe in the instance it has levels.
-	for index, node in dataProvider:Enumerate() do
+	for index, node in dataProvider:EnumerateEntireRange() do
 		local data = node:GetData();
 		local recipeInfo = data.recipeInfo;
 		-- Don't select recrafting as the initial recipe, since its filtering can cause confusion
@@ -769,11 +769,13 @@ local function FindRecipeInfo(dataProvider, recipeID)
 		return nil;
 	end
 
-	local node = dataProvider:FindElementDataByPredicate(function(node)
+	local function IsRecipeMatch(node)
 		local data = node:GetData();
 		local recipeInfo = data.recipeInfo;
 		return recipeInfo and recipeInfo.recipeID == recipeID;
-	end);
+	end
+
+	local node = dataProvider:FindElementDataByPredicate(IsRecipeMatch, TreeDataProviderConstants.IncludeCollapsed);
 
 	if node then
 		local data = node:GetData();

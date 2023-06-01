@@ -53,18 +53,9 @@ function ContentTrackingManagerMixin:OnTrackingTargetInfoUpdate(targetType, targ
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TARGET_INFO, targetID, moduleWhoseCollapseChanged, targetType);
 end
 
-function ContentTrackingManagerMixin:OnTransmogSourceCollected(trackableID)
-	-- If the source is currently showing in the objective tracker, the objective tracker will handle un-tracking the item after animations
-	if not ADVENTURE_TRACKER_MODULE:IsShowingBlock(trackableID) then
-		C_ContentTracking.StopTracking(Enum.ContentTrackingType.Appearance, trackableID);
-	end
-end
-
 local ContentTrackingManager = CreateAndInitFromMixin(ContentTrackingManagerMixin);
 EventRegistry:RegisterFrameEventAndCallback("CONTENT_TRACKING_UPDATE", ContentTrackingManager.OnContentTrackingUpdate, ContentTrackingManager);
 EventRegistry:RegisterFrameEventAndCallback("TRACKING_TARGET_INFO_UPDATE", ContentTrackingManager.OnTrackingTargetInfoUpdate, ContentTrackingManager);
-EventRegistry:RegisterFrameEventAndCallback("TRANSMOG_COLLECTION_SOURCE_ADDED", ContentTrackingManager.OnTransmogSourceCollected, ContentTrackingManager);
-
 
 ContentTrackingUtil = {};
 

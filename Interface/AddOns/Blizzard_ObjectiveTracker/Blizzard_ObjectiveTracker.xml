@@ -344,6 +344,12 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="AdventureObjectiveTrackerBonusRewardsFrame" inherits="BonusObjectiveRewardsFrameTemplate">
+		<KeyValues>
+			<KeyValue key="HeaderText" value="COLLECTED" type="global"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate" frameStrata="LOW">
 		<Size x="235" y="140"/>
 		<KeyValues>

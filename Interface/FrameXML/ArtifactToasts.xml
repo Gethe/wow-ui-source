@@ -11,14 +11,14 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="ToastBG" alpha="0" atlas="AftLevelup-ToastBG" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.GlowLine" relativePoint="CENTER" y="-15"/>
+						<Anchor point="TOP" relativePoint="CENTER" y="-15"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="GlowLine" alpha="0" atlas="AftLevelup-GlowLine" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.IconFrame" x="0" y="-12"/>
+						<Anchor point="CENTER" x="0" y="-12"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="GlowLineBottom" alpha="0" atlas="AftLevelup-GlowLine" useAtlasSize="true">

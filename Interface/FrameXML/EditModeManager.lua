@@ -167,6 +167,7 @@ end
 
 function EditModeManagerFrameMixin:OnUpdate()
 	self:InvokeOnAnyEditModeSystemAnchorChanged();
+	self:RefreshSnapPreviewLines();
 end
 
 local function callOnEditModeEnter(index, systemFrame)
@@ -352,6 +353,19 @@ function EditModeManagerFrameMixin:UpdateSystemAnchorInfo(systemFrame)
 		local anchorInfoChanged = false;
 
 		local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
+
+		-- If we don't have a relativeTo then we are gonna set our relativeTo to be UIParent
+		if not relativeTo then
+			relativeTo = UIParent;
+
+			-- When setting our relativeTo to UIParent it's possible for our y position to change slightly depending on UIParent's size from stuff like debug menus
+			-- To account for this set out position and then track the change in our top and adjust for that
+			local originalSystemFrameTop = systemFrame:GetTop();
+			systemFrame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+
+			offsetY = offsetY + originalSystemFrameTop - systemFrame:GetTop();
+			systemFrame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+		end
 
 		-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
 		local frameScale = systemFrame:GetScale();
@@ -1005,6 +1019,10 @@ end
 function EditModeManagerFrameMixin:SetEnableSnap(enableSnap, isUserInput)
 	self.snapEnabled = enableSnap;
 
+	if not self.snapEnabled then
+		self:HideSnapPreviewLines();
+	end
+
 	if isUserInput then
 		self:OnAccountSettingChanged(Enum.EditModeAccountSetting.EnableSnap, enableSnap);
 	else
@@ -1014,6 +1032,57 @@ end
 
 function EditModeManagerFrameMixin:IsSnapEnabled()
 	return self.snapEnabled;
+end
+
+function EditModeManagerFrameMixin:SetSnapPreviewFrame(snapPreviewFrame)
+	self.snapPreviewFrame = snapPreviewFrame;
+end
+
+function EditModeManagerFrameMixin:ClearSnapPreviewFrame()
+	self.snapPreviewFrame = nil;
+	self:HideSnapPreviewLines();
+end
+
+function EditModeManagerFrameMixin:ShouldShowSnapPreviewLines()
+	return self:IsSnapEnabled() and self.snapPreviewFrame;
+end
+
+local function RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor)
+	if lineAnchor then
+		line:Setup(magneticFrameInfo, lineAnchor);
+	else
+		line:Hide();
+	end
+end
+
+function EditModeManagerFrameMixin:RefreshSnapPreviewLines()
+	if not self:ShouldShowSnapPreviewLines() then
+		return;
+	end
+
+	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo = EditModeMagnetismManager:GetMagneticFrameInfo(self.snapPreviewFrame);
+	if primaryMagneticFrameInfo then
+		local line = self.MagnetismPreviewLinesContainer.lines[1];
+		local lineAnchors = line:GetLineAnchors(primaryMagneticFrameInfo);
+		local lineAnchor = lineAnchors[1];
+		RefreshSnapPreviewLine(line, primaryMagneticFrameInfo, lineAnchor);
+
+		line = self.MagnetismPreviewLinesContainer.lines[2];
+		local magneticFrameInfo = primaryMagneticFrameInfo;
+		lineAnchor = lineAnchors[2];
+		if not lineAnchor and secondaryMagneticFrameInfo then
+			magneticFrameInfo = secondaryMagneticFrameInfo;
+			lineAnchors = line:GetLineAnchors(secondaryMagneticFrameInfo);
+			lineAnchor = lineAnchors[1];
+		end
+		RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor);
+	end
+end
+
+function EditModeManagerFrameMixin:HideSnapPreviewLines()
+	for _, line in ipairs(self.MagnetismPreviewLinesContainer.lines) do
+		line:Hide();
+	end
 end
 
 function EditModeManagerFrameMixin:SetEnableAdvancedOptions(enableAdvancedOptions, isUserInput)
@@ -1403,6 +1472,8 @@ function EditModeGridMixin:OnLoad()
 	);
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	hooksecurefunc("UpdateUIParentPosition", function() if self:IsShown() then self:UpdateGrid() end end);
 end
 
 function EditModeGridMixin:OnHide()
@@ -1613,6 +1684,18 @@ function EditModeAccountSettingsMixin:OnLoad()
 	self.settingsCheckButtons.PetFrame = self.SettingsContainer.PetFrame;
 	self.settingsCheckButtons.PetFrame:SetCallback(onPetFrameCheckboxChecked);
 
+	local function onTimerBarsCheckboxChecked(isChecked, isUserInput)
+		self:SetTimerBarsShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.TimerBars = self.SettingsContainer.TimerBars;
+	self.settingsCheckButtons.TimerBars:SetCallback(onTimerBarsCheckboxChecked);
+
+	local function onVehicleSeatIndicatorCheckboxChecked(isChecked, isUserInput)
+		self:SetVehicleSeatIndicatorShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.VehicleSeatIndicator = self.SettingsContainer.VehicleSeatIndicator;
+	self.settingsCheckButtons.VehicleSeatIndicator:SetCallback(onVehicleSeatIndicatorCheckboxChecked);
+
 	self:LayoutSettings();
 end
 
@@ -1646,6 +1729,8 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:SetupDurabilityFrame();
 	self:SetupPetFrame();
 	self:SetupEncounterBar();
+	self:SetupTimerBars();
+	self:SetupVehicleSeatIndicator();
 
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
@@ -1663,6 +1748,8 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshStatusTrackingBar2();
 	self:RefreshDurabilityFrame();
 	self:RefreshPetFrame();
+	self:RefreshTimerBars();
+	self:RefreshVehicleSeatIndicator();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -2178,6 +2265,58 @@ function EditModeAccountSettingsMixin:RefreshPetFrame()
 	end
 
 	PetFrame:UpdateShownState();
+end
+
+function EditModeAccountSettingsMixin:SetupTimerBars()
+	-- If the frame is already showing then set control checked
+	if MirrorTimerContainer:HasAnyTimersShowing() then
+		self.settingsCheckButtons.TimerBars:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetTimerBarsShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowTimerBars, shown);
+		self:RefreshTimerBars();
+	else
+		self.settingsCheckButtons.TimerBars:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshTimerBars()
+	local showTimerBars = self.settingsCheckButtons.TimerBars:IsControlChecked();
+	MirrorTimerContainer:SetIsInEditMode(showTimerBars);
+	if showTimerBars then
+		MirrorTimerContainer:HighlightSystem();
+	else
+		MirrorTimerContainer:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupVehicleSeatIndicator()
+	-- If the frame is already showing then set control checked
+	if VehicleSeatIndicator:IsShown() then
+		self.settingsCheckButtons.VehicleSeatIndicator:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetVehicleSeatIndicatorShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowVehicleSeatIndicator, shown);
+		self:RefreshVehicleSeatIndicator();
+	else
+		self.settingsCheckButtons.VehicleSeatIndicator:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshVehicleSeatIndicator()
+	local showVehicleSeatIndicator = self.settingsCheckButtons.VehicleSeatIndicator:IsControlChecked();
+	VehicleSeatIndicator:SetIsInEditMode(showVehicleSeatIndicator);
+	if showVehicleSeatIndicator then
+		VehicleSeatIndicator:HighlightSystem();
+	else
+		VehicleSeatIndicator:ClearHighlight();
+	end
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)
