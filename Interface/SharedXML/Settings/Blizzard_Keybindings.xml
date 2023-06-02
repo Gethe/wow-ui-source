@@ -37,7 +37,7 @@
 		<Size x="560" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+				<FontString parentKey="Label" inherits="GameFontNormal" enableMouse="true" wordwrap="false" justifyH="LEFT">
 					<Size x="170" y="24"/>
 				</FontString>
 				<Texture parentKey="Highlight" hidden="true">

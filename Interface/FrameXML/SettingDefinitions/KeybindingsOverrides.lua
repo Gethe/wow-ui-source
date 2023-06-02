@@ -8,7 +8,6 @@ function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR3, "PROXY_SHOW_ACTIONBAR_3");
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR4, "PROXY_SHOW_ACTIONBAR_4");
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR5, "PROXY_SHOW_ACTIONBAR_5");
-	AddBindingCategory(BINDING_HEADER_MULTIACTIONBAR);
 	AddBindingCategory(BINDING_HEADER_CHAT);
 	AddBindingCategory(BINDING_HEADER_TARGETING);
 	AddBindingCategory(BINDING_HEADER_RAID_TARGET);

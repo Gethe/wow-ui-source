@@ -387,6 +387,12 @@ function InterfaceOptionsFrame_OnEvent (self, event, ...)
 end
 
 function InterfaceOptionsFrame_OnShow (self)
+	-- Show the new UI panel, and hide the old one.
+	InterfaceOptionsFrame_OpenToCategory(CONTROLS_LABEL);
+	InterfaceOptionsFrame:Hide();
+
+	-- Don't show this old options panel. The only thing that can call this function now are outdated addons.
+	--[[
 	--Refresh the two category lists and display the "Controls" group of options if nothing is selected.
 	InterfaceCategoryList_Update();
 	InterfaceOptionsOptionsFrame_RefreshCategories();
@@ -396,6 +402,7 @@ function InterfaceOptionsFrame_OnShow (self)
 	end
 	--Refresh the categories to pick up changes made while the options frame was hidden.
 	InterfaceOptionsOptionsFrame_RefreshAddOns();
+	]]
 end
 
 function InterfaceOptionsFrame_OnHide (self)
