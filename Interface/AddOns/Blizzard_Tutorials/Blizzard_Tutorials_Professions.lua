@@ -302,7 +302,7 @@ function Class_EquipProfessionGear:UpdateState()
 		return;
 	end
 
-	if Professions.IsCraftingMinimized() or not IsAnyBagOpen() then
+	if ProfessionsUtil.IsCraftingMinimized() or not IsAnyBagOpen() then
 		self:Reset();
 		return;
 	end

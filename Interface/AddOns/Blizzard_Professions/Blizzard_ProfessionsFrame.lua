@@ -74,7 +74,7 @@ function ProfessionsMixin:ApplyDesiredWidth()
 end
 
 function ProfessionsMixin:SetMaximized()
-	Professions.SetCraftingMinimized(false);
+	ProfessionsUtil.SetCraftingMinimized(false);
 
 	self.CraftingPage:SetMaximized();
 
@@ -84,7 +84,7 @@ function ProfessionsMixin:SetMaximized()
 end
 
 function ProfessionsMixin:SetMinimized()
-	Professions.SetCraftingMinimized(true);
+	ProfessionsUtil.SetCraftingMinimized(true);
 
 	self.CraftingPage:SetMinimized();
 
@@ -253,7 +253,7 @@ function ProfessionsMixin:UpdateTabs()
 	end
 
 	local onlyShowRecipes = not Professions.InLocalCraftingMode() or C_TradeSkillUI.IsRuneforging();
-	self:SetTabsShown(not (onlyShowRecipes or Professions.IsCraftingMinimized()));
+	self:SetTabsShown(not (onlyShowRecipes or ProfessionsUtil.IsCraftingMinimized()));
 
 	local recipesTab = self:GetTabButton(self.recipesTabID);
 	recipesTab.Text:SetText(recipeTabName[self.professionType]);

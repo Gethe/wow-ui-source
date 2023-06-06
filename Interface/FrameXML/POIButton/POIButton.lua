@@ -130,6 +130,22 @@ local function POIButton_GetCampaignAtlasInfoPushed(poiButton)
 	end
 end
 
+local function POIButton_GetImportantAtlasInfoNormal(poiButton)
+	if poiButton:IsSelected() then
+		return "UI-QuestPoiImportant-QuestNumber-SuperTracked";
+	else
+		return "UI-QuestPoiImportant-QuestNumber";
+	end
+end
+
+local function POIButton_GetImportantAtlasInfoPushed(poiButton)
+	if poiButton:IsSelected() then
+		return "UI-QuestPoiImportant-QuestNumber-Pressed-SuperTracked";
+	else
+		return "UI-QuestPoiImportant-QuestNumber-Pressed";
+	end
+end
+
 local function POIButton_GetQuestCompleteAtlas(poiButton)
 	local questID = poiButton:GetQuestID();
 	local isLegendaryQuest = questID and C_QuestLog.IsLegendaryQuest(questID) or false;
@@ -140,11 +156,16 @@ local function POIButton_UpdateNumericStyleTextures(poiButton)
 	POIButton_SetTextureSize(poiButton.Number, 32, 32);
 
 	local questType = poiButton:GetQuestType();
-	if questType and (questType ~= POIButtonUtil.QuestTypes.Normal) then
+	if questType == POIButtonUtil.QuestTypes.Campaign or questType == POIButtonUtil.QuestTypes.Calling then
 		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");
 		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetCampaignAtlasInfoNormal(poiButton));
 		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetCampaignAtlasInfoPushed(poiButton));
 		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiCampaign-InnerGlow");
+	elseif questType == POIButtonUtil.QuestTypes.Important then
+		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiImportant-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetImportantAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetImportantAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiImportant-InnerGlow");
 	else
 		POIButton_SetTexture(poiButton.Glow, 50, 50, "Interface/WorldMap/UI-QuestPoi-IconGlow");
 		POIButton_SetTexture(poiButton.NormalTexture, 32, 32, POIButton_GetTextureInfoNormal(poiButton));
@@ -172,6 +193,8 @@ local function POIButton_UpdateNormalStyleTexture(poiButton)
 			poiButton.Display:SetAtlas(32, 32, "UI-QuestPoiCampaign-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Calling then
 			poiButton.Display:SetAtlas(32, 32, "UI-DailyQuestPoiCampaign-QuestBangTurnIn");
+		elseif questPOIType == POIButtonUtil.QuestTypes.Important then
+			poiButton.Display:SetAtlas(32, 32, "UI-QuestPoiImportant-QuestBangTurnIn");			
 		end
 
 		if not questPOIType or (questPOIType == POIButtonUtil.QuestTypes.Normal) then
@@ -180,6 +203,12 @@ local function POIButton_UpdateNormalStyleTexture(poiButton)
 			POIButton_SetTexture(poiButton.NormalTexture, 32, 32, POIButton_GetTextureInfoNormal(poiButton));
 			POIButton_SetTexture(poiButton.PushedTexture, 32, 32, POIButton_GetTextureInfoPushed(poiButton));
 			POIButton_SetTexture(poiButton.HighlightTexture, 32, 32, POIButton_GetTextureInfoHighlight(poiButton));
+		elseif questPOIType == POIButtonUtil.QuestTypes.Important then
+			poiButton.Display:SetOffset(0, 0);
+			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiImportant-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetImportantAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetImportantAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiImportant-InnerGlow");			
 		else
 			poiButton.Display:SetOffset(0, 0);
 			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");
@@ -280,10 +309,6 @@ function POIButtonMixin:OnClick()
 		end
 
 		C_SuperTrack.SetSuperTrackedContent(trackableType, trackableID);
-
-		-- TODO:: ping world map?
-		-- if self.pingWorldMap then
-		-- end
 	end
 end
 
@@ -347,10 +372,13 @@ function POIButtonMixin:GetQuestType()
 		return nil;
 	end
 
+	local quest = QuestCache:Get(questID);
 	if QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID) then
 		return POIButtonUtil.QuestTypes.Campaign;
-	elseif QuestCache:Get(questID):IsCalling() then
+	elseif quest:IsCalling() then
 		return POIButtonUtil.QuestTypes.Calling;
+	elseif quest:IsImportant() then
+		return POIButtonUtil.QuestTypes.Important;
 	else
 		return POIButtonUtil.QuestTypes.Normal;
 	end

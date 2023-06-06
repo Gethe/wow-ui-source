@@ -336,8 +336,10 @@ function ProfessionsCraftingOutputLogMixin:OnEvent(event, ...)
 end
 
 function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
-	if not self.ScrollBox:HasDataProvider() then
-		self.ScrollBox:SetDataProvider(CreateDataProvider());
+	local dataProvider = self.ScrollBox:GetDataProvider();
+	if not dataProvider then
+		dataProvider = CreateDataProvider();
+		self.ScrollBox:SetDataProvider(dataProvider);
 	end
 
 	for index, resultData in ipairs_reverse(self.pendingResultData) do
@@ -354,7 +356,7 @@ function ProfessionsCraftingOutputLogMixin:FinalizePendingResultData()
 		-- We're only expecting to display the original item with bonus items
 		-- and currencies contained within it.
 		if resultData.operationID and not resultData.firstCraftReward then
-			self.ScrollBox:InsertElementData(resultData);
+			dataProvider:Insert(resultData);
 		end
 	end
 

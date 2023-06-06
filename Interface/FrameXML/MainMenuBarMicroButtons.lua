@@ -280,7 +280,9 @@ end
 
 function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.FlashBorder);
-	UIFrameFlashStop(self.FlashContent);
+	if(self.FlashContent) then 
+		UIFrameFlashStop(self.FlashContent);
+	end
 	g_flashingMicroButtons[self] = nil;
 end
 
@@ -446,34 +448,31 @@ function MainMenuBarMicroButtonMixin:OnHide()
 	MicroMenuContainer:Layout();
 end
 
+function MainMenuBarMicroButtonMixin:OnMouseDown()
+	self.Background:Hide(); 
+	self.PushedBackground:Show(); 
+end
+
+function MainMenuBarMicroButtonMixin:OnMouseUp()
+	self.Background:Show(); 
+	self.PushedBackground:Hide(); 
+end
+
 CharacterMicroButtonMixin = {};
 
 function CharacterMicroButtonMixin:OnLoad()
-	LoadMicroButtonTextures(self, "CharacterInfo");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("PORTRAITS_UPDATED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 end
 
-function CharacterMicroButtonMixin:OnMouseDown()
-	if ( not KeybindFrames_InQuickKeybindMode() ) then
-		if ( self.down ) then
-			self.down = nil;
-			ToggleCharacter("PaperDollFrame");
-		else
-			self:SetPushed();
-			self.down = 1;
-		end
-	end
-end
-
-function CharacterMicroButtonMixin:OnMouseUp(button)
+function CharacterMicroButtonMixin:OnClick()
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		self:QuickKeybindButtonOnClick(button);
-	else
+	else 
 		if ( self.down ) then
 			self.down = nil;
-			if ( self:IsMouseOver() ) then
-				ToggleCharacter("PaperDollFrame");
-			end
 			UpdateMicroButtons();
 		elseif ( self:GetButtonState() == "NORMAL" ) then
 			self:SetPushed();
@@ -482,20 +481,32 @@ function CharacterMicroButtonMixin:OnMouseUp(button)
 			self:SetNormal();
 			self.down = 1;
 		end
+		ToggleCharacter("PaperDollFrame");
 	end
-end
+end 
 
 function CharacterMicroButtonMixin:OnEvent(event, ...)
-	if ( event == "UPDATE_BINDINGS" ) then
+	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			SetPortraitTexture(self.Portrait, "player");
+		end
+	elseif ( event == "PORTRAITS_UPDATED" ) then
+		SetPortraitTexture(self.Portrait, "player");
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		SetPortraitTexture(self.Portrait, "player");
+	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 	end
 end
 
 function CharacterMicroButtonMixin:SetPushed()
+	self.Portrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
 	CharacterMicroButton:SetButtonState("PUSHED", true);
 end
 
 function CharacterMicroButtonMixin:SetNormal()
+	self.Portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
 	CharacterMicroButton:SetButtonState("NORMAL");
 end
 

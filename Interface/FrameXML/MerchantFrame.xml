@@ -59,7 +59,8 @@
 					</OnHide>
 				</Scripts>
 			</ItemButton>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT" x="2" y="31"/>
 				</Anchors>
@@ -103,26 +104,13 @@
 						<Anchor point="BOTTOM" x="0" y="86"/>
 					</Anchors>
 				</FontString>
-				<FontString name="MerchantRepairText" inherits="GameFontHighlightSmall" text="REPAIR_ITEMS">
- 					<Anchors>
- 						<Anchor point="BOTTOMLEFT" x="16" y="40"/>
- 					</Anchors>
- 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="MerchantFrameBottomLeftBorder" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
-					<Size x="256" y="61"/>
+				<Texture atlas="UI-Merchant-BotFrame" name="MerchantFrameBottomLeftBorder">
+					<Size x="334" y="61"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="1" y="26"/>
 					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="0.4765625"/>
-				</Texture>
-				<Texture name="MerchantFrameBottomRightBorder" file="Interface\MerchantFrame\UI-Merchant-BottomBorder">
-					<Size x="76" y="61"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="MerchantFrameBottomLeftBorder" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.296875" top="0.4765625" bottom="0.953125"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -187,15 +175,55 @@
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT" x="12" y="0"/>
 				</Anchors>
 			</Frame>
+			<Button name="MerchantSellAllJunkButton">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="160" y="33"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\UI-EmptySlot">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" atlas="SpellIcon-256x256-SellJunk" useAtlasSize="false">
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(SELL_ALL_JUNK_ITEMS);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick>
+						MerchantFrame_OnSellAllJunkButtonClicked();
+					</OnClick>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
 			<Button name="MerchantRepairAllButton">
 				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="172" y="11"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\UI-EmptySlot">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
-						<Texture name="MerchantRepairAllIcon" file="Interface\MerchantFrame\UI-Merchant-RepairIcons">
-							<TexCoords left="0.28125" right="0.5625" top="0" bottom="0.5625"/>
+						<Texture parentKey="Icon" atlas="SpellIcon-256x256-RepairAll" useAtlasSize="false">
 						</Texture>
 					</Layer>
 				</Layers>
@@ -222,13 +250,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllIcon, true);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
+							SetDesaturation(MerchantRepairAllButton.Icon, true);
+							SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
 							MerchantGuildBankRepairButton:Disable();
 							self:Disable();
 						else
-							SetDesaturation(MerchantRepairAllIcon, false);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
+							SetDesaturation(MerchantRepairAllButton.Icon, false);
+							SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
 							self:Enable();
 							MerchantGuildBankRepairButton:Enable();
 						end
@@ -246,9 +274,16 @@
 					<Anchor point="RIGHT" relativeTo="MerchantRepairAllButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\UI-EmptySlot">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
-						<Texture file="Interface\MerchantFrame\UI-Merchant-RepairIcons">
-							<TexCoords left="0" right="0.28125" top="0" bottom="0.5625"/>
+						<Texture parentKey="Icon" atlas="SpellIcon-256x256-Repair" useAtlasSize="false">
 						</Texture>
 					</Layer>
 				</Layers>
@@ -272,14 +307,21 @@
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
 			<Button name="MerchantGuildBankRepairButton" hidden="true">
-				<Size x="32" y="32"/>
+				<Size x="36" y="36"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="MerchantRepairAllButton" relativePoint="RIGHT" x="4" y="0"/>
+					<Anchor point="LEFT" relativeTo="MerchantRepairAllButton" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\UI-EmptySlot">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-13" y="14"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BORDER">
-						<Texture name="MerchantGuildBankRepairButtonIcon" file="Interface\MerchantFrame\UI-Merchant-RepairIcons">
-							<TexCoords left="0.5625" right="0.84375" top="0" bottom="0.5625"/>
+						<Texture parentKey="Icon" atlas="SpellIcon-256x256-RepairAllGuild" useAtlasSize="false">
 						</Texture>
 					</Layer>
 				</Layers>
@@ -330,13 +372,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllIcon, true);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
+							SetDesaturation(MerchantRepairAllButton.Icon, true);
+							SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
 							MerchantGuildBankRepairButton:Disable();
 							MerchantRepairAllButton:Disable();
 						else
-							SetDesaturation(MerchantRepairAllIcon, false);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
+							SetDesaturation(MerchantRepairAllButton.Icon, false);
+							SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
 							self:Enable();
 							MerchantRepairAllButton:Enable();
 						end
@@ -349,9 +391,9 @@
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
 			<Frame name="MerchantBuyBackItem">
-				<Size x="153" y="37"/>
+				<Size x="115" y="37"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="MerchantItem10" relativePoint="BOTTOMLEFT" x="0" y="-53"/>
+					<Anchor point="TOPLEFT" relativeTo="MerchantItem10" relativePoint="BOTTOMLEFT" x="30" y="-53"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -361,16 +403,16 @@
 								<Anchor point="TOPLEFT" x="-13" y="13"/>
 							</Anchors>
 						</Texture>
-						<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
-							<Size x="128" y="64"/>
+						<Texture name="$parentNameFrame" hidden="true" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+							<Size x="90" y="64"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-9" y="-10"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
-							<Size x="90" y="30"/>
+							<Size x="70" y="35"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="10"/>
+								<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT" x="-5" y="2"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -384,28 +426,31 @@
 							<OnLoad function="MerchantItemBuybackButton_OnLoad"/>
 							<OnEvent>
 								if ( event == "MERCHANT_UPDATE" ) then
+									self:SetItemButtonScale(0.65);
 									if ( GameTooltip:IsOwned(self) ) then
 										GameTooltip:SetBuybackItem(GetNumBuybackItems());
 										GameTooltip:Show();
 									end
+									SetDesaturation(UndoFrame.Arrow, GetNumBuybackItems() == 0);
+									UpdateCursorAfterBuyBack(self);
 								end
 							</OnEvent>
+							<OnShow>
+								SetDesaturation(UndoFrame.Arrow, GetNumBuybackItems() == 0);
+							</OnShow>
 							<OnClick>
 								BuybackItem(GetNumBuybackItems());
 							</OnClick>
 							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetBuybackItem(GetNumBuybackItems());
-								if (CanAffordMerchantItem(self:GetID()) == false) then
-									SetCursor("BUY_ERROR_CURSOR");
-								else
-									SetCursor("BUY_CURSOR");
-								end
+								MerchantBuyBackButton_OnEnter(self);
+								UpdateCursorAfterBuyBack(self);
 							</OnEnter>
-							<OnLeave function="GameTooltip_HideResetCursor"/>
+							<OnLeave>
+								MerchantBuyBackButton_OnLeave();
+							</OnLeave>
 						</Scripts>
 					</ItemButton>
-					<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+					<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT" x="0" y="25"/>
 						</Anchors>
@@ -417,6 +462,22 @@
 						</Scripts>
 					</Frame>
 				</Frames>
+			</Frame>
+			<Frame name="UndoFrame" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="445" y="98"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="common-icon-undo" parentKey="Arrow">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Frame name="MerchantExtraCurrencyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 				<Anchors>

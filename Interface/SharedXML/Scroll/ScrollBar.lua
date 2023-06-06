@@ -198,7 +198,7 @@ function ScrollBarMixin:SetScrollPercentageInternal(scrollPercentage)
 end
 
 function ScrollBarMixin:HasScrollableExtent()
-	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), 0, 1);
+	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), MathUtil.Epsilon, 1 - MathUtil.Epsilon);
 end
 
 function ScrollBarMixin:SetScrollAllowed(allowScroll)

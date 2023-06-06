@@ -324,4 +324,15 @@
 			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="EditModeArchaeologyBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeArchaeologyBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ArchaeologyBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ARCHAEOLOGY_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
 </Ui>

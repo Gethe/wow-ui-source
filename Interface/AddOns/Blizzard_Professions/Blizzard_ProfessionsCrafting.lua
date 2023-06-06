@@ -354,7 +354,7 @@ function ProfessionsCraftingPageMixin:Reset()
 end
 
 function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
-	if Professions.IsCraftingMinimized() then
+	if ProfessionsUtil.IsCraftingMinimized() then
 		return 404;
 	end
 
@@ -859,7 +859,7 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	end
 	self.RecipeList.NoResultsText:SetShown(dataProvider:IsEmpty());
 	
-	local minimized = Professions.IsCraftingMinimized();
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	if minimized and self.MinimizedSearchBox:IsCurrentTextValidForSearch() then
 		self.searchDataProvider = CreateDataProvider();
 		for index, node in dataProvider:Enumerate() do
@@ -930,7 +930,7 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	local isRuneforging = C_TradeSkillUI.IsRuneforging();
 
 	local schematicWidth;
-	local minimized = Professions.IsCraftingMinimized();
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	if minimized then
 		self.RecipeList:Hide();
 		self.MinimizedSearchBox:Show();
@@ -1214,7 +1214,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, qualityMeterSection);
 	end
-	if detailsShown and not Professions.IsCraftingMinimized() then
+	if detailsShown and not ProfessionsUtil.IsCraftingMinimized() then
 		local statsTopPoint = details:GetTop() - self:GetTop() + 6;
 		local statsLeftPoint = details:GetLeft() - self:GetLeft();
 		local statsBoxWidth = 251;
@@ -1250,7 +1250,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
 	end
 
-	if Professions.IsCraftingMinimized() and self.SchematicForm.FinishingReagents:IsShown() then
+	if ProfessionsUtil.IsCraftingMinimized() and self.SchematicForm.FinishingReagents:IsShown() then
 		local finishingReagentsTopPoint = self.SchematicForm.FinishingReagents:GetTop() - self:GetTop();
 		local finishingReagentsLeftPoint = self.SchematicForm.FinishingReagents:GetLeft() - self:GetLeft();
 		local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);

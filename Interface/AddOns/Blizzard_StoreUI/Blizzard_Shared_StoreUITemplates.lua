@@ -170,7 +170,7 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 			if button.disabledTooltip then
 	 			StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint("BOTTOMLEFT", button, "TOPRIGHT");
-				StoreTooltip_Show("", self.disabledTooltip);
+				StoreTooltip_Show("", button.disabledTooltip);
 			else
 				button.HighlightTexture:Show();
 			end
@@ -201,7 +201,7 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 					if parentGroupID > 0 then
 						ExpandParentOfChild(node, dataProvider);
 					else
-						dataProvider:SetAllCollapsed(true);
+						dataProvider:CollapseAll();
 					end
 					SelectCategoryGroupID(data.groupID);
 				end				

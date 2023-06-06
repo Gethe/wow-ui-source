@@ -136,6 +136,10 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Info" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 							</Anchors>
+							<Scripts>
+								<OnEnter function="LocationText_OnEnter"/>
+								<OnLeave function="LocationText_OnLeave"/>
+							</Scripts>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -1218,7 +1222,13 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture inherits="services-cover" setAllPoints="true"/>
+								<Texture parentKey="BackgroundDefault" inherits="services-cover" setAllPoints="true"/>
+								<Texture parentKey="BackgroundRPE" atlas="characterupdate_background" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="10" y="-10" />
+										<Anchor point="BOTTOMRIGHT" x="-10" y="10" />
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="BORDER">
 								<Texture parentKey="Icon">
@@ -1267,6 +1277,16 @@
 								<Scripts>
 									<OnClick>
 										self:GetParent():Hide();
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button parentKey="MinimizeButton" inherits="UIPanelHideButtonNoScripts" hidden="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="18" y="-18" />
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										CharSelectServicesFlow_Minimize(self:GetParent());
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -1385,10 +1405,14 @@
 						</Frames>
 						<Scripts>
 							<OnShow>
-								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-								CharacterSelect_UpdateButtonState();
-								CharSelectServicesCover:Show();
-								CharacterServicesMaster_UpdateServiceButton();
+								if self.IsMinimized then
+									CharSelectServicesFlow_Minimize();
+								else
+									PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+									CharacterSelect_UpdateButtonState();
+									CharSelectServicesCover:Show();
+									CharacterServicesMaster_UpdateServiceButton();
+								end
 							</OnShow>
 							<OnHide>
 								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);

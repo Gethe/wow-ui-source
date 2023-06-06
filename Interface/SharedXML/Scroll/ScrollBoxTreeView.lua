@@ -39,11 +39,21 @@ function ScrollBoxListTreeListViewMixin:ReverseForEachElementData(func)
 	error("ReverseForEachElementData unsupported in ScrollBoxListTreeListViewMixin.");
 end
 
+-- Deprecated, use FindElementData
 function ScrollBoxListTreeListViewMixin:Find(index)
+	return self:FindElementData(index);
+end
+
+-- Deprecated, use FindElementDataIndex
+function ScrollBoxListTreeListViewMixin:FindIndex(elementData)
+	return self:FindElementDataIndex(elementData);
+end
+
+function ScrollBoxListTreeListViewMixin:FindElementData(index)
 	return self:GetDataProvider():Find(index, TreeDataProviderConstants.ExcludeCollapsed);
 end
 
-function ScrollBoxListTreeListViewMixin:FindIndex(elementData)
+function ScrollBoxListTreeListViewMixin:FindElementDataIndex(elementData)
 	return self:GetDataProvider():FindIndex(elementData, TreeDataProviderConstants.ExcludeCollapsed);
 end
 

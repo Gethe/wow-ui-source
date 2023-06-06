@@ -1696,6 +1696,12 @@ function EditModeAccountSettingsMixin:OnLoad()
 	self.settingsCheckButtons.VehicleSeatIndicator = self.SettingsContainer.VehicleSeatIndicator;
 	self.settingsCheckButtons.VehicleSeatIndicator:SetCallback(onVehicleSeatIndicatorCheckboxChecked);
 
+	local function onArchaeologyBarCheckboxChecked(isChecked, isUserInput)
+		self:SetArchaeologyBarShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.ArchaeologyBar = self.SettingsContainer.ArchaeologyBar;
+	self.settingsCheckButtons.ArchaeologyBar:SetCallback(onArchaeologyBarCheckboxChecked);
+
 	self:LayoutSettings();
 end
 
@@ -1731,6 +1737,7 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:SetupEncounterBar();
 	self:SetupTimerBars();
 	self:SetupVehicleSeatIndicator();
+	self:SetupArchaeologyBar();
 
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
@@ -1750,6 +1757,7 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshPetFrame();
 	self:RefreshTimerBars();
 	self:RefreshVehicleSeatIndicator();
+	self:RefreshArchaeologyBar();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
@@ -2316,6 +2324,32 @@ function EditModeAccountSettingsMixin:RefreshVehicleSeatIndicator()
 		VehicleSeatIndicator:HighlightSystem();
 	else
 		VehicleSeatIndicator:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupArchaeologyBar()
+	-- If the frame is already showing then set control checked
+	if ArcheologyDigsiteProgressBar:IsShown() then
+		self.settingsCheckButtons.ArchaeologyBar:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetArchaeologyBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowArchaeologyBar, shown);
+		self:RefreshArchaeologyBar();
+	else
+		self.settingsCheckButtons.ArchaeologyBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshArchaeologyBar()
+	local showArchaeologyBar = self.settingsCheckButtons.ArchaeologyBar:IsControlChecked();
+	ArcheologyDigsiteProgressBar:SetIsInEditMode(showArchaeologyBar);
+	if showArchaeologyBar then
+		ArcheologyDigsiteProgressBar:HighlightSystem();
+	else
+		ArcheologyDigsiteProgressBar:ClearHighlight();
 	end
 end
 

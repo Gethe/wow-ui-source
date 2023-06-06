@@ -350,7 +350,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	self.currentRecipeInfo = recipeInfo;
 
-	local mimimized = Professions.IsCraftingMinimized();
+	local mimimized = ProfessionsUtil.IsCraftingMinimized();
 	if self.NineSlice then
 		self.NineSlice:SetShown(not self.isInspection and not mimimized);
 	end
@@ -1448,7 +1448,7 @@ function ProfessionsRecipeSchematicFormMixin:ClearRecipeDescription()
 end
 
 function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
-	if not Professions.IsCraftingMinimized() and not self.transaction:IsRecraft() then
+	if not ProfessionsUtil.IsCraftingMinimized() and not self.transaction:IsRecraft() then
 		local spell = Spell:CreateFromSpellID(self.currentRecipeInfo.recipeID);
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 		local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());

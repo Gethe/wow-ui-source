@@ -4,16 +4,7 @@
 	<Button name="TotemButtonTemplate" virtual="true" mixin="TotemButtonMixin" hidden="true">
 		<Size x="37" y="37"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\Minimap\UI-Minimap-Background">
-					<Size x="34" y="34"/>
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.6"/>
-				</Texture>
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<FontString inherits="GameFontNormalSmall" parentKey="Duration">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM">
@@ -22,41 +13,38 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="UI-HUD-UnitFrame-TotemFrame" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="-1.5" />
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Icon">
+			<Frame parentKey="Icon" useParentLevel="true">
 				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset x="0" y="0"/>
-					</Anchor>
+					<Anchor point="CENTER" />
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Texture"/>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="Texture" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+						<MaskTexture parentKey="TextureMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="Texture"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true"/>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" useParentLevel="true">
+						<SwipeTexture>
+							<Color r="0" g="0" b="0" a="0.65"/>
+						</SwipeTexture>
+					</Cooldown>
 				</Frames>
-			</Frame>
-			<Frame>
-				<Size x="38" y="38"/>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset x="0" y="0"/>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\CharacterFrame\TotemBorder"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent().Icon:GetFrameLevel() + 1);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -71,6 +59,8 @@
 			<KeyValue key="layoutIndex" value="50" type="number"/>
 			<KeyValue key="layoutOnBottom" value="true" type="boolean"/>
 			<KeyValue key="leftPadding" value="15" type="number"/>
+			<KeyValue key="topPadding" value="-2" type="number"/>
+			<KeyValue key="spacing" value="-6" type="number" />
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" y="20"/>

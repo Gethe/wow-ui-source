@@ -97,9 +97,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 26,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -129,6 +129,7 @@ local EditModeManagerShared =
 				{ Name = "ShowPetFrame", Type = "EditModeAccountSetting", EnumValue = 24 },
 				{ Name = "ShowTimerBars", Type = "EditModeAccountSetting", EnumValue = 25 },
 				{ Name = "ShowVehicleSeatIndicator", Type = "EditModeAccountSetting", EnumValue = 26 },
+				{ Name = "ShowArchaeologyBar", Type = "EditModeAccountSetting", EnumValue = 27 },
 			},
 		},
 		{
@@ -170,6 +171,17 @@ local EditModeManagerShared =
 				{ Name = "StanceBar", Type = "EditModeActionBarSystemIndices", EnumValue = 11 },
 				{ Name = "PetActionBar", Type = "EditModeActionBarSystemIndices", EnumValue = 12 },
 				{ Name = "PossessActionBar", Type = "EditModeActionBarSystemIndices", EnumValue = 13 },
+			},
+		},
+		{
+			Name = "EditModeArchaeologyBarSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeArchaeologyBarSetting", EnumValue = 0 },
 			},
 		},
 		{
@@ -359,9 +371,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 18,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -383,6 +395,7 @@ local EditModeManagerShared =
 				{ Name = "DurabilityFrame", Type = "EditModeSystem", EnumValue = 16 },
 				{ Name = "TimerBars", Type = "EditModeSystem", EnumValue = 17 },
 				{ Name = "VehicleSeatIndicator", Type = "EditModeSystem", EnumValue = 18 },
+				{ Name = "ArchaeologyBar", Type = "EditModeSystem", EnumValue = 19 },
 			},
 		},
 		{

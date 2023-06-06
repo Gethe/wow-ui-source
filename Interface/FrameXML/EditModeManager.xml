@@ -392,11 +392,18 @@
 									<KeyValue key="advancedLayoutIndex" value="7" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="ArchaeologyBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_ARCHAEOLOGY_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
+								</KeyValues>
+							</Frame>
 							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
-									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="9" type="number"/>
 									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP" type="global"/>
 								</KeyValues>
 							</Frame>

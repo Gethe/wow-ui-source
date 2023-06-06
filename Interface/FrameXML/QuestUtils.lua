@@ -108,13 +108,15 @@ function QuestUtil.GetWorldQuestAtlasInfo(worldQuestType, inProgress, tradeskill
 	return "worldquest-questmarker-questbang", 6, 15;
 end
 
-function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
+function QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant)
 	if isCampaign then
 		return "CampaignAvailableQuestIcon", true;
 	elseif isLegendary then
 		return "legendaryavailablequesticon", true;		
 	elseif isCovenantCalling then
 		return "CampaignAvailableDailyQuestIcon", true;
+	elseif isImportant then
+		return "importantavailablequesticon", true;		
 	elseif frequency == Enum.QuestFrequency.Daily then
 		return "Interface/GossipFrame/DailyQuestIcon", false;
 	elseif isRepeatable then
@@ -137,7 +139,7 @@ function QuestUtil.ApplyQuestIconOfferToTexture(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOffer(...));
 end
 
-function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
+function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant)
 	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
 	if isComplete then
 		if isLegendary then
@@ -146,6 +148,8 @@ function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepe
 			return "CampaignActiveQuestIcon", true;
 		elseif isCovenantCalling then
 			return "CampaignActiveDailyQuestIcon", true;
+		elseif isImportant then
+			return "importantactivequesticon", true;
 		else
 			return "Interface/GossipFrame/ActiveQuestIcon", false;
 		end
@@ -155,6 +159,8 @@ function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepe
 		return "CampaignIncompleteQuestIcon", true;
 	elseif isLegendary then
 		return "legendaryincompletequesticon", true;
+	elseif isImportant then
+		return "importantincompletequesticon", true;
 	end
 
 	return "Interface/GossipFrame/IncompleteQuestIcon", false;
@@ -173,18 +179,42 @@ function QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID)
 	return false;
 end
 
-function QuestUtil.GetQuestIconOfferForQuestID(questID)
+local function GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable)
 	local quest = QuestCache:Get(questID);
-	return QuestUtil.GetQuestIconOffer(quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID));
+	-- allow for possible overrides
+	if isComplete == nil then
+		isComplete = quest:IsComplete();
+	end
+	if isLegendary == nil then
+		isLegendary = quest:IsLegendary();
+	end
+	if frequency == nil then
+		frequency = quest.frequency;
+	end
+	if isRepeatable == nil then
+		isRepeatable = quest:IsRepeatableQuest();
+	end
+	local isCampaign = QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID);
+	local isCalling = C_QuestLog.IsQuestCalling(questID);
+	local isImportant = C_QuestLog.IsImportantQuest(questID);
+	return isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant;
+end
+
+function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable)
+	local unusedIsComplete = false;
+	local isCampaign, isCalling, isImportant;
+	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable);
+	return QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant);
 end
 
 function QuestUtil.ApplyQuestIconOfferToTextureForQuestID(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOfferForQuestID(...));
 end
 
-function QuestUtil.GetQuestIconActiveForQuestID(questID)
-	local quest = QuestCache:Get(questID);
-	return QuestUtil.GetQuestIconActive(quest:IsComplete(), quest:IsLegendary(), quest.frequency, quest:IsRepeatable(), QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID));
+function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable)
+	local isCampaign, isCalling, isImportant;
+	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable);
+	return QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant);
 end
 
 function QuestUtil.ApplyQuestIconActiveToTextureForQuestID(texture, ...)

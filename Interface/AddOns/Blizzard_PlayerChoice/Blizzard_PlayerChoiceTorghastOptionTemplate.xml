@@ -3,7 +3,6 @@
 
 	<Frame name="PlayerChoiceTorghastOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceTorghastOptionTemplateMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="selectedEffectID" value="97" type="number"/>
 			<KeyValue key="minOptionHeight" value="388" type="number"/>
 			<KeyValue key="choiceSelectedSound" value="SOUNDKIT.UI_PLAYER_CHOICE_JAILERS_TOWER_FADEOUT_POWERS_NOT_PICKED" type="global"/>
 		</KeyValues>

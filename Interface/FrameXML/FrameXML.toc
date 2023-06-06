@@ -449,6 +449,7 @@ TalkingHeadUI.xml
 FramerateFrame.xml
 ClassTalentHelper.lua
 MotionSickness.xml
+ArchaeologyProgressBar.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

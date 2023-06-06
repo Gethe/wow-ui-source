@@ -14,6 +14,7 @@ POIButtonUtil.QuestTypes = {
 	Normal = 1,
 	Campaign = 2,
 	Calling = 3,
+	Important = 4,
 };
 
 function POIButtonUtil.GetStyleFromQuestData(isComplete, isWaypoint)

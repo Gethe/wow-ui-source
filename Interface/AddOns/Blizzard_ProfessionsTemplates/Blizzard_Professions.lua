@@ -56,20 +56,6 @@ function Professions.ExtractItemIDsFromCraftingReagents(reagents)
 	return tbl;
 end
 
-local isCraftingMinimized = false;
-function Professions.SetCraftingMinimized(minimized)
-	local changed = isCraftingMinimized ~= minimized;
-	isCraftingMinimized = minimized;
-
-	if changed then
-		EventRegistry:TriggerEvent("ProfessionsFrame.Minimized");
-	end
-end
-
-function Professions.IsCraftingMinimized()
-	return isCraftingMinimized;
-end
-
 function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
@@ -227,7 +213,7 @@ function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
 end
 
 local function CanShowBar(professionInfo)
-	if Professions.IsCraftingMinimized() then
+	if ProfessionsUtil.IsCraftingMinimized() then
 		return false;
 	end
 

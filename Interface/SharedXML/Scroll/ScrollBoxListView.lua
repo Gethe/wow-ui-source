@@ -187,6 +187,14 @@ function ScrollBoxListViewMixin:ReverseForEachElementData(func)
 	self:GetDataProvider():ReverseForEach(func);
 end
 
+function ScrollBoxListViewMixin:FindElementData(index)
+	return self:GetDataProvider():Find(index);
+end
+
+function ScrollBoxListViewMixin:FindElementDataIndex(elementData)
+	return self:GetDataProvider():FindIndex(elementData);
+end
+
 function ScrollBoxListViewMixin:FindElementDataByPredicate(predicate)
 	return self:GetDataProvider():FindElementDataByPredicate(predicate);
 end
@@ -199,12 +207,14 @@ function ScrollBoxListViewMixin:FindByPredicate(predicate)
 	return self:GetDataProvider():FindByPredicate(predicate);
 end
 
+-- Deprecated, use FindElementData
 function ScrollBoxListViewMixin:Find(index)
-	return self:GetDataProvider():Find(index);
+	return self:FindElementData(index);
 end
 
+-- Deprecated, use FindElementDataIndex
 function ScrollBoxListViewMixin:FindIndex(elementData)
-	return self:GetDataProvider():FindIndex(elementData);
+	return self:FindElementDataIndex(elementData);
 end
 
 function ScrollBoxListViewMixin:ContainsElementDataByPredicate(predicate)

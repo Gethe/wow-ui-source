@@ -376,10 +376,10 @@
 		</Anchors>
 		<ResizeBounds>
 			<minResize>
-				<AbsDimension x="296" y="120"/>
+				<AbsDimension x="250" y="120"/>
 			</minResize>
 			<maxResize>
-				<AbsDimension x="608" y="400"/>
+				<AbsDimension x="800" y="800"/>
 			</maxResize>
 		</ResizeBounds>
 		<Frames>

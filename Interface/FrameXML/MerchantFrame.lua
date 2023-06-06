@@ -337,13 +337,11 @@ function MerchantFrame_UpdateMerchantInfo()
 		SetItemButtonStock(MerchantBuyBackItemItemButton, buybackNumAvailable);
 		SetItemButtonTexture(MerchantBuyBackItemItemButton, buybackTexture);
 		MerchantFrameItem_UpdateQuality(MerchantBuyBackItem, GetBuybackItemLink(numBuybackItems), buybackIsBound);
-		MerchantBuyBackItemMoneyFrame:Show();
 		MoneyFrame_Update("MerchantBuyBackItemMoneyFrame", buybackPrice);
 		MerchantBuyBackItem:Show();
 
 	else
 		MerchantBuyBackItemName:SetText("");
-		MerchantBuyBackItemMoneyFrame:Hide();
 		SetItemButtonTexture(MerchantBuyBackItemItemButton, "");
 		SetItemButtonCount(MerchantBuyBackItemItemButton, 0);
 		MerchantFrameItem_UpdateQuality(MerchantBuyBackItem, nil);
@@ -377,7 +375,6 @@ function MerchantFrame_UpdateMerchantInfo()
 	-- Show all merchant related items
 	MerchantBuyBackItem:Show();
 	MerchantFrameBottomLeftBorder:Show();
-	MerchantFrameBottomRightBorder:Show();
 
 	-- Hide buyback related items
 	MerchantItem11:Hide();
@@ -489,7 +486,6 @@ function MerchantFrame_UpdateBuybackInfo()
 	MerchantPrevPageButton:Hide();
 	MerchantNextPageButton:Hide();
 	MerchantFrameBottomLeftBorder:Hide();
-	MerchantFrameBottomRightBorder:Hide();
 	MerchantRepairText:Hide();
 	MerchantPageText:Hide();
 	MerchantGuildBankRepairButton:Hide();
@@ -531,6 +527,8 @@ function MerchantItemBuybackButton_OnLoad(self)
 			BuyMerchantItem(button:GetID(), split);
 		end
 	end
+
+	self:SetItemButtonScale(0.65);
 end
 
 function MerchantItemButton_OnLoad(self)
@@ -818,13 +816,13 @@ function MerchantFrame_ConfirmLimitedCurrencyPurchase(itemButton, currencyInfo, 
 end
 
 function MerchantFrame_UpdateCanRepairAll()
-	if ( MerchantRepairAllIcon ) then
+	if ( MerchantRepairAllButton.Icon ) then
 		local repairAllCost, canRepair = GetRepairAllCost();
 		if ( canRepair ) then
-			SetDesaturation(MerchantRepairAllIcon, false);
+			SetDesaturation(MerchantRepairAllButton.Icon, false);
 			MerchantRepairAllButton:Enable();
 		else
-			SetDesaturation(MerchantRepairAllIcon, true);
+			SetDesaturation(MerchantRepairAllButton.Icon, true);
 			MerchantRepairAllButton:Disable();
 		end
 	end
@@ -833,10 +831,10 @@ end
 function MerchantFrame_UpdateGuildBankRepair()
 	local repairAllCost, canRepair = GetRepairAllCost();
 	if ( canRepair ) then
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
+		SetDesaturation(MerchantGuildBankRepairButton.Icon, false);
 		MerchantGuildBankRepairButton:Enable();
 	else
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
+		SetDesaturation(MerchantGuildBankRepairButton.Icon, true);
 		MerchantGuildBankRepairButton:Disable();
 	end
 end
@@ -845,15 +843,14 @@ function MerchantFrame_UpdateRepairButtons()
 	if ( CanMerchantRepair() ) then
 		--See if can guildbank repair
 		if ( CanGuildBankRepair() ) then
-			MerchantRepairAllButton:SetWidth(32);
-			MerchantRepairAllButton:SetHeight(32);
-			MerchantRepairItemButton:SetWidth(32);
-			MerchantRepairItemButton:SetHeight(32);
-			MerchantRepairItemButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", -4, 0);
+			MerchantRepairAllButton:SetWidth(36);
+			MerchantRepairAllButton:SetHeight(36);
+			MerchantRepairItemButton:SetWidth(36);
+			MerchantRepairItemButton:SetHeight(36);
+			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 96, 33);
+			MerchantRepairItemButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", -9, 0);
+			MerchantSellAllJunkButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", 128, 0);
 
-			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 100, 30);
-			MerchantRepairText:ClearAllPoints();
-			MerchantRepairText:SetPoint("CENTER", MerchantFrame, "BOTTOMLEFT", 80, 68);
 			MerchantGuildBankRepairButton:Show();
 			MerchantFrame_UpdateGuildBankRepair();
 		else
@@ -861,19 +858,16 @@ function MerchantFrame_UpdateRepairButtons()
 			MerchantRepairAllButton:SetHeight(36);
 			MerchantRepairItemButton:SetWidth(36);
 			MerchantRepairItemButton:SetHeight(36);
-			MerchantRepairItemButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", -2, 0);
+			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 118, 33);
+			MerchantRepairItemButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", -8, 0);
+			MerchantSellAllJunkButton:SetPoint("RIGHT", MerchantRepairAllButton, "LEFT", 80, 0);
 
-			MerchantRepairAllButton:SetPoint("BOTTOMRIGHT", MerchantFrame, "BOTTOMLEFT", 160, 32);
-			MerchantRepairText:ClearAllPoints();
-			MerchantRepairText:SetPoint("BOTTOMLEFT", MerchantFrame, "BOTTOMLEFT", 14, 45);
 			MerchantGuildBankRepairButton:Hide();
 		end
-		MerchantRepairText:Show();
 		MerchantRepairAllButton:Show();
 		MerchantRepairItemButton:Show();
 		MerchantFrame_UpdateCanRepairAll();
 	else
-		MerchantRepairText:Hide();
 		MerchantRepairAllButton:Hide();
 		MerchantRepairItemButton:Hide();
 		MerchantGuildBankRepairButton:Hide();
@@ -1042,5 +1036,33 @@ function MerchantFrame_InitFilter()
 	info.checked = currFilter == LE_LOOT_FILTER_ALL;
 	info.arg1 = LE_LOOT_FILTER_ALL;
 	UIDropDownMenu_AddButton(info);
+end
+
+function MerchantFrame_OnSellAllJunkButtonClicked()
+	GameTooltip:Hide();
+	C_MerchantFrame.SellAllJunkItems();
+end
+
+function MerchantBuyBackButton_OnEnter(button)
+	MerchantBuyBackItem.itemHover = button:GetID();
+	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+	GameTooltip:SetBuybackItem(GetNumBuybackItems());
+end
+
+function MerchantBuyBackButton_OnLeave()
+	GameTooltip_HideResetCursor();
+	MerchantBuyBackItem.itemHover = nil;
+end
+
+function UpdateCursorAfterBuyBack(buybackButton)
+	if ( MerchantBuyBackItem.itemHover ~= buybackButton:GetID() ) then
+		return;
+	end
+
+	if (GetNumBuybackItems() == 0) then
+		SetCursor("BUY_ERROR_CURSOR");
+	else
+		SetCursor("BUY_CURSOR");
+	end
 end
 

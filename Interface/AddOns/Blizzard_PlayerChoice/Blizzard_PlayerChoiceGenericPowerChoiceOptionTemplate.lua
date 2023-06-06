@@ -12,6 +12,7 @@ function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:OnLoad()
 	PlayerChoicePowerChoiceTemplateMixin.OnLoad(self);
 	self.CircleBorder.topPadding = 15;
 	self.CircleBorder.bottomPadding = 20;
+	self.selectedEffects = { {id = 143}, {id = 150, scaleMultiplier = 1.5} };
 end
 
 function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:GetTextureKitRegionTable()
@@ -21,17 +22,8 @@ function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:GetTextureKitRegionTa
 	useTextureRegions.ArtworkGlow1 = "UI-Frame-%s"..rarityGlows.glow1;
 	useTextureRegions.ArtworkGlow2 = "UI-Frame-%s"..rarityGlows.glow2;
 
-	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait-border";
-	useTextureRegions.ArtworkBack = "UI-Frame-%s-Portrait-back";
-	useTextureRegions.Background = "UI-Frame-%s-CardParchment";
-	useTextureRegions.BackgroundFrame = "UI-Frame-%s-CardFrame";
+	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait-Border";
 	return useTextureRegions;
-end
-
-function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:SetupFrame()
-	PlayerChoicePowerChoiceTemplateMixin.SetupFrame(self);
-	self.CircleBorder:SetWidth(64);
-	self.CircleBorder:SetHeight(64);
 end
 
 local OPTION_TEXT_WIDTH = 165;

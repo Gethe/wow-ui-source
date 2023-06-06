@@ -276,6 +276,7 @@ CharacterCustomizationSharedDocumentation.lua
 ChatConstantsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
+CommentatorSharedDocumentation.lua
 ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua

@@ -21,6 +21,15 @@ local function ConvertValueDiffFromMin(self, value, forDisplay)
 	end
 end
 
+-- Create display only setting enum values
+-- These are purely used for display. Changing their values may result in other settings values changing. Used for composite settings like ones made up of multiple other hidden settings.
+do
+	local highestValue = TableUtil.GetHighestNumericalValueInTable(Enum.EditModeChatFrameSetting);
+	Enum.EditModeChatFrameDisplayOnlySetting = {};
+	Enum.EditModeChatFrameDisplayOnlySetting.Width = highestValue + 1;
+	Enum.EditModeChatFrameDisplayOnlySetting.Height = highestValue + 2;
+end
+
 -- The ordering of the setting display info tables in here affects the order settings show in the system setting dialog
 EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
@@ -440,6 +449,37 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.ChatFrame] =
 	{
+		-- Width
+		{
+			setting = Enum.EditModeChatFrameDisplayOnlySetting.Width,
+			name = HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 250,
+			maxValue = 800,
+			stepSize = 1,
+
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- We do this to support more values than we're normally capable of based on data saving limits.
+			isCompositeNumberSetting = true,
+			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.WidthHundreds,
+			compositeNumberTensAndOnesSetting = Enum.EditModeChatFrameSetting.WidthTensAndOnes,
+		},
+
+		-- Height
+		{
+			setting = Enum.EditModeChatFrameDisplayOnlySetting.Height,
+			name = HUD_EDIT_MODE_SETTING_CHAT_FRAME_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 120,
+			maxValue = 800,
+			stepSize = 1,
+
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- We do this to support more values than we're normally capable of based on data saving limits.
+			isCompositeNumberSetting = true,
+			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.HeightHundreds,
+			compositeNumberTensAndOnesSetting = Enum.EditModeChatFrameSetting.HeightTensAndOnes,
+		},
 	},
 
 	[Enum.EditModeSystem.VehicleLeaveButton] =
@@ -614,6 +654,21 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 50,
 			maxValue = 100,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.ArchaeologyBar] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeArchaeologyBarSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_ARCHAEOLOGY_BAR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
+			maxValue = 200,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,

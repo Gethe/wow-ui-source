@@ -59,6 +59,8 @@ EventRegistry:RegisterFrameEventAndCallback("TRACKING_TARGET_INFO_UPDATE", Conte
 
 ContentTrackingUtil = {};
 
+local CombinedIDOffset = 1000;
+
 ContentTrackingUtil.IsTrackingModifierDown = IsShiftKeyDown;
 
 function ContentTrackingUtil.RegisterTrackableElement(element, trackableType, trackableID)
@@ -96,9 +98,7 @@ function ContentTrackingUtil.OpenMapToTrackable(trackableType, trackableID)
 	end
 
 	local unused_trackingResult, uiMapID = C_ContentTracking.GetBestMapForTrackable(trackableType, trackableID);
-	-- TODO:: If unused_trackingResult is DataPending, should we give an error?
 	if uiMapID then
-		-- TODO:: ping?
 		OpenWorldMap(uiMapID);
 	end
 end
@@ -111,4 +111,14 @@ function ContentTrackingUtil.DisplayTrackingError(trackingError)
 	elseif trackingError == Enum.ContentTrackingError.AlreadyTracked then
 		UIErrorsFrame:AddExternalErrorMessage(CONTENT_TRACKING_ALREADYTRACKED_ERROR_TEXT);
 	end
+end
+
+function ContentTrackingUtil.MakeCombinedID(trackableType, trackableID)
+	return (trackableID * CombinedIDOffset) + trackableType;
+end
+
+function ContentTrackingUtil.SplitCombinedID(combinedTrackableID)
+	local trackableType = (combinedTrackableID % CombinedIDOffset);
+	local trackableID = math.floor(combinedTrackableID / CombinedIDOffset);
+	return trackableType, trackableID;
 end

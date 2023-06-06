@@ -406,9 +406,7 @@ function CharacterSelect_OnHide(self)
         CharacterSelect_EndCharacterUndelete();
     end
 
-    if ( CharSelectServicesFlowFrame:IsShown() ) then
-        CharSelectServicesFlowFrame:Hide();
-    end
+    EndCharacterServicesFlow(true);
 
 	SocialContractFrame:Hide();
 
@@ -535,7 +533,11 @@ function CharacterSelect_OnKeyDown(self,key)
         elseif C_Login.IsLauncherLogin() then
             GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
         elseif CharSelectServicesFlowFrame:IsShown() then
-            CharSelectServicesFlowFrame:Hide();
+			if CharSelectServicesFlowFrame.MinimizedFrame then
+				CharSelectServicesFlow_Minimize();
+			else
+				EndCharacterServicesFlow(false);
+			end
         elseif CopyCharacterFrame:IsShown() then
             CopyCharacterFrame:Hide();
         elseif CharacterSelect.undeleting then
@@ -623,6 +625,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 		end
 		UpdateMaxCharactersDisplayed();
 		UpdateCharacterSelection(self);
+
+		local function IsSelectedIndex(elementData)
+			return elementData.index == self.selectedIndex;
+		end
+		CharacterSelectCharacterFrame.ScrollBox:ScrollToElementDataByPredicate(IsSelectedIndex, ScrollBoxConstants.AlignNearest);
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
         GlueDialog_Hide();
         local message = ...;
@@ -853,7 +860,7 @@ function CharacterSelect_GetCharacterButton(buttonIndex)
 end
 
 function CharacterSelect_CanReorderCharacter()
-	return not CharacterSelect.undeleting and not CharSelectServicesFlowFrame:IsShown();
+	return not CharacterSelect.undeleting and not CharacterServicesFlow_IsShowing();
 end
 
 function CharacterSelect_SetArrowButtonShown(button, shown)
@@ -868,7 +875,7 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 	button.upButton:Hide();
 	button.downButton:Hide();
 
-	local disallowOrderChange = CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown();
+	local disallowOrderChange = CharacterSelect.undeleting or CharacterServicesFlow_IsShowing();
 	CharacterSelectCharacterFrame.ScrollBox.dragBehavior:SetDragEnabled(not disallowOrderChange);
 	if disallowOrderChange and button.padlock then
 		button.padlock:Hide();
@@ -1027,7 +1034,13 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 				if lockedByExpansion then
 					locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 				else
-					locationText:SetText(zone);
+					if IsRPEBoostEligible(GetCharIDFromIndex(button.index)) then
+						locationText:SetFontObject("GlueFontHighlightSmall");
+						locationText:SetText(RPE_GEAR_UPDATE_GREEN); 
+					else
+						locationText:SetFontObject("GlueFontDisableSmall");
+						locationText:SetText(zone);
+					end
 				end
 
                 if lockedByExpansion or revokedCharacterUpgrade then
@@ -1175,7 +1188,7 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 	local arrowShown = button:IsEnabled() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(elementData.index);
 	CharacterSelect_SetArrowButtonShown(button, arrowShown);
 
-	if CharSelectServicesFlowFrame:IsShown() then
+	if CharacterServicesFlow_IsShowing() then
 		paidServiceButton:Hide();
 		upgradeIcon:Hide();
 	end
@@ -1393,6 +1406,18 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         end
 
         CharSelectEnterWorldButton:SetText(text);
+
+		if not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector() then
+			if IsRPEBoostEligible(charID) then
+				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
+			else
+				EndCharacterServicesFlow(false);
+			end
+
+			CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(button)
+				CharacterSelect_SetButtonSelected(button, button:GetElementData().index == index);
+			end);
+		end
     end
 end
 
@@ -1420,6 +1445,20 @@ function CharacterDeleteDialog_OnShow()
     CharacterDeleteButton1:Disable();
 end
 
+local function EnterWorldHelper()
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
+	StopGlueAmbience();
+	EnterWorld();
+end
+
+GlueDialogTypes["RPE_SKIP_UPGRADE_CONFIRM"] = {
+    text = RPE_SKIP_UPGRADE_CONFIRMATION,
+    button1 = CONTINUE,
+    button2 = CANCEL,
+    OnAccept = EnterWorldHelper,
+    OnCancel = function () end,
+}
+
 function CharacterSelect_EnterWorld()
     if (CharacterSelect_IsAccountLocked()) then
         return;
@@ -1433,9 +1472,11 @@ function CharacterSelect_EnterWorld()
         return;
     end
 
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
-    StopGlueAmbience();
-    EnterWorld();
+	if IsRPEBoostEligible(GetCharacterSelection()) then
+		GlueDialog_Show("RPE_SKIP_UPGRADE_CONFIRM");
+	else
+		EnterWorldHelper();
+	end
 end
 
 function CharacterSelect_Exit()
@@ -1487,7 +1528,7 @@ function CharacterSelect_AllowedToEnterWorld()
         return false;
     elseif (TokenReactivateConfirmationDialog:IsShown()) then
         return false;
-    elseif (CharSelectServicesFlowFrame:IsShown()) then
+    elseif (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
         return false;
 	elseif (Kiosk.IsEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
 		return false;
@@ -1601,6 +1642,21 @@ end
 
 function CharacterSelectScrollUp_OnClick()
 	CharacterSelect_RotateSelection(-1);
+end
+
+function LocationText_OnEnter(self)
+	local index = self:GetParent():GetParent().index;
+	if IsRPEBoostEligible(GetCharIDFromIndex(index)) then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_LEFT", -16, -22);
+		GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE1);
+		GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE2);
+		tooltip:Show();
+	end
+end
+
+function LocationText_OnLeave(self)
+	 GetAppropriateTooltip():Hide();
 end
 
 function CharacterSelectButton_OnEnter(self)
@@ -2043,7 +2099,7 @@ end
 
 function CharacterSelect_UpdateButtonState()
     local hasCharacters = GetNumCharacters() > 0;
-    local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
+    local servicesEnabled = not CharSelectServicesFlowFrame:ShouldDisableButtons();
     local undeleting = CharacterSelect.undeleting;
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
@@ -2177,6 +2233,10 @@ local function GetCharacterServiceDisplayOrder()
 	return displayOrder;
 end
 
+function IsRPEBoostEligible(charID)
+	return select(36, GetCharacterInfo(charID));
+end
+
 -- CHARACTER BOOST (SERVICES)
 function CharacterServicesMaster_UpdateServiceButton()
 	if not CharacterSelect.VASPools then
@@ -2201,7 +2261,7 @@ function CharacterServicesMaster_UpdateServiceButton()
     UpgradePopupFrame:Hide();
     CharacterSelectUI.WarningText:Hide();
 
-    if CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown() then
+    if CharacterSelect.undeleting or (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
         return;
     end
 
@@ -2243,6 +2303,20 @@ function DisplayBattlepayTokens(upgradeInfo, boostType)
 		local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 		DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo);
 	end
+end
+
+function CharSelectServicesFlow_Minimize()
+	local parent = CharSelectServicesFlowFrame;
+	parent.IsMinimized = true;
+	parent.MinimizedFrame:Show();
+	parent:Hide();
+end
+
+function CharSelectServicesFlow_Maximize()
+	local parent = CharSelectServicesFlowFrame;
+	parent.IsMinimized = false;
+	parent.MinimizedFrame:Hide();
+	BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 end
 
 ------------------------------------------------------------------
@@ -2485,10 +2559,21 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason
     end
 end
 
-local function BeginFlow(flow, data)
+function BeginCharacterServicesFlow(flow, data)
     CharSelectServicesFlowFrame:Show();
 	flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
+	CharSelectServicesFlowFrame:Initialize(flow);
+end
+
+function EndCharacterServicesFlow(shouldMaximize)
+	CharSelectServicesFlowFrame:Hide();
+	if CharSelectServicesFlowFrame.MinimizedFrame then
+		CharSelectServicesFlowFrame.MinimizedFrame:Hide();
+		if shouldMaximize then
+			CharSelectServicesFlowFrame.IsMinimized = false;
+		end
+	end
 end
 
 function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
@@ -2504,17 +2589,17 @@ function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
 	end
 
 	CharacterUpgradePopup_CheckSetPopupSeen(data);
-	BeginFlow(CharacterUpgradeFlow, data);
+	BeginCharacterServicesFlow(CharacterUpgradeFlow, data);
 end
 
 function CharacterUpgradePopup_BeginVASFlow(data, guid)
 	assert(data.vasType ~= nil);
 	if data.vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer then
-		BeginFlow(PaidCharacterTransferFlow, data);
+		BeginCharacterServicesFlow(PaidCharacterTransferFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
-		BeginFlow(PaidFactionChangeFlow, data);
+		BeginCharacterServicesFlow(PaidFactionChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		BeginFlow(PaidRaceChangeFlow, data);
+		BeginCharacterServicesFlow(PaidRaceChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
@@ -2588,6 +2673,8 @@ end
 CharacterBoostMixin = {};
 
 function CharacterBoostMixin:OnClick()
+	EndCharacterServicesFlow(true);
+
 	if self.data.isExpansionTrial then
 		if UpgradePopupFrame:IsShown() then
 			UpgradePopupFrame:Hide();
@@ -2807,31 +2894,44 @@ function CharacterServicesMaster_HideFlows(self)
 	end
 end
 
-function CharacterServicesMaster_SetBlockActiveState(block)
-    block.frame.StepLabel:Show();
-    block.frame.StepNumber:Show();
-    block.frame.StepActiveLabel:Show();
-    block.frame.StepActiveLabel:SetText(block.ActiveLabel);
-    block.frame.ControlsFrame:Show();
-    block.frame.Checkmark:Hide();
-    block.frame.StepFinishedLabel:Hide();
-    block.frame.ResultsLabel:Hide();
-end
+do
+	local function callIfPresent(block)
+		return function(key, fn, ...)
+			local child = block.frame[key];
+			if child then
+				child[fn](child, ...);
+			end
+		end
+	end
 
-function CharacterServicesMaster_SetBlockFinishedState(block)
-    block.frame.Checkmark:Show();
-    block.frame.StepFinishedLabel:Show();
-    block.frame.StepFinishedLabel:SetText(block.ResultsLabel);
-    block.frame.ResultsLabel:Show();
-    if (block.FormatResult) then
-        block.frame.ResultsLabel:SetText(block:FormatResult());
-    else
-        block.frame.ResultsLabel:SetText(block:GetResult());
-    end
-    block.frame.StepLabel:Hide();
-    block.frame.StepNumber:Hide();
-    block.frame.StepActiveLabel:Hide();
-    block.frame.ControlsFrame:Hide();
+	function CharacterServicesMaster_SetBlockActiveState(block)
+		local call = callIfPresent(block);
+		call("StepLabel", "Show");
+		call("StepNumber", "Show");
+		call("StepActiveLabel", "Show");
+		call("StepActiveLabel", "SetText", block.ActiveLabel);
+		call("ControlsFrame", "Show");
+		call("Checkmark", "Hide");
+		call("StepFinishedLabel", "Hide");
+		call("ResultsLabel", "Hide");
+	end
+
+	function CharacterServicesMaster_SetBlockFinishedState(block)
+		local call = callIfPresent(block);
+		call("Checkmark", "Show");
+		call("StepFinishedLabel", "Show");
+		call("StepFinishedLabel", "SetText", block.ResultsLabel);
+		call("ResultsLabel", "Show");
+		if (block.FormatResult) then
+			call("ResultsLabel", "SetText", block:FormatResult());
+		else
+			call("ResultsLabel", "SetText", block:GetResult());
+		end
+		call("StepLabel", "Hide");
+		call("StepNumber", "Hide");
+		call("StepActiveLabel", "Hide");
+		call("ControlsFrame", "Hide");
+	end
 end
 
 function CharacterServicesMasterBackButton_OnClick()
@@ -2877,7 +2977,7 @@ function CharacterServicesMasterFinishButton_OnClick()
 	end
 
     -- wait a bit after button is shown so no one accidentally upgrades the wrong character
-    if ( GetTime() - CharacterServicesMaster.FinishTime < 0.5 ) then
+    if (CharacterServicesMaster.FinishTime and (GetTime() - CharacterServicesMaster.FinishTime < 0.5 )) then
         return;
     end
     local master = CharacterServicesMaster;
@@ -3351,6 +3451,10 @@ function CharacterSelectMailIndicationButtonMixin:SetMailSenders(mailSenders)
 	self.mailSenders = mailSenders;
 end
 
+function CharacterServicesFlow_IsShowing()
+	return CharSelectServicesFlowFrame:IsShown() or (CharSelectServicesFlowFrame.MinimizedFrame and CharSelectServicesFlowFrame.MinimizedFrame:IsShown())
+end
+
 CharSelectServicesFlowFrameMixin = {};
 
 function CharSelectServicesFlowFrameMixin:SetErrorMessage(msg)
@@ -3372,6 +3476,57 @@ function CharSelectServicesFlowFrameMixin:ClearErrorMessage()
 	self.ErrorMessageContainer.Text:SetText("");
 	self.ErrorMessageContainer.fullText = nil;
 	self.ErrorMessageContainer.isTruncated = nil;
+end
+
+function CharSelectServicesFlowFrameMixin:Initialize(flow)
+	self.MinimizedFrame = _G[flow.MinimizedFrame];
+	self.DisableButtons = flow.DisableButtons;
+
+	local theme = flow.theme;
+	if theme == "default" then
+		self.BackgroundDefault:Show();
+		self.Icon:Show();
+		self.IconBorder:Show();
+		self.TitleText:Show();
+		self.CloseButton:Show();
+		self.BackgroundRPE:Hide();
+		self.MinimizeButton:Hide();
+
+		local backNextX, backNextY = 40, 57;
+		self.NextButton:SetPoint("BOTTOMRIGHT", -backNextX, backNextY);
+		self.BackButton:SetPoint("BOTTOMLEFT", backNextX, backNextY);
+
+		self.FinishButton:SetPoint("BOTTOMRIGHT", -28, 53);
+
+		NineSliceUtil.HideLayout(self);
+
+		self:SetSize(421, 724);
+		self:SetPoint("LEFT", 8, 16);
+	elseif theme == "RPE" then
+		self.BackgroundDefault:Hide();
+		self.Icon:Hide();
+		self.IconBorder:Hide();
+		self.TitleText:Hide();
+		self.CloseButton:Hide();
+		self.BackgroundRPE:Show();
+		self.MinimizeButton:Show();
+
+		local backNextX, backNextY = 30, 20;
+		self.NextButton:SetPoint("BOTTOMRIGHT", -backNextX, backNextY);
+		self.BackButton:SetPoint("BOTTOMLEFT", backNextX, backNextY);
+
+		self.FinishButton:SetPoint("BOTTOMRIGHT", -18, 18);
+
+		NineSliceUtil.ApplyLayout(self, NineSliceUtil.GetLayout("Dialog"));
+		NineSliceUtil.ShowLayout(self);
+
+		self:SetSize(360, 545);
+		self:SetPoint("LEFT", 8, -17);
+	end
+end
+
+function CharSelectServicesFlowFrameMixin:ShouldDisableButtons()
+	return self:IsShown() and self.DisableButtons;
 end
 
 FlowErrorContainerMixin = {};

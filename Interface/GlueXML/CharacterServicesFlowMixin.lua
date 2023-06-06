@@ -207,7 +207,9 @@ function CharacterServicesFlowMixin:SetUpBlock(controller, results, wasFromRewin
 		else
 			self:MoveBlock(block, -105);
 		end
-		block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
+		if block.frame.StepNumber then
+			block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
+		end
 		block.frame:Show();
 	end
 	block:Initialize(results, wasFromRewind);

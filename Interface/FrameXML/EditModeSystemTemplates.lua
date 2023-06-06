@@ -213,8 +213,33 @@ function EditModeSystemMixin:ClearDirtySetting(setting)
 	self.dirtySettings[setting] = nil;
 end
 
+function EditModeSystemMixin:TrySetCompositeNumberSettingValue(setting, newValue)
+	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
+	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
+		return false;
+	end
+
+	-- Composite number settings are settings which represent multiple other hidden settings which combine to form the one main setting's number
+	-- So when we change the main setting we actually want to be changing each of the sub settings which make up that number
+	local useRawValueYes = true;
+	local rawOldValue = self:GetSettingValue(setting, useRawValueYes);
+	local rawNewValue = self:ConvertSettingDisplayValueToRawValue(setting, newValue);
+	if rawOldValue ~= rawNewValue then
+		local hundredsValue = math.floor(newValue / 100);
+		EditModeManagerFrame:OnSystemSettingChange(self, settingDisplayInfo.compositeNumberHundredsSetting, hundredsValue);
+
+		local tensAndOnesValue = math.floor(newValue % 100);
+		EditModeManagerFrame:OnSystemSettingChange(self, settingDisplayInfo.compositeNumberTensAndOnesSetting, tensAndOnesValue);
+	end
+	return true;
+end
+
 function EditModeSystemMixin:UpdateSystemSettingValue(setting, newValue)
 	if not self:IsInitialized() then
+		return;
+	end
+
+	if self:TrySetCompositeNumberSettingValue(setting, newValue) then
 		return;
 	end
 
@@ -345,15 +370,55 @@ function EditModeSystemMixin:HasActiveChanges()
 	return self.hasActiveChanges;
 end
 
+function EditModeSystemMixin:HasCompositeNumberSetting(setting)
+	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
+	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
+		return nil;
+	end
+
+	-- Composite number settings are settings which represent multiple other hidden settings which combine to form the one main setting's number
+	-- So if we want to know if a composite number setting exists we actually want to be checking if all the sub settings which make up the number exist
+	return self:HasSetting(settingDisplayInfo.compositeNumberHundredsSetting)
+		and self:HasSetting(settingDisplayInfo.compositeNumberTensAndOnesSetting);
+end
+
 function EditModeSystemMixin:HasSetting(setting)
+	local hasCompositeNumberSetting = self:HasCompositeNumberSetting(setting);
+	if hasCompositeNumberSetting ~= nil then
+		return hasCompositeNumberSetting;
+	end
+
 	return self.settingMap and (self.settingMap[setting] ~= nil);
+end
+
+function EditModeSystemMixin:GetCompositeNumberSettingValue(setting, useRawValue)
+	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
+	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
+		return nil;
+	end
+
+	-- Composite number settings are settings which represent multiple other hidden settings which combine to form the one main setting's number
+	-- So if we want to get the setting's value we need to get the sub settings values and combine them to form the main setting's number
+	local hundreds = self:GetSettingValue(settingDisplayInfo.compositeNumberHundredsSetting, useRawValue) or 0;
+	local tensAndOnes = self:GetSettingValue(settingDisplayInfo.compositeNumberTensAndOnesSetting, useRawValue) or 0;
+	return math.floor((hundreds * 100) + tensAndOnes);
 end
 
 function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
 	if not self:IsInitialized() then
 		return 0;
 	end
-	return useRawValue and self.settingMap[setting].value or self.settingMap[setting].displayValue;
+
+	local compositeNumberValue = self:GetCompositeNumberSettingValue(setting, useRawValue);
+	if compositeNumberValue ~= nil then
+		return compositeNumberValue;
+	end
+
+	if useRawValue then
+		return self.settingMap[setting].value;
+	else
+		return self.settingMap[setting].displayValue or self.settingMap[setting].value;
+	end
 end
 
 function EditModeSystemMixin:GetSettingValueBool(setting, useRawValue)
@@ -1771,6 +1836,22 @@ end
 
 EditModeChatFrameSystemMixin = {};
 
+function EditModeChatFrameSystemMixin:UpdateSystem(systemInfo)
+	EditModeSystemMixin.UpdateSystem(self, systemInfo);
+	self:RefreshSystemPosition();
+end
+
+function EditModeChatFrameSystemMixin:MarkSystemPositionDirty()
+	self.systemPositionDirty = true;
+end
+
+function EditModeChatFrameSystemMixin:RefreshSystemPosition()
+	if self.systemPositionDirty then
+		EditModeManagerFrame:OnSystemPositionChange(self);
+		self.systemPositionDirty = false;
+	end
+end
+
 function EditModeChatFrameSystemMixin:OnEditModeEnter()
 	EditModeSystemMixin.OnEditModeEnter(self);
 
@@ -1789,17 +1870,15 @@ function EditModeChatFrameSystemMixin:OnEditModeExit()
 end
 
 function EditModeChatFrameSystemMixin:EditMode_OnResized()
-	local width = self:GetWidth();
-	local height = self:GetHeight();
+	local width = math.floor(self:GetWidth());
+	local height =  math.floor(self:GetHeight());
 
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthHundreds, math.floor(width / 100));
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthTensAndOnes, math.floor(width % 100));
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightHundreds, math.floor(height / 100));
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightTensAndOnes, math.floor(height % 100));
-	EditModeManagerFrame:OnSystemPositionChange(self);
+	-- Changing the display only width/height settings will in turn cause the hidden width and height settings to be changed (ex. WidthHundreds and WidthTensAndOnes)
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameDisplayOnlySetting.Width, width);
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameDisplayOnlySetting.Height, height);
 end
 
-function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
+function EditModeChatFrameSystemMixin:UpdateSystemSettingWidth()
 	local useRawValueYes = true;
 
 	local width;
@@ -1810,6 +1889,14 @@ function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
 	else
 		width = self:GetWidth();
 	end
+	width = math.floor(width);
+
+	self:SetSize(width, self:GetHeight());
+	self:MarkSystemPositionDirty();
+end
+
+function EditModeChatFrameSystemMixin:UpdateSystemSettingHeight()
+	local useRawValueYes = true;
 
 	local height;
 	if self:HasSetting(Enum.EditModeChatFrameSetting.HeightHundreds) and self:HasSetting(Enum.EditModeChatFrameSetting.HeightTensAndOnes) then
@@ -1819,8 +1906,10 @@ function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
 	else
 		height = self:GetHeight();
 	end
+	height = math.floor(height);
 
-	self:SetSize(width, height);
+	self:SetSize(self:GetWidth(), height);
+	self:MarkSystemPositionDirty();
 end
 
 function EditModeChatFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1831,12 +1920,18 @@ function EditModeChatFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if (setting == Enum.EditModeChatFrameSetting.WidthHundreds
-		or setting == Enum.EditModeChatFrameSetting.WidthTensAndOnes
-		or setting == Enum.EditModeChatFrameSetting.HeightHundreds
-		or setting == Enum.EditModeChatFrameSetting.HeightTensAndOnes)
-		then
-		self:UpdateSystemSettingSize();
+	if setting == Enum.EditModeChatFrameSetting.WidthHundreds and self:HasSetting(Enum.EditModeChatFrameSetting.WidthHundreds) then
+		self:UpdateSystemSettingWidth();
+	elseif setting == Enum.EditModeChatFrameSetting.WidthTensAndOnes and self:HasSetting(Enum.EditModeChatFrameSetting.WidthTensAndOnes) then
+		self:UpdateSystemSettingWidth();
+	elseif setting == Enum.EditModeChatFrameSetting.HeightHundreds and self:HasSetting(Enum.EditModeChatFrameSetting.HeightHundreds) then
+		self:UpdateSystemSettingHeight();
+	elseif setting == Enum.EditModeChatFrameSetting.HeightTensAndOnes and self:HasSetting(Enum.EditModeChatFrameSetting.HeightTensAndOnes) then
+		self:UpdateSystemSettingHeight();
+	end
+
+	if not entireSystemUpdate then
+		self:RefreshSystemPosition();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -2280,6 +2375,33 @@ function EditModeVehicleSeatIndicatorSystemMixin:UpdateSystemSetting(setting, en
 	end
 
 	if setting == Enum.EditModeVehicleSeatIndicatorSetting.Size and self:HasSetting(Enum.EditModeVehicleSeatIndicatorSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeArchaeologyBarSystemMixin = {};
+
+function EditModeArchaeologyBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeArchaeologyBarSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeArchaeologyBarSetting.Size) / 100);
+end
+
+function EditModeArchaeologyBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeArchaeologyBarSetting.Size and self:HasSetting(Enum.EditModeArchaeologyBarSetting.Size) then
 		self:UpdateSystemSettingSize();
 	end
 

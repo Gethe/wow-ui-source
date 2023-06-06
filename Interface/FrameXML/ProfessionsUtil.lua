@@ -1,5 +1,19 @@
 ProfessionsUtil = {};
 
+local isCraftingMinimized = false;
+function ProfessionsUtil.SetCraftingMinimized(minimized)
+	local changed = isCraftingMinimized ~= minimized;
+	isCraftingMinimized = minimized;
+
+	if changed then
+		EventRegistry:TriggerEvent("ProfessionsFrame.Minimized");
+	end
+end
+
+function ProfessionsUtil.IsCraftingMinimized()
+	return isCraftingMinimized;
+end
+
 function ProfessionsUtil.OpenProfessionFrameToRecipe(recipeID)
     local tradeSkillID, skillLineName, parentTradeSkillID = C_TradeSkillUI.GetTradeSkillLineForRecipe(recipeID);
     if tradeSkillID then

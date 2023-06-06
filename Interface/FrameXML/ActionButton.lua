@@ -1022,9 +1022,12 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif (event == "UNIT_SPELLCAST_START") then 
 			self:PlaySpellCastAnim(); 
 	elseif (event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED") then 
-			self:StopSpellCastAnim(); 
+			self:StopSpellCastAnim(false, false); 
+			self:StopTargettingReticleAnim();
 	elseif (event == "UNIT_SPELLCAST_CHANNEL_START") then 
 			self:PlaySpellCastAnim(true); 
+	elseif (event == "UNIT_SPELLCAST_CHANNEL_STOP") then 
+			self:StopSpellCastAnim(true, true);
 	elseif (event == "UNIT_SPELLCAST_RETICLE_TARGET") then
 			self:PlayTargettingReticleAnim();
 	elseif (event == "UNIT_SPELLCAST_RETICLE_CLEAR") then
@@ -1130,6 +1133,7 @@ function ActionBarActionButtonMixin:PlaySpellCastAnim(isChannel)
 	self:ClearInterruptDisplay(); 
 	self:ClearReticle();
 	self.SpellCastAnimFrame:Setup(isChannel); 
+	self.isChannel = isChannel; 
 end
 
 function ActionBarActionButtonMixin:PlayTargettingReticleAnim()
@@ -1145,11 +1149,14 @@ function ActionBarActionButtonMixin:StopTargettingReticleAnim()
 	end
 end
 
-function ActionBarActionButtonMixin:StopSpellCastAnim(forceStop)
-	if(forceStop) then 
-		self.SpellCastAnimFrame:Hide();
-	elseif(self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then 
-		self.SpellCastAnimFrame:FinishAnimAndPlayBurst(); 
+function ActionBarActionButtonMixin:StopSpellCastAnim(forceStop, isChannel)
+	if( (not self.isChannel and not isChannel) or (self.isChannel and isChannel) ) then 
+		if(forceStop) then 
+			self.SpellCastAnimFrame:Hide();
+		elseif(self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then 
+			self.SpellCastAnimFrame:FinishAnimAndPlayBurst(); 
+		end
+		self.isChannel = nil; 
 	end
 end
 
@@ -1601,7 +1608,8 @@ end
 ActionButtonCastingFinishAnimMixin = { }; 
 function ActionButtonCastingFinishAnimMixin:OnFinished()
 	self:GetParent():GetParent():Hide(); 
-	self:GetParent():GetParent():GetParent():StopSpellCastAnim(); 
+	local parentButton = self:GetParent():GetParent():GetParent();
+	self:GetParent():GetParent():GetParent():StopSpellCastAnim(false, parentButton.isChannel); 
 end
 
 ActionButtonTargetReticleFrameMixin = { }; 

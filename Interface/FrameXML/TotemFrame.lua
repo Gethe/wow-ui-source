@@ -61,6 +61,13 @@ end
 
 function TotemButtonMixin:OnLoad()
 	self:RegisterForClicks("RightButtonUp");
+
+	local cdSwipeAtlas = C_Texture.GetAtlasInfo("CircleMask");
+	self.Icon.Cooldown:SetSwipeTexture(cdSwipeAtlas.file or cdSwipeAtlas.filename);
+	-- CooldownFrame primarily works with Texture files, extra info required to make it work with a Texture Atlas
+	local lowTexCoords = { x = cdSwipeAtlas.leftTexCoord, y = cdSwipeAtlas.topTexCoord };
+	local highTexCoords = { x = cdSwipeAtlas.rightTexCoord, y = cdSwipeAtlas.bottomTexCoord };
+	self.Icon.Cooldown:SetTexCoordRange(lowTexCoords, highTexCoords);
 end
 
 function TotemButtonMixin:OnUpdate(elapsed)

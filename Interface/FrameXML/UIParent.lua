@@ -2229,7 +2229,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "ARCHAEOLOGY_SURVEY_CAST" ) then
 		ArchaeologyFrame_LoadUI();
-		ArcheologyDigsiteProgressBar_OnEvent(ArcheologyDigsiteProgressBar, event, ...);
+		ArcheologyDigsiteProgressBar:OnEvent(event, ...);
 		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	--Events for Trial caps
 	elseif ( event == "TRIAL_CAP_REACHED_MONEY" ) then

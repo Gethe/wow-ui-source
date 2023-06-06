@@ -69,6 +69,8 @@ function StorylineQuestPinMixin:OnAcquired(questID)
 		self.Texture:SetAtlas("TrivialQuests", true);
 	elseif QuestUtil.ShouldQuestIconsUseCampaignAppearance(self.questID) then
 		self.Texture:SetAtlas("Quest-Campaign-Available", true);
+	elseif (questLineInfo.isImportant) then	
+		self.Texture:SetAtlas("Quest-Important-Available", true);		
 	elseif (questLineInfo.isLegendary) then
 		self.Texture:SetAtlas("UI-QuestPoiLegendary-QuestBang", true);		
 	else

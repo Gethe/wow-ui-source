@@ -172,7 +172,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Highlight" alpha="0.8" alphaMode="ADD" atlas="UI-HUD-ActionBar-Target-Highlight">
+				<Texture parentKey="Highlight" alpha="0.8" alphaMode="ADD" useAtlasSize="true" snapToPixelGrid="false" texelSnappingBias="0.0" atlas="UI-HUD-ActionBar-Target-Highlight">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

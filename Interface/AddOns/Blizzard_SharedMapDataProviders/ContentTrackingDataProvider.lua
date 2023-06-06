@@ -94,7 +94,6 @@ function ContentTrackingDataProviderMixin:AddTrackable(trackableMapInfo, isWaypo
 	if isSuperTracked then
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_CONTENT");
 	else
-		-- TODO:: Sub levels?
 		pin:UseFrameLevelType("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	end
 
