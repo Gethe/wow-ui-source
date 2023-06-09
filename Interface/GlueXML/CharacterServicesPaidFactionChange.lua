@@ -146,6 +146,12 @@ function PaidFactionChangeFlow:OnStoreCharacterListReceived()
 	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
 end
 
+function PaidFactionChangeFlow:OnHide()
+	CharacterServicesFlowMixin.OnHide(self);
+	EventRegistry:UnregisterFrameEvent("STORE_CHARACTER_LIST_RECEIVED");
+	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
+end
+
 function PaidFactionChangeFlow:ShouldFinishBehaveLikeNext()
 	return true;
 end

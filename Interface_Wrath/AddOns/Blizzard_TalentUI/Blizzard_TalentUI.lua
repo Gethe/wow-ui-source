@@ -377,6 +377,7 @@ end
 
 function PlayerTalentFrame_Refresh()
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	EventRegistry:TriggerEvent("PlayerTalentFrame.TabShow", selectedTab);
 	if ( selectedTab == GLYPH_TALENT_TAB ) then
 		PlayerTalentFrame_ShowGlyphFrame();
 	else

@@ -133,47 +133,47 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
-			<Button name="$parentBuff1" inherits="PartyBuffFrameTemplate" id="1">
+			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentBuff2" inherits="PartyBuffFrameTemplate" id="2">
+			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff1" relativePoint="RIGHT" x="2" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentBuff3" inherits="PartyBuffFrameTemplate" id="3">
+			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff2" relativePoint="RIGHT" x="2" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
-			<Button name="$parentBuff4" inherits="PartyBuffFrameTemplate" id="4">
+			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentBuff3" relativePoint="RIGHT" x="2" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetUnitBuff(PetFrame.unit, self:GetID());
+						GameTooltip:SetUnitDebuff(PetFrame.unit, self:GetID());
 					</OnEnter>
 				</Scripts>
 			</Button>
@@ -252,4 +252,3 @@
 		</Scripts>
 	</StatusBar>
 </Ui>
-

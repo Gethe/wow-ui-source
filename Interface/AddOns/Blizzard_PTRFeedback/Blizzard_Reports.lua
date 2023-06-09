@@ -141,28 +141,45 @@ function PTR_IssueReporter.CreateReports()
     currencyReport:RegisterPopEvent(event.Tooltip, tooltips.currency)
     
     ---------------------------------- Classic Talent Reporting -------------------------------------------
-    local GetIconFromTalentID = function(value)
+    local talentID = 0
+    local talentTabID = 1
+
+    local talentEventListener = function (event, talentTab)
+        if (talentTab) then
+            talentTabID = talentTab
+        end
+    end
+
+    EventRegistry:RegisterCallback("PlayerTalentFrame.TabShow", talentEventListener, "PTRIssueReporter")
+    
+    local GetIconFromIDAndSetTalentID = function(value)
         local IDString = {}
         for s in value:gmatch("[^-]+") do
             table.insert(IDString, s)
         end
-        if (IDString[2]) then
-            local frame = _G["TalentFrameTalent"..IDString[2].."IconTexture"]
-            if (frame) then
-                return frame:GetTexture()
-            end
-        end
         
-        return "Interface\\Icons\\INV_Misc_QuestionMark"
+        local name, icon, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTabID, tonumber(IDString[2]))
+        talentID = tID
+
+        if icon then
+            return icon
+        end
+        return 0
+    end
+
+    local GetTalentID = function()
+        return talentID
     end
     
     local classicTalentReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 9, "Bug Report: %s")
     classicTalentReport:PopulateDynamicTitleToken(1, "Name")
-    classicTalentReport:AttachIconViewer("ID", GetIconFromTalentID)
+    classicTalentReport:AttachIconViewer("ID", GetIconFromIDAndSetTalentID)
+    
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(classicTalentReport)
     
     classicTalentReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
     classicTalentReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this talent?")
+    classicTalentReport:AddDataCollection(baseCollectors + 3, collector.RunFunction, GetTalentID)
 
     classicTalentReport:RegisterPopEvent(event.Tooltip, tooltips.talent)
     
@@ -179,11 +196,9 @@ function PTR_IssueReporter.CreateReports()
 
     ---------------------------------- Classic Glyph Reporting -------------------------------------------   
     local classicGlyphReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 11, "Bug Report: %s")
-
     classicGlyphReport:PopulateDynamicTitleToken(1, "Name")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(classicGlyphReport)
-    
-    classicGlyphReport:AddDataCollection(baseCollectors + 1, collector.RunFunction, "ID")
+    classicGlyphReport:AddDataCollection(baseCollectors + 1, collector.FromDataPackage, "ID")
     classicGlyphReport:AddDataCollection(baseCollectors + 2, collector.OpenEndedQuestion, "What was the issue with this glyph?")
 
     classicGlyphReport:RegisterPopEvent(event.Tooltip, tooltips.glyph)

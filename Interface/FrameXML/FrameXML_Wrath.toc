@@ -254,7 +254,7 @@ PartyFrame.xml
 ..\..\Interface_Wrath\FrameXML\TargetFrame.xml
 TotemFrame.xml
 ..\..\Interface_Wrath\FrameXML\PetFrame_Wrath.lua
-PetFrame.xml
+..\..\Interface_Wrath\FrameXML\PetFrame_Wrath.xml
 StatsFrame.xml
 SpellBookFrame.xml
 ..\..\Interface_Wrath\FrameXML\CharacterFrame.xml

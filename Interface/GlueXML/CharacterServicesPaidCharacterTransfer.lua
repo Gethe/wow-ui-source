@@ -324,6 +324,12 @@ function PaidCharacterTransferFlow:OnStoreCharacterListReceived()
 	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
 end
 
+function PaidCharacterTransferFlow:OnHide()
+	CharacterServicesFlowMixin.OnHide(self);
+	EventRegistry:UnregisterFrameEvent("STORE_CHARACTER_LIST_RECEIVED");
+	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
+end
+
 function PaidCharacterTransferFlow:ShouldFinishBehaveLikeNext()
 	return true;
 end

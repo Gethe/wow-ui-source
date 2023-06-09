@@ -3,10 +3,10 @@ ActionBarsOverrides = {}
 function ActionBarsOverrides.CreateActionBarVisibilitySettings(category, ActionBarSettingsTogglesCache, ActionBarSettingsLastCacheTime, ActionBarSettingsCacheTimeout)
 		local actionBars = 
 		{
-			{variable = "PROXY_SHOW_ACTIONBAR_2", label = OPTION_SHOW_ACTION_BAR:format(2), tooltip = OPTION_SHOW_ACTION_BAR2_TOOLTIP, uvar = "SHOW_MULTI_ACTIONBAR_1" },
-			{variable = "PROXY_SHOW_ACTIONBAR_3", label = OPTION_SHOW_ACTION_BAR:format(3), tooltip = OPTION_SHOW_ACTION_BAR3_TOOLTIP, uvar = "SHOW_MULTI_ACTIONBAR_2" },
-			{variable = "PROXY_SHOW_ACTIONBAR_4", label = OPTION_SHOW_ACTION_BAR:format(4), tooltip = OPTION_SHOW_ACTION_BAR4_TOOLTIP, uvar = "SHOW_MULTI_ACTIONBAR_3" },
-			{variable = "PROXY_SHOW_ACTIONBAR_5", label = OPTION_SHOW_ACTION_BAR:format(5), tooltip = OPTION_SHOW_ACTION_BAR5_TOOLTIP, uvar = "SHOW_MULTI_ACTIONBAR_4" },
+			{variable = "PROXY_SHOW_ACTIONBAR_2", label = OPTION_SHOW_ACTION_BAR:format(2), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR1, uvar = "SHOW_MULTI_ACTIONBAR_1" },
+			{variable = "PROXY_SHOW_ACTIONBAR_3", label = OPTION_SHOW_ACTION_BAR:format(3), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR2, uvar = "SHOW_MULTI_ACTIONBAR_2" },
+			{variable = "PROXY_SHOW_ACTIONBAR_4", label = OPTION_SHOW_ACTION_BAR:format(4), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR3, uvar = "SHOW_MULTI_ACTIONBAR_3" },
+			{variable = "PROXY_SHOW_ACTIONBAR_5", label = OPTION_SHOW_ACTION_BAR:format(5), tooltip = OPTION_TOOLTIP_SHOW_MULTIBAR4, uvar = "SHOW_MULTI_ACTIONBAR_4" },
 		};
 
 		local function GetActionBarToggle(index)

@@ -12,7 +12,6 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	}
 	
 	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelCallback, CompactUnitFrameProfiles_DefaultCallback, CompactUnitFrameProfiles_UpdateCurrentPanel);
-	InterfaceOptions_AddCategory(self, false, 11);
 end
 
 function CompactUnitFrameProfiles_OnEvent(self, event, ...)
