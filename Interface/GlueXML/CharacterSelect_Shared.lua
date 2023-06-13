@@ -830,7 +830,7 @@ function UpdateCharacterList(skipSelect)
     local areCharServicesShown = CharSelectServicesFlowFrame:IsShown();
 
     for i=1, characterLimit, 1 do
-        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+        local name, race, _, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, _, lastLoginBuild, _, isExpansionTrialCharacter, _, _, eraChoiceState, _, _, _, _, isLockedFromOtherChars = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
         local productID, vasServiceState, vasServiceErrors, productInfo;
         if (guid) then
             productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
@@ -872,7 +872,7 @@ function UpdateCharacterList(skipSelect)
 
             if ( CharacterSelect.undeleting ) then
                 nameText:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
-            elseif ( locked ) then
+            elseif ( locked or isLockedFromOtherChars ) then
                 nameText:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
             else
                 nameText:SetText(name);
@@ -1141,23 +1141,23 @@ function UpdateCharacterList(skipSelect)
 		if (CanCreateCharacter()) then
 			CharacterSelect.createIndex = numChars + 1;
 			if ( connected ) then
-				--If can create characters position and show the create button
-				CharSelectCreateCharacterButton:SetID(CharacterSelect.createIndex);
+        --If can create characters position and show the create button
+        CharSelectCreateCharacterButton:SetID(CharacterSelect.createIndex);
 				CharSelectCreateCharacterButton:Show();
 				UpdateCharacterUndeleteStatus();
 				CharSelectUndeleteCharacterButton:Show();
-			end
+    end
 		elseif (numChars < GetNumCharacters()) then
 			-- If our number of visible characters is less than our total number of characters,
 			-- display the Create Character button with a helpful error message.
 			CharSelectCreateCharacterButton.tooltip = CHAR_CREATE_UNACTIVATED_CHARACTER_LIMIT;
 			CharSelectCreateCharacterButton:Show();
 			CharSelectCreateCharacterButton:SetEnabled(false);
-			UpdateCharacterUndeleteStatus();
+    UpdateCharacterUndeleteStatus();
 			CharSelectUndeleteCharacterButton:Show();
 		end
     end
-
+    
     if (MAX_CHARACTERS_DISPLAYED < MAX_CHARACTERS_DISPLAYED_BASE) then
         for i = MAX_CHARACTERS_DISPLAYED + 1, MAX_CHARACTERS_DISPLAYED_BASE, 1 do
             _G["CharSelectCharacterButton"..i]:Hide();
@@ -1418,9 +1418,9 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
     end
 
-    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(22, GetCharacterInfo(GetCharacterSelection()));
+    local isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, _, _, isLockedFromOtherChars = select(22, GetCharacterInfo(GetCharacterSelection()));
 	local trialBoostUnavailable = (isExpansionTrialCharacter and (isTrialBoostLocked or not IsExpansionTrial())) or (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled()));
-    if (revokedCharacterUpgrade or trialBoostUnavailable) then
+    if (revokedCharacterUpgrade or trialBoostUnavailable or isLockedFromOtherChars) then
         return false;
     end
 
@@ -1717,7 +1717,7 @@ end
 function IsEraChoiceStateLocked(eraChoiceState)
 	if( not GetTBCTransitionUIEnabled() ) then
 		return false;
-	end
+end
 
 	return eraChoiceState == Enum.CharacterEraChoiceState.CharacterEraChoiceLockedToOtherEra;
 end
