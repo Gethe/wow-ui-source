@@ -3,7 +3,7 @@
 -------------------------------------------------
 
 local MonthlyActivityFilterSelection;
-local MonthlyActivitySelected = nil;
+local MonthlyActivitySelectedID = nil;
 
 local ACTIVITIES_MONTH_NAMES = {
 	MONTH_JANUARY,
@@ -76,7 +76,7 @@ function MonthlyActivitiesButtonMixin:SetButtonData()
 	self.Checkmark:SetShown(not data.restricted and data.completed and not data.pendingComplete);
 	self.CheckmarkFlipbook:SetShown(data.pendingComplete);
 	self.TrackingCheckmark:SetShown(data.tracked and not data.completed);
-	local normalActiveTexture = self.id == MonthlyActivitySelected and "activities-incomplete-active" or "activities-incomplete"
+	local normalActiveTexture = self.id == MonthlyActivitySelectedID and "activities-incomplete-active" or "activities-incomplete"
 	self:SetNormalAtlas(data.completed and "activities-complete" or normalActiveTexture);
 	
 	-- Prevent hover state and tooltip when restricted
@@ -530,9 +530,6 @@ function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
 	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) or ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		self:CollapseAllMonthlyActivities();
-		if MonthlyActivitySelected then
-			EncounterJournal.MonthlyActivitiesFrame:ScrollToPerksActivityID(MonthlyActivitySelected);
-		end
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		Chat_AddSystemMessage(MONTHLY_ACTIVITIES_UPDATED);
@@ -955,20 +952,50 @@ function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName, secondsRemaini
 	end
 end
 
+function MonthlyActivitiesFrameMixin:SetSelectedActivityID(activityID)
+	local scrollBox = self.ScrollBox;
+	local view = scrollBox:GetView();
+	if view then
+		local function FindFrame(ID)
+			return view:FindFrameByPredicate(function(frame)
+				return frame.id == ID;
+			end);
+		end
+
+		local oldSelectedFrame = MonthlyActivitySelectedID and FindFrame(MonthlyActivitySelectedID);
+		local newSelectedFrame = FindFrame(activityID);
+
+		MonthlyActivitySelectedID = activityID;
+		if oldSelectedFrame ~= newSelectedFrame then
+			if oldSelectedFrame then
+				oldSelectedFrame:UpdateButtonState();
+			end
+			if newSelectedFrame then
+				newSelectedFrame:UpdateButtonState();
+			end
+		end
+	end
+end
+
 function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
 	local scrollBox = self.ScrollBox;
-	local dataProvider = scrollBox:GetDataProvider();
-	if dataProvider then
-		local function FindNode(ID)
+	local function FindNode(ID)
+		local dataProvider = scrollBox:GetDataProvider();
+		if dataProvider then
 			return dataProvider:FindElementDataByPredicate(function(node)
 				local data = node:GetData();
 				return data.id == ID;
 			end, TreeDataProviderConstants.IncludeCollapsed);
 		end
-		local selectedNode = FindNode(activityID);
-		if selectedNode then
-			scrollBox:ScrollToElementData(selectedNode, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
-		end
+	end
+	local selectedNode = FindNode(activityID);
+	if not selectedNode then
+		-- Reset filter to ALL
+		MonthlyActivityFilterSelection:SelectFirstElementData();
+		selectedNode = FindNode(activityID);
+	end
+	if selectedNode then
+		scrollBox:ScrollToElementData(selectedNode, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 	end
 end
 
@@ -998,11 +1025,12 @@ function MonthlyActivitiesFrame_OpenFrameToActivity(activityID)
 	if ( not EncounterJournal:IsShown() ) then
 		EncounterJournal_OpenJournal();
 	end
-	MonthlyActivitySelected = activityID;
+
 	MonthlyActivitiesFrame_OpenFrame();
 	
 	EncounterJournal.MonthlyActivitiesFrame:CollapseAllMonthlyActivities();
 	EncounterJournal.MonthlyActivitiesFrame:ScrollToPerksActivityID(activityID);
+	EncounterJournal.MonthlyActivitiesFrame:SetSelectedActivityID(activityID);
 end
 
 -- MonthlyActivitiesRewardButton

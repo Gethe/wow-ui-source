@@ -929,7 +929,7 @@ local TAB_SETS = 2;
 local TABS_MAX_WIDTH = 185;
 
 local WARDROBE_MODEL_SETUP = {
-	["HEADSLOT"] 		= { useTransmogSkin = false, useTransmogChoices = false, obeyHideInTransmogFlag = true, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = false } },
+	["HEADSLOT"] 		= { useTransmogSkin = false, useTransmogChoices = false, obeyHideInTransmogFlag = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = false } },
 	["SHOULDERSLOT"]	= { useTransmogSkin = true,  useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true  } },
 	["BACKSLOT"]		= { useTransmogSkin = true,  useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true  } },
 	["CHESTSLOT"]		= { useTransmogSkin = true,  useTransmogChoices = true,  obeyHideInTransmogFlag = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false, HEADSLOT = true  } },
@@ -1174,7 +1174,9 @@ function WardrobeCollectionFrameMixin:OnShow()
 	local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 	self.inAlternateForm = inAlternateForm;
 
-	if C_Transmog.IsAtTransmogNPC() then
+	local isAtTransmogNPC = C_Transmog.IsAtTransmogNPC();
+	self.InfoButton:SetShown(not isAtTransmogNPC);
+	if isAtTransmogNPC then
 		self:SetTab(self.selectedTransmogTab);
 	else
 		self:SetTab(self.selectedCollectionTab);
@@ -1278,7 +1280,8 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 	local showUseError = true;
 	local inLegionArtifactCategory = TransmogUtil.IsCategoryLegionArtifact(self.ItemsCollectionFrame:GetActiveCategory());
 	local subheaderString = nil;
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString);
+	local showTrackingInfo = not C_Transmog.IsAtTransmogNPC();
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
 end
 
 function WardrobeCollectionFrameMixin:HideAppearanceTooltip()
@@ -2510,9 +2513,7 @@ function WardrobeItemsModelMixin:UpdateContentTracking()
 
 	if ( self.visualInfo ) then
 		local itemsCollectionFrame = self:GetParent();
-		if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
-			-- TODO:: Handle illusions.
-		else
+		if ( not itemsCollectionFrame.transmogLocation:IsIllusion() ) then
 			local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(self.visualInfo.visualID, itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame.transmogLocation);
 			for i, sourceInfo in ipairs(sources) do
 				self:AddTrackable(Enum.ContentTrackingType.Appearance, sourceInfo.sourceID);
@@ -2524,6 +2525,9 @@ function WardrobeItemsModelMixin:UpdateContentTracking()
 end
 
 function WardrobeItemsModelMixin:UpdateTrackingDisabledOverlay()
+	if ( not ContentTrackingUtil.isContentTrackingEnabled() ) then
+		return;
+	end
 	self.DisabledOverlay:SetShown(ContentTrackingUtil.IsTrackingModifierDown() and not self:HasTrackableSource());
 end
 
@@ -2547,19 +2551,9 @@ function WardrobeItemsModelMixin:GetSourceInfoForTracking()
 end
 
 function WardrobeItemsModelMixin:OnMouseDown(button)
-	if ( self.visualInfo and not self.visualInfo.isCollected ) then
-		local sourceInfo = self:GetSourceInfoForTracking();
-		if ( sourceInfo ) then
-			if ( self:CheckTrackableClick(button, Enum.ContentTrackingType.Appearance, sourceInfo.sourceID) ) then
-				self:UpdateContentTracking();
-				return;
-			end
-		end
-	end
-
 	local itemsCollectionFrame = self:GetParent();
-	itemsCollectionFrame:RefreshAppearanceTooltip();
-	if ( IsModifiedClick("CHATLINK") ) then
+	local isChatLinkClick = IsModifiedClick("CHATLINK");
+	if ( isChatLinkClick ) then
 		local link;
 		if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
 			local name;
@@ -2572,11 +2566,27 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 			end
 		end
 		if ( link ) then
-			HandleModifiedItemClick(link);
+			if ( HandleModifiedItemClick(link) ) then
+				return;
+			end
 		end
-		return;
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		itemsCollectionFrame:DressUpVisual(self.visualInfo);
+		return;
+	end
+
+	if ( self.visualInfo and not self.visualInfo.isCollected ) then
+		local sourceInfo = self:GetSourceInfoForTracking();
+		if ( sourceInfo ) then
+			if ( self:CheckTrackableClick(button, Enum.ContentTrackingType.Appearance, sourceInfo.sourceID) ) then
+				self:UpdateContentTracking();
+				itemsCollectionFrame:RefreshAppearanceTooltip();
+				return;
+			end
+		end
+	end
+
+	if ( isChatLinkClick ) then
 		return;
 	end
 

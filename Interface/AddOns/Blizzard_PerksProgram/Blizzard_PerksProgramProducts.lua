@@ -170,8 +170,6 @@ function PerksProgramProductsFrameMixin:OnUpdate(deltaTime)
 end
 
 function PerksProgramProductsFrameMixin:OnProductSelectedAfterModel(data)
-	local showDetailsFrame = not (data.perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy);
-	self.PerksProgramProductDetailsContainerFrame:SetShown(showDetailsFrame);
 	C_PerksProgram.ItemSelectedTelemetry(data.perksVendorItemID);
 end
 

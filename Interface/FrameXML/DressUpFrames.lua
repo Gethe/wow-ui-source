@@ -734,7 +734,8 @@ function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
 	local slotName = TransmogUtil.GetSlotName(self.slotID);
 	local subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]);
 	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString);
+	local showTrackingInfo = false;
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
 	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 	GameTooltip:Show();
 end

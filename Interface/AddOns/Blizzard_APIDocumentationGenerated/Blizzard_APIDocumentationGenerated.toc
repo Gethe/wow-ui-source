@@ -52,6 +52,7 @@ FogOfWarDocumentation.lua
 FrameAPICinematicModelDocumentation.lua
 FrameAPICooldownDocumentation.lua
 FrameAPIFogOfWarFrameDocumentation.lua
+FrameAPIModelSceneFrameDocumentation.lua
 FrameAPISimpleCheckoutDocumentation.lua
 FrameAPITabardModelBaseDocumentation.lua
 FrameAPIUnitPositionFrameDocumentation.lua
@@ -284,6 +285,7 @@ DamageConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
+FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
 GARRISON_TYPEConstantsDocumentation.lua
 GamePadConstDocumentation.lua

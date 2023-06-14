@@ -2189,15 +2189,11 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Events for taxi benchmarking
 	elseif ( event == "ENABLE_TAXI_BENCHMARK" ) then
-		if ( not FramerateText:IsShown() ) then
-			ToggleFramerate(true);
-		end
+		FramerateFrame:BeginBenchmark();
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_ON, info.r, info.g, info.b, info.id);
 	elseif ( event == "DISABLE_TAXI_BENCHMARK" ) then
-		if ( FramerateText.benchmark ) then
-			ToggleFramerate();
-		end
+		FramerateFrame:EndBenchmark();
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI

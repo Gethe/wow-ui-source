@@ -350,7 +350,7 @@
 
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">
 		<Frames>
-			<Button parentKey="InfoButton" inherits="MainHelpPlateButton" mixin="WardrobeCollectionTutorialMixin">
+			<Button parentKey="InfoButton" inherits="MainHelpPlateButton" mixin="WardrobeCollectionTutorialMixin" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="43" y="19"/>
 				</Anchors>

@@ -1048,7 +1048,7 @@ function EditModeManagerFrameMixin:ShouldShowSnapPreviewLines()
 end
 
 local function RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor)
-	if lineAnchor then
+	if magneticFrameInfo and lineAnchor then
 		line:Setup(magneticFrameInfo, lineAnchor);
 	else
 		line:Hide();
@@ -1061,22 +1061,26 @@ function EditModeManagerFrameMixin:RefreshSnapPreviewLines()
 	end
 
 	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo = EditModeMagnetismManager:GetMagneticFrameInfo(self.snapPreviewFrame);
-	if primaryMagneticFrameInfo then
-		local line = self.MagnetismPreviewLinesContainer.lines[1];
-		local lineAnchors = line:GetLineAnchors(primaryMagneticFrameInfo);
-		local lineAnchor = lineAnchors[1];
-		RefreshSnapPreviewLine(line, primaryMagneticFrameInfo, lineAnchor);
 
-		line = self.MagnetismPreviewLinesContainer.lines[2];
-		local magneticFrameInfo = primaryMagneticFrameInfo;
-		lineAnchor = lineAnchors[2];
-		if not lineAnchor and secondaryMagneticFrameInfo then
-			magneticFrameInfo = secondaryMagneticFrameInfo;
-			lineAnchors = line:GetLineAnchors(secondaryMagneticFrameInfo);
-			lineAnchor = lineAnchors[1];
-		end
-		RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor);
+	-- Setup first preview line using primary MagneticFrameInfo and first line anchor we get from it
+	local line = self.MagnetismPreviewLinesContainer.lines[1];
+	local lineAnchors = primaryMagneticFrameInfo and line:GetLineAnchors(primaryMagneticFrameInfo) or {};
+	local lineAnchor = lineAnchors[1];
+	RefreshSnapPreviewLine(line, primaryMagneticFrameInfo, lineAnchor);
+
+	-- Setup second preview line using either primary or secondary MagneticFrameInfo
+	-- If our primary MagneticFrameInfo has a second line anchor then use that
+	-- Otherwise, if possible, get the line anchor using the secondary MagneticFrameInfo
+	line = self.MagnetismPreviewLinesContainer.lines[2];
+	local magneticFrameInfo = primaryMagneticFrameInfo;
+	lineAnchor = lineAnchors[2];
+	if not lineAnchor and secondaryMagneticFrameInfo then
+		lineAnchors = line:GetLineAnchors(secondaryMagneticFrameInfo);
+
+		magneticFrameInfo = secondaryMagneticFrameInfo;
+		lineAnchor = lineAnchors[1];
 	end
+	RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor);
 end
 
 function EditModeManagerFrameMixin:HideSnapPreviewLines()

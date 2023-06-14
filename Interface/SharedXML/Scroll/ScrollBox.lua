@@ -567,7 +567,7 @@ function ScrollBoxListMixin:FindElementDataByPredicate(predicate)
 end
 
 function ScrollBoxListMixin:FindElementDataIndex(elementData)
-	return self:GetView():FindElementDataIndex(predicate);
+	return self:GetView():FindElementDataIndex(elementData);
 end
 
 function ScrollBoxListMixin:FindElementDataIndexByPredicate(predicate)

@@ -32,8 +32,8 @@
 			<OnEnter method="OnEnter" inherit="append"/>
 			<OnShow method="OnShow" inherit="append"/>
 			<OnHide method="OnHide" inherit="append"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method ="OnMouseUp"/>
+			<OnMouseDown method="OnMouseDown" inherit="append"/>
+			<OnMouseUp method ="OnMouseUp" inherit="append"/>
 			<OnEnable>
 				self:SetAlpha(1);
 			</OnEnable>
@@ -60,7 +60,7 @@
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="childXPadding" value="-5" type="number"/>
-			<KeyValue key="childYPadding" value="1" type="number"/>
+			<KeyValue key="childYPadding" value="-5" type="number"/>
 			<KeyValue key="isHorizontal" value="true" type="boolean"/>
 			<KeyValue key="stride" value="12" type="number"/>
 			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
@@ -172,8 +172,24 @@
 					<KeyValue key="layoutIndex" value="6" type="number"/>
 				</KeyValues>
 				<Layers>
-					<Layer level="OVERLAY">
+					<Layer level="ARTWORK">
 						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GuildCommunities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+					<Layer level ="OVERLAY">
+						<Texture parentKey="Emblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="12" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level ="HIGHLIGHT">
+						<Texture parentKey="HighlightEmblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="12" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>

@@ -338,6 +338,42 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="PerksProgramToyDetailsFrameTemplate" mixin="PerksProgramToyDetailsFrameMixin" virtual="true">
+		<Size x="360" y="280"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ProductNameText" justifyH="CENTER" inherits="SystemFont_Huge2">
+					<Size x="360" y="60"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="20" type="number"/>
+						<KeyValue key="topPadding" value="8" type="number"/>
+						<KeyValue key="bottomPadding" value="8" type="number"/>
+					</KeyValues>
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DescriptionText" justifyH="CENTER" justifyV="TOP" inherits="GameFontNormalMed3">
+					<Size x="300" y="220"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="30" type="number"/>
+						<KeyValue key="topPadding" value="8" type="number"/>
+						<KeyValue key="bottomPadding" value="8" type="number"/>
+					</KeyValues>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ProductNameText" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+		</Scripts>
+	</Frame>
+
 	<Button name="PerksModelSceneControlButtonTemplate" mixin="PerksModelSceneControlButtonMixin" virtual="true">
 		<Size x="48" y="48"/>
 		<KeyValues>

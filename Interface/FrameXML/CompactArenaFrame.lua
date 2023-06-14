@@ -55,35 +55,6 @@ local function GetPetUnitToken(unitIndex)
 	return "arenapet"..unitIndex;
 end
 
-local function GetUnitRoleFromIndex(unitIndex)
-	local unitSpecID, unitGender = GetArenaOpponentSpec(unitIndex);
-	if unitSpecID ~= nil and unitGender ~= nil then
-		local unitRole = select(5, GetSpecializationInfoByID(unitSpecID, unitGender));
-		if unitRole then
-			return unitRole;
-		end
-	end
-
-	local unitToken = GetUnitToken(unitIndex);
-	return UnitGroupRolesAssigned(unitToken);
-end
-
--- Sort healers to front and then just follow unit index
-local roleValues = { HEALER = 1, TANK = 2, DAMAGER = 3, NONE = 4 };
-local function ArenaUnitFrameSort(unit1Index, unit2Index)
-	local unit1Role = GetUnitRoleFromIndex(unit1Index);
-	local unit1RoleValue = roleValues[unit1Role] or roleValues.NONE;
-
-	local unit2Role = GetUnitRoleFromIndex(unit2Index);
-	local unit2RoleValue = roleValues[unit2Role] or roleValues.NONE;
-
-	if unit1RoleValue ~= unit2RoleValue then
-		return unit1RoleValue < unit2RoleValue;
-	end
-
-	return unit1Index < unit2Index;
-end
-
 local function SetRoleIconTexture(texture, role)
 	if role and (role == "TANK" or role == "HEALER" or role == "DAMAGER") then
 		texture:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
@@ -112,7 +83,6 @@ function CompactArenaFrame_Generate()
 		frame = CreateFrame("Frame", "CompactArenaFrame", UIParent, "CompactArenaFrameTemplate");
 		frame:RegisterEvent("ARENA_OPPONENT_UPDATE");
 		frame:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
-		frame.flowSortFunc = ArenaUnitFrameSort;
 		didCreate = true;
 	end
 	return frame, didCreate;
@@ -221,15 +191,9 @@ end
 
 function CompactArenaFrameMixin:RefreshMembers()
 	-- Add player units
-	local unitIndices = {};
-	for i = 1, #self.memberUnitFrames do
-		table.insert(unitIndices, i);
-	end
-	table.sort(unitIndices, ArenaUnitFrameSort);
-
 	local numEditModeForcedShownArenaFrames = EditModeManagerFrame:GetNumArenaFramesForcedShown();
 	for i, memberUnitFrame in ipairs(self.memberUnitFrames) do
-		memberUnitFrame.unitIndex = unitIndices[i];
+		memberUnitFrame.unitIndex = i;
 		memberUnitFrame.unitToken = GetUnitToken(memberUnitFrame.unitIndex);
 		local usePlayerOverride = i <= numEditModeForcedShownArenaFrames and not ArenaUtil.UnitExists(memberUnitFrame.unitToken);
 		memberUnitFrame.unitToken = usePlayerOverride and "player" or memberUnitFrame.unitToken;
@@ -261,8 +225,7 @@ function CompactArenaFrameMixin:RefreshMembers()
 	-- Pets should always appear at the bottom under the real players
 	-- Pets order should match the units order
 	for i, petUnitFrame in ipairs(self.petUnitFrames) do
-		local petUnitIndex = unitIndices[i];
-		local petUnitToken = CompactRaidFrameContainer.pvpDisplayPets and GetPetUnitToken(petUnitIndex) or nil;
+		local petUnitToken = CompactRaidFrameContainer.pvpDisplayPets and GetPetUnitToken(i) or nil;
 
 		CompactUnitFrame_SetUpFrame(petUnitFrame, DefaultCompactMiniFrameSetup);
 		CompactUnitFrame_SetUnit(petUnitFrame, petUnitToken);
@@ -306,16 +269,9 @@ function ArenaPreMatchFramesContainerMixin:UpdateShownState()
 end
 
 function ArenaPreMatchFramesContainerMixin:UpdateUnitFrames()
-	-- Sort units
-	local unitIndices = {};
-	for i = 1, #self.preMatchUnitFrames do
-		table.insert(unitIndices, i);
-	end
-	table.sort(unitIndices, ArenaUnitFrameSort);
-
 	-- update pre match unit frames
 	for i, preMatchUnitFrame in ipairs(self.preMatchUnitFrames) do
-		preMatchUnitFrame:Update(unitIndices[i]);
+		preMatchUnitFrame:Update(i);
 	end
 
 	self:UpdateShownState();

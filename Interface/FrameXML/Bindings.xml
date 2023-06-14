@@ -1375,7 +1375,7 @@
 		end
 	</Binding>
 	<Binding name="TOGGLEFPS" category="BINDING_HEADER_MISC">
-		ToggleFramerate();
+		FramerateFrame:Toggle();
 	</Binding>
 	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
 		Screenshot();

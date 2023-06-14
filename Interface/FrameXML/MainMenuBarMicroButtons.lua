@@ -50,15 +50,30 @@ local PERFORMANCEBAR_LOW_LATENCY = 300;
 local PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 
 --Textures
-function LoadMicroButtonTextures(self, name)
+function LoadMicroButtonTextures(self, name, color)
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	local prefix = "UI-HUD-MicroMenu-";
+	self.textureName = name; 
 	self:SetNormalAtlas(prefix..name.."-Up");
 	self:SetPushedAtlas(prefix..name.."-Down");
 	self:SetDisabledAtlas(prefix..name.."-Disabled");
-	self:SetHighlightAtlas(prefix..name.."-Mouseover");
+	self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND");
+
+	if(color) then 
+		local normalTexture = self:GetNormalTexture(); 
+		normalTexture:SetVertexColor(color.r, color.g, color.b);
+
+		local pushedTexture = self:GetPushedTexture(); 
+		pushedTexture:SetVertexColor(color.r, color.g, color.b);
+
+		local disabledTexture = self:GetDisabledTexture(); 
+		disabledTexture:SetVertexColor(color.r, color.g, color.b);
+		
+		local highlightTexture = self:GetHighlightTexture(); 
+		highlightTexture:SetVertexColor(color.r, color.g, color.b);
+	end
 end
 
 --Tooltips
@@ -122,26 +137,26 @@ function UpdateMicroButtons()
 	end
 
 	if ( SpellBookFrame and SpellBookFrame:IsShown() ) then
-		SpellbookMicroButton:SetButtonState("PUSHED", true);
+		SpellbookMicroButton:SetPushed(); 
 	else
-		SpellbookMicroButton:SetButtonState("NORMAL");
+		SpellbookMicroButton:SetNormal();
 	end
 
 	if (ClassTalentFrame and ClassTalentFrame:IsShown()) then
-		TalentMicroButton:SetButtonState("PUSHED", true);
+		TalentMicroButton:SetPushed();
 	else
 		if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
 			TalentMicroButton:Disable();
 		else
 			TalentMicroButton:Enable();
-			TalentMicroButton:SetButtonState("NORMAL");
+			TalentMicroButton:SetNormal();
 		end
 	end
 
 	if (  WorldMapFrame and WorldMapFrame:IsShown() ) then
-		QuestLogMicroButton:SetButtonState("PUSHED", true);
+		QuestLogMicroButton:SetPushed();
 	else
-		QuestLogMicroButton:SetButtonState("NORMAL");
+		QuestLogMicroButton:SetNormal();
 	end
 
 	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
@@ -152,6 +167,8 @@ function UpdateMicroButtons()
 	else
 		MainMenuMicroButton:SetNormal();
 	end
+
+	GuildMicroButton:UpdateTabard();
 
 	if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk.IsEnabled() ) then
 		GuildMicroButton:Disable();
@@ -168,10 +185,10 @@ function UpdateMicroButtons()
 		GuildMicroButton.disabledTooltip = UNAVAILABLE;
 	elseif ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
 		GuildMicroButton:Enable();
-		GuildMicroButton:SetButtonState("PUSHED", true);
+		GuildMicroButton:SetPushed();
 	else
 		GuildMicroButton:Enable();
-		GuildMicroButton:SetButtonState("NORMAL");
+		GuildMicroButton:SetNormal();
 		if ( CommunitiesFrame_IsEnabled() ) then
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
 			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_COMMUNITIESTAB;
@@ -187,7 +204,7 @@ function UpdateMicroButtons()
 	GuildMicroButton:UpdateNotificationIcon(GuildMicroButton);
 
 	if ( PVEFrame and PVEFrame:IsShown() ) then
-		LFDMicroButton:SetButtonState("PUSHED", true);
+		LFDMicroButton:SetPushed();
 	else
 		if not LFDMicroButton:IsActive() then
 			if (Kiosk.IsEnabled()) then
@@ -196,16 +213,16 @@ function UpdateMicroButtons()
 			LFDMicroButton:Disable();
 		else
 			LFDMicroButton:Enable();
-			LFDMicroButton:SetButtonState("NORMAL");
+			LFDMicroButton:SetNormal();
 		end
 	end
 
 	if ( AchievementFrame and AchievementFrame:IsShown() ) then
-		AchievementMicroButton:SetButtonState("PUSHED", true);
+		AchievementMicroButton:SetPushed();
 	else
 		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() and not Kiosk.IsEnabled()  ) then
 			AchievementMicroButton:Enable();
-			AchievementMicroButton:SetButtonState("NORMAL");
+			AchievementMicroButton:SetNormal();
 		else
 			if (Kiosk.IsEnabled()) then
 				SetKioskTooltip(AchievementMicroButton);
@@ -217,11 +234,11 @@ function UpdateMicroButtons()
 	EJMicroButton:UpdateDisplay();
 
 	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
-		CollectionsMicroButton:SetButtonState("PUSHED", true);
+		CollectionsMicroButton:SetPushed();
 	else
 		if ( not Kiosk.IsEnabled() ) then
 			CollectionsMicroButton:Enable();
-			CollectionsMicroButton:SetButtonState("NORMAL");
+			CollectionsMicroButton:SetNormal();
 		else
 			SetKioskTooltip(CollectionsMicroButton);
 			CollectionsMicroButton:Disable();
@@ -229,9 +246,9 @@ function UpdateMicroButtons()
 	end
 
 	if ( StoreFrame and StoreFrame_IsShown() ) then
-		StoreMicroButton:SetButtonState("PUSHED", true);
+		StoreMicroButton:SetPushed();
 	else
-		StoreMicroButton:SetButtonState("NORMAL");
+		StoreMicroButton:SetNormal();
 	end
 
 	StoreMicroButton:Show();
@@ -249,9 +266,9 @@ function UpdateMicroButtons()
 			StoreMicroButton:Hide();
 
 			if ( HelpFrame and HelpFrame:IsShown() ) then
-				HelpMicroButton:SetButtonState("PUSHED", true);
+				HelpMicroButton:SetPushed();
 			else
-				HelpMicroButton:SetButtonState("NORMAL");
+				HelpMicroButton:SetNormal();
 			end
 		else
 			StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_UNAVAILABLE;
@@ -438,6 +455,22 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 			GameTooltip:Show();
 		end
 	end
+end
+
+function MainMenuBarMicroButtonMixin:SetPushed()
+	self:SetButtonState("PUSHED", true);
+	self:SetHighlightAtlas("UI-HUD-MicroMenu-"..self.textureName.."-Down", "ADD");
+
+	--Need to duplicate the down texture for highlight when the button is pushed, ADD is to bright and BLEND is too dark, so decrease the alpha
+	local highlightTexture = self:GetHighlightTexture();
+	highlightTexture:SetAlpha(.50); 
+end
+
+function MainMenuBarMicroButtonMixin:SetNormal()
+	self:SetButtonState("NORMAL");
+	self:SetHighlightAtlas("UI-HUD-MicroMenu-"..self.textureName.."-Mouseover", "BLEND");
+	local highlightTexture = self:GetHighlightTexture();
+	highlightTexture:SetAlpha(1); 
 end
 
 function MainMenuBarMicroButtonMixin:OnShow()
@@ -767,6 +800,8 @@ function GuildMicroButtonMixin:OnLoad()
 	self:RegisterEvent("CLUB_FINDER_COMMUNITY_OFFLINE_JOIN");
 	self:RegisterEvent("CHAT_DISABLED_CHANGED");
 	self:RegisterEvent("CHAT_DISABLED_CHANGE_FAILED");
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	if ( IsCommunitiesUIDisabledByTrialAccount() ) then
 		self:Disable();
 		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
@@ -774,6 +809,7 @@ function GuildMicroButtonMixin:OnLoad()
 	if (Kiosk.IsEnabled()) then
 		self:Disable();
 	end
+	self.needsUpdate = true;
 end
 
 function GuildMicroButtonMixin:OnEvent(event, ...)
@@ -791,6 +827,9 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		else
 			GuildMicroButton.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
 		end
+	elseif ( event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
+		self.needsUpdate = true;
+		UpdateMicroButtons();
 	elseif ( event == "BN_DISCONNECTED" or event == "BN_CONNECTED") then
 		UpdateMicroButtons();
 	elseif ( event == "INITIAL_CLUBS_LOADED" ) then
@@ -856,6 +895,32 @@ function GuildMicroButtonMixin:UpdateNotificationIcon(self)
 	else
 		self.NotificationOverlay:SetShown(false);
 	end
+end
+
+function GuildMicroButtonMixin:UpdateTabard(forceUpdate)
+	if ( not self.needsUpdate and not forceUpdate ) then
+		return;
+	end
+	-- switch textures if the guild has a custom tabard
+	local emblemFilename = select(10, GetGuildLogoInfo());
+	local tabardInfo = C_GuildInfo.GetGuildTabardInfo("player");
+	if ( emblemFilename and tabardInfo) then
+		if ( not self.Emblem:IsShown() ) then
+			self.Emblem:Show();
+			self.HighlightEmblem:Show();
+		end
+
+		LoadMicroButtonTextures(self, "GuildCommunities-GuildColor", tabardInfo.backgroundColor);
+		SetSmallGuildTabardTextures("player", self.Emblem);
+		SetSmallGuildTabardTextures("player", self.HighlightEmblem);
+	else
+		LoadMicroButtonTextures(self, "GuildCommunities");
+		if ( self.Emblem:IsShown() ) then
+			self.Emblem:Hide();
+			self.HighlightEmblem:Hide();
+		end
+	end
+	self.needsUpdate = nil;
 end
 
 function GuildMicroButtonMixin:SetNewClubId(newClubId)
@@ -1139,17 +1204,15 @@ end
 
 function EJMicroButtonMixin:UpdateDisplay()
 	if ( EncounterJournal and EncounterJournal:IsShown() ) then
-		self:SetButtonState("PUSHED", true);
+		self:SetPushed();
 	else
-		local inKioskMode = Kiosk.IsEnabled();
-		local disabled = inKioskMode or not C_AdventureJournal.CanBeShown();
-		if ( disabled ) then
+		if ( not AdventureJournalUtil.IsAvailable() ) then
 			self:Disable();
 			self.disabledTooltip = inKioskMode and ERR_SYSTEM_DISABLED or FEATURE_NOT_YET_AVAILABLE;
 			self:ClearNewAdventureNotice();
 		else
 			self:Enable();
-			self:SetButtonState("NORMAL");
+			self:SetNormal();
 		end
 	end
 end
@@ -1335,14 +1398,6 @@ function MainMenuMicroButtonMixin:OnLeave()
 	end
 end
 
-function MainMenuMicroButtonMixin:SetPushed()
-	self:SetButtonState("PUSHED", true);
-end
-
-function MainMenuMicroButtonMixin:SetNormal()
-	self:SetButtonState("NORMAL");
-end
-
 MicroMenuMixin = {};
 
 -- Gets the button on the the extreme edge of the micro menu based on the inputs and the orientation of the bar
@@ -1397,6 +1452,14 @@ function MicroMenuMixin:UpdateQueueStatusAnchors(position)
 	end
 end
 
+function MicroMenuMixin:UpdateFramerateFrameAnchor(position)
+	if not FramerateFrame then
+		return;
+	end
+
+	FramerateFrame:UpdatePosition(position, self.isHorizontal);
+end
+
 function MicroMenuMixin:AnchorToMenuContainer(position)
 	if self:GetParent() ~= MicroMenuContainer then
 		-- If micro menu isn't parented to the default container then don't do anything
@@ -1432,6 +1495,7 @@ function MicroMenuMixin:Layout()
 	local position = MicroMenuContainer:GetPosition();
 	self:AnchorToMenuContainer(position);
 	self:UpdateQueueStatusAnchors(position);
+	self:UpdateFramerateFrameAnchor(position);
 	self:UpdateHelpTicketButtonAnchor(position);
 end
 

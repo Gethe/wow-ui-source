@@ -149,7 +149,7 @@ function CollectionWardrobeUtil.IsAppearanceUsable(appearanceInfo, inLegionArtif
 	return false;
 end
 
-function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString)
+function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo)
 	local canCycle = false;
 
 	for i = 1, #sources do
@@ -297,18 +297,22 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
-			if (C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sources[i].sourceID) ) then
+			if (showTrackingInfo and ContentTrackingUtil.isContentTrackingEnabled() and C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sources[i].sourceID) ) then
 				name = name..CreateAtlasMarkup("checkmark-minimal", 15, 15, 0, -2);
 			end
 			GameTooltip_AddColoredDoubleLine(tooltip, name, sourceText, nameColor, sourceColor);
 		end
-		GameTooltip_AddBlankLineToTooltip(tooltip);
-		CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID); 
+		if ( showTrackingInfo ) then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID); 
+		end
 		GameTooltip_AddColoredLine(tooltip, WARDROBE_TOOLTIP_CYCLE, GRAY_FONT_COLOR);
 		canCycle = true;
 	else
-		GameTooltip_AddBlankLineToTooltip(tooltip);
-		CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID);
+		if ( showTrackingInfo ) then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID);
+		end
 		if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
 			useError = sources[headerIndex].useError;
 		end
@@ -335,6 +339,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 end
 
 function CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sourceID)
+	if ( not ContentTrackingUtil.isContentTrackingEnabled() ) then
+		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+		return;
+	end
 	if ( C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
 		if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sourceID) ) then
 			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);

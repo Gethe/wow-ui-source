@@ -183,6 +183,7 @@ RewardTrackTemplates.xml
 TitleUtil.lua
 CollectionsUtil.lua
 ProfessionsUtil.lua
+AdventureJournalUtil.lua
 ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 CurrencyContainer.lua
@@ -283,6 +284,7 @@ UnitFrame.xml
 Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
+GuildUtil.lua
 ActionBarController.xml
 InstanceDifficulty.xml
 Minimap.xml
@@ -440,7 +442,6 @@ AzeriteIslandsToast.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 AzeriteEmpoweredItemDataSource.lua
-GuildUtil.lua
 QuestSession.xml
 ActionStatus.xml
 WeeklyReward.lua

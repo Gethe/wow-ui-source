@@ -638,10 +638,7 @@ CharacterUpgradeFlow = Mixin(
 			[2] = CharacterUpgradeSpecSelectBlock,
 			[3] = CharacterUpgradeFactionSelectBlock,
 			[4] = CharacterUpgradeEndStep,
-		},
-
-		theme = "default",
-		DisableButtons = true
+		}
 	},
 	CharacterServicesFlowMixin
 );
@@ -701,10 +698,6 @@ function CharacterUpgradeFlow:ShouldSkipSpecSelect()
 
 	local experienceLevel = select(7, GetCharacterInfo(results.charid));
 	return experienceLevel >= self.data.level;
-end
-
-function CharacterUpgradeFlow:UsesSelector()
-	return true;
 end
 
 function CharacterUpgradeFlow:Initialize(controller)
@@ -1045,15 +1038,21 @@ RPEUpgradeFlow = Mixin(
 			[2] = RPEUpgradeSpecSelectBlock
 		},
 
-		theme = "RPE",
-		MinimizedFrame = "RPEUpgradeMinimizedFrame",
-		DisableButtons = false
+		MinimizedFrame = "RPEUpgradeMinimizedFrame"
 	},
 	CharacterServicesFlowMixin
 );
 
 function RPEUpgradeFlow:Initialize(controller)
 	CharacterServicesFlowMixin.Initialize(self, controller);
+end
+
+function RPEUpgradeFlow:GetTheme()
+	return "RPE";
+end
+
+function RPEUpgradeFlow:ShouldDisableButtons()
+	return false;
 end
 
 function RPEUpgradeFlow:GetFinishLabel()

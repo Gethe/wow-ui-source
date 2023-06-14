@@ -2771,8 +2771,12 @@ function CharacterServicesMaster_SetFlow(self, flow)
 	CharacterServicesMaster_HideFlows(self);
 
     flow:Initialize(self);
-    SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
-    self:GetParent().TitleText:SetText(flow.data.flowTitle);
+	if flow.data.icon then
+		SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
+	end
+	if flow.data.flowTitle then
+		self:GetParent().TitleText:SetText(flow.data.flowTitle);
+	end
 
     CharacterServicesMaster_UpdateFinishLabel(self);
 
@@ -3479,10 +3483,10 @@ function CharSelectServicesFlowFrameMixin:ClearErrorMessage()
 end
 
 function CharSelectServicesFlowFrameMixin:Initialize(flow)
-	self.MinimizedFrame = _G[flow.MinimizedFrame];
-	self.DisableButtons = flow.DisableButtons;
+	self.MinimizedFrame = flow.MinimizedFrame and _G[flow.MinimizedFrame];
+	self.DisableButtons = flow:ShouldDisableButtons();
 
-	local theme = flow.theme;
+	local theme = flow:GetTheme();
 	if theme == "default" then
 		self.BackgroundDefault:Show();
 		self.Icon:Show();

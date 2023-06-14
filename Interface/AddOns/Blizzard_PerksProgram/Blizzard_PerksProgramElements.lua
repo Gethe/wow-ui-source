@@ -530,6 +530,48 @@ function PerksProgramCheckBoxMixin:OnClick()
 	end
 end
 
+
+
+----------------------------------------------------------------------------------
+-- PerksProgramToyDetailsFrameMixin
+----------------------------------------------------------------------------------
+PerksProgramToyDetailsFrameMixin = {};
+function PerksProgramToyDetailsFrameMixin:OnLoad()
+	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
+end
+
+function PerksProgramToyDetailsFrameMixin:OnShow()
+	local newFont = PerksProgramFrame:GetLabelFont();
+	self.DescriptionText:SetFontObject(newFont);
+end
+
+local restrictions = { Enum.TooltipDataLineType.ToyEffect, Enum.TooltipDataLineType.ToyDescription };
+local function PerksProgramToy_ProcessLines(data)
+	local result = TooltipUtil.FindLinesFromGetter(restrictions, "GetToyByItemID", data.itemID);
+	local toyDescription, toyEffect;
+	if result then
+		for i, lineData in ipairs(result) do
+			if lineData.leftText then
+				local restrictionText = lineData.leftText;
+				restrictionText = lineData.leftColor:WrapTextInColorCode(restrictionText);
+				if lineData.type == Enum.TooltipDataLineType.ToyEffect then
+					toyEffect = StripHyperlinks(restrictionText);
+				elseif lineData.type == Enum.TooltipDataLineType.ToyDescription then				
+					toyDescription = StripHyperlinks(restrictionText);
+				end
+			end
+		end
+	end
+	return toyDescription, toyEffect;
+end
+
+function PerksProgramToyDetailsFrameMixin:OnProductSelectedAfterModel(data)
+	self.ProductNameText:SetText(data.name);
+	
+	local _, effectText = PerksProgramToy_ProcessLines(data);
+	self.DescriptionText:SetText(effectText);
+end
+
 ----------------------------------------------------------------------------------
 -- PerksProgramProductDetailsFrameMixin
 ----------------------------------------------------------------------------------
@@ -580,8 +622,14 @@ end
 
 function PerksProgramProductDetailsFrameMixin:OnProductSelectedAfterModel(data)
 	self.ProductNameText:SetText(data.name);
-	
-	local descriptionText = PerksProgramProductDetails_ProcessLines(data);
+
+	local descriptionText;
+	local perksVendorCategoryID = data.perksVendorCategoryID;
+	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy then
+		descriptionText = PerksProgramToy_ProcessLines(data);
+	else
+		descriptionText = PerksProgramProductDetails_ProcessLines(data);
+	end
 	self.DescriptionText:SetText(descriptionText);
 
 	local categoryText = PerksProgramFrame:GetCategoryText(data.perksVendorCategoryID);

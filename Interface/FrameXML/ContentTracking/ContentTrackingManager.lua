@@ -3,6 +3,7 @@ local ContentTrackingManagerMixin = {};
 
 function ContentTrackingManagerMixin:Init()
 	self.typeToTrackableElementMap = {};
+	self.isEnabled = C_ContentTracking.GetCollectableSourceTrackingEnabled();
 end
 
 function ContentTrackingManagerMixin:GetTrackableElementsList(trackableType, trackableID)
@@ -53,15 +54,25 @@ function ContentTrackingManagerMixin:OnTrackingTargetInfoUpdate(targetType, targ
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TARGET_INFO, targetID, moduleWhoseCollapseChanged, targetType);
 end
 
+function ContentTrackingManagerMixin:OnContentTrackingToggled(isEnabled)
+	self.isEnabled = isEnabled;
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_ADVENTURE);
+end
+
 local ContentTrackingManager = CreateAndInitFromMixin(ContentTrackingManagerMixin);
 EventRegistry:RegisterFrameEventAndCallback("CONTENT_TRACKING_UPDATE", ContentTrackingManager.OnContentTrackingUpdate, ContentTrackingManager);
 EventRegistry:RegisterFrameEventAndCallback("TRACKING_TARGET_INFO_UPDATE", ContentTrackingManager.OnTrackingTargetInfoUpdate, ContentTrackingManager);
+EventRegistry:RegisterFrameEventAndCallback("CONTENT_TRACKING_IS_ENABLED_UPDATE", ContentTrackingManager.OnContentTrackingToggled, ContentTrackingManager);
 
 ContentTrackingUtil = {};
 
 local CombinedIDOffset = 1000;
 
 ContentTrackingUtil.IsTrackingModifierDown = IsShiftKeyDown;
+
+function ContentTrackingUtil.isContentTrackingEnabled()
+	return ContentTrackingManager.isEnabled;
+end
 
 function ContentTrackingUtil.RegisterTrackableElement(element, trackableType, trackableID)
 	ContentTrackingManager:RegisterTrackableElement(element, trackableType, trackableID);

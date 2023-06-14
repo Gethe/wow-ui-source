@@ -288,6 +288,12 @@ function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableType, tracka
 end
 
 function ADVENTURE_TRACKER_MODULE:Update()
+	if not ContentTrackingUtil.isContentTrackingEnabled() then
+		self:BeginLayout();
+		self:EndLayout();
+		return;
+	end
+	
 	if OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TRANSMOG_COLLECTED then
 		self:OnTrackableItemCollected(Enum.ContentTrackingType.Appearance, OBJECTIVE_TRACKER_UPDATE_ID);
 		return;

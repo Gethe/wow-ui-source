@@ -24,6 +24,15 @@ local ContentTracking =
 			},
 		},
 		{
+			Name = "GetCollectableSourceTrackingEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCollectableSourceTypes",
 			Type = "Function",
 
@@ -245,6 +254,15 @@ local ContentTracking =
 
 	Events =
 	{
+		{
+			Name = "ContentTrackingIsEnabledUpdate",
+			Type = "Event",
+			LiteralName = "CONTENT_TRACKING_IS_ENABLED_UPDATE",
+			Payload =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "ContentTrackingListUpdate",
 			Type = "Event",
