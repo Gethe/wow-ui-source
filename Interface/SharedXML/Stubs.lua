@@ -15,6 +15,9 @@ HelpTip = {}
 function HelpTip:Show( p1, p2 )
 end
 
+function HelpTip:Hide( p1, p2 )
+end
+
 HelpTip.ButtonStyle = {
 	None = 1,
 	Close = 2,
