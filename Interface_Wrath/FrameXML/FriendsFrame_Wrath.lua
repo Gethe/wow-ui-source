@@ -850,6 +850,7 @@ function GuildStatus_Update()
 			-- If need scrollbar resize columns
 			if ( showScrollBar ) then
 				getglobal("GuildFrameButton"..i.."Zone"):SetWidth(95);
+				getglobal("GuildFrameButton"..i.."Class"):SetWidth(80);
 			else
 				getglobal("GuildFrameButton"..i.."Zone"):SetWidth(110);
 			end
