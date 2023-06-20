@@ -83,6 +83,11 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
 			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 
+			if GetClassicExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTIBLE", unit);
+				self:RegisterUnitEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", unit);
+			end
+
 			CastingBarFrame_OnEvent(self, "PLAYER_ENTERING_WORLD")
 		else
 			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
@@ -94,6 +99,11 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:UnregisterEvent("UNIT_SPELLCAST_START");
 			self:UnregisterEvent("UNIT_SPELLCAST_STOP");
 			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
+
+			if GetClassicExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+				self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+				self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+			end
 
 			self:Hide();
 		end
@@ -116,16 +126,13 @@ function CastingBarFrame_OnShow(self)
 	end
 end
 
-function CastingBarFrame_GetEffectiveStartColor(self, isChannel, notInterruptible)
-	if self.nonInterruptibleColor and notInterruptible then
-		return self.nonInterruptibleColor;
-	end
+function CastingBarFrame_GetEffectiveStartColor(self, isChannel)
 	return isChannel and self.startChannelColor or self.startCastColor;
 end
 
 function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
-
+	
 	local unit = self.unit;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local nameChannel = UnitChannelInfo(unit);
@@ -144,24 +151,31 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	if ( arg1 ~= unit ) then
 		return;
 	end
-
+	
 	if ( event == "UNIT_SPELLCAST_START" ) then
-		local name, text, texture, startTime, endTime, isTradeSkill, castID--[[, notInterruptible]] = UnitCastingInfo(unit);
-		local notInterruptible = false;
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+		if GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE then
+			notInterruptible = false;
+		end
+		self.notInterruptible = notInterruptible;
+
+		if( notInterruptible ) then
+			CastingBarFrame_SetUseStartColorForFinished(self, false);
+		end
 
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
 		end
 
-		local startColor = CastingBarFrame_GetEffectiveStartColor(self, false, notInterruptible);
+		local startColor = CastingBarFrame_GetEffectiveStartColor(self, false);
 		self:SetStatusBarColor(startColor:GetRGB());
 		if self.flashColorSameAsStart then
 			self.Flash:SetVertexColor(startColor:GetRGB());
 		else
 			self.Flash:SetVertexColor(1, 1, 1);
 		end
-
+		
 		if ( self.Spark ) then
 			self.Spark:Show();
 		end
@@ -250,8 +264,11 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
-			local name, text, texture, startTime, endTime, isTradeSkill, castID--[[, notInterruptible]] = UnitCastingInfo(unit);
-			local notInterruptible = false;
+			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+			if GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE then
+				notInterruptible = false;
+			end
+			self.notInterruptible = notInterruptible;
 
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
@@ -262,7 +279,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self.maxValue = (endTime - startTime) / 1000;
 			self:SetMinMaxValues(0, self.maxValue);
 			if ( not self.casting ) then
-				self:SetStatusBarColor(CastingBarFrame_GetEffectiveStartColor(self, false, notInterruptible):GetRGB());
+				self:SetStatusBarColor(CastingBarFrame_GetEffectiveStartColor(self, false):GetRGB());
 				if ( self.Spark ) then
 					self.Spark:Show();
 				end
@@ -277,8 +294,11 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
-		local name, text, texture, startTime, endTime, isTradeSkill, _, spellID = UnitChannelInfo(unit);
-		local notInterruptible = false;
+		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo(unit);
+		if GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE then
+			notInterruptible = false;
+		end
+		self.notInterruptible = notInterruptible;
 
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar
@@ -286,7 +306,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return;
 		end
 
-		local startColor = CastingBarFrame_GetEffectiveStartColor(self, true, notInterruptible);
+		local startColor = CastingBarFrame_GetEffectiveStartColor(self, true);
 		if self.flashColorSameAsStart then
 			self.Flash:SetVertexColor(startColor:GetRGB());
 		else
@@ -347,7 +367,7 @@ end
 
 function CastingBarFrame_UpdateInterruptibleState(self, notInterruptible)
 	if ( self.casting or self.channeling ) then
-		local startColor = CastingBarFrame_GetEffectiveStartColor(self, self.channeling, notInterruptible);
+		local startColor = CastingBarFrame_GetEffectiveStartColor(self, self.channeling);
 		self:SetStatusBarColor(startColor:GetRGB());
 
 		if self.flashColorSameAsStart then

@@ -34,6 +34,7 @@ local WowEntitlementInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "payloadID", Type = "number", Nilable = true },
 				{ Name = "showFancyToast", Type = "bool", Nilable = false },
+				{ Name = "rafVersion", Type = "RecruitAFriendRewardsVersion", Nilable = false },
 			},
 		},
 	},

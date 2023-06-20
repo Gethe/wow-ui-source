@@ -29,7 +29,7 @@ local SimpleObjectAPI =
 
 			Returns =
 			{
-				{ Name = "parent", Type = "table", Nilable = false },
+				{ Name = "parent", Type = "CScriptObject", Nilable = false },
 			},
 		},
 		{
@@ -42,7 +42,7 @@ local SimpleObjectAPI =
 
 			Returns =
 			{
-				{ Name = "parentKey", Type = "string", Nilable = false },
+				{ Name = "parentKey", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -51,7 +51,7 @@ local SimpleObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "parentKey", Type = "string", Nilable = false },
+				{ Name = "parentKey", Type = "cstring", Nilable = false },
 			},
 		},
 	},

@@ -1239,7 +1239,7 @@ function FriendsFrame_UpdateFriendButton(button)
 				end
 			end
 			
-			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client));
+			C_Texture.SetTitleIconTexture(button.gameIcon, client, Enum.TitleIconVersion.Medium);
 
 			local fadeIcon = (client == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
 			if fadeIcon then

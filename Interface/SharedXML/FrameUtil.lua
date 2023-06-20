@@ -22,6 +22,28 @@ end
 
 FrameUtil = {};
 
+function FrameUtil.RegisterUpdateFunction(frame, frequencySeconds, func)
+	-- Prevents the OnUpdate handler from running the same frame it was
+	-- removed.
+	frame.canUpdate = true;
+
+	local elapsed = frequencySeconds;
+	frame:SetScript("OnUpdate", function(self, dt)
+		if self.canUpdate then
+			elapsed = elapsed - dt;
+			if elapsed <= 0 then
+				elapsed = frequencySeconds;
+				func(frame, dt);
+			end
+		end
+	end);
+end
+
+function FrameUtil.UnregisterUpdateFunction(frame)
+	frame.canUpdate = false;
+	frame:SetScript("OnUpdate", nil);
+end
+
 function FrameUtil.RegisterFrameForEvents(frame, events)
 	for i, event in ipairs(events) do
 		frame:RegisterEvent(event);

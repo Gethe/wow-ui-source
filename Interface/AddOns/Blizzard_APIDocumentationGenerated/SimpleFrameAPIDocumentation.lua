@@ -24,14 +24,14 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "drawLayer", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "line", Type = "table", Nilable = false },
+				{ Name = "line", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{
@@ -40,15 +40,15 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "drawLayer", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 				{ Name = "subLevel", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "line", Type = "table", Nilable = false },
+				{ Name = "line", Type = "SimpleLine", Nilable = false },
 			},
 		},
 		{
@@ -57,15 +57,15 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "drawLayer", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 				{ Name = "subLevel", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "maskTexture", Type = "table", Nilable = false },
+				{ Name = "maskTexture", Type = "SimpleMaskTexture", Nilable = false },
 			},
 		},
 		{
@@ -74,15 +74,15 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "drawLayer", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 				{ Name = "subLevel", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -101,7 +101,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 			},
 		},
 		{
@@ -123,7 +123,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 			},
 		},
 		{
@@ -159,7 +159,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "attributeName", Type = "string", Nilable = false },
+				{ Name = "attributeName", Type = "cstring", Nilable = false },
 				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
 			},
 
@@ -179,7 +179,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -188,12 +188,12 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "attributeName", Type = "string", Nilable = false },
+				{ Name = "attributeName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "value", Type = "string", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -206,10 +206,10 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
-				{ Name = "width", Type = "number", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -235,10 +235,10 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -264,7 +264,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "effectiveAlpha", Type = "number", Nilable = false },
+				{ Name = "effectiveAlpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -329,7 +329,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "strata", Type = "string", Nilable = false },
+				{ Name = "strata", Type = "FrameStrata", Nilable = false },
 			},
 		},
 		{
@@ -342,10 +342,10 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -436,10 +436,10 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "minWidth", Type = "number", Nilable = false },
-				{ Name = "minHeight", Type = "number", Nilable = false },
-				{ Name = "maxWidth", Type = "number", Nilable = false },
-				{ Name = "maxHeight", Type = "number", Nilable = false },
+				{ Name = "minWidth", Type = "uiUnit", Nilable = false },
+				{ Name = "minHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "maxWidth", Type = "uiUnit", Nilable = false },
+				{ Name = "maxHeight", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -508,7 +508,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "string", Nilable = false },
+				{ Name = "eventName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -703,7 +703,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "string", Nilable = false },
+				{ Name = "eventName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -726,7 +726,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "string", Nilable = false },
+				{ Name = "eventName", Type = "cstring", Nilable = false },
 				{ Name = "units", Type = "string", Nilable = false, StrideIndex = 1 },
 			},
 
@@ -752,7 +752,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "alpha", Type = "number", Nilable = false },
+				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
 			},
 		},
 		{
@@ -761,8 +761,8 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "attributeName", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = false },
+				{ Name = "attributeName", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -771,8 +771,8 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "attributeName", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = false },
+				{ Name = "attributeName", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -781,10 +781,10 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -820,7 +820,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 				{ Name = "isEnabled", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -866,7 +866,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "strata", Type = "string", Nilable = false },
+				{ Name = "strata", Type = "FrameStrata", Nilable = false },
 			},
 		},
 		{
@@ -875,10 +875,10 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -959,10 +959,10 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "minWidth", Type = "number", Nilable = false },
-				{ Name = "minHeight", Type = "number", Nilable = false },
-				{ Name = "maxWidth", Type = "number", Nilable = true },
-				{ Name = "maxHeight", Type = "number", Nilable = true },
+				{ Name = "minWidth", Type = "uiUnit", Nilable = false },
+				{ Name = "minHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "maxWidth", Type = "uiUnit", Nilable = true },
+				{ Name = "maxHeight", Type = "uiUnit", Nilable = true },
 			},
 		},
 		{
@@ -1050,7 +1050,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "string", Nilable = false },
+				{ Name = "eventName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

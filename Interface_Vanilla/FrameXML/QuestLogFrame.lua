@@ -568,7 +568,7 @@ function QuestLogRewardItem_OnClick(self)
 		if (self.rewardType == "item") then
 			link = GetQuestLogItemLink(self.type, self:GetID());
 		elseif (self.rewardType== "spell") then
-			link = GetQuestLogSpellLink(self:GetID());
+			link = GetSpellLink(self:GetID());
 		end
 
 		if ( ChatEdit_InsertLink(link) ) then

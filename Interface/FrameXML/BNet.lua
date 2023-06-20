@@ -358,3 +358,7 @@ function BNet_GetValidatedCharacterName(characterName, battleTag, client)
 	end
 	return characterName;
 end
+
+function BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, battleTag, texture, fileWidth, fileHeight, texWidth, texHeight, texXOffset, texYOffset)
+	return BNet_GetClientEmbeddedTexture(texture, fileWidth, fileHeight, texWidth, texHeight, texXOffset, texYOffset).." "..BNet_GetValidatedCharacterName(characterName, battleTag, client);
+end

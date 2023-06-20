@@ -26,3 +26,7 @@ function PetFrame_AdjustPoint(self)
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
 	end
 end
+
+function RefreshBuffsOrDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
+	RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar);
+end

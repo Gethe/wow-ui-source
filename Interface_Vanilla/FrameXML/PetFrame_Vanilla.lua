@@ -23,3 +23,7 @@ function PetFrame_SetHappiness()
 		PetFrameHappiness.tooltipLoyalty = nil;
 	end
 end
+
+function RefreshBuffsOrDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
+	RefreshBuffs(frame, unit, numDebuffs, suffix, checkCVar);
+end

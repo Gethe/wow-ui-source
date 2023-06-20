@@ -259,7 +259,7 @@
 						</OnTextChanged>
 					</Scripts>
 				</EditBox>
-				<ScrollFrame parentKey="DescriptionFrame" inherits="InputScrollFrameTemplate">
+				<ScrollFrame parentKey="DescriptionFrame" inherits="UIPanelInputScrollFrameTemplate">
 					<Size x="0" y="50"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
@@ -276,7 +276,7 @@
 								self:GetParent():GetParent().NameBox:SetFocus();
 							end);
 							self.EditBox:SetMaxLetters(500);
-							InputScrollFrame_OnLoad(self);
+							UIPanelInputScrollFrame_OnLoad(self);
 						</OnLoad>
 					</Scripts>
 				</ScrollFrame>

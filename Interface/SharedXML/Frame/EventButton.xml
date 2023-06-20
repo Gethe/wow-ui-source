@@ -2,15 +2,15 @@
 ..\..\FrameXML\UI_shared.xsd">
 	<Script file="EventButton.lua"/>
 
-	<Button name="EventButton" mixin="EventButtonMixin" enableMouse="true" intrinsic="true">
-		<Scripts>
-			<OnLoad method="OnLoad_Intrinsic"/>
-			<OnMouseUp method="OnMouseUp_Intrinsic" intrinsicOrder="postcall"/>
-			<OnMouseDown method="OnMouseDown_Intrinsic" intrinsicOrder="postcall"/>
-			<OnClick method="OnClick_Intrinsic" intrinsicOrder="postcall"/>
-			<OnEnter method="OnEnter_Intrinsic" intrinsicOrder="postcall"/>
-			<OnLeave method="OnLeave_Intrinsic" intrinsicOrder="postcall"/>
-			<OnSizeChanged method="OnSizeChanged_Intrinsic" intrinsicOrder="postcall"/>
-		</Scripts>
-	</Button>
+		<Button name="EventButton" mixin="EventButtonMixin" enableMouse="true" intrinsic="true">
+			<Scripts>
+				<OnLoad method="OnLoad_Intrinsic"/>
+				<OnMouseUp method="OnMouseUp_Intrinsic" intrinsicOrder="postcall"/>
+				<OnMouseDown method="OnMouseDown_Intrinsic" intrinsicOrder="postcall"/>
+				<OnClick method="OnClick_Intrinsic" intrinsicOrder="postcall"/>
+				<OnEnter method="OnEnter_Intrinsic" intrinsicOrder="postcall"/>
+				<OnLeave method="OnLeave_Intrinsic" intrinsicOrder="postcall"/>
+				<OnSizeChanged method="OnSizeChanged_Intrinsic" intrinsicOrder="postcall"/>
+			</Scripts>
+		</Button>
 </Ui>

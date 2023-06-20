@@ -69,11 +69,37 @@ local EditModeManagerShared =
 			},
 		},
 		{
+			Name = "BagsDirection",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Left", Type = "BagsDirection", EnumValue = 0 },
+				{ Name = "Right", Type = "BagsDirection", EnumValue = 1 },
+				{ Name = "Up", Type = "BagsDirection", EnumValue = 0 },
+				{ Name = "Down", Type = "BagsDirection", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "BagsOrientation",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Horizontal", Type = "BagsOrientation", EnumValue = 0 },
+				{ Name = "Vertical", Type = "BagsOrientation", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -86,8 +112,8 @@ local EditModeManagerShared =
 				{ Name = "ShowCastBar", Type = "EditModeAccountSetting", EnumValue = 7 },
 				{ Name = "ShowEncounterBar", Type = "EditModeAccountSetting", EnumValue = 8 },
 				{ Name = "ShowExtraAbilities", Type = "EditModeAccountSetting", EnumValue = 9 },
-				{ Name = "ShowBuffFrame", Type = "EditModeAccountSetting", EnumValue = 10 },
-				{ Name = "ShowDebuffFrame", Type = "EditModeAccountSetting", EnumValue = 11 },
+				{ Name = "ShowBuffsAndDebuffs", Type = "EditModeAccountSetting", EnumValue = 10 },
+				{ Name = "DeprecatedShowDebuffFrame", Type = "EditModeAccountSetting", EnumValue = 11 },
 				{ Name = "ShowPartyFrames", Type = "EditModeAccountSetting", EnumValue = 12 },
 				{ Name = "ShowRaidFrames", Type = "EditModeAccountSetting", EnumValue = 13 },
 				{ Name = "ShowTalkingHeadFrame", Type = "EditModeAccountSetting", EnumValue = 14 },
@@ -96,7 +122,11 @@ local EditModeManagerShared =
 				{ Name = "ShowArenaFrames", Type = "EditModeAccountSetting", EnumValue = 17 },
 				{ Name = "ShowLootFrame", Type = "EditModeAccountSetting", EnumValue = 18 },
 				{ Name = "ShowHudTooltip", Type = "EditModeAccountSetting", EnumValue = 19 },
-				{ Name = "EnableSnap", Type = "EditModeAccountSetting", EnumValue = 20 },
+				{ Name = "ShowStatusTrackingBar2", Type = "EditModeAccountSetting", EnumValue = 20 },
+				{ Name = "ShowDurabilityFrame", Type = "EditModeAccountSetting", EnumValue = 21 },
+				{ Name = "EnableSnap", Type = "EditModeAccountSetting", EnumValue = 22 },
+				{ Name = "EnableAdvancedOptions", Type = "EditModeAccountSetting", EnumValue = 23 },
+				{ Name = "ShowPetFrame", Type = "EditModeAccountSetting", EnumValue = 24 },
 			},
 		},
 		{
@@ -155,7 +185,7 @@ local EditModeManagerShared =
 				{ Name = "IconLimitDebuffFrame", Type = "EditModeAuraFrameSetting", EnumValue = 4 },
 				{ Name = "IconSize", Type = "EditModeAuraFrameSetting", EnumValue = 5 },
 				{ Name = "IconPadding", Type = "EditModeAuraFrameSetting", EnumValue = 6 },
-				{ Name = "ShowFull", Type = "EditModeAuraFrameSetting", EnumValue = 7 },
+				{ Name = "DeprecatedShowFull", Type = "EditModeAuraFrameSetting", EnumValue = 7 },
 			},
 		},
 		{
@@ -171,15 +201,29 @@ local EditModeManagerShared =
 			},
 		},
 		{
+			Name = "EditModeBagsSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Orientation", Type = "EditModeBagsSetting", EnumValue = 0 },
+				{ Name = "Direction", Type = "EditModeBagsSetting", EnumValue = 1 },
+				{ Name = "Size", Type = "EditModeBagsSetting", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "EditModeCastBarSetting",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "BarSize", Type = "EditModeCastBarSetting", EnumValue = 0 },
 				{ Name = "LockToPlayerFrame", Type = "EditModeCastBarSetting", EnumValue = 1 },
+				{ Name = "ShowCastTime", Type = "EditModeCastBarSetting", EnumValue = 2 },
 			},
 		},
 		{
@@ -197,39 +241,67 @@ local EditModeManagerShared =
 			},
 		},
 		{
-			Name = "EditModeLayoutType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Preset", Type = "EditModeLayoutType", EnumValue = 0 },
-				{ Name = "Account", Type = "EditModeLayoutType", EnumValue = 1 },
-				{ Name = "Character", Type = "EditModeLayoutType", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "EditModeMinimapSetting",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "HeaderUnderneath", Type = "EditModeMinimapSetting", EnumValue = 0 },
-				{ Name = "RotateMinimap", Type = "EditModeMinimapSetting", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "EditModeObjectiveTrackerSetting",
+			Name = "EditModeDurabilityFrameSetting",
 			Type = "Enumeration",
 			NumValues = 1,
 			MinValue = 0,
 			MaxValue = 0,
 			Fields =
 			{
+				{ Name = "Size", Type = "EditModeDurabilityFrameSetting", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "EditModeLayoutType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Preset", Type = "EditModeLayoutType", EnumValue = 0 },
+				{ Name = "Account", Type = "EditModeLayoutType", EnumValue = 1 },
+				{ Name = "Character", Type = "EditModeLayoutType", EnumValue = 2 },
+				{ Name = "Override", Type = "EditModeLayoutType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "EditModeMicroMenuSetting",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Orientation", Type = "EditModeMicroMenuSetting", EnumValue = 0 },
+				{ Name = "Order", Type = "EditModeMicroMenuSetting", EnumValue = 1 },
+				{ Name = "Size", Type = "EditModeMicroMenuSetting", EnumValue = 2 },
+				{ Name = "EyeSize", Type = "EditModeMicroMenuSetting", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "EditModeMinimapSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "HeaderUnderneath", Type = "EditModeMinimapSetting", EnumValue = 0 },
+				{ Name = "RotateMinimap", Type = "EditModeMinimapSetting", EnumValue = 1 },
+				{ Name = "Size", Type = "EditModeMinimapSetting", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "EditModeObjectiveTrackerSetting",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
 				{ Name = "Height", Type = "EditModeObjectiveTrackerSetting", EnumValue = 0 },
+				{ Name = "Opacity", Type = "EditModeObjectiveTrackerSetting", EnumValue = 1 },
 			},
 		},
 		{
@@ -258,11 +330,36 @@ local EditModeManagerShared =
 			},
 		},
 		{
+			Name = "EditModeStatusTrackingBarSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Height", Type = "EditModeStatusTrackingBarSetting", EnumValue = 0 },
+				{ Name = "Width", Type = "EditModeStatusTrackingBarSetting", EnumValue = 1 },
+				{ Name = "TextSize", Type = "EditModeStatusTrackingBarSetting", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "EditModeStatusTrackingBarSystemIndices",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "StatusTrackingBar1", Type = "EditModeStatusTrackingBarSystemIndices", EnumValue = 1 },
+				{ Name = "StatusTrackingBar2", Type = "EditModeStatusTrackingBarSystemIndices", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -278,6 +375,10 @@ local EditModeManagerShared =
 				{ Name = "LootFrame", Type = "EditModeSystem", EnumValue = 10 },
 				{ Name = "HudTooltip", Type = "EditModeSystem", EnumValue = 11 },
 				{ Name = "ObjectiveTracker", Type = "EditModeSystem", EnumValue = 12 },
+				{ Name = "MicroMenu", Type = "EditModeSystem", EnumValue = 13 },
+				{ Name = "Bags", Type = "EditModeSystem", EnumValue = 14 },
+				{ Name = "StatusTrackingBar", Type = "EditModeSystem", EnumValue = 15 },
+				{ Name = "DurabilityFrame", Type = "EditModeSystem", EnumValue = 16 },
 			},
 		},
 		{
@@ -310,9 +411,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeUnitFrameSystemIndices",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 1,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Player", Type = "EditModeUnitFrameSystemIndices", EnumValue = 1 },
@@ -322,6 +423,31 @@ local EditModeManagerShared =
 				{ Name = "Raid", Type = "EditModeUnitFrameSystemIndices", EnumValue = 5 },
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
 				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
+				{ Name = "Pet", Type = "EditModeUnitFrameSystemIndices", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "MicroMenuOrder",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Default", Type = "MicroMenuOrder", EnumValue = 0 },
+				{ Name = "Reverse", Type = "MicroMenuOrder", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "MicroMenuOrientation",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Horizontal", Type = "MicroMenuOrientation", EnumValue = 0 },
+				{ Name = "Vertical", Type = "MicroMenuOrientation", EnumValue = 1 },
 			},
 		},
 		{

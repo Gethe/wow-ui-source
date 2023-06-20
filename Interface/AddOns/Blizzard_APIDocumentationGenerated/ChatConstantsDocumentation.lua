@@ -37,15 +37,63 @@ local ChatConstants =
 			},
 		},
 		{
+			Name = "ChatToxityFilterOptOut",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 4294967295,
+			Fields =
+			{
+				{ Name = "FilterAll", Type = "ChatToxityFilterOptOut", EnumValue = 0 },
+				{ Name = "ExcludeFilterFriend", Type = "ChatToxityFilterOptOut", EnumValue = 1 },
+				{ Name = "ExcludeFilterGuild", Type = "ChatToxityFilterOptOut", EnumValue = 2 },
+				{ Name = "ExcludeFilterAll", Type = "ChatToxityFilterOptOut", EnumValue = 4294967295 },
+			},
+		},
+		{
+			Name = "ChatWhisperTargetStatus",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "CanWhisper", Type = "ChatWhisperTargetStatus", EnumValue = 0 },
+				{ Name = "Offline", Type = "ChatWhisperTargetStatus", EnumValue = 1 },
+				{ Name = "WrongFaction", Type = "ChatWhisperTargetStatus", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ExcludedCensorSources",
+			Type = "Enumeration",
+			NumValues = 10,
+			MinValue = 0,
+			MaxValue = 255,
+			Fields =
+			{
+				{ Name = "None", Type = "ExcludedCensorSources", EnumValue = 0 },
+				{ Name = "Friends", Type = "ExcludedCensorSources", EnumValue = 1 },
+				{ Name = "Guild", Type = "ExcludedCensorSources", EnumValue = 2 },
+				{ Name = "Reserve1", Type = "ExcludedCensorSources", EnumValue = 4 },
+				{ Name = "Reserve2", Type = "ExcludedCensorSources", EnumValue = 8 },
+				{ Name = "Reserve3", Type = "ExcludedCensorSources", EnumValue = 16 },
+				{ Name = "Reserve4", Type = "ExcludedCensorSources", EnumValue = 32 },
+				{ Name = "Reserve5", Type = "ExcludedCensorSources", EnumValue = 64 },
+				{ Name = "Reserve6", Type = "ExcludedCensorSources", EnumValue = 128 },
+				{ Name = "All", Type = "ExcludedCensorSources", EnumValue = 255 },
+			},
+		},
+		{
 			Name = "LanguageFlag",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "IsExotic", Type = "LanguageFlag", EnumValue = 1 },
 				{ Name = "HiddenFromPlayer", Type = "LanguageFlag", EnumValue = 2 },
+				{ Name = "HideLanguageNameInChat", Type = "LanguageFlag", EnumValue = 4 },
 			},
 		},
 		{
@@ -94,8 +142,8 @@ local ChatConstants =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "shortcut", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "shortcut", Type = "cstring", Nilable = false },
 				{ Name = "localID", Type = "number", Nilable = false },
 				{ Name = "instanceID", Type = "number", Nilable = false },
 				{ Name = "zoneChannelID", Type = "number", Nilable = false },

@@ -258,14 +258,15 @@ end
 --------------------------- UnitPopup Button Overrides ------------------------------------------
 function UnitPopupRaidDifficulty1ButtonMixin:IsDisabled()
 	local inInstance, instanceType = IsInInstance();
-	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or inInstance ) then
-		return true;
-	end
-	
+	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
+
 	local toggleDifficultyID;
-	local _, instanceType, instanceDifficultyID = GetInstanceInfo();
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
 		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+	end
+
+	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or (inInstance and not toggleDifficultyID) ) then
+		return true;
 	end
 
 	if ( toggleDifficultyID and CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID()) ) then
@@ -275,18 +276,20 @@ end
 
 function UnitPopupRaidDifficulty1ButtonMixin:IsEnabled()
 	local inInstance, instanceType = IsInInstance();
-	local isPublicParty = IsInGroup(LE_PARTY_CATEGORY_INSTANCE); 
-	if( isPublicParty or (inInstance and instanceType ~= "raid") ) then
-		return false;
+	local isPublicParty = IsInGroup(LE_PARTY_CATEGORY_INSTANCE);
+	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
+
+	local toggleDifficultyID;
+	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
+		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end
-	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or isPublicParty or inInstance ) then
+
+	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or isPublicParty or (inInstance and not toggleDifficultyID) ) then
 		return false;
 	end
 
-	local toggleDifficultyID;
-	local _, _, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
-	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
-		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+	if( isPublicParty or (inInstance and instanceType ~= "raid") ) then
+		return false;
 	end
 
 	if (toggleDifficultyID) then

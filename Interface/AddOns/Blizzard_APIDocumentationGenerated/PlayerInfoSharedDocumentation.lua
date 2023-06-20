@@ -8,9 +8,9 @@ local PlayerInfoShared =
 			Fields =
 			{
 				{ Name = "raceID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "fileName", Type = "string", Nilable = false },
-				{ Name = "createScreenIconAtlas", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "fileName", Type = "cstring", Nilable = false },
+				{ Name = "createScreenIconAtlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -18,10 +18,10 @@ local PlayerInfoShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "fileName", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "fileName", Type = "cstring", Nilable = false },
 				{ Name = "alternateFormRaceData", Type = "CharacterAlternateFormData", Nilable = true },
-				{ Name = "createScreenIconAtlas", Type = "string", Nilable = false },
+				{ Name = "createScreenIconAtlas", Type = "textureAtlas", Nilable = false },
 				{ Name = "sex", Type = "UnitSex", Nilable = false },
 			},
 		},

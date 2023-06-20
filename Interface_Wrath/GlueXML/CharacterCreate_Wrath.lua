@@ -1,5 +1,6 @@
 MAX_RACES = 10;
 MAX_CLASSES_PER_RACE = 10;
+SHOW_UNAVAILABLE_CLASSES = true;
 
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
@@ -219,12 +220,14 @@ function SetCharacterGender(sex)
 
 	-- Update right hand race portrait to reflect gender change
 	-- Set Race
-	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
-	CharacterCreateRaceLabel:SetText(race);
-	fileString = strupper(fileString);
-	local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
-	CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-	UpdateCharacterRaceLabelText();
+	if (CharacterCreate.selectedRace > 0) then
+		local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
+		CharacterCreateRaceLabel:SetText(race);
+		fileString = strupper(fileString);
+		local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
+		CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		UpdateCharacterRaceLabelText();
+	end
 	-- Update class labels to reflect gender change
 	-- Set Class
 	local classData = C_CharacterCreation.GetSelectedClass();

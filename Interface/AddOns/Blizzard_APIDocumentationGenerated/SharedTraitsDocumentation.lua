@@ -94,6 +94,20 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GenerateInspectImportString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "target", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "importString", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConditionInfo",
 			Type = "Function",
 
@@ -293,6 +307,20 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetTraitSystemFlags",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "flags", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTraitSystemWidgetSetID",
 			Type = "Function",
 
@@ -376,6 +404,15 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "IsReadyForCommit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isReadyForCommit", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PurchaseRank",
 			Type = "Function",
 
@@ -428,6 +465,22 @@ local SharedTraits =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "treeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ResetTreeByCurrency",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "treeID", Type = "number", Nilable = false },
+				{ Name = "traitCurrencyID", Type = "number", Nilable = false },
 			},
 
 			Returns =

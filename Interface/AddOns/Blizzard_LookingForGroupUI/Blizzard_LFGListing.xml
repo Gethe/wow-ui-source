@@ -545,7 +545,7 @@
 							<Anchor relativeTo="$parentScrollBox" point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
 						</Anchors>
 					</EventFrame>
-					<ScrollFrame name="LFGListingComment" parentkey="Comment" inherits="InputScrollFrameTemplate">
+					<ScrollFrame name="LFGListingComment" parentkey="Comment" inherits="UIPanelInputScrollFrameTemplate">
 						<Size x="285" y="47"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="19"/> <!-- Reanchored in code. -->
@@ -560,7 +560,7 @@
 								StoreSecureReference("LFGListingComment", self.EditBox);
 								self.EditBox:SetSecurityDisableSetText();
 								self.EditBox:SetSecurityDisablePaste();
-								InputScrollFrame_OnLoad(self);
+								UIPanelInputScrollFrame_OnLoad(self);
 
 								self.EditBox:SetScript("OnTextChanged", function(self, userInput)
 									LFGListingComment_OnTextChanged(self:GetParent(), userInput);

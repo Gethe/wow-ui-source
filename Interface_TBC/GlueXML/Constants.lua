@@ -327,3 +327,12 @@ CALENDAR_FULLDATE_MONTH_NAMES = {
 	FULLDATE_MONTH_NOVEMBER,
 	FULLDATE_MONTH_DECEMBER,
 };
+
+-- These are purposely different for Classic Era and TBC
+characterCopyRegions = {
+	[41] = NORTH_AMERICA,
+	[42] = KOREA,
+	[43] = EUROPE,
+	[44] = TAIWAN,
+	[45] = CHINA,
+};

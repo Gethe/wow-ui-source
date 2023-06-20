@@ -10,6 +10,16 @@ local PartyPoseUI =
 
 	Events =
 	{
+		{
+			Name = "ShowPartyPoseUI",
+			Type = "Event",
+			LiteralName = "SHOW_PARTY_POSE_UI",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "won", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
@@ -26,6 +36,8 @@ local PartyPoseUI =
 				{ Name = "defeatModelSceneID", Type = "number", Nilable = false },
 				{ Name = "victorySoundKitID", Type = "number", Nilable = false },
 				{ Name = "defeatSoundKitID", Type = "number", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
+				{ Name = "titleText", Type = "string", Nilable = true },
 			},
 		},
 	},

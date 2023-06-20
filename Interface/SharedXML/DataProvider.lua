@@ -1,3 +1,29 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+Import("table");
+Import("select");
+Import("ipairs");
+Import("math");
+
+end
+---------------
+
 DataProviderMixin = CreateFromMixins(CallbackRegistryMixin);
 
 DataProviderMixin:GenerateCallbackEvents(
@@ -19,8 +45,12 @@ function DataProviderMixin:Init(tbl)
 	end
 end
 
-function DataProviderMixin:Enumerate(indexBegin, indexEnd)
-	return CreateTableEnumerator(self.collection, indexBegin, indexEnd);
+function DataProviderMixin:Enumerate(minIndex, maxIndex)
+	return CreateTableEnumerator(self.collection, minIndex, maxIndex);
+end
+
+function DataProviderMixin:ReverseEnumerate(minIndex, maxIndex)
+	return CreateTableReverseEnumerator(self.collection, minIndex, maxIndex);
 end
 
 function DataProviderMixin:GetCollection()
@@ -59,13 +89,13 @@ function DataProviderMixin:InsertTable(tbl)
 	self:InsertTableRange(tbl, 1, #tbl);
 end
 
-function DataProviderMixin:InsertTableRange(tbl, indexBegin, indexEnd)
-	if indexEnd - indexBegin < 0 then
+function DataProviderMixin:InsertTableRange(tbl, minIndex, maxIndex)
+	if maxIndex - minIndex < 0 then
 		return;
 	end
 
 	local hasSortComparator = self:HasSortComparator();
-	for index = indexBegin, indexEnd do
+	for index = minIndex, maxIndex do
 		self:InsertInternal(tbl[index], hasSortComparator);
 	end
 
@@ -108,16 +138,16 @@ function DataProviderMixin:RemoveIndex(index)
 	self:RemoveIndexRange(index, index);
 end
 
-function DataProviderMixin:RemoveIndexRange(indexBegin, indexEnd)
+function DataProviderMixin:RemoveIndexRange(minIndex, maxIndex)
 	local originalSize = self:GetSize();
 
-	indexBegin = math.max(1, indexBegin);
-	indexEnd = math.min(self:GetSize(), indexEnd);
-	while indexEnd >= indexBegin do
-		local elementData = self.collection[indexEnd];
-		tremove(self.collection, indexEnd);
-		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, indexEnd);
-		indexEnd = indexEnd - 1;
+	minIndex = math.max(1, minIndex);
+	maxIndex = math.min(self:GetSize(), maxIndex);
+	while maxIndex >= minIndex do
+		local elementData = self.collection[maxIndex];
+		table.remove(self.collection, maxIndex);
+		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, maxIndex);
+		maxIndex = maxIndex - 1;
 	end
 
 	if self:GetSize() ~= originalSize then
@@ -132,6 +162,10 @@ function DataProviderMixin:SetSortComparator(sortComparator, skipSort)
 	if not skipSort then
 		self:Sort();
 	end
+end
+
+function DataProviderMixin:ClearSortComparator()
+	self.sortComparator = nil;
 end
 
 function DataProviderMixin:HasSortComparator()
@@ -182,6 +216,12 @@ end
 
 function DataProviderMixin:ForEach(func)
 	for index, elementData in self:Enumerate() do
+		func(elementData);
+	end
+end
+
+function DataProviderMixin:ReverseForEach(func)
+	for index, elementData in self:ReverseEnumerate() do
 		func(elementData);
 	end
 end

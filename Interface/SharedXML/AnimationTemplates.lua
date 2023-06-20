@@ -29,3 +29,29 @@ function TargetsVisibleWhilePlayingAnimGroupMixin:SetTargetsShown(shown, ...)
 		end
 	end
 end
+
+EasyFrameAnimationsMixin = { };
+
+local function IterateAllAnimationGroups(frame, func)
+	local animGroups = { frame:GetAnimationGroups() };
+	for _, animGroup in ipairs(animGroups) do
+		func(animGroup);
+	end
+
+	local children = { frame:GetChildren() };
+	for _, child in ipairs(children) do
+		IterateAllAnimationGroups(child, func);
+	end
+end
+
+function EasyFrameAnimationsMixin:PlayAnims()
+	IterateAllAnimationGroups(self, function(animGroup)
+		animGroup:Play();
+	end);
+end
+
+function EasyFrameAnimationsMixin:StopAnims()
+	IterateAllAnimationGroups(self, function(animGroup)
+		animGroup:Stop();
+	end);
+end

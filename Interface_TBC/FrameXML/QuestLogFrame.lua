@@ -574,7 +574,7 @@ function QuestLog_UpdatePartyInfoTooltip(self)
 	local questName = tostring(self:GetText());
 	local numPartyMembers = GetNumSubgroupMembers();
 	local questID = GetQuestIDFromLogIndex(index);
-	
+
 	if ( numPartyMembers == 0 or self.isHeader ) then
 		EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, questName, questID, false);
 		return;
@@ -610,8 +610,8 @@ function QuestLogRewardItem_OnClick(self)
 		local link;
 		if (self.rewardType == "item") then
 			link = GetQuestLogItemLink(self.type, self:GetID());
-		elseif (self.rewardType== "spell") then
-			link = GetQuestLogSpellLink(self:GetID());
+		elseif (self.rewardType == "spell") then
+			link = GetSpellLink(self:GetID());
 		end
 
 		if ( ChatEdit_InsertLink(link) ) then

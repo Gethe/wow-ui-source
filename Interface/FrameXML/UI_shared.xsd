@@ -1089,6 +1089,7 @@
 
 		<xs:attribute name="forbidden" type="xs:boolean" default="false"/>
 		<xs:attribute name="scriptsUseGivenEnv" type="xs:boolean" default="false"/>
+    <xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
 		<xs:attribute name="fullLockdown" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
@@ -1538,6 +1539,7 @@
 	<xs:element name="ContainedAlertFrame" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="DropDownToggleButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventEditBox" type="EditBoxType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="EventScrollFrame" type="ScrollFrameType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="ItemButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>

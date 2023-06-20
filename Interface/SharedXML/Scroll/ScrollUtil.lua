@@ -1,3 +1,30 @@
+---------------
+--NOTE - Please do not change this section without understanding the full implications of the secure environment
+--We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
+local _, tbl = ...;
+
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+		Import("C_StoreGlue");
+	end
+
+	setfenv(1, tbl);
+
+	Import("assert");
+	Import("NegateIf");
+	Import("Saturate");
+end
+----------------
+
 ScrollUtil = {};
 
 -- For public addons to access frames post-acquire, post-initialization and post-release. It can be correct
@@ -109,6 +136,121 @@ end
 function ScrollUtil.InitScrollBar(scrollBox, scrollBar)
 	RegisterWithScrollBar(scrollBox, scrollBar);
 	InitScrollBar(scrollBox, scrollBar);
+end
+
+local function ConvertScrollPercentage(messageFrame, scrollPercentage)
+	if messageFrame:GetInsertMode() == SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP then
+		return scrollPercentage;
+	end
+	return 1.0 - scrollPercentage;
+end
+
+function ScrollUtil.InitScrollingMessageFrameWithScrollBar(messageFrame, scrollBar, noMouseWheel)
+	-- Prevent message frame outbound messages from interferring with scroll bar while a drag or hold
+	-- is in progress.
+	scrollBar:EnableInternalPriority();
+
+	-- Require snapping so that any scrollbar position changes cannot occur without a corresponding
+	-- SMF offset change.
+	scrollBar:EnableSnapToInterval();
+
+	messageFrame:AddOnDisplayRefreshedCallback(function(messageFrame)
+		local maxScrollRange = messageFrame:GetMaxScrollRange();
+		local scrollPercentage = 0;
+		local panExtentPercentage = 0;
+		if maxScrollRange > 0 then
+			scrollPercentage = messageFrame:GetScrollOffset() / maxScrollRange;
+			panExtentPercentage = 1 / maxScrollRange;
+		end
+
+		scrollPercentage = ConvertScrollPercentage(messageFrame, scrollPercentage);
+		scrollBar:SetScrollPercentage(scrollPercentage, ScrollBoxConstants.NoScrollInterpolation);
+
+		local visibleExtentPercentage = 0;
+		local messages = messageFrame:GetNumMessages();
+		if messages > 1 then
+			visibleExtentPercentage = 1 / messages;
+		end
+
+		scrollBar:SetVisibleExtentPercentage(visibleExtentPercentage);
+		scrollBar:SetPanExtentPercentage(panExtentPercentage);
+	end);
+
+	if not noMouseWheel then
+		local function onMouseWheel(scrollFrame, value)
+			value = NegateIf(value, scrollFrame:GetInsertMode() == SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP);
+			messageFrame:ScrollByAmount(value * 3);
+		end
+		messageFrame:EnableMouseWheel(true);
+		messageFrame:SetScript("OnMouseWheel", onMouseWheel);
+	end
+
+	local onScrollBarScroll = function(o, scrollPercentage)
+		scrollPercentage = ConvertScrollPercentage(messageFrame, scrollPercentage);
+		local scrollOffset = math.floor((scrollPercentage * messageFrame:GetMaxScrollRange()) + .0001);
+		messageFrame:SetScrollOffset(scrollOffset);
+	end;
+	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBarScroll, messageFrame);
+end
+
+-- Compatible with "ScrollFrameTemplate"
+function ScrollUtil.InitScrollFrameWithScrollBar(scrollFrame, scrollBar)
+	local onVerticalScroll = function(scrollFrame, offset)
+		local verticalScrollRange = scrollFrame:GetVerticalScrollRange();
+		local scrollPercentage = 0;
+		if verticalScrollRange > 0 then
+			scrollPercentage = offset / verticalScrollRange;
+		end
+		scrollBar:SetScrollPercentage(scrollPercentage, ScrollBoxConstants.NoScrollInterpolation);
+	end
+
+	scrollFrame:SetScript("OnVerticalScroll", onVerticalScroll);
+	
+	scrollFrame.GetPanExtent = function(self)
+		return self.panExtent;
+	end
+
+	scrollFrame.SetPanExtent = function(self, panExtent)
+		self.panExtent = panExtent;
+	end
+	
+	-- 30 is used in the absence of accurate individual element extents.
+	-- Anything larger will require multiple scrolls of the mouse, but shouldn't 
+	-- be too much friction to be annoying.
+	scrollFrame:SetPanExtent(30);
+
+	local onScrollRangeChanged = function(scrollFrame, hScrollRange, vScrollRange)
+		onVerticalScroll(scrollFrame, scrollFrame:GetVerticalScroll());
+
+		local visibleExtentPercentage = 0;
+		local height = scrollFrame:GetHeight();
+		if height > 0 then
+			visibleExtentPercentage = height / (vScrollRange + height);
+		end
+
+		scrollBar:SetVisibleExtentPercentage(visibleExtentPercentage);
+
+		local panExtentPercentage = 0;
+		local verticalScrollRange = scrollFrame:GetVerticalScrollRange();
+		if verticalScrollRange > 0 then
+			panExtentPercentage = Saturate(scrollFrame:GetPanExtent() / verticalScrollRange);
+		end
+		scrollBar:SetPanExtentPercentage(panExtentPercentage);
+	end;
+
+	scrollFrame:SetScript("OnScrollRangeChanged", onScrollRangeChanged);
+
+	local onMouseWheel = function(scrollFrame, value)
+		scrollBar:ScrollStepInDirection(-value);
+	end
+
+	scrollFrame:SetScript("OnMouseWheel", onMouseWheel);
+
+	local onScrollBarScroll = function(o, scrollPercentage)
+		local scroll = scrollPercentage * scrollFrame:GetVerticalScrollRange();
+		scrollFrame:SetVerticalScroll(scroll);
+	end;
+	scrollBar:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBarScroll, scrollFrame);
 end
 
 -- Utility for managing the visibility of a ScrollBar and reanchoring of the
@@ -310,6 +452,38 @@ function SelectionBehaviorMixin:ToggleSelectElementData(elementData)
 
 	local newSelected = not oldSelected;
 	self:SetElementDataSelected_Internal(elementData, newSelected);
+end
+
+function SelectionBehaviorMixin:SelectFirstElementData()
+	local dataProvider = self.scrollBox:GetDataProvider();
+	if dataProvider then
+		local elementData = dataProvider:Find(1);
+		if elementData then
+			self:SelectElementData(elementData);
+		end
+	end
+end
+
+function SelectionBehaviorMixin:SelectNextElementData()
+	return self:SelectOffsetElementData(1);
+end
+
+function SelectionBehaviorMixin:SelectPreviousElementData()
+	return self:SelectOffsetElementData(-1);
+end
+
+function SelectionBehaviorMixin:SelectOffsetElementData(offset)
+	local dataProvider = self.scrollBox:GetDataProvider();
+	if dataProvider then
+		local currentElementData = self:GetFirstSelectedElementData();
+		local currentIndex = dataProvider:FindIndex(currentElementData);
+		local offsetIndex = currentIndex + offset;
+		local offsetElementData = dataProvider:Find(offsetIndex);
+		if offsetElementData then
+			self:SelectElementData(offsetElementData);
+			return offsetElementData, offsetIndex;
+		end
+	end
 end
 
 function SelectionBehaviorMixin:SelectElementData(elementData)

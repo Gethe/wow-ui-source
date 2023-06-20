@@ -16,8 +16,8 @@ local GMTicketInfo =
 			LiteralName = "GM_PLAYER_INFO",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "info", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "info", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -41,7 +41,7 @@ local GMTicketInfo =
 			LiteralName = "PLAYER_REPORT_SUBMITTED",
 			Payload =
 			{
-				{ Name = "invitedByGUID", Type = "string", Nilable = false },
+				{ Name = "invitedByGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -65,7 +65,7 @@ local GMTicketInfo =
 				{ Name = "ticketStatus", Type = "number", Nilable = true },
 				{ Name = "caseIndex", Type = "number", Nilable = true },
 				{ Name = "waitTimeMinutes", Type = "number", Nilable = true },
-				{ Name = "waitMessage", Type = "string", Nilable = true },
+				{ Name = "waitMessage", Type = "cstring", Nilable = true },
 			},
 		},
 	},

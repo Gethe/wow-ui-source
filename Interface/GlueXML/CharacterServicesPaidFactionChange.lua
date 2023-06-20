@@ -29,7 +29,7 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 			local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
 			hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
 			isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
-			factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
+			factionChangeDisabled, characterServiceRequiresLogin, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
 
 			-- factions
 			for factionTag, factionInfo in pairs(factionInfoTable) do
@@ -142,6 +142,12 @@ end
 
 function PaidFactionChangeFlow:OnStoreCharacterListReceived()
 	self:GetStep(1):CheckEnable();
+	EventRegistry:UnregisterFrameEvent("STORE_CHARACTER_LIST_RECEIVED");
+	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
+end
+
+function PaidFactionChangeFlow:OnHide()
+	CharacterServicesFlowMixin.OnHide(self);
 	EventRegistry:UnregisterFrameEvent("STORE_CHARACTER_LIST_RECEIVED");
 	EventRegistry:UnregisterCallback("STORE_CHARACTER_LIST_RECEIVED", self);
 end

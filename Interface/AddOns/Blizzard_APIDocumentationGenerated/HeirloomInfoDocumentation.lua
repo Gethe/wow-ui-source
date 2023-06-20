@@ -26,7 +26,7 @@ local HeirloomInfo =
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
-				{ Name = "updateReason", Type = "string", Nilable = true },
+				{ Name = "updateReason", Type = "cstring", Nilable = true },
 				{ Name = "hideUntilLearned", Type = "bool", Nilable = true },
 			},
 		},

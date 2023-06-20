@@ -1,6 +1,7 @@
 MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
 MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for UIParentManageFramePositions
+DIFFICULTY_ID_5PLAYER_DUNGEON_NORMAL = 1;
 
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
@@ -418,7 +419,7 @@ function MiniMapInstanceDifficulty_OnEvent(self)
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
 	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
 
-	if ( ( instanceType == "party" or instanceType == "raid" ) and ( isHeroic or displayHeroic ) ) then		
+	if ( ( instanceType == "party" or instanceType == "raid" ) and not (difficulty == DIFFICULTY_ID_5PLAYER_DUNGEON_NORMAL) ) then --show the banner for all raids/dungeons except 5 person normal dungeon
 		MiniMapInstanceDifficultyText:SetText(maxPlayers);
 		-- the 1 looks a little off when text is centered
 		local xOffset = 0;

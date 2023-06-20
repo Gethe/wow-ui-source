@@ -107,13 +107,13 @@
 					GameTooltip:SetQuestLogItem(self.type, self:GetID());
 					GameTooltip_ShowCompareItem(GameTooltip);
 				elseif ( self.rewardType == "spell" ) then
-					GameTooltip:SetQuestLogRewardSpell();
+					GameTooltip:SetSpellByID(self:GetID());
 				end
 			</OnEnter>
 			<OnClick>
 				if ( self.rewardType == "spell" ) then
 					if ( IsModifiedClick("CHATLINK") ) then
-						ChatEdit_InsertLink(GetQuestLogSpellLink());
+						ChatEdit_InsertLink(GetSpellLink(self:GetID()));
 					end
 				else
 					HandleModifiedItemClick(GetQuestLogItemLink(self.type, self:GetID()));

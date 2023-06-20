@@ -55,7 +55,7 @@ local SocialQueue =
 				{ Name = "needHealer", Type = "bool", Nilable = false },
 				{ Name = "needDamage", Type = "bool", Nilable = false },
 				{ Name = "isSoloQueueParty", Type = "bool", Nilable = false },
-				{ Name = "leaderGUID", Type = "string", Nilable = false },
+				{ Name = "leaderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -77,8 +77,8 @@ local SocialQueue =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = true },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = true },
 			},
 		},
 	},

@@ -25,6 +25,19 @@ function UnitPopupMenuSelf:GetMenuButtons()
 	}
 end
 
+UnitPopupMenuFriendlyPlayerInteract = CreateFromMixins(UnitPopupTopLevelMenuMixin);
+function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
+	return {
+		UnitPopupWhisperButtonMixin,
+		UnitPopupInspectButtonMixin, 
+		UnitPopupAchievementButtonMixin,
+		UnitPopupTradeButtonMixin, 
+		UnitPopupFollowButtonMixin,
+		UnitPopupDuelButtonMixin,
+		UnitPopupPetBattleDuelButtonMixin,
+	}
+end 
+
 function UnitPopupMenuParty:GetMenuButtons()
 	return {
 		UnitPopupMenuFriendlyPlayer, --This is a submenu

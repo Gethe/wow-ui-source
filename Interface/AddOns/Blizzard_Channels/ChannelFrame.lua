@@ -383,7 +383,7 @@ function ChannelFrameMixin:ToggleCreateChannel()
 end
 
 function ChannelFrameMixin:ToggleVoiceSettings()
-	ShowOptionsPanel(VideoOptionsFrame, self, VOICE_CHAT);
+	Settings.OpenToCategory(Settings.AUDIO_CATEGORY_ID, CHAT_VOICE);
 end
 
 -- Channel remains, but appears disabled

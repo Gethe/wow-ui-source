@@ -111,7 +111,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				ScrollFrame_OnLoad(self);
+				UIPanelScrollFrame_OnLoad(self);
 				self.scrollBarHideable = 1;
 			</OnLoad>
 		</Scripts>

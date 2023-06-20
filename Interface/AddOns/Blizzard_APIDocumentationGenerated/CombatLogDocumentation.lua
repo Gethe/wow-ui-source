@@ -26,7 +26,7 @@ local CombatLog =
 			LiteralName = "COMBAT_TEXT_UPDATE",
 			Payload =
 			{
-				{ Name = "combatTextType", Type = "string", Nilable = false },
+				{ Name = "combatTextType", Type = "cstring", Nilable = false },
 			},
 		},
 	},

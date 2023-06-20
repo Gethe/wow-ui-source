@@ -24,6 +24,8 @@ local PLAYER_UNITS = {
 	pet = true,
 };
 
+CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
+
 function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.HealthBar.LeftText = self.textureFrame.HealthBarTextLeft;
 	self.HealthBar.RightText = self.textureFrame.HealthBarTextRight;
@@ -99,6 +101,14 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		end
 	end
 	SecureUnitButton_OnLoad(self, self.unit, showmenu);
+
+	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
+end
+
+function TargetFrame_OnCVarChanged (self, cvar, cvarValue)
+	if( cvar == "showTargetOfTarget" and self.totFrame ) then
+		TargetofTarget_Update(self.totFrame);
+	end
 end
 
 function TargetFrame_Update (self)
@@ -112,6 +122,7 @@ function TargetFrame_Update (self)
 		-- Moved here to avoid taint from functions below
 		if ( self.totFrame ) then
 			TargetofTarget_Update(self.totFrame);
+			TargetofTarget_UpdateDebuffs(self.totFrame);
 		end
 
 		UnitFrame_Update(self);
@@ -218,6 +229,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		else
 			if ( self.totFrame ) then
 				TargetofTarget_Update(self.totFrame);
+				TargetofTarget_UpdateDebuffs(self.totFrame);
 			end
 			TargetFrame_CheckFaction(self);
 		end
@@ -412,8 +424,11 @@ function TargetFrame_CheckDead (self)
 end
 
 function TargetFrame_OnUpdate (self, elapsed)
-	if ( self.totFrame and self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit) ) then
-		TargetofTarget_Update(self.totFrame);
+	if ( self.totFrame) then
+		if ( self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit) ) then
+			TargetofTarget_Update(self.totFrame);
+		end
+		TargetofTarget_UpdateDebuffs(self.totFrame);
 	end
 end
 
@@ -908,7 +923,7 @@ end
 function TargetofTarget_Update(self, elapsed)
 	local show;
 	local parent = self:GetParent();
-	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
 		if ( not self:IsShown() ) then
 			self:Show();
 			if ( parent.spellbar ) then
@@ -928,6 +943,13 @@ function TargetofTarget_Update(self, elapsed)
 				Target_Spellbar_AdjustPosition(parent.spellbar);
 			end
 		end
+	end
+end
+
+function TargetofTarget_UpdateDebuffs(self)
+	local parent = self:GetParent();
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+		RefreshDebuffs(self, self.unit, nil, nil, true);
 	end
 end
 

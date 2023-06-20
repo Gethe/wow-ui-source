@@ -12,7 +12,7 @@ local UserFeedback =
 
 			Arguments =
 			{
-				{ Name = "bugInfo", Type = "string", Nilable = false },
+				{ Name = "bugInfo", Type = "cstring", Nilable = false },
 				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
 			},
 
@@ -27,7 +27,7 @@ local UserFeedback =
 
 			Arguments =
 			{
-				{ Name = "suggestion", Type = "string", Nilable = false },
+				{ Name = "suggestion", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

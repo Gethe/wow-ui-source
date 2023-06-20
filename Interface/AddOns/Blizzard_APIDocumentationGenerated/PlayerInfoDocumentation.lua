@@ -7,6 +7,20 @@ local PlayerInfo =
 	Functions =
 	{
 		{
+			Name = "CanUseItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUseable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAlternateFormInfo",
 			Type = "Function",
 
@@ -17,12 +31,30 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetDisplayID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displayID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerCharacterData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "characterData", Type = "PlayerInfoCharacterData", Nilable = false },
+			},
+		},
+		{
 			Name = "HasVisibleInvSlot",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =

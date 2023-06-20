@@ -98,8 +98,6 @@ function TableInspectorMixin:UpdateLines()
 			line:Show();
 		end
 	end
-
-	ScrollFrame_OnScrollRangeChanged(self.LinesScrollFrame);
 end
 
 function TableInspectorMixin:OpenParentDisplay()

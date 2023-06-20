@@ -12,7 +12,7 @@ local MerchantFrame =
 
 			Arguments =
 			{
-				{ Name = "buybackSlotIndex", Type = "number", Nilable = false },
+				{ Name = "buybackSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =

@@ -114,7 +114,7 @@ end
 
 function InterfaceOptionsPanel_OnLoad (self)
 	BlizzardOptionsPanel_OnLoad(self, nil, InterfaceOptionsPanel_Cancel, InterfaceOptionsPanel_Default, InterfaceOptionsPanel_Refresh);
-	InterfaceOptions_AddCategory(self);
+	--InterfaceOptions_AddCategory(self);
 end
 
 function InterfaceOptionsPanel_RegisterSetToDefaultFunc(func, self)
@@ -753,11 +753,6 @@ end
 
 -- [[ Social Options Panel ]] --
 
-TwitterData = {
-	linked = false,
-	screenName = nil
-}
-
 SocialPanelOptions = {
 	profanityFilter = { text = "PROFANITY_FILTER" },
 
@@ -771,7 +766,6 @@ SocialPanelOptions = {
 	showToastBroadcast = { text = "SHOW_TOAST_BROADCAST_TEXT" },
 	showToastFriendRequest = { text = "SHOW_TOAST_FRIEND_REQUEST_TEXT" },
 	showToastWindow = { text = "SHOW_TOAST_WINDOW_TEXT" },
-	enableTwitter = { text = "SOCIAL_ENABLE_TWITTER_FUNCTIONALITY" },
 }
 
 function InterfaceOptionsSocialPanel_OnLoad (self)
@@ -785,12 +779,7 @@ function InterfaceOptionsSocialPanel_OnLoad (self)
 
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("BN_CONNECTED");
-	self:RegisterEvent("TWITTER_STATUS_UPDATE");
-	self:RegisterEvent("TWITTER_LINK_RESULT");
 	self:SetScript("OnEvent", InterfaceOptionsSocialPanel_OnEvent);
-
-	-- Send an event to the server to request Twitter status and enable social UI if checked
-	C_Social.TwitterCheckStatus();
 end
 
 function InterfaceOptionsSocialPanel_OnHide(self)
@@ -799,30 +788,6 @@ end
 
 function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
-
-	if ( event == "TWITTER_STATUS_UPDATE" ) then
-		local enabled, linked, screenName = ...;
-		if (enabled and not Kiosk.IsEnabled()) then
-			self.EnableTwitter:Show();
-			self.TwitterLoginButton:Show();
-			TwitterData["linked"] = linked;
-			if (linked) then
-				TwitterData["screenName"] = "@" .. screenName;
-			end
-			Twitter_Update();
-		end
-	elseif ( event == "TWITTER_LINK_RESULT" ) then
-		local linked, screenName, errorMsg = ...;
-		SocialBrowserFrame:Hide();
-		TwitterData["linked"] = linked;
-		if (linked) then
-			TwitterData["screenName"] = "@" .. screenName;
-			UIErrorsFrame:AddMessage(SOCIAL_TWITTER_CONNECT_SUCCESS_MESSAGE, 1.0, 1.0, 0.0, 1.0);
-		else
-			UIErrorsFrame:AddMessage(SOCIAL_TWITTER_CONNECT_FAIL_MESSAGE, 1.0, 0.1, 0.1, 1.0);
-		end
-		Twitter_Update();
-	end
 end
 
 function InterfaceOptionsSocialPanelChatStyle_OnEvent (self, event, ...)
@@ -1072,45 +1037,6 @@ end
 
 function InterfaceOptionsSocialPanelTimestamps_OnClick(self)
 	InterfaceOptionsSocialPanelTimestamps:SetValue(self.value);
-end
-
--- [[ Twitter options ]] --
-
-function Twitter_GetLoginStatus()
-	local statusText = (GRAY_FONT_COLOR_CODE .. SOCIAL_TWITTER_STATUS_NOT_CONNECTED .. FONT_COLOR_CODE_CLOSE);
-	if (TwitterData["linked"]) then
-		statusText = (GREEN_FONT_COLOR_CODE .. format(SOCIAL_TWITTER_STATUS_CONNECTED, TwitterData["screenName"]) .. FONT_COLOR_CODE_CLOSE);
-	end
-	return TwitterData["linked"], statusText;
-end
-
-function Twitter_SetEnabled(value)
-	local enabled = (value == "1");
-	InterfaceOptionsSocialPanel.TwitterLoginButton:SetEnabled(enabled);
-end
-
-function Twitter_Update()
-	local linked, statusText = Twitter_GetLoginStatus();
-	local panel = InterfaceOptionsSocialPanel;
-
-	if (linked) then
-		panel.TwitterLoginButton:SetText(SOCIAL_TWITTER_DISCONNECT);
-	else
-		panel.TwitterLoginButton:SetText(SOCIAL_TWITTER_SIGN_IN);
-	end
-	panel.TwitterLoginButton:SetWidth(panel.TwitterLoginButton:GetTextWidth() + 30);
-
-	panel.EnableTwitter.LoginStatus:SetText(statusText);
-end
-
-function Twitter_LoginButton_OnClick(self)
-	if (TwitterData["linked"]) then
-		C_Social.TwitterDisconnect();
-	else
-		SocialBrowserFrame:Show();
-		C_Social.TwitterConnect();
-	end
-	Twitter_Update();
 end
 
 -- [[ ActionBars Options Panel ]] --
@@ -1507,10 +1433,12 @@ function BlizzardOptionsPanel_UpdateDebuffFrames()
 	frame = TargetFrame;
 	TargetFrame_UpdateAuras(frame);
 	TargetofTarget_Update(frame.totFrame);
+	TargetofTarget_UpdateDebuffs(frame.totFrame);
 	-- Focus frame and its target-of-target
 	frame = FocusFrame;
 	TargetFrame_UpdateAuras(frame);
 	TargetofTarget_Update(frame.totFrame);
+	TargetofTarget_UpdateDebuffs(frame.totFrame);
 	-- Party frames and their pets
 	for i = 1, MAX_PARTY_MEMBERS do
 		if ( UnitExists("party"..i) ) then

@@ -120,7 +120,7 @@ local PaperDollInfo =
 			LiteralName = "INSPECT_READY",
 			Payload =
 			{
-				{ Name = "inspecteeGUID", Type = "string", Nilable = false },
+				{ Name = "inspecteeGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -189,7 +189,7 @@ local PaperDollInfo =
 			Payload =
 			{
 				{ Name = "groupIndex", Type = "number", Nilable = false },
-				{ Name = "newRole", Type = "string", Nilable = false },
+				{ Name = "newRole", Type = "cstring", Nilable = false },
 			},
 		},
 		{

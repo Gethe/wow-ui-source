@@ -341,21 +341,6 @@ local GarrisonConstants =
 			},
 		},
 		{
-			Name = "GarrisonFollowerType",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 1,
-			MaxValue = 123,
-			Fields =
-			{
-				{ Name = "FollowerType_6_0", Type = "GarrisonFollowerType", EnumValue = 1 },
-				{ Name = "FollowerType_6_2", Type = "GarrisonFollowerType", EnumValue = 2 },
-				{ Name = "FollowerType_7_0", Type = "GarrisonFollowerType", EnumValue = 4 },
-				{ Name = "FollowerType_8_0", Type = "GarrisonFollowerType", EnumValue = 22 },
-				{ Name = "FollowerType_9_0", Type = "GarrisonFollowerType", EnumValue = 123 },
-			},
-		},
-		{
 			Name = "GarrisonTalentAvailability",
 			Type = "Enumeration",
 			NumValues = 9,
@@ -372,20 +357,6 @@ local GarrisonConstants =
 				{ Name = "UnavailablePlayerCondition", Type = "GarrisonTalentAvailability", EnumValue = 6 },
 				{ Name = "UnavailableAlreadyHave", Type = "GarrisonTalentAvailability", EnumValue = 7 },
 				{ Name = "UnavailableRequiresPrerequisiteTalent", Type = "GarrisonTalentAvailability", EnumValue = 8 },
-			},
-		},
-		{
-			Name = "GarrisonType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 2,
-			MaxValue = 111,
-			Fields =
-			{
-				{ Name = "Type_6_0", Type = "GarrisonType", EnumValue = 2 },
-				{ Name = "Type_7_0", Type = "GarrisonType", EnumValue = 3 },
-				{ Name = "Type_8_0", Type = "GarrisonType", EnumValue = 9 },
-				{ Name = "Type_9_0", Type = "GarrisonType", EnumValue = 111 },
 			},
 		},
 	},

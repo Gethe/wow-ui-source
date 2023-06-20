@@ -267,19 +267,17 @@
 					</OnDragStop>
 				</Scripts>
 			</Button>
-			<ScrollFrame parentKey="LinesScrollFrame" inherits="UIPanelScrollFrameTemplate">
+			<ScrollFrame parentKey="LinesScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarX" value="10" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-7" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="-8" type="number"/>
+				</KeyValues>
 				<Size x="430" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-70"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.scrollBarHideable = 1;
-						self.ScrollBar.scrollStep = 24;
-						ScrollFrame_OnLoad(self);
-						ScrollFrame_OnScrollRangeChanged(self);
-					</OnLoad>
-				</Scripts>
 				<ScrollChild>
 					<Frame parentKey="LinesContainer">
 						<Size x="300" y="10"/>
@@ -292,7 +290,7 @@
 			<Frame parentKey="ScrollFrameArt" inherits="TooltipBorderBackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.LinesScrollFrame" x="0" y="6"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LinesScrollFrame.ScrollBar" x="6" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LinesScrollFrame.ScrollBar" x="16" y="-8"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="FrameHighlight" inherits="FrameHighlightTemplate"/>

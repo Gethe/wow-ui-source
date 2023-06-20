@@ -21,7 +21,7 @@ local GuildBank =
 			LiteralName = "GUILDBANK_TEXT_CHANGED",
 			Payload =
 			{
-				{ Name = "guildBankTab", Type = "number", Nilable = false },
+				{ Name = "guildBankTab", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

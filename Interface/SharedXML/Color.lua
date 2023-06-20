@@ -1,4 +1,5 @@
 ColorMixin = {};
+COLOR_FORMAT_RGBA = "RRGGBBAA";
 
 function CreateColor(r, g, b, a)
 	local color = CreateFromMixins(ColorMixin);
@@ -70,5 +71,14 @@ do
 		local color = CreateColor(dbColor.color.r, dbColor.color.g, dbColor.color.b, dbColor.color.a);
 		_G[dbColor.baseTag] = color;
 		_G[dbColor.baseTag.."_CODE"] = color:GenerateHexColorMarkup();
+	end
+end
+
+function CreateColorFromRGBAHexString(hexColor)
+	if #hexColor == #COLOR_FORMAT_RGBA then
+		local r, g, b, a = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
+		return CreateColor(r, g, b, a);
+	else
+		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: RRGGBBAA.");
 	end
 end

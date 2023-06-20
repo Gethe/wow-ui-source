@@ -229,7 +229,7 @@
 				<Scripts>
 					<OnLoad>
 						self.scrollBarHideable = 1;
-						ScrollFrame_OnLoad(self);
+						UIPanelScrollFrame_OnLoad(self);
 						ScrollFrame_OnScrollRangeChanged(self, 0, 0);
 					</OnLoad>
 					<OnScrollRangeChanged>

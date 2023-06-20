@@ -103,7 +103,7 @@ function FloatingChatFrame_SetupScrolling(self)
 		messageFrame.ScrollBar:SetValue(messageFrame:GetNumMessages() - offset);
 	end);]]
 
-	self:SetOnDisplayRefreshedCallback(FloatingChatFrame_UpdateScroll);
+	self:AddOnDisplayRefreshedCallback(FloatingChatFrame_UpdateScroll);
 	FloatingChatFrame_UpdateScroll(self);
 end
 

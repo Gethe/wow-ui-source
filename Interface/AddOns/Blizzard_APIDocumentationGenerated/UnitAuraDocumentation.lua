@@ -15,7 +15,7 @@ local UnitAura =
 			LiteralName = "UNIT_AURA",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 	},

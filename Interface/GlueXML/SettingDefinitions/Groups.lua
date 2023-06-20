@@ -1,0 +1,1 @@
+Settings.GetOrCreateSettingsGroup(SETTING_GROUP_SYSTEM, 1);

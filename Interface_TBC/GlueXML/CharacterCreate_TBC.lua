@@ -1,5 +1,6 @@
 MAX_RACES = 10;
 MAX_CLASSES_PER_RACE = 8;
+SHOW_UNAVAILABLE_CLASSES = false;
 
 FRAMES_TO_BACKDROP_COLOR = { 
 	"CharacterCreateCharacterRace",
@@ -51,18 +52,7 @@ end
 function SetCharacterRace(id)
 	CharacterCreate.selectedRace = id;
 
-	for i=1, CharacterCreate.numRaces, 1 do
-		local button = _G["CharacterCreateRaceButton"..i];
-		if ( button.raceID == id ) then
-			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText(button.tooltip);
-			button:SetChecked(1);
-			button:LockHighlight();
-		else
-			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText("");
-			button:SetChecked(0);
-			button:UnlockHighlight();
-		end
-	end
+	UpdateCharacterRaceLabelText();
 
 	--twain SetSelectedRace(id);
 	-- Set Faction
@@ -129,13 +119,26 @@ function SetCharacterRace(id)
 
 	SetBackgroundModel(CharacterCreate, C_CharacterCreation.GetCreateBackgroundModel());
 	--twainUpdateCustomizationBackground();
-	
+
 	CharacterCreateEnumerateClasses();
 	SetDefaultClass();
 
 	-- Hair customization stuff
 	CharacterCreate_UpdateFacialHairCustomization();
 	CharacterCreate_UpdateCustomizationOptions();
+end
+
+function UpdateCharacterRaceLabelText()
+	for i=1, CharacterCreate.numRaces, 1 do
+		local button = _G["CharacterCreateRaceButton"..i];
+		if ( button.raceID == CharacterCreate.selectedRace ) then
+			_G["CharacterCreateRaceButton"..i.."Text"]:SetText(button.tooltip);
+			button:SetChecked(1);
+		else
+			_G["CharacterCreateRaceButton"..i.."Text"]:SetText("");
+			button:SetChecked(nil);
+		end
+	end
 end
 
 function SetDefaultClass()
@@ -205,11 +208,19 @@ function SetCharacterGender(sex)
 
 	-- Update right hand race portrait to reflect gender change
 	-- Set Race
-	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
-	CharacterCreateRaceLabel:SetText(race);
-	fileString = strupper(fileString);
-	local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
-	CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	if (CharacterCreate.selectedRace > 0) then
+		local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
+		CharacterCreateRaceLabel:SetText(race);
+		fileString = strupper(fileString);
+		local coords = RACE_ICON_TCOORDS[fileString.."_"..gender];
+		CharacterCreateRaceIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		UpdateCharacterRaceLabelText();
+	end
+	-- Update class labels to reflect gender change
+	-- Set Class
+	local classData = C_CharacterCreation.GetSelectedClass();
+	CharacterCreateClassLabel:SetText(classData.name);
+	CharacterCreateEnumerateClasses(); -- Update class tooltips.
 end
 
 function CharacterCreate_UpdateFacialHairCustomization()

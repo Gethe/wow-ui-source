@@ -61,7 +61,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -70,7 +70,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -79,7 +79,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -88,7 +88,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -97,7 +97,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -106,7 +106,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -115,7 +115,7 @@ local MinimapFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{

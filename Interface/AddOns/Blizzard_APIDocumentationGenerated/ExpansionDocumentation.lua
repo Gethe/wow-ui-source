@@ -72,7 +72,7 @@ local Expansion =
 			Returns =
 			{
 				{ Name = "isExpansionTrialAccount", Type = "bool", Nilable = false },
-				{ Name = "expansionTrialRemainingSeconds", Type = "number", Nilable = true },
+				{ Name = "expansionTrialRemainingSeconds", Type = "time_t", Nilable = true },
 			},
 		},
 		{
@@ -176,8 +176,8 @@ local Expansion =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "logo", Type = "number", Nilable = false },
-				{ Name = "banner", Type = "string", Nilable = false },
+				{ Name = "logo", Type = "fileID", Nilable = false },
+				{ Name = "banner", Type = "textureAtlas", Nilable = false },
 				{ Name = "features", Type = "table", InnerType = "ExpansionDisplayInfoFeature", Nilable = false },
 			},
 		},
@@ -186,8 +186,8 @@ local Expansion =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 	},

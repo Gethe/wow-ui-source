@@ -6,23 +6,6 @@ SCROLLING_MESSAGE_FRAME_INSERT_MODE_BOTTOM = 2;
 
 ScrollingMessageFrameMixin = CreateFromMixins(FontableFrameMixin);
 
-function ScrollingMessageFrameScrollBar_OnValueChanged(self, value, userInput)
-	self.ScrollUp:Enable();
-	self.ScrollDown:Enable();
-
-	local minVal, maxVal = self:GetMinMaxValues();
-	if value >= maxVal then
-		self.ScrollDown:Disable()
-	end
-	if value <= minVal then
-		self.ScrollUp:Disable();
-	end
-	
-	if userInput then
-		self:GetParent():SetScrollOffset(maxVal - value);
-	end
-end
-
 -- where ... is any extra user data
 function ScrollingMessageFrameMixin:AddMessage(message, r, g, b, ...)
 	if self.historyBuffer:PushFront(self:PackageEntry(message, r, g, b, ...)) then
@@ -146,12 +129,16 @@ function ScrollingMessageFrameMixin:ScrollToBottom()
 	self:ResetAllFadeTimes();
 end
 
-function ScrollingMessageFrameMixin:SetOnDisplayRefreshedCallback(callback)
-	self.onDisplayRefreshedCallback = callback;
+function ScrollingMessageFrameMixin:AddOnDisplayRefreshedCallback(callback)
+	table.insert(self.onDisplayRefreshedCallbacks, callback);
 end
 
-function ScrollingMessageFrameMixin:GetOnDisplayRefreshedCallback()
-	return self.onDisplayRefreshedCallback;
+local function CallCallbacks(index, callback, messageFrame)
+	callback(messageFrame);
+end
+
+function ScrollingMessageFrameMixin:CallOnDisplayRefreshed()
+	secureexecuterange(self.onDisplayRefreshedCallbacks, CallCallbacks, self);
 end
 
 function ScrollingMessageFrameMixin:SetOnScrollChangedCallback(onScrollChangedCallback)
@@ -186,7 +173,14 @@ function ScrollingMessageFrameMixin:GetScrollOffset()
 end
 
 function ScrollingMessageFrameMixin:GetMaxScrollRange()
-	return math.max(self.historyBuffer:GetNumElements() - 1, 0);
+	-- Warning! constrainRangeToText is only intended to be used by scrolling message frames with
+	-- exclusively single unwrapped lines. This has the effect of removing the "empty space" by constraining 
+	-- the scroll range to prevent the text from being scrolled into a position beyond the last line.
+	if self.constrainRangeToText then
+		return math.max((self.historyBuffer:GetNumElements() - (self:GetNumVisibleLines() - 1)), 0);
+	else
+		return math.max(self.historyBuffer:GetNumElements() - 1, 0);
+	end
 end
 
 function ScrollingMessageFrameMixin:GetNumVisibleLines()
@@ -300,6 +294,7 @@ function ScrollingMessageFrameMixin:OnPreLoad()
 	self.textIsCopyable = false;
 
 	self.visibleLines = {};
+	self.onDisplayRefreshedCallbacks = {};
 end
 
 function ScrollingMessageFrameMixin:OnPostShow()
@@ -531,7 +526,7 @@ function ScrollingMessageFrameMixin:RefreshLayout()
 	for lineIndex = self:GetNumVisibleLines(), numVisibleLines, -1 do
 		self.visibleLines[lineIndex] = nil;
 	end
-
+	
 	self:MarkDisplayDirty();
 end
 
@@ -577,14 +572,6 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 	end
 
 	self:CallOnDisplayRefreshed();
-end
-
-function ScrollingMessageFrameMixin:CallOnDisplayRefreshed()
-	local callback = self:GetOnDisplayRefreshedCallback();
-
-	if callback then
-		callback(self);
-	end
 end
 
 function ScrollingMessageFrameMixin:CalculateLineAlphaValueFromTimestamp(now, timestamp)

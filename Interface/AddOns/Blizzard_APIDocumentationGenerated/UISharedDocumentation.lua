@@ -8,10 +8,10 @@ local UIShared =
 			Fields =
 			{
 				{ Name = "point", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -19,10 +19,10 @@ local UIShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
-				{ Name = "width", Type = "number", Nilable = false },
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 	},

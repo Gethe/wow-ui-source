@@ -344,6 +344,9 @@ function UIParent_OnLoad(self)
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+
+	--Event(s) for soft targetting
+	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 end
 
 function UIParent_OnShow(self)
@@ -361,6 +364,16 @@ function UIParent_OnHide(self)
 	if ( LowHealthFrame ) then
 		LowHealthFrame:EvaluateVisibleState();
 	end
+end
+
+function UIParent_OnUpdate(self, elapsed)
+	FCF_OnUpdate(elapsed);
+	ButtonPulse_OnUpdate(elapsed);
+	UnitPopup_OnUpdate(elapsed);
+	AnimatedShine_OnUpdate(elapsed);
+	AutoCastShine_OnUpdate(nil, elapsed);
+	BattlefieldFrame_OnUpdate(elapsed);
+	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 end
 
 -- Addons --
@@ -1560,6 +1573,15 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
+		end
+	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
+		if(GetCVarBool("softTargettingInteractKeySound")) then
+			local previousTarget, currentTarget = ...;
+			if(not currentTarget) then
+				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+			elseif(previousTarget ~= currentTarget) then
+				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
+			end
 		end
 	end
 end
@@ -3774,10 +3796,10 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 			debuffTotal = debuffTotal + 1;
 
 			-- setup the cooldown
-			--[[local coolDown = _G[debuffName.."Cooldown"];
+			local coolDown = _G[debuffName.."Cooldown"];
 			if ( coolDown ) then
 				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end]]
+			end
 
 			-- show the aura
 			_G[debuffName]:Show();

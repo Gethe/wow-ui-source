@@ -387,7 +387,7 @@ setmetatable(LOCAL_Closure_Factories, { __index = ClosureFactories_index });
 local LOCAL_execution_count = 0;
 local LOCAL_references_frames = {};
 
-local LOCAL_CHECK_Frame = CreateFrame("Frame");
+local LOCAL_CHECK_Frame = CopyTable(GetFrameMetatable().__index);
 
 local function CheckForbidden(frame)
 	return LOCAL_CHECK_Frame.IsForbidden(frame); 

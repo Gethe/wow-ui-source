@@ -13,7 +13,7 @@ local EquipmentManager =
 			Arguments =
 			{
 				{ Name = "equipmentSetID", Type = "number", Nilable = false },
-				{ Name = "specIndex", Type = "number", Nilable = false },
+				{ Name = "specIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -35,8 +35,8 @@ local EquipmentManager =
 
 			Arguments =
 			{
-				{ Name = "equipmentSetName", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "string", Nilable = true },
+				{ Name = "equipmentSetName", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -73,7 +73,7 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "specIndex", Type = "number", Nilable = false },
+				{ Name = "specIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -82,7 +82,7 @@ local EquipmentManager =
 
 			Arguments =
 			{
-				{ Name = "specIndex", Type = "number", Nilable = false },
+				{ Name = "specIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -96,7 +96,7 @@ local EquipmentManager =
 
 			Arguments =
 			{
-				{ Name = "equipmentSetName", Type = "string", Nilable = false },
+				{ Name = "equipmentSetName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -192,7 +192,7 @@ local EquipmentManager =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -201,7 +201,7 @@ local EquipmentManager =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -216,8 +216,8 @@ local EquipmentManager =
 			Arguments =
 			{
 				{ Name = "equipmentSetID", Type = "number", Nilable = false },
-				{ Name = "newName", Type = "string", Nilable = false },
-				{ Name = "newIcon", Type = "string", Nilable = true },
+				{ Name = "newName", Type = "cstring", Nilable = false },
+				{ Name = "newIcon", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -236,7 +236,7 @@ local EquipmentManager =
 			Arguments =
 			{
 				{ Name = "equipmentSetID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "string", Nilable = true },
+				{ Name = "icon", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -254,7 +254,7 @@ local EquipmentManager =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
