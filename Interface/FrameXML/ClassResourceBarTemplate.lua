@@ -13,7 +13,9 @@
 	resourcePointSetupFunc [global] - function on the resource point for any custom setup
 	resourcePointReleaseFunc [global] - function on the resource point for any custom on-release reset logic
 	showTooltip [boolean] - show the tooltip on the mouseover
-	showBarFunc [global] - custom function for whether or not the bar should show
+	shouldShowBarFunc [global] - custom function for whether or not the bar should show
+	showBarFunc [global] - custom function for showing the bar
+	hideBarFunc [global] - custom function for hiding the bar
 	requiredShownLevel [number] - If the bar needs a certain level to show this will handle showing the bar on level up, etc
 ]]
 ClassResourceBarMixin = {};
@@ -65,7 +67,11 @@ end
 function ClassResourceBarMixin:HandleBarSetup()
 	local frameLevel = self:GetParent() and self:GetParent():GetFrameLevel() + 2 or self:GetFrameLevel(); 
 	self:SetFrameLevel(frameLevel);
-	self:Show();
+	if (self.showBarFunc) then
+		self.showBarFunc(self);
+	else
+		self:Show();
+	end
 	self:UpdateMaxPower();
 	if(self.resourceBarMixin.UpdateMaxPower) then 
 		self.resourceBarMixin.UpdateMaxPower(self);
@@ -82,8 +88,8 @@ function ClassResourceBarMixin:Setup()
 		showBar = PlayerVehicleHasComboPoints();
 	else
 		showBar = self.resourceBarMixin.Setup(self);
-		if(self.showBarFunc) then
-			showBar = self.showBarFunc(self);
+		if(self.shouldShowBarFunc) then
+			showBar = self.shouldShowBarFunc(self);
 		end
 	end
 
@@ -98,7 +104,11 @@ function ClassResourceBarMixin:Setup()
 			self:HandleBarSetup();
 		end
 	else
-		self:Hide();
+		if (self.hideBarFunc) then
+			self.hideBarFunc(self);
+		else
+			self:Hide();
+		end
 		self:UnregisterEvent("UNIT_POWER_FREQUENT");
 		self:UnregisterEvent("UNIT_MAXPOWER");
 		self:UnregisterEvent("UNIT_POWER_POINT_CHARGE");

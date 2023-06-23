@@ -286,7 +286,7 @@ end
 function LootHistoryFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, LootHistoryFrameWhenShownEvents);
 
-	self.ScrollBox:ClearDataProvider();
+	self.ScrollBox:RemoveDataProvider();
 	self.selectedEncounterID = nil;
 end
 

@@ -1,3 +1,10 @@
+SELF_CAST_SETTING_VALUES = {
+	NONE = 1,
+	AUTO = 2,
+	KEY_PRESS = 3,
+	AUTO_AND_KEY_PRESS = 4,
+};
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(COMBAT_LABEL);
 
@@ -112,10 +119,10 @@ local function Register()
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:Add(1, NONE, OPTIONS_TOOLTIP_SELF_CAST_NONE);
-			container:Add(2, SELF_CAST_AUTO, OPTIONS_TOOLTIP_SELF_CAST_AUTO);
-			container:Add(3, SELF_CAST_KEY_PRESS, OPTIONS_TOOLTIP_SELF_CAST_KEY_PRESS);
-			container:Add(4, SELF_CAST_AUTO_AND_KEY_PRESS, OPTIONS_TOOLTIP_SELF_CAST_AUTO_AND_KEY_PRESS);
+			container:Add(SELF_CAST_SETTING_VALUES.NONE, NONE, OPTIONS_TOOLTIP_SELF_CAST_NONE);
+			container:Add(SELF_CAST_SETTING_VALUES.AUTO, SELF_CAST_AUTO, OPTIONS_TOOLTIP_SELF_CAST_AUTO);
+			container:Add(SELF_CAST_SETTING_VALUES.KEY_PRESS, SELF_CAST_KEY_PRESS, OPTIONS_TOOLTIP_SELF_CAST_KEY_PRESS);
+			container:Add(SELF_CAST_SETTING_VALUES.AUTO_AND_KEY_PRESS, SELF_CAST_AUTO_AND_KEY_PRESS, OPTIONS_TOOLTIP_SELF_CAST_AUTO_AND_KEY_PRESS);
 			return container:GetData();
 		end
 

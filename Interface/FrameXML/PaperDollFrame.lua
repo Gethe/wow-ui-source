@@ -1411,14 +1411,14 @@ function PaperDollFrame_SetPlayer()
 	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, true);
 
 	local form = GetShapeshiftFormID();
-	if form then
+	if form and not UnitOnTaxi("player") then
 		local actorTag = ANIMAL_FORMS[form] and ANIMAL_FORMS[form].actorTag or nil;
 		if actorTag then
 			local actor = CharacterModelScene:GetPlayerActor(actorTag);
 			local creatureDisplayID = C_PlayerInfo.GetDisplayID();
 			if actor and creatureDisplayID then
 				actor:SetModelByCreatureDisplayID(creatureDisplayID);
-				actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 				return;
 			end
 		end
@@ -1431,7 +1431,7 @@ function PaperDollFrame_SetPlayer()
 		local hideWeapon = false;
 		local useNativeForm = not inAlternateForm;
 		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 end
 

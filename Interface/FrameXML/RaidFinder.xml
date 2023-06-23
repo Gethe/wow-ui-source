@@ -4,9 +4,9 @@
 	<Button name="RaidFinderRoleButtonTemplate" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
-				self.background:SetTexCoord(GetBackgroundTexCoordsForRole(self.role));
-				self.background:SetAlpha(0.6);
+				local showDisabled = false;
+				self:SetNormalAtlas(GetIconForRole(self.role, showDisabled));
+				self.background:SetAtlas(GetBackgroundForRole(self.role), TextureKitConstants.IgnoreAtlasSize);
 				self.checkButton.onClick = RaidFinderFrameRoleCheckButton_OnClick;
 				LFGRoleButtonTemplate_OnLoad(self);
 			</OnLoad>
@@ -114,7 +114,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("GUIDE"));
+								local showDisabled = false;
+								self:SetNormalAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 								self.checkButton.onClick = RaidFinderFrameRoleCheckButton_OnClick;
 							</OnLoad>
 							<OnEnter>

@@ -94,7 +94,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="LANDING_DRAGONRIDING_TREE_BUTTON">
+					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="CallbackRegistrantTemplate, UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="LANDING_DRAGONRIDING_TREE_BUTTON">
 						<Size x="80" y="22"/>
 						<KeyValues>
 							<KeyValue key="disabledTooltip" value="LANDING_DRAGONRIDING_TREE_BUTTON_DISABLED" type="global"/>
@@ -103,8 +103,46 @@
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
+						<Frames>
+							<Frame parentKey="YellowGlow" alpha="0">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-12" y="0"/>
+									<Anchor point="RIGHT" x="12" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Left" atlas="newplayertutorial-yellowGlow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="LEFT"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Right" atlas="newplayertutorial-yellowGlow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="RIGHT"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Middle" atlas="newplayertutorial-yellowGlow-redbutton-middle" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+						<Animations>
+							<AnimationGroup parentKey="UnspentGlyphsAnim" looping="REPEAT" setToFinalAlpha="true">
+								<Alpha childKey="YellowGlow" duration="1" order="1" fromAlpha="0" toAlpha="0.6" />
+								<Alpha childKey="YellowGlow" duration="1" order="2" fromAlpha="0.6" toAlpha="0" />
+							</AnimationGroup>
+						</Animations>
 						<Scripts>
+							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>

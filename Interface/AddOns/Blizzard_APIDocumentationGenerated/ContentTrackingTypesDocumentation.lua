@@ -31,15 +31,16 @@ local ContentTrackingTypes =
 		{
 			Name = "ContentTrackingTargetType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "JournalEncounter", Type = "ContentTrackingTargetType", EnumValue = 0 },
 				{ Name = "Vendor", Type = "ContentTrackingTargetType", EnumValue = 1 },
 				{ Name = "Achievement", Type = "ContentTrackingTargetType", EnumValue = 2 },
 				{ Name = "Profession", Type = "ContentTrackingTargetType", EnumValue = 3 },
+				{ Name = "Quest", Type = "ContentTrackingTargetType", EnumValue = 4 },
 			},
 		},
 		{
@@ -99,7 +100,7 @@ local ContentTrackingTypes =
 			Fields =
 			{
 				{ Name = "creatureName", Type = "cstring", Nilable = false },
-				{ Name = "zoneName", Type = "cstring", Nilable = true },
+				{ Name = "zoneName", Type = "string", Nilable = true },
 				{ Name = "currencyType", Type = "number", Nilable = true },
 				{ Name = "cost", Type = "BigUInteger", Nilable = true },
 			},

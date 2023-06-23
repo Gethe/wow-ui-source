@@ -1124,7 +1124,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="Icon" atlas="UI-Frame-TankIcon" useAtlasSize="true"/>
+					<Texture parentKey="Icon" atlas="UI-LFG-RoleIcon-Tank" useAtlasSize="true"/>
 				</Layer>
 			</Layers>
 			<Frames>
@@ -1150,7 +1150,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="Icon" atlas="UI-Frame-HealerIcon" useAtlasSize="true"/>
+					<Texture parentKey="Icon" atlas="UI-LFG-RoleIcon-Healer" useAtlasSize="true"/>
 				</Layer>
 			</Layers>
 			<Frames>
@@ -1176,7 +1176,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="Icon" atlas="UI-Frame-DpsIcon" useAtlasSize="true"/>
+					<Texture parentKey="Icon" atlas="UI-LFG-RoleIcon-DPS" useAtlasSize="true"/>
 				</Layer>
 			</Layers>
 			<Frames>

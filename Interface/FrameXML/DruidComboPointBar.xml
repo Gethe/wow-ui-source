@@ -97,7 +97,7 @@
 			<KeyValue key="resourcePointTemplate" value="DruidComboPointTemplate" type="string"/>
 			<KeyValue key="resourcePointSetupFunc" value="DruidComboPointMixin.Setup" type="global"/>
 			<KeyValue key="resourcePointReleaseFunc" value="DruidComboPointMixin.OnRelease" type="global"/>
-			<KeyValue key="showBarFunc" value="DruidComboPointBarMixin.ShouldShowBar" type="global"/>
+			<KeyValue key="shouldShowBarFunc" value="DruidComboPointBarMixin.ShouldShowBar" type="global"/>
 			<KeyValue key="spacing" value="4" type="number"/>
 			<KeyValue key="class" value="DRUID" type="string"/>
 		</KeyValues>

@@ -200,7 +200,7 @@ function ProfessionsQualityDialogMixin:EvaluateAllocations()
 	for qualityIndex, reagent in ipairs(self.reagentSlotSchematic.reagents) do
 		local container = self.containers[qualityIndex];
 		local editBox = container.EditBox;
-		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), Professions.GetReagentQuantityInPossession(reagent)));
+		editBox:SetMinMaxValues(0, math.min(self:GetQuantityRequired(), ProfessionsUtil.GetReagentQuantityInPossession(reagent)));
 	end
 
 	local canEnable = not self.disallowZeroAllocations and quantityAllocated == 0;

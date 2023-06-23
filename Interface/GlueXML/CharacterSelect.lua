@@ -380,8 +380,6 @@ function CharacterSelect_OnShow(self)
 end
 
 function CharacterSelect_OnHide(self)
-	CharacterSelectCharacterFrame.ScrollBox.dragBehavior:AbortDrag();
-
     CharacterSelect_SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
     CharacterRenameDialog:Hide();

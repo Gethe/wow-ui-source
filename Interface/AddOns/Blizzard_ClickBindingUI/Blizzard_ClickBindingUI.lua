@@ -166,7 +166,7 @@ local function NameAndIconFromElementData(elementData)
 		local actionID = bindingInfo.actionID;
 
 		local actionName, actionIcon, _;
-		if type == Enum.ClickBindingType.Spell then
+		if type == Enum.ClickBindingType.Spell or type == Enum.ClickBindingType.PetAction then
 			local overrideID = FindSpellOverrideByID(actionID);
 			actionName, _, actionIcon = GetSpellInfo(overrideID);
 		elseif type == Enum.ClickBindingType.Macro then
@@ -374,10 +374,11 @@ end
 local function AddFromCursorInfo(addFunc)
 	local addedNew = false;
 	local cursorType, cursorInfo1, _, cursorInfo3 = GetCursorInfo();
-	if cursorType == "spell" then
-		local spellID = cursorInfo3;
+	if cursorType == "spell" or cursorType == "petaction" then
+		local spellID = cursorType == "spell" and cursorInfo3 or cursorInfo1;
 		if C_ClickBindings.CanSpellBeClickBound(spellID) then
-			addFunc(Enum.ClickBindingType.Spell, spellID);
+			local type = cursorType == "spell" and Enum.ClickBindingType.Spell or Enum.ClickBindingType.PetAction;
+			addFunc(type, spellID);
 			addedNew = true;
 		end
 	elseif cursorType == "macro" then

@@ -57,10 +57,9 @@ end
 
 local function SetRoleIconTexture(texture, role)
 	if role and (role == "TANK" or role == "HEALER" or role == "DAMAGER") then
-		texture:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
-		texture:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
-		texture:Show();
 		texture:SetSize(12, 12);
+		texture:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
+		texture:Show();
 	else
 		texture:Hide();
 		texture:SetSize(1, 12);

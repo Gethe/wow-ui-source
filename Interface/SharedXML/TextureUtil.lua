@@ -81,67 +81,63 @@ function ClearClampedTextureRotation(texture)
 	end
 end
 
+local LFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader",
+	["TANK"] = "UI-LFG-RoleIcon-Tank",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS",
+};
+
+local DisabledLFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Disabled",
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Disabled",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Disabled",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Disabled",
+};
+
+function GetIconForRole(role, showDisabled)
+	if LFGRoleIcons[role] == nil or DisabledLFGRoleIcons[role] == nil then
+		error("Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return showDisabled and DisabledLFGRoleIcons[role] or LFGRoleIcons[role];
+end
+
+local MicroLFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Micro",
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro",
+};
+
+function GetMicroIconForRole(role)
+	if MicroLFGRoleIcons[role] == nil then
+		error("Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return MicroLFGRoleIcons[role];
+end
+
+local LFGRoleBackgrounds = {
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Background",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Background",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Background",
+};
+
+function GetBackgroundForRole(role)
+	if LFGRoleBackgrounds[role] == nil then
+		error("Unknown role: " .. tostring(role));
+	end
+
+	return LFGRoleBackgrounds[role];
+end
 
 function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
 	local widthPerGrid = gridWidth/textureWidth;
 	local heightPerGrid = gridHeight/textureHeight;
 	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
-end
-
-function GetTexCoordsForRole(role)
-	local textureHeight, textureWidth = 256, 256;
-	local roleHeight, roleWidth = 67, 67;
-
-	if ( role == "GUIDE" ) then
-		return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "TANK" ) then
-		return GetTexCoordsByGrid(1, 2, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "HEALER" ) then
-		return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "DAMAGER" ) then
-		return GetTexCoordsByGrid(2, 2, textureWidth, textureHeight, roleWidth, roleHeight);
-	else
-		error("Unknown role: "..tostring(role));
-	end
-end
-
-function GetBackgroundTexCoordsForRole(role)
-	local textureHeight, textureWidth = 128, 256;
-	local roleHeight, roleWidth = 75, 75;
-
-	if ( role == "TANK" ) then
-		return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "HEALER" ) then
-		return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "DAMAGER" ) then
-		return GetTexCoordsByGrid(3, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	else
-		error("Role does not have background: "..tostring(role));
-	end
-end
-
-function GetTexCoordsForRoleSmallCircle(role)
-	if ( role == "TANK" ) then
-		return 0, 19/64, 22/64, 41/64;
-	elseif ( role == "HEALER" ) then
-		return 20/64, 39/64, 1/64, 20/64;
-	elseif ( role == "DAMAGER" ) then
-		return 20/64, 39/64, 22/64, 41/64;
-	else
-		error("Unknown role: "..tostring(role));
-	end
-end
-
-function GetTexCoordsForRoleSmall(role)
-	if ( role == "TANK" ) then
-		return 0.5, 0.75, 0, 1;
-	elseif ( role == "HEALER" ) then
-		return 0.75, 1, 0, 1;
-	elseif ( role == "DAMAGER" ) then
-		return 0.25, 0.5, 0, 1;
-	else
-		error("Unknown role: "..tostring(role));
-	end
 end
 
 function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)

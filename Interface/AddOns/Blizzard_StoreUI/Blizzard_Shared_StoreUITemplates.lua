@@ -250,7 +250,7 @@ end
 
 function CategoryTreeScrollContainerMixin:OnHide()
 	self.selectionBehavior:ClearSelections();
-	self.ScrollBox:ClearDataProvider();
+	self.ScrollBox:RemoveDataProvider();
 end
 
 function CategoryTreeScrollContainerMixin:OnEvent(event, ...)

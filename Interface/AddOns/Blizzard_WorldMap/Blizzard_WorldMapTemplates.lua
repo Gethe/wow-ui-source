@@ -36,11 +36,26 @@ function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 	local info = UIDropDownMenu_CreateInfo();
 	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
 		info.text = mapGroupMemberInfo.name;
+		if self:ShouldShowTrackingIconOnFloor(C_EncounterJournal.GetEncountersOnMap(mapGroupMemberInfo.mapID)) then
+			info.text = info.text..CreateAtlasMarkup("waypoint-mappin-minimap-tracked", 20, 20, 0, 0);
+		end
 		info.value = mapGroupMemberInfo.mapID;
 		info.func = GoToMap;
 		info.checked = (mapID == mapGroupMemberInfo.mapID);
 		UIDropDownMenu_AddButton(info);
 	end
+end
+
+function WorldMapFloorNavigationFrameMixin:ShouldShowTrackingIconOnFloor(encountersOnFloor)
+	if not ContentTrackingUtil.isContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
+		return false;
+	end
+	for index, mapEncounterInfo in ipairs(encountersOnFloor) do
+		if ContentTrackingUtil.IsContentTrackedInEncounter(mapEncounterInfo.encounterID) then
+			return true;
+		end
+	end
+	return false;
 end
 
 WorldMapTrackingOptionsButtonMixin = { };

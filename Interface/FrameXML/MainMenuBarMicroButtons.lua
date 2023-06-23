@@ -458,6 +458,9 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 end
 
 function MainMenuBarMicroButtonMixin:SetPushed()
+	self.Background:Hide(); 
+	self.PushedBackground:Show(); 
+
 	self:SetButtonState("PUSHED", true);
 	self:SetHighlightAtlas("UI-HUD-MicroMenu-"..self.textureName.."-Down", "ADD");
 
@@ -471,6 +474,8 @@ function MainMenuBarMicroButtonMixin:SetNormal()
 	self:SetHighlightAtlas("UI-HUD-MicroMenu-"..self.textureName.."-Mouseover", "BLEND");
 	local highlightTexture = self:GetHighlightTexture();
 	highlightTexture:SetAlpha(1); 
+	self.Background:Show(); 
+	self.PushedBackground:Hide(); 
 end
 
 function MainMenuBarMicroButtonMixin:OnShow()
@@ -482,13 +487,7 @@ function MainMenuBarMicroButtonMixin:OnHide()
 end
 
 function MainMenuBarMicroButtonMixin:OnMouseDown()
-	self.Background:Hide(); 
-	self.PushedBackground:Show(); 
-end
-
-function MainMenuBarMicroButtonMixin:OnMouseUp()
-	self.Background:Show(); 
-	self.PushedBackground:Hide(); 
+	self:SetPushed();
 end
 
 CharacterMicroButtonMixin = {};
@@ -1206,7 +1205,7 @@ function EJMicroButtonMixin:UpdateDisplay()
 	if ( EncounterJournal and EncounterJournal:IsShown() ) then
 		self:SetPushed();
 	else
-		if ( not AdventureJournalUtil.IsAvailable() ) then
+		if ( not AdventureGuideUtil.IsAvailable() ) then
 			self:Disable();
 			self.disabledTooltip = inKioskMode and ERR_SYSTEM_DISABLED or FEATURE_NOT_YET_AVAILABLE;
 			self:ClearNewAdventureNotice();
@@ -1327,8 +1326,13 @@ function MainMenuMicroButtonMixin:OnUpdate(elapsed)
 		self:SetNormalAtlas(prefix..textureKit.."-Up");
 		self:SetPushedAtlas(prefix..textureKit.."-Down");
 		self:SetDisabledAtlas(prefix..textureKit..disabledPostfix);
-		self:SetHighlightAtlas(prefix..textureKit..highlightPostfix);
 
+		if(self:GetButtonState() == "NORMAL") then 
+			self:SetHighlightAtlas(prefix..textureKit..highlightPostfix, "BLEND");
+		else 
+			self:SetHighlightAtlas(prefix..textureKit.."-Down", "ADD");
+		end 
+	
 		local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 		local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 		if ( latency > PERFORMANCEBAR_MEDIUM_LATENCY ) then

@@ -49,7 +49,7 @@
 	<CheckButton name="CharacterUpgradeSelectSpecRadioButtonTemplate" inherits="UIRadioButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="RoleIcon">
+				<Texture name="$parentRoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro" parentKey="RoleIcon">
 					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="48" y="-10" />

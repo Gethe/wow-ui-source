@@ -4,7 +4,7 @@
 
 	<Texture name="HoverBackgroundTemplate" virtual="true" hidden="true">
 		<Anchors>
-			<Anchor relativeKey="$parent.$parent" point="TOPLEFT"/>
+			<Anchor relativeKey="$parent.$parent" point="TOPLEFT" x="-10"/>
 			<Anchor relativeKey="$parent.$parent" point="BOTTOMRIGHT" x="-5"/>
 		</Anchors>
 		<Color a="0.1" r="1" g="1" b="1"/>

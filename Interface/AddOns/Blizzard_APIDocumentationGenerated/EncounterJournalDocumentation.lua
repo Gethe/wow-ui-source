@@ -52,6 +52,21 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "GetInstanceForGameMap",
+			Type = "Function",
+			Documentation = { "GameMap as opposed to UIMap since we use a mapID not a uiMapID." },
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "journalInstanceID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetLootInfo",
 			Type = "Function",
 

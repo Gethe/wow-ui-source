@@ -118,7 +118,7 @@
 						<Anchor point="TOP" relativeKey="$parent.SpecImage" relativePoint="BOTTOM" x="0" y="-54"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
+				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic">
 					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.SpecName" relativePoint="BOTTOM" x="-20" y="-11"/>

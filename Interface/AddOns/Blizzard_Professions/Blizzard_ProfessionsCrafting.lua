@@ -449,7 +449,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	local function ClampAllocations(allocations)
 		for slotIndex, allocation in allocations:Enumerate() do
-			local quantity = Professions.GetReagentQuantityInPossession(allocation:GetReagent());
+			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent());
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
 		end
@@ -809,28 +809,19 @@ function ProfessionsCraftingPageMixin:UpdateSearchPreview()
 end
 
 function ProfessionsCraftingPageMixin:Init(professionInfo)
-	-- If we're reinitializing the crafting page due to selecting a recrafting recipe
-	-- then don't modify the recipe list at all and just forward the desired recipe to the
-	-- schematic form in SelectRecipe.
+	-- We don't need to modify the recipe list if we're viewing the recrafting instance.
 	local transitionData = Professions.GetRecraftingTransitionData();
-	if transitionData then
-		local dataProvider = self.RecipeList.ScrollBox:GetDataProvider();
-		if dataProvider then
-			local node = dataProvider:FindElementDataByPredicate(function(node)
-				local data = node:GetData();
-				local recipeInfo = data.recipeInfo;
-				return recipeInfo and recipeInfo.recipeID == professionInfo.openRecipeID;
-			end);
-
-			if node then
-				local data = node:GetData();
-				local recipeInfo = data.recipeInfo;
-
-				local skipSelectInList = true;
-				self:SelectRecipe(recipeInfo, skipSelectInList);
-				return;
-			end
+	if transitionData and professionInfo.openRecipeID then
+		local recraftRecipeInfo = C_TradeSkillUI.GetRecipeInfo(professionInfo.openRecipeID);
+		if recraftRecipeInfo then
+			local skipSelectInList = true;
+			self:SelectRecipe(recraftRecipeInfo, skipSelectInList);
 		end
+
+		-- Wait to erase the recraft instance information until after the form updates. It's needed to
+		-- understand the recipe being shown is a recraft instead of a regular craft.
+		Professions.EraseRecraftingTransitionData();
+		return;
 	end
 
 	local oldProfessionInfo = self.professionInfo;
@@ -862,10 +853,10 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	if minimized and self.MinimizedSearchBox:IsCurrentTextValidForSearch() then
 		self.searchDataProvider = CreateDataProvider();
-		for index, node in dataProvider:Enumerate() do
+		for index, node in dataProvider:EnumerateEntireRange() do
 			local elementData = node:GetData();
 			local recipeInfo = elementData.recipeInfo;
-			if recipeInfo and recipeInfo.learned and not (recipeInfo.favoritesInstance or recipeInfo.isRecraft) then
+			if recipeInfo and recipeInfo.learned and not recipeInfo.favoritesInstance then
 				self.searchDataProvider:Insert(elementData.recipeInfo);
 			end
 		end

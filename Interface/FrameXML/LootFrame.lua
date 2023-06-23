@@ -129,7 +129,7 @@ end
 function LootFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, FrameEvents);
 
-	self.ScrollBox:ClearDataProvider();
+	self.ScrollBox:RemoveDataProvider();
 
 	CloseLoot();
 

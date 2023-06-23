@@ -132,6 +132,8 @@ function GenericTraitFrameMixin:OnShow()
 
 	FrameUtil.RegisterFrameForEvents(self, GenericTraitFrameEvents);
 
+	EventRegistry:TriggerEvent("GenericTraitFrame.OnShow");
+
 	self:UpdateTreeCurrencyInfo();
 	self:ShowGenericTraitFrameTutorial();
 
@@ -144,6 +146,8 @@ function GenericTraitFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, GenericTraitFrameEvents);
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.TraitSystem);
+
+	EventRegistry:TriggerEvent("GenericTraitFrame.OnHide");
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 end

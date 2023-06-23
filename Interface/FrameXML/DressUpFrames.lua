@@ -190,7 +190,7 @@ function DressUpBattlePet(creatureID, displayID, speciesID)
 	local battlePetActor = frame.ModelScene:GetActorByTag("pet");
 	if ( battlePetActor ) then
 		battlePetActor:SetModelByCreatureDisplayID(displayID);
-		battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 	return true;
 end
@@ -251,10 +251,10 @@ function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
 		
 		-- mount self idle animation
 		if (isSelfMount) then
-			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 			mountActor:SetAnimation(618); -- MountSelfIdle
 		else
-			mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
+			mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
 			mountActor:SetAnimation(0);
 		end
 		frame.ModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview);

@@ -1,7 +1,7 @@
-READY_CHECK_WAITING_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-Waiting";
-READY_CHECK_READY_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-Ready";
-READY_CHECK_NOT_READY_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
-READY_CHECK_AFK_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
+READY_CHECK_WAITING_TEXTURE = "UI-LFG-PendingMark";
+READY_CHECK_READY_TEXTURE = "UI-LFG-ReadyMark";
+READY_CHECK_NOT_READY_TEXTURE = "UI-LFG-DeclineMark";
+READY_CHECK_AFK_TEXTURE = "UI-LFG-DeclineMark";
 
 
 --
@@ -73,7 +73,7 @@ end
 function ReadyCheck_Start(readyCheckFrame)
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
-	readyCheckFrame.Texture:SetTexture(READY_CHECK_WAITING_TEXTURE);
+	readyCheckFrame.Texture:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.UseAtlasSize);
 	readyCheckFrame.state = "waiting";
 	readyCheckFrame:SetAlpha(1);
 	readyCheckFrame:Show();
@@ -83,10 +83,10 @@ function ReadyCheck_Confirm(readyCheckFrame, ready)
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
 	if ( ready == 1 ) then
-		readyCheckFrame.Texture:SetTexture(READY_CHECK_READY_TEXTURE);
+		readyCheckFrame.Texture:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.UseAtlasSize);
 		readyCheckFrame.state = "ready";
 	else
-		readyCheckFrame.Texture:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+		readyCheckFrame.Texture:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.UseAtlasSize);
 		readyCheckFrame.state = "notready";
 	end
 	readyCheckFrame:SetAlpha(1);
@@ -95,7 +95,7 @@ end
 
 function ReadyCheck_Finish(readyCheckFrame, finishTime, fadeTime, onFinishFunc, onFinishFuncArg)
 	if ( readyCheckFrame.state == "waiting" ) then
-		readyCheckFrame.Texture:SetTexture(READY_CHECK_AFK_TEXTURE);
+		readyCheckFrame.Texture:SetAtlas(READY_CHECK_AFK_TEXTURE, TextureKitConstants.UseAtlasSize);
 		readyCheckFrame.state = "afk";
 	end
 

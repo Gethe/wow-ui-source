@@ -392,7 +392,7 @@ function ProfessionsCraftingOutputLogMixin:OnHide()
 	self:UnregisterEvent("TRADE_SKILL_ITEM_CRAFTED_RESULT");
 	self:UnregisterEvent("TRADE_SKILL_CURRENCY_REWARD_RESULT");
 
-	self.ScrollBox:ClearDataProvider();
+	self.ScrollBox:RemoveDataProvider();
 end
 
 function ProfessionsCraftingOutputLogMixin:OnCloseCallback()

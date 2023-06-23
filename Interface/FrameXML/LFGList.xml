@@ -36,31 +36,31 @@
 			<Frame parentKey="Enumerate" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+						<Texture parentKey="Icon1" parentArray="Icons" atlas="UI-LFG-RoleIcon-Generic-Micro">
 							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+						<Texture parentKey="Icon2" parentArray="Icons" atlas="UI-LFG-RoleIcon-Generic-Micro">
 							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon1" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon3" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+						<Texture parentKey="Icon3" parentArray="Icons" atlas="UI-LFG-RoleIcon-Generic-Micro">
 							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon4" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+						<Texture parentKey="Icon4" parentArray="Icons" atlas="UI-LFG-RoleIcon-Generic-Micro">
 							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon3" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon5" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+						<Texture parentKey="Icon5" parentArray="Icons" atlas="UI-LFG-RoleIcon-Generic-Micro">
 							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon4" relativePoint="CENTER" x="-18" y="0"/>
@@ -389,32 +389,25 @@
 			 <KeyValue key="role" value="TANK" type="string"/>
 			 <KeyValue key="roleID" value="1" type="number"/>
 		</KeyValues-->
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
-					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<CheckButton parentKey="CheckButton">
-				<Size x="24" y="24"/>
+			<CheckButton parentKey="CheckButton" scale="0.7">
+				<Size x="30" y="29"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="LFGListRoleButtonCheckButton_OnClick"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+				<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
+				local showDisabled = false;
+				self:SetNormalAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			</OnLoad>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -434,7 +427,7 @@
 				self.CheckButton:UnlockHighlight();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+		<NormalTexture atlas="UI-LFG-RoleIcon-Generic"/>
 	</Button>
 	<Button name="LFGListCategoryTemplate" virtual="true">
 		<Size x="300" y="46"/>
@@ -2048,12 +2041,11 @@
 						<Anchor point="TOP" x="0" y="-64"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES">
+				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic">
 					<Size x="62" y="62"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-93"/>
 					</Anchors>
-					<TexCoords left="0" right="0.2617" top="0.2617" bottom="0.5234"/>
 				</Texture>
 				<FontString parentKey="RoleDescription" inherits="GameFontHighlightSmall" text="YOUR_ROLE">
 					<Anchors>

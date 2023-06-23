@@ -44,7 +44,6 @@ function UIWidgetContainerMixin:OnLoad()
 end
 
 function UIWidgetContainerMixin:OnShow()
-	self:UpdateWidgetLayout();
 end
 
 function UIWidgetContainerMixin:OnEvent(event, ...)

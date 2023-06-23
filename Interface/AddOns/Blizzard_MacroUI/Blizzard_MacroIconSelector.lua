@@ -29,6 +29,9 @@ function MacroPopupFrameMixin:OnShow()
 	MacroNewButton:Disable();
 	MacroFrameTab1:Disable();
 	MacroFrameTab2:Disable();
+
+	local isShown = true;
+	self:UpdateMacroFramePanelWidth(isShown);
 end
 
 function MacroPopupFrameMixin:OnHide()
@@ -50,6 +53,9 @@ function MacroPopupFrameMixin:OnHide()
 
 	-- Enable tabs
 	PanelTemplates_UpdateTabs(macroFrame);
+
+	local isShown = false;
+	self:UpdateMacroFramePanelWidth(isShown);
 end
 
 function MacroPopupFrameMixin:Update()
@@ -110,4 +116,16 @@ end
 
 function MacroPopupFrameMixin:GetMacroFrame()
 	return MacroFrame;
+end
+
+function MacroPopupFrameMixin:UpdateMacroFramePanelWidth(shown)
+	local macroFrame = self:GetMacroFrame();
+	local width = macroFrame:GetWidth();
+	if shown then
+		local p, r, rp, x, y = self:GetPointByName("TOPLEFT");
+		width = width + x + self:GetWidth();
+	end
+
+	SetUIPanelAttribute(macroFrame, "width", width);
+	UpdateUIPanelPositions(macroFrame);
 end

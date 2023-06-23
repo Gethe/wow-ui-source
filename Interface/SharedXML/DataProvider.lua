@@ -46,12 +46,22 @@ function DataProviderMixin:Init(tbl)
 	end
 end
 
-function DataProviderMixin:Enumerate(minIndex, maxIndex)
-	return CreateTableEnumerator(self.collection, minIndex, maxIndex);
+function DataProviderMixin:Enumerate(indexBegin, indexEnd)
+	return CreateTableEnumerator(self.collection, indexBegin, indexEnd);
 end
 
-function DataProviderMixin:ReverseEnumerate(minIndex, maxIndex)
-	return CreateTableReverseEnumerator(self.collection, minIndex, maxIndex);
+function DataProviderMixin:EnumerateEntireRange()
+	local indexBegin, indexEnd = nil, nil;
+	return self:Enumerate(indexBegin, indexEnd);
+end
+
+function DataProviderMixin:ReverseEnumerate(indexBegin, indexEnd)
+	return CreateTableReverseEnumerator(self.collection, indexBegin, indexEnd);
+end
+
+function DataProviderMixin:ReverseEnumerateEntireRange()
+	local indexBegin, indexEnd = nil, nil;
+	return self:ReverseEnumerate(indexBegin, indexEnd);
 end
 
 function DataProviderMixin:GetCollection()
@@ -103,12 +113,12 @@ function DataProviderMixin:InsertTable(tbl)
 	self:InsertTableRange(tbl, 1, #tbl);
 end
 
-function DataProviderMixin:InsertTableRange(tbl, minIndex, maxIndex)
-	if maxIndex - minIndex < 0 then
+function DataProviderMixin:InsertTableRange(tbl, indexBegin, indexEnd)
+	if indexEnd - indexBegin < 0 then
 		return;
 	end
 
-	for index = minIndex, maxIndex do
+	for index = indexBegin, indexEnd do
 		self:InsertInternal(tbl[index]);
 	end
 
@@ -167,16 +177,16 @@ function DataProviderMixin:RemoveIndex(index)
 	self:RemoveIndexRange(index, index);
 end
 
-function DataProviderMixin:RemoveIndexRange(minIndex, maxIndex)
+function DataProviderMixin:RemoveIndexRange(indexBegin, indexEnd)
 	local originalSize = self:GetSize();
 
-	minIndex = math.max(1, minIndex);
-	maxIndex = math.min(self:GetSize(), maxIndex);
-	while maxIndex >= minIndex do
-		local elementData = self.collection[maxIndex];
-		table.remove(self.collection, maxIndex);
-		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, maxIndex);
-		maxIndex = maxIndex - 1;
+	indexBegin = math.max(1, indexBegin);
+	indexEnd = math.min(self:GetSize(), indexEnd);
+	while indexEnd >= indexBegin do
+		local elementData = self.collection[indexEnd];
+		table.remove(self.collection, indexEnd);
+		self:TriggerEvent(DataProviderMixin.Event.OnRemove, elementData, indexEnd);
+		indexEnd = indexEnd - 1;
 	end
 
 	if self:GetSize() ~= originalSize then

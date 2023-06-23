@@ -1746,12 +1746,12 @@ function UIParent_OnEvent(self, event, ...)
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
 			if not UnitIsDeadOrGhost("player") then
-			if not PlayerChoiceFrame then
-				PlayerChoice_LoadUI();
+				if not PlayerChoiceFrame then
+					PlayerChoice_LoadUI();
+				end
+				PlayerChoiceToggle_TryShow();
+				PlayerChoiceTimeRemaining:TryShow();
 			end
-			PlayerChoiceToggle_TryShow();
-			PlayerChoiceTimeRemaining:TryShow();
-		end
 		end
 
 	    if (not IGNORE_DEATH_REQUIREMENTS) then 

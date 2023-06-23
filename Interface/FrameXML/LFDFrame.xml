@@ -4,8 +4,7 @@
 	<Button name="LFDRoleButtonTemplate" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				self.background:SetTexCoord(GetBackgroundTexCoordsForRole(self.role));
-				self.background:SetAlpha(0.6);
+				self.background:SetAtlas(GetBackgroundForRole(self.role), TextureKitConstants.IgnoreAtlasSize);
 				self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 				LFGRoleButtonTemplate_OnLoad(self);
 			</OnLoad>
@@ -253,7 +252,8 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("GUIDE"));
+								local showDisabled = false;
+								self:SetNormalAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
 							</OnLoad>
 							<OnEnter>

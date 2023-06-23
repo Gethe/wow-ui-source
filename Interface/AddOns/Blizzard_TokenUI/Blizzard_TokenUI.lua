@@ -231,6 +231,20 @@ function BackpackTokenFrameMixin:OnLoad()
 	self.tokenPool = CreateFramePool("BUTTON", self, "BackpackTokenTemplate");
 end
 
+function BackpackTokenFrameMixin:OnShow()
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+end
+
+function BackpackTokenFrameMixin:OnHide()
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+end
+
+function BackpackTokenFrameMixin:OnEvent(event, ...)
+	if event == "CURRENCY_DISPLAY_UPDATE" then
+		self:Update();
+	end
+end
+
 function BackpackTokenFrameMixin:UpdateIfVisible()
 	if self:IsVisible() then
 		self:Update();

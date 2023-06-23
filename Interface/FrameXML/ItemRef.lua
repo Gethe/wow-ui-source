@@ -161,7 +161,7 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 7) == "journal" ) then
 		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then
-			AdventureJournalUtil.OpenHyperLink(strsplit(":", link));
+			AdventureGuideUtil.OpenHyperLink(strsplit(":", link));
 		end
 		return;
 	elseif ( strsub(link, 1, 8) == "urlIndex" ) then

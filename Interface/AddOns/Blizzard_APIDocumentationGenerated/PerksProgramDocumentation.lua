@@ -332,6 +332,7 @@ local PerksProgram =
 			Fields =
 			{
 				{ Name = "overrideModelSceneID", Type = "number", Nilable = true },
+				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
 			},
 		},
 		{

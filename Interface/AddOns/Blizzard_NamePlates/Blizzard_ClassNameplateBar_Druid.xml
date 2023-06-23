@@ -10,7 +10,7 @@
 			<KeyValue key="unit" value="player" type="string"/>
 			<KeyValue key="spacing" value="6" type="number"/>
 			<KeyValue key="paddingOverride" value="-7" type="number"/>
-			<KeyValue key="showBarFunc" value="ClassNameplateBarFeralDruid.ShouldShowBar" type="global"/>
+			<KeyValue key="shouldShowBarFunc" value="ClassNameplateBarFeralDruid.ShouldShowBar" type="global"/>
 		</KeyValues>
 	</Frame>
 </Ui>

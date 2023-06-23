@@ -676,10 +676,10 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 				-- mount self idle animation
 				if (isSelfMount) then
-					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+					mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 					mountActor:SetAnimation(618); -- MountSelfIdle
 				else
-					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
+					mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
 					mountActor:SetAnimation(0);
 				end
 				local showPlayer = GetCVarBool("mountJournalShowPlayer");

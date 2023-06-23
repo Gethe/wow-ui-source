@@ -263,7 +263,7 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 	else
 		self.Text:Show();
 
-		self.ScrollBox:ClearDataProvider();
+		self.ScrollBox:RemoveDataProvider();
 		self.ScrollBar:SetShown(false);
 
 		self:SetSize(250, 120);

@@ -526,7 +526,7 @@
                 <Texture parentKey="Border" atlas="BossBanner-PortraitBorder" setAllPoints="true"/>
             </Layer>
             <Layer level="OVERLAY" textureSubLevel="1">
-                 <Texture parentKey="RoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+                 <Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Border" x="0" y="-8"/>

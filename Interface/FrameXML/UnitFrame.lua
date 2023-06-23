@@ -49,6 +49,11 @@ local ManaBarFrequentUpdateUnitTypes = {
 	"focustarget"
 };
 
+local replacePortraitCvarNames = {
+	"ReplaceMyPlayerPortrait",
+	"ReplaceOtherPlayerPortraits",
+};
+
 function GetPowerBarColor(powerType)
 	return PowerBarColor[powerType];
 end
@@ -168,6 +173,8 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 		self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 		self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unit);
 	end
+
+	UnitFrame_UpdateReplacePortraitSettingRegistration(self);
 end
 
 function UnitFrame_SetUnit (self, unit, healthbar, manabar)
@@ -194,6 +201,9 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	end
 
 	self.unit = unit;
+
+	UnitFrame_UpdateReplacePortraitSettingRegistration(self);
+
 	UnitFrameHealthBar_SetUnit(healthbar, unit)
 	if ( manabar ) then	--Party Pet frames don't have a mana bar.
 		manabar.unit = unit;
@@ -228,6 +238,15 @@ end
 
 function UnitFramePortrait_Update (self)
 	if ( self.portrait ) then
+		if ( UnitFrame_ShouldReplacePortrait(self) ) then
+			local _, class = UnitClass(self.unit);
+			local classIconAtlas = GetClassAtlas(class);
+			if ( classIconAtlas ) then
+				self.portrait:SetAtlas(classIconAtlas);
+				return;
+			end
+		end
+
 		SetPortraitTexture(self.portrait, self.unit, self.disablePortraitMask);
 	end
 end
@@ -1099,6 +1118,36 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 			if ( numericIndicator ) then
 				numericIndicator:Hide();
 			end
+		end
+	end
+end
+
+function UnitFrame_ShouldReplacePortrait(self)
+	if UnitIsPlayer(self.unit) then
+		local cvarName = UnitIsUnit(self.unit, "player") and "ReplaceMyPlayerPortrait" or "ReplaceOtherPlayerPortraits";
+		return GetCVarBool(cvarName);
+	end
+
+	return false;
+end
+
+function UnitFrame_UpdateReplacePortraitSettingRegistration(self)
+	if self.unit then
+		if self.replacePortraitSettingChangedHandlers then
+			return;
+		end
+		self.replacePortraitSettingChangedHandlers = {};
+
+		for _, cvarName in ipairs(replacePortraitCvarNames) do
+			local settingChangedHandler = Settings.SetOnValueChangedCallback(cvarName, UnitFramePortrait_Update, self);
+			table.insert(self.replacePortraitSettingChangedHandlers, settingChangedHandler);
+		end
+	else
+		if self.replacePortraitSettingChangedHandlers then
+			for _, settingChangedHandler in ipairs(self.replacePortraitSettingChangedHandlers) do
+				settingChangedHandler:Unregister();
+			end
+			self.replacePortraitSettingChangedHandlers = nil;
 		end
 	end
 end

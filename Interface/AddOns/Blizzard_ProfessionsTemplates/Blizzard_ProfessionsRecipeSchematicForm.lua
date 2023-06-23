@@ -816,8 +816,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.recraftSlot.OutputSlot:SetScript("OnClick", function()
 			local itemGUID = self.transaction:GetRecraftAllocation();
 			if itemGUID then
-				GameTooltip:SetOwner(self.recraftSlot.OutputSlot, "ANCHOR_RIGHT");
-
 				local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 				local optionalReagents = self.transaction:CreateOptionalCraftingReagentInfoTbl();
 				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeSchematic.recipeID, reagents, itemGUID);
@@ -1448,7 +1446,7 @@ function ProfessionsRecipeSchematicFormMixin:ClearRecipeDescription()
 end
 
 function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
-	if not ProfessionsUtil.IsCraftingMinimized() and not self.transaction:IsRecraft() then
+	if not ProfessionsUtil.IsCraftingMinimized() and not self.transaction:IsRecraft() and not self.isRecraftOverride then
 		local spell = Spell:CreateFromSpellID(self.currentRecipeInfo.recipeID);
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 		local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());

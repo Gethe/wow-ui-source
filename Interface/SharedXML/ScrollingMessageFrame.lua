@@ -165,6 +165,8 @@ function ScrollingMessageFrameMixin:SetScrollOffset(offset)
 		if self.onScrollChangedCallback then
 			self.onScrollChangedCallback(self, self.scrollOffset);
 		end
+	elseif newOffset == 0 then
+		self:MarkDisplayDirty();
 	end
 end
 

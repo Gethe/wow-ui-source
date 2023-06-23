@@ -49,8 +49,16 @@ function ContentTrackingElementMixin:CheckTrackableClick(buttonName, trackableTy
 		if trackingError then
 			ContentTrackingUtil.DisplayTrackingError(trackingError);
 		end
+		local isTracking = C_ContentTracking.IsTracking(trackableType, trackableID);
+		if isTracking then
+			PlaySound(SOUNDKIT.CONTENT_TRACKING_START_TRACKING);
+			PlaySound(SOUNDKIT.CONTENT_TRACKING_OBJECTIVE_TRACKING_START);
+		else
+			PlaySound(SOUNDKIT.CONTENT_TRACKING_STOP_TRACKING);
+		end
+
 		if #self.trackables == 1 then
-			self:SetTrackingCheckmarkShown(C_ContentTracking.IsTracking(trackableType, trackableID));
+			self:SetTrackingCheckmarkShown(isTracking);
 		else
 			self:UpdateTrackingCheckmark();
 		end

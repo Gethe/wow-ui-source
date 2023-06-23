@@ -112,25 +112,24 @@ end
 
 PvpRoleButtonWithCountMixin = { };
 function PvpRoleButtonWithCountMixin:Setup(roleInfo)
-	self.Texture:SetTexCoord(GetTexCoordsForRole(roleInfo.role));
+	local showDisabled = false;
+	self.Texture:SetAtlas(GetIconForRole(roleInfo.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 	self.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, roleInfo.totalAccepted, roleInfo.totalRole);
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1); 
 	if(roleInfo.totalDeclined > 0) then 
-		self.StatusIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+		self.StatusIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	elseif(roleInfo.totalAccepted == roleInfo.totalRole) then 
-		self.StatusIcon:SetTexture(READY_CHECK_READY_TEXTURE);
+		self.StatusIcon:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	else 
-		self.StatusIcon:SetTexture(READY_CHECK_WAITING_TEXTURE);
+		self.StatusIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	end 
 	self:Show(); 		
 end
 
 PvpRolelessButtonMixin = { };
 function PvpRolelessButtonMixin:OnLoad()
-	-- Interface\LFGFrame\UI-LFG-ICON-ROLES
-	local rolelessIconTexCoords = { 0.5234375, 0.78125, 0, 0.2578125 };
-	self.Texture:SetTexCoord(unpack(rolelessIconTexCoords));
-	self.StatusIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+	self.Texture:SetAtlas("UI-LFG-RoleIcon-Generic", TextureKitConstants.IgnoreAtlasSize);
+	self.StatusIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 end
 
 function PvpRolelessButtonMixin:Setup(readyCheckInfo)

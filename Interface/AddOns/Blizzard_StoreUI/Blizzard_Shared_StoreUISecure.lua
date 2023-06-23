@@ -357,7 +357,7 @@ Import("BLIZZARD_STORE_VAS_TRANSFER_FACTION_BUNDLE");
 Import("BLIZZARD_STORE_VAS_EMAIL_ADDRESS");
 Import("ACCOUNT_NAME");
 Import("BLIZZARD_STORE_VAS_DESTINATION_BNET_ACCOUNT");
-Import("BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE");
+Import("BLIZZARD_STORE_VAS_REALMS_AND_MORE");
 Import("BLIZZARD_STORE_VAS_REALMS_PREVIOUS");
 Import("BLIZZARD_STORE_VAS_ERROR_INVALID_BNET_ACCOUNT");
 Import("BLIZZARD_STORE_VAS_PREVIOUS_ENTRIES");
@@ -404,7 +404,6 @@ Import("WOW_SUBSCRIPTION_CATEGORY_ID");
 
 --Lua enums
 Import("SOUNDKIT");
-Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
@@ -4569,7 +4568,7 @@ function StoreUpdateAutoComplete(self, text, cursorPosition)
 		button:SetScript("OnClick", StoreAutoCompleteHasMore_OnClick);
 		button:SetNormalFontObject("GameFontDisableTiny2");
 		button:SetHighlightFontObject("GameFontDisableTiny2");
-		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
+		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_REALMS_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
 		button:Show();
 		shownButtons = shownButtons + 1;
 	end

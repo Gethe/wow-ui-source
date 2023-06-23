@@ -183,7 +183,7 @@ RewardTrackTemplates.xml
 TitleUtil.lua
 CollectionsUtil.lua
 ProfessionsUtil.lua
-AdventureJournalUtil.lua
+AdventureGuideUtil.lua
 ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 CurrencyContainer.lua

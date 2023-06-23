@@ -241,14 +241,16 @@ function Class_DracthyrLowHealthWatcher:StartWatching()
 	EventRegistry:RegisterFrameEventAndCallback("UNIT_HEALTH", self.OnUnitHealthChanged, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_DISABLED", self.UpdateTutorialState, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self.UpdateTutorialState, self);
-	self.settingChangedCallbackHandler = Settings.SetOnValueChangedCallback("SELFCAST", self.UpdateTutorialState, self);
+	self.selfCastChangedHandler = Settings.SetOnValueChangedCallback("PROXY_SELF_CAST", self.UpdateTutorialState, self);
+	self.selfCastKeyChangedHandler = Settings.SetOnValueChangedCallback("SELFCAST", self.UpdateTutorialState, self);
 end
 
 function Class_DracthyrLowHealthWatcher:StopWatching()
 	EventRegistry:UnregisterFrameEventAndCallback("UNIT_HEALTH", self);
 	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_DISABLED", self);
 	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self);
-	self.settingChangedCallbackHandler:Unregister();
+	self.selfCastChangedHandler:Unregister();
+	self.selfCastKeyChangedHandler:Unregister();
 end
 
 function Class_DracthyrLowHealthWatcher:OnUnitHealthChanged(arg1)
@@ -263,8 +265,13 @@ function Class_DracthyrLowHealthWatcher:UpdateTutorialState()
 		return;
 	end
 
+	local selfCastSettingValue = Settings.GetValue("PROXY_SELF_CAST");
+	local usingSelfCast = selfCastSettingValue == SELF_CAST_SETTING_VALUES.KEY_PRESS
+						or selfCastSettingValue == SELF_CAST_SETTING_VALUES.AUTO_AND_KEY_PRESS;
+
 	local selfCastKeyModifier = GetModifiedClick("SELFCAST");
-	local usingSelfCast = selfCastKeyModifier ~= "NONE";
+	usingSelfCast = usingSelfCast and selfCastKeyModifier ~= "NONE";
+
 	local actionButton = TutorialHelper:GetActionButtonBySpellID(self.spellID);
 	if usingSelfCast and actionButton then
 		local action = actionButton.action or "";

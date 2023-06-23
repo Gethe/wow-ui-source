@@ -1274,13 +1274,23 @@ function WardrobeCollectionFrameMixin:UpdateTabButtons()
 	self.SetsTab.FlashFrame:SetShown(C_TransmogSets.GetLatestSource() ~= Constants.Transmog.NoTransmogID and not C_Transmog.IsAtTransmogNPC());
 end
 
+local function IsAnySourceCollected(sources)
+	for i, source in ipairs(sources) do
+		if source.isCollected then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID, warningString)
 	self.tooltipContentFrame = contentFrame;
 	local selectedIndex = self.tooltipSourceIndex;
 	local showUseError = true;
 	local inLegionArtifactCategory = TransmogUtil.IsCategoryLegionArtifact(self.ItemsCollectionFrame:GetActiveCategory());
 	local subheaderString = nil;
-	local showTrackingInfo = not C_Transmog.IsAtTransmogNPC();
+	local showTrackingInfo = not IsAnySourceCollected(sources) and not C_Transmog.IsAtTransmogNPC();
 	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
 end
 
@@ -1750,20 +1760,13 @@ function WardrobeItemsCollectionMixin:EvaluateSlotAllowed()
 		-- Any model will do, using the 1st
 	local model = self.Models[1];
 	self.slotAllowed = not isArmor or model:IsSlotAllowed(self.transmogLocation:GetSlotID());	
-	if model:IsGeoReady() then
-		self:SetScript("OnUpdate", nil);
-	else
-		-- Not likely to ever hit this, but just in case
-		self:SetScript("OnUpdate", self.OnUpdate);
+	if not model:IsGeoReady() then
+		self:MarkGeoDirty();
 	end
 end
 
-function WardrobeItemsCollectionMixin:OnUpdate()
-	local model = self.Models[1];
-	if model:IsGeoReady() then
-		self:EvaluateSlotAllowed();
-		self:UpdateItems();
-	end
+function WardrobeItemsCollectionMixin:MarkGeoDirty()
+	self.geoDirty = true;
 end
 
 function WardrobeItemsCollectionMixin:RefreshCameras()
@@ -2077,6 +2080,16 @@ function WardrobeItemsCollectionMixin:GetCameraVariation()
 end
 
 function WardrobeItemsCollectionMixin:OnUpdate()
+	if self.geoDirty then
+		local model = self.Models[1];
+		if model:IsGeoReady() then
+			self.geoDirty = nil;
+
+			self:EvaluateSlotAllowed();
+			self:UpdateItems();
+		end
+	end
+
 	if (self.trackingModifierDown and not ContentTrackingUtil.IsTrackingModifierDown()) or (not self.trackingModifierDown and ContentTrackingUtil.IsTrackingModifierDown()) then
 		for i, model in ipairs(self.Models) do
 			model:UpdateTrackingDisabledOverlay();

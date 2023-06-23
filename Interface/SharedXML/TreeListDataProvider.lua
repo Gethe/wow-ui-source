@@ -241,27 +241,6 @@ function TreeDataProviderMixin:Init()
 	self.node = CreateTreeNode(self);
 end
 
-local function EnumerateInternal(indexBegin, indexEnd, root, excludeCollapsed)
-	indexBegin = indexBegin and (indexBegin - 1) or 0;
-	indexEnd = indexEnd or math.huge;
-
-	local enumerator = EnumerateTreeListNode(root, excludeCollapsed);
-	local index = indexBegin;
-	while index > 0 do
-		index = index - 1;
-		enumerator();
-	end
-
-	local function Enumerator()
-		if indexBegin <= indexEnd then
-			indexBegin = indexBegin + 1;
-			return enumerator();
-		end
-	end
-	
-	return Enumerator;
-end
-
 function TreeDataProviderMixin:GetChildrenNodes()
 	return self.node:GetNodes();
 end
@@ -332,12 +311,30 @@ end
 
 function TreeDataProviderMixin:EnumerateEntireRange()
 	local indexBegin, indexEnd = nil, nil;
-	return EnumerateInternal(indexBegin, indexEnd, self.node, TreeDataProviderConstants.IncludeCollapsed);
+	return self:Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
 end
 
 function TreeDataProviderMixin:Enumerate(indexBegin, indexEnd, excludeCollapsed)
 	assert(excludeCollapsed ~= nil, explicitParameterMsg);
-	return EnumerateInternal(indexBegin, indexEnd, self.node, excludeCollapsed);
+
+	indexBegin = indexBegin and (indexBegin - 1) or 0;
+	indexEnd = indexEnd or math.huge;
+
+	local enumerator = EnumerateTreeListNode(self.node, excludeCollapsed);
+	local index = indexBegin;
+	while index > 0 do
+		index = index - 1;
+		enumerator();
+	end
+
+	local function Enumerator()
+		if indexBegin <= indexEnd then
+			indexBegin = indexBegin + 1;
+			return enumerator();
+		end
+	end
+	
+	return Enumerator;
 end
 
 function TreeDataProviderMixin:ForEach(func, excludeCollapsed)

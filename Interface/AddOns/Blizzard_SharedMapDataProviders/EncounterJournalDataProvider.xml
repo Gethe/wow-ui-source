@@ -55,4 +55,8 @@
 			<TexCoords left="0.68945313" right="0.81054688" top="0.33300781" bottom="0.39257813"/>
 		</HighlightTexture>
 	</Button>
+
+	<Button name="EncounterMapTrackingPinTemplate" mixin="EncounterMapTrackingPinMixin" inherits="POIButtonTemplate" virtual="true">
+		<Size x="24" y="24"/>
+	</Button>
 </Ui>

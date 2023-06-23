@@ -33,7 +33,6 @@
 			<OnShow method="OnShow" inherit="append"/>
 			<OnHide method="OnHide" inherit="append"/>
 			<OnMouseDown method="OnMouseDown" inherit="append"/>
-			<OnMouseUp method ="OnMouseUp" inherit="append"/>
 			<OnEnable>
 				self:SetAlpha(1);
 			</OnEnable>

@@ -53,6 +53,7 @@ FrameAPICinematicModelDocumentation.lua
 FrameAPICooldownDocumentation.lua
 FrameAPIFogOfWarFrameDocumentation.lua
 FrameAPIModelSceneFrameDocumentation.lua
+FrameAPIModelSceneFrameActorBaseDocumentation.lua
 FrameAPISimpleCheckoutDocumentation.lua
 FrameAPITabardModelBaseDocumentation.lua
 FrameAPIUnitPositionFrameDocumentation.lua
@@ -210,6 +211,7 @@ FrameAPIArchaeologyDigsiteDocumentation.lua
 FrameAPIBlobDocumentation.lua
 FrameAPICharacterModelBaseDocumentation.lua
 FrameAPIDressUpModelDocumentation.lua
+FrameAPIModelSceneFrameActorDocumentation.lua
 FrameAPIQuestPOIDocumentation.lua
 FrameAPIScenarioPOIDocumentation.lua
 FrameAPITabardModelDocumentation.lua
@@ -300,7 +302,7 @@ LevelConstantsDocumentation.lua
 LootConstantsDocumentation.lua
 MapConstantsDocumentation.lua
 MinimapConstantsDocumentation.lua
-ModelSceneDocumentation.lua
+ModelAnimationSharedDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua

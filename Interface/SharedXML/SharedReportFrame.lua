@@ -305,6 +305,15 @@ function ReportInfo:CreateMailReportInfo(reportType, mailIndex)
 	return reportInfo;
 end
 
+function ReportInfo:CreateCraftingOrderReportInfo(reportType, craftingOrderID)
+	if(reportType ~= Enum.ReportType.CraftingOrder) then
+		return nil;
+	end
+	local reportInfo = self:CreateReportInfoFromType(reportType);
+	reportInfo:SetCraftingOrderID(craftingOrderID);
+	return reportInfo;
+end
+
 ReportInfoMixin = { };
 function ReportInfoMixin:Clear()
 	self.reportType = nil;
@@ -357,6 +366,10 @@ end
 
 function ReportInfoMixin:SetPetGUID(petGUID)
 	self.petGUID = petGUID;
+end
+
+function ReportInfoMixin:SetCraftingOrderID(craftingOrderID)
+	self.craftingOrderID = craftingOrderID;
 end
 
 function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCategoryFlags)

@@ -66,6 +66,15 @@
 						<Anchor point="TOPLEFT" x="3" y="-3"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="PortraitMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+					</MaskedTextures>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="ui-hud-unitframe-party-portraiton" useAtlasSize="true" scale="0.5">
@@ -130,6 +139,15 @@
 						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="PortraitMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+					</MaskedTextures>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="UI-HUD-UnitFrame-Party-PortraitOn" useAtlasSize="true">
@@ -346,7 +364,7 @@
 			</Frame>
 			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="CENTER" x="0" y="0"/>
+					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="CENTER" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

@@ -285,7 +285,7 @@ function Class_EquipProfessionGear:BagOpened()
 end
 
 function Class_EquipProfessionGear:IsProfessionsFrameVisible()
-	return ProfessionsFrame:IsVisible();
+	return ProfessionsFrame and ProfessionsFrame:IsVisible();
 end
 
 function Class_EquipProfessionGear:IsCorrectProfessionSelected()

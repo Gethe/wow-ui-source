@@ -1530,6 +1530,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "complete", Type = "bool", Nilable = false },
 			},
 		},
 		{

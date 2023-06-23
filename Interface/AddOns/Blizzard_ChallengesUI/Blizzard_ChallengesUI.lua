@@ -1070,7 +1070,7 @@ function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
 
     local role = UnitGroupRolesAssigned(unitToken);
     if ( role == "TANK" or role == "HEALER" or role == "DAMAGER" ) then
-		self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
+		self.RoleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
 		self.RoleIcon:Show();
 	else
 		self.RoleIcon:Hide();

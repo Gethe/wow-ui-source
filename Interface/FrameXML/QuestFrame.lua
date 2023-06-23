@@ -573,7 +573,7 @@ function QuestFrame_GetMaterial()
 	local questTextContrastEnabled = QuestUtil.QuestTextContrastEnabled();
 	local material = GetQuestBackgroundMaterial();
 	if questTextContrastEnabled or not material then
-		return "Parchment", true;
+		return "Parchment", not questTextContrastEnabled;
 	end
 
 	return material, false;

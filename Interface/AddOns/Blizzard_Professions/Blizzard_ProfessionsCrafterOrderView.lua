@@ -1,5 +1,7 @@
 
 ProfessionsCrafterOrderViewMixin = {};
+local ownReagentsConfirmationReferenceKey = {};
+local ignoreConfirmationReferenceKey = {};
 
 function ProfessionsCrafterOrderViewMixin:InitButtons()
     self.OrderInfo.BackButton:SetScript("OnClick", function() self:CloseOrder(); end);
@@ -27,18 +29,20 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 			end
 		end
 
-		local referenceKey = self;
-		if providedReagents and not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-			local customData = 
-			{
-				text = CRAFTING_ORDERS_OWN_REAGENTS_CONFIRMATION,
-				callback = StartCraft,
-				acceptText = YES,
-				cancelText = CANCEL,
-				referenceKey = referenceKey,
-			};
+		local referenceKey = ownReagentsConfirmationReferenceKey;
+		if providedReagents then
+			if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+				local customData = 
+				{
+					text = CRAFTING_ORDERS_OWN_REAGENTS_CONFIRMATION,
+					callback = StartCraft,
+					acceptText = YES,
+					cancelText = CANCEL,
+					referenceKey = referenceKey,
+				};
 
-			StaticPopup_ShowCustomGenericConfirmation(customData);
+				StaticPopup_ShowCustomGenericConfirmation(customData);
+			end
 		else
 			StartCraft();
 		end
@@ -58,6 +62,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
     self.StopRecraftButton:SetScript("OnClick", function()
         self.recraftingOrderID = nil;
         self:SetOrder(self.order); -- Refresh all
+		self:CloseGenericConfirmation();
     end);
 
     self.CompleteOrderButton:SetScript("OnClick", function() 
@@ -146,7 +151,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 			info.text = IGNORE;
 			if canIgnore then
 				info.func = function()
-					local referenceKey = self;
+					local referenceKey = ignoreConfirmationReferenceKey;
 					if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
 						local customData = 
 						{
@@ -169,6 +174,33 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 				info.tooltipOnButton = true;
 				info.tooltipTitle = "";
 				info.tooltipText = self.order.orderState ~= Enum.CraftingOrderState.Created and PROF_ORDER_CANT_IGNORE_IN_PROGRESS or PROF_ORDER_CANT_IGNORE_ALREADY_IGNORED;
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
+		
+		-- Add report button
+		do
+			local canReport = self.order.orderState == Enum.CraftingOrderState.Created;
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = PROF_ORDER_REPORT;
+			if canReport then
+				info.func = function()
+					if not ReportFrame:IsShown() then
+						local reportInfo = ReportInfo:CreateCraftingOrderReportInfo(Enum.ReportType.CraftingOrder, self.order.orderID);
+						if reportInfo then
+							local playerLocation = PlayerLocation:CreateFromGUID(self.order.customerGuid);
+							ReportFrame:InitiateReport(reportInfo, nil, playerLocation);
+						end
+					end
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				info.tooltipText = PROF_ORDER_CANT_REPORT_IN_PROGRESS;
 			end
 			info.isNotRadio = true;
 			info.notCheckable = true;
@@ -257,6 +289,7 @@ local ProfessionsCrafterOrderViewEvents =
 	"BAG_UPDATE",
 	"BAG_UPDATE_DELAYED",
 	"CAN_LOCAL_WHISPER_TARGET_RESPONSE",
+	"PLAYER_REPORT_SUBMITTED",
 };
 function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
     if event == "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE" then
@@ -267,13 +300,17 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 
         local success = result == Enum.CraftingOrderResult.Ok;
         if not success then
-			if (result == Enum.CraftingOrderResult.CannotClaimOwnOrder) then
+			if result == Enum.CraftingOrderResult.CannotClaimOwnOrder then
 				UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_CANNOT_CLAIM_OWN_ORDER);
+			elseif result == Enum.CraftingOrderResult.OutOfPublicOrderCapacity then
+				UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_FAILED_NO_CLAIMS);
 			else
 				UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_NOT_AVAILABLE);
 			end
             self:CloseOrder();
         end
+
+		self:CloseGenericConfirmation();
         -- View will update when the order added event comes in
     elseif event == "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE" or event == "CRAFTINGORDERS_REJECT_ORDER_RESPONSE" then
         local result, orderID = ...;
@@ -355,6 +392,11 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 		if whisperTarget == self.order.customerGuid then
 			self:SetWhisperCustomerStatus(status);
 		end
+	elseif event == "PLAYER_REPORT_SUBMITTED" then
+		local reportedGuid = ...;
+		if reportedGuid == self.order.customerGuid then
+			self:CloseOrder();
+		end
     end
 end
 
@@ -368,13 +410,23 @@ function ProfessionsCrafterOrderViewMixin:OnShow()
     EventRegistry:RegisterCallback("Professions.AllocationUpdated", AllocationUpdatedUpdatedCallback, self);
 end
 
+function ProfessionsCrafterOrderViewMixin:ShowingGenericConfirmation()
+	return StaticPopup_IsCustomGenericConfirmationShown(ownReagentsConfirmationReferenceKey) or StaticPopup_IsCustomGenericConfirmationShown(ignoreConfirmationReferenceKey);
+end
+
+function ProfessionsCrafterOrderViewMixin:CloseGenericConfirmation()
+	if self:ShowingGenericConfirmation() then
+		StaticPopup_Hide("GENERIC_CONFIRMATION");
+	end
+end
+
 function ProfessionsCrafterOrderViewMixin:OnHide()
 	self.CraftingOutputLog:Close();
     FrameUtil.UnregisterFrameForEvents(self, ProfessionsCrafterOrderViewEvents);
     self:SetScript("OnUpdate", nil);
     EventRegistry:UnregisterCallback("Professions.AllocationUpdated", self);
     self:SetOverrideCastBarActive(false);
-    StaticPopup_Hide("GENERIC_CONFIRMATION");
+	self:CloseGenericConfirmation();
 end
 
 function ProfessionsCrafterOrderViewMixin:OnUpdate()

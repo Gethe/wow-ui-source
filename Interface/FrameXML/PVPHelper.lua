@@ -282,16 +282,14 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 	local height = 150;
 	if ( PVPHelper_QueueNeedsRoles(queueType, isRated) ) then
 		height = height + 20;
-		self.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
-
+		
 		self.roleDescription:Show();
 		self.roleLabel:Show();
 		self.roleIcon:Show();
-		self.roleIcon.texture:SetTexCoord(GetTexCoordsForRole(role));
+		local showDisabled = false;
+		self.roleIcon.texture:SetAtlas(GetIconForRole(role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 		self.roleLabel:SetText(_G[role]);
 	else
-		self.bottomArt:SetTexCoord(0.0, 0.18, 0.0, 0.5625);
-
 		self.roleDescription:Hide();
 		self.roleLabel:Hide();
 		self.roleIcon:Hide();

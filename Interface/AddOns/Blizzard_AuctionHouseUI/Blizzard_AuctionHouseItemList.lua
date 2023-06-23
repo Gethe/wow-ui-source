@@ -263,7 +263,7 @@ function AuctionHouseItemListMixin:SetState(state)
 	self:UpdateRefreshFrame();
 
 	if state ~= ItemListState.ShowResults then
-		self.ScrollBox:ClearDataProvider();
+		self.ScrollBox:RemoveDataProvider();
 	end
 end
 

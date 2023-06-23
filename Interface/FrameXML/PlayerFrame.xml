@@ -325,7 +325,7 @@
 								<Layers>
 									<Layer level="ARTWORK">
 										<Texture parentKey="RestTexture" alpha="1" alphaMode="BLEND" atlas="UI-HUD-UnitFrame-Player-Rest-Flipbook">
-											<Size x="20" y="20"/>
+											<Size x="30" y="30"/>
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
@@ -334,7 +334,7 @@
 								</Layers>
 								<Animations>
 									<AnimationGroup parentKey="PlayerRestLoopAnim" looping="REPEAT" setToFinalAlpha="true">
-										<FlipBook smoothing="NONE" childKey="RestTexture" duration="2" order="1" flipBookRows="1" flipBookColumns="8" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+										<FlipBook smoothing="NONE" childKey="RestTexture" duration="1.5" order="1" flipBookRows="7" flipBookColumns="6" flipBookFrames="42" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 									</AnimationGroup>
 								</Animations>
 							</Frame>

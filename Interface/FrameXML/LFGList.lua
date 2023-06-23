@@ -53,9 +53,9 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 
 LFG_LIST_GROUP_DATA_ATLASES = {
 	--Roles
-	TANK = "groupfinder-icon-role-large-tank",
-	HEALER = "groupfinder-icon-role-large-heal",
-	DAMAGER = "groupfinder-icon-role-large-dps",
+	TANK = GetMicroIconForRole("TANK"),
+	HEALER = GetMicroIconForRole("HEALER"),
+	DAMAGER = GetMicroIconForRole("DAMAGER"),
 };
 
 --Fill out classes
@@ -2154,7 +2154,7 @@ function LFGListSearchPanel_UpdateResults(self)
 		self.SearchingSpinner:Show();
 		self.ScrollBox.NoResultsFound:Hide();
 		self.ScrollBox.StartGroupButton:Hide();
-		self.ScrollBox:ClearDataProvider();
+		self.ScrollBox:RemoveDataProvider();
 	else
 		self.SearchingSpinner:Hide();
 		
@@ -2840,7 +2840,8 @@ function LFGListInviteDialog_Show(self, resultID, kstringGroupName)
 	self.GroupName:SetText(kstringGroupName or searchResultInfo.name);
 	self.ActivityName:SetText(activityName);
 	self.Role:SetText(_G[role]);
-	self.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
+	local showDisabled = false;
+	self.RoleIcon:SetAtlas(GetIconForRole(role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 	self.Label:SetText(informational and LFG_LIST_JOINED_GROUP_NOTICE or LFG_LIST_INVITED_TO_GROUP);
 
 	self.informational = informational;

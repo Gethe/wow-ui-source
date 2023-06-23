@@ -134,7 +134,7 @@ function ScrollBoxListViewMixin:Flush()
 	self.dataIndicesInvalidated = nil;
 	self.poolCollection:ReleaseAll();
 
-	self:ClearDataProvider();
+	self:RemoveDataProvider();
 end
 
 function ScrollBoxListViewMixin:ForEachFrame(func)
@@ -265,7 +265,7 @@ function ScrollBoxListViewMixin:HasDataProvider()
 	return self.dataProvider ~= nil;
 end
 
-function ScrollBoxListViewMixin:ClearDataProviderInternal()
+function ScrollBoxListViewMixin:RemoveDataProviderInternal()
 	local dataProvider = self:GetDataProvider();
 	if dataProvider then
 		dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
@@ -279,17 +279,24 @@ function ScrollBoxListViewMixin:ClearDataProviderInternal()
 	self.calculatedElementExtents = nil;
 end
 
-function ScrollBoxListViewMixin:ClearDataProvider()
-	self:ClearDataProviderInternal();
+function ScrollBoxListViewMixin:RemoveDataProvider()
+	self:RemoveDataProviderInternal();
 	self:SignalDataChangeEvent(InvalidationReason.DataProviderReassigned);
+end
+
+function ScrollBoxListViewMixin:FlushDataProvider()
+	local dataProvider = self:GetDataProvider();
+	if dataProvider then
+		dataProvider:Flush();
+	end
 end
 
 function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPosition)
 	if dataProvider == nil then
-		error("SetDataProvider() dataProvider was nil. Call ClearDataProvider() if this was your intent.");
+		error("SetDataProvider() dataProvider was nil. Call RemoveDataProvider() if this was your intent.");
 	end
 	
-	self:ClearDataProviderInternal();
+	self:RemoveDataProviderInternal();
 
 	self.dataProvider = dataProvider;
 	if dataProvider then
@@ -485,8 +492,8 @@ function ScrollBoxListViewMixin:SetElementResetter(resetter)
 	self.frameResetter = resetter;
 end
 
-function ScrollBoxListViewMixin:SetNonVirtualized()
-	self.nonVirtualized = true;
+function ScrollBoxListViewMixin:SetVirtualized(virtualized)
+	self.virtualized = virtualized;
 end
 
 function ScrollBoxListViewMixin:CalculateFrameExtent(dataIndex, elementData)
@@ -548,7 +555,7 @@ function ScrollBoxListViewMixin:GetPanExtent(spacing)
 end
 
 function ScrollBoxListViewMixin:IsVirtualized()
-	return not self.nonVirtualized;
+	return self.virtualized ~= false;
 end
 
 local function CheckDataIndicesReturn(dataIndexBegin, dataIndexEnd)
@@ -570,7 +577,7 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 	end
 
 	if not self:IsVirtualized() then
-		CheckDataIndicesReturn(1, size);
+		return CheckDataIndicesReturn(1, size);
 	end
 
 	self:RecalculateExtent(scrollBox, stride, spacing); --prevents the assert in GetElementExtent
@@ -603,7 +610,7 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 	-- Addon request to exclude the first element when only spacing is visible.
 	-- This will be revised when per-element spacing support is added.
 	if (spacing > 0) and ((extentBegin - spacing) < scrollOffset) then
-		dataIndexBegin = dataIndexBegin + 1;
+		dataIndexBegin = dataIndexBegin + stride;
 		extentBegin = extentBegin + self:GetElementExtent(dataIndexBegin) + spacing;
 	end
 

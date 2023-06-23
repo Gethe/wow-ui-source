@@ -20,6 +20,20 @@ local PetInfo =
 				{ Name = "petTamers", Type = "table", InnerType = "PetTamerMapInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "GetSpellForPetAction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+		},
 	},
 
 	Events =

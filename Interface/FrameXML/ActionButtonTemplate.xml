@@ -10,7 +10,7 @@
 	<Frame name="ActionBarButtonSpellActivationAlert" virtual="true" mixin="ActionBarButtonSpellActivationAlertMixin">
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="ProcStartFlipbook" alphaMode="ADD" atlas="UI-HUD-ActionBar-Proc-Start-Flipbook" alpha="1">
+					<Texture parentKey="ProcStartFlipbook" atlas="UI-HUD-ActionBar-Proc-Start-Flipbook" alpha="1">
 						<Size x="150" y="150"/>
 						<Anchors>
 							<Anchor point="CENTER"/>
@@ -22,12 +22,14 @@
 			<Animations>
 				<AnimationGroup parentKey="ProcLoop" looping="REPEAT" setToFinalAlpha="true">
 					<Alpha childKey="ProcLoopFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
-					<FlipBook parentKey="FlipAnim" childKey="ProcLoopFlipbook" duration="1" order="0" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0">
-					</FlipBook>
+					<FlipBook parentKey="FlipAnim" childKey="ProcLoopFlipbook" duration="1" order="0" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="ProcLoopFlipbook" duration=".001" order="2" fromAlpha="1" toAlpha="0"/>
 				</AnimationGroup>
 					
 				<AnimationGroup parentKey="ProcStartAnim" setToFinalAlpha="true" mixin="ActionBarButtonSpellActivationAlertProcStartAnimMixin">
-					<FlipBook childKey="ProcStartFlipbook" duration="0.8" order="1" flipBookRows="5" flipBookColumns="5" flipBookFrames="25" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="ProcStartFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
+					<FlipBook childKey="ProcStartFlipbook" duration="0.7" order="1" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="ProcStartFlipbook" duration=".001" order="2" fromAlpha="1" toAlpha="0"/>
 					<Scripts>
 						<OnFinished method="OnFinished"/>
 					</Scripts>

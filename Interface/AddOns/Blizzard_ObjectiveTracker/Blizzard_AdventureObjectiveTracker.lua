@@ -258,8 +258,13 @@ function ADVENTURE_TRACKER_MODULE:StopTrackingCollectedItems()
 		return;
 	end
 
+	local removingCollectedObjective = false;
 	for trackableId, trackableType in pairs(self.collectedIds) do
-		C_ContentTracking.StopTracking(trackableType, trackableId)
+		C_ContentTracking.StopTracking(trackableType, trackableId);
+		removingCollectedObjective = true;
+	end
+	if removingCollectedObjective then
+		PlaySound(SOUNDKIT.CONTENT_TRACKING_OBJECTIVE_TRACKING_END);
 	end
 	self.collectedIds = nil;
 end
@@ -275,10 +280,12 @@ function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableType, tracka
 		block.objective.block = block;
 		block.objective.state = "ANIMATING";
 		AdventureObjectiveTracker_AnimateReward(trackableID, block, block.posIndex, self);
+		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
 	elseif C_ContentTracking.IsTracking(trackableType, trackableID) then
 		--If no block is found, but we are tracking the item, show animation at the bottom of the objective tracker
 		AdventureObjectiveTracker_AnimateReward(trackableID, ObjectiveTrackerFrame, 0, self);
 		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", ObjectiveTrackerFrame, "BOTTOMLEFT", 20, 16);
+		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
 	end
 
 	if not self.collectedIds then
