@@ -115,7 +115,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 		-- Add "Add Friend" option
 		do
 			local info = UIDropDownMenu_CreateInfo();
-			info.text = ADD_FRIEND;
+			info.text = ADD_CHARACTER_FRIEND;
 
 			-- Use the same status as whisper for now; if the player is offline, we can't easily check their faction
 			local whisperStatus = self:GetWhisperCustomerStatus();

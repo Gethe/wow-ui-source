@@ -416,7 +416,7 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
 		EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
 	end
 
-	EditModeManagerFrame:OnEditModeSystemAnchorChanged();
+	self:OnEditModeSystemAnchorChanged();
 end
 
 function EditModeManagerFrameMixin:MirrorSetting(system, systemIndex, setting, value)

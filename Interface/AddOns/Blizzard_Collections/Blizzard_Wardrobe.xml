@@ -1349,6 +1349,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnKeyDown method="OnKeyDown"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 

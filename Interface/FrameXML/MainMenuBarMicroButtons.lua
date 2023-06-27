@@ -59,7 +59,7 @@ function LoadMicroButtonTextures(self, name, color)
 	self:SetNormalAtlas(prefix..name.."-Up");
 	self:SetPushedAtlas(prefix..name.."-Down");
 	self:SetDisabledAtlas(prefix..name.."-Disabled");
-	self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND");
+	self:SetHighlightAtlas(prefix..name.."-Mouseover");
 
 	if(color) then 
 		local normalTexture = self:GetNormalTexture(); 
@@ -455,7 +455,21 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 			GameTooltip:Show();
 		end
 	end
+
+	--The shadow is baked into the highlight texture so we shouldn't show the normal texture while the highlight is happening
+	local normalTexture = self:GetNormalTexture();
+	if(normalTexture) then 
+		normalTexture:SetAlpha(0); 
+	end 
 end
+
+function MainMenuBarMicroButtonMixin:OnLeave()
+	local normalTexture = self:GetNormalTexture();
+	if(normalTexture) then 
+		normalTexture:SetAlpha(1);
+	end
+end 
+
 
 function MainMenuBarMicroButtonMixin:SetPushed()
 	self.Background:Hide(); 
@@ -533,13 +547,30 @@ function CharacterMicroButtonMixin:OnEvent(event, ...)
 end
 
 function CharacterMicroButtonMixin:SetPushed()
-	self.Portrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
 	CharacterMicroButton:SetButtonState("PUSHED", true);
+	self.PushedShadow:Show();
+	self.Background:Hide(); 
+	self.PushedBackground:Show(); 
+	self.PortraitMask:ClearAllPoints();
+	self.PortraitMask:SetPoint("CENTER", 2, -2);
+
+	self.Portrait:ClearAllPoints(); 
+	self.Portrait:SetPoint("TOPLEFT", 7, -7);
+	self.Portrait:SetPoint("BOTTOMRIGHT", -6, 5);
 end
 
 function CharacterMicroButtonMixin:SetNormal()
-	self.Portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
 	CharacterMicroButton:SetButtonState("NORMAL");
+	self.PushedShadow:Hide();
+	self.Background:Show(); 
+	self.PushedBackground:Hide(); 
+
+	self.PortraitMask:ClearAllPoints();
+	self.PortraitMask:SetPoint("CENTER", 0, 0);
+
+	self.Portrait:ClearAllPoints(); 
+	self.Portrait:SetPoint("TOPLEFT", 7, -7);
+	self.Portrait:SetPoint("BOTTOMRIGHT", -7, 7);
 end
 
 
@@ -809,6 +840,25 @@ function GuildMicroButtonMixin:OnLoad()
 		self:Disable();
 	end
 	self.needsUpdate = true;
+end
+
+function GuildMicroButtonMixin:SetPushed()
+	self.Emblem:ClearAllPoints();
+	self.HighlightEmblem:ClearAllPoints()
+
+	self.Emblem:SetPoint("CENTER", 1, 1);
+	self.HighlightEmblem:SetPoint("CENTER", 1, 1);
+
+	MainMenuBarMicroButtonMixin.SetPushed(self);
+end 
+
+function GuildMicroButtonMixin:SetNormal()
+	self.Emblem:ClearAllPoints();
+	self.HighlightEmblem:ClearAllPoints()
+
+	self.Emblem:SetPoint("CENTER", 0, 2);
+	self.HighlightEmblem:SetPoint("CENTER", 0, 2);
+	MainMenuBarMicroButtonMixin.SetNormal(self);
 end
 
 function GuildMicroButtonMixin:OnEvent(event, ...)

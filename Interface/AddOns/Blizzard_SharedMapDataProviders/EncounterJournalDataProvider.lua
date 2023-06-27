@@ -52,7 +52,7 @@ function EncounterJournalDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function EncounterJournalDataProviderMixin:CheckForContentTracking(encounterID)
-	if not ContentTrackingUtil.isContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
+	if not ContentTrackingUtil.IsContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
 		return false;
 	end
 	local trackedItemMapInfos = ContentTrackingUtil.GetTrackingMapInfoByEncounterID(encounterID);

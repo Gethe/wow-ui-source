@@ -750,7 +750,7 @@ PerksProgramUtil = {};
 local firstWeaponCategory = Enum.TransmogCollectionType.Wand;
 local lastWeaponCategory = Enum.TransmogCollectionType.Warglaives;
 local function IsWeapon(categoryID)
-	if categoryID >= firstWeaponCategory and categoryID <= lastWeaponCategory then
+	if categoryID and categoryID >= firstWeaponCategory and categoryID <= lastWeaponCategory then
 		return true;
 	end
 	return false;

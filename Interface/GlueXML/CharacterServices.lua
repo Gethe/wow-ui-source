@@ -1086,6 +1086,7 @@ GlueDialogTypes["RPE_UPGRADE_CONFIRM"] = {
     OnAccept = function()
         local results = GlueDialog.data;
 		C_CharacterServices.RPEResetCharacter(results.playerguid, results.faction, results.spec, results.keepQuests);
+		CharacterSelect_UpdateCharacterMatchingGUID(results.playerguid); --update the character button so it says 'processing'
     end,
     OnCancel = function()
 		BeginCharacterServicesFlow(RPEUpgradeFlow, {});
@@ -1110,8 +1111,15 @@ function RPEUpgradeFlow:Finish(controller)
 	CharacterServicesMaster.pendingGuid = results.playerguid;
 
 	ValidateSpec(results);
-	GlueDialog_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, results);
-	return false; --flow will be closed by the RPE_UPGRADE_QUEST_CLEAR_CONFIRM dialog.
+	local questClearAvailable = select(37, GetCharacterInfo(results.charid));
+	if questClearAvailable then
+		GlueDialog_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, results);
+		return false; --flow will be closed by the RPE_UPGRADE_QUEST_CLEAR_CONFIRM dialog.
+	else
+		results.keepQuests = true;
+		GlueDialog_Show("RPE_UPGRADE_CONFIRM", nil, results);
+		return true;
+	end
 end
 
 

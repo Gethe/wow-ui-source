@@ -973,10 +973,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 			ObjectiveTracker_Initialize(self);
 		end
 		ObjectiveTracker_Update();
-
-		if not QuestSuperTracking_IsSuperTrackedQuestValid() then
-			QuestSuperTracking_ChooseClosestQuest();
-		end
+		QuestSuperTracking_CheckSelection();
 
 		self.lastMapID = C_Map.GetBestMapForUnit("player");
 	elseif ( event == "CVAR_UPDATE" ) then

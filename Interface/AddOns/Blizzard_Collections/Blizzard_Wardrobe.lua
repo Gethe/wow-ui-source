@@ -131,12 +131,20 @@ function TransmogFrameMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		local unit = ...;
-		if ( unit == "player" and IsUnitModelReadyForUI("player") ) then
-			local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-			if ( self.inAlternateForm ~= inAlternateForm ) then
-				self.inAlternateForm = inAlternateForm;
-				self:RefreshPlayerModel();
-			end
+		if ( unit == "player" ) then
+			self:HandleFormChanged();
+		end
+	end
+end
+
+function TransmogFrameMixin:HandleFormChanged()
+	self.needsFormChangedHandling = true;
+	if IsUnitModelReadyForUI("player") then
+		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+		if ( self.inAlternateForm ~= inAlternateForm ) then
+			self.inAlternateForm = inAlternateForm;
+			self:RefreshPlayerModel();
+			self.needsFormChangedHandling = false;
 		end
 	end
 end
@@ -173,6 +181,10 @@ end
 function TransmogFrameMixin:OnUpdate()
 	if self.dirty then
 		self:Update();
+	end
+
+	if self.needsFormChangedHandling then
+		self:HandleFormChanged();
 	end
 end
 
@@ -1135,13 +1147,7 @@ function WardrobeCollectionFrameMixin:OnEvent(event, ...)
 			self.ItemsCollectionFrame:ValidateChosenVisualSources();
 		end
 	elseif ( event == "UNIT_FORM_CHANGED" ) then
-		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-		if ( (self.inAlternateForm ~= inAlternateForm or self.updateOnModelChanged) ) then
-			if ( self.activeFrame:OnUnitModelChangedEvent() ) then
-				self.inAlternateForm = inAlternateForm;
-				self.updateOnModelChanged = nil;
-			end
-		end
+		self:HandleFormChanged();
 	elseif ( event == "PLAYER_LEVEL_UP" or event == "SKILL_LINES_CHANGED" or event == "UPDATE_FACTION" or event == "SPELLS_CHANGED" ) then
 		self:UpdateUsableAppearances();
 	elseif ( event == "TRANSMOG_SEARCH_UPDATED" ) then
@@ -1153,6 +1159,26 @@ function WardrobeCollectionFrameMixin:OnEvent(event, ...)
 		self:RestartSearchTracking();
 	elseif ( event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED" or event == "TRANSMOG_COLLECTION_CAMERA_UPDATE" ) then
 		self:RefreshCameras();
+	end
+end
+
+function WardrobeCollectionFrameMixin:HandleFormChanged()
+	local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+	self.needsFormChangedHandling = false;
+	if ( self.inAlternateForm ~= inAlternateForm or self.updateOnModelChanged ) then
+		if ( self.activeFrame:OnUnitModelChangedEvent() ) then
+			self.inAlternateForm = inAlternateForm;
+			self.updateOnModelChanged = nil;
+		else
+			self.needsFormChangedHandling = true;
+		end
+	end
+end
+
+
+function WardrobeCollectionFrameMixin:OnUpdate()
+	if self.needsFormChangedHandling then
+		self:HandleFormChanged();
 	end
 end
 
@@ -1291,6 +1317,9 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 	local inLegionArtifactCategory = TransmogUtil.IsCategoryLegionArtifact(self.ItemsCollectionFrame:GetActiveCategory());
 	local subheaderString = nil;
 	local showTrackingInfo = not IsAnySourceCollected(sources) and not C_Transmog.IsAtTransmogNPC();
+	if WardrobeCollectionFrame.activeFrame == WardrobeCollectionFrame.SetsCollectionFrame then
+		showTrackingInfo = false;
+	end
 	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
 end
 
@@ -2538,10 +2567,13 @@ function WardrobeItemsModelMixin:UpdateContentTracking()
 end
 
 function WardrobeItemsModelMixin:UpdateTrackingDisabledOverlay()
-	if ( not ContentTrackingUtil.isContentTrackingEnabled() ) then
+	if ( not ContentTrackingUtil.IsContentTrackingEnabled() ) then
 		return;
 	end
-	self.DisabledOverlay:SetShown(ContentTrackingUtil.IsTrackingModifierDown() and not self:HasTrackableSource());
+
+	local isCollected = self.visualInfo and self.visualInfo.isCollected;
+	local showDisabled = ContentTrackingUtil.IsTrackingModifierDown() and (isCollected or not self:HasTrackableSource());
+	self.DisabledOverlay:SetShown(showDisabled);
 end
 
 function WardrobeItemsModelMixin:GetSourceInfoForTracking()
@@ -2551,7 +2583,6 @@ function WardrobeItemsModelMixin:GetSourceInfoForTracking()
 
 	local itemsCollectionFrame = self:GetParent();
 	if ( itemsCollectionFrame.transmogLocation:IsIllusion() ) then
-		-- TODO:: Handle illusions.
 		return nil;
 	else
 		local sourceIndex = WardrobeCollectionFrame.tooltipSourceIndex or 1;
@@ -4178,27 +4209,31 @@ end
 function WardrobeSetsDetailsModelMixin:OnUpdate(elapsed)
 	if ( IsUnitModelReadyForUI("player") ) then
 		if ( self.rotating ) then
-			local x = GetCursorPosition();
-			local diff = (x - self.rotateStartCursorX) * MODELFRAME_DRAG_ROTATION_CONSTANT;
-			self.rotateStartCursorX = GetCursorPosition();
-			self.yaw = self.yaw + diff;
-			if ( self.yaw < 0 ) then
-				self.yaw = self.yaw + (2 * PI);
+			if ( self.yaw ) then
+				local x = GetCursorPosition();
+				local diff = (x - self.rotateStartCursorX) * MODELFRAME_DRAG_ROTATION_CONSTANT;
+				self.rotateStartCursorX = GetCursorPosition();
+				self.yaw = self.yaw + diff;
+				if ( self.yaw < 0 ) then
+					self.yaw = self.yaw + (2 * PI);
+				end
+				if ( self.yaw > (2 * PI) ) then
+					self.yaw = self.yaw - (2 * PI);
+				end
+				self:SetRotation(self.yaw, false);
 			end
-			if ( self.yaw > (2 * PI) ) then
-				self.yaw = self.yaw - (2 * PI);
-			end
-			self:SetRotation(self.yaw, false);
 		elseif ( self.panning ) then
-			local cursorX, cursorY = GetCursorPosition();
-			local modelX = self:GetPosition();
-			local panSpeedModifier = 100 * sqrt(1 + modelX - self.defaultPosX);
-			local modelY = self.panStartModelY + (cursorX - self.panStartCursorX) / panSpeedModifier;
-			local modelZ = self.panStartModelZ + (cursorY - self.panStartCursorY) / panSpeedModifier;
-			local limits = self:GetPanAndZoomLimits();
-			modelY = Clamp(modelY, limits.panMaxLeft, limits.panMaxRight);
-			modelZ = Clamp(modelZ, limits.panMaxBottom, limits.panMaxTop);
-			self:SetPosition(modelX, modelY, modelZ);
+			if ( self.defaultPosX ) then
+				local cursorX, cursorY = GetCursorPosition();
+				local modelX = self:GetPosition();
+				local panSpeedModifier = 100 * sqrt(1 + modelX - self.defaultPosX);
+				local modelY = self.panStartModelY + (cursorX - self.panStartCursorX) / panSpeedModifier;
+				local modelZ = self.panStartModelZ + (cursorY - self.panStartCursorY) / panSpeedModifier;
+				local limits = self:GetPanAndZoomLimits();
+				modelY = Clamp(modelY, limits.panMaxLeft, limits.panMaxRight);
+				modelZ = Clamp(modelZ, limits.panMaxBottom, limits.panMaxTop);
+				self:SetPosition(modelX, modelY, modelZ);
+			end
 		end
 	end
 end

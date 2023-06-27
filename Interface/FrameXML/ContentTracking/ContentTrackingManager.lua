@@ -27,7 +27,9 @@ end
 
 function ContentTrackingManagerMixin:OnContentTrackingUpdate(trackableType, id, isTracked)
 	if trackableType == Enum.ContentTrackingType.Achievement then
-		AchievementFrameAchievements_UpdateTrackedAchievements();
+		if AchievementFrameAchievements_UpdateTrackedAchievements then
+			AchievementFrameAchievements_UpdateTrackedAchievements();
+		end
 
 		if isTracked then
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED, id);
@@ -70,7 +72,7 @@ local CombinedIDOffset = 1000;
 
 ContentTrackingUtil.IsTrackingModifierDown = IsShiftKeyDown;
 
-function ContentTrackingUtil.isContentTrackingEnabled()
+function ContentTrackingUtil.IsContentTrackingEnabled()
 	return ContentTrackingManager.isEnabled;
 end
 

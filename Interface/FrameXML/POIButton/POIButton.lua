@@ -163,9 +163,9 @@ local function POIButton_UpdateNumericStyleTextures(poiButton)
 		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiCampaign-InnerGlow");
 	elseif questType == POIButtonUtil.QuestTypes.Important then
 		POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiImportant-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetImportantAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetImportantAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiImportant-InnerGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, 32, 36, POIButton_GetImportantAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, 32, 36, POIButton_GetImportantAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, 32, 36, "UI-QuestPoiImportant-InnerGlow");
 	else
 		POIButton_SetTexture(poiButton.Glow, 50, 50, "Interface/WorldMap/UI-QuestPoi-IconGlow");
 		POIButton_SetTexture(poiButton.NormalTexture, 32, 32, POIButton_GetTextureInfoNormal(poiButton));
@@ -194,7 +194,7 @@ local function POIButton_UpdateNormalStyleTexture(poiButton)
 		elseif questPOIType == POIButtonUtil.QuestTypes.Calling then
 			poiButton.Display:SetAtlas(32, 32, "UI-DailyQuestPoiCampaign-QuestBangTurnIn");
 		elseif questPOIType == POIButtonUtil.QuestTypes.Important then
-			poiButton.Display:SetAtlas(32, 32, "UI-QuestPoiImportant-QuestBangTurnIn");			
+			poiButton.Display:SetAtlas(32, 36, "UI-QuestPoiImportant-QuestBangTurnIn");			
 		end
 
 		if not questPOIType or (questPOIType == POIButtonUtil.QuestTypes.Normal) then
@@ -206,9 +206,9 @@ local function POIButton_UpdateNormalStyleTexture(poiButton)
 		elseif questPOIType == POIButtonUtil.QuestTypes.Important then
 			poiButton.Display:SetOffset(0, 0);
 			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiImportant-OuterGlow");
-			POIButton_SetAtlas(poiButton.NormalTexture, 32, 32, POIButton_GetImportantAtlasInfoNormal(poiButton));
-			POIButton_SetAtlas(poiButton.PushedTexture, 32, 32, POIButton_GetImportantAtlasInfoPushed(poiButton));
-			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 32, "UI-QuestPoiImportant-InnerGlow");			
+			POIButton_SetAtlas(poiButton.NormalTexture, 32, 36, POIButton_GetImportantAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, 32, 36, POIButton_GetImportantAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, 32, 36, "UI-QuestPoiImportant-InnerGlow");			
 		else
 			poiButton.Display:SetOffset(0, 0);
 			POIButton_SetAtlas(poiButton.Glow, 64, 64, "UI-QuestPoiCampaign-OuterGlow");

@@ -33,6 +33,18 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
+		<Frames>
+			<Frame parentKey="RecommendLabel" inherits="NewFeatureLabelTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="animateGlow" value="true" type="boolean"/>
+					<KeyValue key="label" value="RECOMMENDED" type="global"/>
+					<KeyValue key="justifyH" value="LEFT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="65" y="-20"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>

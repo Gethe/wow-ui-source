@@ -93,7 +93,7 @@ function MONTHLY_ACTIVITIES_TRACKER_MODULE:Update()
 				if not requirement.completed then
 					local criteriaString = requirement.requirementText;
 					criteriaString = string.gsub(criteriaString, " / ", "/");
-					self:AddObjective(block, index, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Normal"]);
+					self:AddObjective(block, index, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Normal"]);
 				end
 			end
 			block:SetHeight(block.height);

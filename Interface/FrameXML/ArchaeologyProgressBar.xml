@@ -5,7 +5,7 @@
 <Frame name="ArcheologyDigsiteProgressBar" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeArchaeologyBarSystemTemplate" mixin="ArcheologyDigsiteProgressBarMixin" hidden="true">
 	<Size x="200" y="30"/>
 	<KeyValues>
-		<KeyValue key="layoutIndex" value="8" type="number"/>
+		<KeyValue key="layoutIndex" value="7" type="number"/>
 	</KeyValues>
 	<Animations>
 		<AnimationGroup parentKey="AnimIn">

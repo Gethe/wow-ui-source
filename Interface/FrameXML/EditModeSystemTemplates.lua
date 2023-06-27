@@ -53,15 +53,11 @@ function EditModeSystemMixin:ProcessMovementKey(key)
 		xDelta = deltaAmount;
 	end
 
-	if (self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame) and self:IsInDefaultPosition() then
-		self:SetParent(UIParent);
-
-		if self.isPlayerFrameBottomManagedFrame then
-			self:UpdateSystemSettingFrameSize();
-		end
+	if self.isManagedFrame and self:IsInDefaultPosition() then
+		self:BreakFromFrameManager();
 	end
 
-	if self:HasSetting(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
+	if self == PlayerCastingBarFrame then
 		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeCastBarSetting.LockToPlayerFrame, 0);
 	end
 
@@ -129,7 +125,7 @@ function EditModeSystemMixin:SetScaleOverride(newScale)
 		self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 	end
 
-	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+	if self.isManagedFrame and self:IsInDefaultPosition() then
 		UIParent_ManageFramePositions();
 
 		if self.isRightManagedFrame and ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsInDefaultPosition() then
@@ -265,17 +261,39 @@ function EditModeSystemMixin:ResetToDefaultPosition()
 	self:SetHasActiveChanges(true);
 end
 
-function EditModeSystemMixin:ApplySystemAnchor()
-	if self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame then
-		local frameContainer;
-		if self.isBottomManagedFrame then
-			frameContainer = UIParentBottomManagedFrameContainer;
-		elseif self.isRightManagedFrame then
-			frameContainer = UIParentRightManagedFrameContainer;
-		else
-			frameContainer = PlayerFrameBottomManagedFramesContainer;
-		end
+function EditModeSystemMixin:GetManagedFrameContainer()
+	if not self.isManagedFrame then
+		return nil;
+	end
 
+	if self.isBottomManagedFrame then
+		return UIParentBottomManagedFrameContainer;
+	elseif self.isRightManagedFrame then
+		return UIParentRightManagedFrameContainer;
+	else
+		return PlayerFrameBottomManagedFramesContainer;
+	end
+end
+
+function EditModeSystemMixin:BreakFromFrameManager()
+	local frameContainer = self:GetManagedFrameContainer();
+	if not frameContainer then
+		return;
+	end
+
+	self.ignoreFramePositionManager = true;
+	frameContainer:RemoveManagedFrame(self);
+	self:SetParent(UIParent);
+
+	if self.isPlayerFrameBottomManagedFrame then
+		self:UpdateSystemSettingFrameSize();
+	end
+end
+
+function EditModeSystemMixin:ApplySystemAnchor()
+	local frameContainer = self:GetManagedFrameContainer();
+
+	if frameContainer then
 		if self:IsInDefaultPosition() then
 			self.ignoreFramePositionManager = nil;
 			frameContainer:AddManagedFrame(self);
@@ -286,13 +304,7 @@ function EditModeSystemMixin:ApplySystemAnchor()
 			return;
 		end
 
-		self.ignoreFramePositionManager = true;
-		frameContainer:RemoveManagedFrame(self);
-		self:SetParent(UIParent);
-
-		if self.isPlayerFrameBottomManagedFrame then
-			self:UpdateSystemSettingFrameSize();
-		end
+		self:BreakFromFrameManager();
 	end
 
 	self:ClearAllPoints();
@@ -784,12 +796,8 @@ end
 
 function EditModeSystemMixin:OnDragStart()
 	if self:CanBeMoved() then
-		if (self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame) and self:IsInDefaultPosition() then
-			self:SetParent(UIParent);
-
-			if self.isPlayerFrameBottomManagedFrame then
-				self:UpdateSystemSettingFrameSize();
-			end
+		if self.isManagedFrame and self:IsInDefaultPosition() then
+			self:BreakFromFrameManager();
 		end
 		self:ClearFrameSnap();
 		self:StartMoving();

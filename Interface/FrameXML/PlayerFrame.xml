@@ -320,7 +320,7 @@
 							<Frame parentKey="PlayerRestLoop" alpha="1" setAllPoints="true" hidden="true">
 								<Size x="20" y="20"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="67" y="-6"/>
+									<Anchor point="TOPLEFT" x="64" y="-6"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">

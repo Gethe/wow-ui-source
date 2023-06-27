@@ -610,9 +610,7 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 
 			self.MainModelScene:SetViewInsets(DefaultInsets.left, DefaultInsets.right, DefaultInsets.top, DefaultInsets.bottom);
 			actor:SetModelByCreatureDisplayID(creatureDisplayID);
-			actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
-			data.displayData.desiredScale = desiredScale;
-			actor:SetRequestedScale(desiredScale);
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 						
 			local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
 			UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID);

@@ -251,12 +251,12 @@ LootHistoryFrameMixin = {};
 local LootHistoryFrameAlwaysListenEvents =
 {
 	"LOOT_HISTORY_GO_TO_ENCOUNTER",
+	"LOOT_HISTORY_CLEAR_HISTORY",
 };
 
 local LootHistoryFrameWhenShownEvents =
 {
 	"LOOT_HISTORY_UPDATE_ENCOUNTER",
-	"LOOT_HISTORY_CLEAR_HISTORY",
 };
 
 function LootHistoryFrameMixin:OnLoad()
@@ -302,6 +302,9 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "LOOT_HISTORY_CLEAR_HISTORY" then
 		self:SetInfoShown(false);
+		self:SetScript("OnUpdate", nil);
+		self.selectedEncounterID = nil;
+		self.encounterInfo = nil;
 	end
 end
 

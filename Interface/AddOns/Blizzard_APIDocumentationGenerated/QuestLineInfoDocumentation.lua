@@ -21,6 +21,20 @@ local QuestLineInfo =
 			},
 		},
 		{
+			Name = "GetForceVisibleQuests",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestLineInfo",
 			Type = "Function",
 

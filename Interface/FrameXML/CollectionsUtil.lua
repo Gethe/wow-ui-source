@@ -297,7 +297,7 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
-			if (showTrackingInfo and ContentTrackingUtil.isContentTrackingEnabled() and C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sources[i].sourceID) ) then
+			if (showTrackingInfo and ContentTrackingUtil.IsContentTrackingEnabled() and C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sources[i].sourceID) ) then
 				name = name..CreateAtlasMarkup("checkmark-minimal", 15, 15, 0, -2);
 			end
 			GameTooltip_AddColoredDoubleLine(tooltip, name, sourceText, nameColor, sourceColor);
@@ -339,7 +339,7 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 end
 
 function CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sourceID)
-	if ( not ContentTrackingUtil.isContentTrackingEnabled() ) then
+	if ( not ContentTrackingUtil.IsContentTrackingEnabled() ) then
 		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
 		return;
 	end

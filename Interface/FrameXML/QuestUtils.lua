@@ -142,10 +142,10 @@ end
 function QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling, isImportant)
 	-- Frequency and isRepeatable aren't used yet, reserved for differentiating daily/weekly quests from other ones...
 	if isComplete then
-		if isLegendary then
-			return "legendaryactivequesticon", true;
-		elseif isCampaign then
+		if isCampaign then
 			return "CampaignActiveQuestIcon", true;
+		elseif isLegendary then
+			return "legendaryactivequesticon", true;			
 		elseif isCovenantCalling then
 			return "CampaignActiveDailyQuestIcon", true;
 		elseif isImportant then

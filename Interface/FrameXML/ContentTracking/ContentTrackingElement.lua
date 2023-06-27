@@ -24,7 +24,7 @@ function ContentTrackingElementMixin:SetTrackable(trackableType, trackableID)
 end
 
 function ContentTrackingElementMixin:AddTrackable(trackableType, trackableID)
-	if not ContentTrackingUtil.isContentTrackingEnabled() then
+	if not ContentTrackingUtil.IsContentTrackingEnabled() then
 		return;
 	end
 

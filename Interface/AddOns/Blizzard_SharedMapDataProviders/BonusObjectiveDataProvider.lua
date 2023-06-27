@@ -122,6 +122,8 @@ function BonusObjectivePinMixin:OnAcquired(taskInfo)
 	self.dataProvider = taskInfo.dataProvider;
 	if C_QuestLog.IsQuestCalling(self.questID) then
 		self.Texture:SetAtlas("Quest-DailyCampaign-Available", false);
+	elseif C_QuestLog.IsImportantQuest(self.questID) then
+		self.Texture:SetAtlas("importantavailablequesticon", false);
 	elseif taskInfo.isDaily then
 		self.Texture:SetAtlas("QuestDaily", false);
 	elseif taskInfo.isQuestStart then

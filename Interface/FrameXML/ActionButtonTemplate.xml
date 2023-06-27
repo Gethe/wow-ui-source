@@ -20,10 +20,9 @@
 				</Layer>
 			</Layers>
 			<Animations>
-				<AnimationGroup parentKey="ProcLoop" looping="REPEAT" setToFinalAlpha="true">
+				<AnimationGroup parentKey="ProcLoop" looping="REPEAT">
 					<Alpha childKey="ProcLoopFlipbook" duration=".001" order="0" fromAlpha="1" toAlpha="1"/>
 					<FlipBook parentKey="FlipAnim" childKey="ProcLoopFlipbook" duration="1" order="0" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
-					<Alpha childKey="ProcLoopFlipbook" duration=".001" order="2" fromAlpha="1" toAlpha="0"/>
 				</AnimationGroup>
 					
 				<AnimationGroup parentKey="ProcStartAnim" setToFinalAlpha="true" mixin="ActionBarButtonSpellActivationAlertProcStartAnimMixin">

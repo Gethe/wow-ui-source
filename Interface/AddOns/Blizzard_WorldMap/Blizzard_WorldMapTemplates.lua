@@ -47,7 +47,7 @@ function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 end
 
 function WorldMapFloorNavigationFrameMixin:ShouldShowTrackingIconOnFloor(encountersOnFloor)
-	if not ContentTrackingUtil.isContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
+	if not ContentTrackingUtil.IsContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
 		return false;
 	end
 	for index, mapEncounterInfo in ipairs(encountersOnFloor) do
