@@ -32,6 +32,10 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("READY_CHECK");
 	self:RegisterEvent("READY_CHECK_CONFIRM");
 	self:RegisterEvent("READY_CHECK_FINISHED");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
+	self:RegisterEvent("UNIT_EXITING_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
@@ -179,6 +183,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateReadyCheck();
 	elseif ( event == "READY_CHECK_FINISHED" ) then
 		ReadyCheck_Finish(PlayerFrameReadyCheck, DEFAULT_READY_CHECK_STAY_TIME);
+	elseif ( event == "UNIT_RUNIC_POWER" and arg1 == "player" ) then
+		PlayerFrame_SetRunicPower(UnitPower("player"));
 	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
 		if ( arg1 == "player" ) then
 			if ( arg2 ) then
@@ -258,13 +264,17 @@ function PlayerFrame_IsAnimatedOut(self)
 end
 
 function PlayerFrame_UpdateArt(self)
-	if ( self.animFinished and self.inSeat and self.inSequence) then
+	if ( self.inSeat ) then
 		if ( self:IsUserPlaced() ) then
 			PlayerFrame_SequenceFinished(PlayerFrame);
-		else
+		elseif ( self.animFinished and self.inSequence ) then
 			SetUpAnimation(PlayerFrame, PlayerFrameAnimTable, PlayerFrame_SequenceFinished, true)
 		end
+		if ( UnitHasVehiclePlayerFrameUI("player") ) then
+			PlayerFrame_ToVehicleArt(self, UnitVehicleSkinType("player"));
+		else
 		PlayerFrame_ToPlayerArt(self);
+		end
 	elseif ( self.updatePetFrame ) then
 		-- leaving a vehicle that didn't change player art
 		self.updatePetFrame = false;
@@ -273,6 +283,7 @@ function PlayerFrame_UpdateArt(self)
 end
 
 function PlayerFrame_SequenceFinished(self)
+	self.isAnimatedOut = false;
 	self.inSequence = false;
 	PetFrame_Update(PetFrame);
 end
@@ -292,12 +303,16 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrameTexture:Hide();
 	if ( vehicleType == "Natural" ) then
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic");
+		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Organic-Flash");
+		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(103);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",116,-41);
 		PlayerFrameManaBar:SetWidth(103);
 		PlayerFrameManaBar:SetPoint("TOPLEFT",116,-52);
 	else
 		PlayerFrameVehicleTexture:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame");
+		PlayerFrameFlash:SetTexture("Interface\\Vehicles\\UI-Vehicle-Frame-Flash");
+		PlayerFrameFlash:SetTexCoord(-0.02, 1, 0.07, 0.86);
 		PlayerFrameHealthBar:SetWidth(100);
 		PlayerFrameHealthBar:SetPoint("TOPLEFT",119,-41);
 		PlayerFrameManaBar:SetWidth(100);
@@ -389,7 +404,15 @@ function PlayerFrame_OnReceiveDrag ()
 end
 
 function PlayerFrame_UpdateStatus()
-	if ( IsResting() ) then
+	if ( UnitHasVehiclePlayerFrameUI("player") ) then
+		PlayerStatusTexture:Hide()
+		PlayerRestIcon:Hide()
+		PlayerAttackIcon:Hide()
+		PlayerRestGlow:Hide()
+		PlayerAttackGlow:Hide()
+		PlayerStatusGlow:Hide()
+		PlayerAttackBackground:Hide()
+	elseif ( IsResting() ) then
 		PlayerStatusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0);
 		PlayerStatusTexture:Show();
 		PlayerRestIcon:Show();
@@ -617,6 +640,12 @@ function PlayerFrame_ShowVehicleTexture()
 	local _, class = UnitClass("player");
 	if ( PlayerFrame.classPowerBar ) then
 		PlayerFrame.classPowerBar:Hide();
+	elseif ( class == "SHAMAN" ) then
+		TotemFrame:Hide();
+	elseif ( class == "DEATHKNIGHT" ) then
+		RuneFrame:Hide();
+	elseif ( class == "PRIEST" and PriestBarFrame) then
+		PriestBarFrame:Hide();
 	end
 end
 
@@ -627,6 +656,12 @@ function PlayerFrame_HideVehicleTexture()
 	local _, class = UnitClass("player");
 	if ( PlayerFrame.classPowerBar ) then
 		PlayerFrame.classPowerBar:Setup();
+	elseif ( class == "SHAMAN" ) then
+		TotemFrame_Update();
+	elseif ( class == "DEATHKNIGHT" ) then
+		RuneFrame:Show();
+	elseif ( class == "PRIEST" and PriestBarFrame) then
+		PriestBarFrame_CheckAndShow();
 	end
 end
 
@@ -705,8 +740,22 @@ function PlayerFrame_AdjustAttachments()
 	end
 	if ( PetFrame and PetFrame:IsShown() ) then
 		CastingBarFrame:SetPoint("TOP", PetFrame, "BOTTOM", 0, -4);
+	elseif ( TotemFrame and TotemFrame:IsShown() ) then
+		CastingBarFrame:SetPoint("TOP", TotemFrame, "BOTTOM", 0, 2);
 	else
 		local _, class = UnitClass("player");
+		if ( class == "PALADIN" ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -6);
+		elseif ( class == "DRUID" ) then
 		CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
+		elseif ( class == "PRIEST" and PriestBarFrame and PriestBarFrame:IsShown() ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -2);
+		elseif ( class == "DEATHKNIGHT" or class == "WARLOCK" ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 4);
+		elseif ( class == "MONK" ) then
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, -1);
+		else
+			CastingBarFrame:SetPoint("TOP", PlayerFrame, "BOTTOM", 0, 10);
+		end
 	end
 end

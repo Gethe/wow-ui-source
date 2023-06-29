@@ -41,6 +41,13 @@ function BaseLayoutMixin:IgnoreLayoutIndex()
 	return false;
 end
 
+function BaseLayoutMixin:MarkIgnoreInLayout(region, ...)
+	if region then
+		region.ignoreInLayout = true;
+		self:MarkIgnoreInLayout(...);
+	end
+end
+
 local function IsLayoutFrame(f)
 	return f.IsLayoutFrame and f:IsLayoutFrame();
 end
@@ -54,9 +61,11 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	end
 end
 
-local function LayoutIndexComparator(left, right)
+function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
-		GMError("Duplicate layoutIndex found: " .. left.layoutIndex);
+		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
+		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
+		GMError(("Duplicate layoutIndex found: %d for %s and %s"):format(left.layoutIndex, leftName, rightName));
 	end
 	return left.layoutIndex < right.layoutIndex;
 end
@@ -90,6 +99,9 @@ end
 function BaseLayoutMixin:MarkDirty()
 	self.dirty = true;
 
+	-- To optimize performance, only set OnUpdate while marked dirty.
+	self:SetScript("OnUpdate", self.OnUpdate);
+
 	-- Tell any ancestors who may also be LayoutFrames that they should also become dirty
 	local parent = self:GetParent();
 	while parent do
@@ -105,6 +117,11 @@ end
 function BaseLayoutMixin:MarkClean()
 	self.dirty = false;
 	self:OnCleaned();
+
+	-- Clear OnUpdate once cleaned, unless it has been overridden in which case assume it needs to be called continuously.
+	if self.OnUpdate == BaseLayoutMixin.OnUpdate then
+		self:SetScript("OnUpdate", nil);
+	end
 end
 
 function BaseLayoutMixin:IsDirty()
@@ -141,6 +158,10 @@ function LayoutMixin:GetChildPadding(child)
 	end
 end
 
+local function GetSize(desired, fixed, minimum, maximum)
+	return fixed or Clamp(desired, minimum or desired, maximum or desired);
+end
+
 function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	local frameWidth, frameHeight;
 	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding();
@@ -160,7 +181,7 @@ function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 	else
 		frameHeight = self.fixedHeight or childrenHeight;
 	end
-	return frameWidth, frameHeight;
+	return GetSize(frameWidth, nil, self.minimumWidth, self.maximumWidth), GetSize(frameHeight, nil, self.minimumHeight, self.maximumHeight);
 end
 
 function LayoutMixin:Layout()
@@ -197,18 +218,26 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 			child:Layout();
 		end
 
+		local childScale = child:GetScale();
+
 		local childWidth, childHeight = child:GetSize();
-		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
-		if (child.expand) then
-			hasExpandableChild = true;
+		if self.respectChildScale then
+			childWidth = childWidth * childScale;
+			childHeight = childHeight * childScale;
 		end
 
+		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
+
 		-- Expand child width if it is set to expand and we also have an expandToWidth value.
-		if (child.expand and expandToWidth) then
-			childWidth = expandToWidth - leftPadding - rightPadding - frameLeftPadding - frameRightPadding;
-			child:SetWidth(childWidth);
-			childHeight = child:GetHeight();
+		if child.expand then
+			hasExpandableChild = true;
+
+			if expandToWidth then
+				childWidth = expandToWidth - leftPadding - rightPadding - frameLeftPadding - frameRightPadding;
+				child:SetWidth(childWidth);
+			end
 		end
+
 		childrenWidth = math.max(childrenWidth, childWidth + leftPadding + rightPadding);
 		childrenHeight = childrenHeight + childHeight + topPadding + bottomPadding;
 		if (i > 1) then
@@ -218,16 +247,24 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 		-- Set child position
 		child:ClearAllPoints();
 		topOffset = topOffset + topPadding;
+		topOffset = self.respectChildScale and topOffset / childScale or topOffset;
 		if (child.align == "right") then
 			local rightOffset = frameRightPadding + rightPadding;
+			rightOffset = self.respectChildScale and rightOffset / childScale or rightOffset;
 			child:SetPoint("TOPRIGHT", -rightOffset, -topOffset);
 		elseif (child.align == "center") then
 			local leftOffset = (frameLeftPadding - frameRightPadding + leftPadding - rightPadding) / 2;
+			leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
 			child:SetPoint("TOP", leftOffset, -topOffset);
 		else
 			local leftOffset = frameLeftPadding + leftPadding;
+			leftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
 			child:SetPoint("TOPLEFT", leftOffset, -topOffset);
 		end
+		-- If you adjusted the offset due to respecting child scale then undo that adjustment since the next frame may have a different scale
+		topOffset = self.respectChildScale and topOffset * childScale or topOffset;
+
+		-- Determine topOffset for next frame
 		topOffset = topOffset + childHeight + bottomPadding + spacing;
 	end
 
@@ -264,6 +301,13 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 			child:SetHeight(childHeight);
 			childWidth = child:GetWidth();
 		end
+
+		if self.respectChildScale then
+			local childScale = child:GetScale();
+			childWidth = childWidth * childScale;
+			childHeight = childHeight * childScale;
+		end
+
 		childrenHeight = math.max(childrenHeight, childHeight + topPadding + bottomPadding);
 		childrenWidth = childrenWidth + childWidth + leftPadding + rightPadding;
 		if (i > 1) then
@@ -308,10 +352,6 @@ local function GetExtents(childFrame, left, right, top, bottom, layoutFrameScale
 	return left, right, top, bottom, defaulted;
 end
 
-local function GetSize(desired, fixed, minimum, maximum)
-	return fixed or Clamp(desired, minimum or desired, maximum or desired);
-end
-
 function ResizeLayoutMixin:IgnoreLayoutIndex()
 	return true;
 end
@@ -341,6 +381,7 @@ function ResizeLayoutMixin:Layout()
 	if left and right and top and bottom then
 		local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
 		local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
+
 		self:SetSize(width, height);
 	end
 
@@ -349,4 +390,92 @@ function ResizeLayoutMixin:Layout()
 	end
 
 	self:MarkClean();
+end
+
+--------------------------------------------------------------------------------
+-- GridLayoutFrameMixin
+--------------------------------------------------------------------------------
+
+GridLayoutFrameMixin = {}
+
+function GridLayoutFrameMixin:Layout()
+	local layoutChildren = self:GetLayoutChildren();
+	if not self:ShouldUpdateLayout(layoutChildren) then
+		return;
+	end
+
+	-- Multipliers determine the direction the layout grows for grid layouts
+	-- Positive means right/up
+	-- Negative means left/down
+	local xMultiplier = self.layoutFramesGoingRight and 1 or -1;
+	local yMultiplier = self.layoutFramesGoingUp and 1 or -1;
+
+	-- Create the grid layout according to whether we are horizontal or vertical
+	local layout;
+	if self.isHorizontal then
+		layout = GridLayoutUtil.CreateStandardGridLayout(self.stride, self.childXPadding, self.childYPadding, xMultiplier, yMultiplier);
+	else
+		layout = GridLayoutUtil.CreateVerticalGridLayout(self.stride, self.childXPadding, self.childYPadding, xMultiplier, yMultiplier);
+	end
+
+	-- Need to change where the frames anchor based on how the layout grows
+	local anchorPoint;
+	if self.layoutFramesGoingUp then
+		anchorPoint = self.layoutFramesGoingRight and "BOTTOMLEFT" or "BOTTOMRIGHT";
+	else
+		anchorPoint = self.layoutFramesGoingRight and "TOPLEFT" or "TOPRIGHT";
+	end
+
+	-- Apply the layout and then update our size
+	GridLayoutUtil.ApplyGridLayout(layoutChildren, AnchorUtil.CreateAnchor(anchorPoint, self, anchorPoint), layout);
+	ResizeLayoutMixin.Layout(self);
+	self:CacheLayoutSettings(layoutChildren);
+end
+
+function GridLayoutFrameMixin:CacheLayoutSettings(layoutChildren)
+    self.oldGridSettings = {
+		layoutChildren = layoutChildren;
+        childXPadding = self.childXPadding;
+		childYPadding = self.childYPadding;
+		isHorizontal = self.isHorizontal;
+		stride = self.stride;
+		layoutFramesGoingRight = self.layoutFramesGoingRight;
+		layoutFramesGoingUp = self.layoutFramesGoingUp;
+    };
+end
+
+function GridLayoutFrameMixin:ShouldUpdateLayout(layoutChildren)
+    if not self:IsShown() then
+        return false;
+    end
+
+	if self.alwaysUpdateLayout then
+		return true;
+	end
+
+    if self.oldGridSettings == nil then
+        return true;
+    end
+
+    if #self.oldGridSettings.layoutChildren ~= #layoutChildren
+	or self.oldGridSettings.childXPadding ~= self.childXPadding
+	or self.oldGridSettings.childYPadding ~= self.childYPadding
+    or self.oldGridSettings.isHorizontal ~= self.isHorizontal
+    or self.oldGridSettings.stride ~= self.stride
+    or self.oldGridSettings.layoutFramesGoingRight ~= self.layoutFramesGoingRight
+    or self.oldGridSettings.layoutFramesGoingUp ~= self.layoutFramesGoingUp then
+        return true;
+    end
+
+    for index, child in ipairs(layoutChildren) do
+        if self.oldGridSettings.layoutChildren[index] ~= child then
+            return true;
+        end
+    end
+
+    return false;
+end
+
+function GridLayoutFrameMixin:IgnoreLayoutIndex()
+	return false;
 end

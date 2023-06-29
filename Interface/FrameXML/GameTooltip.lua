@@ -278,10 +278,12 @@ end
 
 function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 	if( not maxcost ) then --We just have 1 price to display
-		SetTooltipMoney(self, cost, nil);
+		SetTooltipMoney(self, cost, nil, string.format("%s:", SELL_PRICE));
 	else
-		SetTooltipMoney(self, cost, nil, string.format("%s:", MINIMUM));
-		SetTooltipMoney(self, maxcost, nil, string.format("%s:", MAXIMUM));
+		GameTooltip_AddColoredLine(self, ("%s:"):format(SELL_PRICE), HIGHLIGHT_FONT_COLOR);
+		local indent = string.rep(" ",4)
+		SetTooltipMoney(self, cost, nil, string.format("%s%s:", indent, MINIMUM));
+		SetTooltipMoney(self, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
 	end
 end
 
@@ -323,6 +325,18 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	end
 	MoneyFrame_Update(moneyFrame:GetName(), money);
 	local moneyFrameWidth = moneyFrame:GetWidth();
+
+	-- Align money frames
+	local widths = {};
+	for i=1, frame.shownMoneyFrames do
+		local moneyFrame = _G[frame:GetName().."MoneyFrame"..i];
+		MoneyFrame_AccumulateAlignmentWidths(moneyFrame, widths);
+	end
+	for i=1, frame.shownMoneyFrames do
+		local moneyFrame = _G[frame:GetName().."MoneyFrame"..i];
+		MoneyFrame_UpdateAlignment(moneyFrame, widths);
+	end
+
 	if ( frame:GetMinimumWidth() < moneyFrameWidth ) then
 		frame:SetMinimumWidth(moneyFrameWidth);
 	end
@@ -340,6 +354,7 @@ function GameTooltip_ClearMoney(self)
 		if(moneyFrame) then
 			moneyFrame:Hide();
 			MoneyFrame_SetType(moneyFrame, "STATIC");
+			MoneyFrame_ResetAlignment(moneyFrame);
 		end
 	end
 	self.shownMoneyFrames = nil;
@@ -872,33 +887,6 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
 	return false;
 end
 
-function EmbeddedItemTooltip_SetSpellByQuestReward(self, rewardIndex, questID)
-	local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetQuestLogRewardSpell(rewardIndex, questID);
-	if garrFollowerID then
-		self:Show();
-		EmbeddedItemTooltip_PrepareForFollower(self);
-		local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(garrFollowerID);
-		GarrisonFollowerTooltipTemplate_SetGarrisonFollower(self.FollowerTooltip, data);
-		EmbeddedItemTooltip_UpdateSize(self);
-		return true;
-	elseif name and texture then
-		self.itemID = nil;
-		self.spellID = spellID;
-
-		self:Show();
-		EmbeddedItemTooltip_PrepareForSpell(self);
-		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetQuestLogRewardSpell(rewardIndex, questID);
-		SetItemButtonQuality(self, LE_ITEM_QUALITY_COMMON);
-		SetItemButtonCount(self, 0);
-		self.Icon:SetTexture(texture);
-		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
-		EmbeddedItemTooltip_UpdateSize(self);
-		return true;
-	end
-	return false;
-end
-
 function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
 	local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
 	if name and texture then
@@ -910,11 +898,11 @@ function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 
 		local displayQuantity;
-		name, texture, displayQuantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);		
+		name, texture, displayQuantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, name, texture, quality);
 		self.Tooltip:SetCurrencyByID(currencyID, quantity);
 		SetItemButtonQuality(self, quality, currencyID);
 		self.Icon:SetTexture(texture);
-		SetItemButtonCount(self, displayQuantity); 
+		SetItemButtonCount(self, displayQuantity);
 
 		self:Show();
 		EmbeddedItemTooltip_UpdateSize(self);

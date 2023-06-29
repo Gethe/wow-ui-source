@@ -14,7 +14,7 @@ MoneyTypeInfo["PLAYER"] = {
 	OnloadFunc = function(self)
 		self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	end,
-	
+
 	UpdateFunc = function(self)
 		return MoneyFrame_UpdateTrialErrorButton(self);
 	end,
@@ -45,6 +45,16 @@ MoneyTypeInfo["AUCTION"] = {
 	showSmallerCoins = "Backpack",
 	fixedWidth = 1,
 	collapse = 1,
+	truncateSmallCoins = nil,
+};
+MoneyTypeInfo["AUCTION_TOOLTIP"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+	showSmallerCoins = "Backpack",
+	fixedWidth = 1,
+	collapse = 1,
+	align = 1,
 	truncateSmallCoins = nil,
 };
 MoneyTypeInfo["PLAYER_TRADE"] = {
@@ -217,7 +227,7 @@ function MoneyFrame_OnEvent (self, event, ...)
 	end
 
 	local moneyType = self.moneyType;
-	
+
 	if ( event == "PLAYER_MONEY" and moneyType == "PLAYER" ) then
 		MoneyFrame_UpdateMoney(self);
 	elseif ( event == "TRIAL_STATUS_UPDATE" and moneyType == "PLAYER" ) then
@@ -241,7 +251,7 @@ end
 
 function MoneyFrame_OnEnter(moneyFrame)
 	if ( moneyFrame.showTooltip ) then
-		GameTooltip:SetOwner(_G[moneyFrame:GetName().."CopperButton"], "ANCHOR_TOPRIGHT", 20, 2);		
+		GameTooltip:SetOwner(_G[moneyFrame:GetName().."CopperButton"], "ANCHOR_TOPRIGHT", 20, 2);
 		SetTooltipMoney(GameTooltip, moneyFrame.staticMoney, "TOOLTIP", "");
 		GameTooltip:Show();
 	end
@@ -299,7 +309,7 @@ local function CreateMoneyButtonNormalTexture (button, iconWidth)
 	texture:SetHeight(iconWidth);
 	texture:SetPoint("RIGHT", -1, 1);
 	button:SetNormalTexture(texture);
-	
+
 	return texture;
 end
 
@@ -311,7 +321,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	else
 		frame = _G[frameName];
 	end
-	
+
 	local info = frame.info;
 	if ( not info ) then
 		message("Error moneyType not set");
@@ -335,15 +345,15 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 
 	local maxDisplayWidth = frame.maxDisplayWidth;
-	
+
 	-- Set values for each denomination
 	if ( ENABLE_COLORBLIND_MODE == "1" ) then
 		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = true;
 			frame.vadjust = MONEY_TEXT_VADJUST;
-			goldButton:SetNormalTexture("");
-			silverButton:SetNormalTexture("");
-			copperButton:SetNormalTexture("");
+			goldButton:ClearNormalTexture();
+			silverButton:ClearNormalTexture();
+			copperButton:ClearNormalTexture();
 			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
@@ -381,14 +391,25 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		copperButton:SetWidth(copperButton:GetTextWidth() + iconWidth);
 		copperButton:Show();
 	end
-		
+
 	-- Store how much money the frame is displaying
 	frame.staticMoney = money;
 	frame.showTooltip = nil;
-	
-	-- If not collapsable or not using maxDisplayWidth don't need to continue
-	if ( not info.collapse and not maxDisplayWidth ) then
+
+	-- If not collapsable and not aligning multiple rows and not using maxDisplayWidth, don't need to continue
+	if ( not info.collapse and not info.align and not maxDisplayWidth ) then
 		return;
+	end
+
+	-- If aligning multiple rows, make sure each component width is consistent in each row
+	if ( frame.alignGoldWidth and frame.alignGoldWidth > goldButton:GetWidth() ) then
+		goldButton:SetWidth(frame.alignGoldWidth);
+	end
+	if ( frame.alignSilverWidth and frame.alignSilverWidth > silverButton:GetWidth() ) then
+		silverButton:SetWidth(frame.alignSilverWidth);
+	end
+	if ( frame.alignCopperWidth and frame.alignCopperWidth > copperButton:GetWidth() ) then
+		copperButton:SetWidth(frame.alignCopperWidth);
 	end
 
 	local width = iconWidth;
@@ -414,7 +435,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( showLowerDenominations and info.fixedWidth ) then
 			silverButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
-		
+
 		local silverWidth = silverButton:GetWidth();
 		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
 		if ( goldButton:IsShown() ) then
@@ -445,7 +466,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( showLowerDenominations and info.fixedWidth ) then
 			copperButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
-		
+
 		local copperWidth = copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
@@ -469,14 +490,26 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	copperButton:ClearAllPoints();
 	copperButton:SetPoint("RIGHT", frameName, "RIGHT", -13, 0);
 
+	-- keep track of money width so it can be used to align multiple rows
+	frame.moneyWidth = width;
+
 	-- attach text now that denominations have been computed
 	local prefixText = _G[frameName.."PrefixText"];
 	if ( prefixText ) then
 		if ( prefixText:GetText() and money > 0 ) then
 			prefixText:Show();
+
+			-- if aligning multiple rows, make sure the prefix and total money width is consistent in each row
+			local alignWidthPad = 0;
+			if ( frame.alignMoneyWidth and frame.alignMoneyWidth > width ) then
+				alignWidthPad = alignWidthPad + frame.alignMoneyWidth - width;
+			end
+			if ( frame.alignPrefixWidth and frame.alignPrefixWidth > prefixText:GetWidth() ) then
+				alignWidthPad = alignWidthPad + frame.alignPrefixWidth - prefixText:GetWidth();
+			end
 			copperButton:ClearAllPoints();
-			copperButton:SetPoint("RIGHT", frameName.."PrefixText", "RIGHT", width, 0);
-			width = width + prefixText:GetWidth();
+			copperButton:SetPoint("RIGHT", frameName.."PrefixText", "RIGHT", alignWidthPad + width, 0);
+			width = width + prefixText:GetWidth() + alignWidthPad;
 		else
 			prefixText:Hide();
 		end
@@ -511,6 +544,114 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 end
 
+function MoneyFrame_AccumulateAlignmentWidths(frameName, widths)
+	local frame;
+	if ( type(frameName) == "table" ) then
+		frame = frameName;
+		frameName = frame:GetName();
+	else
+		frame = _G[frameName];
+	end
+
+	local info = frame.info;
+	if ( not info ) then
+		message("Error moneyType not set");
+		return;
+	end
+
+	if ( not info.align ) then
+		return;
+	end
+
+	local prefixFrame = _G[frameName.."PrefixText"];
+	local goldButton = _G[frameName.."GoldButton"];
+	local silverButton = _G[frameName.."SilverButton"];
+	local copperButton = _G[frameName.."CopperButton"];
+
+	if (prefixFrame) then
+		widths.prefix = math.max(widths.prefix or 0, prefixFrame:GetWidth());
+	end
+	if (goldButton) then
+		widths.gold = math.max(widths.gold or 0, goldButton:GetWidth());
+	end
+	if (silverButton) then
+		widths.silver = math.max(widths.silver or 0, silverButton:GetWidth());
+	end
+	if (copperButton) then
+		widths.copper = math.max(widths.copper or 0, copperButton:GetWidth());
+	end
+	widths.money = math.max(widths.money or 0, frame.moneyWidth);
+end
+
+function MoneyFrame_UpdateAlignment(frameName, widths)
+	local frame;
+	if ( type(frameName) == "table" ) then
+		frame = frameName;
+		frameName = frame:GetName();
+	else
+		frame = _G[frameName];
+	end
+
+	local info = frame.info;
+	if ( not info ) then
+		message("Error moneyType not set");
+		return;
+	end
+
+	if ( not info.align ) then
+		return;
+	end
+
+	frame.alignPrefixWidth = widths.prefix;
+	frame.alignGoldWidth = widths.gold;
+	frame.alignSilverWidth = widths.silver;
+	frame.alignCopperWidth = widths.copper;
+	frame.alignMoneyWidth = widths.money;
+
+	local prefixFrame = _G[frameName.."PrefixText"];
+	local goldButton = _G[frameName.."GoldButton"];
+	local silverButton = _G[frameName.."SilverButton"];
+	local copperButton = _G[frameName.."CopperButton"];
+
+	local update = false;
+
+	if ( frame.alignPrefixWidth and frame.alignPrefixWidth > prefixFrame:GetWidth() ) then
+		update = true;
+	end
+	if ( frame.alignGoldWidth and frame.alignGoldWidth > goldButton:GetWidth() ) then
+		update = true;
+	end
+	if ( frame.alignSilverWidth and frame.alignSilverWidth > silverButton:GetWidth() ) then
+		update = true;
+	end
+	if ( frame.alignCopperWidth and frame.alignCopperWidth > copperButton:GetWidth() ) then
+		update = true;
+	end
+	if ( frame.alignMoneyWidth and frame.alignMoneyWidth > frame.moneyWidth ) then
+		update = true;
+	end
+
+	if ( update ) then
+		MoneyFrame_Update(frameName, frame.staticMoney);
+	end
+end
+
+function MoneyFrame_ResetAlignment(frameName)
+	local frame;
+	if ( type(frameName) == "table" ) then
+		frame = frameName;
+		frameName = frame:GetName();
+	else
+		frame = _G[frameName];
+	end
+
+	frame.alignPrefixWidth = nil;
+	frame.alignGoldWidth = nil;
+	frame.alignSilverWidth = nil;
+	frame.alignCopperWidth = nil;
+	frame.alignMoneyWidth = nil;
+end
+
 function MoneyFrame_UpdateTrialErrorButton(self)
 	local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
 	if self.trialErrorButton then
@@ -518,7 +659,7 @@ function MoneyFrame_UpdateTrialErrorButton(self)
 		local moneyIsRestricted = GameLimitedMode_IsActive() and money >= rMoney;
 		self.trialErrorButton:SetShown(moneyIsRestricted);
 	end
-	
+
 	return money;
 end
 
@@ -549,7 +690,7 @@ function SetMoneyFrameColor(frameName, color)
 			fontObject = NumberFontNormalLargeRight;
 		end
 	end
-	
+
 	local goldButton = _G[frameName.."GoldButton"];
 	local silverButton = _G[frameName.."SilverButton"];
 	local copperButton = _G[frameName.."CopperButton"];

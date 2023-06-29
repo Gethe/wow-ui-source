@@ -1311,18 +1311,17 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						self.cvar = "useMaxFPS";
+						self.SetValue = function (self, value)
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						VideoOptionsCheckbox_OnLoad(self);
+					</OnLoad>
 					<OnClick>
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent .. "MaxFPSSlider"];
-						if ( self:GetChecked() ) then
-							VideoOptions_Enable(slider);
-							slider.newValue = 8;
-							slider:SetDisplayValue(8);
-						else
-							VideoOptions_Disable(slider);
-							slider.newValue = 0;
-							slider:SetDisplayValue(0);
-						end
+						VideoOptions_SetEnabled(slider, self:GetChecked());
 						BlizzardOptionsPanel_CheckButton_OnClick(self);
 						Graphics_EnableApply(self);
 					</OnClick>
@@ -1376,20 +1375,17 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						self.cvar = "useMaxFPSBk";
+						self.SetValue = function (self, value)
+							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						end
+						VideoOptionsCheckbox_OnLoad(self);
+					</OnLoad>
 					<OnClick>
 						local parent = (self:GetParent()):GetName();
 						local slider = _G[parent .. "MaxFPSBKSlider"];
-						if ( self:GetChecked() ) then
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							VideoOptions_Enable(slider);
-							slider.newValue = 8;
-							slider:SetDisplayValue(8);
-						else
-							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							VideoOptions_Disable(slider);
-							slider.newValue = 0;
-							slider:SetDisplayValue(0);
-						end
+						VideoOptions_SetEnabled(slider, self:GetChecked());
 						BlizzardOptionsPanel_CheckButton_OnClick(self);
 						Graphics_EnableApply(self);
 					</OnClick>

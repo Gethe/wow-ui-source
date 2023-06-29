@@ -1,3 +1,25 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+	Import("ipairs");
+end
+---------------
+
 ScrollBoxViewMixin = CreateFromMixins(ScrollDirectionMixin);
 
 ScrollBoxViewMixin.FrameLevelPolicy =
@@ -43,6 +65,9 @@ function ScrollBoxViewMixin:GetScrollBox()
 	return self.scrollBox;
 end
 
+function ScrollBoxViewMixin:InitDefaultDrag(scrollBox)
+end
+
 function ScrollBoxViewMixin:IsExtentValid()
 	return self.extent and self.extent > 1;
 end
@@ -74,7 +99,10 @@ end
 
 function ScrollBoxViewMixin:FindFrameByPredicate(predicate)
 	for index, frame in ipairs(self:GetFrames()) do
-		if predicate(frame) then
+		-- Passing elementData so it's not ambiguous what the first argument of the predicate is, and
+		-- to free the handler from needing to make the GetElementData() call themselves, which would
+		-- happen frequently.
+		if predicate(frame, frame:GetElementData()) then
 			return frame;
 		end
 	end

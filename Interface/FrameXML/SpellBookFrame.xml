@@ -382,6 +382,35 @@
 					</Anchor>
 				</Anchors>
 			</Button>
+			<CheckButton name="ShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="26" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="74" y="-38"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(SHOW_ALL_SPELL_RANKS);
+					</OnLoad>
+					<OnShow>
+						self:SetChecked( GetCVarBool("ShowAllSpellRanks") );
+					</OnShow>
+					<OnClick>
+						SetCVar("ShowAllSpellRanks", self:GetChecked());
+						SpellBookFrame_UpdatePages();
+						SpellBookFrame_UpdateSpells();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<Frame name="SpellBookSpellIconsFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" relativePoint="TOPLEFT"/>

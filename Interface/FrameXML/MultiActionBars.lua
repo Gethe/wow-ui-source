@@ -133,7 +133,7 @@ function MultiActionBar_UpdateGrid (barName, show)
 end
 
 function MultiActionBar_UpdateGridVisibility ()
-	if ( ALWAYS_SHOW_MULTIBARS == "1" or ALWAYS_SHOW_MULTIBARS == 1 ) then
+	if ( Settings.GetValue("PROXY_ALWAYS_SHOW_ACTION_BARS") ) then
 		MultiActionBar_ShowAllGrids();
 	else
 		MultiActionBar_HideAllGrids();
@@ -145,8 +145,8 @@ function Multibar_EmptyFunc (show)
 end
 
 function MultibarGrid_IsVisible ()
-	STATE_AlwaysShowMultibars = ALWAYS_SHOW_MULTIBARS;
-	return ALWAYS_SHOW_MULTIBARS;
+	STATE_AlwaysShowMultibars = Settings.GetValue("PROXY_ALWAYS_SHOW_ACTION_BARS");
+	return STATE_AlwaysShowMultibars;
 end
 
 function MultiBar1_IsVisible ()

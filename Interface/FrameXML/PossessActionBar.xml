@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="PossessActionBar.lua"/>
+	
+	<CheckButton name="PossessButtonTemplate" inherits="SecureFrameTemplate, ActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				self.cooldown:SetSwipeColor(0, 0, 0);
+			</OnLoad>
+			<OnClick>
+				PossessButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PossessButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="PossessBarFrame" parent="MainMenuBar" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="29" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuBar" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="30" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="PossessBackground1" file="Interface\ShapeshiftBar\ShapeshiftBar">
+					<Size x="47" y="38"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.734375" top="0" bottom="0.296875"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="PossessBackground2" file="Interface\ShapeshiftBar\ShapeshiftBar">
+					<Size x="43" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="PossessBackground1" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.328125" right="1" top="0.3125" bottom="0.6015625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="PossessButton1" inherits="PossessButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PossessButton2" inherits="PossessButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PossessButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnShow function="UIParent_ManageFramePositions"/>
+			<OnHide function="UIParent_ManageFramePositions"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -16,6 +16,7 @@ CLASS_BUTTONS = {
 	["PRIEST"]		= {0.49609375, 0.7421875, 0.25, 0.5},
 	["WARLOCK"]	= {0.7421875, 0.98828125, 0.25, 0.5},
 	["PALADIN"]		= {0, 0.25, 0.5, 0.75},
+	["DEATHKNIGHT"]	= {0.25, 0.49609375, 0.5, 0.75},
 };
 
 function WorldStateScoreFrame_OnLoad(self)
@@ -90,10 +91,15 @@ function WorldStateScoreFrame_Update()
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", "WorldStateScoreFrameKB", "RIGHT", 0, 0);
 		if ( isRanked ) then
-			WorldStateScoreFrameTeam:Show();
 			WorldStateScoreFrameHonorGainedText:SetText(SCORE_RATING_CHANGE);
-			WorldStateScoreFrameHonorGained.sortType = "team";
-			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameTeam", "RIGHT", 0, 0);
+
+			if ( GetCurrentArenaSeasonUsesTeams() ) then
+				WorldStateScoreFrameTeam:Show();
+				WorldStateScoreFrameHonorGained.sortType = "team";
+				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameTeam", "RIGHT", 0, 0);
+			else
+				WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", 0, 0);
+			end
 		else
 			WorldStateScoreFrameHonorGained:Hide();
 			WorldStateScoreFrameKB:SetPoint("LEFT", "WorldStateScoreFrameName", "RIGHT", 0, 0);
@@ -140,15 +146,23 @@ function WorldStateScoreFrame_Update()
 		-- Show winner
 		local teamName, teamRating, newTeamRating;
 		if ( isArena ) then
-			if ( isRanked ) then
-				teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
-				if ( teamName ) then
-					WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_ARENA_WINS, teamName);			
+			if ( GetCurrentArenaSeasonUsesTeams() ) then
+				if ( isRanked ) then
+					teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
+					if ( teamName ) then
+						WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_ARENA_WINS, teamName);			
+					else
+						WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_ARENA_DRAW);							
+					end
 				else
-					WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_ARENA_DRAW);							
+					WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT_ARENA"..battlefieldWinner]);
 				end
 			else
-				WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT_ARENA"..battlefieldWinner]);
+				if ( battlefieldWinner == 0 or battlefieldWinner == 1) then
+					WorldStateScoreWinnerFrameText:SetText(_G["VICTORY_TEXT_ARENA"..battlefieldWinner]);
+				else
+					WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_ARENA_DRAW);
+				end
 			end
 			if ( battlefieldWinner == 0 ) then
 				-- Purple Team won
@@ -250,7 +264,7 @@ function WorldStateScoreFrame_Update()
 				teamDataFailed = 1;
 			end
 		end
-		if ( isRanked ) then
+		if ( isRanked and GetCurrentArenaSeasonUsesTeams() ) then
 			teamName, teamRating, newTeamRating = GetBattlefieldTeamInfo(battlefieldWinner);
 			if ( not teamName ) then
 				teamDataFailed = 1;
@@ -305,10 +319,12 @@ function WorldStateScoreFrame_Update()
 			teamName, teamRating, newTeamRating, teamMMR = GetBattlefieldTeamInfo(faction);
 			if ( isArena ) then
 				if ( isRanked ) then
-					scoreButton.team:SetText(teamName);
-					scoreButton.name.teamName = teamName;
+					if ( GetCurrentArenaSeasonUsesTeams() ) then
+						scoreButton.team:SetText(teamName);
+						scoreButton.name.teamName = teamName;
+						scoreButton.team:Show();
+					end
 
-					scoreButton.team:Show();
 					if ( teamDataFailed == 1 ) then
 						scoreButton.honorGained:SetText("-------");
 					else
@@ -461,7 +477,9 @@ function WorldStateScoreFrame_Resize()
 		columns = 3;
 		if ( isRanked ) then
 			columns = columns + 1; -- Rating
-			width = width + WorldStateScoreFrameTeam:GetWidth();
+			if ( GetCurrentArenaSeasonUsesTeams() ) then
+				width = width + WorldStateScoreFrameTeam:GetWidth();
+			end
 		end
 	else
 		columns = SCORE_BASE_COLUMNS;

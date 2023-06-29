@@ -28,7 +28,7 @@ end
 function PetTamerDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
-	if not CanTrackBattlePets() or not GetCVarBool("showTamers") then
+	if not C_Minimap.CanTrackBattlePets() or not GetCVarBool("showTamers") then
 		return;
 	end
 

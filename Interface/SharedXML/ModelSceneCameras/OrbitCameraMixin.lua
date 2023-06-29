@@ -596,8 +596,10 @@ end
 
 function OrbitCameraMixin:UpdateLight()
 	if self:ShouldAlignLightToOrbitDelta() then
-		local cameraDeltaYaw = self.interpolatedYaw - self.initialCameraYaw;
-		local cameraDeltaPitch = self.interpolatedPitch - self.initialCameraPitch;
+		local yaw, pitch, roll = self:GetInterpolatedOrientation();
+ 
+		local cameraDeltaYaw = yaw - self.initialCameraYaw;
+		local cameraDeltaPitch = pitch - self.initialCameraPitch;
 
 		local lightYaw = self.initialLightYaw + cameraDeltaYaw;
 		local lightPitch = self.initialLightPitch + cameraDeltaPitch;

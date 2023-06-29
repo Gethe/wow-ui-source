@@ -347,7 +347,7 @@
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="1" y="-6"/>
 							</Anchors>
-							<TexCoords left="0" right=".5" top="0" bottom=".45"/>
+							<TexCoords left="0" right=".5" top="0" bottom=".9"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">

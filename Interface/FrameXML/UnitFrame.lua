@@ -5,7 +5,6 @@ PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true };
 PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true };
 PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true };
 PowerBarColor["HAPPINESS"] = { r = 1.00, g = 0.41, b = 0.96 };
-PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
 PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
 PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
 PowerBarColor["LUNAR_POWER"] = { r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
@@ -29,7 +28,6 @@ PowerBarColor[1] = PowerBarColor["RAGE"];
 PowerBarColor[2] = PowerBarColor["FOCUS"];
 PowerBarColor[3] = PowerBarColor["ENERGY"];
 PowerBarColor[4] = PowerBarColor["CHI"];
-PowerBarColor[5] = PowerBarColor["RUNES"];
 PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
 PowerBarColor[7] = PowerBarColor["SOUL_SHARDS"];
 PowerBarColor[8] = PowerBarColor["LUNAR_POWER"];
@@ -38,6 +36,19 @@ PowerBarColor[11] = PowerBarColor["MAELSTROM"];
 PowerBarColor[13] = PowerBarColor["INSANITY"];
 PowerBarColor[17] = PowerBarColor["FURY"];
 PowerBarColor[18] = PowerBarColor["PAIN"];
+
+local ManaBarFrequentUpdateUnitTypes = {
+	"player",
+	"pet",
+	"vehicle",
+	"target",
+	"focus",
+	"targettarget",
+	"focustarget"
+};
+
+-- Threat Display
+MAX_DISPLAYED_THREAT_PERCENT = 999;
 
 function GetPowerBarColor(powerType)
 	return PowerBarColor[powerType];
@@ -61,8 +72,8 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.portrait = portrait;
 	self.healthbar = healthbar;
 	self.manabar = manabar;
-	--self.threatIndicator = threatIndicator;
-	--self.threatNumericIndicator = threatNumericIndicator;
+	self.threatIndicator = threatIndicator;
+	self.threatNumericIndicator = threatNumericIndicator;
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
 	self.totalAbsorbBar = totalAbsorbBar;
@@ -118,8 +129,18 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.manabar.capNumericDisplay = true;
 	end
 	UnitFrameHealthBar_Initialize(unit, healthbar, healthtext, true);
-	UnitFrameManaBar_Initialize(unit, manabar, manatext, (unit == "player" or unit == "pet" or unit == "vehicle" or unit == "target" or unit == "focus"));
-	--UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
+
+	local manaBarFrequentUpdates = false;
+	for _, unitType in ipairs(ManaBarFrequentUpdateUnitTypes) do
+		if (unit == unitType) then
+			manaBarFrequentUpdates = true;
+			break;
+		end
+	end
+
+	UnitFrameManaBar_Initialize(unit, manabar, manatext, manaBarFrequentUpdates);
+
+	UnitFrameThreatIndicator_Initialize(unit, self, threatFeedbackUnit);
 	UnitFrame_Update(self);
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
@@ -312,7 +333,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 				if ( playerDeadOrGhost ) then
 					manaBar:SetStatusBarColor(0.6, 0.6, 0.6, 0.5);
 				else
-					manaBar:SetStatusBarColor(info.r, info.g, info.b);
+					manaBar:SetStatusBarColor(info.r, info.g, info.b, 1);
 				end
 			end
 
@@ -555,14 +576,16 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 	if ( unit == statusbar.unit ) then
 		local maxValue = UnitHealthMax(unit);
 
-		statusbar.showPercentage = false;
+		if (GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE) then
+			statusbar.showPercentage = false;
+		end
 
 		-- Safety check to make sure we never get an empty bar.
 		statusbar.forceHideText = false;
 		if ( maxValue == 0 ) then
 			maxValue = 1;
 			statusbar.forceHideText = true;
-		elseif ( GetClassicExpansionLevel() >= LE_EXPANSION_BURNING_CRUSADE and (maxValue == 100 or not ShouldKnowUnitHealth(unit)) ) then
+		elseif ( GetClassicExpansionLevel() <= LE_EXPANSION_BURNING_CRUSADE and (maxValue == 100 or not ShouldKnowUnitHealth(unit)) ) then
 			--This should be displayed as percentage.
 			statusbar.showPercentage = true;
 		end
@@ -717,7 +740,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 	end
 	TextStatusBar_UpdateTextString(statusbar);
 end
---[[
+
 function UnitFrameThreatIndicator_Initialize(unit, unitFrame, feedbackUnit)
 	local indicator = unitFrame.threatIndicator;
 	if ( not indicator ) then
@@ -771,7 +794,9 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
 					end
+
 					if ( display and display ~= 0 ) then
+						display = min(display, MAX_DISPLAYED_THREAT_PERCENT);
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
 						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
 						numericIndicator:Show();
@@ -790,7 +815,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 		end
 	end
 end
---]]
+
 function GetUnitName(unit, showServerName)
 	local name, server = UnitName(unit);
 	local relationship = UnitRealmRelationship(unit);
@@ -808,7 +833,7 @@ function GetUnitName(unit, showServerName)
 		return name;
 	end
 end
---[[
+
 function ShowNumericThreat()
 	if ( GetCVar("threatShowNumeric") == "1" ) then
 		return true;
@@ -816,4 +841,3 @@ function ShowNumericThreat()
 		return false;
 	end
 end
---]]

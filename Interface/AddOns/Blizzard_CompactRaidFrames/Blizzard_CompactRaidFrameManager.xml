@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_CompactRaidFrameManager.lua"/>
+	<Script file="..\..\..\Interface_Vanilla\AddOns\Blizzard_CompactRaidFrames\Blizzard_CompactRaidFrameManager_Vanilla.lua"/>
+	<Script file="Blizzard_CompactRaidFrameManager_Shared.lua"/>
 	<Button name="CRFManagerFilterButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -312,7 +313,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								InterfaceOptionsFrame_OpenToCategory(COMPACT_UNIT_FRAME_PROFILES_LABEL);
+								Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								--ToggleRaidFrame();
 							</OnClick>
@@ -505,10 +506,10 @@
 								self:SetChecked(IsEveryoneAssistant());
 								if ( UnitIsGroupLeader("player") ) then
 									self:Enable();
-									self.text:SetFontObject(GameFontNormalSmall);
+									self.Text:SetFontObject(GameFontNormalSmall);
 								else
 									self:Disable();
-									self.text:SetFontObject(GameFontDisableSmall);
+									self.Text:SetFontObject(GameFontDisableSmall);
 								end
 							</OnEvent>
 							<OnClick>

@@ -1,3 +1,96 @@
+---------------
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
+if tbl then
+	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
+	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+	tbl.type = tbl.SecureCapsuleGet("type");
+	tbl.unpack = tbl.SecureCapsuleGet("unpack");
+	tbl.error = tbl.SecureCapsuleGet("error");
+	tbl.pcall = tbl.SecureCapsuleGet("pcall");
+	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
+
+	local function CleanFunction(f)
+		local f = function(...)
+			local function HandleCleanFunctionCallArgs(success, ...)
+				if success then
+					return ...;
+				else
+					tbl.error("Error in secure capsule function execution: "..(...));
+				end
+			end
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
+		end
+		setfenv(f, tbl);
+		return f;
+	end
+
+	local function CleanTable(t, tableCopies)
+		if not tableCopies then
+			tableCopies = {};
+		end
+
+		local cleaned = {};
+		tableCopies[t] = cleaned;
+
+		for k, v in tbl.pairs(t) do
+			if tbl.type(v) == "table" then
+				if ( tableCopies[v] ) then
+					cleaned[k] = tableCopies[v];
+				else
+					cleaned[k] = CleanTable(v, tableCopies);
+				end
+			elseif tbl.type(v) == "function" then
+				cleaned[k] = CleanFunction(v);
+			else
+				cleaned[k] = v;
+			end
+		end
+		return cleaned;
+	end
+
+	local function Import(name)
+		local skipTableCopy = true;
+		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+		if tbl.type(val) == "function" then
+			tbl[name] = CleanFunction(val);
+		elseif tbl.type(val) == "table" then
+			tbl[name] = CleanTable(val);
+		else
+			tbl[name] = val;
+		end
+	end
+
+	Import("tinsert");
+	Import("NineSliceLayouts");
+	Import("NineSliceUtil");
+	Import("NineSlicePanelMixin");
+	Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+	Import("GREEN_FONT_COLOR");
+	Import("RED_FONT_COLOR");
+	Import("DISABLED_FONT_COLOR");
+	Import("SharedTooltip_SetBackdropStyle");
+	Import("Round");
+
+
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
+	setfenv(1, tbl);
+end
+----------------
+
+local envTbl = tbl or _G;
+
 local function SetupTextFont(fontString, fontObject)
 	if fontString and fontObject then
 		fontString:SetFontObject(fontObject);
@@ -95,6 +188,15 @@ function GameTooltip_SetTitle(tooltip, text, overrideColor, wrap)
 	GameTooltip_AddColoredLine(tooltip, text, overrideColor or HIGHLIGHT_FONT_COLOR, wrap)
 end
 
+function GameTooltip_ShowDisabledTooltip(tooltip, owner, text, tooltipAnchor)
+	tooltip:SetOwner(owner, tooltipAnchor);
+
+	local wrap = true;
+	GameTooltip_SetTitle(tooltip, text, RED_FONT_COLOR, wrap);
+
+	tooltip:Show();
+end
+
 function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
 	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
 end
@@ -123,21 +225,27 @@ function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
 	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
 end
 
-function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColor, rightColor, wrap)
+function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColor, rightColor, wrap, leftOffset)
 	local leftR, leftG, leftB = leftColor:GetRGB();
 	local rightR, rightG, rightB = rightColor:GetRGB();
 	if wrap == nil then
 		wrap = true;
 	end
-	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap);
+	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap, leftOffset);
+end
+
+function GameTooltip_ShowSimpleTooltip(tooltip, text, overrideColor, wrap, owner, point, offsetX, offsetY)
+	tooltip:SetOwner(owner, point, offsetX, offsetY);
+	GameTooltip_SetTitle(tooltip, text, overrideColor, wrap);
+	tooltip:Show();
 end
 
 function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 	verticalPadding = verticalPadding or 0;
 
 	local textSpacing = tooltipFrame:GetCustomLineSpacing() or 2;
-	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight();
-	local neededHeight = frame:GetHeight() + verticalPadding ;
+	local textHeight = Round(envTbl[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight());
+	local neededHeight = Round(frame:GetHeight() + verticalPadding);
 	local numLinesNeeded = math.ceil(neededHeight / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);
@@ -193,4 +301,34 @@ end
 
 function TooltipBackdropTemplateMixin:SetBorderBlendMode(blendMode)
 	self.NineSlice:SetBorderBlendMode(blendMode);
+end
+
+DisabledTooltipButtonMixin = {};
+
+function DisabledTooltipButtonMixin:OnEnter()
+	if not self:IsEnabled() then
+		local disabledTooltip, disabledTooltipAnchor = self:GetDisabledTooltip();
+		if disabledTooltip ~= nil then
+			GameTooltip_ShowDisabledTooltip(GetAppropriateTooltip(), self, disabledTooltip, disabledTooltipAnchor);
+		end
+	end
+end
+
+function DisabledTooltipButtonMixin:OnLeave()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
+function DisabledTooltipButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor)
+	self.disabledTooltip = disabledTooltip;
+	self.disabledTooltipAnchor = disabledTooltipAnchor;
+end
+
+function DisabledTooltipButtonMixin:GetDisabledTooltip()
+	return self.disabledTooltip, self.disabledTooltipAnchor;
+end
+
+function DisabledTooltipButtonMixin:SetDisabledState(disabled, disabledTooltip, disabledTooltipAnchor)
+	self:SetEnabled(not disabled);
+	self:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor);
 end

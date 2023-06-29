@@ -2,6 +2,7 @@
 ## LoadOnDemand: 1
 
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\SecureScrollTemplates.lua
 ..\..\SharedXML\NineSliceLayouts.lua
 ..\..\SharedXML\NineSlice.lua
 CommunitiesList.xml

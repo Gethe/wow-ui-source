@@ -42,7 +42,9 @@ function WorldMapMixin:AddStandardDataProviders()
 	--self:AddDataProvider(CreateFromMixins(StorylineQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(BattlefieldFlagDataProviderMixin));
 	--self:AddDataProvider(CreateFromMixins(BonusObjectiveDataProviderMixin));
-	--self:AddDataProvider(CreateFromMixins(VehicleDataProviderMixin));
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		self:AddDataProvider(CreateFromMixins(VehicleDataProviderMixin));
+	end
 	--self:AddDataProvider(CreateFromMixins(EncounterJournalDataProviderMixin));
 	--self:AddDataProvider(CreateFromMixins(FogOfWarDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DeathMapDataProviderMixin));

@@ -1,3 +1,24 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+end
+---------------
+
 ScrollBoxPaddingMixin = {};
 
 function ScrollBoxPaddingMixin:Init(top, bottom, left, right)
@@ -39,6 +60,6 @@ function ScrollBoxPaddingMixin:SetRight(right)
 	self.right = right;
 end
 
-function CreateScrollBoxPadding(top, bottom, left, right, spacing)
-	return CreateAndInitFromMixin(ScrollBoxPaddingMixin, top, bottom, left, right, spacing);
+function CreateScrollBoxPadding(top, bottom, left, right)
+	return CreateAndInitFromMixin(ScrollBoxPaddingMixin, top, bottom, left, right);
 end

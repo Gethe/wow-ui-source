@@ -141,7 +141,7 @@ local function PickupAny(kind, target, detail, ...)
 	elseif kind == 'bag' then
 		PickupBagFromSlot(target)
 	elseif kind == 'bagslot' then
-		PickupContainerItem(target, detail)
+		C_Container.PickupContainerItem(target, detail)
 	elseif kind == 'inventory' then
 		PickupInventoryItem(target)
 	elseif kind == 'item' then

@@ -30,15 +30,100 @@ function InspectPVPFrame_SetFaction(self)
 end
 
 function InspectPVPFrame_Update(self)
-	for i=1, MAX_ARENA_TEAMS do
-		GetInspectArenaTeamData(i);
-	end	
+	if ( GetCurrentArenaSeasonUsesTeams() ) then
+		for i=1, MAX_ARENA_TEAMS do
+			GetInspectArenaTeamData(i);
+		end	
+	end
 	InspectPVPFrame_SetFaction(self);
 	InspectPVPHonor_Update(self);
 	InspectPVPTeam_Update(self);
 end
 
-function InspectPVPTeam_Update(self)
+function InspectPVPTeam_Update()
+	if ( GetCurrentArenaSeasonUsesTeams() ) then
+		InspectPVPTeam_TeamsUpdate();
+	else
+		InspectPVPTeam_SoloUpdate();
+	end
+end
+
+function InspectPVPTeam_SoloUpdate()
+	-- Display Elements
+	local button, buttonName, data, standard;
+	local emblem, emblemColor, border, borderColor, banner, bannerColor, rankColor;
+	-- Data Elements
+	local teamSize, rating, played, wins, loss, rank;
+
+	local buttonIndex = 0;
+
+	-- fill out data
+	for index=1, MAX_ARENA_TEAMS do
+		buttonIndex = buttonIndex + 1;
+
+		-- Pull Values
+		rating, played, wins, _, _, rank, teamSize = GetInspectArenaData(index);
+		loss = played - wins;
+		emblem, emblemColor, border, borderColor, banner, bannerColor, rankColor = ArenaUtil.GetArenaBannerInfo(rating, rank);
+
+		-- Set button elements to variables 
+		button = getglobal("InspectPVPTeam"..buttonIndex);
+		buttonName = "InspectPVPTeam"..buttonIndex;
+		data = buttonName.."Data";
+
+		if (rating > 0) then
+			-- Populate Data
+			getglobal(data.."TypeLabel"):SetText(ARENA_THIS_SEASON);
+			getglobal(data.."Name"):SetText(_G["ARENA_" .. teamSize .. "V" .. teamSize]);
+			getglobal(data.."PlayedLabel"):SetText(RATING);  -- Using the "Played" element for rating in teamless mode
+			getglobal(data.."Played"):SetText(rating);
+			getglobal(data.."Games"):SetText(played);
+			getglobal(data.."Wins"):SetText(wins);
+			getglobal(data.."Loss"):SetText(loss);
+
+			-- Set TeamSize Banner
+			standard = buttonName.."Standard";
+			getglobal(standard.."Banner"):SetTexture(banner);
+			getglobal(standard.."Banner"):SetVertexColor(bannerColor.r, bannerColor.g, bannerColor.b);
+			if (border) then
+				getglobal(standard.."Border"):SetTexture(border);
+				getglobal(standard.."Border"):SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
+			end
+			getglobal(standard.."Emblem"):SetTexture(emblem);
+			getglobal(standard.."Emblem"):SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
+
+			-- Set visual elements
+			getglobal(data):Show();
+			button:SetAlpha(1);
+			getglobal(buttonName.."Highlight"):SetAlpha(1);
+			getglobal(buttonName.."Highlight"):SetBackdropBorderColor(1.0, 0.82, 0);
+			getglobal(standard):SetAlpha(1);
+			getglobal(standard.."Border"):Show();
+			getglobal(standard.."Emblem"):Show();
+			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
+			getglobal(buttonName.."Background"):SetAlpha(1);
+			getglobal(buttonName.."TeamType"):Hide();
+			getglobal(standard.."Rank"):Hide();
+			getglobal(data.."RatingLabel"):Hide();
+			getglobal(data.."Rating"):Hide();
+		else
+			-- Set standard type
+			getglobal(buttonName.."StandardBanner"):SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
+
+			-- Hide or Show items
+			button:SetAlpha(0.4);
+			getglobal(data):Hide();
+			getglobal(buttonName.."Background"):SetVertexColor(0, 0, 0);
+			getglobal(buttonName.."Standard"):SetAlpha(0.1);
+			getglobal(buttonName.."StandardBorder"):Hide();
+			getglobal(buttonName.."StandardEmblem"):Hide();
+			getglobal(buttonName.."TeamType"):SetFormattedText(PVP_TEAMSIZE, teamSize, teamSize);
+			getglobal(buttonName.."TeamType"):Show();
+		end
+	end
+end
+
+function InspectPVPTeam_TeamsUpdate()
 	-- Display Elements
 	local button, buttonName, highlight, data, standard, emblem, border;
 	-- Data Elements

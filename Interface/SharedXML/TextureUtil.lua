@@ -81,28 +81,63 @@ function ClearClampedTextureRotation(texture)
 	end
 end
 
+local LFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader",
+	["TANK"] = "UI-LFG-RoleIcon-Tank",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS",
+};
+
+local DisabledLFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Disabled",
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Disabled",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Disabled",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Disabled",
+};
+
+function GetIconForRole(role, showDisabled)
+	if LFGRoleIcons[role] == nil or DisabledLFGRoleIcons[role] == nil then
+		error("Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return showDisabled and DisabledLFGRoleIcons[role] or LFGRoleIcons[role];
+end
+
+local MicroLFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Micro",
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro",
+};
+
+function GetMicroIconForRole(role)
+	if MicroLFGRoleIcons[role] == nil then
+		error("Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return MicroLFGRoleIcons[role];
+end
+
+local LFGRoleBackgrounds = {
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Background",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Background",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Background",
+};
+
+function GetBackgroundForRole(role)
+	if LFGRoleBackgrounds[role] == nil then
+		error("Unknown role: " .. tostring(role));
+	end
+
+	return LFGRoleBackgrounds[role];
+end
 
 function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
 	local widthPerGrid = gridWidth/textureWidth;
 	local heightPerGrid = gridHeight/textureHeight;
 	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
-end
-
-function GetTexCoordsForRole(role)
-	local textureHeight, textureWidth = 256, 256;
-	local roleHeight, roleWidth = 67, 67;
-
-	if ( role == "GUIDE" ) then
-		return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "TANK" ) then
-		return GetTexCoordsByGrid(1, 2, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "HEALER" ) then
-		return GetTexCoordsByGrid(2, 1, textureWidth, textureHeight, roleWidth, roleHeight);
-	elseif ( role == "DAMAGER" ) then
-		return GetTexCoordsByGrid(2, 2, textureWidth, textureHeight, roleWidth, roleHeight);
-	else
-		error("Unknown role: "..tostring(role));
-	end
 end
 
 function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, right, top, bottom, xOffset, yOffset)
@@ -118,6 +153,14 @@ function CreateTextureMarkup(file, fileWidth, fileHeight, width, height, left, r
 		, right * fileWidth
 		, top * fileHeight
 		, bottom * fileHeight
+	);
+end
+
+function CreateSimpleTextureMarkup(file, width, height)
+	return ("|T%s:%d:%d|t"):format(
+		  file
+		, height or width
+		, width
 	);
 end
 
@@ -145,9 +188,11 @@ function CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexCo
 	end
 end
 
-function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor)
+function CreateAtlasMarkupWithAtlasSize(atlasName, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor, scale)
 	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
-	return CreateAtlasMarkup(atlasName, atlasInfo.width, atlasInfo.height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
+	local width = scale and Round(atlasInfo.width * scale) or atlasInfo.width;
+	local height = scale and Round(atlasInfo.height * scale) or atlasInfo.height;
+	return CreateAtlasMarkup(atlasName, width, height, offsetX, offsetY, rVertexColor, gVertexColor, bVertexColor);
 end
 
 -- NOTE: Many of the TextureKit functions below use the following parameters
@@ -168,7 +213,7 @@ function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
 	for region, atlas in pairs(regionsToAtlases) do
 		if frame[region] then
 			if frame[region]:GetObjectType() == "StatusBar" then
-				frame[region]:SetStatusBarAtlas(atlas);
+				frame[region]:SetStatusBarTexture(atlas);
 			elseif frame[region].SetAtlas then
 				frame[region]:SetAtlas(atlas, useAtlasSize);
 			end
@@ -196,7 +241,7 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 
 	if textureKit then
 		if frame:GetObjectType() == "StatusBar" then
-			success = frame:SetStatusBarAtlas(GetFinalNameFromTextureKit(fmt, textureKit));
+			success = frame:SetStatusBarTexture(GetFinalNameFromTextureKit(fmt, textureKit));
 		elseif frame.SetAtlas then
 			success = frame:SetAtlas(GetFinalNameFromTextureKit(fmt, textureKit), useAtlasSize);
 		end

@@ -193,6 +193,7 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("ACTIONBAR_HIDEGRID");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
 	self:RegisterEvent("PET_BAR_UPDATE");
@@ -230,8 +231,8 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PET_STABLE_UPDATE");
 	self:RegisterEvent("PET_STABLE_SHOW");
-	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
-	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
+	self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
+	self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
 	self:RegisterEvent("SPELL_UPDATE_ICON");
 end
 
@@ -294,6 +295,16 @@ function ActionButton_UpdateHotkeys(self, actionButtonType)
         hotkey:SetText(RANGE_INDICATOR);
         hotkey:Hide();
     else
+		local frameWidth, frameHeight = self:GetSize();
+		if ( IsBindingForGamePad(key) ) then
+			-- Allow gamepad binding to go all the way across and overlap the border for more space
+			hotkey:SetSize(frameWidth, 16);
+			hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", 3, 0);
+		else
+			-- Tuck in KBM binding a bit to be inside the border
+			hotkey:SetSize(frameWidth-8, 10);
+			hotkey:SetPoint("TOPRIGHT", self, "TOPRIGHT", -2, -2);
+		end
         hotkey:SetText(text);
         hotkey:Show();
     end
@@ -706,7 +717,7 @@ function ActionButton_OnEvent(self, event, ...)
 		ActionButton_ShowGrid(self);
 	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
 		ActionButton_HideGrid(self);
-	elseif ( event == "UPDATE_BINDINGS" ) then
+	elseif ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		ActionButton_UpdateHotkeys(self, self.buttonType);
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;

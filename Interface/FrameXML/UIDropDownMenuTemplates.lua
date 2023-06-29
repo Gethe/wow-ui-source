@@ -11,6 +11,10 @@ function UIDropDownCustomMenuEntryMixin:GetPreferredEntryWidth()
 	return self:GetWidth();
 end
 
+function UIDropDownCustomMenuEntryMixin:GetPreferredEntryHeight()
+	return self:GetHeight();
+end
+
 function UIDropDownCustomMenuEntryMixin:OnSetOwningButton()
 	-- for derived objects to implement
 end

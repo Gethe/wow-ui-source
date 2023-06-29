@@ -6,8 +6,6 @@ local MAX_MONEY_DISPLAY_WIDTH = 120;
 
 function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_UPDATE");
-	self:RegisterEvent("MERCHANT_CLOSED");
-	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
@@ -22,18 +20,6 @@ end
 function MerchantFrame_OnEvent(self, event, ...)
 	if ( event == "MERCHANT_UPDATE" ) then
 		self.update = true;
-	elseif ( event == "MERCHANT_CLOSED" ) then
-		StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
-		HideUIPanel(self);
-	elseif ( event == "MERCHANT_SHOW" ) then
-		ShowUIPanel(self);
-		if ( not self:IsShown() ) then
-			CloseMerchant();
-			return;
-		end
-		self.page = 1;
-		MerchantFrame_UpdateCurrencies();
-		MerchantFrame_Update();
 	elseif ( event == "PLAYER_MONEY" ) then
 		MerchantFrame_UpdateCanRepairAll();
 		MerchantFrame_UpdateRepairButtons();
@@ -50,6 +36,22 @@ function MerchantFrame_OnEvent(self, event, ...)
 	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		MerchantFrame_UpdateItemQualityBorders(self);
 	end
+end
+
+function MerchantFrame_MerchantShow()
+	ShowUIPanel(MerchantFrame);
+	if ( not MerchantFrame:IsShown() ) then
+		CloseMerchant();
+		return;
+	end
+	MerchantFrame.page = 1;
+	MerchantFrame_UpdateCurrencies();
+	MerchantFrame_Update();
+end
+
+function MerchantFrame_MerchantClosed()
+	StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
+	HideUIPanel(MerchantFrame);
 end
 
 function MerchantFrame_OnUpdate(self, dt)

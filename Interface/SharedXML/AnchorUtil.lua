@@ -58,6 +58,7 @@ GridLayoutMixin = {};
 GridLayoutMixin.Direction = {
 	TopLeftToBottomRight = { x = 1, y = -1 },
 	TopRightToBottomLeft = { x = -1, y = -1 },
+	BottomRightToTopLeft = { x = -1, y = 1 },
 	TopLeftToBottomRightVertical = { x = 1, y = -1, isVertical = true },
 	TopRightToBottomLeftVertical = { x = -1, y = -1, isVertical = true },
 };
@@ -157,6 +158,8 @@ function AnchorUtil.GridLayoutFactoryByCount(factoryFunction, count, initialAnch
 	end
 
 	AnchorUtil.GridLayout(frames, initialAnchor, layout);
+
+	return frames;
 end
 
 -- For initialAnchor, use AnchorUtil.CreateAnchor(...)
@@ -217,15 +220,15 @@ local function MirrorRegionsAlongAxis(mirrorDescriptions, exchangeables, setPoin
 						setPointWrapper(region, point2, relative2, relativePoint2, x2, y2);
 					else
 						-- Otherwise, clear the original point.
-						region:ClearPointByName(point1);
+						region:ClearPoint(point1);
 					end
-					
+
 					exchanged[point1] = true;
 					exchanged[mirrorPoint1] = true;
 				end
 			end
 		end
-		
+
 		if mirrorUV then
 			setTexCoordsWrapper(region);
 		end
@@ -304,7 +307,10 @@ function AnchorUtil.DebugAnchorGraph(frame, indent, visited, output)
 
 	local function FormatFrame(frame)
 		local color = frame:IsRectValid() and GREEN_FONT_COLOR or RED_FONT_COLOR;
-		return color:WrapTextInColorCode(frame:GetDebugName() .. (" size <%.2f, %.2f>"):format(frame:GetSize(true)))
+		local x, y = frame:GetSize();
+		local x2, y2 = frame:GetSize(true);
+		return color:WrapTextInColorCode(frame:GetDebugName() .. (" calculated size <%.2f, %.2f> explicit size <%.2f, %.2f> points <%d>"):format(
+		x, y, x2, y2, frame:GetNumPoints()));
 	end
 
 	table.insert(output, indent .. FormatFrame(frame));

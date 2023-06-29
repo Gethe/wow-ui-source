@@ -87,11 +87,20 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentBorder" relativePoint="CENTER">
 							<Offset>
-								<AbsDimension x="-5" y="17"/>
+								<AbsDimension x="-5" y="17"/> <!-- Note: this is modified if we aren't using arena teams -->
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBorder" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="-4" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

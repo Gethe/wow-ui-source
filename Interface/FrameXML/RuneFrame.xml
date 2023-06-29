@@ -1,0 +1,156 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="RuneFrame.lua"/>
+  <Button name="RuneButtonIndividualTemplate" virtual="true" hidden="false">
+    <Size>
+      <AbsDimension x="18" y="18"/>
+    </Size>
+    <Frames>
+		<Cooldown name="$parentCooldown" reverse="false" drawEdge="true"  hideCountdownNumbers="true" useCircularEdge="true" inherits="CooldownFrameTemplate" drawBling="false">
+			<Size x="15" y="15"/>
+			<Anchors>
+			  <Anchor point="CENTER">
+				<Offset>
+				  <AbsDimension x="0" y="-1"/>
+				</Offset>
+			  </Anchor>
+			</Anchors>
+		</Cooldown>
+		<Frame name="$parentBorder" frameStrata="LOW">
+			<Size x="24" y="24"/>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset x="0" y="-1"/>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentTexture" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Ring">
+						<Color r=".6" g=".6" b=".6" a="1"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>	
+					RaiseFrameLevel(self);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+		<Frame frameStrata="MEDIUM" setAllPoints="true" name="$parentShine">
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="$parentTexture" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+						<Size x="60" y="35"/>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Frame>
+    </Frames>
+    <Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Blood">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+		</Layer>
+    </Layers>
+    <Scripts>
+		<OnLoad>
+			RuneButton_OnLoad(self);
+		</OnLoad>
+		<OnEnter>
+			RuneButton_OnEnter(self, motion);
+		</OnEnter>
+		<OnLeave>
+			RuneButton_OnLeave(self, motion);
+		</OnLeave>
+    </Scripts>
+  </Button>
+	
+	<!--If you change anything about RuneFrame (specifically anchors), make sure to change the relevant information in UnitFrame_SetUnit -->
+  <Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false" >
+		<!--parent="UIParent" mixin="RuneFrameMixin"-->
+		<Size x="130" y="18" />
+		<Anchors>
+			<Anchor point="TOP" relativePoint="BOTTOM" x="54" y="34" />
+		</Anchors>
+    <Scripts>
+      <OnLoad function="RuneFrame_OnLoad"/>
+    </Scripts>
+  </Frame>
+
+  <Button name="Rune1" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="1">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="RuneFrame" relativePoint="LEFT">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="Rune2" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="2">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="Rune1" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="Rune3" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="5">
+    <Anchors>
+      <Anchor point="LEFT"  relativeTo="Rune2" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="Rune4" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="6">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="Rune3" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="Rune5" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="3">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="Rune4" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+  <Button name="Rune6" parentArray="Runes" inherits="RuneButtonIndividualTemplate" parent="RuneFrame" id="4">
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="Rune5" relativePoint="RIGHT">
+        <Offset>
+          <AbsDimension x="3" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+
+</Ui>

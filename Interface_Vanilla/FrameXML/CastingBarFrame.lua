@@ -10,14 +10,16 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetNonInterruptibleCastColor(self, 0.7, 0.7, 0.7);
 	CastingBarFrame_SetFailedCastColor(self, 1.0, 0.0, 0.0);
 
-	CastingBarFrame_SetUseStartColorForFinished(self, true);
+	--classic cast bars should flash green when finished casting
+	--CastingBarFrame_SetUseStartColorForFinished(self, true);
 	CastingBarFrame_SetUseStartColorForFlash(self, true);
 
 	CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield);
 
 	self.showCastbar = true;
+	self.notInterruptible = false;
 
-	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint();
+	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint(1);
 	if ( point == "CENTER" ) then
 		self.Spark.offsetY = offsetY;
 	end
@@ -123,7 +125,7 @@ end
 
 function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
-	
+
 	local unit = self.unit;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local nameChannel = ChannelInfo();
@@ -142,7 +144,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	if ( arg1 ~= unit ) then
 		return;
 	end
-	
+
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = CastingInfo();
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
@@ -157,7 +159,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		else
 			self.Flash:SetVertexColor(1, 1, 1);
 		end
-		
+
 		if ( self.Spark ) then
 			self.Spark:Show();
 		end

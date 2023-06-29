@@ -24,6 +24,8 @@ local PLAYER_UNITS = {
 	pet = true,
 };
 
+CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
+
 function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.HealthBar.LeftText = self.textureFrame.HealthBarTextLeft;
 	self.HealthBar.RightText = self.textureFrame.HealthBarTextRight;
@@ -66,9 +68,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                     nil, "player", nil,
 						 nil, nil,
 						 nil, nil, nil,
-						 nil, nil, 
+						 nil, nil,
 						 nil, nil);
-						
+
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_HEALTH");
@@ -99,6 +101,14 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		end
 	end
 	SecureUnitButton_OnLoad(self, self.unit, showmenu);
+
+	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
+end
+
+function TargetFrame_OnCVarChanged (self, cvar, cvarValue)
+	if( cvar == "showTargetOfTarget" and self.totFrame ) then
+		TargetofTarget_Update(self.totFrame);
+	end
 end
 
 function TargetFrame_Update (self)
@@ -112,6 +122,7 @@ function TargetFrame_Update (self)
 		-- Moved here to avoid taint from functions below
 		if ( self.totFrame ) then
 			TargetofTarget_Update(self.totFrame);
+			TargetofTarget_UpdateDebuffs(self.totFrame);
 		end
 
 		UnitFrame_Update(self);
@@ -155,7 +166,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		TargetFrame_UpdateRaidTargetIcon(self);
 		CloseDropDownMenus();
 
-		if ( UnitExists(self.unit) and not IsReplacingUnit()) then
+		if ( UnitExists(self.unit) and not C_PlayerInteractionManager.IsReplacingUnit()) then
 			if ( UnitIsEnemy(self.unit, "player") ) then
 				PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT);
 			elseif ( UnitIsFriend("player", self.unit) ) then
@@ -218,6 +229,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		else
 			if ( self.totFrame ) then
 				TargetofTarget_Update(self.totFrame);
+				TargetofTarget_UpdateDebuffs(self.totFrame);
 			end
 			TargetFrame_CheckFaction(self);
 		end
@@ -239,7 +251,7 @@ function TargetFrame_OnVariablesLoaded()
 	TargetFrame_SetLocked(not TARGET_FRAME_UNLOCKED);
 	TargetFrame_UpdateBuffsOnTop();
 
-	FocusFrame_SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
+	FocusFrame:SetSmallSize(not GetCVarBool("fullSizeFocusFrame"));
 	FocusFrame_UpdateBuffsOnTop();
 end
 
@@ -412,8 +424,11 @@ function TargetFrame_CheckDead (self)
 end
 
 function TargetFrame_OnUpdate (self, elapsed)
-	if ( self.totFrame and self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit) ) then
-		TargetofTarget_Update(self.totFrame);
+	if ( self.totFrame) then
+		if ( self.totFrame:IsShown() ~= UnitExists(self.totFrame.unit) ) then
+			TargetofTarget_Update(self.totFrame);
+		end
+		TargetofTarget_UpdateDebuffs(self.totFrame);
 	end
 end
 
@@ -908,7 +923,7 @@ end
 function TargetofTarget_Update(self, elapsed)
 	local show;
 	local parent = self:GetParent();
-	if ( SHOW_TARGET_OF_TARGET == "1" and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
 		if ( not self:IsShown() ) then
 			self:Show();
 			if ( parent.spellbar ) then
@@ -928,6 +943,13 @@ function TargetofTarget_Update(self, elapsed)
 				Target_Spellbar_AdjustPosition(parent.spellbar);
 			end
 		end
+	end
+end
+
+function TargetofTarget_UpdateDebuffs(self)
+	local parent = self:GetParent();
+	if ( CVarCallbackRegistry:GetCVarValueBool("showTargetOfTarget") and UnitExists(parent.unit) and UnitExists(self.unit) and ( not UnitIsUnit(PlayerFrame.unit, parent.unit) ) and ( UnitHealth(parent.unit) > 0 ) ) then
+		RefreshDebuffs(self, self.unit, nil, nil, true);
 	end
 end
 
@@ -996,7 +1018,7 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 end
 
 function Target_Spellbar_OnEvent(self, event, ...)
-	if( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE ) then 
+	if( GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE ) then
 		return;
 	end
 
@@ -1114,7 +1136,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
-	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint("CENTER")));
+	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint(1)));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self:SetHitRectInsets(0, 95, 15, 30);
 	self:SetScale(0.75);
@@ -1131,16 +1153,19 @@ end
 -- Focus Frame
 -- *********************************************************************************
 
+local FOCUS_FRAME_LOCKED = true;
+
+FocusFrameMixin = {};
+
 function FocusFrameDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "FOCUS", "focus", SET_FOCUS);
 end
 
-FOCUS_FRAME_LOCKED = true;
-function FocusFrame_IsLocked()
+function FocusFrameMixin:IsLocked()
 	return FOCUS_FRAME_LOCKED;
 end
 
-function FocusFrame_SetLock(locked)
+function FocusFrameMixin:SetLock(locked)
 	FOCUS_FRAME_LOCKED = locked;
 end
 
@@ -1170,7 +1195,7 @@ function FocusFrame_OnDragStop(self)
 	end
 end
 
-function FocusFrame_SetSmallSize(smallSize, onChange)
+function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 	if ( smallSize and not FocusFrame.smallSize ) then
 		local x = FocusFrame:GetLeft();
 		local y = FocusFrame:GetTop();

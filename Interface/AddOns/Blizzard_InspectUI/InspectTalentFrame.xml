@@ -14,13 +14,12 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="7" y="-6"/>
+								<AbsDimension x="8" y="-7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 				</Texture>
 			</Layer>
-
 			<Layer level="BORDER">
 				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
 					<Size>
@@ -46,7 +45,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotLeft">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
 					<Size>
 						<AbsDimension x="256" y="256"/>
 					</Size>
@@ -58,7 +57,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\TalentFrame\UI-TalentFrame-BotRight">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
 					<Size>
 						<AbsDimension x="128" y="256"/>
 					</Size>
@@ -121,36 +120,8 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="InspectTalentFrameSpentPoints" inherits="GameFontNormalSmall" justifyH="CENTER">
-					<Size>
-						<AbsDimension x="225" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="30" y="86"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+			</Layers>
 		<Frames>
-			<Frame name="InspectTalentFrameSpentPointsMouseover">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectTalentFrameSpentPoints"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="InspectTalentFrameSpentPoints"/>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						InspectTalentFrameSpentPoints_OnEnter(self);
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Frame>
 			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -164,6 +135,7 @@
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update(self);
 						TalentFrame_Update(InspectTalentFrame);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -176,6 +148,7 @@
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update(self);
 						TalentFrame_Update(InspectTalentFrame);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -188,6 +161,7 @@
 						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
 						InspectTalentFrame_Update(self);
 						TalentFrame_Update(InspectTalentFrame);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -200,23 +174,89 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="InspectTalentFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
-				<Size>
-					<AbsDimension x="80" y="22"/>
-				</Size>
+			<Frame name="InspectTalentFramePointsBar">
+				<Size x="331" y="26"/>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="305" y="-420"/>
-						</Offset>
+					<Anchor point="LEFT">
+						<Offset x="16" y="0"/>
+					</Anchor>
+					<Anchor point="RIGHT">
+						<Offset x="-36" y="0"/>
+					</Anchor>
+					<Anchor point="BOTTOM">
+						<Offset x="0" y="81"/>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" file="Interface\Buttons\UI-Button-Borders2" setAllPoints="true">
+							<Size x="331" y="26"/>
+							<TexCoords left="0.0" right="0.646484375" top="0.2109375" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2">
+							<Size x="6" y="18"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset x="4" y="0"/>
+								</Anchor>
+								<Anchor point="TOP">
+									<Offset x="0" y="-5"/>
+								</Anchor>
+								<Anchor point="BOTTOM">
+									<Offset x="0" y="5"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.0" right="0.01171875" top="0.421875" bottom="0.5625"/>
+						</Texture>
+						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2">
+							<Size x="6" y="18"/>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="-4" y="0"/>
+								</Anchor>
+								<Anchor point="TOP">
+									<Offset x="0" y="-5"/>
+								</Anchor>
+								<Anchor point="BOTTOM">
+									<Offset x="0" y="5"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
+						</Texture>
+						<Texture name="$parentBorderMiddle" file="Interface\Buttons\UI-Button-Borders2">
+				<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+					<TexCoords left="0.01171875" right="0.3046875" top="0.421875" bottom="0.5625"/>
+				</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="InspectTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size x="0" y="15"/>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="12" y="1"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="InspectTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
+							<Size x="0" y="15"/>
+						<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="-12" y="1"/>
+					</Anchor>
+				</Anchors>
+				</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
-					<OnClick>
-						HideUIPanel(InspectFrame);
-					</OnClick>
+					<OnEnter function="InspectTalentFramePointsBar_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</Button>
+			</Frame>
 			<ScrollFrame name="InspectTalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
 					<AbsDimension x="296" y="332"/>
@@ -226,6 +266,9 @@
 						<Offset>
 							<AbsDimension x="-65" y="-77"/>
 						</Offset>
+					</Anchor>
+				<Anchor point="BOTTOM" relativeTo="InspectTalentFramePointsBar" relativePoint="TOP">
+						<Offset x="0" y="0"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -401,15 +444,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				InspectTalentFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				InspectTalentFrame_OnHide(self);
-			</OnHide>
-			<OnLoad>
-				InspectTalentFrame_OnLoad(self);
-			</OnLoad>
+			<OnShow function="InspectTalentFrame_OnShow"/>
+			<OnHide function="InspectTalentFrame_OnHide"/>
+			<OnLoad function="InspectTalentFrame_OnLoad"/>
+			<OnEvent function="InspectTalentFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -193,9 +193,27 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	button1 = DONE,
 	button2 = CANCEL,
 	OnAccept = function()
-		-- need to get desired faction in case of pandaren doing faction change to another pandaren
-		-- this will be nil in any other case
-		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
+		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+	end,
+}
+
+GlueDialogTypes["CONFIRM_VAS_FACTION_CHANGE"] = {
+	text = CONFIRM_PAID_SERVICE,
+	button1 = DONE,
+	button2 = CANCEL,
+	OnAccept = function()
+		CharacterCreateFrame:BeginVASTransaction();
+	end,
+}
+
+GlueDialogTypes["CHARACTER_CREATE_VAS_ERROR"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+	OnAccept = function ()
+		if GlueDialog.data then
+			CharacterCreateFrame:Exit();
+		end
 	end,
 }
 
@@ -465,9 +483,6 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogButton3:Hide();
 	end
 	
-	--Show/Hide the disable overlay on the rest of the screen
-	GlueDialog.Cover:SetShown(dialogInfo.cover);
-
 	-- Set the miscellaneous variables for the dialog
 	GlueDialog.which = which;
 	GlueDialog.timeleft = dialogInfo.timeout or 0;
@@ -567,6 +582,80 @@ function GlueDialog_Show(which, text, data)
 	GlueDialog:Show();
 end
 
+function GlueDialog_Resize(self, which)
+	local dialogInfo = GlueDialogTypes[which];
+
+	-- Get the width of the text to aid in determining the width of the dialog
+	local textWidth = 0;
+	if ( dialogInfo.html ) then
+		textWidth = select(3, GlueDialogHTML:GetBoundsRect());
+	else
+		textWidth = GlueDialogText:GetWidth();
+	end
+
+	-- size the width first
+	if( dialogInfo.displayVertical ) then
+		local borderPadding = 32;
+		local backgroundWidth = math.max(GlueDialogButton1:GetWidth(), textWidth);
+		GlueDialogBackground:SetWidth(backgroundWidth + borderPadding);
+	elseif ( dialogInfo.button3 ) then
+		local displayWidth = 75 + GlueDialogButton1:GetWidth() + 15 + GlueDialogButton2:GetWidth() + 15 + GlueDialogButton3:GetWidth() + 75;
+		GlueDialogBackground:SetWidth(displayWidth);
+		GlueDialogText:SetWidth(displayWidth - 40);
+	end
+
+	-- Get the height of the string
+	local textHeight, _;
+	if ( dialogInfo.html ) then
+		_,_,_,textHeight = GlueDialogHTML:GetBoundsRect();
+	else
+		textHeight = GlueDialogText:GetHeight();
+	end
+
+	-- now size the dialog box height
+	local displayHeight = 16 + textHeight;
+	if( dialogInfo.displayVertical ) then
+		if ( dialogInfo.button1 ) then
+			displayHeight = displayHeight + 25 + GlueDialogButton1:GetHeight() + 25;
+			if ( dialogInfo.button2 ) then
+				displayHeight = displayHeight + 10 + GlueDialogButton2:GetHeight();
+				if ( dialogInfo.button3 ) then
+					displayHeight = displayHeight + 10 + GlueDialogButton3:GetHeight();
+				end
+			end
+		end
+
+		if ( dialogInfo.spinner)  then
+			displayHeight = displayHeight + GlueDialogSpinner:GetHeight();
+		end
+	else
+		if ( dialogInfo.button1 ) then
+			displayHeight = displayHeight + 13 + GlueDialogButton1:GetHeight() + 25;
+		else
+			displayHeight = displayHeight + 25;
+		end
+
+		if ( dialogInfo.hasEditBox ) then
+			displayHeight = displayHeight + 13 + GlueDialogEditBox:GetHeight();
+			if (dialogInfo.editBoxYMargin) then
+				displayHeight = displayHeight + dialogInfo.editBoxYMargin;
+			end
+			if (dialogInfo.editBoxInstructions) then
+				displayHeight = displayHeight + 3 + GlueDialogEditBox.Instructions:GetHeight();
+			end
+		end
+
+		if ( dialogInfo.spinner)  then
+			displayHeight = displayHeight + GlueDialogSpinner:GetHeight();
+		end
+	end
+	if (dialogInfo.alertTopCenterAlign == 1) then
+		displayHeight = displayHeight + GlueDialogAlertIcon:GetHeight() + 36;
+	end
+
+	GlueDialogBackground:SetHeight(math.floor(displayHeight + 0.5));
+end
+
 function GlueDialog_Hide(which, text)
 	if ( which ) then
 		if ( GlueDialog.which ~= which ) then
@@ -597,7 +686,10 @@ function GlueDialog_OnShow(self)
 	self:Raise();
 	local OnShow = GlueDialogTypes[self.which].OnShow;
 	if ( OnShow ) then
-		OnShow();
+		OnShow(self, self.data);
+	end
+	if GlueDialogTypes[self.which].cover then
+		GlueParent_AddModalFrame(GlueDialog);
 	end
 end
 
@@ -619,32 +711,29 @@ function GlueDialog_OnUpdate(self, elapsed)
 	
 	local OnUpdate = GlueDialogTypes[which].OnUpdate;
 	if ( OnUpdate ) then
-		OnUpdate(elapsed);
+		OnUpdate(self, elapsed);
 	end
 end
 
-function GlueDialog_OnHide()
+function GlueDialog_OnHide(self)
 --	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	GlueParent_RemoveModalFrame(self);
 end
 
 function GlueDialog_OnClick(self, button, down)
-	local index = self:GetID();
 	GlueDialog:Hide();
+	local index = self:GetID();
+	local info = GlueDialogTypes[GlueDialog.which]
+	local func;
 	if ( index == 1 ) then
-		local OnAccept = GlueDialogTypes[GlueDialog.which].OnAccept;
-		if ( OnAccept ) then
-			OnAccept();
-		end
+		func = info.OnAccept or info.OnButton1;
 	elseif ( index == 2 ) then
-		local OnCancel = GlueDialogTypes[GlueDialog.which].OnCancel;
-		if ( OnCancel ) then
-			OnCancel();
-		end
+		func = info.OnCancel or info.OnButton2;
 	elseif ( index == 3 ) then
-		local OnAlt = GlueDialogTypes[GlueDialog.which].OnAlt;
-		if ( OnAlt ) then
-			OnAlt();
-		end
+		func = info.OnAlt or info.OnButton3;
+	end
+	if ( func ) then
+		func();
 	end
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end

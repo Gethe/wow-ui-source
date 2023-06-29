@@ -7,4 +7,7 @@
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
+
+	<!--This is a dummy element that Blizzard_SharedWidgetFrames depends on.  We currently don't use the relevant widgets in Classic.  This only exists to avoid errors on startup.-->
+	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="ResizeLayoutFrame"/>
 </Ui>

@@ -3,6 +3,7 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("COMPACT_UNIT_FRAME_PROFILES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	
 	--Get this working with the InterfaceOptions panel.
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
@@ -11,7 +12,6 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	}
 	
 	BlizzardOptionsPanel_OnLoad(self, CompactUnitFrameProfiles_SaveChanges, CompactUnitFrameProfiles_CancelCallback, CompactUnitFrameProfiles_DefaultCallback, CompactUnitFrameProfiles_UpdateCurrentPanel);
-	InterfaceOptions_AddCategory(self, false, 11);
 end
 
 function CompactUnitFrameProfiles_OnEvent(self, event, ...)
@@ -28,12 +28,9 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 		CompactUnitFrameProfiles_ValidateProfilesLoaded(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then	--Check for zoning
 		CompactUnitFrameProfiles_CheckAutoActivation();
-	elseif ( event == "GROUP_JOINED" ) then
-		local partyCategory = ...;
-		if ( partyCategory == LE_PARTY_CATEGORY_INSTANCE ) then
+	elseif ( event == "GROUP_JOINED" or event == "GROUP_ROSTER_UPDATE" ) then
 			CompactUnitFrameProfiles_CheckAutoActivation();
 		end
-	end
 end
 
 function CompactUnitFrameProfiles_ValidateProfilesLoaded(self)
@@ -169,6 +166,12 @@ function CompactUnitFrameProfiles_ActivateRaidProfile(profile)
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
 end
 
+function CompactUnitFrameProfiles_SetRaidProfile(profile)
+	CompactUnitFrameProfiles.selectedProfile = profile;
+	SaveRaidProfileCopy(profile);	--Save off the current version in case we cancel.
+	SetActiveRaidProfile(profile);
+end
+
 function CompactUnitFrameProfiles_ApplyCurrentSettings()
 	CompactUnitFrameProfiles_ApplyProfile(GetActiveRaidProfile());
 end
@@ -267,10 +270,12 @@ end
 
 local autoActivateGroupSizes = { 2, 3, 5, 10, 15, 20, 40 };
 local countMap = {};	--Maps number of players to the category.
-for i=1, 10 do countMap[i] = 10 end;
-for i=11, 15 do countMap[i] = 15 end;
-for i=16, 20 do countMap[i] = 20 end;
-for i=21, 40 do countMap[i] = 40 end;
+for i, autoActivateGroupSize in ipairs(autoActivateGroupSizes) do
+	local groupSizeStart = i > 1 and (autoActivateGroupSizes[i - 1] + 1) or 1;
+	for groupSize = groupSizeStart, autoActivateGroupSize do
+		countMap[groupSize] = autoActivateGroupSize;
+	end
+end
 
 function CompactUnitFrameProfiles_GetAutoActivationState()
 	local name, instanceType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic = GetInstanceInfo();
@@ -281,30 +286,21 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 	local numPlayers, profileType, enemyType;
 	
 	if ( instanceType == "party" or instanceType == "raid" ) then
-		if ( maxPlayers <= 5 ) then
-			numPlayers = 5;	--For 5-man dungeons.
-		else
-			numPlayers = countMap[maxPlayers];
-		end
-		profileType, enemyType = instanceType, "PvE";
+		numPlayers = maxPlayers > 0 and countMap[maxPlayers] or 5;
+		profileType = instanceType;
+		enemyType = "PvE";
 	elseif ( instanceType == "arena" ) then
-		local groupSize = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME);
-		--TODO - Get the actual arena size, not just the # in party.
-		if ( groupSize <= 2 ) then
-			numPlayers, profileType, enemyType = 2, instanceType, "PvP";
-		elseif ( groupSize <= 3 ) then
-			numPlayers, profileType, enemyType = 3, instanceType, "PvP";
-		else
-			numPlayers, profileType, enemyType = 5, instanceType, "PvP";
-		end
+		numPlayers = countMap[GetNumGroupMembers()];
+		profileType = instanceType;
+		enemyType = "PvP";
 	elseif ( instanceType == "pvp" ) then
-		numPlayers, profileType, enemyType = countMap[maxPlayers], instanceType, "PvP";
+		numPlayers = countMap[maxPlayers];
+		profileType = instanceType;
+		enemyType = "PvP";
 	else
-		if ( IsInRaid() ) then
-			numPlayers, profileType, enemyType = countMap[GetNumGroupMembers()], "world", "PvE";
-		else
-			numPlayers, profileType, enemyType = 5, "world", "PvE";
-		end
+		numPlayers = countMap[GetNumGroupMembers()];
+		profileType = "world";
+		enemyType = "PvE";
 	end
 	
 	if ( not numPlayers ) then
@@ -340,9 +336,6 @@ function CompactUnitFrameProfiles_CheckAutoActivation()
 	end
 		
 	local lastActivationType, lastNumPlayers, lastEnemyType = CompactUnitFrameProfiles_GetLastActivationType();
-	if ( activationType == "world" ) then	--We don't adjust due to just the number of players in the raid.
-		return;
-	end
 	
 	if ( lastActivationType == activationType and lastNumPlayers == numPlayers and lastEnemyType == enemyType ) then
 		--If we last auto-adjusted for this same thing, we don't change. (In case they manually changed the profile.)
@@ -618,3 +611,6 @@ CUFProfileActionTable = {
 	locked = CompactUnitFrameProfiles_GenerateRaidManagerSetting("Locked"),
 	shown = CompactUnitFrameProfiles_GenerateRaidManagerSetting("IsShown"),
 }
+
+-- This addon depends on some function from the following addon, so making sure it is enabled.
+EnableAddOn("Blizzard_CompactRaidFrames");

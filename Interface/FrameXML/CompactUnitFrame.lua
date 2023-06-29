@@ -6,6 +6,10 @@ DISTANCE_THRESHOLD_SQUARED = 250*250;
 CUF_NAME_SECTION_SIZE = 15;
 CUF_AURA_BOTTOM_OFFSET = 2;
 
+--Used by CompactUnitFrame_SetHideHealth
+HEALTH_BAR_HIDE_REASON_SETUP = 1;
+HEALTH_BAR_HIDE_REASON_UNIT_DEAD = 2;
+
 function CompactUnitFrame_OnLoad(self)
 	-- Names are required for concatenation of compact unit frame names. Search for
 	-- Name.."HealthBar" for examples. This is ignored by nameplates.
@@ -20,6 +24,8 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED");
+	self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED");
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
@@ -56,7 +62,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateAll(self);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		CompactUnitFrame_UpdateAll(self);
-	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
+	elseif ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_SOFT_ENEMY_CHANGED" or event == "PLAYER_SOFT_FRIEND_CHANGED" ) then
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
 		CompactUnitFrame_UpdateHealthBorder(self);
@@ -310,6 +316,12 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
 		CompactUnitFrame_UpdateLevel(frame);
+	elseif (UnitIsGameObject(frame.displayedUnit) ) then -- Interactable GameObject
+		CompactUnitFrame_SetHideHealth(frame, true, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
+		CompactUnitFrame_UpdateName(frame);
+		CompactUnitFrame_UpdateInRange(frame);
+		CompactUnitFrame_UpdateStatusText(frame);
+		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 	end
 end
 
@@ -350,7 +362,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 end
 
 function CompactUnitFrame_UpdateVisible(frame)
-	if ( UnitExists(frame.unit) or UnitExists(frame.displayedUnit) ) then
+	if ( UnitExists(frame.unit) or UnitExists(frame.displayedUnit) or UnitIsGameObject(frame.displayedUnit) ) then
 		if ( not frame.unitExists ) then
 			frame.newUnit = true;
 		end
@@ -358,8 +370,11 @@ function CompactUnitFrame_UpdateVisible(frame)
 		frame.unitExists = true;
 		frame:Show();
 	else
-		frame:Hide();
 		frame.unitExists = false;
+
+		if ( not UnitIsGameObject(frame.displayedUnit) ) then -- Interactable GameObject nameplates stay visible after death
+			frame:Hide();
+		end
 	end
 end
 
@@ -389,7 +404,11 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 
 	local r, g, b;
 
-	if ( not UnitIsConnected(frame.unit) ) then
+	local unitIsConnected = UnitIsConnected(frame.unit);
+	local unitIsDead = unitIsConnected and UnitIsDead(frame.unit);
+	local unitIsPlayer = UnitIsPlayer(frame.unit) or UnitIsPlayer(frame.displayedUnit);
+
+	if ( not unitIsConnected or (unitIsDead and not unitIsPlayer) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
 	else
@@ -420,7 +439,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			end
 		end
 	end
-	if ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b ) then
+	if (frame.healthBar:GetStatusBarTexture() and ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b )) then
 		frame.healthBar:SetStatusBarColor(r, g, b);
 
 		if (frame.optionTable.colorHealthWithExtendedColors) then
@@ -431,6 +450,26 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 
 		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
 	end
+
+	-- Update whether healthbar is hidden due to being dead - only applies to non-player nameplates
+	local hideHealthBecauseDead = unitIsDead and not unitIsPlayer;
+	CompactUnitFrame_SetHideHealth(frame, hideHealthBecauseDead, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
+end
+
+function CompactUnitFrame_SetHideHealth(frame, hideHealth, reason)
+	assert(reason);
+	
+	if ( hideHealth ) then
+		frame.hideHealthBarMask = bit.bor(frame.hideHealthBarMask or 0, reason);
+	else
+		frame.hideHealthBarMask = bit.band(frame.hideHealthBarMask or 0, bit.bnot(reason));
+	end
+
+	frame.healthBar:SetShown(not CompactUnitFrame_GetHideHealth(frame));
+end
+
+function CompactUnitFrame_GetHideHealth(frame)
+	return frame.hideHealthBarMask and frame.hideHealthBarMask > 0 or false;
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)
@@ -545,7 +584,7 @@ function CompactUnitFrame_UpdateName(frame)
 		if ( frame.optionTable.highlightNameOnMouseover and UnitIsUnit(frame.displayedUnit, "mouseover") ) then
 			-- Classic Nameplates had a yellow name on mouseover.
 			frame.name:SetVertexColor(1.0, 1.0, 0.0);
-		elseif ( CompactUnitFrame_IsTapDenied(frame) ) then
+		elseif ( CompactUnitFrame_IsTapDenied(frame) or UnitIsDead(frame.unit) ) then
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then
@@ -616,13 +655,36 @@ local function SetBorderColor(frame, r, g, b, a)
 	end
 end
 
+local function SetBorderUnderline(frame, r, g, b, a)
+	frame.healthBar.border:SetUnderlineColor(r, g, b, a);
+	if frame.castBar and frame.castBar.border then
+		frame.castBar.border:SetVertexColor(r, g, b, a);
+	end
+end
+
 function CompactUnitFrame_UpdateHealthBorder(frame)
 	if frame.UpdateHealthBorderOverride and frame:UpdateHealthBorderOverride() then
 		return;
 	end
 
+	-- If loose target is forced to match soft target, show soft target colored outline.
+	local softTargetForce = GetCVarBool("SoftTargetForce");
+	if softTargetForce and IsTargetLoose() and frame.optionTable.softTargetBorderColor and
+		(UnitIsUnit(frame.displayedUnit, "softenemy") or UnitIsUnit(frame.displayedUnit, "softfriend")) then
+		SetBorderColor(frame, frame.optionTable.softTargetBorderColor:GetRGBA());
+		return;
+	end
+
+	-- Locked target outline
 	if frame.optionTable.selectedBorderColor and UnitIsUnit(frame.displayedUnit, "target") then
 		SetBorderColor(frame, frame.optionTable.selectedBorderColor:GetRGBA());
+		return;
+	end
+
+-- If soft target, but not forced to match locked, do "underline" border
+	if frame.optionTable.softTargetBorderColor and 
+		(UnitIsUnit(frame.displayedUnit, "softenemy") or UnitIsUnit(frame.displayedUnit, "softfriend")) then
+		SetBorderUnderline(frame, frame.optionTable.softTargetBorderColor:GetRGBA());
 		return;
 	end
 
@@ -1529,6 +1591,7 @@ DefaultCompactNamePlateFriendlyFrameOptions = {
 	showLevel = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .35),
+	softTargetBorderColor = CreateColor(.9, 1, .9, .25),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, .8),
 }
@@ -1553,6 +1616,7 @@ DefaultCompactNamePlateEnemyFrameOptions = {
 	showLevel = true,
 
 	selectedBorderColor = CreateColor(1, 1, 1, .55),
+	softTargetBorderColor = CreateColor(1, 1, 1, .4),
 	tankBorderColor = CreateColor(1, 1, 0, .6),
 	defaultBorderColor = CreateColor(0, 0, 0, .8),
 }
@@ -1601,7 +1665,9 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 			end
 		end
 
-		frame.healthBar:SetShown(not setupOptions.hideHealthbar);
+		frame.hideHealthBarMask = 0; -- Clear out mask of any old values
+		CompactUnitFrame_SetHideHealth(frame, setupOptions.hideHealthbar, HEALTH_BAR_HIDE_REASON_SETUP); -- Populate with setup option
+
 		frame.healthBar:SetHeight(setupOptions.healthBarHeight);
 
 		frame.selectionHighlight:SetParent(frame.healthBar);

@@ -17,7 +17,7 @@ end
 
 function IndexRangeDataProviderMixin:Enumerate(indexBegin, indexEnd)
 	indexBegin = indexBegin and (indexBegin - 1) or 0;
-	indexEnd = indexEnd or math.huge;
+	indexEnd = indexEnd or self.size;
 
 	local function Enumerator(invariant, index)
 		index = index + 1;
@@ -28,6 +28,11 @@ function IndexRangeDataProviderMixin:Enumerate(indexBegin, indexEnd)
 	
 	local invariant = nil;
 	return Enumerator, invariant, indexBegin;
+end
+
+function IndexRangeDataProviderMixin:EnumerateEntireRange()
+	local indexBegin, indexEnd = nil, nil;
+	return self:Enumerate(indexBegin, indexEnd);
 end
 
 function IndexRangeDataProviderMixin:GetSize()

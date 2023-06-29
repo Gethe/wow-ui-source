@@ -48,7 +48,7 @@ function TexelSnappingVisualizerMixin:OnCreated()
 	end
 
 	do
-		local texelSnappingSlider = CreateFrame("SLIDER", nil, self, "HorizontalSliderTemplate");
+		local texelSnappingSlider = CreateFrame("SLIDER", nil, self, "UISliderTemplate");
 		texelSnappingSlider:SetPoint("BOTTOM", self, "BOTTOM", 0, 15);
 		texelSnappingSlider:SetSize(200, 16);
 		local MIN_VALUE = -.25;

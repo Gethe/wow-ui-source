@@ -67,7 +67,7 @@ function RealmList_Update()
 
 			--Update RealmType
 			local realmType = "";
-			if (seasonID) then
+			if (seasonID and SEASON_NAMES[seasonID] ~= nil) then
 				realmType = SEASON_NAMES[seasonID] .. " ";
 			end
 			if ( isPvP and isRP ) then
@@ -113,8 +113,7 @@ function RealmList_Update()
 				button.Load:SetText(LOAD_NEW);
 				button.Load:SetTextColor(BLUE_FONT_COLOR:GetRGB());
 			elseif ( populationState == "RECOMMENDED" ) then
-				--button.Load:SetText(LOAD_RECOMMENDED);
-				button.Load:SetText(RECOMMENDED);
+				button.Load:SetText(LOAD_RECOMMENDED);
 				button.Load:SetTextColor(BLUE_FONT_COLOR:GetRGB());
 			elseif ( populationState == "FULL" ) then
 				button.Load:SetText(LOAD_FULL);
@@ -272,7 +271,12 @@ function RealmList_OnOk()
 		if ( populationState == "FULL" and numChars == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
 		else
-			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+			if (seasonID == Enum.SeasonID.Hardcore and numChars == 0) then
+				HardcorePopUpFrame:SetRealmInfo(RealmList.selectedRealm)
+				HardcorePopUpFrame:ShowRealmSelectionWarning();
+			else
+				C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+			end
 		end
 	end
 end

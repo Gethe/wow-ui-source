@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI_shared.xsd">
+	<Script file="Blizzard_MacroIconSelector.lua"/>
+
+	<Frame name="MacroPopupFrame" mixin="MacroPopupFrameMixin" inherits="IconSelectorPopupFrameTemplate" toplevel="true" frameStrata="HIGH" parent="MacroFrame" movable="true" enableMouse="true" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="5"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="editBoxHeaderText" value="MACRO_POPUP_TEXT" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

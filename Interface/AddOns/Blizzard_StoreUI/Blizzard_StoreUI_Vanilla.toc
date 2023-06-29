@@ -15,6 +15,7 @@
 ..\..\SharedXML\NineSlice.lua
 ..\..\SharedXML\SecureUtil.lua
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\VASErrorLookup.lua
 Blizzard_SimpleCheckout.xml
 ..\..\..\Interface_Vanilla\AddOns\Blizzard_StoreUI\Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml

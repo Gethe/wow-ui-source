@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\..\Interface\FrameXML\UI.xsd">
 	<Script file="Blizzard_NamePlates.lua" />
 
 	<Frame name="NamePlateDriverFrame" toplevel="true" mixin="NamePlateDriverMixin">
@@ -65,6 +65,17 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="SoftTargetFrame">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.name" relativePoint="TOP" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />
 					</Layer>
 				</Layers>
 			</Frame>

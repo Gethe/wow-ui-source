@@ -133,7 +133,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						ScrollFrame_OnLoad(self);
+						UIPanelScrollFrame_OnLoad(self);
 					</OnLoad>
 					<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
 					<OnVerticalScroll>

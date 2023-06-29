@@ -16,11 +16,20 @@ function ActionBarController_OnLoad(self)
 	
 	--MainBar Only
 	
+	--Alternate Only
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
+		self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR");
+	end
+
 	--Shapeshift/Stance Only
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
+
+	-- Possess Bar
+	self:RegisterEvent("UPDATE_POSSESS_BAR");
 
 	-- MultiBarBottomLeft
 	self:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT");
@@ -82,12 +91,22 @@ end
 
 
 function ActionBarController_UpdateAll(force)
+	PossessBar_Update();
 	StanceBar_Update();
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 
+	-- If we have a skinned vehicle bar or skinned override bar, display the OverrideActionBar
+	if ((HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "")
+	or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= 0)) then
+		OverrideActionBar_UpdateSkin();
+		CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_OVERRIDE;
 	-- If we have a non-skinned override bar of some sort, use the MainMenuBarArtFrame
-	if ( HasBonusActionBar() or HasTempShapeshiftActionBar() ) then
-		if (HasTempShapeshiftActionBar()) then
+	elseif ( HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar() ) then
+		if (HasVehicleActionBar()) then
+			MainMenuBarArtFrame:SetAttribute("actionpage", GetVehicleBarIndex());
+		elseif (HasOverrideActionBar()) then
+			MainMenuBarArtFrame:SetAttribute("actionpage", GetOverrideBarIndex());
+		elseif (HasTempShapeshiftActionBar()) then
 			MainMenuBarArtFrame:SetAttribute("actionpage", GetTempShapeshiftBarIndex());
 		elseif (HasBonusActionBar() and GetActionBarPage() == 1) then
 			MainMenuBarArtFrame:SetAttribute("actionpage", GetBonusBarIndex());
@@ -139,7 +158,9 @@ function ValidateActionBarTransition()
 	UIParent_ManageFramePositions();
 	
 	if CURRENT_ACTION_BAR_STATE == LE_ACTIONBAR_STATE_MAIN then
-		if not MainMenuBar:IsShown() then
+		if OverrideActionBar and OverrideActionBar:IsShown() then
+			BeginActionBarTransition(OverrideActionBar, nil);
+		elseif not MainMenuBar:IsShown() then
 			BeginActionBarTransition(MainMenuBar, 1);
 			if ( SHOW_MULTI_ACTIONBAR_3 ) then
 			BeginActionBarTransition(MultiBarRight, 1);

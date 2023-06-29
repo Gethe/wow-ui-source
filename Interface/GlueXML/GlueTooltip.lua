@@ -3,6 +3,8 @@ GLUETOOLTIP_HPADDING = 20;
 
 function GlueTooltip_OnLoad(self)
 	self.Clear = GlueTooltip_Clear;
+	-- For compatibility with shared code
+	self.ClearLines = GlueTooltip_Clear;
 	self.SetFont = GlueTooltip_SetFont;
 	self.AddLine = GlueTooltip_AddLine;
 	self.SetText = GlueTooltip_SetText;
@@ -76,11 +78,11 @@ function GlueTooltip_Clear(self)
 	self:SetHeight(1);
 end
 
-function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
+function GlueTooltip_AddLine(self, text, r, g, b, wrap)
 	r = r or self.defaultColor.r;
 	g = g or self.defaultColor.g;
 	b = b or self.defaultColor.b;
-	a = a or 1;
+	a = 1;
 	-- find a free line
 	local freeLine;
 	for i = 1, GLUETOOLTIP_NUM_LINES do

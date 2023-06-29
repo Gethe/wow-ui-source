@@ -8,5 +8,6 @@ WM_WorldQuestDataProvider.xml
 WM_InvasionDataProvider.xml
 WM_DebugDataProvider.xml
 Blizzard_WorldMapTemplates.xml
-..\..\..\Interface_Vanilla\AddOns\Blizzard_WorldMap\Blizzard_WorldMap.xml
+..\..\..\Interface_Vanilla\AddOns\Blizzard_WorldMap\Blizzard_WorldMap.lua
+Blizzard_WorldMap.xml
 Blizzard_WorldMapTooltip.xml

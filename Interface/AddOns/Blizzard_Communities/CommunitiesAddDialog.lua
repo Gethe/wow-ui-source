@@ -134,9 +134,10 @@ end
 
 function CommunitiesCreateDialogMixin:UpdateCreateButton()
 	local name = self.NameBox:GetText();
-	local nameIsValid = C_Club.ValidateText(Enum.ClubType.BattleNet, name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.NameSuccess;
+	local nameIsValid = C_Club.ValidateText(Enum.ClubType.BattleNet, name, Enum.ClubFieldType.ClubName) == Enum.ValidateNameResult.Success;
 	local shortName = self.ShortNameBox:GetText();
-	local shortNameIsValid = C_Club.ValidateText(Enum.ClubType.BattleNet, shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.NameSuccess;
+	local shortNameIsValid = C_Club.ValidateText(Enum.ClubType.BattleNet, shortName, Enum.ClubFieldType.ClubShortName) == Enum.ValidateNameResult.Success;
+	
 	self.CreateButton:SetEnabled(nameIsValid and shortNameIsValid);
 	if self.CreateButton:IsMouseOver() then
 		CommunitiesCreateDialogCreateButton_OnEnter(self.CreateButton);

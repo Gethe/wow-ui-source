@@ -1,60 +1,4 @@
-----
--- Character Services uses a master which acts as a sort of state machine in combination with flows and blocks.
---
--- Flows must have the following functions:
---  :Initialize(controller):  This sets up the flow and any associated blocks.
---  :Advance(controller):  Advances the flow one step.
---  :Finish(controller):  Finishes the flow and does whatever it needs to process the data.  Should return true if completed sucessfully or false if it failed.
---
--- The methods are provided by a base class for all flows but may be overridden if necessary:
---  :SetUpBlock(controller): This sets up the current block for the given step.
---  :Rewind(controller): Backs the flow up to the next available step.
---  :HideBlock():  Hides the current block.
---  :Restart(controller):  Hide all blocks and restart the flow at step 1.
---  :OnHide():  Check each block for a :OnHide method and call it if it exists.
---  :GetFinishLabel(): The label for the final step of a flow is updated every time the flow is updated (going to next step, etc) this allows a dynamic string to be used.
---
--- Flows should have the following members:
---  .data - reference to an entry in CharacterUpgrade_Items with display info
---  .FinishLabel - The label to show on the finish button for this flow.
---
--- Blocks are opaque data structures.  Frames that belong to blocks inherit the template for blocks, and all controls used for data collection must be in the ControlsFrame.
---
--- Blocks must have the following methods:
---  :Initialize(results, wasFromRewind) - Initializes the block and any controls to the active state.  The argument wasFromRewind indicates whether or not this block is being checked due to the user returning to this step.
---  :IsFinished(wasFromRewind) - Returns whether or not the block is finished and its result set. The argument wasFromRewind indicates whether or not this block is being checked due to the user returning to this step.
---  :GetResult() - Gets the result from the block in a table passed back to the flow.
---
--- The following optional methods may be present on a block:
---  :FormatResult() - Formats the result for display with the result label.  If absent, :GetResult() will be used instead.
---  :OnHide() - This function is called when a block needs to handle any resetting when the flow is hidden.
---  :OnAdvance() - This function is called in response to the flow:Advance call if the block needs to handle any logic here.
---  :OnRewind() - This function is called in response to the flow:Rewind call if the block needs to handle any logic here.
---  :SkipIf() - Skip this block if a certain result is present
---  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
---  :ShouldShowPopup() - If you have a .Popup, then ShouldShowPopup will perform a check if the popup should appear.
---  :GetPopupText() - If you have a .Popup, then GetPopupText fetch the text to display.
---
--- The following members must be present on a block:
---  .Back - Show the back button on the flow frame.
---  .Next - Show the next button on the flow frame.  Conflicts with .Finish
---  .Finish - Show the finish button on the flow frame.  Conflicts with .Next
-
--- The following must be on all blocks not marked as HiddenStep:
---  .ActiveLabel - The label to show when the block is active above the controls.
---  .ResultsLabel - The label to show when the block is finished above the results themselves.
---
--- The following members may be present on a block:
---  .AutoAdvance - If true the flow will automatically advance when the block is finished and will not wait for user input.
---  .HiddenStep - This is only valid for the end step of any flow.  This says that this block has no meaningful controls or results for the user and should instead just
---    cause the master to change the flow controls.
---  .SkipOnRewind - This tells the flow to ignore the :IsFinished() result when deciding where to rewind and instead skip this block.
---  .ExtraOffset - May be set on a block by the flow for the master to add extra vertical offset to a block based on previous results.
---  .Popup - May be set on a block to potentially show a popup before advancing to the next step.
---
--- However a block uses controls to gather data, once it has data and is finished it should call
--- CharacterServicesMaster_Update() to advance the flow and button states.
-----
+-- See CharacterServicesFlowMixin for more documentation
 
 CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 
@@ -142,23 +86,22 @@ GlueDialogTypes["BOOST_FACTION_CHANGE_IN_PROGRESS"] = {
 	escapeHides = true,
 };
 
-local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" };
+local CharacterUpgradeCharacterSelectBlock = { FrameName = "CharacterUpgradeSelectCharacterFrame", Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" };
 local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
 
 CharacterServicesFlowPrototype = {};
 
-CharacterUpgradeFlow = {
-	Icon = "Interface\\Icons\\achievement_level_90",
-	Text = CHARACTER_UPGRADE_90_FLOW_LABEL,
-	FinishLabel = CHARACTER_UPGRADE_FINISH_LABEL,
+CharacterUpgradeFlow = Mixin(
+	{
+		FinishLabel = CHARACTER_UPGRADE_FINISH_LABEL,
 
-	Steps = {
-		[1] = CharacterUpgradeCharacterSelectBlock,
-		[2] = CharacterUpgradeEndStep,
+		Steps = {
+			[1] = CharacterUpgradeCharacterSelectBlock,
+			[2] = CharacterUpgradeEndStep,
+		},
 	},
-
-	numSteps = 2,
-};
+	CharacterServicesFlowMixin
+);
 
 function CharacterServicesFlowPrototype:BuildResults(steps)
 	if (not self.results) then
@@ -285,7 +228,7 @@ function CharacterUpgradeFlow:IsUnrevoke()
 		return false;
 	end
 	
-	local results = self:BuildResults(self.numSteps);
+	local results = self:BuildResults(self:GetNumSteps());
 	if not results.charid then
 		-- We haven't chosen a character yet.
 		return nil;
@@ -297,22 +240,21 @@ end
 
 function CharacterUpgradeFlow:Initialize(controller)
 	CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
-
-	CharacterUpgradeCharacterSelectBlock.frame = CharacterUpgradeSelectCharacterFrame;
-
 	CharacterUpgradeSecondChanceWarningFrame:Hide();
 
-	self:Restart(controller);
+	CharacterServicesFlowMixin.Initialize(self, controller);
+
+	self.hasVeteran = nil;
 end
 
 function CharacterUpgradeFlow:Rewind(controller)
 	self:SetAutoSelectGuid(nil);
-	return CharacterServicesFlowPrototype.Rewind(self, controller);
+	return CharacterServicesFlowMixin.Rewind(self, controller);
 end
 
 function CharacterUpgradeFlow:OnHide()
 	self:SetAutoSelectGuid(nil);
-	return CharacterServicesFlowPrototype.OnHide(self);
+	return CharacterServicesFlowMixin.OnHide(self);
 end
 
 function CharacterUpgradeFlow:OnAdvance()
@@ -327,40 +269,8 @@ function CharacterUpgradeFlow:OnAdvance()
 	end
 end
 
-function CharacterUpgradeFlow:Advance(controller)
-	if (self.step == self.numSteps) then
-		self:Finish(controller);
-	else
-		local block = self.Steps[self.step];
-		if (block.OnAdvance) then
-			block:OnAdvance();
-		end
-
-		self:OnAdvance();
-
-		local results = self:BuildResults(self.step);
-		if (self.step == 1) then
-			local level = select(7, GetCharacterInfo(results.charid));
-			if (level >= UPGRADE_BONUS_LEVEL) then
-				self.Steps[2].ExtraOffset = 45;
-			else
-				self.Steps[2].ExtraOffset = 0;
-			end
-			local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
-		end
-		self.step = self.step + 1;
-		while (self.Steps[self.step].SkipIf and self.Steps[self.step]:SkipIf(results)) do
-			if (self.Steps[self.step].OnSkip) then
-				self.Steps[self.step]:OnSkip();
-			end
-			self.step = self.step + 1;
-		end
-		self:SetUpBlock(controller, results);
-	end
-end
-
 function CharacterUpgradeFlow:Finish(controller)
-	local results = self:BuildResults(self.numSteps);
+	local results = self:BuildResults(self:GetNumSteps());
 	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:Disable();
@@ -375,13 +285,13 @@ function CharacterUpgradeFlow:Finish(controller)
 			if ( C_StoreSecure.GetCurrencyID() == CURRENCY_KRW ) then
 				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_KRW_FINISH_BUTTON_POPUP_TEXT);
 			else
-				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT);
+				CharacterUpgradeSecondChanceWarningBackground.Text:SetText(CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT:format(self.data.level));
 			end
 		end
 
 		local realmName = GetServerName();
 		local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost, _, revokedCharacterUpgrade = GetCharacterInfo(results.charid);
-		CharacterUpgradeSecondChanceWarningBackground.CharacterDetails:SetText(SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFileName].colorStr, name .. " - " .. realmName .. "\n", level, class));
+		CharacterUpgradeSecondChanceWarningBackground.CharacterDetails:SetText(CHARACTER_UPGRADE_CONFIRMATION_TEXT:format(name, realmName, RAID_CLASS_COLORS[classFileName].colorStr, class, level, self.data.level));
 
 		CharacterUpgradeSecondChanceWarningFrame:Show();
 		return false;
@@ -426,7 +336,7 @@ function CharacterUpgradeFlow:GetFinishLabel()
 		return CHARACTER_UPGRADE_UNREVOKE_CHARACTER_FINISH_LABEL;
 	end
 
-	return self.FinishLabel;
+	return CharacterServicesFlowMixin.GetFinishLabel(self);
 end
 
 local function replaceScripts(button)
@@ -530,20 +440,20 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not C_CharacterServices.IsTrialBoostEnabled() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function IsBoostFlowValidForCharacter(flowData, class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState)
+local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
 	if (boostInProgress or vasServiceInProgress) then
 		return false;
 	end
 
-	if class == "DEMONHUNTER" and flowData.level <= 100 then
+	if not C_CharacterServices.IsBoostEnabled() then
 		return false;
 	end
 
-	if raceFilename == "BloodElf" or raceFilename == "Draenei" then
+	if C_CharacterServices.DoesBoostTypeRestrictClass(flowData.boostType, classID) then
 		return false;
 	end
-	
-	if IsEraChoiceStateLocked(eraChoiceState) or DoesEraChoiceStateRequireDecision(eraChoiceState) then
+
+	if C_CharacterServices.DoesBoostTypeRestrictRace(flowData.boostType, raceID) then
 		return false;
 	end
 
@@ -566,8 +476,8 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, raceFilename
 	return true;
 end
 
-local function CanBoostCharacter(class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState)
-	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState);
+local function CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
@@ -606,9 +516,9 @@ function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
 	local availableBoosts = {};
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
 	if upgradeDistributions then
-		local _, _, raceFileName, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfoByGUID(characterGUID);
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, raceID = GetCharacterInfoByGUID(characterGUID);
 		for boostType, data in pairs(upgradeDistributions) do
-			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), class, level, raceFileName, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState) then
+			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter) then
 				availableBoosts[#availableBoosts + 1] = boostType;
 			end
 		end
@@ -771,8 +681,6 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		CHARACTER_LIST_OFFSET = max(numCharacters - MAX_CHARACTERS_DISPLAYED, 0);
 
 		if (self.createNum < numCharacters) then
-			CharacterSelect.selectedIndex = GetNumCharactersActiveForEra();
-
 			CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;
 			CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
 			CharacterSelectCharacterFrame.scrollBar.blockUpdates = nil;
@@ -827,8 +735,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
-		local canBoostCharacter = CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState);
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, raceID = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local canBoostCharacter = CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -858,8 +766,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local _, _, raceFilename, _, class, _, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, eraChoiceState = GetCharacterInfo(GetCharIDFromIndex(i));
-		if CanBoostCharacter(class, level, raceFilename, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, eraChoiceState) then
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, raceID = GetCharacterInfo(GetCharIDFromIndex(i));
+		if CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end
@@ -967,6 +875,15 @@ function CharacterUpgradeCharacterSelectBlock:FormatResult()
 	return SELECT_CHARACTER_RESULTS_FORMAT:format(RAID_CLASS_COLORS[classFileName].colorStr, name, level, class);
 end
 
+local g_filteringByBoostsOnly = nil;
+function CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable()
+	return g_filteringByBoostsOnly;
+end
+
+function CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(boostsOnly)
+	g_filteringByBoostsOnly = boostsOnly;
+end
+
 function CharacterUpgradeCharacterSelectBlock:OnHide()
 	enableScroll(CharacterSelectCharacterFrame.scrollBar);
 
@@ -1019,7 +936,7 @@ end
 
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
 	if characterType == Enum.CharacterCreateType.Boost then
-		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharactersActiveForEra();
+		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
 
 		if CharacterServicesMaster.flow then
 			CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;

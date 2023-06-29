@@ -242,14 +242,10 @@ function UnitPositionFrameMixin:GetUnitColor(timeNow, unit, appearanceData)
 	return false;
 end
 
-function UnitPositionFrameMixin:AddUnitInternal(timeNow, unit, appearanceData, callAtlasAPI)
+function UnitPositionFrameMixin:AddUnitInternal(timeNow, unit, appearanceData)
 	local isValid, r, g, b = self:GetUnitColor(timeNow, unit, appearanceData);
 	if isValid then
-		if callAtlasAPI then
-			self:AddUnitAtlas(unit, appearanceData.texture, appearanceData.size, appearanceData.size, r, g, b, 1);
-		else
-			self:AddUnit(unit, appearanceData.texture, appearanceData.size, appearanceData.size, r, g, b, 1, appearanceData.sublevel, appearanceData.showRotation);
-		end
+		self:AddUnit(unit, appearanceData.texture, appearanceData.size, appearanceData.size, r, g, b, 1, appearanceData.sublevel, appearanceData.showRotation);
 	end
 end
 
@@ -293,15 +289,12 @@ function UnitPositionFrameMixin:UpdateFull(timeNow)
 
 			if unitExists and not UnitIsUnit(unit, "player") then
 				local appearance = raidAppearance;
-				local callAtlasAPI = false;
 				if (unitBase == "party" or unitBase == "raid") then
 					appearance = UnitInSubgroup(unit, overridePartyType) and partyAppearance or raidAppearance;
-					callAtlasAPI = false;
 				elseif (unitBase == "spectateda" or unitBase == "spectatedb") then
 					appearance = unitBase == "spectateda" and spectatedaAppearance or spectatedbAppearance;
-					callAtlasAPI = true;
 				end
-				self:AddUnitInternal(timeNow, unit, appearance, callAtlasAPI);
+				self:AddUnitInternal(timeNow, unit, appearance);
 			end
 		end
 	end

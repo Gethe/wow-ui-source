@@ -7,12 +7,16 @@ COMBO_FRAME_LAST_NUM_POINTS = 0;
 
 function ComboFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
-	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+	self:RegisterEvent("UNIT_POWER_FREQUENT");
+	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player");
+	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
 	-- init alpha
 	self.ComboPoints[1].Highlight:SetAlpha(0);
 	self.ComboPoints[1].Shine:SetAlpha(0);
+
+	self.unit = "player";
 
 	ComboFrame_UpdateMax(self);
 end
@@ -22,16 +26,22 @@ function ComboFrame_OnEvent(self, event, ...)
 		ComboFrame_Update(self);
 	elseif ( event == "UNIT_POWER_FREQUENT" ) then
 		local unit = ...;
-		if ( unit == PlayerFrame.unit ) then
+		if ( unit == self.unit ) then
 			ComboFrame_Update(self);
 		end
 	elseif ( event == "UNIT_MAXPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
+		ComboFrame_UpdateMax(self);
+	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
+		self.unit = "vehicle";
+		ComboFrame_UpdateMax(self);
+	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
+		self.unit = "player";
 		ComboFrame_UpdateMax(self);
 	end
 end
 
 function ComboFrame_UpdateMax(self)
-	self.maxComboPoints = UnitPowerMax(PlayerFrame.unit, Enum.PowerType.ComboPoints);
+	self.maxComboPoints = UnitPowerMax(self.unit, Enum.PowerType.ComboPoints);
 
 	-- First hide all combo points
 	for i = 1, #self.ComboPoints do
@@ -48,7 +58,7 @@ function ComboFrame_Update(self)
 		return;
 	end
 
-	local comboPoints = GetComboPoints(PlayerFrame.unit, "target");
+	local comboPoints = GetComboPoints(self.unit, "target");
 	local comboPoint, comboPointHighlight, comboPointShine;
 
 	if ( comboPoints > 0 ) then

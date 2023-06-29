@@ -4,8 +4,8 @@ function CreditsFrameMixin:OnShow()
 	StopGlueAmbience();
 	self.expansion = GetClientDisplayExpansionLevel();
 	self.maxExpansion = LE_EXPANSION_LEVEL_CURRENT;
-	self.releaseType = LE_RELEASE_TYPE_MODERN;
-	self.maxReleaseType = LE_RELEASE_TYPE_MODERN;
+	self.releaseType = LE_RELEASE_TYPE_CLASSIC;
+	self.maxReleaseType = LE_RELEASE_TYPE_CLASSIC;
 	self:Update();
 end
 
@@ -108,7 +108,7 @@ function CreditsFrameMixin:Update()
 	self.creditsTextWidth = self.ScrollFrame:GetWidth();
 
 	-- Set Credits Text
-	self.ScrollFrame.Text:SetText(GetCreditsText(self.expansion, self.releaseType));
+	self.ScrollFrame.Text:SetText(GetCreditsText(self.expansion, self.releaseType));	
 	self.data = self.ScrollFrame.Text:GetTextData();
 	self.Slider:SetMinMaxValues(1, #self.data);
 	self.ScrollFrame.Text:SetText("");
@@ -434,7 +434,7 @@ function CreditsExpansionListMixin:OpenExpansionList(selectedExpansion, maxExpan
 	local minWidth = 200;
 	local maxWidth = minWidth;
 	local buttonSpacing = 5;
-	for type=0,maxReleaseType do
+	for type=1,maxReleaseType do
 		for exp=0,maxExpansion do
 			local button = self.buttonPool:Acquire();
 			button.expansion = exp;
@@ -444,7 +444,7 @@ function CreditsExpansionListMixin:OpenExpansionList(selectedExpansion, maxExpan
 			else
 				button:SetPoint("TOP", prevButton, "BOTTOM", 0, -buttonSpacing);
 			end
-			button:SetText(_G["CREDITS_EXPANSION_NAME_" .. exp .. "_" .. type]);
+			button:SetText(_G["CREDITS_EXPANSION_NAME_" .. exp .. "_" .. type-1]);
 
 			local width = button:GetTextWidth();
 			maxWidth = math.max(width, maxWidth);

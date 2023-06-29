@@ -118,7 +118,7 @@
 					<OnClick function="CommunitiesSettingsDialogChangeAvatarButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<ScrollFrame parentKey="MessageOfTheDay" inherits="InputScrollFrameTemplate">
+			<ScrollFrame parentKey="MessageOfTheDay" inherits="UIPanelInputScrollFrameTemplate">
 				<Size x="0" y="50"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.MessageOfTheDayLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
@@ -132,12 +132,12 @@
 				</KeyValues>
 				<Scripts>
 					<OnLoad>
-						InputScrollFrame_OnLoad(self);
+						UIPanelInputScrollFrame_OnLoad(self);
 						self.EditBox.nextEditBox = self:GetParent().NameEdit;
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
-			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
+			<ScrollFrame parentKey="Description" inherits="UIPanelInputScrollFrameTemplate">
 				<Size x="0" y="50"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
@@ -150,7 +150,7 @@
 				</KeyValues>
 				<Scripts>
 					<OnLoad>
-						InputScrollFrame_OnLoad(self);
+						UIPanelInputScrollFrame_OnLoad(self);
 						self.EditBox.nextEditBox = self:GetParent().MessageOfTheDay.EditBox;
 					</OnLoad>
 				</Scripts>
