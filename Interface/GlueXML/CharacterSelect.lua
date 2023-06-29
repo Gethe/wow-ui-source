@@ -174,6 +174,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
 	self:RegisterEvent("ACCOUNT_SAVE_ENABLED_UPDATE");
 	self:RegisterEvent("ACCOUNT_LOCKED_POST_SAVE_UPDATE");
+	self:RegisterEvent("REALM_HIDDEN_INFO_UPDATE");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -743,6 +744,14 @@ function CharacterSelect_OnEvent(self, event, ...)
         CharacterSelect_ConditionallyLoadAccountSaveUI();
     elseif (event == "ACCOUNT_LOCKED_POST_SAVE_UPDATE" ) then
         CharacterSelect_UpdateIfUpdateIsNotPending();
+	elseif (event == "REALM_HIDDEN_INFO_UPDATE") then
+		local text = ...;
+		if(text) then
+			REALM_HIDDEN_ALERT:SetText(text);
+			REALM_HIDDEN_ALERT:Show();
+		else
+			REALM_HIDDEN_ALERT:Hide();
+		end
 	end
 end
 

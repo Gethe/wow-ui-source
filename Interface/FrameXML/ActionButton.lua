@@ -1033,8 +1033,10 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif (event == "UNIT_SPELLCAST_STOP") then 
 		self:StopSpellCastAnim(true, ActionButtonCastType.Cast); 
 		self:StopTargettingReticleAnim();
-	elseif(event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_SENT") then 
+	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then 
 		self:StopSpellCastAnim(false, ActionButtonCastType.Cast); 
+		self:StopTargettingReticleAnim();
+	elseif(event == "UNIT_SPELLCAST_SENT") then 
 		self:StopTargettingReticleAnim();
 	elseif (event == "UNIT_SPELLCAST_EMPOWER_START") then 
 		self:PlaySpellCastAnim(ActionButtonCastType.Empowered); 
@@ -1049,7 +1051,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif (event == "UNIT_SPELLCAST_CHANNEL_START") then 
 			self:PlaySpellCastAnim(ActionButtonCastType.Channel); 
 	elseif (event == "UNIT_SPELLCAST_CHANNEL_STOP") then 
-			self:StopSpellCastAnim(true, ActionButtonCastType.Channel);
+			self:StopSpellCastAnim(false, ActionButtonCastType.Channel);
 	elseif (event == "UNIT_SPELLCAST_RETICLE_TARGET") then
 			self:PlayTargettingReticleAnim();
 	elseif (event == "UNIT_SPELLCAST_RETICLE_CLEAR") then

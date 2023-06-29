@@ -157,9 +157,9 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 				end
 			end
 		elseif itemModifiedAppearanceID then
-			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
-			local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-			local preferredHandSlot;
+			local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
+			local classID, unusedSubclassID = select(6, GetItemInfoInstant(itemID));
+			local isWeapon = classID == Enum.ItemClass.Weapon;
 			if isWeapon then
 				local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
 				local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");

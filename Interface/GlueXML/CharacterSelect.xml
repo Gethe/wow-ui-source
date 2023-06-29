@@ -605,6 +605,11 @@
 								<Anchor point="BOTTOM" x="0" y="100"/>
 							</Anchors>
 						</FontString>
+						<FontString name="REALM_HIDDEN_ALERT" inherits="GlueFontRed" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="CharSelectCharacterName" relativePoint="TOP" y="15"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>

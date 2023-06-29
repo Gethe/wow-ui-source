@@ -275,6 +275,7 @@ BattlePetConstantsDocumentation.lua
 BountySharedDocumentation.lua
 ButtonConstantsDocumentation.lua
 CalendarConstantsDocumentation.lua
+CameraConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 ChatConstantsDocumentation.lua
 ClubSharedDocumentation.lua

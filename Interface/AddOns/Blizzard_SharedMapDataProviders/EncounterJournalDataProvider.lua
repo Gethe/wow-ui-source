@@ -173,9 +173,9 @@ function EncounterMapTrackingPinMixin:OnMouseEnter()
 	local numTrackedItems = #self.trackableEncounterInfo;
 	for i = 1, numTrackedItems do
 		local trackableMapInfo = self.trackableEncounterInfo[i];
-		objectiveText = objectiveText..C_ContentTracking.GetTitle(trackableMapInfo.targetType, trackableMapInfo.targetID).."\n";
+		objectiveText = objectiveText..C_ContentTracking.GetTitle(trackableMapInfo.trackableType, trackableMapInfo.trackableID).."\n";
 	end
-	GameTooltip_AddColoredLine(GameTooltip, objectiveText, EPIC_PURPLE_COLOR);
+	GameTooltip_AddColoredLine(GameTooltip, objectiveText, ITEM_EPIC_COLOR);
 
 	GameTooltip:Show();
 end

@@ -23,7 +23,15 @@ local function GetStoryLinePinType(questLineInfo)
 end
 
 function StorylineQuestDataProviderMixin:ShouldShowQuestLine(questLineInfo)
-	return not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or C_Minimap.IsTrackingHiddenQuests());
+	return questLineInfo and (not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or C_Minimap.IsTrackingHiddenQuests()));
+end
+
+function StorylineQuestDataProviderMixin:CheckAddPin(questLineInfo)
+	if self:ShouldShowQuestLine(questLineInfo) then
+		local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo, GetStoryLinePinType(questLineInfo));
+		pin:SetPosition(questLineInfo.x, questLineInfo.y);
+		pin:Show();
+	end
 end
 
 function StorylineQuestDataProviderMixin:RefreshAllData(fromOnShow)
@@ -32,22 +40,12 @@ function StorylineQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
 		for _, questLineInfo in pairs(C_QuestLine.GetAvailableQuestLines(mapID)) do
-			if self:ShouldShowQuestLine(questLineInfo) then
-				local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo, GetStoryLinePinType(questLineInfo));
-				pin:SetPosition(questLineInfo.x, questLineInfo.y);
-				pin:Show();
-			end
+			self:CheckAddPin(questLineInfo);
 		end
 
 		local forceVisibleQuests = C_QuestLine.GetForceVisibleQuests(mapID);
 		for index, questID in ipairs(forceVisibleQuests) do
-			local questLineInfo = C_QuestLine.GetQuestLineInfo(questID, mapID);
-
-			if (questLineInfo and not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or C_Minimap.IsTrackingHiddenQuests())) then
-				local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo.questID);
-				pin:SetPosition(questLineInfo.x, questLineInfo.y);
-				pin:Show();
-			end
+			self:CheckAddPin(C_QuestLine.GetQuestLineInfo(questID, mapID));
 		end
 	end
 end

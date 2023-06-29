@@ -107,7 +107,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="CinematicFrame_OnLoad"/>
-			<OnShow function="CinematicFrame_OnShow"/>
 			<OnHide function="CinematicFrame_OnHide"/>
 			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown function="CinematicFrame_OnKeyDown"/>

@@ -1,24 +1,23 @@
 
 local AspectRatios = {};
-AspectRatios[Enum.CinematicAspectRatio.NoAspectRatioSpecified] = {x = 0, y = 0};
-AspectRatios[Enum.CinematicAspectRatio.Legacy_16_X_9] = {x = 16, y = 9};
-AspectRatios[Enum.CinematicAspectRatio.Square_1_X_1] = {x = 1, y = 1};
-AspectRatios[Enum.CinematicAspectRatio.Sd_4_X_3] = {x = 4, y = 3};
-AspectRatios[Enum.CinematicAspectRatio.Hd_16_X_9] = {x = 16, y = 9};
-AspectRatios[Enum.CinematicAspectRatio.Cinemascope2Dot4X_1] = {x = 2.4, y = 1};
+
+AspectRatios[Enum.CameraModeAspectRatio.Default] = {x = 0, y = 0};
+AspectRatios[Enum.CameraModeAspectRatio.LegacyLetterbox] = {x = 16, y = 9};
+AspectRatios[Enum.CameraModeAspectRatio.HighDefinition_16_X_9] = {x = 16, y = 9};
+AspectRatios[Enum.CameraModeAspectRatio.Cinemascope_2_Dot_4_X_1] = {x = 2.4, y = 1};
+
+local DefaultAspectRatio = {x = 16, y = 9};
 
 function CinematicFrame_OnDisplaySizeChanged(self)
+	-- called when the display changes and when the cinematic camera wants to 
+	-- either adjust the aspect ratio or add the legacy letterbox
 	if (self:IsShown()) then
-		if self.forcedAspectRatio == Enum.CinematicAspectRatio.NoAspectRatioSpecified then -- no letterboxes
-			UpperBlackBar:SetShown(false);
-			LowerBlackBar:SetShown(false);
-		elseif self.forcedAspectRatio == Enum.CinematicAspectRatio.Legacy_16_X_9 then -- Legacy Letterbox
+		if self.forcedAspectRatio == Enum.CameraModeAspectRatio.LegacyLetterbox then
 			local width = CinematicFrame:GetWidth();
 			local height = CinematicFrame:GetHeight();
 
-			local viewableHeight = width * 9 / 16;
-			local worldFrameHeight = WorldFrame:GetHeight();
-			local halfDiff = math.max(math.floor((worldFrameHeight - viewableHeight) / 2), 0);
+			local viewableHeight = width * DefaultAspectRatio.y / DefaultAspectRatio.x;
+			local halfDiff = math.max(math.floor((height - viewableHeight) / 2.0), 0);
 
 			WorldFrame:ClearAllPoints();
 			WorldFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 0, -halfDiff);
@@ -41,27 +40,25 @@ function CinematicFrame_OnDisplaySizeChanged(self)
 				width = requestedRatio.x * WorldFrame:GetHeight() / requestedRatio.y;
 				actualRatio = requestedRatio.x / requestedRatio.y;
 			else
-				height = 9 * WorldFrame:GetWidth() / 16;
-				width = 16 * WorldFrame:GetHeight() / 9;
-				actualRatio = 16 / 9;
+				height = DefaultAspectRatio.y * WorldFrame:GetWidth() / DefaultAspectRatio.x;
+				width = DefaultAspectRatio.x * WorldFrame:GetHeight() / DefaultAspectRatio.y;
+				actualRatio = DefaultAspectRatio.x / DefaultAspectRatio.y;
 			end
 			local physicalWidth, physicalHeight = GetPhysicalScreenSize();
 			local screenRatio = physicalWidth / physicalHeight;
 
 			WorldFrame:ClearAllPoints();
 			if actualRatio > screenRatio then -- letterbox
+				WorldFrame:SetHeight(1);
 				WorldFrame:SetPoint("LEFT", nil, "LEFT", 0, 0);
 				WorldFrame:SetPoint("RIGHT", nil, "RIGHT", 0, 0);
-				WorldFrame:SetHeight(1);
 				WorldFrame:SetHeight(height);
-
 			elseif actualRatio < screenRatio then --pillarbox
+				WorldFrame:SetWidth(1);
 				WorldFrame:SetPoint("TOP", nil, "TOP", 0, 0);
 				WorldFrame:SetPoint("BOTTOM", nil, "BOTTOM", 0, 0);
-				WorldFrame:SetWidth(1);
 				WorldFrame:SetWidth(width);				
 			else -- perfect match
-				WorldFrame:ClearAllPoints();
 				WorldFrame:SetAllPoints();
 			end
 		end
@@ -69,7 +66,7 @@ function CinematicFrame_OnDisplaySizeChanged(self)
 end
 
 function CinematicFrame_OnLoad(self)
-	self.forcedAspectRatio = Enum.CinematicAspectRatio.NoAspectRatioSpecified;
+	self.forcedAspectRatio = Enum.CameraModeAspectRatio.LegacyLetterbox;
 
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
@@ -81,10 +78,6 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_YELL");
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-end
-
-function CinematicFrame_OnShow(self)
-	CinematicFrame_OnDisplaySizeChanged(self);
 end
 
 function CinematicFrame_OnHide(self)
@@ -99,8 +92,14 @@ function CinematicFrame_OnEvent(self, event, ...)
 			self.Subtitles[i]:SetText("");
 			self.Subtitles[i]:Hide();
 		end
+
 		self.isRealCinematic = canBeCancelled;	--If it isn't real, it's a vehicle cinematic
-		self.forcedAspectRatio = Enum.CinematicAspectRatio.Hd_16_X_9;--forcedAspectRatio;
+
+		if (self.forcedAspectRatio ~= forcedAspectRatio) then
+			self.forcedAspectRatio = forcedAspectRatio;
+		end
+		CinematicFrame_OnDisplaySizeChanged(self);
+
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
 		RaidNotice_Clear(self.raidBossEmoteFrame);
