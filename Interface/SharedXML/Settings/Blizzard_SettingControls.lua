@@ -1043,3 +1043,8 @@ function CreateSettingsExpandableSectionInitializer(name)
 	initializer.data = {name = name};
 	return initializer;
 end
+
+function CreateSettingsAddOnDisabledLabelInitializer()
+	local data = {};
+	return Settings.CreateElementInitializer("SettingsAddOnDisabledLabelTemplate", data);
+end

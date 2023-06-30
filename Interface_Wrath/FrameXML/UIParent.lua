@@ -2483,7 +2483,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			hasPetBar = 1;
 		end
 		local numWatchBars = 0;
-		numWatchBars = numWatchBars + (ReputationWatchBar:IsShown() and 1 or 0);
+		numWatchBars = numWatchBars + ((ReputationWatchBar and ReputationWatchBar:IsShown()) and 1 or 0);
 		numWatchBars = numWatchBars + (MainMenuExpBar:IsShown() and 1 or 0);
 		if ( numWatchBars > 1 ) then
 			tinsert(yOffsetFrames, "watchBar");
@@ -2527,7 +2527,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if ( value.bonusActionBar and BonusActionBarFrame ) then
 			value.bonusActionBar = BonusActionBarFrame:GetHeight() - MainMenuBar:GetHeight();
 		end
-		if ( value.castingBar ) then
+		if ( value.castingBar and CastingBarFrame) then
 			value.castingBar = CastingBarFrame:GetHeight() + 14;
 		end
 		if ( value.talkingHeadFrame and TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
@@ -2595,7 +2595,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- If petactionbar is already shown, set its point in addition to changing its y target
-	if ( PetActionBarFrame:IsShown() ) then
+	if (PetActionBarFrame and PetActionBarFrame:IsShown() ) then
 		PetActionBar_UpdatePositionValues();
 		PetActionBarFrame:SetPoint("TOPLEFT", MainMenuBar, "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 	end
@@ -2607,7 +2607,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 
 	-- Setup y anchors
 	local anchorY = 0
-	local buffsAnchorY = min(0, (MINIMAP_BOTTOM_EDGE_EXTENT or 0) - BuffFrame.bottomEdgeExtent);
+	local buffsAnchorY = 0;
+	if (BuffFrame) then
+		buffsAnchorY = min(0, (MINIMAP_BOTTOM_EDGE_EXTENT or 0) - BuffFrame.bottomEdgeExtent);
+	end
 	-- Count right action bars
 	local rightActionBars = 0;
 	if ( IsNormalActionBarState() ) then
@@ -2648,9 +2651,11 @@ function FramePositionDelegate:UIParentManageFramePositions()
 
 	-- Boss frames - need to move below buffs/debuffs if both right action bars are showing
 	local numBossFrames = 0;
-	for i = 1, MAX_BOSS_FRAMES do
-		if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
-			numBossFrames = i;
+	if (MAX_BOSS_FRAMES) then	
+		for i = 1, MAX_BOSS_FRAMES do
+			if ( _G["Boss"..i.."TargetFrame"]:IsShown() ) then
+				numBossFrames = i;
+			end
 		end
 	end
 	if ( numBossFrames > 0 ) then
@@ -2680,7 +2685,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	end
 
 	-- QuestWatchFrame
-	if not ( WatchFrame:IsUserPlaced() ) then
+	if (WatchFrame and (not (WatchFrame:IsUserPlaced()))) then
 		local numArenaOpponents = GetNumArenaOpponents();
 		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
 			WatchFrame:ClearAllPoints();

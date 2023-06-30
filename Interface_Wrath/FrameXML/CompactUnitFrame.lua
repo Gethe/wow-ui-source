@@ -437,7 +437,8 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 			end
 		end
 	end
-	if ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b ) then
+
+	if (frame.healthBar:GetStatusBarTexture() and ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b )) then
 		frame.healthBar:SetStatusBarColor(r, g, b);
 
 		if (frame.optionTable.colorHealthWithExtendedColors) then

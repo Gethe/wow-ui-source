@@ -611,3 +611,6 @@ CUFProfileActionTable = {
 	locked = CompactUnitFrameProfiles_GenerateRaidManagerSetting("Locked"),
 	shown = CompactUnitFrameProfiles_GenerateRaidManagerSetting("IsShown"),
 }
+
+-- This addon depends on some function from the following addon, so making sure it is enabled.
+EnableAddOn("Blizzard_CompactRaidFrames");
