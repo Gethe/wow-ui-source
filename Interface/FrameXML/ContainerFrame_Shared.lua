@@ -991,7 +991,7 @@ function UpdateContainerFrameAnchors()
 	local screenWidth = GetScreenWidth();
 	local containerScale = 1;
 	local leftLimit = 0;
-	if ( BankFrame:IsShown() ) then
+	if (BankFrame and BankFrame:IsShown() ) then
 		leftLimit = BankFrame:GetRight() - 25;
 	end
 	

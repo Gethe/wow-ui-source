@@ -22,6 +22,19 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="SettingsAddOnDisabledLabelTemplate" virtual="true">
+		<Size y="30"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontRed" text="ADDON_DISABLED" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="37" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 	
 	<Frame name="SettingsListElementTemplate" mixin="SettingsListElementMixin" virtual="true">
 		<Layers>

@@ -176,9 +176,8 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
 	elseif name == SettingsInbound.RepairDisplayAttribute then
 		self:RepairDisplay();
-	elseif name == SettingsInbound.SetCurrentLayout then
-		local layout = SecureUnpackArgs(value);
-		self:SetCurrentLayout(layout);
+	elseif name == SettingsInbound.SetCurrentLayoutAttribute then
+		self:SetCurrentLayout(value);
 	end
 end
 
