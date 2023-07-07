@@ -2267,8 +2267,10 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogDetailFrame);
+		if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+			if ( QuestLogDetailFrame:IsShown() ) then
+				HideUIPanel(QuestLogDetailFrame);
+			end
 		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
@@ -2283,8 +2285,10 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogDetailFrame);
+		if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+			if ( QuestLogDetailFrame:IsShown() ) then
+				HideUIPanel(QuestLogDetailFrame);
+			end
 		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
@@ -2968,7 +2972,6 @@ StaticPopupDialogs["DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM"] = {
 	wide = true,
 	sound = SOUNDKIT.IG_PLAYER_INVITE,
 	OnAccept = function(self)
-		AcceptDuel();
 		local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 		StartDuel(dropdownMenu.unit, true, true);
 	end,

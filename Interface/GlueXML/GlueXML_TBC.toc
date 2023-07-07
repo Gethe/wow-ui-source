@@ -32,6 +32,7 @@ GlueCheck.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\..\Interface_TBC\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
