@@ -22,8 +22,6 @@ function VehicleSeatIndicatorMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 	UIDropDownMenu_Initialize(self.DropDown, VehicleSeatIndicatorDropdown_Initialize, "MENU");
-
-	self.buttonPool = CreateFramePool("BUTTON", self, "VehicleSeatIndicatorButtonTemplate");
 end
 
 function VehicleSeatIndicatorMixin:OnEvent(event, ...)
@@ -73,6 +71,24 @@ function VehicleSeatIndicatorMixin:Update()
 	end
 end
 
+function VehicleSeatIndicatorMixin:HideButtons()
+	if not self.buttons then
+		return;
+	end
+
+	for _, button in ipairs(self.buttons) do
+		button:Hide();
+	end
+end
+
+function VehicleSeatIndicatorMixin:GetButton(index)
+	if self.buttons and self.buttons[index] then
+		return self.buttons[index];
+	end
+
+	return CreateFrame("Button", "VehicleSeatIndicatorButton"..index, self, "VehicleSeatIndicatorButtonTemplate");
+end
+
 function VehicleSeatIndicatorMixin:SetupVehicle(vehicleIndicatorID)
 	if ( vehicleIndicatorID == self.currSkin ) then
 		return;
@@ -94,11 +110,11 @@ function VehicleSeatIndicatorMixin:SetupVehicle(vehicleIndicatorID)
 	local totalWidth = 128; --self.BackgroundTexture:GetFileWidth();
 	self:SetHeight(totalHeight);
 	self:SetWidth(totalWidth);
+	self:HideButtons();
 
-	self.buttonPool:ReleaseAll();
 	for i = 1, numSeatIndicators do
 		local virtualSeatIndex, xOffset, yOffset = GetVehicleUIIndicatorSeat(vehicleIndicatorID, i);
-		local button = self.buttonPool:Acquire();
+		local button = self:GetButton(i);
 		button:SetID(i);
 		button.virtualID = virtualSeatIndex;
 		button:SetPoint("CENTER", button:GetParent(), "TOPLEFT", xOffset*totalWidth, -yOffset*totalHeight);
@@ -115,7 +131,7 @@ end
 function VehicleSeatIndicatorMixin:UnloadTextures()
 	self.BackgroundTexture:SetTexture(nil);
 	self.currSkin = nil;
-	self.buttonPool:ReleaseAll();
+	self:HideButtons();
 	self:UpdateShownState();
 	DurabilityFrame:SetAlerts();
 

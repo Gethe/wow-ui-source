@@ -179,6 +179,7 @@ function PerksProgramMixin:OnShow()
 	AlertFrame:SetBaseAnchorFrame(self.FooterFrame.RotateButtonContainer);
 	ActionStatus:SetAlternateParentFrame(self);
 
+	self:RegisterEvent("CURSOR_CHANGED");
 	EventRegistry:TriggerEvent("PerksProgramFrame.OnShow");
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_OPEN);
 end
@@ -201,6 +202,7 @@ function PerksProgramMixin:OnHide()
 	local scrollContainer = self.ProductsFrame.ProductsScrollBoxContainer;
 	scrollContainer.selectionBehavior:ClearSelections();
 
+	self:UnregisterEvent("CURSOR_CHANGED");
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_CLOSE);
 end
 
@@ -218,11 +220,16 @@ function PerksProgramMixin:OnEvent(event, ...)
 		if self.purchaseStateTimer then
 			self.purchaseStateTimer:Cancel();
 		end
-	elseif event == "GLOBAL_MOUSE_DOWN" then
+	elseif event == "GLOBAL_MOUSE_DOWN" then		
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 		if isRightButton and StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
 			StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM");
+			PerksProgramFrame:ResetDragAndDrop();
+		end
+	elseif event == "CURSOR_CHANGED" then
+		local isDefault = ...;
+		if isDefault and not StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
 			PerksProgramFrame:ResetDragAndDrop();
 		end
 	end
@@ -328,7 +335,7 @@ function PerksProgramMixin:ConfirmOverrideFrozenItem()
 	local data = self:GetFrozenItemData();
 	if data then
 		StaticPopup_Show("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM", nil, nil, data);
-		self:RegisterEvent("GLOBAL_MOUSE_DOWN");		
+		self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	else
 		self:GetFrozenItemFrame():TriggerFreezeItem();
 		C_PerksProgram.SetFrozenPerksVendorItem();

@@ -235,6 +235,7 @@ function ActionBarActionEventsFrameMixin:OnLoad()
 	self:RegisterEvent("UNIT_SPELLCAST_SENT");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player");
@@ -267,7 +268,8 @@ function ActionBarActionEventsFrameMixin:IsSpellcastEvent(event)
 	event == "UNIT_SPELLCAST_RETICLE_CLEAR" or 
 	event == "UNIT_SPELLCAST_EMPOWER_START" or
 	event == "UNIT_SPELLCAST_EMPOWER_STOP" or
-	event == "UNIT_SPELLCAST_SENT") then 
+	event == "UNIT_SPELLCAST_SENT" or 
+	event == "UNIT_SPELLCAST_FAILED") then 
 		return true; 
 	else 
 		return false;
@@ -1036,7 +1038,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then 
 		self:StopSpellCastAnim(false, ActionButtonCastType.Cast); 
 		self:StopTargettingReticleAnim();
-	elseif(event == "UNIT_SPELLCAST_SENT") then 
+	elseif(event == "UNIT_SPELLCAST_SENT" or event == "UNIT_SPELLCAST_FAILED") then 
 		self:StopTargettingReticleAnim();
 	elseif (event == "UNIT_SPELLCAST_EMPOWER_START") then 
 		self:PlaySpellCastAnim(ActionButtonCastType.Empowered); 

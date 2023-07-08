@@ -750,6 +750,7 @@ retainenum("ClubFieldType");
 retainenum("ValidateNameResult");
 retainenum("TooltipDataLineType");
 retainenum("TooltipDataType");
+retainenum("ModelBlendOperation");
 
 -- For Private Auras
 retainfromtable("AuraUtil", "DefaultAuraCompare");

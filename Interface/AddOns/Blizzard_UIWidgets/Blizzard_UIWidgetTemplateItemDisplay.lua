@@ -24,6 +24,7 @@ function UIWidgetTemplateItemDisplayMixin:Setup(widgetInfo, widgetContainer)
 
 		self:SetWidth(self.Item:GetWidth());
 		self:SetHeight(self.Item:GetHeight());
+		widgetContainer:MarkDirtyLayout();
 	end);
 end
 

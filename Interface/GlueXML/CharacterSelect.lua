@@ -1417,6 +1417,9 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		if not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector() then
 			if IsRPEBoostEligible(charID) then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
+				if IsVeteranTrialAccount() then
+					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
+				end
 			else
 				EndCharacterServicesFlow(false);
 			end
@@ -2241,6 +2244,11 @@ local function GetCharacterServiceDisplayOrder()
 end
 
 function IsRPEBoostEligible(charID)
+	if CharacterSelect.undeleting then
+		-- Deleted characters are not eligible for RPE Boost (until they are restored)
+		return false;
+	end
+
 	return select(36, GetCharacterInfo(charID));
 end
 
@@ -2567,10 +2575,10 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason
 end
 
 function BeginCharacterServicesFlow(flow, data)
+	CharSelectServicesFlowFrame:Initialize(flow);
     CharSelectServicesFlowFrame:Show();
 	flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
-	CharSelectServicesFlowFrame:Initialize(flow);
 end
 
 function EndCharacterServicesFlow(shouldMaximize)
@@ -3490,6 +3498,13 @@ function CharSelectServicesFlowFrameMixin:ClearErrorMessage()
 end
 
 function CharSelectServicesFlowFrameMixin:Initialize(flow)
+	if not flow.MinimizedFrame then
+		self.IsMinimized = false; --flows that cant minimize should no longer be tracking that they are minimized.
+		if self.MinimizedFrame then 
+			self.MinimizedFrame:Hide(); --any previously minimized frames should be hidden (will be cleared in CharSelectServicesFlowFrame:Initialize)
+		end
+	end
+
 	self.MinimizedFrame = flow.MinimizedFrame and _G[flow.MinimizedFrame];
 	self.DisableButtons = flow:ShouldDisableButtons();
 

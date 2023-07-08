@@ -11,56 +11,54 @@ local DefaultAspectRatio = {x = 16, y = 9};
 function CinematicFrame_OnDisplaySizeChanged(self)
 	-- called when the display changes and when the cinematic camera wants to 
 	-- either adjust the aspect ratio or add the legacy letterbox
-	if (self:IsShown()) then
-		if self.forcedAspectRatio == Enum.CameraModeAspectRatio.LegacyLetterbox then
-			local width = CinematicFrame:GetWidth();
-			local height = CinematicFrame:GetHeight();
+	if self.forcedAspectRatio == Enum.CameraModeAspectRatio.LegacyLetterbox then
+		local width = CinematicFrame:GetWidth();
+		local height = CinematicFrame:GetHeight();
 
-			local viewableHeight = width * DefaultAspectRatio.y / DefaultAspectRatio.x;
-			local halfDiff = math.max(math.floor((height - viewableHeight) / 2.0), 0);
+		local viewableHeight = width * DefaultAspectRatio.y / DefaultAspectRatio.x;
+		local halfDiff = math.max(math.floor((height - viewableHeight) / 2.0), 0);
 
-			WorldFrame:ClearAllPoints();
-			WorldFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 0, -halfDiff);
-			WorldFrame:SetPoint("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, halfDiff);
+		WorldFrame:ClearAllPoints();
+		WorldFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 0, -halfDiff);
+		WorldFrame:SetPoint("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, halfDiff);
 
-			local blackBarHeight = math.max(halfDiff, 40);
-			UpperBlackBar:SetHeight( blackBarHeight );
-			LowerBlackBar:SetHeight( blackBarHeight );
+		local blackBarHeight = math.max(halfDiff, 40);
+		UpperBlackBar:SetHeight( blackBarHeight );
+		LowerBlackBar:SetHeight( blackBarHeight );
 			
-			UpperBlackBar:SetShown(true);
-			LowerBlackBar:SetShown(true);
+		UpperBlackBar:SetShown(true);
+		LowerBlackBar:SetShown(true);
+	else
+		UpperBlackBar:SetShown(false);
+		LowerBlackBar:SetShown(false);
+
+		local height, width, actualRatio;
+		local requestedRatio = AspectRatios[self.forcedAspectRatio];
+		if requestedRatio then
+			height = requestedRatio.y * WorldFrame:GetWidth() / requestedRatio.x;
+			width = requestedRatio.x * WorldFrame:GetHeight() / requestedRatio.y;
+			actualRatio = requestedRatio.x / requestedRatio.y;
 		else
-			UpperBlackBar:SetShown(false);
-			LowerBlackBar:SetShown(false);
+			height = DefaultAspectRatio.y * WorldFrame:GetWidth() / DefaultAspectRatio.x;
+			width = DefaultAspectRatio.x * WorldFrame:GetHeight() / DefaultAspectRatio.y;
+			actualRatio = DefaultAspectRatio.x / DefaultAspectRatio.y;
+		end
+		local physicalWidth, physicalHeight = GetPhysicalScreenSize();
+		local screenRatio = physicalWidth / physicalHeight;
 
-			local height, width, actualRatio;
-			local requestedRatio = AspectRatios[self.forcedAspectRatio];
-			if requestedRatio then
-				height = requestedRatio.y * WorldFrame:GetWidth() / requestedRatio.x;
-				width = requestedRatio.x * WorldFrame:GetHeight() / requestedRatio.y;
-				actualRatio = requestedRatio.x / requestedRatio.y;
-			else
-				height = DefaultAspectRatio.y * WorldFrame:GetWidth() / DefaultAspectRatio.x;
-				width = DefaultAspectRatio.x * WorldFrame:GetHeight() / DefaultAspectRatio.y;
-				actualRatio = DefaultAspectRatio.x / DefaultAspectRatio.y;
-			end
-			local physicalWidth, physicalHeight = GetPhysicalScreenSize();
-			local screenRatio = physicalWidth / physicalHeight;
-
-			WorldFrame:ClearAllPoints();
-			if actualRatio > screenRatio then -- letterbox
-				WorldFrame:SetHeight(1);
-				WorldFrame:SetPoint("LEFT", nil, "LEFT", 0, 0);
-				WorldFrame:SetPoint("RIGHT", nil, "RIGHT", 0, 0);
-				WorldFrame:SetHeight(height);
-			elseif actualRatio < screenRatio then --pillarbox
-				WorldFrame:SetWidth(1);
-				WorldFrame:SetPoint("TOP", nil, "TOP", 0, 0);
-				WorldFrame:SetPoint("BOTTOM", nil, "BOTTOM", 0, 0);
-				WorldFrame:SetWidth(width);				
-			else -- perfect match
-				WorldFrame:SetAllPoints();
-			end
+		WorldFrame:ClearAllPoints();
+		if actualRatio > screenRatio then -- letterbox
+			WorldFrame:SetHeight(1);
+			WorldFrame:SetPoint("LEFT", nil, "LEFT", 0, 0);
+			WorldFrame:SetPoint("RIGHT", nil, "RIGHT", 0, 0);
+			WorldFrame:SetHeight(height);
+		elseif actualRatio < screenRatio then --pillarbox
+			WorldFrame:SetWidth(1);
+			WorldFrame:SetPoint("TOP", nil, "TOP", 0, 0);
+			WorldFrame:SetPoint("BOTTOM", nil, "BOTTOM", 0, 0);
+			WorldFrame:SetWidth(width);				
+		else -- perfect match
+			WorldFrame:SetAllPoints();
 		end
 	end
 end
@@ -95,9 +93,7 @@ function CinematicFrame_OnEvent(self, event, ...)
 
 		self.isRealCinematic = canBeCancelled;	--If it isn't real, it's a vehicle cinematic
 
-		if (self.forcedAspectRatio ~= forcedAspectRatio) then
-			self.forcedAspectRatio = forcedAspectRatio;
-		end
+		self.forcedAspectRatio = forcedAspectRatio;
 		CinematicFrame_OnDisplaySizeChanged(self);
 
 		self.closeDialog:Hide();
@@ -131,7 +127,9 @@ function CinematicFrame_OnEvent(self, event, ...)
 			CinematicFrame_AddSubtitle(chatType, body);
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
-		CinematicFrame_OnDisplaySizeChanged(self);
+		if (self:IsShown()) then
+			CinematicFrame_OnDisplaySizeChanged(self);
+		end
 	elseif ( event == "HIDE_SUBTITLE") then
 		CinematicFrame_HideSubtitle(self)
 	end
