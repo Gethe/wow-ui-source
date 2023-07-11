@@ -419,6 +419,16 @@ function TimeManagerClockButton_OnLoad(self)
 		TimeManager_StartCheckingAlarm();
 	end
 	self:RegisterForClicks("AnyUp");
+
+	-- Update ClockButton only once a second to reduce perf cost.
+	self.onUpdate = TimeManagerClockButton_OnUpdate;
+	self.lastUpdate = GetTime();
+	C_Timer.NewTicker(1, function()
+		local time = GetTime();
+		local elapsed = time - self.lastUpdate;
+		self:onUpdate(elapsed);
+		self.lastUpdate = time;
+	end);
 end
 
 function TimeManagerClockButton_Update()
@@ -427,12 +437,12 @@ end
 
 function TimeManagerClockButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	TimeManagerClockButton:SetScript("OnUpdate", TimeManagerClockButton_OnUpdateWithTooltip);
+	self.onUpdate = TimeManagerClockButton_OnUpdateWithTooltip;
 end
 
 function TimeManagerClockButton_OnLeave(self)
 	GameTooltip:Hide();
-	TimeManagerClockButton:SetScript("OnUpdate", TimeManagerClockButton_OnUpdate);
+	self.onUpdate = TimeManagerClockButton_OnUpdate;
 end
 
 function TimeManagerClockButton_OnClick(self)

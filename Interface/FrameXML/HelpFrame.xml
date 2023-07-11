@@ -64,8 +64,8 @@ UI_shared.xsd">
 			</Browser>
 			<Frame parentKey="SpinnerOverlay" frameLevel="3" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.HelpBrowser" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HelpBrowser" relativePoint="BOTTOMRIGHT"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

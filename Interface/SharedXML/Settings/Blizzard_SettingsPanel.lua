@@ -174,6 +174,10 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 	elseif name == SettingsInbound.OnSettingValueChangedAttribute then
 		local setting, newValue, oldValue, originalValue = SecureUnpackArgs(value);
 		self:OnSettingValueChanged(setting, newValue, oldValue, originalValue);
+	elseif name == SettingsInbound.RepairDisplayAttribute then
+		self:RepairDisplay();
+	elseif name == SettingsInbound.SetCurrentLayoutAttribute then
+		self:SetCurrentLayout(value);
 	end
 end
 
@@ -600,13 +604,15 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 		local redirectCategory = category.redirectCategory or category;
 		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical then
 			for _, initializer in layout:EnumerateInitializers() do
-				local result = initializer:MatchesSearchTags(words);
-				if result and initializer:ShouldShow() then
-					if not matches[result] then
-						matches[result] = {};
-					end
+				if not initializer:IsSearchIgnoredInLayout(layout) then
+					local result = initializer:MatchesSearchTags(words);
+					if result and initializer:ShouldShow() then
+						if not matches[result] then
+							matches[result] = {};
+						end
 
-					table.insert(matches[result], { initializer = initializer, category = redirectCategory });
+						table.insert(matches[result], { initializer = initializer, category = redirectCategory });
+					end
 				end
 			end
 		end
@@ -740,6 +746,20 @@ function SettingsPanelMixin:OnSettingValueChanged(setting, value, oldValue, orig
 	self.modified[setting] = isModified and setting or nil;
 	securecallfunction(setting.UpdateIgnoreApplyFlag, setting);
 	self:CheckApplyButton();
+
+	SettingsInbound.RepairDisplay();
+end
+
+function SettingsPanelMixin:RepairDisplay()
+	local layout = self.currentLayout;
+	if layout then
+		local layoutType = layout:GetLayoutType();
+		if layoutType == SettingsLayoutMixin.LayoutType.Vertical then
+			local initializers = securecallfunction(layout.GetInitializers, layout);
+			local settingsList = self:GetSettingsList();
+			securecallfunction(settingsList.RepairDisplay, settingsList, initializers);
+		end
+	end
 end
 
 function SettingsPanelMixin:GetAllCategories()
@@ -805,10 +825,16 @@ function SettingsPanelMixin:DisplayCategory(category)
 	self:DisplayLayout(layout);
 end
 
+function SettingsPanelMixin:SetCurrentLayout(layout)
+	self.currentLayout = layout;
+end
+
 function SettingsPanelMixin:DisplayLayout(layout)
 	if not layout then
 		return;
 	end
+
+	SettingsInbound.SetCurrentLayout(layout);
 
 	local currentCategory = self:GetCurrentCategory();
 	if currentCategory then

@@ -334,7 +334,7 @@ function QuestFrameGreetingPanel_OnShow()
 			end
 
 			local activeQuestID = GetActiveQuestID(i);
-			QuestUtil.ApplyQuestIconActiveToTexture(questTitleButton.Icon, isComplete, IsActiveQuestLegendary(i), nil, nil, QuestUtil.ShouldQuestIconsUseCampaignAppearance(activeQuestID), C_QuestLog.IsQuestCalling(activeQuestID));
+			QuestUtil.ApplyQuestIconActiveToTextureForQuestID(questTitleButton.Icon, activeQuestID, isComplete, IsActiveQuestLegendary(i));
 			questTitleButton:SetHeight(math.max(questTitleButton:GetTextHeight() + 2, questTitleButton.Icon:GetHeight()));
 			questTitleButton:SetID(i);
 			questTitleButton.isActive = 1;
@@ -364,7 +364,7 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(i - numActiveQuests);
-			QuestUtil.ApplyQuestIconOfferToTexture(questTitleButton.Icon, isLegendary, frequency, isRepeatable, QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID), C_QuestLog.IsQuestCalling(questID));
+			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable);
 
 			if ( isTrivial ) then
 				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
@@ -573,7 +573,7 @@ function QuestFrame_GetMaterial()
 	local questTextContrastEnabled = QuestUtil.QuestTextContrastEnabled();
 	local material = GetQuestBackgroundMaterial();
 	if questTextContrastEnabled or not material then
-		return "Parchment", true;
+		return "Parchment", not questTextContrastEnabled;
 	end
 
 	return material, false;

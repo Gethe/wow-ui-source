@@ -354,6 +354,7 @@ local GossipInfo =
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
 				{ Name = "isIgnored", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "isImportant", Type = "bool", Nilable = false },
 			},
 		},
 	},

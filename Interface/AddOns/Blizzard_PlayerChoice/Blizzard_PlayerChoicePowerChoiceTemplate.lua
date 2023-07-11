@@ -14,14 +14,18 @@ end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnShow()
 	self:SetAlpha(1);
-	for _, animation in ipairs(self.PassiveAnimations) do
-		animation:Play();
+	if(self.PassiveAnimations) then
+		for _, animation in ipairs(self.PassiveAnimations) do
+			animation:Play();
+		end
 	end
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnHide()
-	for _, animation in ipairs(self.PassiveAnimations) do
-		animation:Stop();
+	if(self.PassiveAnimations) then
+		for _, animation in ipairs(self.PassiveAnimations) do
+			animation:Stop();
+		end
 	end
 	if self.ChoiceSelectedAnimation then
 		self.ChoiceSelectedAnimation:Stop();
@@ -59,8 +63,11 @@ function PlayerChoicePowerChoiceTemplateMixin:FadeOut()
 		if self.ChoiceSelectedAnimation then
 			self.ChoiceSelectedAnimation:Restart();
 		end
-		if self.selectedEffectID ~= nil then
-			self.selectedEffectController = GlobalFXDialogModelScene:AddEffect(self.selectedEffectID, self.Artwork);
+		if self.selectedEffects ~= nil then
+			self.selectedEffectControllers = {};
+			for _, effect in ipairs(self.selectedEffects) do
+				table.insert(self.selectedEffectControllers, GlobalFXDialogModelScene:AddEffect(effect.id, self.Artwork, self.Artwork, nil, nil, effect.scaleMultiplier or 1));
+			end
 		end
 
 		local toggleButton = PlayerChoiceToggle_GetActiveToggle();
@@ -132,9 +139,11 @@ function PlayerChoicePowerChoiceTemplateMixin:BeginEffects()
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:CancelEffects()
-	if self.selectedEffectController then
-		self.selectedEffectController:CancelEffect();
-		self.selectedEffectController = nil;
+	if self.selectedEffectControllers then
+		for _, effectController in ipairs(self.selectedEffectControllers) do
+			effectController:CancelEffect();
+		end
+		self.selectedEffectControllers = nil;
 	end
 end
 

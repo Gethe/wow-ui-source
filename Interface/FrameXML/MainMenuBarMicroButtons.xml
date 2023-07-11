@@ -10,21 +10,30 @@
 	</Frame>
 
 	<Button name="MainMenuBarMicroButton" inherits="QuickKeybindButtonTemplate" mixin="MainMenuBarMicroButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="19" y="26"/>
+		<Size x="32" y="40"/>
 		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="FlashBorder" atlas="UI-HUD-MicroMenu-Highlightalert" useAtlasSize="false" alphaMode="ADD" hidden="true">
-					<Size x="22" y="31"/>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-HUD-MicroMenu-ButtonBG-Up" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="4"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="PushedBackground" atlas="UI-HUD-MicroMenu-ButtonBG-Down" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashBorder" setAllPoints="true" atlas="UI-HUD-MicroMenu-Highlightalert" alphaMode="ALPHA" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter" inherit="append"/>
+			<OnLeave method="OnLeave" inherit="append"/>
 			<OnShow method="OnShow" inherit="append"/>
 			<OnHide method="OnHide" inherit="append"/>
+			<OnMouseDown method="OnMouseDown" inherit="append"/>
 			<OnEnable>
 				self:SetAlpha(1);
 			</OnEnable>
@@ -50,8 +59,8 @@
 			<Anchor point="BOTTOMRIGHT"/>
 		</Anchors>
 		<KeyValues>
-			<KeyValue key="childXPadding" value="1" type="number"/>
-			<KeyValue key="childYPadding" value="1" type="number"/>
+			<KeyValue key="childXPadding" value="-5" type="number"/>
+			<KeyValue key="childYPadding" value="-5" type="number"/>
 			<KeyValue key="isHorizontal" value="true" type="boolean"/>
 			<KeyValue key="stride" value="12" type="number"/>
 			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
@@ -65,14 +74,42 @@
 					<KeyValue key="layoutIndex" value="1" type="number"/>
 				</KeyValues>
 				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Shadow" atlas="UI-HUD-MicroMenu-Portrait-Shadow-2x" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Portrait">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="7" y="-7"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-7" y="7"/>
+							</Anchors>
+							<TexCoords left="0.2" right="0.8" top="0.0666" bottom="0.9"/>
+						</Texture>
+					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-CharacterInfo-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<MaskTexture parentKey="PortraitMask" atlas="UI-HUD-MicroMenu-Portrait-Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="35" y="65"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Portrait"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<Texture parentKey="PushedShadow" atlas="UI-HUD-MicroMenu-Portrait-Down-2x" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="1" y="-4"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnMouseDown method="OnMouseDown"/>
-					<OnMouseUp method ="OnMouseUp"/>
+					<OnClick method="OnClick"/>
 					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Button>
@@ -83,7 +120,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpellbookAbilities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpellbookAbilities-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -99,7 +136,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpecTalents-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-SpecTalents-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -115,7 +152,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Achievements-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Achievements-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -132,7 +169,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Questlog-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Questlog-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -147,8 +184,24 @@
 					<KeyValue key="layoutIndex" value="6" type="number"/>
 				</KeyValues>
 				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GuildCommunities-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					<Layer level="ARTWORK">
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GuildCommunities-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
+					</Layer>
+					<Layer level ="OVERLAY">
+						<Texture parentKey="Emblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="12" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT" textureSubLevel="5">
+						<Texture parentKey="HighlightEmblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="12" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -180,7 +233,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Groupfinder-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Groupfinder-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -199,7 +252,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Collections-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Collections-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -216,7 +269,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-AdventureGuide-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-AdventureGuide-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -234,7 +287,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -248,7 +301,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Shop-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-Shop-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -266,7 +319,7 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GameMenu-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/>
 						<Texture parentKey="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
 							<Size x="19" y="39"/>
 							<Anchors>
@@ -278,8 +331,8 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnUpdate method="OnUpdate"/>
-					<OnMouseDown method="OnMouseDown"/>
-					<OnMouseUp method="OnMouseUp"/>
+					<OnMouseDown method="OnMouseDown" inherit="append"/>
+					<OnMouseUp method ="OnMouseUp" inherit="append"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 				</Scripts>

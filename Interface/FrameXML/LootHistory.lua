@@ -251,12 +251,12 @@ LootHistoryFrameMixin = {};
 local LootHistoryFrameAlwaysListenEvents =
 {
 	"LOOT_HISTORY_GO_TO_ENCOUNTER",
+	"LOOT_HISTORY_CLEAR_HISTORY",
 };
 
 local LootHistoryFrameWhenShownEvents =
 {
 	"LOOT_HISTORY_UPDATE_ENCOUNTER",
-	"LOOT_HISTORY_CLEAR_HISTORY",
 };
 
 function LootHistoryFrameMixin:OnLoad()
@@ -286,7 +286,7 @@ end
 function LootHistoryFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, LootHistoryFrameWhenShownEvents);
 
-	self.ScrollBox:ClearDataProvider();
+	self.ScrollBox:RemoveDataProvider();
 	self.selectedEncounterID = nil;
 end
 
@@ -302,6 +302,9 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "LOOT_HISTORY_CLEAR_HISTORY" then
 		self:SetInfoShown(false);
+		self:SetScript("OnUpdate", nil);
+		self.selectedEncounterID = nil;
+		self.encounterInfo = nil;
 	end
 end
 
@@ -417,10 +420,10 @@ function LootHistoryFrameMixin:UpdateTimer()
 
 	local elapsed = C_LootHistory.GetLootHistoryTime() - self.encounterInfo.startTime;
 	if allRollsFinished or elapsed >= self.encounterInfo.duration or self.encounterInfo.duration == 0 then
-		self.Timer:Hide();
+		self.Timer.Fill:Hide();
 		self:SetScript("OnUpdate", nil);
 	else
-		self.Timer:Show();
+		self.Timer.Fill:Show();
 
 		local fullFillWidth = 234;
 		local pctLeft = 1.0 - (elapsed / self.encounterInfo.duration);

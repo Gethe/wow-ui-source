@@ -268,6 +268,20 @@ local KeyBindingFrameBindingTemplateEvents = {
 };
 
 function KeyBindingFrameBindingTemplateMixin:OnLoad()
+	self.Label:SetScript("OnEnter", function()
+		if self.Label:IsTruncated() then
+			SettingsTooltip:SetOwner(self.Label, "ANCHOR_RIGHT");
+			SettingsTooltip:AddLine(self.Label:GetText());
+			SettingsTooltip:Show();
+		end
+	end);
+
+	self.Label:SetScript("OnLeave", function()
+		if self.Label:IsTruncated() then
+			SettingsTooltip:Hide();
+		end
+	end);
+
 	self.cbrHandles = Settings.CreateCallbackHandleContainer();
 end
 
@@ -310,8 +324,10 @@ function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
 			MultiBar7, 			
 		};
 		local bar = bars[tonumber(multiActionBar)];
-		local button = bar.actionButtons[tonumber(multiActionButton)];
-		return button;
+		if bar.actionButtons then
+			local button = bar.actionButtons[tonumber(multiActionButton)];
+			return button;
+		end
 	end
 
 	local petActionButton = string.match(action, "^BONUSACTIONBUTTON(%d+)");

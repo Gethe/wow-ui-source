@@ -47,6 +47,8 @@ ScrollBoxConstants =
 	AlignNearest = -1,
 	ScrollBegin = MathUtil.Epsilon,
 	ScrollEnd = (1 - MathUtil.Epsilon),
+	StopIteration = true,
+	ContinueIteration = false,
 };
 
 -- ScrollBoxBaseMixin includes CallbackRegistryMixin but the derived mixins are responsible
@@ -352,8 +354,7 @@ function ScrollBoxBaseMixin:SanitizeAlignment(alignment, extent)
 		return 0;
 	end
 	
-	local centered = .5;
-	return alignment and Saturate(alignment) or centered;
+	return alignment and Saturate(alignment) or ScrollBoxConstants.AlignCenter;
 end
 
 function ScrollBoxBaseMixin:ScrollToOffset(offset, frameExtent, alignment, noInterpolation)
@@ -529,6 +530,10 @@ function ScrollBoxListMixin:ForEachFrame(func)
 	self:GetView():ForEachFrame(func);
 end
 
+function ScrollBoxListMixin:ReverseForEachFrame(func)
+	self:GetView():ReverseForEachFrame(func);
+end
+
 function ScrollBoxListMixin:ForEachElementData(func)
 	self:GetView():ForEachElementData(func);
 end
@@ -541,8 +546,28 @@ function ScrollBoxListMixin:EnumerateFrames()
 	return self:GetView():EnumerateFrames();
 end
 
+-- Considering doing a conversion in 11.0 to rename EntireRange to become Enumerate, 
+-- and Enumerate to be renamed to EnumerateRange(min, max). It is a bit counter-intuitive
+-- for Enumerate to do anything other than iterate the entire range, and additionally
+-- confusing that this newly added EntireRange function does exactly that.
+function ScrollBoxListMixin:EnumerateDataProviderEntireRange()
+	return self:GetView():EnumerateDataProvider();
+end
+
+function ScrollBoxListMixin:EnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetView():EnumerateDataProvider(indexBegin, indexEnd);
+end
+
+function ScrollBoxListMixin:FindElementData(index)
+	return self:GetView():Find(index);
+end
+
 function ScrollBoxListMixin:FindElementDataByPredicate(predicate)
 	return self:GetView():FindElementDataByPredicate(predicate);
+end
+
+function ScrollBoxListMixin:FindElementDataIndex(elementData)
+	return self:GetView():FindElementDataIndex(elementData);
 end
 
 function ScrollBoxListMixin:FindElementDataIndexByPredicate(predicate)
@@ -553,24 +578,18 @@ function ScrollBoxListMixin:FindByPredicate(predicate)
 	return self:GetView():FindByPredicate(predicate);
 end
 
+-- Deprecated, use FindElementData
 function ScrollBoxListMixin:Find(index)
-	return self:GetView():Find(index);
+	return self:FindElementData(index);
 end
 
+-- Deprecated, use FindElementDataIndex
 function ScrollBoxListMixin:FindIndex(elementData)
-	return self:GetView():FindIndex(elementData);
+	return self:FindElementDataIndex(elementData);
 end
 
-function ScrollBoxListMixin:InsertElementData(...)
-	self:GetView():InsertElementData(...);
-end
-
-function ScrollBoxListMixin:InsertElementDataTable(tbl)
-	self:GetView():InsertElementDataTable(tbl);
-end
-
-function ScrollBoxListMixin:InsertElementDataTableRange(tbl, indexBegin, indexEnd)
-	self:GetView():InsertElementDataTableRange(tbl, indexBegin, indexEnd);
+function ScrollBoxListMixin:FindFrameElementDataIndex(frame)
+	return self:GetView():FindFrameElementDataIndex(frame);
 end
 
 function ScrollBoxListMixin:ContainsElementDataByPredicate(predicate)
@@ -585,8 +604,12 @@ function ScrollBoxListMixin:HasDataProvider()
 	return self:GetView():HasDataProvider();
 end
 
-function ScrollBoxListMixin:ClearDataProvider()
-	self:GetView():ClearDataProvider();
+function ScrollBoxListMixin:RemoveDataProvider()
+	self:GetView():RemoveDataProvider();
+end
+
+function ScrollBoxListMixin:FlushDataProvider()
+	self:GetView():FlushDataProvider();
 end
 
 function ScrollBoxListMixin:GetDataIndexBegin()
@@ -693,47 +716,79 @@ function ScrollBoxListMixin:Update(forceLayout)
 	self:SetUpdateLocked(false);
 end
 
+--[[
+Be very careful calling ScrollToNearest or ScrollToElementDataIndex to be certain the index is correct.
+While linear views are unlikely to misbehave, Tree views return indices differently depending on if the 
+tree is skipping, or traversed past collapsed elements. If you attempt to scroll to an index of child of
+a collapsed tree node, either a bounds error or an incorrect scroll will happen. For these cases, use
+ScrollToElementData and ScrollToElementDataByPredicate to correctly scroll (and expand to) the desired element.
+]]--
+
 function ScrollBoxListMixin:ScrollToNearest(dataIndex, noInterpolation)
-	local scrollOffset = self:GetDerivedScrollOffset();
-	if self:GetExtentUntil(dataIndex) > (scrollOffset + self:GetVisibleExtent()) then
-		return self:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignEnd, noInterpolation);
-	elseif self:GetExtentUntil(dataIndex) < scrollOffset then
-		return self:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignBegin, noInterpolation);
-	end
+	self:ScrollToElementDataIndex(dataIndex, ScrollBoxConstants.AlignNearest, noInterpolation);
+end
+
+function ScrollBoxListMixin:ScrollToNearestByPredicate(predicate, noInterpolation)
+	self:ScrollToElementDataByPredicate(predicate, ScrollBoxConstants.AlignNearest, noInterpolation);
 end
 
 function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation)
+	alignment = alignment or ScrollBoxConstants.AlignCenter;
+
 	if alignment == ScrollBoxConstants.AlignNearest then
-		return self:ScrollToNearest(dataIndex, noInterpolation);
-	else
-		local elementData = self:Find(dataIndex);
-		if elementData then
-			local extent = self:GetExtentUntil(dataIndex);
-			local elementExtent = self:GetElementExtent(dataIndex);
-			self:ScrollToOffset(extent, elementExtent, alignment, noInterpolation);
-			return elementData;
+		local scrollOffset = self:GetDerivedScrollOffset();
+		if self:GetExtentUntil(dataIndex) > (scrollOffset + self:GetVisibleExtent()) then
+			alignment = ScrollBoxConstants.AlignEnd;
+		elseif self:GetExtentUntil(dataIndex) < scrollOffset then
+			alignment = ScrollBoxConstants.AlignBegin;
+		else
+			-- Already in view
+			return;
 		end
+	end
+
+	local elementData = self:Find(dataIndex);
+	if elementData then
+		local extent = self:GetExtentUntil(dataIndex);
+		local elementExtent = self:GetElementExtent(dataIndex);
+		self:ScrollToOffset(extent, elementExtent, alignment, noInterpolation);
+		return elementData;
 	end
 end
 
 function ScrollBoxListMixin:ScrollToElementData(elementData, alignment, noInterpolation)
-	local dataIndex = self:FindIndex(elementData);
+	local view = self:GetView();
+	if not view then
+		return;
+	end
+
+	alignment = alignment or ScrollBoxConstants.AlignCenter;
+
+	-- Particular views may have preparatory steps before the scroll can occur. For instance,
+	-- tree view must expand each of the element's ancestor nodes before scroll box can find the
+	-- desired element. This can be overwritten by each view, but isn't generally necessary.
+	view:PrepareScrollToElementData(elementData);
+
+	local dataIndex = self:FindElementDataIndex(elementData);
 	if dataIndex then
 		return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
 	end
 end
 
 function ScrollBoxListMixin:ScrollToElementDataByPredicate(predicate, alignment, noInterpolation)
-	if alignment == ScrollBoxConstants.AlignNearest then
-		local dataIndex, elementData = self:FindByPredicate(predicate);
-		if dataIndex then
-			return self:ScrollToNearest(dataIndex, noInterpolation);
-		end
-	else
-		local dataIndex = self:FindElementDataIndexByPredicate(predicate);
-		if dataIndex then
-			return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
-		end
+	local view = self:GetView();
+	if not view then
+		return;
+	end
+	
+	alignment = alignment or ScrollBoxConstants.AlignCenter;
+
+	-- See comment adjacent to PrepareScrollToElementData above
+	view:PrepareScrollToElementDataByPredicate(predicate);
+
+	local dataIndex = self:FindElementDataIndexByPredicate(predicate);
+	if dataIndex then
+		return self:ScrollToElementDataIndex(dataIndex, alignment, noInterpolation);
 	end
 end
 

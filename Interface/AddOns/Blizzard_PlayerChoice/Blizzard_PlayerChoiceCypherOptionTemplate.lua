@@ -51,6 +51,8 @@ local animationInfos =
 };
 
 function PlayerChoiceCypherOptionTemplateMixin:CypherChoiceOnLoad()
+	self.selectedEffects = { {id = 138} };
+
 	-- Set up animations with variable durations and delays so that not all options' animations are in-sync
 	for asset, info in pairs(animationInfos) do
 		local newGroup = self:CreateAnimationGroup();

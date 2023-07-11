@@ -141,20 +141,6 @@ local WarCampaign =
 				{ Name = "sortAsNormalQuest", Type = "bool", Nilable = false },
 			},
 		},
-		{
-			Name = "UsesNormalQuestIcons",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "campaignID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "useNormalQuestIcons", Type = "bool", Nilable = false },
-			},
-		},
 	},
 
 	Events =
@@ -206,6 +192,8 @@ local WarCampaign =
 				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "isWarCampaign", Type = "bool", Nilable = false },
+				{ Name = "usesNormalQuestIcons", Type = "bool", Nilable = false },
+				{ Name = "isContainerCampaign", Type = "bool", Nilable = false },
 			},
 		},
 	},

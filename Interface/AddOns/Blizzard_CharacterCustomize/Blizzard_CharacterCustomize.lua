@@ -348,7 +348,7 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 
 	self.New:SetShown(categoryData.hasNewChoices);
 	local selected = false;
-	if categoryData.chrModelID then
+	if categoryData.chrModelID and not CharCustomizeFrame.needsNativeFormCategory then
 		if CharCustomizeFrame.viewingChrModelID then
 			selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
 		else
@@ -1192,17 +1192,23 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 	local buttonPool = self:GetAlteredFormsButtonPool();
 	if self.selectedRaceData.alternateFormRaceData and self.selectedRaceData.alternateFormRaceData.createScreenIconAtlas then
 		local normalForm = buttonPool:Acquire();
-		local normalFormSelected = not self.viewingShapeshiftForm and not self.viewingAlteredForm;
+		local notChrModel = not self.viewingShapeshiftForm and not self.viewingChrModelID;
+		local normalFormSelected = notChrModel and not self.viewingAlteredForm;
 		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 
 		local alteredForm = buttonPool:Acquire();
-		local alteredFormSelected = not self.viewingShapeshiftForm and self.viewingAlteredForm;
+		local alteredFormSelected = notChrModel and self.viewingAlteredForm;
 		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, alteredFormSelected, true, 0);
 		alteredForm:Show();
 	elseif self.hasShapeshiftForms then
 		local normalForm = buttonPool:Acquire();
 		local normalFormSelected = not self.viewingShapeshiftForm;
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
+		normalForm:Show();
+	elseif self.needsNativeFormCategory then
+		local normalForm = buttonPool:Acquire();
+		local normalFormSelected = not self.viewingChrModelID;
 		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 	end
@@ -1388,6 +1394,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	self.hasShapeshiftForms = false;
 	self.hasChrModels = false;	-- nothing using this right now, tracking it anyway
+	self.needsNativeFormCategory = false;
 	self.firstChrModelID = nil;
 	self.numNormalCategories = 0;
 
@@ -1409,6 +1416,10 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 				self.hasShapeshiftForms = true;
 			else
 				self.numNormalCategories = self.numNormalCategories + 1;
+			end
+
+			if categoryData.needsNativeFormCategory then
+				self.needsNativeFormCategory = true;
 			end
 
 			button:SetCategory(categoryData, self.selectedCategoryData.id);

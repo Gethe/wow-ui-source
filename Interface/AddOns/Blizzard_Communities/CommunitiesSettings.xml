@@ -188,7 +188,7 @@
 						<FontString parentKey="Label" text="CLUB_FINDER_LIST_COMMUNITY" justifyH="LEFT" inherits="GameFontHighlight">
 							<Size x="260" y="0"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.ShouldListClubButton" x="35" y="0"/>
+								<Anchor point="LEFT" x="35" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -266,7 +266,7 @@
 					<EditBox parentKey="EditBox" inherits="InputBoxTemplate" numeric="true" letters="3" setAllPoints="true" autoFocus="false">
 						<Size x="135" y="18"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="RIGHT" x="200" y="0"/>
+							<Anchor point="RIGHT" x="200" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">

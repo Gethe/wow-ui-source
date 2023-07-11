@@ -317,6 +317,9 @@ function NamePlateDriverMixin:OnNamePlateResized(namePlateFrame)
 	if self.classNamePlatePowerBar and self.classNamePlatePowerBar:GetParent() == namePlateFrame then
 		self.classNamePlatePowerBar:OnSizeChanged();
 	end
+	if self.classNamePlateAlternatePowerBar and self.classNamePlateAlternatePowerBar:GetParent() == namePlateFrame then
+		self.classNamePlateAlternatePowerBar:OnSizeChanged();
+	end
 end
 
 function NamePlateDriverMixin:SetupClassNameplateBars()
@@ -327,9 +330,13 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		showMechanicOnTarget = GetCVarBool("nameplateResourceOnTarget");
 	end
 
-	local anchorMechanicToPowerBar = false;
+	local bottomMostBar = nil;
+	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
+	if namePlatePlayer then
+		bottomMostBar = namePlatePlayer.UnitFrame.healthBar;
+	end
+
 	if self.classNamePlatePowerBar then
-		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 		if namePlatePlayer then
 			self.classNamePlatePowerBar:SetParent(namePlatePlayer);
 			self.classNamePlatePowerBar:ClearAllPoints();
@@ -337,9 +344,25 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 0);
 			self.classNamePlatePowerBar:SetShown(not self.playerHideHealthandPowerBar);
 
-			anchorMechanicToPowerBar = true;
+			bottomMostBar = self.classNamePlatePowerBar;
 		else
 			self.classNamePlatePowerBar:Hide();
+		end
+	end
+
+	if self.classNamePlateAlternatePowerBar then
+		if namePlatePlayer then
+			local powerBar = self.classNamePlatePowerBar;
+			local attachTo = (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.healthBar;
+			self.classNamePlateAlternatePowerBar:SetParent(namePlatePlayer);
+			self.classNamePlateAlternatePowerBar:ClearAllPoints();
+			self.classNamePlateAlternatePowerBar:SetPoint("TOPLEFT", attachTo, "BOTTOMLEFT", 0, 0);
+			self.classNamePlateAlternatePowerBar:SetPoint("TOPRIGHT", attachTo, "BOTTOMRIGHT", 0, 0);
+			self.classNamePlateAlternatePowerBar:Show();
+
+			bottomMostBar = self.classNamePlateAlternatePowerBar;
+		else
+			self.classNamePlateAlternatePowerBar:Hide();
 		end
 	end
 
@@ -354,30 +377,24 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 			else
 				self.classNamePlateMechanicFrame:Hide();
 			end
-		elseif anchorMechanicToPowerBar then
-			local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
+		elseif bottomMostBar then
 			self.classNamePlateMechanicFrame:SetParent(namePlatePlayer);
 			self.classNamePlateMechanicFrame:ClearAllPoints();
-			self.classNamePlateMechanicFrame:SetPoint("TOP", self.classNamePlatePowerBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
+			self.classNamePlateMechanicFrame:SetPoint("TOP", bottomMostBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
 			self.classNamePlateMechanicFrame:Show();
 		else
-			local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
-			if namePlatePlayer then
-				self.classNamePlateMechanicFrame:SetParent(namePlatePlayer);
-				self.classNamePlateMechanicFrame:ClearAllPoints();
-				self.classNamePlateMechanicFrame:SetPoint("TOP", namePlatePlayer.UnitFrame.healthBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
-				self.classNamePlateMechanicFrame:Show();
-			else
-				self.classNamePlateMechanicFrame:Hide();
-			end
+			self.classNamePlateMechanicFrame:Hide();
 		end
 	end
 
-	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 	if self.personalFriendlyBuffFrame and namePlatePlayer then
 		local mechanicFrame = not showMechanicOnTarget and self.classNamePlateMechanicFrame;
 		local powerBar = self.classNamePlatePowerBar;
-		local attachTo = (mechanicFrame and mechanicFrame:IsShown() and mechanicFrame) or (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.BuffFrame;
+		local alternatePowerBar = self.classNamePlateAlternatePowerBar;
+		local attachTo = (mechanicFrame and mechanicFrame:IsShown() and mechanicFrame)
+					  or (alternatePowerBar and alternatePowerBar:IsShown() and alternatePowerBar)
+					  or (powerBar and powerBar:IsShown() and powerBar)
+					  or namePlatePlayer.UnitFrame.BuffFrame;
 		self.personalFriendlyBuffFrame:SetParent(namePlatePlayer);
 		self.personalFriendlyBuffFrame:ClearAllPoints();
 		self.personalFriendlyBuffFrame:SetPoint("TOP", attachTo, "BOTTOM", 0, 0);
@@ -385,7 +402,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		self.personalFriendlyBuffFrame:SetActive(not C_Commentator.IsSpectating());
 	end
 
-	if targetMode and self.classNamePlateMechanicFrame then
+	if showMechanicOnTarget and self.classNamePlateMechanicFrame then
 		local percentOffset = tonumber(GetCVar("nameplateClassResourceTopInset")) or 0;
 		if self:IsUsingLargerNamePlateStyle() then
 			percentOffset = percentOffset + .1;
@@ -412,6 +429,15 @@ end
 function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
 	self.classNamePlatePowerBar = frame;
 	self:SetupClassNameplateBars();
+end
+
+function NamePlateDriverMixin:SetClassNameplateAlternatePowerBar(frame)
+	self.classNamePlateAlternatePowerBar = frame;
+	self:SetupClassNameplateBars();
+end
+
+function NamePlateDriverMixin:GetClassNameplateAlternatePowerBar()
+	return self.classNamePlateAlternatePowerBar;
 end
 
 function NamePlateDriverMixin:SetPersonalFriendlyBuffFrame(frame)
@@ -507,6 +533,10 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	if self.classNamePlatePowerBar then
 		self.classNamePlatePowerBar:OnOptionsUpdated();
 	end
+	if self.classNamePlateAlternatePowerBar then
+		self.classNamePlateAlternatePowerBar:OnOptionsUpdated();
+	end
+	
 	self:SetupClassNameplateBars();
 end
 

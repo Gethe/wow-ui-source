@@ -325,7 +325,7 @@
 						<Button parentKey="AcceptButton" inherits="StoreButtonSmallTemplate">
 							<Size x="120" y="22" />
 							<Anchors>
-								<Anchor point="BOTTOM" relativeKey="$parent.RightInset" relativePoint="BOTTOM" x="0" y="20" />
+								<Anchor point="BOTTOM" x="0" y="20" />
 							</Anchors>
 							<Scripts>
 								<OnClick function="StoreFrameErrorAcceptButton_OnClick" />

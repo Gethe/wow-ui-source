@@ -63,6 +63,14 @@ function QuestMixin:IsCalling()
 	return self.isCalling;
 end
 
+function QuestMixin:IsImportant()
+	if self.isImportant == nil then
+		self.isImportant = C_QuestLog.IsImportantQuest(self:GetID());
+	end
+
+	return self.isImportant;
+end
+
 function QuestMixin:IsRepeatableQuest()
 	return self.isRepeatable;
 end

@@ -2417,7 +2417,7 @@
 					<Anchor point="LEFT" relativeTo="$parentDungeonTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT" id="5" parentKey="LootJournalTab">
+			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT_JOURNAL_ITEM_SETS" id="5" parentKey="LootJournalTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRaidTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>

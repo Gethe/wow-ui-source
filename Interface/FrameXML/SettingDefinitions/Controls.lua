@@ -60,8 +60,7 @@ local function Register()
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
 	end
 
-	-- Auto Dismount
-	Settings.SetupCVarCheckBox(category, "autoDismountFlying", AUTO_DISMOUNT_FLYING_TEXT, OPTION_TOOLTIP_AUTO_DISMOUNT_FLYING);
+	ControlsOverrides.SetupAutoDismountSetting(category);
 
 	-- Auto Cancel AFK
 	Settings.SetupCVarCheckBox(category, "autoClearAFK", CLEAR_AFK, OPTION_TOOLTIP_CLEAR_AFK);
@@ -82,8 +81,10 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 
-	-- Use Combined Inventory Bags
-	Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
+	if C_CVar.GetCVar("combinedBags") then
+		-- Use Combined Inventory Bags
+		Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
+	end
 
 	-- Enable Interact Key
 	do
@@ -226,6 +227,8 @@ local function Register()
 		end
 		Settings.SetupCVarDropDown(category, "cameraSmoothStyle", Settings.VarType.Number, GetOptions, CAMERA_FOLLOWING_STYLE, OPTION_TOOLTIP_CAMERA_FOLLOWING_STYLE);
 	end
+
+	ControlsOverrides.AdjustCameraSettings(category);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

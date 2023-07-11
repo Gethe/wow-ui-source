@@ -32,54 +32,8 @@ local function Register()
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[SOCIAL_LABEL]);
 
-	do
-		local cvar = "excludedCensorSources";
-		local friendsAndGuild = bit.bor(Enum.ExcludedCensorSources.Friends, Enum.ExcludedCensorSources.Guild);
-
-		local EVERYONE = 1;
-		local EVERYONE_EXCEPT_FRIEND = 2;
-		local EVERYONE_EXCEPT_FRIEND_AND_GUILD = 3;
-		local NO_ONE = 4;
-
-		local function GetValue()
-			local censoredMessageSources = tonumber(C_CVar.GetCVar(cvar));
-			if censoredMessageSources == 0 then
-				return EVERYONE;
-			elseif censoredMessageSources == Enum.ExcludedCensorSources.Friends then
-				return EVERYONE_EXCEPT_FRIEND;
-			elseif censoredMessageSources == friendsAndGuild then
-				return EVERYONE_EXCEPT_FRIEND_AND_GUILD;
-			else
-				return NO_ONE;
-			end
-		end
-		
-		local function SetValue(value)
-			if value == EVERYONE then
-				SetCVar(cvar, 0);
-			elseif value == EVERYONE_EXCEPT_FRIEND then
-				SetCVar(cvar, Enum.ExcludedCensorSources.Friends);
-			elseif value == EVERYONE_EXCEPT_FRIEND_AND_GUILD then
-				SetCVar(cvar, friendsAndGuild);
-			else
-				SetCVar(cvar, 255);
-			end
-		end
-
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(EVERYONE, CENSOR_SOURCE_EVERYONE);
-			container:Add(EVERYONE_EXCEPT_FRIEND, CENSOR_SOURCE_EXCLUDE_FRIENDS);
-			container:Add(EVERYONE_EXCEPT_FRIEND_AND_GUILD, CENSOR_SOURCE_EXCLUDE_FRIENDS_AND_GUILD);
-			container:Add(NO_ONE, CENSOR_SOURCE_NO_ONE);
-			return container:GetData();
-		end
-
-		local defaultValue = EVERYONE_EXCEPT_FRIEND;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CENSOR_MESSAGES", Settings.DefaultVarLocation,
-			Settings.VarType.Number, CENSOR_SOURCE_EXCLUDE, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CENTER_SOURCE_EXCLUDE);
-	end
+	-- Censor Messages
+	SocialOverrides.CreateCensorMessagesSetting(category);
 
 	-- Mature Language
 	do
@@ -104,7 +58,7 @@ local function Register()
 	end
 	
 	-- Display Only Character Achievements
-	do
+	if AreAccountAchievementsHidden and ShowAccountAchievements then
 		local defaultValue = false;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_ACCOUNT_ACHIEVEMENTS", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, SHOW_ACCOUNT_ACHIEVEMENTS, defaultValue, AreAccountAchievementsHidden, ShowAccountAchievements);
@@ -129,8 +83,10 @@ local function Register()
 	-- Show Toast Window
 	Settings.SetupCVarCheckBox(category, "showToastWindow", SHOW_TOAST_WINDOW_TEXT, OPTION_TOOLTIP_SHOW_TOAST_WINDOW);
 
-	-- Auto Accept Quick Join Requests
-	Settings.SetupCVarCheckBox(category, "autoAcceptQuickJoinRequests", AUTO_ACCEPT_QUICK_JOIN_TEXT, OPTION_TOOLTIP_AUTO_ACCEPT_QUICK_JOIN);
+	if C_CVar.GetCVar("autoAcceptQuickJoinRequests") then
+		-- Auto Accept Quick Join Requests
+		Settings.SetupCVarCheckBox(category, "autoAcceptQuickJoinRequests", AUTO_ACCEPT_QUICK_JOIN_TEXT, OPTION_TOOLTIP_AUTO_ACCEPT_QUICK_JOIN);
+	end
 
 	--Chat Style
 	do
@@ -198,6 +154,8 @@ local function Register()
 		local initializer = CreateSettingsButtonInitializer(RESET_CHAT_POSITION, RESET, OnButtonClick, OPTION_TOOLTIP_RESET_CHAT_POSITION);
 		layout:AddInitializer(initializer);
 	end
+
+	SocialOverrides.AdjustSocialSettings(category);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

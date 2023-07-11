@@ -140,7 +140,7 @@
 							<Layer level="BORDER">
 								<Texture parentKey="Border" atlas="dragonflight-landingpage-radial-frame" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>

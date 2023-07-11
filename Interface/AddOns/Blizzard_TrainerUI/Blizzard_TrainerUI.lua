@@ -14,6 +14,8 @@ TRAINER_FILTER_USED = 0;
 
 UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0, allowOtherPanels = 1,};
 
+local TrainDisableReason = EnumUtil.MakeEnum("NoProfessionSlot", "CannotAfford");
+
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
 	button1 = ACCEPT,
@@ -74,7 +76,9 @@ function ClassTrainerFrame_OnShow(self)
 	SetPortraitTexture(ClassTrainerFramePortrait, "npc");
 	self:SetTitle(UnitName("npc"));
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-	ClassTrainerTrainButton:Disable();
+
+	ClassTrainerTrainButton.disableReason = nil;
+	ClassTrainerFrame_SetTrainButtonEnabled(false);
 
 	ClassTrainerFrame.selectedService = nil;
 
@@ -105,6 +109,26 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 	end
 end
 
+function ClassTrainerFrame_SetTrainButtonEnabled(enabled, disableReason)
+	ClassTrainerTrainButton:SetEnabled(enabled);
+
+	if enabled then
+		ClassTrainerTrainButton:SetScript("OnEnter", nil);
+		ClassTrainerTrainButton:SetScript("OnLeave", nil);
+	else
+		ClassTrainerTrainButton:SetScript("OnEnter", function()
+			-- Tooltips have not been asked for other disabled cases
+			if ClassTrainerTrainButton.disableReason == TrainDisableReason.NoProfessionSlot then
+				GameTooltip:SetOwner(ClassTrainerTrainButton, "ANCHOR_RIGHT");
+				GameTooltip_AddNormalLine(GameTooltip, TRAINER_CANNOT_EXCEED_MAX_PROFESSIONS, true);
+				GameTooltip:Show(); 
+			end
+		end);
+		ClassTrainerTrainButton:SetScript("OnLeave", function()
+			GameTooltip_Hide();
+		end);
+	end
+end
 
 function ClassTrainerFrame_Update(retainScrollPosition)
 	local numTrainerServices = GetNumTrainerServices();
@@ -167,14 +191,15 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	local playerMoney = elementData.playerMoney;
 	local isTradeSkill = elementData.isTradeSkill;
 
-	local unavailable = false;
+	ClassTrainerTrainButton.disableReason = nil;
+
+	local available = true;
 	local serviceName, serviceType, texture, reqLevel = GetTrainerServiceInfo(skillIndex);
 	if ( not serviceName ) then
 		serviceName = UNKNOWN;
 	end
 
 	skillButton.icon:SetTexture(texture);
-
 
 	local requirements = "";
 	local separator = "";
@@ -244,7 +269,8 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 			SetMoneyFrameColorByFrame(skillButton.money, "white");
 		else
 			SetMoneyFrameColorByFrame(skillButton.money, "red");
-			unavailable = true;
+			available = false;
+			ClassTrainerTrainButton.disableReason = TrainDisableReason.CannotAfford;
 		end
 		skillButton.money:Show();
 	else
@@ -254,21 +280,23 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	-- Place the highlight and lock the highlight state
 	if ( ClassTrainerFrame.selectedService == skillIndex ) then
 		ClassTrainerFrame.showDialog = nil;
-
+	
 		if isProfession then
 			ClassTrainerFrame.showDialog = true;
-			local _, prof2 = GetProfessions();
-			if prof2 then
-				unavailable = true;
+
+			local noAvailableSlot = select(2, GetProfessions()) ~= nil;
+			local cannotAcquireService = serviceType == "available" and noAvailableSlot;
+			if cannotAcquireService then
+				available = false;
+				ClassTrainerTrainButton.disableReason = TrainDisableReason.NoProfessionSlot;
 			end
 		end
 
 		skillButton.selectedTex:Show();
-		if ( serviceType == "available" and not unavailable) then
-			ClassTrainerTrainButton:Enable();
-		else
-			ClassTrainerTrainButton:Disable();
-		end
+
+		-- This ClassTrainerFrame_SetTrainButtonEnabled logic should be moved out of the button initializer to
+		-- the point where a button/option is selected.
+		ClassTrainerFrame_SetTrainButtonEnabled(serviceType == "available" and available);
 	else
 		skillButton.selectedTex:Hide();
 	end
@@ -283,7 +311,6 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 end
 
 function ClassTrainer_SelectNearestLearnableSkill()
-	ClassTrainerTrainButton:Disable();
 	local numServices = GetNumTrainerServices();
 	local startIndex = ClassTrainerFrame.selectedService;
 	if not startIndex or startIndex > numServices then

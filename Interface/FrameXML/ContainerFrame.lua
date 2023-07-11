@@ -1711,19 +1711,20 @@ function ContainerFrameItemButtonMixin:SetIsExtended(isExtended)
 end
 
 function ContainerFrameItemButtonMixin:IsExtended()
-		return self.isExtended;
+		return not not self.isExtended;
 end
 
 function ContainerFrameItemButtonMixin:UpdateExtended()
-	local oldIsExtended = self.isExtended;
+	local oldIsExtended = self:IsExtended();
 
 	local slotId, bagId = self:GetSlotAndBagID();
 	local _, currentNumSlots = ContainerFrame_GetContainerNumSlots(bagId);
 	-- If a slotId is greater than our currentNumSlots then it is an extended (locked) slot which can't be used until your account is secured
 	self:SetIsExtended(slotId > currentNumSlots);
 
-	if self.isExtended ~= oldIsExtended then
-		if self:IsExtended() then
+	local newIsExtended = self:IsExtended();
+	if newIsExtended ~= oldIsExtended then
+		if newIsExtended then
 			if not self.extendedFrame then
 				self.extendedFrame = CreateFrame("FRAME", nil, self, "ContainerFrameExtendedItemButtonTemplate");
 				self.extendedFrame:SetAllPoints(self);

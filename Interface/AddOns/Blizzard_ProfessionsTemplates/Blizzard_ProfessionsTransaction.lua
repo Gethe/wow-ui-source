@@ -198,7 +198,7 @@ end
 
 function ProfessionsRecipeTransactionMixin:IsSlotModifyingRequired(slotIndex)
 	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
-	return Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	return ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 end
 
 function ProfessionsRecipeTransactionMixin:AccumulateAllocations(slotIndex)
@@ -292,7 +292,7 @@ function ProfessionsRecipeTransactionMixin:SanitizeAllocationsInternal(index, al
 			-- because it currently represents a "no change" operation.
 
 			if not self:IsModificationAllocated(reagent, index) and self:IsReagentSanizationExempt(reagent) then
-				local owned = Professions.GetReagentQuantityInPossession(reagent);
+				local owned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 				local quantity = allocs:GetQuantity();
 				if owned < quantity then
 					valid = false;
@@ -607,7 +607,7 @@ end
 function ProfessionsRecipeTransactionMixin:HasMetQuantityRequirements()
 	for slotIndex, reagentTbl in self:Enumerate() do
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
-		if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
+		if ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic) then
 			local quantityRequired = reagentSlotSchematic.quantityRequired;
 			local allocations = self:GetAllocations(slotIndex);
 			for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do

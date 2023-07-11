@@ -202,16 +202,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		return container:GetData();
 	end
 
-	local function GetTextureResolutionOptions()
-		local container = Settings.CreateControlTextContainer();
-		local variable = settingTextureResolution:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_TEXTURE_DETAIL_LOW);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
-		AddRecommended(container, variable);
-		return container:GetData();
-	end
-
 	local function GetSpellDensityOptions()
 		local container = Settings.CreateControlTextContainer();
 		local variable = settingSpellDensity:GetVariable();
@@ -359,7 +349,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	InitControlDropDown(self.DepthEffects, settingDepthEffects, DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
 	InitControlDropDown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
 	InitControlDropDown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
-	InitControlDropDown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GetTextureResolutionOptions);
+	InitControlDropDown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GenerateClosure(GraphicsOverrides.GetTextureResolutionOptions, settingTextureResolution, AddValidatedSettingOption, AddRecommended));
 	InitControlDropDown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
 	InitControlDropDown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
 	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
@@ -1123,8 +1113,22 @@ local function Register()
 	end
 
 	-- Physics Interaction
-	do
-		GraphicsOverrides.CreatePhysicsInteractionSetting(category);
+	if C_CVar.GetCVar("physicsLevel") then
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(0, NO_ENVIRONMENT_INTERACTION);
+			container:Add(1, PLAYER_ONLY_INTERACTION);
+			container:Add(2, PLAYER_AND_NPC_INTERACTION);
+			return container:GetData();
+		end
+
+		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("physicsLevel", Settings.VarType.Number);
+		local commitValue = setValue;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_PHYSICS_LEVEL", Settings.DefaultVarLocation,
+			Settings.VarType.Number, PHYSICS_INTERACTION, getDefaultValue(), getValue, nil, commitValue);
+		setting:SetCommitFlags(Settings.CommitFlag.ClientRestart);
+
+		Settings.CreateDropDown(category, setting, GetOptions, OPTION_PHYSICS_OPTIONS);
 	end
 
 	-- Graphics Card

@@ -285,7 +285,7 @@ function Class_EquipProfessionGear:BagOpened()
 end
 
 function Class_EquipProfessionGear:IsProfessionsFrameVisible()
-	return ProfessionsFrame:IsVisible();
+	return ProfessionsFrame and ProfessionsFrame:IsVisible();
 end
 
 function Class_EquipProfessionGear:IsCorrectProfessionSelected()
@@ -302,7 +302,7 @@ function Class_EquipProfessionGear:UpdateState()
 		return;
 	end
 
-	if Professions.IsCraftingMinimized() or not IsAnyBagOpen() then
+	if ProfessionsUtil.IsCraftingMinimized() or not IsAnyBagOpen() then
 		self:Reset();
 		return;
 	end

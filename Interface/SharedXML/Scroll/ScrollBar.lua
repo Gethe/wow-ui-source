@@ -198,7 +198,7 @@ function ScrollBarMixin:SetScrollPercentageInternal(scrollPercentage)
 end
 
 function ScrollBarMixin:HasScrollableExtent()
-	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), 0, 1);
+	return WithinRangeExclusive(self:GetVisibleExtentPercentage(), MathUtil.Epsilon, 1 - MathUtil.Epsilon);
 end
 
 function ScrollBarMixin:SetScrollAllowed(allowScroll)
@@ -301,7 +301,7 @@ function ScrollBarMixin:DisableControls()
 end
 
 function ScrollBarMixin:CanCursorStepInDirection(direction)
-	local c = self:SelectCursorComponent(self:GetEffectiveScale());
+	local c = self:SelectCursorComponent(self);
 	if direction ==  ScrollControllerMixin.Directions.Decrease then
 		if self.isHorizontal then
 			return c < self:GetUpper(self:GetThumb());
@@ -425,7 +425,7 @@ function ScrollBarMixin:OnThumbMouseDown(button, buttonName)
 
 	self.requireInternalScope = true;
 	
-	local c = self:SelectCursorComponent(self:GetEffectiveScale());
+	local c = self:SelectCursorComponent(self);
 	local scrollPercentage = self:GetScrollPercentage();
 	local extentRemaining = self:GetTrackExtent() - self:GetFrameExtent(self:GetThumb());
 	
@@ -443,7 +443,7 @@ function ScrollBarMixin:OnThumbMouseDown(button, buttonName)
 	end
 
 	self:SetScript("OnUpdate", function()
-		local c = Clamp(self:SelectCursorComponent(self:GetEffectiveScale()), min, max);
+		local c = Clamp(self:SelectCursorComponent(self), min, max);
 		local scrollPercentage;
 		if self.isHorizontal then
 			scrollPercentage = PercentageBetween(c, min, max);

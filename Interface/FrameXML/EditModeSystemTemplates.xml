@@ -9,6 +9,7 @@
 	</Frame>
 
 	<Frame name="EditModeSystemSelectionBaseTemplate" parentKey="Selection" inherits="NineSliceCodeTemplate" mixin="EditModeSystemSelectionBaseMixin" ignoreParentAlpha="true" frameStrata="MEDIUM" frameLevel="1000" toplevel="true" enableMouse="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+		<Size x="1" y="1"/>
 		<KeyValues>
 			<KeyValue key="highlightTextureKit" value="editmode-actionbar-highlight" type="string"/>
 			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
@@ -227,7 +228,7 @@
 			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
@@ -237,7 +238,7 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_MICRO_MENU_LABEL" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
@@ -247,7 +248,7 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_BAGS_LABEL" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
@@ -256,7 +257,7 @@
 			<KeyValue key="system" value="Enum.EditModeSystem.StatusTrackingBar" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
@@ -284,7 +285,7 @@
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Selection" inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
 
@@ -301,5 +302,38 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PET_FRAME_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 		</KeyValues>
+	</Frame>
+
+	<Frame name="EditModeTimerBarsSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeTimerBarsSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.TimerBars" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_TIMER_BARS_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeVehicleSeatIndicatorSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeVehicleSeatIndicatorSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.VehicleSeatIndicator" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_VEHICLE_SEAT_INDICATOR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeArchaeologyBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeArchaeologyBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.ArchaeologyBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_ARCHAEOLOGY_BAR_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
 	</Frame>
 </Ui>

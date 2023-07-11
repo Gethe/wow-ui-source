@@ -147,6 +147,15 @@
 								<Anchor point="TOPRIGHT" x="-26" y="-19"/>
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="PortraitMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<MaskedTextures>
+								<MaskedTexture childKey="Portrait"/>
+							</MaskedTextures>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait" x="-1"/>
+							</Anchors>
+						</MaskTexture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn" useAtlasSize="true">
@@ -464,6 +473,15 @@
 						<Anchor point="TOPLEFT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="PortraitMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+					</MaskedTextures>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn" useAtlasSize="true">

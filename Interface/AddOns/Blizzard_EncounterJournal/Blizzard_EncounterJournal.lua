@@ -268,18 +268,15 @@ end
 EncounterBossButtonMixin = {};
 
 function EncounterBossButtonMixin:Init(elementData)
-	local index = elementData.index;
-	local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(index);
-
-	self.link = link;
-	self:SetText(name);
-	self.encounterID = bossID;
+	self.link = elementData.link;
+	self:SetText(elementData.name);
+	self.encounterID = elementData.bossID;
 
 	--Use the boss' first creature as the button icon
-	local bossImage = select(5, EJ_GetCreatureInfo(1, bossID)) or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
+	local bossImage = select(5, EJ_GetCreatureInfo(1, elementData.bossID)) or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 	self.creature:SetTexture(bossImage);
 
-	if (EncounterJournal.encounterID == bossID) then
+	if (EncounterJournal.encounterID == elementData.bossID) then
 		self:LockHighlight();
 	else
 		self:UnlockHighlight();
@@ -587,16 +584,15 @@ function EncounterJournal_OnShow(self)
 	C_EncounterJournal.OnOpen();
 
 	if not self.lootJournalView then
-		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_POWERS);
+		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_ITEM_SETS);
 	end
 
 	local instanceSelect = EncounterJournal.instanceSelect;
 
 	--automatically navigate to the current dungeon if you are in one;
-	local mapID = C_Map.GetBestMapForUnit("player");
-	local instanceID = mapID and EJ_GetInstanceForMap(mapID) or 0;
+	local instanceID = AdventureGuideUtil.GetCurrentJournalInstance();
 	local _, instanceType, difficultyID = GetInstanceInfo();
-	if ( EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID) ) then
+	if ( instanceID and EncounterJournal_HasChangedContext(instanceID, instanceType, difficultyID) ) then
 		EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID);
 		EncounterJournal.queuedPortraitUpdate = nil;
 	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
@@ -635,7 +631,6 @@ function EncounterJournal_OnShow(self)
 		EJ_ContentTab_Select(self.selectedTab);
 	end
 
-	EncounterJournal_CheckAndDisplayLootTab();
 	EncounterJournal_CheckAndDisplayTradingPostTab();
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
@@ -651,15 +646,6 @@ function EncounterJournal_CheckAndDisplayTradingPostTab()
 	else
 		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
 		EncounterJournal.suggestTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "LEFT");
-	end
-end
-
-function EncounterJournal_CheckAndDisplayLootTab()
-	local instanceSelect = EncounterJournal.instanceSelect;
-	if EJ_GetCurrentTier() == EJ_TIER_INDEX_SHADOWLANDS then
-		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.LootJournalTab:GetID());
-	else
-		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.LootJournalTab:GetID());
 	end
 end
 
@@ -975,6 +961,23 @@ local function GetIconIndexForDifficultyID(difficultyID)
 	return IconIndexByDifficulty[difficultyID];
 end
 
+local function PopulateBossDataProvider()
+	local dataProvider = CreateDataProvider();
+
+	local index = 1;
+	while index do
+		local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(index);
+		if bossID and bossID > 0 then
+			dataProvider:Insert({index=index, name=name, description=description, bossID=bossID, rootSectionID=rootSectionID, link=link});
+			index = index + 1;
+		else
+			break;
+		end
+	end
+
+	return dataProvider;
+end
+
 function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EJ_HideNonInstancePanels();
 
@@ -991,7 +994,12 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails();
 
-	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID = EJ_GetInstanceInfo();
+	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID, _, _, _, isRaid = EJ_GetInstanceInfo();
+	local desiredTabID = isRaid and EncounterJournal.raidsTab:GetID() or EncounterJournal.dungeonsTab:GetID();
+	if desiredTabID ~= EncounterJournal.selectedTab then
+		EJ_ContentTab_Select(desiredTabID);
+	end
+
 	self.instance.title:SetText(instanceName);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
 	self.instance.loreBG:SetTexture(loreImage);
@@ -1024,30 +1032,11 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 
 	UpdateDifficultyVisibility();
 
-	local bossIndex = 1;
-	local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
-	local bossButton;
-
-	local hasBossAbilities = false;
-	do
-		local index = 1;
-		local dataProvider = CreateDataProvider();
-		while index do
-			local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(index);
-			if bossID then
-				if not hasBossAbilities then
-					hasBossAbilities = rootSectionID > 0;
-				end
-
-				dataProvider:Insert({index=index});
-				index = index + 1;
-			else
-				index = nil;
-			end
-		end
-
-		self.info.BossesScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-	end
+	local dataProvider = PopulateBossDataProvider();
+	local hasBossAbilities = dataProvider:FindByPredicate(function(elementData)
+		return elementData.rootSectionID > 0;
+	end);
+	self.info.BossesScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	EncounterJournal_SetTabEnabled(EncounterJournal.encounter.info.overviewTab, true);
 	--disable model tab and abilities tab, no boss selected
@@ -1154,18 +1143,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.infoFrame.expanded = false;
 
 	do
-		local index = 1;
-		local dataProvider = CreateDataProvider()
-		while index do
-			local bossID = select(3, EJ_GetEncounterInfoByIndex(index));
-			if bossID then
-				dataProvider:Insert({index=index});
-				index = index + 1;
-			else
-				index = nil;
-			end
-		end
-
+		local dataProvider = PopulateBossDataProvider();
 		self.info.BossesScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
 
@@ -2402,14 +2380,6 @@ function EncounterJournalSearchBoxShowAllResults_OnEnter(self)
 	EncounterJournal.searchBox:SetSearchPreviewSelectionToAllResults();
 end
 
-function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
-	jtype = tonumber(jtype);
-	id = tonumber(id);
-	difficultyID = tonumber(difficultyID);
-	local instanceID, encounterID, sectionID, tierIndex = EJ_HandleLinkPath(jtype, id);
-	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
-end
-
 function EncounterJournal_OpenToPowerID(powerID)
 	ShowUIPanel(EncounterJournal);
 	EJ_ContentTab_Select(EncounterJournal.LootJournalTab:GetID());
@@ -2517,7 +2487,7 @@ function EJ_ContentTab_Select(id)
 		end
 	elseif ( id == EncounterJournal.LootJournalTab:GetID() ) then
 		EJ_HideSuggestPanel();
-		EncounterJournal_DisableTierDropDown(true);
+		EncounterJournal_CheckAndDisplayLootJournalViewDropDown();
 		EJ_ShowLootJournalPanel();
 	elseif ( id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() ) then
 		EJ_HideNonInstancePanels();
@@ -2613,7 +2583,7 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 	local tierData = GetEJTierData(tier);
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 
-	EncounterJournal_CheckAndDisplayLootTab();
+	EncounterJournal_CheckAndDisplayLootJournalViewDropDown();
 
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
 
@@ -2797,17 +2767,28 @@ function EncounterJournal_LootTabViewDropDown_Init(self)
 
 	local info = UIDropDownMenu_CreateInfo();
 
-	info.text = LOOT_JOURNAL_POWERS;
-	info.func = SetView;
-	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_POWERS;
-	info.arg1 = LOOT_JOURNAL_POWERS;
-	UIDropDownMenu_AddButton(info, level);
-
 	info.text = LOOT_JOURNAL_ITEM_SETS;
 	info.func = SetView;
 	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_ITEM_SETS;
 	info.arg1 = LOOT_JOURNAL_ITEM_SETS;
 	UIDropDownMenu_AddButton(info, level);
+	
+	info.text = LOOT_JOURNAL_POWERS;
+	info.func = SetView;
+	info.checked = EncounterJournal_GetLootJournalView() == LOOT_JOURNAL_POWERS;
+	info.arg1 = LOOT_JOURNAL_POWERS;
+	UIDropDownMenu_AddButton(info, level);
+end
+
+function EncounterJournal_CheckAndDisplayLootJournalViewDropDown()
+	local currentTier = EJ_GetCurrentTier();
+
+	-- Only Shadowlands uses the 'Powers' tab, if switching off of that make sure to go back to Item Sets.
+	if currentTier ~= EJ_TIER_INDEX_SHADOWLANDS and EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
+		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_ITEM_SETS);
+	end
+
+	EncounterJournal.LootJournalViewDropDown:SetShown(currentTier == EJ_TIER_INDEX_SHADOWLANDS);
 end
 
 ----------------------------------------
@@ -2865,6 +2846,7 @@ function EJSuggestFrame_OnLoad(self)
 
 	self:RegisterEvent("AJ_REWARD_DATA_RECEIVED");
 	self:RegisterEvent("AJ_REFRESH_DISPLAY");
+	self:RegisterEvent("AJ_OPEN_COLLECTIONS_ACTION");
 end
 
 function EJSuggestFrame_OnEvent(self, event, ...)
@@ -2878,6 +2860,12 @@ function EJSuggestFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "AJ_REWARD_DATA_RECEIVED" ) then
 		EJSuggestFrame_RefreshRewards()
+	elseif ( event == "AJ_OPEN_COLLECTIONS_ACTION" ) then
+		if not CollectionsJournal then
+			CollectionsJournal_LoadUI();
+		end
+		WardrobeCollectionFrame:ShowItemTrackingHelptipOnShow();
+		ToggleCollectionsJournal();
 	end
 end
 
@@ -3450,6 +3438,8 @@ function EJInstanceSelect_UpdateTitle(tabId)
 		instanceSelect.Title:SetText(DUNGEONS);
 	elseif ( tabId == EncounterJournal.MonthlyActivitiesTab:GetID()) then
 		showTitle = false; -- MonthlyActivities frame has a unique header bar so we hide this title
+	elseif (tabId == EncounterJournal.LootJournalTab:GetID()) then
+		instanceSelect.Title:SetText(LOOT_JOURNAL_ITEM_SETS);
 	end
 
 	instanceSelect.Title:SetShown(showTitle);

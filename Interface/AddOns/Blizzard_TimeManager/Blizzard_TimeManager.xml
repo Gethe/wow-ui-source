@@ -205,7 +205,6 @@
 			<OnLoad function="TimeManagerClockButton_OnLoad"/>
 			<OnEnter function="TimeManagerClockButton_OnEnter"/>
 			<OnLeave function="TimeManagerClockButton_OnLeave"/>
-			<OnUpdate function="TimeManagerClockButton_OnUpdate"/>
 			<OnClick function="TimeManagerClockButton_OnClick"/>
 		</Scripts>
 	</Button>

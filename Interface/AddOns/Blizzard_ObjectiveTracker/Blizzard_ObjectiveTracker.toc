@@ -1,6 +1,6 @@
 ## Title: Blizzard Objective Tracker UI
 ## LoadOnDemand: 0
-## RequiredDep: Blizzard_UIWidgets, Blizzard_MawBuffs, Blizzard_Professions
+## RequiredDep: Blizzard_UIWidgets, Blizzard_MawBuffs
 Blizzard_ObjectiveTrackerShared.xml
 Blizzard_ObjectiveTracker.xml
 Blizzard_QuestSuperTracking.lua
@@ -12,4 +12,5 @@ Blizzard_BonusObjectiveTracker.xml
 Blizzard_ScenarioObjectiveTracker.xml
 Blizzard_ProfessionsRecipeTracker.lua
 Blizzard_MonthlyActivitiesObjectiveTracker.lua
+Blizzard_AdventureObjectiveTracker.lua
 Blizzard_ObjectiveTrackerUIWidgetContainer.xml

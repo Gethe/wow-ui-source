@@ -135,6 +135,10 @@ end
 
 function ProfessionsRecraftInputSlotMixin:OnReceiveDrag()
 	local cursorItemLocation = C_Cursor.GetCursorItem();
+	if not cursorItemLocation then
+		return;
+	end
+
 	local cursorItemGUID = C_Item.GetItemGUID(cursorItemLocation);
 	local learned = C_TradeSkillUI.IsOriginalCraftRecipeLearned(cursorItemGUID);
 	if learned and self.cursorItemPredicate(cursorItemGUID) then

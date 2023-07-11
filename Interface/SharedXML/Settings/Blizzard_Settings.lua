@@ -77,6 +77,22 @@ function SettingsSearchableElementMixin:MatchesSearchTags(words)
 	return nil;
 end
 
+function SettingsSearchableElementMixin:SetSearchIgnoredInLayout(layout)
+	if not self.searchIgnoredLayouts then
+		self.searchIgnoredLayouts = {};
+	end
+
+	table.insert(self.searchIgnoredLayouts, layout);
+end
+
+function SettingsSearchableElementMixin:IsSearchIgnoredInLayout(layout)
+	if not self.searchIgnoredLayouts then
+		return false;
+	end
+
+	return tContains(self.searchIgnoredLayouts, layout);
+end
+
 function SettingsSearchableElementMixin:AddShownPredicate(func)
 	if not self.shownPredicates then
 		self.shownPredicates = {};

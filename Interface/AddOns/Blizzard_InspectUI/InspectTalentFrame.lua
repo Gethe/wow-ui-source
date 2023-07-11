@@ -38,7 +38,8 @@ function InspectTalentFrameSpec_OnShow(self)
 			self.specName:SetText(name);
 			self.roleIcon:Show();
 			self.roleName:SetText(_G[role1]);
-			self.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+			local showDisabled = false;
+			self.roleIcon:SetAtlas(GetIconForRole(role1, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			self.tooltip = description;
 		end
 	else

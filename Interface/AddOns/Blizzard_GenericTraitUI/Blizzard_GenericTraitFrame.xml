@@ -12,6 +12,8 @@
 			<KeyValue key="basePanOffsetX" value="0" type="number"/>
 			<KeyValue key="basePanOffsetY" value="0" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="defaultSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT" type="global"/>
+			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
 		</KeyValues>
 		<Size x="650" y="750"/>
 

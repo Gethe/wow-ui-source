@@ -50,7 +50,7 @@ function ProfessionsReagentSlotMixin:SetSlotBehaviorModifyingRequired(isModifyin
 end
 
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
-	local isModifyingRequired = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	local isModifyingRequired = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 	self.Button:SetModifyingRequired(isModifyingRequired);
 	self.Button:SetCropOverlayShown(isModifyingRequired);
 
@@ -97,7 +97,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			else
 				self.Button:SetItem(reagent.itemID);
 			end
-		elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+		elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
 			InitButton();
 		elseif reagentType == Enum.CraftingReagentType.Modifying or reagentType == Enum.CraftingReagentType.Finishing then
 			self.Name:Hide();
@@ -167,14 +167,14 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		return;
 	end
 
-	if not Professions.IsReagentSlotRequired(reagentSlotSchematic) then
+	if not ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic) then
 		return;
 	end
 
 	-- For a modifying-required reagent slot, if the current allocation is the currently installed modification
 	-- we want to avoid displaying x/y quantity and instead display only the name of the current modification. This
 	-- will be done in ApplySlotInfo(), so we return early here.
-	local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 	if isModifyingRequiredSlot and self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
 		return;
 	end
@@ -200,9 +200,9 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		else
 			if foundIndex then
 				local reagent = reagentSlotSchematic.reagents[foundIndex];
-				quantity = Professions.GetReagentQuantityInPossession(reagent);
+				quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 			else
-				quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
+				quantity = ProfessionsUtil.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 			end
 		end
 	end
@@ -245,7 +245,7 @@ function ProfessionsReagentSlotMixin:GetInventoryDetails()
 	local foundMultiple = nil;
 	local foundIndex = nil;
 	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
-		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 		if quantity > 0 then
 			if foundIndex then
 				foundMultiple = true;
@@ -316,7 +316,7 @@ function ProfessionsReagentSlotMixin:ApplySlotInfo()
 	local slotInfo = reagentSlotSchematic.slotInfo;
 	local slotText = slotInfo and slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX;
 
-	local isModifyingRequired = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	local isModifyingRequired = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 	if isModifyingRequired and not self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
 		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(0, reagentSlotSchematic.quantityRequired);
 		self:SetNameText(("%s %s"):format(quantityText, slotText));

@@ -401,15 +401,15 @@ function RaidGroupFrame_Update()
 					subframes.rank:SetHeight(10);
 					subframes.role:SetWidth(10);
 					subframes.role:SetHeight(10);
-					subframes.readyCheck:SetWidth(10);
-					subframes.readyCheck:SetHeight(10);
+					subframes.readyCheck:SetWidth(12);
+					subframes.readyCheck:SetHeight(12);
 				else
 					subframes.rank:SetWidth(11);
 					subframes.rank:SetHeight(11);
 					subframes.role:SetWidth(11);
 					subframes.role:SetHeight(11);
-					subframes.readyCheck:SetWidth(11);
-					subframes.readyCheck:SetHeight(11);
+					subframes.readyCheck:SetWidth(14);
+					subframes.readyCheck:SetHeight(14);
 				end
 
 				button.jobs = button.jobs or {};

@@ -122,33 +122,7 @@ local function Register()
 
 	-- Larger Nameplates
 	do
-		local normalScale = 1.0;
-		local function GetValue()
-			local hScale = GetCVarNumberOrDefault("NamePlateHorizontalScale");
-			local vScale = GetCVarNumberOrDefault("NamePlateVerticalScale");
-			local cScale = GetCVarNumberOrDefault("NamePlateClassificationScale");
-			return not (ApproximatelyEqual(hScale, normalScale) and ApproximatelyEqual(vScale, normalScale) and ApproximatelyEqual(cScale, normalScale));
-		end
-		
-		local function SetValue(value)
-			if value then
-				SetCVar("NamePlateHorizontalScale", 1.4);
-				SetCVar("NamePlateVerticalScale", 2.7);
-				SetCVar("NamePlateClassificationScale", 1.25);
-			else
-				SetCVar("NamePlateHorizontalScale", normalScale);
-				SetCVar("NamePlateVerticalScale", normalScale);
-				SetCVar("NamePlateClassificationScale", normalScale);
-			end
-		end
-
-		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_LARGER_SETTINGS", Settings.DefaultVarLocation, 
-			Settings.VarType.Boolean, UNIT_NAMEPLATES_MAKE_LARGER, defaultValue, GetValue, SetValue);
-		local initializer = Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAKE_LARGER);
-		initializer:AddModifyPredicate(function()
-			return not C_Commentator.IsSpectating();
-		end);
+		InterfaceOverrides.CreateLargerNameplateSetting(category);
 	end
 
 	-- Enemy Units
@@ -182,8 +156,10 @@ local function Register()
 		initializer:SetParentInitializer(friendUnitInitializer);
 	end
 
-	-- Flash on Agro Loss
-	Settings.SetupCVarCheckBox(category, "ShowNamePlateLoseAggroFlash", SHOW_NAMEPLATE_LOSE_AGGRO_FLASH, OPTION_TOOLTIP_SHOW_NAMEPLATE_LOSE_AGGRO_FLASH);
+	if C_CVar.GetCVar("ShowNamePlateLoseAggroFlash") then
+		-- Flash on Agro Loss
+		Settings.SetupCVarCheckBox(category, "ShowNamePlateLoseAggroFlash", SHOW_NAMEPLATE_LOSE_AGGRO_FLASH, OPTION_TOOLTIP_SHOW_NAMEPLATE_LOSE_AGGRO_FLASH);
+	end
 
 	-- Nameplate Motion Type
 	do
@@ -200,14 +176,20 @@ local function Register()
 		Settings.SetupCVarDropDown(category, "nameplateMotion", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_TYPES, OPTION_TOOLTIP_UNIT_NAMEPLATES_TYPES);
 	end
 
+	InterfaceOverrides.AdjustNameplateSettings(category);
+
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
 
-	-- Hide Adventure Guide Alerts
-	Settings.SetupCVarCheckBox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
+	if C_CVar.GetCVar("ShowNamePlateLoseAggroFlash") then
+		-- Hide Adventure Guide Alerts
+		Settings.SetupCVarCheckBox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
+	end
 
-	-- In Game Navigation
-	Settings.SetupCVarCheckBox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+	if C_CVar.GetCVar("showInGameNavigation") then
+		-- In Game Navigation
+		Settings.SetupCVarCheckBox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+	end
 
 	-- Tutorials
 	-- FIXME DISABLE BUTTON BEHAVIOR
@@ -232,7 +214,7 @@ local function Register()
 	end
 
 	-- Outline
-	do 
+	if C_CVar.GetCVar("Outline") then
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(0, OBJECT_NPC_OUTLINE_DISABLED);
@@ -338,58 +320,52 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
 
+	-- ReplaceOtherPlayerPortraits
+	Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
+
+	-- ReplaceMyPlayerPortrait
+	Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+
+	InterfaceOverrides.AdjustDisplaySettings(category);
+
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
 
-	-- Raid Frame Preview
-	do
-		local data = { };
-		local initializer = Settings.CreatePanelInitializer("RaidFramePreviewTemplate", data);
-		layout:AddInitializer(initializer);
+	-- Some 3rd party addons like to disable this addon. Don't initialize the settings for it and display a "disabled" label in its place if it is disabled.
+	if (IsAddOnLoaded("Blizzard_CUFProfiles") ) then
+		InterfaceOverrides.CreateRaidFrameSettings(category, layout)
+	else
+		layout:AddInitializer(CreateSettingsAddOnDisabledLabelInitializer());
 	end
 
-	-- Incoming Heals
-	Settings.SetupCVarCheckBox(category, "raidFramesDisplayIncomingHeals", COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYHEALPREDICTION);
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(PVP_FRAMES_LABEL));
 
-	-- Power Bars
-	Settings.SetupCVarCheckBox(category, "raidFramesDisplayPowerBars", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
+	-- Pvp Power Bars
+	local pvpFramesDisplayPowerBarsSetting, pvpFramesDisplayPowerBarsInitializer = Settings.SetupCVarCheckBox(category, "pvpFramesDisplayPowerBars", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
 
-	-- Aggro Highlight
-	Settings.SetupCVarCheckBox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
-
-	-- Class Colors
-	Settings.SetupCVarCheckBox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
-
-	-- Pets
-	Settings.SetupCVarCheckBox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
-
-	-- Main Tank and Assist
-	Settings.SetupCVarCheckBox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
-
-	do
-		-- Debuffs
-		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
-
-		-- Only Dispellable Debuffs
-		local function IsModifiable()
-			return debuffSetting:GetValue();
-		end
-
-		local _, initializer = Settings.SetupCVarCheckBox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
-		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	local _, pvpFramesDisplayOnlyHealerPowerBarsInitializer = Settings.SetupCVarCheckBox(category, "pvpFramesDisplayOnlyHealerPowerBars", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS);
+	local function EnablePvpFramesDisplayOnlyHealerPowerBarsSetting()
+		return pvpFramesDisplayPowerBarsSetting:GetValue();
 	end
+	pvpFramesDisplayOnlyHealerPowerBarsInitializer:SetParentInitializer(pvpFramesDisplayPowerBarsInitializer, EnablePvpFramesDisplayOnlyHealerPowerBarsSetting);
 
-	-- Health Text
-	do 
+	-- Pvp Class Colors
+	Settings.SetupCVarCheckBox(category, "pvpFramesDisplayClassColor", PVP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+	-- Pvp Pets
+	Settings.SetupCVarCheckBox(category, "pvpOptionDisplayPets", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
+
+	-- Pvp Health Text
+	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
-			container:Add("health", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
-			container:Add("losthealth", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
-			container:Add("perc", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
+			container:Add("none", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
+			container:Add("health", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
+			container:Add("losthealth", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
+			container:Add("perc", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "raidFramesHealthText", Settings.VarType.String, GetOptions, COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
+		Settings.SetupCVarDropDown(category, "pvpFramesHealthText", Settings.VarType.String, GetOptions, PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
 	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);

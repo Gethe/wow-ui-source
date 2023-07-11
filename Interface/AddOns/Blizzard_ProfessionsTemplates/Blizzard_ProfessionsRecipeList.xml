@@ -9,7 +9,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Backgroud" atlas="Professions-background-summarylist" setAllPoints="true"/>
+				<Texture parentKey="Background" atlas="Professions-background-summarylist" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="NoResultsText" inherits="GameFontNormal" text="PROFESSIONS_NO_JOURNAL_ENTRIES" hidden="true">
@@ -26,8 +26,8 @@
 					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
 

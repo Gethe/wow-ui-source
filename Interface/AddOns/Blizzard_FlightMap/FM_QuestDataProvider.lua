@@ -10,7 +10,7 @@ end
 
 function FlightMap_QuestDataProviderMixin:AddQuest(...) -- override
 	local pin = QuestDataProviderMixin.AddQuest(self, ...);
-	if pin.isSuperTracked or pin.style == "normal" then
+	if pin.isSuperTracked or pin.style == POIButtonUtil.Style.QuestComplete then
 		pin:SetAlphaLimits(1.0, 1.0, 1.0);
 	else
 		pin:SetAlphaLimits(2.0, 0.0, 1.0);

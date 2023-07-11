@@ -483,6 +483,16 @@ function TableUtil.GetTableValueListFromEnumeration(tableKey, ...)
 	return values;
 end
 
+function TableUtil.GetHighestNumericalValueInTable(table)
+	local highestValue = nil;
+	for key, value in pairs(table) do
+		if type(value) == "number" and (not highestValue or value > highestValue) then
+			highestValue = value;
+		end
+	end
+	return highestValue;
+end
+
 --[[
 This utility creates and returns a table of elements that are sorted by value "priority".
 

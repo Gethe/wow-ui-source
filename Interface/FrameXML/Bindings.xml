@@ -1375,7 +1375,7 @@
 		end
 	</Binding>
 	<Binding name="TOGGLEFPS" category="BINDING_HEADER_MISC">
-		ToggleFramerate();
+		FramerateFrame:Toggle();
 	</Binding>
 	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
 		Screenshot();
@@ -1461,6 +1461,9 @@
 	</Binding>
 	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		DumpMovementCapture();
+	</Binding>
+	<Binding name="COPYTOOLTIP" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TooltipUtil.DebugCopyGameTooltip();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->

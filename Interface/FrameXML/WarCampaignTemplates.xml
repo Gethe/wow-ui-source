@@ -193,7 +193,7 @@
 							</Anchors>
 							<Animations>
 								<AnimationGroup parentKey="Rotate" looping="REPEAT">
-									<Rotation childKey="Burst" smoothing="NONE" duration="12" degrees="360"/>
+									<Rotation smoothing="NONE" duration="12" degrees="360"/>
 								</AnimationGroup>
 							</Animations>
 						</Texture>

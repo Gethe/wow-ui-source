@@ -564,23 +564,29 @@ ChallengesFrameWeeklyInfoMixin = {};
 function ChallengesFrameWeeklyInfoMixin:SetUp(hasWeeklyRun, bestData)
 	local affixes = C_MythicPlus.GetCurrentAffixes();
 	if (affixes) then
+		local affixesContainer = self.Child.AffixesContainer;
 		for i, affix in ipairs(affixes) do
-			local frame = self.Child.Affixes[i];
-			if (not frame) then
-				frame = CreateFrame("Frame", nil, self.Child, "ChallengesKeystoneFrameAffixTemplate");
-				frame:SetPoint("LEFT", self.Child.Affixes[i-1], "RIGHT", 10, 0);
+			local affixFrame;
+			if affixesContainer.Affixes and i <= #affixesContainer.Affixes then
+				affixFrame = affixesContainer.Affixes[i];
+			else
+				affixFrame = CreateFrame("Frame", nil, affixesContainer, "ChallengesKeystoneFrameAffixTemplate");
+				affixFrame.layoutIndex = i;
+				affixFrame.align = "center";
 			end
-			frame:SetUp(affix.id);
+			affixFrame:SetUp(affix.id);
 		end
+
+		affixesContainer:Layout();
 		self:Show();
 	end
 end
 
 function ChallengesFrameWeeklyInfoMixin:HideAffixes()
-	if(self.Child.Affixes) then
-		for i = 1, #self.Child.Affixes do
-			local frame = self.Child.Affixes[i];
-			frame:Hide();
+	local affixesContainer = self.Child.AffixesContainer;
+	if (affixesContainer.Affixes) then
+		for _, affixFrame in ipairs(affixesContainer.Affixes) do
+			affixFrame:Hide();
 		end
 	end
 end
@@ -1064,7 +1070,7 @@ function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
 
     local role = UnitGroupRolesAssigned(unitToken);
     if ( role == "TANK" or role == "HEALER" or role == "DAMAGER" ) then
-		self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
+		self.RoleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
 		self.RoleIcon:Show();
 	else
 		self.RoleIcon:Hide();

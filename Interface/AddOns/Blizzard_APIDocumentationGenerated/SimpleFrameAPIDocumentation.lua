@@ -6,6 +6,14 @@ local SimpleFrameAPI =
 	Functions =
 	{
 		{
+			Name = "AbortDrag",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CanChangeAttribute",
 			Type = "Function",
 
@@ -487,6 +495,15 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
+			},
+		},
+		{
+			Name = "InterceptStartDrag",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "delegate", Type = "SimpleFrame", Nilable = false },
 			},
 		},
 		{

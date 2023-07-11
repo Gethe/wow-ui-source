@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GroupLootFrame.lua"/>
 
-	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="LootRollButtonTemplate" parentArray="LootButtons" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Scripts>
 			<OnClick>
@@ -181,7 +181,7 @@
 					<Frame parentKey="InfoFrame">
 						<Size x="135" y="38"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="60" y="-15"/>
+							<Anchor point="TOPLEFT" x="60" y="-15"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -445,21 +445,102 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnUpdate>
-						GroupLootFrame_OnUpdate(self, elapsed);
-					</OnUpdate>
-				</Scripts>
 				<BarTexture parentKey="Bar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="1.0" g="1.0" b="0" />
 			</StatusBar>
+			<Frame parentKey="NeedRollAnim" hidden="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.NeedButton" x="5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString parentKey="RollNumber" inherits="Game32Font">
+							<Color r="1.0" g="1.0" b="1.0"/>
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" x="13" y="-13"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="DiceGlow" atlas="lootroll-animdiceglow">
+							<Size x="70" y="76"/>
+							<Anchors>
+								<Anchor point="CENTER" x="13" y="-13"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="FX_RevealB1" atlas="lootroll-animreveal-b">
+							<Size x="108" y="150"/>
+							<Anchors>
+								<Anchor point="CENTER" x="10" y="15"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FX_RevealB2" atlas="lootroll-animreveal-b">
+							<Size x="108" y="150"/>
+							<Anchors>
+								<Anchor point="CENTER" x="23" y="15"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="DiceRoll" atlas="lootroll-animdice">
+							<Size x="58" y="74"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FX_RevealA" atlas="lootroll-animreveal-a">
+							<Size x="128" y="114"/>
+							<Anchors>
+								<Anchor point="CENTER" x="19.5" y="-7"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FX_RevealFade" atlas="lootroll-animrevealfade">
+							<Size x="70" y="220"/>
+							<Anchors>
+								<Anchor point="CENTER" x="12.5" y="30"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Animation" setToFinalAlpha="true">
+						<FlipBook childKey="DiceRoll" duration="1.47" order="1" flipBookRows="9" flipBookColumns="5" flipBookFrames="44" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="DiceRoll" duration="1.47" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="DiceRoll" duration="0" order="1" startDelay="1.48" fromAlpha="0" toAlpha="0"/>
+						<FlipBook childKey="DiceGlow" duration="1.67" order="1" startDelay="1.48" flipBookRows="10" flipBookColumns="5" flipBookFrames="50" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="DiceGlow" duration="1.47" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="DiceGlow" duration="1.67" order="1" startDelay="1.48" fromAlpha="1" toAlpha="1"/>
+						<Scale childKey="DiceGlow" duration="0.27" order="1" startDelay="3.15" fromScaleX="1" fromScaleY="1" toScaleX="1.3" toScaleY="1.3"/>
+						<Alpha childKey="DiceGlow" duration="0.27" order="1" startDelay="3.15" fromAlpha="1" toAlpha="0"/>
+						<FlipBook childKey="FX_RevealB1" duration="0.3" order="1" startDelay="3.15" flipBookRows="2" flipBookColumns="5" flipBookFrames="10" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FX_RevealB1" duration="3.14" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_RevealB1" duration="0.3" order="1" startDelay="3.15" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FX_RevealB1" duration="0" order="1" startDelay="3.46" fromAlpha="0" toAlpha="0"/>
+						<FlipBook childKey="FX_RevealB2" duration="0.35" order="1" startDelay="3.2" flipBookRows="2" flipBookColumns="5" flipBookFrames="10" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FX_RevealB2" duration="3.19" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_RevealB2" duration="0.35" order="1" startDelay="3.2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="FX_RevealB2" duration="0" order="1" startDelay="3.56" fromAlpha="0" toAlpha="0"/>
+						<FlipBook childKey="FX_RevealA" duration="0.4" order="1" startDelay="3.3" flipBookRows="2" flipBookColumns="6" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FX_RevealA" duration="3.29" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_RevealA" duration="0.4" order="1" startDelay="3.3" fromAlpha="1" toAlpha="1"/>
+						<FlipBook childKey="FX_RevealFade" duration="0.7" order="1" startDelay="3.4" flipBookRows="3" flipBookColumns="7" flipBookFrames="21" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<Alpha childKey="FX_RevealFade" duration="3.39" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="FX_RevealFade" duration="0.7" order="1" startDelay="3.4" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="RollNumber" duration="3.39" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="RollNumber" duration="0.1" order="1" startDelay="3.4" fromAlpha="0" toAlpha="1"/>
+						<Translation childKey="RollNumber" duration="0" order="1" offsetY="5"/>
+						<Translation childKey="RollNumber" duration="0.6" order="1" startDelay="3.4" offsetY="-5"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("CANCEL_LOOT_ROLL");
-			</OnLoad>
 			<OnShow function="GroupLootFrame_OnShow"/>
+			<OnHide function="GroupLootFrame_OnHide"/>
 			<OnEvent function="GroupLootFrame_OnEvent"/>
+			<OnUpdate function="GroupLootFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<ContainedAlertFrame name="GroupLootContainer" inherits="UIParentBottomManagedFrameTemplate" parent="UIParent" hidden="true">

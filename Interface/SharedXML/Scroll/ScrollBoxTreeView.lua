@@ -26,9 +26,115 @@ function ScrollBoxListTreeListViewMixin:Init(indent, top, bottom, left, right, s
 	self:SetElementIndent(indent);
 end
 
-function ScrollBoxListTreeListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
-	return self:GetDataProvider():EnumerateUncollapsed(indexBegin, indexEnd);
+function ScrollBoxListTreeListViewMixin:InitDefaultDrag(scrollBox)
+	return ScrollUtil.InitDefaultTreeDragBehavior(scrollBox);
 end
+
+-- Start of accessor overrides required by ScrollBox
+function ScrollBoxListTreeListViewMixin:ForEachElementData(func)
+	self:GetDataProvider():ForEach(func, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:ReverseForEachElementData(func)
+	error("ReverseForEachElementData unsupported in ScrollBoxListTreeListViewMixin.");
+end
+
+-- Deprecated, use FindElementData
+function ScrollBoxListTreeListViewMixin:Find(index)
+	return self:FindElementData(index);
+end
+
+-- Deprecated, use FindElementDataIndex
+function ScrollBoxListTreeListViewMixin:FindIndex(elementData)
+	return self:FindElementDataIndex(elementData);
+end
+
+function ScrollBoxListTreeListViewMixin:FindElementData(index)
+	return self:GetDataProvider():Find(index, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:FindElementDataIndex(elementData)
+	return self:GetDataProvider():FindIndex(elementData, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:FindElementDataByPredicate(predicate)
+	return self:GetDataProvider():FindElementDataByPredicate(predicate, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:FindElementDataIndexByPredicate(predicate)
+	return self:GetDataProvider():FindIndexByPredicate(predicate, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:FindByPredicate(predicate)
+	return self:GetDataProvider():FindByPredicate(predicate, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:ContainsElementDataByPredicate(predicate)
+	return self:GetDataProvider():ContainsByPredicate(predicate, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:EnumerateDataProviderEntireRange()
+	local indexBegin, indexEnd = nil, nil;
+	self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.IncludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetDataProvider():Enumerate(indexBegin, indexEnd, TreeDataProviderConstants.ExcludeCollapsed);
+end
+
+function ScrollBoxListTreeListViewMixin:GetDataProviderSize()
+	local dataProvider = self:GetDataProvider();
+	if dataProvider then
+		return dataProvider:GetSize(TreeDataProviderConstants.ExcludeCollapsed);
+	end
+	return 0;
+end
+
+function ScrollBoxListTreeListViewMixin:TranslateElementDataToUnderlyingData(elementData)
+	return elementData:GetData();
+end
+
+function ScrollBoxListTreeListViewMixin:IsScrollToDataIndexSafe()
+	return false;
+end
+
+function ScrollBoxListTreeListViewMixin:PrepareScrollToElementDataByPredicate(predicate)
+	local dataProvider = self:GetDataProvider();
+	if dataProvider then
+		-- Traverse the data provider including collapsed elements as we're going to expand the ancestry to
+		-- force the desired element to become visible.
+		local elementData = dataProvider:FindElementDataByPredicate(predicate, TreeDataProviderConstants.IncludeCollapsed);
+		self:PrepareScrollToElementData(elementData);
+	end
+end
+
+function ScrollBoxListTreeListViewMixin:PrepareScrollToElementData(elementData)
+	if elementData then
+		local parents = {};
+
+		local parent = elementData.parent;
+		while parent do
+			table.insert(parents, parent);
+
+			local next = parent.parent;
+			if next then
+				parent = next;
+			else
+				break;
+			end
+		end
+
+		for index, parent in ipairs_reverse(parents) do
+			parent:SetCollapsed(false, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
+		end
+
+		-- Skip invalidation so that each individual collapse change doesn't unnecessarily signal updates. We're invalidating
+		-- after this finishes below.
+		local dataProvider = self:GetDataProvider();
+		dataProvider:Invalidate();
+	end
+end
+-- End of accessor overrides
 
 function ScrollBoxListTreeListViewMixin:SetElementIndent(indent)
 	self.indent = indent;

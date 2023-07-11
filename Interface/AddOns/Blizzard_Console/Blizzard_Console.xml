@@ -244,6 +244,9 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						if not self.Icon:GetTexture() then
+							self.Icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_WRENCH_01");
+						end
 						<!-- for some reason this didn't work in the XML ANCHOR tag -->
 						self.Icon:ClearAllPoints();
 						self.Icon:SetPoint("RIGHT", self.Label, "LEFT", -2, 0);

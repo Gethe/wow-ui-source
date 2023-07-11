@@ -730,7 +730,6 @@ retain("LE_TOKEN_RESULT_ERROR_DISABLED");
 take("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP");
 take("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 take("LE_TOKEN_REDEEM_TYPE_BALANCE");
-retain("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Tag enums
 takeenum("StoreError");
@@ -751,6 +750,7 @@ retainenum("ClubFieldType");
 retainenum("ValidateNameResult");
 retainenum("TooltipDataLineType");
 retainenum("TooltipDataType");
+retainenum("ModelBlendOperation");
 
 -- For Private Auras
 retainfromtable("AuraUtil", "DefaultAuraCompare");

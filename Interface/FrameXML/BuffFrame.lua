@@ -1,8 +1,7 @@
 BUFF_WARNING_TIME = 31;
 BUFF_DURATION_WARNING_TIME = 60;
 BUFF_MAX_DISPLAY = 32;
-DEBUFF_MAX_DISPLAY = 16
-DEBUFF_CRITICAL_TIME_REMAINING = 15;
+DEBUFF_MAX_DISPLAY = 16;
 DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 
 --Aubrie TODO move these.. to something else
@@ -249,7 +248,7 @@ function AuraFrameMixin:TryEditModeUpdateAuraButtons()
 		if not self.hasInitializedForEditMode then
 			if not self.iconDataProvider then
 				local spellIconsOnly = true;
-				self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell, spellIconsOnly);
+				self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spellbook, spellIconsOnly);
 			end
 
 			local iconDataProviderNumIcons = self.iconDataProvider:GetNumIcons();
@@ -501,74 +500,75 @@ function DebuffFrameMixin:UpdateAuras()
 
 	self.deadlyDebuffInfo = {};
 
-	AuraUtil.ForEachAura(PlayerFrame.unit, "HARMFUL", self.maxAuras, function(...)
-		local _, texture, count, debuffType, duration, expirationTime, _, _, _, spellID, _, _, _, _, timeMod = ...;
+	AuraUtil.ForEachAura(PlayerFrame.unit, "HARMFUL", self.maxAuras, function(auraData)
+		local index = #self.auraInfo + 1;
+		-- TODO:: Rename usages in this file to match packed auraData names, then just use packed aura everywhere
+		self.auraInfo[index] = {index = index, texture = auraData.icon, count = auraData.applications, debuffType = auraData.dispelName, duration =  auraData.duration, expirationTime =  auraData.expirationTime, timeMod =  auraData.timeMod, auraType = "Debuff" };
 
-		local deadlyDebuffInfo = C_SpellBook.GetDeadlyDebuffInfo(spellID);
+		local deadlyDebuffInfo = C_SpellBook.GetDeadlyDebuffInfo(auraData.spellId);
 		if(deadlyDebuffInfo) then
 			local deadlyDebuff = {
-				index = 0,
+				spellID = auraData.spellId,
 				auraType = "DeadlyDebuff",
-				texture = texture,
-				count = count,
-				debuffType = debuffType,
-				duration = duration,
-				expirationTime = expirationTime,
-				timeMod = timeMod,
+				texture = auraData.icon,
+				count = auraData.applications,
+				debuffType = auraData.dispelName,
+				duration = auraData.duration,
+				expirationTime = auraData.expirationTime,
+				timeMod = auraData.timeMod,
 				warningText = deadlyDebuffInfo.warningText,
 				soundKitID = deadlyDebuffInfo.soundKitID,
 				priority = deadlyDebuffInfo.priority,
-				criticalTimeRemaining = deadlyDebuffInfo.overrideCriticalTimeRemaining,
+				criticalTimeRemainingMs = deadlyDebuffInfo.criticalTimeRemainingMs,
+				criticalStacks = deadlyDebuffInfo.criticalStacks,
+				auraInstanceID =  auraData.auraInstanceID,
 			};
 			table.insert(self.deadlyDebuffInfo, deadlyDebuff);
-		else
-			local index = #self.auraInfo + 1;
-			self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration, expirationTime = expirationTime, timeMod = timeMod, auraType = "Debuff" }
 		end
-
-		return (#self.auraInfo + #self.deadlyDebuffInfo) > self.maxAuras;
-	end);
-	self:SetupDeadlyDebuffs();
+	end, true);
+	self:UpdateDeadlyDebuffs();
+	local onUpdateScript = #self.deadlyDebuffInfo > 0 and self.UpdateDeadlyDebuffs or nil;
+	self:SetScript("OnUpdate", onUpdateScript);
 end
 
-function DebuffFrameMixin:SetupDeadlyDebuffs()
-	-- Setup DeadlyDebuffFrame
+function DebuffFrameMixin:UpdateDeadlyDebuffs()
 	local mostCriticalDebuffIndex = nil;
 
+	local currentTime = GetTime();
+	local function IsCritical(index)
+		local info = self.deadlyDebuffInfo[index];
+
+		if not info.criticalTimeRemainingMs and not info.criticalStacks then
+			return true; -- No critical period specified is always critical
+		end
+
+		local criticalTimeS = info.criticalTimeRemainingMs and (info.criticalTimeRemainingMs / 1000);
+		if criticalTimeS and criticalTimeS >= (info.expirationTime - currentTime) then
+			return true;
+		end
+
+		if info.criticalStacks and info.criticalStacks <= info.count then
+			return true;
+		end
+				
+		return false;
+	end
+
 	for i = 1, #self.deadlyDebuffInfo do
-		if(not mostCriticalDebuffIndex) then
-			mostCriticalDebuffIndex = i;
-		else
-			local currentTime = GetTime();
-			local timeRemaining1 = self.deadlyDebuffInfo[i].expirationTime - currentTime;
-			local timeRemaining2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].expirationTime - currentTime;
+		if IsCritical(i) then
+			if not mostCriticalDebuffIndex then
+				mostCriticalDebuffIndex = i;
+			else
+				local timeRemaining1 = self.deadlyDebuffInfo[i].expirationTime - currentTime;
+				local timeRemaining2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].expirationTime - currentTime;
 
-			local priority1 = self.deadlyDebuffInfo[i].priority;
-			local priority2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].priority;
+				local priority1 = self.deadlyDebuffInfo[i].priority;
+				local priority2 = self.deadlyDebuffInfo[mostCriticalDebuffIndex].priority;
 
-			--If the deadly debuff has an override critical time, use that to determine the critical state, if not.. use the default
-			local isInCriticalTimeRemaining1 = (self.deadlyDebuffInfo[i].overrideCriticalTimeRemaining) and (self.deadlyDebuffInfo[i].overrideCriticalTimeRemaining <= timeRemaining1) or (DEBUFF_CRITICAL_TIME_REMAINING >= timeRemaining1)
-			local isInCriticalTimeRemaining2 = (self.deadlyDebuffInfo[mostCriticalDebuffIndex].overrideCriticalTimeRemaining) and (self.deadlyDebuffInfo[mostCriticalDebuffIndex].overrideCriticalTimeRemaining <= timeRemaining2)
-
-			--If the debuffs are both in their critical state, prioritize the one with the highest priority, if they have the same priority, use the time remaining. 
-			if isInCriticalTimeRemaining1 and isInCriticalTimeRemaining2 then
-				if priority1 > priority2 then
+				if priority1 < priority2 then
 					mostCriticalDebuffIndex = i;
 				elseif timeRemaining1 < timeRemaining2 then
 					mostCriticalDebuffIndex = i;
-				end
-			-- If 1 is in critical time remaining.. use that. 
-			elseif isInCriticalTimeRemaining1 then
-				mostCriticalDebuffIndex = i;
-			else
-				--Keep using the mostCriticalDebuffIndex unless the current debuff info is a higher priorty or has less time remaining. 
-				--If the previous compared debuff is in the critical state, show that instead since it's more critical
-				if not isInCriticalTimeRemaining2 then
-					if priority1 > priority2 then
-						mostCriticalDebuffIndex = i;
-					elseif timeRemaining1 < timeRemaining2 then
-						mostCriticalDebuffIndex = i;
-					end
 				end
 			end
 		end
@@ -584,14 +584,8 @@ function DebuffFrameMixin:SetupDeadlyDebuffs()
 		else
 			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
 		end
-		-- Remove deadly debuff which is being shown in DeadlyDebuffFrame so it only appears in one place
-		table.remove(self.deadlyDebuffInfo, mostCriticalDebuffIndex);
-	end
-
-	-- Add remaining deadly debuffs onto end of aura list so they appear at the end
-	for index, deadlyDebuff in ipairs(self.deadlyDebuffInfo) do
-		deadlyDebuff.index = #self.auraInfo + 1;
-		self.auraInfo[deadlyDebuff.index] = deadlyDebuff;
+	else
+		DeadlyDebuffFrame:Hide();
 	end
 end
 
@@ -661,7 +655,12 @@ function AuraButtonMixin:OnEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 	GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
-	GameTooltip:SetUnitAura(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
+
+	if self.deadlyInstanceID then
+		GameTooltip:SetUnitDebuffByAuraInstanceID(PlayerFrame.unit, self.deadlyInstanceID, self:GetFilter());
+	else
+		GameTooltip:SetUnitAura(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
+	end
 end
 
 function AuraButtonMixin:OnLeave()
@@ -718,13 +717,13 @@ function AuraButtonMixin:OnUpdate()
 	end
 
 	if GameTooltip:IsOwned(self) and not self:GetID() then
-		GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
-	end
-
-	if self.auraType == "DeadlyDebuff" and self.timeLeft <= 0 then
-		DeadlyDebuffFrame:Hide()
-	elseif (self.buttonInfo.criticalTimeRemaining and self.buttonInfo.criticalTimeRemaining > 0) and timeLeft <= self.buttonInfo.criticalTimeRemaining then
-		DebuffFrame:SetupDeadlyDebuffs();
+		if GameTooltip:IsOwned(self) then
+			if self.deadlyInstanceID then
+				GameTooltip:SetUnitDebuffByAuraInstanceID(PlayerFrame.unit, self.deadlyInstanceID, self:GetFilter());
+			else
+				GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
+			end
+		end
 	end
 end
 
@@ -840,7 +839,11 @@ function AuraButtonMixin:Update(buttonInfo)
 	end
 
 	if GameTooltip:IsOwned(self) then
-		GameTooltip:SetUnitAura(self.unit, buttonInfo.index, self:GetFilter());
+		if self.deadlyInstanceID then
+			GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.deadlyInstanceID, self:GetFilter());
+		else
+			GameTooltip:SetUnitAura(self.unit, buttonInfo.index, self:GetFilter());
+		end
 	end
 end
 
@@ -934,15 +937,20 @@ end
 function DeadlyDebuffFrameMixin:OnHide()
 	self:UnregisterEvent("CHAT_MSG_RAID_WARNING");
 	self:UnregisterEvent("RAID_BOSS_EMOTE");
+
+	self.lastSpellID = nil;
 end
 
 function DeadlyDebuffFrameMixin:Setup(deadlyDebuffInfo)
+	self.Debuff.deadlyInstanceID = deadlyDebuffInfo.auraInstanceID;
 	self.Debuff:Update(deadlyDebuffInfo);
 	self.WarningText:SetText(deadlyDebuffInfo.warningText)
 
-	if deadlyDebuffInfo.soundKitID then
+	if deadlyDebuffInfo.soundKitID and deadlyDebuffInfo.spellID ~= self.lastSpellID then
 		PlaySound(deadlyDebuffInfo.soundKitID);
 	end
+
+	self.lastSpellID = deadlyDebuffInfo.spellID;
 
 	self:Show();
 end

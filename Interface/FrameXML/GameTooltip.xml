@@ -147,6 +147,7 @@
 				GameTooltip_ClearMoney(self);
 				SharedTooltip_ClearInsertedFrames(self);
 				GameTooltip_ClearStyle(self);
+				self:ClearHandlerInfo();
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>

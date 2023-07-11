@@ -2844,6 +2844,11 @@ function ChatFrame_OnLoad(self)
 
 	local noMouseWheel = not GetCVarBool("chatMouseScroll");
 	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self, self.ScrollBar, noMouseWheel);
+
+	-- Scroll bar alpha is managed by a cursor test over the chat frame. Set the initial alpha to 0
+	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and 
+	-- FCF_FadeOutScrollbar.
+	self.ScrollBar:SetAlpha(0);
 end
 
 function ChatFrame_UpdateChatFrames()

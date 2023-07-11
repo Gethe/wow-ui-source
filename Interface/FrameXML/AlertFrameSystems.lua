@@ -985,23 +985,7 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 		return;
 	end
 
-	ProfessionsFrame_LoadUI();
-
-	local currBaseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
-	local currentSkillLineInfo = C_TradeSkillUI.GetChildProfessionInfo();
-	if currentSkillLineInfo ~= nil and currentSkillLineInfo.professionID == self.skillLineID then
-		local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.recipeID);
-		ProfessionsFrame:SetTab(ProfessionsFrame.recipesTabID);
-		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", recipeInfo, nilRecipeList);
-	elseif currBaseProfessionInfo ~= nil and currBaseProfessionInfo.professionID == self.tradeSkillID then
-		C_TradeSkillUI.SetProfessionChildSkillLineID(self.skillLineID);
-		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
-		professionInfo.openRecipeID = self.recipeID;
-		EventRegistry:TriggerEvent("Professions.ProfessionSelected", professionInfo);
-	else
-		ProfessionsFrame:SetOpenRecipeResponse(self.skillLineID, self.recipeID);
-		C_TradeSkillUI.OpenTradeSkill(self.tradeSkillID);
-	end
+	ProfessionsUtil.OpenProfessionFrameToRecipe(self.recipeID);
 end
 
 NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipeLearnedAlertFrameTemplate", NewRecipeLearnedAlertFrame_SetUp, 2, 6);

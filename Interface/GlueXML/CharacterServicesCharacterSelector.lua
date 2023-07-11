@@ -126,6 +126,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 			CharSelectServicesFlowFrame:Hide();
 			return;
 		end
+
 		block:SaveResultInfo(characterButton, serviceInfo.playerguid);
 
 		-- The user entered a normal boost flow and selected a trial boost character, at this point

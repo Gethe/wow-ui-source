@@ -304,7 +304,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 
 		self.statLinePool:ReleaseAll();
 		
-		if Professions.IsCraftingMinimized() then
+		if ProfessionsUtil.IsCraftingMinimized() then
 			self.BackgroundTop:Hide();
 			self.BackgroundBottom:Hide();
 			self.BackgroundMiddle:Hide();

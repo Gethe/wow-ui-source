@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 
-	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true">
+	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" inherits="ContentTrackingElementTemplate" virtual="true">
 		<Size x="78" y="104"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -18,7 +18,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="DisabledOverlay" atlas="transmog-wardrobe-border-selected" hidden="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Color a="0.8"/>
+					<Size x="96" y="124"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture parentKey="TransmogStateTexture" atlas="transmog-wardrobe-border-selected" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SlotInvalidTexture" atlas="transmog-icon-unsupported" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -305,8 +319,47 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="AlertTrackingFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertTrackingFeatureMixin" virtual="true">
+		<Size x="1" y="1"/>
+	</Frame>
+
+	<Frame name="TrackingInterfaceShortcutsFrame" hidden="true">
+		<Size x="226" y="40"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HeaderText" inherits="GameFontHighlightLeft" text="WARDROBE_SHORTCUTS_TUTORIAL_2" justifyH="LEFT" justifyV="TOP">
+					<Size x="0" y="0"/>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" text="WARDROBE_SHORTCUTS_TUTORIAL_3" justifyH="LEFT" justifyV="TOP">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="-1"/>
+						<Anchor point="LEFT" relativeKey="$parent.HeaderText" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NewAlert" inherits="AlertTrackingFeatureTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HeaderText" relativePoint="RIGHT" x="17"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">
 		<Frames>
+			<Button parentKey="InfoButton" inherits="MainHelpPlateButton" mixin="WardrobeCollectionTutorialMixin" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="43" y="19"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
 			<Button name="$parentTab1" parentKey="ItemsTab" inherits="PanelTopTabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4">
 				<KeyValues>
 					<KeyValue key="minWidth" value="57" type="number"/>
@@ -330,8 +383,8 @@
 				<Frames>
 					<Frame parentKey="FlashFrame" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SetsTab" relativePoint="TOPLEFT" x="0" y="-10"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SetsTab" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" x="0" y="-10"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -858,6 +911,7 @@
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
 					<OnMouseWheel method="OnMouseWheel"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="SetsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeSetsCollectionMixin" hidden="true">
@@ -1013,7 +1067,7 @@
 									<Layer level="ARTWORK">
 										<Texture parentKey="Icon" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5" y="-2"/>
+												<Anchor point="RIGHT" x="-5" y="-2"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -1295,6 +1349,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnKeyDown method="OnKeyDown"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 

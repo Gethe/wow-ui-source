@@ -622,12 +622,16 @@ end
 function TalentButtonBaseMixin:PlaySelectSound()
 	if self.selectSound then
 		PlaySound(self.selectSound);
+	else
+		self:GetTalentFrame():PlaySelectSoundForButton(self);
 	end
 end
 
 function TalentButtonBaseMixin:PlayDeselectSound()
 	if self.deselectSound then
 		PlaySound(self.deselectSound);
+	else
+		self:GetTalentFrame():PlayDeselectSoundForButton(self);
 	end
 end
 
@@ -1279,7 +1283,8 @@ function TalentButtonSelectMixin:UpdateNodeInfo(skipUpdate)
 	self.talentSelections = hasNodeInfo and nodeInfo.entryIDs or {};
 
 	if hasNodeInfo then
-		self:UpdateSelectedEntryID(nodeInfo.activeEntry and nodeInfo.activeEntry.entryID or nil);
+		local isUserInput = false;
+		self:UpdateSelectedEntryID(nodeInfo.activeEntry and nodeInfo.activeEntry.entryID or nil, isUserInput);
 	end
 
 	self:GetTalentFrame():UpdateSelections(self, self:CanSelectChoice(), self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
@@ -1388,7 +1393,8 @@ function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID, selectedDef
 	local oldSelection = self.selectedEntryID;
 
 	if not self:GetTalentFrame():ShouldShowConfirmation() then
-		if not self:UpdateSelectedEntryID(selectedEntryID, selectedDefinitionInfo) then
+		local isUserInput = true;
+		if not self:UpdateSelectedEntryID(selectedEntryID, isUserInput, selectedDefinitionInfo) then
 			return;
 		end
 	end
@@ -1399,15 +1405,17 @@ function TalentButtonSelectMixin:SetSelectedEntryID(selectedEntryID, selectedDef
 	end
 end
 
-function TalentButtonSelectMixin:UpdateSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
+function TalentButtonSelectMixin:UpdateSelectedEntryID(selectedEntryID, isUserInput, selectedDefinitionInfo)
 	if self.selectedEntryID == selectedEntryID then
 		return false;
 	end
 
-	if selectedEntryID == nil then
-		self:PlayDeselectSound();
-	else
-		self:PlaySelectSound();
+	if isUserInput then
+		if selectedEntryID == nil then
+			self:PlayDeselectSound();
+		else
+			self:PlaySelectSound();
+		end
 	end
 
 	self.selectedEntryID = selectedEntryID;

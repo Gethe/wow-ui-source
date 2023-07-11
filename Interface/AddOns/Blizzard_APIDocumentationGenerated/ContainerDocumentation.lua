@@ -662,6 +662,7 @@ local Container =
 				{ Name = "hasNoValue", Type = "bool", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "isBound", Type = "bool", Nilable = false },
+				{ Name = "itemName", Type = "string", Nilable = false },
 			},
 		},
 		{

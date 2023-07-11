@@ -1583,7 +1583,7 @@
 						</Layers>
 						<Scripts>
 							<OnShow>
-								OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", 9, -4, true);
+								OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -17, 9, true);
 							</OnShow>
 						</Scripts>
 					</Frame>

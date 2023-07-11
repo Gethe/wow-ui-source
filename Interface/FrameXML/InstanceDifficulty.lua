@@ -13,6 +13,7 @@ function InstanceDifficultyMixin:OnLoad()
 	self:RegisterEvent("PARTY_MEMBER_ENABLE");
 	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("GUILD_PARTY_STATE_UPDATED");
+	self:Update();
 end
 
 function InstanceDifficultyMixin:OnEvent(event, ...)

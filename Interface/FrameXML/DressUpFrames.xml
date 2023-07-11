@@ -135,7 +135,7 @@
 			<CheckButton parentKey="ShowMountCheckButton" inherits="UICheckButtonTemplate">
 				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.ModelScene" relativePoint="BOTTOMRIGHT" x="-20" y="30"/>
+					<Anchor point="TOP" relativePoint="BOTTOMRIGHT" x="-20" y="30"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

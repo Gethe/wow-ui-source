@@ -8,7 +8,22 @@
 	<Script file="ScrollBoxTreeView.lua"/>
 	<Script file="ScrollBoxGridView.lua"/>
 	<Script file="ScrollBox.lua"/>
-	
+
+	<Frame name="ScrollBoxDragIndicatorTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="1" g="1" b="1" a=".5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ScrollBoxDragBoxTemplate" inherits="ScrollBoxDragIndicatorTemplate" virtual="true"/>
+	<Frame name="ScrollBoxDragLineTemplate" inherits="ScrollBoxDragIndicatorTemplate" virtual="true">
+		<Size x="1" y="2"/>
+	</Frame>
+
 	<Frame name="ScrollBoxBaseTemplate" clipChildren="true" mixin="ScrollBoxBaseMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="canInterpolateScroll" value="false" type="boolean"/>
@@ -18,6 +33,7 @@
 			-->
 		</KeyValues>
 		<Frames>
+			<Frame parentKey="DragDelegate"/>
 			<EventFrame parentKey="ScrollTarget" useParentLevel="true"/>
 			<Frame parentKey="Shadows" setAllPoints="true">
 				<Layers>

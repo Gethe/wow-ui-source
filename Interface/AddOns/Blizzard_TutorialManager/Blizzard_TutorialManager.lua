@@ -44,7 +44,7 @@ function TutorialManager:Shutdown()
 	self.Watchers = {};
 	self.IsActive = false;
 	TutorialQueue:Reset();
-	EventRegistry:TriggerEvent("TutorialManager.TutorialsDisabled", self.IsActive);
+	EventRegistry:TriggerEvent("TutorialManager.TutorialsDisabled");
 	self:DebugLog("TUTORIAL MANAGER DISABLED");
 end
 

@@ -222,7 +222,7 @@
 				<Texture parentKey="VoiceChatStatusIcon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Name"/>
+						<Anchor point="LEFT" relativePoint="RIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

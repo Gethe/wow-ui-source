@@ -37,6 +37,7 @@
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua
@@ -135,6 +136,14 @@ ObjectAPI\Quest.lua
 ObjectAPI\UiMapPoint.lua
 ObjectAPI\CovenantCalling.lua
 
+ContentTracking\ContentTrackingManager.lua
+ContentTracking\ContentTrackingElement.xml
+
+POIButton\POIButtonHighlightManager.lua
+POIButton\POIButton.xml
+POIButton\POIButtonOwner.xml
+POIButton\POIButtonUtil.lua
+
 ## add new modules below here
 ..\SharedXML\Backdrop.xml
 ChatBubbleTemplates.xml
@@ -160,6 +169,7 @@ MapUtil.lua
 AzeriteUtil.lua
 AzeriteEssenceUtil.lua
 AuraUtil.lua
+ArenaUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
 RuneforgeUtil.xml
@@ -172,6 +182,8 @@ RenownRewardUtil.lua
 RewardTrackTemplates.xml
 TitleUtil.lua
 CollectionsUtil.lua
+ProfessionsUtil.lua
+AdventureGuideUtil.lua
 ItemDisplay.xml
 ..\SharedXML\HelpTip.xml
 CurrencyContainer.lua
@@ -207,7 +219,7 @@ StaticPopup.xml
 ..\SharedXML\DialogUtil.lua
 ..\SharedXML\Settings\GameplaySettingsGroup.lua
 ..\SharedXML\Settings\Settings.xml
-..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
+..\FrameXML\SettingDefinitions\OverrideDefinitions.xml
 SettingDefinitions\Definitions.xml
 QuickKeybind.xml
 TutorialFrame.xml
@@ -272,6 +284,7 @@ UnitFrame.xml
 Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
+GuildUtil.lua
 ActionBarController.xml
 InstanceDifficulty.xml
 Minimap.xml
@@ -319,7 +332,6 @@ PaperDollFrame.xml
 ReputationFrame.xml
 FriendshipStatusBar.xml
 QuestFrame.xml
-QuestPOI.xml
 QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml
@@ -389,8 +401,10 @@ EssenceFramePlayer.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
+AlternatePowerBarBase.xml
 AlternatePowerBar.xml
 MonkStaggerBar.xml
+EvokerEbonMightBar.xml
 BossBannerToast.xml
 EventToastManager.xml
 AnimationSystem.lua
@@ -398,6 +412,8 @@ EquipmentManager.lua
 CompactUnitFrame.xml
 CompactRaidGroup.xml
 CompactPartyFrame.xml
+CompactArenaFrame.xml
+Deprecated_ArenaUI.xml
 RolePoll.xml
 SpellFlyout.xml
 PaladinPowerBar.xml
@@ -426,16 +442,15 @@ AzeriteIslandsToast.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
 AzeriteEmpoweredItemDataSource.lua
-GuildUtil.lua
 QuestSession.xml
 ActionStatus.xml
 WeeklyReward.lua
 PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
-ArenaUI.xml
 FramerateFrame.xml
 ClassTalentHelper.lua
 MotionSickness.xml
+ArchaeologyProgressBar.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

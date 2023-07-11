@@ -3,7 +3,6 @@ local CampaignMixin = {};
 function CampaignMixin:Init(campaignID)
 	self.campaignID = campaignID;
 	self.chapterIDs = C_CampaignInfo.GetChapterIDs(campaignID) or {};
-	self.usesNormalQuestIcons = C_CampaignInfo.UsesNormalQuestIcons(campaignID);
 	Mixin(self, C_CampaignInfo.GetCampaignInfo(campaignID));
 end
 
@@ -53,6 +52,10 @@ end
 
 function CampaignMixin:UsesNormalQuestIcons()
 	return self.usesNormalQuestIcons;
+end
+
+function CampaignMixin:IsContainerCampaign()
+	return self.isContainerCampaign;
 end
 
 CampaignCache = ObjectCache_Create(CampaignMixin);

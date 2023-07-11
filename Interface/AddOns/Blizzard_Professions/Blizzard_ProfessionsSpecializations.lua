@@ -5,18 +5,22 @@ local helptipSystemName = "Profession Specializations";
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] = 
 {
-	text = PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE,
+	text = "",
 	button1 = YES,
 	button2 = CANCEL,
+	wide = true,
+	wideText = true,
 
 	OnAccept = function(self, info)
 		info.onAccept();
 	end,
 
 	OnShow = function(self, info)
-		local bodyText = info.hasAnyConfigChanges and PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_UNAPPLIED or PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB;
-		self.SubText:SetText(bodyText:format(info.specName, info.profName));
-		self.SubText:Show();
+		local headerText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE:format(info.specName).."\n\n");
+		local bodyKey = info.hasAnyConfigChanges and PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_UNAPPLIED or PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB;
+		local bodyText = NORMAL_FONT_COLOR:WrapTextInColorCode(bodyKey:format(info.specName, info.profName));
+		self.text:SetText(headerText..bodyText);
+		self.text:Show();
 	end,
 
 	hideOnEscape = 1,
@@ -152,8 +156,7 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 		info.specName = self.tabInfo.name;
 		info.profName = self.professionInfo.professionName;
 		info.hasAnyConfigChanges = self:HasAnyConfigChanges();
-
-		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB", self.tabInfo.name, self.professionInfo.professionName, info);
+		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB", nil, nil, info);
 	end
 end
 

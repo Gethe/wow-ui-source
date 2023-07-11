@@ -7,7 +7,6 @@ local IsRecrafting = true;
 -- *****************************************************************************************************
 -- ***** BLOCK DROPDOWN FUNCTIONS
 -- *****************************************************************************************************
-
 local function GetRecipeID(block)
 	return math.abs(block.id);
 end
@@ -86,7 +85,7 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 	self.continuableContainer = ContinuableContainer:Create();
 	local function LoadItems(recipes)
 		for _, recipeID in ipairs(recipes) do
-			local reagents = Professions.CreateRecipeReagentsForAllBasicReagents(recipeID);
+			local reagents = ProfessionsUtil.CreateRecipeReagentsForAllBasicReagents(recipeID);
 			for reagentIndex, reagent in ipairs(reagents) do
 				if reagent.itemID then
 					self.continuableContainer:AddContinuable(Item:CreateFromItemID(reagent.itemID));
@@ -112,8 +111,8 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 
 				local eligibleSlots = {};
 				for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-					if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
-						if Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+					if ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic) then
+						if ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
 							table.insert(eligibleSlots, 1, {slotIndex = slotIndex, reagentSlotSchematic = reagentSlotSchematic});
 						else
 							table.insert(eligibleSlots, {slotIndex = slotIndex, reagentSlotSchematic = reagentSlotSchematic});
@@ -124,13 +123,13 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 				for idx, tbl in ipairs(eligibleSlots) do
 					local slotIndex = tbl.slotIndex;
 					local reagentSlotSchematic = tbl.reagentSlotSchematic;
-					if Professions.IsReagentSlotRequired(reagentSlotSchematic) then
+					if ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic) then
 						local reagent = reagentSlotSchematic.reagents[1];
 						local quantityRequired = reagentSlotSchematic.quantityRequired;
-						local quantity = Professions.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
+						local quantity = ProfessionsUtil.AccumulateReagentsInPossession(reagentSlotSchematic.reagents);
 						local name = nil;
 
-						if Professions.IsReagentSlotBasicRequired(reagentSlotSchematic) then
+						if ProfessionsUtil.IsReagentSlotBasicRequired(reagentSlotSchematic) then
 							if reagent.itemID then
 								local item = Item:CreateFromItemID(reagent.itemID);
 								name = item:GetItemName();
@@ -140,7 +139,7 @@ function PROFESSION_RECIPE_TRACKER_MODULE:Update()
 									name = currencyInfo.name;
 								end
 							end
-						elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+						elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
 							if reagentSlotSchematic.slotInfo then
 								name = reagentSlotSchematic.slotInfo.slotText;
 							end

@@ -33,10 +33,18 @@ function ChromieTimeFrameMixin:SelectExpansionOption()
 	end
 end 
 
+--The option with the largest priorty will be bubbled to the top. 
+local function SortByPriority(leftInfo, rightInfo)
+	return leftInfo.sortPriority > rightInfo.sortPriority;
+end
+
 function ChromieTimeFrameMixin:SetupExpansionButtons()
 	self.lastOption = nil;
 	self.ExpansionOptionsPool:ReleaseAll(); 
-	local expansionOptions = C_ChromieTime.GetChromieTimeExpansionOptions(); 
+
+	local expansionOptions = C_ChromieTime.GetChromieTimeExpansionOptions();
+	table.sort(expansionOptions, SortByPriority);
+
 	for optionIndex, option in ipairs(expansionOptions) do 
 		self.lastOption = self:GetExpansionOptionButton(optionIndex, option);
 	end 
@@ -107,6 +115,7 @@ function ChromieTimeExpansionButtonMixin:SetupButton(buttonInfo)
 	self.CompletedCheck:SetShown(buttonInfo.completed);
 	self.Background:SetDesaturated(disabled);
 	self:GetNormalTexture():SetDesaturated(disabled);
+	self.RecommendLabel:SetShown(not disabled and buttonInfo.recommended);
 
 	local nameColor = NORMAL_FONT_COLOR;
 	if (disabled) then 

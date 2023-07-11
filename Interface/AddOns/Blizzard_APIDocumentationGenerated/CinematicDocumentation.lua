@@ -17,6 +17,7 @@ local Cinematic =
 			Payload =
 			{
 				{ Name = "canBeCancelled", Type = "bool", Nilable = false },
+				{ Name = "forcedAspectRatio", Type = "CameraModeAspectRatio", Nilable = false },
 			},
 		},
 		{

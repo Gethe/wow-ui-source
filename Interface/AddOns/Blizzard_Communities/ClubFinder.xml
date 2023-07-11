@@ -32,7 +32,7 @@
 			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="130" y="25"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-80" y="15"/>
+					<Anchor point="BOTTOM" x="-80" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -318,7 +318,7 @@
 			<Frame parentKey="RecruitmentMessageFrame">
 				<Size x="335" y="80"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.LookingForDropDown" relativePoint="CENTER" x="0" y="-35"/>
+					<Anchor point="CENTER" x="0" y="-35"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -443,7 +443,7 @@
 					<EditBox parentKey="EditBox" inherits="InputBoxTemplate" numeric="true" letters="3" setAllPoints="true" autoFocus="false">
 						<Size x="135" y="18"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="RIGHT" x="200" y="0"/>
+							<Anchor point="RIGHT" x="200" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -476,7 +476,7 @@
 			<Button parentKey="Accept" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="ACCEPT">
 				<Size x="120" y="25"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-80" y="15"/>
+					<Anchor point="BOTTOM" x="-80" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -675,7 +675,7 @@
 			<Button parentKey="Apply" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="CLUB_FINDER_APPLY">
 				<Size x="120" y="25"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-80" y="15"/>
+					<Anchor point="BOTTOM" x="-80" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -1089,7 +1089,7 @@
 		<Frame parentKey="ClubSizeDropdown" name="ClubFinderSizeDropdown" hidden="true" mixin="ClubSizeDropdownMixin" inherits="UIDropDownMenuTemplate">
 			<Size x="100" y="10"/>
 			<Anchors>
-				<Anchor point="RIGHT" relativeKey="$parent.GuildFocusDropdown" relativePoint="RIGHT" x="0" y="0"/>
+				<Anchor point="RIGHT"/>
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
@@ -1105,7 +1105,7 @@
 		<Frame parentKey="SortByDropdown" name="ClubFinderSortByDropdown" hidden="true" mixin="ClubSortByDropdownMixin" inherits="UIDropDownMenuTemplate">
 			<Size x="100" y="15"/>
 			<Anchors>
-				<Anchor point="RIGHT" relativeKey="$parent.GuildFocusDropdown" relativePoint="RIGHT" x="50" y="0"/>
+				<Anchor point="RIGHT" x="50" y="0"/>
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
@@ -1124,7 +1124,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="Icon" atlas="UI-Frame-TankIcon" useAtlasSize="true"/>
+					<Texture parentKey="Icon" atlas="UI-LFG-RoleIcon-Tank" useAtlasSize="true"/>
 				</Layer>
 			</Layers>
 			<Frames>
@@ -1150,7 +1150,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="Icon" atlas="UI-Frame-HealerIcon" useAtlasSize="true"/>
+					<Texture parentKey="Icon" atlas="UI-LFG-RoleIcon-Healer" useAtlasSize="true"/>
 				</Layer>
 			</Layers>
 			<Frames>
@@ -1176,7 +1176,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<Texture parentKey="Icon" atlas="UI-Frame-DpsIcon" useAtlasSize="true"/>
+					<Texture parentKey="Icon" atlas="UI-LFG-RoleIcon-DPS" useAtlasSize="true"/>
 				</Layer>
 			</Layers>
 			<Frames>

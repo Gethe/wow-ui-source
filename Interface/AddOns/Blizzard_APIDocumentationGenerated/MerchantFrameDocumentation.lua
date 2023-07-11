@@ -21,6 +21,15 @@ local MerchantFrame =
 			},
 		},
 		{
+			Name = "GetNumJunkItems",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numJunkItems", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMerchantItemRefundable",
 			Type = "Function",
 

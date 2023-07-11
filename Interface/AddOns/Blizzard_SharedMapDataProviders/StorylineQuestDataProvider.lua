@@ -4,17 +4,48 @@ function StorylineQuestDataProviderMixin:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate("StorylineQuestPinTemplate");
 end
 
+local function GetStoryLinePinType(questLineInfo)
+	if questLineInfo then
+		if (questLineInfo.isDaily) then
+			return "Daily";
+		elseif (questLineInfo.isHidden) then
+			return "Trivial";
+		elseif QuestUtil.ShouldQuestIconsUseCampaignAppearance(questLineInfo.questID) then
+			return "Campaign";
+		elseif (questLineInfo.isImportant) then
+			return "Important";
+		elseif (questLineInfo.isLegendary) then
+			return "Legendary";
+		end
+	end
+
+	return "Normal";
+end
+
+function StorylineQuestDataProviderMixin:ShouldShowQuestLine(questLineInfo)
+	return questLineInfo and (not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or C_Minimap.IsTrackingHiddenQuests()));
+end
+
+function StorylineQuestDataProviderMixin:CheckAddPin(questLineInfo)
+	if self:ShouldShowQuestLine(questLineInfo) then
+		local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo, GetStoryLinePinType(questLineInfo));
+		pin:SetPosition(questLineInfo.x, questLineInfo.y);
+		pin:Show();
+	end
+end
+
 function StorylineQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 	local mapID = self:GetMap():GetMapID();
 	local mapInfo = C_Map.GetMapInfo(mapID);
 	if (mapInfo and MapUtil.ShouldMapTypeShowQuests(mapInfo.mapType)) then
 		for _, questLineInfo in pairs(C_QuestLine.GetAvailableQuestLines(mapID)) do
-			if (not C_QuestLog.IsOnQuest(questLineInfo.questID) and (not questLineInfo.isHidden or C_Minimap.IsTrackingHiddenQuests())) then
-				local pin = self:GetMap():AcquirePin("StorylineQuestPinTemplate", questLineInfo.questID);
-				pin:SetPosition(questLineInfo.x, questLineInfo.y);
-				pin:Show();
-			end
+			self:CheckAddPin(questLineInfo);
+		end
+
+		local forceVisibleQuests = C_QuestLine.GetForceVisibleQuests(mapID);
+		for index, questID in ipairs(forceVisibleQuests) do
+			self:CheckAddPin(C_QuestLine.GetQuestLineInfo(questID, mapID));
 		end
 	end
 end
@@ -59,24 +90,41 @@ function StorylineQuestPinMixin:OnLoad()
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_STORY_LINE");
 end
 
-function StorylineQuestPinMixin:OnAcquired(questID)
-	self.questID = questID;
+local storyLinePinData =
+{
+	Trivial = { level = 1, atlas = "TrivialQuests", },
+	Daily =	{ level = 2, atlas = "QuestDaily", },
+	Normal = { level = 3, atlas = "QuestNormal", },
+	Campaign = { level = 4, atlas = "Quest-Campaign-Available", },
+	Important = { level = 5, atlas = "Quest-Important-Available", },
+	Legendary = { level = 6, atlas = "UI-QuestPoiLegendary-QuestBang", },
+};
+
+local function GetStoryLinePinLevel(questType)
+	local info = storyLinePinData[questType];
+	return info and info.level or 0;
+end
+
+local function GetStoryLinePinAtlas(questType)
+	local info = storyLinePinData[questType];
+	return info and info.atlas or "QuestNormal";
+end
+
+function StorylineQuestPinMixin:OnAcquired(questLineInfo, questType)
+	self.questID = questLineInfo.questID;
+	self.questType = questType;
 	self.mapID = self:GetMap():GetMapID();
-	local questLineInfo = C_QuestLine.GetQuestLineInfo(self.questID, self.mapID);
-	if (questLineInfo.isDaily) then
-		self.Texture:SetAtlas("QuestDaily", true);
-	elseif (questLineInfo.isLegendary) then
-		self.Texture:SetAtlas("UI-QuestPoiLegendary-QuestBang", true);
-	elseif (questLineInfo.isHidden) then
-		self.Texture:SetAtlas("TrivialQuests", true);
-	elseif QuestUtil.ShouldQuestIconsUseCampaignAppearance(self.questID) then
-		self.Texture:SetAtlas("Quest-Campaign-Available", true);
-	else
-		self.Texture:SetAtlas("QuestNormal", true);
-	end
+
+	self:SetFrameLevelType(questType);
+
+	self.Texture:SetAtlas(GetStoryLinePinAtlas(questType));
 	self.Below:SetShown(questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Below);
 	self.Above:SetShown(questLineInfo.floorLocation == Enum.QuestLineFloorLocation.Above);
 	self.Texture:SetDesaturated(questLineInfo.floorLocation ~= Enum.QuestLineFloorLocation.Same);
+end
+
+function StorylineQuestPinMixin:SetFrameLevelType(questType)
+	self:UseFrameLevelType("PIN_FRAME_LEVEL_STORY_LINE", GetStoryLinePinLevel(questType));
 end
 
 function StorylineQuestPinMixin:OnMouseEnter()

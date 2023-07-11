@@ -766,6 +766,7 @@ local TradeSkillUI =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 			},
 
 			Returns =

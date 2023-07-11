@@ -1766,12 +1766,13 @@ function ClubFinderCommunitiesCardsBaseMixin:RefreshLayout()
 	end
 
 	local listSize = #self.CardList;
-	if (self.newRequest or not self.ScrollBox:HasDataProvider()) then
+	local dataProvider = self.ScrollBox:GetDataProvider();
+	if (not dataProvider or self.newRequest) then
 		self.newRequest = nil;
-		local dataProvider = CreateDataProvider(self.CardList);
+		dataProvider = CreateDataProvider(self.CardList);
 		self.ScrollBox:SetDataProvider(dataProvider);
 	else
-		self.ScrollBox:InsertElementDataTableRange(self.CardList, self.ScrollBox:GetDataProviderSize() + 1, listSize);
+		dataProvider:InsertTableRange(self.CardList, self.ScrollBox:GetDataProviderSize() + 1, listSize);
 	end
 
 	self.showingCards = listSize > 0;

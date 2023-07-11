@@ -3,18 +3,11 @@
 	<Script file="LFGFrame.lua"/>
 	<Button name="LFGRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="48" y="48"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
-					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<CheckButton parentKey="checkButton">
-				<Size x="24" y="24"/>
+			<CheckButton parentKey="checkButton" scale="0.7">
+				<Size x="30" y="29"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+					<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -29,11 +22,10 @@
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+				<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 			</CheckButton>
 
 			<Frame parentKey="lockedIndicator" hidden="true">
@@ -80,12 +72,100 @@
 				self.checkButton:UnlockHighlight();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+		<NormalTexture atlas="UI-LFG-RoleIcon-Generic"/>
 	</Button>
+	
+	<Button name="LFGRoleButtonWithShortageRewardTemplate" inherits="LFGRoleButtonTemplate" mixin="LFGRoleButtonWithShortageRewardMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="shortageBorder" atlas="UI-LFG-RoleIcon-Incentive" hidden="true" alpha="0.6" alphaMode="ADD">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconPulse" alphaMode="ADD" atlas="UI-LFG-RoleIcon-Generic" alpha="0">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EdgePulse" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="false" alpha="0">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPulse" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="RoleShortagePulseModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="incentiveIcon" hidden="true">
+				<Size x="14" y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSublevel="0">
+						<Texture parentKey="texture">
+							<Size x="14" y="14"/>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="11" y="11"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.texture"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="texture"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="border" atlas="bag-border" hidden="true">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.texture" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRoleIconIncentive_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RoleShortagePulseAnim" looping="REPEAT" setToFinalAlpha="true" mixin="LFGRoleShortagePulseAnimMixin">
+				<Alpha childKey="IconPulse" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconPulse" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="EdgePulse" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="EdgePulse" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnLoop method="OnLoop"/>
+					<OnStop method="OnStop"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+
 	<Button name="LFGRoleButtonWithBackgroundTemplate" inherits="LFGRoleButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-ICONS-ROLEBACKGROUNDS" alpha="0.3" parentKey="background">
+				<Texture name="$parentBackground" parentKey="background">
 					<Size x="80" y="80"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -97,10 +177,10 @@
 	<Button name="LFGRoleButtonWithBackgroundAndRewardTemplate" inherits="LFGRoleButtonWithBackgroundTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="$parentShortageBorder" file="Interface\Common\GoldRing" parentKey="shortageBorder" hidden="true">
+				<Texture name="$parentShortageBorder" atlas="UI-LFG-RoleIcon-Incentive" parentKey="shortageBorder" hidden="true" alpha="0.6" alphaMode="ADD">
 					<Size x="48" y="48"/>
 					<Anchors>
-						<Anchor point="CENTER" x="-1" y="1"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -109,20 +189,23 @@
 			<Frame name="$parentIncentiveIcon" parentKey="incentiveIcon" hidden="true">
 				<Size x="25" y="25"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture name="$parentTexture" parentKey="texture">
 							<Size x="17" y="17"/>
 							<Anchors>
-								<Anchor point="CENTER" x="-3" y="3"/>
+								<Anchor point="CENTER" x="-1" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="$parentBorder" setAllPoints="true" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING" parentKey="border">
-							<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
+						<Texture name="$parentBorder" atlas="bag-border" parentKey="border">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -211,20 +294,18 @@
 		</Scripts>
 	</Frame>
 	<Frame name="LFGDungeonReadyRewardTemplate" parentArray="Rewards" virtual="true">
-		<Size x="40" y="40"/>
+		<Size x="34" y="34"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTexture" parentKey="texture">
-					<Size x="30" y="30"/>
+					<Size x="27" y="27"/>
 					<Anchors>
-						<Anchor point="CENTER" x="-3" y="3"/>
+						<Anchor point="CENTER" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" setAllPoints="true" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING">
-					<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
-				</Texture>
+				<Texture name="$parentBorder" atlas="bag-border" useAtlasSize="false"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -236,13 +317,13 @@
 		<Size x="55" y="55"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="texture"/>
+				<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic" parentKey="texture"/>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentStatusIcon"  file="Interface\RaidFrame\ReadyCheck-Waiting" parentKey="statusIcon">
-					<Size x="30" y="30"/>
+			<Texture name="$parentStatusIcon" atlas="UI-LFG-PendingMark" parentKey="statusIcon" useAtlasSize="false">
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="4" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -278,10 +359,10 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-					<Button name="$parentCloseButton">
-						<Size x="32" y="32"/>
+					<Button name="$parentCloseButton" inherits="UIPanelHideButtonNoScripts">
+						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+							<Anchor point="TOPRIGHT" x="-1" y="-1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -289,9 +370,6 @@
 								StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
 					<Frame name="$parentIndividual">
 						<Size x="306" y="55"/>
@@ -363,14 +441,14 @@
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								self.ready.texture:SetTexCoord(0.5234375, 0.78125, 0, 0.2578125);
+								self.ready.texture:SetAtlas("UI-LFG-RoleIcon-Generic", TextureKitConstants.IgnoreAtlasSize);
 								self.ready.statusIcon:Hide();
 							</OnLoad>
 						</Scripts>
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true" inherits="BackdropTemplate">
+			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
 				<Size x="306" y="193"/>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -389,19 +467,11 @@
 								<Anchor point="TOP" x="0" y="-15"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentFiligree" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="filigree">
-							<Size x="292" y="54"/>
+						<Texture name="$parentBottomArt" atlas="UI-LFG-DividerLine" parentKey="bottomArt">
+							<Size x="287" y="4"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="7" y="-3"/>
+								<Anchor point="TOP" relativeKey="$parent.background" relativePoint="BOTTOM" y="1"/>
 							</Anchors>
-							<TexCoords left="0.02734" right="0.59765" top="0.578125" bottom="1.0"/>
-						</Texture>
-						<Texture name="$parentBottomArt" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="bottomArt">
-							<Size x="287" y="72"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="55"/>
-							</Anchors>
-							<TexCoords left="0.0" right="0.5605" top="0.0" bottom="0.5625"/>
 						</Texture>
 						<FontString name="$parentYourRoleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
 							<Anchors>
@@ -416,11 +486,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-					<Button name="$parentCloseButton">
-						<Size x="32" y="32"/>
+					<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+					<Button name="$parentCloseButton" inherits="UIPanelHideButtonNoScripts">
+						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+							<Anchor point="TOPRIGHT" x="-1" y="-1"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -429,9 +499,6 @@
 								StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton">
 						<Size x="115" y="22"/>
@@ -465,15 +532,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true"/>
+								<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic"/>
 							</Layer>
 							<Layer level="OVERLAY">
-								<Texture name="$parentLeaderIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+								<Texture name="$parentLeaderIcon" atlas="UI-LFG-RoleIcon-Leader-Micro">
 									<Size x="19" y="19"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="0" y="-4"/>
 									</Anchors>
-									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -539,7 +605,7 @@
 					<Frame name="$parentRewardsFrame">
 						<Size x="72" y="40"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="BOTTOMRIGHT" x="19" y="15"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="BOTTOMRIGHT" x="19" y="14"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -586,7 +652,7 @@
 		<Size x="19" y="19"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" parentKey="texture"/>
+				<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic" parentKey="texture"/>
 			</Layer>
 		</Layers>
 		<Scripts>

@@ -167,6 +167,7 @@ end
 
 function EditModeManagerFrameMixin:OnUpdate()
 	self:InvokeOnAnyEditModeSystemAnchorChanged();
+	self:RefreshSnapPreviewLines();
 end
 
 local function callOnEditModeEnter(index, systemFrame)
@@ -353,6 +354,19 @@ function EditModeManagerFrameMixin:UpdateSystemAnchorInfo(systemFrame)
 
 		local point, relativeTo, relativePoint, offsetX, offsetY = systemFrame:GetPoint(1);
 
+		-- If we don't have a relativeTo then we are gonna set our relativeTo to be UIParent
+		if not relativeTo then
+			relativeTo = UIParent;
+
+			-- When setting our relativeTo to UIParent it's possible for our y position to change slightly depending on UIParent's size from stuff like debug menus
+			-- To account for this set out position and then track the change in our top and adjust for that
+			local originalSystemFrameTop = systemFrame:GetTop();
+			systemFrame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+
+			offsetY = offsetY + originalSystemFrameTop - systemFrame:GetTop();
+			systemFrame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+		end
+
 		-- Undo offset changes due to scale so we're always working as if we're at 1.0 scale
 		local frameScale = systemFrame:GetScale();
 		offsetX = offsetX * frameScale;
@@ -402,7 +416,7 @@ function EditModeManagerFrameMixin:OnSystemPositionChange(systemFrame)
 		EditModeSystemSettingsDialog:UpdateDialog(systemFrame);
 	end
 
-	EditModeManagerFrame:OnEditModeSystemAnchorChanged();
+	self:OnEditModeSystemAnchorChanged();
 end
 
 function EditModeManagerFrameMixin:MirrorSetting(system, systemIndex, setting, value)
@@ -472,6 +486,21 @@ function EditModeManagerFrameMixin:ArePartyFramesForcedShown()
 	return self:IsEditModeActive() and self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames);
 end
 
+function EditModeManagerFrameMixin:GetNumArenaFramesForcedShown()
+	if self:IsEditModeActive() and self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowArenaFrames) then
+		local viewArenaSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Arena, Enum.EditModeUnitFrameSetting.ViewArenaSize);
+		if viewArenaSize == Enum.ViewArenaSize.Two then
+			return 2;
+		elseif viewArenaSize == Enum.ViewArenaSize.Three then
+			return 3;
+		else
+			return 5;
+		end
+	end
+
+	return 0;
+end
+
 function EditModeManagerFrameMixin:UseRaidStylePartyFrames()
 	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 end
@@ -487,11 +516,11 @@ function EditModeManagerFrameMixin:UpdateRaidContainerFlow()
 	if raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsVertical then
 		orientation = "vertical";
 		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-		maxPerLine = 1;
+		maxPerLine = 5;
 	elseif raidGroupDisplayType == Enum.RaidGroupDisplayType.SeparateGroupsHorizontal then
 		orientation = "horizontal";
 		CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-		maxPerLine = 1;
+		maxPerLine = 5;
 	elseif raidGroupDisplayType == Enum.RaidGroupDisplayType.CombineGroupsVertical then
 		orientation = "vertical";
 		maxPerLine = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RowSize);
@@ -545,28 +574,27 @@ function EditModeManagerFrameMixin:GetNumRaidMembersForcedShown()
 	end
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameWidth(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+function EditModeManagerFrameMixin:GetRaidFrameWidth(systemIndex)
 	local raidFrameWidth = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameWidth);
 	return (raidFrameWidth and raidFrameWidth > 0) and raidFrameWidth or NATIVE_UNIT_FRAME_WIDTH;
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameHeight(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+function EditModeManagerFrameMixin:GetRaidFrameHeight(systemIndex)
 	local raidFrameHeight = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameHeight);
 	return (raidFrameHeight and raidFrameHeight > 0) and raidFrameHeight or NATIVE_UNIT_FRAME_HEIGHT;
 end
 
-function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(forParty)
-	if forParty then
-		return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Party, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
-	else
-		return self:DoesSettingValueEqual(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Raid, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType, Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
+function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(systemIndex)
+	if systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+		return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.UseHorizontalGroups);
+	elseif systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+		return self:DoesSettingValueEqual(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.RaidGroupDisplayType, Enum.RaidGroupDisplayType.SeparateGroupsHorizontal);
 	end
+
+	return false;
 end
 
-function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(forParty)
-	local systemIndex = forParty and Enum.EditModeUnitFrameSystemIndices.Party or Enum.EditModeUnitFrameSystemIndices.Raid;
+function EditModeManagerFrameMixin:ShouldRaidFrameDisplayBorder(systemIndex)
 	return self:GetSettingValueBool(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.DisplayBorder);
 end
 
@@ -991,6 +1019,10 @@ end
 function EditModeManagerFrameMixin:SetEnableSnap(enableSnap, isUserInput)
 	self.snapEnabled = enableSnap;
 
+	if not self.snapEnabled then
+		self:HideSnapPreviewLines();
+	end
+
 	if isUserInput then
 		self:OnAccountSettingChanged(Enum.EditModeAccountSetting.EnableSnap, enableSnap);
 	else
@@ -1000,6 +1032,61 @@ end
 
 function EditModeManagerFrameMixin:IsSnapEnabled()
 	return self.snapEnabled;
+end
+
+function EditModeManagerFrameMixin:SetSnapPreviewFrame(snapPreviewFrame)
+	self.snapPreviewFrame = snapPreviewFrame;
+end
+
+function EditModeManagerFrameMixin:ClearSnapPreviewFrame()
+	self.snapPreviewFrame = nil;
+	self:HideSnapPreviewLines();
+end
+
+function EditModeManagerFrameMixin:ShouldShowSnapPreviewLines()
+	return self:IsSnapEnabled() and self.snapPreviewFrame;
+end
+
+local function RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor)
+	if magneticFrameInfo and lineAnchor then
+		line:Setup(magneticFrameInfo, lineAnchor);
+	else
+		line:Hide();
+	end
+end
+
+function EditModeManagerFrameMixin:RefreshSnapPreviewLines()
+	if not self:ShouldShowSnapPreviewLines() then
+		return;
+	end
+
+	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo = EditModeMagnetismManager:GetMagneticFrameInfo(self.snapPreviewFrame);
+
+	-- Setup first preview line using primary MagneticFrameInfo and first line anchor we get from it
+	local line = self.MagnetismPreviewLinesContainer.lines[1];
+	local lineAnchors = primaryMagneticFrameInfo and line:GetLineAnchors(primaryMagneticFrameInfo) or {};
+	local lineAnchor = lineAnchors[1];
+	RefreshSnapPreviewLine(line, primaryMagneticFrameInfo, lineAnchor);
+
+	-- Setup second preview line using either primary or secondary MagneticFrameInfo
+	-- If our primary MagneticFrameInfo has a second line anchor then use that
+	-- Otherwise, if possible, get the line anchor using the secondary MagneticFrameInfo
+	line = self.MagnetismPreviewLinesContainer.lines[2];
+	local magneticFrameInfo = primaryMagneticFrameInfo;
+	lineAnchor = lineAnchors[2];
+	if not lineAnchor and secondaryMagneticFrameInfo then
+		lineAnchors = line:GetLineAnchors(secondaryMagneticFrameInfo);
+
+		magneticFrameInfo = secondaryMagneticFrameInfo;
+		lineAnchor = lineAnchors[1];
+	end
+	RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor);
+end
+
+function EditModeManagerFrameMixin:HideSnapPreviewLines()
+	for _, line in ipairs(self.MagnetismPreviewLinesContainer.lines) do
+		line:Hide();
+	end
 end
 
 function EditModeManagerFrameMixin:SetEnableAdvancedOptions(enableAdvancedOptions, isUserInput)
@@ -1389,6 +1476,8 @@ function EditModeGridMixin:OnLoad()
 	);
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	hooksecurefunc("UpdateUIParentPosition", function() if self:IsShown() then self:UpdateGrid() end end);
 end
 
 function EditModeGridMixin:OnHide()
@@ -1599,6 +1688,24 @@ function EditModeAccountSettingsMixin:OnLoad()
 	self.settingsCheckButtons.PetFrame = self.SettingsContainer.PetFrame;
 	self.settingsCheckButtons.PetFrame:SetCallback(onPetFrameCheckboxChecked);
 
+	local function onTimerBarsCheckboxChecked(isChecked, isUserInput)
+		self:SetTimerBarsShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.TimerBars = self.SettingsContainer.TimerBars;
+	self.settingsCheckButtons.TimerBars:SetCallback(onTimerBarsCheckboxChecked);
+
+	local function onVehicleSeatIndicatorCheckboxChecked(isChecked, isUserInput)
+		self:SetVehicleSeatIndicatorShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.VehicleSeatIndicator = self.SettingsContainer.VehicleSeatIndicator;
+	self.settingsCheckButtons.VehicleSeatIndicator:SetCallback(onVehicleSeatIndicatorCheckboxChecked);
+
+	local function onArchaeologyBarCheckboxChecked(isChecked, isUserInput)
+		self:SetArchaeologyBarShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.ArchaeologyBar = self.SettingsContainer.ArchaeologyBar;
+	self.settingsCheckButtons.ArchaeologyBar:SetCallback(onArchaeologyBarCheckboxChecked);
+
 	self:LayoutSettings();
 end
 
@@ -1632,6 +1739,9 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:SetupDurabilityFrame();
 	self:SetupPetFrame();
 	self:SetupEncounterBar();
+	self:SetupTimerBars();
+	self:SetupVehicleSeatIndicator();
+	self:SetupArchaeologyBar();
 
 	self:RefreshTargetAndFocus();
 	self:RefreshPartyFrames();
@@ -1649,12 +1759,16 @@ function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self:RefreshStatusTrackingBar2();
 	self:RefreshDurabilityFrame();
 	self:RefreshPetFrame();
+	self:RefreshTimerBars();
+	self:RefreshVehicleSeatIndicator();
+	self:RefreshArchaeologyBar();
 end
 
 function EditModeAccountSettingsMixin:OnEditModeExit()
 	self:ResetTargetAndFocus();
 	self:ResetPartyFrames();
 	self:ResetRaidFrames();
+	self:ResetArenaFrames();
 	self:ResetHudTooltip();
 
 	self:ResetActionBarShown(StanceBar);
@@ -1754,12 +1868,12 @@ function EditModeAccountSettingsMixin:RefreshPartyFrames()
 		PartyFrame:ClearHighlight();
 	end
 
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
 	UpdateRaidAndPartyFrames();
 end
 
 function EditModeAccountSettingsMixin:ResetPartyFrames()
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
 	UpdateRaidAndPartyFrames();
 end
 
@@ -2026,15 +2140,11 @@ end
 
 function EditModeAccountSettingsMixin:RefreshArenaFrames()
 	local showArenaFrames = self.settingsCheckButtons.ArenaFrames:IsControlChecked();
-	if showArenaFrames then
-		ArenaEnemyFramesContainer:SetIsInEditMode(true);
-		ArenaEnemyFramesContainer:HighlightSystem();
-	else
-		ArenaEnemyFramesContainer:SetIsInEditMode(false);
-		ArenaEnemyFramesContainer:ClearHighlight();
-	end
+	CompactArenaFrame:SetIsInEditMode(showArenaFrames);
+end
 
-	ArenaEnemyFramesContainer:Update();
+function EditModeAccountSettingsMixin:ResetArenaFrames()
+	CompactArenaFrame:SetIsInEditMode(false);
 end
 
 function EditModeAccountSettingsMixin:SetLootFrameShown(shown, isUserInput)
@@ -2167,6 +2277,84 @@ function EditModeAccountSettingsMixin:RefreshPetFrame()
 	end
 
 	PetFrame:UpdateShownState();
+end
+
+function EditModeAccountSettingsMixin:SetupTimerBars()
+	-- If the frame is already showing then set control checked
+	if MirrorTimerContainer:HasAnyTimersShowing() then
+		self.settingsCheckButtons.TimerBars:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetTimerBarsShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowTimerBars, shown);
+		self:RefreshTimerBars();
+	else
+		self.settingsCheckButtons.TimerBars:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshTimerBars()
+	local showTimerBars = self.settingsCheckButtons.TimerBars:IsControlChecked();
+	MirrorTimerContainer:SetIsInEditMode(showTimerBars);
+	if showTimerBars then
+		MirrorTimerContainer:HighlightSystem();
+	else
+		MirrorTimerContainer:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupVehicleSeatIndicator()
+	-- If the frame is already showing then set control checked
+	if VehicleSeatIndicator:IsShown() then
+		self.settingsCheckButtons.VehicleSeatIndicator:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetVehicleSeatIndicatorShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowVehicleSeatIndicator, shown);
+		self:RefreshVehicleSeatIndicator();
+	else
+		self.settingsCheckButtons.VehicleSeatIndicator:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshVehicleSeatIndicator()
+	local showVehicleSeatIndicator = self.settingsCheckButtons.VehicleSeatIndicator:IsControlChecked();
+	VehicleSeatIndicator:SetIsInEditMode(showVehicleSeatIndicator);
+	if showVehicleSeatIndicator then
+		VehicleSeatIndicator:HighlightSystem();
+	else
+		VehicleSeatIndicator:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetupArchaeologyBar()
+	-- If the frame is already showing then set control checked
+	if ArcheologyDigsiteProgressBar:IsShown() then
+		self.settingsCheckButtons.ArchaeologyBar:SetControlChecked(true);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetArchaeologyBarShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowArchaeologyBar, shown);
+		self:RefreshArchaeologyBar();
+	else
+		self.settingsCheckButtons.ArchaeologyBar:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshArchaeologyBar()
+	local showArchaeologyBar = self.settingsCheckButtons.ArchaeologyBar:IsControlChecked();
+	ArcheologyDigsiteProgressBar:SetIsInEditMode(showArchaeologyBar);
+	if showArchaeologyBar then
+		ArcheologyDigsiteProgressBar:HighlightSystem();
+	else
+		ArcheologyDigsiteProgressBar:ClearHighlight();
+	end
 end
 
 function EditModeAccountSettingsMixin:SetExpandedState(expanded, isUserInput)

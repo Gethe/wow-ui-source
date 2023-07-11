@@ -9,6 +9,7 @@
 	<Include file="Blizzard_SettingsList.xml"/>
 	<Script file="Blizzard_Setting.lua"/>
 	<Include file="Blizzard_SettingControls.xml"/>
+	<Include file="Blizzard_SettingsPanelTemplates.xml"/>
 	<Script file="Blizzard_SettingsPanel.lua"/>
 	<Include file="Blizzard_SettingsPanel.xml"/>
 	<Include file="Blizzard_Keybindings.xml"/>

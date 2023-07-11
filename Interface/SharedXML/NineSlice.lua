@@ -205,6 +205,36 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 	end
 end
 
+do 
+	local function ForEachPiece(fn)
+		return function(container)
+			for pieceIndex, setup in ipairs(nineSliceSetup) do
+				local pieceName = setup.pieceName;
+				local piece, pieceAlreadyExisted = GetNineSlicePiece(container, pieceName);
+				if piece then
+					fn(piece);
+				end
+			end
+		end
+	end
+
+	NineSliceUtil.HideLayout = ForEachPiece(function(piece)
+		piece:Hide();
+	end);
+
+	NineSliceUtil.ShowLayout = ForEachPiece(function(piece)
+		piece:Show();
+	end);
+
+	function NineSliceUtil.SetLayoutShown(container, show)
+		if show then
+			NineSliceUtil.ShowLayout(container);
+		else
+			NineSliceUtil.HideLayout(container);
+		end
+	end
+end
+
 function NineSliceUtil.DisableSharpening(container)
 	for pieceIndex, setup in ipairs(nineSliceSetup) do
 		local piece = GetNineSlicePiece(container, setup.pieceName);

@@ -5,13 +5,6 @@
 	<Button name="MonthlyActivitiesButtonTemplate" mixin="MonthlyActivitiesButtonMixin" hidden="true" virtual="true">
 		<Size x="521" y="78"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="ActiveBg" atlas="activities-incomplete-active" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Coin" alpha="1" alphaMode="ADD" atlas="activities-coindecal" useAtlasSize="true">
 					<Anchors>
@@ -35,7 +28,17 @@
 				</Texture>
 				<Texture parentKey="Ribbon" atlas="activities-ribbon" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT" x="-20" y="5"/>
+						<Anchor point="TOPRIGHT" x="-22" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RibbonStacked" hidden="true" atlas="activities-ribbon-stacked" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HeaderCollapseIndicator" hidden="true" atlas="campaign_headericon_closed" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RibbonStacked" relativePoint="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Checkmark" atlas="activities-icon-checkmark" useAtlasSize="true">
@@ -44,7 +47,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontBlackMedium" justifyV="MIDDLE" justifyH="LEFT">
-					<Size x="380" y="50"/>
+					<Size x="370" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT" x="36" y="0"/>
 					</Anchors>
@@ -89,7 +92,49 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	
+
+	<Button name="MonthlySupersedeActivitiesButtonTemplate" mixin="MonthlySupersedeActivitiesButtonMixin" hidden="true" virtual="true">
+		<Size x="521" y="48"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" atlas="activities-icon-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="7"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontBlackMedium" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="360" y="48"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Points" inherits="GameFontHighlightMed2" justifyV="MIDDLE" justifyH="CENTER" text="100">
+					<Anchors>
+						<Anchor point="RIGHT" x="-40" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
+					<Size x="98" y="98"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Checkmark" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="activities-incomplete"/>
+		<HighlightTexture atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="MonthlyActivitiesThresholdTemplate" mixin="MonthlyActivitiesThresholdMixin" useParentLevel="true" virtual="true">
 		<Size x="40" y="40"/>
 		<Layers>
@@ -300,8 +345,8 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="BarFillGlow" atlas="activities-bar-fill-glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.BarFill" x="0" y="0"/>
-								<Anchor point="RIGHT" relativeKey="$parent.BarFill" x="0" y="0"/>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -325,13 +370,13 @@
 								<FontString parentKey="Points" inherits="GameFontHighlight" text="MONTHLY_ACTIVITIES_POINTS" justifyV="MIDDLE">
 									<Size x="0" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.$parent.barBackground" x="15" y="0"/>
+										<Anchor point="LEFT" x="15" y="0"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="ProgressText" inherits="GameFontHighlight" text="650 / 1,000" justifyV="MIDDLE">
 									<Size x="0" y="0"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.$parent.barBackground" x="-30" y="0"/>
+										<Anchor point="RIGHT" x="-30" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -485,6 +530,7 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>

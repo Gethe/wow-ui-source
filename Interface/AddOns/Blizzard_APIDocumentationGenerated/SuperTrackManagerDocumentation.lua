@@ -7,12 +7,26 @@ local SuperTrackManager =
 	Functions =
 	{
 		{
+			Name = "ClearSuperTrackedContent",
+			Type = "Function",
+		},
+		{
 			Name = "GetHighestPrioritySuperTrackingType",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "type", Type = "SuperTrackingType", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSuperTrackedContent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "trackableType", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "trackableID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -26,6 +40,15 @@ local SuperTrackManager =
 		},
 		{
 			Name = "IsSuperTrackingAnything",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSuperTracking", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSuperTrackingContent",
 			Type = "Function",
 
 			Returns =
@@ -58,6 +81,16 @@ local SuperTrackManager =
 			Returns =
 			{
 				{ Name = "isSuperTracking", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSuperTrackedContent",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "trackableType", Type = "ContentTrackingType", Nilable = false },
+				{ Name = "trackableID", Type = "number", Nilable = false },
 			},
 		},
 		{

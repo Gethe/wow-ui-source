@@ -1065,6 +1065,16 @@ local AuctionHouse =
 			LiteralName = "AUCTION_HOUSE_FAVORITES_UPDATED",
 		},
 		{
+			Name = "AuctionHouseItemDeliveryDelayUpdate",
+			Type = "Event",
+			LiteralName = "AUCTION_HOUSE_ITEM_DELIVERY_DELAY_UPDATE",
+			Payload =
+			{
+				{ Name = "purchasedItemDeliveryDelay", Type = "number", Nilable = false },
+				{ Name = "cancelledItemDeliveryDelay", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AuctionHouseNewBidReceived",
 			Type = "Event",
 			LiteralName = "AUCTION_HOUSE_NEW_BID_RECEIVED",
@@ -1100,15 +1110,6 @@ local AuctionHouse =
 			Payload =
 			{
 				{ Name = "auctionID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "AuctionHousePurchaseDeliveryDelayUpdate",
-			Type = "Event",
-			LiteralName = "AUCTION_HOUSE_PURCHASE_DELIVERY_DELAY_UPDATE",
-			Payload =
-			{
-				{ Name = "purchasedItemDeliveryDelay", Type = "number", Nilable = false },
 			},
 		},
 		{

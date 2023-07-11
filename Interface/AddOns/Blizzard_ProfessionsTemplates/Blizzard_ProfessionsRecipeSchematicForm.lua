@@ -350,7 +350,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 	self.currentRecipeInfo = recipeInfo;
 
-	local mimimized = Professions.IsCraftingMinimized();
+	local mimimized = ProfessionsUtil.IsCraftingMinimized();
 	if self.NineSlice then
 		self.NineSlice:SetShown(not self.isInspection and not mimimized);
 	end
@@ -597,7 +597,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 
 		self.RecipeSourceButton:SetScript("OnEnter", function()
-			GameTooltip:SetOwner(self.RecipeSourceButton, "ANCHOR_RIGHT");
+			GameTooltip:SetOwner(self.RecipeSourceButton.Text, "ANCHOR_RIGHT");
 			GameTooltip:SetCustomWordWrapMinWidth(350);
 			GameTooltip_AddHighlightLine(GameTooltip, sourceText);
 			GameTooltip:Show();
@@ -816,8 +816,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.recraftSlot.OutputSlot:SetScript("OnClick", function()
 			local itemGUID = self.transaction:GetRecraftAllocation();
 			if itemGUID then
-				GameTooltip:SetOwner(self.recraftSlot.OutputSlot, "ANCHOR_RIGHT");
-
 				local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 				local optionalReagents = self.transaction:CreateOptionalCraftingReagentInfoTbl();
 				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeSchematic.recipeID, reagents, itemGUID);
@@ -836,7 +834,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
 		local reagentType = reagentSlotSchematic.reagentType;
 		-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
-		local isModifyingRequiredSlot = Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+		local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 		local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
 		
 		local slots = self.reagentSlots[sectionType];
@@ -1032,6 +1030,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							flyout.OnElementEnabledImplementation = function(button, elementData)
 								local item = elementData.item;
 								if not self.transaction:AreAllRequirementsAllocated(item) then
+									return false;
+								end
+								
+								local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
+								if self.transaction:HasAllocatedReagent(reagent) then
 									return false;
 								end
 
@@ -1260,12 +1263,17 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 						tooltip:Show();
 					end
 					
+					local function IsEnchantTargetValid(elementData)
+						local reagents = self.transaction:CreateCraftingReagentInfoTbl();
+						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID(), reagents);
+					end
+
 					flyout.OnElementEnabledImplementation = function(button, elementData)
-						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID());
+						return IsEnchantTargetValid(elementData);
 					end
 					
 					flyout.GetElementValidImplementation = function(button, elementData)
-						return C_TradeSkillUI.IsEnchantTargetValid(recipeID, elementData.item:GetItemGUID());
+						return IsEnchantTargetValid(elementData);
 					end
 
 					local canModifyFilter = false;
@@ -1296,11 +1304,16 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end);
 	end
 
-	local basicSlots;
+	local basicSlots = {};
 	if isSalvage then
-		basicSlots = {self.salvageSlot};
-	else
-		basicSlots = self:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
+		table.insert(basicSlots, self.salvageSlot);
+	end
+
+	do
+		local addBasics = self:GetSlotsByReagentType(Enum.CraftingReagentType.Basic);
+		if addBasics then
+			tAppendAll(basicSlots, addBasics);
+		end
 	end
 
 	local optionalSlots;
@@ -1312,7 +1325,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.OptionalReagents:SetText(PROFESSIONS_OPTIONAL_REAGENT_CONTAINER_LABEL);
 	end
 
-	if basicSlots and #basicSlots > 0 then
+	if #basicSlots > 0 then
 		self.Reagents:Show();
 
 		self.Reagents:ClearAllPoints();
@@ -1433,7 +1446,7 @@ function ProfessionsRecipeSchematicFormMixin:ClearRecipeDescription()
 end
 
 function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
-	if not Professions.IsCraftingMinimized() and not self.transaction:IsRecraft() then
+	if not ProfessionsUtil.IsCraftingMinimized() and not self.transaction:IsRecraft() and not self.isRecraftOverride then
 		local spell = Spell:CreateFromSpellID(self.currentRecipeInfo.recipeID);
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 		local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());

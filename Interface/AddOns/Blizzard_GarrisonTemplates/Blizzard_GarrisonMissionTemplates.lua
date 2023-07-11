@@ -1807,7 +1807,7 @@ end
 function GarrisonMissionComplete:AnimFollowerXP(followerID, xpAward, oldXP, oldLevel, oldQuality)
 	local missionList = self.completeMissions;
 	local missionIndex = self.currentIndex;
-	local mission = missionList[missionIndex];
+	local mission = missionList and missionList[missionIndex];
 
 	if (not mission) then
 		return;

@@ -170,8 +170,6 @@ function PerksProgramProductsFrameMixin:OnUpdate(deltaTime)
 end
 
 function PerksProgramProductsFrameMixin:OnProductSelectedAfterModel(data)
-	local showDetailsFrame = not (data.perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy);
-	self.PerksProgramProductDetailsContainerFrame:SetShown(showDetailsFrame);
 	C_PerksProgram.ItemSelectedTelemetry(data.perksVendorItemID);
 end
 
@@ -232,6 +230,7 @@ end
 function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 	local newData = {};
 	local modelSceneID = displayInfo.overrideModelSceneID or displayInfo.defaultModelSceneID;
+	local creatureDisplayInfoID = displayInfo.creatureDisplayInfoID;
 	if modelSceneID then
 		local _, cameraIDs, actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
 		
@@ -308,7 +307,8 @@ function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 	end
 	newData.defaultModelSceneID = displayInfo.defaultModelSceneID;
 	newData.overrideModelSceneID = displayInfo.overrideModelSceneID;
-	newData.selectedModelScene = modelSceneID;	
+	newData.selectedModelSceneID = modelSceneID;
+	newData.creatureDisplayInfoID = creatureDisplayInfoID;
 	return newData;
 end
 
@@ -481,9 +481,9 @@ end
 
 local RED_TEXT_CURRENCY_THRESHOLD = 0;
 function PerksProgramCurrencyFrameMixin:UpdateCurrencyAmount()
-	local currencyAmount = C_PerksProgram.GetCurrencyAmount();
-	local color = (currencyAmount >= RED_TEXT_CURRENCY_THRESHOLD) and WHITE_FONT_COLOR or RED_FONT_COLOR;
-	local text = color:WrapTextInColorCode(currencyAmount);
+	self.currencyAmount = C_PerksProgram.GetCurrencyAmount();
+	local color = (self.currencyAmount >= RED_TEXT_CURRENCY_THRESHOLD) and WHITE_FONT_COLOR or RED_FONT_COLOR;
+	local text = color:WrapTextInColorCode(self.currencyAmount);
 	self.Text:SetText(text);
 end
 
@@ -544,14 +544,18 @@ function PerksProgramCurrencyFrameMixin:OnEnter()
 	self.tooltip:SetOwner(self.Icon, "ANCHOR_BOTTOMRIGHT", 0, 0);
 	self.tooltip:SetCurrencyByID(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 
+	if self.currencyAmount < 0 then
+		GameTooltip_AddNormalLine(self.tooltip, PERKS_PROGRAM_NEGATIVE_TENDER);
+	end
+
 	if HasTenderToRetrieve(self.pendingRewards) then
 		GameTooltip_AddBlankLineToTooltip(self.tooltip);
-		self.tooltip:AddLine(PERKS_PROGRAM_UNCOLLECTED_TENDER);
+		GameTooltip_AddNormalLine(self.tooltip, PERKS_PROGRAM_UNCOLLECTED_TENDER);
 	end
 
 	if PerksActivitiesHasUnearned() then
 		GameTooltip_AddBlankLineToTooltip(self.tooltip);
-		self.tooltip:AddLine(PERKS_PROGRAM_ACTIVITIES_UNEARNED);
+		GameTooltip_AddNormalLine(self.tooltip, PERKS_PROGRAM_ACTIVITIES_UNEARNED);
 	end
 	self.tooltip:Show();
 end

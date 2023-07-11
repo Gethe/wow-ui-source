@@ -295,6 +295,7 @@ function ScenarioObjectiveStageBlock_OnEnter(self)
 		GameTooltip_AddNormalLine(GameTooltip, description);
 		GameTooltip:Show();
 	end
+	EventRegistry:TriggerEvent("Scenario.ObjectTracker_OnEnter", GameTooltip);
 end
 
 -- *****************************************************************************************************
@@ -1121,6 +1122,23 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	end
 
 	self:EndLayout();
+
+	if isInScenario then
+		-- IMPORTANT: 
+		--	If isInScenario is true then TopScenarioWidgetContainerBlock and BottomScenarioWidgetContainerBlock were added above.
+		--	In this case we need to ensure that UpdateWidgetLayout is called once on each widget container AFTER EndLayout is called
+		--	The reason for this is that depending on the widget data source setup UpdateWidgetLayout may have been called BEFORE the player was actually in a scenario.
+		--	If that is the case then the size of the widget container (and the block) will be incorrect
+		if not TopScenarioWidgetContainerBlock.widgetsInitialized then
+			TopScenarioWidgetContainerBlock.WidgetContainer:UpdateWidgetLayout();
+			TopScenarioWidgetContainerBlock.widgetsInitialized = true;
+		end
+
+		if not BottomScenarioWidgetContainerBlock.widgetsInitialized then
+			BottomScenarioWidgetContainerBlock.WidgetContainer:UpdateWidgetLayout();
+			BottomScenarioWidgetContainerBlock.widgetsInitialized = true;
+		end
+	end
 
 	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_MOVED ) then
 		if ( shouldShowMawBuffs ) then

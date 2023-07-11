@@ -165,6 +165,8 @@ function ScrollingMessageFrameMixin:SetScrollOffset(offset)
 		if self.onScrollChangedCallback then
 			self.onScrollChangedCallback(self, self.scrollOffset);
 		end
+	elseif newOffset == 0 then
+		self:MarkDisplayDirty();
 	end
 end
 
@@ -292,6 +294,7 @@ function ScrollingMessageFrameMixin:OnPreLoad()
 	self.scrollOffset = 0;
 	self.overrideFadeTimestamp = 0;
 	self.textIsCopyable = false;
+	self.oldestFadingLineTimestamp = math.huge;
 
 	self.visibleLines = {};
 	self.onDisplayRefreshedCallbacks = {};
@@ -549,6 +552,8 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 	local canFade = self:CanEffectivelyFade();
 	local now = GetTime();
 
+	local oldestFadingLineTimestamp = math.huge;
+
 	local fontR, fontG, fontB = self:GetTextColor();
 	for lineIndex, visibleLine in ipairs(self.visibleLines) do
 		local messageIndex = lineIndex + self.scrollOffset;
@@ -558,9 +563,14 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 			visibleLine:SetText(messageInfo.message);
 			visibleLine:SetTextColor(messageInfo.r or fontR, messageInfo.g or fontG, messageInfo.b or fontB);
 			if canFade then
-				local alpha = self:CalculateLineAlphaValueFromTimestamp(now, math.max(messageInfo.timestamp, self.overrideFadeTimestamp));
+				local lineTimestamp = math.max(messageInfo.timestamp, self.overrideFadeTimestamp);
+				local alpha = self:CalculateLineAlphaValueFromTimestamp(now, lineTimestamp);
 				visibleLine:SetAlpha(alpha);
 				visibleLine:SetShown(alpha > 0);
+				
+				if alpha > 0 then
+					oldestFadingLineTimestamp = math.min(oldestFadingLineTimestamp, lineTimestamp);
+				end
 			else
 				visibleLine:SetAlpha(1);
 				visibleLine:Show();
@@ -570,6 +580,8 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 			visibleLine:Hide();
 		end
 	end
+
+	self.oldestFadingLineTimestamp = oldestFadingLineTimestamp;
 
 	self:CallOnDisplayRefreshed();
 end
@@ -610,7 +622,9 @@ function ScrollingMessageFrameMixin:MarkDisplayDirty()
 end
 
 function ScrollingMessageFrameMixin:ResetAllFadeTimes()
-	self.overrideFadeTimestamp = GetTime();
+	local now = GetTime();
+	self.overrideFadeTimestamp = now;
+	self.oldestFadingLineTimestamp = now;
 end
 
 function ScrollingMessageFrameMixin:AcquireFontString()
@@ -668,13 +682,32 @@ function ScrollingMessageFrameMixin:UpdateFading()
 	end
 
 	local now = GetTime();
+
+	local oldestFadingLineBeginsFading = self.oldestFadingLineTimestamp + self:GetTimeVisible();
+
+	-- Skip updating every line unless lines are actively fading out because it's an expensive performance cost.
+	-- If now is before when the oldest visible line begins fading, then fading is not occuring.
+	-- If all lines are already faded out, then oldestFadingLineBeginsFading will be set to math.huge (infinity).
+	if now < oldestFadingLineBeginsFading then
+		return;
+	end
+
+	local oldestFadingLineTimestamp = math.huge;
+
 	for lineIndex, visibleLine in ipairs(self.visibleLines) do
 		if visibleLine.messageInfo then
-			local alpha = self:CalculateLineAlphaValueFromTimestamp(now, math.max(visibleLine.messageInfo.timestamp, self.overrideFadeTimestamp));
+			local lineTimestamp = math.max(visibleLine.messageInfo.timestamp, self.overrideFadeTimestamp);
+			local alpha = self:CalculateLineAlphaValueFromTimestamp(now, lineTimestamp);
 			visibleLine:SetAlpha(alpha);
 			visibleLine:SetShown(alpha > 0);
+
+			if alpha > 0 then
+				oldestFadingLineTimestamp = math.min(oldestFadingLineTimestamp, lineTimestamp);
+			end
 		end
 	end
+
+	self.oldestFadingLineTimestamp = oldestFadingLineTimestamp;
 end
 
 function ScrollingMessageFrameMixin:OnFontObjectUpdated() -- override from FontableFrameMixin

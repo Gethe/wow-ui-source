@@ -11,10 +11,12 @@ local function IconDataProvider_RefreshIconTextures()
 	end
 
 	BaseIconFilenames = {};
-	GetLooseMacroIcons(BaseIconFilenames);
-	GetLooseMacroItemIcons(BaseIconFilenames);
-	GetMacroIcons(BaseIconFilenames);
-	GetMacroItemIcons(BaseIconFilenames);
+	BaseIconFilenames[IconDataProviderIconType.Spell] = {};
+	BaseIconFilenames[IconDataProviderIconType.Item] = {};
+	GetLooseMacroIcons(BaseIconFilenames[IconDataProviderIconType.Spell]);
+	GetLooseMacroItemIcons(BaseIconFilenames[IconDataProviderIconType.Item]);
+	GetMacroIcons(BaseIconFilenames[IconDataProviderIconType.Spell]);
+	GetMacroItemIcons(BaseIconFilenames[IconDataProviderIconType.Item]);
 end
 
 local function IconDataProvider_ClearIconTextures()
@@ -22,8 +24,8 @@ local function IconDataProvider_ClearIconTextures()
 	collectgarbage();
 end
 
-local function IconDataProvider_GetBaseIconTexture(index)
-	local texture = BaseIconFilenames[index];
+local function IconDataProvider_GetBaseIconTexture(iconType, index)
+	local texture = BaseIconFilenames[iconType][index];
 	local fileDataID = tonumber(texture);
 	if fileDataID ~= nil then
 		return fileDataID;
@@ -32,11 +34,21 @@ local function IconDataProvider_GetBaseIconTexture(index)
 	end
 end
 
+function IconDataProvider_GetAllIconTypes()
+	local iconTypeValues = GetValuesArray(IconDataProviderIconType);
+	table.sort(iconTypeValues);
+	return iconTypeValues;
+end
 
 IconDataProviderMixin = {};
 
+IconDataProviderIconType = EnumUtil.MakeEnum(
+	"Spell",
+	"Item"
+);
+
 IconDataProviderExtraType = {
-	Spell = 1,
+	Spellbook = 1,
 	Equipment = 2,
 	None = 3,
 };
@@ -108,10 +120,12 @@ local function FillOutExtraIconsMapWithEquipment(extraIconsMap)
 	end
 end
 
-function IconDataProviderMixin:Init(type, extraIconsOnly)
+function IconDataProviderMixin:Init(type, extraIconsOnly, requestedIconTypes)
 	self.extraIcons = {};
+	self.extraIconType = type;
+	self.requestedIconTypes = requestedIconTypes or IconDataProvider_GetAllIconTypes(); -- Default to all icon types.
 
-	if type == IconDataProviderExtraType.Spell then
+	if type == IconDataProviderExtraType.Spellbook then
 		local extraIconsMap = {};
 		FillOutExtraIconsMapWithSpells(extraIconsMap);
 		FillOutExtraIconsMapWithTalents(extraIconsMap);
@@ -128,10 +142,22 @@ function IconDataProviderMixin:Init(type, extraIconsOnly)
 	end
 end
 
+function IconDataProviderMixin:SetIconTypes(iconTypes)
+	self.requestedIconTypes = iconTypes or IconDataProvider_GetAllIconTypes();
+end
+
 function IconDataProviderMixin:GetNumIcons()
 	-- 1 to account for the ? icon.
-	local numBaseIcons = BaseIconFilenames and #BaseIconFilenames or 0;
-	return 1 + #self.extraIcons + numBaseIcons;
+	local numIcons = 1;
+	if (self:ShouldShowExtraIcons()) then
+		numIcons = numIcons + #self.extraIcons;
+	end
+	if (BaseIconFilenames) then
+		for _, v in pairs(self.requestedIconTypes) do
+			numIcons = numIcons + #BaseIconFilenames[v];
+		end
+	end
+	return numIcons;
 end
 
 function IconDataProviderMixin:GetIconByIndex(index)
@@ -141,13 +167,28 @@ function IconDataProviderMixin:GetIconByIndex(index)
 
 	index = index - 1;
 
-	local numExtraIcons = #self.extraIcons;
+	local numExtraIcons = self:ShouldShowExtraIcons() and #self.extraIcons or 0;
 	if index <= numExtraIcons then
 		return self.extraIcons[index];
 	end
 
 	local baseIndex = index - numExtraIcons;
-	return IconDataProvider_GetBaseIconTexture(baseIndex);
+	local lookupIconType = nil;
+	-- Each icon type's table is indexed from 1, so loop through the tables to find which icon type we index to.
+	for _, v in pairs(self.requestedIconTypes) do
+		local numIconsForType = #BaseIconFilenames[v];
+		if (baseIndex <= numIconsForType) then
+			lookupIconType = v;
+			break;
+		end
+		baseIndex = baseIndex - numIconsForType;
+	end
+
+	if (lookupIconType) then
+		return IconDataProvider_GetBaseIconTexture(lookupIconType, baseIndex);
+	else
+		return nil;
+	end
 end
 
 function IconDataProviderMixin:GetIconForSaving(index)
@@ -172,6 +213,10 @@ function IconDataProviderMixin:GetIndexOfIcon(icon)
 	end
 
 	return nil;
+end
+
+function IconDataProviderMixin:ShouldShowExtraIcons()
+	return (self.extraIconType == IconDataProviderExtraType.Spellbook and tContains(self.requestedIconTypes, IconDataProviderIconType.Spell)) or (self.extraIconType == IconDataProviderExtraType.Equipment and tContains(self.requestedIconTypes, IconDataProviderIconType.Item))
 end
 
 function IconDataProviderMixin:Release()

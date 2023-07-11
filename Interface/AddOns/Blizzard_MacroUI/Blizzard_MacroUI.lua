@@ -110,7 +110,7 @@ end
 
 function MacroFrameMixin:RefreshIconDataProvider()
 	if self.iconDataProvider == nil then
-		self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spell);
+		self.iconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spellbook);
 	end
 
 	return self.iconDataProvider;

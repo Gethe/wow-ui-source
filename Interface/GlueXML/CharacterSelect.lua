@@ -174,15 +174,18 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SOCIAL_CONTRACT_STATUS_UPDATE");
 	self:RegisterEvent("ACCOUNT_SAVE_ENABLED_UPDATE");
 	self:RegisterEvent("ACCOUNT_LOCKED_POST_SAVE_UPDATE");
+	self:RegisterEvent("REALM_HIDDEN_INFO_UPDATE");
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("CharSelectCharacterButtonTemplate", function(button, elementData)
+	local function Initializer(button, elementData)
 		if elementData.index > 0 then
 			CharacterSelect_InitCharacterButton(button, elementData);
 		end
-	end);
+	end;
+
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("CharSelectCharacterButtonTemplate", Initializer);
 
 	-- Scroll box extends far to the left and then counterpositioned to make space
 	-- for services, service arrows, and locks.
@@ -193,6 +196,55 @@ function CharacterSelect_OnLoad(self)
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
 	
+	do
+		local function Initializer(button, elementData)
+			CharacterSelect_InitCharacterButton(button, elementData);
+			button.selection:Hide();
+			button.drag:Show();
+		end
+
+		local function CursorFactory(elementData)
+			return "CharSelectCharacterButtonTemplate", Initializer;
+		end
+
+		local function LineFactory(elementData)
+			return "ScrollBoxDragLineTemplate";
+		end
+
+		local function AnchoringHandler(anchorFrame, candidateFrame, candidateArea)
+			local leftX = -3;
+			local rightX = -33;
+			if candidateArea == DragIntersectionArea.Above then
+				local y = 0;
+				anchorFrame:SetPoint("BOTTOMLEFT", candidateFrame, "TOPLEFT", leftX, y);
+				anchorFrame:SetPoint("BOTTOMRIGHT", candidateFrame, "TOPRIGHT", rightX, y);
+			elseif candidateArea == DragIntersectionArea.Below then
+				local y = 15;
+				anchorFrame:SetPoint("TOPLEFT", candidateFrame, "BOTTOMLEFT", leftX, y);
+				anchorFrame:SetPoint("TOPRIGHT", candidateFrame, "BOTTOMRIGHT", rightX, y);
+			end
+		end
+
+		local dragBehavior = ScrollUtil.AddLinearDragBehavior(CharacterSelectCharacterFrame.ScrollBox, CursorFactory, LineFactory, AnchoringHandler);
+		dragBehavior:SetReorderable(true);
+		dragBehavior:SetDragRelativeToCursor(true);
+		dragBehavior:SetCursorHitInsets(14, 0);
+
+		dragBehavior:SetNotifyDragSource(function(sourceFrame, drag)
+			sourceFrame:SetAlpha(drag and .5 or 1);
+			sourceFrame:DesaturateHierarchy(drag and 1 or 0);
+			sourceFrame:SetMouseMotionEnabled(not drag);
+		end);
+
+		dragBehavior:SetNotifyDragCandidates(function(candidateFrame, drag)
+			candidateFrame:SetMouseMotionEnabled(not drag);
+		end);
+
+		dragBehavior:SetSourceDragCondition(function(sourceFrame, sourceElementData)
+			return true;
+		end);
+	end
+
 	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions. 
 	-- When the actual character data arrives, this data provider will be discarded.
 	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(CreateDataProvider());
@@ -329,17 +381,6 @@ function CharacterSelect_OnShow(self)
 end
 
 function CharacterSelect_OnHide(self)
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-	-- the user may have gotten d/c while dragging
-    if CharacterSelect.draggedIndex then
-		local draggedButton = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame)
-			return frame.index == CharacterSelect.draggedIndex;
-		end);
-		if draggedButton then
-			CharacterSelectButton_OnDragStop(draggedButton);
-		end
-	end
-
     CharacterSelect_SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
     CharacterRenameDialog:Hide();
@@ -364,9 +405,7 @@ function CharacterSelect_OnHide(self)
         CharacterSelect_EndCharacterUndelete();
     end
 
-    if ( CharSelectServicesFlowFrame:IsShown() ) then
-        CharSelectServicesFlowFrame:Hide();
-    end
+    EndCharacterServicesFlow(true);
 
 	SocialContractFrame:Hide();
 
@@ -475,13 +514,6 @@ function CharacterSelect_OnUpdate(self, elapsed)
         end
     end
 
-    if ( self.pressDownButton ) then
-        self.pressDownTime = self.pressDownTime + elapsed;
-        if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
-            CharacterSelectButton_OnDragStart(self.pressDownButton);
-        end
-    end
-
     if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
         CharacterServicesMaster_OnCharacterListUpdate();
     end
@@ -500,7 +532,11 @@ function CharacterSelect_OnKeyDown(self,key)
         elseif C_Login.IsLauncherLogin() then
             GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
         elseif CharSelectServicesFlowFrame:IsShown() then
-            CharSelectServicesFlowFrame:Hide();
+			if CharSelectServicesFlowFrame.MinimizedFrame then
+				CharSelectServicesFlow_Minimize();
+			else
+				EndCharacterServicesFlow(false);
+			end
         elseif CopyCharacterFrame:IsShown() then
             CopyCharacterFrame:Hide();
         elseif CharacterSelect.undeleting then
@@ -519,12 +555,12 @@ function CharacterSelect_OnKeyDown(self,key)
     elseif key == "PRINTSCREEN" then
         Screenshot();
     elseif key == "UP" or key == "LEFT" then
-        if CharSelectServicesFlowFrame:IsShown() then
+        if CharSelectServicesFlowFrame:IsShown() and CharSelectServicesFlowFrame.DisableButtons then
             return;
         end
         CharacterSelectScrollUp_OnClick();
     elseif ( key == "DOWN" or key == "RIGHT" ) then
-        if (CharSelectServicesFlowFrame:IsShown()) then
+        if CharSelectServicesFlowFrame:IsShown() and CharSelectServicesFlowFrame.DisableButtons then
             return;
         end
         CharacterSelectScrollDown_OnClick();
@@ -588,6 +624,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 		end
 		UpdateMaxCharactersDisplayed();
 		UpdateCharacterSelection(self);
+
+		local function IsSelectedIndex(elementData)
+			return elementData.index == self.selectedIndex;
+		end
+		CharacterSelectCharacterFrame.ScrollBox:ScrollToElementDataByPredicate(IsSelectedIndex, ScrollBoxConstants.AlignNearest);
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
         GlueDialog_Hide();
         local message = ...;
@@ -703,6 +744,14 @@ function CharacterSelect_OnEvent(self, event, ...)
         CharacterSelect_ConditionallyLoadAccountSaveUI();
     elseif (event == "ACCOUNT_LOCKED_POST_SAVE_UPDATE" ) then
         CharacterSelect_UpdateIfUpdateIsNotPending();
+	elseif (event == "REALM_HIDDEN_INFO_UPDATE") then
+		local text = ...;
+		if(text) then
+			REALM_HIDDEN_ALERT:SetText(text);
+			REALM_HIDDEN_ALERT:Show();
+		else
+			REALM_HIDDEN_ALERT:Hide();
+		end
 	end
 end
 
@@ -818,7 +867,7 @@ function CharacterSelect_GetCharacterButton(buttonIndex)
 end
 
 function CharacterSelect_CanReorderCharacter()
-	return not CharacterSelect.undeleting and not CharSelectServicesFlowFrame:IsShown();
+	return not CharacterSelect.undeleting and not CharacterServicesFlow_IsShowing();
 end
 
 function CharacterSelect_SetArrowButtonShown(button, shown)
@@ -832,14 +881,11 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 
 	button.upButton:Hide();
 	button.downButton:Hide();
-	if (CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown()) then
-		CharacterSelectButton_DisableDrag(button);
 
-		if (button.padlock) then
-			button.padlock:Hide();
-		end
-	else
-		CharacterSelectButton_EnableDrag(button);
+	local disallowOrderChange = CharacterSelect.undeleting or CharacterServicesFlow_IsShowing();
+	CharacterSelectCharacterFrame.ScrollBox.dragBehavior:SetDragEnabled(not disallowOrderChange);
+	if disallowOrderChange and button.padlock then
+		button.padlock:Hide();
 	end
 
 	button.characterID = GetCharIDFromIndex(button.index);
@@ -995,7 +1041,13 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 				if lockedByExpansion then
 					locationText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 				else
-					locationText:SetText(zone);
+					if IsRPEBoostEligible(GetCharIDFromIndex(button.index)) then
+						locationText:SetFontObject("GlueFontHighlightSmall");
+						locationText:SetText(RPE_GEAR_UPDATE_GREEN); 
+					else
+						locationText:SetFontObject("GlueFontDisableSmall");
+						locationText:SetText(zone);
+					end
 				end
 
                 if lockedByExpansion or revokedCharacterUpgrade then
@@ -1143,26 +1195,7 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 	local arrowShown = button:IsEnabled() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(elementData.index);
 	CharacterSelect_SetArrowButtonShown(button, arrowShown);
 
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-    if ( CharacterSelect.draggedIndex ) then
-        if ( CharacterSelect.draggedIndex == button.index ) then
-            button:SetAlpha(1);
-            button.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
-            button:LockHighlight();
-            paidServiceButton.texture:SetVertexColor(1, 1, 1);
-            paidServiceButton.GoldBorder:SetVertexColor(1, 1, 1);
-            paidServiceButton.VASIcon:SetVertexColor(1, 1, 1);
-        else
-            button:SetAlpha(0.6);
-            button.buttonText.name:SetPoint("TOPLEFT", DEFAULT_TEXT_OFFSET, -5);
-            button:UnlockHighlight();
-            paidServiceButton.texture:SetVertexColor(0.35, 0.35, 0.35);
-            paidServiceButton.GoldBorder:SetVertexColor(0.35, 0.35, 0.35);
-            paidServiceButton.VASIcon:SetVertexColor(0.35, 0.35, 0.35);
-        end
-    end
-
-	if CharSelectServicesFlowFrame:IsShown() then
+	if CharacterServicesFlow_IsShowing() then
 		paidServiceButton:Hide();
 		upgradeIcon:Hide();
 	end
@@ -1172,6 +1205,9 @@ end
 
 function CharacterSelect_GetCharactersDataProvider()
 	local dataProvider = CreateDataProviderByIndexCount(GetNumCharacters());
+	dataProvider:RegisterCallback(DataProviderMixin.Event.OnMove, function(o, elementData, oldIndex, newIndex)
+		MoveCharacter(oldIndex, newIndex);
+	end);
 	return dataProvider;
 end
 
@@ -1303,39 +1339,37 @@ function CharacterSelectButton_OnDoubleClick(self)
 end
 
 function CharacterSelectButton_ShowMoveButtons(button)
-    if (CharacterSelect.undeleting or CharacterSelect_IsAccountLocked()) then return end;
-    local numCharacters = GetNumCharacters();
-    if ( numCharacters <= 1 ) then
-	   return;
-    end
-
+	if (CharacterSelect.undeleting or CharacterSelect_IsAccountLocked()) then return end;
+	local numCharacters = GetNumCharacters();
+	if ( numCharacters <= 1 ) then
+		return;
+	end
+	
 	if not CharacterSelect_CanReorderCharacter() then
 		return;
 	end
-
-    if ( not CharacterSelect.draggedIndex ) then
-        button.upButton:Show();
-        button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
-        button.upButton.highlightTexture:SetPoint("CENTER", 0, 0);
-        button.downButton:Show();
-        button.downButton.normalTexture:SetPoint("CENTER", 0, 0);
-        button.downButton.highlightTexture:SetPoint("CENTER", 0, 0);
-        if ( button.index == 1 ) then
-            button.upButton:Disable();
-            button.upButton:SetAlpha(0.35);
-        else
-            button.upButton:Enable();
-            button.upButton:SetAlpha(1);
-        end
-
-        if ( button.index == numCharacters ) then
-            button.downButton:Disable();
-            button.downButton:SetAlpha(0.35);
-        else
-            button.downButton:Enable();
-            button.downButton:SetAlpha(1);
-        end
-    end
+	
+	button.upButton:Show();
+	button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
+	button.upButton.highlightTexture:SetPoint("CENTER", 0, 0);
+	button.downButton:Show();
+	button.downButton.normalTexture:SetPoint("CENTER", 0, 0);
+	button.downButton.highlightTexture:SetPoint("CENTER", 0, 0);
+	if ( button.index == 1 ) then
+	    button.upButton:Disable();
+	    button.upButton:SetAlpha(0.35);
+	else
+	    button.upButton:Enable();
+	    button.upButton:SetAlpha(1);
+	end
+	
+	if ( button.index == numCharacters ) then
+	    button.downButton:Disable();
+	    button.downButton:SetAlpha(0.35);
+	else
+	    button.downButton:Enable();
+	    button.downButton:SetAlpha(1);
+	end
 end
 
 function CharacterSelect_CreateNewCharacter(characterType)
@@ -1379,6 +1413,21 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         end
 
         CharSelectEnterWorldButton:SetText(text);
+
+		if not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector() then
+			if IsRPEBoostEligible(charID) then
+				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
+				if IsVeteranTrialAccount() then
+					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
+				end
+			else
+				EndCharacterServicesFlow(false);
+			end
+
+			CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(button)
+				CharacterSelect_SetButtonSelected(button, button:GetElementData().index == index);
+			end);
+		end
     end
 end
 
@@ -1406,6 +1455,20 @@ function CharacterDeleteDialog_OnShow()
     CharacterDeleteButton1:Disable();
 end
 
+local function EnterWorldHelper()
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
+	StopGlueAmbience();
+	EnterWorld();
+end
+
+GlueDialogTypes["RPE_SKIP_UPGRADE_CONFIRM"] = {
+    text = RPE_SKIP_UPGRADE_CONFIRMATION,
+    button1 = CONTINUE,
+    button2 = CANCEL,
+    OnAccept = EnterWorldHelper,
+    OnCancel = function () end,
+}
+
 function CharacterSelect_EnterWorld()
     if (CharacterSelect_IsAccountLocked()) then
         return;
@@ -1419,9 +1482,11 @@ function CharacterSelect_EnterWorld()
         return;
     end
 
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ENTER_WORLD);
-    StopGlueAmbience();
-    EnterWorld();
+	if IsRPEBoostEligible(GetCharacterSelection()) then
+		GlueDialog_Show("RPE_SKIP_UPGRADE_CONFIRM");
+	else
+		EnterWorldHelper();
+	end
 end
 
 function CharacterSelect_Exit()
@@ -1473,7 +1538,7 @@ function CharacterSelect_AllowedToEnterWorld()
         return false;
     elseif (TokenReactivateConfirmationDialog:IsShown()) then
         return false;
-    elseif (CharSelectServicesFlowFrame:IsShown()) then
+    elseif (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
         return false;
 	elseif (Kiosk.IsEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
 		return false;
@@ -1589,23 +1654,20 @@ function CharacterSelectScrollUp_OnClick()
 	CharacterSelect_RotateSelection(-1);
 end
 
-function CharacterSelectButton_OnDragUpdate(self)
-    -- FIXME SCROLLBOX REIMPLEMENTATION
+function LocationText_OnEnter(self)
+	local index = self:GetParent():GetParent().index;
+	if IsRPEBoostEligible(GetCharIDFromIndex(index)) then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_LEFT", -16, -22);
+		GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE1);
+		GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE2);
+		tooltip:Show();
+	end
 end
 
-function CharacterSelectButton_OnDragStart(self)
-   -- FIXME SCROLLBOX REIMPLEMENTATION
+function LocationText_OnLeave(self)
+	 GetAppropriateTooltip():Hide();
 end
-
-function CharacterSelectButton_OnDragStop(self)
-   -- FIXME SCROLLBOX REIMPLEMENTATION
-end
-
-function CharacterSelectButton_OnMouseDown(self)
-	CharacterSelect.pressDownButton = self;
-	CharacterSelect.pressDownTime = 0;
-end
-
 
 function CharacterSelectButton_OnEnter(self)
 	if ( CharacterSelect.selectedIndex == self:GetElementData().index ) then
@@ -1618,8 +1680,6 @@ function CharacterSelectButton_OnEnter(self)
 		CharSelectAccountUpgradeButtonPointerFrame:Show();
 		CharSelectAccountUpgradeButtonGlow:Show();
 	end
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-	--CharacterSelect.dragToIndex = self:GetID();
 end
 
 function CharacterSelectButton_OnLeave(self)
@@ -1630,9 +1690,6 @@ function CharacterSelectButton_OnLeave(self)
 	CharSelectAccountUpgradeButtonPointerFrame:Hide();
 	CharSelectAccountUpgradeButtonGlow:Hide();
 	GlueTooltip:Hide();
-
-	-- FIXME SCROLLBOX REIMPLEMENTATION
-	--CharacterSelect.dragToIndex = nil;
 end
 
 function CharacterSelectButton_RotateCharacter(self, direction)
@@ -1649,43 +1706,22 @@ function CharacterSelectButton_DownButtonOnClick(self)
 	CharacterSelectButton_RotateCharacter(self, 1);
 end
 
-function MoveCharacter(originIndex, targetIndex, fromDrag)
+function MoveCharacter(originIndex, targetIndex)
     CharacterSelect.orderChanged = true;
-    if ( targetIndex < 1 ) then
-        targetIndex = #translationTable;
-    elseif ( targetIndex > #translationTable ) then
-        targetIndex = 1;
-    end
-    if ( originIndex == CharacterSelect.selectedIndex ) then
-        CharacterSelect.selectedIndex = targetIndex;
-    elseif ( targetIndex == CharacterSelect.selectedIndex ) then
-        CharacterSelect.selectedIndex = originIndex;
-    end
-    translationTable[originIndex], translationTable[targetIndex] = translationTable[targetIndex], translationTable[originIndex];
+	targetIndex = Wrap(targetIndex, #translationTable);
 
-   -- FIXME SCROLLBOX REIMPLEMENTATION
-   -- update character list
-    if ( fromDrag ) then
-        CharacterSelect.draggedIndex = targetIndex;
-    end
-    UpdateCharacterSelection(CharacterSelect);
-    UpdateCharacterList();
+	local selectedCharacterIndex = translationTable[CharacterSelect.selectedIndex];
+
+	local value = translationTable[originIndex];
+	table.remove(translationTable, originIndex);
+	table.insert(translationTable, targetIndex, value);
+
+	CharacterSelect.selectedIndex = tIndexOf(translationTable, selectedCharacterIndex);
+
+	UpdateCharacterSelection(CharacterSelect);
+	UpdateCharacterList();
 
 	CharacterSelectCharacterFrame.ScrollBox:ScrollToElementDataIndex(targetIndex, ScrollBoxConstants.AlignNearest, ScrollBoxConstants.NoScrollInterpolation);
-end
-
-function CharacterSelectButton_DisableDrag(button)
-    button:SetScript("OnMouseDown", nil);
-    button:SetScript("OnMouseUp", nil);
-    button:SetScript("OnDragStart", nil);
-    button:SetScript("OnDragStop", nil);
-end
-
-function CharacterSelectButton_EnableDrag(button)
-    button:SetScript("OnDragStart", CharacterSelectButton_OnDragStart);
-    button:SetScript("OnDragStop", CharacterSelectButton_OnDragStop);
-    button:SetScript("OnMouseDown", CharacterSelectButton_OnMouseDown);
-    button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
 end
 
 -- translation functions
@@ -2073,7 +2109,7 @@ end
 
 function CharacterSelect_UpdateButtonState()
     local hasCharacters = GetNumCharacters() > 0;
-    local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
+    local servicesEnabled = not CharSelectServicesFlowFrame:ShouldDisableButtons();
     local undeleting = CharacterSelect.undeleting;
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
@@ -2207,6 +2243,15 @@ local function GetCharacterServiceDisplayOrder()
 	return displayOrder;
 end
 
+function IsRPEBoostEligible(charID)
+	if CharacterSelect.undeleting then
+		-- Deleted characters are not eligible for RPE Boost (until they are restored)
+		return false;
+	end
+
+	return select(36, GetCharacterInfo(charID));
+end
+
 -- CHARACTER BOOST (SERVICES)
 function CharacterServicesMaster_UpdateServiceButton()
 	if not CharacterSelect.VASPools then
@@ -2231,7 +2276,7 @@ function CharacterServicesMaster_UpdateServiceButton()
     UpgradePopupFrame:Hide();
     CharacterSelectUI.WarningText:Hide();
 
-    if CharacterSelect.undeleting or CharSelectServicesFlowFrame:IsShown() then
+    if CharacterSelect.undeleting or (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
         return;
     end
 
@@ -2273,6 +2318,20 @@ function DisplayBattlepayTokens(upgradeInfo, boostType)
 		local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 		DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo);
 	end
+end
+
+function CharSelectServicesFlow_Minimize()
+	local parent = CharSelectServicesFlowFrame;
+	parent.IsMinimized = true;
+	parent.MinimizedFrame:Show();
+	parent:Hide();
+end
+
+function CharSelectServicesFlow_Maximize()
+	local parent = CharSelectServicesFlowFrame;
+	parent.IsMinimized = false;
+	parent.MinimizedFrame:Hide();
+	BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 end
 
 ------------------------------------------------------------------
@@ -2515,10 +2574,21 @@ function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason
     end
 end
 
-local function BeginFlow(flow, data)
+function BeginCharacterServicesFlow(flow, data)
+	CharSelectServicesFlowFrame:Initialize(flow);
     CharSelectServicesFlowFrame:Show();
 	flow:SetTarget(data); -- NOTE: It seems like data can be changed in the middle of a flow, so keeping this here until that is determined.
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, flow);
+end
+
+function EndCharacterServicesFlow(shouldMaximize)
+	CharSelectServicesFlowFrame:Hide();
+	if CharSelectServicesFlowFrame.MinimizedFrame then
+		CharSelectServicesFlowFrame.MinimizedFrame:Hide();
+		if shouldMaximize then
+			CharSelectServicesFlowFrame.IsMinimized = false;
+		end
+	end
 end
 
 function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
@@ -2534,17 +2604,17 @@ function CharacterUpgradePopup_BeginCharacterUpgradeFlow(data, guid)
 	end
 
 	CharacterUpgradePopup_CheckSetPopupSeen(data);
-	BeginFlow(CharacterUpgradeFlow, data);
+	BeginCharacterServicesFlow(CharacterUpgradeFlow, data);
 end
 
 function CharacterUpgradePopup_BeginVASFlow(data, guid)
 	assert(data.vasType ~= nil);
 	if data.vasType == Enum.ValueAddedServiceType.PaidCharacterTransfer then
-		BeginFlow(PaidCharacterTransferFlow, data);
+		BeginCharacterServicesFlow(PaidCharacterTransferFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
-		BeginFlow(PaidFactionChangeFlow, data);
+		BeginCharacterServicesFlow(PaidFactionChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		BeginFlow(PaidRaceChangeFlow, data);
+		BeginCharacterServicesFlow(PaidRaceChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
@@ -2618,6 +2688,8 @@ end
 CharacterBoostMixin = {};
 
 function CharacterBoostMixin:OnClick()
+	EndCharacterServicesFlow(true);
+
 	if self.data.isExpansionTrial then
 		if UpgradePopupFrame:IsShown() then
 			UpgradePopupFrame:Hide();
@@ -2714,8 +2786,12 @@ function CharacterServicesMaster_SetFlow(self, flow)
 	CharacterServicesMaster_HideFlows(self);
 
     flow:Initialize(self);
-    SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
-    self:GetParent().TitleText:SetText(flow.data.flowTitle);
+	if flow.data.icon then
+		SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
+	end
+	if flow.data.flowTitle then
+		self:GetParent().TitleText:SetText(flow.data.flowTitle);
+	end
 
     CharacterServicesMaster_UpdateFinishLabel(self);
 
@@ -2837,31 +2913,44 @@ function CharacterServicesMaster_HideFlows(self)
 	end
 end
 
-function CharacterServicesMaster_SetBlockActiveState(block)
-    block.frame.StepLabel:Show();
-    block.frame.StepNumber:Show();
-    block.frame.StepActiveLabel:Show();
-    block.frame.StepActiveLabel:SetText(block.ActiveLabel);
-    block.frame.ControlsFrame:Show();
-    block.frame.Checkmark:Hide();
-    block.frame.StepFinishedLabel:Hide();
-    block.frame.ResultsLabel:Hide();
-end
+do
+	local function callIfPresent(block)
+		return function(key, fn, ...)
+			local child = block.frame[key];
+			if child then
+				child[fn](child, ...);
+			end
+		end
+	end
 
-function CharacterServicesMaster_SetBlockFinishedState(block)
-    block.frame.Checkmark:Show();
-    block.frame.StepFinishedLabel:Show();
-    block.frame.StepFinishedLabel:SetText(block.ResultsLabel);
-    block.frame.ResultsLabel:Show();
-    if (block.FormatResult) then
-        block.frame.ResultsLabel:SetText(block:FormatResult());
-    else
-        block.frame.ResultsLabel:SetText(block:GetResult());
-    end
-    block.frame.StepLabel:Hide();
-    block.frame.StepNumber:Hide();
-    block.frame.StepActiveLabel:Hide();
-    block.frame.ControlsFrame:Hide();
+	function CharacterServicesMaster_SetBlockActiveState(block)
+		local call = callIfPresent(block);
+		call("StepLabel", "Show");
+		call("StepNumber", "Show");
+		call("StepActiveLabel", "Show");
+		call("StepActiveLabel", "SetText", block.ActiveLabel);
+		call("ControlsFrame", "Show");
+		call("Checkmark", "Hide");
+		call("StepFinishedLabel", "Hide");
+		call("ResultsLabel", "Hide");
+	end
+
+	function CharacterServicesMaster_SetBlockFinishedState(block)
+		local call = callIfPresent(block);
+		call("Checkmark", "Show");
+		call("StepFinishedLabel", "Show");
+		call("StepFinishedLabel", "SetText", block.ResultsLabel);
+		call("ResultsLabel", "Show");
+		if (block.FormatResult) then
+			call("ResultsLabel", "SetText", block:FormatResult());
+		else
+			call("ResultsLabel", "SetText", block:GetResult());
+		end
+		call("StepLabel", "Hide");
+		call("StepNumber", "Hide");
+		call("StepActiveLabel", "Hide");
+		call("ControlsFrame", "Hide");
+	end
 end
 
 function CharacterServicesMasterBackButton_OnClick()
@@ -2907,7 +2996,7 @@ function CharacterServicesMasterFinishButton_OnClick()
 	end
 
     -- wait a bit after button is shown so no one accidentally upgrades the wrong character
-    if ( GetTime() - CharacterServicesMaster.FinishTime < 0.5 ) then
+    if (CharacterServicesMaster.FinishTime and (GetTime() - CharacterServicesMaster.FinishTime < 0.5 )) then
         return;
     end
     local master = CharacterServicesMaster;
@@ -3381,6 +3470,10 @@ function CharacterSelectMailIndicationButtonMixin:SetMailSenders(mailSenders)
 	self.mailSenders = mailSenders;
 end
 
+function CharacterServicesFlow_IsShowing()
+	return CharSelectServicesFlowFrame:IsShown() or (CharSelectServicesFlowFrame.MinimizedFrame and CharSelectServicesFlowFrame.MinimizedFrame:IsShown())
+end
+
 CharSelectServicesFlowFrameMixin = {};
 
 function CharSelectServicesFlowFrameMixin:SetErrorMessage(msg)
@@ -3402,6 +3495,64 @@ function CharSelectServicesFlowFrameMixin:ClearErrorMessage()
 	self.ErrorMessageContainer.Text:SetText("");
 	self.ErrorMessageContainer.fullText = nil;
 	self.ErrorMessageContainer.isTruncated = nil;
+end
+
+function CharSelectServicesFlowFrameMixin:Initialize(flow)
+	if not flow.MinimizedFrame then
+		self.IsMinimized = false; --flows that cant minimize should no longer be tracking that they are minimized.
+		if self.MinimizedFrame then 
+			self.MinimizedFrame:Hide(); --any previously minimized frames should be hidden (will be cleared in CharSelectServicesFlowFrame:Initialize)
+		end
+	end
+
+	self.MinimizedFrame = flow.MinimizedFrame and _G[flow.MinimizedFrame];
+	self.DisableButtons = flow:ShouldDisableButtons();
+
+	local theme = flow:GetTheme();
+	if theme == "default" then
+		self.BackgroundDefault:Show();
+		self.Icon:Show();
+		self.IconBorder:Show();
+		self.TitleText:Show();
+		self.CloseButton:Show();
+		self.BackgroundRPE:Hide();
+		self.MinimizeButton:Hide();
+
+		local backNextX, backNextY = 40, 57;
+		self.NextButton:SetPoint("BOTTOMRIGHT", -backNextX, backNextY);
+		self.BackButton:SetPoint("BOTTOMLEFT", backNextX, backNextY);
+
+		self.FinishButton:SetPoint("BOTTOMRIGHT", -28, 53);
+
+		NineSliceUtil.HideLayout(self);
+
+		self:SetSize(421, 724);
+		self:SetPoint("LEFT", 8, 16);
+	elseif theme == "RPE" then
+		self.BackgroundDefault:Hide();
+		self.Icon:Hide();
+		self.IconBorder:Hide();
+		self.TitleText:Hide();
+		self.CloseButton:Hide();
+		self.BackgroundRPE:Show();
+		self.MinimizeButton:Show();
+
+		local backNextX, backNextY = 30, 20;
+		self.NextButton:SetPoint("BOTTOMRIGHT", -backNextX, backNextY);
+		self.BackButton:SetPoint("BOTTOMLEFT", backNextX, backNextY);
+
+		self.FinishButton:SetPoint("BOTTOMRIGHT", -18, 18);
+
+		NineSliceUtil.ApplyLayout(self, NineSliceUtil.GetLayout("Dialog"));
+		NineSliceUtil.ShowLayout(self);
+
+		self:SetSize(360, 545);
+		self:SetPoint("LEFT", 8, -17);
+	end
+end
+
+function CharSelectServicesFlowFrameMixin:ShouldDisableButtons()
+	return self:IsShown() and self.DisableButtons;
 end
 
 FlowErrorContainerMixin = {};

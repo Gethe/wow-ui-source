@@ -38,7 +38,7 @@
 						</Texture>
 						<FontString parentKey="Label" inherits="GameFontNormal">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.RankTexture" y="1"/>
+								<Anchor point="CENTER" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>

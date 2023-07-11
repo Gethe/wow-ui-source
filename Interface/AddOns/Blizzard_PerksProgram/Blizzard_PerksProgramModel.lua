@@ -157,9 +157,9 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 				end
 			end
 		elseif itemModifiedAppearanceID then
-			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
-			local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-			local preferredHandSlot;
+			local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
+			local classID, unusedSubclassID = select(6, GetItemInfoInstant(itemID));
+			local isWeapon = classID == Enum.ItemClass.Weapon;
 			if isWeapon then
 				local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
 				local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
@@ -169,7 +169,7 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 			end
 			actor:TryOn(itemModifiedAppearanceID, preferredHandSlot);
 		end
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		return actor;
 	end	
 	return nil
@@ -401,10 +401,10 @@ function PerksProgramModelSceneContainerFrameMixin:OnCelebratePurchase(purchased
 	local fanfareActor = self.CelebrateModelScene:GetActorByTag(DEFAULT_FANFARE_ACTOR_TAG);
 
 	if fanfareActor then
-		fanfareActor:SetSpellVisualKit(CelebrationSpellVisualID, true);
 		self.CelebrateModelScene:Show();
+		fanfareActor:SetSpellVisualKit(CelebrationSpellVisualID, true);
 
-		self.CelebrateTimer = C_Timer.NewTimer(3,
+		self.CelebrateTimer = C_Timer.NewTimer(5,
 		function()
 			fanfareActor:SetSpellVisualKit(nil);
 			self.CelebrateModelScene:Hide();
@@ -421,7 +421,7 @@ local function FlagsChanged(data)
 end
 
 function PerksProgramModelSceneContainerFrameMixin:OnDisplayDataChanged(data, dataChanged)
-	local modelSceneChanged = dataChanged and dataChanged["selectedModelScene"] ~= nil or false;
+	local modelSceneChanged = dataChanged and dataChanged["selectedModelSceneID"] ~= nil or false;
 	local actorDisplayChanged = dataChanged and dataChanged["modelActorDisplayID"] ~= nil or false;
 	if FlagsChanged(dataChanged) or modelSceneChanged then
 		local forceSceneChange = dataChanged["autodress"] ~= nil;
@@ -455,6 +455,9 @@ function PerksProgramModelSceneContainerFrameMixin:OnDisplayDataChanged(data, da
 	elseif categoryID == Enum.PerksVendorCategoryType.Mount then
 		modelScene = self.MainModelScene;
 		actor = modelScene:GetActorByTag(DEFAULT_MOUNT_ACTOR_TAG);
+	elseif categoryID == Enum.PerksVendorCategoryType.Toy then
+		modelScene = self.MainModelScene;
+		actor = modelScene:GetActorByTag(DEFAULT_TOY_ACTOR_TAG);
 	end
 	local camera = modelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
 	UpdateModelSceneWithDisplayData(actor, camera, data.displayData, categoryID);
@@ -507,10 +510,10 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 		actor:SetModelByCreatureDisplayID(creatureDisplayID);
 
 		if (isSelfMount) then
-			actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 			actor:SetAnimation(MOUNT_SELF_IDLE_ANIM);
 		else
-			actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
 			actor:SetAnimation(0);
 		end
 		local showPlayer = not PerksProgramFrame:GetTogglePlayerSetting();
@@ -562,7 +565,7 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, 
 
 		self.MainModelScene:SetViewInsets(DefaultInsets.left, DefaultInsets.right, DefaultInsets.top, DefaultInsets.bottom);
 		actor:SetModelByCreatureDisplayID(displayID);
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		data.displayData.animationKitID = PET_DEFAULT_ANIM_ID;
 		data.displayData.desiredScale = desiredScale;
 		actor:SetRequestedScale(desiredScale);
@@ -579,15 +582,55 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, 
 	EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", self.MainModelScene);
 end
 
+
+
 -- TOYS
 function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, modelSceneID, forceSceneChange)
-	local iconTexture = C_Item.GetItemIconByID(data.itemID);
-	self.ToyOverlayFrame.Icon:SetTexture(iconTexture);
-	self.ToyOverlayFrame:Show();
-	self.MainModelScene:Hide();
-	self.PlayerModelScene:Hide();
-	local noModelScene;
-	EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", noModelScene);
+	if forceSceneChange then
+		self.MainModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+	end
+	local creatureDisplayID = data.displayData.creatureDisplayInfoID;
+	if creatureDisplayID then -- UI Model Scene Toy Display
+		local actor = self.MainModelScene:GetActorByTag(DEFAULT_TOY_ACTOR_TAG);
+		if actor then
+			local playerData = nil;
+			local forcePlayerSceneChange = true;
+			local playerModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(Enum.PerksVendorCategoryType.Transmog);
+			self:SetupModelSceneForTransmogs(playerData, playerModelSceneID, forcePlayerSceneChange);
+
+			if self.playerActor then
+				local playerCamera = self.PlayerModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
+				playerCamera:SetYaw(math.rad(150));
+
+				local currentX, currentY, currentZ= self.playerActor:GetPosition();
+				local x = currentX - 2;
+				local y = currentY + 2.2;
+				SetActorPosition(self.playerActor, x, y, currentZ);
+			end
+
+			self.MainModelScene:SetViewInsets(DefaultInsets.left, DefaultInsets.right, DefaultInsets.top, DefaultInsets.bottom);
+			actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+						
+			local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
+			UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID);
+		end
+
+		UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["PET_MAIN"]);
+		UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["PET_PLAYER"]);
+		self.ToyOverlayFrame:Hide();
+		self.MainModelScene:Show();
+		self.PlayerModelScene:Show();
+		EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", self.MainModelScene);
+	else -- default Toy Display		
+		local iconTexture = C_Item.GetItemIconByID(data.itemID);
+		self.ToyOverlayFrame.Icon:SetTexture(iconTexture);
+		self.ToyOverlayFrame:Show();
+		self.MainModelScene:Hide();
+		self.PlayerModelScene:Hide();
+		local noModelScene;
+		EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", noModelScene);
+	end
 end
 
 -- TRANSMOGS

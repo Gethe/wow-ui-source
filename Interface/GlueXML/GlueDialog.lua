@@ -268,6 +268,20 @@ GlueDialogTypes["BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING"] = {
 	end,
 }
 
+GlueDialogTypes["RPE_BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING"] = {
+	button1 = CONTINUE,
+	button2 = CANCEL,
+	html = 1,
+	OnAccept = function()
+		local master = CharacterServicesMaster;
+		master.flow:Advance(master);
+	end,
+	OnCancel = function()
+		local master = CharacterServicesMaster;
+		master.flow:Restart(master);
+	end,
+}
+
 GlueDialogTypes["LEGION_PURCHASE_READY"] = {
 	text = BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION,
 	button1 = BLIZZARD_STORE_LOG_OUT_NOW,

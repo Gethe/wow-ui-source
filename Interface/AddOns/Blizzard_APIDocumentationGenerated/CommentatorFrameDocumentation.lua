@@ -636,6 +636,41 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "GetPlayerItemCooldownInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerItemCooldownInfoByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerOverrideName",
 			Type = "Function",
 
@@ -1049,6 +1084,15 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "SetBlocklistedItemCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCamera",
 			Type = "Function",
 
@@ -1260,6 +1304,15 @@ local CommentatorFrame =
 			},
 		},
 		{
+			Name = "SetRequestedItemCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRequestedOffensiveCooldowns",
 			Type = "Function",
 
@@ -1464,21 +1517,6 @@ local CommentatorFrame =
 	Tables =
 	{
 		{
-			Name = "TrackedSpellCategory",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "Offensive", Type = "TrackedSpellCategory", EnumValue = 0 },
-				{ Name = "Defensive", Type = "TrackedSpellCategory", EnumValue = 1 },
-				{ Name = "Debuff", Type = "TrackedSpellCategory", EnumValue = 2 },
-				{ Name = "RacialAbility", Type = "TrackedSpellCategory", EnumValue = 3 },
-				{ Name = "Count", Type = "TrackedSpellCategory", EnumValue = 4 },
-			},
-		},
-		{
 			Name = "CommentatorHistory",
 			Type = "Structure",
 			Fields =
@@ -1540,6 +1578,15 @@ local CommentatorFrame =
 			{
 				{ Name = "playerName", Type = "string", Nilable = false },
 				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorTrackedItemCooldown",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
 		},
 		{

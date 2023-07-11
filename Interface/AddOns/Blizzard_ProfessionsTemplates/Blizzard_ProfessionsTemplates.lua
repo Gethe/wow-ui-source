@@ -292,18 +292,18 @@ function ProfessionsCrafterTableCellReagentsMixin:OnEnter()
 		for _, orderReagentInfo in ipairs(order.reagents) do
 			if orderReagentInfo.source == Enum.CraftingOrderReagentSource.Any and orderReagentInfo.isBasicReagent then
 				local itemID = orderReagentInfo.reagent.itemID;
-				local reagentSlot = orderReagentInfo.reagentSlot;
+				local slotIndex = orderReagentInfo.slotIndex;
 
-				local _, existingReagent = FindInTableIf(reagents, function(r) return r.reagentSlot == reagentSlot; end);
+				local _, existingReagent = FindInTableIf(reagents, function(r) return r.slotIndex == slotIndex; end);
 				if existingReagent == nil then
-					table.insert(reagents, {reagentSlot = reagentSlot, itemID = itemID, multipleQualities = false});
+					table.insert(reagents, {slotIndex = slotIndex, itemID = itemID, multipleQualities = false});
 				else
 					existingReagent.multipleQualities = true;
 				end
 			end
 		end
 
-		table.sort(reagents, function(l, r) return l.reagentSlot < r.reagentSlot; end);
+		table.sort(reagents, function(l, r) return l.slotIndex < r.slotIndex; end);
 
 		for idx, reagent in ipairs(reagents) do
 			local reagentIconFrame = reagentIconFramePool:Acquire();

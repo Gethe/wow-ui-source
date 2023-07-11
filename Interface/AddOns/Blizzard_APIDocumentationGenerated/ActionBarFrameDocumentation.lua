@@ -7,6 +7,16 @@ local ActionBarFrame =
 	Functions =
 	{
 		{
+			Name = "EnableActionRangeCheck",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "FindFlyoutActionButtons",
 			Type = "Function",
 
@@ -272,6 +282,17 @@ local ActionBarFrame =
 
 	Events =
 	{
+		{
+			Name = "ActionRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "ACTION_RANGE_CHECK_UPDATE",
+			Payload =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false },
+				{ Name = "checksRange", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "ActionbarHidegrid",
 			Type = "Event",

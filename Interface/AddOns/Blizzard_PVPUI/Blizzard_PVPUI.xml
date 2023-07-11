@@ -383,13 +383,52 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="RoleShortageBonus" hidden="true" mixin="PVPRewardRoleShortageBonusMixin">
+				<Size x="29" y="29"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="4" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="25" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="honorsystem-icon-enlistmentbonus" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<MaskTexture atlas="CircleMaskScalable" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="25" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 	</Frame>
 
-	<Frame name="PVPStandardRewardTemplate" inherits="PVPRewardTemplate" virtual="true">
+	<Frame name="PVPStandardRewardTemplate" inherits="CallbackRegistrantTemplate, PVPRewardTemplate" mixin="PVPStandardRewardMixin" virtual="true">
 		<Scripts>
-			<OnEnter function="PVPStandardRewardTemplate_OnEnter"/>
-			<OnLeave function="PVPRewardTemplate_OnLeave"/>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -791,6 +830,12 @@
 		</Animations>
 	</Frame>
 
+	<Frame name="PVPRoleButtonTemplate" inherits="LFGRoleButtonWithShortageRewardTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="onClick" value="PVPUIFrame_RoleButtonClicked" type="global"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="PVPUIFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Size x="563" y="428"/>
 		<Anchors>
@@ -1044,50 +1089,29 @@
 									<Anchor point="TOPLEFT" x="4" y="-85"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
-								<Size x="32" y="32"/>
+							<Button parentKey="TankIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="1">
 								<KeyValues>
 									<KeyValue key="role" value="TANK" type="string"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="9" y="2"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-										LFGRoleButtonTemplate_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</Button>
-							<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
-								<Size x="32" y="32"/>
+							<Button parentKey="HealerIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="2">
 								<KeyValues>
 									<KeyValue key="role" value="HEALER" type="string"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-										LFGRoleButtonTemplate_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</Button>
-							<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
-								<Size x="32" y="32"/>
+							<Button parentKey="DPSIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="3">
 								<KeyValues>
 									<KeyValue key="role" value="DAMAGER" type="string"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-										LFGRoleButtonTemplate_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</Button>
 							<Frame name="$parentTypeDropDown" inherits="UIDropDownMenuTemplate" id="1">
 								<Anchors>
@@ -1128,7 +1152,7 @@
 								<Frames>
 									<Button parentKey="RandomBGButton" inherits="PVPCasualStandardButtonTemplate">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.Inset" y="-9"/>
+											<Anchor point="TOP" y="-9"/>
 										</Anchors>
 										<KeyValues>
 											<KeyValue key="tooltipTableKey" value="RandomBG" type="string"/>
@@ -1245,50 +1269,29 @@
 									<Anchor point="TOPLEFT" x="4" y="-85"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
-								<Size x="32" y="32"/>
+							<Button parentKey="TankIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="1">
 								<KeyValues>
 									<KeyValue key="role" value="TANK" type="string"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="9" y="2"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-										LFGRoleButtonTemplate_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</Button>
-							<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
-								<Size x="32" y="32"/>
+							<Button parentKey="HealerIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="2">
 								<KeyValues>
 									<KeyValue key="role" value="HEALER" type="string"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-										LFGRoleButtonTemplate_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</Button>
-							<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
-								<Size x="32" y="32"/>
+							<Button parentKey="DPSIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="3">
 								<KeyValues>
 									<KeyValue key="role" value="DAMAGER" type="string"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-										LFGRoleButtonTemplate_OnLoad(self);
-									</OnLoad>
-								</Scripts>
 							</Button>
 							<Button parentKey="RatedSoloShuffle" inherits="PVPRatedActivityButtonTemplate" id="1">
 								<KeyValues>
@@ -1635,14 +1638,14 @@
 					<Frame parentKey="NewSeasonPopup" frameStrata="HIGH" inherits="PVPSeasonChangesNoticeTemplate">
 						<Size x="570" y="390"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.ConquestFrame" x="108"/>
+							<Anchor point="CENTER" x="108"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="SeasonRewardText" inherits="SystemFont_Med3" text="NEW_PVP_SEASON_REWARD_PREVIEW">
 									<Size x="380" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.SeasonDescription2" relativePoint="BOTTOM" y="-14"/>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" y="-14"/>
 									</Anchors>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
 								</FontString>

@@ -255,7 +255,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.MacrosPortrait" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="TutorialFrame" inherits="PortraitFrameBaseTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
+			<Frame parentKey="TutorialFrame" inherits="PortraitFrameTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
 				<Size x="496" y="253"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPLEFT" x="300" y="0"/>

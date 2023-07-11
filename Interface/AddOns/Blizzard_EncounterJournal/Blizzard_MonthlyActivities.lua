@@ -3,7 +3,7 @@
 -------------------------------------------------
 
 local MonthlyActivityFilterSelection;
-local MonthlyActivitySelected = nil;
+local MonthlyActivitySelectedID = nil;
 
 local ACTIVITIES_MONTH_NAMES = {
 	MONTH_JANUARY,
@@ -42,8 +42,7 @@ end
 
 -- MonthlyActivitiesButton
 MonthlyActivitiesButtonMixin = { };
-
-function MonthlyActivitiesButtonMixin:Init(elementData)
+function MonthlyActivitiesButtonMixin:Init(node)
 	-- Handle scrolling down the list while anims are playing on an existing button
 	if self.CheckmarkAnim:IsPlaying() or self.CoinAnim:IsPlaying() then
 		self.CheckmarkAnim:Stop();
@@ -51,29 +50,60 @@ function MonthlyActivitiesButtonMixin:Init(elementData)
 		self.pendingComplete = false;
 		MonthlyActivities_PendingAnimComplete();
 	end
-
-	self.id = elementData.id;
-	self.tracked = elementData.tracked;
-	self.requirementsList = elementData.requirementsList;
-	self.activityName = elementData.name;
-	self.description = elementData.description;
-	self.completed = elementData.completed;
-	self.Name:SetText(elementData.name);
-	self.Name:SetFontObject(elementData.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
-	self.Ribbon:SetShown(not elementData.restricted and (elementData.completed or elementData.rewardAvailable));
-	self.Points:SetText(elementData.points);
-	self.Points:SetShown(not elementData.restricted and not elementData.completed and elementData.rewardAvailable and not elementData.pendingComplete);
-	self.Checkmark:SetShown(not elementData.restricted and elementData.completed and not elementData.pendingComplete);
-	self.CheckmarkFlipbook:SetShown(elementData.pendingComplete);
-	self.ActiveBg:SetShown(self.id == MonthlyActivitySelected);
-	self.TrackingCheckmark:SetShown(elementData.tracked and not elementData.completed);
-
-	self:SetNormalAtlas(elementData.completed and "activities-complete" or "activities-incomplete");
-
-	-- Prevent hover state and tooltip when restricted
-	self:SetEnabled(not elementData.restricted);
-
+	
+	self:UpdateButtonState();
 	self:Show();
+end
+
+function MonthlyActivitiesButtonMixin:SetButtonData()
+	local node = self:GetElementData();
+	if not node then
+		return;
+	end
+	local data = node:GetData();
+
+	self.id = data.id;
+	self.tracked = data.tracked;
+	self.requirementsList = data.requirementsList;
+	self.activityName = data.name;
+	self.description = data.description;
+	self.completed = data.completed;
+	self.Name:SetText(data.name);
+	self.Name:SetFontObject(data.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
+
+	self.Points:SetText(data.points);
+	self.Points:SetShown(not data.restricted and not data.completed and data.rewardAvailable and not data.pendingComplete);
+	self.Checkmark:SetShown(not data.restricted and data.completed and not data.pendingComplete);
+	self.CheckmarkFlipbook:SetShown(data.pendingComplete);
+	self.TrackingCheckmark:SetShown(data.tracked and not data.completed);
+	local normalActiveTexture = self.id == MonthlyActivitySelectedID and "activities-incomplete-active" or "activities-incomplete"
+	self:SetNormalAtlas(data.completed and "activities-complete" or normalActiveTexture);
+	
+	-- Prevent hover state and tooltip when restricted
+	self:SetEnabled(not data.restricted);
+end
+
+function MonthlyActivitiesButtonMixin:UpdateButtonState()
+	self:SetButtonData();
+
+	local node = self:GetElementData();
+	if not node then
+		return;
+	end
+	local data = node:GetData();
+
+	local showRibbon = not data.restricted and (data.completed or data.rewardAvailable);
+	local isCollapsed = node:IsCollapsed();
+	if data.hasChild then
+		self.HeaderCollapseIndicator:SetAtlas(isCollapsed and "campaign_headericon_closed" or "campaign_headericon_open");
+		self.HeaderCollapseIndicator:SetShown(true);
+		self.Ribbon:SetShown(false);
+		self.RibbonStacked:SetShown(showRibbon);
+	else
+		self.HeaderCollapseIndicator:SetShown(false);
+		self.RibbonStacked:SetShown(false);
+		self.Ribbon:SetShown(showRibbon);
+	end
 end
 
 function MonthlyActivitiesButtonMixin:OnEnter()
@@ -84,7 +114,7 @@ function MonthlyActivitiesButtonMixin:OnEnter()
 	end
 end
 
-function MonthlyActivitiesButtonMixin:OnClick()
+function MonthlyActivitiesButtonMixin:OnClick_Internal()
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(self.id);
 		ChatEdit_InsertLink(perksActivityLink);
@@ -102,6 +132,19 @@ function MonthlyActivitiesButtonMixin:OnClick()
 		end
 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+end
+
+function MonthlyActivitiesButtonMixin:OnClick()
+	self:OnClick_Internal();
+
+	local node = self:GetElementData();
+	if node then
+		local data = node:GetData();
+		if data and data.hasChild then
+			node:ToggleCollapsed();
+			self:UpdateButtonState();
+		end
 	end
 end
 
@@ -136,9 +179,23 @@ function MonthlyActivitiesButtonMixin:ShowTooltip()
 	GameTooltip:Show();
 end
 
+-- MonthlySupersedeActivitiesButton
+MonthlySupersedeActivitiesButtonMixin = CreateFromMixins(MonthlyActivitiesButtonMixin);
+function MonthlySupersedeActivitiesButtonMixin:Init(node)
+	self:UpdateButtonState();
+	self:Show();
+end
+
+function MonthlySupersedeActivitiesButtonMixin:UpdateButtonState()
+	MonthlyActivitiesButtonMixin.SetButtonData(self);
+end
+
+function MonthlySupersedeActivitiesButtonMixin:OnClick()
+	MonthlyActivitiesButtonMixin.OnClick_Internal(self);
+end
+
 -- MonthlyActivitiesThresholdMixin
 MonthlyActivitiesThresholdMixin = { };
-
 function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	self.RewardCurrency:SetCurrentPoints(points);
 
@@ -304,7 +361,6 @@ end
 
 -- MonthlyActivitiesFilterListMixin
 MonthlyActivitiesFilterListMixin = { };
-
 function MonthlyActivitiesFilterListMixin:OnLoad()
 	local pad = 10;
 	local spacing = 2;
@@ -333,12 +389,26 @@ function MonthlyActivitiesFilterListMixin:OnLoad()
 			self.ScrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignNearest);
 		end
 
+		if elementData.filter == self:GetFilterSetting() then
+			return;
+		end
+		self:SetFilterSetting(elementData.filter);
 		local activitiesInfo = C_PerksActivities.GetPerksActivitiesInfo();
 		EncounterJournal.MonthlyActivitiesFrame:SetActivities(activitiesInfo.activities, ScrollBoxConstants.RetainScrollPosition);
+		EncounterJournal.MonthlyActivitiesFrame:CollapseAllMonthlyActivities();
 	end;
 
 	MonthlyActivityFilterSelection = ScrollUtil.AddSelectionBehavior(self.ScrollBox);
 	MonthlyActivityFilterSelection:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
+end
+
+local currentFilterSetting = ALL;
+function MonthlyActivitiesFilterListMixin:SetFilterSetting(newFilterSetting)
+	currentFilterSetting = newFilterSetting;
+end
+
+function MonthlyActivitiesFilterListMixin:GetFilterSetting()
+	return currentFilterSetting;
 end
 
 function MonthlyActivitiesFilterListMixin:UpdateFilters()
@@ -400,28 +470,45 @@ function MonthlyActivitiesFrameMixin:OnLoad()
 	self.ThresholdBar.BarFillGlow:SetPoint("RIGHT", self.ThresholdBar.BarFill, "RIGHT", 0, 0);
 	self.ThresholdBar.BarEnd:SetPoint("CENTER", self.ThresholdBar.BarFill, "RIGHT", 0, 0);
 
-	local leftPad = 10;
-	local Pad = 0;
-	local Spacing = 0;
-	local view = CreateScrollBoxListLinearView(leftPad, Pad, Pad, Pad, Spacing);
+	local DefaultPad = 0;
+	local DefaultSpacing = 0;
+	local indent = 32;
+	local view = CreateScrollBoxListTreeListView(indent, DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
+	view:SetPanExtent(20);
+
+	myView = view;
 		
-	local function Initializer(button, elementData)
-		button:Init(elementData);
+	local function Initializer(button, node)		
+		button:Init(node);
 	end
 
-	view:SetElementInitializer("MonthlyActivitiesButtonTemplate", Initializer);
-
+	view:SetElementFactory(function(factory, node)
+		local data = node:GetData();
+		local activityTemplate = data.isChild == true and "MonthlySupersedeActivitiesButtonTemplate" or "MonthlyActivitiesButtonTemplate";
+		factory(activityTemplate, Initializer);
+	end);
 	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	self.FilterList:UpdateFilters();
 
-	self:UpdateActivities();
 	self:RegisterEvent("PERKS_ACTIVITIES_TRACKED_UPDATED");
 	self:RegisterEvent("PERKS_ACTIVITIES_UPDATED");
 	self:RegisterEvent("CHEST_REWARDS_UPDATED_FROM_SERVER");
 	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
+	self:UpdateActivities();
 
 	C_PerksProgram.RequestPendingChestRewards();
+end
+
+function MonthlyActivitiesFrameMixin:CollapseAllMonthlyActivities()
+	local dataProvider = self.ScrollBox:GetDataProvider();
+	if dataProvider then
+		dataProvider:CollapseAll();
+	end
+end
+
+function MonthlyActivitiesFrameMixin:OnShow()
+	self:CollapseAllMonthlyActivities();
 end
 
 function MonthlyActivitiesFrameMixin:OnHide()
@@ -440,8 +527,9 @@ function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
 	if ( event == "PERKS_ACTIVITIES_UPDATED" ) then
 		local activitiesInfo = ...;
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition, activitiesInfo);
-	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" or event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
+	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) or ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
+		self:CollapseAllMonthlyActivities();
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		Chat_AddSystemMessage(MONTHLY_ACTIVITIES_UPDATED);
@@ -539,7 +627,7 @@ function MonthlyActivitiesFrameMixin:TriggerNextPending()
 		self.pendingComplete = { };
 		self.ScrollBox:GetDataProvider():ForEach(function(elementData)
 			elementData.pendingComplete = false;
-		end);
+		end, TreeDataProviderConstants.IncludeCollapsed);
 		C_PerksActivities.ClearPerksActivitiesPendingCompletion();
 
 		if self.pendingTargetValue then
@@ -554,16 +642,90 @@ function MonthlyActivities_PendingAnimComplete(anim)
 	EncounterJournal.MonthlyActivitiesFrame:TriggerNextPending();
 end
 
+
+local function FindActivity(activityID, activities)	
+	local function CheckChildren(activityID, activity)
+		if activity and activity.child then
+			if activity.child.ID == activityID then
+				return activity.child;
+			else
+				return CheckChildren(activityID, activity.child);
+			end
+		end
+		return nil;
+	end
+
+	for _, activity in pairs(activities) do
+		if activity.ID == activityID then
+			return activity;
+		else
+			local returnActivity = CheckChildren(activityID, activity);
+			if returnActivity then
+				return returnActivity;
+			end
+		end
+	end
+	return nil;
+end
+
+local function BuildActivityTree(activities)
+	local parentActivities = {};
+	local childActivities = {};
+
+	for _, activity in pairs(activities) do
+		if activity.supersedes == 0 then
+			table.insert(parentActivities, activity);
+		else
+			table.insert(childActivities, activity);
+		end
+	end
+	
+	for i = #childActivities, 1, -1 do
+		local childActivity = childActivities[i];
+		local parentActivityID = childActivity.supersedes;
+		local parentActivity = FindActivity(parentActivityID, childActivities);
+		if not parentActivity then
+			parentActivity = FindActivity(parentActivityID, parentActivities);
+		end
+		if parentActivity then
+			parentActivity.child = childActivity;
+			table.remove(childActivities, i);
+		end
+	end
+	assert(#childActivities == 0, "child activities missing parent");
+	return parentActivities;
+end
+
 function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosition)
 	local selected = MonthlyActivityFilterSelection:GetFirstSelectedElementData();
 	local selectedFilter = selected and selected.filter;
 	local restricted = AreMonthlyActivitiesRestricted();
 
-	-- Add activity buttons
-	local dataProvider = CreateDataProvider();
-	for _, activity in pairs(activities) do
-		local activityFiltered = selectedFilter ~= ALL;
+	local activityTree = BuildActivityTree(activities);
 
+	local function DataProviderAdd(dataProvider, activity)
+		dataProvider:Insert({
+			id = activity.ID,
+			name = activity.activityName,
+			description = activity.description,
+			points = activity.thresholdContributionAmount,
+			completed = activity.completed,
+			requirementsList = activity.requirementsList,
+			tracked = activity.tracked,
+			rewardAvailable = not self.allRewardsEarned,
+			pendingComplete = self.pendingComplete[activity.ID],
+			thresholdMax = self.thresholdMax,
+			restricted = restricted,
+			uiPriority = activity.uiPriority,
+			hasChild = activity.hasChild or false;
+			isChild = activity.isChild or false;
+			supersedes = activity.supersedes,
+		});
+	end
+	local dataProvider = CreateTreeDataProvider();
+
+	for _, activity in pairs(activityTree) do
+		local activityFiltered = selectedFilter ~= ALL;
 		for _, tag in pairs(activity.tagNames) do
 			if tag == selectedFilter then
 				activityFiltered = false;
@@ -571,48 +733,60 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 		end
 
 		if not activityFiltered then
-			dataProvider:Insert({
-				id = activity.ID,
-				name = activity.activityName,
-				description = activity.description,
-				points = activity.thresholdContributionAmount,
-				completed = activity.completed,
-				requirementsList = activity.requirementsList,
-				tracked = activity.tracked,
-				rewardAvailable = not self.allRewardsEarned,
-				pendingComplete = self.pendingComplete[activity.ID],
-				thresholdMax = self.thresholdMax,
-				restricted = restricted,
-				uiPriority = activity.uiPriority,
-			});
+			DataProviderAdd(dataProvider, activity);
+
+			local function FindNode(ID)
+				return dataProvider:FindElementDataByPredicate(function(node)
+					local data = node:GetData();
+					return data.id == ID;
+				end, TreeDataProviderConstants.IncludeCollapsed);
+			end
+			local parentNode = FindNode(activity.ID);
+			
+			local child = activity.child;
+			while child do
+				local parentData = parentNode:GetData();
+				if parentData.completed  then 
+					DataProviderAdd(dataProvider, child);
+					parentNode = FindNode(child.ID);
+				elseif child.completed then
+					DataProviderAdd(dataProvider, child);
+				else
+					child.isChild = true;
+					DataProviderAdd(parentNode, child);
+					parentData.hasChild = true;				
+				end
+				child = child.child;
+			end
 		end
 	end
 
 	dataProvider:SetSortComparator(function(a, b)
+		aData = a:GetData();
+		bData = b:GetData();
 		-- Sort pending complete to the top
-		if a.pendingComplete ~= b.pendingComplete then
+		if aData.pendingComplete ~= bData.pendingComplete then
 			return a.pendingComplete;
 		end
 
 		-- But sort already completed to the bottom
-		if a.completed ~= b.completed then
-			return b.completed;
+		if aData.completed ~= bData.completed then
+			return bData.completed;
 		end
 
 		-- Sort by data driven ui priority field
-		if a.uiPriority ~= b.uiPriority then
-			return a.uiPriority > b.uiPriority;
+		if aData.uiPriority ~= bData.uiPriority then
+			return aData.uiPriority > bData.uiPriority;
 		end
 	
 		-- Then sort by points descending
-		if a.points ~= b.points then
-			return a.points > b.points;
+		if aData.points ~= bData.points then
+			return aData.points > bData.points;
 		end
 	
 		-- Last sort by alphabetical name
-		return a.name < b.name;
+		return aData.name < bData.name;
 	end);
-
 	self.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition);
 end
 
@@ -778,12 +952,50 @@ function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName, secondsRemaini
 	end
 end
 
+function MonthlyActivitiesFrameMixin:SetSelectedActivityID(activityID)
+	local scrollBox = self.ScrollBox;
+	local view = scrollBox:GetView();
+	if view then
+		local function FindFrame(ID)
+			return view:FindFrameByPredicate(function(frame)
+				return frame.id == ID;
+			end);
+		end
+
+		local oldSelectedFrame = MonthlyActivitySelectedID and FindFrame(MonthlyActivitySelectedID);
+		local newSelectedFrame = FindFrame(activityID);
+
+		MonthlyActivitySelectedID = activityID;
+		if oldSelectedFrame ~= newSelectedFrame then
+			if oldSelectedFrame then
+				oldSelectedFrame:UpdateButtonState();
+			end
+			if newSelectedFrame then
+				newSelectedFrame:UpdateButtonState();
+			end
+		end
+	end
+end
+
 function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
 	local scrollBox = self.ScrollBox;
-	local dataProvider = scrollBox:GetDataProvider();
-	if dataProvider then
-		local function SelectElement(elementData) return elementData.id == activityID; end
-		scrollBox:ScrollToElementDataByPredicate(SelectElement, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+	local function FindNode(ID)
+		local dataProvider = scrollBox:GetDataProvider();
+		if dataProvider then
+			return dataProvider:FindElementDataByPredicate(function(node)
+				local data = node:GetData();
+				return data.id == ID;
+			end, TreeDataProviderConstants.IncludeCollapsed);
+		end
+	end
+	local selectedNode = FindNode(activityID);
+	if not selectedNode then
+		-- Reset filter to ALL
+		MonthlyActivityFilterSelection:SelectFirstElementData();
+		selectedNode = FindNode(activityID);
+	end
+	if selectedNode then
+		scrollBox:ScrollToElementData(selectedNode, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
 	end
 end
 
@@ -813,10 +1025,12 @@ function MonthlyActivitiesFrame_OpenFrameToActivity(activityID)
 	if ( not EncounterJournal:IsShown() ) then
 		EncounterJournal_OpenJournal();
 	end
-	MonthlyActivitySelected = activityID;
+
 	MonthlyActivitiesFrame_OpenFrame();
+	
+	EncounterJournal.MonthlyActivitiesFrame:CollapseAllMonthlyActivities();
 	EncounterJournal.MonthlyActivitiesFrame:ScrollToPerksActivityID(activityID);
-	EncounterJournal.MonthlyActivitiesFrame:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
+	EncounterJournal.MonthlyActivitiesFrame:SetSelectedActivityID(activityID);
 end
 
 -- MonthlyActivitiesRewardButton

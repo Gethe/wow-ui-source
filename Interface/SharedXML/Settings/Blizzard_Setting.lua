@@ -6,7 +6,7 @@ end
 
 local function ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue)
 	if type(name) ~= "string" then
-		error("'name' requires string type.");
+		error(string.format("'name' for variable '%s' requires string type.", variable));
 	end
 
 	if type(variable) ~= "string" then
@@ -265,6 +265,18 @@ function ProxySettingMixin:Init(name, variable, variableTbl, variableType, defau
 	-- commitValue can be leveraged to treat the setting value as a temporary value. For example, a dropdown
 	-- in the graphics list may have it's value changed from 1 to 2 without immediately making undesired cvar changes.
 	self.commitValue = commitValue;
+	
+	-- initValue is the function that we used to set the original value (getValue). We save it so
+	-- we can later reinitialize the setting from an external source if required.
+	self.initValue = getValue;
+end
+
+function ProxySettingMixin:GetInitValue()
+	if self.initValue then
+		return self.initValue();
+	end
+	
+	return self.defaultValue;
 end
 
 ModifiedClickSettingMixin = CreateFromMixins(SettingMixin);

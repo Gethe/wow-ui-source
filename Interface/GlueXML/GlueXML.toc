@@ -35,6 +35,7 @@
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\SoundKitConstants.lua
@@ -119,7 +120,6 @@ GlueParent.xml
 ..\SharedXML\ModelFrameTemplates.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
-..\SharedXML\DressUpModelFrameMixin.lua
 ..\SharedXML\CharacterModelFrameMixin.lua
 ..\SharedXML\HelpTip.xml
 GlueDialog.xml

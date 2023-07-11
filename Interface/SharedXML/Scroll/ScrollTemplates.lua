@@ -205,7 +205,7 @@ function ScrollingEditBoxMixin:ScrollCursorIntoView(allowCursorClipping)
 		return;
 	end
 
-	local scrollOffset = scrollBox:GetDerivedScrollOffset();
+	local scrollOffset = Round(scrollBox:GetDerivedScrollOffset());
 	if cursorOffset < scrollOffset then
 		local visibleExtent = scrollBox:GetVisibleExtent();
 		local deltaExtent = editBoxExtent - visibleExtent;

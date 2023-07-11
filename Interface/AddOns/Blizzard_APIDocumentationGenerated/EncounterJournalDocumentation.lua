@@ -21,6 +21,23 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "GetEncounterJournalLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "linkType", Type = "JournalLinkTypes", Nilable = false },
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "displayText", Type = "string", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEncountersOnMap",
 			Type = "Function",
 
@@ -32,6 +49,21 @@ local EncounterJournal =
 			Returns =
 			{
 				{ Name = "encounters", Type = "table", InnerType = "EncounterJournalMapEncounterInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInstanceForGameMap",
+			Type = "Function",
+			Documentation = { "GameMap as opposed to UIMap since we use a mapID not a uiMapID." },
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "journalInstanceID", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -5,6 +5,8 @@
 	<Frame name="ClassNameplateBarFrame" parentKey="NameplateBar" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="scale" value=".75"/>
+			<KeyValue key="showBarFunc" value="ClassNameplateBar.ShowNameplateBar" type="global"/>
+			<KeyValue key="hideBarFunc" value="ClassNameplateBar.HideNameplateBar" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

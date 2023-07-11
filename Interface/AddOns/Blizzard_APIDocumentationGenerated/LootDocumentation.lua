@@ -7,6 +7,20 @@ local Loot =
 	Functions =
 	{
 		{
+			Name = "GetLootRollDuration",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "rollID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "IsLegacyLootModeEnabled",
 			Type = "Function",
 
@@ -64,6 +78,11 @@ local Loot =
 			Name = "BonusRollStarted",
 			Type = "Event",
 			LiteralName = "BONUS_ROLL_STARTED",
+		},
+		{
+			Name = "CancelAllLootRolls",
+			Type = "Event",
+			LiteralName = "CANCEL_ALL_LOOT_ROLLS",
 		},
 		{
 			Name = "CancelLootRoll",
@@ -210,6 +229,17 @@ local Loot =
 			Payload =
 			{
 				{ Name = "lootSlot", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "MainSpecNeedRoll",
+			Type = "Event",
+			LiteralName = "MAIN_SPEC_NEED_ROLL",
+			Payload =
+			{
+				{ Name = "rollID", Type = "number", Nilable = false },
+				{ Name = "roll", Type = "number", Nilable = false },
+				{ Name = "isWinning", Type = "bool", Nilable = false },
 			},
 		},
 		{

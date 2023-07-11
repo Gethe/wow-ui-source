@@ -149,9 +149,9 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 	-- Only add this information if joining the group is still relevant
 	if ( canEffectivelyJoin ) then
 		local roleIcons = "";
-		if needTank then roleIcons = roleIcons..CreateAtlasMarkup("groupfinder-icon-role-large-tank", 16, 16); end
-		if needHealer then roleIcons = roleIcons..CreateAtlasMarkup("groupfinder-icon-role-large-heal", 16, 16); end
-		if needDamage then roleIcons = roleIcons..CreateAtlasMarkup("groupfinder-icon-role-large-dps", 16, 16); end
+		if needTank then roleIcons = roleIcons .. INLINE_TANK_ICON end
+		if needHealer then roleIcons = roleIcons .. INLINE_HEALER_ICON end
+		if needDamage then roleIcons = roleIcons .. INLINE_DAMAGER_ICON end
 
 		tooltip:AddLine(" ");
 
@@ -225,7 +225,7 @@ function SocialQueueUtil_SortGroupMembers(members)
 			return lhsPriority < rhsPriority;
 		end
 
-		return strcmputf8i(lhsName, rhsName) <= 0;
+		return strcmputf8i(lhsName, rhsName) < 0;
 	end);
 	return members;
 end

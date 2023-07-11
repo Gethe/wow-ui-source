@@ -260,7 +260,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	self:RegisterEvent("MIRROR_TIMER_START");
 	self:RegisterEvent("DUEL_REQUESTED");
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
 	self:RegisterEvent("DUEL_INBOUNDS");
@@ -1747,12 +1746,12 @@ function UIParent_OnEvent(self, event, ...)
 
 		if(C_PlayerChoice.IsWaitingForPlayerChoiceResponse()) then
 			if not UnitIsDeadOrGhost("player") then
-			if not PlayerChoiceFrame then
-				PlayerChoice_LoadUI();
+				if not PlayerChoiceFrame then
+					PlayerChoice_LoadUI();
+				end
+				PlayerChoiceToggle_TryShow();
+				PlayerChoiceTimeRemaining:TryShow();
 			end
-			PlayerChoiceToggle_TryShow();
-			PlayerChoiceTimeRemaining:TryShow();
-		end
 		end
 
 	    if (not IGNORE_DEATH_REQUIREMENTS) then 
@@ -1808,7 +1807,7 @@ function UIParent_OnEvent(self, event, ...)
 		local pendingLootRollIDs = GetActiveLootRollIDs();
 
 		for i=1, #pendingLootRollIDs do
-			GroupLootFrame_OpenNewFrame(pendingLootRollIDs[i], GetLootRollTimeLeft(pendingLootRollIDs[i]));
+			GroupLootContainer_AddRoll(pendingLootRollIDs[i], C_Loot.GetLootRollDuration(pendingLootRollIDs[i]));
 		end
 		OrderHall_CheckCommandBar();
 
@@ -1835,8 +1834,6 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
-	elseif ( event == "MIRROR_TIMER_START" ) then
-		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6);
 	elseif ( event == "DUEL_REQUESTED" ) then
 		StaticPopup_Show("DUEL_REQUESTED", arg1);
 	elseif ( event == "DUEL_OUTOFBOUNDS" ) then
@@ -1941,7 +1938,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		UIParent.isOutOfControl = nil;
 	elseif ( event == "START_LOOT_ROLL" ) then
-		GroupLootFrame_OpenNewFrame(arg1, arg2);
+		GroupLootContainer_AddRoll(arg1, arg2);
 	elseif ( event == "CONFIRM_LOOT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
@@ -2192,15 +2189,11 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Events for taxi benchmarking
 	elseif ( event == "ENABLE_TAXI_BENCHMARK" ) then
-		if ( not FramerateText:IsShown() ) then
-			ToggleFramerate(true);
-		end
+		FramerateFrame:BeginBenchmark();
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_ON, info.r, info.g, info.b, info.id);
 	elseif ( event == "DISABLE_TAXI_BENCHMARK" ) then
-		if ( FramerateText.benchmark ) then
-			ToggleFramerate();
-		end
+		FramerateFrame:EndBenchmark();
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(BENCHMARK_TAXI_MODE_OFF, info.r, info.g, info.b, info.id);
 	elseif ( event == "CHAT_MSG_WHISPER" and arg6 == "GM" ) then	--GMChatUI
@@ -2232,7 +2225,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "ARCHAEOLOGY_SURVEY_CAST" ) then
 		ArchaeologyFrame_LoadUI();
-		ArcheologyDigsiteProgressBar_OnEvent(ArcheologyDigsiteProgressBar, event, ...);
+		ArcheologyDigsiteProgressBar:OnEvent(event, ...);
 		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	--Events for Trial caps
 	elseif ( event == "TRIAL_CAP_REACHED_MONEY" ) then

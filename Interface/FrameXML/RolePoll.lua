@@ -51,9 +51,8 @@ end
 
 function RolePollPopupRoleButton_Enable(button)
 	button:Enable();
-	SetDesaturation(button:GetNormalTexture(), false);
-	button.cover:Hide();
-	button.cover:SetAlpha(1);
+	local showDisabled = false;
+	button:SetNormalAtlas(GetIconForRole(button.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 	button.checkButton:Enable();
 	button.checkButton:Show();
 	
@@ -62,9 +61,8 @@ end
 
 function RolePollPopupRoleButton_Disable(button)
 	button:Disable();
-	SetDesaturation(button:GetNormalTexture(), true);
-	button.cover:Show();
-	button.cover:SetAlpha(0.5);
+	local showDisabled = true;
+	button:SetNormalAtlas(GetIconForRole(button.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 	button.checkButton:Disable();
 	button.checkButton:Hide();
 	

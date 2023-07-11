@@ -25,22 +25,22 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Content"/>
+								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Content"/>
+								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Content"/>
+								<Anchor point="BOTTOMLEFT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Content"/>
+								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">

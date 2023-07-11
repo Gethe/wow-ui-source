@@ -360,9 +360,6 @@ end
 function LFG_PermanentlyDisableRoleButton(button)
 	button.permDisabled = true;
 	button:Disable();
-	SetDesaturation(button:GetNormalTexture(), true);
-	button.cover:Show();
-	button.cover:SetAlpha(0.7);
 	button.checkButton:Hide();
 	button.checkButton:Disable();
 	button.checkButton:SetChecked(false);
@@ -379,10 +376,6 @@ end
 
 function LFG_DisableRoleButton(button)
 	button:Disable();
-	button.cover:Show();
-	if ( not button.permDisabled ) then
-		button.cover:SetAlpha(0.5);
-	end
 	button.checkButton:Disable();
 	if ( button.background ) then
 		button.background:Hide();
@@ -397,8 +390,6 @@ end
 function LFG_EnableRoleButton(button)
 	button.permDisabled = false;
 	button:Enable();
-	SetDesaturation(button:GetNormalTexture(), false);
-	button.cover:Hide();
 	if( button.lockedIndicator:IsShown() ) then
 		button.checkButton:Hide();
 		button.checkButton:Disable();
@@ -765,36 +756,16 @@ function LFGDungeonReadyPopup_Update()
 		end
 
 		local showRole = true;	-- scenarios will set this to false
-		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
-			LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\LFR-Texture");
-			LFGDungeonReadyDialog.filigree:SetTexCoord(0.00195313, 0.57617188, 0.58593750, 0.78125000);
-			LFGDungeonReadyDialog.filigree:SetSize(294, 50);
-			LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -8);
-			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\LFR-Texture");
-			LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.00195313, 0.55273438, 0.29296875, 0.57812500);
-			LFGDungeonReadyDialog.bottomArt:SetSize(282, 73);
-			LFGDungeonReadyDialog:SetBackdrop(BACKDROP_GOLD_DIALOG_32_32);
-		else
-			LFGDungeonReadyDialog.filigree:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
-			LFGDungeonReadyDialog.filigree:SetTexCoord(0.02734, 0.59765, 0.578125, 1.0);
-			LFGDungeonReadyDialog.filigree:SetSize(292, 54);
-			LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -3);
-			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
-			if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
-				showRole = false;
-				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.18, 0.0, 0.5625);
-			else
-				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
-			end
-			LFGDungeonReadyDialog.bottomArt:SetSize(287, 72);
-			LFGDungeonReadyDialog:SetBackdrop(BACKDROP_DIALOG_32_32);
+		if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
+			showRole = false;
 		end
 
 		if ( showRole ) then
 			LFGDungeonReadyDialogRoleIcon:Show();
 			LFGDungeonReadyDialogYourRoleDescription:Show();
 			LFGDungeonReadyDialogRoleLabel:SetText(_G[role]);
-			LFGDungeonReadyDialogRoleIconTexture:SetTexCoord(GetTexCoordsForRole(role));
+			local showDisabled = false;
+			LFGDungeonReadyDialogRoleIconTexture:SetAtlas(GetIconForRole(role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			if ( isLeader ) then
 				LFGDungeonReadyDialogRoleIconLeaderIcon:Show();
 			else
@@ -810,9 +781,9 @@ function LFGDungeonReadyPopup_Update()
 		LFGDungeonReadyDialog_UpdateRewards(id, role);
 		LFGDungeonReadyDialogRewardsFrame:ClearAllPoints();
 		if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
-			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOM", LFGDungeonReadyDialogRoleIcon, "BOTTOM", 0, 15);
+			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOM", LFGDungeonReadyDialogRoleIcon, "BOTTOM", 0, 14);
 		else
-			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOMLEFT", LFGDungeonReadyDialogRoleIcon, "BOTTOMRIGHT", 19, 15);
+			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOMLEFT", LFGDungeonReadyDialogRoleIcon, "BOTTOMRIGHT", 19, 14);
 		end
 	end
 end
@@ -988,25 +959,27 @@ end
 function LFGDungeonReadyStatusIndividual_UpdateIcon(button)
 	local isLeader, role, level, responded, accepted, name, class = GetLFGProposalMember(button:GetID());
 
-	button.texture:SetTexCoord(GetTexCoordsForRole(role));
+	local showDisabled = false;
+	button.texture:SetAtlas(GetIconForRole(role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 
 	if ( not responded ) then
-		button.statusIcon:SetTexture(READY_CHECK_WAITING_TEXTURE);
+		button.statusIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	elseif ( accepted ) then
 		if ( button.readyStatus ~= "accepted" ) then
 			button.readyStatus = "accepted";
 			PlaySound(SOUNDKIT.LFG_ROLE_CHECK);
 		end
-		button.statusIcon:SetTexture(READY_CHECK_READY_TEXTURE);
+		button.statusIcon:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	else
-		button.statusIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+		button.statusIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	end
 
 	button:Show();
 end
 
 function LFGDungeonReadyStatusGrouped_UpdateIcon(button, buttonRole, numMembers)
-	button.texture:SetTexCoord(GetTexCoordsForRole(buttonRole));
+	local showDisabled = false;
+	button.texture:SetAtlas(GetIconForRole(buttonRole, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 
 	local numTotal, numAccepted = 0, 0;
 	local didDecline = false;
@@ -1027,11 +1000,11 @@ function LFGDungeonReadyStatusGrouped_UpdateIcon(button, buttonRole, numMembers)
 	button.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, numAccepted, numTotal);
 
 	if ( didDecline ) then
-		button.statusIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+		button.statusIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	elseif ( numAccepted == numTotal ) then
-		button.statusIcon:SetTexture(READY_CHECK_READY_TEXTURE);
+		button.statusIcon:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	else
-		button.statusIcon:SetTexture(READY_CHECK_WAITING_TEXTURE);
+		button.statusIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
@@ -1420,20 +1393,21 @@ function LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, index, id, name, 
 
 	if ( numRoles > 0 and numRoles < 3 ) then	--If we give it to all 3 roles, no reason to show icons.
 		local roleIcon = frame.roleIcon1;
+		local showDisabled = false;
 		if ( showTankIcon ) then
-			roleIcon.texture:SetTexCoord(GetTexCoordsForRoleSmallCircle("TANK"));
+			roleIcon.texture:SetAtlas(GetMicroIconForRole("TANK", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			roleIcon.role = "TANK";
 			roleIcon:Show();
 			roleIcon = frame.roleIcon2;
 		end
 		if ( showHealerIcon ) then
-			roleIcon.texture:SetTexCoord(GetTexCoordsForRoleSmallCircle("HEALER"));
+			roleIcon.texture:SetAtlas(GetMicroIconForRole("HEALER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			roleIcon.role = "HEALER";
 			roleIcon:Show();
 			roleIcon = frame.roleIcon2;
 		end
 		if ( showDamageIcon ) then
-			roleIcon.texture:SetTexCoord(GetTexCoordsForRoleSmallCircle("DAMAGER"));
+			roleIcon.texture:SetAtlas(GetMicroIconForRole("DAMAGER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			roleIcon.role = "DAMAGER";
 			roleIcon:Show();
 			roleIcon = frame.roleIcon2;
@@ -2164,7 +2138,13 @@ function LFGRole_SetChecked(button, checked)
 end
 
 function LFGRoleButtonTemplate_OnLoad(self)
-	self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
+	if self.role then
+		local showDisabled = false;
+		self:SetNormalAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
+		showDisabled = true;
+		self:SetDisabledAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
+	end
+	
 	local classTank, classHealer, classDPS = UnitGetAvailableRoles("player");
 	local id = self.role;
 	if(self.role == "TANK") then
@@ -2211,4 +2191,77 @@ function LFGRoleButton_LockReasonsTextTable(dungeonID, roleID, textTable)
 	end
 
 	return textTable;
+end
+
+LFGRoleButtonWithShortageRewardMixin = {};
+
+function LFGRoleButtonWithShortageRewardMixin:OnLoad()
+	LFGRoleButtonTemplate_OnLoad(self);
+
+	if self.onClick then
+		self.checkButton.onClick = self.onClick;
+	end
+	
+	self:SetUpIconPulseAnim();
+	self.enableAnim = false;
+end
+
+function LFGRoleButtonWithShortageRewardMixin:OnShow()
+	self.RoleShortagePulseAnim:SetPlaying(self.enableAnim);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:OnHide()
+	self.RoleShortagePulseAnim:SetPlaying(false);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:SetUpIconPulseAnim()
+	local showDisabled = false;
+	self.IconPulse:SetAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:EnableRoleShortagePulseAnim(enableAnim)
+	self.enableAnim = enableAnim;	
+	local playAnim = self:IsVisible() and enableAnim;
+	if playAnim and self.RoleShortagePulseAnim:IsPlaying() then
+		self:RestartRoleShortagePulseAnim();
+		return;
+	end
+	
+	self.RoleShortagePulseAnim:SetPlaying(playAnim);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:RestartRoleShortagePulseAnim()
+	self:CancelPulseEffect();
+	self.RoleShortagePulseAnim:Restart();
+end
+
+function LFGRoleButtonWithShortageRewardMixin:TryPlayPulseEffect()
+	if not self:IsVisible() or not self.RoleShortagePulseAnim:IsPlaying() then
+		return;
+	end
+
+	local roleShortageEffectID, effectSpeed = 164, 0.17;
+	self.RoleShortagePulseModelScene:SetEffectSpeed(effectSpeed);
+	self.RoleShortagePulseModelScene:AddEffect(roleShortageEffectID, self);
+end
+
+function LFGRoleButtonWithShortageRewardMixin:CancelPulseEffect()
+	if self.effectTimer then
+		self.effectTimer:Cancel();
+	end
+
+	self.RoleShortagePulseModelScene:ClearEffects();
+end
+
+LFGRoleShortagePulseAnimMixin = {};
+
+function LFGRoleShortagePulseAnimMixin:OnLoop()
+	local parentFrame = self:GetParent();
+	-- Play the pulse effect when the role icon is at its brightest
+	local pulseEffectDelay = 0.9;
+	parentFrame.effectTimer = C_Timer.NewTimer(pulseEffectDelay, GenerateClosure(parentFrame.TryPlayPulseEffect, parentFrame));
+end
+
+function LFGRoleShortagePulseAnimMixin:OnStop()
+	self:GetParent():CancelPulseEffect();
 end

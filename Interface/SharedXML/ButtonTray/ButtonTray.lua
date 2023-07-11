@@ -62,6 +62,12 @@ end
 
 function GridButtonTrayMixin:OnSizeChanged()
 	local newWidth = self:GetWidth();
+	if newWidth < 2 then
+		-- A rather stupid looking early out, but this solves some indirectly circular resize dependencies
+		-- with ToolsControlDashboard stuff.
+		return;
+	end
+
 	local widthEpsilon = 0.1;
 	if ApproximatelyEqual(self.previousWidth, newWidth, widthEpsilon) then
 		return;

@@ -1002,19 +1002,22 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		--Update your role icons
 		if ( isDPS ) then
 			local icon = entry["RoleIcon"..nextRoleIcon];
-			icon:SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+			local showDisabled = false;
+			icon:SetAtlas(GetIconForRole("DAMAGER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			icon:Show();
 			nextRoleIcon = nextRoleIcon + 1;
 		end
 		if ( isHealer ) then
 			local icon = entry["RoleIcon"..nextRoleIcon];
-			icon:SetTexCoord(GetTexCoordsForRole("HEALER"));
+			local showDisabled = false;
+			icon:SetAtlas(GetIconForRole("HEALER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			icon:Show();
 			nextRoleIcon = nextRoleIcon + 1;
 		end
 		if ( isTank ) then
 			local icon = entry["RoleIcon"..nextRoleIcon];
-			icon:SetTexCoord(GetTexCoordsForRole("TANK"));
+			local showDisabled = false;
+			icon:SetAtlas(GetIconForRole("TANK", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 			icon:Show();
 			nextRoleIcon = nextRoleIcon + 1;
 		end
@@ -1033,12 +1036,10 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.HealersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalHealers - healerNeeds, totalHealers);
 		entry.DamagersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalDPS - dpsNeeds, totalDPS);
 
-		entry.TanksFound.Texture:SetDesaturated(tankNeeds ~= 0);
-		entry.TanksFound.Cover:SetShown(tankNeeds ~= 0);
-		entry.HealersFound.Texture:SetDesaturated(healerNeeds ~= 0);
-		entry.HealersFound.Cover:SetShown(healerNeeds ~= 0);
-		entry.DamagersFound.Texture:SetDesaturated(dpsNeeds ~= 0);
-		entry.DamagersFound.Cover:SetShown(dpsNeeds ~= 0);
+		local needMoreTanks, needMoreHealers, needMoreDPS = tankNeeds ~= 0, healerNeeds ~= 0, dpsNeeds ~= 0; 
+		entry.TanksFound.RoleIcon:SetAtlas(GetIconForRole("TANK", needMoreTanks), TextureKitConstants.IgnoreAtlasSize);
+		entry.HealersFound.RoleIcon:SetAtlas(GetIconForRole("HEALER", needMoreHealers), TextureKitConstants.IgnoreAtlasSize);
+		entry.DamagersFound.RoleIcon:SetAtlas(GetIconForRole("DAMAGER", needMoreDPS), TextureKitConstants.IgnoreAtlasSize);
 
 		entry.TanksFound:Show();
 		entry.HealersFound:Show();
@@ -1553,8 +1554,7 @@ end
 
 function TogglePVPScoreboardOrResults()
 	if IsAddOnLoaded("Blizzard_PVPMatch") then
-		local matchState = C_PvP.GetActiveMatchState();
-		local isComplete = matchState == Enum.PvPMatchState.Complete;
+		local isComplete = C_PvP.IsMatchComplete();
 		if isComplete then
 			if PVPMatchResults:IsShown() then
 				HideUIPanel(PVPMatchResults);
@@ -1565,7 +1565,7 @@ function TogglePVPScoreboardOrResults()
 			if PVPMatchScoreboard:IsShown() then
 				HideUIPanel(PVPMatchScoreboard);
 			else
-				local isActive = matchState == Enum.PvPMatchState.Active;
+				local isActive = C_PvP.IsMatchActive();
 				if isActive and (not C_PvP.IsMatchConsideredArena() or C_PvP.IsSoloShuffle()) then
 					PVPMatchScoreboard:BeginShow();
 				end

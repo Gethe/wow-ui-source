@@ -200,6 +200,7 @@ end
 local iconLookup = {
 	[Enum.SuperTrackingType.Quest] = "Navigation-Tracked-Icon",
 	[Enum.SuperTrackingType.UserWaypoint] = "Waypoint-MapPin-Tracked",
+	[Enum.SuperTrackingType.Content] = "Waypoint-MapPin-Tracked",
 	[Enum.SuperTrackingType.Corpse] = "Navigation-Tombstone-Icon",
 };
 

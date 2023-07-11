@@ -149,7 +149,7 @@ end
 ProfessionsCustomerOrdersRecipeCategoryListMixin = {};
 
 function ProfessionsCustomerOrdersRecipeCategoryListMixin:Init()
-	local emptyProvider = CreateLinearizedTreeListDataProvider();
+	local emptyProvider = CreateTreeDataProvider();
 	self.ScrollBox:SetDataProvider(emptyProvider);
 
 	self.categoryFilters = {};
@@ -202,7 +202,7 @@ function ProfessionsCustomerOrdersRecipeCategoryListMixin:OnDataLoadFinished()
 		end
 	end
 
-	local dataProvider = CreateTreeListDataProvider();
+	local dataProvider = CreateTreeDataProvider();
 	dataProvider:Insert({isRecraftCategory = true});
 	dataProvider:Insert({isSpacer = true});
 	InsertChildrenToTree(dataProvider, Enum.CraftingOrderCustomerCategoryType.Primary);
@@ -224,11 +224,11 @@ function ProfessionsCustomerOrdersRecipeCategoryListMixin:SetCategoryFilter(type
 		local elementData = node:GetData();
 		local categoryInfo = elementData.categoryInfo;
 		local collapsed = not IsCategorySelected(categoryInfo, self.categoryFilters);
-		node:SetCollapsed(collapsed, TreeListDataProviderConstants.RetainChildCollapse, TreeListDataProviderConstants.SkipInvalidation);
+		node:SetCollapsed(collapsed, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
 	end
 
 	local dataProvider = self.ScrollBox:GetDataProvider();
-	dataProvider:ForEach(UpdateNodeExpanded);
+	dataProvider:ForEach(UpdateNodeExpanded, TreeDataProviderConstants.IncludeCollapsed);
 	dataProvider:Invalidate();
 
 	local function UpdateButtonSelected(button)

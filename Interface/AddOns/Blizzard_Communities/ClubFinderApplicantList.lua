@@ -112,9 +112,9 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 		self.AllSpec:SetText(NONE);
 		self.AllSpec:Show();
 	elseif (isHealer and isTank and isDps) then 
-		self.RoleIcon1:SetTexCoord(GetTexCoordsForRoleSmallCircle("TANK"));
-		self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle("HEALER"));
-		self.RoleIcon3:SetTexCoord(GetTexCoordsForRoleSmallCircle("DAMAGER"));
+		self.RoleIcon1:SetAtlas(GetMicroIconForRole("TANK"), TextureKitConstants.IgnoreAtlasSize);
+		self.RoleIcon2:SetAtlas(GetMicroIconForRole("HEALER"), TextureKitConstants.IgnoreAtlasSize);
+		self.RoleIcon3:SetAtlas(GetMicroIconForRole("DAMAGER"), TextureKitConstants.IgnoreAtlasSize);
 
 		self.RoleIcon2:Show();
 		self.RoleIcon1:Show();
@@ -141,12 +141,12 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 		end
 
 		if (icon1Role) then
-			self.RoleIcon1:SetTexCoord(GetTexCoordsForRoleSmallCircle(icon1Role));
+			self.RoleIcon1:SetAtlas(GetMicroIconForRole(icon1Role), TextureKitConstants.IgnoreAtlasSize);
 			self.RoleIcon1:Show();
 		end
 
 		if (icon2Role) then
-			self.RoleIcon2:SetTexCoord(GetTexCoordsForRoleSmallCircle(icon2Role));
+			self.RoleIcon2:SetAtlas(GetMicroIconForRole(icon2Role), TextureKitConstants.IgnoreAtlasSize);
 			self.RoleIcon2:Show();
 		end
 	end

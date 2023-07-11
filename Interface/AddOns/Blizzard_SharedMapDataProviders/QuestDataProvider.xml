@@ -2,35 +2,10 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="QuestDataProvider.lua"/>
 
-	<Frame name="QuestPinTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="QuestPinMixin" virtual="true">
+	<Button name="QuestPinTemplate" inherits="POIButtonTemplate" hidden="true" flattenRenderLayers="true" enableMouse="true" mixin="QuestPinMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="shouldShowGlow" value="false" type="boolean"/>
+		</KeyValues>
 		<Size x="50" y="50"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="NormalTexture">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-				<Texture parentKey="PushedTexture" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="HighlightTexture" alphaMode="ADD" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="Display" inherits="QuestPOIDisplayLayerTemplate" virtual="true">
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
+	</Button>
 </Ui>

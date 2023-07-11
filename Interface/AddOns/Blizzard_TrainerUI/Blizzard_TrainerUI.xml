@@ -183,7 +183,7 @@
 					<OnShow function="ClassTrainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Button name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" text="TRAIN">
+			<Button name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true" text="TRAIN">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" />
 				</Anchors>

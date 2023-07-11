@@ -3,13 +3,6 @@
 	<Script file="RolePoll.lua"/>
 	<Button name="RolePollRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="48" y="48"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
-					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<CheckButton parentKey="checkButton">
 				<Size x="24" y="24"/>
@@ -22,15 +15,9 @@
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-RadioButton">
-					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
-				</NormalTexture>
-				<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
-					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
-				</HighlightTexture>
-				<CheckedTexture file="Interface\Buttons\UI-RadioButton">
-					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
-				</CheckedTexture>
+				<NormalTexture parentKey="NormalTexture" atlas="common-radiobutton-circle"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="common-radiobutton-circle" alphaMode="ADD" alpha="0.2"/>
+				<CheckedTexture parentKey="CheckedTexture" atlas="common-radiobutton-dot"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -53,7 +40,7 @@
 				self.checkButton:UnlockHighlight();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+		<NormalTexture atlas="UI-LFG-RoleIcon-Generic"/>
 	</Button>
 	<Frame name="RolePollPopup" parent="UIParent" hidden="true">
 		<Size x="306" y="160"/>
@@ -86,8 +73,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						local showDisabled = false;
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+						self:SetNormalAtlas(GetIconForRole("TANK", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 						self.role = "TANK";
 					</OnLoad>
 				</Scripts>
@@ -99,8 +87,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						local showDisabled = false;
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+						self:SetNormalAtlas(GetIconForRole("HEALER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 						self.role = "HEALER";
 					</OnLoad>
 				</Scripts>
@@ -112,8 +101,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						local showDisabled = false;
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+						self:SetNormalAtlas(GetIconForRole("DAMAGER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 						self.role = "DAMAGER";
 					</OnLoad>
 				</Scripts>

@@ -53,15 +53,11 @@ function EditModeSystemMixin:ProcessMovementKey(key)
 		xDelta = deltaAmount;
 	end
 
-	if (self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame) and self:IsInDefaultPosition() then
-		self:SetParent(UIParent);
-
-		if self.isPlayerFrameBottomManagedFrame then
-			self:UpdateSystemSettingFrameSize();
-		end
+	if self.isManagedFrame and self:IsInDefaultPosition() then
+		self:BreakFromFrameManager();
 	end
 
-	if self:HasSetting(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
+	if self == PlayerCastingBarFrame then
 		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeCastBarSetting.LockToPlayerFrame, 0);
 	end
 
@@ -129,7 +125,7 @@ function EditModeSystemMixin:SetScaleOverride(newScale)
 		self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 	end
 
-	if (self.isBottomManagedFrame or self.isRightManagedFrame) and self:IsInDefaultPosition() then
+	if self.isManagedFrame and self:IsInDefaultPosition() then
 		UIParent_ManageFramePositions();
 
 		if self.isRightManagedFrame and ObjectiveTrackerFrame and ObjectiveTrackerFrame:IsInDefaultPosition() then
@@ -213,8 +209,33 @@ function EditModeSystemMixin:ClearDirtySetting(setting)
 	self.dirtySettings[setting] = nil;
 end
 
+function EditModeSystemMixin:TrySetCompositeNumberSettingValue(setting, newValue)
+	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
+	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
+		return false;
+	end
+
+	-- Composite number settings are settings which represent multiple other hidden settings which combine to form the one main setting's number
+	-- So when we change the main setting we actually want to be changing each of the sub settings which make up that number
+	local useRawValueYes = true;
+	local rawOldValue = self:GetSettingValue(setting, useRawValueYes);
+	local rawNewValue = self:ConvertSettingDisplayValueToRawValue(setting, newValue);
+	if rawOldValue ~= rawNewValue then
+		local hundredsValue = math.floor(newValue / 100);
+		EditModeManagerFrame:OnSystemSettingChange(self, settingDisplayInfo.compositeNumberHundredsSetting, hundredsValue);
+
+		local tensAndOnesValue = math.floor(newValue % 100);
+		EditModeManagerFrame:OnSystemSettingChange(self, settingDisplayInfo.compositeNumberTensAndOnesSetting, tensAndOnesValue);
+	end
+	return true;
+end
+
 function EditModeSystemMixin:UpdateSystemSettingValue(setting, newValue)
 	if not self:IsInitialized() then
+		return;
+	end
+
+	if self:TrySetCompositeNumberSettingValue(setting, newValue) then
 		return;
 	end
 
@@ -240,17 +261,39 @@ function EditModeSystemMixin:ResetToDefaultPosition()
 	self:SetHasActiveChanges(true);
 end
 
-function EditModeSystemMixin:ApplySystemAnchor()
-	if self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame then
-		local frameContainer;
-		if self.isBottomManagedFrame then
-			frameContainer = UIParentBottomManagedFrameContainer;
-		elseif self.isRightManagedFrame then
-			frameContainer = UIParentRightManagedFrameContainer;
-		else
-			frameContainer = PlayerFrameBottomManagedFramesContainer;
-		end
+function EditModeSystemMixin:GetManagedFrameContainer()
+	if not self.isManagedFrame then
+		return nil;
+	end
 
+	if self.isBottomManagedFrame then
+		return UIParentBottomManagedFrameContainer;
+	elseif self.isRightManagedFrame then
+		return UIParentRightManagedFrameContainer;
+	else
+		return PlayerFrameBottomManagedFramesContainer;
+	end
+end
+
+function EditModeSystemMixin:BreakFromFrameManager()
+	local frameContainer = self:GetManagedFrameContainer();
+	if not frameContainer then
+		return;
+	end
+
+	self.ignoreFramePositionManager = true;
+	frameContainer:RemoveManagedFrame(self);
+	self:SetParent(UIParent);
+
+	if self.isPlayerFrameBottomManagedFrame then
+		self:UpdateSystemSettingFrameSize();
+	end
+end
+
+function EditModeSystemMixin:ApplySystemAnchor()
+	local frameContainer = self:GetManagedFrameContainer();
+
+	if frameContainer then
 		if self:IsInDefaultPosition() then
 			self.ignoreFramePositionManager = nil;
 			frameContainer:AddManagedFrame(self);
@@ -261,13 +304,7 @@ function EditModeSystemMixin:ApplySystemAnchor()
 			return;
 		end
 
-		self.ignoreFramePositionManager = true;
-		frameContainer:RemoveManagedFrame(self);
-		self:SetParent(UIParent);
-
-		if self.isPlayerFrameBottomManagedFrame then
-			self:UpdateSystemSettingFrameSize();
-		end
+		self:BreakFromFrameManager();
 	end
 
 	self:ClearAllPoints();
@@ -345,15 +382,55 @@ function EditModeSystemMixin:HasActiveChanges()
 	return self.hasActiveChanges;
 end
 
+function EditModeSystemMixin:HasCompositeNumberSetting(setting)
+	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
+	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
+		return nil;
+	end
+
+	-- Composite number settings are settings which represent multiple other hidden settings which combine to form the one main setting's number
+	-- So if we want to know if a composite number setting exists we actually want to be checking if all the sub settings which make up the number exist
+	return self:HasSetting(settingDisplayInfo.compositeNumberHundredsSetting)
+		and self:HasSetting(settingDisplayInfo.compositeNumberTensAndOnesSetting);
+end
+
 function EditModeSystemMixin:HasSetting(setting)
+	local hasCompositeNumberSetting = self:HasCompositeNumberSetting(setting);
+	if hasCompositeNumberSetting ~= nil then
+		return hasCompositeNumberSetting;
+	end
+
 	return self.settingMap and (self.settingMap[setting] ~= nil);
+end
+
+function EditModeSystemMixin:GetCompositeNumberSettingValue(setting, useRawValue)
+	local settingDisplayInfo = self.settingDisplayInfoMap[setting];
+	if not settingDisplayInfo or not settingDisplayInfo.isCompositeNumberSetting then
+		return nil;
+	end
+
+	-- Composite number settings are settings which represent multiple other hidden settings which combine to form the one main setting's number
+	-- So if we want to get the setting's value we need to get the sub settings values and combine them to form the main setting's number
+	local hundreds = self:GetSettingValue(settingDisplayInfo.compositeNumberHundredsSetting, useRawValue) or 0;
+	local tensAndOnes = self:GetSettingValue(settingDisplayInfo.compositeNumberTensAndOnesSetting, useRawValue) or 0;
+	return math.floor((hundreds * 100) + tensAndOnes);
 end
 
 function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
 	if not self:IsInitialized() then
 		return 0;
 	end
-	return useRawValue and self.settingMap[setting].value or self.settingMap[setting].displayValue;
+
+	local compositeNumberValue = self:GetCompositeNumberSettingValue(setting, useRawValue);
+	if compositeNumberValue ~= nil then
+		return compositeNumberValue;
+	end
+
+	if useRawValue then
+		return self.settingMap[setting].value;
+	else
+		return self.settingMap[setting].displayValue or self.settingMap[setting].value;
+	end
 end
 
 function EditModeSystemMixin:GetSettingValueBool(setting, useRawValue)
@@ -719,21 +796,19 @@ end
 
 function EditModeSystemMixin:OnDragStart()
 	if self:CanBeMoved() then
-		if (self.isBottomManagedFrame or self.isRightManagedFrame or self.isPlayerFrameBottomManagedFrame) and self:IsInDefaultPosition() then
-			self:SetParent(UIParent);
-
-			if self.isPlayerFrameBottomManagedFrame then
-				self:UpdateSystemSettingFrameSize();
-			end
+		if self.isManagedFrame and self:IsInDefaultPosition() then
+			self:BreakFromFrameManager();
 		end
 		self:ClearFrameSnap();
 		self:StartMoving();
+		EditModeManagerFrame:SetSnapPreviewFrame(self);
 		self.isDragging = true;
 	end
 end
 
 function EditModeSystemMixin:OnDragStop()
 	if self:CanBeMoved() then
+		EditModeManagerFrame:ClearSnapPreviewFrame();
 		self:StopMovingOrSizing();
 		self.isDragging = false;
 
@@ -1158,7 +1233,7 @@ end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseRaidStylePartyFrames()
 	UpdateRaidAndPartyFrames();
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
 	self:UpdateSelectionVerticalState();
 	self:UpdateSystemSettingFrameSize();
 end
@@ -1253,8 +1328,8 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingSortPlayersBy()
 		CompactRaidFrameContainer:SetFlowSortFunction(sortFunc);
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
-		CompactPartyFrame_SetFlowSortFunction(sortFunc);
-	end 
+		CompactPartyFrame:SetFlowSortFunction(sortFunc);
+	end
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingRowSize()
@@ -1282,6 +1357,10 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameSize()
 	end
 
 	self:SetScale(self:GetSettingValue(Enum.EditModeUnitFrameSetting.FrameSize) / 100);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingViewArenaSize()
+	self:RefreshMembers();
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1323,7 +1402,9 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
 		self:UpdateSystemSettingRowSize();
 	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameSize) then
-		self:UpdateSystemSettingFrameSize()
+		self:UpdateSystemSettingFrameSize();
+	elseif setting == Enum.EditModeUnitFrameSetting.ViewArenaSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewArenaSize) then
+		self:UpdateSystemSettingViewArenaSize();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1350,19 +1431,55 @@ end
 
 EditModeArenaUnitFrameSystemMixin = {};
 
-function EditModeArenaUnitFrameSystemMixin:OnEditModeExit()
-	EditModeSystemMixin.OnEditModeExit(self);
-
-	self:SetIsInEditMode(false);
-	self:Update();
+local function OpenPvpFrameSettings()
+	EditModeManagerFrame:ClearSelectedSystem();
+	EditModeManagerFrame:SetEditModeLockState("hideSelections");
+	HideUIPanel(EditModeManagerFrame);
+	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, PVP_FRAMES_LABEL);
 end
 
 function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
 	self.isInEditMode = isInEditMode;
-	for index, unitFrame in ipairs(ArenaEnemyMatchFramesContainer.UnitFrames) do
-		unitFrame.isInEditMode = isInEditMode;
-		unitFrame:GetPetFrame().isInEditMode = isInEditMode;
+
+	for _, memberUnitFrame in ipairs(self.memberUnitFrames) do
+		local castingBarFrame = memberUnitFrame.CastingBarFrame;
+		if castingBarFrame then
+			castingBarFrame.isInEditMode = isInEditMode;
+			castingBarFrame:UpdateShownState();
+		end
+
+		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
+		if ccRemoverFrame then
+			ccRemoverFrame:SetIsInEditMode(isInEditMode);
+		end
+
+		local debuffFrame = memberUnitFrame.DebuffFrame;
+		if debuffFrame then
+			debuffFrame:SetIsInEditMode(isInEditMode);
+		end
 	end
+
+	self.PreMatchFramesContainer:SetIsInEditMode(isInEditMode);
+
+	self:RefreshMembers();
+
+	if isInEditMode then
+		self:HighlightSystem();
+	else
+		self:ClearHighlight();
+	end
+end
+
+function EditModeArenaUnitFrameSystemMixin:AddExtraButtons(extraButtonPool)
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+
+	local raidFrameSettingsButton = extraButtonPool:Acquire();
+	raidFrameSettingsButton.layoutIndex = 4;
+	raidFrameSettingsButton:SetText(HUD_EDIT_MODE_PVP_FRAME_SETTINGS);
+	raidFrameSettingsButton:SetOnClickHandler(OpenPvpFrameSettings);
+	raidFrameSettingsButton:Show();
+
+	return true;
 end
 
 EditModeMinimapSystemMixin = {};
@@ -1727,6 +1844,22 @@ end
 
 EditModeChatFrameSystemMixin = {};
 
+function EditModeChatFrameSystemMixin:UpdateSystem(systemInfo)
+	EditModeSystemMixin.UpdateSystem(self, systemInfo);
+	self:RefreshSystemPosition();
+end
+
+function EditModeChatFrameSystemMixin:MarkSystemPositionDirty()
+	self.systemPositionDirty = true;
+end
+
+function EditModeChatFrameSystemMixin:RefreshSystemPosition()
+	if self.systemPositionDirty then
+		EditModeManagerFrame:OnSystemPositionChange(self);
+		self.systemPositionDirty = false;
+	end
+end
+
 function EditModeChatFrameSystemMixin:OnEditModeEnter()
 	EditModeSystemMixin.OnEditModeEnter(self);
 
@@ -1745,17 +1878,15 @@ function EditModeChatFrameSystemMixin:OnEditModeExit()
 end
 
 function EditModeChatFrameSystemMixin:EditMode_OnResized()
-	local width = self:GetWidth();
-	local height = self:GetHeight();
+	local width = math.floor(self:GetWidth());
+	local height =  math.floor(self:GetHeight());
 
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthHundreds, math.floor(width / 100));
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.WidthTensAndOnes, math.floor(width % 100));
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightHundreds, math.floor(height / 100));
-	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameSetting.HeightTensAndOnes, math.floor(height % 100));
-	EditModeManagerFrame:OnSystemPositionChange(self);
+	-- Changing the display only width/height settings will in turn cause the hidden width and height settings to be changed (ex. WidthHundreds and WidthTensAndOnes)
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameDisplayOnlySetting.Width, width);
+	EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeChatFrameDisplayOnlySetting.Height, height);
 end
 
-function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
+function EditModeChatFrameSystemMixin:UpdateSystemSettingWidth()
 	local useRawValueYes = true;
 
 	local width;
@@ -1766,6 +1897,14 @@ function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
 	else
 		width = self:GetWidth();
 	end
+	width = math.floor(width);
+
+	self:SetSize(width, self:GetHeight());
+	self:MarkSystemPositionDirty();
+end
+
+function EditModeChatFrameSystemMixin:UpdateSystemSettingHeight()
+	local useRawValueYes = true;
 
 	local height;
 	if self:HasSetting(Enum.EditModeChatFrameSetting.HeightHundreds) and self:HasSetting(Enum.EditModeChatFrameSetting.HeightTensAndOnes) then
@@ -1775,8 +1914,10 @@ function EditModeChatFrameSystemMixin:UpdateSystemSettingSize()
 	else
 		height = self:GetHeight();
 	end
+	height = math.floor(height);
 
-	self:SetSize(width, height);
+	self:SetSize(self:GetWidth(), height);
+	self:MarkSystemPositionDirty();
 end
 
 function EditModeChatFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1787,12 +1928,18 @@ function EditModeChatFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if (setting == Enum.EditModeChatFrameSetting.WidthHundreds
-		or setting == Enum.EditModeChatFrameSetting.WidthTensAndOnes
-		or setting == Enum.EditModeChatFrameSetting.HeightHundreds
-		or setting == Enum.EditModeChatFrameSetting.HeightTensAndOnes)
-		then
-		self:UpdateSystemSettingSize();
+	if setting == Enum.EditModeChatFrameSetting.WidthHundreds and self:HasSetting(Enum.EditModeChatFrameSetting.WidthHundreds) then
+		self:UpdateSystemSettingWidth();
+	elseif setting == Enum.EditModeChatFrameSetting.WidthTensAndOnes and self:HasSetting(Enum.EditModeChatFrameSetting.WidthTensAndOnes) then
+		self:UpdateSystemSettingWidth();
+	elseif setting == Enum.EditModeChatFrameSetting.HeightHundreds and self:HasSetting(Enum.EditModeChatFrameSetting.HeightHundreds) then
+		self:UpdateSystemSettingHeight();
+	elseif setting == Enum.EditModeChatFrameSetting.HeightTensAndOnes and self:HasSetting(Enum.EditModeChatFrameSetting.HeightTensAndOnes) then
+		self:UpdateSystemSettingHeight();
+	end
+
+	if not entireSystemUpdate then
+		self:RefreshSystemPosition();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -2186,6 +2333,87 @@ end
 
 function EditModePetFrameSystemMixin:UpdateSystemSettingFrameSize()
 	UpdatePetFrameScale();
+end
+
+EditModeTimerBarsSystemMixin = {};
+
+function EditModeTimerBarsSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeTimerBarsSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeTimerBarsSetting.Size) / 100);
+end
+
+function EditModeTimerBarsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeTimerBarsSetting.Size and self:HasSetting(Enum.EditModeTimerBarsSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeVehicleSeatIndicatorSystemMixin = {};
+
+function EditModeVehicleSeatIndicatorSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeVehicleSeatIndicatorSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeVehicleSeatIndicatorSetting.Size) / 100);
+end
+
+function EditModeVehicleSeatIndicatorSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeVehicleSeatIndicatorSetting.Size and self:HasSetting(Enum.EditModeVehicleSeatIndicatorSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeArchaeologyBarSystemMixin = {};
+
+function EditModeArchaeologyBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsInEditMode(false);
+end
+
+function EditModeArchaeologyBarSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeArchaeologyBarSetting.Size) / 100);
+end
+
+function EditModeArchaeologyBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeArchaeologyBarSetting.Size and self:HasSetting(Enum.EditModeArchaeologyBarSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
 end
 
 local EditModeSystemSelectionLayout =

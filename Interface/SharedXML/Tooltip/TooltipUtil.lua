@@ -142,9 +142,6 @@ function TooltipUtil.FindLinesFromData(lineTypeTable, tooltipData)
 		local lineTypes = tInvert(lineTypeTable);
 
 		for i, lineData in ipairs(tooltipData.lines) do
-			if not lineData.type then
-				TooltipUtil.SurfaceArgs(lineData);
-			end
 			if lineTypes[lineData.type] then
 				tinsert(resultTable, lineData);
 			end
@@ -152,4 +149,22 @@ function TooltipUtil.FindLinesFromData(lineTypeTable, tooltipData)
 	end
 
 	return resultTable;
+end
+
+function TooltipUtil.DebugCopyGameTooltip()
+	local output = "";
+	local numLines = GameTooltip:NumLines();
+	if numLines > 0 then
+		for i = 1, numLines do
+			local leftString = _G["GameTooltipTextLeft"..i];
+			output = output.."\n"..leftString:GetText();
+			local rightString = _G["GameTooltipTextRight"..i];
+			local rightText = rightString:GetText();
+			if rightText and rightText ~= "" then
+				output = output.."\t\t"..rightText;
+			end
+		end
+		CopyToClipboard(output);
+		DEFAULT_CHAT_FRAME:AddMessage("GameTooltip copied to clipboard", YELLOW_FONT_COLOR:GetRGB());
+	end
 end
