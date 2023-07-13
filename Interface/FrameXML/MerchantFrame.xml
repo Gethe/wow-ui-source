@@ -175,7 +175,7 @@
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT" x="12" y="0"/>
 				</Anchors>
 			</Frame>
-			<Button name="MerchantSellAllJunkButton">
+			<Button name="MerchantSellAllJunkButton" hidden="true">
 				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="160" y="33"/>

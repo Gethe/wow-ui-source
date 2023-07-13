@@ -146,7 +146,7 @@ function MerchantFrame_Update()
 
 	local hasJunkItems = C_MerchantFrame.GetNumJunkItems() > 0;
 	MerchantSellAllJunkButton.Icon:SetDesaturated(not hasJunkItems);
-	MerchantGuildBankRepairButton:SetEnabled(hasJunkItems);
+	MerchantSellAllJunkButton:SetEnabled(hasJunkItems);
 end
 
 function MerchantFrameItem_UpdateQuality(self, link, isBound)
@@ -379,7 +379,9 @@ function MerchantFrame_UpdateMerchantInfo()
 	MerchantBuyBackItem:Show();
 	MerchantFrameBottomLeftBorder:Show();
 
-	MerchantSellAllJunkButton:Show();
+	--ALEX TODO - Disabled until next patch
+	--MerchantSellAllJunkButton:Show();
+	MerchantSellAllJunkButton:Hide();
 	UndoFrame.Arrow:Show();
 
 	-- Hide buyback related items
@@ -1047,8 +1049,9 @@ function MerchantFrame_InitFilter()
 end
 
 function MerchantFrame_OnSellAllJunkButtonClicked()
-	GameTooltip:Hide();
-	C_MerchantFrame.SellAllJunkItems();
+	--ALEX TODO - disabled until next patch	
+	--GameTooltip:Hide();
+	--C_MerchantFrame.SellAllJunkItems();
 end
 
 function MerchantBuyBackButton_OnEnter(button)

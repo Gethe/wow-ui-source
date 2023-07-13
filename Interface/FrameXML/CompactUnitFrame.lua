@@ -219,6 +219,11 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		frame.hideCastbar = frame.optionTable.hideCastbar;
 		frame.healthBar.healthBackground = nil;
 
+		frame.aurasDirty = nil;
+		frame.healthDirty = nil;
+		frame.healPredictionDirty = nil;
+		frame.needsUpdate = nil;
+
 		frame:SetAttribute("unit", unit);
 		if ( unit ) then
 			CompactUnitFrame_RegisterEvents(frame);

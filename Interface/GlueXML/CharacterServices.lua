@@ -1166,6 +1166,10 @@ function RPEUPgradeInfoBlock:IsFinished()
 	return true;
 end
 
+function RPEUPgradeInfoBlock:OnHide()
+  --intentionally left blank
+end
+
 function RPEUPgradeInfoBlock:ShouldShowPopup()
 	return false;
 end
