@@ -1528,7 +1528,7 @@ SecureCmdList["DUEL_TO_THE_DEATH"] = function(msg)
 	if(not msg or msg == "") then
 		msg = GetUnitName("target", true);
 	end
-	if (msg == "" or not msg) then
+	if (msg == "" or not msg or not C_GameRules.IsHardcoreActive()) then
 		return;
 	end
 	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg);

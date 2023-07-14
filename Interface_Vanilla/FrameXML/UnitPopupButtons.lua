@@ -91,7 +91,7 @@ end
 
 function UnitPopupDuelToTheDeathButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( UnitCanAttack("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer() and C_GameRules.IsHardcoreActive()) then
+	if ((UnitCanAttack("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer()) or not C_GameRules.IsHardcoreActive()) then
 		return false;
 	end
 	return true;
