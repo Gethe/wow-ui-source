@@ -24,9 +24,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 31,
+			NumValues = 40,
 			MinValue = 0,
-			MaxValue = 30,
+			MaxValue = 39,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -60,6 +60,15 @@ local TooltipInfoShared =
 				{ Name = "EquipSlot", Type = "TooltipDataLineType", EnumValue = 28 },
 				{ Name = "ItemName", Type = "TooltipDataLineType", EnumValue = 29 },
 				{ Name = "Separator", Type = "TooltipDataLineType", EnumValue = 30 },
+				{ Name = "ToyName", Type = "TooltipDataLineType", EnumValue = 31 },
+				{ Name = "ToyText", Type = "TooltipDataLineType", EnumValue = 32 },
+				{ Name = "ToyEffect", Type = "TooltipDataLineType", EnumValue = 33 },
+				{ Name = "ToyDuration", Type = "TooltipDataLineType", EnumValue = 34 },
+				{ Name = "RestrictedArena", Type = "TooltipDataLineType", EnumValue = 35 },
+				{ Name = "RestrictedBg", Type = "TooltipDataLineType", EnumValue = 36 },
+				{ Name = "ToyFlavorText", Type = "TooltipDataLineType", EnumValue = 37 },
+				{ Name = "ToyDescription", Type = "TooltipDataLineType", EnumValue = 38 },
+				{ Name = "ToySource", Type = "TooltipDataLineType", EnumValue = 39 },
 			},
 		},
 		{

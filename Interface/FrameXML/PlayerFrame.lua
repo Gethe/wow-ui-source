@@ -1,12 +1,6 @@
 REQUIRED_REST_HOURS = 5;
 
 function PlayerFrame_OnLoad(self)
-	PlayerFrame.PlayerFrameContainer.FrameTexture:SetTexelSnappingBias(0);
-	PlayerFrame.PlayerFrameContainer.FrameTexture:SetSnapToPixelGrid(false);
-
-	PlayerFrame.PlayerFrameContainer.FrameFlash:SetTexelSnappingBias(0);
-	PlayerFrame.PlayerFrameContainer.FrameFlash:SetSnapToPixelGrid(false);
-
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
 	UnitFrame_Initialize(self, "player", PlayerName, self.frameType, self.PlayerFrameContainer.PlayerPortrait,
@@ -29,11 +23,21 @@ function PlayerFrame_OnLoad(self)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 
-	healthBar:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
-	PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
+	local healthBarTexture = healthBar:GetStatusBarTexture();
+	healthBarTexture:AddMaskTexture(healthBar.HealthBarMask);
+	healthBarTexture:SetTexelSnappingBias(0);
+	healthBarTexture:SetSnapToPixelGrid(false);
+	
+	local healthLossTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture();
+	healthLossTexture:AddMaskTexture(healthBar.HealthBarMask);
+	healthLossTexture:SetTexelSnappingBias(0);
+	healthLossTexture:SetSnapToPixelGrid(false);
 
-	manaBar:GetStatusBarTexture():AddMaskTexture(manaBar.ManaBarMask);
 	manaBar.FeedbackFrame:AddMaskTexture(manaBar.ManaBarMask);
+	local manaBarTexture = manaBar:GetStatusBarTexture();
+	manaBarTexture:AddMaskTexture(manaBar.ManaBarMask);
+	manaBarTexture:SetTexelSnappingBias(0);
+	manaBarTexture:SetSnapToPixelGrid(false);
 
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
 	PlayerFrame_Update();
@@ -240,6 +244,10 @@ function PlayerFrame_GetManaBar()
 	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar;
 end
 
+function PlayerFrame_GetAlternatePowerBar()
+	return PlayerFrame.activeAlternatePowerBar;
+end
+
 --
 -- Functions related to localization anchoring, which can be overritten in LocalizationPost for different languages.
 --
@@ -263,7 +271,6 @@ function PlayerFrame_Update()
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();
 		PlayerFrame_UpdatePlaytime();
-		PlayerFrame_UpdateLayout();
 	end
 end
 
@@ -304,6 +311,8 @@ function PlayerFrame_UpdatePvPStatus()
 	local pvpIcon = playerFrameTargetContextual.PVPIcon;
 	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
 	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+	
+	local activePvPBadgeContainer = nil;
 
 	if (UnitIsPVPFreeForAll("player")) then
 		if (PlayerFrame_CanPlayPVPUpdateSound()) then
@@ -317,11 +326,13 @@ function PlayerFrame_UpdatePvPStatus()
 			prestigePortrait:Show();
 			prestigeBadge:Show();
 			pvpIcon:Hide();
+			activePvPBadgeContainer = prestigePortrait;
 		else
 			prestigePortrait:Hide();
 			prestigeBadge:Hide();
 			pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
 			pvpIcon:Show();
+			activePvPBadgeContainer = pvpIcon;
 		end
 
 		PlayerPVPTimerText:Hide();
@@ -348,6 +359,7 @@ function PlayerFrame_UpdatePvPStatus()
 			prestigePortrait:Show();
 			prestigeBadge:Show();
 			pvpIcon:Hide();
+			activePvPBadgeContainer = prestigePortrait;
 		else
 			prestigePortrait:Hide();
 			prestigeBadge:Hide();
@@ -367,6 +379,7 @@ function PlayerFrame_UpdatePvPStatus()
 			end
 
 			pvpIcon:Show();
+			activePvPBadgeContainer = pvpIcon;
 		end
 	else
 		prestigePortrait:Hide();
@@ -374,6 +387,12 @@ function PlayerFrame_UpdatePvPStatus()
 		pvpIcon:Hide();
 		PlayerPVPTimerText:Hide();
 		PlayerPVPTimerText.timeLeft = nil;
+	end
+
+	if activePvPBadgeContainer == prestigePortrait then
+		PlayerPVPTimerText:SetPoint("TOP", prestigePortrait, "BOTTOM", 0, 10);
+	elseif activePvPBadgeContainer == pvpIcon then
+		PlayerPVPTimerText:SetPoint("TOP", pvpIcon, "BOTTOM", 0, 2);
 	end
 end
 
@@ -542,6 +561,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	-- Swap frame textures
 	PlayerFrame.PlayerFrameContainer.FrameTexture:Hide();
 	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Show();
+	PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:Hide();
 
 	-- Update Flash and Status Textures
 	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
@@ -569,6 +589,14 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	manaBar:SetPoint("TOPLEFT",91,-61);
 
 	manaBar.ManaBarMask:SetWidth(121);
+	manaBar.ManaBarMask:Show();
+
+	-- Update alternate power bar
+	PlayerFrameAlternatePowerBarArea:Hide();
+	local alternatePowerBar = PlayerFrame_GetAlternatePowerBar();
+	if alternatePowerBar then
+		alternatePowerBar:Hide();
+	end
 
 	-- Update power bar
 	local _, class = UnitClass("player");
@@ -593,8 +621,12 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -26);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 194, -27);
-	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -87);
 	PlayerLevelText:Hide();
+
+	PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
+	if PlayerFrameBottomManagedFramesContainer:IsShown() then
+		PlayerFrameBottomManagedFramesContainer:Layout();
+	end
 end
 
 function PlayerFrame_ToPlayerArt(self)
@@ -602,19 +634,26 @@ function PlayerFrame_ToPlayerArt(self)
 
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
+	local alternatePowerBar = PlayerFrame_GetAlternatePowerBar();
 
 	-- Unswap pet and player frames
 	UnitFrame_SetUnit(self, "player", healthBar, manaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
 
 	-- Swap frame textures
-	PlayerFrame.PlayerFrameContainer.FrameTexture:Show();
 	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Hide();
+	PlayerFrame.PlayerFrameContainer.FrameTexture:SetShown(alternatePowerBar == nil);
+	PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:SetShown(alternatePowerBar ~= nil);
 
 	-- Update Flash and Status Textures
 	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
-	frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
-	frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1.5, 1);
+	if alternatePowerBar then
+		frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-ClassResource-InCombat", TextureKitConstants.UseAtlasSize);
+		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -2, 0.5);
+	else
+		frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
+		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1.5, 1);
+	end
 
 	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
 	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
@@ -637,6 +676,15 @@ function PlayerFrame_ToPlayerArt(self)
 	manaBar:SetPoint("TOPLEFT", 85, -61);
 
 	manaBar.ManaBarMask:SetWidth(128);
+	manaBar.ManaBarMask:SetShown(alternatePowerBar == nil);
+
+	-- Update alternate power bar area
+	if alternatePowerBar then
+		PlayerFrameAlternatePowerBarArea:Show();
+		alternatePowerBar:Show();
+	else
+		PlayerFrameAlternatePowerBarArea:Hide();
+	end
 
 	-- Update power bar
 	local _, class = UnitClass("player");
@@ -661,7 +709,32 @@ function PlayerFrame_ToPlayerArt(self)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -27);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
-	playerFrameTargetContextual.PvpTimerText:SetPoint("TOPLEFT", 45, -82);
+
+	if alternatePowerBar then
+		PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 15);
+	else
+		PlayerFrameBottomManagedFramesContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 25);
+	end
+
+	if PlayerFrameBottomManagedFramesContainer:IsShown() then
+		PlayerFrameBottomManagedFramesContainer:Layout();
+	end
+end
+
+--
+--	Functions related to the alternate power bar
+--
+
+function PlayerFrame_OnAlternatePowerBarEnabled(alternatePowerBar)
+	PlayerFrame.activeAlternatePowerBar = alternatePowerBar;
+	PlayerFrame_UpdateArt(PlayerFrame);
+end
+
+function PlayerFrame_OnAlternatePowerBarDisabled(alternatePowerBar)
+	if PlayerFrame.activeAlternatePowerBar == alternatePowerBar then
+		PlayerFrame.activeAlternatePowerBar = nil;
+		PlayerFrame_UpdateArt(PlayerFrame);
+	end
 end
 
 --
@@ -678,107 +751,6 @@ function PlayerFrameDropDown_Initialize()
 		UnitPopup_ShowMenu(PlayerFrameDropDown, "VEHICLE", "vehicle");
 	else
 		UnitPopup_ShowMenu(PlayerFrameDropDown, "SELF", "player");
-	end
-end
-
---
--- Functions related to class specific things.
---
-
-function PlayerFrame_SetupDeathKnightLayout()
-	PlayerFrame:SetHitRectInsets(0,0,0,33);
-end
-
-CustomClassLayouts = {
-	["DEATHKNIGHT"] = PlayerFrame_SetupDeathKnightLayout,
-}
-
-local layoutUpdated = false;
-
-function PlayerFrame_UpdateLayout()
-	if (layoutUpdated) then
-		return;
-	end
-	layoutUpdated = true;
-
-	local _, class = UnitClass("player");
-
-	if (CustomClassLayouts[class]) then
-		CustomClassLayouts[class]();
-	end
-end
-
-local RUNICPOWERBARHEIGHT = 63;
-local RUNICGLOW_FADEALPHA = .050;
-local RUNICGLOW_MINALPHA = .40;
-local RUNICGLOW_MAXALPHA = .80;
-local RUNICGLOW_PULSEINTERVAL = .8;
-local RUNICGLOW_FINISHPULSEANDHIDE = false;
-local RUNICGLOW_PULSESTART = 0;
-
-function PlayerFrame_SetRunicPower(runicPower)
-	PlayerFrameRunicPowerBar:SetHeight(RUNICPOWERBARHEIGHT * (runicPower / 100));
-	PlayerFrameRunicPowerBar:SetTexCoord(0, 1, (1 - (runicPower / 100)), 1);
-
-	if (runicPower >= 90) then
-		RUNICGLOW_FINISHPULSEANDHIDE = false;
-		if (not PlayerFrameRunicPowerGlow:IsShown()) then
-			PlayerFrameRunicPowerGlow:Show();
-		end
-		PlayerFrameRunicPowerGlow:GetParent():SetScript("OnUpdate", DeathKnightPulseFunction);
-	elseif (PlayerFrameRunicPowerGlow:GetParent():GetScript("OnUpdate")) then
-		RUNICGLOW_FINISHPULSEANDHIDE = true;
-	else
-		PlayerFrameRunicPowerGlow:Hide();
-	end
-end
-
-local firstFadeIn = true;
-function DeathKnightPulseFunction(self, elapsed)
-	if (RUNICGLOW_PULSESTART == 0) then
-		RUNICGLOW_PULSESTART = GetTime();
-	elseif (not RUNICGLOW_FINISHPULSEANDHIDE) then
-		local interval = RUNICGLOW_PULSEINTERVAL - math.abs(.9 - (UnitPower("player") / 100));
-		local animTime = GetTime() - RUNICGLOW_PULSESTART;
-		if (animTime >= interval) then
-			-- Fading out
-			PlayerFrameRunicPowerGlow:SetAlpha(math.max(RUNICGLOW_MINALPHA, math.min(RUNICGLOW_MAXALPHA, RUNICGLOW_MAXALPHA * interval/animTime)));
-			if (animTime >= interval * 2) then
-				self.timeSincePulse = 0;
-				RUNICGLOW_PULSESTART = GetTime();
-			end
-			firstFadeIn = false;
-		else
-			-- Fading in
-			if (firstFadeIn) then
-				PlayerFrameRunicPowerGlow:SetAlpha(math.max(RUNICGLOW_FADEALPHA, math.min(RUNICGLOW_MAXALPHA, RUNICGLOW_MAXALPHA * animTime/interval)));
-			else
-				PlayerFrameRunicPowerGlow:SetAlpha(math.max(RUNICGLOW_MINALPHA, math.min(RUNICGLOW_MAXALPHA, RUNICGLOW_MAXALPHA * animTime/interval)));
-			end
-		end
-	elseif (RUNICGLOW_FINISHPULSEANDHIDE) then
-		local currentAlpha = PlayerFrameRunicPowerGlow:GetAlpha();
-		local animTime = GetTime() - RUNICGLOW_PULSESTART;
-		local interval = RUNICGLOW_PULSEINTERVAL;
-		firstFadeIn = true;
-
-		if (animTime >= interval) then
-			-- Already fading out, just keep fading out.
-			local alpha = math.min(PlayerFrameRunicPowerGlow:GetAlpha(), RUNICGLOW_MAXALPHA * (interval/(animTime*(animTime/2))));
-
-			PlayerFrameRunicPowerGlow:SetAlpha(alpha);
-			if (alpha <= RUNICGLOW_FADEALPHA) then
-				self.timeSincePulse = 0;
-				RUNICGLOW_PULSESTART = 0;
-				PlayerFrameRunicPowerGlow:Hide();
-				self:SetScript("OnUpdate", nil);
-				RUNICGLOW_FINISHPULSEANDHIDE = false;
-				return;
-			end
-		else
-			-- Was fading in, start fading out
-			animTime = interval;
-		end
 	end
 end
 

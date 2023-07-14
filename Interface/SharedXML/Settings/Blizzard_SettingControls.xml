@@ -4,7 +4,7 @@
 
 	<Texture name="HoverBackgroundTemplate" virtual="true" hidden="true">
 		<Anchors>
-			<Anchor relativeKey="$parent.$parent" point="TOPLEFT"/>
+			<Anchor relativeKey="$parent.$parent" point="TOPLEFT" x="-10"/>
 			<Anchor relativeKey="$parent.$parent" point="BOTTOMRIGHT" x="-5"/>
 		</Anchors>
 		<Color a="0.1" r="1" g="1" b="1"/>
@@ -17,6 +17,19 @@
 				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="SettingsAddOnDisabledLabelTemplate" virtual="true">
+		<Size y="30"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontRed" text="ADDON_DISABLED" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="37" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -44,10 +57,10 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameLevel="100" hidden="true">
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-20" y="3"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-37" y="3"/>
 				</Anchors>
 			</Frame>
 		</Frames>

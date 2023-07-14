@@ -281,7 +281,7 @@
 			<Frame parentKey="SoftTargetFrame">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeKey="$parent.name" relativePoint="TOP" y="-8" />
+					<Anchor point="BOTTOM" relativePoint="TOP" y="-8" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

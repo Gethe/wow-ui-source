@@ -1,12 +1,22 @@
 
+local AspectRatios = {};
+
+AspectRatios[Enum.CameraModeAspectRatio.Default] = {x = 0, y = 0};
+AspectRatios[Enum.CameraModeAspectRatio.LegacyLetterbox] = {x = 16, y = 9};
+AspectRatios[Enum.CameraModeAspectRatio.HighDefinition_16_X_9] = {x = 16, y = 9};
+AspectRatios[Enum.CameraModeAspectRatio.Cinemascope_2_Dot_4_X_1] = {x = 2.4, y = 1};
+
+local DefaultAspectRatio = {x = 16, y = 9};
+
 function CinematicFrame_OnDisplaySizeChanged(self)
-	if (self:IsShown()) then
+	-- called when the display changes and when the cinematic camera wants to 
+	-- either adjust the aspect ratio or add the legacy letterbox
+	if self.forcedAspectRatio == Enum.CameraModeAspectRatio.LegacyLetterbox then
 		local width = CinematicFrame:GetWidth();
 		local height = CinematicFrame:GetHeight();
 
-		local viewableHeight = width * 9 / 16;
-		local worldFrameHeight = WorldFrame:GetHeight();
-		local halfDiff = math.max(math.floor((worldFrameHeight - viewableHeight) / 2), 0);
+		local viewableHeight = width * DefaultAspectRatio.y / DefaultAspectRatio.x;
+		local halfDiff = math.max(math.floor((height - viewableHeight) / 2.0), 0);
 
 		WorldFrame:ClearAllPoints();
 		WorldFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 0, -halfDiff);
@@ -15,10 +25,47 @@ function CinematicFrame_OnDisplaySizeChanged(self)
 		local blackBarHeight = math.max(halfDiff, 40);
 		UpperBlackBar:SetHeight( blackBarHeight );
 		LowerBlackBar:SetHeight( blackBarHeight );
+			
+		UpperBlackBar:SetShown(true);
+		LowerBlackBar:SetShown(true);
+	else
+		UpperBlackBar:SetShown(false);
+		LowerBlackBar:SetShown(false);
+
+		local height, width, actualRatio;
+		local requestedRatio = AspectRatios[self.forcedAspectRatio];
+		if requestedRatio then
+			height = requestedRatio.y * WorldFrame:GetWidth() / requestedRatio.x;
+			width = requestedRatio.x * WorldFrame:GetHeight() / requestedRatio.y;
+			actualRatio = requestedRatio.x / requestedRatio.y;
+		else
+			height = DefaultAspectRatio.y * WorldFrame:GetWidth() / DefaultAspectRatio.x;
+			width = DefaultAspectRatio.x * WorldFrame:GetHeight() / DefaultAspectRatio.y;
+			actualRatio = DefaultAspectRatio.x / DefaultAspectRatio.y;
+		end
+		local physicalWidth, physicalHeight = GetPhysicalScreenSize();
+		local screenRatio = physicalWidth / physicalHeight;
+
+		WorldFrame:ClearAllPoints();
+		if actualRatio > screenRatio then -- letterbox
+			WorldFrame:SetHeight(1);
+			WorldFrame:SetPoint("LEFT", nil, "LEFT", 0, 0);
+			WorldFrame:SetPoint("RIGHT", nil, "RIGHT", 0, 0);
+			WorldFrame:SetHeight(height);
+		elseif actualRatio < screenRatio then --pillarbox
+			WorldFrame:SetWidth(1);
+			WorldFrame:SetPoint("TOP", nil, "TOP", 0, 0);
+			WorldFrame:SetPoint("BOTTOM", nil, "BOTTOM", 0, 0);
+			WorldFrame:SetWidth(width);				
+		else -- perfect match
+			WorldFrame:SetAllPoints();
+		end
 	end
 end
 
 function CinematicFrame_OnLoad(self)
+	self.forcedAspectRatio = Enum.CameraModeAspectRatio.LegacyLetterbox;
+
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
 	self:RegisterEvent("HIDE_SUBTITLE");
@@ -31,23 +78,24 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
-function CinematicFrame_OnShow(self)
-	CinematicFrame_OnDisplaySizeChanged(self)
-end
-
 function CinematicFrame_OnHide(self)
 	WorldFrame:SetAllPoints(nil);
 end
 
-function CinematicFrame_OnEvent(self, event, ...)
-	local arg1 = ...;
+function CinematicFrame_OnEvent(self, event, ...)	
 	if ( event == "CINEMATIC_START" ) then
+		local canBeCancelled, forcedAspectRatio = ...;
 		EventRegistry:TriggerEvent("CinematicFrame.CinematicStarting");
 		for i=1, #self.Subtitles do
 			self.Subtitles[i]:SetText("");
 			self.Subtitles[i]:Hide();
 		end
-		self.isRealCinematic = arg1;	--If it isn't real, it's a vehicle cinematic
+
+		self.isRealCinematic = canBeCancelled;	--If it isn't real, it's a vehicle cinematic
+
+		self.forcedAspectRatio = forcedAspectRatio;
+		CinematicFrame_OnDisplaySizeChanged(self);
+
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
 		RaidNotice_Clear(self.raidBossEmoteFrame);
@@ -79,7 +127,9 @@ function CinematicFrame_OnEvent(self, event, ...)
 			CinematicFrame_AddSubtitle(chatType, body);
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
-		CinematicFrame_OnDisplaySizeChanged(self);
+		if (self:IsShown()) then
+			CinematicFrame_OnDisplaySizeChanged(self);
+		end
 	elseif ( event == "HIDE_SUBTITLE") then
 		CinematicFrame_HideSubtitle(self)
 	end

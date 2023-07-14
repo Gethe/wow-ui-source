@@ -21,7 +21,7 @@ if tbl then
 	Import("getmetatable");
 	Import("ipairs");
 	Import("Round");
-	Import("LE_MODEL_BLEND_OPERATION_NONE");
+	Import("Enum");
 	Import("GetFontStringMetatable");
 end
 --------------------------------------------------
@@ -152,13 +152,13 @@ function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedApp
 				actor:TryOn(itemModifiedAppearanceID);
 			end
 		end
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 end
 
 function SetupItemPreviewActor(actor, displayID)
 	if actor then
 		actor:SetModelByCreatureDisplayID(displayID);
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 end

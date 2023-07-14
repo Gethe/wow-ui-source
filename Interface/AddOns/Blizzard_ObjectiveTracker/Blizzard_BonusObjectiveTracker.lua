@@ -149,7 +149,7 @@ function BonusObjectiveTracker_UpdatePOIs(self, numPOINumeric)
 	local usedBlocks = self:GetActiveBlocks();
 	for questID, block in pairs(usedBlocks) do
 		if block.isThreatQuest then
-			local poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "threat", nil);
+			local poiButton = ObjectiveTrackerFrame.BlocksFrame:GetButtonForQuest(questID, POIButtonUtil.Style.QuestThreat, nil);
 			if poiButton then
 				local topLine = block.lines[0] or block.lines[1];
 				poiButton:SetPoint("TOPRIGHT", topLine, "TOPLEFT", 18, 0);
@@ -173,7 +173,7 @@ function BonusObjectiveTracker_TrackWorldQuest(questID, watchType)
 		lastTrackedQuestID = questID;
 	end
 
-	if watchType == Enum.QuestWatchType.Automatic or C_SuperTrack.GetSuperTrackedQuestID() == 0 then
+	if watchType == Enum.QuestWatchType.Automatic or not C_SuperTrack.GetSuperTrackedQuestID() then
 		C_SuperTrack.SetSuperTrackedQuestID(questID);
 	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
@@ -359,104 +359,15 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 		tinsert(data.rewards, t);
 	end
 	COMPLETED_BONUS_DATA[block.id] = data;
+	block.module.rewardsFrame:SetRewardData(COMPLETED_BONUS_DATA);
 	-- try to play it
 	if( #data.rewards > 0 ) then
-		BonusObjectiveTracker_AnimateReward(block);
+		block.module.rewardsFrame:AnimateReward(block, data);
 	else
 		local oldPosIndex = COMPLETED_BONUS_DATA[block.id].posIndex;
 		COMPLETED_BONUS_DATA[block.id] = nil;
-		BonusObjectiveTracker_OnAnimateNextReward(block.module, oldPosIndex);
-	end
-end
-
-function BonusObjectiveTracker_AnimateReward(block)
-	local rewardsFrame = block.module.rewardsFrame;
-	if ( not rewardsFrame.id ) then
-		local data = COMPLETED_BONUS_DATA[block.id];
-		if ( not data ) then
-			return;
-		end
-
-		rewardsFrame.id = block.id;
-		rewardsFrame:SetParent(block);
-		rewardsFrame:ClearAllPoints();
-		rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4);
-		rewardsFrame:Show();
-		local numRewards = #data.rewards;
-		local contentsHeight = 12 + numRewards * 36;
-		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
-		rewardsFrame.Anim.RewardsShadowAnim:SetScaleTo(0.8, contentsHeight / 16);
-		rewardsFrame.Anim:Play();
-		PlaySound(SOUNDKIT.UI_BONUS_EVENT_SYSTEM_VIGNETTES);
-		-- configure reward frames
-		for i = 1, numRewards do
-			local rewardItem = rewardsFrame.Rewards[i];
-			if ( not rewardItem ) then
-				rewardItem = CreateFrame("FRAME", nil, rewardsFrame, "BonusObjectiveTrackerRewardTemplate");
-				rewardItem:SetPoint("TOPLEFT", rewardsFrame.Rewards[i-1], "BOTTOMLEFT", 0, -4);
-			end
-			local rewardData = data.rewards[i];
-			if ( rewardData.count > 1 ) then
-				rewardItem.Count:Show();
-				rewardItem.Count:SetText(rewardData.count);
-			else
-				rewardItem.Count:Hide();
-			end
-			rewardItem.Label:SetFontObject(rewardData.font);
-			rewardItem.Label:SetText(rewardData.label);
-			rewardItem.ItemIcon:SetTexture(rewardData.texture);
-			if ( rewardData.overlay ) then
-				rewardItem.ItemOverlay:SetTexture(rewardData.overlay);
-				rewardItem.ItemOverlay:Show();
-			else
-				rewardItem.ItemOverlay:Hide();
-			end
-			rewardItem:Show();
-			if( rewardItem.Anim:IsPlaying() ) then
-				rewardItem.Anim:Stop();
-			end
-			rewardItem.Anim:Play();
-		end
-		-- hide unused reward items
-		for i = numRewards + 1, #rewardsFrame.Rewards do
-			rewardsFrame.Rewards[i]:Hide();
-		end
-	end
-end
-
-function BonusObjectiveTracker_OnAnimateRewardDone(self)
-	local rewardsFrame = self:GetParent();
-	-- kill the data
-	local oldPosIndex = COMPLETED_BONUS_DATA[rewardsFrame.id].posIndex;
-	COMPLETED_BONUS_DATA[rewardsFrame.id] = nil;
-	rewardsFrame.id = nil;
-
-	BonusObjectiveTracker_OnAnimateNextReward(rewardsFrame.module, oldPosIndex);
-end
-
-function BonusObjectiveTracker_OnAnimateNextReward(module, oldPosIndex)
-	local rewardsFrame = module.rewardsFrame;
-	-- look for another reward to animate and fix positions
-	local nextAnimBlock;
-	for id, data in pairs(COMPLETED_BONUS_DATA) do
-		local block = module:GetExistingBlock(id);
-		-- make sure we're still showing this
-		if ( block ) then
-			nextAnimBlock = block;
-			-- If we have position data and if the block that completed was ahead of this, bring it up
-			if ( data.posIndex and oldPosIndex and data.posIndex > oldPosIndex ) then
-				data.posIndex = data.posIndex - 1;
-			end
-		end
-	end
-	-- update tracker to remove dead bonus objective
-	ObjectiveTracker_Update(module.updateReasonModule);
-	-- animate if we have something, otherwise clear it all
-	if ( nextAnimBlock ) then
-		BonusObjectiveTracker_AnimateReward(nextAnimBlock);
-	else
-		rewardsFrame:Hide();
-		wipe(COMPLETED_BONUS_DATA);
+		block.module.rewardsFrame:SetRewardData(COMPLETED_BONUS_DATA);
+		block.module.rewardsFrame:OnAnimateNextReward(block.module, oldPosIndex);
 	end
 end
 

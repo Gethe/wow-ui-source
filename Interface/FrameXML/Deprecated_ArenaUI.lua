@@ -1,3 +1,8 @@
+-- THIS CODE IS DEPRECATED!
+-- Try to avoid adding new features to this code.
+-- The new Arena UI can be found in CompactArenaFrame.
+-- This deprecated code is the old arena frames which are now only used by battlegrounds for representing flag carriers.
+
 MAX_ARENA_ENEMIES = 5;
 
 CVarCallbackRegistry:SetCVarCachable("showArenaEnemyPets");
@@ -31,33 +36,12 @@ function ArenaEnemyFramesContainerMixin:UpdateShownState()
 		unitFrame:UpdateShownState();
 	end
 
-	if self.isInEditMode then
+	local _, instanceType = IsInInstance();
+	if instanceType and instanceType == "pvp"  then
 		ArenaEnemyPrepFramesContainer:Hide();
-
 		ArenaEnemyMatchFramesContainer:Show();
-		for index, unitFrame in ipairs(ArenaEnemyMatchFramesContainer.UnitFrames) do
-			unitFrame:Show();
-		end
-
 		self:Show();
 		return;
-	end
-
-	local _, instanceType = IsInInstance();
-	if instanceType then
-		if instanceType == "arena" then
-			local hasArenaStarted = GetNumArenaOpponents() > 0;
-			ArenaEnemyPrepFramesContainer:SetShown(not hasArenaStarted);
-			ArenaEnemyMatchFramesContainer:SetShown(hasArenaStarted);
-
-			self:Show();
-			return;
-		elseif instanceType == "pvp" then
-			ArenaEnemyPrepFramesContainer:Hide();
-			ArenaEnemyMatchFramesContainer:Show();
-			self:Show();
-			return;
-		end
 	end
 
 	ArenaEnemyPrepFramesContainer:Hide();
@@ -82,8 +66,6 @@ function ArenaEnemyMatchFramesContainerMixin:OnLoad()
 		castFrame:UpdateIsShown();
 	end
 
-	self.ArenaEnemyBackground:Update();
-	self.ArenaEnemyBackground:SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	ArenaEnemyFramesContainer:Update();
 	self:ResetCrowdControlCooldownData();
 end
@@ -104,9 +86,6 @@ function ArenaEnemyMatchFramesContainerMixin:OnEvent(event, ...)
 		for i=1, MAX_ARENA_ENEMIES do
 			_G["ArenaEnemyMatchFrame"..i]:UpdatePet();
 		end
-
-		self.ArenaEnemyBackground:Update();
-		self.ArenaEnemyBackground:SetOpacity(tonumber(GetCVar("partyBackgroundOpacity")));
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:CheckEffectiveEnableState();
 		ArenaEnemyFramesContainer:Update();
@@ -280,7 +259,6 @@ function ArenaEnemyMatchFrameMixin:OnEvent(event, unit, ...)
 				end
 				self:UpdatePet();
 
-				ArenaEnemyMatchFramesContainer.ArenaEnemyBackground:Update();
 				ArenaEnemyFramesContainer:Update();
 			elseif ( unitEvent == "unseen" ) then
 				LockUnitFrame(self);
@@ -351,12 +329,8 @@ end
 
 function ArenaEnemyMatchFrameMixin:UpdateShownState()
 	local unitGuid = UnitGUID(self.unit);
-	if self.isInEditMode and not unitGuid then
-		self:SetMysteryPlayer();
-	end
-
-	self:SetShown(self.isInEditMode or unitGuid);
-	self.CastingBar:SetShown(self.isInEditMode or self.CastingBar.casting);
+	self:SetShown(unitGuid);
+	self.CastingBar:SetShown(self.CastingBar.casting);
 	self:UpdatePet();
 end
 
@@ -373,7 +347,7 @@ end
 ArenaEnemyPetFrameMixin = {};
 
 function ArenaEnemyPetFrameMixin:Update() --At some points, we need to use CVars instead of UVars even though UVars are faster.
-	if (self.isInEditMode or UnitGUID(self.unit)) and CVarCallbackRegistry:GetCVarValue("showArenaEnemyPets") then
+	if UnitGUID(self.unit) and CVarCallbackRegistry:GetCVarValue("showArenaEnemyPets") then
 		self:Show();
 	else
 		self:Hide();
@@ -412,7 +386,6 @@ function ArenaEnemyPetFrameMixin:OnEvent(event, ...)
 		if ( arg2 == "seen" or arg2 == "destroyed") then
 			UnlockUnitFrame(self);
 			self:Update();
-			ArenaEnemyMatchFramesContainer.ArenaEnemyBackground:Update();
 			local ownerFrame = _G["ArenaEnemyMatchFrame"..self:GetID()];
 			if ( not ownerFrame:IsShown() ) then
 				ownerFrame:SetMysteryPlayer();
@@ -457,55 +430,6 @@ end
 
 function ArenaEnemyPetDropDown_Initialize(self)
 	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
-end
-
-ArenaEnemyBackgroundMixin = {};
-
-function ArenaEnemyBackgroundMixin:OnLoad()
-	self:RegisterEvent("VARIABLES_LOADED");
-	self:Update();
-end
-
-function ArenaEnemyBackgroundMixin:OnShow()
-	self:SetFrameLevel(1);
-end
-
-function ArenaEnemyBackgroundMixin:OnEvent(event, ...)
-	if event == "VARIABLES_LOADED" then
-		self:Update();
-		OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
-		self:SetOpacity();
-	end
-end
-
-function ArenaEnemyBackgroundMixin:OnMouseUp(button)
-	if button == "RightButton" then
-		PartyFrame.Background:ToggleOpacity(self);
-	end
-end
-
-function ArenaEnemyBackgroundMixin:Update()
-	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
-		self:Show();
-		local numOpps = min(GetNumArenaOpponents(), MAX_ARENA_ENEMIES);
-		if ( numOpps > 0 ) then
-			self:SetPoint("BOTTOMLEFT", "ArenaEnemyMatchFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
-		else
-			self:Hide();
-		end
-	else
-		self:Hide();
-	end
-end
-
-function ArenaEnemyBackgroundMixin:SetOpacity(opacity)
-	local alpha;
-	if ( not opacity ) then
-		alpha = 1.0 - OpacityFrameSlider:GetValue();
-	else
-		alpha = 1.0 - opacity;
-	end
-	self:SetAlpha(alpha);
 end
 
 -----------------------------------------------------------------------------
@@ -565,53 +489,4 @@ function ArenaEnemyPrepFramesContainerMixin:UpdateFrames()
 			prepFrame:Hide();
 		end
 	end
-end
-
-ArenaPrepBackgroundMixin = {};
-
-function ArenaPrepBackgroundMixin:OnLoad()
-	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
-	self:Update();
-end
-
-function ArenaPrepBackgroundMixin:OnShow()
-	self:SetFrameLevel(1);
-end
-
-function ArenaPrepBackgroundMixin:OnEvent(event, ...)
-	if event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS" then
-		self:Update();
-		OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
-		self:SetOpacity();
-	end
-end
-
-function ArenaPrepBackgroundMixin:Update()
-	if EditModeManagerFrame:ShouldShowPartyFrameBackground() then
-		self:Show();
-		local numOpps = GetNumArenaOpponents();
-		if numOpps > 0 then
-			self:SetPoint("BOTTOMLEFT", "ArenaEnemyMatchFrame"..numOpps.."PetFrame", "BOTTOMLEFT", -15, -10);
-		else
-			self:Hide();
-		end
-	else
-		self:Hide();
-	end
-end
-
-function ArenaPrepBackgroundMixin:OnMouseUp(button)
-	if button == "RightButton" then
-		PartyFrame.Background:ToggleOpacity(self);
-	end
-end
-
-function ArenaPrepBackgroundMixin:SetOpacity(opacity)
-	local alpha;
-	if ( not opacity ) then
-		alpha = 1.0 - OpacityFrameSlider:GetValue();
-	else
-		alpha = 1.0 - opacity;
-	end
-	self:SetAlpha(alpha);
 end

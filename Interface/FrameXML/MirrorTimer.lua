@@ -1,5 +1,4 @@
-
-MIRRORTIMER_NUMTIMERS = 3;
+local numMirrorTimerTypes = 3;
 
 MirrorTimerAtlas = {
 	EXHAUSTION = "ui-castingbar-filling-standard",
@@ -8,101 +7,155 @@ MirrorTimerAtlas = {
 	FEIGNDEATH = "ui-castingbar-filling-channel",
 };
 
-function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
+MirrorTimerContainerMixin = {};
 
-	-- Pick a free dialog to use
-	local dialog = nil;
-	-- Find an open dialog of the requested type
-	for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
-		local frame = _G["MirrorTimer"..index];
-		if ( frame:IsShown() and (frame.timer == timer) ) then
-			dialog = frame;
-			break;
-		end
-	end
-	if ( not dialog ) then
-		-- Find a free dialog
-		for index = 1, MIRRORTIMER_NUMTIMERS, 1 do
-			local frame = _G["MirrorTimer"..index];
-			if ( not frame:IsShown() ) then
-				dialog = frame;
-				break;
-			end
-		end
-	end
-	if ( not dialog ) then
-		return nil;
-	end
+function MirrorTimerContainerMixin:OnLoad()
+	self.activeTimers = {};
 
-	dialog.timer = timer;
-	dialog.value = (value / 1000);
-	dialog.scale = scale;
-	if ( paused > 0 ) then
-		dialog.paused = 1;
-	else
-		dialog.paused = nil;
-	end
-
-	-- Set the text of the dialog
-	local text = dialog.Text;
-	text:SetText(label);
-
-	-- Set the status bar of the dialog
-	local statusbar = dialog.StatusBar;
-	statusbar:SetMinMaxValues(0, (maxvalue / 1000));
-	statusbar:SetValue(dialog.value);
-	statusbar:SetStatusBarTexture(MirrorTimerAtlas[timer]);
-
-	dialog:Show();
-
-	return dialog;
-end
-
-MirrorTimerMixin = { };
-
-function MirrorTimerMixin:OnLoad()
-	self:RegisterEvent("MIRROR_TIMER_PAUSE");
-	self:RegisterEvent("MIRROR_TIMER_STOP");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self.timer = nil;
+	self:RegisterEvent("MIRROR_TIMER_START");
+	self:RegisterEvent("MIRROR_TIMER_STOP");
+	self:RegisterEvent("MIRROR_TIMER_PAUSE");
 end
 
-function MirrorTimerMixin:OnEvent(event, ...)
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		for index=1, MIRRORTIMER_NUMTIMERS do
-			local timer, value, maxvalue, scale, paused, label = GetMirrorTimerInfo(index);
-			if ( timer ==  "UNKNOWN") then
-				self:Hide();
-				self.timer = nil;
-			else
-				MirrorTimer_Show(timer, value, maxvalue, scale, paused, label)
+function MirrorTimerContainerMixin:OnEvent(event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		for i = 1, numMirrorTimerTypes do
+			local timer, value, maxvalue, _, paused, label = GetMirrorTimerInfo(i);
+			if timer ~= "UNKNOWN" then
+				self:SetupTimer(timer, value, maxvalue, paused, label);
 			end
 		end
-	end
-	
-	local arg1 = ...;
-	if ( not self:IsShown() or (arg1 ~= self.timer) ) then
-		return;
-	end
-	
-	if ( event == "MIRROR_TIMER_PAUSE" ) then
-		if ( arg1 > 0 ) then
-			self.paused = 1;
-		else
-			self.paused = nil;
+	elseif event == "MIRROR_TIMER_START" then
+		local timer, value, maxvalue, _, paused, label = ...;
+		self:SetupTimer(timer, value, maxvalue, paused, label);
+	elseif event == "MIRROR_TIMER_STOP" then
+		local timer = ...;
+		self:ClearTimer(timer);
+	elseif event == "MIRROR_TIMER_PAUSE" then
+		local timer, paused = ...;
+		local activeTimer =	self:GetActiveTimer(timer);
+		if activeTimer then
+			activeTimer:SetPaused(paused);
 		end
-		return;
-	elseif ( event == "MIRROR_TIMER_STOP" ) then
-		self:Hide();
-		self.timer = nil;
 	end
 end
+
+function MirrorTimerContainerMixin:SetupTimer(timer, value, maxvalue, paused, label)
+	local availableTimerFrame = self:GetAvailableTimer(timer);
+	if not availableTimerFrame then
+		return;
+	end
+
+	availableTimerFrame:Setup(timer, value, maxvalue, paused, label);
+	self.activeTimers[timer] = availableTimerFrame;
+end
+
+function MirrorTimerContainerMixin:ClearTimer(timer)
+	local activeTimer = self.activeTimers[timer];
+	if activeTimer then
+		activeTimer:Clear();
+		self.activeTimers[timer] = nil;
+	end
+end
+
+function MirrorTimerContainerMixin:GetActiveTimer(timer)
+	return self.activeTimers[timer];
+end
+
+function MirrorTimerContainerMixin:GetAvailableTimer(timer)
+	local activeTimer =	self:GetActiveTimer(timer);
+	if activeTimer then
+		return activeTimer;
+	end
+
+	for index, timerFrame in ipairs(self.mirrorTimers) do
+		if not timerFrame:HasTimer() then
+			return timerFrame;
+		end
+	end
+end
+
+function MirrorTimerContainerMixin:ForceUpdateTimers()
+	for _, activeTimer in pairs(self.activeTimers) do
+		activeTimer:OnUpdate();
+	end
+end
+
+function MirrorTimerContainerMixin:SetIsInEditMode(isInEditMode)
+	for index, timerFrame in ipairs(self.mirrorTimers) do
+		timerFrame:SetIsInEditMode(isInEditMode);
+	end
+end
+
+function MirrorTimerContainerMixin:HasAnyTimersShowing()
+	for index, timerFrame in ipairs(self.mirrorTimers) do
+		if timerFrame:IsShown() then
+			return true;
+		end
+	end
+	return false;
+end
+
+MirrorTimerMixin = {};
 
 function MirrorTimerMixin:OnUpdate(elapsed)
-	if ( self.paused ) then
+	if not self.timer then
 		return;
 	end
-	local statusbar = self.StatusBar;
-	self.value = GetMirrorTimerProgress(self.timer)  / 1000;
-	statusbar:SetValue(self.value);
+
+	self:UpdateStatusBarValue();
+end
+
+function MirrorTimerMixin:OnShow()
+	MirrorTimerContainer:Layout();
+end
+
+function MirrorTimerMixin:OnHide()
+	MirrorTimerContainer:Layout();
+end
+
+function MirrorTimerMixin:Setup(timer, value, maxvalue, paused, label)
+	self.timer = timer;
+
+	self.StatusBar:SetStatusBarTexture(MirrorTimerAtlas[timer]);
+	self.StatusBar:SetMinMaxValues(0, (maxvalue / 1000));
+	self:UpdateStatusBarValue(value);
+
+	self:SetPaused(paused);
+
+	self.Text:SetText(label);
+
+	self:UpdateShownState();
+end
+
+function MirrorTimerMixin:Clear()
+	self:SetScript("OnUpdate", nil);
+	self.timer = nil;
+	self:UpdateShownState();
+end
+
+function MirrorTimerMixin:SetPaused(paused)
+	if paused then
+		self:SetScript("OnUpdate", nil);
+	else
+		self:SetScript("OnUpdate", self.OnUpdate);
+	end
+end
+
+function MirrorTimerMixin:UpdateStatusBarValue(value)
+	self.StatusBar:SetValue((value or GetMirrorTimerProgress(self.timer))  / 1000);
+end
+
+function MirrorTimerMixin:HasTimer()
+	return self.timer;
+end
+
+function MirrorTimerMixin:SetIsInEditMode(isInEditMode)
+	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
+end
+
+function MirrorTimerMixin:UpdateShownState()
+	self:SetShown(self.isInEditMode or self.timer);
 end

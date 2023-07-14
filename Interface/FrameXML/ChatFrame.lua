@@ -142,7 +142,7 @@ ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTab
 ChatTypeInfo["GUILD_ITEM_LOOTED"]						= CopyTable(ChatTypeInfo["GUILD_ACHIEVEMENT"]);
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-
+ChatTypeInfo["PING"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 --NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
@@ -311,7 +311,9 @@ ChatTypeGroup["PET_BATTLE_INFO"] = {
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
 };
-
+ChatTypeGroup["PING"] = {
+	"CHAT_MSG_PING",
+};
 --NEW_CHAT_TYPE - Add the chat type above.
 
 ChatTypeGroupInverted = {};
@@ -1755,6 +1757,36 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 	end
 end
 
+local function CleanupPingTypeString(pingTypeString)
+	local cleanString = pingTypeString:gsub("%s+", "");
+	cleanString = strupper(cleanString);
+	return cleanString;
+end
+local pingNameToTypeTable = {
+	[CleanupPingTypeString(PING_TYPE_ASSIST)] = Enum.PingSubjectType.Assist,
+	[CleanupPingTypeString(PING_TYPE_ATTACK)] = Enum.PingSubjectType.Attack,
+	[CleanupPingTypeString(PING_TYPE_ON_MY_WAY)] = Enum.PingSubjectType.OnMyWay,
+	[CleanupPingTypeString(PING_TYPE_WARNING)] = Enum.PingSubjectType.Warning,
+};
+SecureCmdList["PING"] = function(msg)
+	PingUI_LoadUI();
+
+	local action, target = SecureCmdOptionParse(msg);
+	local pingType;
+	if action then
+		pingType = pingNameToTypeTable[CleanupPingTypeString(action)];
+	end
+
+	-- If you don't have a target but were trying to use one then just return
+	-- We were trying to ping a target which we couldn't get due to some conditional
+	-- Don't wanna try and send a ping since that will do it's best to come up with a target to use which isn't our intention in this case
+	if not target and msg:find("%[.+%]") then
+		return;
+	end
+
+	PingManager:SendMacroPing(pingType, target);
+end
+
 function AddSecureCmd(cmd, cmdString)
 	if not issecure() then
 		error("Cannot call AddSecureCmd from insecure code");
@@ -2844,6 +2876,11 @@ function ChatFrame_OnLoad(self)
 
 	local noMouseWheel = not GetCVarBool("chatMouseScroll");
 	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self, self.ScrollBar, noMouseWheel);
+
+	-- Scroll bar alpha is managed by a cursor test over the chat frame. Set the initial alpha to 0
+	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and 
+	-- FCF_FadeOutScrollbar.
+	self.ScrollBar:SetAlpha(0);
 end
 
 function ChatFrame_UpdateChatFrames()
@@ -3687,7 +3724,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		end
 
 		if ( type == "SYSTEM" or type == "SKILL" or type == "CURRENCY" or type == "MONEY" or
-			 type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
+			 type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE" or type == "PING") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);

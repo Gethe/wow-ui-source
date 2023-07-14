@@ -583,7 +583,11 @@ function ClassTalentTalentsTabMixin:InitializeLoadoutDropDown()
 				end
 			end
 
-			self:GetParent():CheckConfirmResetAction(FinishLoadConfiguration, CancelLoadConfiguration);
+			local function ConfirmFinishLoadConfiguration()
+				self:CheckConfirmSwapFromDefault(FinishLoadConfiguration, CancelLoadConfiguration);
+			end
+
+			self:GetParent():CheckConfirmResetAction(ConfirmFinishLoadConfiguration, CancelLoadConfiguration);
 		end
 	end
 
@@ -1085,6 +1089,30 @@ function ClassTalentTalentsTabMixin:HasAnyConfigChanges()
 	end
 
 	return self:HasValidConfig() and C_Traits.ConfigHasStagedChanges(self:GetConfigID());
+end
+
+function ClassTalentTalentsTabMixin:CheckConfirmSwapFromDefault(callback, cancelCallback)
+	if self:IsDefaultLoadout() then
+		local referenceKey = self;
+		if not StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			local customData = {
+				text = TALENT_FRAME_CONFIRM_LEAVE_DEFAULT_LOADOUT,
+				callback = callback,
+				cancelCallback = cancelCallback,
+				acceptText = CONTINUE,
+				cancelText = CANCEL,
+				referenceKey = referenceKey,
+			};
+
+			StaticPopup_ShowCustomGenericConfirmation(customData);
+		end
+	else
+		callback();
+	end
+end
+
+function ClassTalentTalentsTabMixin:IsDefaultLoadout()
+	return self.lastSelectedConfigID == nil;
 end
 
 function ClassTalentTalentsTabMixin:UpdateConfigButtonsState()

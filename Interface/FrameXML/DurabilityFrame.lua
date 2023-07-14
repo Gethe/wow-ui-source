@@ -113,8 +113,8 @@ function DurabilityFrameMixin:SetAlerts()
 	self:SetWidth(width);
 
 	local isNotShowingVehicleSeatIndicator = not VehicleSeatIndicator:IsShown();
-	local isNotShowingArenaEnemyFrames = not ArenaEnemyFramesContainer or not ArenaEnemyFramesContainer:IsShown();
-	self.shouldShow = numAlerts > 0 and isNotShowingVehicleSeatIndicator and isNotShowingArenaEnemyFrames;
+	local isNotShowingCompactArenaFrame = not CompactArenaFrame or not CompactArenaFrame:IsShown();
+	self.shouldShow = numAlerts > 0 and isNotShowingVehicleSeatIndicator and isNotShowingCompactArenaFrame;
 	self:UpdateShownState();
 end
 

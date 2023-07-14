@@ -3,18 +3,11 @@
 	<Script file="RoleSelectionTemplate.lua"/>
 	<Button name="RoleSelectionRoleTemplate" mixin="RoleSelectionRoleMixin" virtual="true" motionScriptsWhileDisabled="true">
 		<Size x="48" y="48"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="Cover" alpha="0.5" hidden="true">
-					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
-			<CheckButton parentKey="CheckButton">
-				<Size x="24" y="24"/>
+			<CheckButton parentKey="CheckButton" scale="0.7">
+				<Size x="30" y="29"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+					<Anchor point="BOTTOMLEFT" x="-3" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -22,11 +15,10 @@
 					</OnClick>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+				<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 			</CheckButton>
 		</Frames>
 		<Scripts>
@@ -53,7 +45,7 @@
 				self.CheckButton:UnlockHighlight();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+		<NormalTexture atlas="UI-LFG-RoleIcon-Generic"/>
 	</Button>
 	<Frame name="RoleSelectionTemplate" mixin="RoleSelectionMixin" virtual="true">
 		<Size x="306" y="160"/>
@@ -93,7 +85,8 @@
 				<Scripts>
 					<OnLoad>
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+						local showDisabled = false;
+						self:SetNormalAtlas(GetIconForRole("TANK", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 						self.role = "TANK";
 					</OnLoad>
 				</Scripts>
@@ -106,7 +99,8 @@
 				<Scripts>
 					<OnLoad>
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+						local showDisabled = false;
+						self:SetNormalAtlas(GetIconForRole("HEALER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 						self.role = "HEALER";
 					</OnLoad>
 				</Scripts>
@@ -119,7 +113,8 @@
 				<Scripts>
 					<OnLoad>
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+						local showDisabled = false;
+						self:SetNormalAtlas(GetIconForRole("DAMAGER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 						self.role = "DAMAGER";
 					</OnLoad>
 				</Scripts>

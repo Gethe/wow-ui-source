@@ -6,6 +6,8 @@
 	<Frame name="NewFeatureLabelTemplate" inherits="ResizeLayoutFrame" mixin="NewFeatureLabelMixin" virtual="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="animateGlow" value="true" type="boolean"/>
+			<KeyValue key="label" value="NEW_CAPS" type="global"/>
+			<KeyValue key="justifyH" value="CENTER" type="string"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -42,6 +44,7 @@
 		</Animations>
 		<Scripts>
 			<OnShow inherit="prepend" method="OnShow"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>

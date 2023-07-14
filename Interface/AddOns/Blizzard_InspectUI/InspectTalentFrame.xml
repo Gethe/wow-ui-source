@@ -108,7 +108,7 @@
 							</Anchors>
 							<Color r="0.984375" g="0.828125" b="0"/>
 						</FontString>
-						<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="roleIcon">
+						<Texture name="$parentRoleIcon" atlas="UI-LFG-RoleIcon-Generic"	parentKey="roleIcon">
 							<Size x="20" y="20"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-5" y="-3" />

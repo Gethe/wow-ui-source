@@ -139,6 +139,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(ContentTrackingDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(InvasionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(GossipDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(FlightPointDataProviderMixin));
@@ -194,11 +195,13 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CONTRIBUTION_COLLECTOR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE", 6);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_PING");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_CONTENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");

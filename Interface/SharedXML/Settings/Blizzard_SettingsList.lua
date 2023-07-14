@@ -43,9 +43,9 @@ SettingsListMixin = {};
 
 function SettingsListMixin:OnLoad()
 	local verticalPad = 10;
-	local pad = 0;
+	local padLeft, padRight = 25, 0;
 	local spacing = 9;
-	local view = CreateScrollBoxListLinearView(verticalPad, verticalPad, pad, pad, spacing);
+	local view = CreateScrollBoxListLinearView(verticalPad, verticalPad, padLeft, padRight, spacing);
 
 	local function Factory(factory, elementData)
 		local function Initializer(frame, elementData)
@@ -71,7 +71,7 @@ function SettingsListMixin:OnLoad()
 
 	local scrollBoxAnchors = 
 	{
-		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", 10, -2),
+		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", -15, -2),
 		CreateAnchor("BOTTOMRIGHT", -20, -2);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchors, scrollBoxAnchors);
@@ -90,6 +90,43 @@ end
 
 function SettingsListMixin:GetInputBlocker()
 	return self.ScrollBox.InputBlocker;
+end
+
+-- Used when a setting value change results in other settings needing to have their
+-- visibility changed. For example, checking a bool setting may hide one child, but show
+-- another.
+function SettingsListMixin:RepairDisplay(initializers)
+	-- The order isn't stored on the initializer itself because initializers can be mirrored in
+	-- another settings lists, namely Acessibility.
+	local order = {};
+	for index, initializer in ipairs(initializers) do
+		order[initializer] = index;
+	end
+
+	-- Remove what is no longer intended to be shown.
+	local dataProvider = self.ScrollBox:GetDataProvider();
+	local shown = {};
+	for index, initializer in dataProvider:ReverseEnumerate() do
+		if initializer:ShouldShow() then
+			shown[initializer] = true;
+		else
+			dataProvider:RemoveIndex(index);
+		end
+	end
+
+	-- Add any newly shown, out of position at the end. Will be corrected when sorted.
+	for index, initializer in EnumerateTaintedKeysTable(initializers) do
+		if not shown[initializer] and initializer:ShouldShow() then
+			dataProvider:Insert(initializer);
+		end
+	end
+
+	-- Reorder and sort the list.
+	local function Comparator(e1, e2)
+		return order[e1] < order[e2];
+	end
+	dataProvider:SetSortComparator(Comparator);
+	dataProvider:ClearSortComparator();
 end
 
 function SettingsListMixin:Display(initializers)

@@ -3,7 +3,6 @@
 
 	<Frame name="PlayerChoiceCypherOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceCypherOptionTemplateMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="selectedEffectID" value="138" type="number"/>
 			<KeyValue key="minOptionHeight" value="343" type="number"/>
 			<KeyValue key="choiceSelectedSound" value="SOUNDKIT.UI_PLAYER_CHOICE_CYPHER_POWER" type="global"/>
 		</KeyValues>

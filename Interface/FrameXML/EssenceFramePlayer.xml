@@ -285,7 +285,7 @@
 			<KeyValue key="tooltip1" value="POWER_TYPE_ESSENCE" type="global"/>
 			<KeyValue key="tooltip2" value="ESSENCE_TOOLTIP" type="global"/>
 			<KeyValue key="resourcePointTemplate" value="EssencePointButtonTemplate" type="string"/>
-			<KeyValue key="showBarFunc" value="EssencePowerBar.SetupEvoker" type="global"/>
+			<KeyValue key="shouldShowBarFunc" value="EssencePowerBar.SetupEvoker" type="global"/>
 			<KeyValue key="spacing" value="-1" type="number"/>
 			<KeyValue key="class" value="DRACTHYR" type="string"/>
 		</KeyValues>

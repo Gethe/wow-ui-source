@@ -220,19 +220,11 @@
 						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentFiligree" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="filigree">
-					<Size x="292" y="54"/>
+				<Texture name="$parentBottomArt" atlas="UI-LFG-DividerLine" parentKey="bottomArt">
+					<Size x="287" y="4"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-3"/>
+						<Anchor point="TOP" relativeKey="$parent.background" relativePoint="BOTTOM" y="1"/>
 					</Anchors>
-					<TexCoords left="0.02734" right="0.59765" top="0.578125" bottom="1.0"/>
-				</Texture>
-				<Texture name="$parentBottomArt" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="bottomArt">
-					<Size x="287" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="55"/>
-					</Anchors>
-					<TexCoords left="0.0" right="0.5605" top="0.0" bottom="0.5625"/>
 				</Texture>
 				<FontString name="$parentYourRoleDescription" parentKey="roleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
 					<Anchors>
@@ -247,11 +239,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Button name="$parentCloseButton">
-				<Size x="32" y="32"/>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Button name="$parentCloseButton" inherits="UIPanelHideButtonNoScripts">
+				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+					<Anchor point="TOPRIGHT" x="-1" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -259,9 +251,6 @@
 						StaticPopupSpecial_Hide(PVPReadyDialog);
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentEnterBattleButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton" mixin="PVPReadyDialogEnterButtonMixin">
 				<Size x="115" y="22"/>
@@ -289,7 +278,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture name="$parentTexture" parentKey="texture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true"/>
+						<Texture name="$parentTexture" parentKey="texture" atlas="UI-LFG-RoleIcon-Generic"/>
 					</Layer>
 				</Layers>
 			</Frame>

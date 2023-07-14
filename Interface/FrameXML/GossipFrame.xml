@@ -88,7 +88,7 @@
 			<OnMouseWheel function=""/>
 		</Scripts>
 	</Frame>
-	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipSharedTitleButtonMixin" hidden="false">
+	<Button name="GossipTitleButtonTemplate" virtual="true" mixin="GossipTitleButtonMixin" hidden="false">
 		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">

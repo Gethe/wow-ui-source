@@ -40,7 +40,7 @@ function ActionBarController_OnLoad(self)
 	
 	-- Misc
 	self:RegisterEvent("PET_BATTLE_CLOSE");
-	
+	self:RegisterEvent("PET_BATTLE_OPENING_START")
 	self:RegisterEvent("SETTINGS_LOADED");
 
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
@@ -99,6 +99,11 @@ function ActionBarController_OnEvent(self, event, ...)
 	
 	if ( event == "PET_BATTLE_CLOSE" ) then
 		ValidateActionBarTransition();
+	end
+
+	-- Override bars should not display within pet battles
+	if ( event == "PET_BATTLE_OPENING_START" and OverrideActionBar:IsShown()) then
+		BeginActionBarTransition(OverrideActionBar, nil);
 	end
 
 	if event == "SETTINGS_LOADED" then

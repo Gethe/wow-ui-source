@@ -129,7 +129,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ObjectiveTrackerLineTemplate" virtual="true">
+	<Frame name="ObjectiveTrackerLineTemplate" mixin="ObjectiveTrackerLineMixin" hyperlinksEnabled="true" virtual="true">
 		<Size x="232" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -147,9 +147,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
-			</OnLoad>
+			<OnLoad method="OnLoad"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
 		</Scripts>
 	</Frame>
 
@@ -345,6 +344,12 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="AdventureObjectiveTrackerBonusRewardsFrame" inherits="BonusObjectiveRewardsFrameTemplate">
+		<KeyValues>
+			<KeyValue key="HeaderText" value="COLLECTED" type="global"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="ObjectiveTrackerFrame" inherits="UIParentRightManagedFrameTemplate, EditModeObjectiveTrackerSystemTemplate" frameStrata="LOW">
 		<Size x="235" y="140"/>
 		<KeyValues>
@@ -362,7 +367,7 @@
 					<Anchor point="BOTTOM"/>
 				</Anchors>
 			</Frame>
-			<Frame name="ObjectiveTrackerBlocksFrame" parentKey="BlocksFrame" hidden="false">
+			<Frame name="ObjectiveTrackerBlocksFrame" parentKey="BlocksFrame" inherits="POIButtonOwnerTemplate" hidden=" false">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
@@ -381,6 +386,7 @@
 					<Frame parentKey="ScenarioHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="UIWidgetsHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="MonthlyActivitiesHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
+					<Frame parentKey="AdventureHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame parentKey="HeaderMenu">

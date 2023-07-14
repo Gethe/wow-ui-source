@@ -769,6 +769,7 @@ function OnExcessiveErrors()
 	-- Glue Implementation, no-op.
 end
 
+ConsolePrint = print;
 SecureMixin = Mixin;
 CreateFromSecureMixins = CreateFromMixins;
 

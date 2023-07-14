@@ -8,6 +8,11 @@ local rarityToSwirlPostfix =
 	[Enum.PlayerChoiceRarity.Epic] = "-QualityEpic",
 };
 
+function PlayerChoiceTorghastOptionTemplateMixin:OnLoad()
+	PlayerChoicePowerChoiceTemplateMixin.OnLoad(self);
+	self.selectedEffects = { {id = 97} };
+end
+
 function PlayerChoiceTorghastOptionTemplateMixin:GetTextureKitRegionTable()
 	local useTextureRegions = PlayerChoicePowerChoiceTemplateMixin.GetTextureKitRegionTable(self);
 

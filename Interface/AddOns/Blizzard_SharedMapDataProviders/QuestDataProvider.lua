@@ -7,6 +7,8 @@ end
 function QuestDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
+	mapCanvas:SetPinTemplateType(self:GetPinTemplate(), "BUTTON");
+
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_POI_UPDATE");
@@ -39,11 +41,11 @@ end
 
 function QuestDataProviderMixin:OnHighlightedQuestPOIChange(questID)
 	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
-		if pin.questID == questID then
-			QuestPOIButton_EvaluateManagedHighlight(pin);
+		if pin:GetQuestID() == questID then
+			pin:EvaluateManagedHighlight();
 			break;
 		end
-	end	
+	end
 end
 
 function QuestDataProviderMixin:OnPingQuestID(...)
@@ -204,7 +206,7 @@ function QuestDataProviderMixin:AssignMissingNumbersToPins()
 		for questNumber = 1, C_QuestLog.GetMaxNumQuests() do
 			if not self.usedQuestNumbers[questNumber] then
 				local pin = table.remove(self.pinsMissingNumbers);
-				pin:AssignQuestNumber(questNumber);
+				pin:SetNumber(questNumber);
 
 				if #self.pinsMissingNumbers == 0 then
 					break;
@@ -226,7 +228,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 	pin.dataProvider = self;
-	QuestPOI_SetPinScale(pin, 2.5);
+	pin:SetPinScale(2.5);
 
 	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();
 	local isComplete = QuestCache:Get(questID):IsComplete();
@@ -243,22 +245,22 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	pin.Display:SetPoint("CENTER");
 	pin.moveHighlightOnMouseDown = false;
 	pin.selected = isSuperTracked;
-	pin.style = QuestPOI_GetStyleFromQuestData(pin, isComplete, isWaypoint);
+	pin.style = POIButtonUtil.GetStyleFromQuestData(isComplete, isWaypoint);
 
-	if pin.style == "numeric" then
+	if pin.style == POIButtonUtil.Style.Numeric then
 		-- try to match the number with tracker or quest log POI if possible
-		local poiButton = QuestPOI_FindButton(ObjectiveTrackerFrame.BlocksFrame, questID) or QuestPOI_FindButton(QuestScrollFrame.Contents, questID);
-		if poiButton and poiButton.style == "numeric" then
+		local poiButton = ObjectiveTrackerFrame.BlocksFrame:FindButtonByQuestID(questID) or QuestScrollFrame.Contents:FindButtonByQuestID(questID);
+		if poiButton and poiButton.style == POIButtonUtil.Style.Numeric then
 			local questNumber = poiButton.index;
 			self.usedQuestNumbers[questNumber] = true;
-			pin:SetQuestNumber(questNumber);
+			pin:SetNumber(questNumber);
 		else
 			table.insert(self.pinsMissingNumbers, pin);
 		end
 	end
 
-	QuestPOI_UpdateButtonStyle(pin);
-	QuestPOIButton_EvaluateManagedHighlight(pin);
+	pin:UpdateButtonStyle();
+	pin:EvaluateManagedHighlight();
 
 	MapPinHighlight_CheckHighlightPin(pin:GetHighlightType(), pin, pin.NormalTexture);
 
@@ -275,8 +277,14 @@ function QuestPinMixin:OnLoad()
 	self.UpdateTooltip = self.OnMouseEnter;
 end
 
+function QuestPinMixin:DisableInheritedMotionScriptsWarning()
+	return true;
+end
+
 function QuestPinMixin:OnMouseEnter()
-	local questID = self.questID;
+	-- Overrides POIButtonMixin.
+
+	local questID = self:GetQuestID();
 	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 	local title = C_QuestLog.GetTitleForQuestID(questID);
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
@@ -288,10 +296,7 @@ function QuestPinMixin:OnMouseEnter()
 	local waypointText = wouldShowWaypointText and C_QuestLog.GetNextWaypointText(questID);
 	if waypointText then
 		GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH..waypointText, HIGHLIGHT_FONT_COLOR);
-	elseif poiButton and poiButton.style ~= "numeric" then
-		local completionText = GetQuestLogCompletionText(questLogIndex) or QUEST_WATCH_QUEST_READY;
-		GameTooltip:AddLine(QUEST_DASH..completionText, 1, 1, 1, true);
-	else
+	elseif self.style == POIButtonUtil.Style.Numeric then
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
 		if numItemDropTooltips > 0 then
 			for i = 1, numItemDropTooltips do
@@ -311,29 +316,28 @@ function QuestPinMixin:OnMouseEnter()
 		end
 	end
 	GameTooltip:Show();
-	QuestPOIHighlightManager:SetHighlight(questID);
+	POIButtonHighlightManager:SetHighlight(questID);
     EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
+	-- Overrides POIButtonMixin.
+
 	GameTooltip:Hide();
-	QuestPOIHighlightManager:ClearHighlight();
+	POIButtonHighlightManager:ClearHighlight();
 end
 
-function QuestPinMixin:OnMouseClickAction(button)
-	QuestPOIButton_OnClick(self, button);
+function QuestPinMixin:OnClick(...)
+	-- Overrides POIButtonMixin.
 	if not IsModifierKeyDown() then
 		EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnClick", self, self.questID);
 	end
+
+	return MapCanvasPinMixin.OnClick(self, ...);
 end
 
-function QuestPinMixin:AssignQuestNumber(questNumber)
-	self:SetQuestNumber(questNumber);
-	QuestPOI_SetNumber(self);
-end
-
-function QuestPinMixin:SetQuestNumber(questNumber)
-	self.index = questNumber;
+function QuestPinMixin:OnMouseClickAction(...)
+	POIButtonMixin.OnClick(self, ...);
 end
 
 function QuestPinMixin:GetHighlightType() -- override
@@ -347,19 +351,31 @@ function QuestPinMixin:GetHighlightType() -- override
 	return MapPinHighlightType.None;
 end
 
-function QuestPinMixin:OnMouseDownAction()
+function QuestPinMixin:OnMouseDown(...)
+	-- Overrides POIButtonMixin.
+	return MapCanvasPinMixin.OnMouseDown(self, ...);
+end
+
+function QuestPinMixin:OnMouseDownAction(...)
+	POIButtonMixin.OnMouseDown(self, ...);
+
 	self.NormalTexture:Hide();
 	self.PushedTexture:Show();
-	self.Display:UpdatePoint(true);
 	if self.moveHighlightOnMouseDown then
 		self.HighlightTexture:SetPoint("CENTER", 2, -2);
 	end
 end
 
-function QuestPinMixin:OnMouseUpAction()
+function QuestPinMixin:OnMouseUp(...)
+	-- Overrides POIButtonMixin.
+	return MapCanvasPinMixin.OnMouseUp(self, ...);
+end
+
+function QuestPinMixin:OnMouseUpAction(...)
+	POIButtonMixin.OnMouseDown(self, ...);
+
 	self.NormalTexture:Show();
 	self.PushedTexture:Hide();
-	self.Display:UpdatePoint(false);
 	if self.moveHighlightOnMouseDown then
 		self.HighlightTexture:SetPoint("CENTER", 0, 0);
 	end

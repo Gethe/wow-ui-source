@@ -610,7 +610,7 @@
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="1">
 								<Texture parentKey="toyBackground" atlas="perks-item-background" >
-									<Size x="358" y="426"/>
+									<Size x="530" y="631"/>
 									<Anchors>
 										<Anchor point="CENTER" x="80" y="0"/>
 									</Anchors>
@@ -618,15 +618,15 @@
 							</Layer>
 							<Layer level="BORDER" >
 								<Texture parentKey="Icon" >
-									<Size x="48" y="48"/>
+									<Size x="88" y="88"/>
 									<Anchors>
-										<Anchor point="CENTER" x="80" y="80"/>
+										<Anchor point="CENTER" x="80" y="118"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK" textureSubLevel="-1">
 								<Texture parentKey="IconBorder" atlas="collections-itemborder-collected" >
-									<Size x="63" y="63"/>
+									<Size x="103" y="103"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-3"/>
 									</Anchors>
@@ -634,14 +634,9 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="DetailsFrame" inherits="PerksProgramDetailsFrameTemplate" >
-								<KeyValues>
-									<KeyValue key="timeTextColor" value="NORMAL_FONT_COLOR" type="global"/>
-									<KeyValue key="timeValueColor" value="WHITE_FONT_COLOR" type="global"/>
-									<KeyValue key="fixedWidth" value="260" type="string"/>
-								</KeyValues>
+							<Frame parentKey="DetailsFrame" inherits="PerksProgramToyDetailsFrameTemplate" >
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-40" />
+									<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-60" />
 								</Anchors>
 							</Frame>
 						</Frames>

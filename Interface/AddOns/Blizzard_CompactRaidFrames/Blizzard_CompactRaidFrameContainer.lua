@@ -46,6 +46,7 @@ function CompactRaidFrameContainerMixin:OnLoad()
 	self.displayFlaggedMembers = true;
 
 	self:AddGroup("PARTY");
+	self:AddGroup("ARENA");
 end
 
 function CompactRaidFrameContainerMixin:OnEvent(event, ...)
@@ -103,6 +104,13 @@ function CompactRaidFrameContainerMixin:SetDisplayPets(displayPets)
 	end
 end
 
+function CompactRaidFrameContainerMixin:SetPvpDisplayPets(displayPets)
+	if self.pvpDisplayPets ~= displayPets then
+		self.pvpDisplayPets = displayPets;
+		self:TryUpdate();
+	end
+end
+
 function CompactRaidFrameContainerMixin:SetDisplayMainTankAndAssist(displayFlaggedMembers)
 	if self.displayFlaggedMembers ~= displayFlaggedMembers then
 		self.displayFlaggedMembers = displayFlaggedMembers;
@@ -127,7 +135,8 @@ end
 
 --Internally used functions
 function CompactRaidFrameContainerMixin:TryUpdate()
-	CompactPartyFrame_RefreshMembers();
+	CompactPartyFrame:RefreshMembers();
+	CompactArenaFrame:RefreshMembers();
 
 	if self:ReadyToUpdate() then
 		self:LayoutFrames();
@@ -211,10 +220,20 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 		groupFrame, didCreation = CompactRaidGroup_GenerateForGroup(id);
 	elseif id == "PARTY" then
 		groupFrame, didCreation = CompactPartyFrame_Generate();
+
+		if didCreation then
+			tinsert(self.frameUpdateList.mini, groupFrame);
+		end
+	elseif id =="ARENA" then
+		groupFrame, didCreation = CompactArenaFrame_Generate();
+
+		if didCreation then
+			tinsert(self.frameUpdateList.mini, groupFrame);
+		end
 	else
 		GMError("Unknown id");
 	end
-	
+
 	groupFrame.unusedFunc = groupFrame.Hide;
 	if didCreation then
 		tinsert(self.frameUpdateList.normal, groupFrame);
@@ -222,7 +241,9 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 	end
 
 	if id == "PARTY" then
-		CompactPartyFrame_UpdateVisibility();
+		CompactPartyFrame:UpdateVisibility();
+	elseif id == "ARENA" then
+		CompactArenaFrame:UpdateVisibility();
 	else
 		if didCreation then
 			groupFrame:SetParent(self);
@@ -335,12 +356,13 @@ function CompactRaidFrameContainerMixin:GetUnitFrame(unit, frameType)
 		unitFramesCreated = unitFramesCreated + 1;
 		frame = CreateFrame("Button", "CompactRaidFrame"..unitFramesCreated, self, "CompactUnitFrameTemplate");
 		frame.applyFunc = applyFunc;
-		CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
 		CompactUnitFrame_SetUpdateAllEvent(frame, "GROUP_ROSTER_UPDATE");
 		frame.unusedFunc = self.unitFrameUnusedFunc;
+		frame.groupType = CompactRaidGroupTypeEnum.Raid;
 		tinsert(self.frameUpdateList[info.updateList], frame);
 		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);
 	end
+	CompactUnitFrame_SetUpFrame(frame, info.setUpFunc);
 	frame.inUse = true;
 	frame.frameType = frameType;
 	return frame;
@@ -368,4 +390,69 @@ function RaidUtil_GetUsedGroups(tab)	--Fills out the table with which groups hav
 		end
 	end
 	return tab;
+end
+
+--Functions used for sorting and such
+function CRFSort_Group(token1, token2)
+	if ( IsInRaid() ) then
+		local id1 = tonumber(string.sub(token1, 5));
+		local id2 = tonumber(string.sub(token2, 5));
+
+		if ( not id1 or not id2 ) then
+			return id1;
+		end
+
+		local _, _, subgroup1 = GetRaidRosterInfo(id1);
+		local _, _, subgroup2 = GetRaidRosterInfo(id2);
+
+		if ( subgroup1 and subgroup2 and subgroup1 ~= subgroup2 ) then
+			return subgroup1 < subgroup2;
+		end
+
+		--Fallthrough: Sort by order in Raid window.
+		return id1 < id2;
+	else
+		if ( token1 == "player" ) then
+			return true;
+		elseif ( token2 == "player" ) then
+			return false;
+		else
+			return token1 < token2;	--String compare is OK since we don't go above 1 digit for party.
+		end
+	end
+end
+
+local roleValues = { MAINTANK = 1, MAINASSIST = 2, TANK = 3, HEALER = 4, DAMAGER = 5, NONE = 6 };
+function CRFSort_Role(token1, token2)
+	local id1, id2 = UnitInRaid(token1), UnitInRaid(token2);
+	local role1, role2;
+	if ( id1 ) then
+		role1 = select(10, GetRaidRosterInfo(id1));
+	end
+	if ( id2 ) then
+		role2 = select(10, GetRaidRosterInfo(id2));
+	end
+
+	role1 = role1 or UnitGroupRolesAssigned(token1);
+	role2 = role2 or UnitGroupRolesAssigned(token2);
+
+	local value1, value2 = roleValues[role1], roleValues[role2];
+	if ( value1 ~= value2 ) then
+		return value1 < value2;
+	end
+
+	--Fallthrough: Sort alphabetically.
+	return CRFSort_Alphabetical(token1, token2);
+end
+
+function CRFSort_Alphabetical(token1, token2)
+	local name1, name2 = UnitName(token1), UnitName(token2);
+	if ( name1 and name2 ) then
+		return name1 < name2;
+	elseif ( name1 or name2 ) then
+		return name1;
+	end
+
+	--Fallthrough: Alphabetic order of tokens (just here to make comparisons well-ordered)
+	return token1 < token2;
 end

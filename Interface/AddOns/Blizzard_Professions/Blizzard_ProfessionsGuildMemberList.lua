@@ -70,7 +70,7 @@ end
 function ProfessionsGuildListingMixin:Refresh()
 	if self.waitingOnData then
 		self.Container.Spinner:Show();
-		self.Container.ScrollBox:ClearDataProvider();
+		self.Container.ScrollBox:RemoveDataProvider();
 	else
 		self.Container.Spinner:Hide();
 

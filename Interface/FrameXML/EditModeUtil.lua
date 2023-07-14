@@ -68,16 +68,21 @@ end
 
 EditModeMagnetismManager = {};
 
+hooksecurefunc("UpdateUIParentPosition", function() EditModeMagnetismManager:UpdateUIParentPoints() end);
+
 EditModeMagnetismManager.magneticFrames = {};
 
 -- Default magnetism range
 EditModeMagnetismManager.magnetismRange = 8;
 EditModeMagnetismManager.sqrMagnetismRange = EditModeMagnetismManager.magnetismRange * EditModeMagnetismManager.magnetismRange;
+EditModeMagnetismManager.sqrCornerMagnetismRange = EditModeMagnetismManager.sqrMagnetismRange * 2;
 
 function EditModeMagnetismManager:UpdateUIParentPoints()
 	self.uiParentCenterX, self.uiParentCenterY = UIParent:GetCenter();
 
 	local left, bottom, width, height = UIParent:GetRect();
+	self.uiParentWidth = width;
+	self.uiParentHeight = height;
 	self.uiParentLeft = left;
 	self.uiParentRight = left + width;
 	self.uiParentBottom = bottom;
@@ -87,6 +92,7 @@ end
 function EditModeMagnetismManager:SetMagnetismRange(magnetismRange)
 	self.magnetismRange = magnetismRange;
 	self.sqrMagnetismRange = magnetismRange * magnetismRange;
+	self.sqrCornerMagnetismRange = self.sqrMagnetismRange * 2;
 end
 
 function EditModeMagnetismManager:RegisterFrame(frame)
@@ -218,7 +224,7 @@ function EditModeMagnetismManager:IsPotentialMagneticCornerFrame(frame)
 end
 
 function EditModeMagnetismManager:ShouldReplaceClosestCorner(closestSqrDistance, cornerSqrDistance)
-	return cornerSqrDistance <= self.sqrMagnetismRange and (not closestSqrDistance or cornerSqrDistance < closestSqrDistance);
+	return cornerSqrDistance <= self.sqrCornerMagnetismRange and (not closestSqrDistance or cornerSqrDistance < closestSqrDistance);
 end
 
 -- Attempts to get a MagneticFrameInfoTable for a corner snap between the input frame and relativeToFrameInfo
@@ -357,35 +363,48 @@ function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 	return magneticHorizontalFrame, magneticVerticalFrame, magneticCornerFrame;
 end
 
-function EditModeMagnetismManager:ApplyMagnetism(systemFrame)
+function EditModeMagnetismManager:GetMagneticFrameInfo(systemFrame)
 	local magneticHorizontalFrame, magneticVerticalFrame, magneticCornerFrame = self:FindMagneticFrames(systemFrame);
 
+	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo;
 	if magneticHorizontalFrame or magneticVerticalFrame or magneticCornerFrame then
-		systemFrame:ClearAllPoints();
-
 		if magneticCornerFrame then
 			-- Prioritize snapping to the corner of another frame
-			systemFrame:SnapToFrame(magneticCornerFrame);
+			primaryMagneticFrameInfo = magneticCornerFrame;
 		elseif magneticHorizontalFrame and magneticVerticalFrame and magneticHorizontalFrame.frame == magneticVerticalFrame.frame then
 			-- This can only happen if both magnetic frames are UIParent
 			-- If one of the frames is a center alignment (systemFrame is going to be snapped to one of UIParent's center lines) then ignore the other one
 			if magneticHorizontalFrame.point == "CENTER" then
-				systemFrame:SnapToFrame(magneticHorizontalFrame);
+				primaryMagneticFrameInfo = magneticHorizontalFrame;
 			elseif magneticVerticalFrame.point == "CENTER" then
-				systemFrame:SnapToFrame(magneticVerticalFrame);
+				primaryMagneticFrameInfo = magneticVerticalFrame;
 			else
 				-- Otherwise snap to both (note that this is only safe in the UIParent case because anchor cycles can result otherwise)
-				systemFrame:SnapToFrame(magneticHorizontalFrame);
-				systemFrame:SnapToFrame(magneticVerticalFrame);
+				primaryMagneticFrameInfo = magneticHorizontalFrame;
+				secondaryMagneticFrameInfo =  magneticVerticalFrame;
 			end
 		else
 			-- Otherwise pick the closest magnetic frame and ignore the other
 			local useHorizontalFrame = magneticHorizontalFrame and (not magneticVerticalFrame or magneticHorizontalFrame.distance < magneticVerticalFrame.distance);
 			if useHorizontalFrame then
-				systemFrame:SnapToFrame(magneticHorizontalFrame);
+				primaryMagneticFrameInfo = magneticHorizontalFrame;
 			else
-				systemFrame:SnapToFrame(magneticVerticalFrame);
+				primaryMagneticFrameInfo = magneticVerticalFrame;
 			end
+		end
+	end
+
+	return primaryMagneticFrameInfo, secondaryMagneticFrameInfo;
+end
+
+function EditModeMagnetismManager:ApplyMagnetism(systemFrame)
+	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo = self:GetMagneticFrameInfo(systemFrame);
+	if primaryMagneticFrameInfo then
+		systemFrame:ClearAllPoints();
+
+		systemFrame:SnapToFrame(primaryMagneticFrameInfo);
+		if secondaryMagneticFrameInfo then
+			systemFrame:SnapToFrame(secondaryMagneticFrameInfo);
 		end
 	end
 end

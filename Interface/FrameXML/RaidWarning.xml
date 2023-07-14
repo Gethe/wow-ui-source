@@ -62,7 +62,7 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" parent="UIParent" frameStrata="HIGH" toplevel="true">
+	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" inherits="PingTopLevelPassThroughAttributeTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
 		<Size x="512" y="80"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="RaidBossEmoteFrame" relativePoint="TOP"/>

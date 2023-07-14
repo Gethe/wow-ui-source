@@ -186,6 +186,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>
+			<!-- OnUpdate set dynamically -->
 		</Scripts>
 	</Frame>
 

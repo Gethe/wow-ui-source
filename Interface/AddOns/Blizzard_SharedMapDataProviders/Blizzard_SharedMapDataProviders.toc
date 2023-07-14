@@ -5,6 +5,7 @@
 
 SharedMapPoiTemplates.xml
 QuestDataProvider.xml
+ContentTrackingDataProvider.xml
 GroupMembersDataProvider.xml
 WorldQuestDataProvider.xml
 ZoneLabelDataProvider.xml

@@ -47,15 +47,17 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
 				{ Name = "CurrencyBShowQuestXPGainInTooltip", Type = "CurrencyFlagsB", EnumValue = 2 },
 				{ Name = "CurrencyBNoNotificationMailOnOfflineProgress", Type = "CurrencyFlagsB", EnumValue = 4 },
 				{ Name = "CurrencyBBattlenetVirtualCurrency", Type = "CurrencyFlagsB", EnumValue = 8 },
+				{ Name = "FutureCurrencyFlag", Type = "CurrencyFlagsB", EnumValue = 16 },
+				{ Name = "CurrencyBDontDisplayIfZero", Type = "CurrencyFlagsB", EnumValue = 32 },
 			},
 		},
 		{
@@ -151,9 +153,6 @@ local CurrencyConstants =
 				{ Name = "CURRENCY_ID_WILLING_SOUL", Type = "number", Value = 1810 },
 				{ Name = "CURRENCY_ID_RESERVOIR_ANIMA", Type = "number", Value = 1813 },
 				{ Name = "CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO", Type = "number", Value = 2032 },
-				{ Name = "CURRENCY_ID_ACCOUNT_WIDE_CATALYST_CHARGES", Type = "number", Value = 2166 },
-				{ Name = "CURRENCY_ID_PERSONAL_CATALYST_CHARGES", Type = "number", Value = 2167 },
-				{ Name = "CATALYST_CHARGE_CAP", Type = "number", Value = 6 },
 			},
 		},
 	},

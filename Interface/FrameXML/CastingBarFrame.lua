@@ -192,6 +192,79 @@ function CastingBarMixin:GetTypeInfo(barType)
 	return CASTING_BAR_TYPES[barType];
 end
 
+
+function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, ...)
+	if ( empoweredInterrupt or (self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
+		self.barType = "interrupted"; -- failed and interrupted use same bar art
+
+		--We don't want to show the full state for the empowered texture since it produces a gradient.
+		self:SetStatusBarTexture(empoweredInterrupt and nil or self:GetTypeInfo(self.barType).full);
+
+		self:ShowSpark();
+
+		if ( self.Text ) then
+			if ( event == "UNIT_SPELLCAST_FAILED" ) then
+				self.Text:SetText(FAILED);
+			else
+				self.Text:SetText(INTERRUPTED);
+			end
+		end
+
+		self.casting = nil;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+
+		self:PlayInterruptAnims();
+	end
+end 
+
+function CastingBarMixin:HandleCastStop(event, ...)
+	if ( not self:IsVisible() ) then
+		local desiredShowFalse = false;
+		self:UpdateShownState(desiredShowFalse);
+	end
+	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
+	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
+		
+		local castComplete = select(4, ...);
+		if(event == "UNIT_SPELLCAST_EMPOWER_STOP" and not castComplete) then
+			self:HandleInterruptOrSpellFailed(true, event, ...);
+			return; 
+		end 
+		
+		-- Cast info not available once stopped, so update bar based on cached barType
+		local barTypeInfo = self:GetTypeInfo(self.barType);
+		self:SetStatusBarTexture(barTypeInfo.full);
+
+		if not self.reverseChanneling then
+			self:HideSpark();
+		end
+
+		if ( self.Flash ) then
+			self.Flash:SetAtlas(barTypeInfo.glow);
+			self.Flash:SetAlpha(0.0);
+			self.Flash:Show();
+		end
+		if not self.reverseChanneling and not self.channeling then
+			self:SetValue(self.maxValue);
+			self:UpdateCastTimeText();
+		end
+
+		self:PlayFadeAnim();
+		self:PlayFinishAnim();
+
+		if ( event == "UNIT_SPELLCAST_STOP" ) then
+			self.casting = nil;
+		else
+			self.channeling = nil;
+			if (self.reverseChanneling) then
+				self.casting = nil;
+			end
+			self.reverseChanneling = nil;
+		end
+	end
+end
+
 function CastingBarMixin:OnEvent(event, ...)
 	local arg1 = ...;
 
@@ -267,67 +340,9 @@ function CastingBarMixin:OnEvent(event, ...)
 
 		self:UpdateShownState(self.showCastbar);
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
-		if ( not self:IsVisible() ) then
-			local desiredShowFalse = false;
-			self:UpdateShownState(desiredShowFalse);
-		end
-		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
-		     ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
-			
-			-- Cast info not available once stopped, so update bar based on cached barType
-			local barTypeInfo = self:GetTypeInfo(self.barType);
-			self:SetStatusBarTexture(barTypeInfo.full);
-
-			if not self.reverseChanneling then
-				self:HideSpark();
-			end
-
-			if ( self.Flash ) then
-				self.Flash:SetAtlas(barTypeInfo.glow);
-				self.Flash:SetAlpha(0.0);
-				self.Flash:Show();
-			end
-			if not self.reverseChanneling and not self.channeling then
-				self:SetValue(self.maxValue);
-				self:UpdateCastTimeText();
-			end
-
-			self:PlayFadeAnim();
-			self:PlayFinishAnim();
-
-			if ( event == "UNIT_SPELLCAST_STOP" ) then
-				self.casting = nil;
-			else
-				self.channeling = nil;
-				if (self.reverseChanneling) then
-					self.casting = nil;
-				end
-				self.reverseChanneling = nil;
-			end
-		end
+		self:HandleCastStop(event, ...);
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		if ( self:IsShown() and
-		     (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()) ) then
-
-			self.barType = "interrupted"; -- failed and interrupted use same bar art
-			self:SetStatusBarTexture(self:GetTypeInfo(self.barType).full);
-
-			self:ShowSpark();
-
-			if ( self.Text ) then
-				if ( event == "UNIT_SPELLCAST_FAILED" ) then
-					self.Text:SetText(FAILED);
-				else
-					self.Text:SetText(INTERRUPTED);
-				end
-			end
-
-			self.casting = nil;
-			self.channeling = nil;
-			self.reverseChanneling = nil;
-
-			self:PlayInterruptAnims();
-		end
+		self:HandleInterruptOrSpellFailed(false, event, ...);
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
@@ -716,7 +731,7 @@ function CastingBarMixin:UpdateCastTimeTextShown()
 		return;
 	end
 
-	local showCastTime = self.showCastTimeSetting and (self.casting or self.isInEditMode);
+	local showCastTime = self.showCastTimeSetting and (self.casting or self.channeling or self.isInEditMode);
 	self.CastTimeText:SetShown(showCastTime);
 	if showCastTime and self.isInEditMode and not self.CastTimeText.text then
 		self:UpdateCastTimeText();
@@ -729,9 +744,13 @@ function CastingBarMixin:UpdateCastTimeText()
 	end
 
 	local seconds = 0;
-	if self.casting then
+	if self.casting or self.channeling then
 		local min, max = self:GetMinMaxValues();
-		seconds = max - self:GetValue();
+		if self.casting then
+			seconds = math.max(min, max - self:GetValue());
+		else
+			seconds = math.max(min, self:GetValue());
+		end
 	elseif self.isInEditMode then
 		seconds = 10;
 	end

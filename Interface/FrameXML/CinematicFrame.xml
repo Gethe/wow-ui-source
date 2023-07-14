@@ -36,17 +36,17 @@
 						<Anchor point="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0"/>
+					<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="TOP" hidden="true" mixin="AutoScalingFontStringMixin">
+				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="MovieSubtitleFont" hidden="true" mixin="AutoScalingFontStringMixin">
+					<Size x="800" y="138"/>
 					<KeyValues>
 						<KeyValue key="minLineHeight" value="10" type="number"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.LowerBlackBar" x="100" y="-5"/>
-						<Anchor point="BOTTOMRIGHT" x="-100" y="5"/>
+						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -107,7 +107,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="CinematicFrame_OnLoad"/>
-			<OnShow function="CinematicFrame_OnShow"/>
 			<OnHide function="CinematicFrame_OnHide"/>
 			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown function="CinematicFrame_OnKeyDown"/>

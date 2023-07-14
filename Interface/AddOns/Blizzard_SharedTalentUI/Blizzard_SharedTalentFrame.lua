@@ -491,6 +491,27 @@ function TalentFrameBaseMixin:GetTalentButtonByNodeID(nodeID)
 	return self.nodeIDToButton[nodeID];
 end
 
+function TalentFrameBaseMixin:InvokeTalentButtonMethodByNodeID(methodName, nodeID, ...)
+	local button = self:GetTalentButtonByNodeID(nodeID);
+	if button then
+		return true, button[methodName](button, ...);
+	end
+
+	return false;
+end
+
+function TalentFrameBaseMixin:PlaySelectSoundForButton(unused_button)
+	if self.defaultSelectSound then
+		PlaySound(self.defaultSelectSound);
+	end
+end
+
+function TalentFrameBaseMixin:PlayDeselectSoundForButton(unused_button)
+	if self.defaultDeselectSound then
+		PlaySound(self.defaultDeselectSound);
+	end
+end
+
 function TalentFrameBaseMixin:AcquireTalentButton(nodeInfo, talentType, offsetX, offsetY, initFunction)
 	offsetX = (offsetX or 0);
 	offsetY = (offsetY or 0);

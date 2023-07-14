@@ -196,6 +196,15 @@ local PerksProgram =
 			LiteralName = "CHEST_REWARDS_UPDATED_FROM_SERVER",
 		},
 		{
+			Name = "PerksProgramAddPendingShopItem",
+			Type = "Event",
+			LiteralName = "PERKS_PROGRAM_ADD_PENDING_SHOP_ITEM",
+			Payload =
+			{
+				{ Name = "vendorItemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PerksProgramClose",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_CLOSE",
@@ -262,6 +271,15 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "PerksProgramRemovePendingShopItem",
+			Type = "Event",
+			LiteralName = "PERKS_PROGRAM_REMOVE_PENDING_SHOP_ITEM",
+			Payload =
+			{
+				{ Name = "vendorItemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PerksProgramSetFrozenItem",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_SET_FROZEN_ITEM",
@@ -314,6 +332,7 @@ local PerksProgram =
 			Fields =
 			{
 				{ Name = "overrideModelSceneID", Type = "number", Nilable = true },
+				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -350,6 +369,7 @@ local PerksProgram =
 				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "purchased", Type = "bool", Nilable = false },
 				{ Name = "refundable", Type = "bool", Nilable = false },
+				{ Name = "pending", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },

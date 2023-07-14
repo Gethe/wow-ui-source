@@ -1302,44 +1302,27 @@ BossTargetFrameContainerMixin = { };
 
 function BossTargetFrameContainerMixin:UpdateSize()
 	local lastShowingBossFrame;
-	local numShowingBossFrames = 0;
 	for index, bossFrame in ipairs(self.BossTargetFrames) do
-		bossFrame.rightPadding = 20;
-		if (self.castBarOnSide) then
-			if (self.smallSize) then
-				bossFrame.bottomPadding = -20;
-			else
-				bossFrame.bottomPadding = -50;
-			end
-			bossFrame.leftPadding = 92;
+		if (self.smallSize) then
+			bossFrame.rightPadding = 30;
+			bossFrame.leftPadding = self.castBarOnSide and 80 or 15;
+			bossFrame.bottomPadding = self.castBarOnSide and -20 or 0;
 		else
-			if (self.smallSize) then
-				bossFrame.bottomPadding = 0;
-			else
-				bossFrame.bottomPadding = -20;
-			end
-			bossFrame.leftPadding = 24;
+			bossFrame.rightPadding = 15;
+			bossFrame.leftPadding = self.castBarOnSide and 105 or 20;
+			bossFrame.bottomPadding = self.castBarOnSide and -50 or -20;
 		end
 
 		if (bossFrame:IsShown()) then
-			numShowingBossFrames = numShowingBossFrames + 1;
 			lastShowingBossFrame = bossFrame;
 		end
 	end
 
 	if (lastShowingBossFrame) then
-		if (self.castBarOnSide) then
-			if (self.smallSize) then
-				lastShowingBossFrame.bottomPadding = (-15 * numShowingBossFrames) + (5 / numShowingBossFrames);
-			else
-				lastShowingBossFrame.bottomPadding = -20;
-			end
+		if (self.smallSize) then
+			lastShowingBossFrame.bottomPadding = self.castBarOnSide and -15 or 10;
 		else
-			if (self.smallSize) then
-				lastShowingBossFrame.bottomPadding = 30 - (20 * (numShowingBossFrames));
-			else
-				lastShowingBossFrame.bottomPadding = 10;
-			end
+			lastShowingBossFrame.bottomPadding = self.castBarOnSide and -20 or 10;
 		end
 	end
 

@@ -41,7 +41,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="Header">
+			<Frame parentKey="Header" frameLevel="100">
 				<Size x="830" y="52"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-65"/>
@@ -54,11 +54,31 @@
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
-					</Layer>
-					<Layer level="ARTWORK">
 						<Texture parentKey="TitleDivider" atlas="header-horizontal-rule" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Laying pieces of the Landing Page background over the top/bottom of Landing Page Scrollbox so that the scroll elements cleanly fade as we scroll up/down -->
+			<Frame parentKey="ScrollFadeOverlay">
+				<Size x="403" y="615"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-47"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Top" atlas="dragonflight-landingpage-background-fadeoverlay-top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bottom" atlas="dragonflight-landingpage-background-fadeoverlay-bottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -94,7 +114,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="LANDING_DRAGONRIDING_TREE_BUTTON">
+					<Button parentKey="SkillsButton" mixin="DragonridingPanelSkillsButtonMixin" inherits="CallbackRegistrantTemplate, UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="LANDING_DRAGONRIDING_TREE_BUTTON">
 						<Size x="80" y="22"/>
 						<KeyValues>
 							<KeyValue key="disabledTooltip" value="LANDING_DRAGONRIDING_TREE_BUTTON_DISABLED" type="global"/>
@@ -103,8 +123,46 @@
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Subtitle" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
+						<Frames>
+							<Frame parentKey="YellowGlow" alpha="0">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-12" y="0"/>
+									<Anchor point="RIGHT" x="12" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Left" atlas="newplayertutorial-yellowGlow-redbutton-left" useAtlasSize="true" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="LEFT"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Right" atlas="newplayertutorial-yellowGlow-redbutton-right" useAtlasSize="true" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="RIGHT"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Middle" atlas="newplayertutorial-yellowGlow-redbutton-middle" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+						<Animations>
+							<AnimationGroup parentKey="UnspentGlyphsAnim" looping="REPEAT" setToFinalAlpha="true">
+								<Alpha childKey="YellowGlow" duration="1" order="1" fromAlpha="0" toAlpha="0.6" />
+								<Alpha childKey="YellowGlow" duration="1" order="2" fromAlpha="0.6" toAlpha="0" />
+							</AnimationGroup>
+						</Animations>
 						<Scripts>
+							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>

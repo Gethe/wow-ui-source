@@ -46,6 +46,20 @@ local SpecializationInfo =
 			},
 		},
 		{
+			Name = "GetClassIDFromSpecID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetInspectSelectedPvpTalent",
 			Type = "Function",
 

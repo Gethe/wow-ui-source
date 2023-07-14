@@ -173,7 +173,7 @@ do
 			end
 
 			if isMouseMotionEnabled then
-				if newPin then
+				if newPin and not pin:DisableInheritedMotionScriptsWarning() then
 					-- These will never be called, just define a OnMouseEnter and OnMouseLeave on the pin mixin and it'll be called when appropriate
 					assert(pin:GetScript("OnEnter") == nil);
 					assert(pin:GetScript("OnLeave") == nil);

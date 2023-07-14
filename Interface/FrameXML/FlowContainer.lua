@@ -96,7 +96,7 @@ function FlowContainer_SetStartingOffset(container, xOffset, yOffset)
 end
 
 local function isFrameTypeExemptFromFlowCount(frameType)
-	return frameType == "flagged" or frameType == "target" or frameType == "pet";
+	return frameType == "flagged" or frameType == "target";
 end
 
 --:GetWidth() and :GetHeight() are used in this function. --meta-comment: Comment added in case anyone ever searches all files for these.
@@ -128,13 +128,17 @@ function FlowContainer_DoLayout(container)
 	local atomicAtBeginning = nil;
 	local i = 1;
 	local targetVerticalOffset = nil;
+	local lastObject = nil;
 	while ( i <= #container.flowFrames ) do
 		local object = container.flowFrames[i];
 		local doContinue = false;
+
 		--If it doesn't fit on the current row, move to the next.
 		if ( object == "linebreak" or	--Force a new line
 			type(object) == "table" and	--Make sure this is an actual object before checking further.
-				((container.flowMaxPerLine and currentPrimaryLine > container.flowMaxPerLine) or	--We went past the max number of columns
+				(object.isFlowGroup or -- Always break if object is a group
+				(lastObject and type(lastObject) == "table" and lastObject.isFlowGroup) or -- Always break if the last object was a group
+				(container.flowMaxPerLine and currentPrimaryLine > container.flowMaxPerLine) or	--We went past the max number of columns
 					currentSecondaryOffset + object["Get"..primaryDirection](object) > container["Get"..primaryDirection](container)) ) then	--We went past the max pixel width.
 					
 				if ( not (atomicAddStart and atomicAtBeginning) ) then	--If we're in an atomic add and we started at the beginning of the line, wrapping won't help us
@@ -200,7 +204,9 @@ function FlowContainer_DoLayout(container)
 				end
 			end
 			i = i + 1;
-		end		
+		end
+
+		lastObject = object;
 	end
 	
 	--Save off how much we actually used.

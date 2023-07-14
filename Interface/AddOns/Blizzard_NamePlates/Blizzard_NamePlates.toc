@@ -4,6 +4,7 @@
 
 Blizzard_NamePlates.xml
 Blizzard_ClassNameplateBar.xml
+Blizzard_ClassNameplateAlternatePowerBar.xml
 Blizzard_ClassNameplateBar_Paladin.xml
 Blizzard_ClassNameplateBar_DeathKnight.xml
 Blizzard_ClassNameplateBar_Dracthyr.xml

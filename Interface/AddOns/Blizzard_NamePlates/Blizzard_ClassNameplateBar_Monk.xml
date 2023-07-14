@@ -11,21 +11,11 @@
 		</KeyValues>
 	</Frame>
 
-	<StatusBar name="ClassNameplateBrewmasterBarFrame" mixin="ClassNameplateBar, ClassNameplateBarBrewmasterMonk">
+	<StatusBar name="ClassNameplateBrewmasterBarFrame" inherits="ClassNameplateAlternatePowerBarBaseTemplate, MonkStaggerBarTemplate" mixin="ClassNameplateBarBrewmasterMonk">
 		<KeyValues>
 			<KeyValue key="scale" value="1"/>
+			<KeyValue key="unit" value="player" type="string"/>
 		</KeyValues>
-		<Size x="86" y="4"/>
-		<Frames>
-			<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate" />
-		</Frames>
-		<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
-		<BarColor r="0" g="0" b="1"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
-		</Scripts>
 	</StatusBar>
 
 </Ui>

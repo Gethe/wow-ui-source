@@ -68,10 +68,10 @@ local guildMemberRequestFrame;
 
 local trackedAchievements = {};
 local achievementFunctions;
-local function updateTrackedAchievements (...)
+local function updateTrackedAchievements(achievementIDs)
 	trackedAchievements = {};
-	for i = 1, select("#", ...) do
-		trackedAchievements[select(i, ...)] = true;
+	for i, id in ipairs(achievementIDs) do
+		trackedAchievements[id] = true;
 	end
 end
 
@@ -812,14 +812,20 @@ function AchievementFrameAchievements_OnCriteriaUpdate()
 	end
 end
 
+function AchievementFrameAchievements_UpdateTrackedAchievements()
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
+	updateTrackedAchievements(C_ContentTracking.GetTrackedIDs(Enum.ContentTrackingType.Achievement));
+end
+
 function AchievementFrameAchievements_OnEvent (self, event, ...)
 	if (Kiosk.IsEnabled()) then
 		return;
 	end
 	if ( event == "ADDON_LOADED" ) then
-		self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
-
-		updateTrackedAchievements(GetTrackedAchievements());
+		AchievementFrameAchievements_UpdateTrackedAchievements();
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
 		if not AchievementFrameCategories.ScrollBox:HasDataProvider() then
 			AchievementFrameCategories_UpdateDataProvider();
@@ -829,9 +835,6 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		AchievementFrameAchievements_OnAchievementEarned(achievementID);
 	elseif ( event == "CRITERIA_UPDATE" ) then
 		AchievementFrameAchievements_OnCriteriaUpdate();
-	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
-
-		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "RECEIVED_ACHIEVEMENT_MEMBER_LIST" ) then
 		local achievementID = ...;
 		-- check if we initiated the request from a meta criteria and we're still over it
@@ -1159,8 +1162,7 @@ function AchievementTemplateMixin:Init(elementData)
 	end
 
 	local noSound = true;
-	if ( IsTrackedAchievement(id) ) then
-		self.Label:SetWidth(self.Label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
+	if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Achievement, id) ) then
 		self:SetAsTracked(true, noSound);
 	else
 		self:SetAsTracked(false, noSound);
@@ -1466,14 +1468,14 @@ end
 function AchievementTemplateMixin:ToggleTracking()
 	local id = self.id;
 	if ( trackedAchievements[id] ) then
-		RemoveTrackedAchievement(id);
+		C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id);
 		self:SetAsTracked(false);
 		return;
 	end
 
-	local count = GetNumTrackedAchievements();
-	if ( count >= MAX_TRACKED_ACHIEVEMENTS ) then
-		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, MAX_TRACKED_ACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
+	local count = #C_ContentTracking.GetTrackedIDs(Enum.ContentTrackingType.Achievement);
+	if ( count >= Constants.ContentTrackingConsts.MaxTrackedAchievements ) then
+		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, Constants.ContentTrackingConsts.MaxTrackedAchievements), 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 
@@ -1484,7 +1486,10 @@ function AchievementTemplateMixin:ToggleTracking()
 	end
 
 	self:SetAsTracked(true);
-	AddTrackedAchievement(id);
+	local trackingError = C_ContentTracking.StartTracking(Enum.ContentTrackingType.Achievement, id);
+	if trackingError then
+		ContentTrackingUtil.DisplayTrackingError(trackingError);
+	end
 
 	return true;
 end
@@ -1497,6 +1502,8 @@ function AchievementTemplateMixin:SetAsTracked(tracked, noSound)
 	elseif not SelectionBehaviorMixin.IsIntrusiveSelected(self) then
 		self.Tracked:Hide();
 	end
+
+	self.Label:SetWidth(self.Label:GetStringWidth() + 4); -- This +4 here is to fudge around any string width issues that arize from resizing a string set to its string width. See bug 144418 for an example.
 end
 
 function AchievementTemplateMixin:OnCheckClicked(o, buttonName, down)

@@ -31,6 +31,11 @@ function SettingsVerticalLayoutMixin:AddInitializer(initializer)
 	return initializer;
 end
 
+function SettingsVerticalLayoutMixin:AddMirroredInitializer(initializer)
+	initializer:SetSearchIgnoredInLayout(self);
+	return self:AddInitializer(initializer);
+end
+
 function SettingsVerticalLayoutMixin:EnumerateInitializers()
 	return CreateTableEnumerator(self.initializers);
 end

@@ -447,6 +447,7 @@
 		<xs:attribute name="registerForDrag" type="xs:string"/>
 		<xs:attribute name="passThroughButtons" type="xs:string"/>
 		<xs:attribute name="secureReferenceKey" type="xs:string"/>
+    <xs:attribute name="retainClickThroughOverride" type="xs:boolean" default="false"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="LayoutFrameType">
@@ -889,6 +890,7 @@
 				<xs:attribute name="letters" type="xs:int" default="0"/>
 				<xs:attribute name="blinkSpeed" type="xs:float" default="0.5"/>
 				<xs:attribute name="numeric" type="xs:boolean" default="false"/>
+				<xs:attribute name="numericFullRange" type="xs:boolean" default="false"/>
 				<xs:attribute name="alphabeticOnly" type="xs:boolean" default="false"/>
 				<xs:attribute name="password" type="xs:boolean" default="false"/>
 				<xs:attribute name="multiLine" type="xs:boolean" default="false"/>

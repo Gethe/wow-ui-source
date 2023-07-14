@@ -37,6 +37,9 @@
 --  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
 --  :ShouldShowPopup() - If you have a .Popup, then ShouldShowPopup will perform a check if the popup should appear.
 --  :GetPopupText() - If you have a .Popup, then GetPopupText fetch the text to display.
+--  :UsesSelector() - If this returns false, the flow will not use the CharacterSelector. Defaulted to true.
+--  :GetTheme() - How should CharacterSelect set up the parent frame? Defaults to "default"
+--  :ShouldDisableButtons() - Should other buttons on CharacterSelect be disabled while this flow is open? Defaults to true.
 --
 -- The following members must be present on a block:
 --  .Back - Show the back button on the flow frame.
@@ -207,7 +210,9 @@ function CharacterServicesFlowMixin:SetUpBlock(controller, results, wasFromRewin
 		else
 			self:MoveBlock(block, -105);
 		end
-		block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
+		if block.frame.StepNumber then
+			block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
+		end
 		block.frame:Show();
 	end
 	block:Initialize(results, wasFromRewind);
@@ -261,6 +266,18 @@ end
 function CharacterServicesFlowMixin:ShouldFinishBehaveLikeNext()
 	-- Override as needed
 	return false;
+end
+
+function CharacterServicesFlowMixin:UsesSelector()
+	return true;
+end
+
+function CharacterServicesFlowMixin:GetTheme()
+	return "default";
+end
+
+function CharacterServicesFlowMixin:ShouldDisableButtons()
+	return true;
 end
 
 GlueDialogTypes["CHARACTER_SERVICES_CHECK_APPLY"] = {

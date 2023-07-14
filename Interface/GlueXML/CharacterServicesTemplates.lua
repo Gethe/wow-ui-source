@@ -235,7 +235,7 @@ function CharacterServicesEditBoxWithAutoCompleteMixin:UpdateAutoComplete()
 		button:SetMode("next");
 		button:SetNormalFontObject("GameFontDisableTiny2");
 		button:SetHighlightFontObject("GameFontDisableTiny2");
-		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_AUTOCOMPLETE_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
+		button.Text:SetText(string.format(BLIZZARD_STORE_VAS_REALMS_AND_MORE, (#VAS_AUTO_COMPLETE_ENTRIES - VAS_AUTO_COMPLETE_OFFSET - VAS_AUTO_COMPLETE_MAX_ENTRIES)));
 		button:Show();
 		shownButtons = shownButtons + 1;
 	end

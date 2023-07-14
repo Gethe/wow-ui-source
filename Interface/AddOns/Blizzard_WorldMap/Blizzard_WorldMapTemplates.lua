@@ -36,11 +36,26 @@ function WorldMapFloorNavigationFrameMixin:InitializeDropDown()
 	local info = UIDropDownMenu_CreateInfo();
 	for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
 		info.text = mapGroupMemberInfo.name;
+		if self:ShouldShowTrackingIconOnFloor(C_EncounterJournal.GetEncountersOnMap(mapGroupMemberInfo.mapID)) then
+			info.text = info.text..CreateAtlasMarkup("waypoint-mappin-minimap-tracked", 20, 20, 0, 0);
+		end
 		info.value = mapGroupMemberInfo.mapID;
 		info.func = GoToMap;
 		info.checked = (mapID == mapGroupMemberInfo.mapID);
 		UIDropDownMenu_AddButton(info);
 	end
+end
+
+function WorldMapFloorNavigationFrameMixin:ShouldShowTrackingIconOnFloor(encountersOnFloor)
+	if not ContentTrackingUtil.IsContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
+		return false;
+	end
+	for index, mapEncounterInfo in ipairs(encountersOnFloor) do
+		if ContentTrackingUtil.IsContentTrackedInEncounter(mapEncounterInfo.encounterID) then
+			return true;
+		end
+	end
+	return false;
 end
 
 WorldMapTrackingOptionsButtonMixin = { };
@@ -107,6 +122,8 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 	elseif (value == "tamers") then
 		SetCVar("showTamers", checked and "1" or "0");
 	elseif (value == "primaryProfessionsFilter" or value == "secondaryProfessionsFilter") then
+		SetCVar(value, checked and "1" or "0");
+	elseif (value == "contentTrackingFilter") then
 		SetCVar(value, checked and "1" or "0");
 	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
 			value == "worldQuestFilterProfessionMaterials" or value == "worldQuestFilterGold" or
@@ -188,6 +205,11 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 		info.checked = GetCVarBool("secondaryProfessionsFilter");
 		UIDropDownMenu_AddButton(info);
 	end
+
+	info.text = CONTENT_TRACKING_MAP_TOGGLE;
+	info.value = "contentTrackingFilter";
+	info.checked = GetCVarBool("contentTrackingFilter");
+	UIDropDownMenu_AddButton(info);
 
 	UIDropDownMenu_AddSeparator();
 

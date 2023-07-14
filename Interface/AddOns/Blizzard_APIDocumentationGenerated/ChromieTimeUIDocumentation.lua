@@ -62,6 +62,8 @@ local ChromieTimeUI =
 				{ Name = "previewAtlas", Type = "textureAtlas", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "alreadyOn", Type = "bool", Nilable = false },
+				{ Name = "recommended", Type = "bool", Nilable = false },
+				{ Name = "sortPriority", Type = "number", Nilable = false },
 			},
 		},
 	},

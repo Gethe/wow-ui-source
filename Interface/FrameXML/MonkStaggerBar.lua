@@ -1,5 +1,3 @@
-BREWMASTER_POWER_BAR_NAME = "STAGGER";
-
 -- percentages at which bar should change color
 STAGGER_YELLOW_TRANSITION = .30
 STAGGER_RED_TRANSITION = .60
@@ -9,107 +7,62 @@ STAGGER_GREEN_INDEX = 1;
 STAGGER_YELLOW_INDEX = 2;
 STAGGER_RED_INDEX = 3;
 
-function MonkStaggerBar_OnLoad(self)
-	self.specRestriction = SPEC_MONK_BREWMASTER;
-	self.textLockable = 1;
-	self.cvar = "statusText";
-	self.cvarLabel = "STATUS_TEXT_PLAYER";
-	self.capNumericDisplay = true;
-	if ( not self.powerName ) then
-		self.powerName = BREWMASTER_POWER_BAR_NAME;
-	end
+MonkStaggerBarMixin = {};
 
-	self.DefaultBackground:Hide();
-	self.DefaultBorder:Hide();
-	self.DefaultBorderLeft:Hide();
-	self.DefaultBorderRight:Hide();
-	self.MonkBackground:Show();
-	self.MonkBorder:Show();
-	self:SetFrameLevel(100);
+function MonkStaggerBarMixin:Initialize()
+	self.frequentUpdates = true;
+	self.requiredClass = "MONK";
+	self.requiredSpec = SPEC_MONK_BREWMASTER;
 
-	local _, class = UnitClass("player")
-	self.class = class
-	if (class == "MONK") then
-		if (self.specRestriction == GetSpecialization()) then
-			MonkStaggerBar_RegisterEvents(self);
-		end
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	end
-
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-
-	SetTextStatusBarText(self, _G[self:GetName().."Text"])
-	TextStatusBar_Initialize(self);
+	self.baseMixin.Initialize(self);
 end
 
-function MonkStaggerBar_OnEvent(self, event, arg1)
-	local parent = self:GetParent();
-	local unit = self:GetParent().unit or self:GetParent():GetParent().unit
-	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UNIT_EXITED_VEHICLE" ) then
-		MonkStaggerBar_UpdatePowerType(self);
-	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		if ( arg1 == nil or arg1 == unit) then
-			MonkStaggerBar_UpdatePowerType(self);
-			if (self.specRestriction == GetSpecialization()) then
-				MonkStaggerBar_RegisterEvents(self);
-			end
-		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		MonkStaggerBar_UpdateMaxValues(self);
-		MonkStaggerBar_UpdatePowerType(self);
-	end
+function MonkStaggerBarMixin:UpdatePower()
+	self:UpdateMinMaxPower();
+	self.baseMixin.UpdatePower(self);
+	self:UpdateArt();
 end
 
-function MonkStaggerBar_OnUpdate(self, elapsed)
-	MonkStaggerBar_UpdateValue(self);
-end
-
-function MonkStaggerBar_RegisterEvents(self)
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
-	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-end
-
-function MonkStaggerBar_UpdateValue(self)
-	local unit = self:GetParent().unit or self:GetParent():GetParent().unit
-	local currstagger = UnitStagger(unit);
-	if (not currstagger) then
+function MonkStaggerBarMixin:UpdateArt()
+	if not self.currentPower or not self.maxPower then
+		self.overrideArtInfo = nil;
+		self.baseMixin.UpdateArt(self);
 		return;
 	end
 
-	self:SetValue(currstagger);
-	self.value = currstagger;
-	MonkStaggerBar_UpdateMaxValues(self);
+	local percent = self.maxPower > 0 and self.currentPower / self.maxPower or 0;
+	local artInfo = PowerBarColor[self.powerName];
 
-	local _, maxstagger = self:GetMinMaxValues();
-	local percent = currstagger/maxstagger;
-	local info = PowerBarColor[self.powerName];
-
-	if (percent >= STAGGER_RED_TRANSITION) then
-		info = info[STAGGER_RED_INDEX];
-	elseif (percent >= STAGGER_YELLOW_TRANSITION) then
-		info = info[STAGGER_YELLOW_INDEX];
+	if percent >= STAGGER_RED_TRANSITION then
+		artInfo = artInfo[STAGGER_RED_INDEX];
+	elseif percent >= STAGGER_YELLOW_TRANSITION then
+		artInfo = artInfo[STAGGER_YELLOW_INDEX];
 	else
-		info = info[STAGGER_GREEN_INDEX];
+		artInfo = artInfo[STAGGER_GREEN_INDEX];
 	end
-	self:SetStatusBarColor(info.r, info.g, info.b);
+	self.overrideArtInfo = artInfo;
+
+	self.baseMixin.UpdateArt(self);
 end
 
-function MonkStaggerBar_UpdateMaxValues(self)
-	local unit = self:GetParent().unit or self:GetParent():GetParent().unit
-	local maxhealth = UnitHealthMax(unit);
-	self:SetMinMaxValues(0, maxhealth);
-	TextStatusBar_UpdateTextString(self);
+function MonkStaggerBarMixin:EvaluateUnit()
+	local meetsRequirements = false;
+
+	local _, class = UnitClass(self:GetUnit());
+	meetsRequirements = class == self.requiredClass and GetSpecialization() == self.requiredSpec;
+
+	self:SetBarEnabled(meetsRequirements);
 end
 
-function MonkStaggerBar_UpdatePowerType(self)
-	if (self.class == "MONK" and self.specRestriction == GetSpecialization()
-			and not UnitHasVehiclePlayerFrameUI("player") ) then
-		self.pauseUpdates = false;
-		MonkStaggerBar_UpdateValue(self);
-		self:Show();
-	else
-		self.pauseUpdates = true;
-		self:Hide();
-	end
+function MonkStaggerBarMixin:OnBarEnabled()
+	self:UpdatePower();
+end
+
+function MonkStaggerBarMixin:GetCurrentPower()
+	return UnitStagger(self:GetUnit()) or 0;
+end
+
+function MonkStaggerBarMixin:GetCurrentMinMaxPower()
+	local maxHealth = UnitHealthMax(self:GetUnit());
+	return 0, maxHealth;
 end

@@ -454,7 +454,7 @@
 									<Layer level="ARTWORK">
 										<FontString parentKey="TogglePlayerText" inherits="GameFontNormalSmall" text="MOUNT_JOURNAL_PLAYER">
 											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.TogglePlayer" relativePoint="LEFT" x="0" y="0"/>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>

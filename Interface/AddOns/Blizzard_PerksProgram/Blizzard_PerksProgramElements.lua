@@ -305,7 +305,7 @@ end
 
 function PerksProgramCarouselFrameMixin:OnProductSelectedAfterModel(data)	
 	local perksVendorCategoryID = data.perksVendorCategoryID;
-	local items;
+	local items = nil;
 
 	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
 		items = data.creatureDisplays;
@@ -350,6 +350,7 @@ function PerksProgramCarouselFrameMixin:SetCarouselItems(data, items, perksVendo
 
 	if showCarousel then
 		self:UpdateCarousel();
+		EventRegistry:TriggerEvent("PerksProgram.OnCarouselUpdated", self.data, self.perksVendorCategoryID, self.carouselIndex);
 	end
 	self:SetShown(showCarousel);
 end
@@ -530,6 +531,48 @@ function PerksProgramCheckBoxMixin:OnClick()
 	end
 end
 
+
+
+----------------------------------------------------------------------------------
+-- PerksProgramToyDetailsFrameMixin
+----------------------------------------------------------------------------------
+PerksProgramToyDetailsFrameMixin = {};
+function PerksProgramToyDetailsFrameMixin:OnLoad()
+	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
+end
+
+function PerksProgramToyDetailsFrameMixin:OnShow()
+	local newFont = PerksProgramFrame:GetLabelFont();
+	self.DescriptionText:SetFontObject(newFont);
+end
+
+local restrictions = { Enum.TooltipDataLineType.ToyEffect, Enum.TooltipDataLineType.ToyDescription };
+local function PerksProgramToy_ProcessLines(data)
+	local result = TooltipUtil.FindLinesFromGetter(restrictions, "GetToyByItemID", data.itemID);
+	local toyDescription, toyEffect;
+	if result then
+		for i, lineData in ipairs(result) do
+			if lineData.leftText then
+				local restrictionText = lineData.leftText;
+				restrictionText = lineData.leftColor:WrapTextInColorCode(restrictionText);
+				if lineData.type == Enum.TooltipDataLineType.ToyEffect then
+					toyEffect = StripHyperlinks(restrictionText);
+				elseif lineData.type == Enum.TooltipDataLineType.ToyDescription then				
+					toyDescription = StripHyperlinks(restrictionText);
+				end
+			end
+		end
+	end
+	return toyDescription, toyEffect;
+end
+
+function PerksProgramToyDetailsFrameMixin:OnProductSelectedAfterModel(data)
+	self.ProductNameText:SetText(data.name);
+	
+	local _, effectText = PerksProgramToy_ProcessLines(data);
+	self.DescriptionText:SetText(effectText);
+end
+
 ----------------------------------------------------------------------------------
 -- PerksProgramProductDetailsFrameMixin
 ----------------------------------------------------------------------------------
@@ -580,8 +623,19 @@ end
 
 function PerksProgramProductDetailsFrameMixin:OnProductSelectedAfterModel(data)
 	self.ProductNameText:SetText(data.name);
-	
-	local descriptionText = PerksProgramProductDetails_ProcessLines(data);
+
+	local descriptionText;
+	local perksVendorCategoryID = data.perksVendorCategoryID;
+	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy then		
+		local toyDescription, toyEffect = PerksProgramToy_ProcessLines(data);
+		if toyDescription and toyEffect then
+			descriptionText = toyDescription.."\n\n"..toyEffect;
+		else
+			descriptionText = toyDescription;
+		end
+	else
+		descriptionText = PerksProgramProductDetails_ProcessLines(data);
+	end
 	self.DescriptionText:SetText(descriptionText);
 
 	local categoryText = PerksProgramFrame:GetCategoryText(data.perksVendorCategoryID);
@@ -693,16 +747,41 @@ function PerksModelSceneControlButtonMixin:OnMouseUp()
 end
 
 PerksProgramUtil = {};
+local firstWeaponCategory = Enum.TransmogCollectionType.Wand;
+local lastWeaponCategory = Enum.TransmogCollectionType.Warglaives;
+local function IsWeapon(categoryID)
+	if categoryID and categoryID >= firstWeaponCategory and categoryID <= lastWeaponCategory then
+		return true;
+	end
+	return false;
+end
+
 function PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs)
-	local firstCategoryID = nil;	
+	local firstCategoryID = nil;
+
+	-- weapons have multiple category slots and we want to treat them as a single slot for the purpose of 
+	-- iterating over transmog items in a carousel.
+	-- Example: a transmog set is all Enum.TransmogCollectionType.Back, we want to return TRUE so this will carousel
+	-- or - this transmog set has ALL weapons (but different slots) - we want to return TRUE so this will carousel
+	local usingWeaponBucket = false;
+
 	for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
 		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
 		if not firstCategoryID then
 			firstCategoryID = categoryID;
+			if IsWeapon(firstCategoryID) then
+				usingWeaponBucket = true;
+			end
 		end
 
-		if firstCategoryID ~= categoryID then
-			return false;
+		if usingWeaponBucket then
+			if not IsWeapon(categoryID) then
+				return false;
+			end
+		else
+			if firstCategoryID ~= categoryID then
+				return false;
+			end
 		end
 	end
 	return true;

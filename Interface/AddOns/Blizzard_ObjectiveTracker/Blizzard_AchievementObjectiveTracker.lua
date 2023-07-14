@@ -72,7 +72,7 @@ function AchievementObjectiveTracker_OnOpenDropDown(self)
 end
 
 function AchievementObjectiveTracker_UntrackAchievement(dropDownButton, achievementID)
-	RemoveTrackedAchievement(achievementID);
+	C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, achievementID);
 	if ( AchievementFrame ) then
 		AchievementFrameAchievements_ForceUpdate();
 	end
@@ -87,8 +87,8 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 	self:BeginLayout();
 
 	local _, instanceType = IsInInstance();
-	local displayOnlyArena = ArenaEnemyFramesContainer and ArenaEnemyFramesContainer:IsShown() and (instanceType == "arena");
-	local trackedAchievements = { GetTrackedAchievements() };
+	local displayOnlyArena = CompactArenaFrame and CompactArenaFrame:IsShown() and (instanceType == "arena");
+	local trackedAchievements = C_ContentTracking.GetTrackedIDs(Enum.ContentTrackingType.Achievement);
 
 	for i = 1, #trackedAchievements do
 		local achievementID = trackedAchievements[i];
@@ -202,7 +202,7 @@ function AchievementObjectiveTracker_OnAchievementUpdate(achievementID, criteria
 			TIMED_CRITERIA[criteriaID] = timedCriteria;
 		end
 	end
-	if ( IsTrackedAchievement(achievementID) ) then
+	if (C_ContentTracking.IsTracking(Enum.ContentTrackingType.Achievement, achievementID)) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
 	else
 		TIMED_CRITERIA[criteriaID] = nil;

@@ -42,23 +42,15 @@ function GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, addFunc)
 	return advRaidSettings;
 end
 
-function GraphicsOverrides.CreatePhysicsInteractionSetting(category)
-	local function GetOptions()
-		local container = Settings.CreateControlTextContainer();
-		container:Add(0, NO_ENVIRONMENT_INTERACTION);
-		container:Add(1, PLAYER_ONLY_INTERACTION);
-		container:Add(2, PLAYER_AND_NPC_INTERACTION);
-		return container:GetData();
-	end
-
-	local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("physicsLevel", Settings.VarType.Number);
-	local commitValue = setValue;
-	local setting = Settings.RegisterProxySetting(category, "PROXY_PHYSICS_LEVEL", Settings.DefaultVarLocation,
-		Settings.VarType.Number, PHYSICS_INTERACTION, getDefaultValue(), getValue, nil, commitValue);
-	setting:SetCommitFlags(Settings.CommitFlag.ClientRestart);
-
-	Settings.CreateDropDown(category, setting, GetOptions, OPTION_PHYSICS_OPTIONS);
+function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropDownFunc, addOptionFunc, addRecommendedFunc)
 end
 
-function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings, raid, initDropDownFunc, addOptionFunc, addRecommendedFunc)
+function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution, addValidatedSettingOptionFunc, addRecommendedFunc)
+		local container = Settings.CreateControlTextContainer();
+		local variable = settingTextureResolution:GetVariable();
+		addValidatedSettingOptionFunc(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_TEXTURE_DETAIL_LOW);
+		addValidatedSettingOptionFunc(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR);
+		addValidatedSettingOptionFunc(container, variable, raid, 2, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH);
+		addRecommendedFunc(container, variable);
+		return container:GetData();
 end

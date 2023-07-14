@@ -16,17 +16,31 @@ local ContentTrackingTypes =
 			},
 		},
 		{
+			Name = "ContentTrackingResult",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Success", Type = "ContentTrackingResult", EnumValue = 0 },
+				{ Name = "DataPending", Type = "ContentTrackingResult", EnumValue = 1 },
+				{ Name = "Failure", Type = "ContentTrackingResult", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ContentTrackingTargetType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "JournalEncounter", Type = "ContentTrackingTargetType", EnumValue = 0 },
 				{ Name = "Vendor", Type = "ContentTrackingTargetType", EnumValue = 1 },
 				{ Name = "Achievement", Type = "ContentTrackingTargetType", EnumValue = 2 },
 				{ Name = "Profession", Type = "ContentTrackingTargetType", EnumValue = 3 },
+				{ Name = "Quest", Type = "ContentTrackingTargetType", EnumValue = 4 },
 			},
 		},
 		{
@@ -47,6 +61,7 @@ local ContentTrackingTypes =
 			Type = "Constants",
 			Values =
 			{
+				{ Name = "MaxTrackedCollectableSources", Type = "number", Value = 15 },
 				{ Name = "MaxTrackedAchievements", Type = "number", Value = 10 },
 			},
 		},
@@ -71,6 +86,7 @@ local ContentTrackingTypes =
 			{
 				{ Name = "encounterName", Type = "cstring", Nilable = false },
 				{ Name = "journalEncounterID", Type = "number", Nilable = true },
+				{ Name = "journalInstanceID", Type = "number", Nilable = true },
 				{ Name = "instanceName", Type = "cstring", Nilable = false },
 				{ Name = "subText", Type = "cstring", Nilable = true },
 				{ Name = "difficultyID", Type = "number", Nilable = true },
@@ -84,7 +100,7 @@ local ContentTrackingTypes =
 			Fields =
 			{
 				{ Name = "creatureName", Type = "cstring", Nilable = false },
-				{ Name = "zoneName", Type = "cstring", Nilable = true },
+				{ Name = "zoneName", Type = "string", Nilable = true },
 				{ Name = "currencyType", Type = "number", Nilable = true },
 				{ Name = "cost", Type = "BigUInteger", Nilable = true },
 			},

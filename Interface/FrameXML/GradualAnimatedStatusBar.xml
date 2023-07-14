@@ -7,13 +7,12 @@ UI_shared.xsd">
 			<KeyValue key="gainAnimationDurationPerDistance" value="0.008" type="number"/>
 			<KeyValue key="accumulationTimeoutInterval" value="0.1" type="number"/>
 		</KeyValues>
-		<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="GainFlareAnimationTexture" alpha="1" alphaMode="ADD" atlas="UI-HUD-ExperienceBar-Flare-Rested-2x-Flipbook" hidden="true">
 					<Size x="32.5" y="10"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.BarTexture" relativePoint="RIGHT" x="1" y="0"/>
+						<Anchor point="RIGHT" x="1" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="LevelUpTexture" alpha="1" alphaMode="ADD" atlas="UI-HUD-ExperienceBar-Fill-Rested-2x-Flipbook" hidden="true">
@@ -62,6 +61,7 @@ UI_shared.xsd">
 				<Alpha startDelay="1" smoothing="IN_OUT" childKey="LevelUpTexture" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
+		<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnUpdate method="OnUpdate"/>

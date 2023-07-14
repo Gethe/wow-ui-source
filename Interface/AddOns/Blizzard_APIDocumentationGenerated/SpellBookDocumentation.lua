@@ -275,7 +275,8 @@ local SpellBook =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "overrideCriticalTimeRemaining", Type = "number", Nilable = false },
+				{ Name = "criticalTimeRemainingMs", Type = "number", Nilable = true },
+				{ Name = "criticalStacks", Type = "number", Nilable = true },
 				{ Name = "priority", Type = "number", Nilable = false },
 				{ Name = "warningText", Type = "string", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = true },

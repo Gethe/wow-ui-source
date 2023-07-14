@@ -240,7 +240,12 @@ end
 
 EditModeGridLineMixin = {};
 
-local linePixelWidth = 1.2;
+local editModeGridLinePixelWidth = 1.2;
+
+local function SetupLineThickness(line, linePixelWidth)
+	local lineThickness = PixelUtil.GetNearestPixelSize(linePixelWidth, line:GetEffectiveScale(), linePixelWidth);
+	line:SetThickness(lineThickness);
+end
 
 function EditModeGridLineMixin:SetupLine(centerLine, verticalLine, xOffset, yOffset)
 	local color = centerLine and EDIT_MODE_GRID_CENTER_LINE_COLOR or EDIT_MODE_GRID_LINE_COLOR;
@@ -249,10 +254,115 @@ function EditModeGridLineMixin:SetupLine(centerLine, verticalLine, xOffset, yOff
 	self:SetStartPoint(verticalLine and "TOP" or "LEFT", EditModeManagerFrame.Grid, xOffset, yOffset);
 	self:SetEndPoint(verticalLine and "BOTTOM" or "RIGHT", EditModeManagerFrame.Grid, xOffset, yOffset);
 
-	local lineThickness = PixelUtil.GetNearestPixelSize(linePixelWidth, self:GetEffectiveScale(), linePixelWidth);
-	self:SetThickness(lineThickness);
+	SetupLineThickness(self, editModeGridLinePixelWidth);
 
 	EditModeMagnetismManager:RegisterGridLine(self, verticalLine, verticalLine and xOffset or yOffset);
+end
+
+MagnetismPreviewLineMixin = {};
+
+local magnetismPreviewLinePixelWidth = 1.5;
+
+local MagnetismPreviewLineAnchorsEnum = {
+	Top = 1,
+	Bottom = 2,
+	Left = 3,
+	Right = 4,
+	CenterHorizontal = 5,
+	CenterVertical = 6,
+};
+
+function MagnetismPreviewLineMixin:GetLineAnchors(magneticFrameInfo)
+	local relativePoint = magneticFrameInfo.relativePoint;
+
+	local anchors = {};
+	if string.find(relativePoint, "CENTER") then
+		if magneticFrameInfo.isHorizontal then
+			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.CenterVertical);
+		else
+			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.CenterHorizontal);
+		end
+	else
+		if string.find(relativePoint, "TOP") then
+			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Top);
+		end
+		if string.find(relativePoint, "BOTTOM") then
+			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Bottom);
+		end
+		if string.find(relativePoint, "LEFT") then
+			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Left);
+		end
+		if string.find(relativePoint, "RIGHT") then
+			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Right);
+		end
+	end
+
+	return anchors;
+end
+
+function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
+	local uiParentWidth, uiParentHeight, uiParentCenterX, uiParentCenterY = EditModeMagnetismManager.uiParentWidth, EditModeMagnetismManager.uiParentHeight, EditModeMagnetismManager.uiParentCenterX, EditModeMagnetismManager.uiParentCenterY;
+	local relativeTo = magneticFrameInfo.frame;
+	local isLineAnchoringHorizontally = lineAnchor == MagnetismPreviewLineAnchorsEnum.Top or lineAnchor == MagnetismPreviewLineAnchorsEnum.Bottom or  lineAnchor == MagnetismPreviewLineAnchorsEnum.CenterHorizontal;
+
+	local startPoint, endPoint;
+	if isLineAnchoringHorizontally then
+		startPoint, endPoint = "LEFT", "RIGHT";
+	else
+		startPoint, endPoint = "TOP", "BOTTOM";
+	end
+
+	local offsetX, offsetY = 0, 0;
+	if relativeTo == UIParent then
+		-- RelativeTo is a grid line
+		-- If anchor is CenterHorizontal or CenterVertical then leave offsets at 0, 0
+		-- Otherwise we have to adjust offsets to put line on top of the grid line we're anchoring to
+		if lineAnchor == MagnetismPreviewLineAnchorsEnum.Top or lineAnchor == MagnetismPreviewLineAnchorsEnum.Bottom then
+			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Top then
+				offsetY = uiParentHeight + magneticFrameInfo.offset;
+			else -- Bottom
+				offsetY = magneticFrameInfo.offset;
+			end
+			offsetY = offsetY - uiParentCenterY;
+		elseif lineAnchor == MagnetismPreviewLineAnchorsEnum.Right or lineAnchor == MagnetismPreviewLineAnchorsEnum.Left then
+			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Right then
+				offsetX = uiParentWidth + magneticFrameInfo.offset;
+			else -- Left
+				offsetX = magneticFrameInfo.offset;
+			end
+			offsetX = offsetX - uiParentCenterX;
+		end
+	else
+		-- RelativeTo is an edit mode frame
+		local relativeToLeft, relativeToRight, relativeToBottom, relativeToTop;
+		local relativeToCenterX, relativeToCenterY;
+
+		relativeToLeft, relativeToRight, relativeToBottom, relativeToTop = relativeTo:GetScaledSelectionSides();
+		relativeToCenterX, relativeToCenterY = relativeTo:GetScaledSelectionCenter();
+
+		if isLineAnchoringHorizontally then
+			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Top then
+				offsetY = relativeToTop - uiParentCenterY;
+			elseif lineAnchor == MagnetismPreviewLineAnchorsEnum.Bottom then
+				offsetY = relativeToBottom - uiParentCenterY;
+			else -- CenterHorizontal
+				offsetY = relativeToCenterY - uiParentCenterY;
+			end
+		else -- isVerticalAnchor
+			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Left then
+				offsetX = relativeToLeft - uiParentCenterX;
+			elseif lineAnchor == MagnetismPreviewLineAnchorsEnum.Right then
+				offsetX = relativeToRight - uiParentCenterX;
+			else -- CenterVertical
+				offsetX = relativeToCenterX - uiParentCenterX;
+			end
+		end
+	end
+
+	self:SetStartPoint(startPoint, UIParent, offsetX, offsetY);
+	self:SetEndPoint(endPoint, UIParent, offsetX, offsetY);
+	SetupLineThickness(self, magnetismPreviewLinePixelWidth);
+	self:Show();
 end
 
 EditModeCheckButtonMixin = {};

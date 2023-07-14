@@ -70,6 +70,23 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "ItemBind",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "None", Type = "ItemBind", EnumValue = 0 },
+				{ Name = "OnAcquire", Type = "ItemBind", EnumValue = 1 },
+				{ Name = "OnEquip", Type = "ItemBind", EnumValue = 2 },
+				{ Name = "OnUse", Type = "ItemBind", EnumValue = 3 },
+				{ Name = "Quest", Type = "ItemBind", EnumValue = 4 },
+				{ Name = "Unused1", Type = "ItemBind", EnumValue = 5 },
+				{ Name = "Unused2", Type = "ItemBind", EnumValue = 6 },
+			},
+		},
+		{
 			Name = "ItemClass",
 			Type = "Enumeration",
 			NumValues = 20,

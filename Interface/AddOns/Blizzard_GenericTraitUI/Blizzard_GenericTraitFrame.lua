@@ -132,6 +132,8 @@ function GenericTraitFrameMixin:OnShow()
 
 	FrameUtil.RegisterFrameForEvents(self, GenericTraitFrameEvents);
 
+	EventRegistry:TriggerEvent("GenericTraitFrame.OnShow");
+
 	self:UpdateTreeCurrencyInfo();
 	self:ShowGenericTraitFrameTutorial();
 
@@ -144,6 +146,8 @@ function GenericTraitFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, GenericTraitFrameEvents);
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.TraitSystem);
+
+	EventRegistry:TriggerEvent("GenericTraitFrame.OnHide");
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 end
@@ -258,8 +262,13 @@ function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
 end
 
 function GenericTraitFrameMixin:SetSelectionCallback(nodeID, entryID)
-	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) and (entryID ~= nil) then
-		self:ShowPurchaseVisuals(nodeID);
+	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) then
+		if entryID then
+			self:ShowPurchaseVisuals(nodeID);
+			self:PlaySelectSoundForNode(nodeID);
+		else
+			self:PlayDeselectSoundForNode(nodeID);
+		end
 	end
 end
 
@@ -316,7 +325,6 @@ function GenericTraitFrameMixin:PurchaseRankCallback(nodeID)
 	end
 end
 
-
 function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
 	local treeID = self:GetTalentTreeID();
 	local nodeIDs = C_Traits.GetTreeNodes(treeID);
@@ -324,12 +332,12 @@ function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
 	local firstButton = self:GetTalentButtonByNodeID(nodeIDs[1]);
 	local tutorialInfo = genericTraitFrameTutorials[treeID];
 	if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
-			HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
+		HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
 	end
 end
 
 function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
-	if (self.buttonPurchaseFXIDs == nil) then
+	if not self.buttonPurchaseFXIDs then
 		return;
 	end
 
@@ -337,8 +345,14 @@ function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
 	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseCompleteEffect then
 		buttonWithPurchase:PlayPurchaseCompleteEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
 	end
+end
 
-	PlaySound(SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT);
+function GenericTraitFrameMixin:PlaySelectSoundForNode(nodeID)
+	self:InvokeTalentButtonMethodByNodeID("PlaySelectSound", nodeID);
+end
+
+function GenericTraitFrameMixin:PlayDeselectSoundForNode(nodeID)
+	self:InvokeTalentButtonMethodByNodeID("PlayDeselectSound", nodeID);
 end
 
 function GenericTraitFrameMixin:ShouldShowConfirmation()

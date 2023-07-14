@@ -88,7 +88,7 @@
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture atlas="PetJournal-LevelBubble" useAtlasSize="true" parentKey="levelBG">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon" x="3" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
 							</Anchors>
 						</Texture>
 						<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER" parentKey="level">
@@ -99,7 +99,7 @@
 						</FontString>
 						<Texture name="$parentFavorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" parentKey="favorite">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-8" y="8"/>
+								<Anchor point="TOPLEFT" x="-8" y="8"/>
 							</Anchors>
 						</Texture>
 					</Layer>

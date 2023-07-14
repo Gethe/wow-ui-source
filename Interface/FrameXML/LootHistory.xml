@@ -194,9 +194,9 @@
 			<minResize>
 				<AbsDimension x="261" y="300"/>
 			</minResize>
-			<MaxResize>
+			<maxResize>
 				<AbsDimension x="261" y="800"/>
-			</MaxResize>
+			</maxResize>
 		</ResizeBounds>
 		<KeyValues>
 			<KeyValue key="panelMaxHeight" value="590" type="number"/>

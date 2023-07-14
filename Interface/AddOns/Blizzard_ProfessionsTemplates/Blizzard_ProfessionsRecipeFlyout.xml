@@ -24,7 +24,7 @@
 		<Frames>
 			<ItemButton parentKey="UndoItem" inherits="ProfessionsItemFlyoutButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="18" y="-15"/>
+					<Anchor point="TOPLEFT" x="18" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer>
@@ -56,7 +56,7 @@
 			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="15" y="-15"/>
+					<Anchor point="TOPLEFT" x="15" y="-15"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

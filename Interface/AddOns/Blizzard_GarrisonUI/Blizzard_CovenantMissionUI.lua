@@ -5,8 +5,8 @@
 --This mission specifically has a tutorial flow to show 
 local STRATEGIC_POSITIONING_TUTORIAL_MISSION_ID = 2295;
 
---This file also represents the DF adventure map so we use this ID to determine when we should apply DF style data.
-local DRAGON_ISLES_MAP_ID = 2057;
+--This file also represents the DF adventure map so we use these IDs to determine when we should apply DF style data.
+local DRAGONFLIGHT_MAP_IDS = {2057, 2147};
 
 -- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
 GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower].missionFollowerSortFunc =  GarrisonFollowerList_DefaultMissionSort;
@@ -647,8 +647,9 @@ function CovenantMission:UpdateTextures()
 
 	self.BackgroundTile:SetAtlas("Adventures-Missions-BG-02");
 
-	-- Check that the map is Dragon Isles (ID 2057)
-	if C_AdventureMap.GetMapID() == DRAGON_ISLES_MAP_ID then
+	-- Check if the map is a Dragonflight map
+	local currentMapID = C_AdventureMap.GetMapID();
+	if tContains(DRAGONFLIGHT_MAP_IDS, currentMapID) then
 		SetupBorder(self, dragonflightStyleData);
 	else
 		SetupBorder(self, covenantGarrisonStyleData);

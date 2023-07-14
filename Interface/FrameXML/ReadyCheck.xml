@@ -2,10 +2,10 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ReadyCheck.lua"/>
 	<Frame name="ReadyCheckStatusTemplate" virtual="true">
-		<Size x="32" y="32"/>
+		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Texture" file="Interface\RaidFrame\ReadyCheck-Waiting" />
+				<Texture parentKey="Texture" atlas="UI-LFG-PendingMark" useAtlasSize="true"/>
 			</Layer>
 		</Layers>
 	</Frame>

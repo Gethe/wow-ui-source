@@ -142,7 +142,7 @@ end
 -- UiItemInteraction data only supports a single, flat currency cost.
 -- We need to add support for extended currency costs or move Item Conversion out of the Item Interaction UI.
 function ItemInteractionMixin:HasExtendedCurrencyCost()
-	return self.usesCharges;
+	return self.conversionMode;
 end
 
 function ItemInteractionMixin:HasCost()
@@ -487,7 +487,7 @@ function ItemInteractionMixin:GetButtonTooltip()
 end
 
 function ItemInteractionMixin:GetConfirmationDescription()
-	if self.interactionType == Enum.UIItemInteractionType.ItemConversion then
+	if self.interactionType == Enum.UIItemInteractionType.ItemConversion and self.currencyTypeId ~= nil then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
 		local file, fileWidth, fileHeight, width, height = currencyInfo.iconFileID, 64, 64, 16, 16;
 		local left, right, top, bottom = 0, 1, 0, 1;
@@ -601,8 +601,13 @@ end
 
 function ItemInteractionMixin:SetItemConversionExtendedCurrencyCost(itemLocation)
 	local conversionCurrencyInfo = itemLocation and C_ItemInteraction.GetItemConversionCurrencyCost(itemLocation) or nil;
-	self.currencyTypeId = conversionCurrencyInfo and conversionCurrencyInfo.currencyID or nil;
-	self.cost = conversionCurrencyInfo and conversionCurrencyInfo.amount or nil;
+	if (conversionCurrencyInfo and conversionCurrencyInfo.currencyID and conversionCurrencyInfo.amount and conversionCurrencyInfo.currencyID ~= 0 and conversionCurrencyInfo.amount ~= 0) then
+		self.currencyTypeId = conversionCurrencyInfo.currencyID;
+		self.cost = conversionCurrencyInfo.amount;
+	else
+		self.currencyTypeId = nil;
+		self.cost = nil;
+	end
 
 	if (self.currencyTypeId and self.cost) then
 		self:UpdateCurrency();

@@ -105,7 +105,8 @@ function BarberShopMixin:Cancel()
 end
 
 function BarberShopMixin:Reset()
-	C_BarberShop.ResetCustomizationChoices();
+	local force = false;
+	C_BarberShop.ResetCustomizationChoices(force);
 	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
 	self:SetCharacterSex(currentCharacterData.sex)
 	self:UpdateCharCustomizationFrame();
@@ -201,7 +202,7 @@ end
 function BarberShopMixin:SetViewingChrModel(chrModelID)
 	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingChrModel(chrModelID);
-	self.BodyTypes:SetShown(false);
+	self.BodyTypes:SetShown(chrModelID == nil);
 end
 
 function BarberShopMixin:SetModelDressState(dressedState)

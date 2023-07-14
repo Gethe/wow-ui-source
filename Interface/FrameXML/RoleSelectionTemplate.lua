@@ -60,23 +60,21 @@ end
 function RoleSelectionRoleMixin:UpdateDisplay()
 	if ( self.permDisabled ) then
 		self:SetEnabled(false);
-		SetDesaturation(self:GetNormalTexture(), true);
-		self.Cover:SetShown(true);
-		self.Cover:SetAlpha(0.5);
+		local showDisabled = true;
+		self:SetNormalAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 		self.CheckButton:SetEnabled(false);
 		self.CheckButton:SetShown(false);
 	elseif ( self.tempDisabled ) then
 		self:SetEnabled(false);
-		SetDesaturation(self:GetNormalTexture(), true);
-		self.Cover:SetShown(true);
-		self.Cover:SetAlpha(0.5);
+		local showDisabled = true;
+		self:SetNormalAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 		self.CheckButton:SetEnabled(false);
 		self.CheckButton:SetShown(true);
 		self.CheckButton:SetChecked(false);
 	else
 		self:SetEnabled(true);
-		SetDesaturation(self:GetNormalTexture(), false);
-		self.Cover:SetShown(false);
+		local showDisabled = false;
+		self:SetNormalAtlas(GetIconForRole(self.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 		self.CheckButton:SetEnabled(true);
 		self.CheckButton:SetShown(true);
 		self.CheckButton:SetChecked(self.selected);

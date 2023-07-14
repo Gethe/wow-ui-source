@@ -157,6 +157,13 @@ function MapCanvasPinMixin:OnClick(...)
 	end	
 end
 
+function MapCanvasPinMixin:DisableInheritedMotionScriptsWarning()
+	-- Override in your mixin to disable warnings (for use if you're inheriting from a template that has OnEnter/OnLeave defined).
+	-- Make sure you call the appropriate OnEnter/OnLeave inside OnMouseEnter/OnMouseLeave.
+
+	return false;
+end
+
 function MapCanvasPinMixin:OnMouseEnter()
 	-- Override in your mixin, called when the mouse enters this pin
 end

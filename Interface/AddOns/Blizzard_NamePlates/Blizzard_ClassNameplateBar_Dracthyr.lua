@@ -1,3 +1,10 @@
+--------------------------------------------------------------------------------
+--
+-- ClassNameplateBarDracthyr
+--
+--------------------------------------------------------------------------------
+
+
 ClassNameplateBarDracthyr = { };
 
 function ClassNameplateBarDracthyr:OnLoad()
@@ -19,4 +26,20 @@ end
 
 function ClassNameplateBarDracthyr:UpdatePower()
 	EssencePowerBar.UpdatePower(self);
+end
+
+
+--------------------------------------------------------------------------------
+--
+-- ClassNameplateEbonMightBar
+--
+--------------------------------------------------------------------------------
+
+
+ClassNameplateEbonMightBar = {};
+
+function ClassNameplateEbonMightBar:Initialize()
+	self.Border:SetVertexColor(0, 0, 0, 1);
+	self.Border:SetBorderSizes(nil, nil, 0, 0);
+	EvokerEbonMightBarMixin.Initialize(self);
 end

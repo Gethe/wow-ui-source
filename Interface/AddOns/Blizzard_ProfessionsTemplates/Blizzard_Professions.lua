@@ -56,34 +56,6 @@ function Professions.ExtractItemIDsFromCraftingReagents(reagents)
 	return tbl;
 end
 
-local isCraftingMinimized = false;
-function Professions.SetCraftingMinimized(minimized)
-	local changed = isCraftingMinimized ~= minimized;
-	isCraftingMinimized = minimized;
-
-	if changed then
-		EventRegistry:TriggerEvent("ProfessionsFrame.Minimized");
-	end
-end
-
-function Professions.IsCraftingMinimized()
-	return isCraftingMinimized;
-end
-
--- This is wrapped in a function because the implementation backing "required" here is likely to change
--- after a planned slot description refactor.
-function Professions.IsReagentSlotRequired(reagentSlotSchematic)
-	return reagentSlotSchematic.required;
-end
-
-function Professions.IsReagentSlotBasicRequired(reagentSlotSchematic)
-	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic and Professions.IsReagentSlotRequired(reagentSlotSchematic);
-end
-
-function Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic)
-	return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying and Professions.IsReagentSlotRequired(reagentSlotSchematic);
-end
-
 function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
@@ -240,24 +212,8 @@ function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
 	return locked, lockedReason;
 end
 
-function Professions.GetReagentQuantityInPossession(reagent)
-	if reagent.itemID then
-		return ItemUtil.GetCraftingReagentCount(reagent.itemID);
-	elseif reagent.currencyID then
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
-		return currencyInfo.quantity;
-	end
-	assert(false);
-end
-
-function Professions.AccumulateReagentsInPossession(reagents)
-	return AccumulateOp(reagents, function(reagent)
-		return Professions.GetReagentQuantityInPossession(reagent);
-	end);
-end
-
 local function CanShowBar(professionInfo)
-	if Professions.IsCraftingMinimized() then
+	if ProfessionsUtil.IsCraftingMinimized() then
 		return false;
 	end
 
@@ -418,19 +374,20 @@ end
 
 function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	local quantities = {0, 0, 0};
-	for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+	local slotIndex = reagentSlotSchematic.slotIndex;
+	for allocationIndex, allocation in transaction:EnumerateAllocations(slotIndex) do
 		local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
 			return Professions.CraftingReagentMatches(reagent, allocation.reagent);
 		end);
 
 		if not index or quantities[index] == nil then
 			local reagent = allocation.reagent;
+			local recipeID = transaction:GetRecipeID();
 			local id = reagent.itemID or reagent.currencyID;
-			assert(false, ("recipeID = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
-				transaction:GetRecipeID(), allocationIndex, 
-				(reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0),
-				(index and index or -1), id)
-			);
+			local foundIndex = index and index or -1;
+			local reagentsSize = (reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0);
+			assert(false, ("Invalid allocation found: recipeID = %d, slotIndex = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
+				recipeID, slotIndex, allocationIndex, foundIndex, reagentsSize, id));
 		end
 		quantities[index] = allocation.quantity;
 	end
@@ -489,7 +446,7 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSche
 				local instruction;
 				if reagentType == Enum.CraftingReagentType.Finishing then
 					instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
-				elseif not Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+				elseif not ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
 					instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
 				end
 
@@ -514,7 +471,7 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSche
 			local instruction;
 			if reagentType == Enum.CraftingReagentType.Finishing then
 				instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD;
-			elseif Professions.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+			elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
 				instruction = REQUIRED_REAGENT_TOOLTIP_CLICK_TO_ADD;
 			else
 				instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
@@ -531,7 +488,7 @@ local function AllocateReagents(allocations, reagentSlotSchematic, useBestQualit
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
 	local iterator = useBestQuality and ipairs_reverse or ipairs;
 	for reagentIndex, reagent in iterator(reagentSlotSchematic.reagents) do
-		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 		allocations:Allocate(reagent, math.min(quantity, quantityRequired));
 		quantityRequired = quantityRequired - quantity;
 
@@ -570,7 +527,7 @@ function Professions.CanAllocateReagents(transaction, slotIndex)
 	local reagentSlotSchematic = transaction:GetReagentSlotSchematic(slotIndex);
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
 	for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
-		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 		quantityRequired = quantityRequired - quantity;
 
 		if quantityRequired <= 0 then
@@ -634,25 +591,6 @@ function Professions.GetReagentInputMode(reagentSlotSchematic)
 	end
 
 	return Professions.ReagentInputMode.Any;
-end
-
-function Professions.CreateRecipeReagentListByPredicate(recipeID, predicate)
-	local reagents = {};
-	local isRecraft = false;
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
-	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		if predicate(reagentSlotSchematic) then
-			tAppendAll(reagents, reagentSlotSchematic.reagents);
-		end
-	end
-	return reagents;
-end
-
-function Professions.CreateRecipeReagentsForAllBasicReagents(recipeID, predicate)
-	local function IsBasicReagent(reagentSlotSchematic)
-		return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
-	end
-	return Professions.CreateRecipeReagentListByPredicate(recipeID, IsBasicReagent);
 end
 
 local function SortRootData(lhs, rhs)
@@ -757,7 +695,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	local unlearnedCategoryMap = {};
 	local categoryMaps = { learnedCategoryMap, unlearnedCategoryMap };
 
-	local dataProvider = CreateLinearizedTreeListDataProvider();
+	local dataProvider = CreateTreeDataProvider();
 	-- Create a category hierarchy for each recipe. Learned and unlearned recipes are now separated into potentially
 	-- identical but cloned hierarchies for the sake of organization.
 	do

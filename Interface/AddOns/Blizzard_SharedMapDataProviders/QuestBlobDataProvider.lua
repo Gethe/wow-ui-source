@@ -139,7 +139,7 @@ function QuestBlobPinMixin:Refresh()
 
 	self:TryDrawQuest(self.highlightedQuestID);
 	self:TryDrawQuest(self.focusedQuestID);
-	self:TryDrawQuest(QuestPOIHighlightManager:GetQuestID());
+	self:TryDrawQuest(POIButtonHighlightManager:GetQuestID());
 end
 
 function QuestBlobPinMixin:OnMapChanged()
@@ -181,7 +181,7 @@ function QuestBlobPinMixin:ClearHighlightedQuestPOI()
 end
 
 function QuestBlobPinMixin:UpdateTooltip()
-	if QuestPOIHighlightManager:HasHighlight() then
+	if POIButtonHighlightManager:HasHighlight() then
 		return;
 	end
 

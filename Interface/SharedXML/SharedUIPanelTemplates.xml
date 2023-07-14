@@ -1294,7 +1294,7 @@
 				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
 					<Size x="10" y="12"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+						<Anchor point="RIGHT" x="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -2580,7 +2580,7 @@
 						</FontString>
 						<FontString parentKey="IconSelectionText" inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="24" y="-69"/>
+								<Anchor point="TOPLEFT" x="24" y="-79"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -2607,9 +2607,6 @@
 											<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
 										</Texture>
 									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="SelectedTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" hidden="true"/>
-									</Layer>
 								</Layers>
 								<Scripts>
 									<OnClick method="OnClick"/>
@@ -2632,7 +2629,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<FontString parentKey="SelectedIconHeader" inherits="GameFontNormalSmall">
+										<FontString parentKey="SelectedIconHeader" inherits="GameFontNormalSmall" text="ICON_SELECTION_TITLE_CURRENT">
 											<KeyValues>
 												<KeyValue key="layoutIndex" value="1" type="number"/>
 												<KeyValue key="align" value="right" type="string"/>
@@ -2718,11 +2715,17 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
+					<Frame parentKey="IconTypeDropDown" inherits="EnumDropDownControlTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-44" y="-68"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
+				<Size x="494" y="361"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="21" y="-84"/>
+					<Anchor point="TOPLEFT" x="21" y="-97"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -2826,8 +2829,8 @@
 			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner2" x="1" y="-28"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" x="-20" y="1"/>
+					<Anchor point="TOPLEFT" x="1" y="-28"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="1"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

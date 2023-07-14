@@ -134,6 +134,19 @@ function FrameUtil.RegisterForVariablesLoaded(frame, loadMethod)
 	EventUtil.ContinueOnVariablesLoaded(VariablesLoadedCallback);
 end
 
+-- Only expected to return differently in glues and in-game.
+function FrameUtil.GetRootParent(frame)
+	local parent = frame:GetParent();
+	while parent do
+		local nextParent = parent:GetParent();
+		if not nextParent then
+			break;
+		end
+		parent = nextParent;
+	end
+	return parent;
+end
+
 function DoesAncestryInclude(ancestry, frame)
 	if ancestry then
 		local currentFrame = frame;

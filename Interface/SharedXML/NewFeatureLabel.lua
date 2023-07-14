@@ -1,5 +1,12 @@
 NewFeatureLabelMixin = {};
 
+function NewFeatureLabelMixin:OnLoad()
+	self.BGLabel:SetText(self.label);
+	self.Label:SetText(self.label);
+	self.Label:SetJustifyH(self.justifyH);
+	self.BGLabel:SetJustifyH(self.justifyH);
+end
+
 function NewFeatureLabelMixin:ClearAlert()
 	-- derive
 	self:SetShown(false);

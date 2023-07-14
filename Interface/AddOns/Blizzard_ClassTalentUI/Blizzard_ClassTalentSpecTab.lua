@@ -51,6 +51,7 @@ local SPEC_FORMAT_STRINGS = {
 	[581] = "demonhunter-vengeance",
 	[1467] = "evoker-devastation",
 	[1468] = "evoker-preservation",
+	[1473] = "evoker-augmentation",
 }
 
 ClassTalentSpecTabMixin={}
@@ -361,7 +362,7 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 		self.Description:SetText(description.."|n"..SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));
 	end
 	local role = GetSpecializationRole(index, false, false);
-	self.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
+	self.RoleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
 	self.RoleName:SetText(_G[role]);
 
 	-- set positions

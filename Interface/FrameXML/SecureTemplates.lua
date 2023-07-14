@@ -764,7 +764,7 @@ end
 function SecureUnitButton_OnClick(self, button, down)
     local modifiers = C_ClickBindings.MakeModifiers();
     local bindingType = C_ClickBindings.GetBindingType(button, modifiers);
-    if ( (bindingType == Enum.ClickBindingType.Spell) or (bindingType == Enum.ClickBindingType.Macro) ) then
+    if ( (bindingType == Enum.ClickBindingType.Spell) or (bindingType == Enum.ClickBindingType.Macro) or (bindingType == Enum.ClickBindingType.PetAction) ) then
         local unit = SecureButton_GetModifiedUnit(self);
         C_ClickBindings.ExecuteBinding(unit, button, modifiers);
     else

@@ -1,6 +1,7 @@
+local playerUnitToken = "player";
 
 function AddDracthyrTutorials()
-	local _, raceFilename = UnitRace("Player");
+	local _, raceFilename = UnitRace(playerUnitToken);
 	if raceFilename == "Dracthyr" then
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_ESSENCE) then
 			local class = Class_DracthyrEssenceWatcher:new();
@@ -207,13 +208,30 @@ end
 Class_DracthyrLowHealthWatcher = class("DracthyrLowHealthWatcher", Class_TutorialBase);
 function Class_DracthyrLowHealthWatcher:OnInitialize()
 	self.spellID = 361469; -- Dracthyr Living Flame Spell
-	self.helpTipInfo = {
+
+	self.actionButtonHelpTipInfo = {
 		text = TUTORIAL_DRACTHYR_SELF_CAST,
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		alignment = HelpTip.Alignment.Center,
+		autoEdgeFlipping = true,
+		autoHorizontalSlide = true,
+		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
+		acknowledgeOnHide = false,
+	};
+
+	self.settingsHelpTipInfo = {
+		text = TUTORIAL_DRACTHYR_SELF_CAST_SETTINGS,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		targetPoint = HelpTip.Point.TopEdgeCenter,
+		alignment = HelpTip.Alignment.Center,
+		autoEdgeFlipping = true,
+		autoHorizontalSlide = true,
+		hideArrow = true,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
 		acknowledgeOnHide = false,
 	};
@@ -221,48 +239,111 @@ end
 
 function Class_DracthyrLowHealthWatcher:StartWatching()
 	EventRegistry:RegisterFrameEventAndCallback("UNIT_HEALTH", self.OnUnitHealthChanged, self);
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_DISABLED", self.UpdateTutorialState, self);
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self.UpdateTutorialState, self);
+	self.selfCastChangedHandler = Settings.SetOnValueChangedCallback("PROXY_SELF_CAST", self.UpdateTutorialState, self);
+	self.selfCastKeyChangedHandler = Settings.SetOnValueChangedCallback("SELFCAST", self.UpdateTutorialState, self);
 end
 
 function Class_DracthyrLowHealthWatcher:StopWatching()
 	EventRegistry:UnregisterFrameEventAndCallback("UNIT_HEALTH", self);
+	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_DISABLED", self);
+	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", self);
+	self.selfCastChangedHandler:Unregister();
+	self.selfCastKeyChangedHandler:Unregister();
+end
+
+function Class_DracthyrLowHealthWatcher:OnUnitHealthChanged(arg1)
+	if arg1 == playerUnitToken then
+		self:UpdateTutorialState();
+	end
 end
 
 local LOW_HEALTH_PERCENTAGE = 0.5;
-function Class_DracthyrLowHealthWatcher:OnUnitHealthChanged(arg1)
-	if arg1 == "player" then
-		local isDeadOrGhost = UnitIsDeadOrGhost("player");
-		local healthPercent = UnitHealth(arg1) / UnitHealthMax(arg1);
-		if (not isDeadOrGhost) and healthPercent <= LOW_HEALTH_PERCENTAGE then
-			self.actionButton = TutorialHelper:GetActionButtonBySpellID(self.spellID);
-			local selfCastKeyModifier = GetModifiedClick("SELFCAST");
-			local usingSelfCast = selfCastKeyModifier ~= "NONE";
-			if usingSelfCast and self.actionButton then
-				local action = self.actionButton.action or "";
-				local key = GetBindingKey("ACTIONBUTTON"..action);
-				-- There's a key assigned, check the combo
-				if key then
-					local selfCastKeyBind = selfCastKeyModifier.."-"..key;
-					if GetBindingAction(selfCastKeyBind) ~= "" then
-						-- something else uses this, cancel
-						usingSelfCast = false;
-					end
-				end
+function Class_DracthyrLowHealthWatcher:UpdateTutorialState()
+	if not self:ShouldUpdateTutorialState() then
+		return;
+	end
+
+	local selfCastSettingValue = Settings.GetValue("PROXY_SELF_CAST");
+	local usingSelfCast = selfCastSettingValue == SELF_CAST_SETTING_VALUES.KEY_PRESS
+						or selfCastSettingValue == SELF_CAST_SETTING_VALUES.AUTO_AND_KEY_PRESS;
+
+	local selfCastKeyModifier = GetModifiedClick("SELFCAST");
+	usingSelfCast = usingSelfCast and selfCastKeyModifier ~= "NONE";
+
+	local actionButton = TutorialHelper:GetActionButtonBySpellID(self.spellID);
+	if usingSelfCast and actionButton then
+		local action = actionButton.action or "";
+		local key = GetBindingKey("ACTIONBUTTON"..action);
+
+		-- There's a key assigned, check the combo
+		if key then
+			local selfCastKeyBind = selfCastKeyModifier.."-"..key;
+			if GetBindingAction(selfCastKeyBind) ~= "" then
+				-- Something else uses this, keybind combo
+				-- In this case the self cast keybind will be eaten by that other thing so we technically can't self cast right now
+				usingSelfCast = false;
 			end
-			if usingSelfCast then
-				self.helpString = TutorialHelper:FormatString(TUTORIAL_DRACTHYR_SELF_CAST:format(selfCastKeyModifier));
-				self.helpTipInfo.text = self.helpString;
-				HelpTip:Show(self.actionButton, self.helpTipInfo);				
-			else
-				self:FinishTutorial();
-			end
-		elseif healthPercent >= 1.0 then
-			HelpTip:Hide(self.actionButton, self.helpString);
 		end
+	end
+
+	-- If we have a self cast keybind set and we have an action button with living flame assigned to it
+	-- Then show the help tip on the action button saying how to self cast the spell
+	if usingSelfCast and actionButton then
+		self:ShowActionButtonHelpTip(actionButton, selfCastKeyModifier);
+		return;
+	end
+
+	local isInCombat = UnitAffectingCombat(playerUnitToken);
+
+	-- If we don't have a self cast keybind set and we're out of combat
+	-- Then show the help tip directing the player to their settings to set a self cast keybind
+	if not usingSelfCast and not isInCombat then
+		self:ShowSettingsHelpTip();
+		return;
 	end
 end
 
 function Class_DracthyrLowHealthWatcher:FinishTutorial()
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH, true);
 	self:StopWatching();
-	HelpTip:Hide(self.actionButton, self.helpString);
+	self:HideHelpTips();
+end
+
+function Class_DracthyrLowHealthWatcher:ShouldUpdateTutorialState()
+	if self.isShowingHelpTip then
+		return true;
+	end
+
+	local isDeadOrGhost = UnitIsDeadOrGhost(playerUnitToken);
+	local healthPercent = UnitHealth(playerUnitToken) / UnitHealthMax(playerUnitToken);
+	return not isDeadOrGhost and healthPercent <= LOW_HEALTH_PERCENTAGE;
+end
+
+function Class_DracthyrLowHealthWatcher:HideHelpTips()
+	if self.actionButton then
+		HelpTip:Hide(self.actionButton, self.actionButtonHelpTipInfo.text);
+		self.actionButton = nil;
+	end
+
+	HelpTip:Hide(MicroMenu, self.settingsHelpTipInfo.text);
+
+	self.isShowingHelpTip = false;
+end
+
+function Class_DracthyrLowHealthWatcher:ShowActionButtonHelpTip(actionButton, selfCastKeyModifier)
+	self:HideHelpTips();
+
+	self.actionButton = actionButton;
+	self.actionButtonHelpTipInfo.text = TutorialHelper:FormatString(TUTORIAL_DRACTHYR_SELF_CAST:format(selfCastKeyModifier));
+	HelpTip:Show(self.actionButton, self.actionButtonHelpTipInfo);
+	self.isShowingHelpTip = true;
+end
+
+function Class_DracthyrLowHealthWatcher:ShowSettingsHelpTip()
+	self:HideHelpTips();
+
+	HelpTip:Show(MicroMenu, self.settingsHelpTipInfo);
+	self.isShowingHelpTip = true;
 end

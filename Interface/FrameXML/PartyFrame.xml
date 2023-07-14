@@ -4,7 +4,7 @@
 	<Script file="PartyFrame.lua"/>
 	<Script file="TextStatusBar.lua"/>
 	<Include file="PartyFrameTemplates.xml"/>
-	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame, EditModeUnitFrameSystemTemplate" frameStrata="LOW" parent="UIParent" toplevel="true">
+	<Frame name="PartyFrame" mixin="PartyFrameMixin" inherits="VerticalLayoutFrame, EditModeUnitFrameSystemTemplate, PingTopLevelPassThroughAttributeTemplate" frameStrata="LOW" parent="UIParent" toplevel="true">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeUnitFrameSystemIndices.Party" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>

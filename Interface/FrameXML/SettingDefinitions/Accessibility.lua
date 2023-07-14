@@ -9,13 +9,12 @@ local function Register()
 	Settings.SetupCVarCheckBox(category, "movieSubtitle", CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
 	
 	-- Alternate Full Screen Effects
-	do
-		local setting, initializer = Settings.SetupCVarCheckBox(category, "overrideScreenFlash", ALTERNATE_SCREEN_EFFECTS, OPTION_TOOLTIP_ALTERNATE_SCREEN_EFFECTS);
-		initializer:AddSearchTags(ALTERNATE_SCREEN_EFFECTS_SEARCH_TAG);
-	end
+	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
 
-	-- Quest Text Contrast
-	Settings.SetupCVarCheckBox(category, "questTextContrast", ENABLE_QUEST_TEXT_CONTRAST, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
+	if C_CVar.GetCVar("empowerTapControls") then
+		-- Quest Text Contrast
+		Settings.SetupCVarCheckBox(category, "questTextContrast", ENABLE_QUEST_TEXT_CONTRAST, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
+	end
 
 	-- Minimum Character Name Size
 	do
@@ -74,7 +73,7 @@ local function Register()
 	end
 
 	-- Dragonriding Motion Sickness
-	do
+	if C_CVar.GetCVar("motionSicknessFocalCircle") and C_CVar.GetCVar("motionSicknessLandscapeDarkening") then
 		local function GetValue()
 			local focalCircle = GetCVarBool("motionSicknessFocalCircle");
 			local landscapeDarkening = GetCVarBool("motionSicknessLandscapeDarkening");
@@ -121,7 +120,7 @@ local function Register()
 	end
 
 	--Dragonriding High Speed Motion Sickness Option
-	do 
+	if C_CVar.GetCVar("DisableAdvancedFlyingVelocityVFX") then
 		local function GetValue()
 			return not GetCVarBool("DisableAdvancedFlyingVelocityVFX");
 		end
@@ -201,15 +200,9 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, CURSOR_SIZE_TOOLTIP);
 	end
 
-	-- Enable Dracthyr Tap Controls (Mirrored in Controls)
-	do
-		local function GetTapControlOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);
-			container:Add(1, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION, SETTING_EMPOWERED_SPELL_INPUT_TAP_OPTION_TOOLTIP);
-			return container:GetData();
-		end
-		Settings.SetupCVarDropDown(category, "empowerTapControls", Settings.VarType.Number, GetTapControlOptions, SETTING_EMPOWERED_SPELL_INPUT, SETTING_EMPOWERED_SPELL_INPUT_TOOLTIP);
+	-- Enable Dracthyr Tap Controls (Source in Combat)
+	if C_CVar.GetCVar("empowerTapControls") then
+		layout:AddMirroredInitializer(Settings.EmpoweredTapControlsInitializer);
 	end
 
 	-- Show Target Tooltip

@@ -124,7 +124,7 @@
       <Layer level="ARTWORK">
         <FontString parentKey="Ranking" inherits="Number12Font_o1">
           <Anchors>
-            <Anchor point="CENTER" relativeKey="$parent.Shadow"/>
+            <Anchor point="CENTER"/>
           </Anchors>
         </FontString>
       </Layer>
@@ -138,4 +138,3 @@
 		</Scripts>
   </Button>
 </Ui>
-

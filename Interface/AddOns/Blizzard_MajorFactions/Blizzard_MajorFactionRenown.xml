@@ -202,7 +202,7 @@
 								<Color r="0" g="0" b="0"/>
 							</Shadow>
 							<Anchors>
-								<Anchor point="BOTTOM" relativeKey="$parent.TrackFrame" relativePoint="TOP" x="0" y="15"/>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="15"/>
 							</Anchors>
 						</FontString>
 					</Layer>

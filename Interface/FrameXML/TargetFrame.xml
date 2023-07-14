@@ -132,7 +132,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" mixin="TargetFrameMixin" virtual="true" frameLevel="500">
+	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" mixin="TargetFrameMixin, PingableType_UnitFrameMixin" virtual="true" frameLevel="500">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="0" right="5" top="4" bottom="9"/>
@@ -147,6 +147,15 @@
 								<Anchor point="TOPRIGHT" x="-26" y="-19"/>
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="PortraitMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<MaskedTextures>
+								<MaskedTexture childKey="Portrait"/>
+							</MaskedTextures>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait" x="-1"/>
+							</Anchors>
+						</MaskTexture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn" useAtlasSize="true">
@@ -424,7 +433,7 @@
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" mixin="BossTargetFrameMixin" toplevel="false" virtual="true">
+	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate, PingReceiverAttributeTemplate" mixin="BossTargetFrameMixin, PingableType_UnitFrameMixin" toplevel="false" virtual="true">
 		<KeyValues>
 			<KeyValue key="align" value="right" type="string"/>
 			<KeyValue key="frameType" value="Target-Boss-Small" type="string"/>
@@ -447,7 +456,7 @@
 			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" mixin="TargetOfTargetMixin" virtual="true" hidden="true">
+	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate, PingReceiverAttributeTemplate" mixin="TargetOfTargetMixin, PingableType_UnitFrameMixin" virtual="true" hidden="true">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="frameType" value="TargetofTarget" type="string"/>
@@ -464,6 +473,15 @@
 						<Anchor point="TOPLEFT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
+				<MaskTexture parentKey="PortraitMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<MaskedTextures>
+						<MaskedTexture childKey="Portrait"/>
+					</MaskedTextures>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Portrait"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn" useAtlasSize="true">

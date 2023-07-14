@@ -470,7 +470,7 @@
 							<Button parentKey="NameAvailabilityState" inherits="CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateNameAvailabilityStateMixin">
 								<Size x="20" y="20"/>
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="22"/>
+									<Anchor point="LEFT" relativePoint="RIGHT" x="22"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="tooltipMinWidth" value="nil" type="global"/>

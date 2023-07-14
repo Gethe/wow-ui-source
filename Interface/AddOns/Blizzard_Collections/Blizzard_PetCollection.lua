@@ -715,7 +715,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 				local battlePetActor = loadoutPlate.modelScene:GetActorByTag("pet");
 				if ( battlePetActor ) then
 					battlePetActor:SetModelByCreatureDisplayID(displayID);
-					battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+					battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 				end
 
 				modelChanged = true;
@@ -1280,7 +1280,7 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 		local battlePetActor = self.modelScene:GetActorByTag("unwrapped");
 		if ( battlePetActor ) then
 			battlePetActor:SetModelByCreatureDisplayID(displayID);
-			battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		end
 
 		modelChanged = true;

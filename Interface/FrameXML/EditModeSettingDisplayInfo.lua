@@ -21,6 +21,15 @@ local function ConvertValueDiffFromMin(self, value, forDisplay)
 	end
 end
 
+-- Create display only setting enum values
+-- These are purely used for display. Changing their values may result in other settings values changing. Used for composite settings like ones made up of multiple other hidden settings.
+do
+	local highestValue = TableUtil.GetHighestNumericalValueInTable(Enum.EditModeChatFrameSetting);
+	Enum.EditModeChatFrameDisplayOnlySetting = {};
+	Enum.EditModeChatFrameDisplayOnlySetting.Width = highestValue + 1;
+	Enum.EditModeChatFrameDisplayOnlySetting.Height = highestValue + 2;
+end
+
 -- The ordering of the setting display info tables in here affects the order settings show in the system setting dialog
 EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	-- Action Bar Settings
@@ -239,6 +248,19 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
+		-- View Arena Size
+		{
+			setting = Enum.EditModeUnitFrameSetting.ViewArenaSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.ViewArenaSize.Two, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_TWO},
+				{value = Enum.ViewArenaSize.Three, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_THREE},
+				{value = Enum.ViewArenaSize.Five, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_VIEW_ARENA_SIZE_FIVE},
+			},
+		},
+
 		-- Frame Width
 		{
 			setting = Enum.EditModeUnitFrameSetting.FrameWidth,
@@ -427,6 +449,37 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.ChatFrame] =
 	{
+		-- Width
+		{
+			setting = Enum.EditModeChatFrameDisplayOnlySetting.Width,
+			name = HUD_EDIT_MODE_SETTING_CHAT_FRAME_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 250,
+			maxValue = 800,
+			stepSize = 1,
+
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- We do this to support more values than we're normally capable of based on data saving limits.
+			isCompositeNumberSetting = true,
+			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.WidthHundreds,
+			compositeNumberTensAndOnesSetting = Enum.EditModeChatFrameSetting.WidthTensAndOnes,
+		},
+
+		-- Height
+		{
+			setting = Enum.EditModeChatFrameDisplayOnlySetting.Height,
+			name = HUD_EDIT_MODE_SETTING_CHAT_FRAME_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 120,
+			maxValue = 800,
+			stepSize = 1,
+
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- We do this to support more values than we're normally capable of based on data saving limits.
+			isCompositeNumberSetting = true,
+			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.HeightHundreds,
+			compositeNumberTensAndOnesSetting = Enum.EditModeChatFrameSetting.HeightTensAndOnes,
+		},
 	},
 
 	[Enum.EditModeSystem.VehicleLeaveButton] =
@@ -514,7 +567,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 150,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,
-			formatter = showAsPercentage,
+			formatter = ShowAsPercentage,
 		},
 	},
 
@@ -570,6 +623,51 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_DURABILITY_FRAME_SIZE,
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 75,
+			maxValue = 200,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.TimerBars] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeTimerBarsSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_TIMER_BARS_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
+			maxValue = 150,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.VehicleSeatIndicator] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeVehicleSeatIndicatorSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_VEHICLE_SEAT_INDICATOR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.ArchaeologyBar] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeArchaeologyBarSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_ARCHAEOLOGY_BAR_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 100,
 			maxValue = 200,
 			stepSize = 5,
 			ConvertValue = ConvertValueDefault,

@@ -96,3 +96,14 @@ end
 function PlayerUtil.CanUseClassTalents()
 	return C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec();
 end
+
+function PlayerUtil.HasFriendlyReaction(unit)
+    local reaction = UnitReaction("player", unit);
+
+	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile.
+    if reaction and reaction <= 4 then
+        return false;
+    end
+
+	return true;
+end

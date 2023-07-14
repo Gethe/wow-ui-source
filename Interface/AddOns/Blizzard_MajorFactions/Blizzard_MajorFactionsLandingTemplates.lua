@@ -25,9 +25,9 @@ local MAJOR_FACTION_LIST_EVENTS = {
 };
 
 function MajorFactionListMixin:OnLoad()
-	local padding = 0;
-	local elementSpacing = 8;
-	local view = CreateScrollBoxListLinearView(padding, padding, padding, padding, elementSpacing);
+	local topPadding, bottomPadding, leftPadding, rightPadding = 5, 10, 0, 0;
+	local elementSpacing = 4;
+	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 	view:SetElementInitializer("MajorFactionButtonTemplate", function(button, majorFactionData)
 		button:Init(majorFactionData);
 		-- Set the button as "selected" if the Renown Track is already open to this faction when we initialize the list
@@ -408,7 +408,7 @@ function MajorFactionWatchFactionButtonMixin:OnLoad()
 	self:ClearAllPoints();
 	local totalWidth = self:GetWidth() + self.Label:GetStringWidth();
 	local padding = 2;
-	local xOffset, yOffset = (totalWidth + padding) * -1, -6;
+	local xOffset, yOffset = (totalWidth + padding) * -1, -8;
 	self:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", xOffset, yOffset);
 end
 

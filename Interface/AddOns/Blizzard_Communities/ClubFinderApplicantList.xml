@@ -78,19 +78,19 @@
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RoleIcon1" hidden="true" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIcon1" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RoleIcon2" hidden="true" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIcon2" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="3" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RoleIcon3" hidden="true" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIcon3" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RoleIcon2" relativePoint="RIGHT" x="3" y="0"/>

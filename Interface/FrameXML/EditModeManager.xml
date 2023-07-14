@@ -50,6 +50,21 @@
 					<Anchor point="TOPLEFT" x="20" y="-35"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="MagnetismPreviewLinesContainer" frameStrata="HIGH">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="UIParent" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Line inherits="MagnetismPreviewLineTemplate"/>
+						<Line inherits="MagnetismPreviewLineTemplate"/>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" hidden="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -363,11 +378,32 @@
 									<KeyValue key="advancedLayoutIndex" value="5" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="TimerBars" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_TIMER_BARS_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="VehicleSeatIndicator" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_VEHICLE_SEAT_INDICATOR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="7" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="ArchaeologyBar" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_ARCHAEOLOGY_BAR_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
+								</KeyValues>
+							</Frame>
 							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
-									<KeyValue key="advancedLayoutIndex" value="6" type="number"/>
+									<KeyValue key="advancedLayoutIndex" value="9" type="number"/>
 									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP" type="global"/>
 								</KeyValues>
 							</Frame>

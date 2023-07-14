@@ -4,6 +4,10 @@ function DefineNewSettings()
 	newSettings["10.1.0"] = {
 		"PROXY_CENSOR_MESSAGES",
 	};
+	newSettings["10.1.5"] = {
+		"ReplaceOtherPlayerPortraits",
+		"ReplaceMyPlayerPortrait",
+	};
 
 	local version = GetBuildInfo();
 

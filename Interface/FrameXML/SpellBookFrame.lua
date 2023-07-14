@@ -670,9 +670,16 @@ function SpellButtonMixin:OnClick(button)
 
 	if InClickBindingMode() then
 		if ClickBindingFrame:HasNewSlot() and self.canClickBind then
-			local slot = SpellBook_GetSpellBookSlot(self);
-			local _, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
-			ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Spell, spellID);
+			if SpellBookFrame.bookType == BOOKTYPE_SPELL then
+				local _, spellID = GetSpellBookItemInfo(slot, BOOKTYPE_SPELL);
+				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Spell, spellID);
+			elseif SpellBookFrame.bookType == BOOKTYPE_PET then
+				local _, actionID = GetSpellBookItemInfo(slot, BOOKTYPE_PET);
+				local spellID = C_PetInfo.GetSpellForPetAction(actionID);
+				if spellID then
+					ClickBindingFrame:AddNewAction(Enum.ClickBindingType.PetAction, spellID);
+				end
+			end
 		end
 		return;
 	end

@@ -1,0 +1,6 @@
+## Title: Blizzard Ping UI
+## LoadOnDemand: 1
+## RequiredDep: Blizzard_RadialWheel
+Blizzard_PingManager.lua
+Blizzard_PingUI.xml
+Blizzard_PingUtil.lua

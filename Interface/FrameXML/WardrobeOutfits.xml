@@ -41,7 +41,7 @@
 				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check" hidden="false">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Icon" hidden="false">

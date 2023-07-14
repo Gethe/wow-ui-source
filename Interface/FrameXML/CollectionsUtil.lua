@@ -149,7 +149,7 @@ function CollectionWardrobeUtil.IsAppearanceUsable(appearanceInfo, inLegionArtif
 	return false;
 end
 
-function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString)
+function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo)
 	local canCycle = false;
 
 	for i = 1, #sources do
@@ -257,6 +257,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 		end
 	end
 
+	if warningString then
+		GameTooltip_AddNormalLine(tooltip, warningString);
+	end
+
 	if ( not appearanceCollected ) then
 		if sourceLocation then
 			if sourceDifficulties then
@@ -266,10 +270,6 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			end
 		end
 		GameTooltip_AddColoredLine(tooltip, sourceText, sourceColor);
-	end
-
-	if warningString then
-		GameTooltip_AddNormalLine(tooltip, warningString);
 	end
 
 	local useError;
@@ -297,12 +297,22 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
+			if (showTrackingInfo and ContentTrackingUtil.IsContentTrackingEnabled() and C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sources[i].sourceID) ) then
+				name = name..CreateAtlasMarkup("checkmark-minimal", 15, 15, 0, -2);
+			end
 			GameTooltip_AddColoredDoubleLine(tooltip, name, sourceText, nameColor, sourceColor);
 		end
-		GameTooltip_AddBlankLineToTooltip(tooltip);
+		if ( showTrackingInfo ) then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID); 
+		end
 		GameTooltip_AddColoredLine(tooltip, WARDROBE_TOOLTIP_CYCLE, GRAY_FONT_COLOR);
 		canCycle = true;
 	else
+		if ( showTrackingInfo ) then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sources[headerIndex].sourceID);
+		end
 		if showUseError and not CollectionWardrobeUtil.IsAppearanceUsable(sources[headerIndex], inLegionArtifactCategory) then
 			useError = sources[headerIndex].useError;
 		end
@@ -328,6 +338,21 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	return headerIndex, canCycle;
 end
 
+function CollectionWardrobeUtil.AddTrackingTooltipLine(tooltip, sourceID)
+	if ( not ContentTrackingUtil.IsContentTrackingEnabled() ) then
+		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+		return;
+	end
+	if ( C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Appearance, sourceID) ) then
+		if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, sourceID) ) then
+			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		else
+			GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0)..CONTENT_TRACKING_TRACKABLE_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		end
+	else
+		GameTooltip_AddColoredLine(tooltip, CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0, 120, 150, 180)..CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+	end
+end
 -- if the sourceID is not collectable, this will try to find a collectable one that has the same appearance
 -- returns: preferredSourceID, hasAllDataAvailable, canCollect
 -- if all data was not available, calling this after TRANSMOG_COLLECTION_ITEM_UPDATE and TRANSMOG_SOURCE_COLLECTABILITY_UPDATE events may result in a better sourceID returned
@@ -395,8 +420,13 @@ end
 function CollectionWardrobeUtil.GetVisibilityWarning(model, transmogLocation)
 	if transmogLocation and model then
 		local slotID = transmogLocation.slotID;
-		if model:IsGeoReady() and model:IsSlotAllowed(slotID) and not model:IsSlotVisible(slotID) then
-			return TRANSMOG_DRACTHYR_APPEARANCE_INVISIBLE;
+		if model:IsGeoReady() then
+			local slotAllowed = model:IsSlotAllowed(slotID);
+			if slotAllowed and not model:IsSlotVisible(slotID) then
+				return TRANSMOG_DRACTHYR_APPEARANCE_INVISIBLE;
+			elseif not slotAllowed and transmogLocation:GetArmorCategoryID() then
+				return TRANSMOG_SLOT_APPEARANCE_INVISIBLE;
+			end			
 		end
 	end
 	return nil;

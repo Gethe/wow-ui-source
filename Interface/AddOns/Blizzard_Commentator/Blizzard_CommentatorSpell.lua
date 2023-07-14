@@ -68,12 +68,20 @@ end
 function CommentatorSpellMixin:UpdateCooldown()
 	local charges, maxCharges, chargeStart, chargeDuration = self.spellCache:GetSpellCharges();
 	local start, duration, enable = self.spellCache:GetCooldownInfo();
-	-- The swipe is only displayed if no charges are available. This mimics the behavior 
+	-- The swipe is only displayed if no charges are available or the charges are on an item (ex. Healthstones). This mimics the behavior 
 	-- of charge spells in the action bar.
-	if maxCharges == 0 or charges == 0 then
+	if maxCharges == 0 or charges == 0 or self:UsesItemCharges() then
 		CooldownFrame_Set(self.Cooldown, start, duration, enable);
 	end
 end
+
+function CommentatorSpellMixin:UsesItemCharges()
+	-- Special case to allow us to properly track/display Healthstones
+	-- We should always show the cooldown swipe to mimic the behavior of items in the action bar.
+	local healthstoneSpellID = 6262;
+	return self.spellCache and self.spellCache.spellID == healthstoneSpellID;
+end
+
 
 function CommentatorSpellMixin:UpdateCooldownsAndCharges()
 	if self:IsActive() then

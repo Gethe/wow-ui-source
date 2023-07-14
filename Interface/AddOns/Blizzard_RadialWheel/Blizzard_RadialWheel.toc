@@ -1,0 +1,4 @@
+## Title: Blizzard Radial Wheel
+## LoadOnDemand: 1
+Blizzard_RadialWheel.lua
+Blizzard_RadialWheel.xml

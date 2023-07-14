@@ -1,6 +1,13 @@
+<!-- 
+	THIS CODE IS DEPRECATED!
+	Try to avoid adding new features to this code.
+	The new Arena UI can be found in CompactArenaFrame.
+	This deprecated code is the old arena frames which are now only used by battlegrounds for representing flag carriers.
+-->
+
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Script file="ArenaUI.lua"/>
+	<Script file="Deprecated_ArenaUI.lua"/>
 	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" virtual="true" hidden="true">
 		<Size x="80" y="14"/>
 		<Layers>
@@ -310,7 +317,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
-	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate" mixin="ArenaEnemyMatchFrameMixin" virtual="true">
+	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate, PingReceiverAttributeTemplate" mixin="ArenaEnemyMatchFrameMixin, PingableType_UnitFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
@@ -364,7 +371,7 @@
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Frame name="ArenaEnemyFramesContainer" inherits="ResizeLayoutFrame, UIParentRightManagedFrameTemplate, EditModeArenaUnitFrameSystemTemplate" mixin="ArenaEnemyFramesContainerMixin">
+	<Frame name="ArenaEnemyFramesContainer" inherits="ResizeLayoutFrame, UIParentRightManagedFrameTemplate" mixin="ArenaEnemyFramesContainerMixin">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="12" type="number"/>
 			<KeyValue key="fixedWidth" value="245" type="number"/>
@@ -403,25 +410,6 @@
 							<KeyValue key="layoutIndex" value="9" type="number"/>
 						</KeyValues>
 					</Button>
-					<Frame name="ArenaPrepBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate" mixin="ArenaPrepBackgroundMixin">
-						<Size x="125" y="10"/>
-						<KeyValues>
-							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ArenaEnemyPrepFrame1" x="-15" y="6"/>
-							<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad method="OnLoad" inherit="prepend"/>
-							<OnShow method="OnShow"/>
-							<OnEvent method="OnEvent"/>
-							<OnMouseUp method="OnMouseUp"/>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -464,25 +452,6 @@
 							<KeyValue key="layoutIndex" value="9" type="number"/>
 						</KeyValues>
 					</Button>
-					<Frame name="ArenaEnemyBackground" parentKey="ArenaEnemyBackground" frameStrata="LOW" enableMouse="true" hidden="true" inherits="BackdropTemplate" mixin="ArenaEnemyBackgroundMixin">
-						<Size x="125" y="10"/>
-						<KeyValues>
-							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="ArenaEnemyMatchFrame1" x="-15" y="6"/>
-							<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad method="OnLoad" inherit="prepend"/>
-							<OnShow method="OnShow"/>
-							<OnEvent method="OnEvent"/>
-							<OnMouseUp method="OnMouseUp"/>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
