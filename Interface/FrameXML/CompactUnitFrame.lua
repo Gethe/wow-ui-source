@@ -393,6 +393,10 @@ end
 
 --Update Functions
 function CompactUnitFrame_UpdateAll(frame)
+	if frame.optionTable and frame.optionTable.updateAllSetupFunc then
+		frame.optionTable.updateAllSetupFunc(frame);
+	end
+
 	CompactUnitFrame_UpdateInVehicle(frame);
 	CompactUnitFrame_UpdateVisible(frame);
 	if ( CompactUnitFrame_UnitExists(frame.displayedUnit) ) then
@@ -2041,7 +2045,12 @@ function DefaultCompactUnitFrameSetup(frame)
 		frame.horizDivider:Hide();
 	end
 
-	CompactUnitFrame_SetOptionTable(frame, DefaultCompactUnitFrameOptions)
+	-- We need to call our setup function on UpdateAll since our layout depends on the unit assigned into the frame
+	-- This is specifically for deciding whether to show the power bar due to settings like displayOnlyHealerPowerBars
+	local optionTable = DefaultCompactUnitFrameOptions;
+	optionTable.updateAllSetupFunc = DefaultCompactUnitFrameSetup;
+
+	CompactUnitFrame_SetOptionTable(frame, optionTable)
 end
 
 DefaultCompactMiniFrameOptions = {

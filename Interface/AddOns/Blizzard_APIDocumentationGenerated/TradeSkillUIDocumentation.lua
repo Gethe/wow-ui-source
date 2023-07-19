@@ -7,6 +7,20 @@ local TradeSkillUI =
 	Functions =
 	{
 		{
+			Name = "CanStoreEnchantInItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canStore", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseTradeSkill",
 			Type = "Function",
 		},
@@ -1179,18 +1193,13 @@ local TradeSkillUI =
 			LiteralName = "TRADE_SKILL_SHOW",
 		},
 		{
-			Name = "UpdateTradeskillCastComplete",
+			Name = "UpdateTradeskillCastStopped",
 			Type = "Event",
-			LiteralName = "UPDATE_TRADESKILL_CAST_COMPLETE",
+			LiteralName = "UPDATE_TRADESKILL_CAST_STOPPED",
 			Payload =
 			{
 				{ Name = "isScrapping", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "UpdateTradeskillRecast",
-			Type = "Event",
-			LiteralName = "UPDATE_TRADESKILL_RECAST",
 		},
 	},
 

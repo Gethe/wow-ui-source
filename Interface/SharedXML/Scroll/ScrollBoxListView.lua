@@ -20,6 +20,7 @@ Import("C_XMLUtil");
 Import("tinsert");
 Import("ipairs");
 Import("math");
+Import("wipe");
 
 end
 ---------------
@@ -376,16 +377,20 @@ function ScrollBoxListViewMixin:AcquireInternal(dataIndex, elementData)
 	self:SetAcquireLocked(false);
 end
 
+function ScrollBoxListViewMixin:InvokeInitializer(frame, initializer)
+	local elementData = frame:GetElementData();
+	initializer(frame, elementData);
+	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnInitializedFrame, frame, elementData);
+end
+
 -- Frame initialization is no longer supported during the factory step. The initializer passed to the
 -- factory object is called once layout has completed, ensuring that the frame can access it's effective
 -- dimensions inside it's own initializer.
 function ScrollBoxListViewMixin:InvokeInitializers()
 	for frame, initializer in pairs(self.initializerList) do
-		local elementData = frame:GetElementData();
-		initializer(frame, elementData);
-		self.initializerList[frame] = nil;
-		self:TriggerEvent(ScrollBoxListViewMixin.Event.OnInitializedFrame, frame, elementData);
+		self:InvokeInitializer(frame, initializer);
 	end
+	wipe(self.initializerList);
 end
 
 function ScrollBoxListViewMixin:AcquireRange(dataIndices)
@@ -508,11 +513,12 @@ function ScrollBoxListViewMixin:CalculateFrameExtent(dataIndex, elementData)
 	return self:CreateTemplateExtentFromElementData(elementData);
 end
 
+-- This local factory function allows us to ask for the template and initializer
+-- without actually creating a frame. This is useful in these cases:
+-- 1) Asking for the template extents before a frame is created
+-- 2) Asking for the template and initializer for creating a drag and drop cursor attachment
+-- 3) Asking for the initializers again to reinitialize every visible frame
 do
-	-- This local factory function allows us to ask for the template and initializer
-	-- without actually creating a frame. This is useful in these cases:
-	-- 1) Asking for the template extents before a frame is created
-	-- 2) Asking for the template and initializer for creating a drag and drop cursor attachment
 	local template;
 	local initializer;
 	local factory = function(frameTemplate, frameInitializer)
@@ -523,6 +529,14 @@ do
 	function ScrollBoxListViewMixin:GetFactoryDataFromElementData(elementData)
 		self.elementFactory(factory, elementData);
 		return template, initializer;
+	end
+end
+
+function ScrollBoxListViewMixin:ReinitializeFrames()
+	for index, frame in self:EnumerateFrames() do
+		local elementData = frame:GetElementData();
+		local template, initializer = self:GetFactoryDataFromElementData(elementData);
+		self:InvokeInitializer(frame, initializer);
 	end
 end
 
@@ -811,21 +825,6 @@ function ScrollBoxListViewMixin:GetDataScrollOffset(scrollBox)
 	return dataScrollOffset;
 end
 
-function ScrollBoxListViewMixin:Rebuild()
-	for index, frame in ipairs_reverse(self:GetFrames()) do
-		self:Release(frame);
-	end
-
-	local dataIndexBegin, dataIndexEnd = self:GetDataRange();
-	if dataIndexEnd > 0 then
-		local range = {};
-		for dataIndex = dataIndexBegin, dataIndexEnd do
-			table.insert(range, dataIndex);
-		end
-		self:AcquireRange(range);
-	end
-end
-
 function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 	-- Calculate the range of indices to display.
 	local oldDataIndexBegin, oldDataIndexEnd = self:GetDataRange();
@@ -882,7 +881,18 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 			self:AcquireRange(acquireList);
 
 		else
-			self:Rebuild();
+			for index, frame in ipairs_reverse(self:GetFrames()) do
+				self:Release(frame);
+			end
+
+			local dataIndexBegin, dataIndexEnd = self:GetDataRange();
+			if dataIndexEnd > 0 then
+				local range = {};
+				for dataIndex = dataIndexBegin, dataIndexEnd do
+					table.insert(range, dataIndex);
+				end
+				self:AcquireRange(range);
+			end
 		end
 		
 		self:ClearInvalidation();

@@ -85,7 +85,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
-			<Frame parentKey="Fill">
+			<Frame parentKey="Fill" useParentLevel="true">
 				<Size x="128" y="128"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -123,7 +123,7 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<Frame parentKey="EndBurst" hidden="true">
+			<Frame parentKey="EndBurst" useParentLevel="true" hidden="true">
 				<Size x="128" y="128"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -165,14 +165,14 @@
 		</Anchors>
 		<Size x="128" y="128"/>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="Base" atlas="UI-HUD-ActionBar-Target" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<Texture parentKey="Highlight" alpha="0.8" alphaMode="ADD" useAtlasSize="true" snapToPixelGrid="false" texelSnappingBias="0.0" atlas="UI-HUD-ActionBar-Target-Highlight">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -198,7 +198,7 @@
 	</Frame>
 	<Frame name="ActionButtonInterruptTemplate" mixin="ActionButtonInterruptFrameMixin" virtual="true">
 		<Frames>
-			<Frame parentKey="Highlight" frameLevel="500">
+			<Frame parentKey="Highlight" useParentLevel="true">
 				<Size x="128" y="128"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -226,7 +226,7 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<Frame parentKey="Base">
+			<Frame parentKey="Base" useParentLevel="true">
 				<Size x="128" y="128"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -273,9 +273,9 @@
 	</Frame>
 	<CheckButton name="ActionButtonSpellFXTemplate" virtual="true">
 		<Frames>
-			<Frame parentKey="InterruptDisplay" inherits="ActionButtonInterruptTemplate" setAllPoints="true" hidden="true"/>
-			<Frame parentKey="SpellCastAnimFrame" inherits="ActionButtonCastingAnimFrameTemplate" hidden="true"/>
-			<Frame parentKey="TargetReticleAnimFrame" inherits="ActionButtonTargetReticleFrameTemplate" hidden="true"/>
+			<Frame parentKey="InterruptDisplay" useParentLevel="true" inherits="ActionButtonInterruptTemplate" setAllPoints="true" hidden="true"/>
+			<Frame parentKey="SpellCastAnimFrame" useParentLevel="true" inherits="ActionButtonCastingAnimFrameTemplate" hidden="true"/>
+			<Frame parentKey="TargetReticleAnimFrame" useParentLevel="true" inherits="ActionButtonTargetReticleFrameTemplate" hidden="true"/>
 			<Frame parentKey="CooldownFlash" inherits="ActionButtonCooldownFlashTemplate" hidden="true"/>
 		</Frames>
 	</CheckButton>
@@ -308,7 +308,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" parentKey="HotKey" justifyH="RIGHT">
 					<Size x="32" y="10"/>
 					<Anchors>

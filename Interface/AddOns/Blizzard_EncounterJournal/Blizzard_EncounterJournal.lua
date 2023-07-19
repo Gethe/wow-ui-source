@@ -884,7 +884,8 @@ function EncounterJournal_ListInstances()
 		instanceID, name, description, _, buttonImage, _, _, _, link = EJ_GetInstanceByIndex(dataIndex, showRaid);
 	end
 
-	EncounterJournal.instanceSelect.ScrollBox:SetDataProvider(dataProvider);
+	instanceSelect.ScrollBox:Show(); -- Scrollbox children will not have resolvable rects unless the scrollbox is shown first
+	instanceSelect.ScrollBox:SetDataProvider(dataProvider);
 
 	--check if the other tab is empty
 	local otherInstanceID = EJ_GetInstanceByIndex(1, not showRaid);

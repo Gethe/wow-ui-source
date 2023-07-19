@@ -177,7 +177,8 @@ function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	CharacterSelect_SetScrollEnabled(true);
 	CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(false);
 
-	CharacterSelectCharacterFrame.ScrollBox:Rebuild();
+	CharacterSelectCharacterFrame.ScrollBox:Rebuild(ScrollBoxConstants.RetainScrollPosition);
+
 	restoreAllButtonScripts();
 
 	UpdateCharacterList(true);

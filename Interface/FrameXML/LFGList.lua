@@ -3058,17 +3058,20 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	--Update the filters if needed
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(currentActivityInfo.categoryID);
 
+	-- This function may need to return the recommended or not-recommended state to determine the
+	-- difficulties options. After a difficulty is selected, a 'nil' filter is passed to
+	-- LFGListEntryCreation_Select, requiring us to fetch the filter from the activity info.
+	-- If separateRecommended is not set, then this state is meaningless and we just return 0.
+	local recFilter = 0;
 	if ( categoryInfo and categoryInfo.separateRecommended ) then
-		if ( bit.band(filters, Enum.LFGListFilter.Recommended) == 0 ) then
-			filters = Enum.LFGListFilter.NotRecommended;
-		else
-			filters = Enum.LFGListFilter.Recommended;
+		recFilter = bit.band(filters, bit.bor(Enum.LFGListFilter.Recommended, Enum.LFGListFilter.NotRecommended));
+
+		if recFilter == 0 then
+			recFilter = currentActivityInfo.filters;
 		end
-	else
-		filters = 0;
 	end
 
-	return filters, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
+	return recFilter, currentActivityInfo.categoryID, currentActivityInfo.groupFinderActivityGroupID, activityID;
 end
 
 function LFGListUtil_SetUpDropDown(context, dropdown, populateFunc, onClickFunc)
