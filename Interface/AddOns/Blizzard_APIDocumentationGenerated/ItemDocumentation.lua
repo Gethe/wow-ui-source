@@ -218,6 +218,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemIDForItemInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemIcon",
 			Type = "Function",
 
