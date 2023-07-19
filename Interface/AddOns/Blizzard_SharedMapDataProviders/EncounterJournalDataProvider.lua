@@ -55,6 +55,7 @@ function EncounterJournalDataProviderMixin:CheckForContentTracking(encounterID)
 	if not ContentTrackingUtil.IsContentTrackingEnabled() or not GetCVarBool("contentTrackingFilter") then
 		return false;
 	end
+
 	local trackedItemMapInfos = ContentTrackingUtil.GetTrackingMapInfoByEncounterID(encounterID);
 	if not trackedItemMapInfos then
 		return;
@@ -169,13 +170,31 @@ function EncounterMapTrackingPinMixin:OnMouseEnter()
 	local title = CONTENT_TRACKING_MAP_TOGGLE;
 	GameTooltip_SetTitle(GameTooltip, title);
 
-	local objectiveText = "";
+	--Get current difficultyID if player is currently in an encounter
+	local difficultyID = select(3, GetInstanceInfo());
+
 	local numTrackedItems = #self.trackableEncounterInfo;
 	for i = 1, numTrackedItems do
 		local trackableMapInfo = self.trackableEncounterInfo[i];
-		objectiveText = objectiveText..C_ContentTracking.GetTitle(trackableMapInfo.trackableType, trackableMapInfo.trackableID).."\n";
+		local sourceInfo = C_TransmogCollection.GetSourceInfo(trackableMapInfo.trackableID);
+		local quality = nil;
+		if sourceInfo then
+			quality = sourceInfo.quality;
+		end
+		local objectiveText = C_ContentTracking.GetTitle(trackableMapInfo.trackableType, trackableMapInfo.trackableID);
+		local difficultyName = PARENS_TEMPLATE:format(DifficultyUtil.GetDifficultyName(trackableMapInfo.difficultyID));
+		local qualityColor = ITEM_EPIC_COLOR; --default to item epic color if somehow the item is not loaded
+		if quality then
+			local r, g, b = GetItemQualityColor(quality);
+			qualityColor = CreateColor(r, g, b, 1);
+		end
+		local difficultyColor = RED_FONT_COLOR;
+		if not difficultyID or difficultyID == 0 or (difficultyID and difficultyID == trackableMapInfo.difficultyID) then
+			difficultyColor = NORMAL_FONT_COLOR;
+		end
+		GameTooltip_AddColoredDoubleLine(GameTooltip, objectiveText, difficultyName, qualityColor, difficultyColor);
 	end
-	GameTooltip_AddColoredLine(GameTooltip, objectiveText, ITEM_EPIC_COLOR);
+	
 
 	GameTooltip:Show();
 end

@@ -757,14 +757,6 @@ end
 
 function ActionButtonCooldown_OnCooldownDone(self, requireCooldownUpdate)
 	self:SetScript("OnCooldownDone", nil);
-	local cooldownFlash = self:GetParent().CooldownFlash;
-	local spellCastAnimFrame = self:GetParent().SpellCastAnimFrame;
-	if (cooldownFlash) then	
-		--If the spellcast anim is playing, don't allow the gcd anim to play. 
-		if (not spellCastAnimFrame or (spellCastAnimFrame and not spellCastAnimFrame:IsShown())) then
-			cooldownFlash:Setup();
-		end
-	end		
 	if (requireCooldownUpdate) then 
 		ActionButton_UpdateCooldown(self:GetParent());
 	end
@@ -778,9 +770,7 @@ local function CreateChargeCooldownFrame(parent)
 	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
-	cooldown:SetEdgeTexture("Interface\\HUD\\UI-HUD-ActionBar-StackCooldown");
 	cooldown:SetFrameStrata("TOOLTIP");
-
 	return cooldown;
 end
 

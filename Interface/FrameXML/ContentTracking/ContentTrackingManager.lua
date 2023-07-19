@@ -108,6 +108,7 @@ function ContentTrackingUtil.GetTrackingMapInfoByEncounterID(encounterID)
 					mapInfo.trackableType = trackableType;
 					mapInfo.targetType = targetType;
 					mapInfo.targetID = targetID;
+					mapInfo.difficultyID = encounterTrackingInfo.difficultyID;
 					table.insert(trackedEncounterMapInfos, mapInfo);
 				end
 			end

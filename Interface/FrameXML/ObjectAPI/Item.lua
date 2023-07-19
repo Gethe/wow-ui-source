@@ -154,13 +154,15 @@ end
 
 -- Item API
 function ItemMixin:GetItemID()
-	if self:GetStaticBackingItem() then
-		return (GetItemInfoInstant(self:GetStaticBackingItem()));
+	local backingItem = self:GetStaticBackingItem();
+	if backingItem then
+		return GetItemInfoInstant(backingItem) or C_Item.GetItemIDForItemInfo(backingItem);
 	end
 
 	if not self:IsItemEmpty() then
 		return C_Item.GetItemID(self:GetItemLocation());
 	end
+
 	return nil;
 end
 
@@ -317,6 +319,10 @@ function ItemMixin:ValidateForContinueOnItemLoad(methodName, callbackFunction)
 		end
 
 		error(("Usage: NonEmptyItem:%s(callbackFunction): invalid item"):format(methodName), 3);
+	else
+		if not self:GetItemID() then
+			error(("Usage: NonEmptyItem:%s(callbackFunction): item appeared non-empty, but had invalid itemID. itemID: <%s>, itemLink: <%s>"):format(methodName, tostring(self.itemID), tostring(self.itemLink)), 3);
+		end
 	end
 end
 
