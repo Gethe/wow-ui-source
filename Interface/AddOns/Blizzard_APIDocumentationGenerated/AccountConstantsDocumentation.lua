@@ -109,6 +109,22 @@ local AccountConstants =
 				{ Name = "AccountUpgradeComplete", Type = "AccountStateFlags", EnumValue = 0 },
 			},
 		},
+		{
+			Name = "DisableAccountProfilesFlags",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 16,
+			Fields =
+			{
+				{ Name = "None", Type = "DisableAccountProfilesFlags", EnumValue = 0 },
+				{ Name = "Document", Type = "DisableAccountProfilesFlags", EnumValue = 1 },
+				{ Name = "SharedCollections", Type = "DisableAccountProfilesFlags", EnumValue = 2 },
+				{ Name = "MountsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 4 },
+				{ Name = "PetsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 8 },
+				{ Name = "ItemsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 16 },
+			},
+		},
 	},
 };
 

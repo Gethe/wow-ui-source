@@ -87,6 +87,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterUnitEvent("UNIT_AURA", unit);
+	self:RegisterUnitEvent("UNIT_TARGET", unit);
 
 	local frameLevel = _G[thisName.."TextureFrame"]:GetFrameLevel();
 
@@ -210,6 +211,10 @@ function TargetFrame_OnEvent (self, event, ...)
 	elseif ( event == "UNIT_AURA" ) then
 		if ( arg1 == self.unit ) then
 			TargetFrame_UpdateAuras(self);
+		end
+	elseif (event == "UNIT_TARGET") then
+		if (self.totFrame) then
+			TargetofTarget_Update(self.totFrame);
 		end
 	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 		if ( arg1 == self.unit ) then
