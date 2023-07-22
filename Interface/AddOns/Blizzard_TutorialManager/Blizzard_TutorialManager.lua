@@ -28,15 +28,13 @@ function TutorialManager:Shutdown()
 	self:DebugLog("TUTORIAL MANAGER SHUTDOWN: ");
 	for k, tutorial in pairs(self.Tutorials) do
 		if (type(tutorial) == "table") then
-			self:DebugLog("    INTERRUPT: "..k);
-			tutorial:Interrupt(nil, true);
+			self:ShutdownTutorial(k);
 		end
 	end
 
 	for k, watcher in pairs(self.Watchers) do
 		if (type(watcher) == "table") then
-			self:DebugLog("    INTERRUPT: "..k);
-			watcher:Interrupt(nil, true);
+			self:ShutdownWatcher(k);
 		end
 	end
 
@@ -125,6 +123,7 @@ end
 function TutorialManager:ShutdownTutorial(tutorialKey)
 	local tutorial = self:GetTutorial(tutorialKey);
 	if tutorial then
+		self:DebugLog("    INTERRUPT: "..tutorialKey);
 		tutorial:Interrupt();
 	end
 	self:RemoveTutorial(tutorialKey);
@@ -181,6 +180,7 @@ function TutorialManager:ShutdownWatcher(tutorialKey)
 	self:StopWatcher(tutorialKey);
 	local watcher = self:GetWatcher(tutorialKey);
 	if watcher then
+		self:DebugLog("    INTERRUPT: "..tutorialKey);
 		watcher:Interrupt();
 	end
 	self:RemoveWatcher(tutorialKey);

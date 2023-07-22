@@ -103,6 +103,9 @@ function CompactArenaFrameMixin:OnLoad()
 				end
 			end);
 
+		-- Arena frames set focus when right clicked rather than opening a dropdown menu
+		memberUnitFrame:SetAttribute("*type2", "focus");
+
 		-- Create CcRemover frame
 		local ccRemoverFrame = CreateFrame("Frame", nil, memberUnitFrame, "ArenaUnitFrameCcRemoverTemplate");
 		memberUnitFrame.CcRemoverFrame = ccRemoverFrame;

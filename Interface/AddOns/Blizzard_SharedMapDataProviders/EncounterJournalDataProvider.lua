@@ -182,7 +182,10 @@ function EncounterMapTrackingPinMixin:OnMouseEnter()
 			quality = sourceInfo.quality;
 		end
 		local objectiveText = C_ContentTracking.GetTitle(trackableMapInfo.trackableType, trackableMapInfo.trackableID);
-		local difficultyName = PARENS_TEMPLATE:format(DifficultyUtil.GetDifficultyName(trackableMapInfo.difficultyID));
+		local difficultyName =""; 
+		if trackableMapInfo.difficultyID then
+			difficultyName = PARENS_TEMPLATE:format(DifficultyUtil.GetDifficultyName(trackableMapInfo.difficultyID));
+		end
 		local qualityColor = ITEM_EPIC_COLOR; --default to item epic color if somehow the item is not loaded
 		if quality then
 			local r, g, b = GetItemQualityColor(quality);

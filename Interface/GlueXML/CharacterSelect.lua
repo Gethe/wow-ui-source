@@ -1414,7 +1414,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 
         CharSelectEnterWorldButton:SetText(text);
 
-		if not boostInProgress and not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector() then
+		if not boostInProgress and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
 			if IsRPEBoostEligible(charID) then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
