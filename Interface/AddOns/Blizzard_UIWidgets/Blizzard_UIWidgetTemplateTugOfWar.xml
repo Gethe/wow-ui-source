@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateTugOfWar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateTugOfWarMixin">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BarBackgroundMiddle">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BarBackgroundLeft">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BarBackgroundRight">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BarBackgroundMiddle"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Spark">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BarBackgroundMiddle"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LeftIcon" inherits="UIWidgetBaseIconTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightIcon" inherits="UIWidgetBaseIconTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

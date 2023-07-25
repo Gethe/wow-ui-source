@@ -185,7 +185,7 @@
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="13" y="5"/>
 				</Anchors>
 			</Frame>
-			<StatusBar parentKey="HealthBar" inherits="TextStatusBar" drawLayer="BACKGROUND">
+			<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" drawLayer="BACKGROUND">
 				<Size x="70" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="45" y="-19"/>
@@ -271,7 +271,7 @@
 				</Scripts>
 				<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health"/>
 			</StatusBar>
-			<StatusBar parentKey="ManaBar" inherits="TextStatusBar">
+			<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate">
 				<Size x="74" y="7"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="41" y="-30"/>

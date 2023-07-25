@@ -3180,7 +3180,10 @@ function Class_LootCorpse:OnComplete()
 		self.Timer:Cancel();
 	end
 
-	TutorialManager:GetTutorial(Class_LootPointer.name):Complete();
+	local lootPointerTutorial = TutorialManager:GetTutorial(Class_LootPointer.name);
+	if lootPointerTutorial then
+		lootPointerTutorial:Complete();
+	end
 
 	if (self.QuestMobID) then
 		self.QuestMobCount = self.QuestMobCount + 1;

@@ -41,6 +41,7 @@ ContributionCollectorDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
+CursorUtilDocumentation.lua
 DeathInfoDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
@@ -66,6 +67,7 @@ GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
 InstanceEncounterDocumentation.lua
+InterfaceFileManifestDocumentation.lua
 ItemDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua

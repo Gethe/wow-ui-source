@@ -382,7 +382,6 @@ function MerchantFrame_UpdateMerchantInfo()
 	--ALEX TODO - Disabled until next patch
 	--MerchantSellAllJunkButton:Show();
 	MerchantSellAllJunkButton:Hide();
-	UndoFrame.Arrow:Show();
 
 	-- Hide buyback related items
 	MerchantItem11:Hide();
@@ -497,7 +496,6 @@ function MerchantFrame_UpdateBuybackInfo()
 	MerchantPageText:Hide();
 	MerchantGuildBankRepairButton:Hide();
 	MerchantSellAllJunkButton:Hide();
-	UndoFrame.Arrow:Hide();
 end
 
 function MerchantPrevPageButton_OnClick()

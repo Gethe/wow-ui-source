@@ -848,11 +848,14 @@ function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent
 	local unitGUID = eventData[8];
 	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
 		-- Wait for mirror data
-		self.canLootTimer = C_Timer.After(1, function()
-			if CanLootUnit(unitGUID) then
-				self:UnitLootable(unitGUID);
-			end
-		end);
+		if not self.canLootTimer then
+			self.canLootTimer = C_Timer.NewTimer(1, function()
+				if CanLootUnit(unitGUID) then
+					self:UnitLootable(unitGUID);
+				end
+				self.canLootTimer = nil;
+			end);
+		end
 	end
 end
 

@@ -394,4 +394,49 @@
 			</GameTooltip>
 		</Frames>
 	</Frame>
+
+	<Frame name="UIWidgetBaseIconTemplate" inherits="UIWidgetTemplateTooltipFrame" mixin="UIWidgetBaseIconTemplateMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Glow" alphaMode="ADD">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Frame">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="CENTER" x="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="GlowPulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Glow" fromAlpha="0.25" toAlpha="1" order="0" duration="0.75"/>
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0.25" order="1" duration="0.75"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 </Ui>

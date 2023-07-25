@@ -48,9 +48,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 28,
+			NumValues = 29,
 			MinValue = 0,
-			MaxValue = 27,
+			MaxValue = 28,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -81,6 +81,7 @@ local UIWidgetManagerShared =
 				{ Name = "TextWithSubtext", Type = "UIWidgetVisualizationType", EnumValue = 25 },
 				{ Name = "WorldLootObject", Type = "UIWidgetVisualizationType", EnumValue = 26 },
 				{ Name = "ItemDisplay", Type = "UIWidgetVisualizationType", EnumValue = 27 },
+				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
 			},
 		},
 	},

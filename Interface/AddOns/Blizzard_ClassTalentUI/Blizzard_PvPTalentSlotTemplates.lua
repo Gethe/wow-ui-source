@@ -49,16 +49,16 @@ function PvPTalentSlotButtonMixin:SetUp(slotIndex)
 		{
 			["setFunction"] = function(value)
 				return LearnPvpTalent(value, slotIndex);
-			end, 
+			end,
 			["getFunction"] = function()
 				if not self:IsPendingTalentRemoval() then
 					local slotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(slotIndex);
 					return slotInfo and slotInfo.selectedTalentID;
 				end
-			end, 
+			end,
 		}
 	);
-	
+
 	self:Update();
 end
 
@@ -117,7 +117,6 @@ function PvPTalentSlotButtonMixin:Update()
 		self.Texture:SetAtlas("pvptalents-talentborder-empty");
 	end
 
-	local showNewLabel = false;
 	if (slotInfo and slotInfo.enabled) then
 		if (selectedTalentID) then
 			self.Border:SetAtlas("talents-node-pvp-filled");
@@ -125,7 +124,6 @@ function PvPTalentSlotButtonMixin:Update()
 			self.Border:SetAtlas("talents-node-pvp-green");
 		end
 		self:Enable();
-		showNewLabel = self.slotNewState == SLOT_NEW_STATE_SHOW_IF_ENABLED;
 	else
 		self.Border:SetAtlas("talents-node-pvp-locked");
 		self:Disable();
@@ -136,8 +134,8 @@ function PvPTalentSlotButtonMixin:Update()
 			end
 		end
 	end
-	self.New:SetShown(showNewLabel);
-	self.NewGlow:SetShown(showNewLabel);
+
+	self:GetParent():UpdateNewNotification();
 
 	if GameTooltip:GetOwner() == self then
 		self:OnEnter();
@@ -150,11 +148,7 @@ function PvPTalentSlotButtonMixin:OnEnter()
 		return;
 	end
 
-	if (self.slotNewState == SLOT_NEW_STATE_SHOW_IF_ENABLED and slotInfo.enabled) then
-		self.slotNewState = SLOT_NEW_STATE_ACKNOWLEDGED;
-		self.New:Hide();
-		self.NewGlow:Hide();
-	end
+	self:GetParent():AcknowledgeNewNotification();
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local selectedTalentID = self:GetSelectedTalent();
@@ -395,4 +389,27 @@ function PvPTalentSlotTrayMixin:GetInspectUnit()
 	end
 
 	return talentFrame:GetInspectUnit();
+end
+
+function PvPTalentSlotTrayMixin:UpdateNewNotification()
+	self.NewContainer:Hide();
+	for index, slot in ipairs(self.Slots) do
+		if slot.slotNewState == SLOT_NEW_STATE_SHOW_IF_ENABLED and slot:IsEnabled() then
+			self.NewContainer:SetPoint("CENTER", slot, "BOTTOMRIGHT", -8, 8);
+			self.NewContainer:Show();
+			break;
+		end
+	end
+end
+
+function PvPTalentSlotTrayMixin:AcknowledgeNewNotification()
+	if self.NewContainer:IsShown() then
+		for index, slot in ipairs(self.Slots) do
+			if slot.slotNewState == SLOT_NEW_STATE_SHOW_IF_ENABLED and slot:IsEnabled() then
+				slot.slotNewState = SLOT_NEW_STATE_ACKNOWLEDGED;
+			end
+		end
+
+		self.NewContainer:Hide();
+	end
 end

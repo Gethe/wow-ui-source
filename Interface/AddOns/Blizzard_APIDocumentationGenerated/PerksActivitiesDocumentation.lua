@@ -171,7 +171,7 @@ local PerksActivities =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "activityName", Type = "cstring", Nilable = false },
-				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "thresholdContributionAmount", Type = "number", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "tracked", Type = "bool", Nilable = false },

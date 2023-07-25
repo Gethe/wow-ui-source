@@ -26,7 +26,7 @@ cooldownFormatter:Init(
 	SecondsFormatter.Abbreviation.None,
 	SecondsFormatterConstants.DontRoundUpLastUnit, 
 	SecondsFormatterConstants.DontConvertToLower);
-cooldownFormatter:SetDesiredUnitCount(1);
+cooldownFormatter:SetDesiredUnitCount(2);
 
 local LayoutEntry = EnumUtil.MakeEnum("Cooldown", "Description", "Source", "FirstCraftBonus");
 
@@ -508,6 +508,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				return true;
 			end
 
+			cooldownFormatter:SetMinInterval(SecondsFormatter.Interval.Seconds);
+
 			local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID);
 			if maxCharges and charges and maxCharges > 0 and (charges > 0 or not cooldown) then
 				if charges < maxCharges and cooldown then
@@ -527,11 +529,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 				if not isDayCooldown then
 					cooldownFormatter:SetConvertToLower(false);
-					cooldownFormatter:SetMinInterval(SecondsFormatter.Interval.Seconds);
 					SetCooldownRemaining(cooldown);
 				elseif cooldown > SECONDS_PER_DAY then
 					cooldownFormatter:SetConvertToLower(false);
-					cooldownFormatter:SetMinInterval(SecondsFormatter.Interval.Days);
+					cooldownFormatter:SetMinInterval(SecondsFormatter.Interval.Hours);
 					SetCooldownRemaining(cooldown);
 				else
 					fontString:SetText(COOLDOWN_EXPIRES_AT_MIDNIGHT);

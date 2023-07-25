@@ -181,9 +181,15 @@ function PingManager:SendMacroPing(type, targetUnitToken)
 
         local pingFrame = C_Ping.GetTargetPingReceiver(cursorX, cursorY);
         if pingFrame then
-            targetGUID = pingFrame:GetTargetPingGUID();
-            if not type then
-                type = pingFrame:GetContextualPingType();
+            if pingFrame.IsPingable then
+                targetGUID = pingFrame:GetTargetPingGUID();
+                if not type then
+                    type = pingFrame:GetContextualPingType();
+                end
+            else
+                -- This is a blocking UI dialog for the ping system, do not make further checks.
+                UIErrorsFrame:AddMessage(PING_ERROR, RED_FONT_COLOR:GetRGBA());
+                return;
             end
         else
             if not type then

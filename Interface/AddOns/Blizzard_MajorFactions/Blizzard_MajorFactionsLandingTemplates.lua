@@ -69,10 +69,14 @@ function MajorFactionListMixin:Refresh()
 		tinsert(factionList, majorFactionData);
 	end
 
-	local function UnlockOrderSort(faction1, faction2)
-		return faction1.unlockOrder < faction2.unlockOrder;
+	local function MajorFactionSort(faction1, faction2)
+		if faction1.uiPriority ~= faction2.uiPriority then
+			return faction1.uiPriority > faction2.uiPriority;
+		end
+
+		return strcmputf8i(faction1.name, faction2.name) < 0;
 	end
-	table.sort(factionList, UnlockOrderSort);
+	table.sort(factionList, MajorFactionSort);
 
 	local dataProvider = CreateDataProvider(factionList);
 	self.ScrollBox:SetDataProvider(dataProvider);

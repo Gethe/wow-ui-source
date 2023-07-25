@@ -24,6 +24,10 @@ local function CanSpendDragonridingGlyphs()
 	end
 
 	local dragonridingConfigID = C_Traits.GetConfigIDBySystemID(DRAGONRIDING_TRAIT_SYSTEM_ID);
+	if not dragonridingConfigID then
+		return false;
+	end
+	
 	local excludeStagedChanges = false;
 	local treeCurrencies = C_Traits.GetTreeCurrencyInfo(dragonridingConfigID, DRAGONRIDING_TREE_ID, excludeStagedChanges);
 	if #treeCurrencies <= 0 then
