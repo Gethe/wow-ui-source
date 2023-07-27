@@ -84,8 +84,35 @@ COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_
 
 COMBAT_TEXT_TYPE_INFO["PROC_RESISTED"] = {r = 1, g = 0.1, b = 0.1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 
+local FrameEvents =
+{
+	"COMBAT_TEXT_UPDATE",
+	"UNIT_HEALTH",
+	"UNIT_POWER_UPDATE",
+	"PLAYER_REGEN_DISABLED",
+	"PLAYER_REGEN_ENABLED",
+	"RUNE_POWER_UPDATE",
+};
+
+local function UpdateEventRegistration(register)
+	if register then
+		FrameUtil.RegisterFrameForEvents(CombatText, FrameEvents);
+	else
+		FrameUtil.UnregisterFrameForEvents(CombatText, FrameEvents);
+	end
+end
 
 function CombatText_OnLoad(self)
+	local function OnValueChanged(_, _, value)
+		UpdateEventRegistration(value);
+		if value then
+			CombatText_UpdateDisplayedMessages();
+		end
+	end
+	Settings.SetOnValueChangedCallback("enableFloatingCombatText", OnValueChanged);
+
+	UpdateEventRegistration(GetCVarBool("enableFloatingCombatText"));
+
 	CombatText_UpdateDisplayedMessages();
 	CombatText.previousMana = {};
 	CombatText.xDir = 1;
@@ -556,32 +583,9 @@ function CombatText_ClearAnimationList()
 end
 
 function CombatText_UpdateDisplayedMessages()
-	-- Unregister events if combat text is disabled
-	if ( SHOW_COMBAT_TEXT == "0" ) then
-		CombatText:UnregisterEvent("COMBAT_TEXT_UPDATE");
-		CombatText:UnregisterEvent("UNIT_HEALTH");
-		CombatText:UnregisterEvent("UNIT_POWER_UPDATE");
-		CombatText:UnregisterEvent("PLAYER_REGEN_DISABLED");
-		CombatText:UnregisterEvent("PLAYER_REGEN_ENABLED");
-		CombatText:UnregisterEvent("RUNE_POWER_UPDATE");
-		--CombatText:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-		--CombatText:UnregisterEvent("UNIT_EXITING_VEHICLE");
-		return;
-	end
-
 	-- set the unit to track
 	CombatText.unit = "player";
 	CombatTextSetActiveUnit("player")
-
-	-- register events
-	CombatText:RegisterEvent("COMBAT_TEXT_UPDATE");
-	CombatText:RegisterEvent("UNIT_HEALTH");
-	CombatText:RegisterEvent("UNIT_POWER_UPDATE");
-	CombatText:RegisterEvent("PLAYER_REGEN_DISABLED");
-	CombatText:RegisterEvent("PLAYER_REGEN_ENABLED");
-	CombatText:RegisterEvent("RUNE_POWER_UPDATE");
-	--CombatText:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	--CombatText:RegisterEvent("UNIT_EXITING_VEHICLE");
 
 	-- Get scale
 	COMBAT_TEXT_Y_SCALE = WorldFrame:GetHeight() / 768;

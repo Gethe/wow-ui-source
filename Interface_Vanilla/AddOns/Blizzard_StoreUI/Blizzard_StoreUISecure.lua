@@ -2439,9 +2439,9 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+				self.Disclaimer:SetTextColor("P", _G.RED_FONT_COLOR:GetRGB());
 		else
-				self.Disclaimer:SetTextColor(0, 0, 0);
+				self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		end
 		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;

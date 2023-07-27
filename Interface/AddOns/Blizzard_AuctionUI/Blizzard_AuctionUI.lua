@@ -280,6 +280,12 @@ function AuctionFrame_OnLoad (self)
 	GetOwnerAuctionItems(AuctionFrameAuctions.page);
 	
 	MoneyFrame_SetMaxDisplayWidth(AuctionFrameMoneyFrame, 160);
+
+	if GetClassicExpansionLevel() == LE_EXPANSION_CLASSIC then
+		--Vanilla textures are slightly different from later expansions so we need to adjust the placement of the BrowseResetButton
+		BrowseResetButton:SetSize(97, 22);
+		BrowseResetButton:SetPoint("TOPLEFT", 37, -79);
+	end
 end
 
 function AuctionFrame_Show()
