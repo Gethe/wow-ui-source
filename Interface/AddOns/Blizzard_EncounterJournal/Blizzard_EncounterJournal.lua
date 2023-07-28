@@ -558,7 +558,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 		EncounterJournal.lastDifficulty = nil;
 		MonthlyActivitiesFrame_OpenFrame();
 	else
-		EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
+		EJ_ContentTab_SelectAppropriateInstanceTab(instanceID);
 
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
@@ -994,11 +994,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails();
 
-	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID, _, _, _, isRaid = EJ_GetInstanceInfo();
-	local desiredTabID = isRaid and EncounterJournal.raidsTab:GetID() or EncounterJournal.dungeonsTab:GetID();
-	if desiredTabID ~= EncounterJournal.selectedTab then
-		EJ_ContentTab_Select(desiredTabID);
-	end
+	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID = EJ_GetInstanceInfo();
 
 	self.instance.title:SetText(instanceName);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
@@ -2392,7 +2388,8 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
-		EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
+		EJ_ContentTab_SelectAppropriateInstanceTab(instanceID);
+
 		EncounterJournal_DisplayInstance(instanceID);
 
 		if difficultyID then
@@ -2512,6 +2509,12 @@ function EJ_ContentTab_Select(id)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
     EventRegistry:TriggerEvent("EncounterJournal.TabSet", EncounterJournal, id);
+end
+
+function EJ_ContentTab_SelectAppropriateInstanceTab(instanceID)
+	local isRaid = select(11, EJ_GetInstanceInfo(instanceID));
+	local desiredTabID = isRaid and EncounterJournal.raidsTab:GetID() or EncounterJournal.dungeonsTab:GetID();
+	EJ_ContentTab_Select(desiredTabID);
 end
 
 function EJ_ContentTab_SetEnabled(self, enabled)
