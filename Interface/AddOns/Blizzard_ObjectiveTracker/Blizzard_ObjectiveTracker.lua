@@ -856,6 +856,7 @@ function ObjectiveTracker_Initialize(self)
 	};
 
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 	self:RegisterEvent("PERKS_ACTIVITIES_TRACKED_UPDATED");
 	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
@@ -896,6 +897,13 @@ end
 function ObjectiveTracker_OnEvent(self, event, ...)
 	if ( event == "QUEST_LOG_UPDATE" ) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
+	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
+		local achievementID, added = ...;
+		if ( added ) then
+			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED, achievementID);
+		else
+			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
+		end
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		AchievementObjectiveTracker_OnAchievementUpdate(...);
 	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) then

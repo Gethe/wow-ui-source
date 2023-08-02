@@ -84,8 +84,6 @@ function MonthlyActivitiesButtonMixin:SetButtonData()
 end
 
 function MonthlyActivitiesButtonMixin:UpdateButtonState()
-	self:SetButtonData();
-
 	local node = self:GetElementData();
 	if not node then
 		return;
@@ -104,6 +102,7 @@ function MonthlyActivitiesButtonMixin:UpdateButtonState()
 		self.RibbonStacked:SetShown(false);
 		self.Ribbon:SetShown(showRibbon);
 	end
+	self:SetButtonData();
 end
 
 function MonthlyActivitiesButtonMixin:OnEnter()
@@ -692,7 +691,15 @@ local function BuildActivityTree(activities)
 			table.remove(childActivities, i);
 		end
 	end
-	assert(#childActivities == 0, "child activities missing parent");
+	if #childActivities > 0 then
+		assertsafe(#childActivities == 0, "child activities missing parent");
+		for i = #childActivities, 1, -1 do
+			local childActivity = childActivities[i];
+			local exceptionMessage = ("child activity has no parent: %d"):format(childActivity.ID)
+			assertsafe(false, exceptionMessage);
+		end
+	end
+
 	return parentActivities;
 end
 

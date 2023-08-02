@@ -5,16 +5,17 @@ local PingConstants =
 		{
 			Name = "PingResult",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Success", Type = "PingResult", EnumValue = 0 },
 				{ Name = "FailedSpamming", Type = "PingResult", EnumValue = 1 },
 				{ Name = "FailedInvalidTarget", Type = "PingResult", EnumValue = 2 },
 				{ Name = "FailedDisabledByLeader", Type = "PingResult", EnumValue = 3 },
-				{ Name = "FailedUnspecified", Type = "PingResult", EnumValue = 4 },
+				{ Name = "FailedDisabledBySettings", Type = "PingResult", EnumValue = 4 },
+				{ Name = "FailedUnspecified", Type = "PingResult", EnumValue = 5 },
 			},
 		},
 		{

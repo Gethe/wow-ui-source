@@ -1,4 +1,9 @@
 -- Utility functions
+function toCharacterNameCasing(name)
+	local formattedName = C_CharacterServices.CapitalizeCharName(name);
+	return formattedName
+end
+
 function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
 	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
 	local sameFaction = CharacterHasAlternativeRaceOptions(characterID);
@@ -33,14 +38,6 @@ end
 
 function PNCCharacterSelectBlock:SetResultsShown(shown)
 	self.frame.ResultsFrame:SetShown(shown);
-
-	if shown then
-		local result = self:GetResult();
-		if result.selectedCharacterGUID then
-			local name = GetCharacterInfoByGUID(result.selectedCharacterGUID);
-			self.frame.ResultsFrame.CurrentNameLabel:SetText(name);
-		end
-	end
 end
 
 function PNCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)
@@ -74,6 +71,7 @@ function PNCNameSelectBlock:Initialize(results, wasFromRewind)
 	end
 
 	self.frame.ControlsFrame.NewNameEditbox:Initialize(results, wasFromRewind);
+	
 	self:CheckUpdate();
 end
 
@@ -82,14 +80,15 @@ function PNCNameSelectBlock:CheckUpdate()
 end
 
 function PNCNameSelectBlock:GetResult()
+	local formatedName = toCharacterNameCasing(self.frame.ControlsFrame.NewNameEditbox:GetNewName());
 	return {
-		name = self.frame.ControlsFrame.NewNameEditbox:GetNewName()
+		name = formatedName
 	}
 end
 
 function PNCNameSelectBlock:FormatResult()
 	local result = self:GetResult();
-	return PNC_NEW_NAME_LABEL_COMPLETE:format(result.name)
+	return result.name
 end
 
 function PNCNameSelectBlock:IsFinished(wasFromRewind)
@@ -112,6 +111,7 @@ function NewNameEditboxMixin:Initialize(_, wasFromRewind)
 	if not wasFromRewind then
 		self:SetText("");
 	end
+	self:SetMaxLetters(12); -- From CharacterNameStringConsts::CHARACTERNAME in CharacterConstants.tag.
 end
 
 function NewNameEditboxMixin:OnEnter()
@@ -132,9 +132,26 @@ end
 local PNCChoiceVerificationBlock = CreateFromMixins(VASChoiceVerificationBlockBase);
 
 function PNCChoiceVerificationBlock:RequestAssignVASForResults(results, isValidationOnly)
+	
+	local valid, reason = C_CharacterCreation.IsCharacterNameValid(results.name)
+	if not valid then 
+		self.errorSet = true; --This flag is so when we rewind due to invalid name, the error messages wont be cleared. 
+		CharSelectServicesFlowFrame:SetErrorMessage(_G[reason]);
+		CharacterServicesMaster.flow:RequestRewind();
+		return false, 0;
+	else
+		self.errorSet = false;
+	end
 	return RequestAssignPNCForResults(results, isValidationOnly);
 end
 
+function PNCChoiceVerificationBlock:OnRewind()
+	self.isAssignmentValid = false;
+	if not self.errorSet then
+		CharSelectServicesFlowFrame:ClearErrorMessage();
+	end
+	self:UnregisterHandlers();
+end
 -- PNCAssignConfirmationBlock
 local PNCAssignConfirmationBlock = CreateFromMixins(VASAssignConfirmationBlockBase)
 do

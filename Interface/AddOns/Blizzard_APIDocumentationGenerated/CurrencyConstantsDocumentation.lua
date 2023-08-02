@@ -76,15 +76,16 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyTokenCategoryFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "FlagSortLast", Type = "CurrencyTokenCategoryFlags", EnumValue = 1 },
 				{ Name = "FlagPlayerItemAssignment", Type = "CurrencyTokenCategoryFlags", EnumValue = 2 },
 				{ Name = "Hidden", Type = "CurrencyTokenCategoryFlags", EnumValue = 4 },
 				{ Name = "Virtual", Type = "CurrencyTokenCategoryFlags", EnumValue = 8 },
+				{ Name = "StartsCollapsed", Type = "CurrencyTokenCategoryFlags", EnumValue = 16 },
 			},
 		},
 		{

@@ -23,6 +23,7 @@ if tbl then
 	Import("bit");
 	Import("pairs");
 	Import("assert");
+	Import("CreateFromMixins");
 end
 ----------------
 
@@ -72,8 +73,8 @@ end
 
 FlagsMixin = {};
 
-function FlagsMixin:OnLoad()
-	self:ClearAll();
+function FlagsMixin:OnLoad(initialFlags)
+	self.flags = initialFlags or 0;
 end
 
 function FlagsMixin:AddNamedFlagsFromTable(flagsTable)
@@ -110,12 +111,26 @@ function FlagsMixin:IsAnySet()
 	return self.flags ~= 0;
 end
 
+function FlagsMixin:AreNoneSet()
+	return self.flags == 0;
+end
+
+function FlagsMixin:AreAnySet(flagOrMask)
+	return FlagsUtil.IsAnySet(self.flags, flagOrMask);
+end
+
 function FlagsMixin:IsSet(flagOrMask)
 	return FlagsUtil.IsSet(self.flags, flagOrMask);
 end
 
 function FlagsMixin:GetFlags()
 	return self.flags;
+end
+
+function CreateFlags(initialFlags)
+	local flags = CreateFromMixins(FlagsMixin);
+	flags:OnLoad(initialFlags);
+	return flags;
 end
 
 DirtyFlagsMixin = CreateFromMixins(FlagsMixin);

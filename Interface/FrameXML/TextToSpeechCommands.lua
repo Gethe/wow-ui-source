@@ -190,6 +190,7 @@ TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ACHIEVEMENT, TextToSpeech_Tog
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_LOOT, TextToSpeech_ToggleTextToSpeechChat, "LOOT", SLASH_TEXTTOSPEECH_HELP_LOOT);
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_CURRENCY, TextToSpeech_ToggleTextToSpeechChat, "CURRENCY", SLASH_TEXTTOSPEECH_HELP_CURRENCY);
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_MONEY, TextToSpeech_ToggleTextToSpeechChat, "MONEY", SLASH_TEXTTOSPEECH_HELP_MONEY);
+TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_PING, TextToSpeech_ToggleTextToSpeechChat, "PING", SLASH_TEXTTOSPEECH_HELP_PING);
 
 do
 	local SLASH_TEXTTOSPEECH_TOGGLE = "";

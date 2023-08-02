@@ -955,25 +955,19 @@ function UIMenuButtonStretchMixin:SetTextures(texture)
 end
 
 function UIMenuButtonStretchMixin:OnMouseDown(button)
-	if ( self:IsEnabled() ) then
+	if self:IsEnabled() then
 		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Down");
-		if ( self.Icon ) then
-			if ( not self.Icon.oldPoint ) then
-				local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
-				self.Icon.oldPoint = point;
-				self.Icon.oldX = x;
-				self.Icon.oldY = y;
-			end
-			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
+		if self.Icon then
+			self.Icon:AdjustPointsOffset(1, -1);
 		end
 	end
 end
 
 function UIMenuButtonStretchMixin:OnMouseUp(button)
-	if ( self:IsEnabled() ) then
+	if self:IsEnabled() then
 		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
-		if ( self.Icon ) then
-			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
+		if self.Icon then
+			self.Icon:AdjustPointsOffset(-1, 1);
 		end
 	end
 end
@@ -2976,7 +2970,7 @@ function SearchBoxListMixin:OnLoad()
 		bar:SetValue(0);
 		bar.previousResults = nil;
 	end);
-	
+
 	self.HasStickyFocus = function()
 		return DoesAncestryInclude(self, GetMouseFocus());
 	end
@@ -3036,7 +3030,7 @@ function SearchBoxListMixin:OnTextChanged()
 		self:HideSearchPreview();
 		return false, text;
 	end
-	
+
 	self:SetSearchPreviewSelection(1);
 
 	return true, text;

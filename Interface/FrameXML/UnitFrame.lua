@@ -240,10 +240,12 @@ function UnitFramePortrait_Update (self)
 	if ( self.portrait ) then
 		if ( UnitFrame_ShouldReplacePortrait(self) ) then
 			local _, class = UnitClass(self.unit);
-			local classIconAtlas = GetClassAtlas(class);
-			if ( classIconAtlas ) then
-				self.portrait:SetAtlas(classIconAtlas);
-				return;
+			if ( class ) then
+				local classIconAtlas = GetClassAtlas(class);
+				if ( classIconAtlas ) then
+					self.portrait:SetAtlas(classIconAtlas);
+					return;
+				end
 			end
 		end
 

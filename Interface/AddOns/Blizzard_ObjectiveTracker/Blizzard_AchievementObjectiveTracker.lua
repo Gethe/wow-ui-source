@@ -72,7 +72,7 @@ function AchievementObjectiveTracker_OnOpenDropDown(self)
 end
 
 function AchievementObjectiveTracker_UntrackAchievement(dropDownButton, achievementID)
-	C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, achievementID);
+	C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, achievementID, Enum.ContentTrackingStopType.Manual);
 	if ( AchievementFrame ) then
 		AchievementFrameAchievements_ForceUpdate();
 	end

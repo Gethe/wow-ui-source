@@ -1407,15 +1407,6 @@
 	<Binding name="TOGGLEWINDOWED" category="BINDING_HEADER_MISC">
 		ToggleWindowed();
 	</Binding>
-	<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_MISC">
-		PingUI_LoadUI();
-		if ( keystate == "down" ) then
-			PingListenerFrame:Show();
-		else
-			PingListenerFrame:CancelPendingPing();
-			PingListenerFrame:Hide();
-		end
-	</Binding>
 
 	<!-- Debug function key bindings -->
   <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
@@ -1605,6 +1596,37 @@
 	<Binding name="VEHICLEAIMDECREMENT" category="BINDING_HEADER_VEHICLE">
 		VehicleAimDecrement(0.1);
 	</Binding>
+
+<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
+<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
+	PingUI_LoadUI();
+	if ( keystate == "down" ) then
+		PingListenerFrame:Show();
+	else
+		PingListenerFrame:CancelPendingPing();
+		PingListenerFrame:Hide();
+	end
+</Binding>
+
+<Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">
+	PingUI_LoadUI();
+	PingManager:SendMacroPing(Enum.PingSubjectType.Attack);
+</Binding>
+
+<Binding name="PINGWARNING" category="BINDING_HEADER_PING_SYSTEM">
+	PingUI_LoadUI();
+	PingManager:SendMacroPing(Enum.PingSubjectType.Warning);
+</Binding>
+
+<Binding name="PINGONMYWAY" category="BINDING_HEADER_PING_SYSTEM">
+	PingUI_LoadUI();
+	PingManager:SendMacroPing(Enum.PingSubjectType.OnMyWay);
+</Binding>
+
+<Binding name="PINGASSIST" category="BINDING_HEADER_PING_SYSTEM">
+	PingUI_LoadUI();
+	PingManager:SendMacroPing(Enum.PingSubjectType.Assist);
+</Binding>
 
 <!-- Hidden bindings -->
 	<Binding name="TURNORACTION" runOnUp="true" hidden="true">

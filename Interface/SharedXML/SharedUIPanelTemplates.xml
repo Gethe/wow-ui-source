@@ -1106,7 +1106,7 @@
 	ButtonFrameTemplate_ShowButtonBar(self)
 *******************************************************************************
 -->
-	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
+	<Frame name="ButtonFrameBaseTemplate" inherits="PortraitFrameBaseTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
 				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
@@ -1127,7 +1127,11 @@
 		</Layers>
 		<Frames>
 			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+		</Frames>
+	</Frame>
 
+	<Frame name="ButtonFrameTemplate" inherits="ButtonFrameBaseTemplate" virtual="true">
+		<Frames>
 			<Frame name="$parentInset" parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-60" />
@@ -1353,7 +1357,7 @@
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 	</Button>
-	
+
 	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">
 		<Size x="31" y="20"/>
 		<Layers>
@@ -3065,7 +3069,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="RingedFrameWithTooltipTemplate" mixin="RingedFrameWithTooltipMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipAnchor" value="ANCHOR_TOPRIGHT" type="string"/>

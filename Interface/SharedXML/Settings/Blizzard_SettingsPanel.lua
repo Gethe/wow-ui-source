@@ -796,8 +796,8 @@ function SettingsPanelMixin:SelectCategory(category, force)
 	if force or (self:GetCurrentCategory() ~= category) then
 		self:ClearSearchBox();
 		self:ClearOutputText();
-		self:DisplayCategory(category);
 		self:SetCurrentCategory(category);
+		self:DisplayCategory(category);
 	end
 end
 

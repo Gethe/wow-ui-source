@@ -83,3 +83,9 @@ end
 function UIDropDownCustomMenuEntryMixin:GetContextData()
 	return self.contextData;
 end
+
+ColorSwatchMixin = {}
+
+function ColorSwatchMixin:SetColor(color)
+	self.Color:SetVertexColor(color:GetRGB());
+end

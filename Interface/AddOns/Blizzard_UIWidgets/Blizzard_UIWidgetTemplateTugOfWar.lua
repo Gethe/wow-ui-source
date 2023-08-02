@@ -48,7 +48,8 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 	local maxIconHeight = math.max(self.LeftIcon:GetHeight(), self.RightIcon:GetHeight());
 	local widgetWidth = self.BarBackgroundMiddle:GetWidth() + (2 * maxIconWidth);
 	local widgetHeight = math.max(maxIconHeight, self.BarBackgroundMiddle:GetHeight());
-	self:SetSize(widgetWidth, widgetHeight);
+
+	self:SetSize(math.max(widgetWidth, widgetInfo.widgetSizeSetting), widgetHeight);
 end
 
 function UIWidgetTemplateTugOfWarMixin:AnimOut()

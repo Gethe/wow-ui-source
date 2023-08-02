@@ -21,7 +21,7 @@ function ADVENTURE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 			CloseDropDownMenus();
 
 			if ContentTrackingUtil.IsTrackingModifierDown() then
-				C_ContentTracking.StopTracking(block.trackableType, block.trackableID);
+				C_ContentTracking.StopTracking(block.trackableType, block.trackableID, Enum.ContentTrackingStopType.Manual);
 			elseif (block.trackableType == Enum.ContentTrackingType.Appearance) and IsModifiedClick("DRESSUP") then
 				DressUpVisual(block.trackableID);
 			elseif block.targetType == Enum.ContentTrackingTargetType.Achievement then
@@ -116,7 +116,7 @@ function AdventureObjectiveTracker_OpenToAppearance(unused_dropDownButton, appea
 end
 
 function AdventureObjectiveTracker_Untrack(unused_dropDownButton, trackableType, id)
-	C_ContentTracking.StopTracking(trackableType, id);
+	C_ContentTracking.StopTracking(trackableType, id, Enum.ContentTrackingStopType.Manual);
 end
 
 function AdventureObjectiveTracker_AnimateReward(trackableID, anchor, posIndex, trackerModule)
@@ -270,7 +270,7 @@ function ADVENTURE_TRACKER_MODULE:StopTrackingCollectedItems()
 
 	local removingCollectedObjective = false;
 	for trackableId, trackableType in pairs(self.collectedIds) do
-		C_ContentTracking.StopTracking(trackableType, trackableId);
+		C_ContentTracking.StopTracking(trackableType, trackableId, Enum.ContentTrackingStopType.Collected);
 		removingCollectedObjective = true;
 	end
 	if removingCollectedObjective then

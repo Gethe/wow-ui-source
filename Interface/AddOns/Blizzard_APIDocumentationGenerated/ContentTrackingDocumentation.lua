@@ -248,6 +248,7 @@ local ContentTracking =
 			{
 				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "stopType", Type = "ContentTrackingStopType", Nilable = false },
 			},
 		},
 		{
@@ -258,6 +259,7 @@ local ContentTracking =
 			{
 				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "stopType", Type = "ContentTrackingStopType", Nilable = false },
 			},
 
 			Returns =

@@ -1468,7 +1468,7 @@ end
 function AchievementTemplateMixin:ToggleTracking()
 	local id = self.id;
 	if ( trackedAchievements[id] ) then
-		C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id);
+		C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id, Enum.ContentTrackingStopType.Manual);
 		self:SetAsTracked(false);
 		return;
 	end

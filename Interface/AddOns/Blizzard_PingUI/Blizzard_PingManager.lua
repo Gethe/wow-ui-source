@@ -11,6 +11,7 @@ local PING_RESULT_STRINGS = {
     [Enum.PingResult.FailedSpamming] = PING_FAILED_SPAMMING,
     [Enum.PingResult.FailedInvalidTarget] = PING_FAILED_INVALID_TARGET,
     [Enum.PingResult.FailedDisabledByLeader] = PING_FAILED_DISABLED_BY_LEADER,
+    [Enum.PingResult.FailedDisabledBySettings] = PING_FAILED_DISABLED_BY_SETTINGS,
     [Enum.PingResult.FailedUnspecified] = PING_FAILED_UNSPECIFIED,
 };
 

@@ -310,6 +310,9 @@ local vasErrorData = {
 	[Enum.VasError.HasCraftingOrders] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CRAFTING_ORDERS,
 	},
+	[Enum.VasError.InvalidName] = {
+		msg = BLIZZARD_STORE_VAS_INVALID_NAME,
+	},
 };
 
 local storeErrorData = {

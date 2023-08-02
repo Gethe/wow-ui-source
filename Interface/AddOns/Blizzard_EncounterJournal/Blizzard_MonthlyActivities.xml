@@ -108,9 +108,9 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontBlackMedium" justifyV="MIDDLE" justifyH="LEFT">
-					<Size x="360" y="48"/>
+					<Size x="350" y="48"/>
 					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
+						<Anchor point="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Points" inherits="GameFontHighlightMed2" justifyV="MIDDLE" justifyH="CENTER" text="100">
