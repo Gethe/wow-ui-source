@@ -61,6 +61,8 @@ function PetBattlesOverrides.GetPositionOverride(petSpeciesID)
 		return -0.8, 0.6, -0.4;
 	elseif petSpeciesID == 504 then
 		return -3.0, -0.0, -0.5;
+	elseif petSpeciesID == 4257 then
+		return -1, -1.75, 0;
 	end
 end
 
