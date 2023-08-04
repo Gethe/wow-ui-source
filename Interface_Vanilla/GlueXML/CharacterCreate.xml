@@ -862,11 +862,9 @@
 										PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 									</OnClick>
 									<OnEnter>
-										if (C_CharacterCreation.GetSelectedSex() == 1) then
-											return;
-										end
-										GlueTooltip_SetOwner(nil, nil, -3, -5);
-										GlueTooltip:SetText(MALE, nil, 1.0, 1.0, 1.0);
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GlueTooltip:SetText(BODY_1);
+										GlueTooltip:Show();
 									</OnEnter>
 								</Scripts>
 							</CheckButton>
@@ -887,11 +885,9 @@
 										PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
 									</OnClick>
 									<OnEnter>
-										if (C_CharacterCreation.GetSelectedSex() == 2) then
-											return;
-										end
-										GlueTooltip_SetOwner(nil, nil, -3, -5);
-										GlueTooltip:SetText(FEMALE, nil, 1.0, 1.0, 1.0);
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GlueTooltip:SetText(BODY_2);
+										GlueTooltip:Show();
 									</OnEnter>
 								</Scripts>
 							</CheckButton>

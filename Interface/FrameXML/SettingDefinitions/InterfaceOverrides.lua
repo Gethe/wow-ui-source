@@ -47,6 +47,10 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_SHOW_CLOAK);
 	end
 
+	if (C_GameRules.IsHardcoreActive()) then
+		Settings.SetupCVarCheckBox(category, "guildAnnounceMemberDeaths", ANNOUNCE_GUILD_MEMBER_DEATH, ANNOUNCE_GUILD_MEMBER_DEATH_TOOLTIP);
+	end
+
 	-- Instant Quest Text
 	Settings.SetupCVarCheckBox(category, "instantQuestText", SHOW_QUEST_FADING_TEXT, OPTION_TOOLTIP_SHOW_QUEST_FADING);
 

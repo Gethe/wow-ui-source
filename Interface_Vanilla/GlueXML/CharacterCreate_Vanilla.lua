@@ -181,18 +181,14 @@ function SetCharacterGender(sex)
 	C_CharacterCreation.SetSelectedSex(sex);
 	if ( sex == Enum.UnitSex.Male ) then
 		gender = "MALE";
-		CharacterCreateGenderButtonMaleHighlightText:SetText(MALE);
 		CharacterCreateGenderButtonMale:SetChecked(1);
 		CharacterCreateGenderButtonMale:LockHighlight();
-		CharacterCreateGenderButtonFemaleHighlightText:SetText("");
 		CharacterCreateGenderButtonFemale:SetChecked(nil);
 		CharacterCreateGenderButtonFemale:UnlockHighlight();
 	else
 		gender = "FEMALE";
-		CharacterCreateGenderButtonMaleHighlightText:SetText("");
 		CharacterCreateGenderButtonMale:SetChecked(nil);
 		CharacterCreateGenderButtonMale:UnlockHighlight();
-		CharacterCreateGenderButtonFemaleHighlightText:SetText(FEMALE);
 		CharacterCreateGenderButtonFemale:SetChecked(1);
 		CharacterCreateGenderButtonFemale:LockHighlight();
 	end

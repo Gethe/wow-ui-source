@@ -1,3 +1,31 @@
+---------------
+--NOTE - Please do not change this section without talking to the UI team
+local _, tbl = ...;
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+	end
+
+	setfenv(1, tbl);
+
+Import("table");
+Import("string");
+Import("tonumber");
+Import("strsplit");
+Import("SOUNDKIT");
+Import("PlaySound");
+Import("LoadURLIndex");
+
+end
+---------------
 
 LinkUtil = {};
 
@@ -27,6 +55,11 @@ function LinkUtil.ExtractLink(text)
 	-- displayText: (.*)|h matches everything up to the second |h.
 	-- Ex: |cffffffff|Htype:a:b:c:d|htext|h|r becomes type, a:b:c:d, text
 	return string.match(text, [[|H([^:]*):([^|]*)|h(.*)|h]]);
+end
+
+function LinkUtil.ExtractNydusLink(text)
+	-- Extracts ex. "urlIndex:24" from strings like "|HurlIndex:24|h"
+	return string.match(text, [[|H([^|]*)|h]]);
 end
 
 function LinkUtil.IsLinkType(link, matchLinkType)

@@ -1418,44 +1418,6 @@ StaticPopupDialogs["DEATH"] = {
 	cancels = "RECOVER_CORPSE",
 	timeoutInformationalOnly = 1,
 };
-StaticPopupDialogs["HARDCORE_DEATH"] = {
-	text = HARDCORE_DEATH,
-	button1 = HARDCORE_GO_AGAIN,
-	button2 = DEATH_RELEASE,
-	selectCallbackByIndex = true,
-	OnShow = function(self)
-		self.button1:Enable();
-		self.button2:Enable();
-		return;
-	end,
-	OnButton1 = function(self)
-		Logout();
-		return;
-	end,
-	OnButton2 = function(self)
-		RepopMe();
-	end,
-	OnUpdate = function(self, elapsed)
-		if ( IsFalling() and not IsOutOfBounds()) then
-			self.button1:Disable();
-			self.button2:Disable();
-			return;
-		else
-			self.button1:Enable();
-			self.button2:Enable();
-			return;
-		end
-	end,
-	timeout = 0,
-	whileDead = 1,
-	interruptCinematic = 1,
-	notClosableByLogout = 1,
-	noCancelOnReuse = 1,
-	hideOnEscape = false,
-	noCloseOnAlt = true,
-	cancels = "HARDCORE_RECOVER_CORPSE",
-	timeoutInformationalOnly = 1,
-};
 StaticPopupDialogs["RESURRECT"] = {
 	StartDelay = GetCorpseRecoveryDelay,
 	delayText = RESURRECT_REQUEST_TIMER,
@@ -2916,85 +2878,209 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED"] = {
-	text = DUEL_TO_THE_DEATH_REQUESTED,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	sound = SOUNDKIT.IG_PLAYER_INVITE,
-	OnAccept = function(self)
-		self:Hide();
-		StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED_CONFIRM");
-	end,
-	OnCancel = function(self)
-		CancelDuel();
-	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED_CONFIRM"] = {
-	text = DUEL_TO_THE_DEATH_REQUEST_CONFIRM,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	hasEditBox = 1,
-	maxLetters = 12,
-	wide = true,
-	sound = SOUNDKIT.IG_PLAYER_INVITE,
-	OnAccept = function(self)
-		AcceptDuel();
-	end,
-	OnCancel = function(self)
-		CancelDuel();
-	end,
-	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if (strupper(parent.editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
-	end,
-	EditBoxOnEscapePressed = function(self)
-		CancelDuel();
-		self:GetParent():Hide();
-	end,
-	OnShow = function(self)
-		self.button1:Disable();
-	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM"] = {
-	text = DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	hasEditBox = 1,
-	maxLetters = 12,
-	wide = true,
-	sound = SOUNDKIT.IG_PLAYER_INVITE,
-	OnAccept = function(self)
-		local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-		StartDuel(dropdownMenu.unit, true, true);
-	end,
-	OnCancel = function(self)
-		-- Duel hasn't started yet
-	end,
-	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		if (strupper(parent.editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	OnShow = function(self)
-		self.button1:Disable();
-	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	hideOnEscape = 1
-};
+-- Hardcore popups
+if (C_GameRules.IsHardcoreActive()) then
+	StaticPopupDialogs["HARDCORE_DEATH"] = {
+		text = HARDCORE_DEATH,
+		button1 = HARDCORE_GO_AGAIN,
+		button2 = DEATH_RELEASE,
+		selectCallbackByIndex = true,
+		OnShow = function(self)
+			self.button1:Enable();
+			self.button2:Enable();
+			return;
+		end,
+		OnButton1 = function(self)
+			Logout();
+			return;
+		end,
+		OnButton2 = function(self)
+			RepopMe();
+		end,
+		OnUpdate = function(self, elapsed)
+			-- If button text is too long, widen out the dialogue
+			if (string.len(self.button1:GetText()) > 20 or string.len(self.button2:GetText()) > 20) then
+				local textWidth = math.max(self.button1:GetWidth(), self.button2:GetWidth())
+				if (textWidth > 120) then
+					self.button1:SetWidth(textWidth);
+					self.button2:SetWidth(textWidth);
+				end
+				self:SetWidth(420)
+			end
+			if ( IsFalling() and not IsOutOfBounds()) then
+				self.button1:Disable();
+				self.button2:Disable();
+				return;
+			else
+				self.button1:Enable();
+				self.button2:Enable();
+				return;
+			end
+		end,
+		timeout = 0,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1,
+		noCancelOnReuse = 1,
+		hideOnEscape = false,
+		noCloseOnAlt = true,
+		cancels = "HARDCORE_RECOVER_CORPSE",
+		timeoutInformationalOnly = 1,
+	};
+	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE"] = {
+		text = HARDCORE_RECOVER_CORPSE,
+		button1 = HARDCORE_GO_AGAIN,
+		OnAccept = function(self)
+			Logout();
+			return 1;
+		end,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1
+	};
+	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE_INSTANCE"] = {
+		text = HARDCORE_RECOVER_CORPSE_INSTANCE,
+		timeout = 0,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1
+	};
+	StaticPopupDialogs["HARDCORE_DEATH_GUILD_HANDOFF"] = {
+		button1 = ACCEPT,
+		text = HARDCORE_GUILDLEADER_DEATH,
+		OnAccept = function(self)
+			if ( self.button1:IsEnabled() ) then
+				-- Pass guild lead
+				local text = self.editBox:GetText();
+				GuildSetLeader(text);
+				self:Hide();
+				if (UnitIsDead("player")) then
+					StaticPopup_Show("HARDCORE_DEATH");
+				end
+			end
+		end,
+		OnUpdate = function (self)
+			-- 
+		end,
+		timeout = 0,
+		whileDead = 1,
+		exclusive = 1,
+		showAlert = 1,
+		hasEditBox = 1,
+		maxLetters = 12,
+		notClosableByLogout = 1,
+		cancels = "HARDCORE_RECOVER_CORPSE",
+		OnShow = function(self)
+			self.button1:Disable();
+			self.editBox:SetFocus();
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent();
+			if ( parent.button1:IsEnabled() ) then
+				-- Pass guild lead
+				local text = parent.editBox:GetText();
+				GuildSetLeader(text);
+				parent:Hide();
+				if (UnitIsDead("player")) then
+					StaticPopup_Show("HARDCORE_DEATH");
+				end
+			end
+		end,
+		EditBoxOnTextChanged = function (self)
+			local parent = self:GetParent();
+			local text = parent.editBox:GetText();
+			if (text == "") then
+				return
+			end
+			local playerInSameGuild = C_GuildInfo.MemberExistsByName(text);
+			-- Check if this is a player, and if that player is in our guild
+			if (playerInSameGuild) then
+				parent.button1:Enable();
+			else
+				parent.button1:Disable();
+			end
+		end,
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED"] = {
+		text = DUEL_TO_THE_DEATH_REQUESTED,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		sound = SOUNDKIT.IG_PLAYER_INVITE,
+		OnAccept = function(self)
+			self:Hide();
+			StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED_CONFIRM");
+		end,
+		OnCancel = function(self)
+			CancelDuel();
+		end,
+		timeout = STATICPOPUP_TIMEOUT,
+		hideOnEscape = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED_CONFIRM"] = {
+		text = DUEL_TO_THE_DEATH_REQUEST_CONFIRM,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		hasEditBox = 1,
+		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
+		wide = true,
+		sound = SOUNDKIT.IG_PLAYER_INVITE,
+		OnAccept = function(self)
+			AcceptDuel();
+		end,
+		OnCancel = function(self)
+			CancelDuel();
+		end,
+		EditBoxOnTextChanged = function (self)
+			local parent = self:GetParent();
+			if (strupper(parent.editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
+				parent.button1:Enable();
+			else
+				parent.button1:Disable();
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			CancelDuel();
+			self:GetParent():Hide();
+		end,
+		OnShow = function(self)
+			self.button1:Disable();
+		end,
+		timeout = STATICPOPUP_TIMEOUT,
+		hideOnEscape = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM"] = {
+		text = DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		hasEditBox = 1,
+		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
+		wide = true,
+		sound = SOUNDKIT.IG_PLAYER_INVITE,
+		OnAccept = function(self)
+			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+			StartDuel(dropdownMenu.unit, true, true);
+		end,
+		OnCancel = function(self)
+			-- Duel hasn't started yet
+		end,
+		EditBoxOnTextChanged = function (self)
+			local parent = self:GetParent();
+			if (strupper(parent.editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
+				parent.button1:Enable();
+			else
+				parent.button1:Disable();
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide();
+		end,
+		OnShow = function(self)
+			self.button1:Disable();
+		end,
+		timeout = STATICPOPUP_TIMEOUT,
+		hideOnEscape = 1
+	};
+end
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
 	text = DUEL_OUTOFBOUNDS_TIMER,
 	timeout = 10,
@@ -3169,82 +3255,6 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1
-};
-
--- Hardcore popups
-StaticPopupDialogs["HARDCORE_RECOVER_CORPSE"] = {
-	text = HARDCORE_RECOVER_CORPSE,
-	button1 = HARDCORE_GO_AGAIN,
-	OnAccept = function(self)
-		Logout();
-		return 1;
-	end,
-	whileDead = 1,
-	interruptCinematic = 1,
-	notClosableByLogout = 1
-};
-StaticPopupDialogs["HARDCORE_RECOVER_CORPSE_INSTANCE"] = {
-	text = HARDCORE_RECOVER_CORPSE_INSTANCE,
-	timeout = 0,
-	whileDead = 1,
-	interruptCinematic = 1,
-	notClosableByLogout = 1
-};
-StaticPopupDialogs["HARDCORE_DEATH_GUILD_HANDOFF"] = {
-	button1 = ACCEPT,
-	text = HARDCORE_GUILDLEADER_DEATH,
-	OnAccept = function(self)
-		if ( self.button1:IsEnabled() ) then
-			-- Pass guild lead
-			local text = self.editBox:GetText();
-			GuildSetLeader(text);
-			self:Hide();
-			if (UnitIsDead("player")) then
-				StaticPopup_Show("HARDCORE_DEATH");
-			end
-		end
-	end,
-	OnUpdate = function (self)
-		-- 
-	end,
-	timeout = 0,
-	whileDead = 1,
-	exclusive = 1,
-	showAlert = 1,
-	hasEditBox = 1,
-	maxLetters = 12,
-	notClosableByLogout = 1,
-	cancels = "HARDCORE_RECOVER_CORPSE",
-	OnShow = function(self)
-		self.button1:Disable();
-		self.editBox:SetFocus();
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		if ( parent.button1:IsEnabled() ) then
-			-- Pass guild lead
-			local text = parent.editBox:GetText();
-			GuildSetLeader(text);
-			parent:Hide();
-			if (UnitIsDead("player")) then
-				StaticPopup_Show("HARDCORE_DEATH");
-			end
-		end
-	end,
-	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		local text = parent.editBox:GetText();
-		if (text == "") then
-			return
-		end
-		local playerInSameGuild = C_GuildInfo.MemberExistsByName(text);
-		-- Check if this is a player, and if that player is in our guild
-		if (playerInSameGuild) then
-			parent.button1:Enable();
-		else
-			parent.button1:Disable();
-		end
-	end,
 };
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = AREA_SPIRIT_HEAL,

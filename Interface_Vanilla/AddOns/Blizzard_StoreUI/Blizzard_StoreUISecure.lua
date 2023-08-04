@@ -287,6 +287,8 @@ Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
 Import("WRATH_OF_THE_LICH_KING");
+Import("IsShiftKeyDown");
+Import("BLIZZARD_STORE_CLICK_TO_OPEN_FAQ");
 
 --Lua enums
 Import("SOUNDKIT");
@@ -354,6 +356,29 @@ local function SetCurrentCategoryToExclusiveState(shouldBeExclusive)
 	end
 
 	StoreFrame_UpdateCategories(StoreFrame);
+end
+
+local function GetFaqNydusLink(entryInfo)
+	local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
+	if not currencyInfo then
+		return nil;
+	end
+
+	-- Check for VAS FAQ link
+	local vasServiceType = C_StoreSecure.GetVasServiceType(entryInfo.productID);
+	if vasServiceType and currencyInfo.vasDisclaimerData and currencyInfo.vasDisclaimerData[vasServiceType] and currencyInfo.vasDisclaimerData[vasServiceType].disclaimer then
+		local text = currencyInfo.vasDisclaimerData[vasServiceType].disclaimer;
+		return LinkUtil.ExtractNydusLink(text);
+	end
+
+	-- Check for boost FAQ link
+	local productDecorator = entryInfo.sharedData.productDecorator;
+	if productDecorator and productDecorator == Enum.BattlepayProductDecorator.Boost and currencyInfo.boostDisclaimerText then
+		local text = currencyInfo.boostDisclaimerText;
+		return LinkUtil.ExtractNydusLink(text);
+	end
+
+	return nil;
 end
 
 -- This is copied from WowTokenUI.lua
@@ -2642,6 +2667,10 @@ function StoreProductCard_UpdateState(card)
 					end
 				end
 
+				if GetFaqNydusLink(entryInfo) then
+					description = description.."\n\n"..BLIZZARD_STORE_CLICK_TO_OPEN_FAQ;
+				end
+
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
 				if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
@@ -2727,6 +2756,15 @@ end
 
 function StoreProductCard_OnClick(self,button,down)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
+
+	if IsShiftKeyDown() then
+		local vasFaqUrl = GetFaqNydusLink(entryInfo);
+		if vasFaqUrl then
+			GetURLIndexAndLoadURL(self, vasFaqUrl);
+			return;
+		end
+	end
+
 	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
 		return;
 	end
