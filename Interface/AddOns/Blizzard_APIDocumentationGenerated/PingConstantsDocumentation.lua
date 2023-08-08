@@ -3,6 +3,18 @@ local PingConstants =
 	Tables =
 	{
 		{
+			Name = "PingMode",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "KeyDown", Type = "PingMode", EnumValue = 0 },
+				{ Name = "ClickDrag", Type = "PingMode", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "PingResult",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -11,8 +23,8 @@ local PingConstants =
 			Fields =
 			{
 				{ Name = "Success", Type = "PingResult", EnumValue = 0 },
-				{ Name = "FailedSpamming", Type = "PingResult", EnumValue = 1 },
-				{ Name = "FailedInvalidTarget", Type = "PingResult", EnumValue = 2 },
+				{ Name = "FailedGeneric", Type = "PingResult", EnumValue = 1 },
+				{ Name = "FailedSpamming", Type = "PingResult", EnumValue = 2 },
 				{ Name = "FailedDisabledByLeader", Type = "PingResult", EnumValue = 3 },
 				{ Name = "FailedDisabledBySettings", Type = "PingResult", EnumValue = 4 },
 				{ Name = "FailedUnspecified", Type = "PingResult", EnumValue = 5 },

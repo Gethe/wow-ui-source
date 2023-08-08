@@ -40,33 +40,61 @@ function PingListenerFrameMixin:OnLoad()
     PingManager:Initialize();
 end
 
+function PingListenerFrameMixin:OnUpdate(elapsed)
+    if self.waitTimerSeconds then
+		self.waitTimerSeconds = self.waitTimerSeconds - elapsed;
+        if self.waitTimerSeconds < 0 then
+            self.waitTimerSeconds = nil;
+            self:BeginPendingPing();
+
+            self:SetScript("OnUpdate", nil);
+        end
+    end
+end
+
 function PingListenerFrameMixin:OnEvent(event, ...)
 	if event == "PENDING_PING_OFF_SCREEN" then
+        self.pendingPingForceCancelled = true;
         self:ClearPendingPingInfo();
     end
 end
 
 function PingListenerFrameMixin:OnMouseDown()
-    self.startX, self.startY = GetScaledCursorPosition(); -- The position where the ping wheel should show.
-    self.checkX, self.checkY = GetCursorPosition(); -- The position on the screen we should check for targets from.
+    if self:GetPingMode() == Enum.PingMode.KeyDown then
+        return;
+    end
+
+    self:SetCursorPositions();
 end
 
 function PingListenerFrameMixin:OnMouseUp()
+    if self:GetPingMode() == Enum.PingMode.KeyDown then
+        return;
+    end
+
     if not self.pendingPingInfo then
         PingManager:DeterminePingTargetAndSend(self.checkX, self.checkY, self.startX, self.startY);
     end
 end
 
 function PingListenerFrameMixin:OnDragStart()
+    if self:GetPingMode() == Enum.PingMode.KeyDown then
+        return;
+    end
+
     if PingFrame.radialParent then
         self:BeginPendingPing();
     else
         -- Cannot show ping wheel correctly until radialParent is setup.
-        UIErrorsFrame:AddMessage(PING_ERROR, RED_FONT_COLOR:GetRGBA());
+        UIErrorsFrame:AddMessage(PING_FAILED_GENERIC, RED_FONT_COLOR:GetRGBA());
     end
 end
 
 function PingListenerFrameMixin:OnDragStop()
+    if self:GetPingMode() == Enum.PingMode.KeyDown then
+        return;
+    end
+
     self:EndPendingPing();
 end
 
@@ -76,6 +104,47 @@ end
 
 function PingListenerFrameMixin:OnLeave()
     ResetCursor();
+end
+
+function PingListenerFrameMixin:TogglePingListener(enabled)
+    if enabled then
+        -- If not the drag flow, start the timer until the radial wheel is shown.
+        if self:GetPingMode() == Enum.PingMode.KeyDown then
+            self:SetCursorPositions();
+            self.waitTimerSeconds = 0.2;
+            self:SetScript("OnUpdate", self.OnUpdate);
+        end
+
+        self:Show();
+    else
+        if self:GetPingMode() == Enum.PingMode.KeyDown then
+            if self.pendingPingInfo then
+                self:EndPendingPing();
+            -- Do not attempt to send a contextual ping if a radial wheel was shown but since cancelled (gone off screen, triggered over invalid target, etc.)
+            elseif not self.pendingPingForceCancelled then
+                -- If no pending ping, send a contextual ping (ping listener keybind was released before the radial wheel was shown).
+                self:SetCursorPositions();
+                PingManager:DeterminePingTargetAndSend(self.checkX, self.checkY, self.startX, self.startY);
+            end
+
+            self.waitTimerSeconds = nil;
+            self:SetScript("OnUpdate", nil);
+        else
+            PingListenerFrame:CancelPendingPing();
+        end
+
+        self.pendingPingForceCancelled = nil;
+		self:Hide();
+    end
+end
+
+function PingListenerFrameMixin:GetPingMode()
+    return tonumber(GetCVar("pingMode"));
+end
+
+function PingListenerFrameMixin:SetCursorPositions()
+    self.startX, self.startY = GetScaledCursorPosition(); -- The position where the ping wheel should show.
+    self.checkX, self.checkY = GetCursorPosition(); -- The position on the screen we should check for targets from.
 end
 
 function PingListenerFrameMixin:BeginPendingPing()
@@ -93,7 +162,8 @@ function PingListenerFrameMixin:BeginPendingPing()
         PingFrame:SelectionStart(self.pendingPingInfo.wedgeInfo, self.pendingPingInfo.hasUITarget, self.pendingPingInfo.cooldownInfo);
     else
         -- Show error no valid target.
-        UIErrorsFrame:AddMessage(PING_ERROR, RED_FONT_COLOR:GetRGBA());
+        self.pendingPingForceCancelled = true;
+        UIErrorsFrame:AddMessage(PING_FAILED_GENERIC, RED_FONT_COLOR:GetRGBA());
     end
 end
 

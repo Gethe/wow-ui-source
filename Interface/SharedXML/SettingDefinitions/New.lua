@@ -1,17 +1,7 @@
-function DefineNewSettings()
-	local newSettings = {};
-
-	newSettings["10.1.0"] = {
-		"PROXY_CENSOR_MESSAGES",
-	};
-	newSettings["10.1.5"] = {
-		"ReplaceOtherPlayerPortraits",
-		"ReplaceMyPlayerPortrait",
-	};
-
+local function DefineNewSettings()
 	local version = GetBuildInfo();
 
-	local currentNewSettings = newSettings[version];
+	local currentNewSettings = NewSettings[version];
 	if currentNewSettings then
 		for _, settingName in ipairs(currentNewSettings) do
 			local setting = Settings.GetSetting(settingName);

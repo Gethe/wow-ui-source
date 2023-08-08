@@ -727,6 +727,8 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 			hasChild = activity.hasChild or false;
 			isChild = activity.isChild or false;
 			supersedes = activity.supersedes,
+			eventStartTime = activity.eventStartTime,
+			eventEndTime = activity.eventEndTime,
 		});
 	end
 	local dataProvider = CreateTreeDataProvider();
@@ -771,6 +773,24 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 	dataProvider:SetSortComparator(function(a, b)
 		aData = a:GetData();
 		bData = b:GetData();
+
+		-- Put non events before events
+		if not aData.eventStartTime and bData.eventStartTime then
+			return true;
+		elseif aData.eventStartTime and not bData.eventStartTime then
+			return false;
+		end
+
+		-- If both are events
+		if aData.eventStartTime and bData.eventStartTime then
+			-- Sort by which event starts or ends first
+			if aData.eventStartTime ~= bData.eventStartTime then
+				return aData.eventStartTime < bData.eventStartTime;
+			elseif aData.eventEndTime ~= bData.eventEndTime then
+				return aData.eventEndTime < bData.eventEndTime;
+			end
+		end
+
 		-- Sort pending complete to the top
 		if aData.pendingComplete ~= bData.pendingComplete then
 			return a.pendingComplete;

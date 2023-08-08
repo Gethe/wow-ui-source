@@ -177,6 +177,8 @@ local PerksActivities =
 				{ Name = "tracked", Type = "bool", Nilable = false },
 				{ Name = "supersedes", Type = "number", Nilable = false },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
+				{ Name = "eventStartTime", Type = "time_t", Nilable = true },
+				{ Name = "eventEndTime", Type = "time_t", Nilable = true },
 				{ Name = "requirementsList", Type = "table", InnerType = "PerksActivityRequirement", Nilable = false },
 				{ Name = "criteriaList", Type = "table", InnerType = "PerksActivityCriteria", Nilable = false },
 				{ Name = "tagNames", Type = "table", InnerType = "string", Nilable = false },

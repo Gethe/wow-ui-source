@@ -242,7 +242,9 @@ function ProxySettingMixin:Init(name, variable, variableTbl, variableType, defau
 	-- If this is not a saved variable, then the value is expected to be obtained from the getValue function.
 	if variableTbl[variable] == nil then
 		if getValue ~= nil then
-			self:SetValueInternal(getValue());
+			local v = getValue();
+			assert(v ~= nil, "getValue must return a value, but is returning nil.");
+			self:SetValueInternal(v);
 		elseif self.defaultValue ~= nil then
 			self:SetValueInternal(self.defaultValue);
 		else

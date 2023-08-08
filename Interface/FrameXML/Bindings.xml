@@ -1600,12 +1600,7 @@
 <!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
 <Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
 	PingUI_LoadUI();
-	if ( keystate == "down" ) then
-		PingListenerFrame:Show();
-	else
-		PingListenerFrame:CancelPendingPing();
-		PingListenerFrame:Hide();
-	end
+	PingListenerFrame:TogglePingListener(keystate == "down");
 </Binding>
 
 <Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">

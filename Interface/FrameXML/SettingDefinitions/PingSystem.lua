@@ -10,6 +10,20 @@ local function Register()
         return enablePingsSetting:GetValue();
     end
 
+    -- Ping Modes
+	do
+		local function GetOptions()
+            local container = Settings.CreateControlTextContainer();
+            container:Add(Enum.PingMode.KeyDown, PING_MODE_KEY_DOWN, OPTION_TOOLTIP_PING_MODE_KEY_DOWN);
+            container:Add(Enum.PingMode.ClickDrag, PING_MODE_CLICK_DRAG, OPTION_TOOLTIP_PING_MODE_CLICK_DRAG);
+            return container:GetData();
+        end
+
+        local setting = Settings.RegisterCVarSetting(category, "pingMode", Settings.VarType.Number, PING_MODE);
+        local initializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_PING_MODE);
+        initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+	end
+
     -- Enable Ping Sounds and Ping Sounds Volume
     do
         local initializer = layout:AddMirroredInitializer(Settings.PingSoundsInitializer);

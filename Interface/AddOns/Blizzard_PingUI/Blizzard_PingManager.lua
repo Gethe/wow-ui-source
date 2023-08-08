@@ -9,7 +9,7 @@ local PING_NAME_STRINGS = {
 
 local PING_RESULT_STRINGS = {
     [Enum.PingResult.FailedSpamming] = PING_FAILED_SPAMMING,
-    [Enum.PingResult.FailedInvalidTarget] = PING_FAILED_INVALID_TARGET,
+	[Enum.PingResult.FailedGeneric] = PING_FAILED_GENERIC,
     [Enum.PingResult.FailedDisabledByLeader] = PING_FAILED_DISABLED_BY_LEADER,
     [Enum.PingResult.FailedDisabledBySettings] = PING_FAILED_DISABLED_BY_SETTINGS,
     [Enum.PingResult.FailedUnspecified] = PING_FAILED_UNSPECIFIED,
@@ -146,7 +146,7 @@ function PingManager:DeterminePingTargetAndSend(posX, posY, spotX, spotY)
             end
         else
             -- This is a blocking UI dialog for the ping system, do not make further checks.
-            UIErrorsFrame:AddMessage(PING_ERROR, RED_FONT_COLOR:GetRGBA());
+            UIErrorsFrame:AddMessage(PING_FAILED_GENERIC, RED_FONT_COLOR:GetRGBA());
         end
     else
         self:SendContextualWorldPing(spotX, spotY);
@@ -189,7 +189,7 @@ function PingManager:SendMacroPing(type, targetUnitToken)
                 end
             else
                 -- This is a blocking UI dialog for the ping system, do not make further checks.
-                UIErrorsFrame:AddMessage(PING_ERROR, RED_FONT_COLOR:GetRGBA());
+                UIErrorsFrame:AddMessage(PING_FAILED_GENERIC, RED_FONT_COLOR:GetRGBA());
                 return;
             end
         else

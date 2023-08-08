@@ -136,6 +136,7 @@ function RadialWheelFrameMixin:AnimateOutro()
 
     self:SetScript("OnUpdate", nil);
 
+    self.lastX, self.lastY = nil, nil;
     self.Pointer:Hide();
 
     self.OutroAnim:Restart();

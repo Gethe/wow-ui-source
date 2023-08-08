@@ -1172,7 +1172,8 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 	else
 		local role = UnitGroupRolesAssigned(frame.unit);
 		if ( frame.optionTable.displayRoleIcon and (role == "TANK" or role == "HEALER" or role == "DAMAGER") ) then
-			frame.roleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
+			frame.roleIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
+			frame.roleIcon:SetTexCoord(GetTexCoordsForOldRoleSmallCircle(role));
 			frame.roleIcon:Show();
 			frame.roleIcon:SetSize(size, size);
 		else
