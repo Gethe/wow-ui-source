@@ -3005,7 +3005,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		text = DUEL_TO_THE_DEATH_REQUESTED,
 		button1 = ACCEPT,
 		button2 = DECLINE,
-		sound = SOUNDKIT.IG_PLAYER_INVITE,
+		sound = SOUNDKIT.HARDCORE_DUEL,
 		OnAccept = function(self)
 			self:Hide();
 			StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED_CONFIRM");
@@ -3023,7 +3023,6 @@ if (C_GameRules.IsHardcoreActive()) then
 		hasEditBox = 1,
 		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
 		wide = true,
-		sound = SOUNDKIT.IG_PLAYER_INVITE,
 		OnAccept = function(self)
 			AcceptDuel();
 		end,
@@ -3055,7 +3054,6 @@ if (C_GameRules.IsHardcoreActive()) then
 		hasEditBox = 1,
 		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
 		wide = true,
-		sound = SOUNDKIT.IG_PLAYER_INVITE,
 		OnAccept = function(self)
 			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 			StartDuel(dropdownMenu.unit, true, true);

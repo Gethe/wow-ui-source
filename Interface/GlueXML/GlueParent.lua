@@ -715,6 +715,10 @@ function SetGameLogo(texture, desiredExpansionLevel, desiredReleaseType)
 	local expansionLevel = desiredExpansionLevel or GetClientDisplayExpansionLevel();
 	local releaseType = desiredReleaseType or LE_RELEASE_TYPE_CLASSIC;
 
+	if(GetCNLogoReleaseType) then
+		releaseType = GetCNLogoReleaseType();
+	end
+
 	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
 
 	if logo then

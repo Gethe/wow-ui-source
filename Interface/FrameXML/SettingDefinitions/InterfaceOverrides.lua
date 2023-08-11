@@ -49,6 +49,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 
 	if (C_GameRules.IsHardcoreActive()) then
 		Settings.SetupCVarCheckBox(category, "guildAnnounceMemberDeaths", ANNOUNCE_GUILD_MEMBER_DEATH, ANNOUNCE_GUILD_MEMBER_DEATH_TOOLTIP);
+		Settings.SetupCVarCheckBox(category, "showMaxLevelAnnouncements", SHOW_MAX_LEVEL_ANNOUNCEMENT, SHOW_MAX_LEVEL_ANNOUNCEMENT_TOOLTIP);
 	end
 
 	-- Instant Quest Text
