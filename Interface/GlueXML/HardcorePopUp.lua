@@ -6,7 +6,9 @@ HARDCORE_POPUP_SCREEN = {
 }
 
 function HardcorePopUpFrameMixin:SetBodyText(text)
-	self.TextBox:SetText(text);
+	self.ScrollBox.Text:SetText(text);
+    self.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
 function HardcorePopUpFrameMixin:Reset()
@@ -17,12 +19,19 @@ end
 
 function HardcorePopUpFrameMixin:OnLoad()
 	NineSliceUtil.ApplyLayoutByName(self.Border, "Dialog");
+	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, CreateScrollBoxLinearView());
     self.screen = nil;
     self.realmInfo = nil;
 end
 
 function HardcorePopUpFrameMixin:OnShow()
 	GlueParent_AddModalFrame(self);
+    if (self.ScrollBar:GetVisibleExtentPercentage() == 1) then
+        -- Text is completely visible
+        self.ScrollBar:Hide();
+    else 
+        self.ScrollBar:Show();
+    end
 end
 
 function HardcorePopUpFrameMixin:OnHide()
@@ -37,6 +46,7 @@ end
 function HardcorePopUpFrameMixin:ShowRealmSelectionWarning()
 	self:SetBodyText(HTML_START .. HARDCORE_WARNING .. HTML_END);
     self:SetSize(510, 240);
+    self.ScrollBox:SetSize(430,220);
     self.screen = HARDCORE_POPUP_SCREEN.REALM_SELECT;
     self:Show();
 end
@@ -45,6 +55,7 @@ function HardcorePopUpFrameMixin:ShowCharacterCreationWarning()
     self:SetBodyText(HTML_START .. HARDCORE_CHARACTER_CREATE_WARNING .. HARDCORE_CHARACTER_CREATE_WARNING_TWO .. HTML_END);
     self:SetSize(510, 580);
     self.screen = HARDCORE_POPUP_SCREEN.CHARACTER_SELECT;
+    self.ScrollBox:SetSize(430,470);
     self:Show();
 end
 

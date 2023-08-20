@@ -60,13 +60,27 @@
         </Layers>
         <Frames>
             <Frame parentKey="Border" setAllPoints="true"/>
-            <SimpleHTML parentKey="TextBox">
-                <Size x="430" y="6"/>
+            <Frame parentKey="ScrollBox" inherits="WowScrollBox">
+                <Size x="400" y="470"/>
                 <Anchors>
                     <Anchor point="TOP" y="-50"/>
                 </Anchors>
-                <FontString inherits="GameFontNormalLarge" justifyH="CENTER"/>
-            </SimpleHTML>
+                <Frames>
+                    <SimpleHTML parentKey="Text" resizeToFitContents="true">
+                        <Size x="395" y="480"/>
+                        <KeyValues>
+                            <KeyValue key="scrollable" value="true" type="boolean"/>
+                        </KeyValues>
+                        <FontString inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="TOP"/>
+                    </SimpleHTML>
+                </Frames>
+            </Frame>
+            <EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.TopInsetEdge" relativePoint="BOTTOMRIGHT" x="-5" y="15"/>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomInsetEdge" relativePoint="TOPRIGHT" x="-5" y="-2"/>
+                </Anchors>
+            </EventFrame>
             <Button parentKey="AcceptButton" mixin="HardcorePopUpAcceptButtonMixin" inherits="UIPanelButtonTemplate" text="HARDCORE_AGREE">
                 <Size x="136" y="22"/>
                 <Anchors>
