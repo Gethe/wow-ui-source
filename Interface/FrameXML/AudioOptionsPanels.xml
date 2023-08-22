@@ -85,7 +85,7 @@
 				</Scripts>
 			</CheckButton>
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="264"/>
+				<Size x="186" y="290"/>
 				<!--OptionsBoxTemplate inherits TooltipBorderBackdropTemplate-->
 				<KeyValues>
 					<KeyValue key="backdropColor" value="VERY_DARK_GRAY_COLOR" type="global"/>
@@ -228,6 +228,21 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "Sound_EnableSoundWhenGameIsInBG";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentEnableDSPs" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundInBG" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableDSPEffects";
+						self.restart = true;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

@@ -30,7 +30,6 @@ function InspectHonorFrame_Update()
 	-- Last Week's values
 	InspectHonorFrameLastWeekHKValue:SetText(lastweekHK);
 	InspectHonorFrameLastWeekContributionValue:SetText(lastweekHonor);
-	InspectHonorFrameLastWeekStandingValue:SetText(lastweekStanding);
 	
 	-- This session's values
 	InspectHonorFrameCurrentHKValue:SetText(sessionHK);

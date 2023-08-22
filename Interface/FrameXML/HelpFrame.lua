@@ -49,18 +49,13 @@ function HelpFrameMixin:ShowUnavailable()
 end
 
 function HelpFrameMixin:OnLoad()
-	ButtonFrameTemplate_HidePortrait(self)
-	self.TitleText:SetText(HELP_FRAME_TITLE)
+	self:SetTitle(HELP_FRAME_TITLE);
 
 	self:RegisterEvent("UPDATE_GM_STATUS");
 	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
-
-	self.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Rock", true, true);
-	self.Bg:SetHorizTile(true);
-	self.Bg:SetVertTile(true);
 end
 
 function HelpFrameMixin:OnShow()
@@ -99,7 +94,7 @@ end
 
 function HelpFrameMixin:OnError(msg)
 	if (self:GetInitialLoading()) then
-		self:ShowUnavailable();		
+		self:ShowUnavailable();
 	else
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id);

@@ -13,7 +13,7 @@ GLUE_SECONDARY_SCREENS = {
 	-- Bug 477070 We have some rare race condition crash in the sound engine that happens when the MovieFrame's "showSound" sound plays at the same time the movie audio is starting.
 	-- Removing the showSound from the MovieFrame in attempt to avoid the crash, until we can actually find and fix the bug in the sound engine.
 	["movie"] = 		{ frame = "MovieFrame", 		playMusic = false,	playAmbience = false,	fullScreen = true },
-	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
+	["options"] = 		{ frame = "SettingsPanel",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = SOUNDKIT.GS_TITLE_OPTIONS },
 };
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
@@ -177,6 +177,11 @@ function GlueParent_UpdateDialogs()
 		if ( not localizedString ) then
 			local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
 			localizedString = _G[tag];
+
+			-- some translations may need the HTML formatting even if we are not using the %s_ERROR_%d_HTML basetag
+			if localizedString and strfind(strlower(localizedString), "<html><body><p>") then
+				isHTML = true;
+			end
 		end
 
 		--If we still don't have one, just display a generic error with the ID
@@ -453,6 +458,12 @@ local glueScreenTags =
 		["PANDAREN"] = "PANDARENCHARACTERSELECT",
 	},
 
+	["charcreate"] =
+	{
+		-- Classes
+		["DEATHKNIGHT"] = true
+	},
+
 --[[
 	["charcreate"] =
 	{
@@ -522,7 +533,7 @@ local function UpdateGlueTagWithOrdering(subTable, ...)
 	return false;
 end
 
-local function UpdateGlueTag()
+function UpdateGlueTag()
 	local currentScreen = GlueParent_GetCurrentScreen();
 
 	local race, class, faction, currentTag;
@@ -688,47 +699,34 @@ function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
 end
 
-gameLogo = {};
-do
-	gameLogo[LE_EXPANSION_CLASSIC] = {
-		[LE_RELEASE_TYPE_ORIGINAL] = {
-			filename = 'Interface\\Glues\\Common\\GLUES-WOW-CLASSICLOGO', uv = { 0, 1, 0, 1 }
-		},
-		[LE_RELEASE_TYPE_MODERN] = {
-			filename = 'Interface\\Glues\\Common\\WOW_Classic-LogoHR', uv = { 0.125, 0.875, 0.3125, 0.6875 }
-		},
-	};
-	gameLogo[LE_EXPANSION_BURNING_CRUSADE] = {
-		[LE_RELEASE_TYPE_ORIGINAL] = {
-			filename = 'Interface\\Glues\\Common\\GLUES-WOW-BCLOGO', uv = { 0, 1, 0, 1 }
-		},
-		[LE_RELEASE_TYPE_MODERN] = {
-			filename = 'Interface\\Glues\\Common\\Glues-WoW-ClassicBurningCrusadeLogo', uv = { 0.125, 0.875, 0.3125, 0.6875 }
-		},
-	};
+
+function GetDisplayedExpansionLogo(expansionLevel, desiredReleaseType)
+	local expansionInfo = GetExpansionDisplayInfo(expansionLevel, desiredReleaseType);
+
+	if expansionInfo then
+		return expansionInfo.logo;
+	end
+
+	return nil;
 end
+
 
 function SetGameLogo(texture, desiredExpansionLevel, desiredReleaseType)
 	local expansionLevel = desiredExpansionLevel or GetClientDisplayExpansionLevel();
-	local releaseType = desiredReleaseType or LE_RELEASE_TYPE_MODERN;
+	local releaseType = desiredReleaseType or LE_RELEASE_TYPE_CLASSIC;
 
-	-- TODO: There's almost certainly a better way to do these overrides. It's just all a bit fragile right now, so going with the safe+verbose method.
-	local logo;
-	if (CLASSIC_ORIGINAL_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_CLASSIC and releaseType == LE_RELEASE_TYPE_ORIGINAL) then
-		logo = CLASSIC_ORIGINAL_LOGO_OVERRIDE;
-	elseif (CLASSIC_MODERN_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_CLASSIC and releaseType == LE_RELEASE_TYPE_MODERN) then
-		logo = CLASSIC_MODERN_LOGO_OVERRIDE;
-	elseif (BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_BURNING_CRUSADE and releaseType == LE_RELEASE_TYPE_ORIGINAL) then
-		logo = BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE;
-	elseif (BURNING_CRUSADE_MODERN_LOGO_OVERRIDE and expansionLevel == LE_EXPANSION_BURNING_CRUSADE and releaseType == LE_RELEASE_TYPE_MODERN) then
-		logo = BURNING_CRUSADE_MODERN_LOGO_OVERRIDE;
-	else
-		logo = gameLogo[expansionLevel][releaseType];
+	if(GetCNLogoReleaseType) then
+		releaseType = GetCNLogoReleaseType();
 	end
 
-	texture:SetTexture(logo.filename);
-	texture:SetTexCoord(unpack(logo.uv));
-	texture:Show();
+	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
+
+	if logo then
+		texture:SetTexture(logo);
+		texture:Show();
+	else
+		texture:Hide();
+	end
 end
 
 function UpgradeAccount()

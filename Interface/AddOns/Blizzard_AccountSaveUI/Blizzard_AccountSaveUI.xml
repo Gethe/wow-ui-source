@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI_shared.xsd">
+	<Script file="Blizzard_AccountSaveUI.lua"/>
+	<Frame name="AccountSaveFrame" mixin="AccountSaveFrameMixin" parent="CharacterSelect" frameStrata="DIALOG" toplevel="true" enableMouse="true">
+		<Size x="360" y="520"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CharacterSelectLogo" relativePoint="BOTTOMLEFT" x="0" y="10"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderOpaqueTemplate"/>
+			<Frame parentKey="ContentInsets">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="25" y="-15"/>
+					<Anchor point="BOTTOMRIGHT" x="-25" y="15"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AlertIcon">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ContentInsets"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<SimpleHTML parentKey="Text" resizeToFitContents="true">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.AlertIcon" y="-5"/>
+					<Anchor point="LEFT" relativeKey="$parent.ContentInsets"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ContentInsets"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="scrollable" value="false" type="boolean"/>
+				</KeyValues>
+				<FontString inherits="GlueFontNormalSmall" spacing="2" justifyH="LEFT" />
+				<FontStringHeader1 inherits="GlueFontNormal" spacing="4" justifyH="LEFT" />
+				<FontStringHeader2 inherits="GlueFontHighlight" spacing="4" justifyH="LEFT" />
+			</SimpleHTML>
+			<EditBox parentKey="LockEditBox" letters="32" historyLines="1">
+				<Size x="130" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="9" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size x="75" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-10" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size x="75" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="GlueFontHighlight"/>
+			</EditBox>
+
+			<Button parentKey="SaveButton" mixin="UIButtonMixin" inherits="UIPanelButtonTemplate" text="ACCOUNT_SAVE_DOWNLOAD_BUTTON">
+				<Size x="225" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LockEditBox" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

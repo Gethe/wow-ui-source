@@ -4,13 +4,13 @@ MAX_CRAFT_REAGENTS = 8;
 CRAFT_SKILL_HEIGHT = 16;
 
 CraftTypeColor = { };
-CraftTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };     
-CraftTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };     
-CraftTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" }; 
-CraftTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };       
-CraftTypeColor["used"]	= { r = 0.50, g = 0.50, b = 0.50,     font = "GameFontNormalLeftGrey" };           
-CraftTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFontNormalLeft" };           
-CraftTypeColor["none"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };       
+CraftTypeColor["optimal"]	= { r = 1.00, g = 0.50, b = 0.25, font = "GameFontNormalLeftOrange" };
+CraftTypeColor["medium"]	= { r = 1.00, g = 1.00, b = 0.00, font = "GameFontNormalLeftYellow" };
+CraftTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };
+CraftTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50, font = "GameFontNormalLeftGrey" };
+CraftTypeColor["used"]	= { r = 0.50, g = 0.50, b = 0.50,     font = "GameFontNormalLeftGrey" };
+CraftTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,    font = "GameFontNormalLeft" };
+CraftTypeColor["none"]		= { r = 0.25, g = 0.75, b = 0.25, font = "GameFontNormalLeftLightGreen" };
 
 CRAFT_TEXT_WIDTH = 290;
 CRAFT_SUBTEXT_OFFSET = 10;
@@ -23,7 +23,7 @@ function CraftFrame_OnShow(self)
 		return;
 	end
 
-	CraftCreateButton:Disable();	
+	CraftCreateButton:Disable();
 	if ( GetNumCrafts() > 0 ) then
 		-- Check to see if has headers, if so select the second slot if not select the first slot
 		local indexToSelect;
@@ -36,7 +36,7 @@ function CraftFrame_OnShow(self)
 		CraftFrame_SetSelection(indexToSelect);
 	end
 	FauxScrollFrame_SetOffset(CraftListScrollFrame, 0);
-	CraftListScrollFrameScrollBar:SetMinMaxValues(0, 0); 
+	CraftListScrollFrameScrollBar:SetMinMaxValues(0, 0);
 	CraftListScrollFrameScrollBar:SetValue(0);
 	CraftFrame_Update();
 end
@@ -124,7 +124,7 @@ function CraftFrame_Update()
 		CraftSkillBorderRight:Hide();
 	end
 
-	-- Hide the expand all button if less than 2 crafts learned	
+	-- Hide the expand all button if less than 2 crafts learned
 	if ( numCrafts <=1 ) then
 		CraftExpandButtonFrame:Hide();
 	else
@@ -151,19 +151,19 @@ function CraftFrame_Update()
 		CraftRequirements:Hide();
 		return;
 	end
-	
+
 	-- If has crafts
 	CraftName:Show();
 	CraftRequirements:Show();
 	CraftIcon:Show();
 	CraftDescription:Show();
 	CraftCollapseAllButton:Enable();
-	
+
 	-- ScrollFrame update
 	FauxScrollFrame_Update(CraftListScrollFrame, numCrafts, CRAFTS_DISPLAYED, CRAFT_SKILL_HEIGHT, nil, nil, nil, CraftHighlightFrame, 293, 316 );
-	
+
 	CraftHighlightFrame:Hide();
-	
+
 	local craftIndex, craftName, craftButton, craftButtonSubText, craftButtonCost, craftButtonText;
 	for i=1, CRAFTS_DISPLAYED, 1 do
 		craftIndex = i + craftOffset;
@@ -172,7 +172,7 @@ function CraftFrame_Update()
 		craftButtonSubText = getglobal("Craft"..i.."SubText");
 		craftButtonCost = getglobal("Craft"..i.."Cost");
 		craftButtonText = getglobal("Craft"..i.."Text");
-		if ( craftIndex <= numCrafts ) then	
+		if ( craftIndex <= numCrafts ) then
 			-- Set button widths if scrollbar is shown or hidden
 			if ( CraftListScrollFrame:IsVisible() ) then
 				craftButton:SetWidth(293);
@@ -189,7 +189,7 @@ function CraftFrame_Update()
 			end
 			craftButtonCost:SetPoint("RIGHT", CRAFT_COST_OFFSET, 0);
 			local color = CraftTypeColor[craftType];
-			
+
 			craftButton:SetNormalFontObject(color.font);
 			craftButtonCost:SetTextColor(color.r, color.g, color.b);
 			Craft_SetSubTextColor(craftButton, color.r, color.g, color.b);
@@ -208,7 +208,7 @@ function CraftFrame_Update()
 				getglobal("Craft"..i.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 				getglobal("Craft"..i):UnlockHighlight();
 			else
-				craftButton:SetNormalTexture("");
+				craftButton:ClearNormalTexture();
 				getglobal("Craft"..i.."Highlight"):SetTexture("");
 				if ( numAvailable == 0 ) then
 					craftButton:SetText(" "..craftName);
@@ -218,7 +218,7 @@ function CraftFrame_Update()
 				if ( craftSubSpellName and craftSubSpellName ~= "" ) then
 					craftButtonSubText:SetText(format(PARENS_TEMPLATE, craftSubSpellName));
 					craftButtonText:SetWidth(0);
-				else 
+				else
 					craftButtonSubText:SetText("");
 
 					-- A bit of a hack. If there's no subtext, we'll set a width to ensure that we don't overflow.
@@ -242,12 +242,12 @@ function CraftFrame_Update()
 					getglobal("Craft"..i):UnlockHighlight();
 				end
 			end
-			
+
 		else
 			craftButton:Hide();
 		end
 	end
-	
+
 	-- If player has training points show them here
 	Craft_UpdateTrainingPoints();
 
@@ -314,7 +314,7 @@ function CraftFrame_SetSelection(id)
 	-- General Info
 	CraftName:SetText(craftName);
 	CraftIcon:SetNormalTexture(GetCraftIcon(id));
-	
+
 	-- Set number of items that are generated
 	local minMade,maxMade = GetCraftNumMade(id);
 	if ( maxMade > 1 ) then
@@ -337,7 +337,7 @@ function CraftFrame_SetSelection(id)
 		CraftDescription:SetText(" ");
 		CraftReagentLabel:SetPoint("TOPLEFT", "CraftDescription", "TOPLEFT", 0, 0);
 	end
-	
+
 	-- Set cooldown data
 	local craftCooldownTime = GetCraftCooldown(id);
 	if craftCooldownTime then
@@ -345,11 +345,11 @@ function CraftFrame_SetSelection(id)
 	else
 		CraftCooldown:SetText("");
 	end
-	
+
 	-- Reagents
 	local creatable = 1;
 	local numReagents = GetCraftNumReagents(id);
-	
+
 	for i=1, numReagents, 1 do
 		local reagentName, reagentTexture, reagentCount, playerReagentCount = GetCraftReagentInfo(id, i);
 		local reagent = getglobal("CraftReagent"..i)
@@ -376,7 +376,7 @@ function CraftFrame_SetSelection(id)
 			count:SetText(playerReagentCount.." /"..reagentCount);
 		end
 	end
-	
+
 	if ( numReagents > 0 ) then
 		CraftReagentLabel:Show();
 	else
@@ -407,7 +407,7 @@ function CraftFrame_SetSelection(id)
 		else
 			CraftCost:SetText(COSTS_LABEL.." "..RED_FONT_COLOR_CODE..trainingPointCost..FONT_COLOR_CODE_CLOSE.." "..TRAINING_POINTS_LABEL);
 		end
-		
+
 		CraftCost:Show();
 	else
 		CraftCost:Hide();
@@ -462,7 +462,7 @@ function Craft_UpdateTrainingPoints()
 	else
 		CraftFramePointsLabel:Hide();
 		CraftFramePointsText:Hide();
-	end	
+	end
 end
 
 function CraftFrameFilterDropDown_OnLoad()

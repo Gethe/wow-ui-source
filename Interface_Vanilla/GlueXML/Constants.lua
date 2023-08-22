@@ -87,7 +87,11 @@ MOVIE_CAPTION_FADE_TIME = 1.0;
 -- These are movieID from the MOVIE database file.
 MOVIE_LIST = {
   -- Movie sequence 1 = Wow Classic
-  { 1, 2 },
+  { expansion=LE_EXPANSION_CLASSIC, 
+	movieIDs = { 1, 2 }, 
+	upAtlas="StreamCinematic-Classic-Up", 
+	downAtlas="StreamCinematic-Classic-Down",
+  }
 };
 
 --Credits
@@ -148,11 +152,22 @@ CALENDAR_FULLDATE_MONTH_NAMES = {
 	FULLDATE_MONTH_DECEMBER,
 }
 
+-- These are purposely different for Classic Era and TBC
+characterCopyRegions = {
+	[81] = NORTH_AMERICA,
+	[82] = KOREA,
+	[83] = EUROPE,
+	[84] = TAIWAN,
+	[85] = CHINA,
+};
+
 SEASON_NAMES = {
 	[Enum.SeasonID.SeasonOfMastery]					= SEASON_OF_MASTERY_REALM_TYPE,
+	[Enum.SeasonID.Hardcore]						= HARDCORE_REALM_NAME,
 };
 SEASON_TOOLTIPS = {
 	[Enum.SeasonID.SeasonOfMastery]					= SEASON_OF_MASTERY_REALM_TOOLTIP,
+	[Enum.SeasonID.Hardcore]						= HARDCORE_REALM_TOOLTIP,
 }
 SEASON_CHARACTER_SELECT_NOTIFICATIONS = {
 	[Enum.SeasonID.SeasonOfMastery]					= SEASON_OF_MASTERY_CHARACTER_SELECT_NOTIFICATION

@@ -16,7 +16,6 @@ function ToggleFramerate(benchmark)
 end
 
 function WorldFrame_OnLoad(self)
-	self:IgnoreDepth(true);
 	TUTORIAL_TIMER_CLOSE_TO_QUEST = 0;
 	TUTORIAL_TIMER_FIRST_QUEST_COMPLETE = 10;
 end
@@ -63,7 +62,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 	if ( StopwatchTicker and not StopwatchTicker:IsVisible() and Stopwatch_IsPlaying() ) then
 		StopwatchTicker_OnUpdate(StopwatchTicker, elapsed);
 	end
-	
+
 	-- need to do some polling for a few tutorials
 	if ( not IsTutorialFlagged(4) and IsTutorialFlagged(10) and not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH ) then
 		TUTORIAL_TIMER_CLOSE_TO_QUEST = TUTORIAL_TIMER_CLOSE_TO_QUEST + elapsed;
@@ -101,11 +100,6 @@ function ActionStatus_OnEvent(self, event, ...)
 		self:SetAlpha(1.0);
 		if ( event == "SCREENSHOT_SUCCEEDED" ) then
 			ActionStatus_DisplayMessage(SCREENSHOT_SUCCESS, true);
-			-- Append [Share] hyperlink
-			if ( C_Social.IsSocialEnabled() ) then
-				local screenshotText = SCREENSHOT_SUCCESS .. " " .. Social_GetShareScreenshotLink();
-				DEFAULT_CHAT_FRAME:AddMessage(screenshotText, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-			end
 		end
 		if ( event == "SCREENSHOT_FAILED" ) then
 			ActionStatus_DisplayMessage(SCREENSHOT_FAILURE, true);

@@ -8,8 +8,24 @@ CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 
-CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
+
+function GetChatTimestampFormat()
+	local value = Settings.GetValue("showTimestamps");
+	if value ~= "none" then
+		return value;
+	end
+	return nil;
+end
+
+ChatFrameUtil = {};
+
+function ChatFrameUtil.ForEachChatFrame(func)
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName];
+		func(frame);
+	end
+end
 
 MAX_CHARACTER_NAME_BYTES = 305;
 
@@ -104,6 +120,8 @@ ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGen
 ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
 ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
@@ -116,6 +134,7 @@ ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = tru
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD_DEATHS"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -230,6 +249,9 @@ ChatTypeGroup["LOOT"] = {
 ChatTypeGroup["MONEY"] = {
 	"CHAT_MSG_MONEY",
 };
+ChatTypeGroup["CURRENCY"] = {
+	"CHAT_MSG_CURRENCY",
+};
 ChatTypeGroup["OPENING"] = {
 	"CHAT_MSG_OPENING";
 };
@@ -241,6 +263,12 @@ ChatTypeGroup["PET_INFO"] = {
 };
 ChatTypeGroup["COMBAT_MISC_INFO"] = {
 	"CHAT_MSG_COMBAT_MISC_INFO";
+};
+ChatTypeGroup["ACHIEVEMENT"] = {
+	"CHAT_MSG_ACHIEVEMENT";
+};
+ChatTypeGroup["GUILD_ACHIEVEMENT"] = {
+	"CHAT_MSG_GUILD_ACHIEVEMENT";
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -266,6 +294,9 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 };
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
+};
+ChatTypeGroup["GUILD_DEATHS"] = {
+	"CHAT_MSG_GUILD_DEATHS",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.
@@ -1127,7 +1158,7 @@ function SecureCmdItemParse(item)
 		slot = strmatch(item, "^(%d+)$");
 	end
 	if ( bag ) then
-		item = GetContainerItemLink(bag, slot);
+		item = C_Container.GetContainerItemLink(bag, slot);
 	elseif ( slot ) then
 		item = GetInventoryItemLink("player", slot);
 	end
@@ -1136,7 +1167,7 @@ end
 
 function SecureCmdUseItem(name, bag, slot, target)
 	if ( bag ) then
-		UseContainerItem(bag, slot, target);
+		C_Container.UseContainerItem(bag, slot, target);
 	elseif ( slot ) then
 		UseInventoryItem(slot, target);
 	else
@@ -1497,6 +1528,16 @@ SecureCmdList["DUEL"] = function(msg)
 	StartDuel(msg)
 end
 
+SecureCmdList["DUEL_TO_THE_DEATH"] = function(msg)
+	if(not msg or msg == "") then
+		msg = GetUnitName("target", true);
+	end
+	if (msg == "" or not msg or not C_GameRules.IsHardcoreActive()) then
+		return;
+	end
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg);
+end
+
 SecureCmdList["DUEL_CANCEL"] = function(msg)
 	ForfeitDuel()
 end
@@ -1588,6 +1629,11 @@ SecureCmdList["CLICK"] = function(msg)
 		if ( not name ) then
 			name = action;
 		end
+		if ( not mouseButton ) then
+			mouseButton = "LeftButton";
+		end
+		down = StringToBoolean(down or "", false);
+
 		local button = GetClickFrame(name);
 		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);
@@ -1653,7 +1699,7 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 end
 
 SecureCmdList["TEAM_INVITE"] = function(msg)
-	if ( msg ~= "" ) then
+	if ( msg ~= "" and GetCurrentArenaSeasonUsesTeams() ) then
 		local team, name = strmatch(msg, "^(%d+)[%w+%d+]*%s+(.*)");
 		if ( team and name ) then
 			if ( strlen(name) > MAX_CHARACTER_NAME_BYTES ) then
@@ -1840,6 +1886,21 @@ SlashCmdList["INVITE"] = function(msg)
 		return;
 	end
 	InviteToGroup(msg);
+end
+
+SlashCmdList["REQUEST_INVITE"] = function(msg)
+	if(msg == "") then
+		msg = GetUnitName("target", true)
+	end
+	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
+		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+		return;
+	end
+	if(msg == nil) then
+		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		return;
+	end
+	RequestInviteFromUnit(msg);
 end
 
 SlashCmdList["UNINVITE"] = function(msg)
@@ -2324,6 +2385,17 @@ end
 	end
 end]]
 
+SlashCmdList["ACHIEVEMENTUI"] = function(msg)
+	ToggleAchievementFrame();
+end
+
+SlashCmdList["EQUIP_SET"] = function(msg)
+	local set = SecureCmdOptionParse(msg);
+	if ( set and set ~= "" ) then
+		C_EquipmentSet.UseEquipmentSet(C_EquipmentSet.GetEquipmentSetID(set));
+	end
+end
+
 -- easier method to turn on/off errors for macros
 SlashCmdList["UI_ERRORS_OFF"] = function(msg)
 	UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE");
@@ -2450,14 +2522,6 @@ end
 
 SlashCmdList["OPEN_LOOT_HISTORY"] = function(msg)
 	ToggleLootHistoryFrame();
-end
-
-SlashCmdList["SHARE"] = function(msg)
-	-- Allow if any social platforms are enabled (currently only Twitter)
-	if (C_Social.IsSocialEnabled()) then
-		SocialFrame_LoadUI();
-		Social_ToggleShow(msg);
-	end
 end
 
 SlashCmdList["API"] = function(msg)
@@ -3143,7 +3207,7 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 		arg2 = Ambiguate(arg2, "none")
 	end
 
-	if ( arg12 and info and Chat_ShouldColorChatByClass(info) ) then
+	if ( info and info.colorNameByClass and arg12 and arg12 ~= "" ) then
 		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
 
 		if ( englishClass ) then
@@ -3224,6 +3288,18 @@ do
 		end
 
 		return message;
+	end
+end
+
+local function FlashTabIfNotShown(frame, info, type, chatGroup, chatTarget)
+	if ( not frame:IsShown() ) then
+		if ( (frame == DEFAULT_CHAT_FRAME and info.flashTabOnGeneral) or (frame ~= DEFAULT_CHAT_FRAME and info.flashTab) ) then
+			if ( not CHAT_OPTIONS.HIDE_FRAME_ALERTS or type == "WHISPER" or type == "BN_WHISPER" ) then	--BN_WHISPER FIXME
+				if (not FCFManager_ShouldSuppressMessageFlash(frame, chatGroup, chatTarget) ) then
+					FCF_StartAlertFlash(frame);
+				end
+			end
+		end
 	end
 end
 
@@ -3348,14 +3424,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
-			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
-			-- arg5 contains the name of the player who looted
-			if (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
-				local itemID, strippedItemLink = GetItemInfoFromHyperlink(arg1);
-				if (itemID and C_Social.GetLastItem() == itemID) then
-					arg1 = arg1 .. " " .. Social_GetShareItemLink(strippedItemLink, true);
-				end
-			end
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -3364,25 +3432,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
-			-- Append [Share] hyperlink
-			if (arg12 == UnitGUID("player") and C_Social.IsSocialEnabled()) then
-				local achieveID = GetAchievementInfoFromHyperlink(arg1);
-				if (achieveID) then
-					arg1 = arg1 .. " " .. Social_GetShareAchievementLink(achieveID, true);
-				end
-			end
 			self:AddMessage(arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
-			if (C_Social.IsSocialEnabled()) then
-				local achieveID = GetAchievementInfoFromHyperlink(arg1);
-				if (achieveID) then
-					local isGuildAchievement = select(12, GetAchievementInfo(achieveID));
-					if (isGuildAchievement) then
-						message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
-					end
-				end
-			end
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
@@ -3452,12 +3504,17 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local _, accountName, battleTag, _, characterName, _, client = BNGetFriendInfoByID(arg13);
 				if (client and client ~= "") then
-					local _, _, battleTag = BNGetFriendInfoByID(arg13);
-					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
-					local characterNameText = BNet_GetClientEmbeddedTexture(client, 14)..characterName;
-					local linkDisplayText = ("[%s] (%s)"):format(arg2, characterNameText);
-					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
-					message = format(globalstring, playerLink);
+					C_Texture.GetTitleIconTexture(client, Enum.TitleIconVersion.Small, function(success, texture)
+						if success then
+							local characterName = BNet_GetValidatedCharacterNameWithClientEmbeddedTexture(characterName, battleTag, texture, 32, 32, 10);
+							local linkDisplayText = ("[%s] (%s)"):format(arg2, characterName);
+							local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
+							local message = format(globalstring, playerLink);
+							self:AddMessage(message, info.r, info.g, info.b, info.id);
+							FlashTabIfNotShown(self, info, type, chatGroup, chatTarget);
+						end
+					end);
+					return;
 				else
 					local linkDisplayText = ("[%s]"):format(arg2);
 					local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, Chat_GetChatCategory(type), 0);
@@ -3482,131 +3539,147 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		else
-			local body;
-
-			local _, fontHeight = FCF_GetChatWindowInfo(self:GetID());
-
-			if ( fontHeight == 0 ) then
-				--fontHeight will be 0 if it's still at the default (14)
-				fontHeight = 14;
-			end
-
-			-- Add AFK/DND flags
-			local pflag;
-			if(arg6 ~= "") then
-				if ( arg6 == "GM" ) then
-					--If it was a whisper, dispatch it to the GMChat addon.
-					if ( type == "WHISPER" ) then
-						return;
-					end
-					--Add Blizzard Icon, this was sent by a GM
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-				elseif ( arg6 == "DEV" ) then
-					--Add Blizzard Icon, this was sent by a Dev
-					pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
-				else
-					pflag = _G["CHAT_FLAG_"..arg6];
-				end
-			else
-				pflag = "";
-			end
-			if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
-				return;
-			end
-
-			local showLink = 1;
-			if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
-				showLink = nil;
-			else
-				arg1 = gsub(arg1, "%%", "%%%%");
-			end
-
-			-- Search for icon links and replace them with texture links.
-			arg1 = ChatFrame_ReplaceIconAndGroupExpressions(arg1, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
-
-			--Remove groups of many spaces
-			arg1 = RemoveExtraSpaces(arg1);
-
-			local playerLink;
-			local playerLinkDisplayText = coloredName;
-			local relevantDefaultLanguage = self.defaultLanguage;
-			if ( (type == "SAY") or (type == "YELL") ) then
-				relevantDefaultLanguage = self.alternativeDefaultLanguage;
-			end
-			local usingDifferentLanguage = (arg3 ~= "") and (arg3 ~= relevantDefaultLanguage);
-			local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
-
-			if ( usingDifferentLanguage or not usingEmote ) then
-				playerLinkDisplayText = ("[%s]"):format(coloredName);
-			end
-
-			local isCommunityType = type == "COMMUNITIES_CHANNEL";
+			local msgTime = time();
 			local playerName, lineID, bnetIDAccount = arg2, arg11, arg13;
-			if ( isCommunityType ) then
-				local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
-				local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
-				if (messageInfo ~= nil) then
-					if ( isBattleNetCommunity ) then
-						playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
-			else
-						playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
-					end
-				else
-					playerLink = playerLinkDisplayText;
-				end
-			else
-				if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
-					playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
-				else
-					playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
-				end
-			end
 
-			local message = arg1;
-			if ( arg14 ) then	--isMobile
-				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
-			end
-
-			if ( usingDifferentLanguage ) then
-				local languageHeader = "["..arg3.."] ";
-				if ( showLink and (arg2 ~= "") ) then
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink);
-				else
-					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
+			local function MessageFormatter(msg)
+				local fontHeight = select(2, FCF_GetChatWindowInfo(self:GetID()));
+				if ( fontHeight == 0 ) then
+					--fontHeight will be 0 if it's still at the default (14)
+					fontHeight = 14;
 				end
-			else
-				if ( not showLink or arg2 == "" ) then
-					if ( type == "TEXT_EMOTE" ) then
-						body = message;
+
+				-- Add AFK/DND flags
+				local pflag;
+				if(arg6 ~= "") then
+					if ( arg6 == "GM" ) then
+						--If it was a whisper, dispatch it to the GMChat addon.
+						if ( type == "WHISPER" ) then
+							return;
+						end
+						--Add Blizzard Icon, this was sent by a GM
+						pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
+					elseif ( arg6 == "DEV" ) then
+						--Add Blizzard Icon, this was sent by a Dev
+						pflag = "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ";
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
+						pflag = _G["CHAT_FLAG_"..arg6];
 					end
 				else
-					if ( type == "EMOTE" ) then
-						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
-					elseif ( type == "TEXT_EMOTE") then
-						body = string.gsub(message, arg2, pflag..playerLink, 1);
-					elseif (type == "GUILD_ITEM_LOOTED") then
-						body = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+					pflag = "";
+				end
+				if ( type == "WHISPER_INFORM" and GMChatFrame_IsGM and GMChatFrame_IsGM(arg2) ) then
+					return;
+				end
+
+				local showLink = 1;
+				if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
+					showLink = nil;
+				else
+					msg = gsub(msg, "%%", "%%%%");
+				end
+
+				-- Search for icon links and replace them with texture links.
+				msg = ChatFrame_ReplaceIconAndGroupExpressions(msg, arg17, not ChatFrame_CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
+
+				--Remove groups of many spaces
+				msg = RemoveExtraSpaces(msg);
+
+				local playerLink;
+				local playerLinkDisplayText = coloredName;
+				local relevantDefaultLanguage = self.defaultLanguage;
+				if ( (type == "SAY") or (type == "YELL") ) then
+					relevantDefaultLanguage = self.alternativeDefaultLanguage;
+				end
+				local usingDifferentLanguage = (arg3 ~= "") and (arg3 ~= relevantDefaultLanguage);
+				local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
+
+				if ( usingDifferentLanguage or not usingEmote ) then
+					playerLinkDisplayText = ("[%s]"):format(coloredName);
+				end
+
+				local isCommunityType = type == "COMMUNITIES_CHANNEL";
+				if ( isCommunityType ) then
+					local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
+					local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
+					if (messageInfo ~= nil) then
+						if ( isBattleNetCommunity ) then
+							playerLink = GetBNPlayerCommunityLink(playerName, playerLinkDisplayText, bnetIDAccount, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+				else
+							playerLink = GetPlayerCommunityLink(playerName, playerLinkDisplayText, clubId, streamId, messageInfo.messageId.epoch, messageInfo.messageId.position);
+						end
 					else
-						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+						playerLink = playerLinkDisplayText;
+					end
+				else
+					if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
+						playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
+					else
+						playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
 					end
 				end
+
+				local message = msg;
+				-- isMobile
+				if arg14 then 
+					message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
+				end
+
+				local outMsg;
+				if ( usingDifferentLanguage ) then
+					local languageHeader = "["..arg3.."] ";
+					if ( showLink and (arg2 ~= "") ) then
+						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink);
+					else
+						outMsg = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..arg2);
+					end
+				else
+					if ( not showLink or arg2 == "" ) then
+						if ( type == "TEXT_EMOTE" or type == "GUILD_DEATHS") then
+							outMsg = message;
+						else
+							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
+						end
+					else
+						if ( type == "EMOTE" ) then
+							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+						elseif ( type == "TEXT_EMOTE") then
+							outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
+						elseif (type == "GUILD_ITEM_LOOTED") then
+							outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+						else
+							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink);
+						end
+					end
+				end
+
+				-- Add Channel
+				if (channelLength > 0) then
+					outMsg = "|Hchannel:channel:"..arg8.."|h["..ChatFrame_ResolvePrefixedChannelName(arg4).."]|h "..outMsg;
+				end
+
+				--Add Timestamps
+				local chatTimestampFmt = GetChatTimestampFormat();
+				if ( chatTimestampFmt ) then
+					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
+				end
+				
+				return outMsg;
 			end
 
-			-- Add Channel
-			if (channelLength > 0) then
-				body = "|Hchannel:channel:"..arg8.."|h["..ChatFrame_ResolvePrefixedChannelName(arg4).."]|h "..body;
-			end
-
-			--Add Timestamps
-			if ( CHAT_TIMESTAMP_FORMAT ) then
-				body = BetterDate(CHAT_TIMESTAMP_FORMAT, time())..body;
-			end
-
+			local isChatLineCensored = C_ChatInfo.IsChatLineCensored(lineID);
+			local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
 			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
-			self:AddMessage(body, info.r, info.g, info.b, info.id, accessID, typeID);
+			
+			-- The message formatter is captured so that the original message can be reformatted when a censored message
+			-- is approved to be shown. We only need to pack the event args if the line was censored, as the message transformation
+			-- step is the only code that needs these arguments. See ItemRef.lua "censoredmessage".
+			local eventArgs;
+			if isChatLineCensored then
+				eventArgs = SafePack(...);
+			end
+			self:AddMessage(msg, info.r, info.g, info.b, info.id, accessID, typeID, event, eventArgs, MessageFormatter);
 		end
 
 		if ( type == "WHISPER" or type == "BN_WHISPER" ) then
@@ -3620,15 +3693,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			FlashClientIcon();
 		end
 
-		if ( not self:IsShown() ) then
-			if ( (self == DEFAULT_CHAT_FRAME and info.flashTabOnGeneral) or (self ~= DEFAULT_CHAT_FRAME and info.flashTab) ) then
-				if ( not CHAT_OPTIONS.HIDE_FRAME_ALERTS or type == "WHISPER" or type == "BN_WHISPER" ) then	--BN_WHISPER FIXME
-					if (not FCFManager_ShouldSuppressMessageFlash(self, chatGroup, chatTarget) ) then
-						FCF_StartAlertFlash(self);
-					end
-				end
-			end
-		end
+		FlashTabIfNotShown(self, info, type, chatGroup, chatTarget);
 
 		return true;
 	elseif ( event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" ) then
@@ -4327,7 +4392,7 @@ function ChatEdit_InsertLink(text)
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			BrowseName:SetText(item);
+			BrowseName:SetText('"'..item..'"');
 			return true;
 		end
 	end
@@ -4444,7 +4509,8 @@ function ChatEdit_UpdateHeader(editBox)
 	end
 
 	local info;
-	if ( type == "VOICE_TEXT" ) then
+	if ( type == "VOICE_TEXT" and VoiceTranscription_GetChatTypeAndInfo ) then
+		-- This can occur after loading ChatFrame.lua and before loading VoiceChatTranscriptionFrame.lua due to loading screen event signals, so nil check is required before calling the function.
 		type, info = VoiceTranscription_GetChatTypeAndInfo();
 	else
 		info = ChatTypeInfo[type];
@@ -5343,33 +5409,4 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		return format("%s|Hchannel:%s|h[%s]|h|r", colorString, chatType, _G[chatType]);
 	end
-end
-
-
---------------------------------------------------------------------------------
--- Social share link functions
---------------------------------------------------------------------------------
-
-SHARE_ICON_COLOR = "ffffd200";
-SHARE_ICON_TEXT = "|TInterface\\ChatFrame\\UI-ChatIcon-Share:18:18|t";
-
-function Social_GetShareItemLink(strippedItemLink, earned)
-	local earnedNum = 0;
-	if (earned) then
-		earnedNum = 1;
-	end
-	return format("|c%s|Hshareitem:%s:%d|h%s|h|r", SHARE_ICON_COLOR, strippedItemLink, earnedNum, SHARE_ICON_TEXT);
-end
-
-function Social_GetShareAchievementLink(achievementID, earned)
-	local earnedNum = 0;
-	if (earned) then
-		earnedNum = 1;
-	end
-	return format("|c%s|Hshareachieve:%d:%d|h%s|h|r", SHARE_ICON_COLOR, achievementID, earnedNum, SHARE_ICON_TEXT);
-end
-
-function Social_GetShareScreenshotLink()
-	local index = C_Social.GetLastScreenshot();
-	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
 end

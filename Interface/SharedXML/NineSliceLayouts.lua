@@ -30,7 +30,20 @@ NineSliceLayouts =
 		BottomEdge = { atlas = "_UI-Frame-DiamondMetal-EdgeBottom", },
 		LeftEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeLeft", },
 		RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
-	};
+	},
+
+	CharacterCreateDropdown =
+	{
+		TopLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopLeft", x=-30, y=20 },
+		TopRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopRight", x=30, y=20 },
+		BottomLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomLeft", x=-30, y=-20 },
+		BottomRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomRight", x=30, y=-20 },
+		TopEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeTop", },
+		BottomEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeBottom", },
+		LeftEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeLeft", },
+		RightEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeRight", },
+		Center = { atlas = "CharacterCreateDropdown-NineSlice-Center", },
+	},
 
 	ChatBubble =
 	{
@@ -43,7 +56,7 @@ NineSliceLayouts =
 		LeftEdge = { atlas = "!ChatBubble-NineSlice-EdgeLeft", },
 		RightEdge = { atlas = "!ChatBubble-NineSlice-EdgeRight", },
 		Center = { atlas = "ChatBubble-NineSlice-Center", },
-	};
+	},
 
 	GMChatRequest =
 	{
@@ -56,7 +69,7 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!GMChat-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!GMChat-NineSlice-EdgeRight" },
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -4, y = 4, x1 = 4, y1 = -4 },
-	};
+	},
 
 	TooltipDefaultLayout =
 	{
@@ -69,7 +82,7 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!Tooltip-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!Tooltip-NineSlice-EdgeRight" },
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -2, y = 2, x1 = 2, y1 = -2 },
-	};
+	},
 
 	TooltipGluesLayout =
 	{
@@ -82,7 +95,7 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!Tooltip-Glues-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!Tooltip-Glues-NineSlice-EdgeRight" },
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-Glues-NineSlice-Center", x = -8, y = 10, x1 = 8, y1 = -7, },
-	};
+	},
 
 	TooltipMixedLayout =
 	{
@@ -95,7 +108,7 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!Tooltip-Glues-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!Tooltip-Glues-NineSlice-EdgeRight" },
 		["Center"] = { layer = "BACKGROUND", atlas = "Tooltip-NineSlice-Center", x = -8, y = 10, x1 = 8, y1 = -7, },
-	};
+	},
 
 	UniqueCornersLayout =
 	{
@@ -108,7 +121,7 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
 		["Center"] = { atlas = "%s-NineSlice-Center" },
-	};
+	},
 
 	IdenticalCornersLayout =
 	{
@@ -121,5 +134,17 @@ NineSliceLayouts =
 		["LeftEdge"] = { atlas = "!%s-NineSlice-EdgeLeft" },
 		["RightEdge"] = { atlas = "!%s-NineSlice-EdgeRight" },
 		["Center"] = { atlas = "%s-NineSlice-Center" },
+	},
+
+	ButtonFrameTemplateNoPortrait =
+	{
+		TopLeftCorner = {  atlas = "UI-Frame-TopLeftCornerNoPortrait"},
+		TopRightCorner = {  atlas = "UI-Frame-TopCornerRight"},
+		BottomLeftCorner = {  atlas = "UI-Frame-BotCornerLeft",},
+		BottomRightCorner = {  atlas = "UI-Frame-BotCornerRight",},
+		TopEdge = {  atlas = "_UI-Frame-TitleTile", },
+		BottomEdge = {  atlas = "_UI-Frame-Bot"},
+		LeftEdge = {  atlas = "!UI-Frame-LeftTile", },
+		RightEdge = {  atlas = "!UI-Frame-RightTile",  x = -8, x1 = 8},
 	};
 };

@@ -67,25 +67,25 @@ function PutKeyInKeyRing()
 	local texture;
 	local emptyKeyRingSlot;
 	for i=1, GetKeyRingSize() do
-		texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
+		texture = C_Container.GetContainerItemInfo(KEYRING_CONTAINER, i);
 		if ( not texture ) then
 			emptyKeyRingSlot = i;
 			break;
 		end
 	end
 	if ( emptyKeyRingSlot ) then
-		PickupContainerItem(KEYRING_CONTAINER, emptyKeyRingSlot);
+		C_Container.PickupContainerItem(KEYRING_CONTAINER, emptyKeyRingSlot);
 	else
 		UIErrorsFrame:AddMessage(NO_EMPTY_KEYRING_SLOTS, 1.0, 0.1, 0.1, 1.0);
 	end
 end
 
 function GetKeyRingSize()
-	local numKeyringSlots = GetContainerNumSlots(KEYRING_CONTAINER);
+	local numKeyringSlots = C_Container.GetContainerNumSlots(KEYRING_CONTAINER);
 	local maxSlotNumberFilled = 0;
 	local numItems = 0;
 	for i=1, numKeyringSlots do
-		local texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
+		local texture = C_Container.GetContainerItemInfo(KEYRING_CONTAINER, i);
 		-- Update max slot
 		if ( texture and i > maxSlotNumberFilled) then
 			maxSlotNumberFilled = i;
@@ -133,9 +133,9 @@ function BagSlotButton_OnEnter(self)
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
 		end
 		local bagID = (self:GetID() - CharacterBag0Slot:GetID()) + 1;
-		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
+		if (not IsInventoryItemProfessionBag("player", C_Container.ContainerIDToInventoryID(bagID))) then
 			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-				if ( GetBagSlotFlag(bagID, i) ) then
+				if ( C_Container.GetBagSlotFlag(bagID, i) ) then
 					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
 					break;
 				end
@@ -200,7 +200,7 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(BACKPACK_CONTAINER) ) then
+		if ( C_Container.IsContainerFiltered(BACKPACK_CONTAINER) ) then
 			self.searchOverlay:Show();
 		else
 			self.searchOverlay:Hide();
@@ -213,7 +213,7 @@ local BACKPACK_FREESLOTS_FORMAT = "(%s)";
 function CalculateTotalNumberOfFreeBagSlots()
 	local totalFree, freeSlots, bagFamily = 0;
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		freeSlots, bagFamily = GetContainerNumFreeSlots(i);
+		freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
 		if ( bagFamily == 0 ) then
 			totalFree = totalFree + freeSlots;
 		end

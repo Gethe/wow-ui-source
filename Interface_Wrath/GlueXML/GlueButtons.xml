@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\Interface\FrameXML\UI.xsd">
 <Script file="../../Interface/GlueXML/GlueButtons.lua"/>
 	<Button name="GlueButtonMasterTemplate" virtual="true" hidden="false">
 		<Scripts>
@@ -55,7 +55,7 @@
 	</Texture>
 
 
-	<Button name="GlueButtonTemplate" virtual="true">
+	<Button name="GlueButtonTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size>
 			<AbsDimension x="170" y="45"/>
 		</Size>
@@ -76,7 +76,7 @@
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
 	</Button>
-	<Button name="GlueButtonTemplateBlue" virtual="true">
+	<Button name="GlueButtonTemplateBlue" mixin="UIButtonMixin" virtual="true">
 		<Size>
 			<AbsDimension x="170" y="45"/>
 		</Size>
@@ -106,7 +106,7 @@
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTextureBlue" alphaMode="ADD"/>
 	</Button>
-	<Button name="GlueButtonTemplateLarge" virtual="true">
+	<Button name="GlueButtonTemplateLarge" mixin="UIButtonMixin" virtual="true">
 		<Size x="170" y="45"/>
 		<ButtonText>
 			<Anchors>
@@ -121,7 +121,7 @@
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
 	</Button>
-	<Button name="GlueButtonSmallTemplate" virtual="true">
+	<Button name="GlueButtonSmallTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size>
 			<AbsDimension x="150" y="38"/>
 		</Size>
@@ -142,7 +142,7 @@
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTexture" alphaMode="ADD"/>
 	</Button>
-	<Button name="GlueButtonSmallTemplateBlue" virtual="true">
+	<Button name="GlueButtonSmallTemplateBlue" mixin="UIButtonMixin" virtual="true">
 		<Size>
 			<AbsDimension x="150" y="38"/>
 		</Size>
@@ -172,7 +172,7 @@
 		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="GluePanelButtonHighlightTextureBlue" alphaMode="ADD"/>
 	</Button>
-	<Button name="GluePanelButtonTemplate" virtual="true">
+	<Button name="GluePanelButtonTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size x="150" y="48"/>
 		<Layers>
 			<Layer level="BACKGROUND">

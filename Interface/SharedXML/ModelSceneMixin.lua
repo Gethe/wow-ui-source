@@ -24,6 +24,7 @@ if tbl then
 	setfenv(1, tbl);
 
 	Import("C_ModelInfo");
+	Import("C_PlayerInfo");
 
 	function nop() end;
 end
@@ -147,6 +148,7 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransition
 	end
 
 	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
+	EventRegistry:TriggerEvent("ModelScene.TransitionToModelSceneID", self, self.modelSceneID);
 end
 
 -- There may be inactive (pooled) actors maintained by this scene, these function only returns the active actors
@@ -165,49 +167,62 @@ function ModelSceneMixin:GetActorByTag(tag)
 	return self.tagToActor[tag];
 end
 
-function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID)
+function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, usePlayerNativeForm)
 	local playerActor = self:GetPlayerActor("player-rider");
 	if (playerActor) then
 		if disablePlayerMountPreview or isSelfMount then
 			playerActor:ClearModel();
 		else
 			local sheathWeapons = true;
-			if (playerActor:SetModelByUnit("player", sheathWeapons)) then
+			local autoDress = true;
+			local hideWeapons = false;
+			if (playerActor:SetModelByUnit("player", sheathWeapons, autoDress, hideWeapons, usePlayerNativeForm)) then
 				local calcMountScale = mountActor:CalculateMountScale(playerActor);
 				local inverseScale = 1 / calcMountScale; 
 				playerActor:SetRequestedScale( inverseScale );
 				mountActor:AttachToMount(playerActor, animID, spellVisualKitID);
+			else
+				playerActor:ClearModel();
+				mountActor:ClearModel();
 			end
 		end
 	end
 end
 
-function ModelSceneMixin:GetPlayerActor(overrideActorName)
+function GetPlayerActorLabelTag()
 	local playerRaceName;
 	local playerGender;
-	local actor;
+	local playerRaceNameActorTag;
+	local hasAlternateForm, inAlternateForm = false, false;
+	if IsOnGlueScreen() then
+		local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
+		playerRaceName = raceFilename;
+		playerGender = genderEnum;
+	else
+		hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+		local _, raceFilename = UnitRace("player");
+		playerRaceName = raceFilename;
+		playerGender = UnitSex("player");
+	end
+	if not playerRaceName or not playerGender then
+		return playerRaceName, playerRaceNameActorTag;
+	end
+	playerRaceName = playerRaceName:lower();
+	if hasAlternateForm and inAlternateForm then
+		playerRaceName = playerRaceName.."-alt";
+	end
+	playerGender = (playerGender == 2) and "male" or "female";
+	playerRaceNameActorTag = playerRaceName.."-"..playerGender;
+	return playerRaceName, playerRaceNameActorTag;
+end
 
+function ModelSceneMixin:GetPlayerActor(overrideActorName)
+	local actor;
 	if overrideActorName then
 		actor = self:GetActorByTag(overrideActorName);
 	else
-
-		if IsOnGlueScreen() then
-			local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
-			playerRaceName = raceFilename;
-			playerGender = genderEnum;
-		else
-			local _, raceFilename = UnitRace("player");
-			playerRaceName = raceFilename;
-			playerGender = UnitSex("player");
-		end
-
-		if not playerRaceName or not playerGender then
-			return nil;
-		end
-		playerGender = (playerGender == 2) and "male" or "female";
-		playerRaceName = playerRaceName:lower();
-		local playerRaceActor = playerRaceName.."-"..playerGender;
-		actor = self:GetActorByTag(playerRaceActor);
+		local playerRaceName, playerRaceNameActorTag = GetPlayerActorLabelTag();
+		actor = self:GetActorByTag(playerRaceNameActorTag);
 		if not actor then		
 			actor = self:GetActorByTag(playerRaceName);
 			if not actor then
@@ -536,4 +551,7 @@ function NoCameraControlModelSceneMixin:OnMouseUp(button)
 end
 
 function NoCameraControlModelSceneMixin:OnMouseWheel(delta)	
+end
+NoZoomModelSceneMixin = CreateFromMixins(ModelSceneMixin);
+function NoZoomModelSceneMixin:OnMouseWheel(delta)	
 end

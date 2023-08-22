@@ -110,7 +110,7 @@ function MapCanvasScrollControllerMixin:OnMouseUp(button)
 		if isClick then
 			if not self:GetMap():ProcessCanvasClickHandlers(button, self:NormalizeUIPosition(cursorX, cursorY)) then
 				if self:ShouldNavigateOnClick() then
-					self:GetMap():NavigateToCursor(self:GetNormalizedCursorPosition());
+					self:GetMap():NavigateToCursor();
 				elseif self:ShouldZoomInOnClick() then
 					self:TryPanOrZoomOnClick();
 				end

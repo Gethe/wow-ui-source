@@ -13,7 +13,7 @@ function SetItemButtonCount(button, count, abbreviate)
 	if ( count > 1 or (button.isBag and count > 0) ) then
 		if ( abbreviate ) then
 			count = AbbreviateNumbers(count);
-		elseif ( count > (button.maxDisplayCount or 999) ) then
+		elseif ( count > (button.maxDisplayCount or 9999) ) then
 			count = "*";
 		end
 		countString:SetText(count);

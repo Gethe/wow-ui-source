@@ -1,3 +1,5 @@
+BindingUtil = {};
+
 local metaKeys =
 {
 	LALT = 1,
@@ -218,4 +220,9 @@ function BindingButtonTemplate_SetupBindingButton(binding, button)
 		button:SetText(GRAY_FONT_COLOR:WrapTextInColorCode(NOT_BOUND));
 		button:SetAlpha(0.8);
 	end
+	return bindingText;
+end
+
+function BindingUtil.UsingMouseoverCasting()
+	return Settings.GetValue("enableMouseoverCast") and ((Settings.GetValue("MOUSEOVERCAST") == "NONE") or IsModifiedClick("MOUSEOVERCAST"));
 end

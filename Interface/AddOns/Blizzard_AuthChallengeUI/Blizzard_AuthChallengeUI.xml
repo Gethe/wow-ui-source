@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Script file="Blizzard_AuthChallengeUI.lua"/>
 
 	<ScopedModifier fullLockdown="true" scriptsUseGivenEnv="true">
@@ -11,35 +11,21 @@
 			<Layers>
 				<Layer level="BACKGROUND">
 					<Texture parentKey="LeftTexture" file="Interface\Common\Common-Input-Border">
-						<Size>
-							<AbsDimension x="8" y="20"/>
-						</Size>
+						<Size x="8" y="20"/>
 						<Anchors>
-							<Anchor point="LEFT">
-								<Offset>
-									<AbsDimension x="-5" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" x="-5" y="0"/>
 						</Anchors>
 						<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 					</Texture>
 					<Texture parentKey="RightTexture" file="Interface\Common\Common-Input-Border">
-						<Size>
-							<AbsDimension x="8" y="20"/>
-						</Size>
+						<Size x="8" y="20"/>
 						<Anchors>
-							<Anchor point="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 					</Texture>
 					<Texture parentKey="MiddleTexture" file="Interface\Common\Common-Input-Border">
-						<Size>
-							<AbsDimension x="10" y="20"/>
-						</Size>
+						<Size x="10" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.LeftTexture" relativePoint="RIGHT"/>
 							<Anchor point="RIGHT" relativeKey="$parent.RightTexture" relativePoint="LEFT"/>

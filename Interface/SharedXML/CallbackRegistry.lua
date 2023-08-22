@@ -1,18 +1,56 @@
+---------------
+--NOTE - Please do not change this section without understanding the full implications of the secure environment
+--We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
+local _, tbl = ...;
+
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+		Import("C_StoreGlue");
+	end
+
+	setfenv(1, tbl);
+
+	Import("secureexecuterange");
+	Import("securecallfunction");
+	Import("unpack");
+	Import("error");
+	Import("ipairs");
+	Import("pairs");
+	Import("rawset");
+	Import("next");
+	Import("CreateFrame");
+	Import("CreateCounter");
+	Import("type");
+end
+----------------
+
 local secureexecuterange = secureexecuterange;
-local securecall = securecall;
-local securecallfunction  = securecallfunction;
+local securecallfunction = securecallfunction;
 local unpack = unpack;
 local error = error;
 local pairs = pairs;
 local rawset = rawset;
 local next = next;
 
+-- Callbacks can be registered without an owner as a matter of convenience. Generally this is fine when you never
+-- intend to release the callback.
+local generateOwnerID = CreateCounter();
+
 local InsertEventAttribute = "insert-secure-event";
 local AttributeDelegate = CreateFrame("FRAME");
 AttributeDelegate:SetForbidden();
 AttributeDelegate:SetScript("OnAttributeChanged", function(self, attribute, value)
 	if attribute == InsertEventAttribute then
-		local registry, event = securecall(unpack, value);
+		local registry, event = securecallfunction(unpack, value);
 		if type(event) ~= "string" then
 			error("AttributeDelegate OnAttributeChanged 'event' requires string type.")
 		end
@@ -74,8 +112,12 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 		error("CallbackRegistryMixin::RegisterCallback 'event' requires string type.");
 	elseif type(func) ~= "function" then
 		error("CallbackRegistryMixin::RegisterCallback 'func' requires function type.");
-	elseif not owner then
-		error("CallbackRegistryMixin:RegisterCallback 'owner' is required.")
+	else
+		if owner == nil then
+			owner = generateOwnerID();
+		elseif type(owner) == "number" then
+			error("CallbackRegistryMixin:RegisterCallback 'owner' as number is reserved internally.")
+		end
 	end
 
 	-- Taint barrier for inserting event key into callback tables.
@@ -94,6 +136,24 @@ function CallbackRegistryMixin:RegisterCallback(event, func, owner, ...)
 		local callbacks = self:GetCallbacksByEvent(CallbackType.Function, event);
 		callbacks[owner] = func;
 	end
+
+	return owner;
+end
+
+local function CreateCallbackHandle(cbr, event, owner)
+	-- Wrapped in a table for future flexibility.
+	local handle = 
+	{
+		Unregister = function()
+			cbr:UnregisterCallback(event, owner);
+		end,
+	};
+	return handle;
+end
+
+function CallbackRegistryMixin:RegisterCallbackWithHandle(event, func, owner, ...)
+	owner = self:RegisterCallback(event, func, owner, ...);
+	return CreateCallbackHandle(self, event, owner);
 end
 
 function CallbackRegistryMixin:TriggerEvent(event, ...)
@@ -125,7 +185,7 @@ end
 function CallbackRegistryMixin:UnregisterCallback(event, owner)
 	if type(event) ~= "string" then
 		error("CallbackRegistryMixin:UnregisterCallback 'event' requires string type.");
-	elseif not owner then
+	elseif owner == nil then
 		error("CallbackRegistryMixin:UnregisterCallback 'owner' is required.");
 	end
 

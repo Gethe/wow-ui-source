@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\UI.xsd">
+	<Script file="TextToSpeech.lua"/>
+
+	<Frame name="STTTemplate" inherits="SettingsCheckBoxControlTemplate" mixin="SpeechToTextMixin" virtual="true">
+		<Size y="26"/>
+		<Frames>
+			<Frame parentKey="SubTextContainer" setAllPoints="true" hyperlinksEnabled="true" enableMouse="true">
+				<Layers>
+					<Layer>
+						<FontString parentKey="SubText" inherits="GameFontNormal" justifyH="LEFT" text="SPEECH_TO_TEXT_SUBTEXT"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnHyperlinkClick function="GetURLIndexAndLoadURL" />
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="RTTSTemplate" inherits="SettingsDropDownControlTemplate" mixin="RTTSMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="dropDownType" value="Frame" type="string"/>
+			<KeyValue key="dropDownTemplate" value="SettingsSelectionPopoutWithButtonsTemplate" type="string"/>
+		</KeyValues>
+		<Size y="54"/>
+		<Frames>
+			<Button parentKey="Button" inherits="UIPanelButtonTemplate">
+				<Size x="200" y="21"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

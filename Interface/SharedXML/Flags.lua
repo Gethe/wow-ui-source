@@ -1,3 +1,31 @@
+---------------
+--NOTE - Please do not change this section without understanding the full implications of the secure environment
+--We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
+local _, tbl = ...;
+
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+		Import("C_StoreGlue");
+	end
+
+	setfenv(1, tbl);
+
+	Import("select");
+	Import("bit");
+	Import("pairs");
+	Import("assert");
+end
+----------------
+
 function Flags_CreateMask(...)
 	local mask = 0;
 	for i = 1, select("#", ...) do
@@ -18,12 +46,28 @@ end
 
 FlagsUtil = {};
 
+function FlagsUtil.MakeFlags(...)
+	local flags = {};
+	for index = 1, select("#", ...) do
+		flags[select(index,...)] = bit.lshift(1, (index-1));
+	end
+	return flags;
+end
+
 function FlagsUtil.IsSet(bitMask, flagOrMask)
 	return bit.band(bitMask, flagOrMask) == flagOrMask;
 end
 
 function FlagsUtil.IsAnySet(bitMask, mask)
 	return bit.band(bitMask, mask) ~= 0;
+end
+
+function FlagsUtil.Combine(lhsFlagOrMask, rhsFlagOrMask, shouldSet)
+	if shouldSet then
+		return bit.bor(lhsFlagOrMask, rhsFlagOrMask);
+	else
+		return bit.band(lhsFlagOrMask, bit.bnot(rhsFlagOrMask));
+	end
 end
 
 FlagsMixin = {};

@@ -1,0 +1,537 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+	<Script file="SecureScrollTemplates.lua"/>
+
+	<!--All templates in this file are deprecated. All variations of HybridScrollFrame and FauxScrollFrame are deprecated. 
+	It is VERY HIGHLY encouraged to instead convert to or choose the ScrollBox API for creating scrollable content in your UI.
+	Any ScrollFrame intrinsic in this file should be replaced with ScrollFrameTemplate if ScrollBox is not suitable.
+	See the ScrollBox and ScrollBar files in the /Scroll directory for API details.-->
+	<Slider name="UIPanelScrollBarTemplate" virtual="true">
+		<Size x="16" y="0"/>
+		<Frames>
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="UIPanelScrollBarScrollUpButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="UIPanelScrollBarScrollDownButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged function="UIPanelScrollBar_OnValueChanged"/>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+
+	<ScrollFrame name="UIPanelScrollFrameCodeTemplate" virtual="true">
+		<Scripts>
+			<OnLoad function="UIPanelScrollFrame_OnLoad"/>
+			<OnScrollRangeChanged function="ScrollFrame_OnScrollRangeChanged"/>
+			<OnVerticalScroll function="ScrollFrame_OnVerticalScroll"/>
+			<OnMouseWheel function="ScrollFrameTemplate_OnMouseWheel"/>
+		</Scripts>
+	</ScrollFrame>
+	<ScrollFrame name="UIPanelScrollFrameTemplate" virtual="true" inherits="UIPanelScrollFrameCodeTemplate">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
+				</Anchors>
+			</Slider>
+		</Frames>
+	</ScrollFrame>
+	<ScrollFrame name="UIPanelInputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="maxLetters" value="0" type="number"/>
+			<!--
+			<KeyValue key="instructions" value="INSTRUCTION_TEXT" type="global"/>
+			<KeyValue key="hideCharCount" value="false" type="boolean"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopLeftTex" file="Interface\Common\Common-Input-Border-TL">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightTex" file="Interface\Common\Common-Input-Border-TR">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="5" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopTex" file="Interface\Common\Common-Input-Border-T">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLeftTex" file="Interface\Common\Common-Input-Border-BL">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRightTex" file="Interface\Common\Common-Input-Border-BR">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomTex" file="Interface\Common\Common-Input-Border-B">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftTex" file="Interface\Common\Common-Input-Border-L">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightTex" file="Interface\Common\Common-Input-Border-R">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleTex" file="Interface\Common\Common-Input-Border-M">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTex" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightTex" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontDisableLarge" parentKey="CharCount">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="UIPanelInputScrollFrame_OnLoad"/>
+			<OnMouseDown function="InputScrollFrame_OnMouseDown"/>
+		</Scripts>
+		<ScrollChild>
+			<EditBox parentKey="EditBox" multiLine="true" countInvisibleLetters="true" autoFocus="false">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="Instructions" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed function="InputScrollFrame_OnTabPressed"/>
+					<OnTextChanged function="InputScrollFrame_OnTextChanged"/>
+					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+					<OnUpdate function="InputScrollFrame_OnUpdate"/>
+					<OnEscapePressed function="InputScrollFrame_OnEscapePressed"/>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+		</ScrollChild>
+	</ScrollFrame>
+	<ScrollFrame name="FauxScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Scripts>
+			<OnScrollRangeChanged function=""/>
+		</Scripts>
+		<ScrollChild>
+			<Frame name="$parentScrollChildFrame" parentKey="ScrollChildFrame">
+				<Size x="300" y="334"/>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+	<ScrollFrame name="ListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ScrollBarTop" name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ScrollBarBottom" name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ScrollFrame>
+	
+	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
+		<Size x="20" y="0" />
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-17"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="17"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="24" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="18"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
+				</Texture>
+				<Texture parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="24" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-3" y="-16"/>
+					</Anchors>
+					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" x="3" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" x="-3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Slider>
+	<Slider name="UIPanelScrollBarTrimTemplate" virtual="true">
+		<Size x="20" y="0"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBG" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a=".85"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTop" parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="24" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="17"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
+				</Texture>
+				<Texture name="$parentBottom" parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="24" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
+					</Anchors>
+					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
+				</Texture>
+				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() - scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() + scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	<Slider name="UIPanelScrollBarTemplateLightBorder" virtual="true">
+		<Size x="16" y="0"/>
+		<Frames>
+			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentBorder" inherits="TooltipBorderBackdropTemplate">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollDownButton" x="5" y="-3"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="16" y="24"/>
+			<TexCoords left="0.25" right="0.75" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	<Slider name="MinimalScrollBarTemplate" virtual="true">
+		<Size x="22" y="0"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTrack" parentKey="trackBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="17"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() - scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() + scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	<Slider name="MinimalScrollBarWithBorderTemplate" virtual="true">
+		<Size x="22" y="0"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Track">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="17"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-17"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() - scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						local scrollStep = self:GetParent().scrollStep or (parent:GetHeight() / 2);
+						parent:SetValue(parent:GetValue() + scrollStep);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ScrollUpBorder" inherits="TooltipBorderBackdropTemplate">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollUpButton" x="5" y="-3"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="ScrollDownBorder" inherits="TooltipBorderBackdropTemplate">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollDownButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Border" inherits="TooltipBorderBackdropTemplate">
+				<Size x="24" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollUpButton" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollDownButton" x="5" y="-3"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropBorderColorAlpha" value="0.5" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				self:GetParent():SetVerticalScroll(value);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+	
+	<!-- This is a scrollframe with no border and a black texture for a track -->
+	<ScrollFrame name="MinimalScrollFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" virtual="true">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-17"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="17"/>
+				</Anchors>
+			</Slider>
+		</Frames>
+	</ScrollFrame>
+
+	<ScrollFrame name="FauxScrollFrameTemplateLight" virtual="true">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplateLightBorder">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
+				</Anchors>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				UIPanelScrollFrame_OnLoad(self);
+			</OnLoad>
+			<OnScrollRangeChanged function=""/>
+			<OnVerticalScroll>
+				local scrollbar = _G[self:GetName().."ScrollBar"];
+				scrollbar:SetValue(offset);
+
+				local min, max = scrollbar:GetMinMaxValues();
+				if ( offset == 0 ) then
+				_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
+				else
+				_G[scrollbar:GetName().."ScrollUpButton"]:Enable();
+				end
+				if ((scrollbar:GetValue() - max) == 0) then
+				_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
+				else
+				_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
+				end
+			</OnVerticalScroll>
+			<OnMouseWheel>
+				ScrollFrameTemplate_OnMouseWheel(self, delta);
+			</OnMouseWheel>
+		</Scripts>
+		<ScrollChild>
+			<Frame name="$parentScrollChildFrame">
+				<Size x="300" y="334"/>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+</Ui>

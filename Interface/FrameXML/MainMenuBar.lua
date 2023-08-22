@@ -122,7 +122,8 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
-	local showXP = newLevel < GetMaxPlayerLevel();
+	--local showXP = not (newLevel >= GetMaxPlayerLevel() or IsXPUserDisabled());
+	local showXP = newLevel < GetMaxPlayerLevel() and not IsXPUserDisabled();
 	local showRep = name;
 	local numBarsShowing = 0;
 	--******************* EXPERIENCE **************************************
@@ -251,6 +252,10 @@ end
 function MainMenuBarVehicleLeaveButton_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("VEHICLE_UPDATE");
 end
 
 function MainMenuBarVehicleLeaveButton_OnEnter(self)
@@ -269,12 +274,16 @@ function MainMenuBarVehicleLeaveButton_OnEvent(self, event, ...)
 end
 
 function MainMenuBarVehicleLeaveButton_Update()
-	if ( UnitOnTaxi("player") and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
+	if ( ( CanExitVehicle() or UnitOnTaxi("player")) and ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN ) then
 		MainMenuBarVehicleLeaveButton:ClearAllPoints();
-		if ( GetNumShapeshiftForms() > 0 ) then
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", "StanceButton"..GetNumShapeshiftForms(), "RIGHT", 30, 0);
+		if ( IsPossessBarVisible() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessButton2, "RIGHT", 30, 0);
+		elseif ( GetNumShapeshiftForms() > 0 ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", StanceBarFrame.StanceButtons[GetNumShapeshiftForms()], "RIGHT", 30, 0);
+		elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", MultiCastActionBarFrame, "RIGHT", 30, 0);
 		else
-			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", StanceBarFrame, "LEFT", 10, 0);
+			MainMenuBarVehicleLeaveButton:SetPoint("LEFT", PossessBarFrame, "LEFT", 10, 0);
 		end
 
 		MainMenuBarVehicleLeaveButton:Show();
@@ -298,6 +307,8 @@ function MainMenuBarVehicleLeaveButton_OnClicked(self)
 		self:Disable();
 		self:SetHighlightTexture([[Interface\Buttons\CheckButtonHilight]], "ADD");
 		self:LockHighlight();
+	else
+		VehicleExit();
 	end
 end
 

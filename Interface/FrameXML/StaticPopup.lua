@@ -128,30 +128,34 @@ StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	whileDead = 1,
 }
 
-StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
+StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) AttachGlyphToSpell(self.data.id); end,
+	OnAccept = function (self)
+		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
+		if ( talentGroup == GetActiveTalentGroup() ) then
+			RemoveGlyphFromSocket(self.data.id);
+		end
+	end,
 	OnCancel = function (self)
 	end,
 	OnShow = function(self)
-		self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name, self.data.currentName);
+		self.text:SetFormattedText(CONFIRM_GLYPH_REMOVAL, self.data.name);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
 }
 
-StaticPopupDialogs["CONFIRM_GLYPH_REMOVAL"] = {
+StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) AttachGlyphToSpell(self.data.id); end,
-	OnCancel = function (self)
-	end,
+	OnAccept = function (self) PlaceGlyphInSocket(self.data.id); end,
+	OnCancel = function (self) end,
 	OnShow = function(self)
-		self.text:SetFormattedText(CONFIRM_GLYPH_REMOVAL, self.data.name);
+		self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name, self.data.currentName);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -337,7 +341,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -361,7 +365,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -382,7 +386,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_ARENA_POINTS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -403,7 +407,7 @@ StaticPopupDialogs["CONFIRM_REFUND_MAX_HONOR_AND_ARENA"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
+		C_Container.ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -633,7 +637,9 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
 	maxLetters = 77,
 	OnAccept = function(self)
-		ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+		if( GetCurrentArenaSeasonUsesTeams() ) then
+			ArenaTeamInviteByName(PVPTeamDetails.team, self.editBox:GetText());
+		end
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -643,9 +649,11 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 		self.editBox:SetText("");
 	end,
 	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
-		parent:Hide();
+		if( GetCurrentArenaSeasonUsesTeams() ) then
+			local parent = self:GetParent();
+			ArenaTeamInviteByName(PVPTeamDetails.team, parent.editBox:GetText());
+			parent:Hide();
+		end
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide();
@@ -1595,10 +1603,10 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 			return;
 		end
 
-		local _, _, guid, _, _, level, spec, itemLevel = GetInviteConfirmationInfo(self.data);
+		local _, _, guid, roles, _, level = GetInviteConfirmationInfo(self.data);
 		local className, classFilename, _, _, gender, characterName, _ = GetPlayerInfoByGUID(guid);
 
-		GameTooltip:SetOwner(self.linkRegion);
+		GameTooltip:SetOwner(self.linkRegion, "ANCHOR_CURSOR_RIGHT");
 
 		if ( className ) then
 			self.nextUpdateTime = nil; -- The tooltip will be created with valid data, no more updates necessary.
@@ -1606,12 +1614,21 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 			local _, _, _, colorCode = GetClassColor(classFilename);
 			GameTooltip:SetText(WrapTextInColorCode(characterName, colorCode));
 
-			local _, specName = GetSpecializationInfoByID(spec, gender);
-			local characterLine = CHARACTER_LINK_CLASS_LEVEL_SPEC_TOOLTIP:format(level, className, specName);
-			local itemLevelLine = CHARACTER_LINK_ITEM_LEVEL_TOOLTIP:format(itemLevel);
+			local characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+			if (roles["TANK"] or roles["HEALER"] or roles["DAMAGER"]) then
+				characterLine = characterLine .. " ";
+				if (roles["TANK"]) then
+					characterLine = characterLine .. " " .. INLINE_TANK_ICON_SMALL;
+				end
+				if (roles["HEALER"]) then
+					characterLine = characterLine .. " " .. INLINE_HEALER_ICON_SMALL;
+				end
+				if (roles["DAMAGER"]) then
+					characterLine = characterLine .. " " .. INLINE_DAMAGER_ICON_SMALL;
+				end
+			end
 
 			GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
-			GameTooltip:AddLine(itemLevelLine, HIGHLIGHT_FONT_COLOR:GetRGB());
 		else
 			self.nextUpdateTime = timeNow + .5;
 			GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
@@ -1637,6 +1654,7 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 		self.nextUpdateTime = nil;
 		GameTooltip:Hide();
 	end,
+	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 };
 StaticPopupDialogs["GUILD_INVITE"] = {
@@ -2211,6 +2229,11 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
+		if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+			if ( QuestLogDetailFrame:IsShown() ) then
+				HideUIPanel(QuestLogDetailFrame);
+			end
+		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -2224,6 +2247,11 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
+		if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+			if ( QuestLogDetailFrame:IsShown() ) then
+				HideUIPanel(QuestLogDetailFrame);
+			end
+		end
 		PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST);
 	end,
 	timeout = 0,
@@ -2850,6 +2878,207 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };
+-- Hardcore popups
+if (C_GameRules.IsHardcoreActive()) then
+	StaticPopupDialogs["HARDCORE_DEATH"] = {
+		text = HARDCORE_DEATH,
+		button1 = HARDCORE_GO_AGAIN,
+		button2 = DEATH_RELEASE,
+		selectCallbackByIndex = true,
+		OnShow = function(self)
+			self.button1:Enable();
+			self.button2:Enable();
+			return;
+		end,
+		OnButton1 = function(self)
+			Logout();
+			return;
+		end,
+		OnButton2 = function(self)
+			RepopMe();
+		end,
+		OnUpdate = function(self, elapsed)
+			-- If button text is too long, widen out the dialogue
+			if (string.len(self.button1:GetText()) > 20 or string.len(self.button2:GetText()) > 20) then
+				local textWidth = math.max(self.button1:GetWidth(), self.button2:GetWidth())
+				if (textWidth > 120) then
+					self.button1:SetWidth(textWidth);
+					self.button2:SetWidth(textWidth);
+				end
+				self:SetWidth(420)
+			end
+			if ( IsFalling() and not IsOutOfBounds()) then
+				self.button1:Disable();
+				self.button2:Disable();
+				return;
+			else
+				self.button1:Enable();
+				self.button2:Enable();
+				return;
+			end
+		end,
+		timeout = 0,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1,
+		noCancelOnReuse = 1,
+		hideOnEscape = false,
+		noCloseOnAlt = true,
+		cancels = "HARDCORE_RECOVER_CORPSE",
+		timeoutInformationalOnly = 1,
+	};
+	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE"] = {
+		text = HARDCORE_RECOVER_CORPSE,
+		button1 = HARDCORE_GO_AGAIN,
+		OnAccept = function(self)
+			Logout();
+			return 1;
+		end,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1
+	};
+	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE_INSTANCE"] = {
+		text = HARDCORE_RECOVER_CORPSE_INSTANCE,
+		timeout = 0,
+		whileDead = 1,
+		interruptCinematic = 1,
+		notClosableByLogout = 1
+	};
+	StaticPopupDialogs["HARDCORE_DEATH_GUILD_HANDOFF"] = {
+		button1 = ACCEPT,
+		text = HARDCORE_GUILDLEADER_DEATH,
+		OnAccept = function(self)
+			if ( self.button1:IsEnabled() ) then
+				-- Pass guild lead
+				local text = self.editBox:GetText();
+				GuildSetLeader(text);
+				self:Hide();
+				if (UnitIsDead("player")) then
+					StaticPopup_Show("HARDCORE_DEATH");
+				end
+			end
+		end,
+		OnUpdate = function (self)
+			-- 
+		end,
+		timeout = 0,
+		whileDead = 1,
+		exclusive = 1,
+		showAlert = 1,
+		hasEditBox = 1,
+		maxLetters = 12,
+		notClosableByLogout = 1,
+		cancels = "HARDCORE_RECOVER_CORPSE",
+		OnShow = function(self)
+			self.button1:Disable();
+			self.editBox:SetFocus();
+		end,
+		EditBoxOnEnterPressed = function(self)
+			local parent = self:GetParent();
+			if ( parent.button1:IsEnabled() ) then
+				-- Pass guild lead
+				local text = parent.editBox:GetText();
+				GuildSetLeader(text);
+				parent:Hide();
+				if (UnitIsDead("player")) then
+					StaticPopup_Show("HARDCORE_DEATH");
+				end
+			end
+		end,
+		EditBoxOnTextChanged = function (self)
+			local parent = self:GetParent();
+			local text = parent.editBox:GetText();
+			if (text == "") then
+				return
+			end
+			local playerInSameGuild = C_GuildInfo.MemberExistsByName(text);
+			-- Check if this is a player, and if that player is in our guild
+			if (playerInSameGuild) then
+				parent.button1:Enable();
+			else
+				parent.button1:Disable();
+			end
+		end,
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED"] = {
+		text = DUEL_TO_THE_DEATH_REQUESTED,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		sound = SOUNDKIT.HARDCORE_DUEL,
+		OnAccept = function(self)
+			self:Hide();
+			StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED_CONFIRM");
+		end,
+		OnCancel = function(self)
+			CancelDuel();
+		end,
+		timeout = STATICPOPUP_TIMEOUT,
+		hideOnEscape = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED_CONFIRM"] = {
+		text = DUEL_TO_THE_DEATH_REQUEST_CONFIRM,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		hasEditBox = 1,
+		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
+		wide = true,
+		OnAccept = function(self)
+			AcceptDuel();
+		end,
+		OnCancel = function(self)
+			CancelDuel();
+		end,
+		EditBoxOnTextChanged = function (self)
+			local parent = self:GetParent();
+			if (strupper(parent.editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
+				parent.button1:Enable();
+			else
+				parent.button1:Disable();
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			CancelDuel();
+			self:GetParent():Hide();
+		end,
+		OnShow = function(self)
+			self.button1:Disable();
+		end,
+		timeout = STATICPOPUP_TIMEOUT,
+		hideOnEscape = 1
+	};
+	StaticPopupDialogs["DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM"] = {
+		text = DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM,
+		button1 = ACCEPT,
+		button2 = DECLINE,
+		hasEditBox = 1,
+		maxLetters = math.max(12, string.len(HARDCORE_DUEL_CONFIRMATION)),
+		wide = true,
+		OnAccept = function(self)
+			local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+			StartDuel(dropdownMenu.unit, true, true);
+		end,
+		OnCancel = function(self)
+			-- Duel hasn't started yet
+		end,
+		EditBoxOnTextChanged = function (self)
+			local parent = self:GetParent();
+			if (strupper(parent.editBox:GetText()) == HARDCORE_DUEL_CONFIRMATION) then
+				parent.button1:Enable();
+			else
+				parent.button1:Disable();
+			end
+		end,
+		EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide();
+		end,
+		OnShow = function(self)
+			self.button1:Disable();
+		end,
+		timeout = STATICPOPUP_TIMEOUT,
+		hideOnEscape = 1
+	};
+end
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
 	text = DUEL_OUTOFBOUNDS_TIMER,
 	timeout = 10,
@@ -2907,17 +3136,18 @@ StaticPopupDialogs["XP_LOSS"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2935,17 +3165,17 @@ StaticPopupDialogs["XP_LOSS_NO_DURABILITY"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			self:Hide(); 
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_PlayerInteractionManager.ClearInteraction();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2963,13 +3193,13 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS"] = {
 			self.data = nil;
 			return 1;
 		else
-			AcceptXPLoss();
+			 C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer)
 		end
 	end,
 	OnUpdate = function(self, dialog)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
 	end,
 	OnCancel = function(self)
@@ -2986,16 +3216,16 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		AcceptXPLoss();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	OnUpdate = function(self, dialog)
-		if ( not CheckSpiritHealerDist() ) then
-			self:Hide();
-			CloseGossip();
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			self:Hide(); 
 		end
 	end,
 	OnCancel = function(self)
-		CloseGossip();
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3024,7 +3254,6 @@ StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
-
 StaticPopupDialogs["AREA_SPIRIT_HEAL"] = {
 	text = AREA_SPIRIT_HEAL,
 	button1 = CHOOSE_LOCATION,
@@ -3310,6 +3539,20 @@ StaticPopupDialogs["CONFIRM_TALENT_WIPE"] = {
 	timeout = 0,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["CONFIRM_BARBERS_CHOICE"] = {
+	text = BARBERS_CHOICE_CONFIRM,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		ConfirmBarbersChoice();
+	end,
+	hasMoneyFrame = 1,
+	exclusive = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_PET_UNLEARN"] = {
 	text = CONFIRM_PET_UNLEARN,
 	button1 = ACCEPT,
@@ -3332,13 +3575,19 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmBinder();
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.Binder);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 	end,
 	OnUpdate = function(self, elapsed)
-		if ( not CheckBinderDist() ) then
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.Binder) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
 			self:Hide();
 		end
 	end,
+	OnCancel = function(self)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Binder);
+		self:Hide();
+	end,	
 	timeout = 0,
 	hideOnEscape = 1
 };
@@ -3452,7 +3701,7 @@ StaticPopupDialogs["GOSSIP_CONFIRM"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		SelectGossipOption(data, "", true);
+		C_GossipInfo.SelectOption(data, "", true);
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
@@ -3465,7 +3714,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	OnAccept = function(self, data)
-		SelectGossipOption(data, self.editBox:GetText(), true);
+		C_GossipInfo.SelectOption(data, self.editBox:GetText(), true);
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -3476,7 +3725,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 	end,
 	EditBoxOnEnterPressed = function(self, data)
 		local parent = self:GetParent();
-		SelectGossipOption(data, parent.editBox:GetText());
+		C_GossipInfo.SelectOption(data, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -4182,6 +4431,18 @@ StaticPopupDialogs["BACKPACK_INCREASE_SIZE"] = {
 	whileDead = 0,
 }
 
+StaticPopupDialogs["GROUP_FINDER_AUTHENTICATOR_POPUP"] = {
+	text = GROUP_FINDER_AUTHENTICATOR_POPUP_DESC,
+	button1 = ACTIVATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		LoadURLIndex(41);
+	end,
+	wide = true,
+	timeout = 0,
+	whileDead = 0,
+}
+
 StaticPopupDialogs["CLIENT_INVENTORY_FULL_OVERFLOW"] = {
 	text = BACKPACK_AUTHENTICATOR_FULL_INVENTORY,
 	button1 = OKAY,
@@ -4326,6 +4587,120 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	timeout = 0,
 	hideOnEscape = 0,
 	exclusive = 1,
+};
+
+StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE"] = {
+	button1 = JOIN,
+	button2 = BATTLEFIELD_GROUP_JOIN,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(true)));
+		if ( not IsInGroup() or not UnitIsGroupLeader("player") ) then
+			self.button2:Disable();
+		end
+	end,
+	OnButton1 = function(self)
+		JoinWorldPVPQueue(true, false);
+	end,
+	OnButton2 = function(self, data, reason)
+		JoinWorldPVPQueue(true, true);
+	end,
+	OnButton3 = function()
+
+	end,
+	timeout = 15,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+	exclusive = 1,
+};
+
+StaticPopupDialogs["ON_BATTLEFIELD_AUTO_QUEUE_EJECT"] = {
+	button1 = OKAY,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_AUTO_QUEUE_EJECT:format(GetWorldPVPQueueMapName(true)));
+	end,
+	OnButton1 = function()
+	end,
+	timeout = 15,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = false,
+};
+
+StaticPopupDialogs["ON_WORLD_PVP_QUEUE"] = {
+	button1 = JOIN,
+	button2 = BATTLEFIELD_GROUP_JOIN,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnShow = function(self)
+		self.text:SetText(WORLD_PVP_INVITED_WARMUP:format(GetWorldPVPQueueMapName(false)));
+		if ( not IsInGroup() or not UnitIsGroupLeader("player") ) then
+			self.button2:Disable();
+		end
+	end,
+	OnButton1 = function(self)
+		JoinWorldPVPQueue(false, false);
+	end,
+	OnButton2 = function(self, data, reason)
+		JoinWorldPVPQueue(false, true);
+	end,
+	OnButton3 = function()
+
+	end,
+	showAlert = 1,
+	hideOnEscape = false,
+};
+
+StaticPopupDialogs["RAID_PROFILE_DELETION"] = {
+	text = CONFIRM_COMPACT_UNIT_FRAME_PROFILE_DELETION,
+	button1 = DELETE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local newProfile = GetRaidProfileName(1);
+		if ( newProfile == self.data.profile ) then
+			newProfile = GetRaidProfileName(2);
+		end
+		CompactUnitFrameProfiles_ActivateRaidProfile(newProfile);
+		DeleteRaidProfile(self.data.profile);
+		self.data.cbObject:OnDeleted();
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["RAID_PROFILE_NEW"] = {
+	text = CREATE_NEW_COMPACT_UNIT_FRAME_PROFILE,
+	button1 = CREATE,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local newProfileName = strtrim(self.editBox:GetText());
+		CompactUnitFrameProfiles_CreateProfile(newProfileName);
+		self.data.cbObject:OnAdded(newProfileName);
+	end,
+	EditBoxOnTextChanged = function(self)
+		if ( strtrim(self:GetText()) == "" ) then
+			self:GetParent().button1:Disable();
+		else
+			self:GetParent().button1:Enable();
+		end
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local newProfileName = strtrim(self:GetParent().editBox:GetText());
+		CompactUnitFrameProfiles_CreateProfile(newProfileName);
+		self:GetParent().data.cbObject:OnAdded(newProfileName);
+		self:GetParent():Hide();
+	end,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 31
 };
 
 function StaticPopup_FindVisible(which, data)
@@ -4559,7 +4934,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") or
 		 (which == "CONFIRM_REMOVE_COMMUNITY_MEMBER") or
-		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") ) then
+		 (which == "CONFIRM_DESTROY_COMMUNITY_STREAM") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE") or
+		 (which == "ON_BATTLEFIELD_AUTO_QUEUE_EJECT") or
+		 (which == "ON_WORLD_PVP_QUEUE") ) then
 		text:SetText(" ");	-- The text will be filled in later.
 		text.text_arg1 = text_arg1;
 		text.text_arg2 = text_arg2;
@@ -4877,10 +5255,18 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
 			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
-				if ( timeleft < 60 ) then
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
-				else
-					text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+				if( GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING ) then
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, GetBindLocation(), ceil(timeleft / 60), MINUTES);
+					end
+				else -- In Wrath+ player is booted to graveyard rather than bind location, so one less format param
+					if ( timeleft < 60 ) then
+						text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
+					else
+						text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
+					end
 				end
 			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then

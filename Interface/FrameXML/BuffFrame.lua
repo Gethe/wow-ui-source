@@ -9,6 +9,8 @@ BUFF_ACTUAL_DISPLAY = 0;
 DEBUFF_MAX_DISPLAY = 16
 DEBUFF_ACTUAL_DISPLAY = 0;
 BUFF_ROW_SPACING = 15;
+CONSOLIDATED_BUFFS_PER_ROW = 4;
+CONSOLIDATED_BUFF_ROW_HEIGHT = 31;
 NUM_TEMP_ENCHANT_FRAMES = 3;
 BUFF_BUTTON_HEIGHT = 30;
 BUFF_FRAME_BASE_EXTENT = 13;	-- pixels from the top of the screen to the top edge of the buff frame, needed to calculate extent for UIParentManageFramePositions
@@ -30,6 +32,8 @@ DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
 DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
 DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
 
+local consolidatedBuffs = { };
+
 function BuffFrame_OnLoad(self)
 	self.BuffFrameUpdateTime = 0;
 	self.BuffFrameFlashTime = 0;
@@ -38,6 +42,7 @@ function BuffFrame_OnLoad(self)
 	self:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self.numEnchants = 0;
+	self.numConsolidated = 0;
 	self.bottomEdgeExtent = 0;
 end
 
@@ -86,12 +91,24 @@ end
 function BuffFrame_Update()
 	-- Handle Buffs
 	BUFF_ACTUAL_DISPLAY = 0;
+	ConsolidatedBuffs.pauseUpdate = true;
+	table.wipe(consolidatedBuffs);
 	for i=1, BUFF_MAX_DISPLAY do
 		if ( AuraButton_Update("BuffButton", i, "HELPFUL") ) then
 			BUFF_ACTUAL_DISPLAY = BUFF_ACTUAL_DISPLAY + 1;
 		end
 	end
-	
+	BuffFrame.numConsolidated = #consolidatedBuffs;
+	if ( BuffFrame.numConsolidated > 0 ) then
+		ConsolidatedBuffsCount:SetText(BuffFrame.numConsolidated);
+		if ( not ConsolidatedBuffs:IsShown() ) then
+			ConsolidatedBuffs:Show();
+		end
+	else
+		BuffFrame.numConsolidated = 0;
+		ConsolidatedBuffs:Hide();	
+	end
+
 	-- Handle debuffs
 	DEBUFF_ACTUAL_DISPLAY = 0;
 	for i=1, DEBUFF_MAX_DISPLAY do
@@ -101,20 +118,23 @@ function BuffFrame_Update()
 	end
 	
 	BuffFrame_UpdateAllBuffAnchors();
+	ConsolidatedBuffs.pauseUpdate = false;
 end
 
 function BuffFrame_UpdatePositions()
 	if ( SHOW_BUFF_DURATIONS == "1" ) then
 		BUFF_ROW_SPACING = 15;
+		CONSOLIDATED_BUFF_ROW_HEIGHT = 31;
 	else
 		BUFF_ROW_SPACING = 5;
+		CONSOLIDATED_BUFF_ROW_HEIGHT = 24;
 	end
 	BuffFrame_Update();
 end
 
 function AuraButton_Update(buttonName, index, filter)
 	local unit = PlayerFrame.unit;
-	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = UnitAura(unit, index, filter);
+	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod, shouldConsolidate = UnitAura(unit, index, filter);
 	local buffName = buttonName..index;
 	local buff = _G[buffName];
 	
@@ -143,6 +163,7 @@ function AuraButton_Update(buttonName, index, filter)
 		buff.filter = filter;
 		buff:SetAlpha(1.0);
 		buff.exitTime = nil;
+		buff.consolidated = nil;
 		buff:Show();
 		-- Set filter-specific attributes
 		if ( not helpful ) then
@@ -214,6 +235,15 @@ function AuraButton_Update(buttonName, index, filter)
 		if ( GameTooltip:IsOwned(buff) ) then
 			GameTooltip:SetUnitAura(PlayerFrame.unit, index, filter);
 		end
+
+		if ( GetCVarBool("consolidateBuffs") and shouldConsolidate ) then
+			if ( buff.timeLeft and duration > 30 ) then
+				buff.exitTime = expirationTime - max(10, duration / 10);
+			end
+			buff.expirationTime = expirationTime;			
+			buff.consolidated = true;
+			table.insert(consolidatedBuffs, buff);
+		end
 	end
 	return 1;
 end
@@ -284,39 +314,57 @@ function BuffFrame_UpdateAllBuffAnchors()
 	local numBuffs = 0;
 	local numAuraRows = 0;
 	local slack = BuffFrame.numEnchants;
+	if ( BuffFrame.numConsolidated > 0 ) then
+		slack = slack + 1;	-- one icon for all consolidated buffs
+	end
 	
 	for i = 1, BUFF_ACTUAL_DISPLAY do
 		buff = _G["BuffButton"..i];
-		numBuffs = numBuffs + 1;
-		index = numBuffs + slack;
-		if ( buff.parent ~= BuffFrame ) then
-			buff.count:SetFontObject(NumberFontNormal);
-			buff:SetParent(BuffFrame);
-			buff.parent = BuffFrame;
-		end
-		buff:ClearAllPoints();
-		if ( (index > 1) and (mod(index, BUFFS_PER_ROW) == 1) ) then
-			-- New row
-			numAuraRows = numAuraRows + 1;
-			buff:SetPoint("TOPRIGHT", aboveBuff, "BOTTOMRIGHT", 0, -BUFF_ROW_SPACING);
-			aboveBuff = buff;
-		elseif ( index == 1 ) then
-			numAuraRows = 1;
-			buff:SetPoint("TOPRIGHT", BuffFrame, "TOPRIGHT", 0, 0);
-			aboveBuff = buff;
-		else
-			if ( numBuffs == 1 ) then
-				if ( BuffFrame.numEnchants > 0 ) then
-					buff:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", BUFF_HORIZ_SPACING, 0);
-					aboveBuff = TemporaryEnchantFrame;
-				else
-					buff:SetPoint("TOPRIGHT", BuffFrame, "TOPRIGHT", 0, 0);
-				end
-			else
-				buff:SetPoint("RIGHT", previousBuff, "LEFT", BUFF_HORIZ_SPACING, 0);
+		if ( buff.consolidated ) then	
+			if ( buff.parent == BuffFrame ) then
+				buff:SetParent(ConsolidatedBuffsContainer);
+				buff.parent = ConsolidatedBuffsContainer;
 			end
+		else
+			numBuffs = numBuffs + 1;
+			index = numBuffs + slack;
+			if ( buff.parent ~= BuffFrame ) then
+				buff.count:SetFontObject(NumberFontNormal);
+				buff:SetParent(BuffFrame);
+				buff.parent = BuffFrame;
+			end
+			buff:ClearAllPoints();
+			if ( (index > 1) and (mod(index, BUFFS_PER_ROW) == 1) ) then
+				-- New row
+				numAuraRows = numAuraRows + 1;
+				if ( index == BUFFS_PER_ROW+1 ) then
+					buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "BOTTOMRIGHT", 0, -BUFF_ROW_SPACING);
+				else
+					buff:SetPoint("TOPRIGHT", aboveBuff, "BOTTOMRIGHT", 0, -BUFF_ROW_SPACING);
+				end
+				aboveBuff = buff;
+			elseif ( index == 1 ) then
+				numAuraRows = 1;
+				buff:SetPoint("TOPRIGHT", BuffFrame, "TOPRIGHT", 0, 0);
+				aboveBuff = buff;
+			else
+				if ( numBuffs == 1 ) then
+					if ( BuffFrame.numEnchants > 0 ) then
+						buff:SetPoint("TOPRIGHT", "TemporaryEnchantFrame", "TOPLEFT", BUFF_HORIZ_SPACING, 0);
+						aboveBuff = TemporaryEnchantFrame;
+					else
+						buff:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", BUFF_HORIZ_SPACING, 0);
+					end
+				else
+					buff:SetPoint("RIGHT", previousBuff, "LEFT", BUFF_HORIZ_SPACING, 0);
+				end
+			end
+			previousBuff = buff;
 		end
-		previousBuff = buff;
+	end
+
+	if ( ConsolidatedBuffsTooltip:IsShown() ) then
+		ConsolidatedBuffs_UpdateAllAnchors();
 	end
 
 	-- check if we need to manage frames
@@ -332,9 +380,38 @@ function BuffFrame_UpdateAllBuffAnchors()
 	end
 end
 
+function ConsolidatedBuffs_UpdateAllAnchors()
+	local buff, previousBuff, aboveBuff;
+	local numBuffs = 0;
+	
+	for _, buff in pairs(consolidatedBuffs) do
+		numBuffs = numBuffs + 1;
+		if ( buff.parent == BuffFrame ) then
+			buff:SetParent(ConsolidatedBuffsContainer);
+			buff.parent = ConsolidatedBuffsContainer;
+		end
+		buff:ClearAllPoints();
+		if ( (numBuffs > 1) and (mod(numBuffs, CONSOLIDATED_BUFFS_PER_ROW) == 1) ) then
+			-- new row
+			buff:SetPoint("TOP", aboveBuff, "BOTTOM", 0, -BUFF_ROW_SPACING);
+			aboveBuff = buff;
+		elseif ( numBuffs == 1 ) then
+			buff:SetPoint("TOPLEFT", ConsolidatedBuffsContainer, "TOPLEFT", 0, 0);
+			aboveBuff = buff;
+		else
+			buff:SetPoint("LEFT", previousBuff, "RIGHT", 7, 0);
+		end
+		previousBuff = buff;
+	end
+	ConsolidatedBuffsTooltip:SetWidth(min(numBuffs * 24 + 18, 114));
+	ConsolidatedBuffsTooltip:SetHeight(floor((numBuffs + 3) / 4 ) * CONSOLIDATED_BUFF_ROW_HEIGHT + 16);
+end
 
 function DebuffButton_UpdateAnchors(buttonName, index)
 	local numBuffs = BUFF_ACTUAL_DISPLAY + BuffFrame.numEnchants;
+	if ( BuffFrame.numConsolidated > 0 ) then
+		numBuffs = numBuffs - BuffFrame.numConsolidated + 1;
+	end
 	
 	local rows = ceil(numBuffs/BUFFS_PER_ROW);
 	local buff = _G[buttonName..index];
@@ -457,4 +534,65 @@ function TempEnchantButton_OnClick(self, button)
 	elseif ( self:GetID() == 18 ) then
 		CancelItemTempEnchantment(3);
 	end
+end
+
+function ConsolidatedBuffs_OnUpdate(self)
+	-- tooltip stuff
+	-- need 1-pixel outer padding because otherwise at certain resolutions OnEnter will trigger with IsMouseOver returning false
+	if ( self.mousedOver and not self:IsMouseOver(1, -1, -1, 1) ) then
+		self.mousedOver = nil;
+		if ( not ConsolidatedBuffsTooltip:IsMouseOver() ) then
+			ConsolidatedBuffsTooltip:Hide();
+		end
+	end
+	
+	-- check exit times
+	if ( not ConsolidatedBuffs.pauseUpdate ) then
+		local needUpdate = false;
+		local timeNow = GetTime();
+		for buffIndex, buff in pairs(consolidatedBuffs) do
+			if ( buff.exitTime and buff.exitTime < timeNow ) then
+				buff.consolidated = false;
+				buff.timeLeft = buff.expirationTime - timeNow;
+				tremove(consolidatedBuffs, buffIndex);
+				needUpdate = true;
+			end
+		end
+		if ( needUpdate ) then			
+			if ( #consolidatedBuffs == 0 ) then
+				BuffFrame.numConsolidated = 0;
+				ConsolidatedBuffs:Hide();
+			else
+				BuffFrame_UpdateAllBuffAnchors();
+				ConsolidatedBuffsCount:SetText(#consolidatedBuffs);
+			end			
+		end
+	end
+end
+
+function ConsolidatedBuffs_OnShow()
+	ConsolidatedBuffsCount:SetText(BuffFrame.numConsolidated);
+	TemporaryEnchantFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPLEFT", -6, 0);
+	BuffFrame_UpdateAllBuffAnchors();
+end
+
+function ConsolidatedBuffs_OnEnter(self)			
+	ConsolidatedBuffsTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+	-- check expiration times
+	local timeNow = GetTime();	
+	for buffIndex, buff in pairs(consolidatedBuffs) do
+		if ( buff.timeLeft ) then
+			buff.timeLeft = buff.expirationTime - timeNow;
+		end
+	end
+	ConsolidatedBuffs_UpdateAllAnchors();
+	ConsolidatedBuffsTooltip:Show();
+	ConsolidatedBuffs.mousedOver = true;
+end
+
+function ConsolidatedBuffs_OnHide(self)
+	self.mousedOver = nil;	
+	ConsolidatedBuffsTooltip:Hide();
+	TemporaryEnchantFrame:SetPoint("TOPRIGHT", ConsolidatedBuffs, "TOPRIGHT", 0, 0);
+	BuffFrame_UpdateAllBuffAnchors();
 end

@@ -17,7 +17,7 @@ end
 function CreditsFrame_Update(self)
 	PlayCreditsMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
 	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
-		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_MODERN);
+		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_CLASSIC);
 	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
 		SetGameLogo(CreditsFrame.CreditsLogo, LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_ORIGINAL);
 	end
@@ -48,7 +48,7 @@ function CreditsFrame_Update(self)
 	-- Set Credits Text
 	-- TODO: This would be better if it was driven by data in Constants.lua.
 	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
-		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_MODERN));
+		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_CLASSIC));
 	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
 		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_ORIGINAL));
 	end

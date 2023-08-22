@@ -387,6 +387,12 @@ function InterfaceOptionsFrame_OnEvent (self, event, ...)
 end
 
 function InterfaceOptionsFrame_OnShow (self)
+	-- Show the new UI panel, and hide the old one.
+	InterfaceOptionsFrame_OpenToCategory(CONTROLS_LABEL);
+	InterfaceOptionsFrame:Hide();
+
+	-- Don't show this old options panel. The only thing that can call this function now are outdated addons.
+	--[[
 	--Refresh the two category lists and display the "Controls" group of options if nothing is selected.
 	InterfaceCategoryList_Update();
 	InterfaceOptionsOptionsFrame_RefreshCategories();
@@ -396,6 +402,7 @@ function InterfaceOptionsFrame_OnShow (self)
 	end
 	--Refresh the categories to pick up changes made while the options frame was hidden.
 	InterfaceOptionsOptionsFrame_RefreshAddOns();
+	]]
 end
 
 function InterfaceOptionsFrame_OnHide (self)
@@ -419,7 +426,7 @@ function InterfaceOptionsFrame_TabOnClick ()
 		InterfaceOptionsFrameAddOns:Show();
 	end
 end
-
+--[[
 function InterfaceOptionsFrame_OpenToCategory (panel)
 	local panelName;
 	if ( type(panel) == "string" ) then
@@ -482,7 +489,7 @@ function InterfaceOptionsFrame_OpenToCategory (panel)
 		end
 	end
 end
-
+]]
 
 ---------------------------------------------------------------------------------------------------
 -- HOWTO: Add new categories of options
@@ -583,7 +590,7 @@ local function AddAddOnCategory(categories, index, frame)
 	end
 	InterfaceCategoryList_Update();
 end
-
+--[[
 function InterfaceOptions_AddCategory (frame, addOn, position)
 	if ( issecure() and ( not addOn ) ) then
 		local parent = frame.parent;
@@ -659,3 +666,4 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 		AddAddOnCategory(categories, position, frame);
 	end
 end
+]]

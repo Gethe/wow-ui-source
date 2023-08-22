@@ -393,7 +393,7 @@ end
 function Graphics_TableSetValue(self, value)
 	if(self.graphicsCVar) then
 		--New method: Call into helper functions and let the C-side handle values.
-		SetCVar(self.graphicsCVar, value);
+		SetCVar(self.graphicsCVar, GetGraphicsCVarOffsetForCVar(value));
 	elseif(self.data[value] and self.data[value].cvars ~= nil) then
 		for cvar, cvar_value in pairs(self.data[value].cvars) do
 			--Old method: Set CVars directly.
@@ -501,7 +501,7 @@ end
 -------------------------------------------------------------------------------------------------------
 function Graphics_TableGetValue(self)
 	if(self.graphicsCVar) then
-		return tonumber(GetCVar(self.graphicsCVar));
+		return tonumber(GetGraphicsCVarOffsetForUI(GetCVar(self.graphicsCVar)));
 	end
 
 	if(self.childOptions) then
@@ -509,7 +509,13 @@ function Graphics_TableGetValue(self)
 			local allMatch = true;
 			for _, child in pairs(self.childOptions) do
 				if(_G[child].graphicsCVar) then
-					local childValue = _G[child].newValue or tonumber(GetCVar(_G[child].graphicsCVar));
+					local childCVarValue;
+					if(_G[child].cvaroffset) then
+						childCVarValue = tonumber(GetGraphicsCVarOffsetForUI(GetCVar(_G[child].graphicsCVar)));
+					else
+						childCVarValue = tonumber(GetCVar(_G[child].graphicsCVar));
+					end
+					local childValue = _G[child].newValue or childCVarValue;
 					if(GetGraphicsDropdownIndexByMasterIndex(_G[child].graphicsCVar, i, self.raid) ~= childValue) then
 						allMatch = false;
 						break;
@@ -763,6 +769,14 @@ function VideoOptions_Disable(self)
 		Slider_Disable(self);
 	elseif(self.type == CONTROLTYPE_CHECKBOX) then
 		BlizzardOptionsPanel_CheckButton_Disable(self);
+	end
+end
+
+function VideoOptions_SetEnabled(self, enabled)
+	if enabled then
+		VideoOptions_Enable(self);
+	else
+		VideoOptions_Disable(self);
 	end
 end
 -------------------------------------------------------------------------------------------------------
@@ -1265,7 +1279,7 @@ function Graphics_SliderOnLoad(self)
 	self.SetValue = Graphics_TableSetValue;
 
 	self.GetCurrentValue = function(self)
-		return self.newValue or tonumber(GetCVar(self.graphicsCVar));
+		return self.newValue or tonumber(GetGraphicsCVarOffsetForUI(GetCVar(self.graphicsCVar)));
 	end;
 
 	if(self.graphicsCVar) then

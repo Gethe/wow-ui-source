@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_SimpleCheckout.lua"/>
 	<Line name="SimpleCheckoutBorder" thickness="1" virtual="true">
 	</Line>
@@ -31,14 +31,14 @@
 							self:GetParent():Hide();
 						</OnClick>
 						<OnMouseDown>
-							self:SetHighlightTexture(nil);
+							self:ClearHighlightTexture();
 						</OnMouseDown>
 						<OnMouseUp>
 							self:SetHighlightAtlas("simplecheckout-close-hover-1x");
 						</OnMouseUp>
 					</Scripts>
 				</Button>
-				<Frame parentKey="Background" enableMouse="true" enableMouseWheel="true" frameStrata="FULLSCREEN">
+				<Frame parentKey="Background" enableMouse="true" frameStrata="FULLSCREEN">
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture setAllPoints="true" parentKey="Texture">

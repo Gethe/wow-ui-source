@@ -7,12 +7,16 @@ function WowTrimScrollBarMixin:OnLoad()
 		self.Background:Hide();
 	end
 	
-	if self.trackAlpha then
-		self.Track:SetAlpha(self.trackAlpha);
+	if self.hideBackplate then
+		self.Backplate:Hide();
+	end
+
+	if self.backplateAlpha then
+		self.Backplate:SetAlpha(self.backplateAlpha);
 	end
 end
 
-WowTrimScrollBarStepperMixin = CreateFromMixins(ScrollBarButtonBehaviorMixin);
+WowTrimScrollBarStepperMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function WowTrimScrollBarStepperMixin:GetAtlas()
 	if self:IsEnabled() then
@@ -29,19 +33,19 @@ function WowTrimScrollBarStepperMixin:UpdateAtlas()
 end
 
 function WowTrimScrollBarStepperMixin:OnEnter()
-	if ScrollBarButtonBehaviorMixin.OnEnter(self) then
+	if ButtonStateBehaviorMixin.OnEnter(self) then
 		self.Overlay:Show();
 	end
 end
 
 function WowTrimScrollBarStepperMixin:OnLeave()
-	if ScrollBarButtonBehaviorMixin.OnEnter(self) then
+	if ButtonStateBehaviorMixin.OnEnter(self) then
 		self.Overlay:Hide();
 	end
 end
 
 function WowTrimScrollBarStepperMixin:OnMouseDown()
-	if ScrollBarButtonBehaviorMixin.OnMouseDown(self) then
+	if ButtonStateBehaviorMixin.OnMouseDown(self) then
 		self:UpdateAtlas();
 		self.Texture:AdjustPointsOffset(-1, 0);
 		self.Overlay:AdjustPointsOffset(-1, -1);
@@ -49,7 +53,7 @@ function WowTrimScrollBarStepperMixin:OnMouseDown()
 end
 
 function WowTrimScrollBarStepperMixin:OnMouseUp()
-	if ScrollBarButtonBehaviorMixin.OnMouseUp(self) then
+	if ButtonStateBehaviorMixin.OnMouseUp(self) then
 		self:UpdateAtlas();
 		self.Texture:AdjustPointsOffset(1, 0);
 		self.Overlay:AdjustPointsOffset(1, 1);
@@ -61,14 +65,14 @@ function WowTrimScrollBarStepperMixin:OnEnable()
 end
 
 function WowTrimScrollBarStepperMixin:OnDisable()
-	ScrollBarButtonBehaviorMixin.OnDisable(self);
+	ButtonStateBehaviorMixin.OnDisable(self);
 	self:UpdateAtlas();
 
 	self.Texture:ClearPointsOffset();
 	self.Overlay:ClearPointsOffset();
 end
 
-WowScrollBarThumbScriptsMixin = CreateFromMixins(ScrollBarButtonBehaviorMixin);
+WowScrollBarThumbScriptsMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function WowScrollBarThumbScriptsMixin:OnLoad()
 	self:UpdateAtlas();
@@ -92,12 +96,12 @@ function WowScrollBarThumbScriptsMixin:UpdateAtlas()
 end
 
 function WowScrollBarThumbScriptsMixin:OnEnter()
-	if ScrollBarButtonBehaviorMixin.OnEnter(self) then
+	if ButtonStateBehaviorMixin.OnEnter(self) then
 		self:UpdateAtlas();
 	end
 end
 function WowScrollBarThumbScriptsMixin:OnLeave()
-	if ScrollBarButtonBehaviorMixin.OnLeave(self) then
+	if ButtonStateBehaviorMixin.OnLeave(self) then
 		self:UpdateAtlas();
 	end
 end
@@ -107,7 +111,7 @@ function WowScrollBarThumbScriptsMixin:OnEnable()
 end
 
 function WowScrollBarThumbScriptsMixin:OnDisable()
-	ScrollBarButtonBehaviorMixin.OnDisable(self);
+	ButtonStateBehaviorMixin.OnDisable(self);
 	self:UpdateAtlas();
 end
 

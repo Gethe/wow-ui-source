@@ -21,7 +21,8 @@ if tbl then
 	Import("getmetatable");
 	Import("ipairs");
 	Import("Round");
-	Import("LE_MODEL_BLEND_OPERATION_NONE");
+	Import("Enum");
+	Import("GetFontStringMetatable");
 end
 --------------------------------------------------
 
@@ -57,7 +58,7 @@ function ShrinkUntilTruncateFontStringMixin:SetText(text)
 		self:SetFontObject(self.fontObjectsToTry[1]);
 	end
 
-	getmetatable(self).__index.SetText(self, text);
+	GetFontStringMetatable().__index.SetText(self, text);
 	self:ApplyFontObjects();
 end
 
@@ -69,7 +70,7 @@ function ShrinkUntilTruncateFontStringMixin:SetFormattedText(format, ...)
 		self:SetFontObject(self.fontObjectsToTry[1]);
 	end
 
-	getmetatable(self).__index.SetFormattedText(self, format, ...);
+	GetFontStringMetatable().__index.SetFormattedText(self, format, ...);
 	self:ApplyFontObjects();
 end
 
@@ -79,12 +80,12 @@ AutoScalingFontStringMixin = { }
 local DEFAULT_AUTO_SCALING_MIN_LINE_HEIGHT = 10;
 
 function AutoScalingFontStringMixin:SetText(text)
-	getmetatable(self).__index.SetText(self, text);
+	GetFontStringMetatable().__index.SetText(self, text);
 	self:ScaleTextToFit();
 end
 
 function AutoScalingFontStringMixin:SetFormattedText(format, ...)
-	getmetatable(self).__index.SetFormattedText(self, format, ...);
+	GetFontStringMetatable().__index.SetFormattedText(self, format, ...);
 	self:ScaleTextToFit();
 end
 
@@ -130,19 +131,20 @@ function AutoScalingFontStringMixin:ScaleTextToFit()
 end
 
 --------------------------------------------------
-function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons)
+function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm)
 	if not modelScene then
 		return;
 	end
 
-	local actor = modelScene:GetPlayerActor();
+	local actor = modelScene:GetPlayerActor(overrideActorName);
 	if actor then
 		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
 		hideWeapons = (hideWeapons == nil) or hideWeapons;
+		useNativeForm = (useNativeForm == nil) or useNativeForm;
 		if IsOnGlueScreen() then
-			actor:SetPlayerModelFromGlues(sheatheWeapons, autoDress, hideWeapons);
+			actor:SetPlayerModelFromGlues(sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		else
-			actor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons);
+			actor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, useNativeForm);
 		end
 
 		if itemModifiedAppearanceIDs then
@@ -150,13 +152,13 @@ function SetupPlayerForModelScene(modelScene, itemModifiedAppearanceIDs, sheathe
 				actor:TryOn(itemModifiedAppearanceID);
 			end
 		end
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 end
 
 function SetupItemPreviewActor(actor, displayID)
 	if actor then
 		actor:SetModelByCreatureDisplayID(displayID);
-		actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 end

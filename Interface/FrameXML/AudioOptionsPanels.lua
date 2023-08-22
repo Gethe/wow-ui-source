@@ -55,6 +55,7 @@ SoundPanelOptions = {
 	Sound_EnablePetSounds = { text = "ENABLE_PET_SOUNDS" },
 	Sound_ZoneMusicNoDelay = { text = "ENABLE_MUSIC_LOOPING" },
 	Sound_EnableSoundWhenGameIsInBG = { text = "ENABLE_BGSOUND" },
+	Sound_EnableDSPEffects = { text = "ENABLE_DSP_EFFECTS" },
 	--Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	--Sound_EnableHardware = { text = "ENABLE_HARDWARE" },
 	--Sound_EnablePositionalLowPassFilter = { text = "ENABLE_SOFTWARE_HRTF" },
@@ -71,6 +72,10 @@ function AudioOptionsSoundPanel_OnLoad (self)
 	self.options = SoundPanelOptions;
 	BlizzardOptionsPanel_OnLoad(self, AudioOptionsPanel_Okay, AudioOptionsPanel_Cancel, AudioOptionsPanel_Default, AudioOptionsPanel_Refresh);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
+
+	if not ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		AudioOptionsSoundPanelEnableDSPs:Hide();
+	end
 end
 
 function AudioOptionsSoundPanelHardwareDropDown_OnLoad (self)
@@ -311,6 +316,7 @@ function AudioOptionsVoicePanel_OnShow(self)
 	VideoOptionsPanel_OnShow(self);
 	AudioOptionsVoicePanel_InitializeCommunicationModeUI(self);
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_ERROR");
 	self:RegisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
 end
@@ -325,13 +331,14 @@ function AudioOptionsVoicePanel_OnHide(self)
 	self:UnregisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
 	self:UnregisterEvent("VOICE_CHAT_ERROR");
 	self:UnregisterEvent("UPDATE_BINDINGS");
+	self:UnregisterEvent("GAME_PAD_ACTIVE_CHANGED");
 end
 
 function AudioOptionsVoicePanel_OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		OptionsFrame_AddCategory(VideoOptionsFrame, self);
 		self:UnregisterEvent(event);
-	elseif event == "UPDATE_BINDINGS" then
+	elseif event == "UPDATE_BINDINGS" or event =="GAME_PAD_ACTIVE_CHANGED" then
 		AudioOptionsVoicePanel_UpdateCommunicationModeUI(self);
 	elseif event == "VOICE_CHAT_ERROR" or event == "VOICE_CHAT_CONNECTION_SUCCESS" then
 		AudioOptionsVoicePanel_Refresh(self);

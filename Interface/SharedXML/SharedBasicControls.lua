@@ -13,6 +13,9 @@ local WARNING_AS_ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
 local WARNING_FORMAT = "Lua Warning:\n"..WARNING_AS_ERROR_FORMAT;
 local INDEX_ORDER_FORMAT = "%d / %d"
 
+local EXCEPTION_FORMAT = [[%s
+Locals: %s]];
+
 local MESSAGE_TYPE_ERROR = 0;
 local MESSAGE_TYPE_WARNING = 1;
 
@@ -193,6 +196,8 @@ function ScriptErrorsFrameMixin:DisplayMessageInternal(msg, warnType, keepHidden
 		self.seen[msgKey] = index;
 		self.locals[index] = locals;
 		self.warnType[index] = (warnType or false); --Use false instead of nil
+
+		PrintToDebugWindow(msg);
 	end
 
 	if ( not self:IsShown() and not keepHidden ) then
@@ -208,14 +213,14 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 	local locals = debuglocals(DEBUGLOCALS_LEVEL);
 
 	if LogAuroraClient then
-		LogAuroraClient("ae", "Lua Error", "message", msg, "stack", stack);
+		LogAuroraClient("ae", "Lua Error ", "message", msg, "stack", stack);
 	end
 
 	self:DisplayMessageInternal(msg, warnType, keepHidden, locals, msg.."\n"..stack);
 
 	-- process any exception after displaying, this ensures frame text is updated
 	if (ProcessExceptionClient) then
-		ProcessExceptionClient();
+		ProcessExceptionClient(EXCEPTION_FORMAT:format(msg or "", locals or ""));
 	end
 end
 
@@ -333,7 +338,7 @@ function ScriptErrorsFrameMixin:ShowNext()
 end
 
 local function IsErrorCVarEnabled(errorTypeCVar)
-	return InGlue() or GetCVarBool(errorTypeCVar);
+	return IsOnGlueScreen() or GetCVarBool(errorTypeCVar);
 end
 
 local function DisplayMessageInternal(errorTypeCVar, warnType, msg, messageType)

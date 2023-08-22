@@ -1,16 +1,19 @@
 ..\SharedXML\SharedConstants.lua
 ##DebugHook.lua
 
+..\SharedXML\middleclass.lua
 GlueCheck.lua
-..\SharedXML\C_TimerAugment.lua
 ..\SharedXML\ErrorUtil.lua
 ..\SharedXML\Mixin.lua
 ..\SharedXML\TableUtil.lua
+..\SharedXML\Stubs.xml
 ..\SharedXML\EnumUtil.lua
+..\SharedXML\LocaleUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
+..\SharedXML\MathUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
 ..\SharedXML\LinkUtil.lua
@@ -21,7 +24,6 @@ GlueCheck.lua
 ..\SharedXML\SmoothStatusBar.lua
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
-..\SharedXML\MathUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\PixelUtilSecure.lua
@@ -30,6 +32,8 @@ GlueCheck.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
+..\SharedXML\EventUtil.lua
 ..\..\Interface_TBC\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
@@ -38,9 +42,30 @@ GlueCheck.lua
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\PixelUtil.lua
 ..\SharedXML\StringUtil.lua
+..\SharedXML\SelectableButton.xml
+..\SharedXML\Frame\EventFrame.xml
+..\SharedXML\Frame\EventButton.xml
+..\SharedXML\Frame\EventEditBox.xml
+..\SharedXML\DataProviders.xml
+..\SharedXML\Interpolator.lua
+..\SharedXML\ButtonStateBehavior.lua
+..\SharedXML\Slider\MinimalSlider.xml
+..\SharedXML\Scroll\ScrollUtil.lua
+..\SharedXML\Scroll\ScrollController.lua
+..\SharedXML\Scroll\ScrollBox.xml
+..\SharedXML\Scroll\ScrollBar.xml
+..\SharedXML\Scroll\MinimalScrollBar.xml
+..\SharedXML\Scroll\TrimScrollBar.xml
+..\SharedXML\Scroll\ClassicTrimScrollBar.xml
+..\SharedXML\Scroll\ScrollTemplates.xml
 ..\SharedXML\Dump.lua
+..\SharedXML\VASErrorLookup.lua
+
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
+..\SharedXML\ScrollDefine.xml
+..\SharedXML\SecureScrollTemplates.xml
+
 ..\SharedXML\Constants.lua
 ..\..\Interface_TBC\GlueXML\Constants.lua
 GlueFonts.xml
@@ -53,8 +78,11 @@ GlueFontStyles.xml
 ..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
+..\SharedXML\Tabs\MinimalTab.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\KeyCommand.lua
+..\SharedXML\GlobalCallbackRegistry.lua
+..\SharedXML\ButtonGroup.lua
 GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
@@ -76,6 +104,7 @@ GlueContextMenu.xml
 
 ##New stuff!!!
 GlueAddons.lua
+GlueParentUtil.lua
 GlueParent.xml
 ## These SharedXML files need to be loaded after GlueParent.xml
 ..\SharedXML\IME.xml
@@ -83,6 +112,12 @@ GlueParent.xml
 ..\SharedXML\ModelPreviewFrame.xml
 GlueDialog.xml
 GlueTooltip.xml
+..\SharedXML\DialogUtil.lua
+
+..\SharedXML\Settings\Settings.xml
+..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
+SettingDefinitions\Definitions.xml
+
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
 AccountLogin.xml
@@ -91,7 +126,13 @@ CharacterServicesPatchwerk.xml
 ..\..\Interface_TBC\GlueXML\CharacterSelect.xml
 AccountReactivate.xml
 KioskModeSplash.xml
+CharacterServicesShared.lua
+CharacterServicesTemplates.xml
 CharacterServices.xml
+CharacterServicesPaidCharacterTransfer.xml
+CharacterServicesPaidFactionChange.xml
+CharacterServicesPaidRaceChange.xml
+CharacterServicesCharacterSelector.xml
 ..\..\Interface_TBC\GlueXML\CharacterCreate.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
@@ -106,6 +147,8 @@ MovieFrame.xml
 ..\..\Interface_TBC\GlueXML\CinematicsFrame.xml
 ..\..\Interface_TBC\GlueXML\CreditsFrame.xml
 GlueMenuFrame.xml
+SocialContract.xml
+..\SharedXML\SharedUtils.lua
 
 ## Should only load internally
 DesignerMenu.xml

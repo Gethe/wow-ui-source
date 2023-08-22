@@ -23,7 +23,7 @@ function UIWidgetTemplateIconAndTextMixin:OnAcquired(widgetInfo)
 		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", -12, -6);
 	else
 		self.alignWidth = self.Text:GetStringWidth();
-		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", 0, -6);
+		self.Text:SetPoint("TOP", self.Icon, "TOPLEFT", 0, -6);
 	end
 
 	self:SetWidth(self.alignWidth);

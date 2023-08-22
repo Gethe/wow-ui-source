@@ -26,6 +26,16 @@ function VideoOptionsFrame_OnLoad (self)
 	OptionsFrame_OnLoad(self);
 
 	_G[self:GetName().."HeaderText"]:SetText(SYSTEMOPTIONS_MENU);
+	if InGlue() then
+		self:SetFrameStrata("DIALOG");
+	end
+end
+
+function VideoOptionsFrame_OnShow(self)
+	OptionsFrame_OnShow(self);
+	if InGlue() then
+		GlueParent_AddModalFrame(self);
+	end
 end
 
 function VideoOptionsFrame_OnHide (self)
@@ -35,6 +45,10 @@ function VideoOptionsFrame_OnHide (self)
 	if ( VideoOptionsFrame.gameRestart ) then
 		GlueDialog_Show("CLIENT_RESTART_ALERT");
 		VideoOptionsFrame.gameRestart = nil;
+	end
+
+	if InGlue() then
+		GlueParent_RemoveModalFrame(self);
 	end
 end
 

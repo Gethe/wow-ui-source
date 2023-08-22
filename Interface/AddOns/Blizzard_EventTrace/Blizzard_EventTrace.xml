@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Script file="Blizzard_EventTrace.lua"/>
 
 	<CheckButton name="EventTraceCheckButtonTemplate" virtual="true">
@@ -79,7 +79,7 @@
 		</Layers>
 	</Button>
 
-	<Button name="EventTraceLogEventButtonTemplate" inherits="EventTraceScrollBoxButtonTemplate" mixin="EventTraceLogEventButtonMixin" virtual="true">
+	<Button name="EventTraceLogEventButtonTemplate" inherits="EventTraceScrollBoxButtonTemplate" registerForClicks="AnyUp" mixin="EventTraceLogEventButtonMixin" virtual="true">
 		<Size y="20"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -101,12 +101,10 @@
 		<Frames>
 			<Button parentKey="HideButton" inherits="UIPanelCloseButtonNoScripts">
 				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="LEFT" x="3"/>
-				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
@@ -167,7 +165,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="EventTrace" mixin="EventTracePanelMixin" inherits="ButtonFrameTemplate" parent="UIParent" toplevel="true" movable="true" resizable="true" enableMouse="true" clampedToScreen="true" frameStrata="TOOLTIP">
+	<Frame name="EventTrace" mixin="EventTracePanelMixin" inherits="ButtonFrameTemplate" parent="UIParent" toplevel="true" movable="true" resizable="true" enableMouse="true" clampedToScreen="true" frameStrata="DIALOG">
 		<Size x="600" y="400"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -292,10 +290,10 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-8"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -319,10 +317,10 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-8"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 								</Anchors>
 							</EventFrame>
 						</Frames>
@@ -383,10 +381,10 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-3"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-8"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>

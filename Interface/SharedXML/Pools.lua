@@ -1,12 +1,68 @@
-
 ---------------
---NOTE - Please do not change this section without talking to Dan
-local _, tbl = ...;
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
 if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
+	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
+	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+	tbl.type = tbl.SecureCapsuleGet("type");
+	tbl.unpack = tbl.SecureCapsuleGet("unpack");
+	tbl.error = tbl.SecureCapsuleGet("error");
+	tbl.pcall = tbl.SecureCapsuleGet("pcall");
+	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
+
+	local function CleanFunction(f)
+		local f = function(...)
+			local function HandleCleanFunctionCallArgs(success, ...)
+				if success then
+					return ...;
+				else
+					tbl.error("Error in secure capsule function execution: "..(...));
+				end
+			end
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
+		end
+		setfenv(f, tbl);
+		return f;
+	end
+
+	local function CleanTable(t, tableCopies)
+		if not tableCopies then
+			tableCopies = {};
+		end
+
+		local cleaned = {};
+		tableCopies[t] = cleaned;
+
+		for k, v in tbl.pairs(t) do
+			if tbl.type(v) == "table" then
+				if ( tableCopies[v] ) then
+					cleaned[k] = tableCopies[v];
+				else
+					cleaned[k] = CleanTable(v, tableCopies);
+				end
+			elseif tbl.type(v) == "function" then
+				cleaned[k] = CleanFunction(v);
+			else
+				cleaned[k] = v;
+			end
+		end
+		return cleaned;
+	end
 
 	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
+		local skipTableCopy = true;
+		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+		if tbl.type(val) == "function" then
+			tbl[name] = CleanFunction(val);
+		elseif tbl.type(val) == "table" then
+			tbl[name] = CleanTable(val);
+		else
+			tbl[name] = val;
+		end
 	end
 
 	Import("IsOnGlueScreen");
@@ -15,12 +71,22 @@ if tbl then
 		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
 	end
 
-	setfenv(1, tbl);
-	
-	Import("pairs");
 	Import("ipairs");
 	Import("next");
+	Import("assert");
 	Import("CreateFrame");
+	Import("CreateForbiddenFrame");
+	Import("CreateFromMixins");
+
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
+	setfenv(1, tbl);
 end
 ----------------
 
@@ -121,11 +187,29 @@ local function ForbiddenFramePoolFactory(framePool)
 	return CreateForbiddenFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
 end
 
-function FramePoolMixin:OnLoad(frameType, parent, frameTemplate, resetterFunc, forbidden)
+function FramePoolMixin:OnLoad(frameType, parent, frameTemplate, resetterFunc, forbidden, frameInitFunc)
 	if forbidden then
-		ObjectPoolMixin.OnLoad(self, ForbiddenFramePoolFactory, resetterFunc);
+		local creationFunc = ForbiddenFramePoolFactory;
+		if frameInitFunc ~= nil then
+			creationFunc = function(framePool)
+				local frame =  CreateForbiddenFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
+				frameInitFunc(frame);
+				return frame;
+			end
+		end
+
+		ObjectPoolMixin.OnLoad(self, creationFunc, resetterFunc);
 	else
-		ObjectPoolMixin.OnLoad(self, FramePoolFactory, resetterFunc);
+		local creationFunc = FramePoolFactory;
+		if frameInitFunc ~= nil then
+			creationFunc = function(framePool)
+				local frame = CreateFrame(framePool.frameType, nil, framePool.parent, framePool.frameTemplate);
+				frameInitFunc(frame);
+				return frame;
+			end
+		end
+
+		ObjectPoolMixin.OnLoad(self, creationFunc, resetterFunc);
 	end
 	self.frameType = frameType;
 	self.parent = parent;
@@ -145,9 +229,15 @@ function FramePool_HideAndClearAnchors(framePool, frame)
 	frame:ClearAllPoints();
 end
 
-function CreateFramePool(frameType, parent, frameTemplate, resetterFunc, forbidden)
+function FramePool_HideAndClearAnchorsWithReset(framePool, frame)
+	frame:Hide();
+	frame:ClearAllPoints();
+	frame:Reset();
+end
+
+function CreateFramePool(frameType, parent, frameTemplate, resetterFunc, forbidden, frameInitFunc)
 	local framePool = CreateFromMixins(FramePoolMixin);
-	framePool:OnLoad(frameType, parent, frameTemplate, resetterFunc or FramePool_HideAndClearAnchors, forbidden);
+	framePool:OnLoad(frameType, parent, frameTemplate, resetterFunc or FramePool_HideAndClearAnchors, forbidden, frameInitFunc);
 	return framePool;
 end
 
@@ -252,6 +342,29 @@ function CreateFramePoolCollection()
 	return poolCollection;
 end
 
+-- If different frames are used for specialized cases even though they have the same template,
+-- supply a specialization key to differentiate. If specialization is a function, it will be
+-- called the first time a frame is acquired. If specialization is a table, it will be mixed
+-- in with FrameUtil.SpecializeFrameWithMixins.
+local function FramePoolCollection_GetPoolKey(template, specialization)
+	return template..tostring(specialization);
+end
+
+local function FramePoolCollection_GetSpecializedFrameInit(specialization)
+	local specializationType = type(specialization);
+	if specializationType == "function" then
+		return specialization;
+	elseif specializationType == "table" then
+		local function SpecializationFrameInit(frame)
+			FrameUtil.SpecializeFrameWithMixins(frame, specialization);
+		end
+
+		return SpecializationFrameInit;
+	end
+
+	return nil;
+end
+
 function FramePoolCollectionMixin:OnLoad()
 	self.pools = {};
 end
@@ -264,33 +377,37 @@ function FramePoolCollectionMixin:GetNumActive()
 	return numTotalActive;
 end
 
-function FramePoolCollectionMixin:GetOrCreatePool(frameType, parent, template, resetterFunc, forbidden)
-	local pool = self:GetPool(template);
+-- Returns the pool, and whether or not the pool needed to be created.
+function FramePoolCollectionMixin:GetOrCreatePool(frameType, parent, template, resetterFunc, forbidden, specialization)
+	local pool = self:GetPool(template, specialization);
 	if not pool then
-		pool = self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+		return self:CreatePool(frameType, parent, template, resetterFunc, forbidden, specialization), true;
 	end
+	return pool, false;
+end
+
+function FramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden, specialization)
+	assert(self:GetPool(template, specialization) == nil);
+	local frameInitFunc = FramePoolCollection_GetSpecializedFrameInit(specialization);
+	local pool = CreateFramePool(frameType, parent, template, resetterFunc, forbidden, frameInitFunc);
+	local poolKey = FramePoolCollection_GetPoolKey(template, specialization);
+	self.pools[poolKey] = pool;
 	return pool;
 end
 
-function FramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden)
-	assert(self:GetPool(template) == nil);
-	local pool = CreateFramePool(frameType, parent, template, resetterFunc, forbidden);
-	self.pools[template] = pool;
-	return pool;
-end
-
-function FramePoolCollectionMixin:CreatePoolIfNeeded(frameType, parent, template, resetterFunc, forbidden)
-	if not self:GetPool(template) then
-		self:CreatePool(frameType, parent, template, resetterFunc, forbidden);
+function FramePoolCollectionMixin:CreatePoolIfNeeded(frameType, parent, template, resetterFunc, forbidden, specialization)
+	if not self:GetPool(template, specialization) then
+		self:CreatePool(frameType, parent, template, resetterFunc, forbidden, specialization);
 	end
 end
 
-function FramePoolCollectionMixin:GetPool(template)
-	return self.pools[template];
+function FramePoolCollectionMixin:GetPool(template, specialization)
+	local poolKey = FramePoolCollection_GetPoolKey(template, specialization);
+	return self.pools[poolKey];
 end
 
-function FramePoolCollectionMixin:Acquire(template)
-	local pool = self:GetPool(template);
+function FramePoolCollectionMixin:Acquire(template, specialization)
+	local pool = self:GetPool(template, specialization);
 	assert(pool);
 	return pool:Acquire();
 end
@@ -307,8 +424,8 @@ function FramePoolCollectionMixin:Release(object)
 	assert(false);
 end
 
-function FramePoolCollectionMixin:ReleaseAllByTemplate(template)
-	local pool = self:GetPool(template);
+function FramePoolCollectionMixin:ReleaseAllByTemplate(template, specialization)
+	local pool = self:GetPool(template, specialization);
 	if pool then
 		pool:ReleaseAll();
 	end
@@ -320,8 +437,8 @@ function FramePoolCollectionMixin:ReleaseAll()
 	end
 end
 
-function FramePoolCollectionMixin:EnumerateActiveByTemplate(template)
-	local pool = self:GetPool(template);
+function FramePoolCollectionMixin:EnumerateActiveByTemplate(template, specialization)
+	local pool = self:GetPool(template, specialization);
 	if pool then
 		return pool:EnumerateActive();
 	end
@@ -349,8 +466,8 @@ function FramePoolCollectionMixin:EnumerateActive()
 	end, nil;
 end
 
-function FramePoolCollectionMixin:EnumerateInactiveByTemplate(template)
-	local pool = self:GetPool(template);
+function FramePoolCollectionMixin:EnumerateInactiveByTemplate(template, specialization)
+	local pool = self:GetPool(template, specialization);
 	if pool then
 		return pool:EnumerateInactive();
 	end
@@ -392,8 +509,8 @@ function FixedSizeFramePoolCollectionMixin:OnLoad()
 	self.sizes = {};
 end
 
-function FixedSizeFramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden, maxPoolSize, preallocate)
-	local pool = FramePoolCollectionMixin.CreatePool(self, frameType, parent, template, resetterFunc, forbidden);
+function FixedSizeFramePoolCollectionMixin:CreatePool(frameType, parent, template, resetterFunc, forbidden, specialization, maxPoolSize, preallocate)
+	local pool = FramePoolCollectionMixin.CreatePool(self, frameType, parent, template, resetterFunc, forbidden, specialization);
 
 	if preallocate then
 		for i = 1, maxPoolSize do
@@ -402,16 +519,18 @@ function FixedSizeFramePoolCollectionMixin:CreatePool(frameType, parent, templat
 		pool:ReleaseAll();
 	end
 
-	self.sizes[template] = maxPoolSize;
+	local poolKey = FramePoolCollection_GetPoolKey(template, specialization);
+	self.sizes[poolKey] = maxPoolSize;
 
 	return pool;
 end
 
-function FixedSizeFramePoolCollectionMixin:Acquire(template)	
-	local pool = self:GetPool(template);
+function FixedSizeFramePoolCollectionMixin:Acquire(template, specialization)
+	local pool = self:GetPool(template, specialization);
 	assert(pool);
 
-	if pool:GetNumActive() < self.sizes[template] then
+	local poolKey = FramePoolCollection_GetPoolKey(template, specialization);
+	if pool:GetNumActive() < self.sizes[poolKey] then
 		return pool:Acquire();
 	end
 	return nil;

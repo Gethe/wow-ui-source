@@ -1,4 +1,5 @@
 ColorMixin = {};
+COLOR_FORMAT_RGBA = "RRGGBBAA";
 
 function CreateColor(r, g, b, a)
 	local color = CreateFromMixins(ColorMixin);
@@ -22,7 +23,7 @@ function ColorMixin:GetRGB()
 end
 
 function ColorMixin:GetRGBAsBytes()
-	return self.r * 255, self.g * 255, self.b * 255;
+	return Round(self.r * 255), Round(self.g * 255), Round(self.b * 255);
 end
 
 function ColorMixin:GetRGBA()
@@ -30,7 +31,7 @@ function ColorMixin:GetRGBA()
 end
 
 function ColorMixin:GetRGBAAsBytes()
-	return self.r * 255, self.g * 255, self.b * 255, (self.a or 1) * 255;
+	return Round(self.r * 255), Round(self.g * 255), Round(self.b * 255), Round((self.a or 1) * 255);
 end
 
 function ColorMixin:SetRGBA(r, g, b, a)
@@ -58,4 +59,26 @@ end
 
 function WrapTextInColorCode(text, colorHexString)
 	return ("|c%s%s|r"):format(colorHexString, text);
+end
+
+function WrapTextInColor(text, color)
+	return WrapTextInColorCode(text, color:GenerateHexColor());
+end
+
+do
+	local DBColors = C_UIColor.GetColors();
+	for _, dbColor in ipairs(DBColors) do
+		local color = CreateColor(dbColor.color.r, dbColor.color.g, dbColor.color.b, dbColor.color.a);
+		_G[dbColor.baseTag] = color;
+		_G[dbColor.baseTag.."_CODE"] = color:GenerateHexColorMarkup();
+	end
+end
+
+function CreateColorFromRGBAHexString(hexColor)
+	if #hexColor == #COLOR_FORMAT_RGBA then
+		local r, g, b, a = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
+		return CreateColor(r, g, b, a);
+	else
+		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: RRGGBBAA.");
+	end
 end

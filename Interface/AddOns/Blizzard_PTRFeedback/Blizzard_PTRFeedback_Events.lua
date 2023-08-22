@@ -1,5 +1,8 @@
 ----------------------------------------------------------------------------------------------------
 local PTR_Event_Frame = CreateFrame("Frame")
+
+PTR_IssueReporter.InBarbershop = false
+
 PTR_IssueReporter.ReportEventTypes = {
     Tooltip = "Tooltip",
     MapIDEnter = "MapIDEnter",
@@ -10,6 +13,8 @@ PTR_IssueReporter.ReportEventTypes = {
     QuestFrameClosed = "QuestFrameClosed",
     QuestRewardFrameShown = "QuestRewardFrameShown",
     QuestTurnedIn = "QuestTurnedIn",
+    BarberShopOpened = "BarberShopOpened",
+    BarberShopClosed = "BarberShopClosed",
 }
 ----------------------------------------------------------------------------------------------------
 local function QuestCompleteHandler()
@@ -25,6 +30,20 @@ local function QuestFinishedHandler()
     PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.QuestFrameClosed)
 end    
 ----------------------------------------------------------------------------------------------------
+local function BarberShopOpenedHandler()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.BarberShopOpened)
+    PTR_IssueReporter:SetParent(CharCustomizeFrame)
+    PTR_IssueReporter:SetFrameStrata("DIALOG")
+	PTR_IssueReporter.InBarbershop = true
+end
+----------------------------------------------------------------------------------------------------
+local function BarberShopClosedHandler()
+    PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.BarberShopClosed)
+    PTR_IssueReporter:SetParent(GetAppropriateTopLevelParent())
+	PTR_IssueReporter:SetFrameStrata("DIALOG")
+    PTR_IssueReporter.InBarbershop = false
+end
+----------------------------------------------------------------------------------------------------
 PTR_IssueReporter.Data.RegisteredEvents = 
 {
     ZONE_CHANGED = PTR_IssueReporter.HandleMapEvents,
@@ -34,6 +53,8 @@ PTR_IssueReporter.Data.RegisteredEvents =
     QUEST_TURNED_IN = QuestTurnedInHandler,
     QUEST_FINISHED = QuestFinishedHandler,
     PLAYER_REGEN_ENABLED = PTR_IssueReporter.CheckSurveyQueue,
+    BARBER_SHOP_OPEN = BarberShopOpenedHandler,
+    BARBER_SHOP_CLOSE = BarberShopClosedHandler,
 }
 for event, func in pairs (PTR_IssueReporter.Data.RegisteredEvents) do
     PTR_Event_Frame:RegisterEvent(event)

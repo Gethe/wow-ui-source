@@ -113,7 +113,7 @@ function ProductChoiceFrameItem_SetUpDisplay(self, data, forceUpdate)
 		local item = self.ModelScene:GetActorByTag("item");
 		if ( item ) then
 			item:SetModelByCreatureDisplayID(data.modelDisplayID);
-			item:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			item:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		end
 		
 		self.ModelScene:Show();

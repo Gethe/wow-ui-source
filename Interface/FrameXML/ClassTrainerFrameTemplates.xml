@@ -21,7 +21,9 @@
 				_G[self:GetName().."SubText"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			</OnEnter>
 			<OnLeave>
-				_G[self:GetName().."SubText"]:SetTextColor(self.subR, self.subG, self.subB);
+				if(self.subR and self.subG and self.subB) then
+					_G[self:GetName().."SubText"]:SetTextColor(self.subR, self.subG, self.subB);
+				end
 			</OnLeave>
 		</Scripts>
 		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
@@ -72,9 +74,9 @@
 				</Anchor>
 			</Anchors>
 		</ButtonText>
-		<NormalFont style="GameFontNormal"/>
-		<HighlightFont style="GameFontHighlight"/>
-		<DisabledFont style="GameFontDisable"/>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontDisableLeft"/>
 	</Button>
 	<ScrollFrame name="ClassTrainerDetailScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>
@@ -109,7 +111,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				ScrollFrame_OnLoad(self);
+				UIPanelScrollFrame_OnLoad(self);
 				self.scrollBarHideable = 1;
 			</OnLoad>
 		</Scripts>

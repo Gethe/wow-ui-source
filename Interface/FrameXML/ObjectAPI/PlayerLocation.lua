@@ -43,6 +43,12 @@ end
 	return playerLocation;
 end
 
+--[[static]] function PlayerLocation:CreateFromBattleNetID(battleNetID)
+	local playerLocation = CreateFromMixins(PlayerLocationMixin);
+	playerLocation:SetBattleNetID(battleNetID);
+	return playerLocation;
+end
+
 --[[static]] function PlayerLocation:CreateFromWhoIndex(whoIndex)
 	local playerLocation = CreateFromMixins(PlayerLocationMixin);
 	playerLocation:SetWhoIndex(whoIndex);
@@ -124,6 +130,19 @@ function PlayerLocationMixin:GetVoiceID()
 	return self.voiceMemberID, self.voiceChannelID;
 end
 
+function PlayerLocationMixin:SetBattleNetID(battleNetID)
+	self:Clear();
+	self.battleNetID = battleNetID;
+end
+
+function PlayerLocationMixin:IsBattleNetID()
+	return self.battleNetID ~= nil;
+end
+
+function PlayerLocationMixin:GetBattleNetID()
+	return self.battleNetID;
+end
+
 function PlayerLocationMixin:SetWhoIndex(whoIndex)
 	self:ClearAndSetField("whoIndex", whoIndex);
 end
@@ -171,6 +190,7 @@ function PlayerLocationMixin:Clear()
 	self.communityEpoch = nil;
 	self.communityPosition = nil;
 	self.communityClubInviterGUID = nil;
+	self.battleNetID = nil;
 end
 
 function PlayerLocationMixin:ClearAndSetField(fieldName, field)

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="ContainerFrame.lua"/>
+	<Script file="ContainerFrame_Shared.lua"/>
 	
 	<Frame name="ContainerFrameHelpBoxTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" virtual="true">
         <!--
@@ -166,7 +166,8 @@
 				local modifiedClick = IsModifiedClick();
 				-- If we can loot the item and autoloot toggle is active, then do a normal click
 				if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
-					local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+					local info = C_Container.GetContainerItemInfo(self:GetParent():GetID(), self:GetID());
+					local lootable = info and info.hasLoot;
 					if ( lootable ) then
 						modifiedClick = false;
 					end

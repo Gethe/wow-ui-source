@@ -1,6 +1,0 @@
-## Title: Blizzard Social UI
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-Blizzard_SocialUI.xml
-Localization.lua

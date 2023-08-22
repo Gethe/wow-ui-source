@@ -64,6 +64,7 @@ function PetActionBar_OnLoad (self)
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE");
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
 	self:RegisterUnitEvent("UNIT_AURA", "pet");
 	self.showgrid = 0;
@@ -244,7 +245,7 @@ function PetActionBar_UpdatePositionValues()
 	elseif ( MainMenuBarVehicleLeaveButton and MainMenuBarVehicleLeaveButton:IsShown() ) then
 		PETACTIONBAR_XPOS = MainMenuBarVehicleLeaveButton:GetRight() + 20;
 	elseif ( StanceBarFrame and GetNumShapeshiftForms() > 0 ) then
-		PETACTIONBAR_XPOS = _G["StanceButton"..GetNumShapeshiftForms()]:GetRight() + 20;
+		PETACTIONBAR_XPOS = StanceBarFrame.StanceButtons[GetNumShapeshiftForms()]:GetRight() + 20;
 	elseif ( MultiCastActionBarFrame and HasMultiCastActionBar() ) then
 		PETACTIONBAR_XPOS = 500;
 	else
@@ -255,7 +256,7 @@ end
 function ShowPetActionBar(doNotSlide)
 	if ( PetHasActionBar() and PetActionBarFrame.showgrid == 0 and (PetActionBarFrame.mode ~= "show") and (not PetActionBarFrame.locked or doNotSlide) and not PetActionBarFrame.ctrlPressed ) then
 		PetActionBar_UpdatePositionValues();
-		if ( MainMenuBar.busy or doNotSlide ) then
+		if ( MainMenuBar.busy or UnitHasVehicleUI("player") or doNotSlide ) then
 			PetActionBarFrame:SetPoint("TOPLEFT", PetActionBarFrame:GetParent(), "BOTTOMLEFT", PETACTIONBAR_XPOS, PETACTIONBAR_YPOS);
 			PetActionBarFrame.state = "top";
 			PetActionBarFrame:Show();
@@ -337,6 +338,7 @@ function PetActionButton_OnLoad (self)
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED");
 	_G[self:GetName().."Cooldown"]:ClearAllPoints();
 	_G[self:GetName().."Cooldown"]:SetWidth(33);
 	_G[self:GetName().."Cooldown"]:SetHeight(33);
@@ -345,7 +347,7 @@ function PetActionButton_OnLoad (self)
 end
 
 function PetActionButton_OnEvent (self, event, ...)
-	if ( event == "UPDATE_BINDINGS" ) then
+	if ( event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" ) then
 		PetActionButton_SetHotkeys(self);
 		return;
 	end
@@ -367,7 +369,7 @@ function PetActionButton_OnModifiedClick (self, button)
 end
 
 function PetActionButton_OnDragStart (self)
-	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
+	if ( not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
 		self:SetChecked(false);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();

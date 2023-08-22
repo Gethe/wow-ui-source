@@ -4,6 +4,7 @@
 ..\..\SharedXML\Spline.lua
 ..\..\SharedXML\PixelUtilSecure.lua
 ..\..\SharedXML\Pools.lua
+..\..\SharedXML\LinkUtil.lua
 ..\..\SharedXML\ModelSceneTemplatesScripts.xml
 ..\..\SharedXML\ModelSceneMixinScripts.xml
 ..\..\SharedXML\ModelSceneActorMixinScripts.xml
@@ -15,6 +16,7 @@
 ..\..\SharedXML\NineSlice.lua
 ..\..\SharedXML\SecureUtil.lua
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\VASErrorLookup.lua
 Blizzard_SimpleCheckout.xml
 ..\..\..\Interface_Vanilla\AddOns\Blizzard_StoreUI\Blizzard_StoreUI.xml
 Blizzard_StoreUIInsecure.xml

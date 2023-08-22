@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\..\FrameXML\UI.xsd">
 	<Script file="CreateChannelPopup.lua"/>
 
 	<EditBox name="CreateChannelPopupEditBoxTemplate" letters="31" multiLine="false" enableMouse="true" inherits="InputBoxTemplate" virtual="true">
@@ -89,9 +89,9 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.text:SetFontObject(GameFontNormal);
-						self.text:SetText(ENABLE_VOICECHAT);
-						self.text:SetPoint("LEFT", self, "RIGHT", 2, 2);
+						self.Text:SetFontObject(GameFontNormal);
+						self.Text:SetText(ENABLE_VOICECHAT);
+						self.Text:SetPoint("LEFT", self, "RIGHT", 2, 2);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>

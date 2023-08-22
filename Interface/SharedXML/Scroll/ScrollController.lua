@@ -1,3 +1,31 @@
+---------------
+--NOTE - Please do not change this section without understanding the full implications of the secure environment
+--We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
+local _, tbl = ...;
+
+if tbl then
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
+
+	local function Import(name)
+		tbl[name] = tbl.SecureCapsuleGet(name);
+	end
+
+	Import("IsOnGlueScreen");
+
+	if ( tbl.IsOnGlueScreen() ) then
+		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
+		Import("C_StoreGlue");
+	end
+
+	setfenv(1, tbl);
+
+	Import("GetScaledCursorPosition");
+	Import("Saturate");
+	Import("CreateInterpolator");
+	Import("ApproximatelyEqual");
+end
+----------------
+
 ScrollDirectionMixin = {};
 
 function ScrollDirectionMixin:SetHorizontal(isHorizontal)
@@ -29,8 +57,8 @@ function ScrollDirectionMixin:GetLower(frame)
 	return self.isHorizontal and frame:GetRight() or frame:GetBottom();
 end
 
-function ScrollDirectionMixin:SelectCursorComponent()
-	local x, y = GetScaledCursorPosition();
+function ScrollDirectionMixin:SelectCursorComponent(parent)
+	local x, y = InputUtil.GetCursorPosition(parent);
 	return self.isHorizontal and x or y;
 end
 
@@ -87,12 +115,20 @@ function ScrollControllerMixin:GetScrollPercentage()
 	return self.scrollPercentage or 0;
 end
 
+function ScrollControllerMixin:IsAtBegin()
+	return ApproximatelyEqual(self:GetScrollPercentage(), 0);
+end
+
+function ScrollControllerMixin:IsAtEnd()
+	return ApproximatelyEqual(self:GetScrollPercentage(), 1);
+end
+
 function ScrollControllerMixin:SetScrollPercentage(scrollPercentage)
 	self.scrollPercentage = Saturate(scrollPercentage);
 end
 
 function ScrollControllerMixin:CanInterpolateScroll()
-	return self.canInterpolateScroll or false;
+	return self.canInterpolateScroll;
 end
 
 function ScrollControllerMixin:SetInterpolateScroll(canInterpolateScroll)
@@ -101,7 +137,7 @@ end
 
 function ScrollControllerMixin:GetScrollInterpolator()
 	if not self.interpolator then
-		self.interpolator = CreateFromMixins(InterpolatorMixin);
+		self.interpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut);
 	end
 	return self.interpolator;
 end
