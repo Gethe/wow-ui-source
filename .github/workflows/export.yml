@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2 
+      uses: actions/checkout@v3
 
     - name: Remove old files
       run: |
@@ -17,12 +17,12 @@ jobs:
         rm -r !(*.git*|*.sublime-*|*.md)
 
     - name: Install Lua
-      uses: leafo/gh-actions-lua@v8.0.0
+      uses: leafo/gh-actions-lua@v10.0.0
       with:
         luaVersion: "5.2"
 
     - name: Checkout InterfaceExport
-      uses: actions/checkout@v2 
+      uses: actions/checkout@v3
       with:
         repository: Gethe/InterfaceExport
         path: InterfaceExport
@@ -40,8 +40,9 @@ jobs:
         path: "version.txt"
 
     - name: Add & Commit
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@latest
       with:
         message: ${{ steps.version.outputs.contents }}
+        default_author: github_actions
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
