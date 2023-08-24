@@ -1004,7 +1004,7 @@ function UnitFrameManaBar_OnUpdate(self)
 					end
 				end
 				if ( self.FullPowerFrame and self.FullPowerFrame.active ) then
-					self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
+					self.FullPowerFrame:StartAnimIfFull(currValue);
 				end
 				self:SetValue(currValue);
 				self.currValue = currValue;

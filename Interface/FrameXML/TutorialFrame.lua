@@ -878,26 +878,6 @@ function HelpPlate_IsShowing(plate)
 	return (HELP_PLATE_CURRENT_PLATE == plate);
 end
 
-function Main_HelpPlate_Button_OnEnter(self)
-	Main_HelpPlate_Button_ShowTooltip(self);
-	HelpPlateTooltip.LingerAndFade:Stop();
-end
-
-function Main_HelpPlate_Button_ShowTooltip(self)
-	HelpPlateTooltip.ArrowRIGHT:Show();
-	HelpPlateTooltip.ArrowGlowRIGHT:Show();
-	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
-	HelpPlateTooltip.Text:SetText(self.MainHelpPlateButtonTooltipText or MAIN_HELP_BUTTON_TOOLTIP);
-	HelpPlateTooltip:Show();
-end
-
-function Main_HelpPlate_Button_OnLeave(self)
-	HelpPlateTooltip.ArrowRIGHT:Hide();
-	HelpPlateTooltip.ArrowGlowRIGHT:Hide();
-	HelpPlateTooltip:ClearAllPoints();
-	HelpPlateTooltip:Hide();
-end
-
 function HelpPlate_Button_OnLoad(self)
 	self.animGroup_Show = self:CreateAnimationGroup();
 	self.animGroup_Show.translate = self.animGroup_Show:CreateAnimation("Translation");

@@ -379,9 +379,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	MerchantBuyBackItem:Show();
 	MerchantFrameBottomLeftBorder:Show();
 
-	--ALEX TODO - Disabled until next patch
-	--MerchantSellAllJunkButton:Show();
-	MerchantSellAllJunkButton:Hide();
+	MerchantSellAllJunkButton:Show();
 
 	-- Hide buyback related items
 	MerchantItem11:Hide();
@@ -1047,9 +1045,12 @@ function MerchantFrame_InitFilter()
 end
 
 function MerchantFrame_OnSellAllJunkButtonClicked()
-	--ALEX TODO - disabled until next patch	
-	--GameTooltip:Hide();
-	--C_MerchantFrame.SellAllJunkItems();
+	GameTooltip:Hide();
+	StaticPopup_ShowGenericConfirmation(SELL_ALL_JUNK_ITEMS_POPUP, MerchantFrame_OnSellAllJunkButtonConfirmed);
+end
+
+function MerchantFrame_OnSellAllJunkButtonConfirmed()
+	C_MerchantFrame.SellAllJunkItems();
 end
 
 function MerchantBuyBackButton_OnEnter(button)

@@ -79,3 +79,14 @@ function SettingsCategoryMixin:CreateSubcategory(name, description)
 	table.insert(self.subcategories, subcategory);
 	return subcategory;
 end
+
+function SettingsCategoryMixin:SetCategoryTutorialInfo(tooltip, callback)
+	self.tutorial = {
+		tooltip = tooltip,
+		callback = callback,
+	};
+end
+
+function SettingsCategoryMixin:GetCategoryTutorialInfo()
+	return self.tutorial;
+end

@@ -15,6 +15,20 @@ local PingManager =
 			Type = "Function",
 		},
 		{
+			Name = "GetContextualPingTypeForUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetUnit", Type = "WOWGUID", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "type", Type = "PingSubjectType", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCooldownInfo",
 			Type = "Function",
 

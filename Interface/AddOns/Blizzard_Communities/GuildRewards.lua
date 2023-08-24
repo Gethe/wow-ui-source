@@ -103,20 +103,30 @@ function CommunitiesGuildRewardsButton_OnEnter(self)
 	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 28, 0);
 	GameTooltip:SetHyperlink("item:"..itemID);
+
+	local hasAchievementRequirements = false;
 	if ( achievementID and achievementID > 0 ) then
 		local id, name, _, _, _, _, _, description = GetAchievementInfo(achievementID)
 		GameTooltip:AddLine(" ", 1, 0, 0, true);
 		GameTooltip:AddLine(REQUIRES_GUILD_ACHIEVEMENT, 1, 0, 0, true);
 		GameTooltip:AddLine(ACHIEVEMENT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
-		GameTooltip:AddLine(description, 1, 1, 1, true);
+		
+		hasAchievementRequirements = true;
 	end
 	local _, _, standingID = GetGuildFactionInfo();
 	if ( repLevel > standingID ) then
 		local gender = UnitSex("player");
 		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
+		
 		GameTooltip:AddLine(" ", 1, 0, 0, true);
 		GameTooltip:AddLine(string.format(REQUIRES_GUILD_FACTION_TOOLTIP, factionStandingtext), 1, 0, 0, true);
 	end
+
+	if(hasAchievementRequirements) then
+		GameTooltip:AddLine(" ", 1, 0, 0, true);
+		GameTooltip:AddLine(INSPECT_REQUIREMENTS, 0, 1, 0);
+	end
+
 	self.UpdateTooltip = CommunitiesGuildRewardsButton_OnEnter;
 	GameTooltip:Show();
 end
@@ -131,6 +141,12 @@ function CommunitiesGuildRewardsButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
 		ChatEdit_LinkItem(itemID);
+	elseif (button == "LeftButton" and IsControlKeyDown()) then
+		local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(self.index);
+
+		if(achievementID and achievementID > 0) then
+			OpenAchievementFrameToAchievement(achievementID);
+		end
 	elseif ( button == "RightButton" ) then
 		local dropDown = self:GetParent():GetParent():GetParent().DropDown;
 		if ( dropDown.rewardIndex ~= self.index ) then

@@ -587,13 +587,13 @@ end
 
 function RaidFrameManagerRestrictPingsButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	C_PartyInfo.SetRestrictRaidPings(self:GetChecked());
+	C_PartyInfo.SetRestrictPings(self:GetChecked());
 end
 
 function RaidFrameManagerRestrictPingsButtonMixin:UpdateCheckedState()
-	self:SetChecked(C_PartyInfo.GetRestrictRaidPings());
+	self:SetChecked(C_PartyInfo.GetRestrictPings());
 end
 
 function RaidFrameManagerRestrictPingsButtonMixin:ShouldShow()
-	return IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player"));
+	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player");
 end

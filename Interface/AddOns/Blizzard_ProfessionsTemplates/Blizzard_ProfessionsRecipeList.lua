@@ -365,7 +365,7 @@ function ProfessionsRecipeListRecipeMixin:OnEnter()
 		GameTooltip:Show();
 	end
 
-	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, recipeID, name, iconID);
+	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, elementData.data);
 end
 
 

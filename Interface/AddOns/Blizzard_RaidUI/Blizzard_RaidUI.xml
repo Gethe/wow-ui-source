@@ -147,6 +147,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="useRaidIcons" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="11" y="11"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRank" relativePoint="RIGHT"  x="0" y="0"/>
@@ -541,6 +544,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="useRaidIcons" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="18" y="18"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>

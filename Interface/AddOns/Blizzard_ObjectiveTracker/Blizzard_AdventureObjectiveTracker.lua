@@ -291,8 +291,18 @@ function ADVENTURE_TRACKER_MODULE:OnTrackableItemCollected(trackableType, tracka
 		block.objective.state = "ANIMATING";
 		AdventureObjectiveTracker_AnimateReward(trackableID, block, block.posIndex, self);
 		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
+	elseif C_ContentTracking.IsTracking(trackableType, trackableID) and self.lastBlock then
+		--If no block is found, but we are tracking the item, and the last block is visible, show animation at the bottom of the tracker module
+		AdventureObjectiveTracker_AnimateReward(trackableID, self.lastBlock, 0, self);
+		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", self.lastBlock, "BOTTOMLEFT");
+		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
+	elseif C_ContentTracking.IsTracking(trackableType, trackableID) and (ObjectiveTrackerBlocksFrame.AdventureHeader:IsShown() and self:IsCollapsed()) then
+		--If no block is found, but we are tracking the item, and the header is visible and collapsed, show animation next to the module header
+		AdventureObjectiveTracker_AnimateReward(trackableID, ObjectiveTrackerBlocksFrame.AdventureHeader, 0, self);
+		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", ObjectiveTrackerBlocksFrame.AdventureHeader, "TOPLEFT");
+		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);
 	elseif C_ContentTracking.IsTracking(trackableType, trackableID) then
-		--If no block is found, but we are tracking the item, show animation at the bottom of the objective tracker
+		--If no block or header is found, but we are tracking the item, show animation at the bottom of the objective tracker
 		AdventureObjectiveTracker_AnimateReward(trackableID, ObjectiveTrackerFrame, 0, self);
 		AdventureObjectiveTrackerBonusRewardsFrame:SetPoint("TOPRIGHT", ObjectiveTrackerFrame, "BOTTOMLEFT", 20, 16);
 		PlaySound(SOUNDKIT.CONTENT_TRACKING_ITEM_ACQUIRED_TOAST);

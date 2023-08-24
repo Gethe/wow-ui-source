@@ -43,6 +43,10 @@ local MerchantFrame =
 				{ Name = "refundable", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SellAllJunkItems",
+			Type = "Function",
+		},
 	},
 
 	Events =

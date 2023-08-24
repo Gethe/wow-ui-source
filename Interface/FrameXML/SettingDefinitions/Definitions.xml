@@ -13,7 +13,7 @@
 	<Script file="Combat.lua"/>
 	<Script file="ActionBars.lua"/>
 	<Include file="Social.lua"/>
-	<Script file="PingSystem.lua"/>
+	<Include file="PingSystem.xml"/>
 	<Include file="Keybindings.xml"/>
 	<Script file="Accessibility.lua"/>
 	<Include file="Colorblind.xml"/>

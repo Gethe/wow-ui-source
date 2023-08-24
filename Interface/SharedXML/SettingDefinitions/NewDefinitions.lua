@@ -8,6 +8,11 @@ NewSettings["10.1.5"] = {
 	"ReplaceMyPlayerPortrait",
 };
 
+NewSettings["10.1.7"] = {
+	"restrictCalendarInvites",
+	"enablePings",
+};
+
 function IsNewSettingInCurrentVersion(variable)
 	local version = GetBuildInfo();
 	local currentNewSettings = NewSettings[version];

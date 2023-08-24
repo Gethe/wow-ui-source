@@ -1,6 +1,5 @@
 PingUtil = {};
 
-function PingUtil:GetContextualPingTypeForUnit(unitToken)
-    local isUnitUnfriendly = not PlayerUtil.HasFriendlyReaction(unitToken);
-    return isUnitUnfriendly and Enum.PingSubjectType.AlertThreat or Enum.PingSubjectType.AlertNotThreat;
+function PingUtil:GetContextualPingTypeForUnit(targetGUID)
+    return C_Ping.GetContextualPingTypeForUnit(targetGUID);
 end

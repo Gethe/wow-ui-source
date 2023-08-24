@@ -2,6 +2,10 @@
 ..\FrameXML\UI.xsd">
 	<Script file="ReadyCheck.lua"/>
 	<Frame name="ReadyCheckStatusTemplate" virtual="true">
+		<!-- <KeyValues>
+			The raid ready check icons are smaller and do not have a background shadow
+			<KeyValue key="useRaidIcons" value="true" type="boolean"/>
+		</KeyValues> -->		
 		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="OVERLAY">

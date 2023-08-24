@@ -171,49 +171,20 @@
 					</Layer>
 				</Layers>
 			</Frame>
-      
-			<PlayerModel name="PetStableModel" mixin="PetStableModelFrameMixin" inherits="ModelWithZoomTemplate">
+
+			<ModelScene name="PetStableModelScene" inherits="PanningModelSceneMixinTemplate" parentKey="PetStableModelScene">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PetStableFrameModelBg" x="2" y="-48"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="PetStableFrameModelBg" x="-3" y="3"/>
 				</Anchors>
-
 				<Frames>
-					<Button name="PetStableModelRotateLeftButton" mixin="ModelControlRotateButtonMixin">
-						<Size x="35" y="35"/>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="rotateDirection" value="left" type="string"/>
-						</KeyValues>
-						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
-
-					<Button name="PetStableModelRotateRightButton" mixin="ModelControlRotateButtonMixin">
-						<Size x="35" y="35"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PetStableModelRotateLeftButton" relativePoint="TOPRIGHT"/>
-						</Anchors>
-            <KeyValues>
-              <KeyValue key="rotateDirection" value="right" type="string"/>
-            </KeyValues>
-            <NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
-					</Button>
-          
-					<Frame name="PetStableModelShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-1" y="1"/>
-							<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+							<Anchor point="TOP" x="0" y="-10"/>
 						</Anchors>
 					</Frame>
 				</Frames>
-        
-			</PlayerModel>
+			</ModelScene>
       
 			<Frame name="PetStablePetInfo">
 				<Size x="310" y="40"/>
@@ -379,17 +350,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="PetStable_OnLoad"/>
-			<OnShow>
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
-			</OnShow>
-			<OnHide>
-				ClosePetStables();
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
-				local cursorType, _ = GetCursorInfo();
-				if (cursorType == "pet") then
-					ClearCursor();
-				end
-			</OnHide>
+			<OnShow function="PetStable_OnShow"/>
+			<OnHide function="PetStable_OnHide"/>
 			<OnEvent function="PetStable_OnEvent"/>
 			<OnMouseWheel function="PetStable_OnMouseWheel"/>
 		</Scripts>

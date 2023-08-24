@@ -503,7 +503,7 @@
 			<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate">
 				<Size x="70" y="10"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="2" y="-3.5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-6" y="-2.5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

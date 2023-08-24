@@ -445,13 +445,13 @@ do
 	local function AddButtons_BagCleanup(bagID, level)
 		local info = UIDropDownMenu_CreateInfo();
 
-		info.text = BAG_FILTER_CLEANUP;
+		info.text = BAG_FILTER_IGNORE;
 		info.isTitle = 1;
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info, level);
 
 		info = UIDropDownMenu_CreateInfo();
-		info.text = BAG_FILTER_IGNORE;
+		info.text = BAG_FILTER_CLEANUP;
 		info.func = function(_, _, _, value)
 			if ContainerFrame_IsMainBank(bagID) then
 				C_Container.SetBankAutosortDisabled(not value);
@@ -471,6 +471,27 @@ do
 		end
 
 		UIDropDownMenu_AddButton(info, level);
+
+		-- ignore junk selling from this bag or backpack
+		if not ContainerFrame_IsMainBank(bagID) then
+			info = UIDropDownMenu_CreateInfo();
+			info.text = SELL_ALL_JUNK_ITEMS_EXCLUDE_FLAG;
+			info.func = function(_, _, _, value)
+				if ContainerFrame_IsBackpack(bagID) then
+					C_Container.SetBackpackSellJunkDisabled(not value);
+				else
+					C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.ExcludeJunkSell, not value);
+				end
+			end
+
+			if ContainerFrame_IsBackpack(bagID) then
+				info.checked = C_Container.GetBackpackSellJunkDisabled();
+			else
+				info.checked = C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.ExcludeJunkSell);
+			end
+
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
 
 	local function AddButtons_BagModeToggle(containerFrame, level)

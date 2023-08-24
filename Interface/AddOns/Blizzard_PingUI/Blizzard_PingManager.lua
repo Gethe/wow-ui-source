@@ -12,6 +12,8 @@ local PING_RESULT_STRINGS = {
 	[Enum.PingResult.FailedGeneric] = PING_FAILED_GENERIC,
     [Enum.PingResult.FailedDisabledByLeader] = PING_FAILED_DISABLED_BY_LEADER,
     [Enum.PingResult.FailedDisabledBySettings] = PING_FAILED_DISABLED_BY_SETTINGS,
+    [Enum.PingResult.FailedOutOfPingArea] = PING_FAILED_OUT_OF_PING_AREA,
+	[Enum.PingResult.FailedSquelched] = PING_FAILED_SQUELCHED;
     [Enum.PingResult.FailedUnspecified] = PING_FAILED_UNSPECIFIED,
 };
 
@@ -174,7 +176,7 @@ function PingManager:SendMacroPing(type, targetUnitToken)
         targetGUID = UnitGUID(targetUnitToken);
 
         if not type then
-            type = PingUtil:GetContextualPingTypeForUnit(targetUnitToken);
+            type = PingUtil:GetContextualPingTypeForUnit(targetGUID);
         end
     else
         local cursorX, cursorY = GetCursorPosition();

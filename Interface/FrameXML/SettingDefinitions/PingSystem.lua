@@ -3,6 +3,14 @@ local function Register()
     category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[PING_SYSTEM_LABEL]);
     Settings.PINGSYSTEM_CATEGORY_ID = category:GetID();
 
+    -- Tutorial
+    local tooltip = PING_SYSTEM_TUTORIAL_TOOLTIP;
+    local function PingSystemTutorialCallback()
+        PingSystemTutorial:SetShown(not PingSystemTutorial:IsShown());
+    end
+
+    Settings.AssignTutorialToCategory(category, tooltip, PingSystemTutorialCallback);
+
     -- Enable Pings
     local enablePingsSetting, enablePingsInitializer = Settings.SetupCVarCheckBox(category, "enablePings", ENABLE_PINGS, OPTION_TOOLTIP_ENABLE_PINGS);
 
@@ -58,3 +66,24 @@ local function Register()
 end
 
 SettingsRegistrar:AddRegistrant(Register);
+
+PingSystemTutorialMixin = {};
+
+function PingSystemTutorialMixin:OnLoad()
+    self:SetParent(UIParent);
+
+    ButtonFrameTemplate_HidePortrait(self);
+    ButtonFrameTemplate_HideAttic(self);
+    ButtonFrameTemplate_HideButtonBar(self);
+
+    self:SetTitle(PING_SYSTEM_TUTORIAL_LABEL);
+    self.DragBar:Init(self);
+end
+
+function PingSystemTutorialMixin:OnHide()
+    SettingsPanel.activeCategoryTutorial = false;
+end
+
+function PingSystemTutorialMixin:OnShow()
+    SettingsPanel.activeCategoryTutorial = true;
+end

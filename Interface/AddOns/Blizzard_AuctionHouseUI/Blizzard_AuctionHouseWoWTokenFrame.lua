@@ -26,6 +26,23 @@ function BrowseWowTokenResults_OnLoad(self)
 
 	self.TokenDisplay:SetItem(WOW_TOKEN_ITEM_ID);
 	self.TokenDisplay.NineSlice:Hide();
+
+	self.HelpButton.Ring:Hide();
+
+	self.HelpButton:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self.HelpButton, "ANCHOR_RIGHT",-22,-22);
+		GameTooltip:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
+		GameTooltip:Show();
+	end);
+
+	self.HelpButton:SetScript("OnLeave", function()
+		GameTooltip_Hide();
+	end);
+
+	self.HelpButton:SetScript("OnClick", function()
+		local gameTimeTutorial = self.HelpButton:GetParent().GameTimeTutorial;
+		gameTimeTutorial:SetShown(not gameTimeTutorial:IsShown());
+	end);
 end
 
 function BrowseWowTokenResults_OnShow(self)

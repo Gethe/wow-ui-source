@@ -160,7 +160,7 @@ local PartyInfo =
 			},
 		},
 		{
-			Name = "GetRestrictRaidPings",
+			Name = "GetRestrictPings",
 			Type = "Function",
 
 			Returns =
@@ -239,7 +239,7 @@ local PartyInfo =
 			},
 		},
 		{
-			Name = "SetRestrictRaidPings",
+			Name = "SetRestrictPings",
 			Type = "Function",
 
 			Arguments =
