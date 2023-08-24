@@ -58,7 +58,11 @@ end
 
 function UnitPopupSharedUtil:GetFullPlayerName()
 	local dropdownFrame = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return dropdownFrame.name;
+	local fullName = dropdownFrame.name;
+	if ( dropdownFrame.server and ((not dropdownFrame.unit and GetNormalizedRealmName() ~= dropdownFrame.server) or (dropdownFrame.unit and UnitRealmRelationship(dropdownFrame.unit) ~= LE_REALM_RELATION_SAME)) ) then
+		fullName = dropdownFrame.name.."-"..dropdownFrame.server;
+	end
+	return fullName; 
 end		
 
 function UnitPopupSharedUtil:HasLFGRestrictions()
