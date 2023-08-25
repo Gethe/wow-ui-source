@@ -351,7 +351,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="QuestNPCModelNameplate" inherits="QuestPortrait-Nameplate"/>
+				<Texture name="QuestNPCModelNameplate" inherits="QuestPortrait-Nameplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-216"/>
+					</Anchors>
+				</Texture>
 				<Texture name="QuestNPCModelBlankNameplate" inherits="QuestPortrait-Divider_noname">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="12"/>

@@ -127,17 +127,19 @@ end
 
 function SettingsListElementInitializer:IsParentInitializerInCurrentSettingsCategory()
 	local parentInitializer = self:GetParentInitializer();
-	if not parentInitializer then
-		return false;
-	end
-
-	local currentSettingsCategory = SettingsPanel:GetCategoryList():GetCurrentCategory();
-	local currentSettingsLayout = SettingsPanel:GetLayout(currentSettingsCategory);
-	for _, initializer in currentSettingsLayout:EnumerateInitializers() do
-		if initializer == parentInitializer then
-			return true;
+	if parentInitializer then
+		local currentCategory = SettingsPanel:GetCategoryList():GetCurrentCategory();
+		local currentLayout = SettingsPanel:GetLayout(currentCategory);
+		if currentLayout and currentLayout:IsVerticalLayout() then
+			for _, initializer in currentLayout:EnumerateInitializers() do
+				if initializer == parentInitializer then
+					return true;
+				end
+			end
 		end
 	end
+
+	return false;	
 end
 
 function SettingsListElementInitializer:GetIndent()

@@ -222,7 +222,11 @@ retain("PercentageBetween");
 retain("Saturate");
 retain("GetCursorDelta");
 retain("GetScaledCursorDelta");
+retain("CalculateAngleBetween");
 retain("CalculateDistanceSq");
+retain("ClampedPercentageBetween");
+retain("AnchorUtil");
+retain("EasingUtil");
 retain("GetTickTime");
 retain("Vector3D_Add");
 retain("Vector3D_Normalize");
@@ -280,9 +284,11 @@ retain("UnitIsPVP");
 retain("UnitReaction");
 retain("C_Timer");
 retain("C_CVar");
+retain("C_UI");
 retain("C_XMLUtil");
 retain("GetFontStringMetatable");
 retain("pcallwithenv");
+retain("UnitGUID");
 
 -- For tooltips
 retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
@@ -319,11 +325,17 @@ retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 retain("IsCharacterNPERestricted");
 retain("GetScaledCursorPosition");
+retain("GetScaledCursorPositionForFrame");
 retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
 retain("Vector3DMixin");
+retain("SetCursor");
+retain("ResetCursor");
+retain("Vector2D_CalculateAngleBetween");
+retain("Vector2D_Cross");
+retain("Vector2D_Dot");
 
 -- Require move
 retain("tInvert");
@@ -768,6 +780,25 @@ retain("C_FunctionContainers");
 retain("C_UnitAuras");
 take("C_UnitAurasPrivate");
 removefromtable("C_TooltipInfo", "GetUnitPrivateAura");
+
+-- For Ping System
+retain("C_Ping");
+take("C_PingSecure");
+retain("PING_TYPE_ASSIST");
+retain("PING_TYPE_ATTACK");
+retain("PING_TYPE_ON_MY_WAY");
+retain("PING_TYPE_WARNING");
+retain("PING_FAILED_SPAMMING");
+retain("PING_FAILED_GENERIC");
+retain("PING_FAILED_DISABLED_BY_LEADER");
+retain("PING_FAILED_DISABLED_BY_SETTINGS");
+retain("PING_FAILED_OUT_OF_PING_AREA");
+retain("PING_FAILED_SQUELCHED");
+retain("PING_FAILED_UNSPECIFIED");
+retainenum("PingSubjectType");
+retainenum("PingResult");
+retainenum("PingMode");
+retain("PingUtil");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

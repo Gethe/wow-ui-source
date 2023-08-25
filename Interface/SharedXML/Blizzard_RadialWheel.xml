@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI_shared.xsd">
-	<Script file="Blizzard_RadialWheel.lua"/>
-
 	<Frame name="RadialWheelButtonTemplate" mixin="RadialWheelButtonMixin" virtual="true">
 		<Size x="100" y="100"/>
 		<Anchors>

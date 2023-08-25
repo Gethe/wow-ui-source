@@ -498,7 +498,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
 
 	-- Event(s) for ping system
-	self:RegisterEvent("PING_PIN_FRAME_ADDED");
+	self:RegisterEvent("PING_SYSTEM_ERROR");
 end
 
 function UIParent_OnShow(self)
@@ -879,10 +879,6 @@ end
 
 function SubscriptionInterstitial_LoadUI()
 	LoadAddOn("Blizzard_SubscriptionInterstitialUI");
-end
-
-function PingUI_LoadUI()
-	LoadAddOn("Blizzard_PingUI");
 end
 
 local playerEnteredWorld = false;
@@ -2472,6 +2468,13 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
+
+		-- Ping Listener.
+		-- When pinging UI, if the ping keybind is mapped to any mouse button the input gets consumed before it would hit the normal logic in Bindings.
+    	-- Below logic catches the input and handles this case specifically.
+		if IsMouseButton(buttonID) and GetConvertedKeyOrButton(buttonID) == GetBindingKey("TOGGLEPINGLISTENER") then
+			C_Ping.TogglePingListener(event == "GLOBAL_MOUSE_DOWN");
+		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
@@ -2495,9 +2498,9 @@ function UIParent_OnEvent(self, event, ...)
 		local partyPoseID, won = ...;
 		MatchCelebrationPartyPoseFrame:LoadScreenByPartyPoseID(partyPoseID, won);
 		ShowUIPanel(MatchCelebrationPartyPoseFrame);
-	elseif event == "PING_PIN_FRAME_ADDED" then
-		PingUI_LoadUI();
-		PingManager:OnPingPinFrameAdded(...);
+	elseif event == "PING_SYSTEM_ERROR" then
+		local errorMsg = ...;
+		UIErrorsFrame:AddMessage(errorMsg, RED_FONT_COLOR:GetRGBA());
 	end
 end
 
@@ -4003,10 +4006,15 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 	end
 end
 
-function GetScaledCursorPosition()
-	local uiScale = UIParent:GetEffectiveScale();
+function GetScaledCursorPositionForFrame(frame)
+	local uiScale = frame:GetEffectiveScale();
 	local x, y = GetCursorPosition();
 	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorPosition()
+	local x, y = GetScaledCursorPositionForFrame(UIParent);
+	return x, y;
 end
 
 function GetScaledCursorDelta()

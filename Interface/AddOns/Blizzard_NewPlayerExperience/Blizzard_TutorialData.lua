@@ -365,7 +365,7 @@ TutorialData.Alliance = {
 
 	LookingForGroupQuest = 55992;
 	
-	GetMountQuest = 58909;
+	GetMountQuest = 58908;
 
 	SpecChoiceQuest = 59587;
 
@@ -494,7 +494,7 @@ TutorialData.Horde = {
 
 	LookingForGroupQuest = 59984;
 	
-	GetMountQuest = 60345;
+	GetMountQuest = 60344;
 
 	SpecChoiceQuest = 60348;
 

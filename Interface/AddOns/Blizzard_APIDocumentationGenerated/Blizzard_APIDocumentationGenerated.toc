@@ -91,6 +91,7 @@ PartyPoseUIDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
 PingManagerDocumentation.lua
+PingManagerSecureDocumentation.lua
 PingPinFrameAPIDocumentation.lua
 PlatformDocumentation.lua
 PlayerInfoDocumentation.lua

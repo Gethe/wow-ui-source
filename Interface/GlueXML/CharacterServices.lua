@@ -77,6 +77,23 @@ local function CanBoostCharacter(class, level, boostInProgress, isTrialBoost, re
 	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, class, level, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, raceFilename);
 end
 
+local function clearButtonScripts(button)
+	button:SetScript("OnClick", nil);
+	button:SetScript("OnDoubleClick", nil);
+	button:SetScript("OnDragStart", nil);
+	button:SetScript("OnDragStop", nil);
+	button:SetScript("OnMouseDown", nil);
+	button:SetScript("OnMouseUp", nil);
+	button:SetScript("OnEnter", nil);
+	button:SetScript("OnLeave", nil);
+
+	-- Are these necessary?
+	button.upButton:SetScript("OnClick", nil);
+	button.downButton:SetScript("OnClick", nil);
+	button.upButton:Hide();
+	button.downButton:Hide();
+end
+
 CharacterSelectBlockBase = {};
 
 function CharacterSelectBlockBase:SetCharacterSelectErrorFrameShown(showError)
@@ -814,23 +831,6 @@ function CharacterUpgradeFlow:GetFinishLabel()
 	end
 
 	return CharacterServicesFlowMixin.GetFinishLabel(self);
-end
-
-local function clearButtonScripts(button)
-	button:SetScript("OnClick", nil);
-	button:SetScript("OnDoubleClick", nil);
-	button:SetScript("OnDragStart", nil);
-	button:SetScript("OnDragStop", nil);
-	button:SetScript("OnMouseDown", nil);
-	button:SetScript("OnMouseUp", nil);
-	button:SetScript("OnEnter", nil);
-	button:SetScript("OnLeave", nil);
-
-	-- Are these necessary?
-	button.upButton:SetScript("OnClick", nil);
-	button.downButton:SetScript("OnClick", nil);
-	button.upButton:Hide();
-	button.downButton:Hide();
 end
 
 local function clearAllButtonScripts()

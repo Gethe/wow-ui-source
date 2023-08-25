@@ -44,6 +44,15 @@ local MerchantFrame =
 			},
 		},
 		{
+			Name = "IsSellAllJunkEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SellAllJunkItems",
 			Type = "Function",
 		},

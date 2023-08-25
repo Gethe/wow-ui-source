@@ -379,7 +379,7 @@ function MerchantFrame_UpdateMerchantInfo()
 	MerchantBuyBackItem:Show();
 	MerchantFrameBottomLeftBorder:Show();
 
-	MerchantSellAllJunkButton:Show();
+	MerchantSellAllJunkButton:SetShown(C_MerchantFrame.IsSellAllJunkEnabled());
 
 	-- Hide buyback related items
 	MerchantItem11:Hide();
@@ -1044,14 +1044,17 @@ function MerchantFrame_InitFilter()
 	UIDropDownMenu_AddButton(info);
 end
 
-function MerchantFrame_OnSellAllJunkButtonClicked()
-	GameTooltip:Hide();
-	StaticPopup_ShowGenericConfirmation(SELL_ALL_JUNK_ITEMS_POPUP, MerchantFrame_OnSellAllJunkButtonConfirmed);
-end
-
 function MerchantFrame_OnSellAllJunkButtonConfirmed()
 	C_MerchantFrame.SellAllJunkItems();
 end
+
+local popupData = { text = SELL_ALL_JUNK_ITEMS_POPUP, callback = MerchantFrame_OnSellAllJunkButtonConfirmed };
+
+function MerchantFrame_OnSellAllJunkButtonClicked()
+	GameTooltip:Hide();
+	StaticPopup_ShowCustomGenericConfirmation(popupData);
+end
+
 
 function MerchantBuyBackButton_OnEnter(button)
 	MerchantBuyBackItem.itemHover = button:GetID();

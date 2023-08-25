@@ -348,6 +348,10 @@ function ReportInfoMixin:SetGroupFinderSearchResultID(groupFinderSearchResultID)
 	self.groupFinderSearchResultID = groupFinderSearchResultID
 end
 
+function ReportInfoMixin:SetReportedChatInline()
+	self.reportedChatInline = true;
+end
+
 function ReportInfoMixin:SetGroupFinderApplicantID(groupFinderApplicantID)
 	self.groupFinderApplicantID = groupFinderApplicantID
 end

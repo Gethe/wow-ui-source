@@ -1,3 +1,108 @@
+---------------
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
+if tbl then
+	assertsafe(secureCapsuleGet ~= nil, "SecureCapsuleGet not provided to secure environment.");
+	tbl.SecureCapsuleGet = secureCapsuleGet;
+	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+	tbl.type = tbl.SecureCapsuleGet("type");
+	tbl.unpack = tbl.SecureCapsuleGet("unpack");
+	tbl.error = tbl.SecureCapsuleGet("error");
+	tbl.pcall = tbl.SecureCapsuleGet("pcall");
+	tbl.pairs = tbl.SecureCapsuleGet("pairs");
+	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
+
+	local function CleanFunction(f)
+		local f = function(...)
+			local function HandleCleanFunctionCallArgs(success, ...)
+				if success then
+					return ...;
+				else
+					tbl.error("Error in secure capsule function execution: "..(...));
+				end
+			end
+			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
+		end
+		setfenv(f, tbl);
+		return f;
+	end
+
+	local function CleanTable(t, tableCopies)
+		if not tableCopies then
+			tableCopies = {};
+		end
+
+		local cleaned = {};
+		tableCopies[t] = cleaned;
+
+		for k, v in tbl.pairs(t) do
+			if tbl.type(v) == "table" then
+				if ( tableCopies[v] ) then
+					cleaned[k] = tableCopies[v];
+				else
+					cleaned[k] = CleanTable(v, tableCopies);
+				end
+			elseif tbl.type(v) == "function" then
+				cleaned[k] = CleanFunction(v);
+			else
+				cleaned[k] = v;
+			end
+		end
+		return cleaned;
+	end
+
+	local function Import(name)
+		if tbl[name] ~= nil then
+			return;
+		end
+
+		local skipTableCopy = true;
+		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+		if tbl.type(val) == "function" then
+			tbl[name] = CleanFunction(val);
+		elseif tbl.type(val) == "table" then
+			tbl[name] = CleanTable(val);
+		else
+			tbl[name] = val;
+		end
+	end
+
+	if tbl.getmetatable(tbl) == nil then
+		local secureEnvMetatable =
+		{
+			__metatable = false,
+			__environment = false,
+		}
+		tbl.setmetatable(tbl, secureEnvMetatable);
+	end
+
+	setfenv(1, tbl);
+----------------
+
+	Import("AnchorUtil");
+	Import("C_Texture");
+	Import("C_UI");
+	Import("EasingUtil");
+	Import("math");
+
+	Import("CalculateAngleBetween");
+	Import("CalculateDistanceSq");
+	Import("Clamp");
+	Import("ClampedPercentageBetween");
+	Import("GetScaledCursorPositionForFrame");
+	Import("GetTime");
+	Import("ipairs");
+	Import("Lerp");
+	Import("PercentageBetween");
+	Import("Saturate");
+	Import("select");
+end
+
+----------------
+
 local RADIAL_FORMAT_SMALL = "%s_Small";
 local RADIAL_FORMAT_DISABLED = "%s_Disabled";
 local RADIAL_FORMAT_COOLDOWN = "%s_CoolDown";
@@ -25,9 +130,14 @@ function RadialWheelFrameMixin:OnUpdate()
     self:UpdateSelection();
 end
 
+local function GetScaledCursorPosition_Insecure()
+	local x, y = GetScaledCursorPositionForFrame(C_UI.GetUIParent());
+	return x, y;
+end
+
 function RadialWheelFrameMixin:UpdateSelection(forceUpdate)
     -- Get angle of mouse position relative to center of frame to know which wedge we are selecting.
-    local x, y = GetScaledCursorPosition();
+    local x, y = securecallfunction(GetScaledCursorPosition_Insecure);
     local radialParentX, radialParentY = select(4, self.radialParent:GetPoint());
     if not forceUpdate and x == self.lastX and y == self.lastY and radialParentX == self.lastRadialParentX and radialParentY == self.lastRadialParentY then
         return;

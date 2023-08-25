@@ -120,6 +120,10 @@ function NewNameEditboxMixin:OnEnter()
 	GetAppropriateTooltip():Show();
 end
 
+function NewNameEditboxMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
+end
+
 function NewNameEditboxMixin:GetNewName()
 	return self:GetText() or nil;
 end

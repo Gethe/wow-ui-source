@@ -130,6 +130,9 @@ function CinematicFrame_OnEvent(self, event, ...)
 			CinematicFrame_AddSubtitle(chatType, body);
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
+		if (self:IsShown()) then
+			WorldFrame:SetAllPoints();
+		end
 		CinematicFrame_UpdateLettboxForAspectRatio(self);
 	elseif ( event == "HIDE_SUBTITLE") then
 		CinematicFrame_HideSubtitle(self)

@@ -92,7 +92,7 @@ function SettingsCategoryListButtonMixin:Init(initializer)
 	
 	local anyNew = false;
 	local layout = SettingsPanel:GetLayout(category);
-	if layout then
+	if layout and layout:IsVerticalLayout() then
 		for _, initializer in layout:EnumerateInitializers() do
 			local setting = initializer.data.setting;
 			if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then

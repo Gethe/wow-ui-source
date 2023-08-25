@@ -1,23 +1,151 @@
+---------------
+--NOTE - Please do not change this section
+local _, tbl, secureCapsuleGet = ...;
+assertsafe(secureCapsuleGet ~= nil, "SecureCapsuleGet not provided to secure environment.");
+tbl.SecureCapsuleGet = secureCapsuleGet;
+tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
+tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
+tbl.type = tbl.SecureCapsuleGet("type");
+tbl.unpack = tbl.SecureCapsuleGet("unpack");
+tbl.error = tbl.SecureCapsuleGet("error");
+tbl.pcall = tbl.SecureCapsuleGet("pcall");
+tbl.pairs = tbl.SecureCapsuleGet("pairs");
+tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
+tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
+tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
+
+local function CleanFunction(f)
+	local f = function(...)
+		local function HandleCleanFunctionCallArgs(success, ...)
+			if success then
+				return ...;
+			else
+				tbl.error("Error in secure capsule function execution: "..(...));
+			end
+		end
+		return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
+	end
+	setfenv(f, tbl);
+	return f;
+end
+
+local function CleanTable(t, tableCopies)
+	if not tableCopies then
+		tableCopies = {};
+	end
+
+	local cleaned = {};
+	tableCopies[t] = cleaned;
+
+	for k, v in tbl.pairs(t) do
+		if tbl.type(v) == "table" then
+			if ( tableCopies[v] ) then
+				cleaned[k] = tableCopies[v];
+			else
+				cleaned[k] = CleanTable(v, tableCopies);
+			end
+		elseif tbl.type(v) == "function" then
+			cleaned[k] = CleanFunction(v);
+		else
+			cleaned[k] = v;
+		end
+	end
+	return cleaned;
+end
+
+local function Import(name)
+	if tbl[name] ~= nil then
+		return;
+	end
+
+	local skipTableCopy = true;
+	local val = tbl.SecureCapsuleGet(name, skipTableCopy);
+	if tbl.type(val) == "function" then
+		tbl[name] = CleanFunction(val);
+	elseif tbl.type(val) == "table" then
+		tbl[name] = CleanTable(val);
+	else
+		tbl[name] = val;
+	end
+end
+
+if tbl.getmetatable(tbl) == nil then
+	local secureEnvMetatable =
+	{
+		__metatable = false,
+		__environment = false,
+	}
+	tbl.setmetatable(tbl, secureEnvMetatable);
+end
+
+setfenv(1, tbl);
+----------------
+
+Import("C_CVar");
+Import("C_Ping");
+Import("C_PingSecure");
+Import("C_Timer");
+Import("C_UI");
+Import("Enum");
+
+Import("GetCVar");
+Import("GetCursorPosition");
+Import("GetScaledCursorPositionForFrame");
+Import("ResetCursor");
+Import("SetCursor");
+Import("tonumber");
+Import("Vector2D_CalculateAngleBetween");
+Import("Vector2D_Cross");
+Import("Vector2D_Dot");
+
+----------------
+
+function GetScaledCursorPosition_Insecure()
+	local x, y = GetScaledCursorPositionForFrame(C_UI.GetUIParent());
+	return x, y;
+end
+
+local function GetWorldFrameCenter_Insecure()
+	local worldFrame = C_UI.GetWorldFrame();
+	local centerX, centerY = worldFrame:GetCenter();
+	return centerX, centerY;
+end
+
+local function GetUIParentScale_Insecure()
+	local uiParent = C_UI.GetUIParent();
+	return uiParent:GetEffectiveScale();
+end
+
+
 PingFrameMixin = {};
 
 function PingFrameMixin:OnLoad()
     RadialWheelFrameMixin.OnLoad(self);
 
-    self:RegisterEvent("PING_RADIAL_WHEEL_FRAME_CREATED");
-    self:RegisterEvent("PING_RADIAL_WHEEL_FRAME_DESTROYED");
+	C_PingSecure.SetPingRadialWheelCreatedCallback(function(...) self:RadialWheelCreated(...) end);
 
-    C_Ping.CreateFrame();
+    self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function PingFrameMixin:OnEvent(event, ...)
-    if event == "PING_RADIAL_WHEEL_FRAME_CREATED" then
-        self.radialParent = ...;
-        self:ClearAllPoints();
-        self:SetPoint("CENTER", self.radialParent);
-    elseif event == "PING_RADIAL_WHEEL_FRAME_DESTROYED" then
-        self:ClearAllPoints();
-        self.radialParent = nil;
-    end
+    if event == "PLAYER_ENTERING_WORLD" then
+		self:Initialize();
+	end
+end
+
+function PingFrameMixin:Initialize()
+    if self.initialized then
+		return;
+	end
+
+	C_PingSecure.CreateFrame();
+	self.initialized = true;
+end
+
+function PingFrameMixin:RadialWheelCreated(radialParent)
+    self.radialParent = radialParent;
+    self:ClearAllPoints();
+    self:SetPoint("CENTER", self.radialParent);
 end
 
 function PingFrameMixin:EvaluateResult(overrideTargetGUID)
@@ -32,31 +160,29 @@ function PingFrameMixin:EvaluateResult(overrideTargetGUID)
     end
 end
 
-PingListenerFrameMixin = {};
+PingListenerFrameMixin = {
+    PingRadialKeyDownDuration = 0.15;
+};
 
 function PingListenerFrameMixin:OnLoad()
-    self:RegisterEvent("PENDING_PING_OFF_SCREEN");
+    C_PingSecure.SetPendingPingOffScreenCallback(function(...) self:OnPendingPingOffScreen(...) end);
+	C_PingSecure.SetTogglePingListenerCallback(function(...) self:TogglePingListener(...) end);
+	C_PingSecure.SetPingCooldownStartedCallback(function(...) self:PingCooldownStarted(...) end);
 
     PingManager:Initialize();
+
+    self.enabledState = false;
 end
 
-function PingListenerFrameMixin:OnUpdate(elapsed)
-    if self.waitTimerSeconds then
-		self.waitTimerSeconds = self.waitTimerSeconds - elapsed;
-        if self.waitTimerSeconds < 0 then
-            self.waitTimerSeconds = nil;
-            self:BeginPendingPing();
-
-            self:SetScript("OnUpdate", nil);
-        end
-    end
+function PingListenerFrameMixin:PingCooldownStarted(cooldownInfo)
+	self.cooldownInfo = cooldownInfo;
+    SetCursor("PING_ERROR_CURSOR");
+    self:SetupCooldownTimer();
 end
 
-function PingListenerFrameMixin:OnEvent(event, ...)
-	if event == "PENDING_PING_OFF_SCREEN" then
-        self.pendingPingForceCancelled = true;
-        self:ClearPendingPingInfo();
-    end
+function PingListenerFrameMixin:OnPendingPingOffScreen()
+	self.pendingPingForceCancelled = true;
+    self:ClearPendingPingInfo();
 end
 
 function PingListenerFrameMixin:OnMouseDown()
@@ -86,7 +212,7 @@ function PingListenerFrameMixin:OnDragStart()
         self:BeginPendingPing();
     else
         -- Cannot show ping wheel correctly until radialParent is setup.
-        UIErrorsFrame:AddMessage(PING_FAILED_GENERIC, RED_FONT_COLOR:GetRGBA());
+		C_PingSecure.DisplayError(PING_FAILED_GENERIC);
     end
 end
 
@@ -99,7 +225,19 @@ function PingListenerFrameMixin:OnDragStop()
 end
 
 function PingListenerFrameMixin:OnEnter()
-    SetCursor("CAST_CURSOR");
+    self.cooldownInfo = C_PingSecure.GetCooldownInfo();
+
+    -- If on cooldown, make sure correct mouse cursor is shown.
+    if self.cooldownInfo then
+        local nowMs = GetTime() * 1000;
+        if nowMs < self.cooldownInfo.endTimeMs then
+            SetCursor("PING_ERROR_CURSOR");
+            self:SetupCooldownTimer();
+            return;
+        end
+    end
+
+    SetCursor("PING_CURSOR");
 end
 
 function PingListenerFrameMixin:OnLeave()
@@ -107,12 +245,19 @@ function PingListenerFrameMixin:OnLeave()
 end
 
 function PingListenerFrameMixin:TogglePingListener(enabled)
+    if self.enabledState == enabled then
+        return;
+    end
+
+    self.enabledState = enabled;
     if enabled then
         -- If not the drag flow, start the timer until the radial wheel is shown.
         if self:GetPingMode() == Enum.PingMode.KeyDown then
             self:SetCursorPositions();
-            self.waitTimerSeconds = 0.2;
-            self:SetScript("OnUpdate", self.OnUpdate);
+            self.radialTimer = C_Timer.NewTimer(self.PingRadialKeyDownDuration, function()
+                self:BeginPendingPing();
+                self.radialTimer = nil;
+            end);
         end
 
         self:Show();
@@ -127,10 +272,18 @@ function PingListenerFrameMixin:TogglePingListener(enabled)
                 PingManager:DeterminePingTargetAndSend(self.checkX, self.checkY, self.startX, self.startY);
             end
 
-            self.waitTimerSeconds = nil;
-            self:SetScript("OnUpdate", nil);
+            if self.radialTimer then
+                self.radialTimer:Cancel();
+                self.radialTimer = nil;
+            end
         else
             PingListenerFrame:CancelPendingPing();
+        end
+
+		self.cooldownInfo = nil;
+        if self.cooldownTimer then
+            self.cooldownTimer:Cancel();
+            self.cooldownTimer = nil;
         end
 
         self.pendingPingForceCancelled = nil;
@@ -138,12 +291,25 @@ function PingListenerFrameMixin:TogglePingListener(enabled)
     end
 end
 
+function PingListenerFrameMixin:SetupCooldownTimer()
+    if self.cooldownTimer then
+        self.cooldownTimer:Cancel();
+        self.cooldownTimer = nil;
+    end
+
+    local cooldownDuration = (self.cooldownInfo.endTimeMs / 1000) - GetTime();
+    self.cooldownTimer = C_Timer.NewTimer(cooldownDuration, function()
+        SetCursor("PING_CURSOR");
+        self.cooldownTimer = nil;
+    end);
+end
+
 function PingListenerFrameMixin:GetPingMode()
     return tonumber(GetCVar("pingMode"));
 end
 
 function PingListenerFrameMixin:SetCursorPositions()
-    self.startX, self.startY = GetScaledCursorPosition(); -- The position where the ping wheel should show.
+    self.startX, self.startY = securecallfunction(GetScaledCursorPosition_Insecure); -- The position where the ping wheel should show.
     self.checkX, self.checkY = GetCursorPosition(); -- The position on the screen we should check for targets from.
 end
 
@@ -153,17 +319,16 @@ function PingListenerFrameMixin:BeginPendingPing()
 
     if targetInfo.hasTarget then
         self.pendingPingInfo = targetInfo;
-        self.pendingPingInfo.cooldownInfo = C_Ping.GetCooldownInfo();
 
         if self.pendingPingInfo.hasUITarget then
             PingFrame.radialParent:SetPoint("CENTER", "WorldFrame", "BOTTOMLEFT", self.startX, self.startY);
         end
 
-        PingFrame:SelectionStart(self.pendingPingInfo.wedgeInfo, self.pendingPingInfo.hasUITarget, self.pendingPingInfo.cooldownInfo);
+        PingFrame:SelectionStart(self.pendingPingInfo.wedgeInfo, self.pendingPingInfo.hasUITarget, self.cooldownInfo);
     else
         -- Show error no valid target.
         self.pendingPingForceCancelled = true;
-        UIErrorsFrame:AddMessage(PING_FAILED_GENERIC, RED_FONT_COLOR:GetRGBA());
+		C_PingSecure.DisplayError(PING_FAILED_GENERIC);
     end
 end
 
@@ -273,8 +438,8 @@ function PingPinFrameMixin:UpdatePinClampedStyle(state)
 end
 
 local function GetCenterScreenPoint()
-    local centerX, centerY = WorldFrame:GetCenter();
-    local scale = UIParent:GetEffectiveScale() or 1;
+    local centerX, centerY = securecallfunction(GetWorldFrameCenter_Insecure);
+    local scale = securecallfunction(GetUIParentScale_Insecure) or 1;
     return centerX / scale, centerY / scale;
 end
 

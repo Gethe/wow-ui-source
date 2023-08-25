@@ -1,3 +1,4 @@
+
 PingUtil = {};
 
 function PingUtil:GetContextualPingTypeForUnit(targetGUID)

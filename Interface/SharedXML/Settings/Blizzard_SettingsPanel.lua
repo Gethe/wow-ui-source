@@ -621,7 +621,7 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 	local function ParseCategory(category, parentCategory)
 		local layout = self:GetLayout(category);
 		local redirectCategory = category.redirectCategory or category;
-		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical then
+		if layout:IsVerticalLayout() then
 			for _, initializer in layout:EnumerateInitializers() do
 				if not initializer:IsSearchIgnoredInLayout(layout) then
 					local result = initializer:MatchesSearchTags(words);
@@ -812,8 +812,11 @@ function SettingsPanelMixin:SelectCategory(category, force)
 		self:ClearActiveCategoryTutorial();
 		self:ClearSearchBox();
 		self:ClearOutputText();
+		self:ClearCurrentCategoryCanvas();
 		self:SetCurrentCategory(category);
 		self:DisplayCategory(category);
+
+		EventRegistry:TriggerEvent("Settings.CategoryChanged", category);
 	end
 end
 
@@ -876,23 +879,27 @@ function SettingsPanelMixin:SetCurrentLayout(layout)
 	self.currentLayout = layout;
 end
 
+function SettingsPanelMixin:ClearCurrentCategoryCanvas()
+	local currentCategory = self:GetCurrentCategory();
+	if not currentCategory then
+		return;
+	end
+
+	local layout = self:GetLayout(currentCategory);
+	if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
+		local frame = layout:GetFrame();
+		frame:SetParent(nil);
+		frame:ClearAllPoints();
+		frame:Hide();
+	end
+end
+
 function SettingsPanelMixin:DisplayLayout(layout)
 	if not layout then
 		return;
 	end
 
 	SettingsInbound.SetCurrentLayout(layout);
-
-	local currentCategory = self:GetCurrentCategory();
-	if currentCategory then
-		local layout = self:GetLayout(currentCategory);
-		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
-			local frame = layout:GetFrame();
-			frame:SetParent(nil);
-			frame:ClearAllPoints();
-			frame:Hide();
-		end
-	end
 
 	local settingsList = self:GetSettingsList();
 	local settingsCanvas = self:GetSettingsCanvas();

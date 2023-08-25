@@ -1188,6 +1188,7 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, MAXFPS_CHECK, OPTION_MAXFPS_CHECK,
 			fpsSliderSetting, options, MAXFPS_CHECK, OPTION_MAXFPS_CHECK);
+		initializer:AddSearchTags(MAXFPS_CHECK);
 		layout:AddInitializer(initializer);
 	end
 
@@ -1209,6 +1210,7 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, MAXFPSBK, OPTION_MAXFPSBK_CHECK,
 			fpsSliderSetting, options, MAXFPSBK, OPTION_MAXFPSBK_CHECK);
+		initializer:AddSearchTags(MAXFPSBK);
 		layout:AddInitializer(initializer);
 	end
 

@@ -62,10 +62,59 @@ local function Register()
 		layout:AddInitializer(initializer);
 	end
 
+    PingSystemInitializer(category);
+
     Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 
 SettingsRegistrar:AddRegistrant(Register);
+
+PingSystemMixin = {
+    TutorialCutoffVersion = {
+        Major = 10;
+        Minor = 2;
+        Revision = 5;
+    };
+};
+
+do
+    local function CreateVersionInt(major, minor, revision)
+        return (major * 10000) + (minor * 100) + revision;
+    end
+
+    local threshold = CreateVersionInt(
+        PingSystemMixin.TutorialCutoffVersion.Major,
+        PingSystemMixin.TutorialCutoffVersion.Minor,
+        PingSystemMixin.TutorialCutoffVersion.Revision);
+
+    local currentVersion = GetBuildInfo();
+    local major, minor, revision = strsplit(".", currentVersion);
+    local lastVersion = CreateVersionInt(tonumber(major), tonumber(minor), tonumber(revision));
+    local shouldShowTutorial = lastVersion <= threshold;
+
+    function PingSystemMixin:TutorialCutoffVersionCheck()
+        return shouldShowTutorial;
+    end
+end
+
+function PingSystemMixin:Init(category)
+    self.category = category;
+    EventRegistry:RegisterCallback("Settings.CategoryChanged", self.OnCategoryChanged, self);
+end
+
+function PingSystemMixin:OnCategoryChanged(category)
+    if category == self.category then
+        if GetCVar("pingCategoryTutorialShown") == "0" and self:TutorialCutoffVersionCheck() then
+            PingSystemTutorial:Show();
+            SetCVar("pingCategoryTutorialShown", "1");
+        end
+    end
+end
+
+function PingSystemInitializer(category)
+	local initializer = CreateFromMixins(PingSystemMixin);
+	initializer:Init(category);
+end
 
 PingSystemTutorialMixin = {};
 

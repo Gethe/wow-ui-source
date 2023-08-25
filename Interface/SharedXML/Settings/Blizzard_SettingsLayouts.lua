@@ -10,6 +10,10 @@ function SettingsLayoutMixin:GetLayoutType()
 	return self.layoutType;
 end
 
+function SettingsLayoutMixin:IsVerticalLayout()
+	return self:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical;
+end
+
 local SettingsVerticalLayoutMixin = CreateFromMixins(SettingsLayoutMixin);
 
 function SettingsVerticalLayoutMixin:Init()
