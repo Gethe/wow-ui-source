@@ -253,6 +253,7 @@ Import("BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS");
 Import("BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS");
 Import("BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS");
 Import("BLIZZARD_STORE_VAS_ERROR_HAS_CRAFTING_ORDERS");
+Import("BLIZZARD_STORE_VAS_INVALID_NAME");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
@@ -288,6 +289,7 @@ Import("BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE");
 Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100");
 Import("BLIZZARD_STORE_DISCLAIMER_BOOST_TOKEN_100_CN");
+Import("BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER");
 Import("STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP");
 Import("STORE_CATEGORY_VETERAN_DISABLED_TOOLTIP");
 Import("TOOLTIP_DEFAULT_COLOR");
@@ -404,7 +406,6 @@ Import("WOW_SUBSCRIPTION_CATEGORY_ID");
 
 --Lua enums
 Import("SOUNDKIT");
-Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
@@ -714,6 +715,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_GBP] = {
@@ -754,6 +758,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -796,6 +803,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_EUR] = {
@@ -836,6 +846,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -878,6 +891,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_ARS] = {
@@ -915,6 +931,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -954,6 +973,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_MXN] = {
@@ -991,6 +1013,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -1030,6 +1055,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_AUD] = {
@@ -1067,6 +1095,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -1107,6 +1138,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_TPT] = {
@@ -1145,6 +1179,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_BETA] = {
@@ -1181,6 +1218,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -1220,6 +1260,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_CAD] = {
@@ -1258,6 +1301,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_NZD] = {
@@ -1295,6 +1341,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -1337,6 +1386,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_TRY] = {
@@ -1377,6 +1429,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},
@@ -1419,6 +1474,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_UAH] = {
@@ -1460,6 +1518,9 @@ local currencySpecific = {
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
 			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_HKD] = {
@@ -1498,6 +1559,9 @@ local currencySpecific = {
 			},
 			[Enum.VasServiceType.GuildFactionChange] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_FACTION_CHANGE,
+			},
+			[Enum.VasServiceType.GuildTransfer] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_GUILD_TRANSFER,
 			},
 		},
 	},

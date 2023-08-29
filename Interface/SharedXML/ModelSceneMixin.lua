@@ -87,10 +87,17 @@ function ModelSceneMixin:SetFromModelSceneID(modelSceneID, forceEvenIfSame, noAu
 	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
 end
 
+function ModelSceneMixin:SetResetCallback(callback)
+	self.resetCallback = callback;
+end
+
 function ModelSceneMixin:Reset()
 	if self.modelSceneID then
 		self:SetLightDirection(self.lightDirX, self.lightDirY, self.lightDirZ);
 		self:TransitionToModelSceneID(self.modelSceneID, self.cameraTransitionType, self.cameraModificationType, self.forceEvenIfSame);
+		if self.resetCallback then
+			self.resetCallback(self);
+		end
 	end
 end
 

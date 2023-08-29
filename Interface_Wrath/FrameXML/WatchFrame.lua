@@ -906,10 +906,6 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 
 	WatchFrame_ReleaseUnusedQuestLines();
 
-	-- if ( selectedQuestId ) then
-	-- 	QuestPOI_SelectButtonByQuestId("WatchFrameLines", selectedQuestId, true);
-	-- end
-
 	return heightUsed, maxWidth, numQuestWatches;
 end
 
@@ -1270,6 +1266,8 @@ function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
 			end
 		end
 	end
+	local questIndex = GetQuestIndexForWatch(self.index);
+	EventRegistry:TriggerEvent("WatchFrame.MouseOver", self, questIndex);
 end
 
 function WatchFrame_SetWidth(width)

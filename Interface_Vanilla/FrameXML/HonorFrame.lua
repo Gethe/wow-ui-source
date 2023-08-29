@@ -14,7 +14,7 @@ end
 
 function HonorFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_PVP_KILLS_CHANGED" or event == "PLAYER_PVP_RANK_CHANGED") then
-		HonorFrame_Update();
+		HonorFrame_Update(1);
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		HonorFrame_Update(1);
 	elseif ( event == "UNIT_LEVEL" ) then
@@ -49,7 +49,6 @@ function HonorFrame_Update(updateAll)
 		hk, dk, contribution, rank = GetPVPLastWeekStats();
 		HonorFrameLastWeekHKValue:SetText(hk);
 		HonorFrameLastWeekContributionValue:SetText(contribution);
-		HonorFrameLastWeekStandingValue:SetText(rank);
 	end
 	
 	-- This session's values

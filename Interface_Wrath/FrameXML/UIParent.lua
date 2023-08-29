@@ -530,6 +530,10 @@ function Communities_LoadUI()
 	UIParentLoadAddOn("Blizzard_Communities");
 end
 
+function CollectionsJournal_LoadUI()
+	UIParentLoadAddOn("Blizzard_Collections");
+end
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
@@ -703,6 +707,48 @@ end
 
 function CommunitiesFrame_IsEnabled()
 	return C_Club.IsEnabled();
+end
+
+COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+
+function ToggleCollectionsJournal(tabIndex)
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
+	if CollectionsJournal then
+		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
+		local isShown = CollectionsJournal:IsShown() and tabMatches;
+		SetCollectionsJournalShown(not isShown, tabIndex);
+	else
+		SetCollectionsJournalShown(true, tabIndex);
+	end
+end
+
+function SetCollectionsJournalShown(shown, tabIndex)
+	if not CollectionsJournal then
+		CollectionsJournal_LoadUI();
+	end
+	if CollectionsJournal then
+		if shown then
+			ShowUIPanel(CollectionsJournal);
+			if tabIndex then
+				CollectionsJournal_SetTab(CollectionsJournal, tabIndex);
+			end
+		else
+			HideUIPanel(CollectionsJournal);
+		end
+	end
+end
+
+function ToggleToyCollection(autoPageToCollectedToyID)
+	CollectionsJournal_LoadUI();
+	ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 end
 
 function ToggleStoreUI()

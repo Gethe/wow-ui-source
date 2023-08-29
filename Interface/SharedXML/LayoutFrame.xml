@@ -6,7 +6,6 @@
 			<Frame name="BaseLayoutFrameTemplate" virtual="true">
 				<Scripts>
 					<OnShow method="OnShow"/>
-					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 

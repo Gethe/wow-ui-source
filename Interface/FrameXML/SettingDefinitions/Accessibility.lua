@@ -200,6 +200,19 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, CURSOR_SIZE_TOOLTIP);
 	end
 
+	-- Enable Raid Self Highlight (Source in Combat)
+	layout:AddMirroredInitializer(Settings.RaidSelfHighlightInitializer);
+
+	-- Enable Spell Alert Opacity (Source in Combat)
+	if C_CVar.GetCVar("spellActivationOverlayOpacity") then
+		layout:AddMirroredInitializer(Settings.SpellAlertOpacityInitializer);
+	end
+
+	-- Enable Hold Button (Source in Combat)
+	if C_CVar.GetCVar("ActionButtonUseKeyHeldSpell") then
+		layout:AddMirroredInitializer(Settings.PressAndHoldCastingInitializer);
+	end
+
 	-- Enable Dracthyr Tap Controls (Source in Combat)
 	if C_CVar.GetCVar("empowerTapControls") then
 		layout:AddMirroredInitializer(Settings.EmpoweredTapControlsInitializer);

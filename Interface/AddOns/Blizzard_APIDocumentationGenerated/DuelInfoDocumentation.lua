@@ -34,6 +34,15 @@ local DuelInfo =
 				{ Name = "playerName", Type = "cstring", Nilable = false },
 			},
 		},
+		{
+			Name = "DuelToTheDeathRequested",
+			Type = "Event",
+			LiteralName = "DUEL_TO_THE_DEATH_REQUESTED",
+			Payload =
+			{
+				{ Name = "playerName", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

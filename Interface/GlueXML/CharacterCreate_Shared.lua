@@ -432,7 +432,11 @@ function CharacterCreate_Okay()
 		else
 			KioskModeSplash:SetAutoEnterWorld(false)
 		end
-		C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+		if (HardcorePopUpFrame and C_GameRules.IsHardcoreActive()) then
+			HardcorePopUpFrame:ShowCharacterCreationWarning();
+		else
+			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
+		end
 	end
 end
 

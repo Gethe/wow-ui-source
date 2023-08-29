@@ -10,6 +10,7 @@ function MacroPopupFrameMixin:OnShow()
 
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self.iconDataProvider = self:GetMacroFrame():RefreshIconDataProvider();
+	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
 	self:Update();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 
@@ -17,9 +18,8 @@ function MacroPopupFrameMixin:OnShow()
 		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
 
 		-- Index is not yet set, but we know if an icon in IconSelector was selected it was in the list, so set directly.
-		self.BorderBox.SelectedIconArea.SelectedIconButton.SelectedTexture:SetShown(false);
-		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CURRENT);
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetFontObject(GameFontHighlightSmall);
 	end
     self.IconSelector:SetSelectedCallback(OnIconSelected);
 
@@ -29,6 +29,9 @@ function MacroPopupFrameMixin:OnShow()
 	MacroNewButton:Disable();
 	MacroFrameTab1:Disable();
 	MacroFrameTab2:Disable();
+
+	local isShown = true;
+	self:UpdateMacroFramePanelWidth(isShown);
 end
 
 function MacroPopupFrameMixin:OnHide()
@@ -50,6 +53,9 @@ function MacroPopupFrameMixin:OnHide()
 
 	-- Enable tabs
 	PanelTemplates_UpdateTabs(macroFrame);
+
+	local isShown = false;
+	self:UpdateMacroFramePanelWidth(isShown);
 end
 
 function MacroPopupFrameMixin:Update()
@@ -76,7 +82,6 @@ function MacroPopupFrameMixin:Update()
 	self.IconSelector:SetSelectionsDataProvider(getSelection, getNumSelections);
 	self.IconSelector:ScrollToSelectedIndex();
 
-	self.BorderBox.SelectedIconArea.SelectedIconButton:SetSelectedTexture();
 	self:SetSelectedIconText();
 end
 
@@ -111,4 +116,16 @@ end
 
 function MacroPopupFrameMixin:GetMacroFrame()
 	return MacroFrame;
+end
+
+function MacroPopupFrameMixin:UpdateMacroFramePanelWidth(shown)
+	local macroFrame = self:GetMacroFrame();
+	local width = macroFrame:GetWidth();
+	if shown then
+		local p, r, rp, x, y = self:GetPointByName("TOPLEFT");
+		width = width + x + self:GetWidth();
+	end
+
+	SetUIPanelAttribute(macroFrame, "width", width);
+	UpdateUIPanelPositions(macroFrame);
 end

@@ -27,6 +27,14 @@ function PixelUtil.GetNearestPixelSize(uiUnitSize, layoutScale, minPixels)
 	return numPixels * uiUnitFactor / layoutScale;
 end
 
+function PixelUtil.ConvertPixelsToUI(desiredPixels, layoutScale)
+	return PixelUtil.GetNearestPixelSize(desiredPixels, layoutScale);
+end
+
+function PixelUtil.ConvertPixelsToUIForRegion(desiredPixels, region)
+	return PixelUtil.GetNearestPixelSize(desiredPixels, region:GetEffectiveScale());
+end
+
 function PixelUtil.SetWidth(region, width, minPixels)
 	region:SetWidth(PixelUtil.GetNearestPixelSize(width, region:GetEffectiveScale(), minPixels));
 end

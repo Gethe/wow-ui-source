@@ -31,6 +31,18 @@
 							<Anchor point="TOPRIGHT" x="-36" y="-16"/>
 						</Anchors>
 					</Button>
+					<Button parentKey="TutorialButton" inherits="MainHelpPlateButton" hidden="true">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="15" y="5"/>
+						</Anchors>
+						<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+							<Size x="46" y="46"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".2"/>
+						</HighlightTexture>
+					</Button>
 				</Frames>
 			</Frame>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
@@ -41,7 +53,7 @@
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-4"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="-1" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="-1" y="7"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>

@@ -23,6 +23,8 @@ SettingsInbound.RegisterInitializerAttribute = "register-initializer";
 SettingsInbound.RepairDisplayAttribute = "repair-display";
 SettingsInbound.SetCurrentLayoutAttribute = "set-current-layout";
 
+SettingsInbound.AssignTutorialToCategoryAttribute = "assign-tutorial-to-category";
+
 function SettingsInbound.OpenToCategory(categoryID, scrollToElementName)
 	SettingsPanel:SetAttribute(SettingsInbound.OpenToCategoryAttribute, { categoryID, scrollToElementName, });
 	return SettingsPanel:GetSecureAttributeResults();
@@ -93,4 +95,8 @@ end
 
 function SettingsInbound.SetCurrentLayout(layout)
 	SettingsPanel:SetAttribute(SettingsInbound.SetCurrentLayoutAttribute, layout);
+end
+
+function SettingsInbound.AssignTutorialToCategory(category, tooltip, callback)
+	SettingsPanel:SetAttribute(SettingsInbound.AssignTutorialToCategoryAttribute, { category, tooltip, callback, });
 end

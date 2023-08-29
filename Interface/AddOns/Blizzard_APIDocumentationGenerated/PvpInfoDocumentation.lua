@@ -62,6 +62,7 @@ local PvpInfo =
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
 			},
 		},
 		{
@@ -74,6 +75,7 @@ local PvpInfo =
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
 			},
 		},
 		{
@@ -86,6 +88,7 @@ local PvpInfo =
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
 			},
 		},
 		{
@@ -98,6 +101,7 @@ local PvpInfo =
 				{ Name = "experience", Type = "number", Nilable = false },
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
 			},
 		},
 		{
@@ -287,6 +291,22 @@ local PvpInfo =
 			Payload =
 			{
 				{ Name = "battleFieldIndex", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "WargameInviteSent",
+			Type = "Event",
+			LiteralName = "WARGAME_INVITE_SENT",
+		},
+		{
+			Name = "WargameRequestResponse",
+			Type = "Event",
+			LiteralName = "WARGAME_REQUEST_RESPONSE",
+			Payload =
+			{
+				{ Name = "responderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "responderName", Type = "cstring", Nilable = true },
+				{ Name = "accepted", Type = "bool", Nilable = false },
 			},
 		},
 		{

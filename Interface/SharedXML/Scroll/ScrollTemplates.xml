@@ -3,7 +3,12 @@
 	<Script file="ScrollTemplates.lua"/>
 
 	<!--Intended for scroll boxes using a data provider.-->
-	<Frame name="WowScrollBoxList" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxListMixin" virtual="true"/>
+	<Frame name="WowScrollBoxList" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxListMixin" virtual="true">
+		<!--
+		The created DragBehavior table will be assigned to MyScrollBox.dragBehavior
+		<KeyValue key="enableDefaultDrag" value="true" type="boolean"/>
+		-->
+	</Frame>
 
 	<!--Intended for static scroll boxes such as a scroll box with a single frame containing a font string.-->
 	<Frame name="WowScrollBox" inherits="ScrollBoxBaseTemplate" mixin="ScrollBoxMixin" virtual="true"/>

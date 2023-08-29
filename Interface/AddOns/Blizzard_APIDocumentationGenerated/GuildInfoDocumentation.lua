@@ -216,6 +216,15 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GuildMemberDied",
+			Type = "Event",
+			LiteralName = "GUILD_MEMBER_DIED",
+			Payload =
+			{
+				{ Name = "memberName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GuildMotd",
 			Type = "Event",
 			LiteralName = "GUILD_MOTD",

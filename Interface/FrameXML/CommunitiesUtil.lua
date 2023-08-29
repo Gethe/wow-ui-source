@@ -174,7 +174,7 @@ function CommunitiesUtil.SortMemberInfoWithOverride(clubId, memberInfoArray, ove
 end
 
 function CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()
-	return CommunitiesUtil.DoesOtherCommunityHaveUnreadMessages(nil);
+	return C_Club.DoesAnyCommunityHaveUnreadMessages();
 end
 
 function CommunitiesUtil.DoesOtherCommunityHaveUnreadMessages(ignoreClubId)

@@ -33,14 +33,15 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderItemType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Reagent", Type = "CraftingOrderItemType", EnumValue = 0 },
 				{ Name = "Recraft", Type = "CraftingOrderItemType", EnumValue = 1 },
 				{ Name = "CraftedResult", Type = "CraftingOrderItemType", EnumValue = 2 },
+				{ Name = "RemoveReagent", Type = "CraftingOrderItemType", EnumValue = 3 },
 			},
 		},
 		{

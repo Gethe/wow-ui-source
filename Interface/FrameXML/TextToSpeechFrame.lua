@@ -32,6 +32,7 @@ local DefaultLegacySettings =  {
 		["CHAT_MSG_INSTANCE_CHAT_LEADER"] = true,
 		["CHAT_MSG_INSTANCE_CHAT"] = true,
 		["CHAT_MSG_BN_WHISPER"] = true,
+		["CHAT_MSG_PING"] = true,
 	},
 	enabledChannelTypes = {},
 };
@@ -426,6 +427,12 @@ function NarrateMyMessagesCheckButton_OnClick(self)
 	C_TTSSettings.SetSetting(Enum.TtsBoolSetting.NarrateMyMessages, self:GetChecked());
 end
 
+local channelsWithTtsName =
+{
+	LOOT = true,
+	MONEY = true,
+};
+
 function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate)
 	local checkBoxNameString = frame:GetName().."CheckBox";
 	local checkBoxName, checkBox;
@@ -452,7 +459,7 @@ function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTempla
 		checkBox.type = value;
 		checkBox:SetChecked(TextToSpeechFrame_GetChatTypeEnabled(value));
 		checkBoxFontString = checkBox.text;
-		checkBoxFontString:SetText(_G[value] or value);
+		checkBoxFontString:SetText((channelsWithTtsName[value] and _G[value.."_TTS_LABEL"] or _G[value]) or value);
 		local r, g, b = GetMessageTypeColor(value);
 		checkBoxFontString:SetVertexColor(r, g, b);
 		checkBoxFontString:SetMaxLines(1);
@@ -758,6 +765,9 @@ local ignoredMsgTypes = {
 	ACHIEVEMENT = true,
 	GUILD_ACHIEVEMENT = true,
 	RAID_BOSS_EMOTE = true, -- Some quests transform the player then use boss emotes sent from the (transformed) player
+	LOOT = true,
+	CURRENCY = true,
+	MONEY = true,
 }
 
 local function IsMessageFromPlayer(msgType, msgSenderName)
@@ -862,6 +872,13 @@ local chatTypesWithToken = {
 	RAID_BOSS_WHISPER = true,
 };
 
+local chatTypesWithoutSays = {
+	TEXT_EMOTE = true,
+	LOOT = true,
+	CURRENCY = true,
+	MONEY = true,
+};
+
 function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 	if ( not GetCVarBool("textToSpeech") ) then
 		return;
@@ -883,7 +900,7 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		if ( chatTypesWithToken[type] ) then
 			-- These messages have a token for sender name that needs filled in.
 			message = message:format(name);
-		elseif ( type ~= "TEXT_EMOTE" and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AddCharacterNameToSpeech) and name ~= "" ) then
+		elseif ( not chatTypesWithoutSays[type] and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AddCharacterNameToSpeech) and name ~= "" ) then
 			if not lineID or not C_ChatInfo.IsChatLineCensored(lineID) then
 				-- Format messages as "<Player> says <message>" except for certain types.
 				local formatType = "SAY";

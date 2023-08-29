@@ -25,6 +25,7 @@ function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
 
 	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
 	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
+	CheckAddVASErrorString(errors, CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE, not IsCharacterVASLocked(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidCharacterTransfer));
 
 	local canTransfer = #errors == 0;

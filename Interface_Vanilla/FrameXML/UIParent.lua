@@ -231,6 +231,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("MIRROR_TIMER_START");
 	self:RegisterEvent("DUEL_REQUESTED");
+	self:RegisterEvent("DUEL_TO_THE_DEATH_REQUESTED");
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
 	self:RegisterEvent("DUEL_INBOUNDS");
 	self:RegisterEvent("DUEL_FINISHED");
@@ -344,6 +345,9 @@ function UIParent_OnLoad(self)
 
 	-- Events for Reporting SYSTEM
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+
+	-- Events for hardcore support
+	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
@@ -714,18 +718,23 @@ function UIParent_OnEvent(self, event, ...)
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
 	elseif ( event == "PLAYER_DEAD" ) then
-		if ( not StaticPopup_Visible("DEATH") ) then
+		if (not StaticPopup_Visible(GetDeathStaticPopup())) then
 			CloseAllWindows(1);
 		end
-		if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
-			StaticPopup_Show("DEATH");
+		if ((GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer() or C_GameRules.IsHardcoreActive())) then
+			if (CheckHardcoreGuildLeadStatus()) then
+				ShowHardcoreGuildHandoff();
+			else
+				StaticPopup_Show(GetDeathStaticPopup());
+			end
 		end
 	elseif ( event == "SELF_RES_SPELL_CHANGED" ) then
-		if ( StaticPopup_Visible("DEATH") ) then
-			StaticPopup_Show("DEATH"); --If we're already showing a death prompt, we should refresh it.
+		if ( StaticPopup_Visible(GetDeathStaticPopup()) ) then
+			StaticPopup_Show(GetDeathStaticPopup()); --If we're already showing a death prompt, we should refresh it.
 		end
 	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
+		StaticPopup_Hide("HARDCORE_DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 	elseif ( event == "PLAYER_UNGHOST" ) then
 		StaticPopup_Hide("RESURRECT");
@@ -733,6 +742,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("SKINNED");
 		StaticPopup_Hide("SKINNED_REPOP");
+		StaticPopup_Hide("HARDCORE_DEATH_GUILD_HANDOFF");
 	elseif ( event == "RESURRECT_REQUEST" ) then
 		ShowResurrectRequest(arg1);
 	elseif ( event == "PLAYER_SKINNED" ) then
@@ -866,8 +876,10 @@ function UIParent_OnEvent(self, event, ...)
 			BattlefieldMap_LoadUI();
 		end
 
-		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
-			StaticPopup_Show("DEATH");
+		if (CheckHardcoreGuildLeadStatus() and (UnitIsDead("player") or UnitIsGhost("player"))) then
+			ShowHardcoreGuildHandoff();
+		elseif ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
+			StaticPopup_Show(GetDeathStaticPopup());
 		end
 
 		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
@@ -931,6 +943,8 @@ function UIParent_OnEvent(self, event, ...)
 		MirrorTimer_Show(arg1, arg2, arg3, arg4, arg5, arg6);
 	elseif ( event == "DUEL_REQUESTED" ) then
 		StaticPopup_Show("DUEL_REQUESTED", arg1);
+	elseif ( event == "DUEL_TO_THE_DEATH_REQUESTED" ) then
+		StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED", arg1);
 	elseif ( event == "DUEL_OUTOFBOUNDS" ) then
 		StaticPopup_Show("DUEL_OUTOFBOUNDS");
 	elseif ( event == "DUEL_INBOUNDS" ) then
@@ -966,10 +980,18 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		HideUIPanel(GossipFrame);
 	elseif ( event == "CORPSE_IN_RANGE" ) then
-		StaticPopup_Show("RECOVER_CORPSE");
+		if(C_GameRules.IsHardcoreActive()) then
+			if (not IsGuildLeader()) then
+				StaticPopup_Show("HARDCORE_RECOVER_CORPSE");
+			end
+		else
+			StaticPopup_Show("RECOVER_CORPSE");			
+		end
 	elseif ( event == "CORPSE_IN_INSTANCE" ) then
 		StaticPopup_Show("RECOVER_CORPSE_INSTANCE");
 	elseif ( event == "CORPSE_OUT_OF_RANGE" ) then
+		StaticPopup_Hide("HARDCORE_RECOVER_CORPSE");
+		StaticPopup_Hide("HARDCORE_CORPSE_INSTANCE");
 		StaticPopup_Hide("RECOVER_CORPSE");
 		StaticPopup_Hide("RECOVER_CORPSE_INSTANCE");
 		StaticPopup_Hide("XP_LOSS");
@@ -1573,6 +1595,10 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			UIErrorsFrame:AddExternalErrorMessage(ERR_REPORT_SUBMISSION_FAILED);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED);
+		end
+	elseif (event == "PLAYER_GUILD_UPDATE") then
+		if (CheckHardcoreGuildLeadStatus() and (UnitIsDead("player") or UnitIsGhost("player"))) then
+			ShowHardcoreGuildHandoff();
 		end
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		if(GetCVarBool("softTargettingInteractKeySound")) then
@@ -3697,6 +3723,9 @@ function RaiseFrameLevelByTwo(frame)
 end
 
 function ShowResurrectRequest(offerer)
+	if (C_GameRules.IsHardcoreActive()) then
+		return;
+	end
 	if ( ResurrectHasSickness() ) then
 		StaticPopup_Show("RESURRECT", offerer);
 	elseif ( ResurrectHasTimer() ) then
@@ -3801,10 +3830,10 @@ function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 			debuffTotal = debuffTotal + 1;
 
 			-- setup the cooldown
-			local coolDown = _G[debuffName.."Cooldown"];
+			--[[local coolDown = _G[debuffName.."Cooldown"];
 			if ( coolDown ) then
 				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
+			end]]
 
 			-- show the aura
 			_G[debuffName]:Show();
@@ -4617,5 +4646,25 @@ function SetLookingForGroupUIAvailable(available)
 		LFGMicroButton:Hide();
 		MiniMapWorldMapButton:Hide();
 		MiniMapTrackingFrame:SetPoint("TOPLEFT", -15, 0);
+	end
+end
+
+-- Popupselectors for hardcore
+function GetDeathStaticPopup()
+	if (C_GameRules.IsHardcoreActive()) then
+		return "HARDCORE_DEATH";
+	else
+		return "DEATH";
+	end
+end
+
+function CheckHardcoreGuildLeadStatus()
+	return (C_GameRules.IsHardcoreActive() and IsGuildLeader());
+end
+
+function ShowHardcoreGuildHandoff()
+	local guildName = GetGuildInfo("player");
+	if (guildName and guildName ~= "") then
+		StaticPopup_Show("HARDCORE_DEATH_GUILD_HANDOFF", guildName);
 	end
 end

@@ -923,6 +923,7 @@ function UpdateCharacterList(skipSelect)
             local nameText = button.buttonText.name;
             local infoText = button.buttonText.Info;
             local locationText = button.buttonText.Location;
+            local deathIcon = button.buttonText.graveIcon;
 			locationText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 
             if (not areCharServicesShown) then
@@ -1022,8 +1023,14 @@ function UpdateCharacterList(skipSelect)
                 else
                     if( ghost ) then
                         infoText:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+                        if (C_GameRules.IsHardcoreActive() and deathIcon) then
+                            deathIcon:Show();
+                        end
                     else
                         infoText:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+                        if (deathIcon) then
+                            deathIcon:Hide();
+                        end
                     end
 
                     locationText:SetText(zone);

@@ -516,5 +516,24 @@ function HorizontalLargeStoreCardWithBuyButtonMixin:SetDisclaimerText(entryInfo)
 end
 
 function HorizontalLargeStoreCardWithBuyButtonMixin:SetupDescription(entryInfo)
-	-- empty override
+	local description = entryInfo.sharedData.description;
+	if not description then
+		self.Description:Hide();
+		return;
+	end
+
+	self.Description:SetText(description);
+	self.Description:SetSize(184, 0);
+	self.Description:ClearAllPoints();
+	self.Description:SetPoint("BOTTOM", self.BuyButton, "TOP", 0, 0);
+	self.Description:Show();
+
+	self.Description:SetJustifyH("CENTER");
+	self.Description:SetJustifyV("BOTTOM");
+	
+	self.ProductName:ClearAllPoints();
+	self.ProductName:SetSize(184, 50);
+	self.ProductName:SetJustifyH("CENTER");
+	self.ProductName:SetJustifyV("BOTTOM");
+	self.ProductName:SetPoint("BOTTOM", self.Description, "TOP", 0, 0);
 end

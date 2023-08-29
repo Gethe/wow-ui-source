@@ -194,6 +194,17 @@ local ActionBarFrame =
 	Events =
 	{
 		{
+			Name = "ActionRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "ACTION_RANGE_CHECK_UPDATE",
+			Payload =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false },
+				{ Name = "checksRange", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ActionbarHidegrid",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_HIDEGRID",

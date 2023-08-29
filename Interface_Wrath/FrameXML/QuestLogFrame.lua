@@ -460,9 +460,9 @@ function QuestLogTitleButton_OnEnter(self)
 	local name = self:GetName();
 	self.tag:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	self.groupMates:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-
 	-- Set group info tooltip
 	QuestLog_UpdatePartyInfoTooltip(self);
+	EventRegistry:TriggerEvent("QuestLogFrame.MouseOver", self, self:GetID());
 end
 
 function QuestLogTitleButton_OnLeave(self)

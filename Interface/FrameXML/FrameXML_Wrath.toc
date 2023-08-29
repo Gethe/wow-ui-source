@@ -17,6 +17,7 @@ FontStyles.xml
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
@@ -34,7 +35,6 @@ FontStyles.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
-..\SharedXML\TextureUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
@@ -47,6 +47,7 @@ FontStyles.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua
@@ -232,6 +233,7 @@ VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 ..\SharedXML\SharedReportFrame.xml
 ReportFrame.xml
+..\SharedXML\SharedUtils.lua
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
 ..\SharedXML\UnitPopupSharedUtils.lua

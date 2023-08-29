@@ -525,7 +525,10 @@ local function Register()
 			EventUtil.ContinueAfterAllEvents(ContinueInitVoiceSettings, "VOICE_CHAT_CONNECTION_SUCCESS", "VOICE_CHAT_VAD_SETTINGS_UPDATED");
 		end
 	end
-	
+
+	-- Ping System
+	AudioOverrides.CreatePingSoundSettings(category, layout);
+
 	Settings.RegisterCategory(category, SETTING_GROUP_SYSTEM);
 end
 

@@ -348,6 +348,18 @@ function UIDropDownMenu_AddSeparator(level)
 	UIDropDownMenu_AddButton(separatorInfo, level);
 end
 
+function UIDropDownMenu_AddSpace(level)
+	local spaceInfo = {
+		hasArrow = false,
+		dist = 0,
+		isTitle = true,
+		isUninteractable = true,
+		notCheckable = true,
+	};
+
+	UIDropDownMenu_AddButton(spaceInfo, level);
+end
+
 function UIDropDownMenu_AddButton(info, level)
 	--[[
 	Might to uncomment this if there are performance issues

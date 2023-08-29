@@ -6,6 +6,15 @@ local GameRules =
 
 	Functions =
 	{
+		{
+			Name = "IsHardcoreActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

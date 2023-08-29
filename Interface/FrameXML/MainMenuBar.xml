@@ -386,6 +386,19 @@
 							</Anchors>
 							<TexCoords left="0" right="1.0" top="0.33203125" bottom="0.5"/>
 						</Texture>
+						<Texture name="MainMenuBarTextureExtender" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size>
+								<AbsDimension x="20" y="43"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="256" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.75" right="1.0" top="0.33203125" bottom="0.5"/>
+						</Texture>
 						<Texture name="MainMenuBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size>
 								<AbsDimension x="256" y="43"/>

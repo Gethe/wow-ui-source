@@ -320,6 +320,16 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
 
+	-- ReplaceOtherPlayerPortraits
+	if C_CVar.GetCVar("ReplaceOtherPlayerPortraits") then
+		Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
+	end
+
+	-- ReplaceMyPlayerPortrait
+	if C_CVar.GetCVar("ReplaceMyPlayerPortrait") then
+		Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+	end
+
 	InterfaceOverrides.AdjustDisplaySettings(category);
 
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
@@ -330,8 +340,9 @@ local function Register()
 	else
 		layout:AddInitializer(CreateSettingsAddOnDisabledLabelInitializer());
 	end
-
-
+	
+	InterfaceOverrides.CreatePvpFrameSettings(category, layout);
+	
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 

@@ -97,9 +97,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -127,6 +127,9 @@ local EditModeManagerShared =
 				{ Name = "EnableSnap", Type = "EditModeAccountSetting", EnumValue = 22 },
 				{ Name = "EnableAdvancedOptions", Type = "EditModeAccountSetting", EnumValue = 23 },
 				{ Name = "ShowPetFrame", Type = "EditModeAccountSetting", EnumValue = 24 },
+				{ Name = "ShowTimerBars", Type = "EditModeAccountSetting", EnumValue = 25 },
+				{ Name = "ShowVehicleSeatIndicator", Type = "EditModeAccountSetting", EnumValue = 26 },
+				{ Name = "ShowArchaeologyBar", Type = "EditModeAccountSetting", EnumValue = 27 },
 			},
 		},
 		{
@@ -168,6 +171,17 @@ local EditModeManagerShared =
 				{ Name = "StanceBar", Type = "EditModeActionBarSystemIndices", EnumValue = 11 },
 				{ Name = "PetActionBar", Type = "EditModeActionBarSystemIndices", EnumValue = 12 },
 				{ Name = "PossessActionBar", Type = "EditModeActionBarSystemIndices", EnumValue = 13 },
+			},
+		},
+		{
+			Name = "EditModeArchaeologyBarSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeArchaeologyBarSetting", EnumValue = 0 },
 			},
 		},
 		{
@@ -357,9 +371,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -379,14 +393,28 @@ local EditModeManagerShared =
 				{ Name = "Bags", Type = "EditModeSystem", EnumValue = 14 },
 				{ Name = "StatusTrackingBar", Type = "EditModeSystem", EnumValue = 15 },
 				{ Name = "DurabilityFrame", Type = "EditModeSystem", EnumValue = 16 },
+				{ Name = "TimerBars", Type = "EditModeSystem", EnumValue = 17 },
+				{ Name = "VehicleSeatIndicator", Type = "EditModeSystem", EnumValue = 18 },
+				{ Name = "ArchaeologyBar", Type = "EditModeSystem", EnumValue = 19 },
+			},
+		},
+		{
+			Name = "EditModeTimerBarsSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeTimerBarsSetting", EnumValue = 0 },
 			},
 		},
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 18,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 17,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -406,6 +434,7 @@ local EditModeManagerShared =
 				{ Name = "SortPlayersBy", Type = "EditModeUnitFrameSetting", EnumValue = 14 },
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 				{ Name = "FrameSize", Type = "EditModeUnitFrameSetting", EnumValue = 16 },
+				{ Name = "ViewArenaSize", Type = "EditModeUnitFrameSetting", EnumValue = 17 },
 			},
 		},
 		{
@@ -424,6 +453,17 @@ local EditModeManagerShared =
 				{ Name = "Boss", Type = "EditModeUnitFrameSystemIndices", EnumValue = 6 },
 				{ Name = "Arena", Type = "EditModeUnitFrameSystemIndices", EnumValue = 7 },
 				{ Name = "Pet", Type = "EditModeUnitFrameSystemIndices", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "EditModeVehicleSeatIndicatorSetting",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "Size", Type = "EditModeVehicleSeatIndicatorSetting", EnumValue = 0 },
 			},
 		},
 		{
@@ -475,6 +515,19 @@ local EditModeManagerShared =
 				{ Name = "Role", Type = "SortPlayersBy", EnumValue = 0 },
 				{ Name = "Group", Type = "SortPlayersBy", EnumValue = 1 },
 				{ Name = "Alphabetical", Type = "SortPlayersBy", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "ViewArenaSize",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Two", Type = "ViewArenaSize", EnumValue = 0 },
+				{ Name = "Three", Type = "ViewArenaSize", EnumValue = 1 },
+				{ Name = "Five", Type = "ViewArenaSize", EnumValue = 2 },
 			},
 		},
 		{

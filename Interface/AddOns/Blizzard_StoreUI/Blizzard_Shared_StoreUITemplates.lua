@@ -21,7 +21,6 @@ setfenv(1, tbl);
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("GetURLIndexAndLoadURL");
 Import("bit");
 
 StoreTooltipBackdropMixin = {};
@@ -85,13 +84,12 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 	local function ExpandParentOfChild(childNode, dataProvider)
 		local childData = childNode:GetData();
 		local parentGroupID = childData.parentGroupID;
-		local foundParentNode = dataProvider:FindElementDataByPredicate(function(node)
+
+		local collapsed = false;
+		dataProvider:SetCollapsedByPredicate(collapsed, function(node)
 			local data = node:GetData();
 			return data.groupID == parentGroupID;
-		end);	
-		if foundParentNode then 
-			foundParentNode:SetCollapsed(false);
-		end
+		end);
 	end
 
 	local function SetParentCollapsedState(node, button)
@@ -171,7 +169,7 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 			if button.disabledTooltip then
 	 			StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint("BOTTOMLEFT", button, "TOPRIGHT");
-				StoreTooltip_Show("", self.disabledTooltip);
+				StoreTooltip_Show("", button.disabledTooltip);
 			else
 				button.HighlightTexture:Show();
 			end
@@ -202,7 +200,7 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 					if parentGroupID > 0 then
 						ExpandParentOfChild(node, dataProvider);
 					else
-						dataProvider:SetAllCollapsed(true);
+						dataProvider:CollapseAll();
 					end
 					SelectCategoryGroupID(data.groupID);
 				end				
@@ -251,7 +249,7 @@ end
 
 function CategoryTreeScrollContainerMixin:OnHide()
 	self.selectionBehavior:ClearSelections();
-	self.ScrollBox:ClearDataProvider();
+	self.ScrollBox:RemoveDataProvider();
 end
 
 function CategoryTreeScrollContainerMixin:OnEvent(event, ...)
@@ -291,7 +289,7 @@ end
 
 function CategoryTreeScrollContainerMixin:UpdateCategories()
 	local productGroups = C_StoreSecure.GetProductGroups();
-	local dataProvider = CreateLinearizedTreeListDataProvider();
+	local dataProvider = CreateTreeDataProvider();
 	local productGroupMap = {};
 	for _, productGroup in ipairs(productGroups) do
 		local groupID = productGroup.groupID;
@@ -305,21 +303,21 @@ function CategoryTreeScrollContainerMixin:UpdateCategories()
 				parentGroupEntry = productGroupMap[parentGroupID];
 				if not parentGroupEntry and parentProductGroup then
 					productGroupMap[parentGroupID] = parentProductGroup;
-					productGroupMap[parentGroupID].children = {};
 					dataProvider:Insert(parentProductGroup);
-
 					parentGroupEntry = productGroupMap[parentGroupID];
 				end
 
 				if parentGroupEntry then
-					productGroupMap[parentGroupID].children[groupID] = productGroup;
-					local foundNode = dataProvider:FindElementDataByPredicate(function(node)
+					local parentGroup = productGroupMap[parentGroupID];
+					if not parentGroup.children then
+						parentGroup.children = {};
+					end
+					parentGroup.children[groupID] = productGroup;
+
+					dataProvider:InsertInParentByPredicate(productGroup, function(node)
 						local data = node:GetData();
 						return data.groupID == parentGroupID;
 					end);
-					if foundNode then
-						foundNode:Insert(productGroup);
-					end
 				end
 			else
 				if productGroupMap[groupID] == nil then

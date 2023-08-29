@@ -154,9 +154,14 @@ function GossipFrameSharedMixin:OnShow()
 end
 
 function GossipFrameSharedMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-	C_GossipInfo.CloseGossip();
 	self.gossipOptions = {};
+
+	if self.interactionIsContinuing then
+		self.interactionIsContinuing = nil;
+	else
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+		C_GossipInfo.CloseGossip();
+	end
 end
 
 function GossipOptionSort(leftInfo, rightInfo)
@@ -183,8 +188,15 @@ function GossipFrameSharedMixin:HandleShow()
 	end
 end
 
-function GossipFrameSharedMixin:HandleHide()
+function GossipFrameSharedMixin:HandleHide(interactionIsContinuing)
+	if interactionIsContinuing and self:IsShown() then
+		self:SetInteractionIsContinuing(interactionIsContinuing);
+	end
 	HideUIPanel(self);
+end
+
+function GossipFrameSharedMixin:SetInteractionIsContinuing(interactionIsContinuing)
+	self.interactionIsContinuing = true;
 end
 
 --This is an API for players and addon authors to continue to be able to select by index rather than ID

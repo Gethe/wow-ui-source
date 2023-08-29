@@ -22,8 +22,8 @@ local SocialInfo =
 			Payload =
 			{
 				{ Name = "isLinked", Type = "bool", Nilable = false },
-				{ Name = "screenName", Type = "cstring", Nilable = false },
-				{ Name = "error", Type = "cstring", Nilable = false },
+				{ Name = "screenName", Type = "string", Nilable = false },
+				{ Name = "error", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -32,7 +32,7 @@ local SocialInfo =
 			LiteralName = "TWITTER_POST_RESULT",
 			Payload =
 			{
-				{ Name = "result", Type = "luaIndex", Nilable = false },
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -43,7 +43,7 @@ local SocialInfo =
 			{
 				{ Name = "isTwitterEnabled", Type = "bool", Nilable = false },
 				{ Name = "isLinked", Type = "bool", Nilable = false },
-				{ Name = "screenName", Type = "cstring", Nilable = false },
+				{ Name = "screenName", Type = "string", Nilable = false },
 			},
 		},
 	},

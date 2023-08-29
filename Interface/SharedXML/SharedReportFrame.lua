@@ -305,6 +305,15 @@ function ReportInfo:CreateMailReportInfo(reportType, mailIndex)
 	return reportInfo;
 end
 
+function ReportInfo:CreateCraftingOrderReportInfo(reportType, craftingOrderID)
+	if(reportType ~= Enum.ReportType.CraftingOrder) then
+		return nil;
+	end
+	local reportInfo = self:CreateReportInfoFromType(reportType);
+	reportInfo:SetCraftingOrderID(craftingOrderID);
+	return reportInfo;
+end
+
 ReportInfoMixin = { };
 function ReportInfoMixin:Clear()
 	self.reportType = nil;
@@ -339,6 +348,10 @@ function ReportInfoMixin:SetGroupFinderSearchResultID(groupFinderSearchResultID)
 	self.groupFinderSearchResultID = groupFinderSearchResultID
 end
 
+function ReportInfoMixin:SetReportedChatInline()
+	self.reportedChatInline = true;
+end
+
 function ReportInfoMixin:SetGroupFinderApplicantID(groupFinderApplicantID)
 	self.groupFinderApplicantID = groupFinderApplicantID
 end
@@ -357,6 +370,10 @@ end
 
 function ReportInfoMixin:SetPetGUID(petGUID)
 	self.petGUID = petGUID;
+end
+
+function ReportInfoMixin:SetCraftingOrderID(craftingOrderID)
+	self.craftingOrderID = craftingOrderID;
 end
 
 function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCategoryFlags)

@@ -154,11 +154,6 @@
 					<Anchor point="TOPLEFT" relativeTo="HonorFrameLastWeekHK" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Frame name="HonorFrameLastWeekStanding" inherits="HonorFrameStandingButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="HonorFrameLastWeekContribution" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
 			<Frame name="HonorFrameLifeTimeHK" inherits="HonorFrameHKButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="HonorFrameLifeTimeTitle" relativePoint="BOTTOMLEFT" x="10" y="-4"/>

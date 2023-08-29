@@ -43,6 +43,8 @@ Import("IsVeteranTrialAccount");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 Import("GetScreenWidth");
 Import("GetScreenHeight");
+Import("IsShiftKeyDown");
+Import("BLIZZARD_STORE_CLICK_TO_OPEN_FAQ");
 
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
@@ -51,6 +53,30 @@ local BATTLEPAY_SPLASH_BANNER_TEXT_NEW = 2;
 local SEE_YOU_LATER_BUNDLE_PRODUCT_ID = 488;
 
 local DEFAULT_ICON_NAME = "Interface\\Icons\\INV_Misc_Note_02";
+
+local function GetFaqNydusLink(entryInfo)
+	local currencyInfo = StoreFrame_CurrencyInfo();
+	if not currencyInfo then
+		return nil;
+	end
+
+	-- Check for VAS FAQ link
+	local vasServiceType = C_StoreSecure.GetVasServiceType(entryInfo.productID);
+	if vasServiceType and currencyInfo.vasDisclaimerData and currencyInfo.vasDisclaimerData[vasServiceType] and currencyInfo.vasDisclaimerData[vasServiceType].disclaimer then
+		local text = currencyInfo.vasDisclaimerData[vasServiceType].disclaimer;
+		return LinkUtil.ExtractNydusLink(text);
+	end
+
+	-- Check for boost FAQ link
+	local productDecorator = entryInfo.sharedData.productDecorator;
+	if productDecorator and productDecorator == Enum.BattlepayProductDecorator.Boost and currencyInfo.boostDisclaimerText then
+		local text = currencyInfo.boostDisclaimerText;
+		return LinkUtil.ExtractNydusLink(text);
+	end
+
+	return nil;
+end
+
 --------------------------------------------------
 -- DEFAULT STORE CARD MIXIN
 StoreCardMixin = {};
@@ -91,6 +117,14 @@ function StoreCardMixin:OnClick()
 	local entryInfo = self:GetEntryInfo();
 	if not self:CanBuyHere(entryInfo) then
 		return;
+	end
+
+	if IsShiftKeyDown() then
+		local vasFaqUrl = GetFaqNydusLink(entryInfo);
+		if vasFaqUrl then
+			GetURLIndexAndLoadURL(self, vasFaqUrl);
+			return;
+		end
 	end
 
 	if not StoreProductCard_CheckShowStorePreviewOnClick(self) then
@@ -193,6 +227,35 @@ function StoreCardMixin:AppendBundleInformationToTooltipDescription(entryInfo, t
 	return tooltipDescription;
 end
 
+function StoreCardMixin:GetTooltipDescription()
+	local entryInfo = self:GetEntryInfo();
+	local description = self.productTooltipDescription or entryInfo.sharedData.description or "";
+
+	description = self:AppendBundleInformationToTooltipDescription(entryInfo, description);
+
+	if self:ShouldAddDiscountInformationToTooltip(entryInfo) then
+		local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
+		if discounted then
+			if description then
+				description = description..(BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM:format(discountPercentage, StoreFrame_CurrencyFormatShort(discountDollars, discountCents)));
+			else
+				description = BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT:format(discountPercentage, StoreFrame_CurrencyFormatShort(discountDollars, discountCents));
+			end
+		end
+	end
+
+	if self:CanBuyHere(entryInfo) then
+		-- Check if we have a FAQ URL
+		if GetFaqNydusLink(entryInfo) then
+			description = description.."\n\n"..BLIZZARD_STORE_CLICK_TO_OPEN_FAQ;
+		end
+	else
+		description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
+	end
+
+	return strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
+end
+
 function StoreCardMixin:ShowTooltip()
 	if not self.Description then
 		local x, y, point, rpoint = self:GetTooltipOffsets();
@@ -205,39 +268,16 @@ function StoreCardMixin:ShowTooltip()
 			rpoint = "TOPRIGHT";
 			x = -4;
 		end
-
-		local entryInfo = self:GetEntryInfo();
-		local name = entryInfo.sharedData.name:gsub("|n", " ");
-		local description = "";
-
-		if self.productTooltipDescription then
-			description = self.productTooltipDescription;
-		elseif entryInfo.sharedData.description then
-			description = entryInfo.sharedData.description;
-		end
-
-		description = self:AppendBundleInformationToTooltipDescription(entryInfo, description);
-
-		if self:ShouldAddDiscountInformationToTooltip(entryInfo) then
-			local discounted, discountPercentage, discountDollars, discountCents = StoreFrame_GetDiscountInformation(entryInfo.sharedData);
-			if discounted then
-				if description then
-					description = description..(BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_ADDENDUM:format(discountPercentage, StoreFrame_CurrencyFormatShort(discountDollars, discountCents)));
-				else
-					description = BLIZZARD_STORE_BUNDLE_DISCOUNT_TOOLTIP_REPLACEMENT:format(discountPercentage, StoreFrame_CurrencyFormatShort(discountDollars, discountCents));
-				end
-			end
-		end
-
 		StoreTooltip:ClearAllPoints();
 		StoreTooltip:SetPoint(point, self, rpoint, x, 0);
 
+		local entryInfo = self:GetEntryInfo();
+		local description = self:GetTooltipDescription();
+		local name = entryInfo.sharedData.name:gsub("|n", " ");
 		if not self:CanBuyHere(entryInfo) then
 			name = "";
-			description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 		end
 
-		description = strtrim(description, "\n\r"); -- Ensure we don't end the description with a new line.
 		StoreTooltip_Show(name, description, entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.WoWToken);
 	end
 end
