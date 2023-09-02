@@ -742,11 +742,7 @@ local GarrisonLandingPageEvents = {
 };
 
 function ExpansionLandingPageMinimapButtonMixin:OnLoad()
-	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);	
-
-	if not ExpansionLandingPage then
-		ExpansionLandingPage_LoadUI();
-	end
+	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);
 
 	self.pulseLocks = {};
 

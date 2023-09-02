@@ -748,10 +748,6 @@ function OrderHall_LoadUI()
 	UIParentLoadAddOn("Blizzard_OrderHallUI");
 end
 
-function ExpansionLandingPage_LoadUI()
-	UIParentLoadAddOn("Blizzard_ExpansionLandingPage");
-end
-
 function MajorFactions_LoadUI()
 	UIParentLoadAddOn("Blizzard_MajorFactions");
 end
@@ -1314,9 +1310,6 @@ function ToggleExpansionLandingPage()
 
 		ToggleFrame(GenericTraitFrame);
 	else
-		if (not ExpansionLandingPage) then
-			ExpansionLandingPage_LoadUI();
-		end
 		ToggleFrame(ExpansionLandingPage);
 	end
 end
