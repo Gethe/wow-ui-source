@@ -68,7 +68,7 @@
 		</Scripts>
 	</Button>
 	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true"/>
-	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
+	<Button name="CompactUnitFrameTemplate" mixin="PingableType_UnitFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingReceiverAttributeTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" parentKey="background" setAllPoints="true" ignoreParentAlpha="true"/>

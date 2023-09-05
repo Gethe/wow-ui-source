@@ -116,6 +116,8 @@
 							<OnLoad>
 								local showDisabled = false;
 								self:SetNormalAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
+								showDisabled = true;
+								self:SetDisabledAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
 								self.checkButton.onClick = RaidFinderFrameRoleCheckButton_OnClick;
 							</OnLoad>
 							<OnEnter>

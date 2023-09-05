@@ -74,9 +74,9 @@ function BaseMapPoiPinMixin:OnMouseLeave()
 	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
 end
 
-MapPinSupertrackHighlightMixin = {};
+MapPinAnimatedHighlightMixin = {};
 
-function MapPinSupertrackHighlightMixin:SetHighlightShown(shown, texture, params)
+function MapPinAnimatedHighlightMixin:SetHighlightShown(shown, texture, params)
 	self:SetShown(shown);
 	self.BackHighlight:SetShown(shown);
 	self.TopHighlight:SetShown(shown);
@@ -105,13 +105,22 @@ end
 
 MapPinHighlightType = EnumUtil.MakeEnum(
 	"None",
-	"BountyRing", -- Golden ring around the pin, used by the Emissary/Bounty Board
-	"SupertrackedHighlight" -- Blue glow + animated icon pulse, used by Covenant Callings and the World Map Activity Tracker
+	"BountyRing",				-- Golden ring around the pin, used by the Emissary/Bounty Board
+	"SupertrackedHighlight",	-- Blue glow + animated icon pulse, used by Covenant Callings and the World Map Activity Tracker
+	"DreamsurgeHighlight"		-- Green glow + animated icon pulse, used by the Dreamsurge event
 );
 
-function MapPinHighlight_SetUpSupertrackedHighlight(parentPin)
-	local frame = CreateFrame("Frame", nil, parentPin, "MapPinSupertrackHighlightTemplate");
-	parentPin.SupertrackedHighlight = frame;
+local function isAnimatedHighlightType(highlightType)
+	return highlightType == MapPinHighlightType.SupertrackedHighlight or highlightType == MapPinHighlightType.DreamsurgeHighlight;
+end
+
+function MapPinHighlight_CreateAnimatedHighlightIfNeeded(parentPin, highlightType)
+	if not isAnimatedHighlightType(highlightType) or parentPin.AnimatedHighlight then
+		return;
+	end
+
+	local frame = CreateFrame("Frame", nil, parentPin, "MapPinAnimatedHighlightTemplate");
+	parentPin.AnimatedHighlight = frame;
 	frame:SetPoint("CENTER");
 
 	frame.BackHighlight:SetParent(parentPin)
@@ -119,6 +128,34 @@ function MapPinHighlight_SetUpSupertrackedHighlight(parentPin)
 
 	frame.TopHighlight:SetParent(parentPin)
 	frame.TopHighlight:SetDrawLayer("OVERLAY", 7);
+end
+
+local animatedHighlightTypeTextureKits = 
+{
+	[MapPinHighlightType.SupertrackedHighlight] = "callings",
+	[MapPinHighlightType.DreamsurgeHighlight] = "dreamsurge",
+};
+
+local animatedHighlightTextureKitRegionInfo = {
+	["BackHighlight"] = "%s-backhighlight-full",
+	["TopHighlight"] = "%s-tophighlight",
+}
+
+function MapPinHighlight_UpdateAnimatedHighlight(highlightType, parentPin, regionToHighlight, params)
+	MapPinHighlight_CreateAnimatedHighlightIfNeeded(parentPin, highlightType);
+
+	if parentPin.AnimatedHighlight then
+		local showHighlight = isAnimatedHighlightType(highlightType);
+		if showHighlight then
+			local textureKit = animatedHighlightTypeTextureKits[highlightType];
+			if textureKit ~= parentPin.AnimatedHighlight.textureKit then
+				SetupTextureKitOnRegions(textureKit, parentPin.AnimatedHighlight, animatedHighlightTextureKitRegionInfo, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+				parentPin.AnimatedHighlight.textureKit = textureKit;
+			end
+		end
+
+		parentPin.AnimatedHighlight:SetHighlightShown(showHighlight, regionToHighlight, params);
+	end
 end
 
 function MapPinHighlight_CheckHighlightPin(highlightType, parentPin, regionToHighlight, params)
@@ -129,14 +166,8 @@ function MapPinHighlight_CheckHighlightPin(highlightType, parentPin, regionToHig
 	if parentPin.BountyRing then
 		parentPin.BountyRing:SetShown(highlightType == MapPinHighlightType.BountyRing);
 	end
-		
-	if highlightType == MapPinHighlightType.SupertrackedHighlight and not parentPin.SupertrackedHighlight then
-		MapPinHighlight_SetUpSupertrackedHighlight(parentPin);
-	end
-		
-	if parentPin.SupertrackedHighlight then
-		parentPin.SupertrackedHighlight:SetHighlightShown(highlightType == MapPinHighlightType.SupertrackedHighlight, regionToHighlight, params);
-	end
+	
+	MapPinHighlight_UpdateAnimatedHighlight(highlightType, parentPin, regionToHighlight, params);
 end
 
 function ClearCachedActivitiesForPlayer()

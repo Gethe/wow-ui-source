@@ -180,33 +180,32 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 			UIDropDownMenu_AddButton(info, level);
 		end
 		
-		-- Disabled for 10.1.5 release but will return shortly.
 		-- Add report button
-		--do
-		--	local canReport = self.order.orderState == Enum.CraftingOrderState.Created;
-		--	local info = UIDropDownMenu_CreateInfo();
-		--	info.text = PROF_ORDER_REPORT;
-		--	if canReport then
-		--		info.func = function()
-		--			if not ReportFrame:IsShown() then
-		--				local reportInfo = ReportInfo:CreateCraftingOrderReportInfo(Enum.ReportType.CraftingOrder, self.order.orderID);
-		--				if reportInfo then
-		--					local playerLocation = PlayerLocation:CreateFromGUID(self.order.customerGuid);
-		--					ReportFrame:InitiateReport(reportInfo, nil, playerLocation);
-		--				end
-		--			end
-		--		end
-		--	else
-		--		info.disabled = true;
-		--		info.tooltipWhileDisabled = true;
-		--		info.tooltipOnButton = true;
-		--		info.tooltipTitle = "";
-		--		info.tooltipText = PROF_ORDER_CANT_REPORT_IN_PROGRESS;
-		--	end
-		--	info.isNotRadio = true;
-		--	info.notCheckable = true;
-		--	UIDropDownMenu_AddButton(info, level);
-		--end
+		do
+			local canReport = self.order.orderState == Enum.CraftingOrderState.Created;
+			local info = UIDropDownMenu_CreateInfo();
+			info.text = PROF_ORDER_REPORT;
+			if canReport then
+				info.func = function()
+					if not ReportFrame:IsShown() then
+						local reportInfo = ReportInfo:CreateCraftingOrderReportInfo(Enum.ReportType.CraftingOrder, self.order.orderID);
+						if reportInfo then
+							local playerLocation = PlayerLocation:CreateFromGUID(self.order.customerGuid);
+							ReportFrame:InitiateReport(reportInfo, nil, playerLocation);
+						end
+					end
+				end
+			else
+				info.disabled = true;
+				info.tooltipWhileDisabled = true;
+				info.tooltipOnButton = true;
+				info.tooltipTitle = "";
+				info.tooltipText = PROF_ORDER_CANT_REPORT_IN_PROGRESS;
+			end
+			info.isNotRadio = true;
+			info.notCheckable = true;
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end, "MENU");
 end
 
@@ -283,7 +282,7 @@ local ProfessionsCrafterOrderViewEvents =
 	"CRAFTINGORDERS_UNEXPECTED_ERROR",
     "UNIT_SPELLCAST_INTERRUPTED",
     "UNIT_SPELLCAST_FAILED",
-    "UPDATE_TRADESKILL_CAST_COMPLETE",
+    "UPDATE_TRADESKILL_CAST_STOPPED",
     "PLAYER_MONEY",
     "IGNORELIST_UPDATE",
 	"TRADE_SKILL_LIST_UPDATE",
@@ -371,7 +370,7 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 				Update();
 			end
         end
-    elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
+    elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UPDATE_TRADESKILL_CAST_STOPPED" then
 		self:SetOverrideCastBarActive(false);
     elseif event == "PLAYER_MONEY" then
         self:UpdateFulfillButton();

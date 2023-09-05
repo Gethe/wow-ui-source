@@ -317,7 +317,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
-	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate" mixin="ArenaEnemyMatchFrameMixin" virtual="true">
+	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate, PingReceiverAttributeTemplate" mixin="ArenaEnemyMatchFrameMixin, PingableType_UnitFrameMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>

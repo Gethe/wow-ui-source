@@ -160,6 +160,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetRestrictPings",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "restrictToAssistants", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "InviteUnit",
 			Type = "Function",
 			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
@@ -227,6 +236,15 @@ local PartyInfo =
 				{ Name = "tank", Type = "bool", Nilable = true },
 				{ Name = "healer", Type = "bool", Nilable = true },
 				{ Name = "dps", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "SetRestrictPings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "restrictToAssistants", Type = "bool", Nilable = false },
 			},
 		},
 	},

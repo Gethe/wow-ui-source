@@ -132,7 +132,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" mixin="TargetFrameMixin" virtual="true" frameLevel="500">
+	<Button name="TargetFrameTemplate" frameStrata="LOW" toplevel="true" parent="UIParent" inherits="SecureUnitButtonTemplate" mixin="TargetFrameMixin, PingableType_UnitFrameMixin" virtual="true" frameLevel="500">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="0" right="5" top="4" bottom="9"/>
@@ -180,9 +180,9 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="TargetFrameContent" setAllPoints="true">
+			<Frame parentKey="TargetFrameContent" inherits="SecureFrameParentPropagationTemplate" setAllPoints="true">
 				<Frames>
-					<Frame parentKey="TargetFrameContentMain" setAllPoints="true">
+					<Frame parentKey="TargetFrameContentMain" inherits="SecureFrameParentPropagationTemplate" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="ReputationColor" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Type" useAtlasSize="true" hidden="false">
@@ -206,10 +206,10 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<StatusBar parentKey="HealthBar" inherits="TextStatusBar" mixin="TargetFrameHealthBarMixin" frameStrata="LOW" drawLayer="BACKGROUND">
+							<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" mixin="TargetFrameHealthBarMixin" frameStrata="LOW" drawLayer="BACKGROUND">
 								<Size x="126" y="20"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.TargetFrameContainer.Portrait" relativePoint="LEFT" x="1" y="-11"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.TargetFrameContainer" relativePoint="LEFT" x="148" y="2"/>
 								</Anchors>
 								<Layers>
 									<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
@@ -279,7 +279,7 @@
 								</Scripts>
 								<BarTexture parentKey="HealthBarTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health"/>
 							</StatusBar>
-							<StatusBar parentKey="ManaBar" inherits="TextStatusBar" mixin="TargetFrameStatusBarMixin" frameStrata="LOW">
+							<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" mixin="TargetFrameStatusBarMixin" frameStrata="LOW">
 								<Size x="134" y="10"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
@@ -433,7 +433,7 @@
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate" mixin="BossTargetFrameMixin" toplevel="false" virtual="true">
+	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate, PingReceiverAttributeTemplate" mixin="BossTargetFrameMixin, PingableType_UnitFrameMixin" toplevel="false" virtual="true">
 		<KeyValues>
 			<KeyValue key="align" value="right" type="string"/>
 			<KeyValue key="frameType" value="Target-Boss-Small" type="string"/>
@@ -456,7 +456,7 @@
 			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" mixin="TargetOfTargetMixin" virtual="true" hidden="true">
+	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate, PingReceiverAttributeTemplate" mixin="TargetOfTargetMixin, PingableType_UnitFrameMixin" virtual="true" hidden="true">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="frameType" value="TargetofTarget" type="string"/>
@@ -500,10 +500,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar parentKey="HealthBar" inherits="TextStatusBar">
+			<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate">
 				<Size x="70" y="10"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="2" y="-3.5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-6" y="-2.5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -537,7 +537,7 @@
 				</Scripts>
 				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health"/>
 			</StatusBar>
-			<StatusBar parentKey="ManaBar" inherits="TextStatusBar">
+			<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate">
 				<Size x="74" y="7"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>

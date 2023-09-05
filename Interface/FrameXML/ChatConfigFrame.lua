@@ -294,6 +294,12 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		checked = function() return IsListeningForMessageType("PET_BATTLE_INFO"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PET_BATTLE_INFO"); end;
 	},
+	[9] = {
+		type = "PING",
+		checked = function () return IsListeningForMessageType("PING"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "PING"); end;
+		disabled = ShouldDisplayDisabled;
+	},
 }
 
 CHAT_CONFIG_CHANNEL_LIST = {};

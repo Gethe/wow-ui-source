@@ -496,6 +496,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
+
+	-- Event(s) for ping system
+	self:RegisterEvent("PING_SYSTEM_ERROR");
 end
 
 function UIParent_OnShow(self)
@@ -745,10 +748,6 @@ function OrderHall_LoadUI()
 	UIParentLoadAddOn("Blizzard_OrderHallUI");
 end
 
-function ExpansionLandingPage_LoadUI()
-	UIParentLoadAddOn("Blizzard_ExpansionLandingPage");
-end
-
 function MajorFactions_LoadUI()
 	UIParentLoadAddOn("Blizzard_MajorFactions");
 end
@@ -961,7 +960,7 @@ function InClickBindingMode()
 end
 
 function ToggleBattlefieldMap()
-	if DISALLOW_FRAME_TOGGLING then 
+	if DISALLOW_FRAME_TOGGLING then
 		return
 	end
 	BattlefieldMap_LoadUI();
@@ -1175,7 +1174,7 @@ function ToggleCollectionsJournal(tabIndex)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-	
+
 	if Kiosk.IsEnabled() then
 		return;
 	end
@@ -1193,7 +1192,7 @@ function SetCollectionsJournalShown(shown, tabIndex)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-	
+
 	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
@@ -1303,7 +1302,7 @@ function ToggleMajorFactionRenown()
 end
 
 function ToggleExpansionLandingPage()
-	if(TRAIT_SYSTEM_OVERRIDE_MAP) then 
+	if(TRAIT_SYSTEM_OVERRIDE_MAP) then
 		GenericTraitUI_LoadUI();
 
 		local currentMapID = select(8, GetInstanceInfo());
@@ -1311,9 +1310,6 @@ function ToggleExpansionLandingPage()
 
 		ToggleFrame(GenericTraitFrame);
 	else
-		if (not ExpansionLandingPage) then
-			ExpansionLandingPage_LoadUI();
-		end
 		ToggleFrame(ExpansionLandingPage);
 	end
 end
@@ -1754,7 +1750,7 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
-	    if (not IGNORE_DEATH_REQUIREMENTS) then 
+	    if (not IGNORE_DEATH_REQUIREMENTS) then
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
@@ -2465,6 +2461,13 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
+
+		-- Ping Listener.
+		-- When pinging UI, if the ping keybind is mapped to any mouse button the input gets consumed before it would hit the normal logic in Bindings.
+    	-- Below logic catches the input and handles this case specifically.
+		if IsMouseButton(buttonID) and GetConvertedKeyOrButton(buttonID) == GetBindingKey("TOGGLEPINGLISTENER") then
+			C_Ping.TogglePingListener(event == "GLOBAL_MOUSE_DOWN");
+		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
@@ -2483,11 +2486,14 @@ function UIParent_OnEvent(self, event, ...)
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
 		end
-	elseif event == "SHOW_PARTY_POSE_UI" then 
-		MatchCelebrationPartyPose_LoadUI(); 
+	elseif event == "SHOW_PARTY_POSE_UI" then
+		MatchCelebrationPartyPose_LoadUI();
 		local partyPoseID, won = ...;
 		MatchCelebrationPartyPoseFrame:LoadScreenByPartyPoseID(partyPoseID, won);
 		ShowUIPanel(MatchCelebrationPartyPoseFrame);
+	elseif event == "PING_SYSTEM_ERROR" then
+		local errorMsg = ...;
+		UIErrorsFrame:AddMessage(errorMsg, RED_FONT_COLOR:GetRGBA());
 	end
 end
 
@@ -3424,7 +3430,7 @@ function CloseWindows(ignoreCenter, frameToIgnore, context)
 	if ( ( not frameToIgnore or frameToIgnore ~= leftFrame ) and not ignoreControlLostLeft ) then
 		HideUIPanel(leftFrame, UIPANEL_SKIP_SET_POINT);
 	end
-	
+
 	HideUIPanel(fullScreenFrame, UIPANEL_SKIP_SET_POINT);
 	HideUIPanel(doublewideFrame, UIPANEL_SKIP_SET_POINT);
 
@@ -3993,10 +3999,15 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 	end
 end
 
-function GetScaledCursorPosition()
-	local uiScale = UIParent:GetEffectiveScale();
+function GetScaledCursorPositionForFrame(frame)
+	local uiScale = frame:GetEffectiveScale();
 	local x, y = GetCursorPosition();
 	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorPosition()
+	local x, y = GetScaledCursorPositionForFrame(UIParent);
+	return x, y;
 end
 
 function GetScaledCursorDelta()

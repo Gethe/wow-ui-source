@@ -2,7 +2,14 @@
 ..\FrameXML\UI.xsd">
     <!-- A base template for secure frames -->
     <Frame name="SecureFrameTemplate" protected="true" virtual="true"/>
-    
+
+    <!-- A variant of SecureFrameTemplate that will propagate all attribute queries to the parent -->
+    <Frame name="SecureFrameParentPropagationTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Attributes>
+			<Attribute name="useparent*" type="boolean" value="true"/>
+		</Attributes>
+	</Frame>
+
     <Script file="SecureTemplates.lua"/>
     <Script file="SecureStateDriver.lua"/>
     <Script file="SecureHoverDriver.lua"/>

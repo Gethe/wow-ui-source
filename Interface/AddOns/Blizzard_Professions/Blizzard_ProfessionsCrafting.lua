@@ -16,7 +16,7 @@ local ProfessionsCraftingPageEvents =
 {
 	"TRADE_SKILL_DATA_SOURCE_CHANGING",
 	"TRADE_SKILL_DATA_SOURCE_CHANGED",
-	"UPDATE_TRADESKILL_CAST_COMPLETE",
+	"UPDATE_TRADESKILL_CAST_STOPPED",
 	"TRADE_SKILL_CLOSE",
 	"BAG_UPDATE",
 	"BAG_UPDATE_DELAYED",
@@ -229,7 +229,7 @@ function ProfessionsCraftingPageMixin:SetMinimized()
 end
 
 function ProfessionsCraftingPageMixin:Cleanup()
-	self.castingEnchantID = nil;
+	self.vellumItemID = nil;
 	self:SetOverrideCastBarActive(false);
 	self:ValidateControls();
 end
@@ -239,7 +239,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 	elseif event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
 		self:Reset();
 		self.GuildFrame:Clear();
-	elseif event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
+	elseif event == "UPDATE_TRADESKILL_CAST_STOPPED" then
 		local isScrapping = ...;
 		if not isScrapping then
 			self:Cleanup();
@@ -253,9 +253,9 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 			-- If we are in the process of enchanting multiple vellums, we may need to reassign
 			-- a valid target if the previous item stack was depleted. This will go away entirely
 			-- once we update the API to accept the itemID and not require an actual item instance.
-			if self.castingEnchantID and not transaction:GetEnchantAllocation() then
+			if self.vellumItemID and not transaction:GetEnchantAllocation() then
 				ItemUtil.IteratePlayerInventory(function(itemLocation)
-					if C_Item.GetItemID(itemLocation) == self.castingEnchantID then
+					if C_Item.GetItemID(itemLocation) == self.vellumItemID then
 						local item = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation));
 						transaction:SetEnchantAllocation(item);
 						return true;
@@ -1006,7 +1006,9 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 
 			local enchantItem = transaction:GetEnchantAllocation();
 			if enchantItem then
-				self.castingEnchantID = enchantItem:GetItemID();
+				if count > 1 and C_TradeSkillUI.CanStoreEnchantInItem(enchantItem:GetItemGUID()) then
+					self.vellumItemID = enchantItem:GetItemID();
+				end
 				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation());
 			else
 				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel);

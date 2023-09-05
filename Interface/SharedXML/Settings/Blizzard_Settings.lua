@@ -198,6 +198,10 @@ function Settings.RegisterModifiedClickSetting(categoryTbl, variable, name, defa
 	return setting;
 end
 
+function Settings.AssignTutorialToCategory(category, tooltip, callback)
+	SettingsInbound.AssignTutorialToCategory(category, tooltip, callback);
+end
+
 function Settings.GetCategory(name)
 	return SettingsPanel:GetCategory(name);
 end

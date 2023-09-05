@@ -60,6 +60,8 @@ Blizzard_UIWidgetTemplateTextWithSubtext.lua
 Blizzard_UIWidgetTemplateTextWithSubtext.xml
 Blizzard_UIWidgetTemplateItemDisplay.lua
 Blizzard_UIWidgetTemplateItemDisplay.xml
+Blizzard_UIWidgetTemplateTugOfWar.lua
+Blizzard_UIWidgetTemplateTugOfWar.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml

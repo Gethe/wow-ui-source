@@ -10,7 +10,8 @@
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
+					<!--Note this is overwritten by the managed scroll bar visibility behavior in OnLoad.-->
+					<Anchor point="TOPLEFT" x="-50" y="0"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
@@ -76,6 +77,14 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="LEFT" x="-37" y="3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>

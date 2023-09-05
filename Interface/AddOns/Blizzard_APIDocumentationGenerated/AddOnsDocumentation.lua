@@ -7,6 +7,20 @@ local AddOns =
 	Functions =
 	{
 		{
+			Name = "DoesAddOnExist",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "exists", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAddOnMetadata",
 			Type = "Function",
 

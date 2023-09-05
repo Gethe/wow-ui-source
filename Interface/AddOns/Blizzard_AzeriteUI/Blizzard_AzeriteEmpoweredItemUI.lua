@@ -10,7 +10,7 @@ local AZERITE_EMPOWERED_FRAME_EVENTS = {
 	"AZERITE_ITEM_POWER_LEVEL_CHANGED",
 	"AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
 	"PLAYER_EQUIPMENT_CHANGED",
-	"UPDATE_TRADESKILL_CAST_COMPLETE",
+	"UPDATE_TRADESKILL_CAST_STOPPED",
 };
 
 AZERITE_EMPOWERED_ITEM_MAX_TIERS = 5;
@@ -106,7 +106,7 @@ function AzeriteEmpoweredItemUIMixin:OnEvent(event, ...)
 		if self.azeriteItemDataSource:DidEquippedItemChange(equipmentSlot) then
 			self:Clear();
 		end
-	elseif event == "UPDATE_TRADESKILL_CAST_COMPLETE" then
+	elseif event == "UPDATE_TRADESKILL_CAST_STOPPED" then
 		local isScrapping = ...;
 		if isScrapping then
 			HideUIPanel(self);

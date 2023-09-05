@@ -480,6 +480,19 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
+					<CheckButton parentKey="RestrictPingsButton" inherits="UICheckButtonTemplate" mixin="RaidFrameManagerRestrictPingsButtonMixin">
+						<Size x="24" y="24"/>
+						<HitRectInsets>
+							<AbsInset left="0" right="-140" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>

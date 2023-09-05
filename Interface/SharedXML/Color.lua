@@ -38,7 +38,7 @@ function ColorMixin:SetRGBA(r, g, b, a)
 	self.r = r;
 	self.g = g;
 	self.b = b;
-	self.a = a;
+	self.a = a or 1;
 end
 
 function ColorMixin:SetRGB(r, g, b)

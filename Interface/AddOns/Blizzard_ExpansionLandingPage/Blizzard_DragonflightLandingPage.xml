@@ -41,7 +41,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="Header">
+			<Frame parentKey="Header" frameLevel="100">
 				<Size x="830" y="52"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-65"/>
@@ -54,11 +54,31 @@
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
-					</Layer>
-					<Layer level="ARTWORK">
 						<Texture parentKey="TitleDivider" atlas="header-horizontal-rule" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Laying pieces of the Landing Page background over the top/bottom of Landing Page Scrollbox so that the scroll elements cleanly fade as we scroll up/down -->
+			<Frame parentKey="ScrollFadeOverlay">
+				<Size x="403" y="615"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-47"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Top" atlas="dragonflight-landingpage-background-fadeoverlay-top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Bottom" atlas="dragonflight-landingpage-background-fadeoverlay-bottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>

@@ -228,7 +228,7 @@ function UIWidgetTemplateCaptureBarMixin:Setup(widgetInfo, widgetContainer)
 	end
 	self:AdjustCaptureBarShadows(inLeftZone, inRightZone)
 
-	if widgetInfo.glowAnimType == Enum.CaptureBarWidgetGlowAnimType.Pulse then
+	if widgetInfo.glowAnimType == Enum.WidgetGlowAnimType.Pulse then
 		self.GlowPulseAnim:Play();
 	else
 		self.GlowPulseAnim:Stop();

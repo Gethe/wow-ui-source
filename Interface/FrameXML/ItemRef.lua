@@ -408,6 +408,7 @@ function SetItemRef(link, text, button, chatFrame)
 
 		local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Chat);
 		reportInfo:SetReportTarget(reportTarget);
+		reportInfo:SetReportedChatInline();
 		ReportFrame:InitiateReport(reportInfo, playerName);
 		return; 
 	elseif ( strsub(link, 1, 12) ==  "dungeonScore" ) then 

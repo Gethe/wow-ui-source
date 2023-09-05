@@ -89,7 +89,7 @@
 			</Layer>
 
 			<Layer level="ARTWORK">
-				<Texture parentKey="RoleIconTexture" atlas="UI-LFG-RoleIcon-Generic">
+				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
 					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>
@@ -141,7 +141,7 @@
 					</Anchors>
 				</Texture>
 
-				<Texture parentKey="RoleIconTexture" atlas="UI-LFG-RoleIcon-Generic">
+				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
 					<Size x="12" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>

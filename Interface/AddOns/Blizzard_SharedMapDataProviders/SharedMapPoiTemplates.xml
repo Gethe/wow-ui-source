@@ -30,16 +30,16 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="MapPinSupertrackHighlightTemplate" mixin="MapPinSupertrackHighlightMixin" hidden="true" virtual="true">
+	<Frame name="MapPinAnimatedHighlightTemplate" mixin="MapPinAnimatedHighlightMixin" hidden="true" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BackHighlight" atlas="Callings-Backhighlight-Full" useAtlasSize="true">
+				<Texture parentKey="BackHighlight">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="TopHighlight" atlas="Callings-TopHighlight" useAtlasSize="true" alphaMode="ADD" alpha=".3">
+				<Texture parentKey="TopHighlight" alphaMode="ADD" alpha=".3">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

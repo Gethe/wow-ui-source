@@ -321,10 +321,14 @@ local function Register()
 	end
 
 	-- ReplaceOtherPlayerPortraits
-	Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
+	if C_CVar.GetCVar("ReplaceOtherPlayerPortraits") then
+		Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
+	end
 
 	-- ReplaceMyPlayerPortrait
-	Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+	if C_CVar.GetCVar("ReplaceMyPlayerPortrait") then
+		Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+	end
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 
@@ -336,38 +340,9 @@ local function Register()
 	else
 		layout:AddInitializer(CreateSettingsAddOnDisabledLabelInitializer());
 	end
-
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(PVP_FRAMES_LABEL));
-
-	-- Pvp Power Bars
-	local pvpFramesDisplayPowerBarsSetting, pvpFramesDisplayPowerBarsInitializer = Settings.SetupCVarCheckBox(category, "pvpFramesDisplayPowerBars", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPOWERBAR);
-
-	local _, pvpFramesDisplayOnlyHealerPowerBarsInitializer = Settings.SetupCVarCheckBox(category, "pvpFramesDisplayOnlyHealerPowerBars", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYHEALERPOWERBARS);
-	local function EnablePvpFramesDisplayOnlyHealerPowerBarsSetting()
-		return pvpFramesDisplayPowerBarsSetting:GetValue();
-	end
-	pvpFramesDisplayOnlyHealerPowerBarsInitializer:SetParentInitializer(pvpFramesDisplayPowerBarsInitializer, EnablePvpFramesDisplayOnlyHealerPowerBarsSetting);
-
-	-- Pvp Class Colors
-	Settings.SetupCVarCheckBox(category, "pvpFramesDisplayClassColor", PVP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
-
-	-- Pvp Pets
-	Settings.SetupCVarCheckBox(category, "pvpOptionDisplayPets", PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
-
-	-- Pvp Health Text
-	do
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add("none", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);
-			container:Add("health", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_HEALTH);
-			container:Add("losthealth", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_LOSTHEALTH);
-			container:Add("perc", PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_PERC);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropDown(category, "pvpFramesHealthText", Settings.VarType.String, GetOptions, PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
-	end
-
+	
+	InterfaceOverrides.CreatePvpFrameSettings(category, layout);
+	
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 

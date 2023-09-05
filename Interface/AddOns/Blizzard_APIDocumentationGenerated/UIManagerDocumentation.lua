@@ -43,6 +43,24 @@ local UIManager =
 			},
 		},
 		{
+			Name = "GetUIParent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiParent", Type = "SimpleFrame", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldFrame",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "worldFrame", Type = "SimpleFrame", Nilable = false },
+			},
+		},
+		{
 			Name = "Reload",
 			Type = "Function",
 		},

@@ -37,22 +37,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="New" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" x="-8" y="8" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-					<Shadow>
-						<Color r="0.32" g="0.5" b="1.0"/>
-					</Shadow>
-				</FontString>
-				<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.New" x="-20" y="10"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.New" x="20" y="-10"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -93,6 +77,28 @@
 					<Anchor point="LEFT" relativeKey="$parent.TalentSlot2" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="NewContainer" hidden="true">
+				<Size x="1" y="1"/>
+				<!-- <Anchor point="CENTER" x="-8" y="8" relativePoint="BOTTOMRIGHT"/> -->
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Shadow>
+								<Color r="0.32" g="0.5" b="1.0"/>
+							</Shadow>
+						</FontString>
+						<Texture parentKey="Glow" atlas="collections-newglow">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Text" x="-20" y="10"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" x="20" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -3,7 +3,7 @@
 	<Include file="UIDropDownMenuTemplates.lua"/>
 	<Frame name="UIDropDownCustomMenuEntryTemplate" enableMouse="true" hidden="true" mixin="UIDropDownCustomMenuEntryMixin" virtual="true"/>
 
-	<Button name="ColorSwatchTemplate" virtual="true">
+	<Button name="ColorSwatchTemplate" mixin="ColorSwatchMixin" virtual="true">
 		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-3">

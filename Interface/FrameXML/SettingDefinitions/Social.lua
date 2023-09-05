@@ -57,6 +57,9 @@ local function Register()
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
 	
+	-- Block Calendar Invites
+	Settings.SetupCVarCheckBox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
+	
 	-- Display Only Character Achievements
 	if AreAccountAchievementsHidden and ShowAccountAchievements then
 		local defaultValue = false;

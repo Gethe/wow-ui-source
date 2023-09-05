@@ -302,7 +302,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="RewardAmount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="3" y="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>

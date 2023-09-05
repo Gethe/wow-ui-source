@@ -270,14 +270,16 @@ end
 
 function ClassNameplateManaBar_OnUpdate(self)
 	local currValue = UnitPower("player", self.powerType) - self.predictedPowerCost;
+	local oldValue = self.currValue or 0;
+
 	if ( currValue ~= self.currValue or self.forceUpdate ) then
 		self.forceUpdate = nil;
 		-- Only show anim if change is more than 10%
-		if ( self.FeedbackFrame.maxValue ~= 0 and math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
-			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
+		if ( self.FeedbackFrame.maxValue ~= 0 and ( math.abs(currValue - oldValue) / self.FeedbackFrame.maxValue ) > 0.1 ) then
+			self.FeedbackFrame:StartFeedbackAnim(oldValue, currValue);
 		end
 		if ( self.FullPowerFrame.active ) then
-			self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
+			self.FullPowerFrame:StartAnimIfFull(currValue);
 		end
 		self.currValue = currValue;
 	end

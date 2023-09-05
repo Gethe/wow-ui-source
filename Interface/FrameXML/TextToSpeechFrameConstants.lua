@@ -25,4 +25,5 @@ TEXT_TO_SPEECH_CHAT_TYPES = {
 	"LOOT",
 	"CURRENCY",
 	"MONEY",
+	"PING",
 };

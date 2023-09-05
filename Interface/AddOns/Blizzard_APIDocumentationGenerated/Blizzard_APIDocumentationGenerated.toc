@@ -41,6 +41,7 @@ ContributionCollectorDocumentation.lua
 CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
+CursorUtilDocumentation.lua
 DeathInfoDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
@@ -66,6 +67,7 @@ GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
 InstanceEncounterDocumentation.lua
+InterfaceFileManifestDocumentation.lua
 ItemDocumentation.lua
 ItemSocketInfoDocumentation.lua
 ItemTextDocumentation.lua
@@ -88,6 +90,9 @@ PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
+PingManagerDocumentation.lua
+PingManagerSecureDocumentation.lua
+PingPinFrameAPIDocumentation.lua
 PlatformDocumentation.lua
 PlayerInfoDocumentation.lua
 PlayerInteractionManagerDocumentation.lua
@@ -309,6 +314,7 @@ PVPMgrConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
+PingConstantsDocumentation.lua
 PlayerDocumentation.lua
 PlayerInfoSharedDocumentation.lua
 PlayerInteractionManagerConstantsDocumentation.lua

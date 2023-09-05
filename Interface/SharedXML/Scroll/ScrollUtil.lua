@@ -1107,6 +1107,18 @@ function ScrollUtil.AddResizableChildrenBehavior(scrollBox)
 	scrollBox:ForEachFrame(onSubscribe);
 end
 
+function ScrollUtil.RegisterAlternateRowBehavior(scrollBox, callback)
+	local function OnDataRangeChanged(sortPending)
+		local index = scrollBox:GetDataIndexBegin();
+		scrollBox:ForEachFrame(function(frame)
+			local alternate = index % 2 == 0;
+			callback(frame, alternate);
+			index = index + 1;
+		end);
+	end;
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, OnDataRangeChanged);
+end
+
 function ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, elementDataTranslator)
 	local onInitialized = function(o, frame, elementData)
 		tableBuilder:AddRow(frame, elementDataTranslator(elementData));

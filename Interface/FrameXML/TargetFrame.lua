@@ -390,7 +390,7 @@ function TargetFrameMixin:CheckClassification()
 		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 		healthBar:SetHeight(12);
 		healthBar:SetWidth(125);
-		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 0, -3);
+		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
 
 		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
 		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
@@ -415,7 +415,7 @@ function TargetFrameMixin:CheckClassification()
 		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 		healthBar:SetHeight(20);
 		healthBar:SetWidth(126);
-		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", 1, -11);
+		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
 
 		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
 		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
@@ -1242,7 +1242,7 @@ function BossTargetFrameMixin:OnLoad()
 	healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff-Bar-Health", TextureKitConstants.UseAtlasSize);
 	healthBar:SetWidth(84);
 	healthBar:SetHeight(10);
-	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer.Portrait, "LEFT", -2, -8);
+	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 145, -6);
 
 	-- The boss frame mask is the same shape as the party frame, so we just use that.
 	healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);

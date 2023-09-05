@@ -54,95 +54,95 @@ hash_EmoteTokenList = {}
 hash_ChatTypeInfoList = {}			--[localizedCommand] -> identifier (Stores all slash commands)
 
 ChatTypeInfo = { };
-ChatTypeInfo["SYSTEM"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["SAY"]										= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PARTY"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RAID"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["OFFICER"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["YELL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["WHISPER"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
+ChatTypeInfo["SYSTEM"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["SAY"]										= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["PARTY"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["RAID"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["GUILD"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["OFFICER"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["YELL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["WHISPER"]									= { sticky = 1, flashTab = true, flashTabOnGeneral = true, ignoreChatTypeProcessing = false };
 ChatTypeInfo["SMART_WHISPER"]							= CopyTable(ChatTypeInfo["WHISPER"]);
-ChatTypeInfo["WHISPER_INFORM"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["REPLY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["EMOTE"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["TEXT_EMOTE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["MONSTER_SAY"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["MONSTER_PARTY"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["MONSTER_YELL"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["MONSTER_WHISPER"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = true };
-ChatTypeInfo["MONSTER_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL_JOIN"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL_LEAVE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL_LIST"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL_NOTICE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL_NOTICE_USER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["TARGETICONS"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["AFK"]										= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["DND"]										= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["IGNORED"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["SKILL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["LOOT"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CURRENCY"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["MONEY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["OPENING"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["TRADESKILLS"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PET_INFO"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["COMBAT_MISC_INFO"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["COMBAT_XP_GAIN"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["COMBAT_HONOR_GAIN"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_LEADER"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["QUEST_BOSS_EMOTE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["INSTANCE_CHAT"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["INSTANCE_CHAT_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["RESTRICTED"] 			                    = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL1"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL2"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL3"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL4"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL5"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL6"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL7"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL8"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL9"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL10"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL11"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL12"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL13"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL14"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL15"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL16"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true };
-ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BN_ALERT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BN_BROADCAST"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BN_BROADCAST_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false };
-ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["WHISPER_INFORM"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["REPLY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["EMOTE"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["TEXT_EMOTE"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["MONSTER_SAY"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["MONSTER_PARTY"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["MONSTER_YELL"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["MONSTER_WHISPER"]							= { sticky = 0, flashTab = true, flashTabOnGeneral = true, ignoreChatTypeProcessing = false };
+ChatTypeInfo["MONSTER_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL"]									= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL_JOIN"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL_LEAVE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL_LIST"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL_NOTICE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL_NOTICE_USER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["TARGETICONS"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["AFK"]										= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["DND"]										= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["IGNORED"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["SKILL"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["LOOT"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CURRENCY"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["MONEY"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["OPENING"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["TRADESKILLS"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["PET_INFO"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["COMBAT_MISC_INFO"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["COMBAT_XP_GAIN"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["COMBAT_HONOR_GAIN"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["COMBAT_FACTION_CHANGE"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BG_SYSTEM_NEUTRAL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BG_SYSTEM_ALLIANCE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BG_SYSTEM_HORDE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["RAID_LEADER"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["QUEST_BOSS_EMOTE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["INSTANCE_CHAT"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["INSTANCE_CHAT_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["RESTRICTED"] 			                    = { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL1"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL2"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL3"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL4"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL5"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL6"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL7"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL8"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL9"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL10"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL11"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL12"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL13"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL14"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL15"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL16"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL17"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL18"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL19"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["CHANNEL20"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["ACHIEVEMENT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["GUILD_ACHIEVEMENT"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["PARTY_LEADER"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_WHISPER"]								= { sticky = 1, flashTab = true, flashTabOnGeneral = true, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_WHISPER_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_ALERT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_BROADCAST"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_BROADCAST_INFORM"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_INLINE_TOAST_ALERT"]					= { sticky = 0, flashTab = true, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_INLINE_TOAST_BROADCAST"]				= { sticky = 0, flashTab = true, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = true, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["GUILD_ITEM_LOOTED"]						= CopyTable(ChatTypeInfo["GUILD_ACHIEVEMENT"]);
-ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-
+ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["PING"]									= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = true };
 --NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
@@ -311,7 +311,9 @@ ChatTypeGroup["PET_BATTLE_INFO"] = {
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
 };
-
+ChatTypeGroup["PING"] = {
+	"CHAT_MSG_PING",
+};
 --NEW_CHAT_TYPE - Add the chat type above.
 
 ChatTypeGroupInverted = {};
@@ -1753,6 +1755,34 @@ SecureCmdList["GUILD_DISBAND"] = function(msg)
 	if ( IsGuildLeader() ) then
 		StaticPopup_Show("CONFIRM_GUILD_DISBAND");
 	end
+end
+
+local function CleanupPingTypeString(pingTypeString)
+	local cleanString = pingTypeString:gsub("%s+", "");
+	cleanString = strupper(cleanString);
+	return cleanString;
+end
+local pingNameToTypeTable = {
+	[CleanupPingTypeString(PING_TYPE_ASSIST)] = Enum.PingSubjectType.Assist,
+	[CleanupPingTypeString(PING_TYPE_ATTACK)] = Enum.PingSubjectType.Attack,
+	[CleanupPingTypeString(PING_TYPE_ON_MY_WAY)] = Enum.PingSubjectType.OnMyWay,
+	[CleanupPingTypeString(PING_TYPE_WARNING)] = Enum.PingSubjectType.Warning,
+};
+SecureCmdList["PING"] = function(msg)
+	local action, target = SecureCmdOptionParse(msg);
+	local pingType;
+	if action then
+		pingType = pingNameToTypeTable[CleanupPingTypeString(action)];
+	end
+
+	-- If you don't have a target but were trying to use one then just return
+	-- We were trying to ping a target which we couldn't get due to some conditional
+	-- Don't wanna try and send a ping since that will do it's best to come up with a target to use which isn't our intention in this case
+	if not target and msg:find("%[.+%]") then
+		return;
+	end
+
+	C_Ping.SendMacroPing(pingType, target);
 end
 
 function AddSecureCmd(cmd, cmdString)
@@ -3707,6 +3737,15 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
+		elseif (type == "PING") then
+			--Add Timestamps
+			local chatTimestampFmt = GetChatTimestampFormat();
+			local outMsg = arg1;
+			if ( chatTimestampFmt ) then
+				outMsg = BetterDate(chatTimestampFmt, time())..outMsg;
+			end
+
+			self:AddMessage(outMsg, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "FILTERED" ) then
@@ -5113,6 +5152,7 @@ function ChatEdit_SetGameLanguage(self, language, languageId)
 	ChatEdit_UpdateHeader(self);
 end
 
+-- This is a special function for "ChatEdit_HandleChatType"
 local function processChatType(editBox, msg, index, send)
 	local autoCompleteInfo = AUTOCOMPLETE_LIST[index];
 	if ( autoCompleteInfo ) then
@@ -5121,8 +5161,8 @@ local function processChatType(editBox, msg, index, send)
 		AutoCompleteEditBox_SetAutoCompleteSource(editBox, nil);
 	end
 
--- this is a special function for "ChatEdit_HandleChatType"
-	if ( ChatTypeInfo[index] ) then
+	local info = ChatTypeInfo[index];
+	if ( info and not info.ignoreChatTypeProcessing ) then
 		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then
 			local targetFound, target, chatType, parsedMsg = ChatEdit_ExtractTellTarget(editBox, msg, index);
 			if ( targetFound ) then

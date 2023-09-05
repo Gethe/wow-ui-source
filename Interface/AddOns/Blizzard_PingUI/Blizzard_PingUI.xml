@@ -1,0 +1,212 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI_shared.xsd">
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+
+		<Frame name="PingFrame" mixin="PingFrameMixin" inherits="RadialWheelFrameTemplate" toplevel="true" parent="UIParent" frameStrata="HIGH" hidden="true">
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent"/>
+			</Scripts>
+		</Frame>
+
+		<Frame name="PingListenerFrame" mixin="PingListenerFrameMixin" parent="UIParent" setAllPoints="true"  hidden="true" registerForDrag="LeftButton" passThroughButtons="RightButton" retainClickThroughOverride="true" frameStrata="FULLSCREEN">
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnMouseDown method="OnMouseDown"/>
+				<OnMouseUp method="OnMouseUp"/>
+				<OnDragStart method="OnDragStart"/>
+				<OnDragStop method="OnDragStop"/>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+			</Scripts>
+		</Frame>
+
+		<Frame name="PingSpotFrameTemplate" parent="UIParent" frameStrata="HIGH" virtual="true">
+			<Size x="128" y="128"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="GlowOut">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="GlowIn">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="PulseAnim">
+					<Scale childKey="GlowOut" duration="0.15" order="1" fromScaleX="0.3" fromScaleY="0.3" toScaleX="0.6" toScaleY="0.6"/>
+					<Scale childKey="GlowOut" duration="0.28" order="1" startDelay="0.15" fromScaleX="0.6" fromScaleY="0.6" toScaleX="1" toScaleY="1"/>
+					<Alpha childKey="GlowOut" duration="0.15" order="1" fromAlpha="1" toAlpha="0.5"/>
+					<Alpha childKey="GlowOut" duration="0.33" order="1" startDelay="0.15" fromAlpha="0.5" toAlpha="0"/>
+					<Scale childKey="GlowIn" duration="1" order="1" fromScaleX="0.43" fromScaleY="0.43" toScaleX="0.94" toScaleY="0.94"/>
+					<Alpha childKey="GlowIn" duration="0.33" order="1" fromAlpha="1" toAlpha="0"/>
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+
+		<Frame name="PingPinFrameTemplate" mixin="PingPinFrameMixin" hidden="true" virtual="true">
+			<Size x="100" y="100"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK" textureSubLevel="1">
+					<Texture parentKey="Icon">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="2">
+					<!-- Size and Anchors set in PingPinFrameMixin for various ping types. -->
+					<Texture parentKey="IconFlipBook" hidden="true"/>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="GroundPin" hidden="true" useParentLevel="true">
+					<Size x="200" y="200"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="BACKGROUND" textureSubLevel="1">
+							<Texture parentKey="BackgroundStem">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="BACKGROUND" textureSubLevel="2">
+							<Texture parentKey="Background">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.BackgroundStem" relativePoint="TOP" y="-8"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="BACKGROUND" textureSubLevel="3">
+							<Texture parentKey="BackgroundHighlight" alpha="0">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.BackgroundStem" relativePoint="TOP" y="-8"/>
+								</Anchors>
+							</Texture>
+							<Texture parentKey="BackgroundMarker" alpha="0" atlas="Ping_UnitMarker_BG" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.BackgroundStem" relativePoint="TOP" y="-8"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="BACKGROUND" textureSubLevel="4">
+							<Texture parentKey="Stroke" alpha="0">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.BackgroundStem" relativePoint="TOP" y="-8"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame parentKey="UnitPin" hidden="true" useParentLevel="true">
+					<Size x="200" y="200"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="Background">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame parentKey="ClampedPin" hidden="true" useParentLevel="true">
+					<Size x="200" y="200"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="Background" atlas="Ping_OVMarker_Pointer_BG" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="OVERLAY">
+							<Texture parentKey="Pointer">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+			</Frames>
+			<Animations>
+				<AnimationGroup parentKey="IntroAnimGround_FlipBook" mixin="PingPinFlipBookAnimMixin">
+					<FlipBook childKey="IconFlipBook" duration="0.7" order="1" startDelay="0.23" flipBookRows="4" flipBookColumns="6" flipBookFrames="21" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="IconFlipBook" duration="0.23" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="IconFlipBook" duration="0" order="1" startDelay="0.23" fromAlpha="1" toAlpha="1"/>
+					<Scripts>
+						<OnPlay method="OnPlay"/>
+						<OnFinished method="OnFinished"/>
+					</Scripts>
+				</AnimationGroup>
+				<AnimationGroup parentKey="IntroAnimGround">
+					<Translation childKey="IconFlipBook" duration="0.01" order="1" offsetX="0" offsetY="-135"/>
+					<Translation childKey="IconFlipBook" duration="0.3" order="1" startDelay="0.17" smoothing="OUT" offsetX="0" offsetY="135"/>
+					<Alpha childKey="Icon" duration="0.93" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="Icon" duration="1" order="1" startDelay="0.93" fromAlpha="1" toAlpha="1"/>
+					<Rotation childKey="GroundPin.Stroke" duration="1" order="1" degrees="390">
+						<Origin point="CENTER"/>
+					</Rotation>
+					<Alpha childKey="GroundPin.Stroke" duration="0.7" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="GroundPin.Stroke" duration="0.3" order="1" startDelay="0.7" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="GroundPin.Stroke" duration="0.01" order="1" offsetX="0" offsetY="-135"/>
+					<Translation childKey="GroundPin.Stroke" duration="0.3" order="1" startDelay="0.17" smoothing="OUT" offsetX="0" offsetY="135"/>
+					<Alpha childKey="GroundPin.BackgroundMarker" duration="0.17" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="GroundPin.BackgroundMarker" duration="0.2" order="1" startDelay="0.8" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="GroundPin.BackgroundMarker" duration="0.01" order="1" offsetX="0" offsetY="-135"/>
+					<Translation childKey="GroundPin.BackgroundMarker" duration="0.3" order="1" startDelay="0.17" smoothing="OUT" offsetX="0" offsetY="135"/>
+					<Alpha childKey="GroundPin.BackgroundHighlight" duration="0.57" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="GroundPin.BackgroundHighlight" duration="0.23" order="1" startDelay="0.57" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="GroundPin.BackgroundHighlight" duration="0.2" order="1" startDelay="0.8" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="GroundPin.BackgroundHighlight" duration="0.01" order="1" offsetX="0" offsetY="-135"/>
+					<Translation childKey="GroundPin.BackgroundHighlight" duration="0.3" order="1" startDelay="0.17" smoothing="OUT" offsetX="0" offsetY="135"/>
+					<Alpha childKey="GroundPin.Background" duration="0.57" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="GroundPin.Background" duration="0.23" order="1" startDelay="0.57" fromAlpha="0" toAlpha="1"/>
+					<Translation childKey="GroundPin.Background" duration="0.01" order="1" offsetX="0" offsetY="-135"/>
+					<Translation childKey="GroundPin.Background" duration="0.3" order="1" startDelay="0.17" offsetX="0" offsetY="135"/>
+					<Scale childKey="GroundPin.BackgroundStem" duration="0.3" order="1" startDelay="0.17" smoothing="OUT" fromScaleX="0" fromScaleY="0" toScaleX="1" toScaleY="1">
+						<Origin point="BOTTOM"/>
+					</Scale>
+					<Alpha childKey="GroundPin.BackgroundStem" duration="0.01" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="GroundPin.BackgroundStem" duration="0" order="1" startDelay="0.01" fromAlpha="0" toAlpha="1"/>
+				</AnimationGroup>
+				<AnimationGroup parentKey="IntroAnimUnit_FlipBook" mixin="PingPinFlipBookAnimMixin">
+					<FlipBook childKey="IconFlipBook" duration="0.7" order="1" flipBookRows="4" flipBookColumns="6" flipBookFrames="21" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Scripts>
+						<OnPlay method="OnPlay"/>
+						<OnFinished method="OnFinished"/>
+					</Scripts>
+				</AnimationGroup>
+				<AnimationGroup parentKey="IntroAnimUnit">
+					<Translation duration="0.01" order="1" offsetX="0" offsetY="40"/>
+					<Translation startDelay="0.01" duration="0.23" order="1" smoothing="OUT" offsetX="0" offsetY="-40"/>
+					<Alpha duration="0.23" order="1" smoothing="OUT" fromAlpha="0" toAlpha="1"/>
+				</AnimationGroup>
+				<AnimationGroup parentKey="OutroAnim">
+					<Alpha duration="0.23" order="1" fromAlpha="1" toAlpha="0"/>
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+	</ScopedModifier>
+</Ui>

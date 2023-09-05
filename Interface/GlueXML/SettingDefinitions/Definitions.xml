@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	
+	<Script file="..\..\SharedXML\SettingDefinitions\NewDefinitions.lua"/>
 	<Script file="Groups.lua"/>
 	<Include file="..\..\SharedXML\SettingDefinitions\Graphics.xml"/>
 	<Include file="..\..\SharedXML\SettingDefinitions\Audio.xml"/>

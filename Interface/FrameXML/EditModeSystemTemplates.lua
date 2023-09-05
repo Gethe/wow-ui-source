@@ -2433,6 +2433,12 @@ EditModeSystemSelectionBaseMixin = {};
 
 function EditModeSystemSelectionBaseMixin:OnLoad()
 	self.parent = self:GetParent();
+	if self.Label then
+		self.Label:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlightSmall");
+	end
+	if self.HorizontalLabel then
+		self.HorizontalLabel:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlightSmall");
+	end
 end
 
 function EditModeSystemSelectionBaseMixin:ShowHighlighted()

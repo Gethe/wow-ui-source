@@ -47,15 +47,17 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
 				{ Name = "CurrencyBShowQuestXPGainInTooltip", Type = "CurrencyFlagsB", EnumValue = 2 },
 				{ Name = "CurrencyBNoNotificationMailOnOfflineProgress", Type = "CurrencyFlagsB", EnumValue = 4 },
 				{ Name = "CurrencyBBattlenetVirtualCurrency", Type = "CurrencyFlagsB", EnumValue = 8 },
+				{ Name = "FutureCurrencyFlag", Type = "CurrencyFlagsB", EnumValue = 16 },
+				{ Name = "CurrencyBDontDisplayIfZero", Type = "CurrencyFlagsB", EnumValue = 32 },
 			},
 		},
 		{
@@ -74,15 +76,16 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyTokenCategoryFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "FlagSortLast", Type = "CurrencyTokenCategoryFlags", EnumValue = 1 },
 				{ Name = "FlagPlayerItemAssignment", Type = "CurrencyTokenCategoryFlags", EnumValue = 2 },
 				{ Name = "Hidden", Type = "CurrencyTokenCategoryFlags", EnumValue = 4 },
 				{ Name = "Virtual", Type = "CurrencyTokenCategoryFlags", EnumValue = 8 },
+				{ Name = "StartsCollapsed", Type = "CurrencyTokenCategoryFlags", EnumValue = 16 },
 			},
 		},
 		{

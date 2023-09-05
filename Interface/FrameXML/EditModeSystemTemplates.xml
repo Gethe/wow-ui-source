@@ -26,10 +26,7 @@
 	<Frame name="EditModeSystemSelectionTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Label" inherits="GameFontHighlightLarge" ignoreParentScale="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" mixin="ShrinkUntilTruncateFontStringMixin" setAllPoints="true" ignoreParentScale="true" hidden="true">
 				</FontString>
 			</Layer>
 		</Layers>
@@ -38,10 +35,7 @@
 	<Frame name="EditModeSystemSelectionDoubleLabelTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionDoubleLabelMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="HorizontalLabel" inherits="GameFontHighlightLarge" ignoreParentScale="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
+				<FontString parentKey="HorizontalLabel" inherits="GameFontHighlightLarge" mixin="ShrinkUntilTruncateFontStringMixin" setAllPoints="true" ignoreParentScale="true" hidden="true">
 				</FontString>
 				<FontString parentKey="VerticalLabel" inherits="GameFontHighlightLarge" degrees="90" ignoreParentScale="true" hidden="true">
 					<Anchors>

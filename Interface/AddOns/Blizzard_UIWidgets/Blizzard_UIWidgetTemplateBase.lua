@@ -1263,3 +1263,97 @@ function UIWidgetBaseItemTemplateMixin:SetMouse(disableMouse)
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
 end
+
+UIWidgetBaseIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+
+local iconTextureKitRegions = {
+	Glow = "%s-spell-glow",
+	Frame = "%s-spell-frame",
+};
+
+local iconFrameSizes =
+{
+	[Enum.WidgetIconSizeType.Small]	= 44,
+	[Enum.WidgetIconSizeType.Medium] = 58,
+	[Enum.WidgetIconSizeType.Large]	= 70,
+	[Enum.WidgetIconSizeType.Standard] = 54,
+}
+
+local function GetWidgetIconFrameSize(iconSizeType)
+	return iconFrameSizes[iconSizeType];
+end
+
+function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconInfo, shouldGlow, glowAnimType)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+
+	if not self.continuableContainer then
+		self.continuableContainer = ContinuableContainer:Create();
+	end
+
+	SetupTextureKitOnRegions(textureKit, self, iconTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+
+	local hasGlowTexture = self.Glow:IsShown();
+	if hasGlowTexture and shouldGlow then
+		if glowAnimType == Enum.WidgetGlowAnimType.Pulse then
+			self.GlowPulseAnim:Play();
+		else
+			self.GlowPulseAnim:Stop();
+			self.Glow:SetAlpha(1);
+		end
+		self.Glow:Show();
+	else
+		self.GlowPulseAnim:Stop();
+		self.Glow:Hide();
+	end
+
+	local iconSize = GetWidgetIconSize(iconInfo.sizeType);
+	self.Icon:SetSize(iconSize, iconSize);
+
+	local iconFrameSize = GetWidgetIconFrameSize(iconInfo.sizeType);
+	self.Frame:SetSize(iconFrameSize, iconFrameSize);
+	self.Glow:SetSize(iconFrameSize, iconFrameSize);
+
+	if iconInfo.sourceType == Enum.WidgetIconSourceType.Spell then
+		local iconTexture = select(3, GetSpellInfo(iconInfo.sourceID));
+		self.Icon:SetTexture(iconTexture);
+	else
+		local item = Item:CreateFromItemID(iconInfo.sourceID);
+		self.continuableContainer:AddContinuable(item);
+
+		self.continuableContainer:ContinueOnLoad(function()
+			local iconTexture = select(10, GetItemInfo(iconInfo.sourceID));
+			self.Icon:SetTexture(iconTexture);
+		end);
+	end
+	self.iconInfo = iconInfo;
+
+	self:SetTooltip(iconInfo.tooltip);
+	self:SetTooltipLocation(iconInfo.tooltipLoc);
+
+	self:SetSize(self.Icon:GetSize());
+end
+
+function UIWidgetBaseIconTemplateMixin:SetMouse(disableMouse)
+	local useMouse = (self.tooltip ~= " ") and not disableMouse;
+	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(false);
+end
+
+function UIWidgetBaseIconTemplateMixin:OnEnter()
+	if self.tooltip == "" then
+		self:SetTooltipOwner();
+		if self.iconInfo.sourceType == Enum.WidgetIconSourceType.Spell then
+			EmbeddedItemTooltip:SetSpellByID(self.iconInfo.sourceID);
+		else
+			EmbeddedItemTooltip:SetItemByID(self.iconInfo.sourceID);
+		end
+		EmbeddedItemTooltip:Show();
+	else
+		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
+	end
+end
+
+function UIWidgetBaseIconTemplateMixin:StopAnims()
+	self.GlowPulseAnim:Stop();
+	self.Glow:Hide();
+end

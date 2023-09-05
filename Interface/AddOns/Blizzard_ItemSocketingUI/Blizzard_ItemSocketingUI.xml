@@ -375,7 +375,7 @@
 					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
 					<KeyValue key="scrollBarBottomY" value="1" type="number"/>
 				</KeyValues>
-				<Size x="269" y="258"/>
+				<Size x="293" y="258"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="22" y="-74"/>
 				</Anchors>

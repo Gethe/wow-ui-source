@@ -1,11 +1,13 @@
-function DressUpLink(link)
-	return link and (DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link));
+
+
+function DressUpLink(link, forcedFrame)
+	return link and (DressUpItemLink(link, forcedFrame) or DressUpBattlePetLink(link, forcedFrame) or DressUpMountLink(link, forcedFrame));
 end
 
-function DressUpItemLink(link)
+function DressUpItemLink(link, forcedFrame)
 	if( link ) then 
 		if ( C_Item.IsDressableItemByID(link) ) then
-			return DressUpVisual(link);
+			return DressUpVisualLink(forcedFrame, link);
 		end
 	end
 	return false;
@@ -66,16 +68,22 @@ local function GetFrameAndSetBackground(raceFilename, classFilename)
 	return frame;
 end
 
-function DressUpVisual(...)
-	local frame = GetFrameAndSetBackground();
-	DressUpFrame_Show(frame);
+-- this is left for backwards compatability when forcedFrame was added to DressUpVisualLink
+function DressUpVisual(link, ...)
+	return DressUpVisualLink(nil, link, ...);
+end
+
+function DressUpVisualLink(forcedFrame, link, ...)
+	local frame = forcedFrame or GetFrameAndSetBackground();
+	local itemModifiedAppearanceIDs, forcePlayerRefresh = nil;
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();
 	if (not playerActor) then
 		return false;
 	end
 
-	local result = playerActor:TryOn(...);
+	local result = playerActor:TryOn(link, ...);
 	if ( result ~= Enum.ItemTryOnReason.Success ) then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_EQUIPPABLE);
 	end
@@ -142,38 +150,38 @@ end
 function DressUpTransmogSet(itemModifiedAppearanceIDs, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground();
 	local forcePlayerRefresh = true;
-	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh);
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
 end
 
-function DressUpBattlePetLink(link)
+function DressUpBattlePetLink(link, forcedFrame)
 	if( link ) then 
 		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
 		if ( linkType == "item") then
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
-				return DressUpBattlePet(creatureID, displayID, speciesID);
+				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			end
 		elseif ( linkType == "battlepet" ) then
 			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
 			if ( speciesID == tonumber(linkID)) then
-				return DressUpBattlePet(creatureID, displayID, speciesID);
+				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			else
 				speciesID = tonumber(linkID);
 				local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
 				displayID = (battlePetDisplayID and battlePetDisplayID ~= "0") and battlePetDisplayID or displayID;
-				return DressUpBattlePet(creatureID, displayID, speciesID);
+				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			end
 		end
 	end
 	return false
 end
 
-function DressUpBattlePet(creatureID, displayID, speciesID)
+function DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame)
 	if ( not displayID and not creatureID ) then
 		return false;
 	end
 	
-	local frame = GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
+	local frame = forcedFrame or GetFrameAndSetBackground("Pet", "warrior");	--default to warrior BG when viewing full Pet/Mounts for now
 
 	--Show the frame
 	frame:SetMode("battlepet");if ( not frame:IsShown() or frame:GetMode() ~= "battlepet" ) then
@@ -182,7 +190,7 @@ function DressUpBattlePet(creatureID, displayID, speciesID)
 	end
 
 	local _, loadoutModelSceneID = C_PetJournal.GetPetModelSceneInfoBySpeciesID(speciesID);
-
+	frame:SetLastLink(link);
 	frame.ModelScene:ClearScene();
 	frame.ModelScene:SetViewInsets(0, 0, 50, 0);
 	frame.ModelScene:TransitionToModelSceneID(loadoutModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
@@ -195,7 +203,7 @@ function DressUpBattlePet(creatureID, displayID, speciesID)
 	return true;
 end
 
-function DressUpMountLink(link)
+function DressUpMountLink(link, forcedFrame)
 	if( link ) then
 		local mountID = 0;
 		local shouldSetModelFromHyperlink = false;
@@ -211,7 +219,7 @@ function DressUpMountLink(link)
 		end
 
 		if ( mountID ) then
-			return DressUpMount(mountID, false, shouldSetModelFromHyperlink, link);
+			return DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link);
 		end
 	end
 	return false
@@ -234,7 +242,7 @@ function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
 		frame:SetMode("mount");
 		ShowUIPanel(frame);
 	end
-
+	frame:SetLastLink(link);
 	frame.ModelScene:ClearScene();
 	frame.ModelScene:SetViewInsets(0, 0, 0, 0);
 	local forceEvenIfSame = true;
@@ -294,8 +302,9 @@ function SetDressUpBackground(frame, raceFilename, classFilename)
 end
 
 local DRESS_UP_FRAME_MODEL_SCENE_ID = 596;
-function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh)
+function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink)
 	if ( forcePlayerRefresh or (not frame:IsShown() or frame:GetMode() ~= "player") ) then
+		frame:SetLastLink(fromLink);
 		frame:SetMode("player");
 
 		-- If there's not enough space as-is, try minimizing.
@@ -326,7 +335,7 @@ function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh)
 end
 
 function DressUpItemTransmogInfo(itemTransmogInfo)
-	local frame = GetFrameAndSetBackground();
+	local frame = forcedFrame or GetFrameAndSetBackground();
 	DressUpFrame_Show(frame);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();
@@ -340,8 +349,8 @@ end
 
 function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh)
 	local frame = GetFrameAndSetBackground();
-	local itemModifiedAppearanceIDs = nil,
-	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh);
+	local itemModifiedAppearanceIDs, fromLink = nil,
+	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();
 	if not playerActor or not itemTransmogInfoList then
@@ -550,7 +559,6 @@ function DressUpOutfitDetailsPanelMixin:RefreshPlayerModel(forcePlayerRefresh)
 	if playerActor then
 		local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
 	end
-
 	local itemModifiedAppearanceIDs = nil;
 	DressUpFrame_Show(DressUpFrame, itemModifiedAppearanceIDs, forcePlayerRefresh);
 

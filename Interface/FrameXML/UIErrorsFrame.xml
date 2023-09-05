@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="UIErrorsFrame.lua"/>
 	
-	<MessageFrame name="UIErrorsFrame" displayDuration="2" fadeDuration=".5" fadePower="3" insertMode="TOP" parent="UIParent" frameStrata="DIALOG" frameLevel="1" toplevel="true" mixin="UIErrorsMixin">
+	<MessageFrame name="UIErrorsFrame" displayDuration="2" fadeDuration=".5" fadePower="3" insertMode="TOP" parent="UIParent" frameStrata="DIALOG" frameLevel="1" toplevel="true" mixin="UIErrorsMixin" inherits="PingTopLevelPassThroughAttributeTemplate">
 		<Size x="512" y="60" />
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-122" />

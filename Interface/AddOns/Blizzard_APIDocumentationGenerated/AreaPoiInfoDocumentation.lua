@@ -97,6 +97,8 @@ local AreaPoiInfo =
 				{ Name = "isPrimaryMapForPOI", Type = "bool", Nilable = false },
 				{ Name = "isAlwaysOnFlightmap", Type = "bool", Nilable = false },
 				{ Name = "addPaddingAboveWidgets", Type = "bool", Nilable = true },
+				{ Name = "highlightWorldQuestsOnHover", Type = "bool", Nilable = false },
+				{ Name = "highlightVignettesOnHover", Type = "bool", Nilable = false },
 			},
 		},
 	},

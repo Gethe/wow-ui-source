@@ -1891,7 +1891,6 @@ function CharacterCreateEditBoxMixin:OnEvent(event, ...)
 		self:SetText(name);
 
 		self:GetParent().RandomNameButton.pendingRequest = false;
-		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	end
 end
 

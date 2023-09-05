@@ -1054,6 +1054,11 @@ local PvpInfo =
 			LiteralName = "PVP_MATCH_INACTIVE",
 		},
 		{
+			Name = "PvpMatchStateChanged",
+			Type = "Event",
+			LiteralName = "PVP_MATCH_STATE_CHANGED",
+		},
+		{
 			Name = "PvpRatedStatsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_RATED_STATS_UPDATE",
@@ -1149,6 +1154,22 @@ local PvpInfo =
 			Payload =
 			{
 				{ Name = "warModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "WargameInviteSent",
+			Type = "Event",
+			LiteralName = "WARGAME_INVITE_SENT",
+		},
+		{
+			Name = "WargameRequestResponse",
+			Type = "Event",
+			LiteralName = "WARGAME_REQUEST_RESPONSE",
+			Payload =
+			{
+				{ Name = "responderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "responderName", Type = "cstring", Nilable = true },
+				{ Name = "accepted", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -1172,7 +1172,8 @@ function CompactUnitFrame_UpdateRoleIcon(frame)
 	else
 		local role = UnitGroupRolesAssigned(frame.unit);
 		if ( frame.optionTable.displayRoleIcon and (role == "TANK" or role == "HEALER" or role == "DAMAGER") ) then
-			frame.roleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
+			frame.roleIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
+			frame.roleIcon:SetTexCoord(GetTexCoordsForOldRoleSmallCircle(role));
 			frame.roleIcon:Show();
 			frame.roleIcon:SetSize(size, size);
 		else
@@ -1190,13 +1191,13 @@ function CompactUnitFrame_UpdateReadyCheck(frame)
 	local readyCheckStatus = GetReadyCheckStatus(frame.unit);
 	frame.readyCheckStatus = readyCheckStatus;
 	if ( readyCheckStatus == "ready" ) then
-		frame.readyCheckIcon:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		frame.readyCheckIcon:SetAtlas(READY_CHECK_READY_TEXTURE_RAID, TextureKitConstants.IgnoreAtlasSize);
 		frame.readyCheckIcon:Show();
 	elseif ( readyCheckStatus == "notready" ) then
-		frame.readyCheckIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		frame.readyCheckIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE_RAID, TextureKitConstants.IgnoreAtlasSize);
 		frame.readyCheckIcon:Show();
 	elseif ( readyCheckStatus == "waiting" ) then
-		frame.readyCheckIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		frame.readyCheckIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE_RAID, TextureKitConstants.IgnoreAtlasSize);
 		frame.readyCheckIcon:Show();
 	else
 		frame.readyCheckIcon:Hide();
@@ -1212,7 +1213,7 @@ function CompactUnitFrame_FinishReadyCheck(frame)
 		CompactUnitFrame_CheckNeedsUpdate(frame);
 
 		if ( frame.readyCheckStatus == "waiting" ) then	--If you haven't responded, you are not ready.
-			frame.readyCheckIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+			frame.readyCheckIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE_RAID, TextureKitConstants.IgnoreAtlasSize);
 			frame.readyCheckIcon:Show();
 		end
 	else

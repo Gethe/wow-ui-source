@@ -17,6 +17,7 @@ function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	AddBindingCategory(BINDING_HEADER_RAID_TARGET);
 	AddBindingCategory(BINDING_HEADER_VEHICLE);
 	AddBindingCategory(BINDING_HEADER_CAMERA);
+	AddBindingCategory(BINDING_HEADER_PING_SYSTEM);
 	AddBindingCategory(BINDING_HEADER_MISC);
 	AddBindingCategory(BINDING_HEADER_OTHER);
 end

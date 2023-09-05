@@ -58,7 +58,7 @@
 						</FontString>
 						<Texture parentKey="WaitDot1" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.CurrentWinnerText" relativePoint="LEFT" x="-8" y="-1"/>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrentWinnerText" relativePoint="LEFT" x="-4" y="-1"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="WaitDot2" alpha="0" atlas="lootroll-pendingdot" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
@@ -194,9 +194,9 @@
 			<minResize>
 				<AbsDimension x="261" y="300"/>
 			</minResize>
-			<MaxResize>
+			<maxResize>
 				<AbsDimension x="261" y="800"/>
-			</MaxResize>
+			</maxResize>
 		</ResizeBounds>
 		<KeyValues>
 			<KeyValue key="panelMaxHeight" value="590" type="number"/>

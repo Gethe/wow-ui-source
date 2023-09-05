@@ -114,7 +114,7 @@
 					<Anchor point="BOTTOMRIGHT" x="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK" textureSublevel="0">
+					<Layer level="ARTWORK" textureSubLevel="0">
 						<Texture parentKey="texture">
 							<Size x="14" y="14"/>
 						</Texture>
@@ -129,7 +129,7 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="border" atlas="bag-border" hidden="true">
+						<Texture parentKey="border" atlas="bag-border">
 							<Size x="14" y="14"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.texture" y="-1"/>
@@ -536,9 +536,9 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" atlas="UI-LFG-RoleIcon-Leader-Micro">
-									<Size x="19" y="19"/>
+									<Size x="24" y="24"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="-4"/>
+										<Anchor point="TOPLEFT" x="-3"/>
 									</Anchors>
 								</Texture>
 							</Layer>

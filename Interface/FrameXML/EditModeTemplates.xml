@@ -250,6 +250,6 @@
 	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true" />
 
 	<Line name="MagnetismPreviewLineTemplate" parentArray="lines" hidden="true" mixin="MagnetismPreviewLineMixin" virtual="true">
-		<color r="1" g="0" b="0"/>
+		<Color r="1" g="0" b="0"/>
 	</Line>
 </Ui>

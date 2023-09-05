@@ -84,8 +84,6 @@ function MonthlyActivitiesButtonMixin:SetButtonData()
 end
 
 function MonthlyActivitiesButtonMixin:UpdateButtonState()
-	self:SetButtonData();
-
 	local node = self:GetElementData();
 	if not node then
 		return;
@@ -104,6 +102,7 @@ function MonthlyActivitiesButtonMixin:UpdateButtonState()
 		self.RibbonStacked:SetShown(false);
 		self.Ribbon:SetShown(showRibbon);
 	end
+	self:SetButtonData();
 end
 
 function MonthlyActivitiesButtonMixin:OnEnter()
@@ -394,7 +393,7 @@ function MonthlyActivitiesFilterListMixin:OnLoad()
 		end
 		self:SetFilterSetting(elementData.filter);
 		local activitiesInfo = C_PerksActivities.GetPerksActivitiesInfo();
-		EncounterJournal.MonthlyActivitiesFrame:SetActivities(activitiesInfo.activities, ScrollBoxConstants.RetainScrollPosition);
+		EncounterJournal.MonthlyActivitiesFrame:SetActivities(activitiesInfo.activities, ScrollBoxConstants.DiscardScrollPosition);
 		EncounterJournal.MonthlyActivitiesFrame:CollapseAllMonthlyActivities();
 	end;
 
@@ -692,7 +691,15 @@ local function BuildActivityTree(activities)
 			table.remove(childActivities, i);
 		end
 	end
-	assert(#childActivities == 0, "child activities missing parent");
+	if #childActivities > 0 then
+		assertsafe(#childActivities == 0, "child activities missing parent");
+		for i = #childActivities, 1, -1 do
+			local childActivity = childActivities[i];
+			local exceptionMessage = ("child activity has no parent: %d"):format(childActivity.ID)
+			assertsafe(false, exceptionMessage);
+		end
+	end
+
 	return parentActivities;
 end
 
@@ -720,6 +727,8 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 			hasChild = activity.hasChild or false;
 			isChild = activity.isChild or false;
 			supersedes = activity.supersedes,
+			eventStartTime = activity.eventStartTime,
+			eventEndTime = activity.eventEndTime,
 		});
 	end
 	local dataProvider = CreateTreeDataProvider();
@@ -764,6 +773,24 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 	dataProvider:SetSortComparator(function(a, b)
 		aData = a:GetData();
 		bData = b:GetData();
+
+		-- Put non events before events
+		if not aData.eventStartTime and bData.eventStartTime then
+			return true;
+		elseif aData.eventStartTime and not bData.eventStartTime then
+			return false;
+		end
+
+		-- If both are events
+		if aData.eventStartTime and bData.eventStartTime then
+			-- Sort by which event starts or ends first
+			if aData.eventStartTime ~= bData.eventStartTime then
+				return aData.eventStartTime < bData.eventStartTime;
+			elseif aData.eventEndTime ~= bData.eventEndTime then
+				return aData.eventEndTime < bData.eventEndTime;
+			end
+		end
+
 		-- Sort pending complete to the top
 		if aData.pendingComplete ~= bData.pendingComplete then
 			return a.pendingComplete;

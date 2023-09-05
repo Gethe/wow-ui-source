@@ -388,7 +388,7 @@ function HandleModifiedItemClick(link, itemLocation)
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then
-		return DressUpItemLocation(itemLocation) or DressUpItemLink(link) or DressUpBattlePetLink(link) or DressUpMountLink(link)
+		return DressUpItemLocation(itemLocation) or DressUpLink(link);
 	end
 	if ( IsModifiedClick("EXPANDITEM") ) then
 		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(link) then

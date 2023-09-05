@@ -865,6 +865,11 @@ local function Register()
 		end
 	end
 
+	local function FormatPercentageRounded(value)
+		local roundToNearestInteger = true;
+		return FormatPercentage(value, roundToNearestInteger);
+	end
+
 	-- UI Scale
 	if not IsOnGlueScreen() then
 		do
@@ -882,9 +887,9 @@ local function Register()
 				Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
 			uiScaleSliderSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
 
-			local minValue, maxValue, step = .65, 1.15, .05;
+			local minValue, maxValue, step = .65, 1.15, .01;
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage)
+			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentageRounded)
 
 			local initializer = CreateSettingsCheckBoxSliderInitializer(
 				useUIScaleSetting, USE_UISCALE, OPTION_TOOLTIP_USE_UISCALE,
@@ -1183,6 +1188,7 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, MAXFPS_CHECK, OPTION_MAXFPS_CHECK,
 			fpsSliderSetting, options, MAXFPS_CHECK, OPTION_MAXFPS_CHECK);
+		initializer:AddSearchTags(MAXFPS_CHECK);
 		layout:AddInitializer(initializer);
 	end
 
@@ -1204,6 +1210,7 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, MAXFPSBK, OPTION_MAXFPSBK_CHECK,
 			fpsSliderSetting, options, MAXFPSBK, OPTION_MAXFPSBK_CHECK);
+		initializer:AddSearchTags(MAXFPSBK);
 		layout:AddInitializer(initializer);
 	end
 

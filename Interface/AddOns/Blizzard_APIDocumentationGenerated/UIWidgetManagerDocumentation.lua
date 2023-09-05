@@ -407,6 +407,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetTugOfWarWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "TugOfWarWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetUnitPowerBarWidgetVisualizationInfo",
 			Type = "Function",
 
@@ -518,18 +532,6 @@ local UIWidgetManager =
 			{
 				{ Name = "RightToLeft", Type = "CaptureBarWidgetFillDirectionType", EnumValue = 0 },
 				{ Name = "LeftToRight", Type = "CaptureBarWidgetFillDirectionType", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "CaptureBarWidgetGlowAnimType",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "None", Type = "CaptureBarWidgetGlowAnimType", EnumValue = 0 },
-				{ Name = "Pulse", Type = "CaptureBarWidgetGlowAnimType", EnumValue = 1 },
 			},
 		},
 		{
@@ -835,6 +837,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "WidgetGlowAnimType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "WidgetGlowAnimType", EnumValue = 0 },
+				{ Name = "Pulse", Type = "WidgetGlowAnimType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "WidgetIconSizeType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -846,6 +860,18 @@ local UIWidgetManager =
 				{ Name = "Medium", Type = "WidgetIconSizeType", EnumValue = 1 },
 				{ Name = "Large", Type = "WidgetIconSizeType", EnumValue = 2 },
 				{ Name = "Standard", Type = "WidgetIconSizeType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "WidgetIconSourceType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Spell", Type = "WidgetIconSourceType", EnumValue = 0 },
+				{ Name = "Item", Type = "WidgetIconSourceType", EnumValue = 1 },
 			},
 		},
 		{
@@ -998,7 +1024,7 @@ local UIWidgetManager =
 				{ Name = "neutralZoneSize", Type = "number", Nilable = false },
 				{ Name = "neutralZoneCenter", Type = "number", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
-				{ Name = "glowAnimType", Type = "CaptureBarWidgetGlowAnimType", Nilable = false },
+				{ Name = "glowAnimType", Type = "WidgetGlowAnimType", Nilable = false },
 				{ Name = "fillDirectionType", Type = "CaptureBarWidgetFillDirectionType", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
@@ -1622,6 +1648,36 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "TugOfWarWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "minValue", Type = "number", Nilable = false },
+				{ Name = "maxValue", Type = "number", Nilable = false },
+				{ Name = "currentValue", Type = "number", Nilable = false },
+				{ Name = "neutralZoneCenter", Type = "number", Nilable = false },
+				{ Name = "neutralZoneSize", Type = "number", Nilable = false },
+				{ Name = "leftIconInfo", Type = "UIWidgetIconInfo", Nilable = false },
+				{ Name = "rightIconInfo", Type = "UIWidgetIconInfo", Nilable = false },
+				{ Name = "glowAnimType", Type = "WidgetGlowAnimType", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UIWidgetCurrencyInfo",
 			Type = "Structure",
 			Fields =
@@ -1631,6 +1687,18 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "isCurrencyMaxed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetIconInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "sourceType", Type = "WidgetIconSourceType", Nilable = false },
+				{ Name = "sourceID", Type = "number", Nilable = false },
+				{ Name = "sizeType", Type = "WidgetIconSizeType", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 			},
 		},
 		{

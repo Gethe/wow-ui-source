@@ -14,6 +14,7 @@
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CallbackRegistrant.xml
@@ -70,6 +71,7 @@
 ..\SharedXML\NewFeatureLabel.xml
 ..\SharedXML\VASErrorLookup.lua
 ..\SharedXML\MixinUtil.lua
+..\SharedXML\PingAttributes.xml
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -146,6 +148,7 @@ CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
 CharacterServicesPaidRaceChange.xml
+CharacterServicesPaidNameChange.xml
 SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

@@ -4,7 +4,7 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to check in PlayerFrame.lua if these values get set there as well.
 		IMPORTANT-->
-	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModePlayerFrameSystemTemplate" parent="UIParent">
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate, EditModePlayerFrameSystemTemplate" parent="UIParent" mixin="PingableType_UnitFrameMixin">
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
@@ -59,9 +59,9 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="PlayerFrameContent" setAllPoints="true">
+			<Frame parentKey="PlayerFrameContent" setAllPoints="true" inherits="SecureFrameParentPropagationTemplate">
 				<Frames>
-					<Frame parentKey="PlayerFrameContentMain" setAllPoints="true">
+					<Frame parentKey="PlayerFrameContentMain" setAllPoints="true" inherits="SecureFrameParentPropagationTemplate">
 						<Layers>
 							<Layer level="OVERLAY" textureSubLevel="1">
 								<FontString name="PlayerName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
@@ -92,7 +92,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="HealthBarArea" setAllPoints="true" useParentLevel="true">
+							<Frame parentKey="HealthBarArea" setAllPoints="true" useParentLevel="true" inherits="SecureFrameParentPropagationTemplate">
 								<Frames>
 									<StatusBar parentKey="PlayerFrameHealthBarAnimatedLoss" mixin="AnimatedHealthLossMixin" hidden="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health"/>
@@ -100,7 +100,7 @@
 											<OnLoad method="OnLoad"/>
 										</Scripts>
 									</StatusBar>
-									<StatusBar parentKey="HealthBar" inherits="TextStatusBar" enableMouseMotion="true" drawLayer="BACKGROUND" useParentLevel="true">
+									<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" enableMouseMotion="true" drawLayer="BACKGROUND" useParentLevel="true">
 										<Size x="124" y="20"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-40"/>
@@ -179,9 +179,9 @@
 									</StatusBar>
 								</Frames>
 							</Frame>
-							<Frame parentKey="ManaBarArea" setAllPoints="true" useParentLevel="true">
+							<Frame parentKey="ManaBarArea" inherits="SecureFrameParentPropagationTemplate" setAllPoints="true" useParentLevel="true">
 								<Frames>
-									<StatusBar parentKey="ManaBar" inherits="TextStatusBar" enableMouseMotion="true" useParentLevel="true">
+									<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate" enableMouseMotion="true" useParentLevel="true">
 										<Size x="124" y="10"/>
 										<Anchors>
 											<Anchor point="TOPLEFT" x="85" y="-61"/>
@@ -241,8 +241,7 @@
 									</StatusBar>
 								</Frames>
 							</Frame>
-							<Frame parentKey="AlternatePowerBarArea" name="PlayerFrameAlternatePowerBarArea" setAllPoints="true" useParentLevel="true" hidden="true">
-							</Frame>
+							<Frame parentKey="AlternatePowerBarArea" name="PlayerFrameAlternatePowerBarArea" setAllPoints="true" useParentLevel="true" hidden="true" inherits="SecureFrameParentPropagationTemplate"/>
 						</Frames>
 					</Frame>
 					<Frame parentKey="PlayerFrameContentContextual" setAllPoints="true">
@@ -408,7 +407,7 @@
 				</Frames>
 			</Frame>
 			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/> 
+				<Size x="10" y="10"/>
 				<Anchors>
 					<Anchor point="TOP" x="-10" y="-50"/>
 				</Anchors>

@@ -24,6 +24,7 @@ function Class_AddSpellToActionBarService:OnBegin(args)
 		TutorialManager:Finished(self:Name());
 		return;
 	end
+
 	self.inProgress = true;
 	self.spellToAdd = spellID;
 	self.spellIDString = "{$"..self.spellToAdd.."}";
@@ -75,9 +76,8 @@ function Class_AddSpellToActionBarService:SpellBookFrameShow()
 	EventRegistry:RegisterCallback("SpellBookFrame.Hide", self.SpellBookFrameHide, self);
 	self:HidePointerTutorials();
 	ActionButton_HideOverlayGlow(SpellbookMicroButton);
-	C_Timer.After(0.1, function()
-		self:RemindAbility();
-	end);
+
+	self:StartRemindTimer();
 end
 
 function Class_AddSpellToActionBarService:SpellBookFrameHide()
@@ -86,9 +86,15 @@ end
 
 function Class_AddSpellToActionBarService:ACTIONBAR_SHOW_BOTTOMLEFT()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-	C_Timer.After(0.1, function()
-		self:RemindAbility();
-	end);
+	self:StartRemindTimer();
+end
+
+function Class_AddSpellToActionBarService:StartRemindTimer()
+	if not self.remindTimer then
+		self.remindTimer = C_Timer.NewTimer(0.1, function()
+			self:RemindAbility();
+		end);
+	end
 end
 
 function Class_AddSpellToActionBarService:RemindAbility()
@@ -164,6 +170,11 @@ function Class_AddSpellToActionBarService:OnComplete()
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 	TutorialDragButton:Hide();
+
+	if self.remindTimer then
+		self.remindTimer:Cancel();
+		self.remindTimer = nil;
+	end
 
 	self.spellToAdd = nil;
 	self.actionButton = nil;

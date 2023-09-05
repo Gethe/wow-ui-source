@@ -8,9 +8,13 @@ AspectRatios[Enum.CameraModeAspectRatio.Cinemascope_2_Dot_4_X_1] = {x = 2.4, y =
 
 local DefaultAspectRatio = {x = 16, y = 9};
 
-function CinematicFrame_OnDisplaySizeChanged(self)
+function CinematicFrame_UpdateLettboxForAspectRatio(self)
 	-- called when the display changes and when the cinematic camera wants to 
 	-- either adjust the aspect ratio or add the legacy letterbox
+	if not (self:IsShown()) then
+		return;
+	end
+
 	if self.forcedAspectRatio == Enum.CameraModeAspectRatio.LegacyLetterbox then
 		local width = CinematicFrame:GetWidth();
 		local height = CinematicFrame:GetHeight();
@@ -92,13 +96,12 @@ function CinematicFrame_OnEvent(self, event, ...)
 		end
 
 		self.isRealCinematic = canBeCancelled;	--If it isn't real, it's a vehicle cinematic
-
-		self.forcedAspectRatio = forcedAspectRatio;
-		CinematicFrame_OnDisplaySizeChanged(self);
-
+		self.forcedAspectRatio = forcedAspectRatio;	
 		self.closeDialog:Hide();
 		ShowUIPanel(self, 1);
 		RaidNotice_Clear(self.raidBossEmoteFrame);
+		CinematicFrame_UpdateLettboxForAspectRatio(self);
+
 
 		LowHealthFrame:EvaluateVisibleState();
 	elseif ( event == "CINEMATIC_STOP" ) then
@@ -128,8 +131,9 @@ function CinematicFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
 		if (self:IsShown()) then
-			CinematicFrame_OnDisplaySizeChanged(self);
+			WorldFrame:SetAllPoints();
 		end
+		CinematicFrame_UpdateLettboxForAspectRatio(self);
 	elseif ( event == "HIDE_SUBTITLE") then
 		CinematicFrame_HideSubtitle(self)
 	end

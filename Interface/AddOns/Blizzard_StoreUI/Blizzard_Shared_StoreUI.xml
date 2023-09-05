@@ -117,7 +117,7 @@
 			</Scripts>
 		</Frame>
 		
-		<Frame name="StoreFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" hidden="true">
+		<Frame name="StoreFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" inherits="PortraitFrameTemplateNoCloseButton, PingReceiverAttributeTemplate" enableMouse="true" hidden="true">
 			<Size x="800" y="537" />
 			<!--Anchored to the screen as a whole in Lua-->
 			<Layers>

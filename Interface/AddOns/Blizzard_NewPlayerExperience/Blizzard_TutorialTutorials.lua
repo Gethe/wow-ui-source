@@ -2815,9 +2815,9 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
+		self.proceed = false;
 		TutorialManager:Finished(self:Name());
 		TutorialManager:Queue(Class_UseMount.name);
-		self.proceed = false;
 		return;
 	end
 
@@ -2837,6 +2837,7 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 end
 
 function Class_MountReceived:OnInterrupt(interruptedBy)
+	self.proceed = false;
 	TutorialManager:Finished(self:Name());
 end
 
@@ -2877,12 +2878,18 @@ function Class_AddMountToActionBar:OnBegin(args)
 	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
-		self.success = true;
 		TutorialManager:Finished(self:Name());
 		return;
 	end
 
-	C_Timer.After(0.1, function()
+	if not MountJournal or not MountJournal:IsVisible() then
+		-- Mount journal was closed before this tutorial could start
+		-- Can happen if MountReceived tutorial is ignored, a different tutorial is queued to start, then MountReceived is completed
+		TutorialManager:Finished(self:Name());
+		return;
+	end
+
+	self.Timer = C_Timer.NewTimer(0.1, function()
 		self:MountJournalShow();
 	end);
 end
@@ -2909,12 +2916,13 @@ function Class_AddMountToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 		local nextEmptyButton = TutorialHelper:FindEmptyButton();
 		if not nextEmptyButton then
 			-- no more empty buttons
-			self.success = false;
-			TutorialManager:Finished(self:Name());			
+			TutorialManager:Finished(self:Name());
 		else
 			TutorialDragButton:Hide();
 			self.destButton = nextEmptyButton;
-			TutorialDragButton:Show(self.originButton, self.destButton);
+			if self.originButton then
+				TutorialDragButton:Show(self.originButton, self.destButton);
+			end
 		end
 	end
 end
@@ -2928,6 +2936,10 @@ function Class_AddMountToActionBar:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	TutorialDragButton:Hide();
 	self:HidePointerTutorials();
+
+	if self.Timer then
+		self.Timer:Cancel();
+	end
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
 		TutorialManager:Queue(Class_UseMount.name);

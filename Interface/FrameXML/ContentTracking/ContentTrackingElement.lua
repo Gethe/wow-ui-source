@@ -45,7 +45,7 @@ end
 
 function ContentTrackingElementMixin:CheckTrackableClick(buttonName, trackableType, trackableID)
 	if (buttonName == "LeftButton") and ContentTrackingUtil.IsTrackingModifierDown() then
-		local trackingError = C_ContentTracking.ToggleTracking(trackableType, trackableID);
+		local trackingError = C_ContentTracking.ToggleTracking(trackableType, trackableID, Enum.ContentTrackingStopType.Manual);
 		if trackingError then
 			ContentTrackingUtil.DisplayTrackingError(trackingError);
 		end

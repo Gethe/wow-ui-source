@@ -542,9 +542,12 @@ function DebuffFrameMixin:UpdateDeadlyDebuffs()
 			return true; -- No critical period specified is always critical
 		end
 
-		local criticalTimeS = info.criticalTimeRemainingMs and (info.criticalTimeRemainingMs / 1000);
-		if criticalTimeS and criticalTimeS >= (info.expirationTime - currentTime) then
-			return true;
+		local hasValidDurationInfo = info.duration > 0 and info.expirationTime > 0;
+		if hasValidDurationInfo then
+			local criticalTimeS = info.criticalTimeRemainingMs and (info.criticalTimeRemainingMs / 1000);
+			if criticalTimeS and criticalTimeS >= (info.expirationTime - currentTime) then
+				return true;
+			end
 		end
 
 		if info.criticalStacks and info.criticalStacks <= info.count then

@@ -15,6 +15,7 @@
 ..\SharedXML\ExportUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CallbackRegistrant.xml
@@ -145,6 +146,11 @@ POIButton\POIButtonOwner.xml
 POIButton\POIButtonUtil.lua
 
 ## add new modules below here
+..\SharedXML\PingUtil.lua
+..\SharedXML\PingAttributes.xml
+..\SharedXML\PingableType.lua
+..\SharedXML\Blizzard_RadialWheel.lua
+..\SharedXML\Blizzard_RadialWheel.xml
 ..\SharedXML\Backdrop.xml
 ChatBubbleTemplates.xml
 WorldFrame.xml

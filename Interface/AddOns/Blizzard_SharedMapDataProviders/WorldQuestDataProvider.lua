@@ -108,6 +108,7 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
 	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
+	self:GetMap():RegisterCallback("HighlightMapPins.WorldQuests", self.ForceHighlightWorldQuestPins, self);
 
 	self:EvaluateSpellEffectPin();
 	self:EvaluateCheckBounties();
@@ -118,6 +119,7 @@ function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("SetBounty", self);
 	self:GetMap():UnregisterCallback("PingQuestID", self);
+	self:GetMap():UnregisterCallback("HighlightMapPins.WorldQuests", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
@@ -141,6 +143,13 @@ function WorldQuestDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, b
 		if self:GetMap() then
 			self:RefreshAllData();
 		end
+	end
+end
+
+function WorldQuestDataProviderMixin:ForceHighlightWorldQuestPins(pinHighlightType)
+	if self.forcedPinHighlightType ~= pinHighlightType then
+		self.forcedPinHighlightType = pinHighlightType;
+		self:OnSuperTrackingChanged();
 	end
 end
 
@@ -430,6 +439,10 @@ function WorldQuestPinMixin:RefreshVisuals()
 end
 
 function WorldQuestPinMixin:GetHighlightType() -- override
+	if self.dataProvider.forcedPinHighlightType then
+		return self.dataProvider.forcedPinHighlightType;
+	end
+
 	local bountyQuestID, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
 	local questTitle, taskFactionID, capped, displayAsObjective = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 	if bountyFrameType == BountyFrameType.BountyBoard then

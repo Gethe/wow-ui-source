@@ -440,14 +440,15 @@ end
 
 function QuestFrame_UpdatePortraitText(text)
 	if (text and text ~= "") then
+		QuestNPCModelNameplate:ClearAllPoints();
+		local modelSceneBottom = -216;
+		QuestNPCModelNameplate:SetPoint("TOPLEFT", 0, modelSceneBottom);
+
 		QuestNPCModelTextFrame:Show();
 		QuestNPCModelText:SetText(text);
 
-		RunNextFrame(function()
-			-- This is to prevent pqj characters with descenders from clipping along the bottom.
-			-- RunNextFrame is a workaround for the rect being invalid, causing nothing to appear.
-			QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight() + 10);
-		end);
+		local descenderPadding = 5;
+		QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight() + descenderPadding);
 	else
 		QuestNPCModelTextFrame:Hide();
 	end

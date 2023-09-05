@@ -23,6 +23,8 @@
 						<MaskedTexture childKey="Spark"/>
 					</MaskedTextures>
 				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Frame">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -61,11 +63,35 @@
 								<MaskedTexture childKey="Flipbook"/>
 							</MaskedTextures>
 						</MaskTexture>
+						<Texture parentKey="FilledFlipbook" alphaMode="ADD" setAllPoints="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="BurstFlipbook" setAllPoints="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="FillupFlipbookAnim" looping="REPEAT">
 						<FlipBook childKey="Flipbook" startDelay="0" endDelay="0" smoothing="NONE" duration="1.2" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="BurstFlipbookAnim" mixin="BurstFlipbookAnimMixin">
+						<FlipBook childKey="BurstFlipbook" duration="0.55" flipBookRows="4" flipBookColumns="4" flipBookFrames="16"/>
+						<Scripts>
+							<OnFinished method="OnAnimFinished"/>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="FilledFlipbookAnim" mixin="FilledFlipbookAnimMixin">
+						<FlipBook childKey="FilledFlipbook" duration="0.6" flipBookRows="2" flipBookColumns="4" flipBookFrames="8"/>
+						<Scripts>
+							<OnFinished method="OnAnimFinished"/>
+						</Scripts>
 					</AnimationGroup>
 				</Animations>
 			</StatusBar>	
@@ -87,6 +113,27 @@
 					</KeyValues>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DecorFlipbookLeft" alphaMode="ADD" setAllPoints="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DecorLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DecorFlipbookRight" alphaMode="ADD" setAllPoints="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DecorRight"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="DecorFlipbookAnim" mixin ="DecorFlipbookAnimMixin">
+				<FlipBook childKey="DecorFlipbookLeft" duration="0.3" flipBookRows="2" flipBookColumns="4" flipBookFrames="8"/>
+				<FlipBook childKey="DecorFlipbookRight" duration="0.3" flipBookRows="2" flipBookColumns="4" flipBookFrames="8"/>
+				<Scripts>
+					<OnFinished method="OnAnimFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 </Ui>

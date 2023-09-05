@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
 	<!-- Note that pet frame uses target of target frame assets/uses TargetofTarget for the frameType, and this is intentional. -->
-	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin, PingableType_UnitFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate, PingReceiverAttributeTemplate" parent="PlayerFrame">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="48" type="number"/>

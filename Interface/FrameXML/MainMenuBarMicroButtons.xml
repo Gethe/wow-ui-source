@@ -25,7 +25,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FlashBorder" setAllPoints="true" atlas="UI-HUD-MicroMenu-Highlightalert" alphaMode="ALPHA" hidden="true"/>
+				<Texture parentKey="FlashBorder" setAllPoints="true" atlas="UI-HUD-MicroMenu-Highlightalert" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
