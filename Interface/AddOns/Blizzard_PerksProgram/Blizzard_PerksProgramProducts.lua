@@ -437,6 +437,25 @@ function PerksProgramProductsFrameMixin:SelectPreviousProduct()
 	end
 end
 
+function PerksProgramProductsFrameMixin:SelectProductByPerksVendorItemID(perksVendorItemID)
+	local itemElementData = self:GetElementData(perksVendorItemID);
+	if not itemElementData then
+		return;
+	end
+
+	local scrollContainer = self.ProductsScrollBoxContainer;
+	scrollContainer.selectionBehavior:SelectElementData(itemElementData);
+end
+
+function PerksProgramProductsFrameMixin:SelectFrozenProduct()
+	local frozenItemInfo = C_PerksProgram.GetFrozenPerksVendorItemInfo();
+	if not frozenItemInfo then
+		return;
+	end
+
+	self:SelectProductByPerksVendorItemID(frozenItemInfo.perksVendorItemID);
+end
+
 function PerksProgramProductsFrameMixin:AllDataRefresh()
 	self:UpdateProducts();
 	self.silenceSelectionSounds = true;

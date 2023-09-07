@@ -180,8 +180,15 @@ function DragonflightLandingOverlayMixin:SetUpMajorFactionList()
 	
 	self.MajorFactionList = LandingPageMajorFactionList.Create(self);
 	self.MajorFactionList:ClearAllPoints();
-	local xOffset, yOffset = 44, -26;
+	local xOffset, yOffset = 45, -20;
 	self.MajorFactionList:SetPoint("TOPRIGHT", self.Header.TitleDivider, "BOTTOMRIGHT", xOffset, yOffset);
+
+	-- The ScrollFadeOverlay should be on top of the Major Faction List to fade out elements as you scroll
+	self.ScrollFadeOverlay:SetFrameLevel(self.MajorFactionList:GetFrameLevel() + 10);
+	-- And the ScrollBar should be on top of the ScrollFadeOverlay so we can still use it
+	self.MajorFactionList.ScrollBar:SetFrameLevel(self.ScrollFadeOverlay:GetFrameLevel() + 10);
+
+
 	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_DRAGONFLIGHT);
 end
 

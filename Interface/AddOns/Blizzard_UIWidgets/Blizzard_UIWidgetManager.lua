@@ -76,7 +76,7 @@ function UIWidgetContainerMixin:OnUpdate(elapsed)
 	end
 end
 
-function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
+function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerLayout)
 	local horizontalRowContainer = nil; 
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll();
@@ -159,7 +159,7 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 					local relative = horizontalRowContainer or sortedWidgets[index - 1];
 					newHorizontalRowContainer:SetPoint(horizontalRowAnchorPoint, relative, horizontalRowRelativePoint, 0, widgetContainerFrame.verticalAnchorYOffset);
 				end
-				widgetFrame:SetPoint("TOPLEFT", newHorizontalRowContainer);
+				widgetFrame:SetPoint(widgetContainerFrame.horizontalAnchorPoint, newHorizontalRowContainer);
 				newHorizontalRowContainer:AddChildWidget(widgetFrame);
 				widgetFrame:SetFrameLevel(widgetContainerFrameLevel + index);
 
@@ -177,8 +177,11 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets)
 
 	if horizontalRowContainer then 
 		horizontalRowContainer:Layout(); 
-	end 
-	widgetContainerFrame:Layout(); 
+	end
+
+	if not skipContainerLayout then
+		widgetContainerFrame:Layout();
+	end
 end
 
 function UIWidgetContainerMixin:SetAttachedUnitAndType(attachedUnitInfo)

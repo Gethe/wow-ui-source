@@ -7,11 +7,13 @@ end
 function VignetteDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
+	self:GetMap():RegisterCallback("HighlightMapPins.Vignettes", self.ForceHighlightVignettePins, self);
 	self:InitializeAllTrackingTables();
 end
 
 function VignetteDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetBounty", self);
+	self:GetMap():UnregisterCallback("HighlightMapPins.Vignettes", self);
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
 end
 
@@ -24,6 +26,13 @@ function VignetteDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bou
 		if self:GetMap() then
 			self:RefreshAllData();
 		end
+	end
+end
+
+function VignetteDataProviderMixin:ForceHighlightVignettePins(forcedPinHighlightType)
+	if self.forcedPinHighlightType ~= forcedPinHighlightType then
+		self.forcedPinHighlightType = forcedPinHighlightType;
+		self:OnSuperTrackingChanged();
 	end
 end
 
@@ -291,7 +300,15 @@ function VignettePinMixin:UpdatePosition(bestUniqueVignette)
 	self:SetShown(showPin);
 end
 
+function VignettePinMixin:ShouldUseForcedHighlightType()
+	return self.dataProvider.forcedPinHighlightType and (self:GetVignetteType() == Enum.VignetteType.Normal);
+end
+
 function VignettePinMixin:GetHighlightType() -- override
+	if self:ShouldUseForcedHighlightType() then
+		return self.dataProvider.forcedPinHighlightType;
+	end
+
 	if (self:GetVignetteType() == Enum.VignetteType.Treasure) and QuestSuperTracking_ShouldHighlightTreasures(self:GetMap():GetMapID()) then
 		return MapPinHighlightType.SupertrackedHighlight;
 	end
@@ -321,22 +338,23 @@ function VignettePinMixin:OnMouseEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		self.UpdateTooltip = self.OnMouseEnter;
 
-		local hasValidTooltip = false;
+		local waitingForData, titleAdded = false, false;
 
 		if self:GetVignetteType() == Enum.VignetteType.Normal or self:GetVignetteType() == Enum.VignetteType.Treasure then
-			hasValidTooltip = self:DisplayNormalTooltip();
+			titleAdded = self:DisplayNormalTooltip();
 		elseif self:GetVignetteType() == Enum.VignetteType.PvPBounty then
-			hasValidTooltip = self:DisplayPvpBountyTooltip();
+			titleAdded = self:DisplayPvpBountyTooltip();
+			waitingForData = not titleAdded;
 		elseif self:GetVignetteType() == Enum.VignetteType.Torghast then
-			hasValidTooltip = self:DisplayTorghastTooltip();
+			titleAdded = self:DisplayTorghastTooltip();
 		end
 
-		if hasValidTooltip and self.widgetSetID then
-			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, self.vignetteInfo.addPaddingAboveWidgets and 10);
+		if not waitingForData and self.widgetSetID then
+			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, titleAdded and self.vignetteInfo.addPaddingAboveWidgets and 10);
 			if overflow then
 				verticalPadding = -overflow;
 			end
-		elseif not hasValidTooltip then
+		elseif waitingForData then
 			GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA);
 		end
 
@@ -353,8 +371,12 @@ function VignettePinMixin:OnMouseLeave()
 end
 
 function VignettePinMixin:DisplayNormalTooltip()
-	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
-	return true;
+	local vignetteName = self:GetVignetteName();
+	if vignetteName ~= "" then
+		GameTooltip_SetTitle(GameTooltip, vignetteName);
+		return true;
+	end
+	return false;
 end
 
 function VignettePinMixin:DisplayPvpBountyTooltip()
@@ -382,8 +404,7 @@ end
 
 function VignettePinMixin:DisplayTorghastTooltip()
 	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_RUNEFORGE_LEGENDARY);
-	GameTooltip_SetTitle(GameTooltip, self:GetVignetteName());
-	return true;
+	return self:DisplayNormalTooltip();
 end
 
 function VignettePinMixin:Remove()

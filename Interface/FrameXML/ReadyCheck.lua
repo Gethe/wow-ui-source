@@ -3,6 +3,12 @@ READY_CHECK_READY_TEXTURE = "UI-LFG-ReadyMark";
 READY_CHECK_NOT_READY_TEXTURE = "UI-LFG-DeclineMark";
 READY_CHECK_AFK_TEXTURE = "UI-LFG-DeclineMark";
 
+-- Smaller icons that do not have a background shadow
+READY_CHECK_WAITING_TEXTURE_RAID = "UI-LFG-PendingMark-Raid";
+READY_CHECK_READY_TEXTURE_RAID = "UI-LFG-ReadyMark-Raid";
+READY_CHECK_NOT_READY_TEXTURE_RAID = "UI-LFG-DeclineMark-Raid";
+READY_CHECK_AFK_TEXTURE_RAID = "UI-LFG-DeclineMark-Raid";
+
 
 --
 -- ReadyCheckFrame
@@ -70,11 +76,26 @@ end
 -- ReadyCheck unit frame functions
 --
 
+local function GetBestReadyCheckIconForFrame(readyCheckFrame)
+	local readyCheckState = readyCheckFrame.state;
+	if readyCheckState == "ready" then
+		return readyCheckFrame.useRaidIcons and READY_CHECK_READY_TEXTURE_RAID or READY_CHECK_READY_TEXTURE;
+	elseif readyCheckState == "notready" then
+		return readyCheckFrame.useRaidIcons and READY_CHECK_NOT_READY_TEXTURE_RAID or READY_CHECK_NOT_READY_TEXTURE
+	elseif readyCheckState == "waiting" then
+		return readyCheckFrame.useRaidIcons and READY_CHECK_WAITING_TEXTURE_RAID or READY_CHECK_WAITING_TEXTURE;
+	elseif readyCheckState == "afk" then
+		return readyCheckFrame.useRaidIcons and READY_CHECK_AFK_TEXTURE_RAID or READY_CHECK_AFK_TEXTURE;
+	end
+
+	return readyCheckFrame.useRaidIcons and READY_CHECK_WAITING_TEXTURE_RAID or READY_CHECK_WAITING_TEXTURE;
+end
+
 function ReadyCheck_Start(readyCheckFrame)
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
-	readyCheckFrame.Texture:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.UseAtlasSize);
 	readyCheckFrame.state = "waiting";
+	readyCheckFrame.Texture:SetAtlas(GetBestReadyCheckIconForFrame(readyCheckFrame), TextureKitConstants.UseAtlasSize);
 	readyCheckFrame:SetAlpha(1);
 	readyCheckFrame:Show();
 end
@@ -83,11 +104,11 @@ function ReadyCheck_Confirm(readyCheckFrame, ready)
 	readyCheckFrame:SetScript("OnUpdate", nil);
 
 	if ( ready == 1 ) then
-		readyCheckFrame.Texture:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.UseAtlasSize);
 		readyCheckFrame.state = "ready";
+		readyCheckFrame.Texture:SetAtlas(GetBestReadyCheckIconForFrame(readyCheckFrame), TextureKitConstants.UseAtlasSize);
 	else
-		readyCheckFrame.Texture:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.UseAtlasSize);
 		readyCheckFrame.state = "notready";
+		readyCheckFrame.Texture:SetAtlas(GetBestReadyCheckIconForFrame(readyCheckFrame), TextureKitConstants.UseAtlasSize);
 	end
 	readyCheckFrame:SetAlpha(1);
 	readyCheckFrame:Show();
@@ -95,8 +116,8 @@ end
 
 function ReadyCheck_Finish(readyCheckFrame, finishTime, fadeTime, onFinishFunc, onFinishFuncArg)
 	if ( readyCheckFrame.state == "waiting" ) then
-		readyCheckFrame.Texture:SetAtlas(READY_CHECK_AFK_TEXTURE, TextureKitConstants.UseAtlasSize);
 		readyCheckFrame.state = "afk";
+		readyCheckFrame.Texture:SetAtlas(GetBestReadyCheckIconForFrame(readyCheckFrame), TextureKitConstants.UseAtlasSize);
 	end
 
 	if ( finishTime > 0 ) then

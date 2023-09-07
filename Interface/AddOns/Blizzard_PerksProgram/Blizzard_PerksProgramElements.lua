@@ -466,7 +466,13 @@ function PerksProgramFrameDragDropMixin:OnLeave()
 end
 
 function PerksProgramFrameDragDropMixin:OnClick(button, down)
-	self:TriggerConfirmOverrideFrozenItem();
+	local draggedVendorItemID = C_PerksProgram.GetDraggedPerksVendorItem();
+	if draggedVendorItemID ~= 0 then
+		self:TriggerConfirmOverrideFrozenItem();
+		return;
+	end
+
+	PerksProgramFrame.ProductsFrame:SelectFrozenProduct();
 end
 
 function PerksProgramFrameDragDropMixin:OnReceiveDrag()
@@ -641,11 +647,17 @@ function PerksProgramProductDetailsFrameMixin:OnProductSelectedAfterModel(data)
 	local categoryText = PerksProgramFrame:GetCategoryText(data.perksVendorCategoryID);
 	self.CategoryText:SetText(categoryText);
 
-	local timeToShow = PerksProgramFrame:FormatTimeLeft(data.timeRemaining, PerksProgramFrame.TimeLeftDetailsFormatter);
-	local timeTextColor = self.timeTextColor or WHITE_FONT_COLOR;
-	local timeValueColor = self.timeValueColor or WHITE_FONT_COLOR;	
-	local timeText = format(timeTextColor:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), timeValueColor:WrapTextInColorCode(timeToShow));
-	self.TimeRemaining:SetText(timeText);
+	if data.isFrozen then
+		local timeText = format(WHITE_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), PERKS_PROGRAM_FROZEN);
+		self.TimeRemaining:SetText(timeText);
+	else
+		local timeToShow = PerksProgramFrame:FormatTimeLeft(data.timeRemaining, PerksProgramFrame.TimeLeftDetailsFormatter);
+		local timeTextColor = self.timeTextColor or WHITE_FONT_COLOR;
+		local timeValueColor = self.timeValueColor or WHITE_FONT_COLOR;	
+		local timeText = format(timeTextColor:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), timeValueColor:WrapTextInColorCode(timeToShow));
+		self.TimeRemaining:SetText(timeText);
+	end
+
 	self:MarkDirty();
 end
 

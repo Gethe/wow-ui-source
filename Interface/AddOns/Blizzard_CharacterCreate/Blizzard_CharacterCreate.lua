@@ -200,6 +200,15 @@ function CharacterCreateMixin:OnShow()
 	self:UpdateRecruitInfo();
 
 	RaceAndClassFrame:UpdateState(selectedFaction);
+
+	if Kiosk.IsEnabled() and not Kiosk.IsCompetitiveModeEnabled() then
+		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
+		if templateIndex then
+			C_CharacterCreation.SetCharacterTemplate(templateIndex);
+		else
+			C_CharacterCreation.ClearCharacterTemplate();
+		end
+	end
 end
 
 local rafHelpTipInfo = {
@@ -1891,7 +1900,6 @@ function CharacterCreateEditBoxMixin:OnEvent(event, ...)
 		self:SetText(name);
 
 		self:GetParent().RandomNameButton.pendingRequest = false;
-		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	end
 end
 

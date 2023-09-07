@@ -18,6 +18,10 @@ function UIWidgetTemplateTooltipFrameMixin:Setup(widgetContainer)
 	self:UpdateMouseEnabled();
 	self:SetMouseClickEnabled(false);
 	self:SetTooltipLocation(nil);
+
+	if self.mouseOver then
+		self:OnEnter();
+	end
 end
 
 function UIWidgetTemplateTooltipFrameMixin:SetTooltip(tooltip, color)
@@ -1159,7 +1163,29 @@ end
 
 UIWidgetBaseItemTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
 
-local TEXT_OFFSET = 10;
+local stackCountTextFontSizes =
+{
+	[Enum.WidgetIconSizeType.Small]	= "NumberFontNormalSmall",
+	[Enum.WidgetIconSizeType.Medium]	= "NumberFontNormal",
+	[Enum.WidgetIconSizeType.Large]	= "NumberFontNormal",
+	[Enum.WidgetIconSizeType.Standard]	= "NumberFontNormalSmall",
+}
+
+local function GetItemCountTextSizeFont(iconSizeType)
+	return stackCountTextFontSizes[iconSizeType];
+end
+
+local earnedCheckSizes =
+{
+	[Enum.WidgetIconSizeType.Small]	= 12,
+	[Enum.WidgetIconSizeType.Medium] = 15,
+	[Enum.WidgetIconSizeType.Large]	= 18,
+	[Enum.WidgetIconSizeType.Standard] = 14,
+}
+
+local function GetEarnedCheckSize(iconSizeType)
+	return earnedCheckSizes[iconSizeType];
+end
 
 function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSizeSetting)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
@@ -1170,79 +1196,102 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 	self.IconOverlay:SetSize(iconSize, iconSize);
 	self.IconOverlay2:SetSize(iconSize, iconSize);
 
+	local earnedCheckSize = GetEarnedCheckSize(itemInfo.iconSizeType);
+	self.EarnedCheck:SetSize(earnedCheckSize, earnedCheckSize);
+
+	self.Count:SetFontObject(GetItemCountTextSizeFont(itemInfo.iconSizeType));
+
 	local itemName, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemInfo.itemID);
 	self.Icon:SetTexture(itemTexture);
 	SetItemButtonQuality(self, quality, itemInfo.itemID);
 	SetItemButtonCount(self, itemInfo.stackCount or 1);
 
-	local iconWidth, iconHeight = self.Icon:GetSize();
-	local maxTextWidth = (widgetSizeSetting > (iconWidth + TEXT_OFFSET)) and (widgetSizeSetting - iconWidth - TEXT_OFFSET) or nil;
+	local qualityColor = ITEM_QUALITY_COLORS[quality];
+	self.ItemName:SetTextColor(qualityColor.r, qualityColor.g, qualityColor.b);
 
-	local textWidth, textHeight;
+	self.EarnedCheck:SetShown(itemInfo.showAsEarned);
+
+	local widgetWidth, widgetHeight;
 	if itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.WorldQuestReward then
+		self.ItemName:Hide()
+		self.InfoText:Hide();
+		self.NameFrame:Hide();
+
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 		self.Tooltip:SetPadding(-10, -10, -10, -10);
 		self.Tooltip:SetItemByID(itemInfo.itemID);
 		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
-
-		textWidth = self.Tooltip:GetWidth();
-		textHeight = self.Tooltip:GetHeight();
-
-		self.ItemName:Hide()
-		self.InfoText:Hide();
 		self.Tooltip:Show();
-	else
-		local qualityColor = ITEM_QUALITY_COLORS[quality];
-		self.ItemName:SetTextColor(qualityColor.r, qualityColor.g, qualityColor.b);
-		self.ItemName:SetSize(0, 0);
-		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
 
-		local itemNameWidth, itemNameHeight = self.ItemName:GetSize();
-		self.ItemName:ClearAllPoints();
-
-		local infoTextWidth, infoTextHeight = 0, 0;
-
-		if itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.ItemNameOnlyCentered then
-			self.ItemName:SetPoint("LEFT", self.Icon, "RIGHT", 10, 0);
-			self.InfoText:Hide();
-			textWidth = itemNameWidth;
-			textHeight = itemNameHeight;
-		else
-			self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
-			if itemInfo.infoText then
-				self.InfoText:SetSize(0, 0);
-				self.InfoText:SetText(itemInfo.infoText);
-				self.InfoText:SetEnabledState(itemInfo.infoTextEnabledState);
-				self.InfoText:Show();
-				infoTextWidth, infoTextHeight = self.InfoText:GetSize();
-
-				textWidth = math.max(itemNameWidth, infoTextWidth);
-				textHeight = itemNameHeight + infoTextHeight + 2;
-			else
-				self.InfoText:Hide();
-			end
-		end
-
-		if maxTextWidth and textWidth > maxTextWidth then
-			self.ItemName:SetSize(maxTextWidth, itemNameHeight);
-			self.InfoText:SetSize(maxTextWidth, infoTextHeight);
-			textWidth = maxTextWidth;
-		end
-
-		self.ItemName:Show();
+		widgetWidth = iconSize + self.Tooltip:GetWidth() + 10;
+		widgetHeight = math.max(iconSize, self.Tooltip:GetHeight());
+	elseif itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.PlayerChoiceReward then
 		self.Tooltip:Hide();
+		self.InfoText:Hide();
+
+		local minNameFrameWidth = 100;
+		local maxNameFrameWidth = 209;
+
+		local desiredNameFrameWidth = (widgetSizeSetting > 0) and (widgetSizeSetting - (iconSize + 2)) or maxNameFrameWidth;
+		local nameFrameWidth = Clamp(desiredNameFrameWidth, minNameFrameWidth, maxNameFrameWidth);
+		self.NameFrame:SetSize(nameFrameWidth, iconSize);
+		self.NameFrame:Show();
+
+		self.ItemName:ClearAllPoints();
+		self.ItemName:SetPoint("TOPLEFT", self.NameFrame, "TOPLEFT", 4, -2);
+		self.ItemName:SetPoint("BOTTOMRIGHT", self.NameFrame, "BOTTOMRIGHT", -4, 2);
+		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
+		self.ItemName:Show();
+
+		widgetWidth = iconSize + nameFrameWidth + 2;
+		widgetHeight = iconSize;
+	elseif itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.ItemNameOnlyCentered then
+		self.Tooltip:Hide();
+		self.NameFrame:Hide();
+		self.InfoText:Hide();
+
+		local desiredItemNameWidth = (widgetSizeSetting > 0) and (widgetSizeSetting - (iconSize + 10)) or 0;
+		local itemNameWidth = math.max(desiredItemNameWidth, 0);
+
+		self.ItemName:ClearAllPoints();
+		self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
+		self.ItemName:SetSize(itemNameWidth, iconSize);
+		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
+		self.ItemName:Show();
+
+		widgetWidth = iconSize + self.ItemName:GetWidth() + 10;
+		widgetHeight = iconSize;
+	else
+		self.Tooltip:Hide();
+		self.NameFrame:Hide();
+
+		local desiredTextWidth = (widgetSizeSetting > 0) and (widgetSizeSetting - (iconSize + 10)) or 0;
+		local textWidth = math.max(desiredTextWidth, 0);
+
+		self.ItemName:ClearAllPoints();
+		self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
+		self.ItemName:SetSize(textWidth, 0);
+		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
+		self.ItemName:Show();
+
+		if itemInfo.infoText then
+			self.InfoText:SetSize(textWidth, 0);
+			self.InfoText:SetText(itemInfo.infoText);
+			self.InfoText:SetEnabledState(itemInfo.infoTextEnabledState);
+			self.InfoText:Show();
+
+			widgetWidth = iconSize + self.InfoText:GetWidth() + 10;
+			widgetHeight = math.max(iconSize, self.ItemName:GetHeight() + self.InfoText:GetHeight() + 2);
+		else
+			self.InfoText:Hide();
+			widgetWidth = iconSize + self.ItemName:GetWidth() + 10;
+			widgetHeight = math.max(iconSize, self.ItemName:GetHeight());
+		end
 	end
 
 	self.itemID = itemInfo.itemID;
 	self.tooltipEnabled = itemInfo.tooltipEnabled;
 	self:SetTooltip(itemInfo.overrideTooltip);
-
-	local widgetWidth = iconWidth + textWidth + TEXT_OFFSET;
-	local widgetHeight = math.max(iconHeight, textHeight)
-
-	if widgetSizeSetting > 0 then
-		widgetWidth = widgetSizeSetting;
-	end
 
 	self:SetWidth(widgetWidth);
 	self:SetHeight(widgetHeight);
@@ -1262,4 +1311,98 @@ function UIWidgetBaseItemTemplateMixin:SetMouse(disableMouse)
 	local useMouse = self.tooltipEnabled and not disableMouse;
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
+end
+
+UIWidgetBaseIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);
+
+local iconTextureKitRegions = {
+	Glow = "%s-spell-glow",
+	Frame = "%s-spell-frame",
+};
+
+local iconFrameSizes =
+{
+	[Enum.WidgetIconSizeType.Small]	= 44,
+	[Enum.WidgetIconSizeType.Medium] = 58,
+	[Enum.WidgetIconSizeType.Large]	= 70,
+	[Enum.WidgetIconSizeType.Standard] = 54,
+}
+
+local function GetWidgetIconFrameSize(iconSizeType)
+	return iconFrameSizes[iconSizeType];
+end
+
+function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconInfo, shouldGlow, glowAnimType)
+	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
+
+	if not self.continuableContainer then
+		self.continuableContainer = ContinuableContainer:Create();
+	end
+
+	SetupTextureKitOnRegions(textureKit, self, iconTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+
+	local hasGlowTexture = self.Glow:IsShown();
+	if hasGlowTexture and shouldGlow then
+		if glowAnimType == Enum.WidgetGlowAnimType.Pulse then
+			self.GlowPulseAnim:Play();
+		else
+			self.GlowPulseAnim:Stop();
+			self.Glow:SetAlpha(1);
+		end
+		self.Glow:Show();
+	else
+		self.GlowPulseAnim:Stop();
+		self.Glow:Hide();
+	end
+
+	local iconSize = GetWidgetIconSize(iconInfo.sizeType);
+	self.Icon:SetSize(iconSize, iconSize);
+
+	local iconFrameSize = GetWidgetIconFrameSize(iconInfo.sizeType);
+	self.Frame:SetSize(iconFrameSize, iconFrameSize);
+	self.Glow:SetSize(iconFrameSize, iconFrameSize);
+
+	if iconInfo.sourceType == Enum.WidgetIconSourceType.Spell then
+		local iconTexture = select(3, GetSpellInfo(iconInfo.sourceID));
+		self.Icon:SetTexture(iconTexture);
+	else
+		local item = Item:CreateFromItemID(iconInfo.sourceID);
+		self.continuableContainer:AddContinuable(item);
+
+		self.continuableContainer:ContinueOnLoad(function()
+			local iconTexture = select(10, GetItemInfo(iconInfo.sourceID));
+			self.Icon:SetTexture(iconTexture);
+		end);
+	end
+	self.iconInfo = iconInfo;
+
+	self:SetTooltip(iconInfo.tooltip);
+	self:SetTooltipLocation(iconInfo.tooltipLoc);
+
+	self:SetSize(self.Icon:GetSize());
+end
+
+function UIWidgetBaseIconTemplateMixin:SetMouse(disableMouse)
+	local useMouse = (self.tooltip ~= " ") and not disableMouse;
+	self:EnableMouse(useMouse)
+	self:SetMouseClickEnabled(false);
+end
+
+function UIWidgetBaseIconTemplateMixin:OnEnter()
+	if self.tooltip == "" then
+		self:SetTooltipOwner();
+		if self.iconInfo.sourceType == Enum.WidgetIconSourceType.Spell then
+			EmbeddedItemTooltip:SetSpellByID(self.iconInfo.sourceID);
+		else
+			EmbeddedItemTooltip:SetItemByID(self.iconInfo.sourceID);
+		end
+		EmbeddedItemTooltip:Show();
+	else
+		UIWidgetTemplateTooltipFrameMixin.OnEnter(self);
+	end
+end
+
+function UIWidgetBaseIconTemplateMixin:StopAnims()
+	self.GlowPulseAnim:Stop();
+	self.Glow:Hide();
 end

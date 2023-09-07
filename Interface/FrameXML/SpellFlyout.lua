@@ -394,6 +394,12 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	end
 end
 
+function SpellFlyout_HideIfWorldMapMaximized(self)
+	if (WorldMapFrame:IsMaximized()) then
+		self:Hide();
+	end
+end
+
 function SpellFlyout_OnShow(self)
 	if (self.eventsRegistered == false) then
 		self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
@@ -404,6 +410,8 @@ function SpellFlyout_OnShow(self)
 		self:RegisterEvent("PET_STABLE_UPDATE");
 		self:RegisterEvent("PET_STABLE_SHOW");
 		self:RegisterEvent("SPELL_FLYOUT_UPDATE");
+		EventRegistry:RegisterCallback("WorldMapMaximized", self.Hide, self);
+		EventRegistry:RegisterCallback("WorldMapOnShow", SpellFlyout_HideIfWorldMapMaximized, self);
 		self.eventsRegistered = true;
 	end
 	if (self.isActionBar) then
@@ -421,6 +429,8 @@ function SpellFlyout_OnHide(self)
 		self:UnregisterEvent("PET_STABLE_UPDATE");
 		self:UnregisterEvent("PET_STABLE_SHOW");
 		self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
+		EventRegistry:UnregisterCallback("WorldMapMaximized", self.Hide);
+		EventRegistry:UnregisterCallback("WorldMapOnShow", SpellFlyout_HideIfWorldMapMaximized);
 		self.eventsRegistered = false;
 	end
 	if (self:IsShown()) then

@@ -1797,7 +1797,7 @@ function FCF_ResetChatWindows()
 end
 
 function IsCombatLog(frame)
-	return ( frame == ChatFrame2 and IsAddOnLoaded("Blizzard_CombatLog") );
+	return ( frame == ChatFrame2 and C_AddOns.IsAddOnLoaded("Blizzard_CombatLog") );
 end
 
 function IsVoiceTranscription(frame)
@@ -2134,7 +2134,7 @@ function FCFDock_UpdateTabs(dock, forceUpdate)
 	end
 
 	dock.scrollFrame:SetPoint("LEFT", lastDockedStaticTab, "RIGHT", 0, 0);
-	dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMRIGHT", 0, 0);
+	dock.scrollFrame:SetPoint("BOTTOMRIGHT", dock, "BOTTOMRIGHT", 0, -1);
 
 	local dynTabSize, hasOverflow = FCFDock_CalculateTabSize(dock, numDynFrames);
 

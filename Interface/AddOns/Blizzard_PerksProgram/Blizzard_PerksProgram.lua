@@ -423,3 +423,52 @@ end
 function PerksProgramMixin.TimeLeftFooterFormatter:GetDesiredUnitCount(seconds)
 	return 2;
 end
+
+----------------------------------------------------------------------------------
+-- Theme Container
+----------------------------------------------------------------------------------
+PerksProgramThemeContainerMixin = {};
+
+function PerksProgramThemeContainerMixin:OnLoad()
+	local function PositionFrame(frame, point, relativeTo, relativePoint, offsetX, offsetY)
+		frame:ClearAllPoints();
+		frame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+	end
+
+	local productListBorder = PerksProgramFrame.ProductsFrame.ProductsScrollBoxContainer.Border;
+	PositionFrame(self.ProductList.Top, "BOTTOM", productListBorder, "TOP", 0, -51);
+	PositionFrame(self.ProductList.Bottom, "TOP", productListBorder, "BOTTOM", 0, 118);
+	PositionFrame(self.ProductList.Left, "RIGHT", productListBorder, "LEFT", 10, 2);
+	PositionFrame(self.ProductList.Right, "LEFT", productListBorder, "RIGHT", -10, 2);
+
+	local productDetailsBorder = PerksProgramFrame.ProductsFrame.PerksProgramProductDetailsContainerFrame.Border;
+	PositionFrame(self.ProductDetails.Top, "BOTTOM", productDetailsBorder, "TOP", 0, -43);
+	PositionFrame(self.ProductDetails.Bottom, "TOP", productDetailsBorder, "BOTTOM", 0, 33);
+	PositionFrame(self.ProductDetails.Left, "TOPRIGHT", productDetailsBorder, "TOPLEFT", 10, 90);
+	PositionFrame(self.ProductDetails.Right, "TOPLEFT", productDetailsBorder, "TOPRIGHT", -10, 90);
+end
+
+function PerksProgramThemeContainerMixin:OnShow()
+	local theme = C_PerksActivities.GetPerksUIThemePrefix();
+	local atlasPrefix = "perks-theme-"..theme.."-tp-";
+
+	local function SetAtlas(texture, atlasSuffix)
+		local atlasName = atlasPrefix..atlasSuffix;
+		if not C_Texture.GetAtlasInfo(atlasName) then
+			texture:SetTexture(nil);
+			return;
+		end
+
+		texture:SetAtlas(atlasName, true);
+	end
+
+	SetAtlas(self.ProductList.Top, "topbig");
+	SetAtlas(self.ProductList.Bottom, "bottombig");
+	SetAtlas(self.ProductList.Left, "leftbig");
+	SetAtlas(self.ProductList.Right, "rightbig");
+
+	SetAtlas(self.ProductDetails.Top, "topsmall");
+	SetAtlas(self.ProductDetails.Bottom, "bottomsmall");
+	SetAtlas(self.ProductDetails.Left, "leftsmall");
+	SetAtlas(self.ProductDetails.Right, "rightsmall");
+end

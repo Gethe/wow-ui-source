@@ -502,6 +502,8 @@ function TalentButtonBaseMixin:CalculateVisualState()
 
 	if not self:ShouldBeVisible() then
 		return TalentButtonUtil.BaseVisualState.Invisible;
+	elseif self:IsRefundInvalid() then
+		return TalentButtonUtil.BaseVisualState.RefundInvalid;
 	elseif self:IsMaxed() then
 		return TalentButtonUtil.BaseVisualState.Maxed;
 	elseif self:IsSelectable() then
@@ -539,6 +541,11 @@ end
 function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
 
+	local isRefundInvalid, refundInvalidInstructions = self:IsRefundInvalid();
+	if TalentButtonUtil.CheckAddRefundInvalidInfo(tooltip, isRefundInvalid, refundInvalidInstructions) then
+		return;
+	end
+
 	local talentFrame = self:GetTalentFrame()
 
 	local shouldAddSpacer = true;
@@ -558,6 +565,10 @@ end
 
 function TalentButtonBaseMixin:IsVisibleAndSelectable()
 	return self:ShouldBeVisible() and self:IsSelectable();
+end
+
+function TalentButtonBaseMixin:IsRefundInvalid()
+	return TalentButtonUtil.GetRefundInvalidInfo(self.nodeInfo);
 end
 
 function TalentButtonBaseMixin:HasProgress()
@@ -581,6 +592,10 @@ function TalentButtonBaseMixin:IsLocked()
 end
 
 function TalentButtonBaseMixin:IsCascadeRepurchasable()
+	if not TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled() then
+		return false;
+	end
+
 	return self.nodeInfo and self.nodeInfo.isCascadeRepurchasable and self:CanAfford();
 end
 
@@ -590,6 +605,11 @@ end
 
 function TalentButtonBaseMixin:IsGhosted()
 	-- Override in your derived mixin as desired.
+
+	if not TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled() then
+		return false;
+	end
+
 	return not self.nodeInfo or self:IsCascadeRepurchasable();
 end
 
@@ -614,6 +634,10 @@ function TalentButtonBaseMixin:CascadeRepurchaseRanks()
 end
 
 function TalentButtonBaseMixin:ClearCascadeRepurchaseHistory()
+	if not TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled() then
+		return;
+	end
+
 	self:PlayDeselectSound();
 	self:GetTalentFrame():ClearCascadeRepurchaseHistory();
 	self:UpdateMouseOverInfo();
@@ -684,15 +708,22 @@ function TalentButtonBasicArtMixin:ApplyVisualState(visualState)
 	self.SpendText:SetTextColor(r, g, b);
 	self.StateBorder:SetColorTexture(r, g, b);
 
+	local isRefundInvalid = (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+	local disabledColor = isRefundInvalid and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
+	self.Icon:SetVertexColor(disabledColor:GetRGBA());
+
 	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
-	self.Icon:SetAlpha(isGated and 0.5 or 1.0);
-	self.DisabledOverlay:SetAlpha(isGated and 0.7 or 0.3);
+	local isStrongDisabledOverlay = not isRefundInvalid and isGated;
+	self.Icon:SetAlpha(isStrongDisabledOverlay and 0.5 or 1.0);
+	self.DisabledOverlay:SetAlpha(isStrongDisabledOverlay and 0.7 or 0.3);
 
-	local isLocked = isGated or (visualState == TalentButtonUtil.BaseVisualState.Locked);
-	self.Icon:SetDesaturated(isLocked);
+	local isLocked = (visualState == TalentButtonUtil.BaseVisualState.Locked);
+	local isDimmed = not isRefundInvalid and (isGated or isLocked);
+	self.Icon:SetDesaturated(isDimmed);
 
-	local isDisabled = isLocked or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
-	self.DisabledOverlay:SetShown(isDisabled);
+	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Disabled);
+	local showDisabledOverlay = not isRefundInvalid and (isGated or isLocked or isDisabled);
+	self.DisabledOverlay:SetShown(showDisabledOverlay);
 end
 
 function TalentButtonBasicArtMixin:SetAndApplySize(width, height)
@@ -727,6 +758,9 @@ end
 
 TalentButtonArtMixin = {};
 
+-- Split out for easier adjustment.
+local RefundInvalidOverlayAlpha = 0.3;
+
 TalentButtonArtMixin.ArtSet = {
 	Square = {
 		iconMask = nil,
@@ -736,6 +770,7 @@ TalentButtonArtMixin.ArtSet = {
 		selectable = "talents-node-square-green",
 		maxed = "talents-node-square-yellow",
 		locked = "talents-node-square-locked",
+		refundInvalid = "talents-node-square-red",
 		glow = "talents-node-square-greenglow",
 		ghost = "talents-node-square-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
@@ -748,6 +783,7 @@ TalentButtonArtMixin.ArtSet = {
 		disabled = "talents-node-circle-gray",
 		selectable = "talents-node-circle-green",
 		maxed = "talents-node-circle-yellow",
+		refundInvalid = "talents-node-circle-red",
 		locked = "talents-node-circle-locked",
 		glow = "talents-node-circle-greenglow",
 		ghost = "talents-node-circle-ghost",
@@ -761,6 +797,7 @@ TalentButtonArtMixin.ArtSet = {
 		disabled = "talents-node-choice-gray",
 		selectable = "talents-node-choice-green",
 		maxed = "talents-node-choice-yellow",
+		refundInvalid = "talents-node-choice-red",
 		locked = "talents-node-choice-locked",
 		glow = "talents-node-choice-greenglow",
 		ghost = "talents-node-choice-ghost",
@@ -774,6 +811,7 @@ TalentButtonArtMixin.ArtSet = {
 		disabled = "talents-node-choiceflyout-square-gray",
 		selectable = "talents-node-choiceflyout-square-green",
 		maxed = "talents-node-choiceflyout-square-yellow",
+		refundInvalid = "talents-node-choiceflyout-square-red",
 		locked = "talents-node-choiceflyout-square-locked",
 		glow = "talents-node-choiceflyout-square-greenglow",
 		ghost = "talents-node-choiceflyout-square-ghost",
@@ -787,6 +825,7 @@ TalentButtonArtMixin.ArtSet = {
 		disabled = "talents-node-choiceflyout-circle-gray",
 		selectable = "talents-node-choiceflyout-circle-green",
 		maxed = "talents-node-choiceflyout-circle-yellow",
+		refundInvalid = "talents-node-choiceflyout-circle-red",
 		locked = "talents-node-choiceflyout-circle-locked",
 		glow = "talents-node-choiceflyout-circle-greenglow",
 		ghost = "talents-node-choiceflyout-circle-ghost",
@@ -826,15 +865,22 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 	local r, g, b = color:GetRGB();
 	self.SpendText:SetTextColor(r, g, b);
 
-	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
-	self.DisabledOverlay:SetAlpha(isGated and 0.7 or 0.25);
+	local isRefundInvalid = (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+	local disabledColor = isRefundInvalid and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
+	self.Icon:SetVertexColor(disabledColor:GetRGBA());
 
-	local isDisabled = isGated or (visualState == TalentButtonUtil.BaseVisualState.Locked) or (visualState == TalentButtonUtil.BaseVisualState.Disabled);
-	self.Icon:SetDesaturated(isDisabled);
-	self.DisabledOverlay:SetShown(isDisabled);
+	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
+	self.DisabledOverlay:SetAlpha((isGated and 0.7) or (isRefundInvalid and RefundInvalidOverlayAlpha) or 0.25);
+
+	local isLocked = (visualState == TalentButtonUtil.BaseVisualState.Locked);
+	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Disabled);
+	local isDimmed = isGated or isLocked or isDisabled;
+	self.Icon:SetDesaturated(not isRefundInvalid and isDimmed);
+	self.DisabledOverlay:SetShown(isRefundInvalid or isDimmed);
 
 	if self.SelectableIcon then
-		self.SelectableIcon:SetShown(visualState == TalentButtonUtil.BaseVisualState.Selectable and CVarCallbackRegistry:GetCVarValueBool("colorblindMode"));
+		local isSelectable = (visualState == TalentButtonUtil.BaseVisualState.Selectable);
+		self.SelectableIcon:SetShown(isSelectable and CVarCallbackRegistry:GetCVarValueBool("colorblindMode"));
 	end
 
 	self:UpdateStateBorder(visualState);
@@ -860,7 +906,9 @@ function TalentButtonArtMixin:UpdateStateBorder(visualState)
 		end
 	end
 
-	if (visualState == TalentButtonUtil.BaseVisualState.Gated) then
+	if (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid) then
+		SetAtlas(self.artSet.refundInvalid);
+	elseif (visualState == TalentButtonUtil.BaseVisualState.Gated) then
 		SetAtlas(self.artSet.locked);
 	elseif (visualState == TalentButtonUtil.BaseVisualState.Selectable) then
 		SetAtlas(self.artSet.selectable);
@@ -1087,7 +1135,7 @@ end
 
 function TalentButtonSpendMixin:CanRefundRank()
 	-- We shouldn't be checking ranksPurchased directly.
-	return self.nodeInfo and not self:IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
+	return self.nodeInfo and not self:GetTalentFrame():IsLocked() and self.nodeInfo.canRefundRank and self.nodeInfo.ranksPurchased and (self.nodeInfo.ranksPurchased > 0);
 end
 
 function TalentButtonSpendMixin:PurchaseRank()
@@ -1217,7 +1265,9 @@ function TalentButtonSelectMixin:OnClick(button)
 		if self.nodeInfo.canRefundRank then
 			self:SetSelectedEntryID(nil);
 
-			local canSelectChoice = true;
+			-- If we just refunded, we should be able to select a choice unless we're in a refund invalid state.
+			-- We're not using CanSelectChoice since that won't be accurate at this point.
+			local canSelectChoice = not self:IsRefundInvalid();
 			self:GetTalentFrame():UpdateSelections(self, canSelectChoice, self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
 		end
 	elseif button == "LeftButton" then
@@ -1295,6 +1345,10 @@ function TalentButtonSelectMixin:UpdateNodeInfo(skipUpdate)
 end
 
 function TalentButtonSelectMixin:CanSelectChoice()
+	if self:IsRefundInvalid() then
+		return false;
+	end
+
 	if self:HasSelectedEntryID() then
 		return true;
 	end

@@ -46,7 +46,7 @@
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<FontString parentKey="New" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" x="-16" y="4" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPRIGHT" x="-9" y="-2"/>
 					</Anchors>
 					<Shadow>
 						<Color color="NEW_FEATURE_SHADOW_COLOR"/>

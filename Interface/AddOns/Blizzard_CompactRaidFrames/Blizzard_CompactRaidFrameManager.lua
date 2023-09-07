@@ -158,6 +158,16 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		CompactRaidFrameManager.displayFrame.everyoneIsAssistButton:Hide();
 	end
 
+	if CompactRaidFrameManager.displayFrame.RestrictPingsButton:ShouldShow() then
+		FlowContainer_AddLineBreak(container);
+		FlowContainer_AddSpacer(container, 20);
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.RestrictPingsButton);
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:UpdateLabel();
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Show();
+	else
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Hide();
+	end
+
 	FlowContainer_ResumeUpdates(container);
 
 	local usedX, usedY = FlowContainer_GetUsedBounds(container);
@@ -548,4 +558,47 @@ function CRF_AddToCount(isDead, assignedRole)
 		RaidInfoCounts.totalAlive = RaidInfoCounts.totalAlive + 1;
 		RaidInfoCounts["aliveRole"..assignedRole] = RaidInfoCounts["aliveRole"..assignedRole] + 1;
 	end
+end
+
+RaidFrameManagerRestrictPingsButtonMixin = {};
+
+local RestrictPingsButtonShownEvents =
+{
+	"GROUP_ROSTER_UPDATE",
+	"PARTY_LEADER_CHANGED",
+};
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, RestrictPingsButtonShownEvents);
+
+	self:UpdateCheckedState();
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, RestrictPingsButtonShownEvents);
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnEvent()
+	self:UpdateCheckedState();
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	C_PartyInfo.SetRestrictPings(self:GetChecked());
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:UpdateLabel()
+	if IsInRaid() then
+		self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS);
+	else
+		self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS_PARTY);
+	end
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:UpdateCheckedState()
+	self:SetChecked(C_PartyInfo.GetRestrictPings());
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:ShouldShow()
+	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player");
 end

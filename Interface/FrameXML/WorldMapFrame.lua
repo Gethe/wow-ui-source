@@ -27,10 +27,11 @@ function WorldMap_GetWorldQuestRewardType(questID)
 	local ORDER_RESOURCES_CURRENCY_ID = 1220;
 	local azeriteCurrencyID = C_CurrencyInfo.GetAzeriteCurrencyID();
 	local warResourcesCurrencyID = C_CurrencyInfo.GetWarResourcesCurrencyID();
+	local dragonIslesSuppliesCurrencyID = C_CurrencyInfo.GetDragonIslesSuppliesCurrencyID();
 	local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
 	for i = 1, numQuestCurrencies do
 		local currencyID = select(4, GetQuestLogRewardCurrencyInfo(i, questID));
-		if ( currencyID == ORDER_RESOURCES_CURRENCY_ID or currencyID == warResourcesCurrencyID) then
+		if ( currencyID == ORDER_RESOURCES_CURRENCY_ID or currencyID == warResourcesCurrencyID or currencyID == dragonIslesSuppliesCurrencyID ) then
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_RESOURCES);
 		elseif ( currencyID == azeriteCurrencyID ) then
 			worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);

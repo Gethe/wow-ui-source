@@ -261,11 +261,12 @@ function ScrollingFontMixin:OnSizeChanged(width, height)
 	local scrollBox = self:GetScrollBox();
 	scrollBox:SetWidth(width);
 
-	local fontStringContainer = self:GetFontStringContainer();
-	fontStringContainer:SetWidth(width);
-
 	local fontString = self:GetFontString();
 	fontString:SetWidth(width);
+
+	local fontStringContainer = self:GetFontStringContainer();
+	fontStringContainer:SetWidth(width);
+	fontStringContainer:SetHeight(fontString:GetStringHeight());
 end
 
 function ScrollingFontMixin:GetScrollBox()
@@ -318,6 +319,9 @@ function ScrollingFontMixin:SetFontObject(fontName)
 	local fontString = self:GetFontString();
 	fontString:SetFontObject(fontName);
 	
+	local fontStringContainer = self:GetFontStringContainer();
+	fontStringContainer:SetHeight(fontString:GetStringHeight());
+
 	local scrollBox = self:GetScrollBox();
 	local fontHeight = select(2, fontString:GetFont());
 	local padding = scrollBox:GetPadding();

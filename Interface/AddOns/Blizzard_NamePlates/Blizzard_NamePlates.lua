@@ -212,9 +212,6 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	local showAll = false;
 
 	local isPlayer = UnitIsUnit("player", unit);
-	local reaction = UnitReaction("player", unit);
-	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-	local hostileUnit = reaction and reaction <= 4;
 	local showDebuffsOnFriendly = self.showDebuffsOnFriendly;
 
 	local auraSettings =
@@ -232,11 +229,7 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 		auraSettings.includeNameplateOnly = true;
 		auraSettings.showPersonalCooldowns = self.showPersonalCooldowns;
 	else
-		if hostileUnit then
-			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-			auraSettings.harmful = true;
-			auraSettings.includeNameplateOnly = true;
-		else
+		if PlayerUtil.HasFriendlyReaction(unit) then
 			if (showDebuffsOnFriendly) then
 				-- dispellable debuffs
 				auraSettings.harmful = true;
@@ -245,6 +238,10 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 			else
 				auraSettings.hideAll = true;
 			end
+		else
+			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
+			auraSettings.harmful = true;
+			auraSettings.includeNameplateOnly = true;
 		end
 	end
 

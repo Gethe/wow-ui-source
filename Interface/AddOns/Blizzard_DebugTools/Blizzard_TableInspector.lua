@@ -6,7 +6,7 @@ local DEFAULT_DATA_PROVIDERS = {
 	TableInspectorAttributeDataProviderMixin,
 };
 
-TableInspectorMixin = {};
+TableInspectorMixin = CreateFromMixins(ToolWindowOwnerMixin);
 
 function TableInspectorMixin:OnLoad()
 	self:Reset();
@@ -131,9 +131,18 @@ end
 
 function TableInspectorMixin:DuplicateAttributeDisplay()
 	local copy = DisplayTableInspectorWindow(self.focusedTable);
-	copy:ClearAllPoints();
-	local point, parent, relativePoint, xOffset, yOffset = self:GetPoint(1);
-	copy:SetPoint(point, parent, relativePoint, xOffset + 60, yOffset + 60);
+	local copyWindow = copy:GetWindow();
+	if copyWindow then
+		local selfWindow = self:GetWindow();
+		if selfWindow then
+			local x, y = selfWindow:GetPosition();
+			copyWindow:SetPosition(x + 60, y + 60);
+		end
+	else
+		copy:ClearAllPoints();
+		local point, parent, relativePoint, xOffset, yOffset = self:GetPoint(1);
+		copy:SetPoint(point, parent, relativePoint, xOffset + 60, yOffset + 60);
+	end
 	copy:Show();
 	return copy;
 end
@@ -209,12 +218,19 @@ function TableInspectorMixin:InspectTable(focusedTable, title)
 		self.FrameHighlight:Hide();
 	end
 
-	if title then
-		self.TitleButton.Text:SetText(title);
-	elseif focusedTable.GetDebugName then
-		self.TitleButton.Text:SetText("Frame Attributes - "..focusedTable:GetDebugName());
-	else
-		self.TitleButton.Text:SetText("Table Attributes");
+	if not title then
+		if focusedTable.GetDebugName then
+			title = "Frame Attributes - "..focusedTable:GetDebugName();
+		else
+			title = "Table Attributes";
+		end
+	end
+
+	self.TitleButton.Text:SetText(title);
+	
+	local window = self:GetWindow();
+	if window then
+		window:SetTitle(title);
 	end
 
 	self:RefreshAllData();
@@ -265,8 +281,11 @@ function DisplayTableInspectorWindow(focusedTable, customTitle, tableFocusedCall
 	local attributeDisplay = tableInspectorPool:Acquire();
 	attributeDisplay:OnLoad();
 	attributeDisplay:SetTableFocusedCallback(tableFocusedCallback);
+	local inWindow = attributeDisplay:MoveToNewWindow("Table Inspector", 700, 570);
+	if not inWindow then
+		attributeDisplay:SetPoint("LEFT", 64 + math.random(0, 64), math.random(0, 64));
+	end
 	attributeDisplay:InspectTable(focusedTable, customTitle);
-	attributeDisplay:SetPoint("LEFT", 64 + math.random(0, 64), math.random(0, 64));
 	attributeDisplay:Show();
 	return attributeDisplay;
 end

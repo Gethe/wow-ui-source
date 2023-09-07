@@ -11,7 +11,7 @@ function GameTutorials:OnTutorialsInit()
 end
 
 function GameTutorials:OnTutorialsEnabled()
-	if IsAddOnLoaded("Blizzard_NewPlayerExperience") then
+	if C_AddOns.IsAddOnLoaded("Blizzard_NewPlayerExperience") then
 		return;
 	end
 

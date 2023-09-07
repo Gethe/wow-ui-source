@@ -10,6 +10,8 @@ local CALL_PET_SPELL_IDS = {
 	83245,
 };
 
+local PET_STABLE_MODEL_SCENE_ID = 718;
+local PET_STABLE_DEFAULT_ACTOR_TAG = "pet";
 function PetStable_OnLoad(self)
 	self:RegisterEvent("PET_STABLE_SHOW");
 	self:RegisterEvent("PET_STABLE_UPDATE");
@@ -35,6 +37,32 @@ function PetStable_OnLoad(self)
 	self.selectedPet = nil;
 end
 
+
+function PetStable_OnShow(self)
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+end
+
+function PetStable_OnHide(self)
+	ClosePetStables();
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	local cursorType, _ = GetCursorInfo();
+	if (cursorType == "pet") then
+		ClearCursor();
+	end
+end
+
+function PetStable_UpdatePetModelScene(self)
+	local forceSceneChange = true;
+	PetStableModelScene:TransitionToModelSceneID(PET_STABLE_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+	local creatureDisplayID = C_PlayerInfo.GetPetStableCreatureDisplayInfoID(PetStableFrame.selectedPet);
+	if creatureDisplayID then
+		local actor = PetStableModelScene:GetActorByTag(PET_STABLE_DEFAULT_ACTOR_TAG);
+		if actor then
+			actor:SetModelByCreatureDisplayID(creatureDisplayID);
+		end
+	end
+end
+
 function PetStable_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( event == "PET_STABLE_SHOW" ) then
@@ -56,9 +84,9 @@ function PetStable_OnEvent(self, event, ...)
 			return;
 		end
 		if (PetStableFrame.selectedPet) then
-			SetPetStablePaperdoll(PetStableModel, PetStableFrame.selectedPet);
+			PetStable_UpdatePetModelScene(self);
 		else
-			PetStableModel:Hide();
+			PetStableModelScene:Hide();
 		end
 	elseif ( event == "PET_STABLE_CLOSED" ) then
 		HideUIPanel(self);
@@ -203,9 +231,9 @@ function PetStable_Update(updateModel)
 
  	if ( PetStableFrame.selectedPet ) then
 		-- Update selected pet display
-		PetStableModel:Show();
+		PetStableModelScene:Show();
 		if (updateModel) then
-			SetPetStablePaperdoll(PetStableModel, PetStableFrame.selectedPet);
+			PetStable_UpdatePetModelScene(self);
 		end
 		local icon, name, level, family, talent = GetStablePetInfo(PetStableFrame.selectedPet);
 		PetStable_SetSelectedPetInfo(icon, name, level, family, talent);
@@ -218,7 +246,7 @@ function PetStable_Update(updateModel)
 		end
 	else
  		-- If no selected pet clear everything out
- 		PetStableModel:Hide();
+ 		PetStableModelScene:Hide();
  		PetStable_SetSelectedPetInfo();
 		PetStableDiet.tooltip = nil;
 		PetStableDiet:Hide();
@@ -272,7 +300,7 @@ function PetStable_NoPetsAllowed()
 	end
 
 	PetStable_SetSelectedPetInfo();
-	PetStableModel:Hide();
+	PetStableModelScene:Hide();
 end
 
 function PetStableSlot_Lock_OnEnter(self)

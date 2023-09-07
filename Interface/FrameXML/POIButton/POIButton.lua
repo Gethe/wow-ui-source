@@ -298,7 +298,7 @@ function POIButtonMixin:OnClick()
 
 			if C_ContentTracking.IsTracking(trackableType, trackableID) then
 				if IsShiftKeyDown() then
-					C_ContentTracking.StopTracking(trackableType, trackableID);
+					C_ContentTracking.StopTracking(trackableType, trackableID, Enum.ContentTrackingStopType.Manual);
 					return;
 				end
 			else

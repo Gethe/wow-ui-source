@@ -257,9 +257,9 @@
 		<Scripts>
 			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
-		<NormalFont style="GameFontHighlightSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisableSmall"/>
+		<NormalFont style="GameFontHighlight"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
 	</Button>
 
 	<Frame name="FilterDropDownContainerTemplate" mixin="FilterDropDownContainerMixin" virtual="true">

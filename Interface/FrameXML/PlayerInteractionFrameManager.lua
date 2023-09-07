@@ -124,7 +124,7 @@ local InteractionManagerFrameInfo = {
 	},
 	[Enum.PlayerInteractionType.Soulbind] = {
 		frame = "SoulbindViewer",
-		loadFunc = function() LoadAddOn("Blizzard_Soulbinds"); end; 
+		loadFunc = function() C_AddOns.LoadAddOn("Blizzard_Soulbinds"); end; 
 		showFunc = function() SoulbindViewer:Open(); end; 
 	},
 	[Enum.PlayerInteractionType.CovenantSanctum] = {

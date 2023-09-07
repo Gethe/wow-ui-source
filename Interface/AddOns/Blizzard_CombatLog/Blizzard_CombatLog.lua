@@ -3379,6 +3379,7 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 
 	-- Parent it to the tab so that we just inherit the tab's alpha. No need to do special fading for it.
 	CombatLogQuickButtonFrame:SetParent(_G[COMBATLOG:GetName() .. "Tab"]);
+	CombatLogQuickButtonFrame:SetFrameStrata("MEDIUM");
 	CombatLogQuickButtonFrame:ClearAllPoints();
 	CombatLogQuickButtonFrame:SetPoint("BOTTOMLEFT", COMBATLOG, "TOPLEFT", 0, 3);
 

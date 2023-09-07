@@ -15,6 +15,7 @@
 ..\SharedXML\ExportUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CallbackRegistrant.xml
@@ -32,6 +33,8 @@
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
+..\SharedXML\Vector2D.lua
+..\SharedXML\Vector3D.lua
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\EasingUtil.lua
@@ -48,8 +51,6 @@
 ..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
@@ -86,6 +87,7 @@
 ..\SharedXML\TypeUtil.lua
 ..\SharedXML\Dump.lua
 ..\SharedXML\MixinUtil.lua
+..\SharedXML\DebugBarManager.lua
 IconDataProvider.lua
 
 ..\SharedXML\Tooltip\TooltipUtil.lua
@@ -145,6 +147,11 @@ POIButton\POIButtonOwner.xml
 POIButton\POIButtonUtil.lua
 
 ## add new modules below here
+..\SharedXML\PingUtil.lua
+..\SharedXML\PingAttributes.xml
+..\SharedXML\PingableType.lua
+..\SharedXML\Blizzard_RadialWheel.lua
+..\SharedXML\Blizzard_RadialWheel.xml
 ..\SharedXML\Backdrop.xml
 ChatBubbleTemplates.xml
 WorldFrame.xml
@@ -335,7 +342,6 @@ QuestFrame.xml
 QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml
-ContainerFrame.lua
 ContainerFrame.xml
 ScrollingFlatPanel.xml
 LootFrame.xml
@@ -443,7 +449,7 @@ AzeriteIslandsToast.xml
 SplashFrame.xml
 AzeriteEmpoweredItemDataSource.lua
 QuestSession.xml
-ActionStatus.xml
+..\SharedXML\ActionStatus.xml
 WeeklyReward.lua
 PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
@@ -451,6 +457,7 @@ FramerateFrame.xml
 ClassTalentHelper.lua
 MotionSickness.xml
 ArchaeologyProgressBar.xml
+..\SharedXML\ToolWindowOwnerMixin.lua
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

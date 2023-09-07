@@ -359,8 +359,8 @@ function CharacterSelect_OnShow(self)
     C_StoreGlue.UpdateVASPurchaseStates();
 
     if (not STORE_IS_LOADED) then
-        STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-        LoadAddOn("Blizzard_AuthChallengeUI");
+        STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+        C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
     end
 
     CharacterSelect_ConditionallyLoadAccountSaveUI();
@@ -1655,7 +1655,10 @@ function CharacterSelectScrollUp_OnClick()
 end
 
 function LocationText_OnEnter(self)
-	local index = self:GetParent():GetParent().index;
+	local characterButton = self:GetParent():GetParent();
+	CharacterSelectButton_OnEnter(characterButton);
+
+	local index = characterButton.index;
 	if IsRPEBoostEligible(GetCharIDFromIndex(index)) then
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(self, "ANCHOR_LEFT", -16, -22);
@@ -1666,7 +1669,13 @@ function LocationText_OnEnter(self)
 end
 
 function LocationText_OnLeave(self)
-	 GetAppropriateTooltip():Hide();
+	GetAppropriateTooltip():Hide();
+
+	local characterButton = self:GetParent():GetParent();
+	characterButton:UnlockHighlight();
+	if ( GetMouseFocus() ~= characterButton ) then
+		CharacterSelectButton_OnLeave(characterButton);
+	end
 end
 
 function CharacterSelectButton_OnEnter(self)
@@ -1683,6 +1692,11 @@ function CharacterSelectButton_OnEnter(self)
 end
 
 function CharacterSelectButton_OnLeave(self)
+	if ( GetMouseFocus() == self.buttonText.Location ) then
+		self:LockHighlight();
+		return;
+	end
+
 	if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
 		self.upButton:Hide();
 		self.downButton:Hide();
@@ -1996,8 +2010,8 @@ end
 
 function ToggleStoreUI()
 	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
 	end
 
     if (STORE_IS_LOADED) then
@@ -2012,8 +2026,8 @@ end
 
 function SetStoreUIShown(shown)
 	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
 	end
 
 	if (STORE_IS_LOADED) then
@@ -2113,7 +2127,7 @@ function CharacterSelect_UpdateButtonState()
     local undeleting = CharacterSelect.undeleting;
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
-    local inCompetitiveMode = IsCompetitiveModeEnabled();
+    local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
 	local inKioskMode = Kiosk.IsEnabled();
     local boostInProgress = select(19,GetCharacterInfo(GetCharacterSelection()));
     local isAccountLocked = CharacterSelect_IsAccountLocked();
@@ -2188,7 +2202,7 @@ end
 function CharacterSelect_ConditionallyLoadAccountSaveUI()
     if (C_AccountServices.IsAccountSaveEnabled()) then
         if (not ACCOUNT_SAVE_IS_LOADED) then
-            ACCOUNT_SAVE_IS_LOADED = LoadAddOn("Blizzard_AccountSaveUI");
+            ACCOUNT_SAVE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_AccountSaveUI");
         end
         if (AccountSaveFrame) then
             AccountSaveFrame:Show();
@@ -2361,6 +2375,8 @@ local function GetVASDistributions()
 					usable = DoesClientThinkTheCharacterIsEligibleForPFC(charID);
 				elseif vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 					usable = DoesClientThinkTheCharacterIsEligibleForPRC(charID);
+				elseif vasType == Enum.ValueAddedServiceType.PaidNameChange then
+					usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
 				end
 				if usable then
 					break;
@@ -2615,6 +2631,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginCharacterServicesFlow(PaidFactionChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		BeginCharacterServicesFlow(PaidRaceChangeFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidNameChange then
+		BeginCharacterServicesFlow(PaidNameChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
@@ -3209,8 +3227,9 @@ end
 
 function CopyCharacterCopy_OnClick(self)
     if ( not GlueDialog:IsShown() ) then
-		if ( CopyCharacterFrame.SelectedIndex ) then
-			local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
+		local selectedIndex = CopyCharacterFrame.SelectedIndex;
+		if ( selectedIndex and (selectedIndex <= GetNumAccountCharacters()) ) then
+			local name, realm = GetAccountCharacterInfo(selectedIndex);
 			GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
 		elseif ( IsGMClient() ) then
 			GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, CopyCharacterFrame.CharacterName:GetText(), CopyCharacterFrame.RealmName:GetText()));

@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="PetFrame.lua"/>
 	<!-- Note that pet frame uses target of target frame assets/uses TargetofTarget for the frameType, and this is intentional. -->
-	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin, PingableType_UnitFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate, PingReceiverAttributeTemplate" parent="PlayerFrame">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="48" type="number"/>

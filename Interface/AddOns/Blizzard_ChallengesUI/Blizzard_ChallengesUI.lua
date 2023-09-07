@@ -527,7 +527,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 
 	local seasonBestDurationSec, seasonBestLevel, members;
 
-	if(overAllScore and inTimeInfo or overtimeInfo) then
+	if(overAllScore and (inTimeInfo or overtimeInfo)) then
 		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
 		if(not color) then
 			color = HIGHLIGHT_FONT_COLOR;

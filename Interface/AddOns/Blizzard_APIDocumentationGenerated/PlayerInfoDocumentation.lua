@@ -122,6 +122,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetPetStableCreatureDisplayInfoID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerCharacterData",
 			Type = "Function",
 

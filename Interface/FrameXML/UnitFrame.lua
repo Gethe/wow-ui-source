@@ -240,10 +240,12 @@ function UnitFramePortrait_Update (self)
 	if ( self.portrait ) then
 		if ( UnitFrame_ShouldReplacePortrait(self) ) then
 			local _, class = UnitClass(self.unit);
-			local classIconAtlas = GetClassAtlas(class);
-			if ( classIconAtlas ) then
-				self.portrait:SetAtlas(classIconAtlas);
-				return;
+			if ( class ) then
+				local classIconAtlas = GetClassAtlas(class);
+				if ( classIconAtlas ) then
+					self.portrait:SetAtlas(classIconAtlas);
+					return;
+				end
 			end
 		end
 
@@ -1002,7 +1004,7 @@ function UnitFrameManaBar_OnUpdate(self)
 					end
 				end
 				if ( self.FullPowerFrame and self.FullPowerFrame.active ) then
-					self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
+					self.FullPowerFrame:StartAnimIfFull(currValue);
 				end
 				self:SetValue(currValue);
 				self.currValue = currValue;

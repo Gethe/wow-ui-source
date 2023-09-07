@@ -196,7 +196,7 @@
 					<KeyValue key="spacing" value="8" type="number"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="WidgetContainer" inherits="PlayerChoiceBaseCenteredFrame, UIWidgetContainerNoResizeTemplate">
+			<Frame parentKey="WidgetContainer" inherits="PlayerChoiceBaseCenteredFrame, UIWidgetContainerTemplate" mixin="PlayerChoiceWidgetContainerMixin">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="20" type="number"/>
 					<KeyValue key="topPadding" value="5" type="number"/>

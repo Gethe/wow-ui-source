@@ -175,7 +175,7 @@
 					<Anchor point="TOPLEFT" relativeTo="MerchantItem11" relativePoint="TOPRIGHT" x="12" y="0"/>
 				</Anchors>
 			</Frame>
-			<Button name="MerchantSellAllJunkButton" hidden="true">
+			<Button name="MerchantSellAllJunkButton">
 				<Size x="36" y="36"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="160" y="33"/>
@@ -422,6 +422,20 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent"/>
 						</Anchors>
+						<Frames>
+							<Frame parentKey="UndoFrame" setAllPoints="true">
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture atlas="common-icon-undo" parentKey="Arrow">
+											<Size x="20" y="20"/>
+											<Anchors>
+												<Anchor point="CENTER" y="-1"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnLoad function="MerchantItemBuybackButton_OnLoad"/>
 							<OnEvent>
@@ -431,12 +445,12 @@
 										GameTooltip:SetBuybackItem(GetNumBuybackItems());
 										GameTooltip:Show();
 									end
-									SetDesaturation(UndoFrame.Arrow, GetNumBuybackItems() == 0);
+									SetDesaturation(self.UndoFrame.Arrow, GetNumBuybackItems() == 0);
 									UpdateCursorAfterBuyBack(self);
 								end
 							</OnEvent>
 							<OnShow>
-								SetDesaturation(UndoFrame.Arrow, GetNumBuybackItems() == 0);
+								SetDesaturation(self.UndoFrame.Arrow, GetNumBuybackItems() == 0);
 							</OnShow>
 							<OnClick>
 								BuybackItem(GetNumBuybackItems());
@@ -462,22 +476,6 @@
 						</Scripts>
 					</Frame>
 				</Frames>
-			</Frame>
-			<Frame name="UndoFrame" frameStrata="HIGH">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
-					<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="445" y="98"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture atlas="common-icon-undo" parentKey="Arrow">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 			<Frame name="MerchantExtraCurrencyInset" inherits="InsetFrameTemplate" useParentLevel="true">
 				<Anchors>

@@ -1,0 +1,9 @@
+## Title: Blizzard Ping UI
+## LoadOnDemand: 0
+## GuardedAddOn: 1
+..\..\SharedXML\Pools.lua
+..\..\SharedXML\Blizzard_RadialWheel.lua
+..\..\SharedXML\PingUtil.lua
+Blizzard_PingManager.lua
+Blizzard_PingUI.lua
+Blizzard_PingUI.xml

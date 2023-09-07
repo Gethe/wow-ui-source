@@ -260,14 +260,6 @@ local SimpleButtonAPI =
 			},
 		},
 		{
-			Name = "LockHighlight",
-			Type = "Function",
-
-			Arguments =
-			{
-			},
-		},
-		{
 			Name = "RegisterForClicks",
 			Type = "Function",
 
@@ -369,15 +361,6 @@ local SimpleButtonAPI =
 			},
 		},
 		{
-			Name = "SetHighlightLocked",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "locked", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetHighlightTexture",
 			Type = "Function",
 
@@ -458,14 +441,6 @@ local SimpleButtonAPI =
 			Arguments =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, Default = "" },
-			},
-		},
-		{
-			Name = "UnlockHighlight",
-			Type = "Function",
-
-			Arguments =
-			{
 			},
 		},
 	},

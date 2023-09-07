@@ -2,12 +2,50 @@ local Console =
 {
 	Name = "Console",
 	Type = "System",
-	Namespace = "C_Console",
 
 	Functions =
 	{
 		{
-			Name = "GetAllCommands",
+			Name = "CalculateStringEditDistance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "firstString", Type = "stringView", Nilable = false },
+				{ Name = "secondString", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "distance", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ConsoleAddMessage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "message", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ConsoleExec",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "command", Type = "cstring", Nilable = false },
+				{ Name = "addToHistory", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ConsoleGetAllCommands",
 			Type = "Function",
 
 			Returns =
@@ -16,7 +54,7 @@ local Console =
 			},
 		},
 		{
-			Name = "GetColorFromType",
+			Name = "ConsoleGetColorFromType",
 			Type = "Function",
 
 			Arguments =
@@ -30,7 +68,7 @@ local Console =
 			},
 		},
 		{
-			Name = "GetFontHeight",
+			Name = "ConsoleGetFontHeight",
 			Type = "Function",
 
 			Returns =
@@ -39,7 +77,16 @@ local Console =
 			},
 		},
 		{
-			Name = "PrintAllMatchingCommands",
+			Name = "ConsoleIsActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "consoleIsActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ConsolePrintAllMatchingCommands",
 			Type = "Function",
 
 			Arguments =
@@ -48,7 +95,7 @@ local Console =
 			},
 		},
 		{
-			Name = "SetFontHeight",
+			Name = "ConsoleSetFontHeight",
 			Type = "Function",
 
 			Arguments =

@@ -10,7 +10,7 @@ function CombatOverrides.CreateRaidSelfHighlightSetting(category)
 		return container:GetData();
 	end
 
-	Settings.SetupCVarDropDown(category, "findYourselfMode", Settings.VarType.Number, GetOptions, SELF_HIGHLIGHT_OPTION, OPTION_TOOLTIP_SELF_HIGHLIGHT);
+	return Settings.SetupCVarDropDown(category, "findYourselfMode", Settings.VarType.Number, GetOptions, SELF_HIGHLIGHT_OPTION, OPTION_TOOLTIP_SELF_HIGHLIGHT);
 end
 
 function CombatOverrides.CreateFloatingCombatTextSetting(category)

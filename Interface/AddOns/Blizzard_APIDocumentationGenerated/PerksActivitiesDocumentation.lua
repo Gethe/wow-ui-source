@@ -75,6 +75,15 @@ local PerksActivities =
 			},
 		},
 		{
+			Name = "GetPerksUIThemePrefix",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "kitPrefix", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTrackedPerksActivities",
 			Type = "Function",
 
@@ -171,12 +180,14 @@ local PerksActivities =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "activityName", Type = "cstring", Nilable = false },
-				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "thresholdContributionAmount", Type = "number", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "tracked", Type = "bool", Nilable = false },
 				{ Name = "supersedes", Type = "number", Nilable = false },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
+				{ Name = "eventStartTime", Type = "time_t", Nilable = true },
+				{ Name = "eventEndTime", Type = "time_t", Nilable = true },
 				{ Name = "requirementsList", Type = "table", InnerType = "PerksActivityRequirement", Nilable = false },
 				{ Name = "criteriaList", Type = "table", InnerType = "PerksActivityCriteria", Nilable = false },
 				{ Name = "tagNames", Type = "table", InnerType = "string", Nilable = false },

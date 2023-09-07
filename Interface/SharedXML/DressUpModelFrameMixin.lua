@@ -9,7 +9,7 @@ end
 function DressUpModelFrameResetButtonMixin:OnClick()
 	local itemModifiedAppearanceIDs = nil;
 	local forcePlayerRefresh = true;
-	DressUpFrame_Show(self:GetParent(), itemModifiedAppearanceIDs, forcePlayerRefresh)
+	DressUpFrame_Show(self:GetParent(), itemModifiedAppearanceIDs, forcePlayerRefresh, self:GetParent():GetLastLink())
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
@@ -129,6 +129,24 @@ end
 -- BASE MODEL FRAME FRAME MIXIN
 DressUpModelFrameBaseMixin = { };
 
+function DressUpModelFrameBaseMixin:OnLoad()
+	self.ModelScene:SetResetCallback(GenerateClosure(self.OnModelSceneReset, self));
+end
+
+function DressUpModelFrameBaseMixin:GetLastLink()
+	return self.lastLink;
+end
+
+function DressUpModelFrameBaseMixin:SetLastLink(link)
+	self.lastLink = link;
+end
+
+function DressUpModelFrameBaseMixin:OnModelSceneReset()
+	if self.lastLink then
+		DressUpLink(self.lastLink, self);
+	end
+end
+
 function DressUpModelFrameBaseMixin:SetMode(mode)
 	self.mode = mode;
 	if self.hasOutfitControls then
@@ -154,6 +172,7 @@ end
 DressUpModelFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function DressUpModelFrameMixin:OnLoad()
+	DressUpModelFrameBaseMixin.OnLoad(self);
 	self:SetTitle(DRESSUP_FRAME);
 end
 
@@ -242,6 +261,8 @@ end
 TransmogAndMountDressupFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 
 function TransmogAndMountDressupFrameMixin:OnLoad()
+	DressUpModelFrameBaseMixin.OnLoad(self);
+
 	local checkButton = self.ShowMountCheckButton;
 	checkButton.Text:SetFontObject("GameFontNormal");
 	checkButton.Text:ClearAllPoints();

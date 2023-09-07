@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\FrameXML\UI_shared.xsd">
 	<Script file="..\SharedXML\AddonList.lua"/>
 
 	<Button name="AddonListEntryTemplate" virtual="true">
@@ -155,19 +155,15 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						if ( IsAddonVersionCheckEnabled() ) then
-							self:SetChecked(false);
-						else
-							self:SetChecked(true);
-						end
+						self:SetChecked(not C_AddOns.IsAddonVersionCheckEnabled());
 					</OnShow>
 					<OnClick>
 						if ( self:GetChecked() ) then
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							SetAddonVersionCheck(false);
+							C_AddOns.SetAddonVersionCheck(false);
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							SetAddonVersionCheck(true);
+							C_AddOns.SetAddonVersionCheck(true);
 						end
 						AddonList_Update();
 					</OnClick>

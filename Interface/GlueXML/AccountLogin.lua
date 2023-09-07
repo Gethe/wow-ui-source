@@ -36,7 +36,7 @@ function AccountLogin_OnEvent(self, event, ...)
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_Update();
 	elseif ( event == "SHOULD_RECONNECT_TO_REALM_LIST" ) then
-		C_LoginUI.ReconnectToRealmList();
+		ReconnectToRealmList();
 	end
 end
 
@@ -450,13 +450,13 @@ function AccountLogin_OnTimerFinished()
 end
 
 function AccountLogin_CanAutoLogin()
-	return not ShouldShowRegulationOverlay() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or GetKioskLoginInfo()) and AccountLogin:IsVisible();
+	return not ShouldShowRegulationOverlay() and ((C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin()) or Kiosk.GetKioskLoginInfo()) and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()
 	if ( AccountLogin_CanAutoLogin() ) then
 		if ( AccountLogin.timerFinished ) then
-			local accountName, password, realmAddr = GetKioskLoginInfo();
+			local accountName, password, realmAddr = Kiosk.GetKioskLoginInfo();
 			if (accountName and password) then
 				SetKioskAutoRealmAddress(realmAddr);
 				AccountLogin.UI.PasswordEditBox:SetText(password);

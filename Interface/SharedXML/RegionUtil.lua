@@ -70,7 +70,32 @@ end
 
 function RegionUtil.GetSides(region)
 	local left, bottom, width, height = region:GetRect();
-	return left, left and (left + width) or nil, bottom, bottom and (bottom + height) or nil;
+	return left, left and (left + width), bottom, bottom and (bottom + height);
+end
+
+function RegionUtil.GetRegionPoint(region, x, y, invertY)
+	local originX, bottom, width, height = region:GetScaledRect();
+	if not originX then
+		return; -- No valid rect, unable to get local coordinates
+	end
+
+	local originY = bottom;
+	local scale = region:GetEffectiveScale();
+	local localX = (x - originX) / scale;
+
+	if invertY then
+		originY = bottom + height;
+		local localY = (originY - y) / scale;
+		return localX, localY;
+	end
+
+	local localY = (y - originY) / scale;
+	return localX, localY;
+end
+
+function RegionUtil.GetRegionPointFromCursor(region, invertY)
+	local x, y = GetCursorPosition();
+	return RegionUtil.GetRegionPoint(region, x, y, invertY);
 end
 
 function enumerate_regions(frame)

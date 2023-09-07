@@ -68,9 +68,9 @@ local AccountConstants =
 		{
 			Name = "AccountStateFlags",
 			Type = "Enumeration",
-			NumValues = 34,
+			NumValues = 35,
 			MinValue = 0,
-			MaxValue = 1073741824,
+			MaxValue = 2147483648,
 			Fields =
 			{
 				{ Name = "None", Type = "AccountStateFlags", EnumValue = 0 },
@@ -105,8 +105,25 @@ local AccountConstants =
 				{ Name = "RafFriendMonthsLoaded", Type = "AccountStateFlags", EnumValue = 268435456 },
 				{ Name = "RevokedRafRewardsLoaded", Type = "AccountStateFlags", EnumValue = 536870912 },
 				{ Name = "AccountNotificationsLoaded", Type = "AccountStateFlags", EnumValue = 1073741824 },
+				{ Name = "PerksPendingPurchaseLoaded", Type = "AccountStateFlags", EnumValue = 2147483648 },
 				{ Name = "AccountWowlabsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
 				{ Name = "AccountUpgradeComplete", Type = "AccountStateFlags", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "DisableAccountProfilesFlags",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 16,
+			Fields =
+			{
+				{ Name = "None", Type = "DisableAccountProfilesFlags", EnumValue = 0 },
+				{ Name = "Document", Type = "DisableAccountProfilesFlags", EnumValue = 1 },
+				{ Name = "SharedCollections", Type = "DisableAccountProfilesFlags", EnumValue = 2 },
+				{ Name = "MountsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 4 },
+				{ Name = "PetsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 8 },
+				{ Name = "ItemsCollections", Type = "DisableAccountProfilesFlags", EnumValue = 16 },
 			},
 		},
 	},

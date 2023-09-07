@@ -172,9 +172,8 @@ end
 -- Hooked by DesignerBar.lua if that addon is loaded
 function GetUIParentOffset()
     local notchHeight = GetNotchHeight();
-	local debugMenuOffset = DebugMenu and DebugMenu.IsVisible() and DebugMenu.GetMenuHeight() or 0;
-	local revealTimeTrackOffset = C_Reveal and C_Reveal:IsCapturing() and C_Reveal:GetTimeTrackHeight() or 0;
-	return math.max(debugMenuOffset + revealTimeTrackOffset, notchHeight);
+	local debugBarsHeight = DebugBarManager:GetTotalHeight();
+	return math.max(debugBarsHeight, notchHeight);
 end
 
 function UpdateUIParentPosition()
@@ -399,12 +398,6 @@ function UIParent_OnLoad(self)
 	-- Lua warnings
 	self:RegisterEvent("LUA_WARNING");
 
-	-- debug menu
-	self:RegisterEvent("DEBUG_MENU_TOGGLED");
-
-	-- Reveal
-	self:RegisterEvent("REVEAL_CAPTURE_TOGGLED");
-
 	-- Garrison
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
@@ -496,6 +489,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SHOW_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("HIDE_HYPERLINK_TOOLTIP");
 	self:RegisterEvent("WORLD_CURSOR_TOOLTIP_UPDATE");
+
+	-- Event(s) for ping system
+	self:RegisterEvent("PING_SYSTEM_ERROR");
 end
 
 function UIParent_OnShow(self)
@@ -541,7 +537,7 @@ end
 local FailedAddOnLoad = {};
 
 function UIParentLoadAddOn(name)
-	local loaded, reason = LoadAddOn(name);
+	local loaded, reason = C_AddOns.LoadAddOn(name);
 	if ( not loaded ) then
 		if ( not FailedAddOnLoad[name] ) then
 			message(format(ADDON_LOAD_FAILED, name, _G["ADDON_"..reason]));
@@ -700,7 +696,7 @@ function ArchaeologyFrame_LoadUI()
 end
 
 function GMChatFrame_LoadUI(...)
-	if ( IsAddOnLoaded("Blizzard_GMChatUI") ) then
+	if ( C_AddOns.IsAddOnLoaded("Blizzard_GMChatUI") ) then
 		return;
 	else
 		UIParentLoadAddOn("Blizzard_GMChatUI");
@@ -743,10 +739,6 @@ end
 
 function OrderHall_LoadUI()
 	UIParentLoadAddOn("Blizzard_OrderHallUI");
-end
-
-function ExpansionLandingPage_LoadUI()
-	UIParentLoadAddOn("Blizzard_ExpansionLandingPage");
 end
 
 function MajorFactions_LoadUI()
@@ -802,7 +794,7 @@ function NPE_CheckTutorials()
 end
 
 function NPE_LoadUI()
-	if ( not GetTutorialsEnabled() or IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
+	if ( not GetTutorialsEnabled() or C_AddOns.IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
 		return;
 	end
 	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
@@ -812,13 +804,13 @@ function NPE_LoadUI()
 end
 
 function BoostTutorial_AttemptLoad()
-	if IsBoostTutorialScenario() and not IsAddOnLoaded("Blizzard_BoostTutorial") then
+	if IsBoostTutorialScenario() and not C_AddOns.IsAddOnLoaded("Blizzard_BoostTutorial") then
 		UIParentLoadAddOn("Blizzard_BoostTutorial");
 	end
 end
 
 function ClassTrial_AttemptLoad()
-	if C_ClassTrial.IsClassTrialCharacter() and not IsAddOnLoaded("Blizzard_ClassTrial") then
+	if C_ClassTrial.IsClassTrialCharacter() and not C_AddOns.IsAddOnLoaded("Blizzard_ClassTrial") then
 		UIParentLoadAddOn("Blizzard_ClassTrial");
 	end
 end
@@ -875,7 +867,7 @@ function GenericTraitUI_LoadUI()
 end
 
 function SubscriptionInterstitial_LoadUI()
-	LoadAddOn("Blizzard_SubscriptionInterstitialUI");
+	C_AddOns.LoadAddOn("Blizzard_SubscriptionInterstitialUI");
 end
 
 local playerEnteredWorld = false;
@@ -961,7 +953,7 @@ function InClickBindingMode()
 end
 
 function ToggleBattlefieldMap()
-	if DISALLOW_FRAME_TOGGLING then 
+	if DISALLOW_FRAME_TOGGLING then
 		return
 	end
 	BattlefieldMap_LoadUI();
@@ -1175,7 +1167,7 @@ function ToggleCollectionsJournal(tabIndex)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-	
+
 	if Kiosk.IsEnabled() then
 		return;
 	end
@@ -1193,7 +1185,7 @@ function SetCollectionsJournalShown(shown, tabIndex)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-	
+
 	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
@@ -1303,7 +1295,7 @@ function ToggleMajorFactionRenown()
 end
 
 function ToggleExpansionLandingPage()
-	if(TRAIT_SYSTEM_OVERRIDE_MAP) then 
+	if(TRAIT_SYSTEM_OVERRIDE_MAP) then
 		GenericTraitUI_LoadUI();
 
 		local currentMapID = select(8, GetInstanceInfo());
@@ -1311,9 +1303,6 @@ function ToggleExpansionLandingPage()
 
 		ToggleFrame(GenericTraitFrame);
 	else
-		if (not ExpansionLandingPage) then
-			ExpansionLandingPage_LoadUI();
-		end
 		ToggleFrame(ExpansionLandingPage);
 	end
 end
@@ -1500,7 +1489,7 @@ function UIParent_OnEvent(self, event, ...)
 		if cvarName and cvarName == "showTutorials" then
 			local showTutorials = GetCVarBool("showTutorials");
 			if ( showTutorials ) then
-				if ( IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
+				if ( C_AddOns.IsAddOnLoaded("Blizzard_NewPlayerExperience") ) then
 					NewPlayerExperience:Initialize();
 				else
 					NPE_LoadUI();
@@ -1754,7 +1743,7 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
-	    if (not IGNORE_DEATH_REQUIREMENTS) then 
+	    if (not IGNORE_DEATH_REQUIREMENTS) then
 		if ( UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
@@ -1818,7 +1807,7 @@ function UIParent_OnEvent(self, event, ...)
 		BoostTutorial_AttemptLoad();
 
 		if Kiosk.IsEnabled() then
-			LoadAddOn("Blizzard_Kiosk");
+			C_AddOns.LoadAddOn("Blizzard_Kiosk");
 		end
 
 		if IsTrialAccount() or IsVeteranTrialAccount() then
@@ -2334,7 +2323,7 @@ function UIParent_OnEvent(self, event, ...)
 		ToggleOrderHallTalentUI();
 	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
 		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
-		LoadAddOn("Blizzard_BehavioralMessaging");
+		C_AddOns.LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
@@ -2379,10 +2368,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "SCENARIO_UPDATE") then
 		BoostTutorial_AttemptLoad();
-	elseif (event == "DEBUG_MENU_TOGGLED") then
-		UpdateUIParentPosition();
-	elseif (event == "REVEAL_CAPTURE_TOGGLED") then
-		UpdateUIParentPosition();
     elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
         UpdateUIParentPosition();
 	elseif (event == "CLIENT_SCENE_OPENED") then
@@ -2465,6 +2450,13 @@ function UIParent_OnEvent(self, event, ...)
  				end
 			end
 		end
+
+		-- Ping Listener.
+		-- When pinging UI, if the ping keybind is mapped to any mouse button the input gets consumed before it would hit the normal logic in Bindings.
+    	-- Below logic catches the input and handles this case specifically.
+		if IsMouseButton(buttonID) and GetConvertedKeyOrButton(buttonID) == GetBindingKey("TOGGLEPINGLISTENER") then
+			C_Ping.TogglePingListener(event == "GLOBAL_MOUSE_DOWN");
+		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	elseif event == "SHOW_HYPERLINK_TOOLTIP" then
@@ -2483,11 +2475,14 @@ function UIParent_OnEvent(self, event, ...)
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
 		end
-	elseif event == "SHOW_PARTY_POSE_UI" then 
-		MatchCelebrationPartyPose_LoadUI(); 
+	elseif event == "SHOW_PARTY_POSE_UI" then
+		MatchCelebrationPartyPose_LoadUI();
 		local partyPoseID, won = ...;
 		MatchCelebrationPartyPoseFrame:LoadScreenByPartyPoseID(partyPoseID, won);
 		ShowUIPanel(MatchCelebrationPartyPoseFrame);
+	elseif event == "PING_SYSTEM_ERROR" then
+		local errorMsg = ...;
+		UIErrorsFrame:AddMessage(errorMsg, RED_FONT_COLOR:GetRGBA());
 	end
 end
 
@@ -3424,7 +3419,7 @@ function CloseWindows(ignoreCenter, frameToIgnore, context)
 	if ( ( not frameToIgnore or frameToIgnore ~= leftFrame ) and not ignoreControlLostLeft ) then
 		HideUIPanel(leftFrame, UIPANEL_SKIP_SET_POINT);
 	end
-	
+
 	HideUIPanel(fullScreenFrame, UIPANEL_SKIP_SET_POINT);
 	HideUIPanel(doublewideFrame, UIPANEL_SKIP_SET_POINT);
 
@@ -3993,10 +3988,15 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 	end
 end
 
-function GetScaledCursorPosition()
-	local uiScale = UIParent:GetEffectiveScale();
+function GetScaledCursorPositionForFrame(frame)
+	local uiScale = frame:GetEffectiveScale();
 	local x, y = GetCursorPosition();
 	return x / uiScale, y / uiScale;
+end
+
+function GetScaledCursorPosition()
+	local x, y = GetScaledCursorPositionForFrame(UIParent);
+	return x, y;
 end
 
 function GetScaledCursorDelta()
@@ -4194,8 +4194,7 @@ end
 
 
 -- Bindings --
-
-function GetBindingFromClick(input)
+function GetBindingFullInput(input)
 	local fullInput = "";
 
 	-- MUST BE IN THIS ORDER (ALT, CTRL, SHIFT, META)
@@ -4281,6 +4280,11 @@ function GetBindingFromClick(input)
 		fullInput = fullInput..input;
 	end
 
+	return fullInput;
+end
+
+function GetBindingFromClick(input)
+	local fullInput = GetBindingFullInput(input);
 	return GetBindingByKey(fullInput);
 end
 

@@ -557,6 +557,7 @@ function SpecPointsChecker:CheckShowReminder()
 	end
 end
 
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_UNLOCKED", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 

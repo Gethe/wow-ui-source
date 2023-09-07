@@ -231,7 +231,7 @@ function SocialQueueUtil_SortGroupMembers(members)
 end
 
 function SocialQueueUtil_HasRelationshipWithLeader(partyGuid)
-	local leaderGuid = select(7, C_SocialQueue.GetGroupInfo(partyGuid));
+	local leaderGuid = select(8, C_SocialQueue.GetGroupInfo(partyGuid));
 	if ( leaderGuid ) then
 		return select(3, SocialQueueUtil_GetRelationshipInfo(leaderGuid)) ~= nil;
 	end

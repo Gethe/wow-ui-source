@@ -104,6 +104,7 @@ local SheenAlphaByVisualState = {
 	[TalentButtonUtil.BaseVisualState.Selectable] = 0,
 	[TalentButtonUtil.BaseVisualState.Maxed] = 1,
 	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
+	[TalentButtonUtil.BaseVisualState.RefundInvalid] = 0,
 };
 
 ClassTalentUtil = {};
@@ -190,3 +191,5 @@ end
 function ClassTalentUtil.GetSheenAlphaForVisualState(visualState)
 	return SheenAlphaByVisualState[visualState];
 end
+
+ClassTalentUtil.ShouldRefundClearEdges = IsShiftKeyDown;

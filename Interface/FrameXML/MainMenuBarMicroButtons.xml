@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="MainMenuBarMicroButtons.lua"/>
 	
 	<Frame name="MicroButtonAndBagsBar" parent="UIParent">
@@ -25,7 +25,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FlashBorder" setAllPoints="true" atlas="UI-HUD-MicroMenu-Highlightalert" alphaMode="ALPHA" hidden="true"/>
+				<Texture parentKey="FlashBorder" setAllPoints="true" atlas="UI-HUD-MicroMenu-Highlightalert" alphaMode="BLEND" hidden="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>

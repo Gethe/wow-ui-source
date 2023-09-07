@@ -121,6 +121,23 @@ function GameTime_UpdateTooltip()
 		HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 end
 
+local function GameTimeFrame_Refresh(self)
+	local pendingCalendarInvites = C_Calendar.GetNumPendingInvites();
+	if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
+		if ( not CalendarFrame or (CalendarFrame and not CalendarFrame:IsShown()) ) then
+			GameTimeCalendarInvitesTexture:Show();
+			GameTimeCalendarInvitesGlow:Show();
+			GameTimeFrame.flashInvite = true;
+			self.pendingCalendarInvites = pendingCalendarInvites;
+		end
+	elseif ( pendingCalendarInvites == 0 ) then
+		GameTimeCalendarInvitesTexture:Hide();
+		GameTimeCalendarInvitesGlow:Hide();
+		GameTimeFrame.flashInvite = false;
+		self.pendingCalendarInvites = 0;
+	end
+	GameTimeFrame_SetDate();
+end
 
 -- GameTimeFrame functions
 
@@ -129,6 +146,7 @@ function GameTimeFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
 	self:RegisterEvent("CALENDAR_EVENT_ALARM");
 	self:RegisterForClicks("AnyUp");
+	CVarCallbackRegistry:RegisterCallback("restrictCalendarInvites", GameTimeFrame_Refresh, self);
 
 	self.timeOfDay = 0;
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
@@ -144,21 +162,7 @@ end
 
 function GameTimeFrame_OnEvent(self, event, ...)
 	if ( event == "CALENDAR_UPDATE_PENDING_INVITES" or event == "PLAYER_ENTERING_WORLD" ) then
-		local pendingCalendarInvites = C_Calendar.GetNumPendingInvites();
-		if ( pendingCalendarInvites > self.pendingCalendarInvites ) then
-			if ( not CalendarFrame or (CalendarFrame and not CalendarFrame:IsShown()) ) then
-				GameTimeCalendarInvitesTexture:Show();
-				GameTimeCalendarInvitesGlow:Show();
-				GameTimeFrame.flashInvite = true;
-				self.pendingCalendarInvites = pendingCalendarInvites;
-			end
-		elseif ( pendingCalendarInvites == 0 ) then
-			GameTimeCalendarInvitesTexture:Hide();
-			GameTimeCalendarInvitesGlow:Hide();
-			GameTimeFrame.flashInvite = false;
-			self.pendingCalendarInvites = 0;
-		end
-		GameTimeFrame_SetDate();
+		GameTimeFrame_Refresh(self);
 	elseif ( event == "CALENDAR_EVENT_ALARM" ) then
 		local title, hour, minute = ...;
 		local info = ChatTypeInfo["SYSTEM"];

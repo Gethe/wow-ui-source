@@ -178,13 +178,7 @@ function ItemSocketingFrame_Update()
 	name, icon, quality = GetSocketItemInfo();
 	ItemSocketingFrame:SetPortraitToAsset(icon);
 
-	-- see if has a scrollbar and resize accordingly
-	local scrollBarOffset = 28;
-	if ( ItemSocketingScrollFrame:GetVerticalScrollRange() ~= 0 ) then
-		scrollBarOffset = 0;
-	end
-	ItemSocketingScrollFrame:SetWidth(269+scrollBarOffset);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, true);
+	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
 	-- Owner needs to be set everytime since it is cleared everytime the tooltip is hidden
 	ItemSocketingDescription:SetOwner(ItemSocketingScrollChild, "ANCHOR_PRESERVE");
 	ItemSocketingDescription:SetSocketedItem();
@@ -214,15 +208,6 @@ function ItemSocketingFrame_EnableSockets()
 end
 
 function ItemSocketingSocketButton_OnScrollRangeChanged()
-
-	-- see if has a scrollbar and resize accordingly
-	local scrollBarOffset = 28;
-	if ( ItemSocketingScrollFrame:GetVerticalScrollRange() ~= 0 ) then
-		scrollBarOffset = 0;
-	end
-	ItemSocketingScrollFrame:SetWidth(269+scrollBarOffset);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, true);
-
 	ItemSocketingDescription:SetSocketedItem();
 end
 

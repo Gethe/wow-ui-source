@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="RaidWarning.lua"/>
 	<Frame name="RaidBossEmoteFrameTemplate" hidden="true" virtual="true">
 		<Size x="512" y="80"/>
@@ -62,7 +62,7 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" parent="UIParent" frameStrata="HIGH" toplevel="true">
+	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" inherits="PingTopLevelPassThroughAttributeTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
 		<Size x="512" y="80"/>
 		<Anchors>
 			<Anchor point="TOP" relativeTo="RaidBossEmoteFrame" relativePoint="TOP"/>

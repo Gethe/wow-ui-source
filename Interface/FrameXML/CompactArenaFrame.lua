@@ -57,9 +57,10 @@ end
 
 local function SetRoleIconTexture(texture, role)
 	if role and (role == "TANK" or role == "HEALER" or role == "DAMAGER") then
-		texture:SetSize(12, 12);
-		texture:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
+		texture:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES");
+		texture:SetTexCoord(GetTexCoordsForOldRoleSmallCircle(role));
 		texture:Show();
+		texture:SetSize(12, 12);
 	else
 		texture:Hide();
 		texture:SetSize(1, 12);
@@ -82,6 +83,7 @@ function CompactArenaFrame_Generate()
 		frame = CreateFrame("Frame", "CompactArenaFrame", UIParent, "CompactArenaFrameTemplate");
 		frame:RegisterEvent("ARENA_OPPONENT_UPDATE");
 		frame:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS");
+		frame:RegisterEvent("PVP_MATCH_STATE_CHANGED");
 		didCreate = true;
 	end
 	return frame, didCreate;
@@ -267,7 +269,7 @@ function ArenaPreMatchFramesContainerMixin:SetIsInEditMode(isInEditMode)
 end
 
 function ArenaPreMatchFramesContainerMixin:UpdateShownState()
-	self:SetShown(IsInArena() and not IsMatchEngaged() and not self.isInEditMode);
+	self:SetShown(IsInArena() and not IsMatchEngaged() and not C_PvP.IsMatchComplete() and not self.isInEditMode);
 end
 
 function ArenaPreMatchFramesContainerMixin:UpdateUnitFrames()
@@ -596,7 +598,7 @@ function StealthedArenaUnitFrameMixin:UpdateShownState()
 	end
 
 	local isInEditMode = EditModeManagerFrame:IsEditModeActive();
-	local isInActiveArena = IsInArena() and IsMatchEngaged();
+	local isInActiveArena = IsInArena() and (IsMatchEngaged() or C_PvP.IsMatchComplete());
 	local shouldUnitExist = self.unitFrame.unitIndex <= GetArenaSize();
 
 	self:SetShown(not isInEditMode and isInActiveArena and shouldUnitExist);

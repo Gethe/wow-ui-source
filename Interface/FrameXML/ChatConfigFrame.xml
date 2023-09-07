@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 <Script file="ChatConfigFrame.lua"/>
 	<Button name="ConfigCategoryButtonTemplate" virtual="true">
 		<Size x="10" y="16"/>
@@ -316,8 +316,7 @@
 		<ButtonText parentKey="Text">
 			<Size x="50" y="8"/>
 			<Anchors>
-				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="0" y="-5"/>
-				<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="0" y="-5"/>
+				<Anchor point="CENTER" y="-5"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormalSmall"/>

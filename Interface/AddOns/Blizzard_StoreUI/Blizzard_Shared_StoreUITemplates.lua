@@ -21,7 +21,6 @@ setfenv(1, tbl);
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("IsTrialAccount");
 Import("IsVeteranTrialAccount");
-Import("GetURLIndexAndLoadURL");
 Import("bit");
 
 StoreTooltipBackdropMixin = {};

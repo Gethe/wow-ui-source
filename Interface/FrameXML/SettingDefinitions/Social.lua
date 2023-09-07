@@ -57,6 +57,9 @@ local function Register()
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
 	
+	-- Block Calendar Invites
+	Settings.SetupCVarCheckBox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
+	
 	-- Display Only Character Achievements
 	if AreAccountAchievementsHidden and ShowAccountAchievements then
 		local defaultValue = false;
@@ -151,7 +154,8 @@ local function Register()
 			FCF_RedockAllWindows();
 		end
 
-		local initializer = CreateSettingsButtonInitializer(RESET_CHAT_POSITION, RESET, OnButtonClick, OPTION_TOOLTIP_RESET_CHAT_POSITION);
+		local addSearchTags = true;
+		local initializer = CreateSettingsButtonInitializer(RESET_CHAT_POSITION, RESET, OnButtonClick, OPTION_TOOLTIP_RESET_CHAT_POSITION, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 

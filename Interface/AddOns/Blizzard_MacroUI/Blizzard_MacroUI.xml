@@ -28,7 +28,7 @@
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
-					<Size x="60" y="60"/>
+					<Size x="58" y="58"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>
@@ -200,7 +200,7 @@
 					</OnEnter>
 					<OnLoad inherit="prepend">
 						self:SetFormattedText(CHARACTER_SPECIFIC_MACROS, UnitName("player"));
-						PanelTemplates_TabResize(self, -15, nil, nil, 150);
+						PanelTemplates_TabResize(self, -15, nil, nil, MACRO_TAB2_WIDTH);
 					</OnLoad>
 					<OnClick>
 						self:GetParent():SelectTab(self);

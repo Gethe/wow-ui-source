@@ -419,6 +419,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 end
 
 function ProfessionsMixin:OnShow()
+	self.CraftingPage.CraftingOutputLog:Cleanup();
 	EventRegistry:TriggerEvent("ProfessionsFrame.Show");
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);

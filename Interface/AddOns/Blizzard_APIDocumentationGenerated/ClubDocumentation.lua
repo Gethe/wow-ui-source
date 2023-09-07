@@ -181,6 +181,15 @@ local Club =
 			},
 		},
 		{
+			Name = "DoesAnyCommunityHaveUnreadMessages",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUnreadMessages", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesCommunityHaveMembersOfTheOppositeFaction",
 			Type = "Function",
 

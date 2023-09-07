@@ -137,9 +137,14 @@ end
 local OPTION_DEFAULT_TEXT_WIDTH = 196;
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupOptionText()
-	self.OptionText:ClearText()
-	self.OptionText:SetWidth(OPTION_DEFAULT_TEXT_WIDTH);
-	self.OptionText:SetText(self.optionInfo.description);
+	if self.optionInfo.description == "" then
+		self.OptionText:Hide();
+	else
+		self.OptionText:Show();
+		self.OptionText:ClearText();
+		self.OptionText:SetWidth(OPTION_DEFAULT_TEXT_WIDTH);
+		self.OptionText:SetText(self.optionInfo.description);
+	end
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupRewards()
@@ -149,47 +154,69 @@ local function IsTopWidget(widgetFrame)
 	return widgetFrame.widgetType == Enum.UIWidgetVisualizationType.SpellDisplay;
 end
 
+local function ReserveSortWidgets(a, b)
+	if a.orderIndex == b.orderIndex then
+		return a.widgetID > b.widgetID;
+	else
+		return a.orderIndex > b.orderIndex;
+	end
+end
+
 function PlayerChoiceBaseOptionTemplateMixin:WidgetsLayout(widgetContainer, sortedWidgets)
-	local widgetsHeight = 0;
-	local maxWidgetWidth = 0;
+	local topWidgets = {};
+	local bottomWidgets = {};
 
-	local lastTopWidget, lastBottomWidget;
+	-- The widget container is the filler frame for player choice options
+	-- Some widget types go at the top of the container and others go at the bottom, with any needed filler space added between them
 
+	-- First put the top and bottom widgets into separate tables
 	for index, widgetFrame in ipairs(sortedWidgets) do
 		if IsTopWidget(widgetFrame) then
-			if lastTopWidget then
-				widgetFrame:SetPoint("TOP", lastTopWidget, "BOTTOM", 0, 0);
-			else
-				widgetFrame:SetPoint("TOP", widgetContainer, "TOP", 0, 0);
-			end
-
-			lastTopWidget = widgetFrame;
+			table.insert(topWidgets, widgetFrame);
 		else
-			if lastBottomWidget then
-				lastBottomWidget:SetPoint("BOTTOM", widgetFrame, "TOP", 0, 0);
-			end
-
-			widgetFrame:SetPoint("BOTTOM", widgetContainer, "BOTTOM", 0, 0);
-
-			lastBottomWidget = widgetFrame;
-		end
-
-		widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
-
-		local widgetWidth = widgetFrame:GetWidgetWidth();
-		if widgetWidth > maxWidgetWidth then
-			maxWidgetWidth = widgetWidth;
+			table.insert(bottomWidgets, widgetFrame);
 		end
 	end
 
-	if lastTopWidget and lastBottomWidget then
-		widgetsHeight = widgetsHeight + 20;
+	local hasTopWidgets = #topWidgets > 0;
+	local hasBottomWidgets = #bottomWidgets > 0;
+	local skipContainerLayout = true;
+
+	if hasTopWidgets then
+		-- Layout all top widgets first from top to bottom and left to right
+		widgetContainer.verticalAnchorPoint = "TOP";
+		widgetContainer.verticalRelativePoint = "BOTTOM";
+		widgetContainer.horizontalAnchorPoint = "LEFT";
+		widgetContainer.horizontalRelativePoint = "RIGHT";
+		widgetContainer.horizontalAnchorXOffset = 2;
+		DefaultWidgetLayout(widgetContainer, topWidgets, skipContainerLayout);
 	end
 
-	widgetsHeight = math.max(widgetsHeight, 1);
-	maxWidgetWidth = math.max(maxWidgetWidth, 1);
-	widgetContainer:SetHeight(widgetsHeight);
-	widgetContainer:SetWidth(maxWidgetWidth);
+	if hasBottomWidgets then
+		-- We want the bottom widgets to be anchored to the bottom of the container but we still want them to be layed out top to bottom among themselves (by orderIndex)
+		-- In order to achieve that, we reserve-sort the bottom widgets and then lay them out bottom to top and right to left
+
+		-- Reverse sort bottom widgets
+		table.sort(bottomWidgets, ReserveSortWidgets);
+
+		-- Then lay them out bottom to top and right to left
+		widgetContainer.verticalAnchorPoint = "BOTTOM";
+		widgetContainer.verticalRelativePoint = "TOP";
+		widgetContainer.horizontalAnchorPoint = "RIGHT";
+		widgetContainer.horizontalRelativePoint = "LEFT";
+		widgetContainer.horizontalAnchorXOffset = -2;
+		DefaultWidgetLayout(widgetContainer, bottomWidgets, skipContainerLayout);
+	end
+
+	-- Add some padding between the top and bottom widgets (more will be added if needed in SetMinHeight)
+	if hasTopWidgets and hasBottomWidgets then
+		widgetContainer.heightPadding = 20;
+	else
+		widgetContainer.heightPadding = nil;
+	end
+
+	-- Finally call Layout on the widget container itself so it resizes to fit all the widgets and padding
+	widgetContainer:Layout();
 
 	if PlayerChoiceFrame:AreOptionsAligned() then
 		-- This indicates that a widget has shown/hidden while the player choice frame is up (and the player choice frame itself was not also updated)
@@ -632,4 +659,12 @@ function PlayerChoiceBaseOptionRewardsMixin:Setup(optionInfo, fontColor)
 	end
 
 	self:Show();
+end
+
+PlayerChoiceWidgetContainerMixin = {}
+
+function PlayerChoiceWidgetContainerMixin:IsLayoutFrame()
+	-- Return false here because the widget container is used as the filler frame for player choice options
+	-- This prevents Layout from getting called on the widget container due to the Layout call in SetMinHeight (after padding has been added to it)
+	return false;
 end

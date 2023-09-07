@@ -41,6 +41,15 @@ local Container =
 			},
 		},
 		{
+			Name = "GetBackpackSellJunkDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBagName",
 			Type = "Function",
 
@@ -373,6 +382,15 @@ local Container =
 		},
 		{
 			Name = "SetBackpackAutosortDisabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "disable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetBackpackSellJunkDisabled",
 			Type = "Function",
 
 			Arguments =

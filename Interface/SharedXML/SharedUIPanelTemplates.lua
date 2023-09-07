@@ -110,9 +110,14 @@ local function ButtonFrameTemplate_UpdateRegionAnchor(region, desiredOffsetX)
 	end
 end
 
-local function ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode)
+local function ButtonFrameTemplate_UpdateAnchors(self, isPortraitMode)
 	ButtonFrameTemplate_UpdateRegionAnchor(self.Bg, isPortraitMode and 2 or 7);
 	ButtonFrameTemplate_UpdateRegionAnchor(self.Inset, isPortraitMode and 4 or 9);
+
+	if self.TitleContainer then
+		self.TitleContainer:SetPoint("TOPLEFT", self, "TOPRIGHT", isPortraitMode and 58 or 0, -1);
+		self.TitleContainer:SetPoint("TOPRIGHT", self, "TOPLEFT", isPortraitMode and -24 or 0, -1);
+	end
 end
 
 function ButtonFrameTemplate_HidePortrait(self)
@@ -120,7 +125,7 @@ function ButtonFrameTemplate_HidePortrait(self)
 	self:SetPortraitShown(false);
 
 	local isPortraitMode = false;
-	ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode);
+	ButtonFrameTemplate_UpdateAnchors(self, isPortraitMode);
 end
 
 function ButtonFrameTemplate_ShowPortrait(self)
@@ -128,7 +133,7 @@ function ButtonFrameTemplate_ShowPortrait(self)
 	self:SetPortraitShown(true);
 
 	local isPortraitMode = true;
-	ButtonFrameTemplate_UpdateBGAnchors(self, isPortraitMode);
+	ButtonFrameTemplate_UpdateAnchors(self, isPortraitMode);
 end
 
 function ButtonFrameTemplateMinimizable_HidePortrait(self)
@@ -851,7 +856,20 @@ function TruncatedTooltipFontStringWrapperMixin:OnLeave()
 	end
 end
 
+local alternateTopLevelParent;
+function SetAlternateTopLevelParent(parent)
+	alternateTopLevelParent = parent;
+end
+
+function ClearAlternateTopLevelParent()
+	alternateTopLevelParent = nil;
+end
+
 function GetAppropriateTopLevelParent()
+	if alternateTopLevelParent and alternateTopLevelParent:IsShown() then
+		return alternateTopLevelParent;
+	end
+
 	return UIParent or GlueParent;
 end
 
@@ -955,25 +973,19 @@ function UIMenuButtonStretchMixin:SetTextures(texture)
 end
 
 function UIMenuButtonStretchMixin:OnMouseDown(button)
-	if ( self:IsEnabled() ) then
+	if self:IsEnabled() then
 		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Down");
-		if ( self.Icon ) then
-			if ( not self.Icon.oldPoint ) then
-				local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
-				self.Icon.oldPoint = point;
-				self.Icon.oldX = x;
-				self.Icon.oldY = y;
-			end
-			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
+		if self.Icon then
+			self.Icon:AdjustPointsOffset(1, -1);
 		end
 	end
 end
 
 function UIMenuButtonStretchMixin:OnMouseUp(button)
-	if ( self:IsEnabled() ) then
+	if self:IsEnabled() then
 		self:SetTextures("Interface\\Buttons\\UI-Silver-Button-Up");
-		if ( self.Icon ) then
-			self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
+		if self.Icon then
+			self.Icon:AdjustPointsOffset(-1, 1);
 		end
 	end
 end
@@ -2204,11 +2216,37 @@ function PanelDragBarMixin:SetTarget(target)
 end
 
 function PanelDragBarMixin:OnDragStart()
-	self.target:StartMoving();
+	local target = self.target;
+
+	local continueDragStart = true;
+	if target.onDragStartCallback then
+		continueDragStart = target.onDragStartCallback(self);
+	end
+
+	if continueDragStart then
+		target:StartMoving();
+	end
+
+	if SetCursor then
+		SetCursor("UI_MOVE_CURSOR");
+	end
 end
 
 function PanelDragBarMixin:OnDragStop()
-	self.target:StopMovingOrSizing();
+	local target = self.target;
+
+	local continueDragStop = true;
+	if target.onDragStopCallback then
+		continueDragStop = target.onDragStopCallback(self);
+	end
+
+	if continueDragStop then
+		target:StopMovingOrSizing();
+	end
+
+	if SetCursor then
+		SetCursor(nil);
+	end
 end
 
 PanelResizeButtonMixin = {};
@@ -2242,10 +2280,32 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 	end
 end
 
+function PanelResizeButtonMixin:OnEnter()
+	if SetCursor then
+		SetCursor("UI_RESIZE_CURSOR");
+	end
+end
+
+function PanelResizeButtonMixin:OnLeave()
+	if SetCursor then
+		SetCursor(nil);
+	end
+end
+
 function PanelResizeButtonMixin:OnMouseDown()
 	self.isActive = true;
 
-	if self.target then
+	local target = self.target;
+	if not target then
+		return;
+	end
+
+	local continueResizeStart = true;
+	if target.onResizeStartCallback then
+		continueResizeStart = target.onResizeStartCallback(self);
+	end
+
+	if continueResizeStart then
 		local alwaysStartFromMouse = true;
 		self.target:StartSizing("BOTTOMRIGHT", alwaysStartFromMouse);
 	end
@@ -2254,12 +2314,22 @@ end
 function PanelResizeButtonMixin:OnMouseUp()
 	self.isActive = false;
 
-	if self.target then
-		self.target:StopMovingOrSizing();
+	local target = self.target;
+	if not target then
+		return;
+	end
 
-		if self.resizeStoppedCallback ~= nil then
-			self.resizeStoppedCallback(self.target);
-		end
+	local continueResizeStop = true;
+	if target.onResizeStopCallback then
+		continueResizeStop = target.onResizeStopCallback(self);
+	end
+
+	if continueResizeStop then
+		target:StopMovingOrSizing();
+	end
+
+	if self.resizeStoppedCallback ~= nil then
+		self.resizeStoppedCallback(self.target);
 	end
 end
 
@@ -2976,7 +3046,7 @@ function SearchBoxListMixin:OnLoad()
 		bar:SetValue(0);
 		bar.previousResults = nil;
 	end);
-	
+
 	self.HasStickyFocus = function()
 		return DoesAncestryInclude(self, GetMouseFocus());
 	end
@@ -3036,7 +3106,7 @@ function SearchBoxListMixin:OnTextChanged()
 		self:HideSearchPreview();
 		return false, text;
 	end
-	
+
 	self:SetSearchPreviewSelection(1);
 
 	return true, text;
@@ -3385,4 +3455,24 @@ function RingedMaskedButtonMixin:UpdateHighlightTexture()
 		self.HighlightTexture:SetPoint("TOPLEFT", self.Ring);
 		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self.Ring);
 	end
+end
+
+function Main_HelpPlate_Button_OnEnter(self)
+	Main_HelpPlate_Button_ShowTooltip(self);
+	HelpPlateTooltip.LingerAndFade:Stop();
+end
+
+function Main_HelpPlate_Button_ShowTooltip(self)
+	HelpPlateTooltip.ArrowRIGHT:Show();
+	HelpPlateTooltip.ArrowGlowRIGHT:Show();
+	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
+	HelpPlateTooltip.Text:SetText(self.MainHelpPlateButtonTooltipText or MAIN_HELP_BUTTON_TOOLTIP);
+	HelpPlateTooltip:Show();
+end
+
+function Main_HelpPlate_Button_OnLeave(self)
+	HelpPlateTooltip.ArrowRIGHT:Hide();
+	HelpPlateTooltip.ArrowGlowRIGHT:Hide();
+	HelpPlateTooltip:ClearAllPoints();
+	HelpPlateTooltip:Hide();
 end

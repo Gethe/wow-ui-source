@@ -105,9 +105,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 			PlayerPVPTimerText:Hide();
 			PlayerPVPTimerText.timeLeft = nil;
 		end
-		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES) then
-			EventRegistry:RegisterCallback("Tutorials.ShowUnitFrameChanges", PlayerFrame_CheckTutorials, self);
-		end
 	elseif (event == "PLAYER_ENTER_COMBAT") then
 		self.inCombat = 1;
 		PlayerFrame_UpdateStatus();
@@ -164,27 +161,6 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateRolesAssigned();
 	elseif (event == "HONOR_LEVEL_UPDATE") then
 		PlayerFrame_UpdatePvPStatus();
-	end
-end
-
-function PlayerFrame_CheckTutorials(self)
-	if not self:IsShown() then
-		return;
-	end
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES) then
-		EventRegistry:UnregisterCallback("Tutorials.ShowUnitFrameChanges", self);
-	else
-		local helpTipInfo = {
-			text = TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES,
-			targetPoint = HelpTip.Point.RightEdgeCenter,
-			offsetX = 0,
-			alignment = HelpTip.Alignment.Center,
-			onAcknowledgeCallback = GenerateClosure(PlayerFrame_CheckTutorials, self),
-		};
-		HelpTip:Show(UIParent, helpTipInfo, self);
 	end
 end
 

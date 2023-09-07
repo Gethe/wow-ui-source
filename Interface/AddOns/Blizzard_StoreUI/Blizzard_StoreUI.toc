@@ -4,6 +4,7 @@
 ..\..\SharedXML\MathUtil.lua
 ..\..\SharedXML\EnumUtil.lua
 ..\..\SharedXML\TableUtil.lua
+..\..\SharedXML\LinkUtil.lua
 ..\..\SharedXML\Flags.lua
 ..\..\SharedXML\Spline.lua
 ..\..\SharedXML\PixelUtilSecure.lua

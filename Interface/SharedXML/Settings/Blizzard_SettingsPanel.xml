@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 
 	<Frame name="SettingsPanel" mixin="SettingsPanelMixin" inherits="SettingsFrameTemplate" toplevel="true" hidden="true" movable="true" enableMouse="true" resizable="true" frameStrata="HIGH">
 		<Size x="920" y="724"/>

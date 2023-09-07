@@ -59,7 +59,10 @@ function LootHistoryElementMixin:SetTooltip()
 				anyRollNumbers = true; -- If there are any roll numbers, they will be at the top of the roll list
 			end
 
-			if (roll.state <= topRollState and roll.state < Enum.EncounterLootDropRollState.NoRoll) or (roll.isSelf and roll.state ~= Enum.EncounterLootDropRollState.NoRoll) then
+			-- Skip rolls that are in a weird state due to multiple item instance win protection
+			local skipRoll = self.dropInfo.winner and not roll.isWinner and roll.roll and roll.roll > self.dropInfo.winner.roll;
+
+			if not skipRoll and ((roll.state <= topRollState and roll.state < Enum.EncounterLootDropRollState.NoRoll) or (roll.isSelf and roll.state ~= Enum.EncounterLootDropRollState.NoRoll)) then
 				local newFrame = tooltipLinePool:Acquire();
 				newFrame:Init(roll, anyRollNumbers);
 				GameTooltip_InsertFrame(GameTooltip, newFrame);
@@ -78,7 +81,7 @@ function LootHistoryElementMixin:SetTooltip()
 			end
 		end
 
-		if waitingOnAny then
+		if waitingOnAny and not self.dropInfo.winner then
 			if anyRollFrames then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
@@ -130,6 +133,7 @@ function LootHistoryElementMixin:Init(dropInfo)
 			end
 
 			self.PendingRollInfo.CurrentWinnerText:SetText(LOOT_HISTORY_CURRENT_WINNER:format(leaderName, dropInfo.currentLeader.roll));
+			self.PendingRollInfo.WaitDot1:SetPoint("RIGHT", self.PendingRollInfo.CurrentWinnerText, "LEFT", -4, -1);
 		else
 			self.PendingRollInfo.CurrentWinnerText:SetText(nil);
 			self.PendingRollInfo.WaitDot1:SetPoint("RIGHT", self.PendingRollInfo.CurrentWinnerText, "LEFT", -3, -1);

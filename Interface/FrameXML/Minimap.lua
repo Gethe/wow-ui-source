@@ -297,11 +297,7 @@ function MinimapClusterMixin:CheckTutorials()
 	if not self:IsShown() then
 		return;
 	end
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES) then
-		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_UNIT_FRAME_CHANGES) then
-			EventRegistry:TriggerEvent("Tutorials.ShowUnitFrameChanges");
-		end
-	else
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES) then
 		local helpTipInfo = {
 			text = TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
 			buttonStyle = HelpTip.ButtonStyle.Close,
@@ -377,6 +373,8 @@ function MiniMapMailFrameMixin:OnEvent(event)
 	if ( event == "UPDATE_PENDING_MAIL" ) then
 		if ( HasNewMail() ) then
 			self:Show();
+			self:TryPlayMailNotification();
+
 			if( GameTooltip:IsOwned(self) ) then
 				MinimapMailFrameUpdate();
 			end
@@ -385,6 +383,10 @@ function MiniMapMailFrameMixin:OnEvent(event)
 		end
 		self:GetParent():Layout();
 	end
+end
+
+function MiniMapMailFrameMixin:OnHide()
+	self:ResetMailIcon();
 end
 
 function MiniMapMailFrameMixin:OnEnter()
@@ -405,6 +407,35 @@ function MinimapMailFrameUpdate()
 	GameTooltip:Show();
 end
 
+function MiniMapMailFrameMixin:ResetMailIcon()
+	self.NewMailAnim:SetPlaying(false);
+	self.MailReminderAnim:SetPlaying(false);
+	self.MailIcon:SetShown(false);
+end
+
+function MiniMapMailFrameMixin:TryPlayMailNotification()
+	if self.NewMailAnim:IsPlaying() or self.MailReminderAnim:IsPlaying() then
+		return;
+	end
+
+	local alreadyNotifiedOfNewMail = GetCVarBool("notifiedOfNewMail");
+	if alreadyNotifiedOfNewMail then
+		self.MailReminderAnim:Restart();
+	else
+		self.NewMailAnim:Restart();
+		SetCVar("notifiedOfNewMail", true);
+	end
+end
+
+MinimapMailAnimMixin = {};
+
+function MinimapMailAnimMixin:OnPlay()
+	MiniMapMailIcon:SetShown(false);
+end
+
+function MinimapMailAnimMixin:OnFinished()
+	MiniMapMailIcon:SetShown(HasNewMail());
+end
 
 MiniMapCraftingOrderFrameMixin = {};
 
@@ -711,11 +742,7 @@ local GarrisonLandingPageEvents = {
 };
 
 function ExpansionLandingPageMinimapButtonMixin:OnLoad()
-	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);	
-
-	if not ExpansionLandingPage then
-		ExpansionLandingPage_LoadUI();
-	end
+	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);
 
 	self.pulseLocks = {};
 

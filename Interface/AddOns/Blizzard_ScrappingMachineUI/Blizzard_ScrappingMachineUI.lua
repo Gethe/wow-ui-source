@@ -56,7 +56,7 @@ function ScrappingMachineMixin:OnShow()
 	self:UpdateScrapButtonState();
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
-	self:RegisterEvent("UPDATE_TRADESKILL_CAST_COMPLETE");
+	self:RegisterEvent("UPDATE_TRADESKILL_CAST_STOPPED");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
@@ -83,7 +83,7 @@ function ScrappingMachineMixin:OnEvent(event, ...)
 			self.scrapCastLineID = nil;
 			C_ScrappingMachineUI.ValidateScrappingList();
 		end
-	elseif (event == "UPDATE_TRADESKILL_CAST_COMPLETE") then
+	elseif (event == "UPDATE_TRADESKILL_CAST_STOPPED") then
 		local isScrapping = ...;
 		if isScrapping then
 			C_ScrappingMachineUI.RemoveAllScrapItems();
@@ -108,7 +108,7 @@ function ScrappingMachineMixin:OnHide()
 	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
-	self:UnregisterEvent("UPDATE_TRADESKILL_CAST_COMPLETE");
+	self:UnregisterEvent("UPDATE_TRADESKILL_CAST_STOPPED");
 	PlaySound(SOUNDKIT.UI_80_SCRAPPING_WINDOW_CLOSE);
 	self:CloseScrappingMachine();
 

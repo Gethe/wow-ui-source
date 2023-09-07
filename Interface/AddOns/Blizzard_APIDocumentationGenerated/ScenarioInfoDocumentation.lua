@@ -182,6 +182,7 @@ local ScenarioInfo =
 				{ Name = "weightedProgress", Type = "number", Nilable = true },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
+				{ Name = "stepID", Type = "number", Nilable = false },
 			},
 		},
 		{

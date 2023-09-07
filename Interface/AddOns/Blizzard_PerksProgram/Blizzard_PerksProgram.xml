@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-		
+
 	<Frame name="PerksProgramFrame" inherits="DefaultScaleFrame" mixin="PerksProgramMixin" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" />
@@ -19,7 +19,7 @@
 					<Anchor point="BOTTOMRIGHT" />
 				</Anchors>
 				<Frames>
-					<Frame parentKey="ProductsScrollBoxContainer">
+					<Frame parentKey="ProductsScrollBoxContainer" frameLevel="1000">
 						<Size x="527" y="751" />
 						<Anchors>
 							<Anchor point="LEFT" x="46" y="22"/>
@@ -50,7 +50,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="NameSortButton" inherits="HeaderSortButtonTemplate" >
+							<Button parentKey="NameSortButton" inherits="HeaderSortButtonTemplate">
 								<KeyValues>
 									<KeyValue key="sortField" value="name" type="string"/>
 									<KeyValue key="labelText" value="PERKS_PROGRAM_NAME" type="global"/>
@@ -61,7 +61,7 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.PerksDividerTop" relativePoint="TOPLEFT" x="8" y="7"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="TimeSortButton" inherits="HeaderSortButtonTemplate" >
+							<Button parentKey="TimeSortButton" inherits="HeaderSortButtonTemplate">
 								<KeyValues>
 									<KeyValue key="sortField" value="timeRemaining" type="string"/>
 									<KeyValue key="iconAtlas" value="perks-clock" type="string"/>
@@ -70,7 +70,7 @@
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PerksDividerTop" relativePoint="TOPRIGHT" x="-24" y="7"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="PriceSortButton" inherits="HeaderSortButtonTemplate" >
+							<Button parentKey="PriceSortButton" inherits="HeaderSortButtonTemplate">
 								<KeyValues>
 									<KeyValue key="sortField" value="price" type="string"/>
 									<KeyValue key="labelText" value="PERKS_PROGRAM_PRICE" type="global"/>
@@ -81,7 +81,7 @@
 									<Anchor point="RIGHT" relativeKey="$parent.TimeSortButton" relativePoint="LEFT" x="-48" y="0"/>
 								</Anchors>
 							</Button>
-							<Frame parentKey="PerksProgramHoldFrame" inherits="TooltipBackdropTemplate"  frameLevel="1000">
+							<Frame parentKey="PerksProgramHoldFrame" inherits="TooltipBackdropTemplate">
 								<KeyValues>
 									<KeyValue key="layoutType" value="PerksProgramHoldPanelTemplate" type="string"/>
 								</KeyValues>
@@ -371,7 +371,7 @@
 									</Frame>
 								</Frames>
 							</Frame>
-							<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+							<Frame parentKey="Border" inherits="NineSlicePanelTemplate" frameLevel="980">
 								<KeyValues>
 									<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
 									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -380,7 +380,7 @@
 						</Frames>
 					</Frame>
 
-					<Frame parentKey="PerksProgramCurrencyFrame" mixin="PerksProgramCurrencyFrameMixin">
+					<Frame parentKey="PerksProgramCurrencyFrame" mixin="PerksProgramCurrencyFrameMixin" frameLevel="1000">
 						<Size x="200" y="50"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="RIGHT" />
@@ -440,14 +440,14 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="PerksProgramFilter" inherits="FilterDropDownContainerTemplate">
+					<Frame parentKey="PerksProgramFilter" inherits="FilterDropDownContainerTemplate" frameLevel="1000">
 						<Size x="172" y="48"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="LEFT" x="-8"/>
 							<Anchor point="BOTTOM" relativeKey="$parent.ProductsScrollBoxContainer" relativePoint="TOP" y="15"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" >
+					<Frame parentKey="PerksProgramProductDetailsContainerFrame" inherits="VerticalLayoutFrame" frameLevel="1000">
 						<KeyValues>
 							<KeyValue key="fixedWidth" value="360" type="string"/>
 						</KeyValues>
@@ -525,7 +525,7 @@
 									<OnLoad method="OnLoad"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="Border" useParentLevel="true" inherits="NineSlicePanelTemplate">
+							<Frame parentKey="Border" inherits="NineSlicePanelTemplate" frameLevel="980">
 								<KeyValues>
 									<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
 									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -818,6 +818,36 @@
 					<OnShow method="OnShow" />
 					<OnHide method="OnHide" />
 					<OnEvent method="OnEvent" />
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="ThemeContainer" setAllPoints="true" frameLevel="990" mixin="PerksProgramThemeContainerMixin">
+				<Frames>
+					<Frame parentKey="ProductList" useParentLevel="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Top"/>
+								<Texture parentKey="Bottom"/>
+								<Texture parentKey="Left"/>
+								<Texture parentKey="Right"/>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame parentKey="ProductDetails" useParentLevel="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Top"/>
+								<Texture parentKey="Bottom"/>
+								<Texture parentKey="Left"/>
+								<Texture parentKey="Right"/>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
 				</Scripts>
 			</Frame>
 		</Frames>

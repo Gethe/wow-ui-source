@@ -8,6 +8,10 @@ function GroupLootContainer_OnLoad(self)
 
 	local alertSystem = AlertFrame:AddExternallyAnchoredSubSystem(self);
 	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 30);
+
+	EventRegistry:RegisterFrameEventAndCallback("CANCEL_ALL_LOOT_ROLLS", function()
+		self.waitingRolls = {};
+	end, self);
 end
 
 function GroupLootContainer_CalcMaxIndex(self)
@@ -36,7 +40,7 @@ function GroupLootContainer_AddFrame(self, frame)
 	frame:Show();
 end
 
-function GroupLootContainer_RemoveFrame(self, frame)
+function GroupLootContainer_RemoveFrame(self, frame, cancellingAll)
 	local idx = nil;
 	for k, v in pairs(self.rollFrames) do
 		if ( v == frame ) then
@@ -52,7 +56,7 @@ function GroupLootContainer_RemoveFrame(self, frame)
 			GroupLootContainer_CalcMaxIndex(self);
 		end
 
-		if #self.waitingRolls > 0 then
+		if #self.waitingRolls > 0 and not cancellingAll then
 			local newRoll = self.waitingRolls[1];
 			table.remove(self.waitingRolls, 1);
 			GroupLootContainer_AddRoll(newRoll.rollID, newRoll.rollTime);
@@ -214,9 +218,9 @@ function GroupLootFrame_OnHide(self)
 	FrameUtil.UnregisterFrameForEvents(self, groupLootFrameEvents);
 end
 
-function GroupLootFrame_Remove(self)
+function GroupLootFrame_Remove(self, cancellingAll)
 	if self:IsShown() then
-		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+		GroupLootContainer_RemoveFrame(GroupLootContainer, self, cancellingAll);
 		StaticPopup_Hide("CONFIRM_LOOT_ROLL", self.rollID);
 	end
 end
@@ -228,7 +232,8 @@ function GroupLootFrame_OnEvent(self, event, ...)
 			GroupLootFrame_Remove(self);
 		end
 	elseif event == "CANCEL_ALL_LOOT_ROLLS" then
-		GroupLootFrame_Remove(self);
+		local cancellingAll = true;
+		GroupLootFrame_Remove(self, cancellingAll);
 	elseif event == "MAIN_SPEC_NEED_ROLL" then
 		local rollID, roll, isWinning = ...;
 		if rollID == self.rollID then

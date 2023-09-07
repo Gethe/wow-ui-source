@@ -228,21 +228,6 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".2"/>
 				</HighlightTexture>
-				<Scripts>
-					<OnLoad>
-						self.Ring:Hide();
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT",-22,-22);
-						GameTooltip:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnClick>
-						local gameTimeTutorial = self:GetParent().GameTimeTutorial;
-						gameTimeTutorial:SetShown(not gameTimeTutorial:IsShown());
-					</OnClick>
-				</Scripts>
 			</Button>
 			<Button parentKey="TokenDisplay" mixin="WoWTokenDisplayMixin" inherits="AuctionHouseItemDisplayTemplate">
 				<Anchors>

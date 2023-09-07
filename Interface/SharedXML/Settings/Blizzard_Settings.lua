@@ -198,6 +198,10 @@ function Settings.RegisterModifiedClickSetting(categoryTbl, variable, name, defa
 	return setting;
 end
 
+function Settings.AssignTutorialToCategory(category, tooltip, callback)
+	SettingsInbound.AssignTutorialToCategory(category, tooltip, callback);
+end
+
 function Settings.GetCategory(name)
 	return SettingsPanel:GetCategory(name);
 end
@@ -478,7 +482,7 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 		--	print(errorMsg);
 		--end
 		--assertsafe(false, errorMsg);
-		--LoadAddOn("Blizzard_DebugTools");
+		--C_AddOns.LoadAddOn("Blizzard_DebugTools");
 		--if Dump then
 		--	Dump(options);
 		--end

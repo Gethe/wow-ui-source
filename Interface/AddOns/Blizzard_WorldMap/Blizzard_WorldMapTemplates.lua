@@ -68,6 +68,12 @@ function WorldMapTrackingOptionsButtonMixin:OnLoad()
 	UIDropDownMenu_SetDisplayMode(self.DropDown, "MENU");
 end
 
+function WorldMapTrackingOptionsButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, MAP_FILTER);
+	GameTooltip:Show();
+end
+
 function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
 	self.Icon:SetPoint("TOPLEFT", 8, -8);
 	self.IconOverlay:Show();
@@ -186,6 +192,11 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.checked = self:IsTrackingFilter(Enum.MinimapTrackingFilter.TrivialQuests);
 	UIDropDownMenu_AddButton(info);
 
+	info.text = CONTENT_TRACKING_MAP_TOGGLE;
+	info.value = "contentTrackingFilter";
+	info.checked = GetCVarBool("contentTrackingFilter");
+	UIDropDownMenu_AddButton(info);
+
 	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.
 	local mapID = self:GetParent():GetMapID();
 	if not mapID or not MapUtil.MapShouldShowWorldQuestFilters(mapID) then
@@ -205,11 +216,6 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 		info.checked = GetCVarBool("secondaryProfessionsFilter");
 		UIDropDownMenu_AddButton(info);
 	end
-
-	info.text = CONTENT_TRACKING_MAP_TOGGLE;
-	info.value = "contentTrackingFilter";
-	info.checked = GetCVarBool("contentTrackingFilter");
-	UIDropDownMenu_AddButton(info);
 
 	UIDropDownMenu_AddSeparator();
 

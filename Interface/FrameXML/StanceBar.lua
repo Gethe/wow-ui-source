@@ -72,6 +72,10 @@ function StanceBarMixin:UpdateState()
 	end
 
 	self:UpdateShownButtons();
+	-- Must update grid layout here since stance bar doesn't keep button containers active as spacers,
+	-- meaning newly active buttons aren't yet part of the grid layout (and therefore won't be visible until they are)
+	-- If the number of active buttons hasn't changed, ActionBarMixin's ShouldUpdateGrid will detect that and avoid the update.
+	self:UpdateGridLayout();
 end
 
 function StanceBarMixin:Select(id)

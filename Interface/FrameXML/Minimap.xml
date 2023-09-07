@@ -95,20 +95,53 @@
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>
 						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="MiniMapMailIcon" atlas="ui-hud-minimap-mail-up" useAtlasSize="true">
+							<Layer level="ARTWORK" textureSubLevel="0">
+								<Texture name="MiniMapMailIcon" parentKey="MailIcon" atlas="ui-hud-minimap-mail-up" useAtlasSize="true" hidden="true">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="NewMailFlipbook" atlas="UI-HUD-Minimap-Mail-New-Flipbook" alpha="0">
+									<Size x="52" y="52"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.MailIcon"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="MailReminderFlipbook" atlas="UI-HUD-Minimap-Mail-Reminder-Flipbook" alpha="0">
+									<Size x="52" y="52"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.MailIcon"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
 							<OnEvent method="OnEvent"/>
 							<OnEnter method="OnEnter"/>
 							<OnLeave method="OnLeave"/>
 						</Scripts>
+						<Animations>
+							<AnimationGroup parentKey="NewMailAnim" mixin="MinimapMailAnimMixin">
+								<Alpha childKey="NewMailFlipbook" duration="0" order="0" fromAlpha="1" toAlpha="1"/>
+								<FlipBook childKey="NewMailFlipbook" smoothing="NONE" duration="0.5" order="1" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Scripts>
+									<OnPlay method="OnPlay"/>
+									<OnFinished method="OnFinished"/>
+								</Scripts>
+							</AnimationGroup>
+							<AnimationGroup parentKey="MailReminderAnim" mixin="MinimapMailAnimMixin">
+								<Alpha childKey="MailReminderFlipbook" duration="0" order="0" fromAlpha="1" toAlpha="1"/>
+								<FlipBook childKey="MailReminderFlipbook" smoothing="NONE" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Scripts>
+									<OnPlay method="OnPlay"/>
+									<OnFinished method="OnFinished"/>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
 					</Frame>
 					<Frame parentKey="CraftingOrderFrame" mixin="MiniMapCraftingOrderFrameMixin" enableMouse="true" hidden="true">
 						<Size x="20" y="15"/>

@@ -3,7 +3,7 @@
 	<Script file="Blizzard_MajorFactionsLandingTemplates.lua"/>
 
 	<Frame name="LandingPageMajorFactionListTemplate" mixin="MajorFactionListMixin" virtual="true" scale="0.875">
-		<Size x="450" y="520"/>
+		<Size x="450" y="536"/>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" scale="0.875">
 				<Anchors>
@@ -28,10 +28,10 @@
 	</Frame>
 
 	<Frame name="MajorFactionButtonTemplate" virtual="true" mixin="MajorFactionButtonMixin">
-		<Size x="458" y="122"/>
+		<Size x="458" y="112"/>
 		<Frames>
 			<Frame parentKey="LockedState" mixin="MajorFactionButtonLockedStateMixin">
-				<Size x="458" y="122"/>
+				<Size x="458" y="112"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -46,14 +46,14 @@
 
 					<Layer level="ARTWORK">
 						<FontString parentKey="Title" inherits="GameFontHighlightLarge2" justifyH="LEFT">
-							<Size x="350" y="22"/>
+							<Size x="330" y="22"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="22" y="-5"/>
 							</Anchors>
 							<Color r="0.5" g="0.5" b="0.5" a="1"/>
 						</FontString>
 						<FontString parentKey="StateInfo" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="MAJOR_FACTION_BUTTON_FACTION_LOCKED">
-							<Size x="350" y="22"/>
+							<Size x="330" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT"/>
 							</Anchors>
@@ -67,14 +67,14 @@
 			</Frame>
 
 			<Button parentKey="UnlockedState" mixin="MajorFactionButtonUnlockedStateMixin">
-				<Size x="458" y="122"/>
+				<Size x="458" y="112"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon">
-							<Size x="48" y="48"/>
+							<Size x="44" y="44"/>
 							<Anchors>
 								<Anchor point="LEFT" x="40"/>
 							</Anchors>
@@ -91,13 +91,13 @@
 
 					<Layer level="ARTWORK">
 						<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge2">
-							<Size x="350"/>
+							<Size x="330"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="30" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="RenownLevel" justifyH="LEFT" inherits="GameFontNormalLarge2">
-							<Size x="350" y="22"/>
+							<Size x="330" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 							</Anchors>
@@ -108,7 +108,7 @@
 					<CheckButton parentKey="WatchFactionButton" hidden="true" mixin="MajorFactionWatchFactionButtonMixin" inherits="UICheckButtonArtTemplate">
 						<Size x="21" y="21"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" y="-6"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" y="-8"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -132,7 +132,7 @@
 					</CheckButton>
 
 					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownProgressBarMixin">
-						<Size x="96" y="96"/>
+						<Size x="86" y="86"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 						</Anchors>
