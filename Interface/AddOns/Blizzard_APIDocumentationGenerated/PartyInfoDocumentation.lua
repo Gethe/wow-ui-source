@@ -40,6 +40,20 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "IsCrossFactionParty",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "isCrossFactionParty", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyFull",
 			Type = "Function",
 
@@ -228,6 +242,16 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "fromName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "VoteKickReasonNeeded",
+			Type = "Event",
+			LiteralName = "VOTE_KICK_REASON_NEEDED",
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "resultGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},

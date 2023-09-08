@@ -196,7 +196,6 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	for questId in pairs(self.activePins) do
 		pinsToRemove[questId] = true;
 	end
-
 	--[[
 	local taskInfo;
 	local mapCanvas = self:GetMap();
@@ -229,8 +228,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 			end
 		end
 	end
-	--]]
-
+	]]
 	for questId in pairs(pinsToRemove) do
 		if self.pingPin and self.pingPin:IsAttachedToQuest(questId) then
 			self.pingPin:Stop();

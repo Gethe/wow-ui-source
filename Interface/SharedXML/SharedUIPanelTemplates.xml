@@ -246,6 +246,13 @@
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
+	<Button name="UIPanelHideButtonNoScripts" frameLevel="510" virtual="true">
+		<Size x="24" y="24"/>
+		<DisabledTexture atlas="RedButton-MiniCondense-disabled"/>
+		<NormalTexture atlas="RedButton-MiniCondense"/>
+		<PushedTexture atlas="RedButton-MiniCondense-pressed"/>
+		<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
+	</Button>	
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -1326,7 +1333,82 @@
 		</HighlightTexture>
     </Button>
 
-		<Button name="PanelTopTabButtonTemplate" inherits="TabButtonTemplate" virtual="true"/> 
+	<Button name="PanelTabButtonTemplate" mixin="PanelTabButtonMixin" motionScriptsWhileDisabled="true" parentArray="Tabs" virtual="true" >
+		<Size x="10" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftActive" atlas="uiframe-activetab-left" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightActive" atlas="uiframe-activetab-right" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleActive" atlas="_uiframe-activetab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftActive" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.RightActive" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Left" atlas="uiframe-tab-left" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="uiframe-tab-right" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="LeftHighlight" atlas="uiframe-tab-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleHighlight" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Middle" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Middle" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHighlight" atlas="uiframe-tab-right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<ButtonText parentKey="Text">
+			<Size x="0" y="10"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontHighlightSmall"/>
+	</Button>
+
+	<!-- Note that this purposely inhertis from TabButtonTemplate for Classic instead of PanelTabButtonTemplate as it does in Mainline.  Otherwise, frames that use this template will need to be refactored. -->
+	<Button name="PanelTopTabButtonTemplate" inherits="TabButtonTemplate" virtual="true"/>
 
     <Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
 		<Size x="32" y="32"/>

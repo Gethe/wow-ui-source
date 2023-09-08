@@ -926,7 +926,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		self.battlefieldBannerShown = nil;
 
-		SetLookingForGroupUIAvailable(C_LFGList.IsLookingForGroupEnabled());
+		SetLookingForGroupUIAvailable(C_LFGInfo.IsGroupFinderEnabled());
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -4107,7 +4107,7 @@ function RaidBrowser_IsEmpowered()
 end
 
 function GetLFGMode(category, lfgID)
-	--[[if ( category ~= LE_LFG_CATEGORY_RF ) then
+	if ( category ~= LE_LFG_CATEGORY_RF ) then
 		lfgID = nil; --HACK - RF works differently from everything else. You can queue for multiple RF slots with different ride tickets.
 	end
 
@@ -4148,7 +4148,7 @@ function GetLFGMode(category, lfgID)
 		return "lfgparty", "noteleport";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "abandonedInDungeon";
-	end]]
+	end
 end
 
 function IsLFGModeActive(category)
@@ -4631,12 +4631,7 @@ end
 
 -- Set the overall UI state to show or not show the LFG UI.
 function SetLookingForGroupUIAvailable(available)
-	local success = false;
 	if (available) then
-		success = UIParentLoadAddOn("Blizzard_LookingForGroupUI");
-	end
-
-	if (success) then
 		WorldMapMicroButton:Hide()
 		LFGMicroButton:Show();
 		MiniMapWorldMapButton:Show();

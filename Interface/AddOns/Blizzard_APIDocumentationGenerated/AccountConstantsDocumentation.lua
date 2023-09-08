@@ -68,9 +68,9 @@ local AccountConstants =
 		{
 			Name = "AccountStateFlags",
 			Type = "Enumeration",
-			NumValues = 34,
+			NumValues = 35,
 			MinValue = 0,
-			MaxValue = 1073741824,
+			MaxValue = 2147483648,
 			Fields =
 			{
 				{ Name = "None", Type = "AccountStateFlags", EnumValue = 0 },
@@ -105,6 +105,7 @@ local AccountConstants =
 				{ Name = "RafFriendMonthsLoaded", Type = "AccountStateFlags", EnumValue = 268435456 },
 				{ Name = "RevokedRafRewardsLoaded", Type = "AccountStateFlags", EnumValue = 536870912 },
 				{ Name = "AccountNotificationsLoaded", Type = "AccountStateFlags", EnumValue = 1073741824 },
+				{ Name = "PerksPendingPurchaseLoaded", Type = "AccountStateFlags", EnumValue = 2147483648 },
 				{ Name = "AccountWowlabsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
 				{ Name = "AccountUpgradeComplete", Type = "AccountStateFlags", EnumValue = 0 },
 			},

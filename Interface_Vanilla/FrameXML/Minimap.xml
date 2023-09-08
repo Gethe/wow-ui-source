@@ -503,40 +503,14 @@
 											<Anchor point="CENTER"/>
 										</Anchors>
 									</Frame>
-									<Frame name="MiniMapLFGDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-										<Scripts>
-											<OnLoad>
-												MiniMapLFGDropDown_OnLoad(self);
-											</OnLoad>
-										</Scripts>
-									</Frame>
+									<Frame parentKey="DropDown" name="$parentDropDown" inherits="UIDropDownMenuTemplate"/>
 								</Frames>
 								<Scripts>
-									<OnLoad>
-										self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
-										self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-										self:SetFrameLevel(self:GetFrameLevel()+1)
-									</OnLoad>
-									<OnClick>
-										if ( button == "RightButton" ) then
-											ToggleDropDownMenu(1, nil, MiniMapLFGDropDown, "MiniMapLFGFrame", 10, -5);
-										else
-											ToggleLFGParentFrame();
-										end
-									</OnClick>
-									<OnEvent>
-										if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
-											if ( C_LFGList.HasActiveEntryInfo() ) then
-												self:Show();
-											else
-												self:Hide();
-											end
-										end
-									</OnEvent>
+									<OnLoad function="MiniMapLFGFrame_OnLoad"/>
+									<OnClick function="MiniMapLFGFrame_OnClick"/>
+									<OnEvent function="MiniMapLFGFrame_OnEvent"/>
 									<OnEnter function="MiniMapLFGFrame_OnEnter"/>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
+									<OnLeave function="MiniMapLFGFrame_OnLeave"/>
 								</Scripts>						
 								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 							</Button>	

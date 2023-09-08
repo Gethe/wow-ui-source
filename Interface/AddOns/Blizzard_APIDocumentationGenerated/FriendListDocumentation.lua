@@ -269,6 +269,7 @@ local FriendList =
 			Arguments =
 			{
 				{ Name = "filter", Type = "cstring", Nilable = false },
+				{ Name = "origin", Type = "number", Nilable = true },
 			},
 		},
 		{

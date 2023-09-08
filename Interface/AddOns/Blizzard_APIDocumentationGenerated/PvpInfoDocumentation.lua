@@ -260,6 +260,11 @@ local PvpInfo =
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
 		},
 		{
+			Name = "PvpBrawlInfoUpdated",
+			Type = "Event",
+			LiteralName = "PVP_BRAWL_INFO_UPDATED",
+		},
+		{
 			Name = "PvpRatedStatsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_RATED_STATS_UPDATE",
@@ -428,6 +433,7 @@ local PvpInfo =
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "groupsAllowed", Type = "bool", Nilable = false },
@@ -436,6 +442,28 @@ local PvpInfo =
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "PVPPersonalRatedInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "personalRating", Type = "number", Nilable = false },
+				{ Name = "bestSeasonRating", Type = "number", Nilable = false },
+				{ Name = "bestWeeklyRating", Type = "number", Nilable = false },
+				{ Name = "seasonPlayed", Type = "number", Nilable = false },
+				{ Name = "seasonWon", Type = "number", Nilable = false },
+				{ Name = "weeklyPlayed", Type = "number", Nilable = false },
+				{ Name = "weeklyWon", Type = "number", Nilable = false },
+				{ Name = "lastWeeksBestRating", Type = "number", Nilable = false },
+				{ Name = "hasWonBracketToday", Type = "bool", Nilable = false },
+				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "ranking", Type = "number", Nilable = true },
+				{ Name = "roundsSeasonPlayed", Type = "number", Nilable = false },
+				{ Name = "roundsSeasonWon", Type = "number", Nilable = false },
+				{ Name = "roundsWeeklyPlayed", Type = "number", Nilable = false },
+				{ Name = "roundsWeeklyWon", Type = "number", Nilable = false },
 			},
 		},
 		{

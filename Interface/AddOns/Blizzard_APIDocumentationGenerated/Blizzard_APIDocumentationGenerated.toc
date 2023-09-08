@@ -50,11 +50,13 @@ EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
 FogOfWarDocumentation.lua
+FrameAPIBlobDocumentation.lua
 FrameAPICinematicModelDocumentation.lua
 FrameAPICooldownDocumentation.lua
 FrameAPIFogOfWarFrameDocumentation.lua
 FrameAPIModelSceneFrameDocumentation.lua
 FrameAPIModelSceneFrameActorBaseDocumentation.lua
+FrameAPIQuestPOIDocumentation.lua
 FrameAPISimpleCheckoutDocumentation.lua
 FrameAPITabardModelBaseDocumentation.lua
 FrameAPIUnitPositionFrameDocumentation.lua
@@ -273,6 +275,7 @@ SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
+SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua

@@ -209,6 +209,7 @@ ActionBarController.xml
 ..\..\Interface_Vanilla\FrameXML\StanceBar.xml
 PossessActionBar.xml
 TutorialFrame.xml
+QueueStatusFrame.xml
 ..\..\Interface_Vanilla\FrameXML\Minimap.xml
 ..\..\Interface_Vanilla\FrameXML\GameTime.xml
 BuffFrame.xml
@@ -282,6 +283,11 @@ MailFrame.xml
 PetStable.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
+QueueUpdater.lua
+PVEFrame.xml
+LFGFrame.xml
+LFDFrame.xml
+LFGList.xml
 ..\..\Interface_Vanilla\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 ..\..\Interface_Vanilla\FrameXML\TalentFrameBase.lua

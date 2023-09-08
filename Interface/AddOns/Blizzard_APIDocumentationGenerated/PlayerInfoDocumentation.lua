@@ -77,6 +77,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsPlayerNPERestricted",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsXPUserDisabled",
 			Type = "Function",
 

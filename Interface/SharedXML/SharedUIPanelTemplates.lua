@@ -299,6 +299,60 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	editBox:ClearFocus();
 end
 
+PanelTabButtonMixin = {};
+
+function PanelTabButtonMixin:OnLoad()
+	self:SetFrameLevel(self:GetFrameLevel() + 4);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function PanelTabButtonMixin:OnEvent(event, ...)
+	if self:IsVisible() then
+		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+	end
+end
+
+function PanelTabButtonMixin:OnShow()
+	PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+end
+
+function PanelTabButtonMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText());
+	end
+end
+
+function PanelTabButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+PanelTopTabButtonMixin = {};
+
+local TOP_TAB_HEIGHT_PERCENT = 0.75;
+local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT;
+
+function PanelTopTabButtonMixin:OnLoad()
+	PanelTabButtonMixin.OnLoad(self);
+
+	for _, tabTexture in ipairs(self.TabTextures) do
+		tabTexture:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD);
+		tabTexture:SetHeight(tabTexture:GetHeight() * TOP_TAB_HEIGHT_PERCENT);
+	end
+
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, 0);
+	self.Right:ClearAllPoints();
+	self.Right:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, 0);
+
+	self.LeftActive:ClearAllPoints();
+	self.LeftActive:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -1, 0);
+	self.RightActive:ClearAllPoints();
+	self.RightActive:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 8, 0);
+
+	self.isTopTab = true;
+end
+
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)
 	PanelTemplates_SetTab(frame, self:GetID())

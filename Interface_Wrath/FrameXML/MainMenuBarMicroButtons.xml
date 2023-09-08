@@ -384,7 +384,7 @@
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnClick>
-				ToggleLFGParentFrame();
+				PVEFrame_ToggleFrame();
 			</OnClick>
 		</Scripts>
 	</Button>
