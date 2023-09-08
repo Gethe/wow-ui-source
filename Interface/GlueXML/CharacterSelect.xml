@@ -139,6 +139,7 @@
 							<Scripts>
 								<OnEnter function="LocationText_OnEnter"/>
 								<OnLeave function="LocationText_OnLeave"/>
+								<OnMouseUp function="LocationText_OnMouseUp"/>
 							</Scripts>
 						</FontString>
 					</Layer>
