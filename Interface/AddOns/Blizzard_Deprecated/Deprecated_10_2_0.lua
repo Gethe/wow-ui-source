@@ -25,4 +25,12 @@ do
 	IsAddonVersionCheckEnabled = C_AddOns.IsAddonVersionCheckEnabled;
 	SetAddonVersionCheck = C_AddOns.SetAddonVersionCheck;
 	IsAddOnLoadOnDemand = C_AddOns.IsAddOnLoadOnDemand;
+
+	local original_SetPortraitToTexture = SetPortraitToTexture;
+	SetPortraitToTexture = function(texture, asset)
+		if type(texture) == "string" then
+			texture = _G[texture];
+		end
+		original_SetPortraitToTexture(texture, asset);
+	end
 end

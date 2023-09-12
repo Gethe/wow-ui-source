@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+		
+	<Frame name="SubtitlesFrame" mixin="SubtitlesFrameMixin" setAllPoints="true" frameLevel="100" clampedToScreen="true" enableKeyboard="true" hidden="true" enableMouse="true">
+		<Size x="0" y="128"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" />
+			<Anchor point="BOTTOMRIGHT" />
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="MovieSubtitleFont" hidden="true" mixin="AutoScalingFontStringMixin">
+					<Size x="800" y="138"/>
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend" />
+			<OnEvent method="OnEvent" inherit="prepend" />
+		</Scripts>
+	</Frame>
+</Ui>

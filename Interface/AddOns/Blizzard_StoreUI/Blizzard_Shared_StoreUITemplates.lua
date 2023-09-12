@@ -248,6 +248,7 @@ function CategoryTreeScrollContainerMixin:ExpandSelectFirstChild(node, dataProvi
 end
 
 function CategoryTreeScrollContainerMixin:OnHide()
+	StoreFrame_SetSelectedCategoryID(nil);
 	self.selectionBehavior:ClearSelections();
 	self.ScrollBox:RemoveDataProvider();
 end
@@ -257,7 +258,18 @@ function CategoryTreeScrollContainerMixin:OnEvent(event, ...)
 		self:UpdateCategories();
 
 		local dataProvider = self.ScrollBox:GetDataProvider();
+		local childrenNodes = dataProvider:GetChildrenNodes();
 		local node = dataProvider:GetFirstChildNode();
+
+		-- If a category has already been selected (e.g. via UpgradeAccount), use that.
+		-- Otherwise, use the first node.
+		for idx, child in ipairs(childrenNodes) do
+			if(child.data and child.data.groupID == StoreFrame_GetSelectedCategoryID()) then
+				node = child;
+				break;
+			end
+		end
+
 		if node then
 			local firstNode = node:GetFirstNode();
 			if firstNode then

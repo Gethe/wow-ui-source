@@ -81,7 +81,7 @@
 									<Anchor point="RIGHT" relativeKey="$parent.TimeSortButton" relativePoint="LEFT" x="-48" y="0"/>
 								</Anchors>
 							</Button>
-							<Frame parentKey="PerksProgramHoldFrame" inherits="TooltipBackdropTemplate">
+							<Frame parentKey="PerksProgramHoldFrame" inherits="TooltipBackdropTemplate" frameLevel="985">
 								<KeyValues>
 									<KeyValue key="layoutType" value="PerksProgramHoldPanelTemplate" type="string"/>
 								</KeyValues>
@@ -92,7 +92,7 @@
 									<Anchor point="RIGHT" x="0" y="0"/>
 								</Anchors>
 								<Frames>
-									<Frame parentKey="FrozenItemFrame" mixin="PerksProgramFrameFrozenItemMixin">
+									<Frame parentKey="FrozenItemFrame" mixin="PerksProgramFrameFrozenItemMixin" frameLevel="1000">
 										<Anchors>
 											<Anchor point="TOPLEFT" x="0" y="0"/>
 											<Anchor point="BOTTOMRIGHT" x="0" y="0"/>

@@ -156,7 +156,7 @@ UI_shared.xsd">
 		</Scripts>
 	</Frame>
 	
-	<Frame name="TimerTracker" parent="UIParent" setAllPoints="true">
+	<Frame name="TimerTracker" frameStrata="DIALOG" parent="UIParent" setAllPoints="true">
 		<Scripts>
 			<OnLoad function="TimerTracker_OnLoad"/>
 			<OnEvent function="TimerTracker_OnEvent"/>

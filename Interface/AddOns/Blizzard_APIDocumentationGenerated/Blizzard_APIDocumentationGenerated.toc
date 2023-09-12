@@ -110,6 +110,7 @@ PlatformDocumentation.lua
 PlayerInfoDocumentation.lua
 PlayerInteractionManagerDocumentation.lua
 PlayerLocationDocumentation.lua
+PonyDocumentation.lua
 PortraitDocumentation.lua
 PvpInfoDocumentation.lua
 QuestInfoSystemDocumentation.lua
@@ -348,6 +349,7 @@ SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
+SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua

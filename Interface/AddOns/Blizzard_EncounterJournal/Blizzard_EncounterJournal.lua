@@ -846,7 +846,6 @@ function EncounterJournal_ListInstances()
 
 	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, tierName);
-	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal.encounter:Hide();
 	instanceSelect:Show();
 
@@ -2423,7 +2422,7 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	elseif tierIndex then
 		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);
 	else
-		EncounterJournal_ListInstances()
+		EncounterJournal_ListInstances();
 	end
 end
 
@@ -2457,9 +2456,9 @@ end
 
 function EJ_ContentTab_Select(id)
 	PanelTemplates_SetTab(EncounterJournal, id);
-	local instanceSelect = EncounterJournal.instanceSelect;
-
 	EncounterJournal.selectedTab = id;
+
+	local instanceSelect = EncounterJournal.instanceSelect;
 
 	-- Setup background
 	local tierData;
@@ -2470,7 +2469,7 @@ function EJ_ContentTab_Select(id)
 	end
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	EncounterJournal.encounter:Hide();
-	EncounterJournal.instanceSelect:Show();
+	instanceSelect:Show();
 
 	if ( id == EncounterJournal.MonthlyActivitiesTab:GetID() ) then
 		EJ_HideSuggestPanel();
@@ -2496,11 +2495,17 @@ function EJ_ContentTab_Select(id)
 	-- Update title bar with the current tab name
 	EJInstanceSelect_UpdateTitle(id);
 
+	NavBar_Reset(EncounterJournal.navBar);
+
+	local showNavBar = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
+	EncounterJournal.navBar:SetShown(showNavBar);
+
+	local showSearchBox = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() or id == EncounterJournal.LootJournalTab:GetID());
+	EncounterJournal.searchBox:SetShown(showSearchBox);
+
 	local showMonthlyActivities = (id == EncounterJournal.MonthlyActivitiesTab:GetID());
-	EncounterJournal.navBar:SetShown(not showMonthlyActivities);
-	EncounterJournal.instanceSelect.tierDropDown:SetShown(not showMonthlyActivities);
-	EncounterJournal.instanceSelect.bg:SetShown(not showMonthlyActivities);
-	EncounterJournal.searchBox:SetShown(not showMonthlyActivities);
+	instanceSelect.tierDropDown:SetShown(not showMonthlyActivities);
+	instanceSelect.bg:SetShown(not showMonthlyActivities);
 	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
 
 	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
@@ -2591,7 +2596,10 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
 
-	EncounterJournal_ListInstances();
+	-- Item Set tab uses the tier dropdown, but we do not want to show instances when changing tiers on that tab.
+	if EncounterJournal_IsDungeonTabSelected(EncounterJournal) or EncounterJournal_IsRaidTabSelected(EncounterJournal) then
+		EncounterJournal_ListInstances();
+	end
 end
 
 function EncounterJournal_OnFilterChanged(self)
@@ -2905,7 +2913,6 @@ end
 
 function EJSuggestFrame_OpenFrame()
 	EJ_ContentTab_Select(EncounterJournal.suggestTab:GetID());
-	NavBar_Reset(EncounterJournal.navBar);
 end
 
 function EJSuggestFrame_UpdateRewards(suggestion)

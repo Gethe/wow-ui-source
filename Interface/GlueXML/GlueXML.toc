@@ -154,8 +154,8 @@ CharacterServicesPaidNameChange.xml
 SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
-MovieFrame.xml
 CinematicsFrame.xml
+MovieFrame.xml
 CreditsFrame.xml
 GlueMenuFrame.xml
 ..\SharedXML\ToolWindowOwnerMixin.lua

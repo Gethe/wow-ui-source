@@ -5,9 +5,9 @@ local PlayerInteractionManagerConstants =
 		{
 			Name = "PlayerInteractionType",
 			Type = "Enumeration",
-			NumValues = 65,
+			NumValues = 66,
 			MinValue = 0,
-			MaxValue = 64,
+			MaxValue = 65,
 			Fields =
 			{
 				{ Name = "None", Type = "PlayerInteractionType", EnumValue = 0 },
@@ -24,7 +24,7 @@ local PlayerInteractionManagerConstants =
 				{ Name = "Registrar", Type = "PlayerInteractionType", EnumValue = 11 },
 				{ Name = "Vendor", Type = "PlayerInteractionType", EnumValue = 12 },
 				{ Name = "PetitionVendor", Type = "PlayerInteractionType", EnumValue = 13 },
-				{ Name = "TabardVendor", Type = "PlayerInteractionType", EnumValue = 14 },
+				{ Name = "GuildTabardVendor", Type = "PlayerInteractionType", EnumValue = 14 },
 				{ Name = "TalentMaster", Type = "PlayerInteractionType", EnumValue = 15 },
 				{ Name = "SpecializationMaster", Type = "PlayerInteractionType", EnumValue = 16 },
 				{ Name = "MailInfo", Type = "PlayerInteractionType", EnumValue = 17 },
@@ -75,6 +75,7 @@ local PlayerInteractionManagerConstants =
 				{ Name = "BarbersChoice", Type = "PlayerInteractionType", EnumValue = 62 },
 				{ Name = "JailersTowerBuffs", Type = "PlayerInteractionType", EnumValue = 63 },
 				{ Name = "MajorFactionRenown", Type = "PlayerInteractionType", EnumValue = 64 },
+				{ Name = "PersonalTabardVendor", Type = "PlayerInteractionType", EnumValue = 65 },
 			},
 		},
 	},

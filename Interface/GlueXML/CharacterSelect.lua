@@ -195,10 +195,15 @@ function CharacterSelect_OnLoad(self)
 	view:SetPadding(pad, pad, left, pad, spacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(CharacterSelectCharacterFrame.ScrollBox, CharacterSelectCharacterFrame.ScrollBar, view);
-	
+
 	do
 		local function Initializer(button, elementData)
 			CharacterSelect_InitCharacterButton(button, elementData);
+			button:SetScript("OnEnter", nil);
+			button:SetScript("OnLeave", nil);
+			button.buttonText.Location:SetScript("OnEnter", nil);
+			button.buttonText.Location:SetScript("OnLeave", nil);
+			button.buttonText.Location:SetScript("OnMouseUp", nil);
 			button.selection:Hide();
 			button.drag:Show();
 		end
@@ -245,7 +250,7 @@ function CharacterSelect_OnLoad(self)
 		end);
 	end
 
-	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions. 
+	-- Assigning an empty data provider to prevent any scroll box related access errors due to race conditions.
 	-- When the actual character data arrives, this data provider will be discarded.
 	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(CreateDataProvider());
 end
@@ -1043,7 +1048,7 @@ function CharacterSelect_InitCharacterButton(button, elementData)
 				else
 					if IsRPEBoostEligible(GetCharIDFromIndex(button.index)) then
 						locationText:SetFontObject("GlueFontHighlightSmall");
-						locationText:SetText(RPE_GEAR_UPDATE_GREEN); 
+						locationText:SetText(RPE_GEAR_UPDATE_GREEN);
 					else
 						locationText:SetFontObject("GlueFontDisableSmall");
 						locationText:SetText(zone);
@@ -1344,11 +1349,11 @@ function CharacterSelectButton_ShowMoveButtons(button)
 	if ( numCharacters <= 1 ) then
 		return;
 	end
-	
+
 	if not CharacterSelect_CanReorderCharacter() then
 		return;
 	end
-	
+
 	button.upButton:Show();
 	button.upButton.normalTexture:SetPoint("CENTER", 0, 0);
 	button.upButton.highlightTexture:SetPoint("CENTER", 0, 0);
@@ -1362,7 +1367,7 @@ function CharacterSelectButton_ShowMoveButtons(button)
 	    button.upButton:Enable();
 	    button.upButton:SetAlpha(1);
 	end
-	
+
 	if ( button.index == numCharacters ) then
 	    button.downButton:Disable();
 	    button.downButton:SetAlpha(0.35);
@@ -1675,6 +1680,13 @@ function LocationText_OnLeave(self)
 	characterButton:UnlockHighlight();
 	if ( GetMouseFocus() ~= characterButton ) then
 		CharacterSelectButton_OnLeave(characterButton);
+	end
+end
+
+function LocationText_OnMouseUp(self, button, upInside)
+	if button == "LeftButton" and upInside then
+		local characterButton = self:GetParent():GetParent();
+		CharacterSelectButton_OnClick(characterButton);
 	end
 end
 
@@ -2206,7 +2218,7 @@ function CharacterSelect_ConditionallyLoadAccountSaveUI()
         end
         if (AccountSaveFrame) then
             AccountSaveFrame:Show();
-            
+
             if (GameRoomBillingFrame:IsShown()) then
                 GameRoomBillingFrame:SetPoint("TOPLEFT", StoreButton, "TOPRIGHT");
             end
@@ -3519,7 +3531,7 @@ end
 function CharSelectServicesFlowFrameMixin:Initialize(flow)
 	if not flow.MinimizedFrame then
 		self.IsMinimized = false; --flows that cant minimize should no longer be tracking that they are minimized.
-		if self.MinimizedFrame then 
+		if self.MinimizedFrame then
 			self.MinimizedFrame:Hide(); --any previously minimized frames should be hidden (will be cleared in CharSelectServicesFlowFrame:Initialize)
 		end
 	end

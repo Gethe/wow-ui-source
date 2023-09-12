@@ -244,4 +244,7 @@
   <Font name="IMEHighlight" inherits="System_IME" justifyH="LEFT" virtual="true">
     <Color r="1.0" g="0.82" b="0"/>
   </Font>
+	<Font name="MovieSubtitleFont" inherits="SystemFont22_Shadow_Outline" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
 </Ui>

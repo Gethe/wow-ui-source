@@ -39,17 +39,6 @@ UI_shared.xsd">
 					<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="MovieSubtitleFont" hidden="true" mixin="AutoScalingFontStringMixin">
-					<Size x="800" y="138"/>
-					<KeyValues>
-						<KeyValue key="minLineHeight" value="10" type="number"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentRaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parentKey="raidBossEmoteFrame">

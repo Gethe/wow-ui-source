@@ -38,7 +38,12 @@ local InteractionManagerFrameInfo = {
 	{
 		frame = "GuildRegistrarFrame"
 	}, 
-	[Enum.PlayerInteractionType.TabardVendor] = 
+	[Enum.PlayerInteractionType.GuildTabardVendor] = 
+	{ 
+		frame = "TabardFrame", 
+		showFunc = TabardFrame_Open 
+	},
+	[Enum.PlayerInteractionType.PersonalTabardVendor] = 
 	{ 
 		frame = "TabardFrame", 
 		showFunc = TabardFrame_Open 

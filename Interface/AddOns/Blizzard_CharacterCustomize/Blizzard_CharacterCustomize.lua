@@ -1087,8 +1087,7 @@ function CharCustomizeMixin:OnLoad()
 	self.pools = CreateFramePoolCollection();
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
-	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeShapeshiftFormButtonTemplate");
-	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeRidingDrakeButtonTemplate");
+	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeConditionalModelButtonTemplate");
 	self.pools:CreatePool("FRAME", self, "CharCustomizeAudioInterface", function(pool, audioInterface)
 		FramePool_HideAndClearAnchors(pool, audioInterface);
 		audioInterface:StopAudio();
@@ -1201,14 +1200,14 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 		local alteredFormSelected = notChrModel and self.viewingAlteredForm;
 		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, alteredFormSelected, true, 0);
 		alteredForm:Show();
-	elseif self.hasShapeshiftForms then
-		local normalForm = buttonPool:Acquire();
-		local normalFormSelected = not self.viewingShapeshiftForm;
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
-		normalForm:Show();
 	elseif self.needsNativeFormCategory then
 		local normalForm = buttonPool:Acquire();
 		local normalFormSelected = not self.viewingChrModelID;
+		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
+		normalForm:Show();
+	elseif self.hasShapeshiftForms then
+		local normalForm = buttonPool:Acquire();
+		local normalFormSelected = not self.viewingShapeshiftForm;
 		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 	end
@@ -1328,9 +1327,7 @@ end
 
 function CharCustomizeMixin:GetCategoryPool(categoryData)
 	if categoryData.chrModelID then
-		return self.pools:GetPool("CharCustomizeRidingDrakeButtonTemplate");
-	elseif categoryData.spellShapeshiftFormID then
-		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");
+		return self.pools:GetPool("CharCustomizeConditionalModelButtonTemplate");
 	else
 		return self.pools:GetPool("CharCustomizeCategoryButtonTemplate");
 	end
@@ -1401,7 +1398,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	local optionsToSetup = {};
 
 	for _, categoryData in ipairs(self:GetCategories()) do
-		local showCategory = not self.selectedCategoryData.spellShapeshiftFormID or categoryData.spellShapeshiftFormID;
+		local showCategory = not self.selectedCategoryData.spellShapeshiftFormID or (categoryData.spellShapeshiftFormID or categoryData.chrModelID);
 
 		if showCategory then
 			local categoryPool = self:GetCategoryPool(categoryData);
@@ -1412,10 +1409,12 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 				if not self.firstChrModelID then
 					self.firstChrModelID = categoryData.chrModelID;
 				end
-			elseif categoryData.spellShapeshiftFormID then
-				self.hasShapeshiftForms = true;
 			else
 				self.numNormalCategories = self.numNormalCategories + 1;
+			end
+
+			if categoryData.spellShapeshiftFormID then
+				self.hasShapeshiftForms = true;
 			end
 
 			if categoryData.needsNativeFormCategory then
@@ -1511,10 +1510,10 @@ end
 function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
 	local hadCategoryChange = not self:IsSelectedCategory(categoryData);
 
-	if categoryData.chrModelID then
-		self:SetViewingChrModel(categoryData.chrModelID);
-	elseif categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
+	if categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
 		self:SetViewingShapeshiftForm(categoryData.spellShapeshiftFormID);
+	elseif categoryData.chrModelID then
+		self:SetViewingChrModel(categoryData.chrModelID);
 	end
 
 	self.selectedCategoryData = categoryData;

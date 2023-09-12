@@ -41,6 +41,7 @@
 			</Button>
 
 			<Button parentKey="UnlockTabButton" inherits="UIPanelButtonTemplate" text="PROFESSIONS_SPECIALIZATION_UNLOCK_TAB" motionScriptsWhileDisabled="true" frameStrata="HIGH">
+				<!-- Width overriden in some locales -->
 				<Size x="164" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="20"/>
@@ -48,6 +49,7 @@
 			</Button>
 
 			<Button parentKey="ViewTreeButton" inherits="UIPanelButtonTemplate" text="PROF_VIEW_FULL_TREE" frameStrata="HIGH" hidden="true">
+				<!-- Width overriden in some locales -->
 				<Size x="140" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="20" y="20"/>

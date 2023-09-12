@@ -257,7 +257,8 @@ end
 function TargetFrameMixin:OnHide()
 	-- "Soft" target changes should not cause this sound to play
 	if (not IsTargetLoose()) then
-		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
+		local forceNoDuplicates = true;
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT, nil, forceNoDuplicates);
 	end
 	CloseDropDownMenus();
 end

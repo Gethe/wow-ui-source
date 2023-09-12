@@ -13,7 +13,7 @@ UI_shared.xsd">
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="ReadyCheckFrame" frameStrata="DIALOG" toplevel="true" parent="UIParent" hidden="true">
 		<Size x="323" y="100"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="-10"/>

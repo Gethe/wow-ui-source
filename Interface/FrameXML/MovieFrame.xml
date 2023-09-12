@@ -8,14 +8,6 @@ UI_shared.xsd">
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="MovieFrameSubtitleString" inherits="MovieSubtitleFont" hidden="true">
-					<Size x="800" y="138"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="CloseDialog">
@@ -74,8 +66,6 @@ UI_shared.xsd">
 			<OnUpdate function="MovieFrame_OnUpdate"/>
 			<OnKeyUp function="MovieFrame_OnKeyUp"/>
 			<OnMovieFinished function="MovieFrame_OnMovieFinished"/>
-			<OnMovieShowSubtitle function="MovieFrame_OnMovieShowSubtitle"/>
-			<OnMovieHideSubtitle function="MovieFrame_OnMovieHideSubtitle"/>
 		</Scripts>
 	</MovieFrame>
 </Ui>

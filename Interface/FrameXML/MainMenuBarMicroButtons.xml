@@ -9,7 +9,7 @@ UI_shared.xsd">
 		</Anchors>
 	</Frame>
 
-	<Button name="MainMenuBarMicroButton" inherits="QuickKeybindButtonTemplate" mixin="MainMenuBarMicroButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="MainMenuBarMicroButton" inherits="QuickKeybindButtonTemplate" mixin="MainMenuBarMicroButtonMixin" motionScriptsWhileDisabled="true" toplevel="true" virtual="true">
 		<Size x="32" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
