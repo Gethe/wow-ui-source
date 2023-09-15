@@ -392,7 +392,6 @@
 					</OnLoad>
 					<OnClick>
 						WorldMapQuestShowObjectives_Toggle();
-						WatchFrame_Update();
 					</OnClick>
 					<OnEnter>
 						WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");

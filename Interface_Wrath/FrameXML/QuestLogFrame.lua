@@ -111,6 +111,7 @@ function QuestLog_OnEvent(self, event, ...)
 		if ( GetCVar("autoQuestWatch") == "1" ) then
 			_QuestLog_ToggleQuestWatch(arg1);
 		end
+		QuestLog_Update();
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		QuestLog_Update();
 	elseif ( event == "QUEST_DETAIL" ) then
@@ -734,7 +735,6 @@ end
 function _QuestLog_ToggleQuestWatch(questIndex)
 	if ( IsQuestWatched(questIndex) ) then
 		RemoveQuestWatch(questIndex);
-		WatchFrame_ClearDisplay();
 		WatchFrame_Update();
 	else
 		if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed

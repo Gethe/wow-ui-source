@@ -135,6 +135,7 @@ KioskModeSplash.xml
 CharacterServicesShared.lua
 CharacterServicesTemplates.xml
 CharacterServices.xml
+..\SharedXML\CharacterServicesPaidNameChange.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
 CharacterServicesPaidRaceChange.xml

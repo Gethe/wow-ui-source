@@ -204,6 +204,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("QUEST_ACCEPTED");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.linePool = CreateFramePool("FRAME", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonPool = CreateFramePool("BUTTON", WatchFrameLines, "WatchFrameLinkButtonTemplate");
@@ -240,6 +241,11 @@ function WatchFrame_OnEvent (self, event, ...)
 		if ( self.collapsed ) then
 			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
 		end
+	elseif ( event == "QUEST_ACCEPTED" ) then
+		if ( WatchFrame.showObjectives ) then
+			WatchFrame_GetCurrentMapQuests();
+		end		
+		WatchFrame_Update(self);
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		local achievementID, criteriaID, elapsed, duration = ...;
 
@@ -289,7 +295,6 @@ function WatchFrame_OnUpdate(self, elapsed)
 end
 
 function WatchFrame_OnSizeChanged(self)
-	WatchFrame_ClearDisplay();
 	WatchFrame_Update(self);
 end
 
@@ -367,6 +372,7 @@ function WatchFrame_Update (self)
 	local totalObjectives = 0;
 
 	WatchFrame_ResetLinkButtons();
+	QuestPOI_ResetUsage(WatchFrameLines);
 
 	for i = 1, #WATCHFRAME_OBJECTIVEHANDLERS do
 		pixelsUsed, maxLineWidth, numObjectives = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, totalOffset, maxHeight, maxFrameWidth);
@@ -1011,7 +1017,6 @@ end
 
 function WatchFrame_StopTrackingQuest (button, arg1, arg2, checked)
 	RemoveQuestWatch(GetQuestIndexForWatch(arg1));
-	WatchFrame_ClearDisplay();
 	WatchFrame_Update();
 end
 
@@ -1464,6 +1469,5 @@ function WatchFrame_MoveQuest(button, questLogIndex, numMoves)
 		indexEnd = numVisibleWatches;
 	end
 	ShiftQuestWatches(GetQuestWatchIndex(questLogIndex), GetQuestWatchIndex(VISIBLE_WATCHES[indexEnd]));
-	WatchFrame_ClearDisplay();
 	WatchFrame_Update();
 end

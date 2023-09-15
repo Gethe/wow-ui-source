@@ -130,6 +130,7 @@ ChatBubbleTemplates.xml
 WorldFrame.xml
 ..\..\Interface_TBC\FrameXML\UIParent.lua
 FrameXML\UIParent.xml
+PartyUtil.lua
 ..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua

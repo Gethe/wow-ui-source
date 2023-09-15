@@ -526,7 +526,6 @@ function WorldMapQuestShowObjectives_Toggle()
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		WatchFrame.showObjectives = nil;
-		WatchFrame_Update();
 	end
 	QuestLog_UpdateMapButton();
 	SetCVar("questPOI", isChecked);

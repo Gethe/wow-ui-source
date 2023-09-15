@@ -3013,6 +3013,54 @@ if (C_GameRules.IsHardcoreActive()) then
 		OnCancel = function(self)
 			CancelDuel();
 		end,
+		OnUpdate = function(self)
+			if ( not self.linkRegion or not self.nextUpdateTime ) then
+				return;
+			end
+	
+			local timeNow = GetTime();
+			if ( self.nextUpdateTime > timeNow ) then
+				return;
+			end
+	
+			local guid, level = GetDuelerInfo();
+			local className, classFilename, _, _, gender, characterName, _ = GetPlayerInfoByGUID(guid);
+			self.target = characterName;
+			GameTooltip:SetOwner(self.linkRegion, "ANCHOR_CURSOR_RIGHT");
+	
+			if ( className ) then
+				self.nextUpdateTime = nil; -- The tooltip will be created with valid data, no more updates necessary.
+	
+				local _, _, _, colorCode = GetClassColor(classFilename);
+				GameTooltip:SetText(WrapTextInColorCode(characterName, colorCode));
+	
+				local characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+				GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
+			else
+				self.nextUpdateTime = timeNow + .5;
+				GameTooltip:SetText(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
+			end
+	
+			GameTooltip:Show();
+		end,
+		OnHyperlinkClick = function(self, link, text, button)
+			-- Target whoever is challenging us.
+			if ( button == "LeftButton" and self.target ) then
+				TargetUnit(self.target)
+			end
+		end,
+		OnHyperlinkEnter = function(self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+			self.linkRegion = region;
+			self.linkText = text;
+			self.nextUpdateTime = GetTime();
+			StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED"].OnUpdate(self);
+		end,
+		OnHyperlinkLeave = function(self)
+			self.linkRegion = nil;
+			self.linkText = nil;
+			self.nextUpdateTime = nil;
+			GameTooltip:Hide();
+		end,
 		timeout = STATICPOPUP_TIMEOUT,
 		hideOnEscape = 1
 	};

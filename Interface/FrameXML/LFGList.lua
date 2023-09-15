@@ -170,7 +170,9 @@ function LFGListFrame_OnEvent(self, event, ...)
 					if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and
 					GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + C_LFGList.GetNumInvitedApplicantMembers() + C_LFGList.GetNumPendingApplicantMembers() > (MAX_PARTY_MEMBERS+1) ) then
 						if ( self.displayedAutoAcceptConvert ) then
-							QueueStatusButton:SetGlowLock("lfglist-applicant", true, numPings);
+							if(QueueStatusButton) then 
+								QueueStatusButton:SetGlowLock("lfglist-applicant", true, numPings); 
+							end
 							self.stopAssistPings = true;
 						else
 							self.displayedAutoAcceptConvert = true;
@@ -178,7 +180,9 @@ function LFGListFrame_OnEvent(self, event, ...)
 						end
 					end
 				elseif ( not self:IsVisible() ) then
-					QueueStatusButton:SetGlowLock("lfglist-applicant", true, numPings);
+					if(QueueStatusButton) then 
+						QueueStatusButton:SetGlowLock("lfglist-applicant", true, numPings);
+					end
 					self.stopAssistPings = true;
 				end
 			end
@@ -186,7 +190,9 @@ function LFGListFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_LIST_APPLICANT_UPDATED" ) then
 		local numApps, numActiveApps = C_LFGList.GetNumApplicants();
 		if ( numActiveApps == 0 ) then
-			QueueStatusButton:SetGlowLock("lfglist-applicant", false);
+			if(QueueStatusButton) then 
+				QueueStatusButton:SetGlowLock("lfglist-applicant", false);
+			end
 			self.stopAssistPings = false;
 		end
 	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" ) then
@@ -233,7 +239,9 @@ function LFGListFrame_OnShow(self)
 	LFGListFrame_FixPanelValid(self);
 	C_LFGList.RequestAvailableActivities();
 	self.stopAssistPings = false;
-	QueueStatusButton:SetGlowLock("lfglist-applicant", false);
+	if(QueueStatusButton) then 
+		QueueStatusButton:SetGlowLock("lfglist-applicant", false);
+	end
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 end
 
@@ -3533,7 +3541,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);
 
-	if (searchResultInfo.playstyle > 0) then
+	if (searchResultInfo.playstyle and searchResultInfo.playstyle > 0) then
 		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
 		if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 			GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
@@ -3550,10 +3558,10 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, searchResultInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 	tooltip:AddLine(" ");
-	if ( searchResultInfo.requiredDungeonScore > 0 ) then
+	if ( searchResultInfo.requiredDungeonScore and searchResultInfo.requiredDungeonScore > 0 ) then
 		tooltip:AddLine(GROUP_FINDER_MYTHIC_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredDungeonScore));
 	end
-	if ( searchResultInfo.requiredPvpRating > 0 ) then
+	if ( searchResultInfo.requiredPvpRating and searchResultInfo.requiredPvpRating > 0 ) then
 		tooltip:AddLine(GROUP_FINDER_PVP_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredPvpRating));
 	end
 	if ( searchResultInfo.requiredItemLevel > 0 ) then
@@ -3569,7 +3577,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( searchResultInfo.voiceChat ~= "" ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
 	end
-	if ( searchResultInfo.requiredItemLevel > 0 or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" or  searchResultInfo.requiredDungeonScore > 0 or searchResultInfo.requiredPvpRating > 0 ) then
+	if ( (searchResultInfo.requiredItemLevel and searchResultInfo.requiredItemLevel > 0) or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" or  (searchResultInfo.requiredDungeonScore and searchResultInfo.requiredDungeonScore > 0) or (searchResultInfo.requiredPvpRating and searchResultInfo.requiredPvpRating > 0) ) then
 		tooltip:AddLine(" ");
 	end
 

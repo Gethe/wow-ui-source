@@ -971,15 +971,15 @@ function LFGDungeonReadyStatusIndividual_UpdateIcon(button)
 	button.texture:SetAtlas(GetIconForRole(role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 
 	if ( not responded ) then
-		button.statusIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		button.statusIcon:SetAtlas(READY_CHECK_WAITING_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 	elseif ( accepted ) then
 		if ( button.readyStatus ~= "accepted" ) then
 			button.readyStatus = "accepted";
 			PlaySound(SOUNDKIT.LFG_ROLE_CHECK);
 		end
-		button.statusIcon:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		button.statusIcon:SetAtlas(READY_CHECK_READY_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 	else
-		button.statusIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		button.statusIcon:SetAtlas(READY_CHECK_NOT_READY_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 	end
 
 	button:Show();
@@ -1008,11 +1008,11 @@ function LFGDungeonReadyStatusGrouped_UpdateIcon(button, buttonRole, numMembers)
 	button.count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, numAccepted, numTotal);
 
 	if ( didDecline ) then
-		button.statusIcon:SetAtlas(READY_CHECK_NOT_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		button.statusIcon:SetAtlas(READY_CHECK_NOT_READY_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 	elseif ( numAccepted == numTotal ) then
-		button.statusIcon:SetAtlas(READY_CHECK_READY_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		button.statusIcon:SetAtlas(READY_CHECK_READY_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 	else
-		button.statusIcon:SetAtlas(READY_CHECK_WAITING_TEXTURE, TextureKitConstants.IgnoreAtlasSize);
+		button.statusIcon:SetAtlas(READY_CHECK_WAITING_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 

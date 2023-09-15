@@ -144,6 +144,7 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("CVAR_UPDATE");
 
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
@@ -180,6 +181,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	if ( (event == "QUEST_LOG_UPDATE" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player")) and not self.ignoreQuestLogUpdate ) then
 		QuestMapFrame_DoFullUpdate();
+		WatchFrame_Update();
 	elseif ( event == "QUEST_LOG_CRITERIA_UPDATE" ) then
 		local questID, criteriaID, description, fulfilled, required = ...;
 
@@ -217,6 +219,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		TUTORIAL_QUEST_ACCEPTED = arg2; -- questID
+		self:Refresh();
 	elseif ( event == "AJ_QUEST_LOG_OPEN" ) then
 		OpenQuestMapLog();
 		local questID = select(8, GetQuestLogTitle(arg1));
@@ -231,12 +234,14 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Refresh();
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+		-- Set to a new zone, update
+		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
 		if ( arg1 == "questPOI" ) then
 			QuestMapFrame:GetParent():SetQuestLogPanelShown(GetCVarBool("questPOI") and GetCVarBool("questHelper"));
 			QuestMapFrame_UpdateAll();
-			WatchFrame_ClearDisplay();
 			WatchFrame_Update();
 			QuestLog_UpdateMapButton();
 		elseif ( arg1 == "questHelper" ) then
@@ -249,9 +254,8 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			end
 			QuestMapFrame:GetParent():SetQuestLogPanelShown(GetCVarBool("questPOI") and GetCVarBool("questHelper"));
 			QuestMapFrame_UpdateAll();
-			WatchFrame_ClearDisplay();
 			WatchFrame_Update();
-			QuestLog_UpdateMapButton()
+			QuestLog_UpdateMapButton();
 		end
 	end
 end
@@ -285,8 +289,8 @@ function QuestMapFrame_Close(userAction)
 end
 
 function QuestMapFrame_Show()
+	QuestMapFrame_UpdateAll();
 	if ( not QuestMapFrame:IsShown() ) then
-		QuestMapFrame_UpdateAll();	
 		QuestMapFrame:Show();
 		QuestMapFrame:GetParent():OnQuestLogShow();
 	end
@@ -840,6 +844,8 @@ local function QuestLogQuests_DisplayQuestButton(displayState, info, index)
 
 	if QuestLogQuests_ShouldShowQuestButton(info,  questWatch) then
 		return QuestLogQuests_AddQuestButton(displayState, info,  questWatch, index);
+	else
+		numQuestComplete =  numQuestComplete + 1;
 	end
 end
 
@@ -962,7 +968,6 @@ local function _QuestMap_HighlightSelectedQuest(questLogTitle)
 		QuestMapSelectFrame:SetPoint("TOPLEFT", questLogTitle, "TOPLEFT", 0, 0);
 		QuestMapSelectFrame:SetPoint("BOTTOMRIGHT", questLogTitle, "BOTTOMRIGHT", 0, 0);
 		QuestMapSelectFrame:Show();
-		SelectQuestLogEntry(questLogIndex);
 
 		if(highlightedQuest and questLogTitle == highlightedQuest) then
 			QuestMapHighlightFrame:Hide();
