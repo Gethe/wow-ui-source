@@ -3171,32 +3171,9 @@ local roleRemainingKeyLookup = {
 	["DAMAGER"] = "DAMAGER_REMAINING",
 };
 
-local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
-	local roles = C_LFGList.GetSearchResultMemberCounts(lfgSearchResultID);
-	if roles then
-		local playerRole = GetSpecializationRole(GetSpecialization());
-		if playerRole then
-			local remainingRoleKey = roleRemainingKeyLookup[playerRole];
-			if remainingRoleKey then
-				return (roles[remainingRoleKey] or 0) > 0;
-			end
-		end
-	end
-
-	return false;
-end
-
 function LFGListUtil_SortSearchResultsCB(searchResultID1, searchResultID2)
 	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
 	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
-
-	local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
-	local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
-
-	-- Groups with your current role available are preferred
-	if (hasRemainingRole1 ~= hasRemainingRole2) then
-		return hasRemainingRole1;
-	end
 
 	--If one has more friends, do that one first
 	if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
