@@ -246,7 +246,7 @@ function DressUpMount(mountID, forcedFrame, shouldSetModelFromHyperlink, link)
 	frame.ModelScene:ClearScene();
 	frame.ModelScene:SetViewInsets(0, 0, 0, 0);
 	local forceEvenIfSame = true;
-	frame.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceEvenIfSame);
+	frame.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceEvenIfSame);
 	
 	local mountActor = frame.ModelScene:GetActorByTag("unwrapped");
 	if mountActor then

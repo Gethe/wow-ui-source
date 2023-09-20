@@ -102,6 +102,7 @@ GlueContextMenu.xml
 ..\SharedXML\ButtonTray\ButtonTrayUtil.lua
 ..\SharedXML\ButtonTray\ButtonTray.xml
 ..\SharedXML\Spline.lua
+..\SharedXML\ModelSceneControlFrame.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
@@ -150,7 +151,7 @@ CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
 CharacterServicesPaidRaceChange.xml
-CharacterServicesPaidNameChange.xml
+..\SharedXML\CharacterServicesPaidNameChange.xml
 SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

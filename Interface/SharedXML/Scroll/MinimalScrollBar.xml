@@ -4,6 +4,7 @@
 
 	<Frame name="MinimalScrollBarStepperScripts" mixin="MinimalScrollBarStepperScriptsMixin" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>

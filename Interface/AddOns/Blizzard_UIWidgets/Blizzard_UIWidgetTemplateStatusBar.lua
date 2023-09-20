@@ -19,9 +19,9 @@ local textureKitRegionFormatStrings = {
 	["Spark"] = "%s-Spark",
 	["SparkMask"] = "%s-spark-mask",
 	["BackgroundGlow"] = "%s-BackgroundGlow",
-	["GlowLeft"] = "%s-Glow-BorderLeft",
-	["GlowRight"] = "%s-Glow-BorderRight",
-	["GlowCenter"] = "%s-Glow-BorderCenter",
+	["GlowLeft"] = "%s-GlowLeft",
+	["GlowRight"] = "%s-GlowRight",
+	["GlowCenter"] = "%s-GlowCenter",
 }
 
 local backgroundGlowTextureKitString = "%s-BackgroundGlow";
@@ -104,6 +104,30 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	local backgroundGlowAtlas = backgroundGlowTextureKitString:format(widgetInfo.frameTextureKit);
 	local backgroundGlowAtlasInfo = C_Texture.GetAtlasInfo(backgroundGlowAtlas);
 	self.Bar.BackgroundGlow:SetShown(backgroundGlowAtlasInfo);
+
+	local hasGlows = self.Bar.GlowLeft:IsShown() and self.Bar.GlowRight:IsShown() and self.Bar.GlowCenter:IsShown();
+	if hasGlows and (widgetInfo.showGlowState == Enum.WidgetShowGlowState.ShowGlow) then
+		self.Bar.GlowLeft:Show();
+		self.Bar.GlowRight:Show();
+		self.Bar.GlowCenter:Show();
+
+		if widgetInfo.glowAnimType == Enum.WidgetGlowAnimType.Pulse then
+			self.Bar.GlowPulseAnim:Play();
+		else
+			self.Bar.GlowPulseAnim:Stop();
+			self.Bar.GlowLeft:SetAlpha(1);
+			self.Bar.GlowRight:SetAlpha(1);
+			self.Bar.GlowCenter:SetAlpha(1);
+		end
+	else
+		self.Bar.GlowPulseAnim:Stop();
+		self.Bar.GlowLeft:Hide();
+		self.Bar.GlowRight:Hide();
+		self.Bar.GlowCenter:Hide();
+		self.Bar.GlowLeft:SetAlpha(1);
+		self.Bar.GlowRight:SetAlpha(1);
+		self.Bar.GlowCenter:SetAlpha(1);
+	end
 
 	local totalWidth = math.max(self.Bar:GetWidth() + 16, labelWidth);
 	self:SetWidth(totalWidth);

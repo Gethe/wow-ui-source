@@ -43,8 +43,8 @@ function ModelSceneMixin:OnLoad()
 		local lightPosX, lightPosY, lightPosZ = self:GetLightPosition();
 		self:SetLightPosition(-lightPosX, -lightPosY, lightPosZ);
 
-		local lightDirX, lightDirY, lightDirZ = self:GetLightDirection();
-		self:SetLightDirection(-lightDirX, -lightDirY, lightDirZ);
+		self.lightDirX, self.lightDirY, self.lightDirZ = self:GetLightDirection();
+		self:SetLightDirection(-self.lightDirX, -self.lightDirY, self.lightDirZ);
 	end
 end
 

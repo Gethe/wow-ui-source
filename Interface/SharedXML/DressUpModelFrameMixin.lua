@@ -174,6 +174,8 @@ DressUpModelFrameMixin = CreateFromMixins(DressUpModelFrameBaseMixin);
 function DressUpModelFrameMixin:OnLoad()
 	DressUpModelFrameBaseMixin.OnLoad(self);
 	self:SetTitle(DRESSUP_FRAME);
+
+	self.ModelScene.ControlFrame:SetModelScene(self.ModelScene);
 end
 
 function DressUpModelFrameMixin:OnShow()

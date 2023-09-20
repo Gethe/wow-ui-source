@@ -243,7 +243,7 @@ function ProxySettingMixin:Init(name, variable, variableTbl, variableType, defau
 	if variableTbl[variable] == nil then
 		if getValue ~= nil then
 			local v = getValue();
-			assert(v ~= nil, "getValue must return a value, but is returning nil.");
+			--assert(v ~= nil, "getValue must return a value, but is returning nil.");
 			self:SetValueInternal(v);
 		elseif self.defaultValue ~= nil then
 			self:SetValueInternal(self.defaultValue);

@@ -28,9 +28,11 @@ do
 
 	local original_SetPortraitToTexture = SetPortraitToTexture;
 	SetPortraitToTexture = function(texture, asset)
-		if type(texture) == "string" then
-			texture = _G[texture];
+		if asset ~= nil then
+			if type(texture) == "string" then
+				texture = _G[texture];
+			end
+			original_SetPortraitToTexture(texture, asset);
 		end
-		original_SetPortraitToTexture(texture, asset);
 	end
 end

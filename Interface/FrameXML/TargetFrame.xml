@@ -305,10 +305,16 @@ UI_shared.xsd">
 										</FontString>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="2">
-										<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+										<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="3">
+										<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="-61" y="3"/>
 											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="Spark"/>
+											</MaskedTextures>
 										</MaskTexture>
 									</Layer>
 								</Layers>
@@ -531,6 +537,7 @@ UI_shared.xsd">
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						TextStatusBar_Initialize(self);
 						self.lockColor = true;
 					</OnLoad>
 					<OnValueChanged>
@@ -545,17 +552,24 @@ UI_shared.xsd">
 					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
 						<!-- Note that using the party mask assets here is intentional. -->
-						<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-27" y="4"/>
 							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Spark"/>
+							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						TextStatusBar_Initialize(self);
 						self.lockColor = true;
 					</OnLoad>
 				</Scripts>

@@ -91,6 +91,13 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="GlowPulseAnim" setToFinalAlpha="true" looping="BOUNCE">
+						<Alpha childKey="GlowLeft" fromAlpha="0.25" toAlpha="1" order="0" duration=".6"/>
+						<Alpha childKey="GlowRight" fromAlpha="0.25" toAlpha="1" order="0" duration=".6"/>
+						<Alpha childKey="GlowCenter" fromAlpha="0.25" toAlpha="1" order="0" duration=".6"/>
+					</AnimationGroup>
+				</Animations>
 			</StatusBar>
 		</Frames>
 		<Layers>

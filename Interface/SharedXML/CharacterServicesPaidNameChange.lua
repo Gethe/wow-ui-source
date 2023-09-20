@@ -1,21 +1,22 @@
 -- Utility functions
 function toCharacterNameCasing(name)
-	local formattedName = C_CharacterServices.CapitalizeCharName(name);
-	return formattedName
+	return C_CharacterServices.CapitalizeCharName(name);
 end
 
 function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, _ = select(7, GetCharacterInfo(characterID));
 	local sameFaction = CharacterHasAlternativeRaceOptions(characterID);
 	local errors = {};
 
 	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
+	if IsCharacterNPERestricted then
+		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
+	end
 	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidNameChange));
 
 	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
+	return canTransfer, errors, playerguid, false;
 end
 
 local function RequestAssignPNCForResults(results, isValidationOnly)

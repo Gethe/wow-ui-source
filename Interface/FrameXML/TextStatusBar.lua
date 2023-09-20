@@ -35,6 +35,10 @@ function TextStatusBar_Initialize(self)
 	end
 
 	Settings.SetOnValueChangedCallback("PROXY_STATUS_TEXT", OnStatusTextSettingChanged);
+
+	if ( self.Spark ) then
+		self.Spark:Initialize(self);
+	end
 end
 
 function SetTextStatusBarText(bar, text)
@@ -181,6 +185,15 @@ end
 
 function TextStatusBar_OnValueChanged(self)
 	TextStatusBar_UpdateTextString(self);
+	if ( self.Spark ) then
+		self.Spark:OnBarValuesUpdated(self);
+	end
+end
+
+function TextStatusBar_OnMinMaxChanged(self, min, max)
+	if ( self.Spark ) then
+		self.Spark:OnBarValuesUpdated(self);
+	end
 end
 
 function SetTextStatusBarTextPrefix(bar, prefix)
@@ -225,4 +238,81 @@ function HideTextStatusBarText(bar)
 		end
 		TextStatusBar_UpdateTextString(bar);
 	end
+end
+
+
+-- Optional spark frame, shows at the end of a TextStatusBar's fill texture
+-- Essentially an endcap whose position follows current fill amount
+TextStatusBarSparkMixin = {};
+
+function TextStatusBarSparkMixin:Initialize(statusBar)
+	self.statusBar = statusBar;
+end
+
+--[[
+visualInfo settings:
+	atlas: [string] -- Name of the atlas to use for the spark
+	xOffset: [number] -- Optional, x anchor offset from the RIGHT edge of the fill bar
+	barHeight: [number] -- Fill bar height the spark was designed for; Used for adjusting the spark's scale to fit the bar's actual current height
+	showAtMax: [bool] -- If true, spark stays visible when bar is at maximum fill, otherwise it's hidden
+]]
+function TextStatusBarSparkMixin:SetVisuals(visualInfo)
+	if ( visualInfo and visualInfo.atlas ) then
+		self.visualInfo = visualInfo;
+		self.isActive = true;
+
+		local xOffset = visualInfo.xOffset or 0;
+		local statusBarTexture = self.statusBar:GetStatusBarTexture();
+
+		self:ClearAllPoints();
+		self:SetPoint("RIGHT", statusBarTexture, "RIGHT", xOffset, 0);
+		self:SetAtlas(visualInfo.atlas, TextureKitConstants.UseAtlasSize);
+
+		self:UpdateSize();
+		self:UpdateShown();
+	else
+		self.visualInfo = nil;
+		self.isActive = false;
+		self:Hide();
+	end
+end
+
+function TextStatusBarSparkMixin:GetIsActive()
+	return self.isActive;
+end
+
+function TextStatusBarSparkMixin:OnBarValuesUpdated()
+	if ( self.isActive ) then
+		self:UpdateShown();
+	end
+end
+
+function TextStatusBarSparkMixin:UpdateShown()
+	if ( not self.isActive or self.isForceHidden ) then
+		self:Hide();
+		return;
+	end
+
+	local currentValue = self.statusBar:GetValue();
+	local minValue, maxValue = self.statusBar:GetMinMaxValues();
+
+	self:SetShown(currentValue > minValue and (currentValue < maxValue or self.visualInfo.showAtMax));
+end
+
+function TextStatusBarSparkMixin:UpdateSize()
+	if ( not self.isActive ) then
+		return;
+	end
+	
+	local newScale = 1;
+	if( self.visualInfo.barHeight ) then
+		local statusBarTexture = self.statusBar:GetStatusBarTexture();
+		local barHeight = statusBarTexture:GetHeight();
+		local heightMultiplier = barHeight / self.visualInfo.barHeight;
+		if heightMultiplier > 0 then
+			newScale = heightMultiplier;
+		end
+	end
+
+	self:SetScale(newScale);
 end

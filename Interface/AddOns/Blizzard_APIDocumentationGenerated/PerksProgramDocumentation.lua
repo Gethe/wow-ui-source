@@ -378,6 +378,17 @@ local PerksProgram =
 				{ Name = "speciesID", Type = "number", Nilable = false },
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+				{ Name = "uiGroupInfo", Type = "PerksVendorItemUIGroupInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "PerksVendorItemUIGroupInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "priority", Type = "number", Nilable = false },
 			},
 		},
 	},

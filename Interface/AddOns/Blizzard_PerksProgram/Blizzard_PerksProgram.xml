@@ -92,15 +92,20 @@
 									<Anchor point="RIGHT" x="0" y="0"/>
 								</Anchors>
 								<Frames>
-									<Frame parentKey="FrozenItemFrame" mixin="PerksProgramFrameFrozenItemMixin" frameLevel="1000">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="0" y="0"/>
-											<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-										</Anchors>
+									<Frame parentKey="FrozenProductContainer" setAllPoints="true" mixin="FrozenProductContainerMixin" frameLevel="1000">
+										<Frames>
+											<Button parentKey="ProductButton" inherits="PerksProgramFrozenProductButtonTemplate" frameLevel="1000">
+												<Size x="1" y="84"/>
+												<Anchors>
+													<Anchor point="LEFT"/>
+													<Anchor point="RIGHT"/>
+												</Anchors>
+											</Button>
+										</Frames>
 										<Animations>
 											<AnimationGroup parentKey="PendingFreezeAnim" looping="NONE" setToFinalAlpha="true">
-												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlowFlash1" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlowFlash2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlowFlash1" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlowFlash2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
 												<Alpha smoothing="NONE" childKey="Label" duration=".2" order="1" fromAlpha="0" toAlpha="1"/>
 												<Translation startDelay="0" childKey="Label" offsetX="-10" offsetY="0" duration="0" order="1"/>
 												<Translation startDelay="0" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
@@ -131,18 +136,18 @@
 												<Alpha smoothing="NONE" childKey="TickGlow" duration=".2" order="1" fromAlpha="0" toAlpha=".4"/>
 												<Alpha startDelay=".2" smoothing="NONE" childKey="TickGlow" duration=".33" order="1" fromAlpha=".4" toAlpha=".4"/>
 												<Alpha startDelay=".53" smoothing="NONE" childKey="TickGlow" duration=".2" order="1" fromAlpha=".4" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".33" order="1" fromAlpha="0" toAlpha="1"/>
-												<Alpha startDelay=".33" smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".13" order="1" fromAlpha="1" toAlpha="1"/>
-												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.ItemGlow" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="FrozenButton.FrostFrame" duration=".46" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="FrozenButton.Frost1" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
-												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost1" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="FrozenButton.Frost2" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
-												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha smoothing="NONE" childKey="FrozenButton.Frost3" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
-												<Alpha startDelay=".46" smoothing="NONE" childKey="FrozenButton.Frost3" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
-												<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="FrozenButton.UnfrozenSlot" duration=".37" order="1" fromAlpha="1" toAlpha="1"/>
-												<Alpha startDelay=".37" smoothing="NONE" childKey="FrozenButton.UnfrozenSlot" duration=".27" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlow" duration=".33" order="1" fromAlpha="0" toAlpha="1"/>
+												<Alpha startDelay=".33" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlow" duration=".13" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.ItemGlow" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.FrostFrame" duration=".46" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.Frost1" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.Frost1" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.Frost2" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.Frost2" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha smoothing="NONE" childKey="ProductButton.FrozenArtContainer.Frost3" duration=".46" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".46" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.Frost3" duration=".43" order="1" fromAlpha="1" toAlpha="0"/>
+												<Alpha startDelay="0" endDelay="0" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.UnfrozenSlot" duration=".37" order="1" fromAlpha="1" toAlpha="1"/>
+												<Alpha startDelay=".37" smoothing="NONE" childKey="ProductButton.FrozenArtContainer.UnfrozenSlot" duration=".27" order="1" fromAlpha="1" toAlpha="0"/>
 												<Alpha startDelay="0" smoothing="NONE" childKey="FrostBG" duration=".46" order="1" fromAlpha=".35" toAlpha=".35"/>
 												<Alpha startDelay=".46" smoothing="NONE" childKey="FrostBG" duration=".43" order="1" fromAlpha=".35" toAlpha="0"/>
 												<Alpha smoothing="NONE" childKey="FrostLabelBG" duration="1" order="1" fromAlpha=".22" toAlpha="0"/>
@@ -152,152 +157,6 @@
 												<Translation startDelay=".9" childKey="Label" offsetX="10" offsetY="0" duration="0.2" order="1"/>
 											</AnimationGroup>
 										</Animations>
-										<Frames>
-											<Button parentKey="FrozenButton" enableMouse="true" mixin="PerksProgramFrameDragDropMixin">
-												<Size x="64" y="64"/>
-												<Anchors>
-													<Anchor point="LEFT" x="33" y="0"/>
-												</Anchors>
-												<Animations>
-													<AnimationGroup parentKey="CancelledFreezeAnim" looping="NONE" setToFinalAlpha="true">
-														<Alpha smoothing="NONE" childKey="OverlayFrozenSlot" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha smoothing="NONE" childKey="OverlayFrozenSlot" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
-														<Translation startDelay="0" childKey="OverlayFrozenSlot" offsetX="0" offsetY="-4" duration=".2" order="1"/>
-													</AnimationGroup>
-													<AnimationGroup parentKey="ConfirmedFreezeAnim" looping="NONE" setToFinalAlpha="true">
-														<Alpha startDelay="0" smoothing="NONE" childKey="ItemGlowFlash2" duration=".2" order="1" fromAlpha="1" toAlpha="1"/>
-														<Alpha startDelay=".2" smoothing="NONE" childKey="ItemGlowFlash2" duration=".7" order="1" fromAlpha="1" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="ItemGlowFlash1" duration=".2" order="1" fromAlpha="1" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="ItemGlow" duration=".3" order="1" fromAlpha="1" toAlpha="1"/>
-														<Alpha startDelay=".3" smoothing="NONE" childKey="ItemGlow" duration=".67" order="1" fromAlpha="1" toAlpha="0"/>
-														<Alpha startDelay="0" smoothing="NONE" childKey="Crack1" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".5" smoothing="NONE" childKey="Crack1" duration=".23" order="1" fromAlpha="0" toAlpha=".45"/>
-														<Alpha startDelay=".73" smoothing="NONE" childKey="Crack1" duration=".23" order="1" fromAlpha=".45" toAlpha="0"/>
-														<Alpha startDelay="0" smoothing="NONE" childKey="Crack2" duration=".7" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".7" smoothing="NONE" childKey="Crack2" duration=".23" order="1" fromAlpha="0" toAlpha=".4"/>
-														<Alpha startDelay=".93" smoothing="NONE" childKey="Crack2" duration=".37" order="1" fromAlpha=".4" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="Crack3" duration=".87" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".87" smoothing="NONE" childKey="Crack3" duration=".23" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha startDelay="1.1" smoothing="NONE" childKey="Crack3" duration=".53" order="1" fromAlpha="1" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="FrostFrame" duration=".37" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".37" smoothing="NONE" childKey="FrostFrame" duration=".17" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha smoothing="NONE" childKey="FrostShine1" duration=".67" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".67" smoothing="NONE" childKey="FrostShine1" duration=".33" order="1" fromAlpha="0" toAlpha=".45"/>
-														<Alpha startDelay="1" smoothing="NONE" childKey="FrostShine1" duration=".53" order="1" fromAlpha=".45" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="FrostShine2" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".5" smoothing="NONE" childKey="FrostShine2" duration=".5" order="1" fromAlpha="0" toAlpha=".4"/>
-														<Alpha startDelay="1" smoothing="NONE" childKey="FrostShine2" duration=".6" order="1" fromAlpha=".4" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="FrostShine3" duration=".5" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".5" smoothing="NONE" childKey="FrostShine3" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha startDelay="1.1" smoothing="NONE" childKey="FrostShine3" duration=".3" order="1" fromAlpha="1" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="FrostShine4" duration=".67" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".67" smoothing="NONE" childKey="FrostShine4" duration=".23" order="1" fromAlpha="0" toAlpha=".25"/>
-														<Alpha startDelay=".9" smoothing="NONE" childKey="FrostShine4" duration=".33" order="1" fromAlpha=".25" toAlpha="0"/>
-														<Alpha smoothing="NONE" childKey="Frost1" duration=".37" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay=".37" smoothing="NONE" childKey="Frost1" duration=".3" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha smoothing="NONE" childKey="Frost2" duration=".67" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay="1" smoothing="NONE" childKey="Frost2" duration=".33" order="1" fromAlpha="0" toAlpha="1"/>
-														<Alpha smoothing="NONE" childKey="Frost3" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
-														<Alpha startDelay="1" smoothing="NONE" childKey="Frost3" duration=".4" order="1" fromAlpha="0" toAlpha="1"/>
-													</AnimationGroup>
-												</Animations>
-												<Layers>
-													<Layer level="BACKGROUND" textureSubLevel="1">
-														<Texture parentKey="FrozenSlot" atlas="perks-slot-empty" useAtlasSize="true"/>
-													</Layer>
-													<Layer level="BACKGROUND" textureSubLevel="2">
-														<!-- Used for animations where frozen item animates away to reveal empty FrozenSlot beneath. -->
-														<Texture parentKey="UnfrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
-													</Layer>
-													<Layer level="OVERLAY" textureSubLevel="1">
-														<Texture parentKey="FrostFrame" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-1" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="ItemGlow" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-glow-1" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="ItemGlowFlash1" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-glow-1" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="ItemGlowFlash2" alpha="0" alphaMode="BLEND" atlas="perks-frost-frame-glow-2" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="Crack1" alpha="0" alphaMode="BLEND" atlas="perks-crack-1" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="Crack2" alpha="0" alphaMode="BLEND" atlas="perks-crack-2" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="Crack3" alpha="0" alphaMode="BLEND" atlas="perks-crack-3" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="FrostShine1" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-1" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="FrostShine2" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-2" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="FrostShine3" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-3" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="FrostShine4" alpha="0" alphaMode="BLEND" atlas="perks-frost-shine-4" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="Frost1" alpha="0" alphaMode="BLEND" atlas="perks-frost-1" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="Frost2" alpha="0" alphaMode="BLEND" atlas="perks-frost-2" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-														<Texture parentKey="Frost3" alpha="0" alphaMode="BLEND" atlas="perks-frost-3" useAtlasSize="true">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-														</Texture>
-													</Layer>
-													<Layer level="OVERLAY" textureSubLevel="2">
-														<!-- Used for animations where pending frozen item animates away to reveal FrozenSlot beneath. -->
-														<Texture parentKey="OverlayFrozenSlot" atlas="perks-slot-empty" useAtlasSize="true" alpha="0"/>
-													</Layer>
-												</Layers>
-												<Scripts>
-													<OnLoad method="OnLoad"/>
-													<OnEnter method="OnEnter"/>
-													<OnLeave method="OnLeave"/>
-													<OnClick method="OnClick"/>
-													<OnReceiveDrag method="OnReceiveDrag"/>
-												</Scripts>
-												<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" atlas="perks-slot-empty">
-													<Color r="1" g="1" b="1" a=".4"/>
-												</HighlightTexture>
-											</Button>
-										</Frames>
 										<Layers>
 											<Layer level="BORDER" textureSubLevel="1">
 												<Texture parentKey="Snow1" alpha="0" alphaMode="BLEND" atlas="perks-snow-1">
@@ -343,30 +202,22 @@
 												</Texture>
 											</Layer>
 											<Layer level="ARTWORK" textureSubLevel="1">
-												<FontString parentKey="Label" justifyH="LEFT" text="PERKS_PROGRAM_FREEZE_ITEM_INSTRUCTIONS" inherits="GameFontNormalMed3" >
-													<Color color="WHITE_FONT_COLOR"/>
-													<Size x="270" y="48"/>
-													<Anchors>
-														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="10" y="0"/>
-													</Anchors>
-												</FontString>
 												<Texture parentKey="TickGlow" alpha="0" alphaMode="BLEND" atlas="perks-tick-glow" useAtlasSize="true">
 													<Anchors>
-														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="0" y="0"/>
+														<Anchor point="LEFT" relativeKey="$parent.ProductButton.FrozenArtContainer" relativePoint="RIGHT" x="0" y="0"/>
 													</Anchors>
 												</Texture>
 											</Layer>
 											<Layer level="ARTWORK" textureSubLevel="2">
 												<Texture parentKey="Tick" alpha="0" alphaMode="BLEND" atlas="perks-tick" useAtlasSize="true">
 													<Anchors>
-														<Anchor point="LEFT" relativeKey="$parent.FrozenButton" relativePoint="RIGHT" x="15" y="0"/>
+														<Anchor point="LEFT" relativeKey="$parent.ProductButton.FrozenArtContainer" relativePoint="RIGHT" x="15" y="0"/>
 													</Anchors>
 												</Texture>
 											</Layer>
 										</Layers>
 										<Scripts>
 											<OnLoad method="OnLoad"/>
-											<OnEvent method="OnEvent"/>
 										</Scripts>
 									</Frame>
 								</Frames>
@@ -788,7 +639,7 @@
 										<Anchor point="BOTTOMRIGHT" x="-20" y="70"/>
 									</Anchors>
 								</FontString>
-								<Texture parentKey="RefundIcon" atlas="perks-clock-large" hidden="false" >
+								<Texture parentKey="RefundIcon" atlas="common-icon-undo" hidden="false" >
 									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="RIGHT" relativeKey="$parent.RefundText" relativePoint="LEFT" x="-10" y="0"/>

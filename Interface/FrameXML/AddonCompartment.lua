@@ -4,7 +4,18 @@ AddonCompartmentMixin = { };
 
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
 
+function AddonCompartmentMixin:OnEvent(event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		-- RegisterAddons cannot be called OnLoad because addons are explicitly not loadable during FrameXML load
+		self:RegisterAddons();
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	end
+end
+
+function AddonCompartmentMixin:RegisterAddons()
 	local addonCount = C_AddOns.GetNumAddOns();
 	for addon = 1, addonCount do
 		local addonEnabled = C_AddOns.GetAddOnEnableState(addon) > 0;

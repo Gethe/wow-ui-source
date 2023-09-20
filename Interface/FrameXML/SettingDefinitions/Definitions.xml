@@ -18,5 +18,6 @@
 	<Script file="Accessibility.lua"/>
 	<Include file="Colorblind.xml"/>
 	<Include file="TextToSpeech.xml"/>
+	<Script file="Mounts.lua"/>
 	<Script file="..\..\SharedXML\SettingDefinitions\New.lua"/>
 </Ui>

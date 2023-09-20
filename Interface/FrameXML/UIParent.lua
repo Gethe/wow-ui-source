@@ -2426,6 +2426,14 @@ function UIParent_OnEvent(self, event, ...)
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 
+		-- Ping Listener.
+		-- When pinging UI, if the ping keybind is mapped to any mouse button the input gets consumed before it would hit the normal logic in Bindings.
+    	-- Below logic catches the input and handles this case specifically.
+		-- TogglePingListener is restricted, so this is must be done before dropdown handling to avoid taint propagation
+		if IsMouseButton(buttonID) and GetConvertedKeyOrButton(buttonID) == GetBindingKey("TOGGLEPINGLISTENER") then
+			C_Ping.TogglePingListener(event == "GLOBAL_MOUSE_DOWN");
+		end
+
 		-- Close dropdown(s).
 		local mouseFocus = GetMouseFocus();
 		if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
@@ -2449,13 +2457,6 @@ function UIParent_OnEvent(self, event, ...)
 					end
  				end
 			end
-		end
-
-		-- Ping Listener.
-		-- When pinging UI, if the ping keybind is mapped to any mouse button the input gets consumed before it would hit the normal logic in Bindings.
-    	-- Below logic catches the input and handles this case specifically.
-		if IsMouseButton(buttonID) and GetConvertedKeyOrButton(buttonID) == GetBindingKey("TOGGLEPINGLISTENER") then
-			C_Ping.TogglePingListener(event == "GLOBAL_MOUSE_DOWN");
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();

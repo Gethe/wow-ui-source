@@ -540,6 +540,25 @@ function UIWidgetBaseStatusBarTemplateMixin:SanitizeAndSetStatusBarValues(barInf
 	self.range = barInfo.barMax - barInfo.barMin;
 end
 
+local widgetOpacityPercentage =
+{
+	[Enum.WidgetOpacityType.OneHundred]	= 1,
+	[Enum.WidgetOpacityType.Ninety]		= 0.9,
+	[Enum.WidgetOpacityType.Eighty]		= 0.8,
+	[Enum.WidgetOpacityType.Seventy]	= 0.7,
+	[Enum.WidgetOpacityType.Sixty]		= 0.6,
+	[Enum.WidgetOpacityType.Fifty]		= 0.5,
+	[Enum.WidgetOpacityType.Forty]		= 0.4,
+	[Enum.WidgetOpacityType.Thirty]		= 0.3,
+	[Enum.WidgetOpacityType.Twenty]		= 0.2,
+	[Enum.WidgetOpacityType.Ten]		= 0.1,
+	[Enum.WidgetOpacityType.Zero]		= 0,
+};
+
+local function GetWidgetOpacityPercentage(widgetOpacityType)
+	return widgetOpacityType and widgetOpacityPercentage[widgetOpacityType] or 1;
+end
+
 function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 
@@ -553,6 +572,9 @@ function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo)
 	self.barTextSizeType = barInfo.barTextSizeType;
 	self.barTextHasStyleSettings = self.barTextEnabledState and self.barTextFontType and self.barTextSizeType;
 
+	self.barMinFillAlpha = GetWidgetOpacityPercentage(barInfo.fillMinOpacity);
+	self.barMaxFillAlpha = GetWidgetOpacityPercentage(barInfo.fillMaxOpacity);
+
 	self.overrideBarText = barInfo.overrideBarText;
 	self.overrideBarTextShownType = barInfo.overrideBarTextShownType;
 
@@ -563,7 +585,7 @@ function UIWidgetBaseStatusBarTemplateMixin:Setup(widgetContainer, barInfo)
 	local fillMotionType = barInfo.fillMotionType or Enum.UIWidgetMotionType.Instant;
 	if (fillMotionType == Enum.UIWidgetMotionType.Instant) or not self.displayedValue then
 		self.displayedValue = self.value;
-		self:DisplayBarValue()
+		self:DisplayBarValue();
 		self:SetScript("OnUpdate", nil);
 	else
 		self:SetScript("OnUpdate", self.UpdateBar);
@@ -591,6 +613,9 @@ function UIWidgetBaseStatusBarTemplateMixin:DisplayBarValue()
 		local showSpark = self.displayedValue > self.barMin and self.displayedValue < self.barMax;
 		self.Spark:SetShown(showSpark);
 	end
+
+	local currentAlpha = Lerp(self.barMinFillAlpha, self.barMaxFillAlpha, ClampedPercentageBetween(self.displayedValue, self.barMin, self.barMax));
+	self:GetStatusBarTexture():SetAlpha(currentAlpha);
 end
 
 function UIWidgetBaseStatusBarTemplateMixin:SetBarText(barValue)

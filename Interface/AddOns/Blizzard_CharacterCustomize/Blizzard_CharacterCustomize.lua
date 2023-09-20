@@ -1202,12 +1202,7 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 		alteredForm:Show();
 	elseif self.needsNativeFormCategory then
 		local normalForm = buttonPool:Acquire();
-		local normalFormSelected = not self.viewingChrModelID;
-		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
-		normalForm:Show();
-	elseif self.hasShapeshiftForms then
-		local normalForm = buttonPool:Acquire();
-		local normalFormSelected = not self.viewingShapeshiftForm;
+		local normalFormSelected = not self.viewingChrModelID and not self.viewingShapeshiftForm;
 		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 	end

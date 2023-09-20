@@ -13,6 +13,16 @@ NewSettings["10.1.7"] = {
 	"enablePings",
 };
 
+NewSettings["10.2.0"] = {
+	"PROXY_ADV_FLY_PITCH_CONTROL",
+	"advFlyPitchControlGroundDebounce",
+	"advFlyPitchControlCameraChase",
+	"advFlyKeyboardMinPitchFactor",
+	"advFlyKeyboardMaxPitchFactor",
+	"advFlyKeyboardMinTurnFactor",
+	"advFlyKeyboardMaxTurnFactor",
+};
+
 function IsNewSettingInCurrentVersion(variable)
 	local version = GetBuildInfo();
 	local currentNewSettings = NewSettings[version];

@@ -80,7 +80,8 @@ function TransmogFrameMixin:OnLoad()
 	self.ShoulderButton.dependentSlot = self.SecondaryShoulderButton;
 	self.SecondaryShoulderButton.dependencySlot = self.ShoulderButton;
 
-	WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox.Label:SetPoint("RIGHT", WardrobeCollectionFrame.ItemsCollectionFrame.PagingFrame.PageText, "LEFT", -40, 0);
+	self.ModelScene.ControlFrame:SetModelScene(WardrobeTransmogFrame.ModelScene);
+	self.ToggleSecondaryAppearanceCheckbox.Label:SetPoint("RIGHT", WardrobeCollectionFrame.ItemsCollectionFrame.PagingFrame.PageText, "LEFT", -40, 0);
 end
 
 function TransmogFrameMixin:OnEvent(event, ...)

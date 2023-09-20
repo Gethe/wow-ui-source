@@ -6,6 +6,15 @@ local SimpleTextureBaseAPI =
 	Functions =
 	{
 		{
+			Name = "ClearTextureSlice",
+			Type = "Function",
+			Documentation = { "Disable shader based nineslice texture rendering. Since SetAtlas will automatically load slice data for the atlas from the DB, can be useful if you want to disable nineslice after setting an atlas." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "GetAtlas",
 			Type = "Function",
 
@@ -135,6 +144,35 @@ local SimpleTextureBaseAPI =
 			Returns =
 			{
 				{ Name = "textureFile", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTextureSliceMargins",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "top", Type = "number", Nilable = false },
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTextureSliceMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "sliceMode", Type = "UITextureSliceMode", Nilable = false },
 			},
 		},
 		{
@@ -348,6 +386,29 @@ local SimpleTextureBaseAPI =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTextureSliceMargins",
+			Type = "Function",
+			Documentation = { "Enables nineslice texture rendering using the specified pixel margins. Preferred over legacy nineslice approach that uses 9 separate textures." },
+
+			Arguments =
+			{
+				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "top", Type = "number", Nilable = false },
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTextureSliceMode",
+			Type = "Function",
+			Documentation = { "Controls whether the center and sides are Stretched or Tiled when using nineslice texture rendering. Defaults to Stretched." },
+
+			Arguments =
+			{
+				{ Name = "sliceMode", Type = "UITextureSliceMode", Nilable = false },
 			},
 		},
 		{

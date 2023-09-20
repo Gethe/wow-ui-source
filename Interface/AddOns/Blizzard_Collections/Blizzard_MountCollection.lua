@@ -157,6 +157,9 @@ function MountJournal_OnLoad(self)
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, MountJournal_EvaluateListHelpTip, self);
 
+	MountJournal.MountDisplay.ModelScene:SetResetCallback(MountJournal_ModelScene_OnReset);
+	MountJournal.MountDisplay.ModelScene.ControlFrame:SetModelScene(MountJournal.MountDisplay.ModelScene);
+
 	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
 
 	local bottomLeftInset = self.BottomLeftInset;
@@ -169,7 +172,7 @@ function MountJournal_OnLoad(self)
 	self.SlotRequirementLabel = bottomLeftInset.SlotRequirementLabel;
 	self.SlotRequirementLabel:SetText(levelRequiredText);
 	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
-	
+
 	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
 
 	MountJournal_UpdateEquipment(self);
@@ -338,6 +341,19 @@ function MountJournal_ApplyEquipment(self, itemLocation)
 	end
 
 	return canContinue;
+end
+
+function MountJournal_ModelScene_OnEnter(button)
+	MountJournal.MountDisplay.ModelScene:OnEnter(button);
+end
+
+function MountJournal_ModelScene_OnLeave(button)
+	MountJournal.MountDisplay.ModelScene:OnLeave(button);
+end
+
+function MountJournal_ModelScene_OnReset()
+	local forceSceneChange = true;
+	MountJournal_UpdateMountDisplay(forceSceneChange);
 end
 
 function MountJournal_UpdateEquipmentPalette(self)
@@ -666,7 +682,7 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
 
-			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
 
 			MountJournal.MountDisplay.ModelScene:PrepareForFanfare(needsFanfare);
 

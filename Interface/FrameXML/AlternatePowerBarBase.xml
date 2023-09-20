@@ -52,6 +52,11 @@ UI_shared.xsd">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="85" y="-73"/>
 		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>

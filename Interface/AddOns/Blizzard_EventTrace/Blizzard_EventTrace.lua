@@ -664,6 +664,10 @@ function EventTracePanelMixin:LogLine(elementData)
 end
 
 function EventTracePanelMixin:OnEvent(event, ...)
+	if event == "IMGUI_RENDER_ENABLED" then
+		return;
+	end
+
 	if event == "ADDONS_UNLOADING" then
 		self:SaveVariables();
 		return;

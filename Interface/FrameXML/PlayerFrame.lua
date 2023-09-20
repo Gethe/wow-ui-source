@@ -565,7 +565,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	manaBar:SetPoint("TOPLEFT",91,-61);
 
 	manaBar.ManaBarMask:SetWidth(121);
-	manaBar.ManaBarMask:Show();
+	manaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask");
 
 	-- Update alternate power bar
 	PlayerFrameAlternatePowerBarArea:Hide();
@@ -652,7 +652,9 @@ function PlayerFrame_ToPlayerArt(self)
 	manaBar:SetPoint("TOPLEFT", 85, -61);
 
 	manaBar.ManaBarMask:SetWidth(128);
-	manaBar.ManaBarMask:SetShown(alternatePowerBar == nil);
+
+	local maskTexture = alternatePowerBar and "Unit_BarMask" or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask";
+	manaBar.ManaBarMask:SetAtlas(maskTexture, TextureKitConstants.UseAtlasSize);
 
 	-- Update alternate power bar area
 	if alternatePowerBar then

@@ -8,6 +8,8 @@ function PerksProgramMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_REFUND_SUCCESS");
 	EventRegistry:RegisterCallback("PerksProgram.ServerPurchaseCountdownExpired", self.OnServerPurchaseCountdownExpired, self);
 	EventRegistry:RegisterCallback("PerksProgram.ServerRefundCountdownExpired", self.OnServerRefundCountdownExpired, self);
+	EventRegistry:RegisterCallback("PerksProgram.OnFrozenItemConfirmationShown", self.OnFrozenItemConfirmationShown, self);
+	EventRegistry:RegisterCallback("PerksProgram.OnFrozenItemConfirmationHidden", self.OnFrozenItemConfirmationHidden, self);
 
 	self.activeFilters = {};
 	self.vendorItemIDs = C_PerksProgram.GetAvailableVendorItemIDs();
@@ -126,7 +128,7 @@ function PerksProgramMixin:GetCategories()
 end
 
 function PerksProgramMixin:GetSelectedProduct()
-	return self.ProductsFrame:GetSelectedProducts();
+	return self.ProductsFrame:GetSelectedProduct();
 end
 
 function PerksProgramMixin:SelectNextProduct()
@@ -224,13 +226,12 @@ function PerksProgramMixin:OnEvent(event, ...)
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 		if isRightButton and StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
-			StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM");
-			PerksProgramFrame:ResetDragAndDrop();
+			EventRegistry:TriggerEvent("PerksProgram.CancelFrozenItemConfirmation");
 		end
 	elseif event == "CURSOR_CHANGED" then
 		local isDefault = ...;
 		if isDefault and not StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
-			PerksProgramFrame:ResetDragAndDrop();
+			C_PerksProgram.ResetHeldItemDragAndDrop();
 		end
 	end
 end
@@ -310,57 +311,12 @@ function PerksProgramMixin:Refund(data)
 	self.purchaseStateTimer = C_Timer.NewTimer(SERVER_TIMEOUT, function() EventRegistry:TriggerEvent("PerksProgram.ServerRefundCountdownExpired"); end);
 end
 
-function PerksProgramMixin:GetFrozenItemData()
-	local data;
-	local frozenVendorItem = C_PerksProgram.GetFrozenPerksVendorItemInfo();
-	if frozenVendorItem and frozenVendorItem.itemID then
-		local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frozenVendorItem.itemID);
-		data = {};
-		data.product = frozenVendorItem;
-		data.link = itemLink;
-		data.name = frozenVendorItem.name;
-		data.color = {ITEM_QUALITY_COLORS[itemRarity].color:GetRGBA()};
-		data.tooltip = PerksProgramTooltip;
-		data.texture = itemTexture;
-	end
-	return data;
+function PerksProgramMixin:OnFrozenItemConfirmationShown()
+	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 end
 
-function PerksProgramMixin:ClearFrozenItem()
-	C_PerksProgram.ClearFrozenPerksVendorItem();
-	PlaySound(SOUNDKIT.TRADING_POST_UI_ITEM_UNLOCKING);
-end
-
-function PerksProgramMixin:ConfirmOverrideFrozenItem()
-	local data = self:GetFrozenItemData();
-	if data then
-		StaticPopup_Show("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM", nil, nil, data);
-		self:RegisterEvent("GLOBAL_MOUSE_DOWN");
-	else
-		self:GetFrozenItemFrame():TriggerFreezeItem();
-		C_PerksProgram.SetFrozenPerksVendorItem();
-		PlaySound(SOUNDKIT.TRADING_POST_UI_ITEM_LOCKING);
-	end
-end
-
-function PerksProgramMixin:OverrideFrozenItem()
-	self:GetFrozenItemFrame():TriggerFreezeItem();
-	C_PerksProgram.SetFrozenPerksVendorItem();
-	PlaySound(SOUNDKIT.TRADING_POST_UI_ITEM_LOCKING);
-end
-
-function PerksProgramMixin:ResetDragAndDrop()
+function PerksProgramMixin:OnFrozenItemConfirmationHidden()
 	self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
-	local frozenItemFrame = self:GetFrozenItemFrame();
-	frozenItemFrame.FrozenButton:TriggerCancelFrozenItem();
-
-	local frozenVendorItemInfo = C_PerksProgram.GetFrozenPerksVendorItemInfo();
-	frozenItemFrame:SetupFrozenVendorItem(frozenVendorItemInfo);
-	C_PerksProgram.ResetHeldItemDragAndDrop();
-end
-
-function PerksProgramMixin:GetFrozenItemFrame()
-	return self.ProductsFrame.ProductsScrollBoxContainer.PerksProgramHoldFrame.FrozenItemFrame;
 end
 
 local RED_TEXT_SECONDS_THRESHOLD = 3600;
@@ -385,6 +341,45 @@ function PerksProgramMixin:GetCategoryText(categoryID)
 		return PERKS_VENDOR_CATEGORY_TRANSMOG_SET;
 	end
 	return "";
+end
+
+function PerksProgramMixin:GetCurrencyIconMarkup()
+	if not self.currencyIconMarkup then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
+		self.currencyIconMarkup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 20, 20, 0, 1, 0, 1, 0, 0);
+	end
+
+	return self.currencyIconMarkup;
+end
+
+local function BuildPerksVendorItemInfo(itemInfo)
+	if itemInfo then
+		itemInfo.isItemInfo = true;
+		local perksVendorCategoryID = itemInfo.perksVendorCategoryID;
+		local displayInfo = C_PerksProgram.GetPerksProgramItemDisplayInfo(itemInfo.perksVendorItemID);
+		displayInfo.defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(perksVendorCategoryID);
+		itemInfo.displayData = PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo);
+		if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
+			itemInfo.creatureDisplays = C_MountJournal.GetAllCreatureDisplayIDsForMountID(itemInfo.mountID);
+		end
+	end
+
+	return itemInfo
+end
+
+-- Use this instead of getting item info directly from C_PerksProgram since it adds extra data to the ItemInfo
+function PerksProgramMixin:GetVendorItemInfo(perksVendorItemID)
+	local itemInfo = C_PerksProgram.GetVendorItemInfo(perksVendorItemID)
+	return BuildPerksVendorItemInfo(itemInfo);
+end
+
+-- Use this instead of getting item info directly from C_PerksProgram since it adds extra data to the ItemInfo
+function PerksProgramMixin:GetFrozenPerksVendorItemInfo()
+	local itemInfo = C_PerksProgram.GetFrozenPerksVendorItemInfo()
+	if itemInfo then
+		itemInfo.isFrozen = true;
+	end
+	return BuildPerksVendorItemInfo(itemInfo);
 end
 
 ----------------------------------------------------------------------------------

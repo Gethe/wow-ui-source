@@ -1168,6 +1168,7 @@ end
 function ActionBarActionButtonMixin:OnShow()
 	self:CheckNeedsUpdate();
 	if self.action then
+		self:Update();
 		self:RegisterActionBarButtonCheckFrames(self.action);
 	end
 end

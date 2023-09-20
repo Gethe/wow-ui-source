@@ -208,12 +208,16 @@ UI_shared.xsd">
 												</FontString>
 											</Layer>
 											<Layer level="OVERLAY" textureSubLevel="2">
-												<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+												<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+											</Layer>
+											<Layer level="OVERLAY" textureSubLevel="3">
+												<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
 													<Anchors>
-														<Anchor point="TOPLEFT" x="-2" y="3"/>
+														<Anchor point="TOPLEFT" x="-2" y="2"/>
 													</Anchors>
 													<MaskedTextures>
 														<MaskedTexture childKey="ManaCostPredictionBar"/>
+														<MaskedTexture childKey="Spark"/>
 													</MaskedTextures>
 												</MaskTexture>
 											</Layer>

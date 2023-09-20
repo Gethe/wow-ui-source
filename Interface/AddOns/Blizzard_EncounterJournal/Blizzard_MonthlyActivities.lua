@@ -313,18 +313,6 @@ end
 -- MonthlyActivitiesFilterListButtonMixin
 MonthlyActivitiesFilterListButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
-function MonthlyActivitiesFilterListButtonMixin:OnEnter()
-	if ButtonStateBehaviorMixin.OnEnter(self) then
-		self:UpdateState();
-	end
-end
-
-function MonthlyActivitiesFilterListButtonMixin:OnLeave()
-	if ButtonStateBehaviorMixin.OnLeave(self) then
-		self:UpdateState();
-	end
-end
-
 function MonthlyActivitiesFilterListButtonMixin:UpdateStateInternal(selected)
 	if selected then
 		self.Label:SetFontObject("GameFontHighlight");
@@ -341,7 +329,7 @@ function MonthlyActivitiesFilterListButtonMixin:UpdateStateInternal(selected)
 	end
 end
 
-function MonthlyActivitiesFilterListButtonMixin:UpdateState()
+function MonthlyActivitiesFilterListButtonMixin:OnButtonStateChanged()
 	self:UpdateStateInternal(MonthlyActivityFilterSelection:IsSelected(self));
 end
 

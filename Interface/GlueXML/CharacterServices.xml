@@ -314,7 +314,7 @@
 			<OnHide function="CharacterUpgradeSelectFactionFrame_ClearChecked"/>
 		</Scripts>
 	</Frame>
-	<Button name="RPEUpgradeMinimizedFrame" hidden="true" frameStrata="DIALOG">
+	<Button name="RPEUpgradeMinimizedFrame" hidden="true" frameStrata="HIGH">
 		<Size x="300" y="90"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharSelectServicesFlowFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
