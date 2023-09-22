@@ -254,6 +254,7 @@ function LootFrame_Update()
 		LootFrameDownButton:Show();
 		LootFrameNext:Show();
 	end
+	LootFrame_AdjustTextLocation(LootFrameNext, LootFramePrev);
 end
 
 function LootFrame_InitAutoLootTable( self )
@@ -657,4 +658,9 @@ end
 function MasterLooterFrame_GiveMasterLoot()
 	GiveMasterLoot(MasterLooterFrame.slot, MasterLooterFrame.candidateId);
 	MasterLooterFrame:Hide();
+end
+
+function LootFrame_AdjustTextLocation(next, prev)
+	-- Overwritten in localized files
+	return;
 end

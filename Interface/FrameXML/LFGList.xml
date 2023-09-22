@@ -885,6 +885,103 @@
 			<OnLeave function="LFGListSearchEntry_OnLeave"/>
 		</Scripts>
 	</Button>
+	<Frame name="LFGListApplicationDialogTemplate" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true" virtual="true">
+		<Size x="306" y="203"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_CHOOSE_YOUR_ROLES">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button parentKey="HealerButton" inherits="LFGListRoleButtonTemplate">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-35"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+					<KeyValue key="roleID" value="3" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="TankButton" inherits="LFGListRoleButtonTemplate">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HealerButton" relativePoint="LEFT" x="-5" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+					<KeyValue key="roleID" value="2" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="DamagerButton" inherits="LFGListRoleButtonTemplate">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HealerButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+					<KeyValue key="roleID" value="1" type="number"/>
+				</KeyValues>
+			</Button>
+			<ScrollFrame parentKey="Description" name="LFGListApplicationDialogDescription" inherits="InputScrollFrameTemplate">
+				<Size x="210" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="55"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="63" type="number"/>
+					<KeyValue key="instructions" value="LFG_LIST_NOTE_TO_LEADER" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						StoreSecureReference("LFGListApplicationDescription", self.EditBox);
+						self.EditBox:SetSecurityDisableSetText();
+						self.EditBox:SetSecurityDisablePaste();
+						InputScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button parentKey="SignUpButton" inherits="UIPanelButtonTemplate" text="SIGN_UP" motionScriptsWhileDisabled="true">
+				<Size x="100" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGListApplicationDialogSignUpButton_OnClick"/>
+					<OnEnter>
+						if ( self.errorText ) then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(self.errorText, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="100" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFGListApplicationDialog_OnLoad"/>
+			<OnEvent function="LFGListApplicationDialog_OnEvent"/>
+		</Scripts>
+	</Frame>	
 	<Frame name="LFGListPanelTemplate" useParentLevel="true" hidden="true" setAllPoints="true" virtual="true"/>
 	<Frame name="LFGListFrame" useParentLevel="true" parent="LFGListPVEStub">
 		<Size x="338" y="428"/>
@@ -1925,103 +2022,13 @@
 			<OnHide function="LFGListFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="LFGListApplicationDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
-		<Size x="306" y="203"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_CHOOSE_YOUR_ROLES">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-15"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Button parentKey="HealerButton" inherits="LFGListRoleButtonTemplate">
-				<Size x="70" y="70"/>
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-35"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="role" value="HEALER" type="string"/>
-					<KeyValue key="roleID" value="3" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button parentKey="TankButton" inherits="LFGListRoleButtonTemplate">
-				<Size x="70" y="70"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HealerButton" relativePoint="LEFT" x="-5" y="0"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="role" value="TANK" type="string"/>
-					<KeyValue key="roleID" value="2" type="number"/>
-				</KeyValues>
-			</Button>
-			<Button parentKey="DamagerButton" inherits="LFGListRoleButtonTemplate">
-				<Size x="70" y="70"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.HealerButton" relativePoint="RIGHT" x="5" y="0"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="role" value="DAMAGER" type="string"/>
-					<KeyValue key="roleID" value="1" type="number"/>
-				</KeyValues>
-			</Button>
-			<ScrollFrame parentKey="Description" name="LFGListApplicationDialogDescription" inherits="InputScrollFrameTemplate">
-				<Size x="210" y="28"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="55"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="maxLetters" value="63" type="number"/>
-					<KeyValue key="instructions" value="LFG_LIST_NOTE_TO_LEADER" type="global"/>
-					<KeyValue key="hideCharCount" value="true" type="boolean"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						StoreSecureReference("LFGListApplicationDescription", self.EditBox);
-						self.EditBox:SetSecurityDisableSetText();
-						self.EditBox:SetSecurityDisablePaste();
-						InputScrollFrame_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</ScrollFrame>
-			<Button parentKey="SignUpButton" inherits="UIPanelButtonTemplate" text="SIGN_UP" motionScriptsWhileDisabled="true">
-				<Size x="100" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="LFGListApplicationDialogSignUpButton_OnClick"/>
-					<OnEnter>
-						if ( self.errorText ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.errorText, nil, nil, nil, nil, true);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="100" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						StaticPopupSpecial_Hide(self:GetParent());
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
+	<Frame name="LFGListApplicationDialog" inherits="LFGListApplicationDialogTemplate"/>
+	<Frame name="LFGListCreateRoleDialog" inherits="LFGListApplicationDialogTemplate">
+		<Size x="306" y="152"/>
 		<Scripts>
-			<OnLoad function="LFGListApplicationDialog_OnLoad"/>
-			<OnEvent function="LFGListApplicationDialog_OnEvent"/>
-		</Scripts>
-	</Frame>
+			<OnLoad inherit="prepend" function="LFGListCreateRoleDialog_OnLoad"/>
+		</Scripts>	
+	</Frame>	
 	<Frame name="LFGListInviteDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
 		<Size x="314" y="210"/>
 		<Layers>

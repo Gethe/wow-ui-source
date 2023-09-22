@@ -4,6 +4,7 @@
 MAX_LFG_LIST_APPLICATIONS = 5;
 MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
 MAX_LFG_LIST_GROUP_DROPDOWN_ENTRIES = 17;
+MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES = 10;
 LFG_LIST_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 LFG_LIST_COMMENT_FONT_COLOR = {r=0.6, g=0.6, b=0.6};
 GROUP_FINDER_CATEGORY_ID_DUNGEONS = 2;
@@ -906,9 +907,9 @@ function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
 	--Start out displaying everything
 	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
 
-	--If we're displaying more than 5, see if we can just display recommended
+	--If we're displaying more than the max, see if we can just display recommended
 	if ( useMore ) then
-		if ( #activities > 5 ) then
+		if ( #activities > MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES ) then
 			filters = bit.bor(filters, Enum.LFGListFilter.Recommended);
 			local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
 
@@ -916,8 +917,8 @@ function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
 			if ( #recActivities > 0 ) then
 				activities = recActivities;
 			else
-				--Just display up to 5 non-recommended activities
-				for i=#activities, 5, -1 do
+				--Just display up to the max number of non-recommended activities
+				for i=#activities, MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES, -1 do
 					activities[i] = nil;
 				end
 			end
@@ -1048,7 +1049,7 @@ function LFGListEntryCreation_GetSanitizedName(self)
 	return string.match(self.Name:GetText(), "^%s*(.-)%s*$");
 end
 
-function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction)
+function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction, chosenRole)
 	local honorLevel = 0;
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
 		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
@@ -1057,18 +1058,18 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 		else
 			-- Changing cross faction setting requires re-listing the group due to how listings are bucketed server side.
 			C_LFGList.RemoveListing();
-			C_LFGList.CreateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+			C_LFGList.CreateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction, chosenRole);
 		end
 		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
 	else
-		if(C_LFGList.CreateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction)) then
+		if(C_LFGList.CreateListing(activityID, itemLevel, honorLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction, chosenRole)) then
 			self.WorkingCover:Show();
 			LFGListEntryCreation_ClearFocus(self);
 		end
 	end
 end
 
-function LFGListEntryCreation_ListGroup(self)
+function LFGListEntryCreation_ListGroup(self, chosenRole)
 
 	local itemLevel;
 	if(self.ItemLevel:IsShown()) then
@@ -1083,7 +1084,7 @@ function LFGListEntryCreation_ListGroup(self)
 	local isCrossFaction =  self.CrossFactionGroup:IsShown() and not self.CrossFactionGroup.CheckButton:GetChecked();
 	local selectedPlaystyle = self.PlayStyleDropdown:IsShown() and self.selectedPlaystyle or nil;
 
-	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, autoAccept, privateGroup, 0, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, autoAccept, privateGroup, 0, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction, chosenRole);
 end
 
 function LFGListEntryCreation_SetAutoCreateDataInternal(self, activityType, activityID, contextID)
@@ -1263,7 +1264,7 @@ end
 
 function LFGListEntryCreationListGroupButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	LFGListEntryCreation_ListGroup(self:GetParent());
+	LFGListCreateRoleDialog_OnShow(LFGListCreateRoleDialog, self:GetParent());
 end
 
 function LFGListEntryCreationActivityFinder_OnLoad(self)
@@ -2673,13 +2674,15 @@ function LFGListApplicationDialog_OnEvent(self, event)
 end
 
 function LFGListApplicationDialog_Show(self, resultID)
-	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	if ( searchResultInfo.activityID ~= self.activityID ) then
-		C_LFGList.ClearApplicationTextFields();
-	end
+	if resultID then
+		local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
+		if ( searchResultInfo.activityID ~= self.activityID ) then
+			C_LFGList.ClearApplicationTextFields();
+		end
 
-	self.resultID = resultID;
-	self.activityID = searchResultInfo.activityID;
+		self.resultID = resultID;
+		self.activityID = searchResultInfo.activityID;
+	end
 	LFGListApplicationDialog_UpdateRoles(self);
 	StaticPopupSpecial_Show(self);
 end
@@ -2765,7 +2768,57 @@ function LFGListRoleButtonCheckButton_OnClick(self)
 
 	local dialog = self:GetParent():GetParent();
 	local leader, tank, healer, dps = GetLFGRoles();
-	SetLFGRoles(leader, dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton.CheckButton:GetChecked());
+	if dialog.exclusive then
+		local setDPS = false;
+		local setTank = false;
+		local setHealer = false;
+		if self:GetParent().roleID == 1 then
+			setDPS = true;
+		elseif self:GetParent().roleID == 2 then
+			setTank = true;
+		elseif self:GetParent().roleID == 3 then
+			setHealer = true;
+		end
+
+		SetLFGRoles(leader, setTank, setHealer, setDPS);
+		LFGListApplicationDialog_UpdateRoles(dialog);
+	else
+		SetLFGRoles(leader, dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton.CheckButton:GetChecked());
+	end
+end
+
+function LFGListCreateRoleDialog_OnClick(button)
+	local dialog = button:GetParent();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	local chosenRole;
+	if(dialog.exclusive) then
+		if dialog.TankButton.CheckButton:GetChecked() then
+			chosenRole = "TANK";
+		elseif dialog.HealerButton.CheckButton:GetChecked() then
+			chosenRole = "HEALER";
+		elseif dialog.DamagerButton.CheckButton:GetChecked() then
+			chosenRole = "DAMAGER";
+		end
+	end
+
+	LFGListEntryCreation_ListGroup(dialog.owner, chosenRole);
+	StaticPopupSpecial_Hide(dialog);
+end
+
+function LFGListCreateRoleDialog_OnShow(self, owner)
+	LFGListApplicationDialog_Show(self, nil);
+	self.owner = owner;
+end
+
+function LFGListCreateRoleDialog_OnLoad(self)
+	self.exclusive = true;
+	-- default to one role since we are exclusive
+	SetLFGRoles(false, false, false, true);
+	LFGListApplicationDialog_OnLoad(self);
+	self.Description:Hide();
+	self.SignUpButton:SetScript("OnClick", LFGListCreateRoleDialog_OnClick);
+	self.Label:SetText(LFG_LIST_CHOOSE_YOUR_ROLE);
 end
 
 -------------------------------------------------------
@@ -3171,9 +3224,21 @@ local roleRemainingKeyLookup = {
 	["DAMAGER"] = "DAMAGER_REMAINING",
 };
 
+local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
+	return false;
+end
+
 function LFGListUtil_SortSearchResultsCB(searchResultID1, searchResultID2)
 	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
 	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
+
+	local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
+	local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
+
+	-- Groups with your current role available are preferred
+	if (hasRemainingRole1 ~= hasRemainingRole2) then
+		return hasRemainingRole1;
+	end
 
 	--If one has more friends, do that one first
 	if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
@@ -3516,7 +3581,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
-	tooltip:AddLine(activityName);
+	tooltip:AddLine(activityInfo.fullName);
 
 	if (searchResultInfo.playstyle and searchResultInfo.playstyle > 0) then
 		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
@@ -3559,7 +3624,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	end
 
 	if ( searchResultInfo.leaderName ) then
-		if(searchResultInfo.leaderFactionGroup and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then
+		if(searchResultInfo.leaderFactionGroup ~= -1 and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then
 			local factionString = FACTION_STRINGS[searchResultInfo.leaderFactionGroup];
 			tooltip:AddLine(LFG_LIST_TOOLTIP_LEADER_FACTION:format(searchResultInfo.leaderName, factionString))
 		else

@@ -142,7 +142,12 @@ function UpdateMicroButtons()
 	if (  LFGParentFrame and LFGParentFrame:IsShown() ) then
 		LFGMicroButton:SetButtonState("PUSHED", true);
 	else
-		LFGMicroButton:SetButtonState("NORMAL");
+		if ( playerLevel < LFGMicroButton.minLevel ) then
+			LFGMicroButton:Disable();
+		else
+			LFGMicroButton:Enable();
+			LFGMicroButton:SetButtonState("NORMAL");
+		end
 	end
 
 	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
@@ -526,4 +531,11 @@ function CollectionMicroButtonMixin:OnClick(button, down)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleCollectionsJournal();
 	end
+end
+
+function LFGMicroButton_OnLoad(self)
+	LoadMicroButtonTextures(self, "LFG");
+	self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+	self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+	self.minLevel = SHOW_LFD_LEVEL;
 end

@@ -374,18 +374,46 @@
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "LFG");
-				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
-				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-			</OnLoad>
+			<OnLoad function="LFGMicroButton_OnLoad"/>
 			<OnEvent>
 				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
-			<OnClick>
-				PVEFrame_ToggleFrame();
-			</OnClick>
+			<OnMouseDown>
+				if ( self:IsEnabled() ) then
+					if ( self.down ) then
+						self.down = nil;
+						PVEFrame_ToggleFrame();
+						return;
+					end
+					self.down = 1;
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( self:IsEnabled() ) then
+					if ( self.down ) then
+						self.down = nil;
+						if ( self:IsMouseOver() ) then
+							PVEFrame_ToggleFrame();
+						end
+						UpdateMicroButtons();
+						return;
+					end
+					if ( self:GetButtonState() == "NORMAL" ) then
+						self.down = 1;
+					else
+						self.down = 1;
+					end
+				end
+			</OnMouseUp>
+			<OnEnable>
+				self:SetAlpha(1);
+				self:GetDisabledTexture():SetDesaturated(false);
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.5);
+				self:GetDisabledTexture():SetDesaturated(true);
+			</OnDisable>			
 		</Scripts>
 	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
