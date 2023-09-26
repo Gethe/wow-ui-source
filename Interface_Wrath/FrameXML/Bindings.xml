@@ -1121,6 +1121,9 @@
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleChannelFrame();
 	</Binding>
+	<Binding name="TOGGLEGROUPFINDER" category="BINDING_HEADER_INTERFACE">
+		PVEFrame_ToggleFrame();
+	</Binding>
 
 	<!-- Misc header="MISC" -->
 	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">

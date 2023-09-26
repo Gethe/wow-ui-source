@@ -142,6 +142,15 @@
 		</Shadow>
 		<Color r="1" g=".82" b="0"/>
 	</Font>
+	<Font name="QuestTitleFontBlackShadowSmaller" inherits="QuestFont_Shadow_Larger" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1" g=".82" b="0"/>
+	</Font>
 	<Font name="QuestFont" inherits="SystemFont_Med2" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>

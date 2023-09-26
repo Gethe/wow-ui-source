@@ -1174,8 +1174,11 @@ function LFGListRemoveCollapsedChildren(list, hiddenByCollapseList)
 	end
 end
 
-
 --Reward frame functions
+function LFGRewardsFrame_AdjustFont(self)
+	-- overriden in localization files
+end
+
 function LFGRewardsFrame_OnLoad(self)
 	self.numRewardFrames = 1;
 	self.description:SetTextColor(1, 1, 1);

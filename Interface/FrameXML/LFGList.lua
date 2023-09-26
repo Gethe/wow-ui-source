@@ -3,7 +3,6 @@
 -------------------------------------------------------
 MAX_LFG_LIST_APPLICATIONS = 5;
 MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
-MAX_LFG_LIST_GROUP_DROPDOWN_ENTRIES = 17;
 MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES = 10;
 LFG_LIST_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 LFG_LIST_COMMENT_FONT_COLOR = {r=0.6, g=0.6, b=0.6};
@@ -808,83 +807,17 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 		return;
 	end
 
-	local useMore = false;
-
-	--Start out displaying everything
+	--In classic we want to display all the groups, so we don't have a "more" button here.
 	local groups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory, bit.bor(self.baseFilters, self.selectedFilters));
-	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, bit.bor(self.baseFilters, self.selectedFilters));
-	if ( self.selectedFilters == 0 ) then
-		--We don't bother filtering if we have less than 5 items anyway
-		if ( #groups + #activities > 5 ) then
-			--Try just displaying the recommended
-			local filters = bit.bor(self.selectedFilters, self.baseFilters, Enum.LFGListFilter.Recommended);
-			local recGroups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory, filters);
-			local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, filters);
+	for i = 1, #groups do
+		local groupID = groups[i];
+		local name = C_LFGList.GetActivityGroupInfo(groupID);
 
-			--If we have some recommended, just display those
-			if ( #recGroups + #recActivities > 0 ) then
-				--If we still have just as many, we don't need to display more
-				useMore = #recGroups ~= #groups or #recActivities ~= #activities;
-				groups = recGroups;
-				activities = recActivities;
-			end
-		end
-	end
-
-	local groupOrder = groups[1] and select(2, C_LFGList.GetActivityGroupInfo(groups[1]));
-	local activityInfo = activities[1] and C_LFGList.GetActivityInfoTable(activities[1]);
-	local activityOrder = activityInfo and activityInfo.orderIndex;
-
-	local groupIndex, activityIndex = 1, 1;
-
-	--Start merging
-	for i=1, MAX_LFG_LIST_GROUP_DROPDOWN_ENTRIES do
-		if ( not groupOrder and not activityOrder ) then
-			break;
-		end
-
-		if ( activityOrder and (not groupOrder or activityOrder < groupOrder) ) then
-			local activityID = activities[activityIndex];
-			local activityInfo = activityID and C_LFGList.GetActivityInfoTable(activityID);
-			local name = activityInfo and activityInfo.shortName;
-
-			info.text = name;
-			info.value = activityID;
-			info.arg1 = "activity";
-			info.checked = (self.selectedActivity == activityID);
-			info.isRadio = true;
-			UIDropDownMenu_AddButton(info);
-
-			activityIndex = activityIndex + 1;
-			local nextActivityInfo =  activities[activityIndex] and C_LFGList.GetActivityInfoTable(activities[activityIndex]);
-			activityOrder = nextActivityInfo and nextActivityInfo.orderIndex;
-		else
-			local groupID = groups[groupIndex];
-			local name = C_LFGList.GetActivityGroupInfo(groupID);
-
-			info.text = name;
-			info.value = groupID;
-			info.arg1 = "group";
-			info.checked = (self.selectedGroup == groupID);
-			info.isRadio = true;
-			UIDropDownMenu_AddButton(info);
-
-			groupIndex = groupIndex + 1;
-			groupOrder = groups[groupIndex] and select(2, C_LFGList.GetActivityGroupInfo(groups[groupIndex]));
-		end
-	end
-
-	if ( #activities + #groups > MAX_LFG_LIST_GROUP_DROPDOWN_ENTRIES ) then
-		useMore = true;
-	end
-
-	if ( useMore ) then
-		info.text = LFG_LIST_MORE;
-		info.value = nil;
-		info.arg1 = "more";
-		info.notCheckable = true;
-		info.checked = false;
-		info.isRadio = false;
+		info.text = name;
+		info.value = groupID;
+		info.arg1 = "group";
+		info.checked = (self.selectedGroup == groupID);
+		info.isRadio = true;
 		UIDropDownMenu_AddButton(info);
 	end
 end
@@ -894,8 +827,6 @@ function LFGListEntryCreation_OnGroupSelected(self, id, buttonType)
 		LFGListEntryCreation_Select(self, nil, nil, nil, id);
 	elseif ( buttonType == "group" ) then
 		LFGListEntryCreation_Select(self, self.selectedFilters, self.selectedCategory, id);
-	elseif ( buttonType == "more" ) then
-		LFGListEntryCreationActivityFinder_Show(self.ActivityFinder, self.selectedCategory, nil, bit.bor(self.baseFilters, self.selectedFilters));
 	end
 end
 
@@ -913,14 +844,14 @@ function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
 			filters = bit.bor(filters, Enum.LFGListFilter.Recommended);
 			local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
 
-			useMore = #recActivities ~= #activities;
 			if ( #recActivities > 0 ) then
+				--We will prefer recommended activities for the ones that are shown (the rest will go into the "more" section)
 				activities = recActivities;
-			else
-				--Just display up to the max number of non-recommended activities
-				for i=#activities, MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES, -1 do
-					activities[i] = nil;
-				end
+			end
+
+			--Just display up to the max number of activities
+			for i=#activities, MAX_LFG_LIST_ACTIVITY_DROPDOWN_ENTRIES, -1 do
+				activities[i] = nil;
 			end
 		else
 			useMore = false;
@@ -1054,7 +985,7 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
 		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 		if activeEntryInfo.isCrossFactionListing == isCrossFaction then
-			C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+			C_LFGList.UpdateListing(activityID, itemLevel, honorLevel, activeEntryInfo.autoAccept, privateGroup, activeEntryInfo.questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction, chosenRole);
 		else
 			-- Changing cross faction setting requires re-listing the group due to how listings are bucketed server side.
 			C_LFGList.RemoveListing();
@@ -1290,7 +1221,7 @@ function LFGListEntryCreationActivityFinder_Show(self, categoryID, groupID, filt
 end
 
 function LFGListEntryCreationActivityFinder_UpdateMatching(self)
-	local filters = ResolveCategoryFilters(self.categoryID, self.filters);
+	local filters = self.filters;
 	self.matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, self.groupID, filters, self.Dialog.EntryBox:GetText());
 	LFGListUtil_SortActivitiesByRelevancy(self.matchingActivities);
 	if ( not self.selectedActivity or not tContains(self.matchingActivities, self.selectedActivity) ) then
@@ -1519,7 +1450,7 @@ function LFGListApplicationViewer_UpdateInfo(self)
 	self.BrowseGroupsButton:SetShown(isPartyLeader);
 
 	if (isPartyLeader) then
-		self.RemoveEntryButton:SetPoint("LEFT", self.BrowseGroupsButton, "RIGHT", 15, 0);
+		self.RemoveEntryButton:SetPoint("RIGHT", self.EditButton, "LEFT", 2, 0);
 	else
 		self.RemoveEntryButton:SetPoint("BOTTOMLEFT", -3, 4);
 	end
@@ -3155,7 +3086,7 @@ end
 function LFGListUtil_ValidateLevelReq(self, text)
 	local myItemLevel = GetAverageItemLevel();
 	if ( text ~= "" and tonumber(text) > myItemLevel) then
-		return LFG_LIST_ILVL_ABOVE_YOURS;
+		return LFG_LIST_ILVL_ABOVE_YOURS .. "\n" .. format(LFG_LIST_ITEM_LEVEL_CURRENT, myItemLevel);
 	end
 end
 

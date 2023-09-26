@@ -412,9 +412,7 @@ function QuestPOIButton_OnClick(self)
 		end
 		return;
 	else
-		if(( not WorldMapFrame:IsShown() and not WorldMapFrame:IsVisible() )) then
-			OpenQuestMapLog(mapID);
-		end
+		OpenQuestMapLog(mapID);
 		QuestMapFrame_ShowQuestDetails(questID);
 	end
 end

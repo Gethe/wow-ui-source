@@ -490,6 +490,18 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
+	<Button name="LFGListButtonTemplate" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if ( self.tooltip ) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+				GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
 	<Button name="LFGListMagicButtonTemplate" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
@@ -1559,7 +1571,7 @@
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="11" y="1"/>
 						</Anchors>
 					</EventFrame>
-					<Button parentKey="RemoveEntryButton" inherits="LFGListMagicButtonTemplate" text="GROUP_FINDER_DELIST">
+					<Button parentKey="RemoveEntryButton" inherits="LFGListButtonTemplate" text="GROUP_FINDER_DELIST">
 						<Size x="90" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>
@@ -1571,7 +1583,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button parentKey="EditButton" inherits="LFGListMagicButtonTemplate" text="EDIT">
+					<Button parentKey="EditButton" inherits="LFGListButtonTemplate" text="EDIT">
 						<Size x="90" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
@@ -1580,7 +1592,7 @@
 							<OnClick function="LFGListApplicationViewerEditButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="BrowseGroupsButton" inherits="LFGListMagicButtonTemplate" mixin="LFGApplicationBrowseGroupsButtonMixin" text="GROUP_FINDER_BROWSE">
+					<Button parentKey="BrowseGroupsButton" inherits="LFGListButtonTemplate" mixin="LFGApplicationBrowseGroupsButtonMixin" text="GROUP_FINDER_BROWSE">
 						<Size x="145" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="-3" y="4"/>

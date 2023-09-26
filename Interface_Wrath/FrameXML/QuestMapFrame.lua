@@ -240,10 +240,11 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
 		if ( arg1 == "questPOI" ) then
-			QuestMapFrame:GetParent():SetQuestLogPanelShown(GetCVarBool("questPOI") and GetCVarBool("questHelper"));
+			QuestMapFrame_CloseQuestDetails();
 			QuestMapFrame_UpdateAll();
 			WatchFrame_Update();
 			QuestLog_UpdateMapButton();
+			QuestMapFrame:GetParent():HandleUserActionToggleQuestLog();
 		elseif ( arg1 == "questHelper" ) then
 			if GetCVarBool("questHelper") then
 				WorldMapQuestShowObjectives:Show();
@@ -252,10 +253,11 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				WorldMapQuestShowObjectives:Hide();
 				WatchFrame.showObjectives = false;
 			end
-			QuestMapFrame:GetParent():SetQuestLogPanelShown(GetCVarBool("questPOI") and GetCVarBool("questHelper"));
+			QuestMapFrame_CloseQuestDetails();
 			QuestMapFrame_UpdateAll();
 			WatchFrame_Update();
 			QuestLog_UpdateMapButton();
+			QuestMapFrame:GetParent():HandleUserActionToggleQuestLog();
 		end
 	end
 end
@@ -328,12 +330,17 @@ function QuestMapFrame_UpdateAll(numPOIs)
 		local poiTable = { };
 		if ( numPOIs > 0 and GetCVarBool("questPOI") and GetCVarBool("questHelper") ) then
 			GetQuestPOIs(poiTable);
+			WorldMapTrackQuest:Show();
+		else
+			WorldMapTrackQuest:Hide();
 		end
 		local questDetailID = QuestMapFrame.DetailsFrame.questID;
 		if questDetailID then
 			QuestMapFrame_ShowQuestDetails(questDetailID);
+		else
+			QuestLogQuests_Update(poiTable);
 		end
-		QuestLogQuests_Update(poiTable);
+
 		QuestMapFrame:GetParent():OnQuestLogUpdate();
 	end
 end
@@ -378,22 +385,24 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	WorldMapTrackQuest:SetChecked(IsQuestWatched(questLogIndex));
 	QuestMapFrame.DetailsFrame.questID = questID;
 	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
-	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
-	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil);
-	QuestInfoRewardsFrame:SetPoint("TOPLEFT", 8, -5);
 
-	-- height
-	local height;
-	if ( MapQuestInfoRewardsFrame:IsShown() ) then
-		height = MapQuestInfoRewardsFrame:GetHeight() + 49;
-	else
-		height = 59;
+	if(not GetCVarBool("miniWorldMap")) then
+		QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
+		QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil);
+		QuestInfoRewardsFrame:SetPoint("TOPLEFT", 8, -5);
+
+		-- height
+		local height;
+		if ( MapQuestInfoRewardsFrame:IsShown() ) then
+			height = MapQuestInfoRewardsFrame:GetHeight() + 49;
+		else
+			height = 59;
+		end
+		height = min(height, 275);
+		QuestMapFrame.DetailsFrame.RewardsFrame:SetHeight(height);
+
+		QuestMapFrame.DetailsFrame:Show();
 	end
-	height = min(height, 275);
-	QuestMapFrame.DetailsFrame.RewardsFrame:SetHeight(height);
-
-	QuestMapFrame.DetailsFrame:Show();
-
 	-- save current view
 	QuestMapFrame.DetailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
 
@@ -897,10 +906,13 @@ function QuestLogQuests_Update(poiTable)
 	QuestPOI_HideUnusedButtons(QuestScrollFrame.Contents);
 	QuestScrollFrame.Contents:Layout();
 
-	if(QuestScrollFrame.titleFramePool:GetNumActive() == 0 or not GetCVarBool("questPOI") or not GetCVarBool("questHelper")) then
-		WorldMapFrame:SetQuestLogPanelShown(false);
+	if (QuestScrollFrame.titleFramePool:GetNumActive() == 0 ) then
+		if(WorldMapFrame.QuestLog:IsShown()) then
+			WorldMapFrame:HandleUserActionToggleQuestLog();
+		end
+		WorldMapTrackQuest:Hide();
 	else
-		WorldMapFrame:SetQuestLogPanelShown(true);
+		WorldMapFrame:HandleUserActionOpenQuestLog();
 	end
 end
 
@@ -917,7 +929,7 @@ function OpenQuestMapLog(mapID)
 	if mapID then
 		QuestMapFrame:GetParent():SetMapID(mapID);
 	end
-	QuestMapFrame_Open();
+	OpenWorldMap(mapID);
 
 	if ( QuestLogDetailFrame:IsShown() ) then
 		HideUIPanel(QuestLogDetailFrame);

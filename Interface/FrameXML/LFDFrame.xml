@@ -305,6 +305,7 @@
 												LFGRewardsFrame_OnLoad(self);
 											</OnLoad>
 											<OnShow>
+												LFGRewardsFrame_AdjustFont(self);
 												LFDQueueFrameRandom_UpdateFrame();
 											</OnShow>
 										</Scripts>

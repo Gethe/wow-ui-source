@@ -21,7 +21,13 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent" ignoreParentScale="true">
+	<Frame name="WorldMapScreenAnchor" hidden="true" movable="true">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Frame>
+	<Frame name="WorldMapFrame" inherits="WorldMapFrameTemplate" parent="UIParent" ignoreParentScale="true" frameBuffer="true">
 		<Size>
 			<AbsDimension x="1024" y="768" />
 		</Size>
@@ -46,6 +52,72 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="MiniBorderFrame" frameStrata="LOW" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="MiniBorderLeft" file="Interface\WorldMap\UI-WorldMapSmall-Left.tga">
+							<Size>
+								<AbsDimension x="512" y="512"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="12" y="-28"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="MiniBorderRight" file="Interface\WorldMap\UI-WorldMapSmall-Right.tga">
+							<Size>
+								<AbsDimension x="128" y="512"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MiniBorderLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="MiniWorldMapTitle" inherits="GameFontNormal" text="WORLD_MAP">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint ="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-40"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="WorldMapTitleDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint ="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="WorldMapTitleButton" parent="WorldMapFrame">
+				<Size>
+					<AbsDimension x="544" y="22" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MiniBorderLeft">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="WorldMapTitleButton_OnLoad" />
+					<OnClick function="WorldMapTitleButton_OnClick" />
+					<OnDragStart function="WorldMapTitleButton_OnDragStart" />
+					<OnDragStop function="WorldMapTitleButton_OnDragStop" />
+				</Scripts>
+			</Button>
 			<Frame parentKey="BorderFrame" frameStrata="LOW" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -193,7 +265,7 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<FontString inherits="GameFontNormal" text="WORLD_MAP">
+						<FontString name="WorldMapTitle" inherits="GameFontNormal" text="WORLD_MAP">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
@@ -402,6 +474,15 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
+			<Frame parentKey="MaximizeMinimizeFrame" inherits="MaximizeMinimizeButtonFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="WorldMapFrameCloseButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

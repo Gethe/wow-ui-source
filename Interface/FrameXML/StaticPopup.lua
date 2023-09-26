@@ -3033,8 +3033,12 @@ if (C_GameRules.IsHardcoreActive()) then
 	
 				local _, _, _, colorCode = GetClassColor(classFilename);
 				GameTooltip:SetText(WrapTextInColorCode(characterName, colorCode));
-	
-				local characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+				local characterLine
+				if (level < 0) then
+					characterLine = UNIT_TYPE_LETHAL_LEVEL_TEMPLATE:format(className);
+				else
+					characterLine = CHARACTER_LINK_CLASS_LEVEL_TOOLTIP:format(level, className);
+				end
 				GameTooltip:AddLine(characterLine, HIGHLIGHT_FONT_COLOR:GetRGB());
 			else
 				self.nextUpdateTime = timeNow + .5;

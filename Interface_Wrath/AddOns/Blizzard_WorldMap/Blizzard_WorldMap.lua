@@ -2,13 +2,57 @@ WorldMapMixin = {};
 
 function WorldMapMixin:SynchronizeDisplayState()
 	if self:IsMaximized() then
+		self.MiniBorderFrame:Hide();
+
+		WorldMapFrame_SetOpacity(0);
+
+		self:SetSize(self.maximizedWidth, self.maximizedHeight);
+
+		self.BlackoutFrame:Show();	
+		self.BorderFrame:Show();
+		WorldMapContinentDropDown:Show();
+		WorldMapZoneDropDown:Show();
+		WorldMapZoomOutButton:Show();
+		WorldMapZoneMinimapDropDown:Show();
+		WorldMapMagnifyingGlassButton:Show();
+		
+
+		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", self.BorderFrame, "TOPRIGHT", 5, 4);
+		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 12, 0);
+		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 11, -70);
+		WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 10, 4);
+
 		MaximizeUIPanel(self);
 	else
+		self.MiniBorderFrame:Show();
+		self:SetMovable("true");
+
+		WorldMapFrame:ClearAllPoints();
+		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, 0);
+		WorldMapFrame:SetUserPlaced(true);
+
+		WorldMapFrame_SetOpacity(GetCVar("worldMapOpacity"));
+
+		self:SetSize(self.minimizedWidth, self.minimizedHeight);
+		
+		self.BlackoutFrame:Hide();
+		self.BorderFrame:Hide();
+		WorldMapContinentDropDown:Hide();
+		WorldMapZoneDropDown:Hide();
+		WorldMapZoomOutButton:Hide();
+		WorldMapZoneMinimapDropDown:Hide();
+		WorldMapMagnifyingGlassButton:Hide();
+
+		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", MiniBorderRight, "TOPRIGHT", -44, 5);
+		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 10, 0);
+		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 20, -50);
+		self.ScrollContainer:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -10, 28);
+		WorldMapTrackQuest:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLeft", 20, 4);
+		
 		RestoreUIPanelArea(self);
 	end
 end
 
---TODO: Implement minimize/maximize
 function WorldMapMixin:Minimize()
 	self.isMaximized = false;
 
@@ -22,10 +66,28 @@ end
 function WorldMapMixin:Maximize()
 	self.isMaximized = true;
 
-	self:UpdateMaximizedSize();
 	self:SynchronizeDisplayState();
 
 	self:OnFrameSizeChanged();
+end
+
+function WorldMapMixin:SetupMinimizeMaximizeButton()
+	self.minimizedWidth = 610;
+	self.minimizedHeight = 463;
+	self.maximizedWidth = 1024;
+	self.maximizedHeight = 768;
+
+	local function OnMaximize()
+		self:HandleUserActionMaximizeSelf();
+	end
+
+	self.MaximizeMinimizeFrame:SetOnMaximizedCallback(OnMaximize);
+
+	local function OnMinimize()
+		self:HandleUserActionMinimizeSelf();
+	end
+
+	self.MaximizeMinimizeFrame:SetOnMinimizedCallback(OnMinimize);
 end
 
 function WorldMapMixin:IsMaximized()
@@ -33,9 +95,10 @@ function WorldMapMixin:IsMaximized()
 end
 
 function WorldMapMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "center", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "CENTER" };
+	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "top" };
 
 	MapCanvasMixin.OnLoad(self);
+	self:SetupMinimizeMaximizeButton();
 
 	self:SetShouldZoomInOnClick(false);
 	self:SetShouldPanOnClick(false);
@@ -64,9 +127,7 @@ function WorldMapMixin:OnEvent(event, ...)
 			WorldMapQuestShowObjectives:SetChecked(GetCVarBool("questPOI"));
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
-		if self:IsMaximized() then
-			self:UpdateMaximizedSize();
-		end
+		self:SynchronizeDisplayState();
 	end
 end
 
@@ -179,6 +240,7 @@ function WorldMapMixin:OnMapChanged()
 	-- Update dropdown text.
 	WorldMapContinentDropDown_Update(self.ContinentDropDown);
 	WorldMapZoneDropDown_Update(self.ZoneDropDown);
+	WorldMapFrame_SetMapName();
 end
 
 function WorldMapMixin:OnShow()
@@ -191,44 +253,21 @@ function WorldMapMixin:OnShow()
 
 	WorldMapZoneMinimapDropDown_Update();
 
-	--TODO: Implement minimize/maximize
-	--[[local miniWorldMap = GetCVarBool("miniWorldMap");
+	local miniWorldMap = GetCVarBool("miniWorldMap");
 	local maximized = self:IsMaximized();
 	if miniWorldMap ~= maximized then
 		if miniWorldMap then
-			self.BorderFrame.MaximizeMinimizeFrame:Minimize();
+			self.MaximizeMinimizeFrame:Minimize();
 		else
-			self.BorderFrame.MaximizeMinimizeFrame:Maximize();
+			self.MaximizeMinimizeFrame:Maximize();
 		end
-	end]]
+	end
 end
 
 function WorldMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
-end
-
-function WorldMapMixin:UpdateMaximizedSize()
-	assert(self:IsMaximized());
-
-	--TODO: Implement minimize/maximize
-	--[[local parentWidth, parentHeight = self:GetParent():GetSize();
-	local SCREEN_BORDER_PIXELS = 30;
-	parentWidth = parentWidth - SCREEN_BORDER_PIXELS;
-
-	local unclampedWidth = ((parentHeight) * self.minimizedWidth) / (self.minimizedHeight);
-	local clampedWidth = math.min(parentWidth, unclampedWidth);
-
-	local unclampedHeight = parentHeight;
-	local clampHeight = ((parentHeight) * (clampedWidth / unclampedWidth));
-	self:SetSize(math.floor(clampedWidth), math.floor(clampHeight));
-
-	SetUIPanelAttribute(self, "bottomClampOverride", (unclampedHeight - clampHeight) / 2);]]
-
-	UpdateUIPanelPositions(self);
-
-	self:OnFrameSizeChanged();
 end
 
 function WorldMapMixin:GetCurrentMapContinent()
@@ -514,6 +553,143 @@ function DoesInstanceTypeMatchBattlefieldMapSettings()
 		return value == "2";
 	end
 	return false;
+end
+
+function WorldMapFrame_SetMapName()
+	local mapName = WORLD_MAP;
+	local mapInfo = WorldMapFrame:GetCurrentMapContinent();
+	
+	-- mapInfo is nil for instances, Azeroth, or the cosmic view, in which case we'll keep the "World Map" title
+	if ( mapInfo) then
+		mapName = UIDropDownMenu_GetText(WorldMapZoneDropDown);
+		if ( not mapName ) then
+			mapName = mapInfo.name;
+		end
+	end
+	MiniWorldMapTitle:SetText(mapName);
+end
+
+function WorldMapTitleButton_OnLoad(self)
+	self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
+	self:RegisterForDrag("LeftButton");
+	UIDropDownMenu_Initialize(WorldMapTitleDropDown, WorldMapTitleDropDown_Initialize, "MENU");
+end
+
+local locked = true;
+function WorldMapTitleDropDown_Initialize()
+	local checked;
+	local info = UIDropDownMenu_CreateInfo();
+
+	-- Lock/Unlock
+	info.text = LOCK_WINDOW;
+	info.func = WorldMapTitleDropDown_ToggleLock;
+	info.checked = locked;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+	
+	-- Opacity
+	info.text = CHANGE_OPACITY;
+	info.func = WorldMapTitleDropDown_ToggleOpacity;
+	info.checked = nil;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+
+	--Reset mini world Map
+	info.text = RESET;
+	info.func = WorldMapTitleDropDown_Reset;
+	info.checked = nil;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+end
+
+function WorldMapTitleButton_OnClick(self, button)
+	--PlaySound("UChatScrollButton");
+
+	-- hide the opacity frame on any click
+	if ( OpacityFrame:IsShown() and OpacityFrame.saveOpacityFunc and OpacityFrame.saveOpacityFunc == WorldMapFrame_SaveOpacity ) then
+		WorldMapFrame_SaveOpacity();
+		OpacityFrame.saveOpacityFunc = nil;
+		OpacityFrame:Hide();
+	end
+	
+	-- If Rightclick bring up the options menu
+	if ( button == "RightButton" ) then
+		ToggleDropDownMenu(1, nil, WorldMapTitleDropDown, "cursor", 0, 0);
+		return;
+	end
+
+	-- Close all dropdowns
+	CloseDropDownMenus();
+end
+
+function WorldMapTitleDropDown_ToggleLock()
+	locked = not locked;
+end
+
+function WorldMapTitleButton_OnDragStart()
+	if ( not locked ) then	
+		WorldMapScreenAnchor:ClearAllPoints();
+		WorldMapFrame:ClearAllPoints();
+		WorldMapFrame:StartMoving();
+	end
+end
+
+function WorldMapTitleButton_OnDragStop()
+	if ( not locked ) then	
+		WorldMapFrame:StopMovingOrSizing();	
+		-- move the anchor
+		WorldMapScreenAnchor:StartMoving();
+		WorldMapScreenAnchor:SetPoint("TOPLEFT", WorldMapFrame);
+		WorldMapScreenAnchor:StopMovingOrSizing();
+	end
+end
+
+function WorldMapTitleDropDown_Reset()
+	SetCVar("worldMapOpacity", 0);
+	WorldMapFrame_SetOpacity(0);
+	WorldMapFrame:ClearAllPoints();
+	WorldMapFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -116);
+	WorldMapScreenAnchor:ClearAllPoints();
+	WorldMapScreenAnchor:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -116);
+	WorldMapFrame:SetUserPlaced(false);
+end
+
+-- ============================================ OPACITY ===============================================================================
+function WorldMapTitleDropDown_ToggleOpacity()
+	if ( OpacityFrame:IsShown() ) then
+		OpacityFrame:Hide();
+		return;
+	end
+	OpacityFrame:ClearAllPoints();
+	if ( WorldMapFrame:GetCenter() < GetScreenWidth() / 2 ) then
+		OpacityFrame:SetPoint("TOPLEFT", WorldMapTitleButton, "BOTTOMRIGHT", 50, 5);
+	else
+		OpacityFrame:SetPoint("TOPRIGHT", WorldMapTitleButton , "BOTTOMLEFT", 5, 5);
+	end
+	OpacityFrame.opacityFunc = WorldMapFrame_ChangeOpacity;
+	OpacityFrame.saveOpacityFunc = WorldMapFrame_SaveOpacity;
+	OpacityFrame:Show();
+	OpacityFrameSlider:SetValue(GetCVar("worldMapOpacity"));	
+end
+
+function WorldMapFrame_ChangeOpacity()
+	local opacity = OpacityFrameSlider:GetValue();
+	WorldMapFrame_SetOpacity(opacity);
+	WorldMapFrame_SaveOpacity();
+end
+
+function WorldMapFrame_SaveOpacity()
+	SetCVar("worldMapOpacity", OpacityFrameSlider:GetValue());
+end
+
+function WorldMapFrame_SetOpacity(opacity)
+	local alpha;
+	-- set border alphas
+	alpha = 0.5 + (1.0 - opacity) * 0.50;
+	WorldMapFrame:SetAlpha(alpha);
+	-- set map alpha
+	alpha = 0.35 + (1.0 - opacity) * 0.65;
+	WorldMapFrame.ScrollContainer:SetAlpha(alpha);
+	-- set blob alpha
+	alpha = 0.45 + (1.0 - opacity) * 0.55;
+	QuestMapFrame:SetAlpha(alpha);
 end
 
 -- ============================================ QUEST HELPER ===============================================================================

@@ -115,7 +115,7 @@ function PetJournal_UpdateSummonButtonState()
 
 	PetJournal.SummonButton:SetEnabled(hasPetID and (C_PetJournal.PetIsSummonable(petID) or needsFanfare));
 
-	local active = C_PetJournal.IsCurrentlySummoned(PetJournalPetCard.speciesID);
+	local active = C_PetJournal.IsCurrentlySummoned(petID);
 
 	if hasPetID and active then
 		PetJournal.SummonButton:SetText(PET_DISMISS);
@@ -744,9 +744,9 @@ function PetOptionsMenu_Init(self, level)
 			info.text = BATTLE_PET_SUMMON;
 			local speciesID = PetJournal.menuPetID and C_PetJournal.GetPetInfoByPetID(PetJournal.menuPetID)
 			info.func = function() C_PetJournal.SummonPetByGUID(PetJournal.menuPetID); end
-			if (PetJournal.menuPetID and C_PetJournal.IsCurrentlySummoned(speciesID)) then
+			if (PetJournal.menuPetID and C_PetJournal.IsCurrentlySummoned(PetJournal.menuPetID)) then
 				info.text = PET_DISMISS;
-				info.func = function() C_PetJournal.DismissSummonedPet(speciesID); end
+				info.func = function() C_PetJournal.DismissSummonedPet(PetJournal.menuPetID); end
 			end
 			if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
 				info.disabled = true;
@@ -809,9 +809,9 @@ function PetJournalSummonButton_OnEnter(self)
 end
 
 function PetJournalSummonButton_OnClick(self)
-	local active = C_PetJournal.IsCurrentlySummoned(PetJournalPetCard.speciesID);
+	local active = C_PetJournal.IsCurrentlySummoned(PetJournalPetCard.petID);
 	if ( active ) then
-		C_PetJournal.DismissSummonedPet(PetJournalPetCard.speciesID);
+		C_PetJournal.DismissSummonedPet(PetJournalPetCard.petID);
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
 		if(C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then

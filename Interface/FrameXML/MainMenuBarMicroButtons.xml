@@ -270,7 +270,7 @@
 		<Scripts>
 			<OnLoad function="LFGMicroButton_OnLoad"/>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 			</OnEvent>
 			<OnMouseDown>

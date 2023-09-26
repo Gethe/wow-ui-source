@@ -70,7 +70,7 @@ function PVEFrame_OnEvent(self, event, ...)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
-	local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+	local canUse = C_LFGInfo.CanPlayerUseGroupFinder() and UnitLevel("player") >= SHOW_LFD_LEVEL;
 	if ( not canUse or Kiosk.IsEnabled() ) then
 		return;
 	end

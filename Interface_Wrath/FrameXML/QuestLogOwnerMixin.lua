@@ -32,16 +32,25 @@ function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 		end
 	end
 
+	if(OpacityFrame:IsShown()) then
+		OpacityFrame:Hide();
+	end
+	
 	self:SetDisplayState(displayState);
 end
 
 function QuestLogOwnerMixin:HandleUserActionToggleQuestLog()
 	local displayState;
-	if self:IsShown() and self.QuestLog:IsShown() then
-		displayState = DISPLAY_STATE_CLOSED;
+	if self:IsShown() and self:IsMaximized() then
+		if not self.QuestLog:IsShown() and self:ShouldShowQuestLogPanel() then
+			displayState = DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG;
+		else
+			displayState = DISPLAY_STATE_OPEN_MAXIMIZED_NO_LOG;
+		end
 	else
-		displayState = DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG;
+		displayState = DISPLAY_STATE_OPEN_MINIMIZED;
 	end
+
 	self:SetDisplayState(displayState);
 end
 
@@ -64,7 +73,13 @@ function QuestLogOwnerMixin:HandleUserActionMaximizeSelf()
 end
 
 function QuestLogOwnerMixin:HandleUserActionOpenQuestLog(mapID)
-	self:SetDisplayState(DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG);
+	if self:IsMaximized() then	
+		if self:ShouldShowQuestLogPanel() then
+			self:SetDisplayState(DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG);
+		end
+	else
+		self:SetDisplayState(DISPLAY_STATE_OPEN_MINIMIZED);
+	end
 	if mapID then
 		self:SetMapID(mapID);
 	end
@@ -89,12 +104,10 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 
 		if displayState == DISPLAY_STATE_OPEN_MINIMIZED then
 			if self:IsMaximized() then
-				self:SetQuestLogPanelShown(false);
-				--TODO: Implement minimize/maximize
-				--self:Minimize();
-				--self.BorderFrame.MaximizeMinimizeFrame:SetMinimizedLook();
+				self:Minimize();
 				hasSynchronizedDisplayState = true;
 			end
+			self:SetQuestLogPanelShown(false);
 		elseif displayState == DISPLAY_STATE_OPEN_MAXIMIZED_NO_LOG then
 			if not self:IsMaximized() then
 				self:Maximize();
@@ -103,9 +116,7 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 			self:SetQuestLogPanelShown(false);
 		elseif displayState == DISPLAY_STATE_OPEN_MAXIMIZED_WITH_LOG then
 			if not self:IsMaximized() then
-				--TODO: Implement minimize/maximize
-				--self:Maximize();
-				--self.BorderFrame.MaximizeMinimizeFrame:SetMaximizedLook();
+				self:Maximize();
 				hasSynchronizedDisplayState = true;
 			end
 			self:SetQuestLogPanelShown(true);
@@ -124,11 +135,13 @@ function QuestLogOwnerMixin:SetQuestLogPanelShown(shown)
 		if shown then
 			self.ScrollContainer:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -320, 236);
 			self.QuestLog:Show();
+			self.QuestLog:UpdatePOIs();
 		else
-			self.ScrollContainer:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -10, 30);
+			self.ScrollContainer:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -11, 30);
 			self.QuestLog:Hide();
 		end
 
+		self:SynchronizeDisplayState();
 		UpdateUIPanelPositions(self);
 		self:OnFrameSizeChanged();
 	end
