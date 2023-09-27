@@ -1789,9 +1789,6 @@
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-10"/>
 								</Anchors>
-								<KeyValues>
-									<KeyValue key="buttonSize" value="18" type="number" />
-								</KeyValues>								
 							</Frame>
 							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true" mixin="WardrobeTransmogClearAllPendingButtonMixin">
 								<Size x="26" y="26"/>
@@ -1800,9 +1797,10 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="Icon" atlas="transmog-icon-revert-small" useAtlasSize="true">
+										<Texture parentKey="Icon" atlas="common-icon-undo" >
+											<Size x="18" y="18"/>
 											<Anchors>
-												<Anchor point="LEFT" x="1"/>
+												<Anchor point="CENTER" />
 											</Anchors>
 										</Texture>
 									</Layer>

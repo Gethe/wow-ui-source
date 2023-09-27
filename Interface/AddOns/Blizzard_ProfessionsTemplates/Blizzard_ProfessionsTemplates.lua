@@ -590,3 +590,20 @@ function ProfessionsCustomerTableCellExpirationMixin:OnLeave()
 
 	GameTooltip:Hide();
 end
+
+ProfessionsRecipeListPanelMixin = {};
+
+function ProfessionsRecipeListPanelMixin:StoreCollapses(scrollbox)
+	self.collapses = {};
+	local dataProvider = scrollbox:GetDataProvider();
+	local childrenNodes = dataProvider:GetChildrenNodes();
+	for idx, child in ipairs(childrenNodes) do
+		if child.data and child:IsCollapsed() then
+			self.collapses[child.data.categoryInfo.categoryID] = true;
+		end
+	end
+end
+
+function ProfessionsRecipeListPanelMixin:GetCollapses()
+	return self.collapses;
+end

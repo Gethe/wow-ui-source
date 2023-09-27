@@ -184,6 +184,8 @@ function PerksProgramMixin:OnShow()
 	self:RegisterEvent("CURSOR_CHANGED");
 	EventRegistry:TriggerEvent("PerksProgramFrame.OnShow");
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_OPEN);
+
+	AlertFrame:BlockLeftClickingAlerts(self);
 end
 
 function PerksProgramMixin:OnHide()
@@ -206,6 +208,8 @@ function PerksProgramMixin:OnHide()
 
 	self:UnregisterEvent("CURSOR_CHANGED");
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_CLOSE);
+
+	AlertFrame:UnblockLeftClickingAlerts(self);
 end
 
 function PerksProgramMixin:OnEvent(event, ...)

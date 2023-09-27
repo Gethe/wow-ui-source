@@ -741,6 +741,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsBrawlSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isBrawlSoloRBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBrawlSoloShuffle",
 			Type = "Function",
 
@@ -846,6 +855,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "isRatedSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSoloRBG", Type = "bool", Nilable = false },
 			},
 		},
 		{

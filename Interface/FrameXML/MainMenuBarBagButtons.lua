@@ -26,6 +26,7 @@ function BaseBagSlotButtonMixin:OnLoadInternal()
 
 	self:RegisterForClicks("AnyUp");
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("BAG_UPDATE_DELAYED");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 
@@ -46,10 +47,12 @@ function BaseBagSlotButtonMixin:BagSlotOnEvent(event, ...)
 			self.AnimIcon:SetTexture(iconFileID);
 			self.FlyIn:Play(true);
 		end
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:UpdateBagMatchesSearch();
 	elseif event == "BAG_UPDATE_DELAYED" then
 		PaperDollItemSlotButton_Update(self);
 	elseif event == "INVENTORY_SEARCH_UPDATE" then
-		self:SetMatchesSearch(not C_Container.IsContainerFiltered(self:GetBagID()));
+		self:UpdateBagMatchesSearch();
 	else
 		PaperDollItemSlotButton_OnEvent(self, event, ...);
 	end
@@ -128,6 +131,10 @@ function BaseBagSlotButtonMixin:BagSlotOnLeave()
 	EventRegistry:TriggerEvent("BagSlot.OnLeave", self);
 	GameTooltip:Hide();
 	ResetCursor();
+end
+
+function BaseBagSlotButtonMixin:UpdateBagMatchesSearch()
+	self:SetMatchesSearch(not C_Container.IsContainerFiltered(self:GetBagID()));
 end
 
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)

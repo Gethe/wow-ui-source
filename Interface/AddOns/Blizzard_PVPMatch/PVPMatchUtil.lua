@@ -21,6 +21,16 @@ function PVPMatchUtil.InSoloShuffleBrawl()
 	return brawlInfo and brawlInfo.brawlID == 130;
 end
 
+function PVPMatchUtil.ModeUsesPvpRatingTiers()
+	-- Arena skirmishes and brawls like Solo Shuffle/Battleground Blitz only use rating for matchmaking purposes
+	-- They do not have rating tiers (Combatant, Challenger, Rival, etc.) or tier rewards
+	if IsArenaSkirmish() or C_PvP.IsBrawlSoloShuffle() or C_PvP.IsBrawlSoloRBG() then
+		return false;
+	end
+
+	return C_PvP.IsRatedMap();
+end
+
 function PVPMatchUtil.IsActiveMatchComplete()
 	return C_PvP.IsMatchComplete();
 end
@@ -65,8 +75,23 @@ PVPMatchStyle.Theme = {
 	},
 };
 
+local function ShouldShowMatchmakingText()
+	if C_PvP.IsRatedSoloShuffle() then
+		return true;
+	end
+
+	-- Ignore modes with a custom victory condition (aside from Rated Solo Shuffle)
+	if C_PvP.GetCustomVictoryStatID() ~= 0 then
+		return false;
+	end
+
+	return  C_PvP.IsSoloRBG() or
+			C_PvP.IsRatedBattleground() or
+			(C_PvP.IsRatedArena() and not IsArenaSkirmish());
+end
+
 function PVPMatchUtil.UpdateMatchmakingText(fontString)
-	if (C_PvP.IsRatedSoloShuffle() or C_PvP.GetCustomVictoryStatID() == 0 and (C_PvP.IsRatedBattleground() or C_PvP.IsRatedArena() and (not IsArenaSkirmish()))) then
+	if ShouldShowMatchmakingText() then
 		local teamInfos = { 
 			C_PvP.GetTeamInfo(0),
 			C_PvP.GetTeamInfo(1), 

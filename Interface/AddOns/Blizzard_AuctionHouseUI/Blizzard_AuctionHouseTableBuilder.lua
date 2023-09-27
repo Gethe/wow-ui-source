@@ -1029,7 +1029,7 @@ function AuctionHouseTableBuilder.GetCommoditiesSellListLayout(owner, itemList)
 		local unitPriceColumn = tableBuilder:AddUnsortableFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, STANDARD_PADDING, 0, AUCTION_HOUSE_HEADER_UNIT_PRICE, "AuctionHouseTableCellUnitPriceTemplate");
 		unitPriceColumn:GetHeaderFrame():SetArrowState(AuctionHouseSortOrderState.PrimarySorted);
 
-		local quantityColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 90, nil, "AuctionHouseTableCellCommoditiesQuantityTemplate");
+		local quantityColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 80, nil, "AuctionHouseTableCellCommoditiesQuantityTemplate");
 		quantityColumn:SetDisplayUnderPreviousHeader(true);
 
 		tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 120, STANDARD_PADDING, 0, AUCTION_HOUSE_HEADER_SELLER, "AuctionHouseTableCellOwnersTemplate");

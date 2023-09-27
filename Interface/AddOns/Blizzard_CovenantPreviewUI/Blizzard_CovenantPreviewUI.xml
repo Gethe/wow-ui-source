@@ -165,18 +165,21 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="100" y="-40"/>
 							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="Location" justifyH="LEFT" justifyV="TOP" inherits="SystemFont_Large">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" x="0" y="-5"/>
 							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="Description" justifyH="LEFT" justifyV="TOP" inherits="SystemFont_Med3">
 							<Size x="490" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Location" relativePoint="BOTTOM" x="30" y="-38"/>
 							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>

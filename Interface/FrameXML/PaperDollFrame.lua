@@ -2407,7 +2407,9 @@ function PaperDollEquipmentManagerPane_InitButton(button, elementData)
 	else
 		local index = elementData.index;
 
-		local equipmentSetIndex = PaperDollFrame.EquipmentManagerPane.equipmentSetIDs[index];
+		local equipmentSetIDs = PaperDollFrame.EquipmentManagerPane.equipmentSetIDs;
+		local equipmentSetIndex = equipmentSetIDs[index];
+		local numRows = #equipmentSetIDs;
 		local name, texture, setID, isEquipped, _, _, _, numLost = C_EquipmentSet.GetEquipmentSetInfo(equipmentSetIndex);
 		button.setID = setID;
 		button.text:SetText(name);
@@ -2442,7 +2444,7 @@ function PaperDollEquipmentManagerPane_InitButton(button, elementData)
 			button.BgMiddle:SetPoint("TOP");
 		end
 
-		if (index == numRows) then
+		if (equipmentSetIndex == numRows) then
 			button.BgBottom:Show();
 			button.BgMiddle:SetPoint("BOTTOM", button.BgBottom, "TOP");
 		else

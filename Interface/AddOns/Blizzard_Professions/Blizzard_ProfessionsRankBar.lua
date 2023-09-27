@@ -87,6 +87,10 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		self.BarAnimation:Restart();
 	end
 
+	if sameRatio then
+		return;
+	end
+
 	local isBarFull = (professionInfo.maxSkillLevel > 0 and professionInfo.skillLevel == professionInfo.maxSkillLevel);
 	if isBarFull and not professionChanged and not sameRatio then
 		self.FlareFadeOut:Restart();
@@ -98,10 +102,6 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 	if self.interpolator then
 		self.interpolator:Cancel();
 		self.interpolator = nil;
-	end
-
-	if sameRatio then
-		return;
 	end
 
 	local width = self.Fill:GetWidth();

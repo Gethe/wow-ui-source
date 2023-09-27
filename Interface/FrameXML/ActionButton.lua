@@ -766,7 +766,7 @@ function ActionButton_UpdateCooldown(self)
 
 	if ( (locStart + locDuration) > (start + duration) ) then
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC");
+			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-LoC");
 			self.cooldown:SetSwipeColor(0.17, 0, 0);
 			self.cooldown:SetHideCountdownNumbers(true);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
@@ -777,7 +777,7 @@ function ActionButton_UpdateCooldown(self)
 		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
+			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-SecondaryCooldown");
 			self.cooldown:SetSwipeColor(0, 0, 0);
 			self.cooldown:SetHideCountdownNumbers(false);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;

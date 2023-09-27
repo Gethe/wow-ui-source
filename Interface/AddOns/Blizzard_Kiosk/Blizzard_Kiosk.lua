@@ -34,15 +34,17 @@ function KioskFrameMixin:OnEvent(event, ...)
 	end
 end
 
+KioskSessionStartedDialogButtonMixin = {}
+
+function KioskSessionStartedDialogButtonMixin:OnClick()
+	KioskSessionStartedDialog:Hide();
+end
+
 KioskSessionFinishedDialogMixin = CreateFromMixins(BaseExpandableDialogMixin);
 
 function KioskSessionFinishedDialogMixin:OnLoad()
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
-
-	self.Dialog.Title:SetText(KIOSK_SESSION_EXPIRED_TITLE);
-	self.Dialog.SubTitle:SetText("Shadowlands");
-	self.Dialog.Body:SetText(KIOSK_SESSION_EXPIRED_BODY);
 end
 
 function KioskSessionFinishedDialogMixin:OnEvent(event, ...)
@@ -52,6 +54,8 @@ function KioskSessionFinishedDialogMixin:OnEvent(event, ...)
 			self:Hide();
 		end
 	elseif event == "KIOSK_SESSION_EXPIRED" then
+		-- Clear starting dialog if still showing.
+		KioskSessionStartedDialog:Hide();
 		self:Show();
 	end
 end

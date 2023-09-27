@@ -70,7 +70,7 @@ UI_shared.xsd">
 				<SwipeTexture>
 					<Color r="0.17" g="0" b="0" a="0.8"/>
 				</SwipeTexture>
-				<EdgeTexture file="Interface\Cooldown\edge-LoC.blp"/>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
 			</Cooldown>
 			<Frame parentKey="TimeLeft">
 				<Size x="200" y="20"/>

@@ -105,6 +105,24 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetNextActivitiesIncrease",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityTierID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSeasonData", Type = "bool", Nilable = false },
+				{ Name = "nextActivityTierID", Type = "number", Nilable = true },
+				{ Name = "nextLevel", Type = "number", Nilable = true },
+				{ Name = "itemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNextMythicPlusIncrease",
 			Type = "Function",
 
@@ -252,6 +270,7 @@ local WeeklyRewards =
 				{ Name = "threshold", Type = "number", Nilable = false },
 				{ Name = "progress", Type = "number", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "activityTierID", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "claimID", Type = "number", Nilable = true },
 				{ Name = "raidString", Type = "cstring", Nilable = true },

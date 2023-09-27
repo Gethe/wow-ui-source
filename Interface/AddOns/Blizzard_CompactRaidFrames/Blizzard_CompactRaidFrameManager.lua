@@ -176,7 +176,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	--Then, we update which specific buttons are enabled.
 
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
-	if ( IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
+	if ( IsInGroup() and not HasLFGRestrictions() and not UnitInBattleground("player") and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Enable();
 		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
 	else

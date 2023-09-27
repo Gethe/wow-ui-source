@@ -26,7 +26,6 @@
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="enableZoom" value="false" type="boolean" />
-									<KeyValue key="buttonSize" value="18" type="number" />
 								</KeyValues>
 							</Frame>
 							<Button parentKey="CarouselLeftButton">

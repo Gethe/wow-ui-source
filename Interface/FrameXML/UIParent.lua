@@ -1808,6 +1808,11 @@ function UIParent_OnEvent(self, event, ...)
 
 		if Kiosk.IsEnabled() then
 			C_AddOns.LoadAddOn("Blizzard_Kiosk");
+
+			local isInitialLogin, isUIReload = arg1, arg2;
+			if isInitialLogin and not isUIReload then
+				KioskSessionStartedDialog:Show();
+			end
 		end
 
 		if IsTrialAccount() or IsVeteranTrialAccount() then

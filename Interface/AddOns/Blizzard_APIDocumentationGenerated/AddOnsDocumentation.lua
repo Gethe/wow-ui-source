@@ -84,7 +84,7 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "state", Type = "number", Nilable = false },
+				{ Name = "state", Type = "AddOnEnableState", Nilable = false },
 			},
 		},
 		{
@@ -102,7 +102,7 @@ local AddOns =
 				{ Name = "title", Type = "cstring", Nilable = false },
 				{ Name = "notes", Type = "cstring", Nilable = false },
 				{ Name = "loadable", Type = "bool", Nilable = false },
-				{ Name = "reason", Type = "string", Nilable = true },
+				{ Name = "reason", Type = "cstring", Nilable = false },
 				{ Name = "security", Type = "cstring", Nilable = false },
 				{ Name = "updateAvailable", Type = "bool", Nilable = false },
 			},
@@ -157,6 +157,23 @@ local AddOns =
 			Returns =
 			{
 				{ Name = "loadOnDemand", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAddOnLoadable",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+				{ Name = "character", Type = "cstring", Nilable = false, Default = "0" },
+				{ Name = "demandLoaded", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "loadable", Type = "bool", Nilable = false },
+				{ Name = "reason", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -256,6 +273,19 @@ local AddOns =
 	Tables =
 	{
 		{
+			Name = "AddOnEnableState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "AddOnEnableState", EnumValue = 0 },
+				{ Name = "Some", Type = "AddOnEnableState", EnumValue = 1 },
+				{ Name = "All", Type = "AddOnEnableState", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "AddOnInfo",
 			Type = "Structure",
 			Fields =
@@ -264,9 +294,18 @@ local AddOns =
 				{ Name = "title", Type = "cstring", Nilable = false },
 				{ Name = "notes", Type = "cstring", Nilable = false },
 				{ Name = "loadable", Type = "bool", Nilable = false },
-				{ Name = "reason", Type = "string", Nilable = true },
+				{ Name = "reason", Type = "cstring", Nilable = false },
 				{ Name = "security", Type = "cstring", Nilable = false },
 				{ Name = "updateAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AddOnLoadableInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "loadable", Type = "bool", Nilable = false },
+				{ Name = "reason", Type = "cstring", Nilable = false },
 			},
 		},
 	},

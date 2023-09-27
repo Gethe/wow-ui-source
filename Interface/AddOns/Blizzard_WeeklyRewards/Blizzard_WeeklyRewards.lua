@@ -65,7 +65,7 @@ WeeklyRewardsMixin = { };
 
 function WeeklyRewardsMixin:OnLoad()
 	self:SetUpActivity(self.RaidFrame, RAIDS, "weeklyrewards-background-raid", Enum.WeeklyRewardChestThresholdType.Raid);
-	self:SetUpActivity(self.MythicFrame, MYTHIC_DUNGEONS, "weeklyrewards-background-mythic", Enum.WeeklyRewardChestThresholdType.MythicPlus);
+	self:SetUpActivity(self.MythicFrame, DUNGEONS, "weeklyrewards-background-mythic", Enum.WeeklyRewardChestThresholdType.Activities);
 	self:SetUpActivity(self.PVPFrame, PVP, "weeklyrewards-background-pvp", Enum.WeeklyRewardChestThresholdType.RankedPvP);
 
 	local attributes =
@@ -132,7 +132,7 @@ function WeeklyRewardsMixin:OnEvent(event)
 		local tooltipOwner = GameTooltip:GetOwner();
 		if tooltipOwner then
 			for i = 1, NUM_COLUMNS do
-				local frame = self:GetActivityFrame(Enum.WeeklyRewardChestThresholdType.MythicPlus, i);
+				local frame = self:GetActivityFrame(Enum.WeeklyRewardChestThresholdType.Activities, i);
 				if frame == tooltipOwner and frame:CanShowPreviewItemTooltip() then
 					frame:ShowPreviewItemTooltip();
 					break;
@@ -428,8 +428,8 @@ function WeeklyRewardsActivityMixin:Refresh(activityInfo)
 		else
 			thresholdString = WEEKLY_REWARDS_THRESHOLD_RAID;
 		end
-	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
-		thresholdString = WEEKLY_REWARDS_THRESHOLD_MYTHIC;
+	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.Activities then
+		thresholdString = WEEKLY_REWARDS_THRESHOLD_DUNGEONS;
 	elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 		thresholdString = WEEKLY_REWARDS_THRESHOLD_PVP;
 	end
@@ -532,7 +532,7 @@ function WeeklyRewardsActivityMixin:SetProgressText(text)
 		if activityInfo.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			local name = DifficultyUtil.GetDifficultyName(activityInfo.level);
 			self.Progress:SetText(name);
-		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
+		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.Activities then
 			self.Progress:SetFormattedText(WEEKLY_REWARDS_MYTHIC, activityInfo.level);
 		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 			self.Progress:SetText(PVPUtil.GetTierName(activityInfo.level));
@@ -581,8 +581,8 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 		self.UpdateTooltip = nil;
 		if self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			self:HandlePreviewRaidRewardTooltip(itemLevel, upgradeItemLevel);
-		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.MythicPlus then
-			local hasData, nextLevel, nextItemLevel = C_WeeklyRewards.GetNextMythicPlusIncrease(self.info.level);
+		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.Activities then
+			local hasData, nextActivityTierID, nextLevel, nextItemLevel = C_WeeklyRewards.GetNextActivitiesIncrease(self.info.activityTierID, self.info.level);
 			if hasData then
 				upgradeItemLevel = nextItemLevel;
 			else

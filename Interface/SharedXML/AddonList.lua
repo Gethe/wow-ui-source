@@ -152,7 +152,7 @@ function AddonList_HasAnyChanged()
 		if (not InGlue()) then
 			character = UnitName("player");
 		end
-		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
+		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		local reason = select(5,C_AddOns.GetAddOnInfo(i))
 		if ( enabled ~= AddonList.startStatus[i] and reason ~= "DEP_DISABLED" ) then
 			return true
@@ -215,7 +215,7 @@ function AddonList_OnLoad(self)
 		self.outOfDate = C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
 		self.outOfDateIndexes = {};
 		for i=1,C_AddOns.GetNumAddOns() do
-			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, UnitName("player")) > 0);
+			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, UnitName("player")) > Enum.AddOnEnableState.None);
 			if (select(5, C_AddOns.GetAddOnInfo(i)) == "INTERFACE_VERSION") then
 				tinsert(self.outOfDateIndexes, i);
 			end
@@ -261,30 +261,28 @@ function AddonList_SetStatus(self,lod,status,reload)
 end
 
 local function TriStateCheckbox_SetState(checked, checkButton)
-	local checkedTexture = _G[checkButton:GetName().."CheckedTexture"];
+	local checkedTexture = checkButton.CheckedTexture;
 	if ( not checkedTexture ) then
 		message("Can't find checked texture");
 	end
-	if ( not checked or checked == 0 ) then
-		-- nil or 0 means not checked
+	if ( not checked or checked == Enum.AddOnEnableState.None ) then
+		-- nil or Enum.AddOnEnableState.None means not checked
 		checkButton:SetChecked(false);
-		checkButton.state = 0;
-	elseif ( checked == 2 ) then
-		-- 2 is a normal
+	elseif ( checked == Enum.AddOnEnableState.All ) then
+		-- Enum.AddOnEnableState.All is a normal check
 		checkButton:SetChecked(true);
 		checkedTexture:SetVertexColor(1, 1, 1);
 		checkedTexture:SetDesaturated(false);
-		checkButton.state = 2;
 	else
-		-- 1 is a gray check
+		-- Enum.AddOnEnableState.Some is a gray check
 		checkButton:SetChecked(true);
 		checkedTexture:SetDesaturated(true);
-		checkButton.state = 1;
 	end
+	checkButton.state = checked or Enum.AddOnEnableState.None;
 end
 
 function AddonList_InitButton(entry, addonIndex)
-	local name, title, notes, loadable, reason, security = C_AddOns.GetAddOnInfo(addonIndex);
+	local name, title, notes, _, _, security = C_AddOns.GetAddOnInfo(addonIndex);
 
 	-- Get the character from the current list (nil is all characters)
 	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
@@ -292,18 +290,21 @@ function AddonList_InitButton(entry, addonIndex)
 		character = nil;
 	end
 
+	-- Get loadable state for the selected character, rather than all characters which GetAddOnInfo checks
+	local loadable, reason = C_AddOns.IsAddOnLoadable(addonIndex, character);
+
 	local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
 	if ( not InGlue() ) then
-		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > 0);
+		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > Enum.AddOnEnableState.None);
 	else
-		enabled = (checkboxState > 0);
+		enabled = (checkboxState > Enum.AddOnEnableState.None);
 	end
 
 	TriStateCheckbox_SetState(checkboxState, entry.Enabled);
-	if (checkboxState == 1 ) then
-		entry.Enabled.AddonTooltip = ENABLED_FOR_SOME;
+	if (checkboxState == Enum.AddOnEnableState.Some ) then
+		entry.Enabled.tooltip = ENABLED_FOR_SOME;
 	else
-		entry.Enabled.AddonTooltip = nil;
+		entry.Enabled.tooltip = nil;
 	end
 
 	if ( loadable or ( enabled and (reason == "DEP_DEMAND_LOADED" or reason == "DEMAND_LOADED") ) ) then
@@ -503,7 +504,7 @@ function AddonList_HasOutOfDate()
 		if (not InGlue()) then
 			character = UnitName("player");
 		end
-		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
+		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
 			hasOutOfDate = true;
 			break;
@@ -529,7 +530,7 @@ function AddonList_DisableOutOfDate()
 		if (not InGlue()) then
 			character = UnitName("player");
 		end
-		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
+		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > Enum.AddOnEnableState.None);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
 			C_AddOns.DisableAddOn(i);
 		end

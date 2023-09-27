@@ -69,13 +69,11 @@ function ModelSceneControlFrameMixin:UpdateLayout()
 	local lastButton;
 	local hPadding = self.buttonHorizontalPadding or 0;
 	local vPadding = 0;
-	local buttonSize = self.buttonSize or 25;
+	local buttonSize = 32;
 	local totalHeight = buttonSize;
-	local totalWidth = 0;
+	local totalWidth = 0 + hPadding;
 
 	local function LayoutButton(button)
-		button:SetSize(buttonSize, buttonSize);
-
 		button:ClearAllPoints();
 		if lastButton then
 			button:SetPoint("LEFT", lastButton, "RIGHT", hPadding, vPadding);

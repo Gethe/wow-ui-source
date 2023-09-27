@@ -94,12 +94,14 @@ KioskModeSplashMixin = {}
 function KioskModeSplashMixin:OnLoad()
 	self.autoEnterWorld = false;
 	self.mode = nil;
-
-	self.NewExpansionButton.Text:SetText("Enter Bastion");
 end
 
 function KioskModeSplashMixin:OnShow()
 	self.mode = nil;
+
+	self.BG:SetAtlas("kiosk-BG");
+	self.NewExpansionButton.Button:SetAtlas("kiosk-button");
+	self.NewExpansionButton.Highlight:SetAtlas("kiosk-button");
 end
 
 function KioskModeSplashMixin:SetMode(mode)

@@ -32,8 +32,7 @@
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
+..\SharedXML\VectorLib.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua

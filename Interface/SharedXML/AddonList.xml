@@ -27,7 +27,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentSecurity" parentKey="Security" hidden="true">
+			<Button parentKey="Security" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT" x="2" y="0"/>
@@ -44,7 +44,7 @@
 				</Scripts>
 				<NormalTexture parentKey="Icon" name="$parentIcon" file="Interface\Glues\CharacterSelect\Glues-AddOn-Icons"/>
 			</Button>
-			<CheckButton name="$parentEnabled" parentKey="Enabled">
+			<CheckButton parentKey="Enabled">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="LEFT" x="5" y="0"/>
@@ -70,7 +70,7 @@
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 			 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture name="$parentCheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
+				<CheckedTexture parentKey="CheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 			<Button name="$parentLoad" inherits="UIPanelButtonTemplate" text="LOAD_ADDON" hidden="true" parentKey="LoadAddonButton">

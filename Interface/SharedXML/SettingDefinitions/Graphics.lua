@@ -423,7 +423,6 @@ end
 SettingsAdvancedDropdownMixin = CreateFromMixins(DefaultTooltipMixin);
 
 function SettingsAdvancedDropdownMixin:OnLoad()
-	Mixin(self.DropDown.Button, DefaultTooltipMixin);
 	DefaultTooltipMixin.OnLoad(self);
 	self:SetCustomTooltipAnchoring(self.DropDown, "ANCHOR_TOPLEFT", -40, 0);
 

@@ -134,7 +134,7 @@
 					<Cooldown parentKey="RenownProgressBar" reverse="true" hideCountdownNumbers="true" rotation="180" useParentLevel="true" mixin="MajorFactionRenownProgressBarMixin">
 						<Size x="86" y="86"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+							<Anchor point="LEFT" x="19"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">

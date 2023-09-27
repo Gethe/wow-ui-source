@@ -416,7 +416,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.RecraftingOutputText:SetPoint("TOPLEFT", 28, -32);
 	end
 
-	local showFavoriteButton = not self.isInspection and self.canShowFavoriteButton and recipeInfo.learned and not isRecraft;
+	local showFavoriteButton = not self.isInspection and self.canShowFavoriteButton and recipeInfo.learned and not isRecraft and not C_TradeSkillUI.IsNPCCrafting();
 	self.FavoriteButton:SetShown(showFavoriteButton);
 	if showFavoriteButton then
 		local isFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeID);
