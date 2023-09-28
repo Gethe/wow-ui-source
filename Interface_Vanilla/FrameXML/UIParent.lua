@@ -944,7 +944,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DUEL_REQUESTED" ) then
 		StaticPopup_Show("DUEL_REQUESTED", arg1);
 	elseif ( event == "DUEL_TO_THE_DEATH_REQUESTED" ) then
-		StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED", arg1);
+		StaticPopup_Show("DUEL_TO_THE_DEATH_REQUESTED", arg1, arg1);
 	elseif ( event == "DUEL_OUTOFBOUNDS" ) then
 		StaticPopup_Show("DUEL_OUTOFBOUNDS");
 	elseif ( event == "DUEL_INBOUNDS" ) then

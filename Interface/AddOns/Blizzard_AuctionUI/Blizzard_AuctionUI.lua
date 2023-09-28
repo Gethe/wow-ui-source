@@ -497,7 +497,7 @@ function AuctionFrame_SetSort(sortTable, sortColumn, oppositeOrder)
 		-- Browsing by the "bid" column will sort by whatever price sorrting option the user selected
 		-- instead of always sorting by "bid" (total bid price)
 		local sort = row.column;
-		if sortTable.."_"..sortColumn == "list_bid" then
+		if sortTable.."_"..sortColumn == "list_bid" and sort == "bid" then
 			sort = PriceSortName();
 		end
 		if (oppositeOrder) then
