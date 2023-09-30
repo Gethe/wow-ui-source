@@ -115,9 +115,7 @@ function PetJournal_UpdateSummonButtonState()
 
 	PetJournal.SummonButton:SetEnabled(hasPetID and (C_PetJournal.PetIsSummonable(petID) or needsFanfare));
 
-	local active = C_PetJournal.IsCurrentlySummoned(petID);
-
-	if hasPetID and active then
+	if hasPetID and C_PetJournal.IsCurrentlySummoned(petID) then
 		PetJournal.SummonButton:SetText(PET_DISMISS);
 	elseif needsFanfare then
 		PetJournal.SummonButton:SetText(UNWRAP);
@@ -809,7 +807,7 @@ function PetJournalSummonButton_OnEnter(self)
 end
 
 function PetJournalSummonButton_OnClick(self)
-	local active = C_PetJournal.IsCurrentlySummoned(PetJournalPetCard.petID);
+	local active = PetJournalPetCard.petID and C_PetJournal.IsCurrentlySummoned(PetJournalPetCard.petID);
 	if ( active ) then
 		C_PetJournal.DismissSummonedPet(PetJournalPetCard.petID);
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
