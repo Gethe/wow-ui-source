@@ -459,6 +459,7 @@ local ItemConstants =
 			Values =
 			{
 				{ Name = "NUM_ITEM_ENCHANTMENT_SOCKETS", Type = "number", Value = 3 },
+				{ Name = "MAX_LOOT_OBJECT_ITEMS", Type = "number", Value = 31 },
 			},
 		},
 		{

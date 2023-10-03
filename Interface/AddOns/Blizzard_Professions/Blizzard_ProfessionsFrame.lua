@@ -190,6 +190,10 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 		if not useNewSkillLine then
 			return;
 		end
+		if professionChanged then
+			SearchBoxTemplate_ClearText(self.CraftingPage.RecipeList.SearchBox);
+			SearchBoxTemplate_ClearText(self.OrdersPage.BrowseFrame.RecipeList.SearchBox);
+		end
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
 	end
 

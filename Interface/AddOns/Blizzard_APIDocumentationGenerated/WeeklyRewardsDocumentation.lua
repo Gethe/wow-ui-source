@@ -76,6 +76,20 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetDifficultyIDForActivityTier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityTierID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetExampleRewardItemHyperlinks",
 			Type = "Function",
 
@@ -136,6 +150,17 @@ local WeeklyRewards =
 				{ Name = "hasSeasonData", Type = "bool", Nilable = false },
 				{ Name = "nextMythicPlusLevel", Type = "number", Nilable = true },
 				{ Name = "itemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetNumCompletedDungeonRuns",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numHeroic", Type = "number", Nilable = false },
+				{ Name = "numMythic", Type = "number", Nilable = false },
+				{ Name = "numMythicPlus", Type = "number", Nilable = false },
 			},
 		},
 		{

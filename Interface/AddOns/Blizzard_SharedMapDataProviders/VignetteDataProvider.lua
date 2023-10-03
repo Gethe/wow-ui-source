@@ -317,8 +317,12 @@ function VignettePinMixin:GetHighlightType() -- override
 	if rewardQuestID then
 		local _, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
 		if bountyFrameType == BountyFrameType.ActivityTracker then
+			-- Is this vignette for a task quest?
 			local _, taskFactionID = C_TaskQuest.GetQuestInfoByQuestID(rewardQuestID);
 			if taskFactionID and (taskFactionID == bountyFactionID) then
+				return MapPinHighlightType.SupertrackedHighlight;
+			-- Is it for a standard quest?
+			elseif C_QuestLog.DoesQuestAwardReputationWithFaction(rewardQuestID, bountyFactionID) then
 				return MapPinHighlightType.SupertrackedHighlight;
 			end
 		end

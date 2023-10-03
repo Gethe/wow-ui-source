@@ -55,6 +55,11 @@ function MonthlyActivitiesButtonMixin:Init(node)
 	self:Show();
 end
 
+function MonthlyActivitiesButtonMixin:OnShow()
+	self:GetElementData():SetCollapsed(true);
+	self:UpdateButtonState();
+end
+
 function MonthlyActivitiesButtonMixin:SetButtonData()
 	local node = self:GetElementData();
 	if not node then
@@ -494,10 +499,6 @@ function MonthlyActivitiesFrameMixin:CollapseAllMonthlyActivities()
 	end
 end
 
-function MonthlyActivitiesFrameMixin:OnShow()
-	self:CollapseAllMonthlyActivities();
-end
-
 function MonthlyActivitiesFrameMixin:OnHide()
 	if self.progressionSoundHandle then
 		StopSound(self.progressionSoundHandle);
@@ -759,8 +760,18 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 	end
 
 	dataProvider:SetSortComparator(function(a, b)
-		aData = a:GetData();
-		bData = b:GetData();
+		local aData = a:GetData();
+		local bData = b:GetData();
+
+		-- Sort pending complete to the top
+		if aData.pendingComplete ~= bData.pendingComplete then
+			return aData.pendingComplete;
+		end
+
+		-- But sort already completed to the bottom
+		if aData.completed ~= bData.completed then
+			return bData.completed;
+		end
 
 		-- Put non events before events
 		if not aData.eventStartTime and bData.eventStartTime then
@@ -779,26 +790,16 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 			end
 		end
 
-		-- Sort pending complete to the top
-		if aData.pendingComplete ~= bData.pendingComplete then
-			return a.pendingComplete;
-		end
-
-		-- But sort already completed to the bottom
-		if aData.completed ~= bData.completed then
-			return bData.completed;
-		end
-
 		-- Sort by data driven ui priority field
 		if aData.uiPriority ~= bData.uiPriority then
 			return aData.uiPriority > bData.uiPriority;
 		end
-	
+
 		-- Then sort by points descending
 		if aData.points ~= bData.points then
 			return aData.points > bData.points;
 		end
-	
+
 		-- Last sort by alphabetical name
 		return aData.name < bData.name;
 	end);

@@ -893,7 +893,7 @@ function OrderHall_CheckCommandBar()
 end
 
 function ShowMacroFrame()
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if ( DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
 

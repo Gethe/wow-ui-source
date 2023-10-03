@@ -247,6 +247,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnEvent method="OnEvent"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnDragStart method="OnDragStart"/>

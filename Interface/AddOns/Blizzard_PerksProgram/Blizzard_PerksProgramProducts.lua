@@ -11,7 +11,6 @@ function PerksProgramProductsFrameMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS");
 	self:RegisterEvent("PERKS_PROGRAM_REFUND_SUCCESS");
 	self:RegisterEvent("PERKS_PROGRAM_SET_FROZEN_ITEM");
-	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH");
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
 	EventRegistry:RegisterCallback("PerksProgram.SortFieldSet", self.SortFieldSet, self);
 	EventRegistry:RegisterCallback("PerksProgram.AllDataRefresh", self.AllDataRefresh, self);
@@ -77,10 +76,10 @@ function PerksProgramProductsFrameMixin:Init()
 end
 
 function PerksProgramProductsFrameMixin:OnEvent(event, ...)
-	if event == "PERKS_PROGRAM_DATA_SPECIFIC_ITEM_REFRESH" or event == "PERKS_PROGRAM_PURCHASE_SUCCESS" or event == "PERKS_PROGRAM_REFUND_SUCCESS" or event == "PERKS_PROGRAM_CURRENCY_REFRESH" then
+	if event == "PERKS_PROGRAM_DATA_SPECIFIC_ITEM_REFRESH" or event == "PERKS_PROGRAM_PURCHASE_SUCCESS" or event == "PERKS_PROGRAM_REFUND_SUCCESS" then
 		local vendorItemID = ...;
 
-		local foundElementData
+		local foundElementData;
 		local frozenItemInfo = self.FrozenProductContainer:GetItemInfo();
 		if frozenItemInfo and frozenItemInfo.perksVendorItemID == vendorItemID then
 			foundElementData = frozenItemInfo;

@@ -28,9 +28,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 64,
+			NumValues = 66,
 			MinValue = 0,
-			MaxValue = 63,
+			MaxValue = 65,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -96,7 +96,9 @@ local CurrencyConstants_Mainline =
 				{ Name = "PlayerTraitRefund", Type = "CurrencySource", EnumValue = 60 },
 				{ Name = "AccountHwmUpdate", Type = "CurrencySource", EnumValue = 61 },
 				{ Name = "ConvertItemsToCurrencyAndReputation", Type = "CurrencySource", EnumValue = 62 },
-				{ Name = "Last", Type = "CurrencySource", EnumValue = 63 },
+				{ Name = "PhBuffer_63", Type = "CurrencySource", EnumValue = 63 },
+				{ Name = "PhBuffer_64", Type = "CurrencySource", EnumValue = 64 },
+				{ Name = "Last", Type = "CurrencySource", EnumValue = 65 },
 			},
 		},
 	},

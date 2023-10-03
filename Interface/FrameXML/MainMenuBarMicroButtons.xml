@@ -209,9 +209,9 @@ UI_shared.xsd">
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture parentKey="UnreadNotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification">
-									<Size x="10" y="11"/>
+									<Size x="10" y="10"/>
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="-1" y="-1"/>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="-1" y="1"/>
 									</Anchors>
 								</Texture>
 							</Layer>

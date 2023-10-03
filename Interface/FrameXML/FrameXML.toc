@@ -450,7 +450,6 @@ SplashFrame.xml
 AzeriteEmpoweredItemDataSource.lua
 QuestSession.xml
 ..\SharedXML\ActionStatus.xml
-WeeklyReward.lua
 PlayerInteractionFrameManager.xml
 TalkingHeadUI.xml
 FramerateFrame.xml

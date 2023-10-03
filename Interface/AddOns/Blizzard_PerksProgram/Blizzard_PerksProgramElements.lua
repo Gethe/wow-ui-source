@@ -77,6 +77,8 @@ function PerksProgramProductButtonMixin:OnLoad()
 	EventRegistry:RegisterCallback("PerksProgram.CelebratePurchase", self.CelebratePurchase, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnProductInfoChanged", self.OnProductInfoChanged, self);
 
+	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH");
+
 	self.tooltip = PerksProgramFrame.PerksProgramTooltip;
 	local newFont = PerksProgramFrame:GetLabelFont();
 	self.ContentsContainer.Label:SetFontObject(newFont);
@@ -96,24 +98,40 @@ function PerksProgramProductButtonMixin:SetItemInfo(itemInfo)
 
 	container.Label:SetText(self.itemInfo.name);
 
-	local price = self.itemInfo.price;
-	local playerCurrencyAmount = C_PerksProgram.GetCurrencyAmount();
-	if playerCurrencyAmount then
-		if self.itemInfo.price > playerCurrencyAmount then
-			price = GRAY_FONT_COLOR:WrapTextInColorCode(price);
-		else
-			price = WHITE_FONT_COLOR:WrapTextInColorCode(price);
-		end
-	end
-	container.Price:SetText(format(PERKS_PROGRAM_PRICE_FORMAT, price, PerksProgramFrame:GetCurrencyIconMarkup()));
-	container.Price:SetShown(not self.itemInfo.purchased);
-	container.RefundIcon:SetShown(self.itemInfo.purchased and self.itemInfo.refundable);
-	container.PurchasedIcon:SetShown(self.itemInfo.purchased and not self.itemInfo.refundable);
+	self:UpdateItemPriceElement();
 
 	self:UpdateTimeRemainingText();
 
 	local iconTexture = C_Item.GetItemIconByID(self.itemInfo.itemID);
 	container.Icon:SetTexture(iconTexture);
+end
+
+function PerksProgramProductButtonMixin:UpdateItemPriceElement()
+	if self.itemInfo then
+		local price = self.itemInfo.price;
+		local playerCurrencyAmount = C_PerksProgram.GetCurrencyAmount();
+		if playerCurrencyAmount then
+			if self.itemInfo.price > playerCurrencyAmount then
+				price = GRAY_FONT_COLOR:WrapTextInColorCode(price);
+			else
+				price = WHITE_FONT_COLOR:WrapTextInColorCode(price);
+			end
+		end
+
+		local container = self.ContentsContainer;
+
+		container.Price:SetText(format(PERKS_PROGRAM_PRICE_FORMAT, price, PerksProgramFrame:GetCurrencyIconMarkup()));
+		container.Price:SetShown(not self.itemInfo.purchased);
+
+		container.RefundIcon:SetShown(self.itemInfo.purchased and self.itemInfo.refundable);
+		container.PurchasedIcon:SetShown(self.itemInfo.purchased and not self.itemInfo.refundable);
+	end
+end
+
+function PerksProgramProductButtonMixin:OnEvent(event, ...)
+	if event == "PERKS_PROGRAM_CURRENCY_REFRESH" then
+		self:UpdateItemPriceElement();
+	end
 end
 
 function PerksProgramProductButtonMixin:OnMouseDown()

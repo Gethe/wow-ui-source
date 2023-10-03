@@ -39,6 +39,7 @@
 				<Texture parentKey="HeaderCollapseIndicator" hidden="true" atlas="campaign_headericon_closed" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.RibbonStacked" relativePoint="LEFT" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Checkmark" atlas="activities-icon-checkmark" useAtlasSize="true">
@@ -87,6 +88,7 @@
 		<NormalTexture atlas="activities-incomplete"/>
 		<HighlightTexture atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
 		<Scripts>
+			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnClick method="OnClick"/>
 			<OnLeave method="OnLeave"/>
@@ -551,7 +553,6 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>

@@ -1622,7 +1622,7 @@ SecureCmdList["CLICK"] = function(msg)
 			mouseButton = "LeftButton";
 		end
 		down = StringToBoolean(down or "", false);
-		
+
 		local button = GetClickFrame(name);
 		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);
@@ -2127,7 +2127,7 @@ SlashCmdList["CHAT_AFK"] = function(msg)
 		ConfirmOrLeaveBattlefield();
 		return;
 	end
-		
+
 	SendChatMessage(msg, "AFK");
 end
 
@@ -2481,7 +2481,7 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	if (not target1 or not target2 or not size) then
 		return;
 	end
-	
+
 	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
@@ -2713,10 +2713,10 @@ SlashCmdList["COMMUNITY"] = function(msg)
 end
 
 SlashCmdList["RAF"] = function(msg)
-	if(C_RecruitAFriend.IsEnabled()) then 
-		ToggleRafPanel(); 
+	if(C_RecruitAFriend.IsEnabled()) then
+		ToggleRafPanel();
 	end
-end 
+end
 
 function RegisterNewSlashCommand(callback, command, commandAlias)
 	local name = string.upper(command);
@@ -2876,7 +2876,7 @@ function ChatFrame_OnLoad(self)
 	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self, self.ScrollBar, noMouseWheel);
 
 	-- Scroll bar alpha is managed by a cursor test over the chat frame. Set the initial alpha to 0
-	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and 
+	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and
 	-- FCF_FadeOutScrollbar.
 	self.ScrollBar:SetAlpha(0);
 end
@@ -3154,15 +3154,20 @@ function ChatFrame_ReceiveAllPrivateMessages(chatFrame)
 	chatFrame.excludePrivateMessageList = nil;
 end
 
+local macroEditBox;
+local function IsMacroEditBox(editBox)
+	return editBox == macroEditBox;
+end
+
 -- Set up a private editbox to handle macro execution
 do
 	local function GetDefaultChatEditBox(field)
 		return DEFAULT_CHAT_FRAME.editBox;
 	end
 
-	local editbox = CreateFrame("Editbox", "MacroEditBox");
-	editbox:RegisterEvent("EXECUTE_CHAT_LINE");
-	editbox:SetScript("OnEvent",
+	macroEditBox = CreateFrame("Editbox");
+	macroEditBox:RegisterEvent("EXECUTE_CHAT_LINE");
+	macroEditBox:SetScript("OnEvent",
 		function(self,event,line)
 			if ( event == "EXECUTE_CHAT_LINE" ) then
 				local defaulteditbox = securecall(GetDefaultChatEditBox);
@@ -3174,7 +3179,7 @@ do
 			end
 		end
 	);
-	editbox:Hide();
+	macroEditBox:Hide();
 end
 
 function ChatFrame_OnEvent(self, event, ...)
@@ -3926,7 +3931,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 				local message = msg;
 				-- isMobile
-				if arg14 then 
+				if arg14 then
 					message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
 				end
 
@@ -3968,7 +3973,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				if ( chatTimestampFmt ) then
 					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
 				end
-				
+
 				return outMsg;
 			end
 
@@ -3976,7 +3981,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
 			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
-			
+
 			-- The message formatter is captured so that the original message can be reformatted when a censored message
 			-- is approved to be shown. We only need to pack the event args if the line was censored, as the message transformation
 			-- step is the only code that needs these arguments. See ItemRef.lua "censoredmessage".
@@ -4990,7 +4995,7 @@ end
 
 function ChatEdit_ClearChat(editBox)
 	ChatEdit_ResetChatTypeToSticky(editBox);
-	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox) ) then
+	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or IsMacroEditBox(editBox)) ) then
 		editBox:SetText("");
 		editBox:Hide();
 	else

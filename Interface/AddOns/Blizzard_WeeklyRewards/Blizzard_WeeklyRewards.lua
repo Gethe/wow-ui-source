@@ -522,6 +522,11 @@ function WeeklyRewardsActivityMixin:ClearActiveEffect()
 	self:SetActiveEffect(nil);
 end
 
+function WeeklyRewardsActivityMixin:IsCompletedAtHeroicLevel()
+	local difficultyID = C_WeeklyRewards.GetDifficultyIDForActivityTier(self.info.activityTierID);
+	return difficultyID == DifficultyUtil.ID.DungeonHeroic;
+end
+
 function WeeklyRewardsActivityMixin:SetProgressText(text)
 	local activityInfo = self.info;
 	if text then
@@ -533,7 +538,11 @@ function WeeklyRewardsActivityMixin:SetProgressText(text)
 			local name = DifficultyUtil.GetDifficultyName(activityInfo.level);
 			self.Progress:SetText(name);
 		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.Activities then
-			self.Progress:SetFormattedText(WEEKLY_REWARDS_MYTHIC, activityInfo.level);
+			if self:IsCompletedAtHeroicLevel() then
+				self.Progress:SetText(WEEKLY_REWARDS_HEROIC);
+			else
+				self.Progress:SetFormattedText(WEEKLY_REWARDS_MYTHIC, activityInfo.level);
+			end
 		elseif activityInfo.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
 			self.Progress:SetText(PVPUtil.GetTierName(activityInfo.level));
 		end
@@ -560,7 +569,36 @@ end
 function WeeklyRewardsActivityMixin:OnEnter()
 	if self:CanShowPreviewItemTooltip() then
 		self:ShowPreviewItemTooltip();
+	elseif self.info and self.info.type == Enum.WeeklyRewardChestThresholdType.Activities then
+		self:ShowIncompleteMythicTooltip();
 	end
+end
+
+function WeeklyRewardsActivityMixin:ShowIncompleteMythicTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -11);
+	GameTooltip_SetTitle(GameTooltip, WEEKLY_REWARDS_UNLOCK_REWARD);
+	if self.info.index == 1 then	-- 1st box in this row
+		GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_INCOMPLETE);
+	else
+		local globalString;
+		if self.info.index == 2 then	-- 2nd box in this row
+			globalString = GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST;
+		else	-- 3rd box
+			globalString = GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND;
+		end
+		GameTooltip_AddNormalLine(GameTooltip, globalString:format(self.info.threshold - self.info.progress));
+		if self.info.progress > 0 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			local lowestLevel = WeeklyRewardsUtil.GetLowestLevelInTopDungeonRuns(self.info.threshold);
+			if lowestLevel == WeeklyRewardsUtil.HeroicLevel then
+				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_HEROIC:format(self.info.threshold));
+			else
+				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_MYTHIC:format(self.info.threshold, lowestLevel));
+			end
+			self:AddTopRunsToTooltip();
+		end
+	end
+	GameTooltip:Show();
 end
 
 function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
@@ -586,7 +624,7 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 			if hasData then
 				upgradeItemLevel = nextItemLevel;
 			else
-				nextLevel = self.info.level + 1;
+				nextLevel = WeeklyRewardsUtil.GetNextMythicLevel(self.info.level);
 			end
 			self:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel, nextLevel);
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.RankedPvP then
@@ -648,34 +686,63 @@ function WeeklyRewardsActivityMixin:HandlePreviewRaidRewardTooltip(itemLevel, up
 end
 
 function WeeklyRewardsActivityMixin:HandlePreviewMythicRewardTooltip(itemLevel, upgradeItemLevel, nextLevel)
-	GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC, itemLevel, self.info.level));
+	local isHeroicLevel = self:IsCompletedAtHeroicLevel();
+	if isHeroicLevel then		
+		GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_HEROIC, itemLevel));
+	else
+		GameTooltip_AddNormalLine(GameTooltip, string.format(WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC, itemLevel, self.info.level));
+	end
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	if upgradeItemLevel then
 		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 		if self.info.threshold == 1 then
-			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT, nextLevel));
+			if isHeroicLevel then
+				GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_HEROIC_SHORT);
+			else
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT, nextLevel));
+			end
 		else
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_MYTHIC, nextLevel, self.info.threshold));
-			local runHistory = C_MythicPlus.GetRunHistory(false, true);
-			if #runHistory > 0 then
-				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
-				local comparison = function(entry1, entry2)
-					if ( entry1.level == entry2.level ) then
-						return entry1.mapChallengeModeID < entry2.mapChallengeModeID;
-					else
-						return entry1.level > entry2.level;
-					end
-				end
-				table.sort(runHistory, comparison);
-				for i = 1, self.info.threshold do
-					if runHistory[i] then
-						local runInfo = runHistory[i];
-						local name = C_ChallengeMode.GetMapUIInfo(runInfo.mapChallengeModeID);
-						GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_RUN_INFO, runInfo.level, name));
-					end
-				end
+			self:AddTopRunsToTooltip();
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:AddTopRunsToTooltip()
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
+
+	local runHistory = C_MythicPlus.GetRunHistory(false, true);
+	if #runHistory > 0 then
+		local comparison = function(entry1, entry2)
+			if ( entry1.level == entry2.level ) then
+				return entry1.mapChallengeModeID < entry2.mapChallengeModeID;
+			else
+				return entry1.level > entry2.level;
 			end
+		end
+		table.sort(runHistory, comparison);
+		for i = 1, self.info.threshold do
+			if runHistory[i] then
+				local runInfo = runHistory[i];
+				local name = C_ChallengeMode.GetMapUIInfo(runInfo.mapChallengeModeID);
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_RUN_INFO, runInfo.level, name));
+			end
+		end
+	end
+
+	local missingRuns = self.info.threshold - #runHistory;
+	if missingRuns > 0 then
+		local numHeroic, numMythic, numMythicPlus = C_WeeklyRewards.GetNumCompletedDungeonRuns();
+		while numMythic > 0 and missingRuns > 0 do
+			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_MYTHIC:format(WeeklyRewardsUtil.MythicLevel));
+			numMythic = numMythic - 1;
+			missingRuns = missingRuns - 1;
+		end
+		while numHeroic > 0 and missingRuns > 0 do
+			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_HEROIC);
+			numHeroic = numHeroic - 1;
+			missingRuns = missingRuns - 1;
 		end
 	end
 end

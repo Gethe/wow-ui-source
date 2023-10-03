@@ -14,7 +14,7 @@
 				</Anchors>
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
-					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ReversedLightingModelSceneMixinTemplate">
+					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="ModelSceneMixinTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="0"/>

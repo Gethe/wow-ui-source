@@ -6,6 +6,14 @@ local SimpleObjectAPI =
 	Functions =
 	{
 		{
+			Name = "ClearParentKey",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "GetDebugName",
 			Type = "Function",
 

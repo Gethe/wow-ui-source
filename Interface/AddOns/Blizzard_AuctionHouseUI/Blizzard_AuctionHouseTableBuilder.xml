@@ -148,11 +148,21 @@
 						<Anchor point="RIGHT" x="1"/>
 					</Anchors>
 				</FontString>
+
+				<!-- Will contain text that should be always displayed, if/when Text truncates -->
+				<FontString parentKey="ExtraInfo" inherits="Number14FontWhite" justifyH="LEFT" maxLines="1" hidden="true">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="1"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEvent method="OnEvent"/>
+			<OnShow method="HandleItemNameTruncation"/>
 			<OnHide method="OnHide"/>
+			<OnSizeChanged method="HandleItemNameTruncation"/>
 		</Scripts>
 	</Frame>
 

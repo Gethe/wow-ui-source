@@ -712,7 +712,6 @@ UI_shared.xsd">
 				if ( self.secureReferenceStr ) then
 					StoreSecureReference(self.secureReferenceStr, self.EditBox);
 					self.EditBox:SetSecurityDisableSetText();
-					self.EditBox:SetSecurityDisablePaste();
 				end
 			</OnLoad>
 		</Scripts>
@@ -1028,7 +1027,7 @@ UI_shared.xsd">
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" securityDisablePaste="true" inherits="SearchBoxTemplate" letters="64">
+					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" inherits="SearchBoxTemplate" letters="64">
 						<Size x="319" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>
@@ -1727,7 +1726,7 @@ UI_shared.xsd">
 							<OnLoad function="LFGListEntryCreationActivityFinder_OnLoad"/>
 						</Scripts>
 					</Frame>
-					<EditBox parentKey="Name" secureReferenceKey="LFGListCreationName" securityDisableSetText="true" securityDisablePaste="true" inherits="LFGListEditBoxTemplate" letters="31">
+					<EditBox parentKey="Name" secureReferenceKey="LFGListCreationName" securityDisableSetText="true" inherits="LFGListEditBoxTemplate" mixin="LFGListCreationNameMixin" letters="31">
 						<Size x="288" y="22"/>
 						<KeyValues>
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
@@ -1736,6 +1735,7 @@ UI_shared.xsd">
 							<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
 						</Anchors>
 						<Scripts>
+							<OnLoad method="OnLoad"/>
 							<OnEditFocusGained function="nop"/> <!--Override the base one that selects all text-->
 							<OnTextChanged>
 								InputBoxInstructions_OnTextChanged(self);
@@ -1982,7 +1982,6 @@ UI_shared.xsd">
 					<OnLoad>
 						StoreSecureReference("LFGListApplicationDescription", self.EditBox);
 						self.EditBox:SetSecurityDisableSetText();
-						self.EditBox:SetSecurityDisablePaste();
 						InputScrollFrame_OnLoad(self);
 					</OnLoad>
 				</Scripts>

@@ -3811,12 +3811,20 @@ function LFGListLockButtonMixin:OnEnter()
 	self:DisplayTooltip();
 end
 
+LFGListCreationNameMixin = CreateFromMixins(LFGEditBoxMixin);
+
+function LFGListCreationNameMixin:OnLoad()
+	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedActivity);
+	if not isAccountSecured then
+		self:SetSecurityDisablePaste();
+	end
+end
+
 LFGListCreationDescriptionMixin = CreateFromMixins(LFGEditBoxMixin);
 
 function LFGListCreationDescriptionMixin:OnLoad()
 	StoreSecureReference("LFGListCreationDescription", self.EditBox);
 	self.EditBox:SetSecurityDisableSetText();
-	self.EditBox:SetSecurityDisablePaste();
 	self:AddToTabCategory("ENTRY_CREATION", self.EditBox);
 	self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
 	self.EditBox:EnableMouse(false);
@@ -3824,6 +3832,11 @@ function LFGListCreationDescriptionMixin:OnLoad()
 
 	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedActivity);
 	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
+	
+	if not isAccountSecured then
+		self.EditBox:SetSecurityDisablePaste();
+	end
+
 	self.EditBox:SetEnabled(isAccountSecured);
 	self.LockButton:SetShown(not isAccountSecured);
 	self.editBoxEnabled = isAccountSecured;

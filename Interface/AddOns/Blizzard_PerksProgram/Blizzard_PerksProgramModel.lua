@@ -118,6 +118,48 @@ local function SetActorRotation(actor, displayData)
 	end
 end
 
+local function PerksTryOn(actor, itemModifiedAppearanceID)
+	local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
+	local invType = select(4, GetItemInfoInstant(itemID));
+
+	local isEquippedInOffhand = invType == "INVTYPE_SHIELD"
+							or invType == "INVTYPE_WEAPONOFFHAND"
+							or invType == "INVTYPE_HOLDABLE";
+
+	local isTwoHandWeapon = invType == "INVTYPE_2HWEAPON"
+						or invType == "INVTYPE_RANGED"
+						or invType == "INVTYPE_RANGEDRIGHT"
+						or invType == "INVTYPE_THROWN";
+
+	local isEquippedInHand = isEquippedInOffhand
+						or isTwoHandWeapon
+						or invType == "INVTYPE_WEAPON"
+						or invType == "INVTYPE_WEAPONMAINHAND";
+
+	if isEquippedInHand then
+		local itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(itemModifiedAppearanceID);
+
+		-- Never show player's equipped weapons when trying on weapons
+		actor:UndressSlot(INVSLOT_MAINHAND);
+		actor:UndressSlot(INVSLOT_OFFHAND);
+
+		-- actor:SetItemTransmogInfo will automatically handle whether the player can dual wield
+		-- If the player can dual wield 1 handed weapons, we will always preview the same weapon appearing in both hands
+
+		-- Only equip 2-hand weapons into 1 slot regardless of whether player can dual wield 2-handed weapons (Titan Grip)
+		if not isTwoHandWeapon then
+			actor:SetItemTransmogInfo(itemTransmogInfo, INVSLOT_OFFHAND, true);
+		end
+
+		-- If the weapon is an off-hand, then only equip it in the off-hand slot
+		if not isEquippedInOffhand then
+			actor:SetItemTransmogInfo(itemTransmogInfo, INVSLOT_MAINHAND, true);
+		end
+	else
+		actor:TryOn(itemModifiedAppearanceID);
+	end
+end
+
 local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, itemModifiedAppearanceID, sheatheWeapon, autodress, hideWeapon, forceSceneChange)
 	if not modelScene then
 		return;
@@ -150,24 +192,14 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 			-- if all the itemModifiedAppearances have the same Category then only show the FIRST item, we will pop the carousel controls to rotate through the others
 			if PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs) then
 				local itemModifiedAppearanceID = itemModifiedAppearanceIDs[1];
-				actor:TryOn(itemModifiedAppearanceID);
+				PerksTryOn(actor, itemModifiedAppearanceID);
 			else
 				for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
-					actor:TryOn(itemModifiedAppearanceID);
+					PerksTryOn(actor, itemModifiedAppearanceID);
 				end
 			end
 		elseif itemModifiedAppearanceID then
-			local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
-			local classID, unusedSubclassID = select(6, GetItemInfoInstant(itemID));
-			local isWeapon = classID == Enum.ItemClass.Weapon;
-			if isWeapon then
-				local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
-				local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
-				actor:UndressSlot(mainHandSlotID);
-				actor:UndressSlot(offHandSlotID);
-				preferredHandSlot = "MAINHANDSLOT";
-			end
-			actor:TryOn(itemModifiedAppearanceID, preferredHandSlot);
+			PerksTryOn(actor, itemModifiedAppearanceID);
 		end
 		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		return actor;
@@ -636,7 +668,7 @@ end
 -- TRANSMOGS
 function PerksProgramModelSceneContainerFrameMixin:PlayerTryOnOverride(overrideItemModifiedAppearanceID)
 	if self.playerActor and overrideItemModifiedAppearanceID then
-		self.playerActor:TryOn(overrideItemModifiedAppearanceID);
+		PerksTryOn(self.playerActor, overrideItemModifiedAppearanceID);
 	end
 end
 
