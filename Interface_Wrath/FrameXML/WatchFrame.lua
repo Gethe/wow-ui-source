@@ -204,6 +204,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("QUEST_POI_UPDATE");
 	self:RegisterEvent("QUEST_ACCEPTED");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.linePool = CreateFramePool("FRAME", WatchFrameLines, "WatchFrameLineTemplate");
@@ -241,6 +242,11 @@ function WatchFrame_OnEvent (self, event, ...)
 		if ( self.collapsed ) then
 			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
 		end
+	elseif ( event == "QUEST_POI_UPDATE" ) then
+		if ( WatchFrame.showObjectives ) then
+			WatchFrame_GetCurrentMapQuests();
+		end		
+		WatchFrame_Update(self);
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		if ( WatchFrame.showObjectives ) then
 			WatchFrame_GetCurrentMapQuests();
@@ -780,18 +786,19 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 
 	local playerMoney = GetMoney();
 	local selectedQuestId;
+	if ( WorldMapFrame and WorldMapFrame:IsShown() ) then
+		selectedQuestId = QuestMapFrame_GetFocusedQuestID();
+	end
 	-- Set our current zone
 	local currentZone = C_Map.GetBestMapForUnit("player");
-	if ( not WorldMapFrame or not WorldMapFrame:IsShown() ) then
-		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
-		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
-		-- open to a different zone.
-		table.wipe(LOCAL_MAP_QUESTS);
-		LOCAL_MAP_QUESTS["zone"] = currentZone;
-		for id in pairs(CURRENT_MAP_QUESTS) do
-			LOCAL_MAP_QUESTS[id] = true;
-		end	
-	end
+	-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
+	-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
+	-- open to a different zone.
+	table.wipe(LOCAL_MAP_QUESTS);
+	LOCAL_MAP_QUESTS["zone"] = currentZone;
+	for id in pairs(CURRENT_MAP_QUESTS) do
+		LOCAL_MAP_QUESTS[id] = true;
+	end	
 	
 	table.wipe(VISIBLE_WATCHES);
 	WatchFrame_ResetQuestLines();
@@ -945,6 +952,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	WatchFrame_ReleaseUnusedQuestLines();
 
 	QuestPOI_HideUnusedButtons(WatchFrameLines);
+
+	if ( selectedQuestId ) then
+		QuestPOI_SelectButtonByQuestID(WatchFrameLines, selectedQuestId);	
+	end
 
 	return heightUsed, maxWidth, numQuestWatches;
 end
@@ -1321,10 +1332,10 @@ function WatchFrame_GetCurrentMapQuests()
 end
 
 function WatchFrameQuestPOI_OnClick(self, button)
-	--QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questId);
+	QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questId);
 	if ( WorldMapFrame:IsShown() ) then
-		--WorldMapFrame_SelectQuestById(self.questId);
-		--QuestPOI_SelectButtonByQuestID(WorldMapFrame, questID)
+		WorldMapFrame_SelectQuestById(self.questId);
+		QuestPOI_SelectButtonByQuestID(WorldMapFrame, questID)
 	end
 	--SetSuperTrackedQuestID(self.questId);
 	PlaySound("igMainMenuOptionCheckBoxOn");
@@ -1431,9 +1442,6 @@ function WatchFrame_SetSorting(button, arg1)
 		SortQuestWatches();
 		WatchFrame_Update();
 		WatchFrame.updateTimer = WATCHFRAME_UPDATE_RATE;
-		if ( WorldMapFrame:IsShown() ) then
-			WorldMapFrame_UpdateMap();
-		end
 	end
 end
 

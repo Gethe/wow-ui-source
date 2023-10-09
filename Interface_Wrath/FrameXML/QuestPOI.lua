@@ -11,18 +11,18 @@ function QuestPOIHighlightManager:SetHighlight(questID)
 		return;
 	end
 	if self.questID then
-		self.ClearHighlight();
+		QuestPOIHighlightManager.ClearHighlight();
 	end
 	self.questID = questID;
 	EventRegistry:TriggerEvent("SetHighlightedQuestPOI", questID);
 end
 
 function QuestPOIHighlightManager:ClearHighlight()
-	if not self.questID then
+	if not QuestPOIHighlightManager.questID then
 		return;
 	end
-	local oldID = self.questID;
-	self.questID = nil;	
+	local oldID = QuestPOIHighlightManager.questID;
+	QuestPOIHighlightManager.questID = nil;	
 	EventRegistry:TriggerEvent("ClearHighlightedQuestPOI", oldID);
 end
 
@@ -32,6 +32,20 @@ end
 
 function QuestPOIHighlightManager:GetQuestID()
 	return self.questID;
+end
+
+function QuestPOIButton_EvaluateManagedHighlight(poiButton)
+	local questID = poiButton.questID;
+	if questID and (questID == QuestPOIHighlightManager:GetQuestID()) then
+		if poiButton.style == "disabled" then
+			return;
+		end
+		poiButton:LockHighlight();
+	else
+		if (poiButton.style == "disabled") or not poiButton:IsMouseOver() then
+			poiButton:UnlockHighlight();
+		end
+	end
 end
 
 function QuestPOI_Initialize(parent, onCreateFunc, useHighlightManager)
@@ -71,8 +85,6 @@ function QuestPOI_CalculateNumericTexCoords(index, color)
 		local yOffset = color + floor(iconIndex / QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
 		local xOffset = mod(iconIndex, QUEST_POI_ICONS_PER_ROW) * QUEST_POI_ICON_SIZE;
 		return xOffset, xOffset + QUEST_POI_ICON_SIZE, yOffset, yOffset + QUEST_POI_ICON_SIZE;
-	else
-		print("complete");
 	end
 end
 
@@ -157,7 +169,11 @@ function QuestPOI_GetTextureInfoNormal(poiButton)
 	if poiButton.selected then
 		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.500, 0.625, 0.375, 0.5;
 	else
-		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.500, 0.625, 0.875, 1.0;
+		if poiButton.style == "numeric" then
+			return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.875, 1.00, 0.375, 0.5;
+		else
+			return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.500, 0.625, 0.875, 1;
+		end
 	end
 end
 
@@ -165,7 +181,11 @@ function QuestPOI_GetTextureInfoPushed(poiButton)
 	if poiButton.selected then
 		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.375, 0.500, 0.375, 0.5;
 	else
-		return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.375, 0.500, 0.875, 1.0;
+		if poiButton.style == "numeric" then
+			return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.750, 0.875, 0.375, 0.5;
+		else
+			return "Interface/WorldMap/UI-QuestPoi-NumberIcons", 0.500, 0.625, 0.875, 1;
+		end
 	end
 end
 
@@ -215,6 +235,8 @@ function QuestPOI_UpdateNumericStyleTextures(poiButton)
 	QuestPOI_SetTextureSize(poiButton.Number, 32, 32);
 
 	QuestPOI_SetTexture(poiButton.Glow, 50, 50, "Interface/WorldMap/UI-QuestPoi-IconGlow");
+	QuestPOI_SetTexture(poiButton.NormalTexture, 32, 32, QuestPOI_GetTextureInfoNormal(poiButton));
+	QuestPOI_SetTexture(poiButton.PushedTexture, 32, 32, QuestPOI_GetTextureInfoPushed(poiButton));
 	QuestPOI_SetTexture(poiButton.HighlightTexture, 32, 32, QuestPOI_GetTextureInfoHighlight(poiButton));
 end
 
@@ -231,7 +253,7 @@ function QuestPOI_UpdateNormalStyleTexture(poiButton)
 		QuestPOI_SetTexture(poiButton.PushedTexture, 32, 32, QuestPOI_GetTextureInfoPushed(poiButton));
 		QuestPOI_SetTexture(poiButton.HighlightTexture, 32, 32, QuestPOI_GetTextureInfoHighlight(poiButton));
 	end
-
+	
 	local buttonAlpha = QuestPOI_GetButtonAlpha(poiButton);
 	poiButton.NormalTexture:SetAlpha(buttonAlpha);
 	poiButton.PushedTexture:SetAlpha(buttonAlpha);

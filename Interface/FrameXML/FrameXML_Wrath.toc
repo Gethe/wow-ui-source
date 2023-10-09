@@ -344,7 +344,6 @@ ArenaRegistrarFrame.xml
 RuneFrame.xml
 ..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 PlayerInteractionFrameManager.xml
-QueueReadyCheckFrame.xml
 SocialQueue.xml
 InviteConfirmationDialog.lua
 

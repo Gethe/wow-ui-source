@@ -32,10 +32,6 @@ function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 		end
 	end
 
-	if(OpacityFrame:IsShown()) then
-		OpacityFrame:Hide();
-	end
-	
 	self:SetDisplayState(displayState);
 end
 
@@ -125,6 +121,18 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 
 	self:RefreshQuestLog();
 
+	if(OpacityFrame:IsShown()) then
+		OpacityFrame:Hide();
+	end
+
+	if ( QuestLogDetailFrame:IsShown() ) then
+		HideUIPanel(QuestLogDetailFrame);
+	end
+
+	if ( QuestLogFrame:IsShown() ) then
+		HideUIPanel(QuestLogFrame);
+	end
+
 	if not hasSynchronizedDisplayState then
 		self:SynchronizeDisplayState();
 	end
@@ -142,8 +150,6 @@ function QuestLogOwnerMixin:SetQuestLogPanelShown(shown)
 		end
 
 		self:SynchronizeDisplayState();
-		UpdateUIPanelPositions(self);
-		self:OnFrameSizeChanged();
 	end
 end
 

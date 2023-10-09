@@ -85,7 +85,7 @@
 				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Text" x="0" y="2"/>
+						<Anchor point="TOPRIGHT" x="-8" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">

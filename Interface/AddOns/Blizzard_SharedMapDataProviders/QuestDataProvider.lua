@@ -135,16 +135,12 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 
-	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	local isSuperTracked = questID == QuestMapFrame.DetailsFrame.questID;
 	local isComplete = IsQuestComplete(questID);
 
 	pin.isSuperTracked = isSuperTracked;
 
-	if isSuperTracked then
-		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
-	else
-		pin:UseFrameLevelType("PIN_FRAME_LEVEL_ACTIVE_QUEST", frameLevelOffset);
-	end
+	pin:UseFrameLevelType("PIN_FRAME_LEVEL_ACTIVE_QUEST", frameLevelOffset);
 
 	pin.Number:ClearAllPoints();
 	pin.Number:SetPoint("CENTER");
@@ -152,21 +148,37 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 
 	if isComplete then
 		pin.style = "normal";
-		pin.Texture:SetSize(89, 90);
-		pin.PushedTexture:SetSize(89, 90);
-		pin.Highlight:SetSize(89, 90);
-		pin.Number:SetSize(74, 74);
-		pin.Number:ClearAllPoints();
-		pin.Number:SetPoint("CENTER", -1, -1);
-		pin.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-		pin.Texture:SetTexCoord(0.500, 0.625, 0.875, 1);
-		pin.PushedTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-		pin.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
-		pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
-		pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
-		pin.Number:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
-		pin.Number:SetTexCoord(0, 0.5, 0, 0.5);
-		pin.Number:Show();
+		-- If the quest is super tracked we want to show the selected circle behind it.
+		if ( isSuperTracked ) then
+			pin.Texture:SetSize(89, 90);
+			pin.PushedTexture:SetSize(89, 90);
+			pin.Highlight:SetSize(89, 90);
+			pin.Number:SetSize(74, 74);
+			pin.Number:ClearAllPoints();
+			pin.Number:SetPoint("CENTER", -1, -1);
+			pin.Texture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+			pin.Texture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
+			pin.PushedTexture:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+			pin.PushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
+			pin.Highlight:SetTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+			pin.Highlight:SetTexCoord(0.625, 0.750, 0.875, 1);
+			pin.Number:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Number:SetTexCoord(0, 0.5, 0, 0.5);
+			pin.Number:Show();
+		else
+			pin.Texture:SetSize(95, 95);
+			pin.PushedTexture:SetSize(95, 95);
+			pin.Highlight:SetSize(95, 95);
+			pin.Number:SetSize(85, 85);
+			pin.Texture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.PushedTexture:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Highlight:SetTexture("Interface/WorldMap/UI-WorldMap-QuestIcon");
+			pin.Texture:SetTexCoord(0, 0.5, 0, 0.5);
+			pin.PushedTexture:SetTexCoord(0, 0.5, 0.5, 1);
+			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
+			pin.moveHighlightOnMouseDown = true;
+			pin.Number:Hide();
+		end	
 	else
 		pin.style = "numeric";	-- for tooltip
 		pin.Texture:SetSize(75, 75);
@@ -245,11 +257,13 @@ function QuestPinMixin:OnMouseEnter()
 		end
 	end
 	WorldMapTooltip:Show();
+	self:GetMap():TriggerEvent("SetHighlightedQuestID", self.questID);
 	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", self.questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
 	WorldMapTooltip:Hide();
+	self:GetMap():TriggerEvent("ClearHighlightedQuestID");
 	self:GetMap():TriggerEvent("ClearHighlightedQuestPOI");
 end
 

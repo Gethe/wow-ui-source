@@ -16,7 +16,6 @@ function WorldMapMixin:SynchronizeDisplayState()
 		WorldMapZoneMinimapDropDown:Show();
 		WorldMapMagnifyingGlassButton:Show();
 		
-
 		WorldMapFrameCloseButton:SetPoint("TOPRIGHT", self.BorderFrame, "TOPRIGHT", 5, 4);
 		self.MaximizeMinimizeFrame:SetPoint("RIGHT", WorldMapFrameCloseButton, "LEFT", 12, 0);
 		self.ScrollContainer:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 11, -70);
@@ -51,6 +50,7 @@ function WorldMapMixin:SynchronizeDisplayState()
 		
 		RestoreUIPanelArea(self);
 	end
+	self:OnFrameSizeChanged();
 end
 
 function WorldMapMixin:Minimize()
@@ -266,6 +266,7 @@ end
 
 function WorldMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
+	self:RefreshQuestLog();
 
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 end

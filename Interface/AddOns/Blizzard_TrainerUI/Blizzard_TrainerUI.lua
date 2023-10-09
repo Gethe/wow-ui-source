@@ -445,7 +445,6 @@ function ClassTrainer_SetSelection(id)
 end
 
 function ClassTrainerSkillButton_OnClick(self)
-	ClassTrainerFrame.selectedService = self:GetID();
 	ClassTrainerFrame.showSkillDetails = 1;
 	ClassTrainer_SetSelection(self:GetID());
 	ClassTrainerFrame_Update();

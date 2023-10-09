@@ -152,9 +152,8 @@ function QuestMapFrame_OnLoad(self)
 
 	self.completedCriteria = {};
 	local onCreateFunc = nil;
-	local useHighlightManager = false;
+	local useHighlightManager = true;
 	QuestPOI_Initialize(QuestScrollFrame.Contents, onCreateFunc, useHighlightManager);
-
 end
 
 local function QuestMapFrame_DoFullUpdate()
@@ -164,7 +163,7 @@ local function QuestMapFrame_DoFullUpdate()
 	if ( questDetailID ) then
 		if ( GetQuestLogIndexByID(questDetailID) == 0 ) then
 			-- this will call QuestMapFrame_UpdateAll
-			QuestMapFrame_ReturnFromQuestDetails();
+			QuestMapFrame_CloseQuestDetails();
 			return;
 		end
 	end
@@ -179,9 +178,17 @@ end
 
 function QuestMapFrame_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
-	if ( (event == "QUEST_LOG_UPDATE" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player")) and not self.ignoreQuestLogUpdate ) then
+	if ( event == "QUEST_LOG_UPDATE" and not self.ignoreQuestLogUpdate ) then
 		QuestMapFrame_DoFullUpdate();
 		WatchFrame_Update();
+	elseif ( (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") and not self.ignoreQuestLogUpdate ) then
+		local prevQuest = QuestMapFrame.DetailsFrame.questID;
+		QuestMapFrame_CloseQuestDetails();
+		WatchFrame_GetCurrentMapQuests();
+		QuestMapFrame_UpdateAll();
+		if(prevQuest and self:IsVisible()) then
+			QuestMapFrame.DetailsFrame.questID = prevQuest;
+		end
 	elseif ( event == "QUEST_LOG_CRITERIA_UPDATE" ) then
 		local questID, criteriaID, description, fulfilled, required = ...;
 
@@ -201,7 +208,13 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 		end
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
+		local prevQuest = QuestMapFrame.DetailsFrame.questID;
+		QuestMapFrame_CloseQuestDetails();
+		WatchFrame_GetCurrentMapQuests();
 		QuestMapFrame_UpdateAll();
+		if(prevQuest and self:IsVisible()) then
+			QuestMapFrame.DetailsFrame.questID = prevQuest;
+		end
 	elseif ( event == "SUPER_TRACKING_CHANGED" ) then
 		QuestMapFrame_UpdateSuperTrackedQuest(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -240,11 +253,11 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
 		if ( arg1 == "questPOI" ) then
-			QuestMapFrame_CloseQuestDetails();
-			QuestMapFrame_UpdateAll();
 			WatchFrame_Update();
 			QuestLog_UpdateMapButton();
 			QuestMapFrame:GetParent():HandleUserActionToggleQuestLog();
+			QuestMapFrame_CloseQuestDetails();
+			QuestMapFrame_UpdateAll();
 		elseif ( arg1 == "questHelper" ) then
 			if GetCVarBool("questHelper") then
 				WorldMapQuestShowObjectives:Show();
@@ -253,17 +266,17 @@ function QuestMapFrame_OnEvent(self, event, ...)
 				WorldMapQuestShowObjectives:Hide();
 				WatchFrame.showObjectives = false;
 			end
-			QuestMapFrame_CloseQuestDetails();
-			QuestMapFrame_UpdateAll();
 			WatchFrame_Update();
 			QuestLog_UpdateMapButton();
 			QuestMapFrame:GetParent():HandleUserActionToggleQuestLog();
+			QuestMapFrame_CloseQuestDetails();
+			QuestMapFrame_UpdateAll();
 		end
 	end
 end
 
 function QuestMapFrame_OnHide(self)
-	QuestMapFrame_CloseQuestDetails(self:GetParent());
+	QuestMapFrame_CloseQuestDetails();
 	WorldMapTrackQuest:Hide();
 end
 
@@ -384,7 +397,15 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	SelectQuestLogEntry(questLogIndex);
 	WorldMapTrackQuest:SetChecked(IsQuestWatched(questLogIndex));
 	QuestMapFrame.DetailsFrame.questID = questID;
+	QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
+	QuestPOI_SelectButtonByQuestID(WatchFrameLines, questID);
 	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
+
+	for frame in QuestScrollFrame.titleFramePool:EnumerateActive() do
+		if ( frame.questID == questID ) then
+			_QuestMap_HighlightSelectedQuest(frame);
+		end
+	end
 
 	if(not GetCVarBool("miniWorldMap")) then
 		QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
@@ -439,6 +460,8 @@ function QuestMapFrame_OpenToQuestDetails(questID)
 	if ( mapID ~= 0 ) then
 		OpenQuestMapLog(mapID);
 		QuestMapFrame_ShowQuestDetails(questID);
+	else
+		OpenQuestMapLog();
 	end
 end
 
@@ -710,8 +733,10 @@ end
 
 local function QuestLogQuests_AddQuestButton(displayState, info, questWatch, index)	
 	local button = QuestScrollFrame.titleFramePool:Acquire();
+	local level = select(2, GetQuestLogTitle(questWatch));
 	local questID = select(8, GetQuestLogTitle(questWatch));
 	local hasLocalPOI = select(12, GetQuestLogTitle(questWatch));
+	local questLogIndex = GetQuestLogIndexByID(questID);
 
 	button.info = info;
 	button.questID = questID;
@@ -722,7 +747,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info, questWatch, ind
 	local title = QuestLogQuests_GetTitle(displayState, questWatch);
 
 	if(QuestMapFrame.DetailsFrame.questID == nil) then
-		QuestMapFrame_ShowQuestDetails(questID);
+		QuestMapFrame.DetailsFrame.questID = questID;
 	end
 
 	local ignoreReplayable = false;
@@ -730,12 +755,22 @@ local function QuestLogQuests_AddQuestButton(displayState, info, questWatch, ind
 	local useLargeIcon = false;
 	button.Text:SetText(title);
 
+	local difficultyColor = GetQuestDifficultyColor(level);
+	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);
+
+	if IsQuestWatched(questLogIndex) then
+		button.Check:Show();
+	else
+		button.Check:Hide();
+	end
+
 	local isComplete = IsQuestComplete(questID);
 
 	-- POI/objectives
 	local requiredMoney = GetQuestLogRequiredMoney(questID);
 	local playerMoney = GetMoney();
 	local numObjectives = GetNumQuestLeaderBoards(questWatch);
+	local isDisabledQuest = false;
 	local totalHeight = 8 + button.Text:GetHeight();
 
 	-- objectives
@@ -794,7 +829,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info, questWatch, ind
 			totalHeight = totalHeight + height;
 		end
 	end
-	local isDisabledQuest = false;
+
 	if QuestLogQuests_ShouldDisplayPOIButton(displayState, info, isDisabledQuest, hasLocalPOI) then
 		local poiButton = QuestLogQuests_GetPOIButton(displayState, info, isDisabledQuest, isComplete, questID, index);
 		if poiButton then
@@ -940,7 +975,7 @@ function OpenQuestMapLog(mapID)
 	end
 end
 
-local function _QuestMap_HighlightQuest(questLogTitle)
+function _QuestMap_HighlightQuest(questLogTitle)
 	local prevParent = QuestMapHighlightFrame:GetParent();
 	if ( prevParent and prevParent ~= questLogTitle ) then
 		-- set prev quest's colors back to normal
@@ -954,6 +989,7 @@ local function _QuestMap_HighlightQuest(questLogTitle)
 		QuestMapHighlightFrame:SetParent(questLogTitle);
 		QuestMapHighlightFrame:SetPoint("TOPLEFT", questLogTitle, "TOPLEFT", 0, 0);
 		QuestMapHighlightFrame:SetPoint("BOTTOMRIGHT", questLogTitle, "BOTTOMRIGHT", 0, 0);
+		QuestMapHighlightFrame:SetFrameStrata("MEDIUM");
 		QuestMapHighlightFrame:Show();
 		QuestMapFrame:GetParent():SetHighlightedQuestID(questLogTitle.questID);
 
@@ -965,7 +1001,7 @@ local function _QuestMap_HighlightQuest(questLogTitle)
 	end
 end
 
-local function _QuestMap_HighlightSelectedQuest(questLogTitle)
+function _QuestMap_HighlightSelectedQuest(questLogTitle)
 	local prevParent = QuestMapSelectFrame:GetParent();
 	if ( prevParent and prevParent ~= questLogTitle ) then
 		-- set prev quest's colors back to normal
@@ -979,7 +1015,9 @@ local function _QuestMap_HighlightSelectedQuest(questLogTitle)
 		QuestMapSelectFrame:SetParent(questLogTitle);
 		QuestMapSelectFrame:SetPoint("TOPLEFT", questLogTitle, "TOPLEFT", 0, 0);
 		QuestMapSelectFrame:SetPoint("BOTTOMRIGHT", questLogTitle, "BOTTOMRIGHT", 0, 0);
+		QuestMapSelectFrame:SetFrameStrata("MEDIUM");
 		QuestMapSelectFrame:Show();
+		QuestMapFrame:GetParent():SetFocusedQuestID(questLogTitle.questID);
 
 		if(highlightedQuest and questLogTitle == highlightedQuest) then
 			QuestMapHighlightFrame:Hide();
@@ -991,12 +1029,23 @@ end
 
 function QuestMapLogTitleButton_OnEnter(self)
 	-- do block highlight
-	questLogIndex = self:GetID();
+	local questID, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(self.questLogIndex);
 	local title, level, questTag, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isBounty, isStory, isHidden, isScaling = GetQuestLogTitle(questLogIndex);
+
+	local difficultyHighlightColor;
+	if isHeader then
+		difficultyHighlightColor = QuestDifficultyHighlightColors["header"];
+	else
+		difficultyHighlightColor = GetQuestDifficultyColor(level);
+	end
+
+	self.Text:SetTextColor(difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b);
 
 	_QuestMap_HighlightQuest(self);
 
-	QuestMapFrame:GetParent():SetHighlightedQuestID(questID);
+	if self:GetParent().useHighlightManager then
+		QuestPOIHighlightManager:SetHighlight(questID);
+	end
 
 	-- description
 	if isComplete then
@@ -1042,25 +1091,24 @@ function QuestMapLogTitleButton_OnEnter(self)
 	GameTooltip:Show();
 	tooltipButton = self;
     EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
+	EventRegistry:TriggerEvent("SetHighlightedQuestPOI", self.questID);
 end
 
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
-	questLogIndex = self:GetID();
-	local info, _, _, isHeader, _, _, _, questID = GetQuestLogTitle(questLogIndex);
+	local questID, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(self.questLogIndex);
+	local info, level, _, isHeader, _, _, _, questID = GetQuestLogTitle(questLogIndex);
 	if info then
-		local difficultyColor = isHeader and QuestDifficultyColors["header"] or GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
+		local difficultyColor = isHeader and QuestDifficultyColors["header"] or GetQuestDifficultyColor(level);
 		self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
-
-		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(questID);
-		for line in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
-			if ( line.questID == questID ) then
-				SetupObjectiveTextColor(line.Text, isDisabledQuest, false);
-			end
-		end
 	end
 
+	
 	QuestMapFrame:GetParent():ClearHighlightedQuestID();
+	if self:GetParent().useHighlightManager then
+		QuestPOIHighlightManager:ClearHighlight();
+	end
+	EventRegistry:TriggerEvent("ClearHighlightedQuestPOI", questID);
 	QuestMapHighlightFrame:Hide();
 	GameTooltip:Hide();
 	tooltipButton = nil;
@@ -1101,6 +1149,12 @@ function QuestMapLogTitleButton_OnMouseDown(self)
 	self.Text:SetPoint(anchor, x + 1, y - 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x + 1, y - 1);
+
+	local poiButton = QuestPOI_FindButton(QuestScrollFrame.Contents, self.questID);
+	if poiButton then
+		poiButton:SetButtonState("PUSHED");
+		poiButton.Display:SetPoint("CENTER", 1, -1);
+	end
 end
 
 function QuestMapLogTitleButton_OnMouseUp(self)
