@@ -15,7 +15,7 @@ local UIShared =
 			},
 		},
 		{
-			Name = "uiRect",
+			Name = "uiBoundsRect",
 			Type = "Structure",
 			Fields =
 			{

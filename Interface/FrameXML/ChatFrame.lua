@@ -134,7 +134,7 @@ ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = tru
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-
+ChatTypeInfo["GUILD_DEATHS"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 --NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
@@ -293,6 +293,9 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 };
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
+};
+ChatTypeGroup["GUILD_DEATHS"] = {
+	"CHAT_MSG_GUILD_DEATHS",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.
@@ -1524,6 +1527,16 @@ SecureCmdList["DUEL"] = function(msg)
 	StartDuel(msg)
 end
 
+SecureCmdList["DUEL_TO_THE_DEATH"] = function(msg)
+	if(not msg or msg == "") then
+		msg = GetUnitName("target", true);
+	end
+	if (msg == "" or not msg or not C_GameRules.IsHardcoreActive()) then
+		return;
+	end
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg);
+end
+
 SecureCmdList["DUEL_CANCEL"] = function(msg)
 	ForfeitDuel()
 end
@@ -2161,7 +2174,7 @@ SlashCmdList["WHO"] = function(msg)
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
-	C_FriendList.SendWho(msg);
+	C_FriendList.SendWho(msg, Enum.SocialWhoOrigin.CHAT);
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
@@ -3621,7 +3634,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					end
 				else
 					if ( not showLink or arg2 == "" ) then
-						if ( type == "TEXT_EMOTE" ) then
+						if ( type == "TEXT_EMOTE" or type == "GUILD_DEATHS") then
 							outMsg = message;
 						else
 							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);

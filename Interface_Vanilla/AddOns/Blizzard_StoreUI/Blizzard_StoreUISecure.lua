@@ -287,10 +287,11 @@ Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_HEADER");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_OWNED_DELIVERABLE");
 Import("BLIZZARD_STORE_BUNDLE_TOOLTIP_UNOWNED_DELIVERABLE");
 Import("WRATH_OF_THE_LICH_KING");
+Import("IsShiftKeyDown");
+Import("BLIZZARD_STORE_CLICK_TO_OPEN_FAQ");
 
 --Lua enums
 Import("SOUNDKIT");
-Import("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Lua constants
 local WOW_TOKEN_CATEGORY_ID = 30;
@@ -355,6 +356,29 @@ local function SetCurrentCategoryToExclusiveState(shouldBeExclusive)
 	end
 
 	StoreFrame_UpdateCategories(StoreFrame);
+end
+
+local function GetFaqNydusLink(entryInfo)
+	local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
+	if not currencyInfo then
+		return nil;
+	end
+
+	-- Check for VAS FAQ link
+	local vasServiceType = C_StoreSecure.GetVasServiceType(entryInfo.productID);
+	if vasServiceType and currencyInfo.vasDisclaimerData and currencyInfo.vasDisclaimerData[vasServiceType] and currencyInfo.vasDisclaimerData[vasServiceType].disclaimer then
+		local text = currencyInfo.vasDisclaimerData[vasServiceType].disclaimer;
+		return LinkUtil.ExtractNydusLink(text);
+	end
+
+	-- Check for boost FAQ link
+	local productDecorator = entryInfo.sharedData.productDecorator;
+	if productDecorator and productDecorator == Enum.BattlepayProductDecorator.Boost and currencyInfo.boostDisclaimerText then
+		local text = currencyInfo.boostDisclaimerText;
+		return LinkUtil.ExtractNydusLink(text);
+	end
+
+	return nil;
 end
 
 -- This is copied from WowTokenUI.lua
@@ -2440,9 +2464,9 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-				self.Disclaimer:SetTextColor(_G.RED_FONT_COLOR:GetRGB());
+				self.Disclaimer:SetTextColor("P", _G.RED_FONT_COLOR:GetRGB());
 		else
-				self.Disclaimer:SetTextColor(0, 0, 0);
+				self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		end
 		local currencyInfo = SecureCurrencyUtil.GetActiveCurrencyInfo();
 		local vasDisclaimerData = currencyInfo.vasDisclaimerData;
@@ -2643,6 +2667,10 @@ function StoreProductCard_UpdateState(card)
 					end
 				end
 
+				if GetFaqNydusLink(entryInfo) then
+					description = description.."\n\n"..BLIZZARD_STORE_CLICK_TO_OPEN_FAQ;
+				end
+
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
 				if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
@@ -2728,6 +2756,15 @@ end
 
 function StoreProductCard_OnClick(self,button,down)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
+
+	if IsShiftKeyDown() then
+		local vasFaqUrl = GetFaqNydusLink(entryInfo);
+		if vasFaqUrl then
+			GetURLIndexAndLoadURL(self, vasFaqUrl);
+			return;
+		end
+	end
+
 	if (entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen()) then
 		return;
 	end
@@ -2888,7 +2925,7 @@ function StoreProductCard_ShowModel(self, entryInfo, showShadows, forceModelUpda
 		local actor = self.ModelScene:GetActorByTag(actorTag);
 		if actor then
 			actor:SetModelByCreatureDisplayID(card.creatureDisplayInfoID);
-			actor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		end
 	end
 

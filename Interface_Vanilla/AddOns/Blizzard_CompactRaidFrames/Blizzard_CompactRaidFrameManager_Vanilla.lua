@@ -70,7 +70,7 @@ local filterOptions = {
 }
 
 function CompactRaidFrameManager_GetFilterOptions(index)
-	return filterOptions;
+	return filterOptions[index];
 end
 
 function CompactRaidFrameManager_SetFilterOptions(index, newValue)

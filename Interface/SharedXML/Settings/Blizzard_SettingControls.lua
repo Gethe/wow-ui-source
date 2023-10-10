@@ -1,3 +1,5 @@
+local indentSize = 15;
+
 local function InitializeSettingTooltip(initializer)
 	Settings.InitTooltip(initializer:GetName(), initializer:GetTooltip());
 end
@@ -120,11 +122,28 @@ function SettingsListElementInitializer:Init(frameTemplate, data)
 end
 
 function SettingsListElementInitializer:Indent()
-	self.data.indent = 15;
+	self.data.indent = indentSize;
+end
+
+function SettingsListElementInitializer:IsParentInitializerInCurrentSettingsCategory()
+	local parentInitializer = self:GetParentInitializer();
+	if parentInitializer then
+		local currentCategory = SettingsPanel:GetCategoryList():GetCurrentCategory();
+		local currentLayout = SettingsPanel:GetLayout(currentCategory);
+		if currentLayout and currentLayout:IsVerticalLayout() then
+			for _, initializer in currentLayout:EnumerateInitializers() do
+				if initializer == parentInitializer then
+					return true;
+				end
+			end
+		end
+	end
+
+	return false;	
 end
 
 function SettingsListElementInitializer:GetIndent()
-	return self.data.indent or 0;
+	return (self.data.indent or self:IsParentInitializerInCurrentSettingsCategory()) and indentSize or 0;
 end
 
 function SettingsListElementInitializer:GetData()
@@ -168,8 +187,6 @@ end
 
 function SettingsListElementInitializer:SetParentInitializer(parentInitializer, modifyPredicate)
 	SettingsElementHierarchyMixin.SetParentInitializer(self, parentInitializer, modifyPredicate);
-
-	self:Indent();
 end
 
 SettingsListElementMixin = {};
@@ -196,7 +213,7 @@ end
 function SettingsListElementMixin:Init(initializer)
 	assert(self.cbrHandles:IsEmpty());
 	self.data = initializer.data;
-	
+
 	local parentInitializer = initializer:GetParentInitializer();
 	if parentInitializer then
 		local setting = parentInitializer:GetSetting();
@@ -205,7 +222,7 @@ function SettingsListElementMixin:Init(initializer)
 		end
 	end
 
-	local font = (parentInitializer ~= nil) and "GameFontNormalSmall" or "GameFontNormal";
+	local font = initializer:IsParentInitializerInCurrentSettingsCategory() and "GameFontNormalSmall" or "GameFontNormal";
 	self.Text:SetFontObject(font);
 	self.Text:SetText(initializer:GetName());
 	self.Text:SetPoint("LEFT", (self:GetIndent() + 37), 0);
@@ -688,20 +705,19 @@ function SettingsCheckBoxSliderControlMixin:Init(initializer)
 
 	local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbLabel, cbTooltip);
 	self:SetTooltipFunc(cbInitTooltip);
-	
+
 	self.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
 	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
 
 	self.SliderWithSteppers.Slider:SetTooltipFunc(GenerateClosure(Settings.InitTooltip, sliderLabel, sliderTooltip));
 
 	self.SliderWithSteppers:Init(sliderSetting:GetValue(), sliderOptions.minValue, sliderOptions.maxValue, sliderOptions.steps, sliderOptions.formatters);
-	self.SliderWithSteppers:SetEnabled_(cbSetting:GetValue());
 	self.cbrHandles:RegisterCallback(self.SliderWithSteppers, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
 
 	-- Defaults...
 	local function OnCheckBoxSettingValueChanged(o, setting, value)
 		self.CheckBox:SetValue(value);
-		self.SliderWithSteppers:SetEnabled_(value);
+		self:EvaluateState();
 	end
 	self.cbrHandles:SetOnValueChangedCallback(cbSetting:GetVariable(), OnCheckBoxSettingValueChanged);
 
@@ -709,6 +725,8 @@ function SettingsCheckBoxSliderControlMixin:Init(initializer)
 		self.SliderWithSteppers:SetValue(value);
 	end
 	self.cbrHandles:SetOnValueChangedCallback(sliderSetting:GetVariable(), OnSliderSettingValueChanged);
+
+	self:EvaluateState();
 end
 
 function SettingsCheckBoxSliderControlMixin:OnCheckBoxValueChanged(value)
@@ -721,13 +739,21 @@ function SettingsCheckBoxSliderControlMixin:OnCheckBoxValueChanged(value)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
-	self.SliderWithSteppers:SetEnabled_(value);
+	self:EvaluateState();
 end
 
 function SettingsCheckBoxSliderControlMixin:OnSliderValueChanged(value)
 	local initializer = self:GetElementData();
 	local sliderSetting = initializer.data.sliderSetting;
 	sliderSetting:SetValue(value);
+end
+
+function SettingsCheckBoxSliderControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
+	local enabled = SettingsControlMixin.IsEnabled(self);
+	self.CheckBox:SetEnabled(enabled);
+	self.SliderWithSteppers:SetEnabled_(enabled and self.CheckBox:GetChecked());
+	self:DisplayEnabled(enabled);
 end
 
 function SettingsCheckBoxSliderControlMixin:Release()

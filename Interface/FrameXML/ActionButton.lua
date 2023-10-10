@@ -231,8 +231,8 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PET_STABLE_UPDATE");
 	self:RegisterEvent("PET_STABLE_SHOW");
-	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
-	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
+	self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
+	self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
 	self:RegisterEvent("SPELL_UPDATE_ICON");
 end
 

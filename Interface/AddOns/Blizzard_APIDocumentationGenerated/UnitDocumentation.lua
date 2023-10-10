@@ -482,6 +482,15 @@ local Unit =
 			LiteralName = "PLAYER_SOFT_TARGET_INTERACTION",
 		},
 		{
+			Name = "PlayerSpecializationChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_SPECIALIZATION_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerStartedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_LOOKING",
@@ -698,6 +707,16 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDistanceCheckUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_DISTANCE_CHECK_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "isInDistance", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitFaction",
 			Type = "Event",
 			LiteralName = "UNIT_FACTION",
@@ -758,6 +777,16 @@ local Unit =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInRangeUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_IN_RANGE_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false },
 			},
 		},
 		{

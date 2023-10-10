@@ -923,6 +923,7 @@ function UpdateCharacterList(skipSelect)
             local nameText = button.buttonText.name;
             local infoText = button.buttonText.Info;
             local locationText = button.buttonText.Location;
+            local deathIcon = button.buttonText.graveIcon;
 			locationText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 
             if (not areCharServicesShown) then
@@ -1022,8 +1023,14 @@ function UpdateCharacterList(skipSelect)
                 else
                     if( ghost ) then
                         infoText:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+                        if (C_GameRules.IsHardcoreActive() and deathIcon) then
+                            deathIcon:Show();
+                        end
                     else
                         infoText:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+                        if (deathIcon) then
+                            deathIcon:Hide();
+                        end
                     end
 
                     locationText:SetText(zone);
@@ -2399,6 +2406,8 @@ local function GetVASDistributions()
 					usable = DoesClientThinkTheCharacterIsEligibleForPFC(charID);
 				elseif vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 					usable = DoesClientThinkTheCharacterIsEligibleForPRC(charID);
+				elseif vasType == Enum.ValueAddedServiceType.PaidNameChange then
+					usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
 				end
 				if usable then
 					break;
@@ -2628,6 +2637,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginFlow(PaidFactionChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		BeginFlow(PaidRaceChangeFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidNameChange and PaidNameChangeFlow then
+		BeginFlow(PaidNameChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end

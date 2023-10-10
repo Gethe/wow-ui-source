@@ -288,7 +288,6 @@ retain("IsTrialAccount");
 retain("IsVeteranTrialAccount");
 retain("C_StorePublic");
 retain("C_Club");
-retain("GetURLIndexAndLoadURL");
 retain("GetUnscaledFrameRect");
 retain("BLIZZARD_STORE_EXTERNAL_LINK_BUTTON_TEXT");
 retain("IsCharacterNPERestricted");
@@ -451,6 +450,7 @@ take("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
 take("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
 take("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
 take("BLIZZARD_STORE_PRODUCT_IS_READY");
+take("BLIZZARD_STORE_CLICK_TO_OPEN_FAQ");
 take("BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION");
 take("BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION");
 take("BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION");
@@ -693,7 +693,6 @@ retain("LE_TOKEN_RESULT_ERROR_DISABLED");
 take("LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP");
 take("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 take("LE_TOKEN_REDEEM_TYPE_BALANCE");
-retain("LE_MODEL_BLEND_OPERATION_NONE");
 
 --Tag enums
 takeenum("StoreError");
@@ -712,6 +711,7 @@ retainenum("ModelSceneSetting");
 retainenum("ClubType");
 retainenum("ClubFieldType");
 retainenum("ValidateNameResult");
+retainenum("ModelBlendOperation");
 
 -- Secure Mixins
 -- where ... are the mixins to mixin

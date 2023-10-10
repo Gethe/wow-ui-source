@@ -34,6 +34,7 @@ function UnitPopupMenuFriendlyPlayerInteract:GetMenuButtons()
 		UnitPopupTradeButtonMixin, 
 		UnitPopupFollowButtonMixin,
 		UnitPopupDuelButtonMixin,
+		UnitPopupDuelToTheDeathButtonMixin,
 		UnitPopupPetBattleDuelButtonMixin,
 	}
 end 

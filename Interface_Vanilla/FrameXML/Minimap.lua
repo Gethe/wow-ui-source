@@ -142,26 +142,90 @@ function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
 
-function MiniMapLFGFrame_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	if (activeEntryInfo) then
-		local text = "";
-		for i=1, #activeEntryInfo.activityIDs do
-			local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityIDs[i]);
-			if (activityInfo and activityInfo.fullName ~= "") then
-				text = text .. activityInfo.fullName .. "\n"
+function MiniMapLFGFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("LFG_UPDATE");
+	self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:SetFrameLevel(self:GetFrameLevel()+1)
+
+	UIDropDownMenu_Initialize(self.DropDown, QueueStatusDropDown_Update, "MENU");
+end
+
+function MiniMapLFGFrame_OnClick(self, button)
+	if ( button == "RightButton" ) then
+		QueueStatusDropDown_Show(self.DropDown, self:GetName());
+	else
+		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
+		if ( IsInLFDBattlefield() ) then
+			inBattlefield = true;
+			showScoreboard = true;
+		end
+		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
+		if ( inBattlefield ) then
+			if ( showScoreboard ) then
+				TogglePVPScoreboardOrResults();
+			end
+		elseif ( lfgListActiveEntry ) then
+			LFGListUtil_OpenBestWindow(true);
+		else
+			--See if we have any active LFGList applications
+			local apps = C_LFGList.GetApplications();
+			for i=1, #apps do
+				local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+				if ( appStatus == "applied" or appStatus == "invited" ) then
+					--We want to open to the LFGList screen
+					LFGListUtil_OpenBestWindow(true);
+					return;
+				end
+			end
+
+			PVEFrame_ShowFrame();
+		end
+	end
+end
+
+function MiniMapLFGFrame_OnEvent(self, event, ...)
+	if (	event == "PLAYER_ENTERING_WORLD" or
+			event == "GROUP_ROSTER_UPDATE" or
+			event == "LFG_UPDATE" or 
+			event == "LFG_QUEUE_STATUS_UPDATE" ) then
+		--Try each LFG type
+		local hasLFGMode = false;
+		for i=1, NUM_LE_LFG_CATEGORYS do
+			local mode, submode = GetLFGMode(i);
+			if ( mode and submode ~= "noteleport" ) then
+				hasLFGMode = true;
+				break;
 			end
 		end
 
-		if (text ~= "") then
-			GameTooltip:SetText(LFG_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			GameTooltip:AddLine(text);
-			GameTooltip:Show();
+		--Try LFGList entries
+		local hasApp = false;
+		local apps = C_LFGList.GetApplications();
+		for i=1, #apps do
+			local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+			if ( appStatus == "applied" or appStatus == "invited" ) then
+				hasApp = true;
+				break;
+			end
+		end
+
+		if ( C_LFGList.HasActiveEntryInfo() or hasLFGMode or hasApp) then
+			self:Show();
 		else
-			GameTooltip:Hide();
+			self:Hide();
 		end
 	end
+end
+
+function MiniMapLFGFrame_OnEnter(self)
+	QueueStatusFrame:Show();
+end
+
+function MiniMapLFGFrame_OnLeave(self)
+	QueueStatusFrame:Hide();
 end
 
 function EyeTemplate_OnUpdate(self, elapsed)

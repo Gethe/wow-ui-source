@@ -280,6 +280,12 @@ function AuctionFrame_OnLoad (self)
 	GetOwnerAuctionItems(AuctionFrameAuctions.page);
 	
 	MoneyFrame_SetMaxDisplayWidth(AuctionFrameMoneyFrame, 160);
+
+	if GetClassicExpansionLevel() == LE_EXPANSION_CLASSIC then
+		--Vanilla textures are slightly different from later expansions so we need to adjust the placement of the BrowseResetButton
+		BrowseResetButton:SetSize(97, 22);
+		BrowseResetButton:SetPoint("TOPLEFT", 37, -79);
+	end
 end
 
 function AuctionFrame_Show()
@@ -491,7 +497,7 @@ function AuctionFrame_SetSort(sortTable, sortColumn, oppositeOrder)
 		-- Browsing by the "bid" column will sort by whatever price sorrting option the user selected
 		-- instead of always sorting by "bid" (total bid price)
 		local sort = row.column;
-		if sortTable.."_"..sortColumn == "list_bid" then
+		if sortTable.."_"..sortColumn == "list_bid" and sort == "bid" then
 			sort = PriceSortName();
 		end
 		if (oppositeOrder) then

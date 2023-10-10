@@ -42,11 +42,23 @@ local ReportSystemConstants =
 			},
 		},
 		{
+			Name = "ReportSubComplaintTypes",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Inappropriate", Type = "ReportSubComplaintTypes", EnumValue = 0 },
+				{ Name = "Advertising", Type = "ReportSubComplaintTypes", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "ReportType",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 0,
-			MaxValue = 15,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
@@ -65,6 +77,7 @@ local ReportSystemConstants =
 				{ Name = "PvP", Type = "ReportType", EnumValue = 13 },
 				{ Name = "PvPScoreboard", Type = "ReportType", EnumValue = 14 },
 				{ Name = "PvPGroupMember", Type = "ReportType", EnumValue = 15 },
+				{ Name = "CraftingOrder", Type = "ReportType", EnumValue = 16 },
 			},
 		},
 	},

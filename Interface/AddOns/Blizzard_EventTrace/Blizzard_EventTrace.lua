@@ -26,6 +26,10 @@ local function GetDisplayEvent(elementData)
 	return elementData.displayEvent or elementData.event;
 end
 
+local function ApplyAlternateState(frame, alternate)
+	frame:SetAlternateOverlayShown(alternate);
+end
+
 EventTraceSavedVars =
 {
 	LogEventsWhenHidden = false,
@@ -273,15 +277,8 @@ function EventTracePanelMixin:InitializeLog()
 		end
 	end);
 
-	local function SetOnDataRangeChanged(scrollBox)
-		local function OnDataRangeChanged(sortPending)
-			SetScrollBoxButtonAlternateState(scrollBox);
-		end;
-		scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
-	end
-
-	SetOnDataRangeChanged(self.Log.Events.ScrollBox);
-	SetOnDataRangeChanged(self.Log.Search.ScrollBox);
+	ScrollUtil.RegisterAlternateRowBehavior(self.Log.Events.ScrollBox, ApplyAlternateState);
+	ScrollUtil.RegisterAlternateRowBehavior(self.Log.Search.ScrollBox, ApplyAlternateState);
 
 	local function AddEventToFilter(scrollBox, elementData)
 		local found = self.filterDataProvider:FindElementDataByPredicate(function(filterData)
@@ -436,10 +433,7 @@ function EventTracePanelMixin:InitializeFilter()
 		self.filterDataProvider:Flush();
 	end);
 
-	local function OnDataRangeChanged(sortPending)
-		SetScrollBoxButtonAlternateState(self.Filter.ScrollBox);
-	end
-	self.Filter.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
+	ScrollUtil.RegisterAlternateRowBehavior(self.Filter.ScrollBox, ApplyAlternateState);
 
 	local function RemoveEventFromFilter(elementData)
 		self.filterDataProvider:Remove(elementData);

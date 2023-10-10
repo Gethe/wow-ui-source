@@ -68,6 +68,7 @@ local LossOfControl =
 			LiteralName = "LOSS_OF_CONTROL_ADDED",
 			Payload =
 			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "effectIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
@@ -94,6 +95,10 @@ local LossOfControl =
 			Name = "LossOfControlUpdate",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
 		},
 		{
 			Name = "PlayerControlGained",
@@ -124,6 +129,7 @@ local LossOfControl =
 				{ Name = "lockoutSchool", Type = "number", Nilable = false },
 				{ Name = "priority", Type = "number", Nilable = false },
 				{ Name = "displayType", Type = "number", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = true },
 			},
 		},
 	},

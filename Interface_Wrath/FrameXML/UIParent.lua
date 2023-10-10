@@ -530,6 +530,10 @@ function Communities_LoadUI()
 	UIParentLoadAddOn("Blizzard_Communities");
 end
 
+function CollectionsJournal_LoadUI()
+	UIParentLoadAddOn("Blizzard_Collections");
+end
+
 local playerEnteredWorld = false;
 local varsLoaded = false;
 function NPETutorial_AttemptToBegin(event)
@@ -703,6 +707,48 @@ end
 
 function CommunitiesFrame_IsEnabled()
 	return C_Club.IsEnabled();
+end
+
+COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS = 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_PETS = COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
+COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
+
+function ToggleCollectionsJournal(tabIndex)
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
+	if CollectionsJournal then
+		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
+		local isShown = CollectionsJournal:IsShown() and tabMatches;
+		SetCollectionsJournalShown(not isShown, tabIndex);
+	else
+		SetCollectionsJournalShown(true, tabIndex);
+	end
+end
+
+function SetCollectionsJournalShown(shown, tabIndex)
+	if not CollectionsJournal then
+		CollectionsJournal_LoadUI();
+	end
+	if CollectionsJournal then
+		if shown then
+			ShowUIPanel(CollectionsJournal);
+			if tabIndex then
+				CollectionsJournal_SetTab(CollectionsJournal, tabIndex);
+			end
+		else
+			HideUIPanel(CollectionsJournal);
+		end
+	end
+end
+
+function ToggleToyCollection(autoPageToCollectedToyID)
+	CollectionsJournal_LoadUI();
+	ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 end
 
 function ToggleStoreUI()
@@ -1017,7 +1063,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		self.battlefieldBannerShown = nil;
 
-		SetLookingForGroupUIAvailable(C_LFGList.IsLookingForGroupEnabled());
+		SetLookingForGroupUIAvailable(C_LFGInfo.IsGroupFinderEnabled());
 
 		if Kiosk.IsEnabled() then
 			LoadAddOn("Blizzard_Kiosk");
@@ -4227,7 +4273,7 @@ function RaidBrowser_IsEmpowered()
 end
 
 function GetLFGMode(category, lfgID)
-	--[[if ( category ~= LE_LFG_CATEGORY_RF ) then
+	if ( category ~= LE_LFG_CATEGORY_RF ) then
 		lfgID = nil; --HACK - RF works differently from everything else. You can queue for multiple RF slots with different ride tickets.
 	end
 
@@ -4268,7 +4314,7 @@ function GetLFGMode(category, lfgID)
 		return "lfgparty", "noteleport";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "abandonedInDungeon";
-	end]]
+	end
 end
 
 function IsLFGModeActive(category)
@@ -4751,12 +4797,7 @@ function DisplayInterfaceActionBlockedMessage()
 end
 -- Set the overall UI state to show or not show the LFG UI.
 function SetLookingForGroupUIAvailable(available)
-	local success = false;
 	if (available) then
-		success = UIParentLoadAddOn("Blizzard_LookingForGroupUI");
-	end
-
-	if (success) then
 		LFGMicroButton:Show();
 		MiniMapWorldMapButton:Show();
 	else

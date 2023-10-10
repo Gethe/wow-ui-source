@@ -670,7 +670,7 @@ end
 
 UnitPopupPromoteGuideButtonMixin = CreateFromMixins(UnitPopupPromoteButtonMixin);
 function UnitPopupPromoteGuideButtonMixin:GetText()
-	return PROMOTE_GUIDE;
+	return PARTY_PROMOTE_GUIDE;
 end
 
 function UnitPopupPromoteGuideButtonMixin:CanShow()

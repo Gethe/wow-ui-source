@@ -271,7 +271,12 @@ function RealmList_OnOk()
 		if ( populationState == "FULL" and numChars == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
 		else
-			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+			if (seasonID == Enum.SeasonID.Hardcore and numChars == 0) then
+				HardcorePopUpFrame:SetRealmInfo(RealmList.selectedRealm)
+				HardcorePopUpFrame:ShowRealmSelectionWarning();
+			else
+				C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+			end
 		end
 	end
 end

@@ -49,6 +49,22 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "ChrModelFeatureFlags",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 1,
+			MaxValue = 32,
+			Fields =
+			{
+				{ Name = "Summons", Type = "ChrModelFeatureFlags", EnumValue = 1 },
+				{ Name = "Forms", Type = "ChrModelFeatureFlags", EnumValue = 2 },
+				{ Name = "Identity", Type = "ChrModelFeatureFlags", EnumValue = 4 },
+				{ Name = "DragonCompanions", Type = "ChrModelFeatureFlags", EnumValue = 8 },
+				{ Name = "Mounts", Type = "ChrModelFeatureFlags", EnumValue = 16 },
+				{ Name = "HunterPets", Type = "ChrModelFeatureFlags", EnumValue = 32 },
+			},
+		},
+		{
 			Name = "CustomizationScope",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -77,6 +93,7 @@ local CharacterCustomizationShared =
 				{ Name = "chrModelID", Type = "number", Nilable = true },
 				{ Name = "options", Type = "table", InnerType = "CharCustomizationOption", Nilable = false },
 				{ Name = "hasNewChoices", Type = "bool", Nilable = false },
+				{ Name = "needsNativeFormCategory", Type = "bool", Nilable = false },
 			},
 		},
 		{

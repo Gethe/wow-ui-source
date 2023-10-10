@@ -299,6 +299,60 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	editBox:ClearFocus();
 end
 
+PanelTabButtonMixin = {};
+
+function PanelTabButtonMixin:OnLoad()
+	self:SetFrameLevel(self:GetFrameLevel() + 4);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function PanelTabButtonMixin:OnEvent(event, ...)
+	if self:IsVisible() then
+		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+	end
+end
+
+function PanelTabButtonMixin:OnShow()
+	PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+end
+
+function PanelTabButtonMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText());
+	end
+end
+
+function PanelTabButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+PanelTopTabButtonMixin = {};
+
+local TOP_TAB_HEIGHT_PERCENT = 0.75;
+local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT;
+
+function PanelTopTabButtonMixin:OnLoad()
+	PanelTabButtonMixin.OnLoad(self);
+
+	for _, tabTexture in ipairs(self.TabTextures) do
+		tabTexture:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD);
+		tabTexture:SetHeight(tabTexture:GetHeight() * TOP_TAB_HEIGHT_PERCENT);
+	end
+
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, 0);
+	self.Right:ClearAllPoints();
+	self.Right:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, 0);
+
+	self.LeftActive:ClearAllPoints();
+	self.LeftActive:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -1, 0);
+	self.RightActive:ClearAllPoints();
+	self.RightActive:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 8, 0);
+
+	self.isTopTab = true;
+end
+
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)
 	PanelTemplates_SetTab(frame, self:GetID())
@@ -1644,6 +1698,11 @@ function DropDownControlMixin:UpdateWidth(width)
 	UIDropDownMenu_SetWidth(self.DropDownMenu, width - 20);
 end
 
+function DropDownControlMixin:SetControlWidth(width)
+	self:SetWidth(width);
+	self:UpdateWidth(width);
+end
+
 function DropDownControlMixin:Initialize()
 	if self.options == nil then
 		return;
@@ -1847,6 +1906,12 @@ IconSelectorPopupFrameModes = EnumUtil.MakeEnum(
 	"Edit"
 );
 
+IconSelectorPopupFrameIconFilterTypes = EnumUtil.MakeEnum(
+	"All",
+	"Spell",
+	"Item"
+);
+
 
 local ValidIconSelectorCursorTypes = {
 	"item",
@@ -1855,6 +1920,17 @@ local ValidIconSelectorCursorTypes = {
 	"battlepet",
 	"macro"
 };
+
+local function IconSelectorPopupFrame_IconFilterToIconTypes(filter)
+	if (filter == IconSelectorPopupFrameIconFilterTypes.All) then
+		return IconDataProvider_GetAllIconTypes();
+	elseif (filter == IconSelectorPopupFrameIconFilterTypes.Spell) then
+		return { IconDataProviderIconType.Spell };
+	elseif (filter == IconSelectorPopupFrameIconFilterTypes.Item) then
+		return { IconDataProviderIconType.Item };
+	end
+	return nil;
+end
 
 local IconSelectorPopupFramesShown = 0;
 
@@ -1876,6 +1952,28 @@ function IconSelectorPopupFrameTemplateMixin:OnLoad()
 	end);
 
 	self.BorderBox.EditBoxHeaderText:SetText(self.editBoxHeaderText);
+
+	-- Icon Filter Dropdown
+	local function IconFilterTypeNameTranslation(enumValue)
+		for key, value in pairs(IconSelectorPopupFrameIconFilterTypes) do
+			if value == enumValue then
+				local key = strupper(key);
+				local string = "ICON_FILTER_" .. strupper(key);
+				local global = _G["ICON_FILTER_" .. strupper(key)];
+				return _G["ICON_FILTER_" .. strupper(key)];
+			end
+		end
+	end
+
+	local function IconFilterTypeSelectedCallback(value, isUserInput)
+		self:SetIconFilter(value);
+	end
+
+	self.BorderBox.IconTypeDropDown:SetControlWidth(125);
+	self.BorderBox.IconTypeDropDown:SetTextJustifyH("LEFT");
+	self.BorderBox.IconTypeDropDown:SetEnum(IconSelectorPopupFrameIconFilterTypes, IconFilterTypeNameTranslation);
+	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+	self.BorderBox.IconTypeDropDown:SetOptionSelectedCallback(IconFilterTypeSelectedCallback);
 end
 
 -- Usually overridden by inheriting frame.
@@ -1913,6 +2011,7 @@ function IconSelectorPopupFrameTemplateMixin:OnEvent(event, ...)
 
 		self.BorderBox.IconDragArea:SetShown(isValidCursorType);
 		self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
+		self.BorderBox.IconTypeDropDown:SetShown(not isValidCursorType);
 		self.IconSelector:SetShown(not isValidCursorType);
 	elseif ( event == "GLOBAL_MOUSE_UP" and DoesAncestryInclude(self, GetMouseFocus())) then
 		self:SetIconFromMouse();
@@ -1944,7 +2043,6 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 
 			if ( icon ) then
 				self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
-				self.BorderBox.SelectedIconArea.SelectedIconButton:SetSelectedTexture();
 			end
 
 			self:SetSelectedIconText();
@@ -1955,11 +2053,11 @@ end
 
 function IconSelectorPopupFrameTemplateMixin:SetSelectedIconText()
 	if ( self:GetSelectedIndex() ) then
-		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CURRENT);
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetFontObject(GameFontHighlightSmall);
 	else
-		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconHeader:SetText(ICON_SELECTION_TITLE_CUSTOM);
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_NOTINLIST);
+		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetFontObject(GameFontDisableSmall);
 	end
 
 	self.BorderBox.SelectedIconArea.SelectedIconText:Layout();
@@ -1973,6 +2071,22 @@ end
 -- Usually overridden by inheriting frame.
 function IconSelectorPopupFrameTemplateMixin:CancelButton_OnClick()
 	self:Hide();
+end
+
+function IconSelectorPopupFrameTemplateMixin:SetIconFilter(iconFilter)
+	if (self.iconFilter == iconFilter) then
+		return;
+	end
+
+	self.iconFilter = iconFilter;
+	local iconTypes = IconSelectorPopupFrame_IconFilterToIconTypes(self.iconFilter);
+	self.iconDataProvider:SetIconTypes(iconTypes);
+	self.IconSelector:UpdateSelections();
+	self:ReevaluateSelectedIcon();
+end
+
+function IconSelectorPopupFrameTemplateMixin:GetIconFilter()
+	return self.iconFilter;
 end
 
 function IconSelectorPopupFrameTemplateMixin:GetIconByIndex(index)
@@ -1989,6 +2103,12 @@ end
 
 function IconSelectorPopupFrameTemplateMixin:GetSelectedIndex()
 	return self.IconSelector:GetSelectedIndex();
+end
+
+function IconSelectorPopupFrameTemplateMixin:ReevaluateSelectedIcon()
+	local texture = self.BorderBox.SelectedIconArea.SelectedIconButton:GetIconTexture();
+	self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(texture));
+	self:SetSelectedIconText();
 end
 
 function IsAnyIconSelectorPopupFrameShown()

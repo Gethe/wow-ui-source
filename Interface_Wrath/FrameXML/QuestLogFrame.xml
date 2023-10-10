@@ -466,6 +466,75 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+				<Button name="QuestLogFrameShowMapButton">
+				<Size>
+					<AbsDimension x="48" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="-38"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\QuestFrame\UI-QuestMap_Button" parentKey="texture">
+							<Size>
+								<AbsDimension x="48" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.125" right="0.875" top="0.0" bottom="0.5"/>
+						</Texture>
+						<FontString name="$parentText" inherits="GameFontNormal" text="SHOW_MAP" parentKey="text">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parentTexture" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture name="$parentHighlight" file="Interface\BUTTONS\ButtonHilight-Square" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="36" y="25"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-7" y="0"/>
+									</Offset>								
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(self.text:GetWidth() + self.texture:GetWidth());
+					</OnLoad>
+					<OnClick>
+						local questID = select(8, GetQuestLogTitle(GetQuestLogSelection()));
+						QuestMapFrame_OpenToQuestDetails(questID);
+					</OnClick>
+					<OnEnter>
+						QuestLogFrameShowMapButtonHighlight:Show();
+					</OnEnter>
+					<OnLeave>
+						QuestLogFrameShowMapButtonHighlight:Hide();
+					</OnLeave>
+					<OnMouseDown>
+						self.texture:SetTexCoord(0.125, 0.875, 0.5, 1.0);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.texture:SetTexCoord(0.125, 0.875, 0.0, 0.5);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
 			<Frame name="EmptyQuestLogFrame" hidden="true">
 				<Size>
 					<AbsDimension x="302" y="356"/>
@@ -693,7 +762,6 @@
 					<Frame name="QuestLogHighlightFrame" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">

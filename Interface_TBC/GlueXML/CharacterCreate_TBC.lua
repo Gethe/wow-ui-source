@@ -132,11 +132,30 @@ function UpdateCharacterRaceLabelText()
 	for i=1, CharacterCreate.numRaces, 1 do
 		local button = _G["CharacterCreateRaceButton"..i];
 		if ( button.raceID == CharacterCreate.selectedRace ) then
-			_G["CharacterCreateRaceButton"..i.."Text"]:SetText(button.tooltip);
+			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText(button.tooltip);
 			button:SetChecked(1);
 		else
-			_G["CharacterCreateRaceButton"..i.."Text"]:SetText("");
+			_G["CharacterCreateRaceButton"..i.."HighlightText"]:SetText("");
 			button:SetChecked(nil);
+		end
+	end
+end
+
+function UpdateCharacterClassLabelText(text)
+	for i=1, CharacterCreate.numClasses, 1 do
+		local button = _G["CharacterCreateClassButton"..i];
+		if ( button.classID == CharacterCreate.selectedClass) then
+			if(text) then
+				_G["CharacterCreateClassButton"..i.."HighlightText"]:SetText(text);
+			else
+				_G["CharacterCreateClassButton"..i.."HighlightText"]:SetText(button.tooltip);
+			end
+			button:SetChecked(1);
+			button:LockHighlight();
+		else
+			_G["CharacterCreateClassButton"..i.."HighlightText"]:SetText("");
+			button:UnlockHighlight();
+			button:SetChecked(0);
 		end
 	end
 end
@@ -154,18 +173,7 @@ function SetCharacterClass(id)
 	end
 
 	CharacterCreate.selectedClass = id;
-	for i=1, CharacterCreate.numClasses, 1 do
-		local button = _G["CharacterCreateClassButton"..i];
-		if ( button.classID == id ) then
-			_G["CharacterCreateClassButton"..i.."HighlightText"]:SetText(button.tooltip);
-			button:SetChecked(1);
-			button:LockHighlight();
-		else
-			_G["CharacterCreateClassButton"..i.."HighlightText"]:SetText("");
-			button:UnlockHighlight();
-			button:SetChecked(0);
-		end
-	end
+	UpdateCharacterClassLabelText();
 	
 	--twain SetSelectedClass(id);
 	local classData = C_CharacterCreation.GetSelectedClass();
@@ -220,6 +228,7 @@ function SetCharacterGender(sex)
 	-- Set Class
 	local classData = C_CharacterCreation.GetSelectedClass();
 	CharacterCreateClassLabel:SetText(classData.name);
+	UpdateCharacterClassLabelText(classData.name);
 	CharacterCreateEnumerateClasses(); -- Update class tooltips.
 end
 

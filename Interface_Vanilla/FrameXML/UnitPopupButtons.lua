@@ -62,10 +62,7 @@ function UnitPopupInviteButtonMixin:CanShow()
 end
 
 function UnitPopupDungeonDifficultyButtonMixin:CanShow()
-	if ( UnitLevel("player") < 65 and GetDungeonDifficultyID() == 1 ) then
-		return false; 
-	end
-	return true; 
+	return false;
 end
 
 function UnitPopupAchievementButtonMixin:CanShow()
@@ -75,3 +72,37 @@ end
 function UnitPopupSetFocusButtonMixin:CanShow()
 	return false; 
 end 
+
+UnitPopupDuelToTheDeathButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupDuelToTheDeathButtonMixin:GetText()
+	return DUEL_TO_DEATH;
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:GetInteractDistance()
+	return 3;
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:IsDisabledInKioskMode()
+	return false;
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	if ((UnitCanAttack("player", dropdownMenu.unit) or not UnitPopupSharedUtil.IsPlayer()) or not C_GameRules.IsHardcoreActive()) then
+		return false;
+	end
+	return true;
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:OnClick()
+	local fullName = UnitPopupSharedUtil.GetFullPlayerName();
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", fullName);
+end
+
+function UnitPopupDuelToTheDeathButtonMixin:IsEnabled()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	if ( UnitIsDeadOrGhost("player") or (not HasFullControl()) or UnitIsDeadOrGhost(dropdownMenu.unit) ) then
+		return false;
+	end
+	return true;
+end

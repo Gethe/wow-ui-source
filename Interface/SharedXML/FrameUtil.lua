@@ -57,7 +57,7 @@ function FrameUtil.UnregisterFrameForEvents(frame, events)
 end
 
 function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
-	for i, event in ipairs(events) do 
+	for i, event in ipairs(events) do
 		frame:RegisterUnitEvent(event, ...);
 	end
 end
@@ -132,6 +132,26 @@ function FrameUtil.RegisterForVariablesLoaded(frame, loadMethod)
 	end
 
 	EventUtil.ContinueOnVariablesLoaded(VariablesLoadedCallback);
+end
+
+-- Only expected to return differently in glues and in-game.
+function FrameUtil.GetRootParent(frame)
+	local parent = frame:GetParent();
+	while parent do
+		local nextParent = parent:GetParent();
+		if not nextParent then
+			break;
+		end
+		parent = nextParent;
+	end
+	return parent;
+end
+
+function FrameUtil.CreateFrame(name, parent, template)
+	-- NOTE: This use of the template type is not strictly correct, but should mostly work.
+	local templateInfo = C_XMLUtil.GetTemplateInfo(template);
+	local frameType = templateInfo and templateInfo.type or "Frame";
+	return CreateFrame(frameType, name, parent, template);
 end
 
 function DoesAncestryInclude(ancestry, frame)

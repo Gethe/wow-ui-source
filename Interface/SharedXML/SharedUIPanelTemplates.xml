@@ -246,6 +246,13 @@
 		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
+	<Button name="UIPanelHideButtonNoScripts" frameLevel="510" virtual="true">
+		<Size x="24" y="24"/>
+		<DisabledTexture atlas="RedButton-MiniCondense-disabled"/>
+		<NormalTexture atlas="RedButton-MiniCondense"/>
+		<PushedTexture atlas="RedButton-MiniCondense-pressed"/>
+		<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
+	</Button>	
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -1326,7 +1333,82 @@
 		</HighlightTexture>
     </Button>
 
-		<Button name="PanelTopTabButtonTemplate" inherits="TabButtonTemplate" virtual="true"/> 
+	<Button name="PanelTabButtonTemplate" mixin="PanelTabButtonMixin" motionScriptsWhileDisabled="true" parentArray="Tabs" virtual="true" >
+		<Size x="10" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftActive" atlas="uiframe-activetab-left" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightActive" atlas="uiframe-activetab-right" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleActive" atlas="_uiframe-activetab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftActive" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.RightActive" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Left" atlas="uiframe-tab-left" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="uiframe-tab-right" useAtlasSize="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="LeftHighlight" atlas="uiframe-tab-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleHighlight" atlas="_uiframe-tab-center" useAtlasSize="true" horizTile="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Middle" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Middle" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightHighlight" atlas="uiframe-tab-right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="TabTextures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<ButtonText parentKey="Text">
+			<Size x="0" y="10"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontHighlightSmall"/>
+	</Button>
+
+	<!-- Note that this purposely inhertis from TabButtonTemplate for Classic instead of PanelTabButtonTemplate as it does in Mainline.  Otherwise, frames that use this template will need to be refactored. -->
+	<Button name="PanelTopTabButtonTemplate" inherits="TabButtonTemplate" virtual="true"/>
 
     <Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" virtual="true">
 		<Size x="32" y="32"/>
@@ -2085,7 +2167,7 @@
 						</FontString>
 						<FontString parentKey="IconSelectionText" inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="24" y="-69"/>
+								<Anchor point="TOPLEFT" x="24" y="-79"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -2112,9 +2194,7 @@
 											<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
 										</Texture>
 									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="SelectedTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" hidden="true"/>
-									</Layer>
+									
 								</Layers>
 								<Scripts>
 									<OnClick method="OnClick"/>
@@ -2137,7 +2217,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<FontString parentKey="SelectedIconHeader" inherits="GameFontNormalSmall">
+										<FontString parentKey="SelectedIconHeader" inherits="GameFontNormalSmall" text="ICON_SELECTION_TITLE_CURRENT">
 											<KeyValues>
 												<KeyValue key="layoutIndex" value="1" type="number"/>
 												<KeyValue key="align" value="right" type="string"/>
@@ -2223,11 +2303,16 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>
 					</EditBox>
+					<Frame parentKey="IconTypeDropDown" inherits="EnumDropDownControlTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-44" y="-68"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="21" y="-84"/>
+					<Anchor point="TOPLEFT" x="21" y="-97"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -2238,4 +2323,72 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
+
+<!--
+*******************************************************************************
+    Help Plate System
+*******************************************************************************
+-->
+	<Button name="MainHelpPlateButton" virtual="true">
+		<Size x="64" y="64"/>
+		<HitRectInsets>
+			<AbsInset left="20" right="20" top="20" bottom="20"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="I" file="Interface\common\help-i">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Ring" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" x="12" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BigIPulse" file="Interface\common\help-i" alphaMode="ADD" hidden="true">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingPulse" file="Interface\TutorialFrame\minimap-glow" alphaMode="ADD" hidden="true">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<!--<OnEnter function="Main_HelpPlate_Button_OnEnter"/>
+			<OnLeave function="Main_HelpPlate_Button_OnLeave"/>-->
+			<OnMouseDown>
+				self.I:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				self.I:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<!--<OnHide function="Main_HelpPlate_Button_OnLeave"/>-->
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+			<Size x="46" y="46"/>
+			<Anchors>
+				<Anchor point="CENTER" x="-1" y="1"/>
+			</Anchors>
+		</HighlightTexture>
+		<Animations>
+			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
+				<Alpha childKey="BigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha childKey="RingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Button>
 </Ui>

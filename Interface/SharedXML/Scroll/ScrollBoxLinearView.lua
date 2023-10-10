@@ -132,6 +132,18 @@ function ScrollBoxListLinearViewMixin:Init(top, bottom, left, right, spacing)
 	self:SetPadding(top, bottom, left, right, spacing);
 end
 
+function ScrollBoxListLinearViewMixin:SetScrollBox(scrollBox)
+	ScrollBoxListViewMixin.SetScrollBox(self, scrollBox);
+
+	if scrollBox.enableDefaultDrag then
+		self:InitDefaultDrag(scrollBox);
+	end
+end
+
+function ScrollBoxListLinearViewMixin:InitDefaultDrag(scrollBox)
+	return ScrollUtil.InitDefaultLinearDragBehavior(scrollBox);
+end
+
 function ScrollBoxListLinearViewMixin:CalculateDataIndices(scrollBox)
 	return ScrollBoxListViewMixin.CalculateDataIndices(self, scrollBox, self:GetStride(), self:GetSpacing());
 end

@@ -32,6 +32,7 @@ GlueCheck.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\..\Interface_TBC\SharedXML\SoundKitConstants.lua
 ..\SharedXML\Pools.lua
@@ -72,6 +73,7 @@ GlueFontStyles.xml
 ..\..\Interface_TBC\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Backdrop.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SharedTooltipTemplates.xml
@@ -147,6 +149,7 @@ MovieFrame.xml
 ..\..\Interface_TBC\GlueXML\CreditsFrame.xml
 GlueMenuFrame.xml
 SocialContract.xml
+..\SharedXML\SharedUtils.lua
 
 ## Should only load internally
 DesignerMenu.xml

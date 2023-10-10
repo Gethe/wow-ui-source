@@ -445,6 +445,14 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "SetProtected",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetScript",
 			Type = "Function",
 

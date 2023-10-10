@@ -657,7 +657,9 @@ function PlayerFrame_HideVehicleTexture()
 	if ( PlayerFrame.classPowerBar ) then
 		PlayerFrame.classPowerBar:Setup();
 	elseif ( class == "SHAMAN" ) then
-		TotemFrame_Update();
+		if (TotemFrame) then
+			TotemFrame_Update();
+		end
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
 	elseif ( class == "PRIEST" and PriestBarFrame) then

@@ -99,6 +99,9 @@ end
 function BaseLayoutMixin:MarkDirty()
 	self.dirty = true;
 
+	-- To optimize performance, only set OnUpdate while marked dirty.
+	self:SetScript("OnUpdate", self.OnUpdate);
+
 	-- Tell any ancestors who may also be LayoutFrames that they should also become dirty
 	local parent = self:GetParent();
 	while parent do
@@ -114,6 +117,11 @@ end
 function BaseLayoutMixin:MarkClean()
 	self.dirty = false;
 	self:OnCleaned();
+
+	-- Clear OnUpdate once cleaned, unless it has been overridden in which case assume it needs to be called continuously.
+	if self.OnUpdate == BaseLayoutMixin.OnUpdate then
+		self:SetScript("OnUpdate", nil);
+	end
 end
 
 function BaseLayoutMixin:IsDirty()

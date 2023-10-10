@@ -50,6 +50,11 @@ local function SecureUnpackArgs(argTable, expectedNumArgs)
 	return ErrorIfFunctionArgs(securecallfunction(unpack, argTable, 1, expectedNumArgs));
 end
 
+-- Allows function args, but only to be used if a function arg is explicitly expected (use SecureUnpackArgs by default in all other cases).
+local function UnpackArgs(argTable, expectedNumArgs)
+	return securecallfunction(unpack, argTable, 1, expectedNumArgs);
+end
+
 SettingsPanelMixin = {};
 
 function SettingsPanelMixin:OnLoad()
@@ -178,6 +183,11 @@ function SettingsPanelMixin:OnAttributeChanged(name, value)
 		self:RepairDisplay();
 	elseif name == SettingsInbound.SetCurrentLayoutAttribute then
 		self:SetCurrentLayout(value);
+	elseif name == SettingsInbound.AssignTutorialToCategoryAttribute then
+		local category, tooltip, callback = UnpackArgs(value);
+		if category then
+			category:SetCategoryTutorialInfo(tooltip, callback);
+		end
 	end
 end
 
@@ -281,6 +291,8 @@ end
 function SettingsPanelMixin:OnHide()
 	self:Flush();
 
+	self:ClearActiveCategoryTutorial();
+
 	if IsOnGlueScreen() then
 		GlueParent_RemoveModalFrame(self);
 		return;
@@ -307,12 +319,19 @@ function SettingsPanelMixin:Close(skipTransitionBackToOpeningPanel)
 end
 
 function SettingsPanelMixin:ExitWithoutCommit()
+	local settingsToRevert = {};
+
 	for setting, record in pairs(self.modified) do
 		-- The settings under affect of IgnoreApply flag shouldn't be in the self.modified table after having been applied
 		-- Needs bug investigation
 		if (securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Apply)) and not securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.IgnoreApply) then
-			securecallfunction(setting.Revert, setting);
+			--store the setting we want to revert and do it outside of this loop so we can avoid any invalid key errors
+			table.insert(settingsToRevert, setting);
 		end
+	end
+
+	for i, setting in ipairs(settingsToRevert) do
+		securecallfunction(setting.Revert, setting);
 	end
 
 	self:Flush();
@@ -602,7 +621,7 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 	local function ParseCategory(category, parentCategory)
 		local layout = self:GetLayout(category);
 		local redirectCategory = category.redirectCategory or category;
-		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Vertical then
+		if layout:IsVerticalLayout() then
 			for _, initializer in layout:EnumerateInitializers() do
 				if not initializer:IsSearchIgnoredInLayout(layout) then
 					local result = initializer:MatchesSearchTags(words);
@@ -662,7 +681,8 @@ function SettingsPanelMixin:OnSearchTextChanged()
 		return;
 	end
 
-	if not self.SearchBox:HasText()then
+	local hasText = self.SearchBox:HasText();
+	if not hasText then
 		self:DisplayCategory(self:GetCurrentCategory());
 		local settingsList = self:GetSettingsList();
 		settingsList.Header.DefaultsButton:Show();
@@ -680,11 +700,11 @@ function SettingsPanelMixin:OnSearchTextChanged()
 					layout:AddInitializer(parentInitializer);
 				end
 			end
-		
+
 			added[initializer] = true;
 			layout:AddInitializer(initializer);
 		end
-		
+
 		local settingsList = self:GetSettingsList();
 		local searchSuccess = not layout:IsEmpty();
 		if not searchSuccess then
@@ -695,7 +715,9 @@ function SettingsPanelMixin:OnSearchTextChanged()
 
 		self:DisplayLayout(layout);
 
-		settingsList.Header.DefaultsButton:SetShown(not searchSuccess);
+		settingsList.Header.DefaultsButton:SetShown(not hasText);
+		settingsList.Header.TutorialButton:SetShown(not hasText);
+		self:ClearActiveCategoryTutorial();
 	end
 end
 
@@ -787,10 +809,14 @@ end
 
 function SettingsPanelMixin:SelectCategory(category, force)
 	if force or (self:GetCurrentCategory() ~= category) then
+		self:ClearActiveCategoryTutorial();
 		self:ClearSearchBox();
 		self:ClearOutputText();
-		self:DisplayCategory(category);
+		self:ClearCurrentCategoryCanvas();
 		self:SetCurrentCategory(category);
+		self:DisplayCategory(category);
+
+		EventRegistry:TriggerEvent("Settings.CategoryChanged", category);
 	end
 end
 
@@ -817,9 +843,33 @@ function SettingsPanelMixin:DisplayCategory(category)
 	if not category then
 		return;
 	end
-	
+
 	local settingsList = self:GetSettingsList();
 	settingsList.Header.Title:SetText(category:GetName());
+
+	-- Help Tip
+	local categoryTutorial = category:GetCategoryTutorialInfo();
+	settingsList.Header.TutorialButton:SetShown(categoryTutorial);
+
+	if categoryTutorial then
+		settingsList.Header.TutorialButton.Ring:Hide();
+
+		settingsList.Header.TutorialButton:SetScript("OnEnter", function()
+			GameTooltip:SetOwner(settingsList.Header.TutorialButton, "ANCHOR_RIGHT",-22,-22);
+			GameTooltip:SetText(categoryTutorial.tooltip);
+			GameTooltip:Show();
+		end);
+
+		settingsList.Header.TutorialButton:SetScript("OnLeave", function()
+			GameTooltip_Hide();
+		end);
+
+		settingsList.Header.TutorialButton:SetScript("OnClick", categoryTutorial.callback);
+	else
+		settingsList.Header.TutorialButton:SetScript("OnEnter", nil);
+		settingsList.Header.TutorialButton:SetScript("OnLeave", nil);
+		settingsList.Header.TutorialButton:SetScript("OnClick", nil);
+	end
 
 	local layout = self:GetLayout(category);
 	self:DisplayLayout(layout);
@@ -829,23 +879,27 @@ function SettingsPanelMixin:SetCurrentLayout(layout)
 	self.currentLayout = layout;
 end
 
+function SettingsPanelMixin:ClearCurrentCategoryCanvas()
+	local currentCategory = self:GetCurrentCategory();
+	if not currentCategory then
+		return;
+	end
+
+	local layout = self:GetLayout(currentCategory);
+	if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
+		local frame = layout:GetFrame();
+		frame:SetParent(nil);
+		frame:ClearAllPoints();
+		frame:Hide();
+	end
+end
+
 function SettingsPanelMixin:DisplayLayout(layout)
 	if not layout then
 		return;
 	end
 
 	SettingsInbound.SetCurrentLayout(layout);
-
-	local currentCategory = self:GetCurrentCategory();
-	if currentCategory then
-		local layout = self:GetLayout(currentCategory);
-		if layout:GetLayoutType() == SettingsLayoutMixin.LayoutType.Canvas then
-			local frame = layout:GetFrame();
-			frame:SetParent(nil);
-			frame:ClearAllPoints();
-			frame:Hide();
-		end
-	end
 
 	local settingsList = self:GetSettingsList();
 	local settingsCanvas = self:GetSettingsCanvas();
@@ -932,4 +986,11 @@ end
 
 function SettingsPanelMixin:OnKeybindRebindSuccess(action)
 	self:SetOutputText(KEY_BOUND);
+end
+
+function SettingsPanelMixin:ClearActiveCategoryTutorial()
+	if self.activeCategoryTutorial then
+		local settingsList = self:GetSettingsList();
+		settingsList.Header.TutorialButton:Click();
+	end
 end

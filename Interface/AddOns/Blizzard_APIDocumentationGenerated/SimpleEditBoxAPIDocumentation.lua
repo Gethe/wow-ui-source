@@ -427,6 +427,19 @@ local SimpleEditBoxAPI =
 			},
 		},
 		{
+			Name = "IsAlphabeticOnly",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAutoFocus",
 			Type = "Function",
 
@@ -505,6 +518,19 @@ local SimpleEditBoxAPI =
 			},
 		},
 		{
+			Name = "IsNumericFullRange",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isNumeric", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPassword",
 			Type = "Function",
 
@@ -528,6 +554,23 @@ local SimpleEditBoxAPI =
 			Returns =
 			{
 				{ Name = "isSecure", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ResetInputMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "SetAlphabeticOnly",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -703,6 +746,15 @@ local SimpleEditBoxAPI =
 		},
 		{
 			Name = "SetNumeric",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "isNumeric", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetNumericFullRange",
 			Type = "Function",
 
 			Arguments =

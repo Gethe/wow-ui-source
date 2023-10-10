@@ -143,11 +143,6 @@
 					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekHK" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Frame name="InspectHonorFrameLastWeekStanding" inherits="HonorFrameStandingButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLastWeekContribution" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-				</Anchors>
-			</Frame>
 			<Frame name="InspectHonorFrameLifeTimeHK" inherits="HonorFrameHKButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="InspectHonorFrameLifeTimeTitle" relativePoint="BOTTOMLEFT" x="10" y="-4"/>

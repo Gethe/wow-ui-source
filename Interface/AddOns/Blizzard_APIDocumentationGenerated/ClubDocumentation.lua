@@ -180,6 +180,15 @@ local Club =
 			},
 		},
 		{
+			Name = "DoesAnyCommunityHaveUnreadMessages",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUnreadMessages", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EditClub",
 			Type = "Function",
 			Documentation = { "nil arguments will not change existing club data" },
@@ -1351,20 +1360,6 @@ local Club =
 			{
 				{ Name = "None", Type = "ClubRestrictionReason", EnumValue = 0 },
 				{ Name = "Unavailable", Type = "ClubRestrictionReason", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "ClubRoleIdentifier",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 1,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "Owner", Type = "ClubRoleIdentifier", EnumValue = 1 },
-				{ Name = "Leader", Type = "ClubRoleIdentifier", EnumValue = 2 },
-				{ Name = "Moderator", Type = "ClubRoleIdentifier", EnumValue = 3 },
-				{ Name = "Member", Type = "ClubRoleIdentifier", EnumValue = 4 },
 			},
 		},
 		{

@@ -17,6 +17,7 @@ FontStyles.xml
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
@@ -34,7 +35,6 @@ FontStyles.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
-..\SharedXML\TextureUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
@@ -47,6 +47,7 @@ FontStyles.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua
@@ -132,6 +133,7 @@ PlayerMovementFrameFader.lua
 ..\SharedXML\PropertyButton.xml
 ..\SharedXML\PropertyFontString.xml
 ..\SharedXML\PropertySlider.xml
+..\..\Interface_Wrath\FrameXML\QuestLogOwnerMixin.lua
 
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
@@ -144,6 +146,7 @@ ChatBubbleTemplates.xml
 WorldFrame.xml
 ..\..\Interface_Wrath\FrameXML\UIParent.lua
 UIParent.xml
+PartyUtil.lua
 ..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
@@ -221,6 +224,7 @@ ActionBarController.xml
 OverrideActionBar.xml
 PossessActionBar.xml
 TutorialFrame.xml
+QueueStatusFrame.xml
 ..\..\Interface_Wrath\FrameXML\Minimap.xml
 ..\..\Interface_Wrath\FrameXML\GameTime.xml
 BuffFrame.xml
@@ -232,6 +236,7 @@ VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 ..\SharedXML\SharedReportFrame.xml
 ReportFrame.xml
+..\SharedXML\SharedUtils.lua
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
 ..\SharedXML\UnitPopupSharedUtils.lua
@@ -264,6 +269,7 @@ SkillFrame.xml
 ..\..\Interface_Wrath\FrameXML\ReputationFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestFrameTemplates.xml
 ..\..\Interface_TBC\FrameXML\QuestFrame.xml
+..\..\Interface_Wrath\FrameXML\QuestPOI.xml
 ..\..\Interface_Wrath\FrameXML\QuestLogFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestInfo.xml
 ..\..\Interface_Wrath\FrameXML\WatchFrame.xml
@@ -282,6 +288,8 @@ PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 ..\..\Interface_Wrath\FrameXML\MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
+..\..\Interface_Wrath\FrameXML\WorldMapFrame.xml
+..\..\Interface_Wrath\FrameXML\QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
 ComboFrame.xml
@@ -297,6 +305,11 @@ MailFrame.xml
 ..\..\Interface_Wrath\FrameXML\VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
+QueueUpdater.lua
+PVEFrame.xml
+LFGFrame.xml
+LFDFrame.xml
+LFGList.xml
 ..\..\Interface_TBC\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 ..\..\Interface_Wrath\FrameXML\TalentFrameBase.lua
@@ -331,7 +344,6 @@ ArenaRegistrarFrame.xml
 RuneFrame.xml
 ..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 PlayerInteractionFrameManager.xml
-QueueReadyCheckFrame.xml
 SocialQueue.xml
 InviteConfirmationDialog.lua
 

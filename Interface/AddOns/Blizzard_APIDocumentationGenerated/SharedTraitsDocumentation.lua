@@ -94,6 +94,20 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GenerateImportString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "importString", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GenerateInspectImportString",
 			Type = "Function",
 

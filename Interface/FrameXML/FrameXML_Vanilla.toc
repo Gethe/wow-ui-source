@@ -17,6 +17,7 @@ FontStyles.xml
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
@@ -34,7 +35,6 @@ FontStyles.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
-..\SharedXML\TextureUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_Vanilla\SharedXML\ColorUtil.lua
@@ -47,6 +47,7 @@ FontStyles.xml
 ..\SharedXML\EasingUtil.lua
 ..\SharedXML\BindingUtil.lua
 ..\SharedXML\FrameUtil.lua
+..\SharedXML\InputUtil.lua
 ..\SharedXML\EventUtil.lua
 ..\SharedXML\RegionUtil.lua
 ..\SharedXML\AnchorUtil.lua
@@ -132,6 +133,7 @@ ChatBubbleTemplates.xml
 WorldFrame.xml
 ..\..\Interface_Vanilla\FrameXML\UIParent.lua
 UIParent.xml
+PartyUtil.lua
 ..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
@@ -208,6 +210,7 @@ ActionBarController.xml
 ..\..\Interface_Vanilla\FrameXML\StanceBar.xml
 PossessActionBar.xml
 TutorialFrame.xml
+QueueStatusFrame.xml
 ..\..\Interface_Vanilla\FrameXML\Minimap.xml
 ..\..\Interface_Vanilla\FrameXML\GameTime.xml
 BuffFrame.xml
@@ -218,6 +221,7 @@ VoiceChatHeadsetButton.xml
 VoiceToggleButton.xml
 ..\SharedXML\SharedReportFrame.xml
 ReportFrame.xml
+..\SharedXML\SharedUtils.lua
 UnitPopupSlider.xml
 UnitPopupCustomControls.xml
 ..\SharedXML\UnitPopupSharedUtils.lua
@@ -280,6 +284,11 @@ MailFrame.xml
 PetStable.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
+QueueUpdater.lua
+PVEFrame.xml
+LFGFrame.xml
+LFDFrame.xml
+LFGList.xml
 ..\..\Interface_Vanilla\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 ..\..\Interface_Vanilla\FrameXML\TalentFrameBase.lua

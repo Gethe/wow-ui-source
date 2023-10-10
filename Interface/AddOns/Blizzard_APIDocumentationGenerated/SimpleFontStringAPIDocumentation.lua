@@ -17,7 +17,7 @@ local SimpleFontStringAPI =
 
 			Returns =
 			{
-				{ Name = "areas", Type = "table", InnerType = "uiRect", Nilable = true },
+				{ Name = "areas", Type = "table", InnerType = "uiBoundsRect", Nilable = true },
 			},
 		},
 		{

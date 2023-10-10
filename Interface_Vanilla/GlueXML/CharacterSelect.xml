@@ -94,6 +94,14 @@
 							</Anchors>
 						</FontString>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="graveIcon" atlas="poi-graveyard-neutral" hidden="true">
+							<Size x="12" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentName"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 			</Frame>
 			<Button name="$parentMoveUp" parentKey="upButton" inherits="CharSelectMoveButtonTemplate">

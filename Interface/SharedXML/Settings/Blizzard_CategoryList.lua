@@ -90,6 +90,20 @@ function SettingsCategoryListButtonMixin:Init(initializer)
 	self.Label:SetText(category:GetName());
 	self.Toggle:SetShown(category:HasSubcategories());
 	
+	local anyNew = false;
+	local layout = SettingsPanel:GetLayout(category);
+	if layout and layout:IsVerticalLayout() then
+		for _, initializer in layout:EnumerateInitializers() do
+			local setting = initializer.data.setting;
+			if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then
+				anyNew = true;
+				break;
+			end
+		end
+	end
+
+	self.NewFeature:SetShown(anyNew);
+
 	self:SetExpanded(category.expanded);
 	self:SetSelected(g_selectionBehavior:IsSelected(self));
 end
@@ -152,16 +166,20 @@ function SettingsCategoryListMixin:OnLoad()
 		return elementData.data and elementData.data.indent or 0;
 	end
 
+	-- The scroll box is anchored -50 so that the "new" label can appear without
+	-- being clipped. This offset moves the contents back into the desired position.
+	local leftPad = 50;
+
 	local pad = 0;
 	local spacing = 2;
-	local view = CreateScrollBoxListLinearView(pad, pad, pad, pad, spacing);
+	local view = CreateScrollBoxListLinearView(pad, pad, leftPad, pad, spacing);
 	view:SetElementFactory(Factory);
 	view:SetElementIndentCalculator(IndentCalculator);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	local scrollBoxAnchorsWithBar = 
 	{
-		CreateAnchor("TOPLEFT", 0, 0),
+		CreateAnchor("TOPLEFT", -leftPad, 0),
 		CreateAnchor("BOTTOMRIGHT", -16, 0);
 	};
 	local scrollBoxAnchorsWithoutBar = 
