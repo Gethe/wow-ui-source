@@ -143,6 +143,9 @@ local function PerksTryOn(actor, itemModifiedAppearanceID)
 		actor:UndressSlot(INVSLOT_MAINHAND);
 		actor:UndressSlot(INVSLOT_OFFHAND);
 
+		-- Since we are manually setting the 2 items in each hand, reset the actors sense of what hand to put stuff into
+		actor:ResetNextHandSlot();
+
 		-- actor:SetItemTransmogInfo will automatically handle whether the player can dual wield
 		-- If the player can dual wield 1 handed weapons, we will always preview the same weapon appearing in both hands
 

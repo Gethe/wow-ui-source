@@ -78,15 +78,17 @@ local scenarioTextureKitOffsets = {
 };
 
 local eventToastTemplatesByToastType = {
-	[Enum.EventToastDisplayType.NormalSingleLine] = {template = "EventToastManagerNormalSingleLineTemplate", frameType= "FRAME", hideAutomatically = true, },
-	[Enum.EventToastDisplayType.NormalBlockText] = {template ="EventToastManagerNormalBlockTextTemplate", frameType= "FRAME", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.NormalTitleAndSubTitle] = {template = "EventToastManagerNormalTitleAndSubtitleTemplate", frameType= "FRAME", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.NormalTextWithIcon] = {template = "EventToastWithIconNormalTemplate", frameType= "FRAME", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.LargeTextWithIcon] = {template = "EventToastWithIconLargeTextTemplate", frameType= "FRAME", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.NormalTextWithIconAndRarity] = {template = "EventToastWithIconWithRarityTemplate", frameType= "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.NormalSingleLine] = {template = "EventToastManagerNormalSingleLineTemplate", frameType = "FRAME", hideAutomatically = true, },
+	[Enum.EventToastDisplayType.NormalBlockText] = {template ="EventToastManagerNormalBlockTextTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.NormalTitleAndSubTitle] = {template = "EventToastManagerNormalTitleAndSubtitleTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.NormalTextWithIcon] = {template = "EventToastWithIconNormalTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.LargeTextWithIcon] = {template = "EventToastWithIconLargeTextTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.NormalTextWithIconAndRarity] = {template = "EventToastWithIconWithRarityTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.Scenario] = {template = "EventToastScenarioToastTemplate", frameType= "BUTTON", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.ChallengeMode] = {template = "EventToastChallengeModeToastTemplate", frameType= "FRAME", hideAutomatically = true,},
-	[Enum.EventToastDisplayType.ScenarioClickExpand] = {template = "EventToastScenarioExpandToastTemplate", frameType= "BUTTON", hideAutomatically = false,},
+	[Enum.EventToastDisplayType.ChallengeMode] = {template = "EventToastChallengeModeToastTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.ScenarioClickExpand] = {template = "EventToastScenarioExpandToastTemplate", frameType = "BUTTON", hideAutomatically = false,},
+	[Enum.EventToastDisplayType.WeeklyRewardUnlock] = {template = "EventToastManagerWeeklyRewardToastUnlockTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.WeeklyRewardUpgrade] = {template = "EventToastManagerWeeklyRewardToastUpgradeTemplate", frameType = "FRAME", hideAutomatically = true,},
 };
 
 EventToastManagerMixin = { };
@@ -257,7 +259,7 @@ function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 	end
 end
 
-function EventToastManagerFrameMixin:DisplayToast(firstToast) 
+function EventToastManagerFrameMixin:DisplayToast(firstToast)
 	self:ReleaseToasts();
 	self:Reset();
 
@@ -296,7 +298,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 	self:Layout();
 end
 
-function EventToastManagerFrameMixin:ToastingEnded() 
+function EventToastManagerFrameMixin:ToastingEnded()
 	self:DisplayToast(); 
 end
 
@@ -553,6 +555,37 @@ function EventToastScenarioExpandToastMixin:OnClick(button, ...)
 	end
 end
 
+EventToastWeeklyRewardToastMixin = {};
+
+function EventToastWeeklyRewardToastMixin:Setup(toastInfo)
+	self.Title:SetText(toastInfo.title);
+	self.SubTitle:SetText(toastInfo.subtitle);
+	self.flipbook = self.GVanim;
+	self:ShowToast();
+end
+
+function EventToastWeeklyRewardToastMixin:ShowToast()
+	self.Title:SetAlpha(0);
+	self.SubTitle:SetAlpha(0);
+	self:GetParent():SetAnimationState(self.hideParentAnim);
+	self:Show();
+	self:AnimIn();
+end
+
+EventToastWeeklyRewardUpgradeToastMixin = CreateFromMixins(EventToastWeeklyRewardToastMixin, ItemMixin);
+
+function EventToastWeeklyRewardUpgradeToastMixin:Setup(toastInfo)
+	local item = Item:CreateFromItemLink(toastInfo.subtitle);
+
+	item:ContinueOnItemLoad(function()
+		local ilvl = item:GetCurrentItemLevel();
+		self.Title:SetText(toastInfo.title);
+		self.SubTitle:SetText(ITEM_LEVEL:format(ilvl));
+		self.flipbook = self.GVanim;
+		self:ShowToast();
+	end);
+end
+
 EventToastWithIconBaseMixin = { }; 
 
 function EventToastWithIconBaseMixin:OnAnimFinished()
@@ -745,6 +778,13 @@ function EventToastAnimationsMixin:SetAnimOutStartDelay(delay)
 	end 
 end
 
+function EventToastAnimationsMixin:SetAnimOutDuration(delay)
+	self.hideAnim.anim1:SetDuration(delay);
+	if(self.hideAnim.anim2) then 
+		self.hideAnim.anim2:SetDuration(delay);
+	end
+end
+
 function EventToastAnimationsMixin:ResetAnimations()
 	self:SetAlpha(1);
 end
@@ -770,6 +810,7 @@ end
 
 local defaultAnimInStartDelay = 1.8;
 local defaultAnimOutStartDelay = 1.8;
+local defaultAnimOutDuration = 0.5;
 
 function EventToastAnimationsMixin:BannerPlay()
 	self:GetParent():SetupGLineAtlas(self.useWhiteGlineAtlas);
@@ -781,14 +822,21 @@ function EventToastAnimationsMixin:BannerPlay()
 
 	self:SetAnimOutStartDelay(defaultAnimOutStartDelay);
 
+	self:SetAnimOutDuration(self.animOutDuration or defaultAnimOutDuration)
+
 	C_Timer.After(self.animInStartDelay or 0, 
 	function() 
 		if (self.toastInfo and self.toastInfo.showSoundKitID) then
 			PlaySound(self.toastInfo.showSoundKitID);
 		end
 	end);
+
 	self.showAnim:Play();
 	self:GetParent():PlayAnim();
+
+	if (self.flipbook) then
+		self.flipbook:Restart();
+	end
 end
 
 function EventToastAnimationsMixin:AnimIn()

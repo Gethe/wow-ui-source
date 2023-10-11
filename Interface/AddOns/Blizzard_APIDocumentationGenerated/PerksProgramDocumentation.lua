@@ -369,7 +369,7 @@ local PerksProgram =
 				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "purchased", Type = "bool", Nilable = false },
 				{ Name = "refundable", Type = "bool", Nilable = false },
-				{ Name = "pending", Type = "bool", Nilable = false },
+				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },

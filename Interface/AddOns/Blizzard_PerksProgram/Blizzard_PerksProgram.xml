@@ -11,8 +11,12 @@
 		</KeyValues>
 		<Frames>
 
-			<GameTooltip name="PerksProgramTooltip" parentKey="PerksProgramTooltip" ignoreParentScale="true"  inherits="GameTooltipTemplate, DefaultScaleFrame"/>
-
+			<GameTooltip name="PerksProgramTooltip" parentKey="PerksProgramTooltip" ignoreParentScale="true"  inherits="GameTooltipTemplate, DefaultScaleFrame">
+				<Scripts>
+					<OnUpdate function="GameTooltip_OnUpdate"/>
+				</Scripts>
+			</GameTooltip>
+			
 			<Frame parentKey="ProductsFrame" mixin="PerksProgramProductsFrameMixin"  frameLevel="500" movable="false" resizable="false" enableMouse="false" clampedToScreen="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" />

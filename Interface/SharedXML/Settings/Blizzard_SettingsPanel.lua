@@ -256,6 +256,7 @@ function SettingsPanelMixin:OnShow()
 		self.NineSlice.Text:SetText(SYSTEMOPTIONS_MENU);
 	else
 		self.NineSlice.Text:SetText(SETTINGS_TITLE);
+		UpdateMicroButtons();
 	end
 
 	self:CheckApplyButton();
@@ -296,6 +297,8 @@ function SettingsPanelMixin:OnHide()
 	if IsOnGlueScreen() then
 		GlueParent_RemoveModalFrame(self);
 		return;
+	else 
+		UpdateMicroButtons();
 	end
 
 	local checked = Settings.GetValue("PROXY_CHARACTER_SPECIFIC_BINDINGS");

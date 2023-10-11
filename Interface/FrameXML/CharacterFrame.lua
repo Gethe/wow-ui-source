@@ -79,7 +79,7 @@ function CharacterFrame_UpdatePortrait()
 	local icon = masteryIndex ~= nil and select(4, GetSpecializationInfo(masteryIndex));
 	if (icon == nil) then
 		local _, class = UnitClass("player");
-		CharacterFrame:SetPortraitToAsset("Interface\\TargetingFrame\\UI-Classes-Circles");
+		CharacterFrame:SetPortraitTextureRaw("Interface\\TargetingFrame\\UI-Classes-Circles");
 		CharacterFrame:SetPortraitTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	else
 		CharacterFrame:SetPortraitTexCoord(0, 1, 0, 1);

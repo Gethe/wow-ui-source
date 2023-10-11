@@ -258,7 +258,9 @@
 					</Frame>
 				</Frames>
 			</Frame>
-
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</EventFrame>
 </Ui>

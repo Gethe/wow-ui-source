@@ -449,7 +449,7 @@ UI_shared.xsd">
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="0" y="5"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="54" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

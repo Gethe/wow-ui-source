@@ -19,6 +19,7 @@ function QuestInfoItem_OnClick(self)
 end
 
 local ACTIVE_TEMPLATE;
+local QuestBgTextContrast = QuestUtil.QuestTextContrastUseLightText();
 
 function QuestInfo_Display(template, parentFrame, acceptButton, material, mapView)
 	ACTIVE_TEMPLATE = template;
@@ -60,9 +61,13 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 			MapQuestInfoRewardsFrame:Hide();
 		end
 	end
-	if ( QuestInfoFrame.material ~= material ) then
+	if ( QuestInfoFrame.material ~= material or QuestBgTextContrast ~= QuestUtil.QuestTextContrastUseLightText()) then
 		QuestInfoFrame.material = material;
 		local textColor, titleTextColor = GetMaterialTextColors(material);
+		QuestBgTextContrast = QuestUtil.QuestTextContrastUseLightText();
+		if QuestBgTextContrast then
+			textColor, titleTextColor = GetMaterialTextColors("Stone");
+		end
 		-- headers
 		QuestInfoTitleHeader:SetTextColor(titleTextColor[1], titleTextColor[2], titleTextColor[3]);
 		QuestInfoDescriptionHeader:SetTextColor(titleTextColor[1], titleTextColor[2], titleTextColor[3]);
@@ -73,6 +78,8 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 		QuestInfoObjectivesText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoGroupSize:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		QuestInfoTimerText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		QuestInfoSpellObjectiveLearnLabel:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		-- reward frame text
 		QuestInfoRewardsFrame.ItemChooseText:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		QuestInfoRewardsFrame.ItemReceiveText:SetTextColor(textColor[1], textColor[2], textColor[3]);
@@ -201,7 +208,13 @@ function QuestInfo_ShowObjectives()
 		numVisibleObjectives = numVisibleObjectives + 1;
 		objective = AcquireObjective(numVisibleObjectives);
 		objective:SetText(WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText));
-		objective:SetTextColor(0, 0, 0);
+		if QuestUtil.QuestTextContrastUseLightText() then
+			textColor, titleTextColor = GetMaterialTextColors("Stone");
+			objective:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		else
+			textColor, titleTextColor = GetMaterialTextColors("Default");
+			objective:SetTextColor(textColor[1], textColor[2], textColor[3]);
+		end
 		objective:SetWidth(ACTIVE_TEMPLATE.contentWidth);
 		objective:Show();
 	end
@@ -218,7 +231,13 @@ function QuestInfo_ShowObjectives()
 				objective:SetTextColor(0.2, 0.2, 0.2);
 				text = text.." ("..COMPLETE..")";
 			else
-				objective:SetTextColor(0, 0, 0);
+				if QuestUtil.QuestTextContrastUseLightText() then
+					textColor, titleTextColor = GetMaterialTextColors("Stone");
+					objective:SetTextColor(textColor[1], textColor[2], textColor[3]);
+				else
+					textColor, titleTextColor = GetMaterialTextColors("Default");
+					objective:SetTextColor(textColor[1], textColor[2], textColor[3]);
+				end
 			end
 			objective:SetText(text);
 			objective:SetWidth(ACTIVE_TEMPLATE.contentWidth);
@@ -266,10 +285,9 @@ function QuestInfo_ShowSpecialObjectives()
 
 		if (finished and QuestInfoFrame.questLog) then -- don't show as completed for the initial offer, as it won't update properly
 			QuestInfoSpellObjectiveLearnLabel:SetText(LEARN_SPELL_OBJECTIVE.." ("..COMPLETE..")");
-			QuestInfoSpellObjectiveLearnLabel:SetTextColor(0.2, 0.2, 0.2);
+			QuestInfoSpellObjectiveLearnLabel:SetTextColor(QUEST_OBJECTIVE_DISABLED_FONT_COLOR:GetRGB());
 		else
 			QuestInfoSpellObjectiveLearnLabel:SetText(LEARN_SPELL_OBJECTIVE);
-			QuestInfoSpellObjectiveLearnLabel:SetTextColor(0, 0, 0);
 		end
 
 		QuestInfoSpellObjectiveLearnLabel:Show();

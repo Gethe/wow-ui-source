@@ -1131,8 +1131,12 @@ BossSpellBarMixin = CreateFromMixins(TargetSpellBarMixin);
 
 function BossSpellBarMixin:AdjustPosition()
 	self:ClearAllPoints();
-	if (self.castBarOnSide) then
-		self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -34);
+	if self.castBarOnSide then
+		if self:GetParent().powerBarAlt:IsShown() then
+			self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -57);
+		else
+			self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -34);
+		end
 	else
 		self:SetPoint("TOPRIGHT", self:GetParent(), "BOTTOMRIGHT", -100, 17);
 	end

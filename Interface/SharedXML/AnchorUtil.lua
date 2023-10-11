@@ -61,6 +61,10 @@ GridLayoutMixin.Direction = {
 	BottomRightToTopLeft = { x = -1, y = 1 },
 	TopLeftToBottomRightVertical = { x = 1, y = -1, isVertical = true },
 	TopRightToBottomLeftVertical = { x = -1, y = -1, isVertical = true },
+	LeftToRight = { x = 1, y = 0 },
+	RightToLeft = { x = -1, y = 0 },
+	TopToBottom = { x = 0, y = 1, isVertical = true },
+	BottomToTop = { x = 0, y = -1, isVertical = true },
 };
 
 function GridLayoutMixin:Init(direction, stride, paddingX, paddingY, horizontalSpacing, verticalSpacing)
@@ -121,6 +125,36 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 		local extraOffsetX = (col - 1) * (width + paddingX) * direction.x + customOffsetX;
 		local extraOffsetY = (row - 1) * (height + paddingY) * direction.y + customOffsetY;
 		initialAnchor:SetPointWithExtraOffset(frame, clearAllPoints, extraOffsetX, extraOffsetY);
+	end
+end
+
+local function UpdateAnchorForChain(previousFrame, anchor, layout)
+	local point, relativeTo, relativePoint, x, y = anchor:Get();
+	if layout then
+		x = layout.horizontalSpacing or x;
+		y = layout.verticalSpacing or y;
+	end
+
+	local direction = (layout and layout.direction) or GridLayoutMixin.Direction.LeftToRight;
+
+	if direction == GridLayoutMixin.Direction.LeftToRight then
+		point, relativeTo, relativePoint = "LEFT", previousFrame, "RIGHT";
+	elseif direction == GridLayoutMixin.Direction.RightToLeft then
+		point, relativeTo, relativePoint = "RIGHT", previousFrame, "LEFT";
+	elseif direction == GridLayoutMixin.Direction.TopToBottom then
+		point, relativeTo, relativePoint = "TOP", previousFrame, "BOTTOM";
+	elseif direction == GridLayoutMixin.Direction.BottomToTop then
+		point, relativeTo, relativePoint = "BOTTOM", previousFrame, "TOP";
+	end
+
+	anchor:Set(point, relativeTo, relativePoint, x, y);
+end
+
+function AnchorUtil.ChainLayout(frames, initialAnchor, layout)
+	local anchor = CreateAnchor(initialAnchor:Get());
+	for i, frame in ipairs(frames) do
+		anchor:SetPoint(frame);
+		UpdateAnchorForChain(frame, anchor, layout);
 	end
 end
 

@@ -811,7 +811,9 @@ local function CreateChargeCooldownFrame(parent)
 	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
-	cooldown:SetFrameStrata("TOOLTIP");
+	cooldown:SetPoint("TOPLEFT", parent.icon, "TOPLEFT", 2, -2);
+	cooldown:SetPoint("BOTTOMRIGHT", parent.icon, "BOTTOMRIGHT", -2, 2);
+	cooldown:SetFrameLevel(parent:GetFrameLevel());
 	return cooldown;
 end
 

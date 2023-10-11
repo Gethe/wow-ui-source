@@ -6,19 +6,19 @@ local UIMacros =
 
 	Functions =
 	{
+		{
+			Name = "SetMacroExecuteLineCallback",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "cb", Type = "MacroExecuteLineCallback", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
-		{
-			Name = "ExecuteChatLine",
-			Type = "Event",
-			LiteralName = "EXECUTE_CHAT_LINE",
-			Payload =
-			{
-				{ Name = "chatLine", Type = "cstring", Nilable = false },
-			},
-		},
 		{
 			Name = "UpdateMacros",
 			Type = "Event",
@@ -28,6 +28,15 @@ local UIMacros =
 
 	Tables =
 	{
+		{
+			Name = "MacroExecuteLineCallback",
+			Type = "CallbackType",
+
+			Arguments =
+			{
+				{ Name = "macroLine", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 };
 

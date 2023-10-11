@@ -154,6 +154,11 @@ UI_shared.xsd">
 		<NormalFont style="QuestFontLeft"/>
 	</Button>
 	<ScrollFrame name="QuestScrollFrameTemplate" inherits="ScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="scrollBarX" value="9" type="number"/>
+			<KeyValue key="scrollBarTopY" value="-2" type="number"/>
+			<KeyValue key="scrollBarBottomY" value="3" type="number"/>
+		</KeyValues>
 		<Size x="300" y="403"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="5" y="-65"/>

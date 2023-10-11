@@ -730,24 +730,6 @@ function AuctionHouseUtil.GetErrorText(auctionHouseError)
 	return AuctionHouseErrorToErrorText[auctionHouseError] or "";
 end
 
-function AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatArg)
-	if auctionHouseNotification == Enum.AuctionHouseNotification.BidPlaced then
-		return ERR_AUCTION_BID_PLACED;
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionRemoved then
-		return ERR_AUCTION_REMOVED;
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionWon then
-		return ERR_AUCTION_WON_S:format(formatArg);
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionOutbid then
-		return ERR_AUCTION_OUTBID_S:format(formatArg);
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionSold then
-		return ERR_AUCTION_SOLD_S:format(formatArg);
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionExpired then
-		return ERR_AUCTION_EXPIRED_S:format(formatArg);
-	end
-
-	return "";
-end
-
 local UniqueShadowlandsCraftedLimitCategoryID = 481;
 function AuctionHouseUtil.IsAuctionIDUniqueShadowlandsCrafted(auctionID)
 	local auctionInfo = C_AuctionHouse.GetAuctionInfoByID(auctionID);

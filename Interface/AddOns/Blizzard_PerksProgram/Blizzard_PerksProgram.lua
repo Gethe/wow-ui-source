@@ -48,11 +48,24 @@ function PerksProgramMixin:SetLabelFont(font)
 	self.labelFont = font;
 end
 
+function PerksProgramMixin:GetDefaultSortAscending(sortField)
+	if sortField == "timeRemaining" then
+		return true;
+	elseif sortField == "price" then
+		return false;
+	elseif sortField == "name" then
+		return true;
+	end
+	return false;
+end
+
 function PerksProgramMixin:SetSortField(sortField)
 	if self.sortField == sortField then
 		self:SetSortAscending(not self:GetSortAscending());
 	else
-		self:SetSortAscending(true);
+		-- If we are setting the sort field to something new, then default SortAscending to whatever that field prefers
+		local sortAscending = self:GetDefaultSortAscending(sortField);
+		self:SetSortAscending(sortAscending);
 	end
 	self.sortField = sortField;
 	EventRegistry:TriggerEvent("PerksProgram.SortFieldSet");

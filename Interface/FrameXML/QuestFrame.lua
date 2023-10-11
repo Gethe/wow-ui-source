@@ -582,10 +582,16 @@ end
 
 function QuestFrame_SetTitleTextColor(fontString, material)
 	local temp, materialTitleTextColor = GetMaterialTextColors(material);
+	if QuestUtil.QuestTextContrastUseLightText() then
+		temp, materialTitleTextColor = GetMaterialTextColors("Stone");
+	end
 	fontString:SetTextColor(materialTitleTextColor[1], materialTitleTextColor[2], materialTitleTextColor[3]);
 end
 
 function QuestFrame_SetTextColor(fontString, material)
 	local materialTextColor = GetMaterialTextColors(material);
+	if QuestUtil.QuestTextContrastUseLightText() then
+		materialTextColor = GetMaterialTextColors("Stone");
+	end
 	fontString:SetTextColor(materialTextColor[1], materialTextColor[2], materialTextColor[3]);
 end

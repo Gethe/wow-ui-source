@@ -11,9 +11,31 @@ local function Register()
 	-- Alternate Full Screen Effects
 	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
 
-	if C_CVar.GetCVar("empowerTapControls") then
-		-- Quest Text Contrast
-		Settings.SetupCVarCheckBox(category, "questTextContrast", ENABLE_QUEST_TEXT_CONTRAST, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
+	-- Quest Text Contrast
+	do
+
+		local function GetValue()
+			return tonumber(GetCVar("questTextContrast"));
+		end
+		
+		local function SetValue(value)
+			SetCVar("questTextContrast", value);
+		end
+	
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(0, QUEST_BG_DEFAULT);
+			container:Add(1, QUEST_BG_LIGHT1);
+			container:Add(2, QUEST_BG_LIGHT2);
+			container:Add(3, QUEST_BG_LIGHT3);
+			container:Add(4, QUEST_BG_DARK);
+			return container:GetData();
+		end
+		
+		local defaultValue = 0;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_QUEST_TEXT_CONTRAST", Settings.DefaultVarLocation,
+			Settings.VarType.Number, ENABLE_QUEST_TEXT_CONTRAST, defaultValue, GetValue, SetValue);
+		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
 	end
 
 	-- Minimum Character Name Size

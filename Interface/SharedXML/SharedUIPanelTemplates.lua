@@ -61,7 +61,7 @@ end
 function FrameTemplate_SetAtticHeight(self, atticHeight)
 	if self.bottomInset then
 		self.bottomInset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, -atticHeight);
-	else
+	elseif self.Inset then
 		self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", PANEL_INSET_LEFT_OFFSET, -atticHeight);
 	end
 end
@@ -69,7 +69,7 @@ end
 function FrameTemplate_SetButtonBarHeight(self, buttonBarHeight)
 	if self.topInset then
 		self.topInset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, buttonBarHeight);
-	else
+	elseif self.Inset then
 		self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, buttonBarHeight);
 	end
 end
@@ -2793,6 +2793,8 @@ function IconSelectorPopupFrameTemplateMixin:OnShow()
 
 	self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconSelector(self);
 	self.BorderBox.IconSelectorEditBox:SetIconSelector(self);
+
+	self:UpdateStateFromCursorType();
 end
 
 -- Usually overridden by inheriting frame.
@@ -2808,22 +2810,26 @@ end
 
 function IconSelectorPopupFrameTemplateMixin:OnEvent(event, ...)
 	if ( event == "CURSOR_CHANGED" ) then
-		local cursorType = GetCursorInfo();
-		local isValidCursorType = false;
-		for _, validType in ipairs(ValidIconSelectorCursorTypes) do
-			if ( cursorType == validType ) then
-				isValidCursorType = true;
-				break;
-			end
-		end
-
-		self.BorderBox.IconDragArea:SetShown(isValidCursorType);
-		self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
-		self.BorderBox.IconTypeDropDown:SetShown(not isValidCursorType);
-		self.IconSelector:SetShown(not isValidCursorType);
+		self:UpdateStateFromCursorType();
 	elseif ( event == "GLOBAL_MOUSE_UP" and DoesAncestryInclude(self, GetMouseFocus())) then
 		self:SetIconFromMouse();
 	end
+end
+
+function IconSelectorPopupFrameTemplateMixin:UpdateStateFromCursorType()
+	local cursorType = GetCursorInfo();
+	local isValidCursorType = false;
+	for _, validType in ipairs(ValidIconSelectorCursorTypes) do
+		if ( cursorType == validType ) then
+			isValidCursorType = true;
+			break;
+		end
+	end
+
+	self.BorderBox.IconDragArea:SetShown(isValidCursorType);
+	self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
+	self.BorderBox.IconTypeDropDown:SetShown(not isValidCursorType);
+	self.IconSelector:SetShown(not isValidCursorType);
 end
 
 function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()

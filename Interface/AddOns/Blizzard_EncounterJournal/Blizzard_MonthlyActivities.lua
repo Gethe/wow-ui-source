@@ -68,24 +68,35 @@ function MonthlyActivitiesButtonMixin:SetButtonData()
 	local data = node:GetData();
 
 	self.id = data.id;
-	self.tracked = data.tracked;
 	self.requirementsList = data.requirementsList;
 	self.activityName = data.name;
 	self.description = data.description;
 	self.completed = data.completed;
+
+	self:UpdateTracked();
+
 	self.Name:SetText(data.name);
 	self.Name:SetFontObject(data.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
-
 	self.Points:SetText(data.points);
 	self.Points:SetShown(not data.restricted and not data.completed and data.rewardAvailable and not data.pendingComplete);
 	self.Checkmark:SetShown(not data.restricted and data.completed and not data.pendingComplete);
 	self.CheckmarkFlipbook:SetShown(data.pendingComplete);
-	self.TrackingCheckmark:SetShown(data.tracked and not data.completed);
 	local normalActiveTexture = self.id == MonthlyActivitySelectedID and "activities-incomplete-active" or "activities-incomplete"
 	self:SetNormalAtlas(data.completed and "activities-complete" or normalActiveTexture);
-	
+
 	-- Prevent hover state and tooltip when restricted
 	self:SetEnabled(not data.restricted);
+end
+
+function MonthlyActivitiesButtonMixin:UpdateTracked()
+	local node = self:GetElementData();
+	if node then
+		local data = node:GetData();
+		self.tracked = data.tracked;
+	else
+		self.tracked = false;
+	end
+	self.TrackingCheckmark:SetShown(self.tracked and not self.completed);
 end
 
 function MonthlyActivitiesButtonMixin:UpdateButtonState()
@@ -118,11 +129,13 @@ function MonthlyActivitiesButtonMixin:OnEnter()
 	end
 end
 
+-- Returns true if this method acted on the click
+-- This may be needed since if the internal method handles the click in a way which leads to the button being released back to the pool then we won't want to continue after
 function MonthlyActivitiesButtonMixin:OnClick_Internal()
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(self.id);
 		ChatEdit_InsertLink(perksActivityLink);
-		return;
+		return true;
 	end
 
 	if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
@@ -136,11 +149,16 @@ function MonthlyActivitiesButtonMixin:OnClick_Internal()
 		end
 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		return true;
 	end
+
+	return false;
 end
 
 function MonthlyActivitiesButtonMixin:OnClick()
-	self:OnClick_Internal();
+	if self:OnClick_Internal() then
+		return;
+	end
 
 	local node = self:GetElementData();
 	if node then
@@ -515,7 +533,19 @@ function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
 	if ( event == "PERKS_ACTIVITIES_UPDATED" ) then
 		local activitiesInfo = ...;
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition, activitiesInfo);
-	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) or ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
+	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) then
+		local perksActivitiesTracked = ...;
+		local trackedActivityIDs = perksActivitiesTracked.trackedIDs;
+		local dataProvider = self.ScrollBox:GetDataProvider();
+		local excludeCollapsed = false;
+		dataProvider:ForEach(function(elementData)
+			local data = elementData:GetData();
+			data.tracked = tContains(trackedActivityIDs, data.id);
+		end, excludeCollapsed);
+		self.ScrollBox:ForEachFrame(function(frame, elementData)
+			frame:UpdateTracked();
+		end);
+	elseif ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		self:CollapseAllMonthlyActivities();
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
@@ -964,6 +994,7 @@ function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName, secondsRemaini
 	if displayMonthName and #displayMonthName > 0 then
 		self.HeaderContainer.Month:SetText(displayMonthName);
 	else
+		local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
 		self.HeaderContainer.Month:SetText(ACTIVITIES_MONTH_NAMES[currentCalendarTime.month]);
 	end
 end

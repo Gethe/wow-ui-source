@@ -69,6 +69,7 @@ local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.PrimaryRaidHeroic,
 	DifficultyUtil.ID.PrimaryRaidMythic,
 	DifficultyUtil.ID.RaidTimewalker,
+	DifficultyUtil.ID.Raid40,
 };
 
 local function IsEJDifficulty(difficultyID)
@@ -502,6 +503,7 @@ function EncounterJournal_SetLootJournalView(view)
 	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);
 	self.LootJournalViewDropDown:SetParent(activeViewPanel);
 	self.LootJournalViewDropDown:SetPoint("TOPLEFT", 15, -9);
+	UIDropDownMenu_SetWidth(self.LootJournalViewDropDown, 150);
 	UIDropDownMenu_SetText(self.LootJournalViewDropDown, view);
 
 	-- if no previous view then it's the init, no need to change which frame is shown
@@ -2555,6 +2557,11 @@ function EJ_HideLootJournalPanel()
 end
 
 function EJ_ShowLootJournalPanel()
+	EncounterJournal_DisableTierDropDown(true);
+
+	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
+	EncounterJournal.instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
+
 	local activeLootPanel = EncounterJournal_GetLootJournalPanels();
 	activeLootPanel:Show();
 end
@@ -2591,8 +2598,6 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 
 	local tierData = GetEJTierData(tier);
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
-
-	EncounterJournal_CheckAndDisplayLootJournalViewDropDown();
 
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
 
@@ -2796,11 +2801,11 @@ function EncounterJournal_CheckAndDisplayLootJournalViewDropDown()
 	local currentTier = EJ_GetCurrentTier();
 
 	-- Only Shadowlands uses the 'Powers' tab, if switching off of that make sure to go back to Item Sets.
-	if currentTier ~= EJ_TIER_INDEX_SHADOWLANDS and EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
+	if EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
 		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_ITEM_SETS);
 	end
 
-	EncounterJournal.LootJournalViewDropDown:SetShown(currentTier == EJ_TIER_INDEX_SHADOWLANDS);
+	EncounterJournal.LootJournalViewDropDown:SetShown(true);
 end
 
 ----------------------------------------

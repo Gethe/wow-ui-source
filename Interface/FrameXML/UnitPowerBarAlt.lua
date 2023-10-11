@@ -214,6 +214,7 @@ function UnitPowerBarAlt_TearDown(self)
 end
 
 function UnitPowerBarAlt_UpdateAll(self)
+	local wasShown = self:IsShown();
 	local barInfo = GetUnitPowerBarInfo(self.unit);
 	if ( barInfo and (not barInfo.hideFromOthers or self.isPlayerBar) ) then
 		UnitPowerBarAlt_TearDown(self);
@@ -234,6 +235,14 @@ function UnitPowerBarAlt_UpdateAll(self)
 		UnitPowerBarAlt_TearDown(self);
 		self:Hide();
 		self.counterBar:Hide();
+	end
+
+	if wasShown ~= self:IsShown() then
+		-- Update spacing of things like cast bars if needed.
+		local spellbar = self:GetParent().spellbar;
+		if spellbar then
+			spellbar:AdjustPosition();
+		end
 	end
 end
 

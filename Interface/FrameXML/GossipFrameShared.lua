@@ -20,6 +20,7 @@ end
 
 GossipSharedQuestButtonMixin = CreateFromMixins(GossipSharedTitleButtonMixin);
 function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial)
+
 	if ( isIgnored ) then
 		self:SetFormattedText(IGNORED_QUEST_DISPLAY, titleText);
 		self.Icon:SetVertexColor(0.5,0.5,0.5);
@@ -31,7 +32,13 @@ function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, is
 		self.Icon:SetVertexColor(1,1,1);
 	end
 
+	if QuestUtil.QuestTextContrastUseLightText() then
+		--use light text when using dark accessibility backgrounds
+		self:SetText(STONE_MATERIAL_TEXT_COLOR:WrapTextInColorCode(titleText));
+	end
+
 	self:Resize();
+
 end
 
 GossipSharedAvailableQuestButtonMixin = CreateFromMixins(GossipSharedQuestButtonMixin);
@@ -77,6 +84,14 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 
 	self:Resize();
 	self:Show();
+
+	if QuestUtil.QuestTextContrastUseLightText() then
+		local textColor, titleTextColor = GetMaterialTextColors("Stone");
+		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
+	else
+		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
+		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
+	end
 end
 function GossipOptionButtonMixin:OnClick(button)
 	C_GossipInfo.SelectOptionByIndex(self:GetID());
@@ -87,6 +102,13 @@ function GossipGreetingTextMixin:Setup(text)
 	self.GreetingText:SetText(text);
 	self:Show();
 	self:SetSize(270, self.GreetingText:GetHeight());
+	if QuestUtil.QuestTextContrastUseLightText() then
+		local textColor, titleTextColor = GetMaterialTextColors("Stone");
+		self.GreetingText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+	else
+		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
+		self.GreetingText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+	end
 end
 
 local function GreetingTextInitializer(button, elementData)

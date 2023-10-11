@@ -836,6 +836,8 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		checkBoxFontString = _G[checkBoxName.."CheckText"];
 		checkBoxFontString:SetText(text);
 		checkBoxFontString:SetMaxLines(1);
+		checkBox.BlankText:SetText(text);
+		checkBox.BlankText:SetMaxLines(1);
 		check = _G[checkBoxName.."Check"];
 		check.func = value.func;
 		check:SetID(index);
@@ -1003,10 +1005,11 @@ function ChatConfig_UpdateCheckboxes(frame)
 	local height;
 	local checkBoxTable = frame.checkBoxTable;
 	local checkBoxNameString = frame:GetName().."CheckBox";
-	local checkBoxName, checkBox, baseName, colorSwatch;
+	local baseFrame, checkBoxName, checkBox, baseName, colorSwatch;
 	local topnum, padding = 0, 8;
 	for index, value in ipairs(checkBoxTable) do
 		baseName = checkBoxNameString..index;
+		baseFrame = _G[baseName];
 		checkBox = _G[baseName.."Check"];
 		if ( checkBox ) then
 			if ( not height ) then
@@ -1014,8 +1017,10 @@ function ChatConfig_UpdateCheckboxes(frame)
 			end
 			if ( value.isBlank ) then
 				checkBox:Hide();
+				baseFrame.BlankText:Show();
 			else
 				checkBox:Show();
+				baseFrame.BlankText:Hide();
 				if ( type(value.checked) == "function" ) then
 					checkBox:SetChecked(value.checked());
 				else
@@ -1607,7 +1612,7 @@ function CreateChatChannelList(self, ...)
 			-- Leave empty entries for missing channels to allow for re-ordering.
 			CHAT_CONFIG_CHANNEL_LIST[count] = {};
 			CHAT_CONFIG_CHANNEL_LIST[count].channelID = count;
-			CHAT_CONFIG_CHANNEL_LIST[count].text = count..".";
+			CHAT_CONFIG_CHANNEL_LIST[count].text = count.."."..EMPTY;
 			CHAT_CONFIG_CHANNEL_LIST[count].isBlank = true;
 			count = count + 1;
 		end
@@ -2442,20 +2447,24 @@ function ChatConfigWideCheckBoxMixin:SetState(state)
 	self.ArtOverlay.GrayedOut:SetShown(state == ChatConfigWideCheckBoxState.GrayedOut);
 
 	-- Allow certain rulesets to modify state behavior
-	local isEnabled = self:GetChannelRuleset() == Enum.ChatChannelRuleset.None;
-	self.CloseChannel:SetEnabled(isEnabled);
-	local desaturation = 0;
-	if not isEnabled then
-		desaturation = 1;
-	end
-
-	self.CloseChannel:DesaturateHierarchy(desaturation);
+	local enabled = self:GetChannelRuleset() == Enum.ChatChannelRuleset.None and not self:GetChannelDisabled();
+	self.CloseChannel:SetEnabled(enabled);
+	self.CloseChannel:DesaturateHierarchy(enabled and 0 or 1);
 end
 
 function ChatConfigWideCheckBoxMixin:GetChannelIndex()
 	local channelIndex = self:GetID();
 	local channelData = CHAT_CONFIG_CHANNEL_LIST[channelIndex];
 	return channelData and channelData.channelID or nil;
+end
+
+function ChatConfigWideCheckBoxMixin:GetChannelDisabled()
+	local channelIndex = self:GetID();
+	local channelData = CHAT_CONFIG_CHANNEL_LIST[channelIndex];
+	if not channelData then 
+		return false;
+	end
+	return type(channelData.disabled) == "function" and channelData.disabled() or channelData.disabled;
 end
 
 function ChatConfigWideCheckBoxMixin:GetChannelRuleset()

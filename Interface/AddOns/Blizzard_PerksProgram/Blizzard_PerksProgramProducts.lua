@@ -368,23 +368,52 @@ local function ProductSortComparator(lhs, rhs)
 	local lhsValue = lhs[sortField];
 	local rhsValue = rhs[sortField];
 
-	if sortField == "price" then
-		-- If we're sorting by price and the product is purchased then act like the product was free
-		lhsValue = lhs.purchased and 0 or lhsValue;
-		rhsValue = rhs.purchased and 0 or rhsValue;
-	elseif sortField == "timeRemaining" then
-		-- If we're sorting by time and the product is purchased then act like the product has max time left
-		lhsValue = lhs.purchased and math.huge or lhsValue;
-		rhsValue = rhs.purchased and math.huge or rhsValue;
+	local sortByPrice = sortField == "price";
+	local sortByTimeRemaining = sortField == "timeRemaining";
+
+	if sortByPrice or sortByTimeRemaining then
+		-- Update sortValue based on our purchased state
+		local huge = math.max(lhsValue, rhsValue) + 1000;
+		local function GetSortValue(itemInfo, baseValue)
+			if itemInfo.refundable then
+				return sortByPrice and -2 or (huge - 1);
+			elseif itemInfo.purchased then
+				return sortByPrice and -3 or huge;
+			else
+				return baseValue;
+			end
+		end
+		lhsValue = GetSortValue(lhs, lhsValue);
+		rhsValue = GetSortValue(rhs, rhsValue);
 	end
+
+	if sortByTimeRemaining then
+		-- Convert values to the largest different time value we actually care to compare
+		local lhsTime = ConvertSecondsToUnits(lhsValue);
+		local rhsTime = ConvertSecondsToUnits(rhsValue);
+		if lhsTime.days ~= rhsTime.days then
+			lhsValue = lhsTime.days;
+			rhsValue = rhsTime.days;
+		elseif lhsTime.hours ~= rhsTime.hours then
+			lhsValue = lhsTime.hours;
+			rhsValue = rhsTime.hours;
+		else
+			-- The smallest we want to compare against is mintutes since thats the lowest we show in UI
+			lhsValue = lhsTime.minutes;
+			rhsValue = rhsTime.minutes;
+		end
+	end
+
+	local sortAscending = PerksProgramFrame:GetSortAscending();
 
 	-- Fallback to sorting by name if our sortfield turns out to be equivalent
 	if lhsValue == rhsValue then
+		sortField = "name";
+		sortAscending = PerksProgramFrame:GetDefaultSortAscending(sortField);
 		lhsValue = lhs.name;
 		rhsValue = rhs.name;
 	end
 
-	local sortAscending = PerksProgramFrame:GetSortAscending();
 	if sortAscending then
 		return lhsValue < rhsValue;
 	end

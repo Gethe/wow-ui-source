@@ -45,13 +45,6 @@ function GossipActiveQuestButtonMixin:Setup(questInfo)
 	GossipSharedActiveQuestButtonMixin.Setup(self, questInfo);
 end
 
-GossipGreetingTextMixin = { }
-function GossipGreetingTextMixin:Setup(text)
-	self.GreetingText:SetText(text);
-	self:Show();
-	self:SetSize(270, self.GreetingText:GetHeight());
-end
-
 GossipFrameMixin = CreateFromMixins(GossipFrameSharedMixin);
 function GossipFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOG_UPDATE");

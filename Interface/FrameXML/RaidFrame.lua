@@ -255,11 +255,14 @@ function RaidInfoFrame_UpdateButtons()
 			RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
 			RaidInfoExtendButton:Disable();
 		end
+	else
+		RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+		RaidInfoExtendButton:Disable();
 	end
 end
 
 function RaidInfoExtendButton_OnClick(self)
-	if(RaidInfoFrame.selectedIndex <= GetNumSavedInstances()) then
+	if(RaidInfoFrame.selectedIndex and RaidInfoFrame.selectedIndex <= GetNumSavedInstances()) then
 		SetSavedInstanceExtend(RaidInfoFrame.selectedIndex, self.doExtend);
 		RequestRaidInfo();
 		RaidInfoFrame_Update();

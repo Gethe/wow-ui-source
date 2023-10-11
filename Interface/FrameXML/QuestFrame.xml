@@ -207,11 +207,6 @@ UI_shared.xsd">
 						</Scripts>
 					</Button>
 					<ScrollFrame name="QuestDetailScrollFrame" parentKey="ScrollFrame" inherits="QuestScrollFrameTemplate">
-						<KeyValues>
-							<KeyValue key="scrollBarX" value="9" type="number"/>
-							<KeyValue key="scrollBarTopY" value="-3" type="number"/>
-							<KeyValue key="scrollBarBottomY" value="3" type="number"/>
-						</KeyValues>
 						<ScrollChild>
 							<Frame name="QuestDetailScrollChildFrame">
 								<Size x="300" y="403"/>

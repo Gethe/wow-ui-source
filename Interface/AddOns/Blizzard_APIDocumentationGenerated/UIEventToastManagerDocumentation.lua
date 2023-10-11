@@ -58,9 +58,9 @@ local UIEventToastManager =
 		{
 			Name = "EventToastDisplayType",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "NormalSingleLine", Type = "EventToastDisplayType", EnumValue = 0 },
@@ -72,14 +72,16 @@ local UIEventToastManager =
 				{ Name = "Scenario", Type = "EventToastDisplayType", EnumValue = 6 },
 				{ Name = "ChallengeMode", Type = "EventToastDisplayType", EnumValue = 7 },
 				{ Name = "ScenarioClickExpand", Type = "EventToastDisplayType", EnumValue = 8 },
+				{ Name = "WeeklyRewardUnlock", Type = "EventToastDisplayType", EnumValue = 9 },
+				{ Name = "WeeklyRewardUpgrade", Type = "EventToastDisplayType", EnumValue = 10 },
 			},
 		},
 		{
 			Name = "EventToastEventType",
 			Type = "Enumeration",
-			NumValues = 23,
+			NumValues = 25,
 			MinValue = 0,
-			MaxValue = 22,
+			MaxValue = 24,
 			Fields =
 			{
 				{ Name = "LevelUp", Type = "EventToastEventType", EnumValue = 0 },
@@ -105,6 +107,8 @@ local UIEventToastManager =
 				{ Name = "PvPTierUpdate", Type = "EventToastEventType", EnumValue = 20 },
 				{ Name = "SpellLearned", Type = "EventToastEventType", EnumValue = 21 },
 				{ Name = "TreasureItem", Type = "EventToastEventType", EnumValue = 22 },
+				{ Name = "WeeklyRewardUnlock", Type = "EventToastEventType", EnumValue = 23 },
+				{ Name = "WeeklyRewardUpgrade", Type = "EventToastEventType", EnumValue = 24 },
 			},
 		},
 		{

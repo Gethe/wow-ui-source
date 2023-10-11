@@ -347,16 +347,15 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	end
 
 	self.New:SetShown(categoryData.hasNewChoices);
-	local selected = false;
-	if categoryData.chrModelID and not CharCustomizeFrame.needsNativeFormCategory then
+	local selected = selectedCategoryID == categoryData.id;
+	if categoryData.chrModelID and not categoryData.subcategory and not CharCustomizeFrame.needsNativeFormCategory then
 		if CharCustomizeFrame.viewingChrModelID then
 			selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
 		else
 			selected = categoryData.chrModelID == CharCustomizeFrame.firstChrModelID;
 		end
-	else
-		selected = selectedCategoryID == categoryData.id;
 	end
+
 	if selected then
 		self:SetChecked(true);
 		self:SetIconAtlas(categoryData.selectedIcon);
@@ -370,7 +369,30 @@ end
 
 function CharCustomizeCategoryButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-	CharCustomizeFrame:SetSelectedCategory(self.categoryData);
+
+	local hadCategoryChange = false;
+
+	if self.categoryData.subcategory then
+		hadCategoryChange = not CharCustomizeFrame:IsSelectedSubcategory(self.categoryData);
+		if hadCategoryChange then 
+			CharCustomizeFrame:SetSelectedSubcategory(self.categoryData);
+		end
+	else
+		-- If selecting a new main Category, we need to clear the Subcategory and 
+		-- force it to pick a new best valid one in SetCategory().
+		hadCategoryChange = not CharCustomizeFrame:IsSelectedCategory(self.categoryData);
+		if hadCategoryChange then 
+			CharCustomizeFrame:SetSelectedCategory(self.categoryData);
+			CharCustomizeFrame:SetSelectedSubcategory(nil);
+		end
+	end
+
+	-- If we didn't change category with this click, then we won't run SetCustomizations(), 
+	-- which would have updated our button's state. So, update it here.
+	if not hadCategoryChange then
+		self:SetChecked(true);
+		self:SetIconAtlas(self.categoryData.selectedIcon);
+	end
 end
 
 CharCustomizeShapeshiftFormButtonMixin = CreateFromMixins(CharCustomizeCategoryButtonMixin);
@@ -1161,6 +1183,7 @@ end
 
 function CharCustomizeMixin:Reset()
 	self.selectedCategoryData = nil;
+	self.selectedSubcategoryData = nil;
 end
 
 function CharCustomizeMixin:NeedsCategorySelected()
@@ -1170,6 +1193,20 @@ function CharCustomizeMixin:NeedsCategorySelected()
 
 	for _, categoryData in ipairs(self:GetCategories()) do
 		if self.selectedCategoryData.id == categoryData.id then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function CharCustomizeMixin:NeedsSubcategorySelected()
+	if not self:HasSelectedSubcategory() then
+		return true;
+	end
+
+	for _, categoryData in ipairs(self:GetCategories()) do
+		if self.selectedSubcategoryData.id == categoryData.id then
 			return false;
 		end
 	end
@@ -1261,10 +1298,6 @@ function CharCustomizeMixin:SetCharacterSex(sexID)
 	self.parentFrame:SetCharacterSex(sexID);
 end
 
-local function SortCategories(a, b)
-	return a.orderIndex < b.orderIndex;
-end
-
 function CharCustomizeMixin:RefreshCustomizations()
 	local categories = self:GetCategories();
 	if categories then
@@ -1272,10 +1305,22 @@ function CharCustomizeMixin:RefreshCustomizations()
 	end
 end
 
-function CharCustomizeMixin:GetFirstValidCategory()
-	-- This filters out any categories with a charmodel id, since we don't want to auto select those
-
+function CharCustomizeMixin:GetFirstValidSubcategory()
 	local categories = self:GetCategories();
+
+	for i, category in ipairs(categories) do
+		if category.subcategory then
+			return category;
+		end
+	end
+
+	return self:GetFirstValidCategory();
+end
+
+function CharCustomizeMixin:GetFirstValidCategory()
+	local categories = self:GetCategories();
+
+	-- Look for non-ChrModel categories.
 	for i, category in ipairs(categories) do
 		if not category.chrModelID then
 			return category;
@@ -1298,11 +1343,20 @@ function CharCustomizeMixin:SetCustomizations(categories)
 
 	local keepState = self:HasSelectedCategory();
 
-	if self:NeedsCategorySelected() then
-		table.sort(self.categories, SortCategories);
+	-- Select required Category if needed.
+	local needsCategorySelected = self:NeedsCategorySelected();
+	if needsCategorySelected then
 		self:SetSelectedCategory(self:GetFirstValidCategory(), keepState);
 	else
 		self:SetSelectedCategory(self.selectedCategoryData, keepState);
+	end
+
+	-- Select required Subcategory if needed.
+	keepState = self:HasSelectedSubcategory();
+	if needsCategorySelected or self:NeedsSubcategorySelected() then
+		self:SetSelectedSubcategory(self:GetFirstValidSubcategory(), keepState);
+	else 
+		self:SetSelectedSubcategory(self.selectedSubcategoryData, keepState);
 	end
 
 	self:AddMissingOptions();
@@ -1388,60 +1442,69 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	self.hasChrModels = false;	-- nothing using this right now, tracking it anyway
 	self.needsNativeFormCategory = false;
 	self.firstChrModelID = nil;
-	self.numNormalCategories = 0;
+	self.numSubcategories = 0;
 
 	local optionsToSetup = {};
 
 	for _, categoryData in ipairs(self:GetCategories()) do
-		local showCategory = not self.selectedCategoryData.spellShapeshiftFormID or (categoryData.spellShapeshiftFormID or categoryData.chrModelID);
+		local categoryPool = self:GetCategoryPool(categoryData);
+		local button = categoryPool:Acquire();
 
-		if showCategory then
-			local categoryPool = self:GetCategoryPool(categoryData);
-			local button = categoryPool:Acquire();
-
-			if categoryData.chrModelID then
-				self.hasChrModels = true;
-				if not self.firstChrModelID then
-					self.firstChrModelID = categoryData.chrModelID;
-				end
-			else
-				self.numNormalCategories = self.numNormalCategories + 1;
+		if categoryData.chrModelID then
+			self.hasChrModels = true;
+			if not self.firstChrModelID then
+				self.firstChrModelID = categoryData.chrModelID;
 			end
+		end
+			
+		if categoryData.spellShapeshiftFormID then
+			self.hasShapeshiftForms = true;
+		end
 
-			if categoryData.spellShapeshiftFormID then
-				self.hasShapeshiftForms = true;
-			end
+		if categoryData.needsNativeFormCategory then
+			self.needsNativeFormCategory = true;
+		end
 
-			if categoryData.needsNativeFormCategory then
-				self.needsNativeFormCategory = true;
-			end
+		local selectedSubcategoryDataID = 0;
+		if self.selectedSubcategoryData then
+			selectedSubcategoryDataID = self.selectedSubcategoryData.id;
+		end
 
+		if categoryData.subcategory then
+			self.numSubcategories = self.numSubcategories + 1;
+			button:SetCategory(categoryData, selectedSubcategoryDataID);
+		else
 			button:SetCategory(categoryData, self.selectedCategoryData.id);
-			button:Show();
+		end
 
-			if self.selectedCategoryData.id == categoryData.id then
-				for _, optionData in ipairs(categoryData.options) do
-					local optionPool = self:GetOptionPool(optionData.optionType);
-					if optionPool then
-						local optionFrame;
+		button:Show();
 
-						if interactingOption and interactingOption.optionData.id == optionData.id then
-							-- This option is being interacted with and so was not released.
-							optionFrame = interactingOption;
-						else
-							optionFrame = optionPool:Acquire();
-						end
-						-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
-						-- in a future version of LayoutFrame.
-						optionFrame:SetPoint("TOPLEFT");
+		local fallbackToCategory = not selectedSubcategoryDataID;
+		local categoryMatches = self.selectedCategoryData.id == categoryData.id;
+		local subcategoryMatches = selectedSubcategoryDataID == categoryData.id;
 
-						-- Just set layoutIndex on the option and add it to optionsToSetup for now.
-						-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
-						optionFrame.layoutIndex = optionData.orderIndex;
-						optionsToSetup[optionFrame] = optionData;
+		if (fallbackToCategory and categoryMatches) or subcategoryMatches then
+			for _, optionData in ipairs(categoryData.options) do
+				local optionPool = self:GetOptionPool(optionData.optionType);
+				if optionPool then
+					local optionFrame;
 
-						optionFrame:Show();
+					if interactingOption and interactingOption.optionData.id == optionData.id then
+						-- This option is being interacted with and so was not released.
+						optionFrame = interactingOption;
+					else
+						optionFrame = optionPool:Acquire();
 					end
+					-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
+					-- in a future version of LayoutFrame.
+					optionFrame:SetPoint("TOPLEFT");
+
+					-- Just set layoutIndex on the option and add it to optionsToSetup for now.
+					-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
+					optionFrame.layoutIndex = optionData.orderIndex;
+					optionsToSetup[optionFrame] = optionData;
+
+					optionFrame:Show();
 				end
 			end
 		end
@@ -1460,7 +1523,7 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	self:UpdateAlteredFormButtons();
 
-	if self.numNormalCategories > 1 then
+	if self.numSubcategories > 1 then
 		self.Categories:Show();
 		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", -20, 0);
 	else
@@ -1470,12 +1533,23 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	end
 end
 
+function CharCustomizeMixin:GetBestCategoryData()
+	-- Prefer Subcategory if we have one.
+	if self.selectedSubcategoryData then
+		return self.selectedSubcategoryData;
+	else
+		return self.selectedCategoryData;
+	end
+end
+
 function CharCustomizeMixin:UpdateModelDressState()
-	self.parentFrame:SetModelDressState(not self.selectedCategoryData.undressModel);
+	local categoryData = self:GetBestCategoryData();
+	self.parentFrame:SetModelDressState(not categoryData.undressModel);
 end
 
 function CharCustomizeMixin:UpdateCameraDistanceOffset()
-	self.parentFrame:SetCameraDistanceOffset(self.selectedCategoryData.cameraDistanceOffset);
+	local categoryData = self:GetBestCategoryData();
+	self.parentFrame:SetCameraDistanceOffset(categoryData.cameraDistanceOffset);
 end
 
 function CharCustomizeMixin:UpdateZoomButtonStates()
@@ -1498,7 +1572,8 @@ function CharCustomizeMixin:UpdateZoomButtonStates()
 end
 
 function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
-	self.parentFrame:SetCameraZoomLevel(self.selectedCategoryData.cameraZoomLevel, keepCustomZoom);
+	local categoryData = self:GetBestCategoryData();
+	self.parentFrame:SetCameraZoomLevel(categoryData.cameraZoomLevel, keepCustomZoom);
 	self:UpdateZoomButtonStates();
 end
 
@@ -1512,12 +1587,47 @@ function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
 	end
 
 	self.selectedCategoryData = categoryData;
+	if not self.selectedSubcategoryData then
+		self:UpdateOptionButtons(not keepState);
+		self:UpdateModelDressState();
+		self:UpdateCameraDistanceOffset();
+		self:UpdateCameraMode(keepState);
+	end
+
+	EventRegistry:TriggerEvent("CharCustomize.OnCategorySelected", self, hadCategoryChange);
+end
+
+function CharCustomizeMixin:SetSelectedSubcategory(categoryData, keepState)
+	if not categoryData then
+		self.selectedSubcategoryData = nil;
+		return;
+	end
+
+	local hadCategoryChange = not self:IsSelectedSubcategory(categoryData);
+
+	self.selectedSubcategoryData = categoryData;
 	self:UpdateOptionButtons(not keepState);
 	self:UpdateModelDressState();
 	self:UpdateCameraDistanceOffset();
 	self:UpdateCameraMode(keepState);
 
 	EventRegistry:TriggerEvent("CharCustomize.OnCategorySelected", self, hadCategoryChange);
+end
+
+function CharCustomizeMixin:HasSelectedSubcategory()
+	return self.selectedSubcategoryData ~= nil;
+end
+
+function CharCustomizeMixin:GetSelectedSubcategory()
+	return self.selectedSubcategoryData;
+end
+
+function CharCustomizeMixin:IsSelectedSubcategory(subcategoryData)
+	if self:HasSelectedSubcategory() then
+		return self:GetSelectedSubcategory().id == subcategoryData.id;
+	end
+
+	return false;
 end
 
 function CharCustomizeMixin:HasSelectedCategory()
@@ -1530,7 +1640,16 @@ end
 
 function CharCustomizeMixin:IsSelectedCategory(categoryData)
 	if self:HasSelectedCategory() then
-		return self:GetSelectedCategory().id == categoryData.id;
+		-- Dragon Mounts have the same category ID until completion of [WOW10-13892]: GP ENG - Dragon Customization code clean-up.
+		local selectedCategoryData = self:GetSelectedCategory();
+		if selectedCategoryData.id == categoryData.id then
+			-- Due to the same-category limitation of Dragons, we backup-check if the chrModelIDs are different.
+			if selectedCategoryData.chrModelID or categoryData.chrModelID then
+				return selectedCategoryData.chrModelID == categoryData.chrModelID;
+			end
+
+			return true;
+		end
 	end
 
 	return false;
@@ -1640,7 +1759,13 @@ function CharCustomizeMixin:HighlightNextMissingOption()
 	local categoryIndex, optionIndex = self:GetNextMissingOption();
 	if categoryIndex then
 		local keepState = true;
-		self:SetSelectedCategory(self:GetCategory(categoryIndex), keepState);
+		local categoryData = self:GetCategory(categoryIndex);
+		if categoryData.subcategory then
+			self:SetSelectedSubcategory(categoryData, keepState);
+		else
+			self:SetSelectedCategory(categoryData, keepState);
+		end
+
 		self:SetMissingOptionWarningEnabled(true);
 	end
 end
