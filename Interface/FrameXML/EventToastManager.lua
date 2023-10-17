@@ -165,7 +165,9 @@ function EventToastManagerFrameMixin:AreAnimationsPaused()
 end
 
 function EventToastManagerFrameMixin:PauseAnimations()
-	if(self.animationsPaused) then 
+	-- TODO: Tech debt: currentDisplayingToast does not take non-EventToastManager toasts into consideration <WOW10-127543>
+	-- ^ We should be setting it or checking to see if there are other TopBannerManager toasts playing or paused...
+	if(self.animationsPaused or not (self.currentDisplayingToast and (self.currentDisplayingToast:GetAlpha() > 0))) then 
 		return;
 	end
 	self.animationsPaused = true; 
@@ -560,7 +562,7 @@ EventToastWeeklyRewardToastMixin = {};
 function EventToastWeeklyRewardToastMixin:Setup(toastInfo)
 	self.Title:SetText(toastInfo.title);
 	self.SubTitle:SetText(toastInfo.subtitle);
-	self.flipbook = self.GVanim;
+	self.flipbook = self.GVUnlockAnim;
 	self:ShowToast();
 end
 
@@ -581,7 +583,7 @@ function EventToastWeeklyRewardUpgradeToastMixin:Setup(toastInfo)
 		local ilvl = item:GetCurrentItemLevel();
 		self.Title:SetText(toastInfo.title);
 		self.SubTitle:SetText(ITEM_LEVEL:format(ilvl));
-		self.flipbook = self.GVanim;
+		self.flipbook = self.GVUpgradeAnim;
 		self:ShowToast();
 	end);
 end

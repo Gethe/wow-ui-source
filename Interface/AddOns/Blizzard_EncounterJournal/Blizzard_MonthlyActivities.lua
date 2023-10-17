@@ -221,11 +221,12 @@ MonthlyActivitiesThresholdMixin = { };
 function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	self.RewardCurrency:SetCurrentPoints(points);
 
+	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
+
 	self.LineIncomplete:SetShown(not aboveThreshold and self.showLine);
 	self.LineComplete:SetShown(aboveThreshold and self.showLine);
-	
+
 	local initialSet = self.aboveThreshold == nil;
-	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
 	if self.aboveThreshold == aboveThreshold then
 		return;
 	end

@@ -923,7 +923,7 @@ UI_shared.xsd">
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="GVanim" setToFinalAlpha="true">
+			<AnimationGroup parentKey="GVUnlockAnim" setToFinalAlpha="true">
 				<Alpha childKey="Title" startDelay="1.67" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 				<Alpha childKey="SubTitle" startDelay="1.97" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 				<FlipBook childKey="FBFrameUnlock" duration="1.8" order="1" startDelay="0" flipBookRows="11" flipBookColumns="5" flipBookFrames="54" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
@@ -1216,7 +1216,7 @@ UI_shared.xsd">
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="GVanim" setToFinalAlpha="true">
+			<AnimationGroup parentKey="GVUpgradeAnim" setToFinalAlpha="true">
 				<Alpha childKey="Title" startDelay="0.53" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 				<Alpha childKey="SubTitle" startDelay="0.67" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
 				<Alpha childKey="FrameGlw" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>

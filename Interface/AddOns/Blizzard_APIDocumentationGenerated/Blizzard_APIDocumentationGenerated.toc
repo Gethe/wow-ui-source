@@ -328,6 +328,7 @@ MinimapConstantsDocumentation.lua
 ModelAnimationSharedDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua
+PartyConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua

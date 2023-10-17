@@ -40,6 +40,14 @@ function ModelSceneControlFrameMixin:OnShow()
 	self:UpdateLayout();
 end
 
+function ModelSceneControlFrameMixin:OnEnter()
+	self:SetAlpha(1);
+end
+
+function ModelSceneControlFrameMixin:OnLeave()
+	self:SetAlpha(0.5);
+end
+
 function ModelSceneControlFrameMixin:SetZoomIncrement(increment)
 	self.zoomIncrement = increment or DEFAULT_ZOOM_INCREMENT;
 end

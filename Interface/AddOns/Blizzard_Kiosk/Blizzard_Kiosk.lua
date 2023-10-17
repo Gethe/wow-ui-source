@@ -6,7 +6,7 @@ KioskFrameMixin = {}
 function KioskFrameMixin:OnLoad()
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_WARNING");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
-	self.whitelistedMapIDs = { 2200 };
+	self.whitelistedMapIDs = { };
 end
 
 function KioskFrameMixin:HasWhitelistedMaps()

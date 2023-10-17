@@ -1856,6 +1856,7 @@ function QuestLogPopupDetailFrame_Show(questLogIndex)
 	QuestLogPopupDetailFrame_Update(true);
 	ShowUIPanel(QuestLogPopupDetailFrame);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();

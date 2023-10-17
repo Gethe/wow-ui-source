@@ -457,6 +457,10 @@ function CreateAdvancedQualitySectionInitializer(name, settings, raidSettings)
 end
 
 local function Register()
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
 	local function AddValidatedCVarOption(container, cvar, value, label, tooltip)
 		local data = container:Add(value, label, tooltip);
 		local error = IsGraphicsCVarValueSupported(cvar, value);

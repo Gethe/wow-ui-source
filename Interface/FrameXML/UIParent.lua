@@ -1170,10 +1170,6 @@ function ToggleCollectionsJournal(tabIndex)
 		return;
 	end
 
-	if Kiosk.IsEnabled() then
-		return;
-	end
-
 	if CollectionsJournal then
 		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
 		local isShown = CollectionsJournal:IsShown() and tabMatches;

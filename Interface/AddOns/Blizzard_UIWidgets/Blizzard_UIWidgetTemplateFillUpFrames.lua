@@ -268,8 +268,13 @@ function UIWidgetFillUpFrameTemplateMixin:Setup(widgetContainer, textureKit, isF
 		if pulseFrame then
 			self.Flash.PulseAnim:Play();
 			if flipbookAtlasInfo then
-				self.Bar.Flipbook:Show();
-				self.Bar.FillupFlipbookAnim:Play();
+				if value > 0 then
+					self.Bar.Flipbook:Show();
+					self.Bar.FillupFlipbookAnim:Play();
+				else
+					self.Bar.Flipbook:Hide();
+					self.Bar.FillupFlipbookAnim:Stop();
+				end
 			end
 		else
 			self.Flash.PulseAnim:Stop();

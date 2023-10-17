@@ -1319,6 +1319,13 @@ end
 
 function CharCustomizeMixin:GetFirstValidCategory()
 	local categories = self:GetCategories();
+	local firstCategory = categories[1];
+
+	-- If the first category is a shapeshift, use it.
+	-- CGBarberShop::GetAvailableCustomizations() will put your current shapeshift form first, if it needs to.
+	if firstCategory.spellShapeshiftFormID then
+		return firstCategory;
+	end
 
 	-- Look for non-ChrModel categories.
 	for i, category in ipairs(categories) do
@@ -1327,7 +1334,7 @@ function CharCustomizeMixin:GetFirstValidCategory()
 		end
 	end
 
-	return categories[1];
+	return firstCategory;
 end
 
 function CharCustomizeMixin:GetCategory(categoryIndex)

@@ -74,9 +74,6 @@
 					<Anchor point="TOP" relativeTo="GameMenuButtonWhatsNew" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						self:SetEnabled(not Kiosk.IsEnabled());
-					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						SettingsPanel:Open();

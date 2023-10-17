@@ -33,9 +33,11 @@ local function Register()
 	end
 
     -- Enable Ping Sounds and Ping Sounds Volume
-    do
-        local initializer = layout:AddMirroredInitializer(Settings.PingSoundsInitializer);
-        initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+    if not Kiosk.IsEnabled() then
+        do
+            local initializer = layout:AddMirroredInitializer(Settings.PingSoundsInitializer);
+            initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+        end
     end
 
     -- Show Pings in Chat

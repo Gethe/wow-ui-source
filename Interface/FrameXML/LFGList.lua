@@ -1862,7 +1862,7 @@ function LFGListApplicantMember_OnEnter(self)
 		return;
 	end
 	local applicantInfo = C_LFGList.GetApplicantInfo(applicantID);
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID  = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local bestDungeonScoreForEntry = C_LFGList.GetApplicantDungeonScoreForListing(applicantID, memberIdx, activeEntryInfo.activityID);
 	local pvpRatingForEntry = C_LFGList.GetApplicantPvpRatingInfoForListing(applicantID, memberIdx, activeEntryInfo.activityID);
 
@@ -1872,10 +1872,14 @@ function LFGListApplicantMember_OnEnter(self)
 	if ( name ) then
 		local classTextColor = RAID_CLASS_COLORS[class];
 		GameTooltip:SetText(name, classTextColor.r, classTextColor.g, classTextColor.b);
+		local classSpecializationName = localizedClass;
+		if(specID) then
+			classSpecializationName = CLUB_FINDER_LOOKING_FOR_CLASS_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specID), classSpecializationName);
+		end
 		if(UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[factionGroup]) then
-			GameTooltip_AddHighlightLine(GameTooltip, UNIT_TYPE_LEVEL_FACTION_TEMPLATE:format(level, localizedClass, FACTION_STRINGS[factionGroup]));
+			GameTooltip_AddHighlightLine(GameTooltip, UNIT_TYPE_LEVEL_FACTION_TEMPLATE:format(level, classSpecializationName, FACTION_STRINGS[factionGroup]));
 		else
-			GameTooltip_AddHighlightLine(GameTooltip, UNIT_TYPE_LEVEL_TEMPLATE:format(level, localizedClass));
+			GameTooltip_AddHighlightLine(GameTooltip, UNIT_TYPE_LEVEL_TEMPLATE:format(level, classSpecializationName));
 		end
 	else
 		GameTooltip:SetText(" ");	--Just make it empty until we get the name update
@@ -3813,7 +3817,9 @@ end
 
 LFGListCreationNameMixin = CreateFromMixins(LFGEditBoxMixin);
 
-function LFGListCreationNameMixin:OnLoad()
+function LFGListCreationNameMixin:OnShow()
+	LFGEditBoxMixin.OnShow(self);
+	
 	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedActivity);
 	if not isAccountSecured then
 		self:SetSecurityDisablePaste();
@@ -3829,21 +3835,15 @@ function LFGListCreationDescriptionMixin:OnLoad()
 	self.EditBox:SetScript("OnTabPressed", LFGListEditBox_OnTabPressed);
 	self.EditBox:EnableMouse(false);
 	InputScrollFrame_OnLoad(self);
-
-	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedActivity);
-	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
-	
-	if not isAccountSecured then
-		self.EditBox:SetSecurityDisablePaste();
-	end
-
-	self.EditBox:SetEnabled(isAccountSecured);
-	self.LockButton:SetShown(not isAccountSecured);
-	self.editBoxEnabled = isAccountSecured;
 end
 
 function LFGListCreationDescriptionMixin:OnShow()
 	local isAccountSecured = C_LFGList.IsPlayerAuthenticatedForLFG(self:GetParent().selectedActivity);
+
+	if not isAccountSecured then
+		self.EditBox:SetSecurityDisablePaste();
+	end
+
 	self.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
 	self.EditBox:SetEnabled(isAccountSecured);
 	self.LockButton:SetShown(not isAccountSecured);

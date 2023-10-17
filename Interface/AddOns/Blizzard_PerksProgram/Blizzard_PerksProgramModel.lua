@@ -354,37 +354,43 @@ function PerksProgramModelSceneContainerFrameMixin:Init()
 end
 
 function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, forceSceneChange)
+	local oldData = self.currentData;
 	self.currentData = data;
-	local categoryID = data.perksVendorCategoryID;
-	local defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(categoryID);
 
-	local hideArmor = not(data.displayData.autodress);
-	local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
-	if hideArmorSetting ~= nil then
-		hideArmor = hideArmorSetting;
-		PerksProgramFrame:SetHideArmorSetting(hideArmor);
+	local dataHasChanged = not oldData or oldData.perksVendorItemID ~= data.perksVendorItemID;
+	local shouldSetupModelScene = forceSceneChange or dataHasChanged;
+
+	if shouldSetupModelScene then
+		local categoryID = self.currentData.perksVendorCategoryID;
+		local defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(categoryID);
+
+		local hideArmor = not(self.currentData.displayData.autodress);
+		local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
+		if hideArmorSetting ~= nil then
+			hideArmor = hideArmorSetting;
+			PerksProgramFrame:SetHideArmorSetting(hideArmor);
+		end
+
+		if categoryID == Enum.PerksVendorCategoryType.Mount then
+			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			self:SetupModelSceneForMounts(self.currentData, defaultModelSceneID, forceSceneChange);		
+			self.previousMainModelSceneID = defaultModelSceneID;
+		elseif categoryID == Enum.PerksVendorCategoryType.Pet then
+			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			self:SetupModelSceneForPets(self.currentData, defaultModelSceneID, forceSceneChange);	
+			self.previousMainModelSceneID = defaultModelSceneID;
+		elseif categoryID == Enum.PerksVendorCategoryType.Toy then
+			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			self:SetupModelSceneForToys(self.currentData, defaultModelSceneID, forceSceneChange);
+			self.previousMainModelSceneID = defaultModelSceneID;
+		elseif categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset then
+			forceSceneChange = true;
+			self:SetupModelSceneForTransmogs(self.currentData, defaultModelSceneID, forceSceneChange);
+		end
 	end
 
-	if categoryID == Enum.PerksVendorCategoryType.Mount then
-		forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
-		self:SetupModelSceneForMounts(data, defaultModelSceneID, forceSceneChange);		
-		self.previousMainModelSceneID = defaultModelSceneID;
-	elseif categoryID == Enum.PerksVendorCategoryType.Pet then
-		forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
-		self:SetupModelSceneForPets(data, defaultModelSceneID, forceSceneChange);	
-		self.previousMainModelSceneID = defaultModelSceneID;
-	elseif categoryID == Enum.PerksVendorCategoryType.Toy then
-		forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
-		self:SetupModelSceneForToys(data, defaultModelSceneID, forceSceneChange);
-		self.previousMainModelSceneID = defaultModelSceneID;
-	elseif categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset then
-		forceSceneChange = true;
-		self:SetupModelSceneForTransmogs(data, defaultModelSceneID, forceSceneChange);
-	end
-	EventRegistry:TriggerEvent("PerksProgramFrame.PerksProductSelected", categoryID);
-	EventRegistry:TriggerEvent("PerksProgramModel.OnProductSelectedAfterModel", data);
-
-	self.previouscategoryID = categoryID;
+	EventRegistry:TriggerEvent("PerksProgramFrame.PerksProductSelected", self.currentData.perksVendorCategoryID);
+	EventRegistry:TriggerEvent("PerksProgramModel.OnProductSelectedAfterModel", self.currentData);
 end
 
 function PerksProgramModelSceneContainerFrameMixin:UpdateFormButtonVisibility(optionalPerksVendorCategoryID)
@@ -422,7 +428,7 @@ end
 
 function PerksProgramModelSceneContainerFrameMixin:OnPlayerHideArmorToggled()
 	if self.currentData then
-		local forceSceneChange = false;
+		local forceSceneChange = true;
 		self:OnProductSelected(self.currentData, forceSceneChange);
 	end
 end

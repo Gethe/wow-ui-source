@@ -624,6 +624,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetSoloRBGMinItemLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpecialEventBrawlInfo",
 			Type = "Function",
 
@@ -1214,9 +1223,9 @@ local PvpInfo =
 		{
 			Name = "BrawlType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "None", Type = "BrawlType", EnumValue = 0 },
@@ -1224,6 +1233,7 @@ local PvpInfo =
 				{ Name = "Arena", Type = "BrawlType", EnumValue = 2 },
 				{ Name = "LFG", Type = "BrawlType", EnumValue = 3 },
 				{ Name = "SoloShuffle", Type = "BrawlType", EnumValue = 4 },
+				{ Name = "SoloRbg", Type = "BrawlType", EnumValue = 5 },
 			},
 		},
 		{
@@ -1357,6 +1367,7 @@ local PvpInfo =
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
+				{ Name = "minItemLevel", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{

@@ -1421,10 +1421,12 @@ function PaperDollFrame_SetPlayer()
 				-- We need to SetModelByCreatureDisplayID() for Shapeshift forms if:
 				-- 1. We have a form active (already checked above)
 				-- 2. The display granted by that form is *not* our native Player display (e.g. anything *but* Glyph of Stars)
-				-- 3. The Player *is* currently their native race (e.g. *not* using a transform Toy of some kind)
+				-- 3. The Player is *not* mirror imaged
+				-- 4. The Player *is* currently their native race (e.g. *not* using a transform Toy of some kind)
 				local displayIDIsNative = (creatureDisplayID == nativeDisplayID);
 				local displayRaceIsNative = C_PlayerInfo.IsDisplayRaceNative();
-				local useShapeshiftDisplayID = (not displayIDIsNative and displayRaceIsNative);
+				local isMirrorImage = C_PlayerInfo.IsMirrorImage();
+				local useShapeshiftDisplayID = (not displayIDIsNative and not isMirrorImage and displayRaceIsNative);
 				if useShapeshiftDisplayID then
 					actor:SetModelByCreatureDisplayID(creatureDisplayID, true);
 					actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);

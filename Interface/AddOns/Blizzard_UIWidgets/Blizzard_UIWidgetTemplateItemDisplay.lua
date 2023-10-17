@@ -10,9 +10,14 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Ite
 UIWidgetTemplateItemDisplayMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateItemDisplayMixin:Setup(widgetInfo, widgetContainer)
-	if not self.continuableContainer then
-		self.continuableContainer = ContinuableContainer:Create();
+	if self.continuableContainer then
+		self.continuableContainer:Cancel();
 	end
+
+	self.continuableContainer = ContinuableContainer:Create();
+
+	self:SetSize(1, 1);
+
 	local item = Item:CreateFromItemID(widgetInfo.itemInfo.itemID);
 	self.continuableContainer:AddContinuable(item);
 

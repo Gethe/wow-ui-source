@@ -90,15 +90,12 @@ function PerksProgramProductsFrameMixin:OnEvent(event, ...)
 			end);
 		end
 
-		if foundElementData then
-			local vendorItemInfo = PerksProgramFrame:GetVendorItemInfo(vendorItemID);
-			local playCelebration = false;
+		local vendorItemInfo = PerksProgramFrame:GetVendorItemInfo(vendorItemID);
 
+		if foundElementData then
 			if(event == "PERKS_PROGRAM_PURCHASE_SUCCESS") then
 				foundElementData.purchased = true;
 				foundElementData.refundable = true;
-
-				playCelebration = true;
 			elseif(event == "PERKS_PROGRAM_REFUND_SUCCESS") then
 				foundElementData.purchased = false;
 				foundElementData.refundable = false;
@@ -108,13 +105,13 @@ function PerksProgramProductsFrameMixin:OnEvent(event, ...)
 			end
 			foundElementData.name = vendorItemInfo.name;
 			foundElementData.description = vendorItemInfo.description;
+		end
 
-			EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", foundElementData);
-			EventRegistry:TriggerEvent("PerksProgram.OnProductInfoChanged", foundElementData);
+		EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", vendorItemInfo);
+		EventRegistry:TriggerEvent("PerksProgram.OnProductInfoChanged", vendorItemInfo);
 
-			if playCelebration then
-				EventRegistry:TriggerEvent("PerksProgram.CelebratePurchase", vendorItemInfo);
-			end
+		if event == "PERKS_PROGRAM_PURCHASE_SUCCESS" then
+			EventRegistry:TriggerEvent("PerksProgram.CelebratePurchase", vendorItemInfo);
 		end
 	elseif event == "PERKS_PROGRAM_SET_FROZEN_ITEM" then
 		self:UpdateProducts();
@@ -149,6 +146,8 @@ function PerksProgramProductsFrameMixin:OnProductButtonDragStart(itemInfo)
 end
 
 function PerksProgramProductsFrameMixin:OnProductSelected(productItemInfo)
+	self.selectedProductInfo = productItemInfo;
+
 	-- Make sure only 1 product appears selected at a time
 	if productItemInfo.isFrozen then
 		self.ProductsScrollBoxContainer.selectionBehavior:ClearSelections();
@@ -316,11 +315,7 @@ local function PerksProgramProducts_PassFilterCheck(vendorItemInfo)
 		return false;
 	end
 
-	local collectedRequired = PerksProgramFrame:GetFilterState("collected");
-	local uncollectedRequired = PerksProgramFrame:GetFilterState("uncollected");
 	local useableRequired = PerksProgramFrame:GetFilterState("useable");
-	local itemCollected = vendorItemInfo.purchased;
-
 	if useableRequired then -- a useable is check is required
 		local isUseable = C_PlayerInfo.CanUseItem(vendorItemInfo.itemID);
 		if not isUseable then
@@ -328,14 +323,19 @@ local function PerksProgramProducts_PassFilterCheck(vendorItemInfo)
 		end
 	end
 
-	if collectedRequired and not itemCollected and not uncollectedRequired then
-		return false;
+	local itemCollected = vendorItemInfo.purchased;
+
+	local includeCollected = PerksProgramFrame:GetFilterState("collected");
+	if includeCollected and itemCollected then
+		return true;
 	end
 
-	if uncollectedRequired and itemCollected and not collectedRequired then
-		return false;
+	local includeUncollected = PerksProgramFrame:GetFilterState("uncollected");
+	if includeUncollected and not itemCollected then
+		return true;
 	end
-	return true;
+
+	return false;
 end
 
 local function ProductSortComparator(lhs, rhs)
@@ -511,12 +511,7 @@ function PerksProgramProductsFrameMixin:OnFilterChanged()
 end
 
 function PerksProgramProductsFrameMixin:GetSelectedProduct()
-	if self.FrozenProductContainer:IsSelected() then
-		return self.FrozenProductContainer:GetItemInfo();
-	end
-
-	local scrollContainer = self.ProductsScrollBoxContainer;
-	return scrollContainer.selectionBehavior:GetFirstSelectedElementData();
+	return self.selectedProductInfo;
 end
 
 function PerksProgramProductsFrameMixin:SelectFirstProduct()

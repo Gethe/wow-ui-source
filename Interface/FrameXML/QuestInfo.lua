@@ -19,7 +19,7 @@ function QuestInfoItem_OnClick(self)
 end
 
 local ACTIVE_TEMPLATE;
-local QuestBgTextContrast = QuestUtil.QuestTextContrastUseLightText();
+local QuestBgTextContrast = false;
 
 function QuestInfo_Display(template, parentFrame, acceptButton, material, mapView)
 	ACTIVE_TEMPLATE = template;

@@ -1735,7 +1735,7 @@ UI_shared.xsd">
 							<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
 							<OnEditFocusGained function="nop"/> <!--Override the base one that selects all text-->
 							<OnTextChanged>
 								InputBoxInstructions_OnTextChanged(self);

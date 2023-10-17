@@ -58,6 +58,8 @@
 			<Scripts>
 				<OnLoad method="OnLoad" />
 				<OnShow method="OnShow" />
+				<OnEnter method="OnEnter" />
+				<OnLeave method="OnLeave" />
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

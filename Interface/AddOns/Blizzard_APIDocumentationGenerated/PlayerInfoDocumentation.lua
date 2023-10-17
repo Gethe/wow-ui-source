@@ -206,6 +206,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsMirrorImage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isMirrorImage", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerEligibleForNPE",
 			Type = "Function",
 

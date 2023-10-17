@@ -142,7 +142,8 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
-	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("MOUNT_EQUIPMENT_APPLY_RESULT");
 	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
@@ -283,7 +284,7 @@ function MountJournal_InitMountButton(button, elementData)
 end
 
 function MountJournal_OnEvent(self, event, ...)
-	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
+	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" or event == "PLAYER_REGEN_ENABLED" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
 			MountJournal_FullUpdate(self);
