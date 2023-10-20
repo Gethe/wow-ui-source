@@ -79,32 +79,10 @@ function PerksProgramProductsFrameMixin:OnEvent(event, ...)
 	if event == "PERKS_PROGRAM_DATA_SPECIFIC_ITEM_REFRESH" or event == "PERKS_PROGRAM_PURCHASE_SUCCESS" or event == "PERKS_PROGRAM_REFUND_SUCCESS" then
 		local vendorItemID = ...;
 
-		local foundElementData;
-		local frozenItemInfo = self.FrozenProductContainer:GetItemInfo();
-		if frozenItemInfo and frozenItemInfo.perksVendorItemID == vendorItemID then
-			foundElementData = frozenItemInfo;
-		else
-			local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
-			_, foundElementData = scrollBox:FindByPredicate(function(elementData)
-				return elementData.perksVendorItemID == vendorItemID;
-			end);
-		end
-
 		local vendorItemInfo = PerksProgramFrame:GetVendorItemInfo(vendorItemID);
 
-		if foundElementData then
-			if(event == "PERKS_PROGRAM_PURCHASE_SUCCESS") then
-				foundElementData.purchased = true;
-				foundElementData.refundable = true;
-			elseif(event == "PERKS_PROGRAM_REFUND_SUCCESS") then
-				foundElementData.purchased = false;
-				foundElementData.refundable = false;
-			else
-				foundElementData.purchased = vendorItemInfo.purchased;
-				foundElementData.refundable = vendorItemInfo.refundable;
-			end
-			foundElementData.name = vendorItemInfo.name;
-			foundElementData.description = vendorItemInfo.description;
+		if event == "PERKS_PROGRAM_REFUND_SUCCESS" then
+			vendorItemInfo.purchased = false;
 		end
 
 		EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", vendorItemInfo);

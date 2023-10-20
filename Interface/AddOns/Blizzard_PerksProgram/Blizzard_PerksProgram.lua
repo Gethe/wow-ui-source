@@ -386,6 +386,10 @@ end
 
 -- Use this instead of getting item info directly from C_PerksProgram since it adds extra data to the ItemInfo
 function PerksProgramMixin:GetVendorItemInfo(perksVendorItemID)
+	if C_PerksProgram.IsFrozenPerksVendorItem(perksVendorItemID) then
+		return self:GetFrozenPerksVendorItemInfo();
+	end
+
 	local itemInfo = C_PerksProgram.GetVendorItemInfo(perksVendorItemID)
 	return BuildPerksVendorItemInfo(itemInfo);
 end

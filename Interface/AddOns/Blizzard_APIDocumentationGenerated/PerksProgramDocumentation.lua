@@ -139,6 +139,20 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "IsFrozenPerksVendorItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFrozen", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ItemSelectedTelemetry",
 			Type = "Function",
 
