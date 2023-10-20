@@ -33,8 +33,11 @@ function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, is
 	end
 
 	if QuestUtil.QuestTextContrastUseLightText() then
-		--use light text when using dark accessibility backgrounds
-		self:SetText(STONE_MATERIAL_TEXT_COLOR:WrapTextInColorCode(titleText));
+		self:GetFontString():SetFixedColor(true);
+		self:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
+	else
+		self:GetFontString():SetFixedColor(false);
+		self:GetFontString():SetTextColor(PARCHMENT_MATERIAL_TEXT_COLOR:GetRGB());
 	end
 
 	self:Resize();
