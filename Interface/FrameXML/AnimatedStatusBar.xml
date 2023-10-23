@@ -1,0 +1,144 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI_shared.xsd">
+	<Script file="AnimatedStatusBar.lua"/>
+
+	<Frame name="AnimatedStatusBarGlowLinesTemplate" virtual="true">
+		<Size x="37" y="26" />
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="GlowLines" alphaMode="ADD" atlas="XPBarAnim-GlowLines" alpha="0" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="GlowLines" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="GlowLines" duration="0.4" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2"/>
+				<Translation childKey="GlowLines" duration="0.3" order="1" offsetX="0" offsetY="8"/>
+				<Alpha childKey="GlowLines" duration="0.4" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<StatusBar name="AnimatedStatusBarTemplate" mixin="AnimatedStatusBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="tileTemplate" value="AnimatedStatusBarGlowLinesTemplate" type="string"/>
+			<KeyValue key="tileTemplateWidth" value="37" type="number"/>
+			<KeyValue key="tileTemplateOverlap" value="0" type="number"/>
+			<KeyValue key="tileTemplateDelay" value=".3" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BarGain" alpha="0" parentArray="ColorableTextures" alphaMode="BLEND" atlas="XPBarAnim-OrangeGain">
+					<Size x="50"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BarTrailGlow" parentArray="ColorableTextures" alphaMode="ADD" alpha="0" atlas="XPBarAnim-OrangeTrail">
+					<Size x="50" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BarGlow" parentArray="ColorableTextures" alphaMode="ADD" alpha="0" atlas="XPBarAnim-OrangeGlow">
+					<Size x="50" y="8"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SparkBurstMove" parentArray="AnimatedTextures" alpha="0" alphaMode="ADD" atlas="XPBarAnim-OrangeSpark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="SparkBurstMove" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
+				<Translation childKey="SparkBurstMove" order="1" offsetY="0">
+					<KeyValues>
+						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
+						<KeyValue key="adjustOffsetX" value="true" type="boolean"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
+					</KeyValues>
+				</Translation>
+				<Scale childKey="SparkBurstMove" duration="0.2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2">
+					<KeyValues>
+						<KeyValue key="delayPerDistance" value="0.008" type="number"/>
+					</KeyValues>
+				</Scale>
+				<Alpha childKey="SparkBurstMove" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				
+				<Scale childKey="BarGain" duration="0.4" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="LEFT"/>
+					<KeyValues>
+						<KeyValue key="setStatusBarOnUpdate" value="true" type="boolean"/>
+						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
+						<KeyValue key="scaleFactor" value=".02" type="number"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
+						<KeyValue key="adjustScaleTo" value="true" type="boolean"/>
+					</KeyValues>
+				</Scale>
+				<Alpha childKey="BarGain" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BarGain" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				
+				<Alpha childKey="BarTrailGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="BarTrailGlow" order="1" offsetY="0">
+					<KeyValues>
+						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
+						<KeyValue key="adjustOffsetX" value="true" type="boolean"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
+					</KeyValues>
+				</Translation>
+				<Scale childKey="BarTrailGlow" order="1" fromScaleX="0.001" fromScaleY="1">
+					<Origin point="RIGHT"/>
+					<KeyValues>
+						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
+						<KeyValue key="scaleFactor" value=".02" type="number"/>
+						<KeyValue key="adjustScaleTo" value="true" type="boolean"/>
+					</KeyValues>
+				</Scale>
+				<Alpha childKey="BarTrailGlow" duration="0.5" order="2" fromAlpha="1" toAlpha="0" />
+				
+				<Scale childKey="BarGlow" order="1" fromScaleX="0.001" fromScaleY="1">
+					<Origin point="LEFT"/>
+					<KeyValues>
+						<KeyValue key="durationPerDistance" value="0.008" type="number"/>
+						<KeyValue key="scaleFactor" value=".02" type="number"/>
+						<KeyValue key="adjustScaleTo" value="true" type="boolean"/>
+					</KeyValues>
+				</Scale>
+				<Alpha childKey="BarGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BarGlow" duration="0.4" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="2">
+					<Origin point="BOTTOM"/>
+					<KeyValues>
+						<KeyValue key="delayPerDistance" value="0.008" type="number"/>
+						<KeyValue key="adjustAnchors" value="true" type="boolean"/>
+					</KeyValues>
+				</Scale>
+				<Alpha childKey="BarGlow" duration="0.4" order="1" fromAlpha="1" toAlpha="0">
+					<KeyValues>
+						<KeyValue key="delayPerDistance" value="0.008" type="number"/>
+					</KeyValues>
+				</Alpha>
+				
+			</AnimationGroup>
+		</Animations>
+
+		<Scripts>
+			<OnLoad>
+				self:OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				self:OnUpdate(elapsed);
+			</OnUpdate>
+		</Scripts>
+	</StatusBar>
+</Ui>
