@@ -4508,6 +4508,10 @@ function ChatEdit_SetLastToldTarget(name, chatType)
 end
 
 function ChatEdit_UpdateHeader(editBox)
+	if IsMacroEditBox(editBox) then
+		return;
+	end
+
 	local type = editBox:GetAttribute("chatType");
 	if ( not type ) then
 		return;
