@@ -117,172 +117,84 @@ function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, is
 	UpdateMicroButtons();
 end
 
+local MICRO_BUTTONS_DISABLED = false;
+
+-- Disables all microbuttons but the store
+--	Arg allows for store to disable main menu button
+-- 
+local function DisableMicroButtons(disableMainMenu)
+	MICRO_BUTTONS_DISABLED = true;
+
+	CharacterMicroButton.disabledTooltip = nil;
+	CharacterMicroButton:Disable();
+	
+	SpellbookMicroButton.disabledTooltip = nil;
+	SpellbookMicroButton:Disable();
+
+	TalentMicroButton.disabledTooltip = nil;
+	TalentMicroButton:Disable();
+
+	QuestLogMicroButton.disabledTooltip = nil;
+	QuestLogMicroButton:Disable();
+
+	GuildMicroButton.disabledTooltip = nil;
+	GuildMicroButton:Disable();
+
+	LFDMicroButton.disabledTooltip = nil;
+	LFDMicroButton:Disable();
+
+	AchievementMicroButton.disabledTooltip = nil;
+	AchievementMicroButton.tooltipText = nil;
+	AchievementMicroButton:Disable();
+
+	EJMicroButton.disabledTooltip = nil;
+	EJMicroButton:Disable();
+
+	CollectionsMicroButton.disabledTooltip = nil;
+	CollectionsMicroButton:Disable();
+
+	if (disableMainMenu) then
+		MainMenuMicroButton.disabledTooltip = nil;
+		MainMenuMicroButton:Disable();
+	end
+end
+
+-- Enables all microbuttons but the store
+local function EnableMicroButtons()
+	MICRO_BUTTONS_DISABLED = false;
+
+	CharacterMicroButton:Enable();
+	SpellbookMicroButton:Enable();
+	TalentMicroButton:Enable();
+	QuestLogMicroButton:Enable();
+	GuildMicroButton:Enable();
+	LFDMicroButton:Enable();
+	AchievementMicroButton:Enable();
+	EJMicroButton:Enable();
+	CollectionsMicroButton:Enable();
+	MainMenuMicroButton:Enable();
+end
+
 function UpdateMicroButtons()
-	local playerLevel = UnitLevel("player");
-	local factionGroup = UnitFactionGroup("player");
+	StoreMicroButton:UpdateMicroButton();
 
-	if ( factionGroup == "Neutral" ) then
-		GuildMicroButton.factionGroup = factionGroup;
-		LFDMicroButton.factionGroup = factionGroup;
-	else
-		GuildMicroButton.factionGroup = nil;
-		LFDMicroButton.factionGroup = nil;
+	if (MainMenuMicroButton:IsEnabled()) then
+		MainMenuMicroButton:UpdateMicroButton();
 	end
 
-
-	if ( CharacterFrame and CharacterFrame:IsShown() ) then
-		CharacterMicroButton:SetPushed();
-	else
-		CharacterMicroButton:SetNormal();
+	if (MICRO_BUTTONS_DISABLED) then
+		return;
 	end
 
-	if ( SpellBookFrame and SpellBookFrame:IsShown() ) then
-		SpellbookMicroButton:SetPushed(); 
-	else
-		SpellbookMicroButton:SetNormal();
-	end
-
-	if (ClassTalentFrame and ClassTalentFrame:IsShown()) then
-		TalentMicroButton:SetPushed();
-	else
-		if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
-			TalentMicroButton:Disable();
-		else
-			TalentMicroButton:Enable();
-			TalentMicroButton:SetNormal();
-		end
-	end
-
-	if (  WorldMapFrame and WorldMapFrame:IsShown() ) then
-		QuestLogMicroButton:SetPushed();
-	else
-		QuestLogMicroButton:SetNormal();
-	end
-
-	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
-		or ( SettingsPanel:IsShown())
-		or ( KeyBindingFrame and KeyBindingFrame:IsShown())
-		or ( MacroFrame and MacroFrame:IsShown()) ) then
-		MainMenuMicroButton:SetPushed();
-	else
-		MainMenuMicroButton:SetNormal();
-	end
-
-	GuildMicroButton:UpdateTabard();
-
-	if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk.IsEnabled() ) then
-		GuildMicroButton:Disable();
-		if (Kiosk.IsEnabled()) then
-			SetKioskTooltip(GuildMicroButton);
-		else
-			GuildMicroButton.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
-		end
-	elseif ( C_Club.IsEnabled() and not BNConnected() ) then
-		GuildMicroButton:Disable();
-		GuildMicroButton.disabledTooltip = BLIZZARD_COMMUNITIES_SERVICES_UNAVAILABLE;
-	elseif ( C_Club.IsEnabled() and C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
-		GuildMicroButton:Disable();
-		GuildMicroButton.disabledTooltip = UNAVAILABLE;
-	elseif ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
-		GuildMicroButton:Enable();
-		GuildMicroButton:SetPushed();
-	else
-		GuildMicroButton:Enable();
-		GuildMicroButton:SetNormal();
-		if ( CommunitiesFrame_IsEnabled() ) then
-			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
-			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_COMMUNITIESTAB;
-		elseif ( IsInGuild() ) then
-			GuildMicroButton.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
-			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
-		else
-			GuildMicroButton.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
-			GuildMicroButton.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
-		end
-	end
-
-	GuildMicroButton:UpdateNotificationIcon(GuildMicroButton);
-
-	if ( PVEFrame and PVEFrame:IsShown() ) then
-		LFDMicroButton:SetPushed();
-	else
-		if not LFDMicroButton:IsActive() then
-			if (Kiosk.IsEnabled()) then
-				SetKioskTooltip(LFDMicroButton);
-			end
-			LFDMicroButton:Disable();
-		else
-			LFDMicroButton:Enable();
-			LFDMicroButton:SetNormal();
-		end
-	end
-
-	if ( AchievementFrame and AchievementFrame:IsShown() ) then
-		AchievementMicroButton:SetPushed();
-	else
-		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() and not Kiosk.IsEnabled()  ) then
-			AchievementMicroButton:Enable();
-			AchievementMicroButton:SetNormal();
-		else
-			if (Kiosk.IsEnabled()) then
-				SetKioskTooltip(AchievementMicroButton);
-			end
-			AchievementMicroButton:Disable();
-		end
-	end
-
-	EJMicroButton:UpdateDisplay();
-
-	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
-		CollectionsMicroButton:SetPushed();
-	else
-		if ( not Kiosk.IsEnabled() ) then
-			CollectionsMicroButton:Enable();
-			CollectionsMicroButton:SetNormal();
-		else
-			SetKioskTooltip(CollectionsMicroButton);
-			CollectionsMicroButton:Disable();
-		end
-	end
-
-	if ( StoreFrame and StoreFrame_IsShown() ) then
-		StoreMicroButton:SetPushed();
-	else
-		StoreMicroButton:SetNormal();
-	end
-
-	StoreMicroButton:Show();
-	HelpMicroButton:Hide();
-
-	if ( C_StorePublic.IsDisabledByParentalControls() ) then
-		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
-		StoreMicroButton:Disable();
-	elseif ( Kiosk.IsEnabled() ) then
-		StoreMicroButton.disabledTooltip = ERR_SYSTEM_DISABLED;
-		StoreMicroButton:Disable();
-	elseif ( not C_StorePublic.IsEnabled() ) then
-		if ( GetCurrentRegionName() == "CN" ) then
-			HelpMicroButton:Show();
-			StoreMicroButton:Hide();
-
-			if ( HelpFrame and HelpFrame:IsShown() ) then
-				HelpMicroButton:SetPushed();
-			else
-				HelpMicroButton:SetNormal();
-			end
-		else
-			StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_UNAVAILABLE;
-			StoreMicroButton:Disable();
-		end
-	elseif C_PlayerInfo.IsPlayerNPERestricted() then
-		local tutorials = TutorialLogic and TutorialLogic.Tutorials;
-		if tutorials and tutorials.UI_Watcher and tutorials.UI_Watcher.IsActive then
-			StoreMicroButton:Hide();
-		end
-	else
-		StoreMicroButton.disabledTooltip = nil;
-		StoreMicroButton:Enable();
-	end
+	CharacterMicroButton:UpdateMicroButton();
+	SpellbookMicroButton:UpdateMicroButton();
+	TalentMicroButton:UpdateMicroButton();
+	QuestLogMicroButton:UpdateMicroButton();
+	GuildMicroButton:UpdateMicroButton();
+	LFDMicroButton:UpdateMicroButton();
+	AchievementMicroButton:UpdateMicroButton();
+	EJMicroButton:UpdateMicroButton();
+	CollectionsMicroButton:UpdateMicroButton();
 end
 
 function MicroButtonPulse(self, duration)
@@ -445,7 +357,7 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 			if ( not self:IsEnabled() ) then
 				if ( self.factionGroup == "Neutral" ) then
 					GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-				elseif ( self.minLevel ) then
+				elseif ( self.minLevel and not MICRO_BUTTONS_DISABLED ) then
 					GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 				elseif ( self.disabledTooltip ) then
 					local disabledTooltipText = GetValueOrCallFunction(self, "disabledTooltip");
@@ -501,7 +413,15 @@ function MainMenuBarMicroButtonMixin:OnHide()
 end
 
 function MainMenuBarMicroButtonMixin:OnMouseDown()
-	self:SetPushed();
+	if self:IsEnabled() then
+		self:SetPushed();
+	end
+end
+
+function MainMenuBarMicroButtonMixin:OnMouseUp()
+	if self:IsEnabled() and not self:IsMouseOver() then
+		UpdateMicroButtons();
+	end
 end
 
 CharacterMicroButtonMixin = {};
@@ -530,6 +450,14 @@ function CharacterMicroButtonMixin:OnClick()
 		ToggleCharacter("PaperDollFrame");
 	end
 end 
+
+function CharacterMicroButtonMixin:UpdateMicroButton()
+	if ( CharacterFrame and CharacterFrame:IsShown() ) then
+		self:SetPushed();
+	else
+		self:SetNormal();
+	end
+end
 
 function CharacterMicroButtonMixin:OnEvent(event, ...)
 	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
@@ -593,6 +521,14 @@ function SpellbookMicroButtonMixin:OnClick(button, down)
 		else
 			ToggleSpellBook(BOOKTYPE_SPELL);
 		end
+	end
+end
+
+function SpellbookMicroButtonMixin:UpdateMicroButton()
+	if ( SpellBookFrame and SpellBookFrame:IsShown() ) then
+		self:SetPushed(); 
+	else
+		self:SetNormal();
 	end
 end
 
@@ -754,6 +690,23 @@ function TalentMicroButtonMixin:OnClick(button, down)
 	end
 end
 
+function TalentMicroButtonMixin:UpdateMicroButton()
+	if (ClassTalentFrame and ClassTalentFrame:IsShown()) then
+		self:SetPushed();
+	else
+		if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
+			self.disabledTooltip =	function()
+				local _, failureReason = C_SpecializationInfo.CanPlayerUseTalentSpecUI();
+				return failureReason;
+			end
+			self:Disable();
+		else
+			self:Enable();
+			self:SetNormal();
+		end
+	end
+end
+
 
 AchievementMicroButtonMixin = {};
 
@@ -773,6 +726,22 @@ end
 function AchievementMicroButtonMixin:OnClick(button, down)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleAchievementFrame();
+	end
+end
+
+function AchievementMicroButtonMixin:UpdateMicroButton()
+	if ( AchievementFrame and AchievementFrame:IsShown() ) then
+		self:SetPushed();
+	else
+		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() and not Kiosk.IsEnabled()  ) then
+			self:Enable();
+			self:SetNormal();
+		else
+			if (Kiosk.IsEnabled()) then
+				SetKioskTooltip(AchievementMicroButton);
+			end
+			self:Disable();
+		end
 	end
 end
 
@@ -810,6 +779,14 @@ end
 function QuestLogMicroButtonMixin:OnClick(button)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleQuestLog();
+	end
+end
+
+function QuestLogMicroButtonMixin:UpdateMicroButton()
+	if (  WorldMapFrame and WorldMapFrame:IsShown() ) then
+		self:SetPushed();
+	else
+		self:SetNormal();
 	end
 end
 
@@ -907,6 +884,51 @@ function GuildMicroButtonMixin:OnClick(button, down)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleGuildFrame();
 	end
+end
+
+function GuildMicroButtonMixin:UpdateMicroButton()
+	local factionGroup = UnitFactionGroup("player");
+
+	if ( factionGroup == "Neutral" ) then
+		self.factionGroup = factionGroup;
+	else
+		self.factionGroup = nil;
+	end
+
+	self:UpdateTabard();
+
+	if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk.IsEnabled() ) then
+		self:Disable();
+		if (Kiosk.IsEnabled()) then
+			SetKioskTooltip(self);
+		else
+			self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
+		end
+	elseif ( C_Club.IsEnabled() and not BNConnected() ) then
+		self:Disable();
+		self.disabledTooltip = BLIZZARD_COMMUNITIES_SERVICES_UNAVAILABLE;
+	elseif ( C_Club.IsEnabled() and C_Club.IsRestricted() ~= Enum.ClubRestrictionReason.None ) then
+		self:Disable();
+		self.disabledTooltip = UNAVAILABLE;
+	elseif ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
+		self:Enable();
+		self:SetPushed();
+	else
+		self:Enable();
+		self:SetNormal();
+		if ( CommunitiesFrame_IsEnabled() ) then
+			self.tooltipText = MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB");
+			self.newbieText = NEWBIE_TOOLTIP_COMMUNITIESTAB;
+		elseif ( IsInGuild() ) then
+			self.tooltipText = MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB");
+			self.newbieText = NEWBIE_TOOLTIP_GUILDTAB;
+		else
+			self.tooltipText = MicroButtonTooltipText(LOOKINGFORGUILD, "TOGGLEGUILDTAB");
+			self.newbieText = NEWBIE_TOOLTIP_LOOKINGFORGUILDTAB;
+		end
+	end
+
+	self:UpdateNotificationIcon(self);
 end
 
 function GuildMicroButtonMixin:EvaluateAlertVisibility()
@@ -1017,6 +1039,35 @@ function LFDMicroButtonMixin:OnClick(button, down)
 	end
 end
 
+function LFDMicroButtonMixin:UpdateMicroButton()
+	local factionGroup = UnitFactionGroup("player");
+
+	if ( factionGroup == "Neutral" ) then
+		self.factionGroup = factionGroup;
+	else
+		self.factionGroup = nil;
+	end
+
+	if ( PVEFrame and PVEFrame:IsShown() ) then
+		self:SetPushed();
+	else
+		if not self:IsActive() then
+			if (Kiosk.IsEnabled()) then
+				SetKioskTooltip(self);
+			end
+
+			self.disabledTooltip =	function()
+				local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
+				return canUse and FEATURE_UNAVAILBLE_PLAYER_IS_NEUTRAL or failureReason;
+			end
+			self:Disable();
+		else
+			self:Enable();
+			self:SetNormal();
+		end
+	end
+end
+
 
 CollectionMicroButtonMixin = {};
 
@@ -1113,6 +1164,20 @@ end
 function CollectionMicroButtonMixin:OnClick(button, down)
 	if ( not KeybindFrames_InQuickKeybindMode() ) then
 		ToggleCollectionsJournal();
+	end
+end
+
+function CollectionMicroButtonMixin:UpdateMicroButton()
+	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
+		self:SetPushed();
+	else
+		if ( not Kiosk.IsEnabled() ) then
+			self:Enable();
+			self:SetNormal();
+		else
+			SetKioskTooltip(self);
+			self:Disable();
+		end
 	end
 end
 
@@ -1286,6 +1351,10 @@ function EJMicroButtonMixin:OnClick(button, down)
 	end
 end
 
+function EJMicroButtonMixin:UpdateMicroButton()
+	self:UpdateDisplay();
+end
+
 function EJMicroButtonMixin:ShouldShowPowerTab(button, down)
 	return (self.runeforgePowerAdded ~= nil) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FIRST_RUNEFORGE_LEGENDARY_POWER), self.runeforgePowerAdded;
 end
@@ -1331,6 +1400,49 @@ function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 		end
 	end
 	return alertShown;
+end
+
+function StoreMicroButtonMixin:UpdateMicroButton()
+	if ( StoreFrame and StoreFrame_IsShown() ) then
+		self:SetPushed();
+		DisableMicroButtons(true);
+	else
+		EnableMicroButtons();
+		self:SetNormal();
+	end
+
+	self:Show();
+	HelpMicroButton:Hide();
+
+	if ( C_StorePublic.IsDisabledByParentalControls() ) then
+		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
+		self:Disable();
+	elseif ( Kiosk.IsEnabled() ) then
+		self.disabledTooltip = ERR_SYSTEM_DISABLED;
+		self:Disable();
+	elseif ( not C_StorePublic.IsEnabled() ) then
+		if ( GetCurrentRegionName() == "CN" ) then
+			self:Show();
+			self:Hide();
+
+			if ( HelpFrame and HelpFrame:IsShown() ) then
+				HelpMicroButton:SetPushed();
+			else
+				HelpMicroButton:SetNormal();
+			end
+		else
+			self.disabledTooltip = BLIZZARD_STORE_ERROR_UNAVAILABLE;
+			self:Disable();
+		end
+	elseif C_PlayerInfo.IsPlayerNPERestricted() then
+		local tutorials = TutorialLogic and TutorialLogic.Tutorials;
+		if tutorials and tutorials.UI_Watcher and tutorials.UI_Watcher.IsActive then
+			self:Hide();
+		end
+	else
+		self.disabledTooltip = nil;
+		self:Enable();
+	end
 end
 
 HelpMicroButtonMixin = {};
@@ -1399,40 +1511,39 @@ function MainMenuMicroButtonMixin:OnUpdate(elapsed)
 	end
 end
 
-function MainMenuMicroButtonMixin:OnMouseDown(button)
-	self:SetPushed();
-	self.down = 1;
+function MainMenuMicroButtonMixin:OnClick(button, down)
+	if ( self:IsMouseOver() ) then
+		if ( not GameMenuFrame:IsShown() ) then
+			if ( not AreAllPanelsDisallowed() ) then
+				if ( SettingsPanel:IsShown() ) then
+					SettingsPanel:Close();
+				end
+				CloseMenus();
+				CloseAllWindows();
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+				ShowUIPanel(GameMenuFrame);
+			end
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
+			HideUIPanel(GameMenuFrame);
+		end
+	end
 end
 
-function MainMenuMicroButtonMixin:OnMouseUp(button)
-	if ( self.down ) then
-		self.down = nil;
-		if ( self:IsMouseOver() ) then
-			if ( not GameMenuFrame:IsShown() ) then
-				if ( not AreAllPanelsDisallowed() ) then
-					if ( SettingsPanel:IsShown() ) then
-						SettingsPanel:Close();
-					end
-					CloseMenus();
-					CloseAllWindows();
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-					ShowUIPanel(GameMenuFrame);
-				end
-			else
-				PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
-				HideUIPanel(GameMenuFrame);
-				self:SetNormal();
-			end
-		end
-		UpdateMicroButtons();
-		return;
-	end
-	if ( self:GetButtonState() == "NORMAL" ) then
+function MainMenuMicroButtonMixin:UpdateMicroButton()
+	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
+		or ( SettingsPanel:IsShown())
+		or ( KeyBindingFrame and KeyBindingFrame:IsShown())
+		or ( MacroFrame and MacroFrame:IsShown()) ) then
 		self:SetPushed();
-		self.down = 1;
+
+		if( ( GameMenuFrame and GameMenuFrame:IsShown() )
+			or ( SettingsPanel:IsShown() ) ) then
+			DisableMicroButtons(false);
+		end
 	else
+		EnableMicroButtons();
 		self:SetNormal();
-		self.down = 1;
 	end
 end
 

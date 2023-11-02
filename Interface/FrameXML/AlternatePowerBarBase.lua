@@ -176,6 +176,10 @@ function PlayerFrameAlternatePowerBarBaseMixin:Initialize()
 	TextStatusBar_Initialize(self);
 
 	AlternatePowerBarBaseMixin.Initialize(self);
+
+	if self.Spark and self.PowerBarMask then
+		self.Spark:AddMaskTexture(self.PowerBarMask);
+	end
 end
 
 function PlayerFrameAlternatePowerBarBaseMixin:OnShow()
@@ -223,6 +227,10 @@ function PlayerFrameAlternatePowerBarBaseMixin:UpdateArt()
 		-- If we cannot find the info for what the bar should be, default to Mana bar
 		self:SetStatusBarColor(1, 1, 1);
 		self:SetStatusBarTexture("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
+	end
+
+	if self.Spark then
+		self.Spark:SetVisuals(info.spark);
 	end
 
 	self:UpdateIsAliveState();

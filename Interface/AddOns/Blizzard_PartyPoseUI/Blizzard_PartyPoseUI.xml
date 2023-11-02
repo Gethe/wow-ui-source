@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\FrameXML\UI_shared.xsd">
 	<Button name="PartyPoseRewardsButtonTemplate" mixin="PartyPoseRewardsMixin" alpha="0" virtual="true">
 		<Size x="174" y="55"/>
 		<Animations>
@@ -164,9 +164,6 @@
 	</Frame>
 	<ModelScene name="PartyPoseModelFrameTemplate" inherits="NonInteractableModelSceneMixinTemplate" virtual="true">
 		<Size x="730" y="400"/>
-		<KeyValues>
-			<KeyValue key="reversedLighting" value="true" type="boolean"/>
-		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="5" y="-75"/>
 			<Anchor point="BOTTOMRIGHT" x="-5" y="65"/>
@@ -353,4 +350,3 @@
 	</ModelScene>
 	<Texture name="PartyPoseModelShadowTextureTemplate" atlas="scoreboard-charactermodels-shadow" useAtlasSize="true" virtual="true"/>
 </Ui>
-

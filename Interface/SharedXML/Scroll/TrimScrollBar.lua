@@ -18,9 +18,14 @@ end
 
 WowTrimScrollBarStepperMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
+function WowTrimScrollBarStepperMixin:OnLoad()
+	local x, y = 1, -1;
+	self:SetDisplacedRegions(x, y, self.Texture, self.Overlay);
+end
+
 function WowTrimScrollBarStepperMixin:GetAtlas()
 	if self:IsEnabled() then
-		if self.down then
+		if self:IsDown() then
 			return self.downTexture;
 		end
 		return self.upTexture;
@@ -28,54 +33,15 @@ function WowTrimScrollBarStepperMixin:GetAtlas()
 	return self.disabledTexture;
 end
 
-function WowTrimScrollBarStepperMixin:UpdateAtlas()
+function WowTrimScrollBarStepperMixin:OnButtonStateChanged()
 	self.Texture:SetAtlas(self:GetAtlas(), TextureKitConstants.UseAtlasSize);
-end
-
-function WowTrimScrollBarStepperMixin:OnEnter()
-	if ButtonStateBehaviorMixin.OnEnter(self) then
-		self.Overlay:Show();
-	end
-end
-
-function WowTrimScrollBarStepperMixin:OnLeave()
-	if ButtonStateBehaviorMixin.OnEnter(self) then
-		self.Overlay:Hide();
-	end
-end
-
-function WowTrimScrollBarStepperMixin:OnMouseDown()
-	if ButtonStateBehaviorMixin.OnMouseDown(self) then
-		self:UpdateAtlas();
-		self.Texture:AdjustPointsOffset(-1, 0);
-		self.Overlay:AdjustPointsOffset(-1, -1);
-	end
-end
-
-function WowTrimScrollBarStepperMixin:OnMouseUp()
-	if ButtonStateBehaviorMixin.OnMouseUp(self) then
-		self:UpdateAtlas();
-		self.Texture:AdjustPointsOffset(1, 0);
-		self.Overlay:AdjustPointsOffset(1, 1);
-	end
-end
-
-function WowTrimScrollBarStepperMixin:OnEnable()
-	self:UpdateAtlas();
-end
-
-function WowTrimScrollBarStepperMixin:OnDisable()
-	ButtonStateBehaviorMixin.OnDisable(self);
-	self:UpdateAtlas();
-
-	self.Texture:ClearPointsOffset();
-	self.Overlay:ClearPointsOffset();
+	self.Overlay:SetShown(self:IsOver());
 end
 
 WowScrollBarThumbScriptsMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function WowScrollBarThumbScriptsMixin:OnLoad()
-	self:UpdateAtlas();
+	self:OnButtonStateChanged();
 end
 
 function WowScrollBarThumbScriptsMixin:GetAtlas()
@@ -88,35 +54,15 @@ function WowScrollBarThumbScriptsMixin:GetAtlas()
 	return self.disabledMiddleTexture, self.disabledBeginTexture, self.disabledEndTexture;
 end
 
-function WowScrollBarThumbScriptsMixin:UpdateAtlas()
+function WowScrollBarThumbScriptsMixin:OnButtonStateChanged()
 	local middleAtlas, beginAtlas, endAtlas = self:GetAtlas();
 	self.Middle:SetAtlas(middleAtlas, TextureKitConstants.UseAtlasSize);
 	self.Begin:SetAtlas(beginAtlas, TextureKitConstants.UseAtlasSize);
 	self.End:SetAtlas(endAtlas, TextureKitConstants.UseAtlasSize);
 end
 
-function WowScrollBarThumbScriptsMixin:OnEnter()
-	if ButtonStateBehaviorMixin.OnEnter(self) then
-		self:UpdateAtlas();
-	end
-end
-function WowScrollBarThumbScriptsMixin:OnLeave()
-	if ButtonStateBehaviorMixin.OnLeave(self) then
-		self:UpdateAtlas();
-	end
-end
-
-function WowScrollBarThumbScriptsMixin:OnEnable()
-	self:UpdateAtlas();
-end
-
-function WowScrollBarThumbScriptsMixin:OnDisable()
-	ButtonStateBehaviorMixin.OnDisable(self);
-	self:UpdateAtlas();
-end
-
 function WowScrollBarThumbScriptsMixin:OnSizeChanged(width, height)
-	self:UpdateAtlas();
+	self:OnButtonStateChanged();
 	local info = C_Texture.GetAtlasInfo(self.Middle:GetAtlas());
 	if self.isHorizontal then
 		self.Middle:SetWidth(width);

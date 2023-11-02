@@ -610,7 +610,7 @@ StaticPopupDialogs["TOO_MANY_LUA_ERRORS"] = {
 	button1 = DISABLE_ADDONS,
 	button2 = IGNORE_ERRORS,
 	OnAccept = function(self)
-		DisableAllAddOns();
+		C_AddOns.DisableAllAddOns();
 		ReloadUI();
 	end,
 	timeout = 0,
@@ -696,7 +696,7 @@ StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
 	button1 = DISABLE,
 	button2 = IGNORE_DIALOG,
 	OnAccept = function(self, data)
-		DisableAddOn(data);
+		C_AddOns.DisableAddOn(data);
 		ReloadUI();
 	end,
 	timeout = 0,
@@ -5007,6 +5007,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	end
 
 	dialog.DarkOverlay:Hide();
+
+	dialog:SetWindow(nil);
 
 	-- Finally size and show the dialog
 	StaticPopup_SetUpPosition(dialog);

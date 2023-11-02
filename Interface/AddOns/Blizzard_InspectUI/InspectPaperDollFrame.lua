@@ -43,7 +43,7 @@ function InspectPaperDollFrame_SetLevel()
 	elseif ( effectiveLevel ~= level ) then
 		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
 	end
-	
+
 	if (specName and specName ~= "") then
 		InspectLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
 	else
@@ -217,4 +217,18 @@ end
 
 function InspectPaperDollFrameTalentsButtonMixin:OnLeave()
 	GameTooltip_Hide();
+end
+
+LevelTextMixin = {}
+
+function LevelTextMixin:OnEnter()
+	if ( InspectLevelText:IsTruncated() ) then
+		GameTooltip:SetOwner(InspectLevelText, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, InspectLevelText:GetText(), false);
+		GameTooltip:Show();
+	end
+end
+
+function LevelTextMixin:OnLeave()
+	GameTooltip:Hide();	
 end

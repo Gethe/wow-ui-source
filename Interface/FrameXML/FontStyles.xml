@@ -32,9 +32,6 @@
 	</Font>
 	<Font name="GameFontNormalRight" inherits="GameFontNormal" justifyH="RIGHT" virtual="true"/>
 	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
-		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
 	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -129,7 +126,7 @@
 	<Font name="NumberFontSmallBattleNetBlueLeft" inherits="NumberFont_Small" justifyH="LEFT" virtual="true" >
 		<Color r="0.510" g="0.773" b="1.0"/>
 	</Font>
-	
+
 	<Font name="GameFontNormalSmallBattleNetBlueLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true" >
 		<Color r="0.510" g="0.773" b="1.0"/>
 	</Font>
@@ -143,7 +140,7 @@
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="Number13FontWhite" inherits="Number13Font" virtual="true" >
 		<Color r="1.0" g="1.0" b="1.0"/>
 		<Shadow>
@@ -173,7 +170,7 @@
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="Number13FontRed" inherits="Number13Font" virtual="true" >
 		<Color r="1.0" g="0.1" b="0.1"/>
 		<Shadow>
@@ -213,7 +210,7 @@
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="PriceFontRed" inherits="PriceFont" virtual="true" >
 		<Color r="1.0" g="0.1" b="0.1"/>
 		<Shadow>
@@ -240,21 +237,21 @@
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="Number14FontGray" inherits="NumberFont_Normal_Med" virtual="true" >
 		<Color r="0.5" g="0.5" b="0.5"/>
 		<Shadow x="1" y="-1">
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="Number14FontGreen" inherits="NumberFont_Normal_Med" virtual="true" >
 		<Color r="0.1" g="1" b="0.1"/>
 		<Shadow x="1" y="-1">
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="Number14FontRed" inherits="NumberFont_Normal_Med" virtual="true" >
 		<Color r="1" g="0.1" b="0.1"/>
 		<Shadow x="1" y="-1">
@@ -271,7 +268,7 @@
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="Number18FontWhite" inherits="Number18Font" virtual="true" >
 		<Color r="1.0" g="1.0" b="1.0"/>
 		<Shadow>
@@ -386,9 +383,6 @@
     <Font name="MissionCombatTextFontOutline" inherits="SystemFont_Outline_WTF2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="MovieSubtitleFont" inherits="GameFontNormalShadowOutline22" virtual="true">
-		<Color r="1.0" g="0.78" b="0"/>
-	</Font>
 
 	<Font name="AchievementPointsFont" inherits="SystemFont_Shadow_Large" justifyH="CENTER" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
@@ -427,7 +421,7 @@
 	<Font name="ArtifactAppearanceSetHighlightFont" inherits="Fancy24Font" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	
+
 	<Font name="CommentatorTeamScoreFont" inherits="SystemFont_Shadow_Large" virtual="true">
 		<Shadow>
 			<Color r="0" g="0" b="0" a="0.9"/>
@@ -454,12 +448,12 @@
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow x="1" y="-1"/>
 	</Font>
-	
+
 	<Font name="CommentatorFontMedium" inherits="SystemFont_Shadow_Large2" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow x="1" y="-1"/>
 	</Font>
-	
+
 	<Font name="CommentatorVictoryFanfare" inherits="Game120Font" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow>
@@ -469,7 +463,7 @@
 			</Offset>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="CommentatorVictoryFanfareTeam" inherits="Game72Font" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow>

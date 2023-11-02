@@ -119,7 +119,8 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 			if player and bags and (not hasBeenShown) then
 				local itemLocation = ItemLocation:CreateEmpty();
 				itemLocation:SetBagAndSlot(bag, slot);
-				if not C_ArtifactUI.IsArtifactItem(itemLocation) then
+				local itemID = GetItemInfoInstant(itemLink);
+				if not C_ArtifactUI.IsArtifactItem(itemLocation) and C_PlayerInfo.CanUseItem(itemID) then
 					table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
 				end
 			end

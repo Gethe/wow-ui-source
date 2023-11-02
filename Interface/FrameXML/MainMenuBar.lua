@@ -234,7 +234,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	UpdateAddOnMemoryUsage();
 	local totalMem = 0;
 
-	for i=1, GetNumAddOns(), 1 do
+	for i=1, C_AddOns.GetNumAddOns(), 1 do
 		local mem = GetAddOnMemoryUsage(i);
 		totalMem = totalMem + mem;
 		for j=1, NUM_ADDONS_TO_DISPLAY, 1 do
@@ -242,7 +242,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 				for k=NUM_ADDONS_TO_DISPLAY, 1, -1 do
 					if( k == j ) then
 						topAddOns[k].value = mem;
-						topAddOns[k].name = GetAddOnInfo(i);
+						topAddOns[k].name = C_AddOns.GetAddOnInfo(i);
 						break;
 					elseif( k ~= 1 ) then
 						topAddOns[k].value = topAddOns[k-1].value;

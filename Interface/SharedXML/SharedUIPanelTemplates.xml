@@ -2417,6 +2417,8 @@
 	<Button name="PanelResizeButtonTemplate" mixin="PanelResizeButtonMixin" virtual="true">
 		<Size x="16" y="16"/>
 		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>

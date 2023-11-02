@@ -686,12 +686,26 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	if isSpecialBrawl and canQueue then
+		local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
+		local brawlHasMinItemLevelRequirement = brawlInfo and brawlInfo.brawlType == Enum.BrawlType.SoloRbg;
 		if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
-			local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
 			if(brawlInfo and not brawlInfo.groupsAllowed) then
 				canQueue = false;
 				disabledReason = SOLO_BRAWL_CANT_QUEUE;
 			end
+			if (brawlHasMinItemLevelRequirement and brawlInfo.groupsAllowed) then
+				local brawlMinItemLevel = brawlInfo.minItemLevel;
+				local partyMinItemLevel, playerWithLowestItemLevel = C_PartyInfo.GetMinItemLevel(Enum.AvgItemLevelCategories.PvP);
+				if (UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) and partyMinItemLevel < brawlMinItemLevel) then
+					canQueue = false;
+					disabledReason = INSTANCE_UNAVAILABLE_OTHER_GEAR_TOO_LOW:format(playerWithLowestItemLevel, brawlMinItemLevel, partyMinItemLevel);
+				end
+			end
+		end 
+		local _, _, playerPvPItemLevel = GetAverageItemLevel();
+		if (brawlHasMinItemLevelRequirement and playerPvPItemLevel < brawlInfo.minItemLevel) then
+			canQueue = false;
+			disabledReason = INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW:format("", brawlInfo.minItemLevel, playerPvPItemLevel);
 		end
 	end
 
@@ -715,8 +729,14 @@ function HonorFrame_UpdateQueueButtons()
 				HonorFrame.QueueButton:Disable();
                 disabledReason = ERR_NOT_LEADER; -- let this trump any other disabled reason
 			elseif(isInCrossFactionGroup) then
-				HonorFrame.QueueButton:Disable();
-				disabledReason = CROSS_FACTION_PVP_ERROR;
+				if (isSpecialBrawl) then 
+					local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
+					local allowCrossFactionGroups = brawlInfo and brawlInfo.brawlType == Enum.BrawlType.SoloRbg;
+					if (not allowCrossFactionGroups) then
+						HonorFrame.QueueButton:Disable();
+						disabledReason = CROSS_FACTION_PVP_ERROR;
+					end
+				end
 			end
 		else
 			HonorFrame.QueueButton:SetText(BATTLEFIELD_JOIN);

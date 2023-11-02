@@ -118,6 +118,51 @@ local function SetActorRotation(actor, displayData)
 	end
 end
 
+local function PerksTryOn(actor, itemModifiedAppearanceID)
+	local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
+	local invType = select(4, GetItemInfoInstant(itemID));
+
+	local isEquippedInOffhand = invType == "INVTYPE_SHIELD"
+							or invType == "INVTYPE_WEAPONOFFHAND"
+							or invType == "INVTYPE_HOLDABLE";
+
+	local isTwoHandWeapon = invType == "INVTYPE_2HWEAPON"
+						or invType == "INVTYPE_RANGED"
+						or invType == "INVTYPE_RANGEDRIGHT"
+						or invType == "INVTYPE_THROWN";
+
+	local isEquippedInHand = isEquippedInOffhand
+						or isTwoHandWeapon
+						or invType == "INVTYPE_WEAPON"
+						or invType == "INVTYPE_WEAPONMAINHAND";
+
+	if isEquippedInHand then
+		local itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(itemModifiedAppearanceID);
+
+		-- Never show player's equipped weapons when trying on weapons
+		actor:UndressSlot(INVSLOT_MAINHAND);
+		actor:UndressSlot(INVSLOT_OFFHAND);
+
+		-- Since we are manually setting the 2 items in each hand, reset the actors sense of what hand to put stuff into
+		actor:ResetNextHandSlot();
+
+		-- actor:SetItemTransmogInfo will automatically handle whether the player can dual wield
+		-- If the player can dual wield 1 handed weapons, we will always preview the same weapon appearing in both hands
+
+		-- Only equip 2-hand weapons into 1 slot regardless of whether player can dual wield 2-handed weapons (Titan Grip)
+		if not isTwoHandWeapon then
+			actor:SetItemTransmogInfo(itemTransmogInfo, INVSLOT_OFFHAND, true);
+		end
+
+		-- If the weapon is an off-hand, then only equip it in the off-hand slot
+		if not isEquippedInOffhand then
+			actor:SetItemTransmogInfo(itemTransmogInfo, INVSLOT_MAINHAND, true);
+		end
+	else
+		actor:TryOn(itemModifiedAppearanceID);
+	end
+end
+
 local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, itemModifiedAppearanceID, sheatheWeapon, autodress, hideWeapon, forceSceneChange)
 	if not modelScene then
 		return;
@@ -150,24 +195,14 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceIDs, item
 			-- if all the itemModifiedAppearances have the same Category then only show the FIRST item, we will pop the carousel controls to rotate through the others
 			if PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs) then
 				local itemModifiedAppearanceID = itemModifiedAppearanceIDs[1];
-				actor:TryOn(itemModifiedAppearanceID);
+				PerksTryOn(actor, itemModifiedAppearanceID);
 			else
 				for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
-					actor:TryOn(itemModifiedAppearanceID);
+					PerksTryOn(actor, itemModifiedAppearanceID);
 				end
 			end
 		elseif itemModifiedAppearanceID then
-			local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
-			local classID, unusedSubclassID = select(6, GetItemInfoInstant(itemID));
-			local isWeapon = classID == Enum.ItemClass.Weapon;
-			if isWeapon then
-				local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
-				local offHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
-				actor:UndressSlot(mainHandSlotID);
-				actor:UndressSlot(offHandSlotID);
-				preferredHandSlot = "MAINHANDSLOT";
-			end
-			actor:TryOn(itemModifiedAppearanceID, preferredHandSlot);
+			PerksTryOn(actor, itemModifiedAppearanceID);
 		end
 		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		return actor;
@@ -319,37 +354,43 @@ function PerksProgramModelSceneContainerFrameMixin:Init()
 end
 
 function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, forceSceneChange)
+	local oldData = self.currentData;
 	self.currentData = data;
-	local categoryID = data.perksVendorCategoryID;
-	local defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(categoryID);
 
-	local hideArmor = not(data.displayData.autodress);
-	local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
-	if hideArmorSetting ~= nil then
-		hideArmor = hideArmorSetting;
-		PerksProgramFrame:SetHideArmorSetting(hideArmor);
+	local dataHasChanged = not oldData or oldData.perksVendorItemID ~= data.perksVendorItemID;
+	local shouldSetupModelScene = forceSceneChange or dataHasChanged;
+
+	if shouldSetupModelScene then
+		local categoryID = self.currentData.perksVendorCategoryID;
+		local defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(categoryID);
+
+		local hideArmor = not(self.currentData.displayData.autodress);
+		local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
+		if hideArmorSetting ~= nil then
+			hideArmor = hideArmorSetting;
+			PerksProgramFrame:SetHideArmorSetting(hideArmor);
+		end
+
+		if categoryID == Enum.PerksVendorCategoryType.Mount then
+			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			self:SetupModelSceneForMounts(self.currentData, defaultModelSceneID, forceSceneChange);		
+			self.previousMainModelSceneID = defaultModelSceneID;
+		elseif categoryID == Enum.PerksVendorCategoryType.Pet then
+			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			self:SetupModelSceneForPets(self.currentData, defaultModelSceneID, forceSceneChange);	
+			self.previousMainModelSceneID = defaultModelSceneID;
+		elseif categoryID == Enum.PerksVendorCategoryType.Toy then
+			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			self:SetupModelSceneForToys(self.currentData, defaultModelSceneID, forceSceneChange);
+			self.previousMainModelSceneID = defaultModelSceneID;
+		elseif categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset then
+			forceSceneChange = true;
+			self:SetupModelSceneForTransmogs(self.currentData, defaultModelSceneID, forceSceneChange);
+		end
 	end
 
-	if categoryID == Enum.PerksVendorCategoryType.Mount then
-		forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
-		self:SetupModelSceneForMounts(data, defaultModelSceneID, forceSceneChange);		
-		self.previousMainModelSceneID = defaultModelSceneID;
-	elseif categoryID == Enum.PerksVendorCategoryType.Pet then
-		forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
-		self:SetupModelSceneForPets(data, defaultModelSceneID, forceSceneChange);	
-		self.previousMainModelSceneID = defaultModelSceneID;
-	elseif categoryID == Enum.PerksVendorCategoryType.Toy then
-		forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
-		self:SetupModelSceneForToys(data, defaultModelSceneID, forceSceneChange);
-		self.previousMainModelSceneID = defaultModelSceneID;
-	elseif categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset then
-		forceSceneChange = true;
-		self:SetupModelSceneForTransmogs(data, defaultModelSceneID, forceSceneChange);
-	end
-	EventRegistry:TriggerEvent("PerksProgramFrame.PerksProductSelected", categoryID);
-	EventRegistry:TriggerEvent("PerksProgramModel.OnProductSelectedAfterModel", data);
-
-	self.previouscategoryID = categoryID;
+	EventRegistry:TriggerEvent("PerksProgramFrame.PerksProductSelected", self.currentData.perksVendorCategoryID);
+	EventRegistry:TriggerEvent("PerksProgramModel.OnProductSelectedAfterModel", self.currentData);
 end
 
 function PerksProgramModelSceneContainerFrameMixin:UpdateFormButtonVisibility(optionalPerksVendorCategoryID)
@@ -387,7 +428,7 @@ end
 
 function PerksProgramModelSceneContainerFrameMixin:OnPlayerHideArmorToggled()
 	if self.currentData then
-		local forceSceneChange = false;
+		local forceSceneChange = true;
 		self:OnProductSelected(self.currentData, forceSceneChange);
 	end
 end
@@ -636,7 +677,7 @@ end
 -- TRANSMOGS
 function PerksProgramModelSceneContainerFrameMixin:PlayerTryOnOverride(overrideItemModifiedAppearanceID)
 	if self.playerActor and overrideItemModifiedAppearanceID then
-		self.playerActor:TryOn(overrideItemModifiedAppearanceID);
+		PerksTryOn(self.playerActor, overrideItemModifiedAppearanceID);
 	end
 end
 

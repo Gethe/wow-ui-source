@@ -285,8 +285,7 @@ function PVPMatchResultsMixin:DisplayRewards()
 		end
 	end
 	
-	-- Skirmish and Brawl Solo Shuffle are considered registered/rated, ignore them.
-	if C_PvP.IsRatedMap() and not IsArenaSkirmish() and not C_PvP.IsBrawlSoloShuffle() then
+	if PVPMatchUtil.ModeUsesPvpRatingTiers() then
 		self:InitRatingFrame();
 	end
 

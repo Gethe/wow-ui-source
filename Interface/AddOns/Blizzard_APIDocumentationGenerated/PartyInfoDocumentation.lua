@@ -146,6 +146,21 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetMinItemLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "avgItemLevelCategory", Type = "AvgItemLevelCategories", Nilable = false, Documentation = { "The active party is always used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+				{ Name = "playerNameWithLowestItemLevel", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinLevel",
 			Type = "Function",
 

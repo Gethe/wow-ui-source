@@ -205,7 +205,10 @@ function ClassNameplateManaBar:SetupBar()
 		end
 		self:SetStatusBarColor(info.r, info.g, info.b);
 
-		self.FeedbackFrame:Initialize(info, "player", powerType);
+		-- Nameplate mana bar uses only solid color (no atlases), ensure its feedback frame does the same
+		local colorOnlyInfo = { r = info.r, g = info.g, b = info.b };
+		self.FeedbackFrame:Initialize(colorOnlyInfo, "player", powerType);
+
 		self:SetScript("OnUpdate", ClassNameplateManaBar_OnUpdate);
 
 		self.FullPowerFrame:SetSize(86, 6);

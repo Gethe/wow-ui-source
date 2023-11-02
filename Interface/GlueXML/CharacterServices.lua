@@ -54,7 +54,7 @@ local function IsBoostFlowValidForCharacter(flowData, class, level, boostInProgr
 		return false;
 	end
 
-	if raceFilename == "Dracthyr" then
+	if (flowData.level < 70) and (raceFilename == "Dracthyr") then
 		return false;
 	end
 

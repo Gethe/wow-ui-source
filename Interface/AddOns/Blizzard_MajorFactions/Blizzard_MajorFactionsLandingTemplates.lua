@@ -9,6 +9,11 @@ local buttonAtlasFormatsByExpansion = {
 	},
 };
 
+local factionIconSize = {
+	["Default"] = 44,
+	["Dream"] = 48,
+}
+
 LandingPageMajorFactionList = {};
 
 function LandingPageMajorFactionList.Create(parent)
@@ -160,6 +165,10 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	};
 	self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
 	
+	local iconSize = factionIconSize[majorFactionData.textureKit] or factionIconSize["Default"];
+	self.UnlockedState.Icon:ClearAllPoints();
+	self.UnlockedState.Icon:SetPoint("CENTER", self.UnlockedState.RenownProgressBar, "CENTER");
+	self.UnlockedState.Icon:SetSize(iconSize, iconSize);
 	self.UnlockedState.Icon:SetAtlas(iconAtlasFormat:format(majorFactionData.textureKit), TextureKitConstants.IgnoreAtlasSize);
 	self.UnlockedState.Icon:Show();
 
@@ -204,6 +213,8 @@ MajorFactionButtonUnlockedStateMixin = {};
 
 function MajorFactionButtonUnlockedStateMixin:Refresh(majorFactionData)
 	self.Title:SetText(majorFactionData.name or "");
+	self.Title:SetPoint("BOTTOMLEFT", self.RenownProgressBar, "RIGHT", 8, 0);
+
 	self.RenownLevel:SetText(MAJOR_FACTION_BUTTON_RENOWN_LEVEL:format(majorFactionData.renownLevel or 0));
 
 	local isCapped = C_MajorFactions.HasMaximumRenown(majorFactionData.factionID);

@@ -76,8 +76,15 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
-	healthBar:GetStatusBarTexture():AddMaskTexture(healthBar.HealthBarMask);
-	manaBar:GetStatusBarTexture():AddMaskTexture(manaBar.ManaBarMask);
+	local healthBarTexture = healthBar:GetStatusBarTexture();
+	healthBarTexture:AddMaskTexture(healthBar.HealthBarMask);
+	healthBarTexture:SetTexelSnappingBias(0);
+	healthBarTexture:SetSnapToPixelGrid(false);
+
+	local manaBarTexture = manaBar:GetStatusBarTexture();
+	manaBarTexture:AddMaskTexture(manaBar.ManaBarMask);
+	manaBarTexture:SetTexelSnappingBias(0);
+	manaBarTexture:SetSnapToPixelGrid(false);
 
 	self:Update();
 
@@ -250,7 +257,8 @@ end
 function TargetFrameMixin:OnHide()
 	-- "Soft" target changes should not cause this sound to play
 	if (not IsTargetLoose()) then
-		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT);
+		local forceNoDuplicates = true;
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT, nil, forceNoDuplicates);
 	end
 	CloseDropDownMenus();
 end
@@ -1123,8 +1131,12 @@ BossSpellBarMixin = CreateFromMixins(TargetSpellBarMixin);
 
 function BossSpellBarMixin:AdjustPosition()
 	self:ClearAllPoints();
-	if (self.castBarOnSide) then
-		self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -34);
+	if self.castBarOnSide then
+		if self:GetParent().powerBarAlt:IsShown() then
+			self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -57);
+		else
+			self:SetPoint("TOPRIGHT", self:GetParent(), "TOPLEFT", 45, -34);
+		end
 	else
 		self:SetPoint("TOPRIGHT", self:GetParent(), "BOTTOMRIGHT", -100, 17);
 	end

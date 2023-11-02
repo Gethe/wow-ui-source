@@ -204,6 +204,14 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "ResetNextHandSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetAutoDress",
 			Type = "Function",
 

@@ -154,7 +154,8 @@ local function Register()
 			FCF_RedockAllWindows();
 		end
 
-		local initializer = CreateSettingsButtonInitializer(RESET_CHAT_POSITION, RESET, OnButtonClick, OPTION_TOOLTIP_RESET_CHAT_POSITION);
+		local addSearchTags = true;
+		local initializer = CreateSettingsButtonInitializer(RESET_CHAT_POSITION, RESET, OnButtonClick, OPTION_TOOLTIP_RESET_CHAT_POSITION, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 

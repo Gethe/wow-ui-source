@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="TargetFrame.lua"/>
 	<Frame name="TargetofTargetDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="12" y="12"/>
@@ -47,8 +47,15 @@
 	<Frame name="TargetDebuffFrameTemplate" virtual="true" enableMouse="true">
 		<Size x="17" y="17"/>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="BACKGROUND">
 				<Texture name="$parentIcon" parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="1"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-Debuff-Overlays">
@@ -59,15 +66,10 @@
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>
-				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -97,7 +99,7 @@
 			<Layer level="ARTWORK">
 				<FontString name="$parentCount" parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -111,7 +113,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true">
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -158,14 +160,14 @@
 						</MaskTexture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn" useAtlasSize="true">
+						<Texture parentKey="FrameTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture parentKey="Flash" atlas="UI-HUD-UnitFrame-Target-PortraitOn-InCombat" useAtlasSize="true" hidden="true">
+						<Texture parentKey="Flash" atlas="UI-HUD-UnitFrame-Target-PortraitOn-InCombat" useAtlasSize="true" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="2"/>
 							</Anchors>
@@ -303,10 +305,16 @@
 										</FontString>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="2">
-										<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+										<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="3">
+										<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="-61" y="3"/>
 											</Anchors>
+											<MaskedTextures>
+												<MaskedTexture childKey="Spark"/>
+											</MaskedTextures>
 										</MaskTexture>
 									</Layer>
 								</Layers>
@@ -441,7 +449,7 @@
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="0" y="5"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" x="54" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -529,6 +537,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						TextStatusBar_Initialize(self);
 						self.lockColor = true;
 					</OnLoad>
 					<OnValueChanged>
@@ -543,17 +552,24 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBar" relativePoint="BOTTOMLEFT" x="-4" y="-1"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Spark" inherits="TextStatusBarSparkTemplate"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
 						<!-- Note that using the party mask assets here is intentional. -->
-						<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<MaskTexture parentKey="ManaBarMask" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-27" y="4"/>
 							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Spark"/>
+							</MaskedTextures>
 						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
+						TextStatusBar_Initialize(self);
 						self.lockColor = true;
 					</OnLoad>
 				</Scripts>

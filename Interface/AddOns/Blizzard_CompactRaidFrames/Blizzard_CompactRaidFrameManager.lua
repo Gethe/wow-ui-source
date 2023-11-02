@@ -162,6 +162,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		FlowContainer_AddLineBreak(container);
 		FlowContainer_AddSpacer(container, 20);
 		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.RestrictPingsButton);
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:UpdateLabel();
 		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Show();
 	else
 		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Hide();
@@ -175,7 +176,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	--Then, we update which specific buttons are enabled.
 
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
-	if ( IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
+	if ( IsInGroup() and not HasLFGRestrictions() and not UnitInBattleground("player") and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Enable();
 		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
 	else
@@ -567,10 +568,6 @@ local RestrictPingsButtonShownEvents =
 	"PARTY_LEADER_CHANGED",
 };
 
-function RaidFrameManagerRestrictPingsButtonMixin:OnLoad()
-	self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS);
-end
-
 function RaidFrameManagerRestrictPingsButtonMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RestrictPingsButtonShownEvents);
 
@@ -588,6 +585,14 @@ end
 function RaidFrameManagerRestrictPingsButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	C_PartyInfo.SetRestrictPings(self:GetChecked());
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:UpdateLabel()
+	if IsInRaid() then
+		self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS);
+	else
+		self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS_PARTY);
+	end
 end
 
 function RaidFrameManagerRestrictPingsButtonMixin:UpdateCheckedState()

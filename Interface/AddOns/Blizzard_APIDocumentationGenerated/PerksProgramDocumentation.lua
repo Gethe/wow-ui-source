@@ -139,6 +139,20 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "IsFrozenPerksVendorItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFrozen", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ItemSelectedTelemetry",
 			Type = "Function",
 
@@ -369,7 +383,7 @@ local PerksProgram =
 				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
 				{ Name = "purchased", Type = "bool", Nilable = false },
 				{ Name = "refundable", Type = "bool", Nilable = false },
-				{ Name = "pending", Type = "bool", Nilable = false },
+				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -378,6 +392,17 @@ local PerksProgram =
 				{ Name = "speciesID", Type = "number", Nilable = false },
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+				{ Name = "uiGroupInfo", Type = "PerksVendorItemUIGroupInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "PerksVendorItemUIGroupInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "priority", Type = "number", Nilable = false },
 			},
 		},
 	},

@@ -1,16 +1,8 @@
 AddOnUtil = {};
 
--- HACK: Support for branches with different APIs in the C_AddOns table.
-local getAddOnDependencies = GetAddOnDependencies or C_AddOns.GetAddOnDependencies;
-local isAddOnLoaded = IsAddOnLoaded or C_AddOns.IsAddOnLoaded;
-local enableAddOn = EnableAddOn or C_AddOns.EnableAddOn;
-local disableAddOn = DisableAddOn or C_AddOns.DisableAddOn;
-local loadAddOn = LoadAddOn or C_AddOns.LoadAddOn;
-local getAddOnEnableState = GetAddOnEnableState or C_AddOns.GetAddOnEnableState;
-
 local function GetAddOnDependenciesRecursive(addonName, dependencyTable)
 	dependencyTable = dependencyTable or {};
-	local dependencies = { getAddOnDependencies(addonName) };
+	local dependencies = { C_AddOns.GetAddOnDependencies(addonName) };
 	for _, depAddonName in pairs(dependencies) do
 		if not dependencyTable[depAddonName] then
 			dependencyTable[depAddonName] = true;
@@ -23,16 +15,16 @@ end
 
 local function SetAddOnEnabled(addonName, enabled)
 	if enabled then
-		enableAddOn(addonName);
+		C_AddOns.EnableAddOn(addonName);
 	else
-		disableAddOn(addonName);
+		C_AddOns.DisableAddOn(addonName);
 	end
 end
 
 local function EnableAndLoadAddOnHelper(addonName, restoreEnabledState)
-	local previousState = (getAddOnEnableState(nil, addonName) > 0);
-	enableAddOn(addonName);
-	local loaded, message = loadAddOn(addonName);
+	local previousState = (C_AddOns.GetAddOnEnableState(addonName) > 0);
+	C_AddOns.EnableAddOn(addonName);
+	local loaded, message = C_AddOns.LoadAddOn(addonName);
 
 	if restoreEnabledState then
 		SetAddOnEnabled(addonName, previousState);
@@ -42,7 +34,7 @@ local function EnableAndLoadAddOnHelper(addonName, restoreEnabledState)
 end
 
 function AddOnUtil.LoadAddOn(addonName, restoreEnabledState)
-	if not isAddOnLoaded(addonName) then
+	if not C_AddOns.IsAddOnLoaded(addonName) then
 		local dependencyTable = GetAddOnDependenciesRecursive(addonName);
 		for depAddonName in pairs(dependencyTable) do
 			EnableAndLoadAddOnHelper(depAddonName, restoreEnabledState);

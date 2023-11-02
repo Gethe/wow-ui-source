@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="CinematicFrame.lua"/>
 	<Button name="CinematicDialogButtonTemplate" virtual="true">
 		<Size x="119" y="21"/>
@@ -38,17 +38,6 @@
 					</Anchors>
 					<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="MovieSubtitleFont" hidden="true" mixin="AutoScalingFontStringMixin">
-					<Size x="800" y="138"/>
-					<KeyValues>
-						<KeyValue key="minLineHeight" value="10" type="number"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>

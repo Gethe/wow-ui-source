@@ -30,6 +30,19 @@ local SimpleLineAPI =
 			},
 		},
 		{
+			Name = "GetHitRectThickness",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "thickness", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "GetStartPoint",
 			Type = "Function",
 
@@ -68,6 +81,15 @@ local SimpleLineAPI =
 				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
 				{ Name = "offsetX", Type = "uiUnit", Nilable = false, Default = 0 },
 				{ Name = "offsetY", Type = "uiUnit", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "SetHitRectThickness",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "thickness", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{

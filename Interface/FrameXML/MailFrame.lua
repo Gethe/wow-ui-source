@@ -284,7 +284,7 @@ function InboxFrame_Update()
 			-- Set highlight
 			if ( InboxFrame.openMailID == index ) then
 				button:SetChecked(true);
-				SetPortraitToTexture("OpenMailFrameIcon", stationeryIcon);
+				SetPortraitToTexture(OpenMailFrameIcon, stationeryIcon);
 			else
 				button:SetChecked(false);
 			end

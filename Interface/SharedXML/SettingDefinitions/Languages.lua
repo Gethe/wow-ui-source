@@ -149,6 +149,10 @@ function LanguageRestartNeededMixin:EvaluateState()
 end
 
 local function Register()
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
 	local category, layout = Settings.RegisterVerticalLayoutCategory(LANGUAGES_LABEL);
 
 	-- Text

@@ -39,6 +39,7 @@
 				<Texture parentKey="HeaderCollapseIndicator" hidden="true" atlas="campaign_headericon_closed" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.RibbonStacked" relativePoint="LEFT" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Checkmark" atlas="activities-icon-checkmark" useAtlasSize="true">
@@ -87,6 +88,7 @@
 		<NormalTexture atlas="activities-incomplete"/>
 		<HighlightTexture atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
 		<Scripts>
+			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnClick method="OnClick"/>
 			<OnLeave method="OnLeave"/>
@@ -296,7 +298,7 @@
 
 	<Frame name="MonthlyActivitiesFrameTemplate" mixin="MonthlyActivitiesFrameMixin" virtual="true">
 		<Frames>
-			<Button parentKey="HelpButton" inherits="MainHelpPlateButton">
+			<Button parentKey="HelpButton" inherits="MainHelpPlateButton" frameLevel="520">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" x="39" y="80" />
 				</Anchors>
@@ -307,7 +309,7 @@
 				</Scripts>
 			</Button>
 			<!-- Use frameBuffer to make fade out look clean with reward item layers -->
-			<StatusBar parentKey="ThresholdBar" frameBuffer="true">
+			<StatusBar parentKey="ThresholdBar" frameBuffer="true" frameLevel="510">
 				<BarTexture parentKey="BarFill" atlas="activities-bar-fill"/>
 				<Size x="663" y="33"/>
 				<Anchors>
@@ -435,7 +437,7 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<Frame parentKey="FilterList" mixin="MonthlyActivitiesFilterListMixin">
+			<Frame parentKey="FilterList" mixin="MonthlyActivitiesFilterListMixin" frameLevel="510">
 				<Size x="220" y="290"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-137"/>
@@ -464,6 +466,45 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="6"/>
 				</Anchors>
 			</EventFrame>
+			<Frame parentKey="HeaderContainer" setAllPoints="true" frameLevel="510">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="LEFT" text="MONTHLY_ACTIVITIES_TAB">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="-16"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Month" inherits="GameFontHighlightMed2" justifyH="LEFT">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Title" x="16" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TimeLeft" inherits="GameFontWhite">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-20" y="-18"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ThemeContainer" setAllPoints="true" frameLevel="505" mixin="MonthlyActivitiesThemeContainerMixin">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Top"/>
+						<Texture parentKey="Bottom"/>
+						<Texture parentKey="Left"/>
+						<Texture parentKey="Right"/>
+						<Texture parentKey="FilterList"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -494,24 +535,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="LEFT" text="MONTHLY_ACTIVITIES_TAB">
-					<Size x="0" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-16"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Month" inherits="GameFontHighlightMed2" justifyH="LEFT">
-					<Size x="0" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Title" x="16" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="TimeLeft" inherits="GameFontWhite">
-					<Size x="0" y="0"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-20" y="-18"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="RestrictedText" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="MIDDLE" text="MONTHLY_ACTIVITIES_RESTRICTED">
 					<Size x="500" y="0"/>
 					<Anchors>
@@ -530,7 +553,6 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>

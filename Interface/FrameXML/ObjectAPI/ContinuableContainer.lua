@@ -63,6 +63,7 @@ function ContinuableContainer:Cancel()
 	if continuables then
 		self.continuables = nil;
 		self.evictableObjects = nil;
+		self.numOutstanding = nil;
 
 		for i, continuable in ipairs(continuables) do
 			continuable();

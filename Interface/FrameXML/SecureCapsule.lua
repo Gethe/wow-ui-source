@@ -330,6 +330,7 @@ retain("SCROLL_FRAME_SCROLL_BAR_TEMPLATE");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_LEFT");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_TOP");
 retain("SCROLL_FRAME_SCROLL_BAR_OFFSET_BOTTOM");
+retain("Vector2DMixin");
 retain("Vector3DMixin");
 retain("SetCursor");
 retain("ResetCursor");

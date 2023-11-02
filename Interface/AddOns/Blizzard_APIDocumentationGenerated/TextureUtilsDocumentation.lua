@@ -16,6 +16,34 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetAtlasElementID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "elementID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAtlasID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "atlasID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasInfo",
 			Type = "Function",
 
@@ -122,6 +150,7 @@ local TextureUtils =
 			{
 				{ Name = "width", Type = "number", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "rawSize", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "leftTexCoord", Type = "number", Nilable = false },
 				{ Name = "rightTexCoord", Type = "number", Nilable = false },
 				{ Name = "topTexCoord", Type = "number", Nilable = false },
@@ -130,6 +159,7 @@ local TextureUtils =
 				{ Name = "tilesVertically", Type = "bool", Nilable = false },
 				{ Name = "file", Type = "fileID", Nilable = true },
 				{ Name = "filename", Type = "string", Nilable = true },
+				{ Name = "sliceData", Type = "UITextureSliceData", Nilable = true },
 			},
 		},
 		{

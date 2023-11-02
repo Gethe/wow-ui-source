@@ -40,6 +40,16 @@ local Cinematic =
 			},
 		},
 		{
+			Name = "ShowSubtitle",
+			Type = "Event",
+			LiteralName = "SHOW_SUBTITLE",
+			Payload =
+			{
+				{ Name = "subtitle", Type = "cstring", Nilable = false },
+				{ Name = "sender", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "StopMovie",
 			Type = "Event",
 			LiteralName = "STOP_MOVIE",

@@ -218,6 +218,14 @@ function BackpackCurrencyCheckBoxMixin:OnEnter()
 end
 
 function TokenFrame_SetTokenWatched(id, watched)
+	if watched then
+		local maxWatched = BackpackTokenFrame:GetMaxTokensWatched();
+		if GetNumWatchedTokens() >= maxWatched then
+			UIErrorsFrame:AddMessage(TOO_MANY_WATCHED_TOKENS:format(maxWatched), 1.0, 0.1, 0.1, 1.0);
+			return;
+		end
+	end
+
 	C_CurrencyInfo.SetCurrencyBackpack(id, watched);
 	TokenFrame_Update();
 	BackpackTokenFrame:Update();
@@ -277,7 +285,6 @@ function BackpackTokenFrameMixin:Update()
 			watchButton.currencyID = currencyInfo.currencyTypesID;
 			watchButton:Show();
 
-			self.shouldShow = true;
 			self.numWatchedTokens = i;
 		end
 	end

@@ -69,6 +69,7 @@ local EJ_DIFFICULTIES = {
 	DifficultyUtil.ID.PrimaryRaidHeroic,
 	DifficultyUtil.ID.PrimaryRaidMythic,
 	DifficultyUtil.ID.RaidTimewalker,
+	DifficultyUtil.ID.Raid40,
 };
 
 local function IsEJDifficulty(difficultyID)
@@ -502,6 +503,7 @@ function EncounterJournal_SetLootJournalView(view)
 	local activeViewPanel, inactiveViewPanel = EncounterJournal_GetLootJournalPanels(view);
 	self.LootJournalViewDropDown:SetParent(activeViewPanel);
 	self.LootJournalViewDropDown:SetPoint("TOPLEFT", 15, -9);
+	UIDropDownMenu_SetWidth(self.LootJournalViewDropDown, 150);
 	UIDropDownMenu_SetText(self.LootJournalViewDropDown, view);
 
 	-- if no previous view then it's the init, no need to change which frame is shown
@@ -846,7 +848,6 @@ function EncounterJournal_ListInstances()
 
 	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, tierName);
-	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal.encounter:Hide();
 	instanceSelect:Show();
 
@@ -2423,7 +2424,7 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 	elseif tierIndex then
 		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);
 	else
-		EncounterJournal_ListInstances()
+		EncounterJournal_ListInstances();
 	end
 end
 
@@ -2457,9 +2458,9 @@ end
 
 function EJ_ContentTab_Select(id)
 	PanelTemplates_SetTab(EncounterJournal, id);
-	local instanceSelect = EncounterJournal.instanceSelect;
-
 	EncounterJournal.selectedTab = id;
+
+	local instanceSelect = EncounterJournal.instanceSelect;
 
 	-- Setup background
 	local tierData;
@@ -2470,7 +2471,7 @@ function EJ_ContentTab_Select(id)
 	end
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	EncounterJournal.encounter:Hide();
-	EncounterJournal.instanceSelect:Show();
+	instanceSelect:Show();
 
 	if ( id == EncounterJournal.MonthlyActivitiesTab:GetID() ) then
 		EJ_HideSuggestPanel();
@@ -2496,11 +2497,17 @@ function EJ_ContentTab_Select(id)
 	-- Update title bar with the current tab name
 	EJInstanceSelect_UpdateTitle(id);
 
+	NavBar_Reset(EncounterJournal.navBar);
+
+	local showNavBar = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
+	EncounterJournal.navBar:SetShown(showNavBar);
+
+	local showSearchBox = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() or id == EncounterJournal.LootJournalTab:GetID());
+	EncounterJournal.searchBox:SetShown(showSearchBox);
+
 	local showMonthlyActivities = (id == EncounterJournal.MonthlyActivitiesTab:GetID());
-	EncounterJournal.navBar:SetShown(not showMonthlyActivities);
-	EncounterJournal.instanceSelect.tierDropDown:SetShown(not showMonthlyActivities);
-	EncounterJournal.instanceSelect.bg:SetShown(not showMonthlyActivities);
-	EncounterJournal.searchBox:SetShown(not showMonthlyActivities);
+	instanceSelect.tierDropDown:SetShown(not showMonthlyActivities);
+	instanceSelect.bg:SetShown(not showMonthlyActivities);
 	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
 
 	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
@@ -2550,6 +2557,11 @@ function EJ_HideLootJournalPanel()
 end
 
 function EJ_ShowLootJournalPanel()
+	EncounterJournal_DisableTierDropDown(true);
+
+	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
+	EncounterJournal.instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
+
 	local activeLootPanel = EncounterJournal_GetLootJournalPanels();
 	activeLootPanel:Show();
 end
@@ -2587,11 +2599,12 @@ function EncounterJournal_TierDropDown_Select(_, tier)
 	local tierData = GetEJTierData(tier);
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 
-	EncounterJournal_CheckAndDisplayLootJournalViewDropDown();
-
 	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
 
-	EncounterJournal_ListInstances();
+	-- Item Set tab uses the tier dropdown, but we do not want to show instances when changing tiers on that tab.
+	if EncounterJournal_IsDungeonTabSelected(EncounterJournal) or EncounterJournal_IsRaidTabSelected(EncounterJournal) then
+		EncounterJournal_ListInstances();
+	end
 end
 
 function EncounterJournal_OnFilterChanged(self)
@@ -2788,11 +2801,11 @@ function EncounterJournal_CheckAndDisplayLootJournalViewDropDown()
 	local currentTier = EJ_GetCurrentTier();
 
 	-- Only Shadowlands uses the 'Powers' tab, if switching off of that make sure to go back to Item Sets.
-	if currentTier ~= EJ_TIER_INDEX_SHADOWLANDS and EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
+	if EncounterJournal.lootJournalView == LOOT_JOURNAL_POWERS then
 		EncounterJournal_SetLootJournalView(LOOT_JOURNAL_ITEM_SETS);
 	end
 
-	EncounterJournal.LootJournalViewDropDown:SetShown(currentTier == EJ_TIER_INDEX_SHADOWLANDS);
+	EncounterJournal.LootJournalViewDropDown:SetShown(true);
 end
 
 ----------------------------------------
@@ -2905,7 +2918,6 @@ end
 
 function EJSuggestFrame_OpenFrame()
 	EJ_ContentTab_Select(EncounterJournal.suggestTab:GetID());
-	NavBar_Reset(EncounterJournal.navBar);
 end
 
 function EJSuggestFrame_UpdateRewards(suggestion)

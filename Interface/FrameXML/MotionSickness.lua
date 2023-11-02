@@ -78,9 +78,10 @@ function MotionSicknessMixin:FullUpdate(canGlide)
 	if canGlide then
 		self:SetScript("OnUpdate", self.OnUpdate);
 	else
+		-- Calling OnUpdate before unsetting so that we can properly update the state of the focal circle when ending a glide.
+		self:OnUpdate()
 		self:SetScript("OnUpdate", nil);
 	end
-	self:UpdateLandscapeDarkening(canGlide);
 end
 
 function MotionSicknessMixin:UpdateScale()
@@ -108,6 +109,7 @@ function MotionSicknessMixin:OnUpdate()
 
 	for i, texture in ipairs(self.LandscapeDarkeningTextures) do
 		texture:SetAlpha(alpha);
+		texture:SetShown(canGlide and self.landscapeDarkening)
 	end
 
 	local showFocalCircle = self.focalCircle and forwardSpeed > 0;
@@ -152,22 +154,4 @@ function MotionSicknessMixin:OnCVarChanged(cvar)
 	end
 
 	self:FullUpdate();
-end
-
-function MotionSicknessMixin:UpdateLandscapeDarkening(canGlide)
-	local doShow = false;
-	if self.landscapeDarkening then	
-		doShow = canGlide;
-	end
-
-	if doShow then
-		for i, texture in ipairs(self.LandscapeDarkeningTextures) do
-			texture:SetAlpha(0);
-			texture:Show();
-		end
-	else
-		for i, texture in ipairs(self.LandscapeDarkeningTextures) do
-			texture:Hide();
-		end
-	end	
 end

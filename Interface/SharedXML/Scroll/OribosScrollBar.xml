@@ -4,6 +4,7 @@
 
 	<Frame name="OribosScrollBarButtonScripts" mixin="OribosScrollBarButtonScriptsMixin" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>

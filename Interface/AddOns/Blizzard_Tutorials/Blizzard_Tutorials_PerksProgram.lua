@@ -33,15 +33,15 @@ function Class_PerksProgramFreezeItemWatcher:OnInitialize()
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_FREEZE_ITEM,
 		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.BottomEdgeRight,
+		targetPoint = HelpTip.Point.BOTTOM,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
-		alignment = HelpTip.Alignment.Center,
+		alignment = HelpTip.Alignment.Left,
 		acknowledgeOnHide = false,
 	};
 end
 
 function Class_PerksProgramFreezeItemWatcher:ShowHelpTip()
-	self.target = PerksProgramFrame.ProductsFrame.ProductsScrollBoxContainer.PerksProgramHoldFrame.FrozenItemFrame.FrozenButton;
+	self.target = PerksProgramFrame.ProductsFrame.ProductsScrollBoxContainer.PerksProgramHoldFrame.FrozenProductContainer.ProductButton.FrozenArtContainer;
 	HelpTip:Show(self.target, self.helpTipInfo);
 end
 

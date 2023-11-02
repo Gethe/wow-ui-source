@@ -123,6 +123,7 @@ TalentButtonUtil.BaseVisualState = {
 	Selectable = 5,
 	Maxed = 6,
 	Invisible = 7,
+	RefundInvalid = 8,
 };
 
 local HoverAlphaByVisualState = {
@@ -133,6 +134,7 @@ local HoverAlphaByVisualState = {
 	[TalentButtonUtil.BaseVisualState.Selectable] = 1,
 	[TalentButtonUtil.BaseVisualState.Maxed] = 1,
 	[TalentButtonUtil.BaseVisualState.Invisible] = 0,
+	[TalentButtonUtil.BaseVisualState.RefundInvalid] = 0.4,
 };
 
 function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarge)
@@ -179,6 +181,8 @@ function TalentButtonUtil.GetColorForBaseVisualState(visualState)
 		return DISABLED_FONT_COLOR;
 	elseif visualState == TalentButtonUtil.BaseVisualState.Selectable then
 		return GREEN_FONT_COLOR;
+	elseif visualState == TalentButtonUtil.BaseVisualState.RefundInvalid then
+		return RED_FONT_COLOR;
 	end
 
 	-- visualState == TalentButtonUtil.BaseVisualState.Maxed or
@@ -211,6 +215,42 @@ function TalentButtonUtil.SetSpendText(button, spendText)
 			shadow:SetText(spendText);
 		end
 	end
+end
+
+function TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled()
+	-- This functionality has been disabled for now in lieu of the new repurchase flow.
+	return false;
+end
+
+function TalentButtonUtil.GetRefundInvalidInfo(nodeInfo)
+	if not nodeInfo then
+		-- This isn't a good state either, but we don't want to display this as RefundInvalid.
+		return false, nil;
+	end
+
+	if nodeInfo.ranksPurchased <= 0 then
+		return false, nil;
+	end
+
+	-- If we don't meet edge requirements, a dependency must have been refunded.
+	if not nodeInfo.meetsEdgeRequirements then
+		return true, TALENT_BUTTON_TOOLTIP_REFUND_INVALID_LINKS_ERROR;
+
+	-- If we can't purchase a rank but we are cascadeRepurchasable, a condition we're
+	-- dependent on must no longer be met due to refunds.
+	elseif not nodeInfo.canPurchaseRank and nodeInfo.isCascadeRepurchasable then
+		return true, TALENT_BUTTON_TOOLTIP_REFUND_INVALID_CONDITIONS_ERROR;
+	end
+end
+
+function TalentButtonUtil.CheckAddRefundInvalidInfo(tooltip, isRefundInvalid, refundInvalidInstructions)
+	if not isRefundInvalid then
+		return false;
+	end
+
+	GameTooltip_AddBlankLineToTooltip(tooltip);
+	GameTooltip_AddErrorLine(tooltip, refundInvalidInstructions);
+	return true;
 end
 
 TalentButtonUtil.ActionBarStatus = {

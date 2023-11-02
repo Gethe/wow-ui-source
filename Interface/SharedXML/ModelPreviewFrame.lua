@@ -1,8 +1,20 @@
+
 function ModelPreviewFrame_OnLoad(self)
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideAttic(self);
 	self:SetTitle(PREVIEW);
+
+	self.Display.ModelScene:SetResetCallback(ModelPreviewFrame_OnModelSceneReset);
+	self.Display.ModelScene.ControlFrame:SetModelScene(self.Display.ModelScene);
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+end
+
+function ModelPreviewFrame_OnModelSceneReset()
+	if ModelPreviewFrame.displayInfoEntries then
+		ModelPreviewFrame_ShowModels(ModelPreviewFrame.displayInfoEntries, false, true);
+	else
+		ModelPreviewFrame_RefreshCurrentDisplay();
+	end
 end
 
 function ModelPreviewFrame_OnShow(self)
@@ -28,14 +40,10 @@ end
 function ModelPreviewFrame_SetStyle(self, style)
 	self.style = style;
 	if style == "carousel" then
-		self.Display.ModelScene.RotateLeftButton:Hide();
-		self.Display.ModelScene.RotateRightButton:Hide();
 		self.Display.ModelScene.CarouselLeftButton:Show();
 		self.Display.ModelScene.CarouselRightButton:Show();
 		self.Display.CarouselText:Show();
 	else
-		self.Display.ModelScene.RotateLeftButton:Show();
-		self.Display.ModelScene.RotateRightButton:Show();
 		self.Display.ModelScene.CarouselLeftButton:Hide();
 		self.Display.ModelScene.CarouselRightButton:Hide();
 		self.Display.CarouselText:Hide();

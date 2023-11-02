@@ -322,15 +322,43 @@ function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isC
 end
 
 function QuestUtil.QuestTextContrastEnabled()
-	return GetCVarBool("QuestTextContrast");
+	return tonumber(GetCVar("QuestTextContrast")) > 0;
+end
+
+function QuestUtil.QuestTextContrastUseLightText()
+	--Use light text when the background is dark
+	local chosenAccessibilityBackground = tonumber(GetCVar("QuestTextContrast"));
+	return  chosenAccessibilityBackground == 4;
 end
 
 function QuestUtil.GetDefaultQuestBackgroundTexture()
-	return QuestUtil.QuestTextContrastEnabled() and "QuestBG-Parchment-Accessibility" or "QuestBG-Parchment";
+	local questAccesibilityBackground = tonumber(GetCVar("QuestTextContrast"));
+	if questAccesibilityBackground == 0 then
+		return "QuestBG-Parchment";
+	elseif questAccesibilityBackground == 1 then
+		return "QuestBG-Parchment-Accessibility";
+	elseif questAccesibilityBackground == 2 then
+		return "QuestBG-Parchment-Accessibility2";
+	elseif questAccesibilityBackground == 3 then
+		return "QuestBG-Parchment-Accessibility3";
+	elseif questAccesibilityBackground == 4 then
+		return "QuestBG-Parchment-Accessibility4";
+	end 
 end
 
 function QuestUtil.GetDefaultQuestMapBackgroundTexture()
-	return QuestUtil.QuestTextContrastEnabled() and "QuestDetailsBackgrounds-Accessibility" or "QuestDetailsBackgrounds";
+	local questAccesibilityBackground = tonumber(GetCVar("QuestTextContrast"));
+	if questAccesibilityBackground == 0 then
+		return "QuestDetailsBackgrounds";
+	elseif questAccesibilityBackground == 1 then
+		return "QuestDetailsBackgrounds-Accessibility";
+	elseif questAccesibilityBackground == 2 then
+		return "QuestDetailsBackgrounds-Accessibility_Light";
+	elseif questAccesibilityBackground == 3 then
+		return "QuestDetailsBackgrounds-Accessibility_Medium";
+	elseif questAccesibilityBackground == 4 then
+		return "QuestDetailsBackgrounds-Accessibility_Dark";
+	end 
 end
 
 function QuestUtil.GetThreatPOIIcon(questID)

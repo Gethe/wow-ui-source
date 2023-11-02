@@ -38,14 +38,6 @@ function ModelSceneMixin:OnLoad()
 	self.actorTemplate = "ModelSceneActorTemplate";
 	self.tagToActor = {};
 	self.tagToCamera = {};
-
-	if self.reversedLighting then
-		local lightPosX, lightPosY, lightPosZ = self:GetLightPosition();
-		self:SetLightPosition(-lightPosX, -lightPosY, lightPosZ);
-
-		local lightDirX, lightDirY, lightDirZ = self:GetLightDirection();
-		self:SetLightDirection(-lightDirX, -lightDirY, lightDirZ);
-	end
 end
 
 function ModelSceneMixin:ClearScene()
@@ -93,7 +85,6 @@ end
 
 function ModelSceneMixin:Reset()
 	if self.modelSceneID then
-		self:SetLightDirection(self.lightDirX, self.lightDirY, self.lightDirZ);
 		self:TransitionToModelSceneID(self.modelSceneID, self.cameraTransitionType, self.cameraModificationType, self.forceEvenIfSame);
 		if self.resetCallback then
 			self.resetCallback(self);
@@ -150,8 +141,6 @@ function ModelSceneMixin:TransitionToModelSceneID(modelSceneID, cameraTransition
 		if needsNewCamera then
 			self:SetActiveCamera(self.cameras[1]);
 		end
-		-- HACK: This should come from game data, instead we're caching them incase we Reset()
-		self.lightDirX, self.lightDirY, self.lightDirZ = self:GetLightDirection();
 	end
 
 	C_ModelInfo.AddActiveModelScene(self, self.modelSceneID);
@@ -325,10 +314,6 @@ function ModelSceneMixin:SetActiveCamera(camera)
 		self.activeCamera = camera;
 
 		if self.activeCamera then
-			-- HACK: This should come from game data, hardcoded from values previously only in client
-			-- The camera will determine whether or not these ever need to update.
-			self:SetLightDirection(self:GetDefaultLightDirection());
-
 			self.activeCamera:OnActivated();
 		end
 	end
@@ -479,20 +464,6 @@ function ModelSceneMixin:CreateOrTransitionCameraFromScene(oldTagToCamera, camer
 
 		return self:CreateCameraFromScene(modelSceneCameraID);
 	end
-end
-
-function ModelSceneMixin:GetDefaultLightDirection()
-	local x = self.defaultLightDirectionX or 0;
-	local y = self.defaultLightDirectionY or 1;
-	local z = self.defaultLightDirectionZ or 0;
-
-	return x, y, z;
-end
-
-function ModelSceneMixin:SetDefaultLightDirection(x, y, z)
-	self.defaultLightDirectionX = x;
-	self.defaultLightDirectionY = y;
-	self.defaultLightDirectionZ = z;
 end
 
 -- actorSettings = {

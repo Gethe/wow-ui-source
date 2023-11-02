@@ -442,8 +442,11 @@
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Frames>
-							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate" />
-							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate" />
+							<Frame parentKey="ControlFrame" frameLevel="500" inherits="ModelSceneControlFrameTemplate" >
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="10"/>
+								</Anchors>
+							</Frame>
 							<CheckButton parentKey="TogglePlayer" mixin="PlayerPreviewToggle" inherits="UICheckButtonTemplate" >
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" >
@@ -471,6 +474,8 @@
 									MountJournalMountButton_UseMount(MountJournal.selectedMountID);
 								end
 							</OnMouseUp>
+							<OnEnter function="MountJournal_ModelScene_OnEnter" />
+							<OnLeave function="MountJournal_ModelScene_OnLeave" />
 						</Scripts>
 					</ModelScene>
 				</Frames>

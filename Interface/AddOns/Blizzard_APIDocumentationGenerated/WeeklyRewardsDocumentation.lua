@@ -76,6 +76,20 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetDifficultyIDForActivityTier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityTierID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetExampleRewardItemHyperlinks",
 			Type = "Function",
 
@@ -105,6 +119,24 @@ local WeeklyRewards =
 			},
 		},
 		{
+			Name = "GetNextActivitiesIncrease",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityTierID", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSeasonData", Type = "bool", Nilable = false },
+				{ Name = "nextActivityTierID", Type = "number", Nilable = true },
+				{ Name = "nextLevel", Type = "number", Nilable = true },
+				{ Name = "itemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetNextMythicPlusIncrease",
 			Type = "Function",
 
@@ -118,6 +150,17 @@ local WeeklyRewards =
 				{ Name = "hasSeasonData", Type = "bool", Nilable = false },
 				{ Name = "nextMythicPlusLevel", Type = "number", Nilable = true },
 				{ Name = "itemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetNumCompletedDungeonRuns",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numHeroic", Type = "number", Nilable = false },
+				{ Name = "numMythic", Type = "number", Nilable = false },
+				{ Name = "numMythicPlus", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -252,6 +295,7 @@ local WeeklyRewards =
 				{ Name = "threshold", Type = "number", Nilable = false },
 				{ Name = "progress", Type = "number", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "activityTierID", Type = "number", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "claimID", Type = "number", Nilable = true },
 				{ Name = "raidString", Type = "cstring", Nilable = true },

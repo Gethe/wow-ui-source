@@ -62,6 +62,8 @@
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</DropDownToggleButton>
 

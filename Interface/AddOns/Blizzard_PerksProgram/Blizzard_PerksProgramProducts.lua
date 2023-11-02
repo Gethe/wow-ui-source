@@ -1,3 +1,6 @@
+local function IsElementDataItemInfo(elementData)
+	return elementData.isItemInfo;
+end
 
 ----------------------------------------------------------------------------------
 -- PerksProgramProductsFrameMixin
@@ -8,146 +11,97 @@ function PerksProgramProductsFrameMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS");
 	self:RegisterEvent("PERKS_PROGRAM_REFUND_SUCCESS");
 	self:RegisterEvent("PERKS_PROGRAM_SET_FROZEN_ITEM");
-	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_REFRESH");
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
 	EventRegistry:RegisterCallback("PerksProgram.SortFieldSet", self.SortFieldSet, self);
 	EventRegistry:RegisterCallback("PerksProgram.AllDataRefresh", self.AllDataRefresh, self);
-
-	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
-	self.currencyIconMarkup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 20, 20, 0, 1, 0, 1, 0, 0);
 
 	local faction = UnitFactionGroup("player");
 	if faction and (PLAYER_FACTION_GROUP[faction] == "Horde") then 		
 		self.LeftBackgroundOverlay:SetAtlas("perks-gradient-orgrimmar-left");
 		self.RightBackgroundOverlay:SetAtlas("perks-gradient-orgrimmar-right");
-	else 
+	else
 		self.LeftBackgroundOverlay:SetAtlas("perks-gradient-stormwind-left");
 		self.RightBackgroundOverlay:SetAtlas("perks-gradient-stormwind-right");
 	end
+
+	self.FrozenProductContainer = self.ProductsScrollBoxContainer.PerksProgramHoldFrame.FrozenProductContainer;
 end
 
 function PerksProgramProductsFrameMixin:Init()
 	local scrollContainer = self.ProductsScrollBoxContainer;
 
-	local ButtonHeight = 35;
 	local DefaultPad = 0;
 	local DefaultSpacing = 1;
 
-	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
-	view:SetElementInitializer("PerksProgramProductButtonTemplate", function(button, elementData)
-		local isSelected = scrollContainer.selectionBehavior:IsElementDataSelected(elementData);
-		PerksProgramFrame.playerCurrencyAmount = C_PerksProgram.GetCurrencyAmount();
-		button:Init(elementData, self.currencyIconMarkup, isSelected, PerksProgramFrame.playerCurrencyAmount);
-		button:SetScript("OnClick", function(button, buttonName)
+	local function InitializeHeader(frame, headerInfo)
+		frame.Text:SetText(headerInfo.uiGroupInfo.name);
+	end
+
+	local function InitializeButton(frame, itemInfo)
+		local isSelected = scrollContainer.selectionBehavior:IsElementDataSelected(itemInfo);
+
+		frame:Init(function() self:OnProductButtonDragStart(itemInfo) end);
+		frame:SetItemInfo(itemInfo);
+		frame:SetSelected(isSelected);
+		frame:SetScript("OnClick", function(button, buttonName)
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 		end);
-	end);
+	end
 
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
+	view:SetElementFactory(function(factory, elementData)
+		if elementData.isHeaderInfo then
+			factory("PerksProgramProductHeaderTemplate", InitializeHeader);
+		elseif elementData.isItemInfo then
+			factory("PerksProgramProductButtonTemplate", InitializeButton);
+		end
+	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(scrollContainer.ScrollBox, scrollContainer.ScrollBar, view);
 
 	local function OnSelectionChanged(o, elementData, selected)
+		if selected then
+			self:OnProductSelected(elementData);
+		end
+
 		local button = scrollContainer.ScrollBox:FindFrame(elementData);
 		if button then
-			button:SetSelection(selected);
-		end
-		if selected then
-			EventRegistry:TriggerEvent("PerksProgramProductsFrame.OnProductSelected", elementData);
-			EventRegistry:TriggerEvent("PerksProgram.OnProductCategoryChanged", elementData.perksVendorCategoryID);
-
-			if not PerksProgramFrame.ProductsFrame.silenceSelectionSounds then
-				PlaySound(SOUNDKIT.TRADING_POST_UI_ITEM_SELECT);
-			end
+			button:SetSelected(selected);
 		end
 	end;
 	scrollContainer.selectionBehavior = ScrollUtil.AddSelectionBehavior(scrollContainer.ScrollBox);
 	scrollContainer.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, OnSelectionChanged, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnFilterChanged", self.OnFilterChanged, self);
-end
 
-function PerksProgramProductsFrameMixin:ClearFrozenItemInProductList()
-	local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
-	local dataIndex, foundElementData = scrollBox:FindByPredicate(function(elementData)
-		return elementData.isFrozen == true;
-	end);
-	if foundElementData then
-		foundElementData.isFrozen = false;
-		local itemFrame = scrollBox:FindFrame(foundElementData);
-		if itemFrame then
-			local isSelected = self.ProductsScrollBoxContainer.selectionBehavior:IsElementDataSelected(foundElementData);
-			itemFrame:Init(foundElementData, self.currencyIconMarkup, isSelected);
-		end
-	end
-end
-
-function PerksProgramProductsFrameMixin:SetFrozenItemInProductList(frozenVendorItemID)
-	local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
-
-	local dataIndex, foundElementData = scrollBox:FindByPredicate(function(elementData)
-		return elementData.perksVendorItemID == frozenVendorItemID;
-	end);
-	if foundElementData then
-		foundElementData.isFrozen = true;
-		local itemFrame = scrollBox:FindFrame(foundElementData);
-		if itemFrame then
-			local isSelected = self.ProductsScrollBoxContainer.selectionBehavior:IsElementDataSelected(foundElementData);
-			itemFrame:Init(foundElementData, self.currencyIconMarkup, isSelected);
-		end
-	end
+	self.FrozenProductContainer:Init(function(itemInfo) self:OnProductSelected(itemInfo) end);
 end
 
 function PerksProgramProductsFrameMixin:OnEvent(event, ...)
-	if event == "PERKS_PROGRAM_DATA_SPECIFIC_ITEM_REFRESH" or event == "PERKS_PROGRAM_PURCHASE_SUCCESS" or event == "PERKS_PROGRAM_REFUND_SUCCESS" or event == "PERKS_PROGRAM_CURRENCY_REFRESH" then
+	if event == "PERKS_PROGRAM_DATA_SPECIFIC_ITEM_REFRESH" or event == "PERKS_PROGRAM_PURCHASE_SUCCESS" or event == "PERKS_PROGRAM_REFUND_SUCCESS" then
 		local vendorItemID = ...;
+
+		local vendorItemInfo = PerksProgramFrame:GetVendorItemInfo(vendorItemID);
+		if event == "PERKS_PROGRAM_REFUND_SUCCESS" then
+			vendorItemInfo.purchased = false;
+		end
+
+		-- Make sure to update scroll box data since they won't receive the events sent below to update shown frames
 		local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
-		local dataIndex, foundElementData = scrollBox:FindByPredicate(function(elementData)
+		local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
 			return elementData.perksVendorItemID == vendorItemID;
 		end);
-
-		local playCelebration = false;
-		if dataIndex then
-			local vendorItemInfo = C_PerksProgram.GetVendorItemInfo(vendorItemID);
-			if(event == "PERKS_PROGRAM_PURCHASE_SUCCESS") then
-				foundElementData.purchased = true;
-				foundElementData.refundable = true;
-				playCelebration = true;
-				EventRegistry:TriggerEvent("PerksProgram.CelebratePurchase", vendorItemInfo);
-			elseif(event == "PERKS_PROGRAM_REFUND_SUCCESS") then
-				foundElementData.purchased = false;
-				foundElementData.refundable = false;
-			else
-				foundElementData.purchased = vendorItemInfo.purchased;
-				foundElementData.refundable = vendorItemInfo.refundable;
-			end
-			foundElementData.name = vendorItemInfo.name;
-			foundElementData.description = vendorItemInfo.description;
-			EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", foundElementData);
+		if foundElementData then
+			foundElementData.purchased = vendorItemInfo.purchased;
+			foundElementData.refundable = vendorItemInfo.refundable;
 		end
-		PerksProgramFrame.playerCurrencyAmount = C_PerksProgram.GetCurrencyAmount();
-		scrollBox:ForEachFrame(function(itemFrame, elementData)
-			local isSelected = self.ProductsScrollBoxContainer.selectionBehavior:IsElementDataSelected(elementData);
-			itemFrame:Init(elementData, self.currencyIconMarkup, isSelected, PerksProgramFrame.playerCurrencyAmount);		
-		end);
-		if playCelebration then
-			local itemFrame = scrollBox:FindFrame(foundElementData);
-			if itemFrame then
-				itemFrame.CelebrateAnimation:Show();
-				itemFrame.CelebrateAnimation.AlphaInAnimation:Play();
-			end
+
+		EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", vendorItemInfo);
+		EventRegistry:TriggerEvent("PerksProgram.OnProductInfoChanged", vendorItemInfo);
+
+		if event == "PERKS_PROGRAM_PURCHASE_SUCCESS" then
+			EventRegistry:TriggerEvent("PerksProgram.CelebratePurchase", vendorItemInfo);
 		end
 	elseif event == "PERKS_PROGRAM_SET_FROZEN_ITEM" then
-		local dataProvider = self.ProductsScrollBoxContainer.ScrollBox:GetDataProvider();
-		if dataProvider:GetSize() ~= 0 then
-			local frozenVendorItemID = ...;
-			self:ClearFrozenItemInProductList();
-			if frozenVendorItemID > 0 then 
-				self:SetFrozenItemInProductList(frozenVendorItemID);
-			end
-		 end
-		 self:UpdateProducts();
-
-		 self.silenceSelectionSounds = true;
-		 self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData();
-		 self.silenceSelectionSounds = false;
+		self:UpdateProducts();
 	end
 end
 
@@ -158,14 +112,41 @@ function PerksProgramProductsFrameMixin:OnUpdate(deltaTime)
 	if currentInterval >= INTERVAL_UPDATE_SECONDS_TIME then
 		local dataProvider = self.ProductsScrollBoxContainer.ScrollBox:GetDataProvider();
 		dataProvider:ForEach(function(elementData)
-			elementData.timeRemaining = C_PerksProgram.GetTimeRemaining(elementData.perksVendorItemID);
+			if elementData.isItemInfo then
+				elementData.timeRemaining = C_PerksProgram.GetTimeRemaining(elementData.perksVendorItemID);
+			end
 		end);
 		self.ProductsScrollBoxContainer.ScrollBox:ForEachFrame(function(itemFrame, elementData)
-			local endTime = elementData.isFrozen and "" or PerksProgramFrame:FormatTimeLeft(elementData.timeRemaining, PerksProgramFrame.TimeLeftListFormatter);
-			itemFrame.ContentsContainer.TimeRemaining:SetText(endTime);
-			itemFrame.ContentsContainer.FrozenIcon:SetShown(elementData.isFrozen);
+			if elementData.isItemInfo then
+				itemFrame:UpdateTimeRemainingText();
+			end
 		end);
 		currentInterval = 0.0;
+	end
+end
+
+function PerksProgramProductsFrameMixin:OnProductButtonDragStart(itemInfo)
+	if itemInfo and not itemInfo.purchased then
+		self:TrySelectProduct(itemInfo);
+		C_PerksProgram.PickupPerksVendorItem(itemInfo.perksVendorItemID);
+	end
+end
+
+function PerksProgramProductsFrameMixin:OnProductSelected(productItemInfo)
+	self.selectedProductInfo = productItemInfo;
+
+	-- Make sure only 1 product appears selected at a time
+	if productItemInfo.isFrozen then
+		self.ProductsScrollBoxContainer.selectionBehavior:ClearSelections();
+	else
+		self.FrozenProductContainer:SetSelected(false);
+	end
+
+	EventRegistry:TriggerEvent("PerksProgramProductsFrame.OnProductSelected", productItemInfo);
+	EventRegistry:TriggerEvent("PerksProgram.OnProductCategoryChanged", productItemInfo.perksVendorCategoryID);
+
+	if not self.silenceSelectionSounds then
+		PlaySound(SOUNDKIT.TRADING_POST_UI_ITEM_SELECT);
 	end
 end
 
@@ -312,17 +293,6 @@ function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 	return newData;
 end
 
-local function BuildVendorItemInfo(vendorItemInfo)
-	local perksVendorCategoryID = vendorItemInfo.perksVendorCategoryID;
-	local displayInfo = C_PerksProgram.GetPerksProgramItemDisplayInfo(vendorItemInfo.perksVendorItemID);
-	displayInfo.defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(perksVendorCategoryID);
-	vendorItemInfo.displayData = PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo);
-
-	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
-		vendorItemInfo.creatureDisplays = C_MountJournal.GetAllCreatureDisplayIDsForMountID(vendorItemInfo.mountID);
-	end
-end
-
 local function PerksProgramProducts_PassFilterCheck(vendorItemInfo)
 	if not vendorItemInfo then
 		return false;
@@ -332,11 +302,7 @@ local function PerksProgramProducts_PassFilterCheck(vendorItemInfo)
 		return false;
 	end
 
-	local collectedRequired = PerksProgramFrame:GetFilterState("collected");
-	local uncollectedRequired = PerksProgramFrame:GetFilterState("uncollected");
 	local useableRequired = PerksProgramFrame:GetFilterState("useable");
-	local itemCollected = vendorItemInfo.purchased;
-
 	if useableRequired then -- a useable is check is required
 		local isUseable = C_PlayerInfo.CanUseItem(vendorItemInfo.itemID);
 		if not isUseable then
@@ -344,66 +310,182 @@ local function PerksProgramProducts_PassFilterCheck(vendorItemInfo)
 		end
 	end
 
-	if collectedRequired and not itemCollected and not uncollectedRequired then
-		return false;
+	local itemCollected = vendorItemInfo.purchased;
+
+	local includeCollected = PerksProgramFrame:GetFilterState("collected");
+	if includeCollected and itemCollected then
+		return true;
 	end
 
-	if uncollectedRequired and itemCollected and not collectedRequired then
-		return false;
+	local includeUncollected = PerksProgramFrame:GetFilterState("uncollected");
+	if includeUncollected and not itemCollected then
+		return true;
 	end
-	return true;
+
+	return false;
 end
 
-function PerksProgramProductsFrameMixin:UpdateProducts()
+local function ProductSortComparator(lhs, rhs)
+	local lhsGroupID = lhs.uiGroupInfo.ID;
+	local rhsGroupID = rhs.uiGroupInfo.ID;
+	local lhsGroupPriority = lhs.uiGroupInfo.priority;
+	local rhsGroupPriority = rhs.uiGroupInfo.priority;
+
+	-- If we have 2 different groups with the same priority then fallback on IDs for comparing which group goes first
+	if (lhsGroupID ~= rhsGroupID) and (lhsGroupPriority == rhsGroupPriority) then
+		lhsGroupPriority = lhsGroupID;
+		rhsGroupPriority = rhsGroupID;
+	end
+
+	-- If we have 2 things with the same priority 
+	-- Give headers higher priority than items under that header
+	if lhsGroupPriority == rhsGroupPriority then
+		lhsGroupPriority = lhs.isHeaderInfo and (lhsGroupPriority + 1) or lhsGroupPriority;
+		rhsGroupPriority = rhs.isHeaderInfo and (rhsGroupPriority + 1) or rhsGroupPriority;
+	end
+
+	-- If entries have varrying group priorities or If both entries are headers
+	-- Then prioritize the entry with the higher group priority
+	if (lhsGroupPriority ~= rhsGroupPriority) or (lhs.isHeaderInfo and rhs.isHeaderInfo) then
+		return lhsGroupPriority > rhsGroupPriority;
+	end
+
+	-- Past this point we know the two entries are both items in the same group
+	local sortField = PerksProgramFrame:GetSortField();
+	local lhsValue = lhs[sortField];
+	local rhsValue = rhs[sortField];
+
+	local sortByPrice = sortField == "price";
+	local sortByTimeRemaining = sortField == "timeRemaining";
+
+	if sortByPrice or sortByTimeRemaining then
+		-- Update sortValue based on our purchased state
+		local huge = math.max(lhsValue, rhsValue) + 1000;
+		local function GetSortValue(itemInfo, baseValue)
+			if itemInfo.refundable then
+				return sortByPrice and -2 or (huge - 1);
+			elseif itemInfo.purchased then
+				return sortByPrice and -3 or huge;
+			else
+				return baseValue;
+			end
+		end
+		lhsValue = GetSortValue(lhs, lhsValue);
+		rhsValue = GetSortValue(rhs, rhsValue);
+	end
+
+	if sortByTimeRemaining then
+		-- Convert values to the largest different time value we actually care to compare
+		local lhsTime = ConvertSecondsToUnits(lhsValue);
+		local rhsTime = ConvertSecondsToUnits(rhsValue);
+		if lhsTime.days ~= rhsTime.days then
+			lhsValue = lhsTime.days;
+			rhsValue = rhsTime.days;
+		elseif lhsTime.hours ~= rhsTime.hours then
+			lhsValue = lhsTime.hours;
+			rhsValue = rhsTime.hours;
+		else
+			-- The smallest we want to compare against is mintutes since thats the lowest we show in UI
+			lhsValue = lhsTime.minutes;
+			rhsValue = rhsTime.minutes;
+		end
+	end
+
+	local sortAscending = PerksProgramFrame:GetSortAscending();
+
+	-- Fallback to sorting by name if our sortfield turns out to be equivalent
+	if lhsValue == rhsValue then
+		sortField = "name";
+		sortAscending = PerksProgramFrame:GetDefaultSortAscending(sortField);
+		lhsValue = lhs.name;
+		rhsValue = rhs.name;
+	end
+
+	if sortAscending then
+		return lhsValue < rhsValue;
+	end
+
+	return  lhsValue > rhsValue;
+end
+
+function PerksProgramProductsFrameMixin:UpdateProducts(resetSelection)
+	local previouslySelectedProduct = self:GetSelectedProduct();
+
 	local scrollContainer = self.ProductsScrollBoxContainer;
 	scrollContainer.selectionBehavior:ClearSelections();
+
 	local dataProvider = CreateDataProvider();
+	local frozenItemInfo = PerksProgramFrame:GetFrozenPerksVendorItemInfo();
+	local groupInfos = {};
+	local numGroupInfos = 0;
 
-	local frozenVendorItemInfo = C_PerksProgram.GetFrozenPerksVendorItemInfo();	
-	local frozenVendorItemInList = false;
+	local function addItemToDataProvider(perksVendorID)
+		local itemInfo = PerksProgramFrame:GetVendorItemInfo(perksVendorID);
+		if not itemInfo then
+			return;
+		end
 
-	for i, vendorItemID in ipairs(PerksProgramFrame.vendorItemIDs) do
-		local vendorItemInfo = C_PerksProgram.GetVendorItemInfo(vendorItemID);
-		if PerksProgramProducts_PassFilterCheck(vendorItemInfo) then			
-			BuildVendorItemInfo(vendorItemInfo);
+		-- Don't add items which are being filtered out
+		if not PerksProgramProducts_PassFilterCheck(itemInfo) then
+			return;
+		end
 
-			if frozenVendorItemInfo and frozenVendorItemInfo.perksVendorItemID == vendorItemID then
-				vendorItemInfo.isFrozen = true;
-				frozenVendorItemInList = true;
-			end
-			dataProvider:Insert(vendorItemInfo);
+		-- Don't add frozen item to item list
+		-- It has it's own section of the UI it goes into
+		if frozenItemInfo and frozenItemInfo.perksVendorItemID == itemInfo.perksVendorItemID then
+			return;
+		end
+
+		-- Don't add items which don't have group info
+		if not itemInfo.uiGroupInfo then
+			return;
+		end
+
+		dataProvider:Insert(itemInfo);
+
+		-- Don't add duplicate group infos
+		if not groupInfos[itemInfo.uiGroupInfo.ID] then
+			groupInfos[itemInfo.uiGroupInfo.ID] = itemInfo.uiGroupInfo;
+			numGroupInfos = numGroupInfos + 1;
 		end
 	end
 
-	if frozenVendorItemInfo and not frozenVendorItemInList then		
-		local categoryID = frozenVendorItemInfo.perksVendorCategoryID;
-		if PerksProgramFrame:GetFilterState(categoryID) then
-			frozenVendorItemInfo.isFrozen = true;
-			BuildVendorItemInfo(frozenVendorItemInfo);
-			if PerksProgramProducts_PassFilterCheck(frozenVendorItemInfo) then
-				dataProvider:Insert(frozenVendorItemInfo);
-			end
+	local function addHeaderToDataProvider(groupInfo)
+		local headerInfo = {};
+		headerInfo.isHeaderInfo = true;
+		headerInfo.uiGroupInfo = groupInfo;
+		dataProvider:Insert(headerInfo);
+	end
+
+	-- Add all other items
+	for _, vendorItemID in ipairs(PerksProgramFrame.vendorItemIDs) do
+		addItemToDataProvider(vendorItemID);
+	end
+
+	-- Only add group headers if there is more than 1 group
+	if numGroupInfos > 1 then
+		for _, groupInfo in pairs(groupInfos) do
+			addHeaderToDataProvider(groupInfo);
 		end
 	end
 
-	local function SortComparator(lhs, rhs)
-		-- Frozen items are always first.
-		if lhs.isFrozen then
-			return true;
-		elseif rhs.isFrozen then
-			return false;
-		end
-
-		local sortField = PerksProgramFrame:GetSortField();
-		local sortAscending = PerksProgramFrame:GetSortAscending();
-		if sortAscending then
-			return lhs[sortField] < rhs[sortField];
-		else
-			return lhs[sortField] > rhs[sortField];
-		end
-	end
-	dataProvider:SetSortComparator(SortComparator);
+	dataProvider:SetSortComparator(ProductSortComparator);
 	scrollContainer.ScrollBox:SetDataProvider(dataProvider);
+
+	-- Update Frozen Product Button
+	if frozenItemInfo then
+		self.FrozenProductContainer:SetItemInfo(frozenItemInfo);
+	else
+		self.FrozenProductContainer:ClearItemInfo();
+	end
+	self.FrozenProductContainer:SetSelected(false);
+
+	-- Try to preserve selection. If not select first product
+	self.silenceSelectionSounds = true;
+	if resetSelection or not previouslySelectedProduct or not self:TrySelectProduct(previouslySelectedProduct) then
+		self:SelectFirstProduct();
+	end
+	self.silenceSelectionSounds = false;
 end
 
 function PerksProgramProductsFrameMixin:SortFieldSet()
@@ -413,48 +495,67 @@ end
 
 function PerksProgramProductsFrameMixin:OnFilterChanged()
 	self:UpdateProducts();
-	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData();
 end
 
-function PerksProgramProductsFrameMixin:GetSelectedProducts()
-	local scrollContainer = self.ProductsScrollBoxContainer;	
-	return scrollContainer.selectionBehavior:GetFirstSelectedElementData();
+function PerksProgramProductsFrameMixin:GetSelectedProduct()
+	return self.selectedProductInfo;
+end
+
+function PerksProgramProductsFrameMixin:SelectFirstProduct()
+	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData(IsElementDataItemInfo);
 end
 
 function PerksProgramProductsFrameMixin:SelectNextProduct()
-	local scrollContainer = self.ProductsScrollBoxContainer;	
-	local selectedElementData, index = scrollContainer.selectionBehavior:SelectNextElementData();
+	if self.FrozenProductContainer:IsSelected() then
+		return;
+	end
+
+	local scrollContainer = self.ProductsScrollBoxContainer;
+	local selectedElementData, index = scrollContainer.selectionBehavior:SelectNextElementData(IsElementDataItemInfo);
 	if selectedElementData then
 		self.ProductsScrollBoxContainer.ScrollBox:ScrollToNearest(index);
 	end
 end
 
 function PerksProgramProductsFrameMixin:SelectPreviousProduct()
+	if self.FrozenProductContainer:IsSelected() then
+		return;
+	end
+
 	local scrollContainer = self.ProductsScrollBoxContainer;
-	local selectedElementData, index = scrollContainer.selectionBehavior:SelectPreviousElementData();
+	local selectedElementData, index = scrollContainer.selectionBehavior:SelectPreviousElementData(IsElementDataItemInfo);
 	if selectedElementData then
 		self.ProductsScrollBoxContainer.ScrollBox:ScrollToNearest(index);
 	end
 end
 
-function PerksProgramProductsFrameMixin:AllDataRefresh()
-	self:UpdateProducts();
-	self.silenceSelectionSounds = true;
-	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData();
-	self.silenceSelectionSounds = false;
+function PerksProgramProductsFrameMixin:AllDataRefresh(resetSelection)
+	self:UpdateProducts(resetSelection);
 end
 
 function PerksProgramProductsFrameMixin:OnShow()
-	self:AllDataRefresh();
+	local resetSelection = true;
+	self:AllDataRefresh(resetSelection);
 end
 
-function PerksProgramProductsFrameMixin:GetElementData(perksVendorItemID)
-	local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
-	local dataIndex, foundElementData = scrollBox:FindByPredicate(function(elementData)
-		return elementData.perksVendorItemID == perksVendorItemID;
-	end);
+function PerksProgramProductsFrameMixin:TrySelectProduct(itemInfo)
+	local frozenProductItemInfo = self.FrozenProductContainer:GetItemInfo();
+	if frozenProductItemInfo and frozenProductItemInfo.perksVendorItemID == itemInfo.perksVendorItemID then
+		self.FrozenProductContainer:SetSelected(true);
+		return true;
+	end
 
-	return foundElementData;
+	local scrollContainer = self.ProductsScrollBoxContainer;
+	local scrollBox = scrollContainer.ScrollBox;
+	local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
+		return elementData.perksVendorItemID == itemInfo.perksVendorItemID;
+	end);
+	if foundElementData then
+		scrollContainer.selectionBehavior:SelectElementData(foundElementData);
+		return true;
+	end
+
+	return false;
 end
 
 ----------------------------------------------------------------------------------
@@ -562,4 +663,100 @@ end
 
 function PerksProgramCurrencyFrameMixin:OnLeave()
 	self.tooltip:Hide();
+end
+
+----------------------------------------------------------------------------------
+-- Frozen product container
+----------------------------------------------------------------------------------
+FrozenProductContainerMixin = {};
+
+function FrozenProductContainerMixin:OnLoad()
+	-- Override the product button's methods so they run through this frame first so even internal calls will go through us
+	self.ProductButton.SetItemInfo = function(frame, itemInfo) self:SetItemInfo(itemInfo) end;
+	self.ProductButton.SetupFreezeDraggedItem = function(frame) self:SetupFreezeDraggedItem() end;
+	self.ProductButton.FreezeDraggedItem = function(frame) self:FreezeDraggedItem() end;
+
+	-- Resize button stuff to better fit the bigger button
+	local productIcon = self.ProductButton.ContentsContainer.Icon;
+	productIcon:SetSize(64, 64);
+	productIcon:ClearAllPoints();
+	productIcon:SetPoint("LEFT", productIcon:GetParent(), "LEFT", 32, 0);
+
+	local iconMask = self.ProductButton.ContentsContainer.IconMask;
+	iconMask:SetSize(95, 95);
+
+	local productLabel = self.ProductButton.ContentsContainer.Label;
+	productLabel:SetSize(233, 45);
+
+	local celebrationAnim = self.ProductButton.CelebrateAnimation;
+	celebrationAnim.Highlight:SetSize(526, 84);
+	celebrationAnim.Border:SetSize(526, 84);
+	celebrationAnim.IconGlow:SetSize(94, 94);
+	celebrationAnim.IconGlow:ClearAllPoints();
+	celebrationAnim.IconGlow:SetPoint("CENTER", productIcon, "CENTER");
+	celebrationAnim.Spark:SetSize(36, 22);
+	celebrationAnim.Spark:ClearAllPoints();
+	celebrationAnim.Spark:SetPoint("CENTER", celebrationAnim, "CENTER", -270, 40);
+	celebrationAnim.Lines:SetSize(340, 80);
+	celebrationAnim.Lines:ClearAllPoints();
+	celebrationAnim.Lines:SetPoint("CENTER", celebrationAnim, "CENTER", -92, 0);
+	celebrationAnim.Glow:SetHeight(84);
+	celebrationAnim.GlowMask:SetSize(622, 879);
+	celebrationAnim.GlowMask:ClearAllPoints();
+	celebrationAnim.GlowMask:SetPoint("CENTER", celebrationAnim, "CENTER", -92, 0);
+	celebrationAnim.HighlightMask:SetSize(526, 879);
+end
+
+function FrozenProductContainerMixin:Init(onSelectedCallback)
+	self.ProductButton:Init(onSelectedCallback);
+end
+
+function FrozenProductContainerMixin:SetItemInfo(itemInfo)
+	PerksProgramFrozenProductButtonMixin.SetItemInfo(self.ProductButton, itemInfo);
+
+	self:ShowFreezeBG(not self.ProductButton.isPendingFreezeItem);
+end
+
+function FrozenProductContainerMixin:ClearItemInfo()
+	if self:GetItemInfo() then
+		self.UnfreezeAnim:Restart();
+	end
+
+	self.ProductButton:ClearItemInfo();
+end
+
+function FrozenProductContainerMixin:GetItemInfo()
+	return self.ProductButton:GetItemInfo();
+end
+
+function FrozenProductContainerMixin:SetSelected(selected)
+	return self.ProductButton:SetSelected(selected);
+end
+
+function FrozenProductContainerMixin:IsSelected()
+	return self.ProductButton:IsSelected();
+end
+
+function FrozenProductContainerMixin:SetupFreezeDraggedItem()
+	-- User could trigger an override while the freeze anims are still playing out.
+	self.ConfirmedBackgroundFreezeAnim:Stop();
+
+	PerksProgramFrozenProductButtonMixin.SetupFreezeDraggedItem(self.ProductButton);
+
+	-- Only show pending freeze anim if we are still asking the player if they want to freeze the item
+	if StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
+		self.PendingFreezeAnim:Restart();
+	end
+end
+
+function FrozenProductContainerMixin:FreezeDraggedItem()
+	PerksProgramFrozenProductButtonMixin.FreezeDraggedItem(self.ProductButton);
+
+	self.ConfirmedBackgroundFreezeAnim:Restart();
+end
+
+-- Only pieces that stay visible once the related animation would be complete.
+function FrozenProductContainerMixin:ShowFreezeBG(show)
+	self.FrostBG:SetAlpha(show and .35 or 0);
+	self.FrostLabelBG:SetAlpha(show and .22 or 0);
 end

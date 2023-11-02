@@ -2448,7 +2448,7 @@ end
 function ContainerFrameTokenWatcherMixin:UpdateTokenTracker()
 	local tokenFrame = ContainerFrameSettingsManager:GetTokenTracker(self);
 	if tokenFrame then
-		local showTokenFrame = tokenFrame:ShouldShow() and self:IsShown()
+		local showTokenFrame = tokenFrame:ShouldShow() and self:IsShown();
 		tokenFrame:SetShown(showTokenFrame);
 	end
 

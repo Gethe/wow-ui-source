@@ -332,6 +332,12 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
+			if QuestUtil.QuestTextContrastUseLightText() then
+				questTitleButton:GetFontString():SetFixedColor(true);
+				questTitleButton:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
+			else
+				questTitleButton:GetFontString():SetFixedColor(false);
+			end
 
 			local activeQuestID = GetActiveQuestID(i);
 			QuestUtil.ApplyQuestIconActiveToTextureForQuestID(questTitleButton.Icon, activeQuestID, isComplete, IsActiveQuestLegendary(i));
@@ -365,13 +371,20 @@ function QuestFrameGreetingPanel_OnShow()
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
 			local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(i - numActiveQuests);
 			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable);
-
+			
+			local title = GetAvailableTitle(i - numActiveQuests);
 			if ( isTrivial ) then
-				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
+				questTitleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(0.5,0.5,0.5);
 			else
-				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, GetAvailableTitle(i - numActiveQuests));
+				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
+			end
+			if QuestUtil.QuestTextContrastUseLightText() then
+				questTitleButton:GetFontString():SetFixedColor(true);
+				questTitleButton:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
+			else
+				questTitleButton:GetFontString():SetFixedColor(false);
 			end
 			questTitleButton:SetHeight(math.max(questTitleButton:GetTextHeight() + 2, questTitleButton.Icon:GetHeight()));
 			questTitleButton:SetID(i - numActiveQuests);
@@ -582,10 +595,16 @@ end
 
 function QuestFrame_SetTitleTextColor(fontString, material)
 	local temp, materialTitleTextColor = GetMaterialTextColors(material);
+	if QuestUtil.QuestTextContrastUseLightText() then
+		temp, materialTitleTextColor = GetMaterialTextColors("Stone");
+	end
 	fontString:SetTextColor(materialTitleTextColor[1], materialTitleTextColor[2], materialTitleTextColor[3]);
 end
 
 function QuestFrame_SetTextColor(fontString, material)
 	local materialTextColor = GetMaterialTextColors(material);
+	if QuestUtil.QuestTextContrastUseLightText() then
+		materialTextColor = GetMaterialTextColors("Stone");
+	end
 	fontString:SetTextColor(materialTextColor[1], materialTextColor[2], materialTextColor[3]);
 end

@@ -48,6 +48,9 @@ function TooltipComparisonManager:AnchorShoppingTooltips(primaryShown, secondary
 	local primaryTooltip = tooltip.shoppingTooltips[1];
 	local secondaryTooltip = tooltip.shoppingTooltips[2];
 	
+	primaryTooltip:SetShown(primaryShown);
+	secondaryTooltip:SetShown(secondaryShown);
+
 	local sideAnchorFrame = self.anchorFrame;
 	if self.anchorFrame.IsEmbedded then
 		sideAnchorFrame = self.anchorFrame:GetParent():GetParent();
@@ -136,8 +139,7 @@ function TooltipComparisonManager:AnchorShoppingTooltips(primaryShown, secondary
 		end
 	end
 	
-	primaryTooltip:SetShown(primaryShown);
-	secondaryTooltip:SetShown(secondaryShown);
+
 end
 
 -- ITEM

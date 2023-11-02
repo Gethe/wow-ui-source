@@ -69,7 +69,7 @@ UI_shared.xsd">
 					<KeyValue key="enabledOverride" value="true" type="boolean"/>
 				</KeyValues>
 			</Frame>
-			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="RadialWheelCooldownMixin">
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true" rotation="180" mixin="RadialWheelCooldownMixin" hidden="true">
 				<Size x="290" y="290"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -95,12 +95,10 @@ UI_shared.xsd">
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="IntroAnim" setToFinalAlpha="true">
-						<Alpha childKey="SwipeTexture" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="Background" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="OutroAnim" setToFinalAlpha="true" mixin="RadialWheelCooldownOutroAnimMixin">
-						<Alpha childKey="SwipeTexture" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Background" duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha duration="0.13" order="1" fromAlpha="1" toAlpha="0"/>
 						<Scripts>
 							<OnFinished method="OnFinished"/>
 						</Scripts>

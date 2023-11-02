@@ -30,7 +30,7 @@
 			<OnClick method="OnClick" />
 		</Scripts>
 	</Button>
-	<Frame name="AlliedRaceAbilityTemplate" virtual="true">
+	<Frame name="AlliedRaceAbilityTemplate" mixin="AlliedRaceAbilityMixin" virtual="true">
 		<Size x="300" y="36"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -56,15 +56,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self.Icon, "ANCHOR_RIGHT", 6, 0);
-				GameTooltip:SetText(self.abilityName, HIGHLIGHT_FONT_COLOR:GetRGB());
-				GameTooltip:AddLine(self.abilityDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-				GameTooltip:Show();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 	<Frame name="AlliedRacesFrame" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="AlliedRacesFrameMixin" enableMouse="true" hidden="true">
@@ -73,7 +66,7 @@
 			<Anchor point="LEFT" x="20" y="40"/>
 		</Anchors>
 		<Frames>
-			<PlayerModel parentKey="ModelFrame" mixin="ModelFrameMixin" enableMouse="true" useParentLevel="true" drawLayer="BORDER" inherits="ModelTemplate">
+			<ModelScene parentKey="ModelScene" mixin="AlliedRacesModelSceneMixin" inherits="PanningModelSceneMixinTemplate">
 				<Size x="313" y="580"/>
 				<Anchors>
 					<Anchor point="LEFT" x="5" y="-9"/>
@@ -87,95 +80,46 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					 <Layer level="ARTWORK">
+					<Layer level="ARTWORK">
 						<Texture parentKey="​BackgroundOverlay" atlas="AlliedRace-UnlockingFrame-ModelFrame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="-8" y="-5"/>
 							</Anchors>
 						</Texture>
-					 </Layer>
+					</Layer>
 				</Layers>
 				<Frames>
-					<CheckButton parentKey="AlliedRacesMaleButton">
+					<CheckButton parentKey="AlliedRacesMaleButton" mixin="AlliedRacesMaleButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.ModelFrame" relativePoint="TOPRIGHT" x="-10" y="-15"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.ModelScene" relativePoint="TOPRIGHT" x="-10" y="-15"/>
 						</Anchors>
 						<NormalTexture atlas="AlliedRace-UnlockingFrame-Male"/>
 						<CheckedTexture atlas="AlliedRace-UnlockingFrame-GenderSelectionGlow"/>
 						<HighlightTexture atlas="AlliedRace-UnlockingFrame-GenderMouseOverGlow"/>
 						<Scripts>
-							<OnClick>
-								local alliedRaceModelFrame = self:GetParent();
-								alliedRaceModelFrame.AlliedRacesFemaleButton:SetChecked(false);
-
-								local alliedRaceFrame = self:GetParent():GetParent();
-								alliedRaceFrame:UpdateModel(self.MaleModelID);
-								alliedRaceFrame:SetRaceNameForGender("male");
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
-							</OnClick>
+							<OnClick method="OnClick"/>
 						</Scripts>
 					</CheckButton>
-					<CheckButton parentKey="AlliedRacesFemaleButton">
+					<CheckButton parentKey="AlliedRacesFemaleButton" mixin="AlliedRacesFemaleButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.AlliedRacesMaleButton" relativePoint="BOTTOM" y ="-35"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								local alliedRaceModelFrame = self:GetParent();
-								alliedRaceModelFrame.AlliedRacesMaleButton:SetChecked(false);
-								local alliedRaceFrame = self:GetParent():GetParent();
-								alliedRaceFrame:UpdateModel(self.FemaleModelID);
-								alliedRaceFrame:SetRaceNameForGender("female");
-								PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
-							</OnClick>
+							<OnClick method="OnClick"/>
 						</Scripts>
 						<NormalTexture atlas="AlliedRace-UnlockingFrame-Female"/>
 						<CheckedTexture atlas="AlliedRace-UnlockingFrame-GenderSelectionGlow"/>
 						<HighlightTexture atlas="AlliedRace-UnlockingFrame-GenderMouseOverGlow"/>
 					</CheckButton>
-					<Button parentKey="ZoomInButton" mixin="AlliedRacesModelControlZoomButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
-						<Size x="26" y="25"/>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelFrame" relativePoint="BOTTOM" x="-50" y="10" />
+							<Anchor point="BOTTOM" x="0" y="10"/>
 						</Anchors>
-						<KeyValues>
-							<KeyValue key="zoomIn" value="true" type="boolean"/>
-						</KeyValues>
-					</Button>
-					<Button parentKey="ZoomOutButton" mixin="AlliedRacesModelControlZoomButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
-						<Size x="26" y="25"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ZoomInButton" relativePoint="BOTTOMRIGHT"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="zoomIn" value="false" type="boolean"/>
-						</KeyValues>
-					</Button>
-					<Button parentKey="RotateLeftButton" mixin="AlliedRacesModelControlRotateButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
-						<Size x="26" y="25"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ZoomOutButton" relativePoint="BOTTOMRIGHT"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="rotateDirection" value="left" type="string"/>
-						</KeyValues>
-					</Button>
-					<Button parentKey="RotateRightButton" mixin="AlliedRacesModelControlRotateButtonMixin" inherits="AlliedRacesModelControlFrameButtonTemplate">
-						<Size x="26" y="25"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.RotateLeftButton" relativePoint="BOTTOMRIGHT"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="rotateDirection" value="right" type="string"/>
-						</KeyValues>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnMouseWheel method="OnMouseWheel" />
-				</Scripts>
-			</PlayerModel>
+					</Frame>
+				</Frames>				
+			</ModelScene>
 			<Frame parentKey="RaceInfoFrame">
 				<Size x="330" y="464"/>
 				<Anchors>
@@ -255,7 +199,7 @@
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Banner" atlas="AlliedRace-UnlockingFrame-RaceBanner" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ModelFrame" relativePoint="TOPRIGHT" x="-76" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ModelScene" relativePoint="TOPRIGHT" x="-76" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>

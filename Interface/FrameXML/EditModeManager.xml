@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 
 	<Frame name="EditModeManagerFrame" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" frameStrata="DIALOG" mixin="EditModeManagerFrameMixin">
 		<Anchors>
@@ -88,6 +88,17 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-85"/>
 				</Anchors>
+				<!-- Intentionally overwriting the Label inherited from EditModeCheckButtonTemplate to force a fixed size -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" wordwrap="false" justifyH="LEFT" inherits="GameFontHighlightMedium">
+							<Size x="96" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="RIGHT" x="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Frame parentKey="GridSpacingSlider" inherits="ResizeLayoutFrame" mixin="EditModeGridSpacingSliderMixin">
 				<Anchors>

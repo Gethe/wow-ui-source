@@ -190,11 +190,17 @@ function ProfessionsMixin:SetProfessionInfo(professionInfo, useLastSkillLine)
 		if not useNewSkillLine then
 			return;
 		end
+		if professionChanged then
+			SearchBoxTemplate_ClearText(self.CraftingPage.RecipeList.SearchBox);
+			SearchBoxTemplate_ClearText(self.OrdersPage.BrowseFrame.RecipeList.SearchBox);
+		end
 		C_TradeSkillUI.SetProfessionChildSkillLineID(useNewSkillLine and professionInfo.professionID or self.professionInfo.professionID);
 	end
 
 	-- Always updating the profession info so we're not displaying any stale information in the refresh.
 	self.professionInfo = Professions.GetProfessionInfo();
+	self.professionInfo.openRecipeID = professionInfo.openRecipeID;
+	self.professionInfo.openSpecTab = professionInfo.openSpecTab;
 
 	if professionIDChanged then
 		EventRegistry:TriggerEvent("Professions.ProfessionSelected", self.professionInfo);
@@ -419,6 +425,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 end
 
 function ProfessionsMixin:OnShow()
+	self.CraftingPage.CraftingOutputLog:Cleanup();
 	EventRegistry:TriggerEvent("ProfessionsFrame.Show");
 	EventRegistry:TriggerEvent("ItemButton.UpdateCraftedProfessionQualityShown");
 	PlaySound(SOUNDKIT.UI_PROFESSIONS_WINDOW_OPEN);

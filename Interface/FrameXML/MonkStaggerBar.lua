@@ -1,11 +1,9 @@
 -- percentages at which bar should change color
-STAGGER_YELLOW_TRANSITION = .30
-STAGGER_RED_TRANSITION = .60
-
--- table indices of bar colors
-STAGGER_GREEN_INDEX = 1;
-STAGGER_YELLOW_INDEX = 2;
-STAGGER_RED_INDEX = 3;
+STAGGER_STATES = {
+	RED 	= { key = "red", threshold = .60 },
+	YELLOW 	= { key = "yellow", threshold = .30 },
+	GREEN 	= { key = "green" }
+}
 
 MonkStaggerBarMixin = {};
 
@@ -32,17 +30,24 @@ function MonkStaggerBarMixin:UpdateArt()
 
 	local percent = self.maxPower > 0 and self.currentPower / self.maxPower or 0;
 	local artInfo = PowerBarColor[self.powerName];
+	local staggerStateKey;
 
-	if percent >= STAGGER_RED_TRANSITION then
-		artInfo = artInfo[STAGGER_RED_INDEX];
-	elseif percent >= STAGGER_YELLOW_TRANSITION then
-		artInfo = artInfo[STAGGER_YELLOW_INDEX];
+	if percent >= STAGGER_STATES.RED.threshold then
+		staggerStateKey = STAGGER_STATES.RED.key;
+	elseif percent >= STAGGER_STATES.YELLOW.threshold then
+		staggerStateKey = STAGGER_STATES.YELLOW.key;
 	else
-		artInfo = artInfo[STAGGER_GREEN_INDEX];
+		staggerStateKey = STAGGER_STATES.GREEN.key;
 	end
-	self.overrideArtInfo = artInfo;
 
-	self.baseMixin.UpdateArt(self);
+	if self.staggerStateKey ~= staggerStateKey then
+		self.staggerStateKey = staggerStateKey;
+
+		self.overrideArtInfo = artInfo[staggerStateKey];
+		self.overrideArtInfo.spark = artInfo.spark;
+
+		self.baseMixin.UpdateArt(self);
+	end
 end
 
 function MonkStaggerBarMixin:EvaluateUnit()

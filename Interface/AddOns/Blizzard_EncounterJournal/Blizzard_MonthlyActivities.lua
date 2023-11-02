@@ -55,6 +55,11 @@ function MonthlyActivitiesButtonMixin:Init(node)
 	self:Show();
 end
 
+function MonthlyActivitiesButtonMixin:OnShow()
+	self:GetElementData():SetCollapsed(true);
+	self:UpdateButtonState();
+end
+
 function MonthlyActivitiesButtonMixin:SetButtonData()
 	local node = self:GetElementData();
 	if not node then
@@ -63,24 +68,35 @@ function MonthlyActivitiesButtonMixin:SetButtonData()
 	local data = node:GetData();
 
 	self.id = data.id;
-	self.tracked = data.tracked;
 	self.requirementsList = data.requirementsList;
 	self.activityName = data.name;
 	self.description = data.description;
 	self.completed = data.completed;
+
+	self:UpdateTracked();
+
 	self.Name:SetText(data.name);
 	self.Name:SetFontObject(data.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
-
 	self.Points:SetText(data.points);
 	self.Points:SetShown(not data.restricted and not data.completed and data.rewardAvailable and not data.pendingComplete);
 	self.Checkmark:SetShown(not data.restricted and data.completed and not data.pendingComplete);
 	self.CheckmarkFlipbook:SetShown(data.pendingComplete);
-	self.TrackingCheckmark:SetShown(data.tracked and not data.completed);
 	local normalActiveTexture = self.id == MonthlyActivitySelectedID and "activities-incomplete-active" or "activities-incomplete"
 	self:SetNormalAtlas(data.completed and "activities-complete" or normalActiveTexture);
-	
+
 	-- Prevent hover state and tooltip when restricted
 	self:SetEnabled(not data.restricted);
+end
+
+function MonthlyActivitiesButtonMixin:UpdateTracked()
+	local node = self:GetElementData();
+	if node then
+		local data = node:GetData();
+		self.tracked = data.tracked;
+	else
+		self.tracked = false;
+	end
+	self.TrackingCheckmark:SetShown(self.tracked and not self.completed);
 end
 
 function MonthlyActivitiesButtonMixin:UpdateButtonState()
@@ -113,11 +129,13 @@ function MonthlyActivitiesButtonMixin:OnEnter()
 	end
 end
 
+-- Returns true if this method acted on the click
+-- This may be needed since if the internal method handles the click in a way which leads to the button being released back to the pool then we won't want to continue after
 function MonthlyActivitiesButtonMixin:OnClick_Internal()
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
 		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(self.id);
 		ChatEdit_InsertLink(perksActivityLink);
-		return;
+		return true;
 	end
 
 	if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
@@ -131,11 +149,16 @@ function MonthlyActivitiesButtonMixin:OnClick_Internal()
 		end
 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		return true;
 	end
+
+	return false;
 end
 
 function MonthlyActivitiesButtonMixin:OnClick()
-	self:OnClick_Internal();
+	if self:OnClick_Internal() then
+		return;
+	end
 
 	local node = self:GetElementData();
 	if node then
@@ -198,11 +221,12 @@ MonthlyActivitiesThresholdMixin = { };
 function MonthlyActivitiesThresholdMixin:SetCurrentPoints(points)
 	self.RewardCurrency:SetCurrentPoints(points);
 
+	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
+
 	self.LineIncomplete:SetShown(not aboveThreshold and self.showLine);
 	self.LineComplete:SetShown(aboveThreshold and self.showLine);
-	
+
 	local initialSet = self.aboveThreshold == nil;
-	local aboveThreshold = points >= self.thresholdInfo.requiredContributionAmount;
 	if self.aboveThreshold == aboveThreshold then
 		return;
 	end
@@ -313,18 +337,6 @@ end
 -- MonthlyActivitiesFilterListButtonMixin
 MonthlyActivitiesFilterListButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
-function MonthlyActivitiesFilterListButtonMixin:OnEnter()
-	if ButtonStateBehaviorMixin.OnEnter(self) then
-		self:UpdateState();
-	end
-end
-
-function MonthlyActivitiesFilterListButtonMixin:OnLeave()
-	if ButtonStateBehaviorMixin.OnLeave(self) then
-		self:UpdateState();
-	end
-end
-
 function MonthlyActivitiesFilterListButtonMixin:UpdateStateInternal(selected)
 	if selected then
 		self.Label:SetFontObject("GameFontHighlight");
@@ -341,7 +353,7 @@ function MonthlyActivitiesFilterListButtonMixin:UpdateStateInternal(selected)
 	end
 end
 
-function MonthlyActivitiesFilterListButtonMixin:UpdateState()
+function MonthlyActivitiesFilterListButtonMixin:OnButtonStateChanged()
 	self:UpdateStateInternal(MonthlyActivityFilterSelection:IsSelected(self));
 end
 
@@ -506,10 +518,6 @@ function MonthlyActivitiesFrameMixin:CollapseAllMonthlyActivities()
 	end
 end
 
-function MonthlyActivitiesFrameMixin:OnShow()
-	self:CollapseAllMonthlyActivities();
-end
-
 function MonthlyActivitiesFrameMixin:OnHide()
 	if self.progressionSoundHandle then
 		StopSound(self.progressionSoundHandle);
@@ -526,7 +534,19 @@ function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
 	if ( event == "PERKS_ACTIVITIES_UPDATED" ) then
 		local activitiesInfo = ...;
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition, activitiesInfo);
-	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) or ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
+	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) then
+		local perksActivitiesTracked = ...;
+		local trackedActivityIDs = perksActivitiesTracked.trackedIDs;
+		local dataProvider = self.ScrollBox:GetDataProvider();
+		local excludeCollapsed = false;
+		dataProvider:ForEach(function(elementData)
+			local data = elementData:GetData();
+			data.tracked = tContains(trackedActivityIDs, data.id);
+		end, excludeCollapsed);
+		self.ScrollBox:ForEachFrame(function(frame, elementData)
+			frame:UpdateTracked();
+		end);
+	elseif ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		self:CollapseAllMonthlyActivities();
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
@@ -771,8 +791,18 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 	end
 
 	dataProvider:SetSortComparator(function(a, b)
-		aData = a:GetData();
-		bData = b:GetData();
+		local aData = a:GetData();
+		local bData = b:GetData();
+
+		-- Sort pending complete to the top
+		if aData.pendingComplete ~= bData.pendingComplete then
+			return aData.pendingComplete;
+		end
+
+		-- But sort already completed to the bottom
+		if aData.completed ~= bData.completed then
+			return bData.completed;
+		end
 
 		-- Put non events before events
 		if not aData.eventStartTime and bData.eventStartTime then
@@ -791,26 +821,16 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 			end
 		end
 
-		-- Sort pending complete to the top
-		if aData.pendingComplete ~= bData.pendingComplete then
-			return a.pendingComplete;
-		end
-
-		-- But sort already completed to the bottom
-		if aData.completed ~= bData.completed then
-			return bData.completed;
-		end
-
 		-- Sort by data driven ui priority field
 		if aData.uiPriority ~= bData.uiPriority then
 			return aData.uiPriority > bData.uiPriority;
 		end
-	
+
 		-- Then sort by points descending
 		if aData.points ~= bData.points then
 			return aData.points > bData.points;
 		end
-	
+
 		-- Last sort by alphabetical name
 		return aData.name < bData.name;
 	end);
@@ -970,12 +990,13 @@ end
 
 function MonthlyActivitiesFrameMixin:UpdateTime(displayMonthName, secondsRemaining)
 	local text = MonthlyActivitiesFrameMixin.TimeLeftFormatter:Format(secondsRemaining);
-	self.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(text));
+	self.HeaderContainer.TimeLeft:SetText(MONTHLY_ACTIVITIES_DAYS:format(text));
 
 	if displayMonthName and #displayMonthName > 0 then
-		self.Month:SetText(displayMonthName);
+		self.HeaderContainer.Month:SetText(displayMonthName);
 	else
-		self.Month:SetText(ACTIVITIES_MONTH_NAMES[currentCalendarTime.month]);
+		local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+		self.HeaderContainer.Month:SetText(ACTIVITIES_MONTH_NAMES[currentCalendarTime.month]);
 	end
 end
 
@@ -1097,4 +1118,41 @@ function MonthlyActivitiesRewardButtonMixin:OnUpdate()
 			ResetCursor();
 		end
 	end
+end
+
+-- MonthlyActivitiesThemeContainerMixin
+MonthlyActivitiesThemeContainerMixin = {};
+
+function MonthlyActivitiesThemeContainerMixin:OnLoad()
+	local function PositionFrame(frame, point, relativeTo, relativePoint, offsetX, offsetY)
+		frame:ClearAllPoints();
+		frame:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
+	end
+
+	PositionFrame(self.FilterList, "CENTER", EncounterJournalMonthlyActivitiesFrame.FilterList, "CENTER", 0, 0);
+	PositionFrame(self.Top, "BOTTOM", EncounterJournal, "TOP", 0, -133);
+	PositionFrame(self.Bottom, "TOP", EncounterJournal, "BOTTOM", 0, 7);
+	PositionFrame(self.Left, "RIGHT", EncounterJournal, "LEFT", 7, -11);
+	PositionFrame(self.Right, "LEFT", EncounterJournal, "RIGHT", -6, -11);
+end
+
+function MonthlyActivitiesThemeContainerMixin:OnShow()
+	local theme = C_PerksActivities.GetPerksUIThemePrefix();
+	local atlasPrefix = "perks-theme-"..theme.."-tl-";
+
+	local function SetAtlas(texture, atlasSuffix)
+		local atlasName = atlasPrefix..atlasSuffix;
+		if not C_Texture.GetAtlasInfo(atlasName) then
+			texture:SetTexture(nil);
+			return;
+		end
+
+		texture:SetAtlas(atlasName, true);
+	end
+
+	SetAtlas(self.FilterList, "box");
+	SetAtlas(self.Top, "top");
+	SetAtlas(self.Bottom, "bottom");
+	SetAtlas(self.Left, "left");
+	SetAtlas(self.Right, "right");
 end

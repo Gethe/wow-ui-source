@@ -568,11 +568,17 @@ function SettingsButtonControlMixin:Release()
 	SettingsListElementMixin.Release(self);
 end
 
-function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip)
+function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip, addSearchTags)
 	local data = {name = name, buttonText = buttonText, buttonClick = buttonClick, tooltip = tooltip};
 	local initializer = Settings.CreateElementInitializer("SettingButtonControlTemplate", data);
-	initializer:AddSearchTags(name);
-	initializer:AddSearchTags(buttonText);
+
+	-- Some settings buttons, like ones that open to a setting category, should not show up in search.
+	assert(addSearchTags ~= nil);
+	if addSearchTags then
+		initializer:AddSearchTags(name);
+		initializer:AddSearchTags(buttonText);
+	end
+
 	return initializer;
 end
 

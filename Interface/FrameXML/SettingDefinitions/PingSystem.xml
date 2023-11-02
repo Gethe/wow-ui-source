@@ -3,7 +3,7 @@
 
 	<Script file="PingSystem.lua"/>
 
-    <Frame Name="PingSystemTutorial" inherits="ButtonFrameTemplate" mixin="PingSystemTutorialMixin" frameStrata="DIALOG" topLevel="true" movable="true" enableMouse="true" hidden="true">
+    <Frame Name="PingSystemTutorial" inherits="ButtonFrameTemplate" mixin="PingSystemTutorialMixin" frameStrata="DIALOG" topLevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
         <Size x="958" y="792"/>
         <Anchors>
             <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="0"/>

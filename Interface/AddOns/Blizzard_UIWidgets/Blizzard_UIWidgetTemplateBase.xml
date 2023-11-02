@@ -342,11 +342,16 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
+				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="NameFrame" atlas="PetList-ButtonBackground" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="ItemName" inherits="GameTooltipHeaderText" justifyV="MIDDLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10"/>
@@ -363,6 +368,21 @@
 					<Size x="28" y="28"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" file="Interface\Common\common-iconmask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="EarnedCheck" atlas="common-icon-checkmark" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="3" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>

@@ -67,33 +67,26 @@
 		</Layers>
 	</ItemButton>
     <Frame name="InspectPaperDollFrame" setAllPoints="true" useParentLevel="true" parent="InspectFrame" id="1">
-        <Layers>
-            <Layer level="OVERLAY">
-                <FontString name="InspectLevelText" inherits="GameFontNormalSmall" text="Level level race class">
-                    <Anchors>
-                        <Anchor point="TOP" x="0" y="-27"/>
-                    </Anchors>
-                </FontString>
-                <FontString name="InspectTitleText" inherits="GameFontNormalSmall" text="title of the player" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="InspectLevelText" relativePoint="BOTTOM" x="0" y="-1"/>
-                    </Anchors>
-                </FontString>
-                <FontString name="InspectGuildText" inherits="GameFontNormalSmall" text="title of guild" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="InspectTitleText" relativePoint="BOTTOM" x="0" y="-1"/>
-                    </Anchors>
-                </FontString>
-				<Texture name="InspectFaction" file="Interface\Timer\Panda-Logo" hidden="true">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="-10"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="1"/>	
-				</Texture>
-            </Layer>
-        </Layers>
-        <Frames>
+		<Frames>
+			<Frame parentKey="LevelTextWrapper" inherits="ResizeLayoutFrame" mixin="LevelTextMixin">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-27"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="InspectLevelText" inherits="GameFontNormalSmall" wordwrap="false">
+							<Size x="220"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
 			<Button parentKey="ViewButton" inherits="UIPanelButtonTemplate" text="VIEW_IN_DRESSUP_FRAME">
 				<Size x="0" y="22"/>
 				<Anchors>
@@ -104,11 +97,11 @@
 					<OnClick function="InspectPaperDollViewButton_OnClick"/>
 				</Scripts>
 			</Button>
-            <PlayerModel name="InspectModelFrame" inherits="ModelWithControlsTemplate">
+			<PlayerModel name="InspectModelFrame" inherits="ModelWithControlsTemplate">
 				<Size x="231" y="320"/>
-                <Anchors>
-                    <Anchor point="TOPLEFT" x="52" y="-66"/>
-                </Anchors>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="52" y="-66"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="InspectModelFrameBackgroundTopLeft" parentKey="BackgroundTopLeft">
@@ -202,12 +195,12 @@
 						</Texture>
 					</Layer>
 				</Layers>
-                <Scripts>
+				<Scripts>
 					<OnLoad>
 						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
 					</OnLoad>
-                </Scripts>
-            </PlayerModel>
+				</Scripts>
+			</PlayerModel>
 			<Frame name="InspectPaperDollItemsFrame" setAllPoints="true">
 				<Frames>
 					<ItemButton name="InspectHeadSlot" inherits="InspectPaperDollItemSlotButtonLeftTemplate">
@@ -323,6 +316,27 @@
 				</Frames>
 			</Frame>
 		</Frames>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="InspectTitleText" inherits="GameFontNormalSmall" hidden="true">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="InspectLevelText" relativePoint="BOTTOM" x="0" y="-1"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="InspectGuildText" inherits="GameFontNormalSmall" hidden="true">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="InspectTitleText" relativePoint="BOTTOM" x="0" y="-1"/>
+                    </Anchors>
+                </FontString>
+				<Texture name="InspectFaction" file="Interface\Timer\Panda-Logo" hidden="true">
+					<Size x="256" y="256"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-10"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>	
+				</Texture>
+            </Layer>
+        </Layers>
         <Scripts>
             <OnLoad function="InspectPaperDollFrame_OnLoad"/>
             <OnEvent function="InspectPaperDollFrame_OnEvent"/>

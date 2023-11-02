@@ -4,22 +4,30 @@ ActionStatusMixin = {};
 local ACTION_STATUS_FADETIME = 2.0;
 
 function ActionStatusMixin:OnLoad()
-	self:RegisterEvent("SCREENSHOT_STARTED");
-	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
-	self:RegisterEvent("SCREENSHOT_FAILED");
+	if (InGlue()) then
+		self:RegisterEvent("GLUE_SCREENSHOT_STARTED");
+		self:RegisterEvent("GLUE_SCREENSHOT_SUCCEEDED");
+		self:RegisterEvent("GLUE_SCREENSHOT_FAILED");
+	else
+		self:RegisterEvent("SCREENSHOT_STARTED");
+		self:RegisterEvent("SCREENSHOT_SUCCEEDED");
+		self:RegisterEvent("SCREENSHOT_FAILED");
+	end
+
 	self.alternateParentFrame = nil;
+	self:UpdateParent();
 end
 
 function ActionStatusMixin:OnEvent(event, ...)
-	if ( event == "SCREENSHOT_STARTED" ) then
+	if ( event == "SCREENSHOT_STARTED" or event == "GLUE_SCREENSHOT_STARTED" ) then
 		self:Hide();
 	else
 		self.startTime = GetTime();
 		self:SetAlpha(1.0);
-		if ( event == "SCREENSHOT_SUCCEEDED" ) then
+		if ( event == "SCREENSHOT_SUCCEEDED" or event == "GLUE_SCREENSHOT_SUCCEEDED" ) then
 			self:DisplayMessage(SCREENSHOT_SUCCESS);
 		end
-		if ( event == "SCREENSHOT_FAILED" ) then
+		if ( event == "SCREENSHOT_FAILED" or event == "GLUE_SCREENSHOT_FAILED" ) then
 			self:DisplayMessage(SCREENSHOT_FAILURE);
 		end
 		self:Show();
@@ -60,8 +68,12 @@ function ActionStatusMixin:UpdateParent()
 		self:SetParent(self.alternateParentFrame);
 		self:SetFrameStrata("TOOLTIP");
 		self:SetScale(1);
-	elseif UIParent:IsVisible() then
+	elseif not InGlue() and UIParent:IsVisible() then
 		self:SetParent(UIParent);
+		self:SetFrameStrata("TOOLTIP");
+		self:SetScale(1);
+	elseif InGlue() and GlueParent:IsVisible() then
+		self:SetParent(GlueParent);
 		self:SetFrameStrata("TOOLTIP");
 		self:SetScale(1);
 	else

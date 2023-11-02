@@ -31,7 +31,8 @@ function KeybindingsOverrides.CreateBindingButtonSettings(layout)
 			ToggleClickBindingFrame();
 		end
 
-		local initializer = CreateSettingsButtonInitializer("", CLICK_BIND_MODE, OnButtonClick);
+		local addSearchTags = true;
+		local initializer = CreateSettingsButtonInitializer("", CLICK_BIND_MODE, OnButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 
@@ -43,7 +44,8 @@ function KeybindingsOverrides.CreateBindingButtonSettings(layout)
 			QuickKeybindFrame:Show();
 		end
 
-		local initializer = CreateSettingsButtonInitializer("", SETTINGS_QUICK_KEYBIND_BUTTON, OnButtonClick);
+		local addSearchTags = true;
+		local initializer = CreateSettingsButtonInitializer("", SETTINGS_QUICK_KEYBIND_BUTTON, OnButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 end

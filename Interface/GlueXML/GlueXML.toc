@@ -32,6 +32,7 @@
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
+..\SharedXML\VectorLib.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
@@ -72,6 +73,7 @@
 ..\SharedXML\VASErrorLookup.lua
 ..\SharedXML\MixinUtil.lua
 ..\SharedXML\PingAttributes.xml
+..\SharedXML\DebugBarManager.lua
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -98,9 +100,8 @@ GlueContextMenu.xml
 ..\SharedXML\DataProviders.xml
 ..\SharedXML\ButtonTray\ButtonTrayUtil.lua
 ..\SharedXML\ButtonTray\ButtonTray.xml
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
+..\SharedXML\ModelSceneControlFrame.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
@@ -127,6 +128,7 @@ GlueParent.xml
 GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\DialogUtil.lua
+..\SharedXML\ActionStatus.xml
 
 ..\SharedXML\Settings\Settings.xml
 ..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
@@ -148,14 +150,15 @@ CharacterServicesAccountSelector.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
 CharacterServicesPaidRaceChange.xml
-CharacterServicesPaidNameChange.xml
+..\SharedXML\CharacterServicesPaidNameChange.xml
 SocialContract.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml
-MovieFrame.xml
 CinematicsFrame.xml
+MovieFrame.xml
 CreditsFrame.xml
 GlueMenuFrame.xml
+..\SharedXML\ToolWindowOwnerMixin.lua
 
 ## Should only load internally
 DesignerMenu.xml

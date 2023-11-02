@@ -30,8 +30,13 @@ local OPTION_TEXT_WIDTH = 165;
 local OPTION_TEXT_HEIGHT = 135;
 
 function PlayerChoiceGenericPowerChoiceOptionTemplateMixin:SetupOptionText()
-	self.OptionText:ClearText()
-	self.OptionText:SetStringHeight(OPTION_TEXT_HEIGHT);
-	self.OptionText:SetWidth(OPTION_TEXT_WIDTH);
-	self.OptionText:SetText(self:GetRarityDescriptionString()..self.optionInfo.description);
+	if self.optionInfo.description == "" then
+		self.OptionText:Hide();
+	else
+		self.OptionText:Show();
+		self.OptionText:ClearText()
+		self.OptionText:SetStringHeight(OPTION_TEXT_HEIGHT);
+		self.OptionText:SetWidth(OPTION_TEXT_WIDTH);
+		self.OptionText:SetText(self:GetRarityDescriptionString()..self.optionInfo.description);
+	end
 end

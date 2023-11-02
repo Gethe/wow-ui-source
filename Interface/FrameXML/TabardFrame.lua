@@ -6,8 +6,6 @@ function TabardFrame_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
 
-	MoneyFrame_Update("TabardFrameCostMoneyFrame",GetTabardCreationCost());
-
 	local backgroundAlpha = 0.40;
 	TabardFrameEmblemTopRight:SetAlpha(backgroundAlpha);
 	TabardFrameEmblemTopLeft:SetAlpha(backgroundAlpha);
@@ -24,6 +22,21 @@ function TabardFrame_Open()
 	TabardFrame_UpdateTextures();
 	TabardFrame_UpdateButtons();
 	ShowUIPanel(TabardFrame);
+
+	if ( TabardModel:IsGuildTabard() ) then
+		MoneyFrame_Update("TabardFrameCostMoneyFrame", GetTabardCreationCost());
+		TabardFrameCostFrame:Show();
+
+		TabardFrameMoneyInset:Show();
+		TabardFrameMoneyBg:Show();
+		TabardFrameMoneyFrame:Show();
+	else
+		TabardFrameCostFrame:Hide();
+
+		TabardFrameMoneyInset:Hide();
+		TabardFrameMoneyBg:Hide();
+		TabardFrameMoneyFrame:Hide();
+	end
 
 	if ( not TabardFrame:IsShown() ) then
 		CloseTabardCreation();
@@ -60,11 +73,16 @@ end
 
 function TabardFrame_UpdateButtons()
 	local guildName, rankName, rank = GetGuildInfo("player");
-	if ( guildName == nil or rankName == nil or ( rank > 0 ) ) then
+	if ( TabardModel:IsGuildTabard() and (guildName == nil or rankName == nil or ( rank > 0 )) ) then
 		TabardFrameGreetingText:SetText(TABARDVENDORNOGUILDGREETING);
 		TabardFrameAcceptButton:Disable();
 	else
-		TabardFrameGreetingText:SetText(TABARDVENDORGREETING);
+		if (TabardModel:IsGuildTabard()) then
+			TabardFrameGreetingText:SetText(TABARDVENDORGREETING);
+		else
+			TabardFrameGreetingText:SetText(PERSONALTABARDVENDORGREETING);
+		end
+
 		if( TabardModel:CanSaveTabardNow() ) then
 			TabardFrameAcceptButton:Enable();
 		else

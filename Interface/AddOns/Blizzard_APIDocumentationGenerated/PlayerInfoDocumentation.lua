@@ -122,6 +122,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetNativeDisplayID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "nativeDisplayID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetStableCreatureDisplayInfoID",
 			Type = "Function",
 
@@ -174,6 +183,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsDisplayRaceNative",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDisplayRaceNative", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsExpansionLandingPageUnlockedForPlayer",
 			Type = "Function",
 
@@ -185,6 +203,15 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMirrorImage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isMirrorImage", Type = "bool", Nilable = false },
 			},
 		},
 		{

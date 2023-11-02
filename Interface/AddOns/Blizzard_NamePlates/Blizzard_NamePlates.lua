@@ -835,9 +835,8 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 						buff.Icon:SetTexture(spellInfo.iconID); 
 
 						local charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(spellID);
-						buff.Cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
 						buff.Cooldown:SetSwipeColor(0, 0, 0);
-						CooldownFrame_Set(buff.Cooldown, start, duration, enable, false, modRate);
+						CooldownFrame_Set(buff.Cooldown, start, duration, enable, true, modRate);
 
 						if (maxCharges and maxCharges > 1) then
 							buff.CountFrame.Count:SetText(charges);

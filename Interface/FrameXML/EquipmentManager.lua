@@ -45,7 +45,7 @@ function EquipmentManager_UpdateFreeBagSpace ()
 end
 
 local function _EquipmentManager_BagsFullError()
-	UIErrorsFrame:AddMessage(EQUIPMENT_MANAGER_BAGS_FULL, 1.0, 0.1, 0.1, 1.0);
+	UIErrorsFrame:AddMessage(ERR_EQUIPMENT_MANAGER_BAGS_FULL, 1.0, 0.1, 0.1, 1.0);
 end
 
 function EquipmentManager_OnEvent (self, event, ...)

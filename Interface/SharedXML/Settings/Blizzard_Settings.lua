@@ -293,13 +293,15 @@ function Settings.CreateSliderOptions(minValue, maxValue, rate)
 	return options;
 end
 
-function Settings.CreateModifiedClickOptions(tooltips)
+function Settings.CreateModifiedClickOptions(tooltips, mustChooseKey)
 	local function GetOptions(options)
 		local container = Settings.CreateControlTextContainer();
 		container:Add("ALT", ALT_KEY, tooltips[1]);
 		container:Add("CTRL", CTRL_KEY, tooltips[2]);
 		container:Add("SHIFT", SHIFT_KEY, tooltips[3]);
-		container:Add("NONE", NONE_KEY, tooltips[4]);
+		if not mustChooseKey then
+			container:Add("NONE", NONE_KEY, tooltips[4]);
+		end
 		return container:GetData();
 	end
 	return GetOptions;
@@ -482,7 +484,7 @@ function Settings.InitSelectionDropDown(selectionDropDown, setting, getOptions, 
 		--	print(errorMsg);
 		--end
 		--assertsafe(false, errorMsg);
-		--LoadAddOn("Blizzard_DebugTools");
+		--C_AddOns.LoadAddOn("Blizzard_DebugTools");
 		--if Dump then
 		--	Dump(options);
 		--end
@@ -508,8 +510,8 @@ function Settings.SetupCVarDropDown(category, variable, variableType, options, l
 	return setting, initializer;
 end
 
-function Settings.SetupModifiedClickDropDown(category, variable, defaultKey, label, tooltips, tooltip)
-	local options = Settings.CreateModifiedClickOptions(tooltips);
+function Settings.SetupModifiedClickDropDown(category, variable, defaultKey, label, tooltips, tooltip, mustChooseKey)
+	local options = Settings.CreateModifiedClickOptions(tooltips, mustChooseKey);
 	local setting = Settings.RegisterModifiedClickSetting(category, variable, label, defaultKey);
 	local initializer = Settings.CreateDropDown(category, setting, options, tooltip);
 	return setting, initializer;

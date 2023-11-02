@@ -257,9 +257,11 @@ local ItemUpgrade =
 		{
 			Name = "ItemUpgradeSeasonalCostType",
 			Type = "Structure",
+			Documentation = { "Costs are made up of either an Item OR a Currency, so either itemID or currencyID will be nil" },
 			Fields =
 			{
-				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = true },
+				{ Name = "currencyID", Type = "number", Nilable = true },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
 				{ Name = "sourceString", Type = "string", Nilable = true },
 			},

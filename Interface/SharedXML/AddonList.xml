@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+..\FrameXML\UI_shared.xsd">
 	<Script file="..\SharedXML\AddonList.lua"/>
 
 	<Button name="AddonListEntryTemplate" virtual="true">
@@ -27,7 +27,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentSecurity" parentKey="Security" hidden="true">
+			<Button parentKey="Security" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="LEFT" x="2" y="0"/>
@@ -44,7 +44,7 @@
 				</Scripts>
 				<NormalTexture parentKey="Icon" name="$parentIcon" file="Interface\Glues\CharacterSelect\Glues-AddOn-Icons"/>
 			</Button>
-			<CheckButton name="$parentEnabled" parentKey="Enabled">
+			<CheckButton parentKey="Enabled">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="LEFT" x="5" y="0"/>
@@ -70,7 +70,7 @@
 				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 			 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-				<CheckedTexture name="$parentCheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
+				<CheckedTexture parentKey="CheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
 				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 			<Button name="$parentLoad" inherits="UIPanelButtonTemplate" text="LOAD_ADDON" hidden="true" parentKey="LoadAddonButton">
@@ -155,19 +155,15 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						if ( IsAddonVersionCheckEnabled() ) then
-							self:SetChecked(false);
-						else
-							self:SetChecked(true);
-						end
+						self:SetChecked(not C_AddOns.IsAddonVersionCheckEnabled());
 					</OnShow>
 					<OnClick>
 						if ( self:GetChecked() ) then
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							SetAddonVersionCheck(false);
+							C_AddOns.SetAddonVersionCheck(false);
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							SetAddonVersionCheck(true);
+							C_AddOns.SetAddonVersionCheck(true);
 						end
 						AddonList_Update();
 					</OnClick>

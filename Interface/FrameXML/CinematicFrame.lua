@@ -69,16 +69,8 @@ end
 
 function CinematicFrame_OnLoad(self)
 	self.forcedAspectRatio = Enum.CameraModeAspectRatio.LegacyLetterbox;
-
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
-	self:RegisterEvent("HIDE_SUBTITLE");
-
-	--For subtitles. We only support say/yell right now.
-	self:RegisterEvent("CHAT_MSG_SAY");
-	self:RegisterEvent("CHAT_MSG_MONSTER_SAY");
-	self:RegisterEvent("CHAT_MSG_YELL");
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
@@ -90,10 +82,6 @@ function CinematicFrame_OnEvent(self, event, ...)
 	if ( event == "CINEMATIC_START" ) then
 		local canBeCancelled, forcedAspectRatio = ...;
 		EventRegistry:TriggerEvent("CinematicFrame.CinematicStarting");
-		for i=1, #self.Subtitles do
-			self.Subtitles[i]:SetText("");
-			self.Subtitles[i]:Hide();
-		end
 
 		self.isRealCinematic = canBeCancelled;	--If it isn't real, it's a vehicle cinematic
 		self.forcedAspectRatio = forcedAspectRatio;	
@@ -102,6 +90,7 @@ function CinematicFrame_OnEvent(self, event, ...)
 		RaidNotice_Clear(self.raidBossEmoteFrame);
 		CinematicFrame_UpdateLettboxForAspectRatio(self);
 
+		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
 
 		LowHealthFrame:EvaluateVisibleState();
 	elseif ( event == "CINEMATIC_STOP" ) then
@@ -110,60 +99,15 @@ function CinematicFrame_OnEvent(self, event, ...)
 
 		LowHealthFrame:EvaluateVisibleState();
 
+		EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
+
 		MovieFrame_OnCinematicStopped();
 		EventRegistry:TriggerEvent("CinematicFrame.CinematicStopped");
-	elseif ( event == "CHAT_MSG_SAY" or event == "CHAT_MSG_MONSTER_SAY" or
-		event == "CHAT_MSG_YELL" or event == "CHAT_MSG_MONSTER_YELL" ) then
-		local message, sender, lang, channel, target, flag, zone, localid, name, instanceId, lineId, guidString, bnId, isMobile, isSubtitle, hideSenderInLetterbox = ...;
-		if ( isSubtitle ) then
-			local body;
-			if (hideSenderInLetterbox) then
-				body = message;
-			elseif ( lang ~= "" and lang ~= GetDefaultLanguage() ) then
-				local languageHeader = "["..lang.."]";
-				body = format(SUBTITLE_FORMAT, sender, languageHeader..message);
-			else
-				body = format(SUBTITLE_FORMAT, sender, message);
-			end
-
-			local chatType = string.match(event, "CHAT_MSG_(.*)");
-			CinematicFrame_AddSubtitle(chatType, body);
-		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED") then
 		if (self:IsShown()) then
 			WorldFrame:SetAllPoints();
 		end
 		CinematicFrame_UpdateLettboxForAspectRatio(self);
-	elseif ( event == "HIDE_SUBTITLE") then
-		CinematicFrame_HideSubtitle(self)
-	end
-end
-
-function CinematicFrame_AddSubtitle(chatType, body)
-	local fontString = nil;
-	for i=1, #CinematicFrame.Subtitles do
-		if ( not CinematicFrame.Subtitles[i]:IsShown() ) then
-			fontString = CinematicFrame.Subtitles[i];
-			break;
-		end
-	end
-
-	if ( not fontString ) then
-		--Scroll everything up.
-		for i=1, #CinematicFrame.Subtitles - 1 do
-			CinematicFrame.Subtitles[i]:SetText(CinematicFrame.Subtitles[i + 1]:GetText());
-		end
-		fontString = CinematicFrame.Subtitles[#CinematicFrame.Subtitles];
-	end
-
-	fontString:SetText(body);
-	fontString:Show();
-end
-
-function CinematicFrame_HideSubtitle(self)
-	for i=1, #self.Subtitles do
-		self.Subtitles[i]:SetText("");
-		self.Subtitles[i]:Hide();
 	end
 end
 

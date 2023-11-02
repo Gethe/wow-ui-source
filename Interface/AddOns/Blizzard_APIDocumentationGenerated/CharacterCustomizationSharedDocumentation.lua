@@ -27,12 +27,13 @@ local CharacterCustomizationShared =
 		{
 			Name = "ChrCustomizationCategoryFlag",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "UndressModel", Type = "ChrCustomizationCategoryFlag", EnumValue = 1 },
+				{ Name = "Subcategory", Type = "ChrCustomizationCategoryFlag", EnumValue = 2 },
 			},
 		},
 		{
@@ -87,6 +88,7 @@ local CharacterCustomizationShared =
 				{ Name = "icon", Type = "textureAtlas", Nilable = false },
 				{ Name = "selectedIcon", Type = "textureAtlas", Nilable = false },
 				{ Name = "undressModel", Type = "bool", Nilable = false },
+				{ Name = "subcategory", Type = "bool", Nilable = false },
 				{ Name = "cameraZoomLevel", Type = "number", Nilable = false },
 				{ Name = "cameraDistanceOffset", Type = "number", Nilable = false },
 				{ Name = "spellShapeshiftFormID", Type = "number", Nilable = true },

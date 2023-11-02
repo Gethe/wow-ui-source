@@ -5,7 +5,7 @@
 	<Frame name="KioskModeSplash" mixin="KioskModeSplashMixin" toplevel="true" parent="GlueParent" setAllPoints="true" hidden="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" atlas="BlizzCon2019Splash-BG" setAllPoints="true" nonBlocking="false"/>
+				<Texture parentKey="BG" setAllPoints="true" nonBlocking="false"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="NewCharacterLabel" atlas="BlizzCon2017Splash-label-newtowow" nonBlocking="false" hidden="true">
@@ -18,16 +18,16 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="NewExpansionButton" mixin="NewExpansionButtonMixin">
-				<Size x="396" y="48"/>
+				<Size x="328" y="90"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="163"/>
+					<Anchor point="BOTTOM" x="0" y="110"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Button" atlas="BlizzCon2019Splash-button-playexpansion" setAllPoints="true" nonBlocking="false"/>
+						<Texture parentKey="Button" setAllPoints="true" nonBlocking="false"/>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalHuge3" justifyH="CENTER" justifyV="MIDDLE">
+						<FontString parentKey="Text" inherits="GameFontNormalHuge" justifyH="CENTER" justifyV="MIDDLE" text="KIOSK_ENTER">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -35,7 +35,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="HIGHLIGHT">
-						<Texture parentKey="Highlight" atlas="BlizzCon2019Splash-button-playexpansion" alpha="0.3" setAllPoints="true" alphaMode="ADD" nonBlocking="false"/>
+						<Texture parentKey="Highlight" alpha="0.3" setAllPoints="true" alphaMode="ADD" nonBlocking="false"/>
 					</Layer>
 				</Layers>
 				<Scripts>

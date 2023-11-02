@@ -126,8 +126,8 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
-							<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="0.36" order="1" smoothing="OUT"/>
-							<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.36" order="2" smoothing="IN"/>
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.36" order="1" smoothing="OUT"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.36" order="2" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
 					<Scripts>

@@ -4,6 +4,7 @@
 
 	<Frame name="WowTrimScrollBarStepperScripts" mixin="WowTrimScrollBarStepperMixin" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
@@ -15,6 +16,7 @@
 
 	<Frame name="WowTrimScrollBarThumbScripts" mixin="WowScrollBarThumbScriptsMixin" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnEnable method="OnEnable"/>
@@ -107,7 +109,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad method="OnLoad"/>
 							<OnSizeChanged method="OnSizeChanged"/>
 						</Scripts>
 					</EventButton>

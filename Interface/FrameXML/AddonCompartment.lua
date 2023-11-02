@@ -4,12 +4,23 @@ AddonCompartmentMixin = { };
 
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
 
-	local addonCount = GetNumAddOns();
+function AddonCompartmentMixin:OnEvent(event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
+		-- RegisterAddons cannot be called OnLoad because addons are explicitly not loadable during FrameXML load
+		self:RegisterAddons();
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	end
+end
+
+function AddonCompartmentMixin:RegisterAddons()
+	local addonCount = C_AddOns.GetNumAddOns();
 	for addon = 1, addonCount do
-		local addonEnabled = GetAddOnEnableState(nil, addon) > 0;
+		local addonEnabled = C_AddOns.GetAddOnEnableState(addon) > 0;
 		local addonCompartmentFunc = C_AddOns.GetAddOnMetadata(addon, "AddonCompartmentFunc");
-		local name, title, notes, loadable, reason, security = GetAddOnInfo(addon);
+		local name, title, notes, loadable, reason, security = C_AddOns.GetAddOnInfo(addon);
 		if addonEnabled and addonCompartmentFunc and (loadable or reason == "DEMAND_LOADED") then
 			local info = UIDropDownMenu_CreateInfo();
 			info.text = title;
@@ -19,8 +30,8 @@ function AddonCompartmentMixin:OnLoad()
 
 			local function CallAddonGlobalFunc(addonCompartmentFunc, addonName, ...)
 				forceinsecure();
-				if reason == "DEMAND_LOADED" and not IsAddOnLoaded(addonName) then
-					LoadAddOn(addonName);
+				if reason == "DEMAND_LOADED" and not C_AddOns.IsAddOnLoaded(addonName) then
+					C_AddOns.LoadAddOn(addonName);
 				end
 				_G[addonCompartmentFunc](addonName, ...);
 			end

@@ -25,6 +25,7 @@ end
 
 function WorldMapMixin:Minimize()
 	self.isMaximized = false;
+	EventRegistry:TriggerEvent("WorldMapMinimized");
 
 	self:SetSize(self.minimizedWidth, self.minimizedHeight);
 
@@ -44,6 +45,7 @@ end
 
 function WorldMapMixin:Maximize()
 	self.isMaximized = true;
+	EventRegistry:TriggerEvent("WorldMapMaximized");
 
 	self.BorderFrame:SetBorder("ButtonFrameTemplateNoPortraitMinimizable");
 	self.BorderFrame:SetPortraitShown(false);
@@ -262,7 +264,7 @@ function WorldMapMixin:OnShow()
 		end
 	end
 
-	self:TriggerEvent("WorldMapOnShow");
+	EventRegistry:TriggerEvent("WorldMapOnShow");
 end
 
 function WorldMapMixin:OnHide()

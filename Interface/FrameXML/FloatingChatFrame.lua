@@ -1797,7 +1797,7 @@ function FCF_ResetChatWindows()
 end
 
 function IsCombatLog(frame)
-	return ( frame == ChatFrame2 and IsAddOnLoaded("Blizzard_CombatLog") );
+	return ( frame == ChatFrame2 and C_AddOns.IsAddOnLoaded("Blizzard_CombatLog") );
 end
 
 function IsVoiceTranscription(frame)

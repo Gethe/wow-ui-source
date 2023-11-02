@@ -37,6 +37,7 @@ local DIFFICULTY_NAMES =
 	[DifficultyUtil.ID.DungeonMythic] = PLAYER_DIFFICULTY6,
 	[DifficultyUtil.ID.DungeonTimewalker] = PLAYER_DIFFICULTY_TIMEWALKER,
 	[DifficultyUtil.ID.RaidTimewalker] = PLAYER_DIFFICULTY_TIMEWALKER,
+	[DifficultyUtil.ID.Raid40] = PLAYER_DIFFICULTY1,
 }
 
 local PRIMARY_RAIDS = { DifficultyUtil.ID.PrimaryRaidLFR, DifficultyUtil.ID.PrimaryRaidNormal, DifficultyUtil.ID.PrimaryRaidHeroic, DifficultyUtil.ID.PrimaryRaidMythic };

@@ -198,7 +198,7 @@ function UnitPopupRafRecruit:GetMenuButtons()
 		UnitPopupMenuFriendlyPlayerInviteOptions, --Submenu
 		UnitPopupWhisperButtonMixin,
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupRafRemoveRecruitButtonMixin,
+		--UnitPopupRafRemoveRecruitButtonMixin,
 		UnitPopupCancelButtonMixin, 
 	}
 end

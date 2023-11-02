@@ -1318,6 +1318,7 @@ local QuestLog =
 				{ Name = "overridesSortOrder", Type = "bool", Nilable = false },
 				{ Name = "readyForTranslation", Type = "bool", Nilable = false, Default = true },
 				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
+				{ Name = "isInternalOnly", Type = "bool", Nilable = false },
 			},
 		},
 		{
