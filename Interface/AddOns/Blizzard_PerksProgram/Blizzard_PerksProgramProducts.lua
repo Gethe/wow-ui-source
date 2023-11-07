@@ -80,9 +80,18 @@ function PerksProgramProductsFrameMixin:OnEvent(event, ...)
 		local vendorItemID = ...;
 
 		local vendorItemInfo = PerksProgramFrame:GetVendorItemInfo(vendorItemID);
-
 		if event == "PERKS_PROGRAM_REFUND_SUCCESS" then
 			vendorItemInfo.purchased = false;
+		end
+
+		-- Make sure to update scroll box data since they won't receive the events sent below to update shown frames
+		local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
+		local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
+			return elementData.perksVendorItemID == vendorItemID;
+		end);
+		if foundElementData then
+			foundElementData.purchased = vendorItemInfo.purchased;
+			foundElementData.refundable = vendorItemInfo.refundable;
 		end
 
 		EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", vendorItemInfo);

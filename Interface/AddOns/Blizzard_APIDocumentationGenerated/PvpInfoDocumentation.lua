@@ -1101,7 +1101,7 @@ local PvpInfo =
 			LiteralName = "PVP_ROLE_POPUP_HIDE",
 			Payload =
 			{
-				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = false },
+				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = true },
 			},
 		},
 		{

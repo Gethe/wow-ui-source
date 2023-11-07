@@ -23,8 +23,14 @@ function PVPReadyPopupMixin:OnEvent(event, ...)
 	elseif (event == "PVP_ROLE_POPUP_HIDE") then 
 		if(self:IsShown()) then 
 			local readyCheckInfo = ...;
-			self.startHide = true; 
-			self:Setup(readyCheckInfo); 
+			local hideInstantly = readyCheckInfo == nil;
+			if hideInstantly then
+				PlaySound(SOUNDKIT.LFG_DENIED);
+				StaticPopupSpecial_Hide(PVPReadyPopup);
+			else
+				self.startHide = true; 
+				self:Setup(readyCheckInfo);
+			end
 		end 
 	end		
 end
