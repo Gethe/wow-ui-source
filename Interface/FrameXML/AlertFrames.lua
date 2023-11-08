@@ -258,6 +258,7 @@ AlertContainerMixin = {};
 
 function AlertContainerMixin:OnLoad()
 	self.alertFrameSubSystems = {};
+	self.reasonsToBlockLeftClickingAlerts = {};
 
 	self.FullscreenFrame = UIParent;
 	self.FullscreenStrata = "DIALOG";
@@ -302,6 +303,18 @@ function AlertContainerMixin:AreAlertsEnabled()
 	end
 
 	return true;
+end
+
+function AlertContainerMixin:BlockLeftClickingAlerts(reasonToBlock)
+	self.reasonsToBlockLeftClickingAlerts[reasonToBlock] = true;
+end
+
+function AlertContainerMixin:UnblockLeftClickingAlerts(reasonToBlock)
+	self.reasonsToBlockLeftClickingAlerts[reasonToBlock] = nil;
+end
+
+function AlertContainerMixin:IsLeftClickingAlertsBlocked()
+	return TableHasAnyEntries(self.reasonsToBlockLeftClickingAlerts);
 end
 
 function AlertContainerMixin:CreateSubSystem(subSystemMixin, ...)
@@ -851,6 +864,11 @@ function AlertFrame_OnClick(self, button, down)
 		end
 		self.waitAndAnimOut:Stop();
 		self:Hide();
+		return true;
+	end
+
+	if self:GetAlertContainer():IsLeftClickingAlertsBlocked() then
+		-- Returning true should lead to the click being suppressed since derived frames will think this means the base frame handled the input
 		return true;
 	end
 

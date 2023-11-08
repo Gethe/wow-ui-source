@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="LFGList.lua"/>
 
 	<Button name="LFGStartGroupButtonTemplate" inherits="UIPanelButtonTemplate" text="START_A_GROUP" motionScriptsWhileDisabled="true" virtual="true">
@@ -712,7 +712,6 @@
 				if ( self.secureReferenceStr ) then
 					StoreSecureReference(self.secureReferenceStr, self.EditBox);
 					self.EditBox:SetSecurityDisableSetText();
-					self.EditBox:SetSecurityDisablePaste();
 				end
 			</OnLoad>
 		</Scripts>
@@ -1028,7 +1027,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" securityDisablePaste="true" inherits="SearchBoxTemplate" letters="64">
+					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" inherits="SearchBoxTemplate" letters="64">
 						<Size x="319" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>
@@ -1727,7 +1726,7 @@
 							<OnLoad function="LFGListEntryCreationActivityFinder_OnLoad"/>
 						</Scripts>
 					</Frame>
-					<EditBox parentKey="Name" secureReferenceKey="LFGListCreationName" securityDisableSetText="true" securityDisablePaste="true" inherits="LFGListEditBoxTemplate" letters="31">
+					<EditBox parentKey="Name" secureReferenceKey="LFGListCreationName" securityDisableSetText="true" inherits="LFGListEditBoxTemplate" mixin="LFGListCreationNameMixin" letters="31">
 						<Size x="288" y="22"/>
 						<KeyValues>
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
@@ -1736,6 +1735,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
 						</Anchors>
 						<Scripts>
+							<OnShow method="OnShow"/>
 							<OnEditFocusGained function="nop"/> <!--Override the base one that selects all text-->
 							<OnTextChanged>
 								InputBoxInstructions_OnTextChanged(self);
@@ -1982,7 +1982,6 @@
 					<OnLoad>
 						StoreSecureReference("LFGListApplicationDescription", self.EditBox);
 						self.EditBox:SetSecurityDisableSetText();
-						self.EditBox:SetSecurityDisablePaste();
 						InputScrollFrame_OnLoad(self);
 					</OnLoad>
 				</Scripts>

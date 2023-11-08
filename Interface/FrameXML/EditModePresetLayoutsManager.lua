@@ -79,5 +79,5 @@ function EditModePresetLayoutManager:GetOverrideLayoutSystemAnchorInfo(layoutInd
 	return GetAnchorInfoFromMap(layoutMap, system, systemIndex);
 end 
 
-EnableAddOn("Blizzard_ObjectiveTracker");
-EnableAddOn("Blizzard_CompactRaidFrames");
+C_AddOns.EnableAddOn("Blizzard_ObjectiveTracker");
+C_AddOns.EnableAddOn("Blizzard_CompactRaidFrames");

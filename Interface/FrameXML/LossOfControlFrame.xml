@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="LossOfControlFrame.lua"/>
 
 	<Frame name="LossOfControlFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true">
@@ -70,7 +70,7 @@
 				<SwipeTexture>
 					<Color r="0.17" g="0" b="0" a="0.8"/>
 				</SwipeTexture>
-				<EdgeTexture file="Interface\Cooldown\edge-LoC.blp"/>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
 			</Cooldown>
 			<Frame parentKey="TimeLeft">
 				<Size x="200" y="20"/>

@@ -899,7 +899,6 @@ function ProfessionsCrafterOrderViewMixin:CraftOrder()
     local craftingReagentTbl = self.OrderDetails.SchematicForm.transaction:CreateCraftingReagentInfoTblIf(predicate);
     local recipeLevel = self.OrderDetails.SchematicForm:GetCurrentRecipeLevel();
     C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel, self.order.orderID);
-	self.CraftingOutputLog:StartListening();
 end
 
 function ProfessionsCrafterOrderViewMixin:RecraftOrder()
@@ -918,7 +917,6 @@ function ProfessionsCrafterOrderViewMixin:RecraftOrder()
 	Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
 
     C_TradeSkillUI.RecraftRecipeForOrder(self.order.orderID, self.order.outputItemGUID, craftingReagentTbl);
-	self.CraftingOutputLog:StartListening();
 end
 
 function ProfessionsCrafterOrderViewMixin:IsRecrafting()

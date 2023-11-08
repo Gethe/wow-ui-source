@@ -234,5 +234,6 @@ function AuctionHouseSearchBarMixin:StartSearch()
 end
 
 function AuctionHouseSearchBarMixin:StartFavoritesSearch()
+	self:GetParent():GetCategoriesList():SetSelectedCategory(nil);
 	self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllFavorites);
 end

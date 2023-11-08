@@ -7,13 +7,13 @@ CUSTOM_GOSSIP_FRAME_EVENTS = {
 
 do
 	local function HandleNPEGuideGossipShow(textureKit)
-		LoadAddOn("Blizzard_NewPlayerExperienceGuide");
+		C_AddOns.LoadAddOn("Blizzard_NewPlayerExperienceGuide");
 		ShowUIPanel(GuideFrame);
 		return GuideFrame;
 	end
 
 	local function HandleTorghastLevelPickerGossipShow(textureKit)
-		LoadAddOn("Blizzard_TorghastLevelPicker");
+		C_AddOns.LoadAddOn("Blizzard_TorghastLevelPicker");
 		TorghastLevelPickerFrame:TryShow(textureKit)
 		return TorghastLevelPickerFrame;
 	end
@@ -38,7 +38,8 @@ function CustomGossipManagerMixin:OnEvent(event, ...)
 	if (event == "GOSSIP_SHOW") then
 		self:HandleOpenEvent(...)
 	elseif (event == "GOSSIP_CLOSED") then
-		self:HideOpenedUIPanel();
+		local interactionIsContinuing = ...;
+		self:HideOpenedUIPanel(interactionIsContinuing);
 	end
 end
 
@@ -55,9 +56,9 @@ function CustomGossipManagerMixin:HandleOpenEvent(textureKit)
 	end
 end
 
-function CustomGossipManagerMixin:HideOpenedUIPanel()
+function CustomGossipManagerMixin:HideOpenedUIPanel(interactionIsContinuing)
 	if(GossipFrame:IsShown()) then
-		GossipFrame:HandleHide();
+		GossipFrame:HandleHide(interactionIsContinuing);
 	elseif self.customFrame then
 		HideUIPanel(self.customFrame);
 		self.customFrame = nil;

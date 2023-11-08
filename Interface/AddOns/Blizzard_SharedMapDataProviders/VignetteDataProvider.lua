@@ -285,7 +285,17 @@ function VignettePinMixin:OnCanvasScaleChanged() -- override
 	-- Do not update things that could show the pin, if we have no valid position on the map.
 	if position then
 		self:ApplyCurrentScale();
+		-- vignettes can get hid in UpdatePosition if they're unique and not the best unique
+		-- ApplyCurrentAlpha below will make them shown again, until UpdatePosition runs again
+		-- store the shown state for unique vignettes and restore it after ApplyCurrentAlpha
+		local shown;
+		if self:IsUnique() then
+			shown = self:IsShown();
+		end
 		self:ApplyCurrentAlpha();
+		if shown ~= nil then
+			self:SetShown(shown);
+		end
 	end
 end
 
@@ -317,8 +327,12 @@ function VignettePinMixin:GetHighlightType() -- override
 	if rewardQuestID then
 		local _, bountyFactionID, bountyFrameType = self.dataProvider:GetBountyInfo();
 		if bountyFrameType == BountyFrameType.ActivityTracker then
+			-- Is this vignette for a task quest?
 			local _, taskFactionID = C_TaskQuest.GetQuestInfoByQuestID(rewardQuestID);
 			if taskFactionID and (taskFactionID == bountyFactionID) then
+				return MapPinHighlightType.SupertrackedHighlight;
+			-- Is it for a standard quest?
+			elseif C_QuestLog.DoesQuestAwardReputationWithFaction(rewardQuestID, bountyFactionID) then
 				return MapPinHighlightType.SupertrackedHighlight;
 			end
 		end

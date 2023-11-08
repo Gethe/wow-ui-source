@@ -666,19 +666,20 @@ local function SortCategoryData(lhs, rhs)
 end
 
 local Group = EnumUtil.MakeEnum("Favorite", "Learned", "UnlearnedDivider", "Unlearned");
+local favoritesCategoryID = -1; --used for remembering collapse state
 
-function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories)
+function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories, collapses)
 	local recipeInfos = {};
-	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, uiOrder = 0, group = Group.Favorite};
+	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, uiOrder = 0, group = Group.Favorite, categoryID = favoritesCategoryID};
 	local showAllRecipes = searching or C_TradeSkillUI.IsNPCCrafting();
+	local favoriteRecipeIDs = {};
 	for index, recipeID in ipairs(C_TradeSkillUI.GetFilteredRecipeIDs()) do
 		local recipeInfo = Professions.GetFirstRecipe(C_TradeSkillUI.GetRecipeInfo(recipeID));
 		local showRecipe = showAllRecipes or C_TradeSkillUI.IsRecipeInSkillLine(recipeID, professionID);
 		if showRecipe then
 			recipeInfos[recipeInfo.recipeID] = recipeInfo;
 		end
-	
-		if not searching and recipeInfo.favorite then
+		if not searching and recipeInfo.favorite and not favoriteRecipeIDs[recipeInfo.recipeID] then
 			local favoritesRecipeInfo = CopyTable(recipeInfo);
 			favoritesRecipeInfo.favoritesInstance = true;
 
@@ -686,9 +687,9 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 				favoritesCategoryInfo.recipes = {};
 			end
 			table.insert(favoritesCategoryInfo.recipes, favoritesRecipeInfo);
+			favoriteRecipeIDs[recipeInfo.recipeID] = true;
 		end
 	end
-
 
 	local favoritesCategoryMap = {favoritesCategoryInfo};
 	local learnedCategoryMap = {};
@@ -787,6 +788,9 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 					-- The new category can have categories or recipes.
 					SetSortComparator(categoryNode);
+					if collapses and collapses[categoryInfo.categoryID] then
+						categoryNode:SetCollapsed(true);
+					end
 				end
 
 				if categoryInfo.recipes and #categoryInfo.recipes > 0 then

@@ -364,8 +364,8 @@ function CharacterSelect_OnShow(self)
     C_StoreGlue.UpdateVASPurchaseStates();
 
     if (not STORE_IS_LOADED) then
-        STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-        LoadAddOn("Blizzard_AuthChallengeUI");
+        STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+        C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
     end
 
     CharacterSelect_ConditionallyLoadAccountSaveUI();
@@ -2022,8 +2022,8 @@ end
 
 function ToggleStoreUI()
 	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
 	end
 
     if (STORE_IS_LOADED) then
@@ -2038,8 +2038,8 @@ end
 
 function SetStoreUIShown(shown)
 	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
 	end
 
 	if (STORE_IS_LOADED) then
@@ -2139,7 +2139,7 @@ function CharacterSelect_UpdateButtonState()
     local undeleting = CharacterSelect.undeleting;
     local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
     local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
-    local inCompetitiveMode = IsCompetitiveModeEnabled();
+    local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
 	local inKioskMode = Kiosk.IsEnabled();
     local boostInProgress = select(19,GetCharacterInfo(GetCharacterSelection()));
     local isAccountLocked = CharacterSelect_IsAccountLocked();
@@ -2214,7 +2214,7 @@ end
 function CharacterSelect_ConditionallyLoadAccountSaveUI()
     if (C_AccountServices.IsAccountSaveEnabled()) then
         if (not ACCOUNT_SAVE_IS_LOADED) then
-            ACCOUNT_SAVE_IS_LOADED = LoadAddOn("Blizzard_AccountSaveUI");
+            ACCOUNT_SAVE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_AccountSaveUI");
         end
         if (AccountSaveFrame) then
             AccountSaveFrame:Show();

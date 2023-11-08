@@ -945,27 +945,6 @@ local tutorials = {
 		textFunc = TextBossSpec,
 		advanceOnClick = true,
 	},
-	-- Click on Combat Ally
-	[3] = {
-		id = 3,
-		text = ORDER_HALL_MISSION_TUTORIAL_COMBAT_ALLY,
-		parent = "MissionList",
-		openConditionFunc = CheckHasCombatAllyMission,
-		closeConditionFunc = CheckOpenZoneSupportMissionPage,
-		cancelConditionFunc = CheckNotHasCombatAllyMission,
-		positionFunc = PositionAtCombatAlly,
-		advanceOnClick = true,
-	 },
-	-- Troops have abilities that can increase your success chance
-	[4] = {
-		id = 4,
-		text = ORDER_HALL_MISSION_TUTORIAL_TROOPS,
-		parent = "MissionPage",
-		openConditionFunc = CheckOpenMissionPageAndHasTroopInList,
-		closeConditionFunc = CheckOpenMissionPageAndTroopInMission,
-		positionFunc = PositionAtFirstTroop,
-		advanceOnClick = true,
-	},
 	-- Lethal will always kill a troop if not countered.
 	[0x10000] = {
 		id = 0x10000,
@@ -1002,7 +981,25 @@ local tutorials = {
 		closeConditionFunc = function(missionFrame) return CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, disorientingMechanicEffectID); end,
 		positionFunc = function(missionFrame) return PositionAtMechanicEffect(missionFrame, disorientingMechanicEffectID); end,
 	},
-
+	-- Click on Combat Ally
+	[0x100000] = {
+		id = 0x100000,
+		text = ORDER_HALL_MISSION_TUTORIAL_COMBAT_ALLY,
+		parent = "MissionList",
+		openConditionFunc = CheckHasCombatAllyMission,
+		closeConditionFunc = CheckOpenZoneSupportMissionPage,
+		cancelConditionFunc = CheckNotHasCombatAllyMission,
+		positionFunc = PositionAtCombatAlly,
+	 },
+	-- Troops have abilities that can increase your success chance
+	[0x200000] = {
+		id = 0x200000,
+		text = ORDER_HALL_MISSION_TUTORIAL_TROOPS,
+		parent = "MissionPage",
+		openConditionFunc = CheckOpenMissionPageAndHasTroopInList,
+		closeConditionFunc = CheckOpenMissionPageAndTroopInMission,
+		positionFunc = PositionAtFirstTroop,
+	},
 };
 
 local function ReadTutorialCVAR()
@@ -1061,10 +1058,9 @@ function OrderHallMission:CheckTutorials(advance)
 	end
 
 	local nextTutorial = lastTutorial + 1;
-	local tutorial = tutorials[nextTutorial];
+	local tutorial = tutorials[nextTutorial] or {};
 
 	if (OrderHallMissionTutorialFrame.id) then
-		tutorial = tutorials[OrderHallMissionTutorialFrame.id];
 		if (not advance) then
 			if (tutorial.closeConditionFunc and tutorial.closeConditionFunc(self)) then
 				advance = true;
@@ -1110,4 +1106,3 @@ function OrderHallMission:CheckTutorials(advance)
 		end
 	end
 end
-

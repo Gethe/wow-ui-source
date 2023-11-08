@@ -468,6 +468,16 @@ function SwapTableEntries(lhsTable, rhsTable, key)
 	rhsTable[key] = lhsValue;
 end
 
+function GetKeysArraySortedByValue(tbl)
+	local keysArray = GetKeysArray(tbl);
+
+	table.sort(keysArray, function(a, b) 
+		return tbl[a] < tbl[b];
+	end);
+	
+	return keysArray;
+end
+
 function TableUtil.OperateOnKeys(tbl, operation)
 	for key, value in pairs(tbl) do
 		operation(key);

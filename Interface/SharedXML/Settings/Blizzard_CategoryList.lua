@@ -43,18 +43,6 @@ function SettingsCategoryListButtonMixin:OnLoad()
 	end);
 end
 
-function SettingsCategoryListButtonMixin:OnEnter()
-	if ButtonStateBehaviorMixin.OnEnter(self) then
-		self:UpdateState();
-	end
-end
-
-function SettingsCategoryListButtonMixin:OnLeave()
-	if ButtonStateBehaviorMixin.OnLeave(self) then
-		self:UpdateState();
-	end
-end
-
 function SettingsCategoryListButtonMixin:UpdateStateInternal(selected)
 	if selected then
 		self.Label:SetFontObject("GameFontHighlight");
@@ -80,7 +68,7 @@ function SettingsCategoryListButtonMixin:UpdateStateInternal(selected)
 	end
 end
 
-function SettingsCategoryListButtonMixin:UpdateState()
+function SettingsCategoryListButtonMixin:OnButtonStateChanged()
 	self:UpdateStateInternal(g_selectionBehavior:IsSelected(self));
 end
 

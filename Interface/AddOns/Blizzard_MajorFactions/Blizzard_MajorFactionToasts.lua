@@ -7,6 +7,7 @@ local majorFactionSwirlEffects =
 	Tuskarr = {152},
 	Valdrakken = {152},
 	Niffen = {152},
+	Dream = {152},
 };
 
 local majorFactionColorFormat = "%s_MAJOR_FACTION_COLOR";

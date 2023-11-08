@@ -18,7 +18,10 @@ function ContainedAlertFrameMixin:GetAlertContainer()
 end
 
 function ContainedAlertFrameMixin:OnManagedAlertFrameVisibilityChanged()
-	self:GetAlertContainer():UpdateAnchors();
+	local container = self:GetAlertContainer();
+	if container then
+		container:UpdateAnchors();
+	end
 end
 
 function ContainedAlertFrameMixin:ManagesOwnOutroAnimation()

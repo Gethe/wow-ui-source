@@ -1117,7 +1117,7 @@ function OpenFriendsFrame(tab)
 end
 
 function WhoFrameEditBox_OnEnterPressed(self)
-	C_FriendList.SendWho(self:GetText());
+	C_FriendList.SendWho(self:GetText(), Enum.SocialWhoOrigin.SOCIAL);
 	self:ClearFocus();
 end
 

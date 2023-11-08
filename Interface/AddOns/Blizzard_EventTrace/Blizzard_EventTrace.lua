@@ -67,7 +67,7 @@ function EventTraceScrollBoxButtonMixin:Flash()
 	self.FlashOverlay.Anim:Play();
 end
 
-EventTracePanelMixin = {};
+EventTracePanelMixin = CreateFromMixins(ToolWindowOwnerMixin);
 
 function EventTracePanelMixin:OnSetDebugToolVisible(addonName, showTool)
 	if addonName == "Blizzard_EventTrace" then
@@ -120,11 +120,19 @@ function EventTracePanelMixin:OnLoad()
 end
 
 function EventTracePanelMixin:OnShow()
+	self:MoveToNewWindow(EVENTTRACE_HEADER, 1000, 600, 930, 300);
+
 	self.Log.Events.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
 
 	if not self:IsLoggingEventsWhenHidden() then
 		self:LogMessage(EVENTTRACE_LOG_START);
 	end
+end
+
+function EventTracePanelMixin:OnCloseClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	self:Hide();
+	self.window:Close();
 end
 
 function EventTracePanelMixin:OnHide()
@@ -656,6 +664,10 @@ function EventTracePanelMixin:LogLine(elementData)
 end
 
 function EventTracePanelMixin:OnEvent(event, ...)
+	if event == "IMGUI_RENDER_ENABLED" then
+		return;
+	end
+
 	if event == "ADDONS_UNLOADING" then
 		self:SaveVariables();
 		return;

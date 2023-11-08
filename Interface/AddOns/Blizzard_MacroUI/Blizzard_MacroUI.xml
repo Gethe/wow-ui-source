@@ -28,7 +28,7 @@
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
-					<Size x="60" y="60"/>
+					<Size x="58" y="58"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>

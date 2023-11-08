@@ -564,14 +564,15 @@ local UIWidgetManager =
 		{
 			Name = "ItemDisplayTextDisplayStyle",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "WorldQuestReward", Type = "ItemDisplayTextDisplayStyle", EnumValue = 0 },
 				{ Name = "ItemNameAndInfoText", Type = "ItemDisplayTextDisplayStyle", EnumValue = 1 },
 				{ Name = "ItemNameOnlyCentered", Type = "ItemDisplayTextDisplayStyle", EnumValue = 2 },
+				{ Name = "PlayerChoiceReward", Type = "ItemDisplayTextDisplayStyle", EnumValue = 3 },
 			},
 		},
 		{
@@ -872,6 +873,39 @@ local UIWidgetManager =
 			{
 				{ Name = "Spell", Type = "WidgetIconSourceType", EnumValue = 0 },
 				{ Name = "Item", Type = "WidgetIconSourceType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "WidgetOpacityType",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 0,
+			MaxValue = 10,
+			Fields =
+			{
+				{ Name = "OneHundred", Type = "WidgetOpacityType", EnumValue = 0 },
+				{ Name = "Ninety", Type = "WidgetOpacityType", EnumValue = 1 },
+				{ Name = "Eighty", Type = "WidgetOpacityType", EnumValue = 2 },
+				{ Name = "Seventy", Type = "WidgetOpacityType", EnumValue = 3 },
+				{ Name = "Sixty", Type = "WidgetOpacityType", EnumValue = 4 },
+				{ Name = "Fifty", Type = "WidgetOpacityType", EnumValue = 5 },
+				{ Name = "Forty", Type = "WidgetOpacityType", EnumValue = 6 },
+				{ Name = "Thirty", Type = "WidgetOpacityType", EnumValue = 7 },
+				{ Name = "Twenty", Type = "WidgetOpacityType", EnumValue = 8 },
+				{ Name = "Ten", Type = "WidgetOpacityType", EnumValue = 9 },
+				{ Name = "Zero", Type = "WidgetOpacityType", EnumValue = 10 },
+			},
+		},
+		{
+			Name = "WidgetShowGlowState",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "HideGlow", Type = "WidgetShowGlowState", EnumValue = 0 },
+				{ Name = "ShowGlow", Type = "WidgetShowGlowState", EnumValue = 1 },
 			},
 		},
 		{
@@ -1456,6 +1490,10 @@ local UIWidgetManager =
 				{ Name = "textEnabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "textFontType", Type = "UIWidgetFontType", Nilable = false },
 				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "glowAnimType", Type = "WidgetGlowAnimType", Nilable = false },
+				{ Name = "showGlowState", Type = "WidgetShowGlowState", Nilable = false },
+				{ Name = "fillMinOpacity", Type = "WidgetOpacityType", Nilable = false },
+				{ Name = "fillMaxOpacity", Type = "WidgetOpacityType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1726,6 +1764,7 @@ local UIWidgetManager =
 				{ Name = "tooltipEnabled", Type = "bool", Nilable = false },
 				{ Name = "iconSizeType", Type = "WidgetIconSizeType", Nilable = false },
 				{ Name = "infoTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
+				{ Name = "showAsEarned", Type = "bool", Nilable = false },
 			},
 		},
 		{

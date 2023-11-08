@@ -80,7 +80,7 @@ function ProfessionsCrafterOrderListElementMixin:Init(elementData)
 end
 
 
-ProfessionsCraftingOrderPageMixin = {};
+ProfessionsCraftingOrderPageMixin = CreateFromMixins(ProfessionsRecipeListPanelMixin);
 
 function ProfessionsCraftingOrderPageMixin:InitButtons()
 	self.BrowseFrame.FavoritesSearchButton.Icon:SetAtlas("auctionhouse-icon-favorite");
@@ -459,6 +459,8 @@ function ProfessionsCraftingOrderPageMixin:OnHide()
 	end
 
 	C_TradeSkillUI.SetOnlyShowAvailableForOrders(false);
+
+	self:StoreCollapses(self.BrowseFrame.RecipeList.ScrollBox);
 end
 
 function ProfessionsCraftingOrderPageMixin:UpdateOrdersRemaining()
@@ -559,7 +561,7 @@ function ProfessionsCraftingOrderPageMixin:Init(professionInfo)
 	end
 
 	local searching = self.BrowseFrame.RecipeList.SearchBox:HasText();
-	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching);
+	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, false, self:GetCollapses());
 	
 	if searching or changedProfessionID then
 		self.BrowseFrame.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);

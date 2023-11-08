@@ -1622,7 +1622,7 @@ SecureCmdList["CLICK"] = function(msg)
 			mouseButton = "LeftButton";
 		end
 		down = StringToBoolean(down or "", false);
-		
+
 		local button = GetClickFrame(name);
 		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);
@@ -2127,7 +2127,7 @@ SlashCmdList["CHAT_AFK"] = function(msg)
 		ConfirmOrLeaveBattlefield();
 		return;
 	end
-		
+
 	SendChatMessage(msg, "AFK");
 end
 
@@ -2144,7 +2144,7 @@ SlashCmdList["WHO"] = function(msg)
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
-	C_FriendList.SendWho(msg);
+	C_FriendList.SendWho(msg, Enum.SocialWhoOrigin.SOCIAL);
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
@@ -2279,17 +2279,17 @@ SlashCmdList["RESETCHAT"] = function(msg)
 end
 
 SlashCmdList["ENABLE_ADDONS"] = function(msg)
-	EnableAllAddOns(msg);
+	C_AddOns.EnableAllAddOns(msg);
 	ReloadUI();
 end
 
 SlashCmdList["DISABLE_ADDONS"] = function(msg)
-	DisableAllAddOns(msg);
+	C_AddOns.DisableAllAddOns(msg);
 	ReloadUI();
 end
 
 SlashCmdList["STOPWATCH"] = function(msg)
-	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
+	if ( not C_AddOns.IsAddOnLoaded("Blizzard_TimeManager") ) then
 		UIParentLoadAddOn("Blizzard_TimeManager");
 	end
 	if ( StopwatchFrame ) then
@@ -2342,7 +2342,7 @@ SlashCmdList["STOPWATCH"] = function(msg)
 end
 
 SlashCmdList["CALENDAR"] = function(msg)
-	if ( not IsAddOnLoaded("Blizzard_Calendar") ) then
+	if ( not C_AddOns.IsAddOnLoaded("Blizzard_Calendar") ) then
 		UIParentLoadAddOn("Blizzard_Calendar");
 	end
 	if ( Calendar_Toggle ) then
@@ -2481,7 +2481,7 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	if (not target1 or not target2 or not size) then
 		return;
 	end
-	
+
 	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
@@ -2544,7 +2544,7 @@ SlashCmdList["API"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2572,7 +2572,7 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2596,7 +2596,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2612,7 +2612,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2713,10 +2713,10 @@ SlashCmdList["COMMUNITY"] = function(msg)
 end
 
 SlashCmdList["RAF"] = function(msg)
-	if(C_RecruitAFriend.IsEnabled()) then 
-		ToggleRafPanel(); 
+	if(C_RecruitAFriend.IsEnabled()) then
+		ToggleRafPanel();
 	end
-end 
+end
 
 function RegisterNewSlashCommand(callback, command, commandAlias)
 	local name = string.upper(command);
@@ -2876,7 +2876,7 @@ function ChatFrame_OnLoad(self)
 	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self, self.ScrollBar, noMouseWheel);
 
 	-- Scroll bar alpha is managed by a cursor test over the chat frame. Set the initial alpha to 0
-	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and 
+	-- so this doesn't appear before the cursor test ever passes. See FCF_FadeInScrollbar and
 	-- FCF_FadeOutScrollbar.
 	self.ScrollBar:SetAlpha(0);
 end
@@ -3154,27 +3154,33 @@ function ChatFrame_ReceiveAllPrivateMessages(chatFrame)
 	chatFrame.excludePrivateMessageList = nil;
 end
 
+local macroEditBox;
+local function IsMacroEditBox(editBox)
+	return editBox == macroEditBox;
+end
+
 -- Set up a private editbox to handle macro execution
 do
 	local function GetDefaultChatEditBox(field)
 		return DEFAULT_CHAT_FRAME.editBox;
 	end
 
-	local editbox = CreateFrame("Editbox", "MacroEditBox");
-	editbox:RegisterEvent("EXECUTE_CHAT_LINE");
-	editbox:SetScript("OnEvent",
-		function(self,event,line)
-			if ( event == "EXECUTE_CHAT_LINE" ) then
-				local defaulteditbox = securecall(GetDefaultChatEditBox);
-				self:SetAttribute("chatType", defaulteditbox:GetAttribute("chatType"));
-				self:SetAttribute("tellTarget", defaulteditbox:GetAttribute("tellTarget"));
-				self:SetAttribute("channelTarget", ChatEdit_GetChannelTarget(defaulteditbox));
-				self:SetText(line);
-				ChatEdit_SendText(self);
-			end
-		end
-	);
-	editbox:Hide();
+	macroEditBox = CreateFrame("Editbox");
+	macroEditBox:Hide();
+
+	local setMacroExecutionCallback = C_Macro.SetMacroExecuteLineCallback;
+	C_Macro.SetMacroExecuteLineCallback = nil; -- explicitly only set this once per ui-instance
+
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
+		setMacroExecutionCallback(function(line)
+			local defaulteditbox = securecall(GetDefaultChatEditBox);
+			macroEditBox:SetAttribute("chatType", defaulteditbox:GetAttribute("chatType"));
+			macroEditBox:SetAttribute("tellTarget", defaulteditbox:GetAttribute("tellTarget"));
+			macroEditBox:SetAttribute("channelTarget", ChatEdit_GetChannelTarget(defaulteditbox));
+			macroEditBox:SetText(line);
+			ChatEdit_SendText(macroEditBox);
+		end);
+	end);
 end
 
 function ChatFrame_OnEvent(self, event, ...)
@@ -3926,7 +3932,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 
 				local message = msg;
 				-- isMobile
-				if arg14 then 
+				if arg14 then
 					message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
 				end
 
@@ -3968,7 +3974,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				if ( chatTimestampFmt ) then
 					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
 				end
-				
+
 				return outMsg;
 			end
 
@@ -3976,7 +3982,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
 			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
-			
+
 			-- The message formatter is captured so that the original message can be reformatted when a censored message
 			-- is approved to be shown. We only need to pack the event args if the line was censored, as the message transformation
 			-- step is the only code that needs these arguments. See ItemRef.lua "censoredmessage".
@@ -4765,6 +4771,10 @@ function ChatEdit_SetLastToldTarget(name, chatType)
 end
 
 function ChatEdit_UpdateHeader(editBox)
+	if IsMacroEditBox(editBox) then
+		return;
+	end
+
 	local type = editBox:GetAttribute("chatType");
 	if ( not type ) then
 		return;
@@ -4990,7 +5000,7 @@ end
 
 function ChatEdit_ClearChat(editBox)
 	ChatEdit_ResetChatTypeToSticky(editBox);
-	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox) ) then
+	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or IsMacroEditBox(editBox)) ) then
 		editBox:SetText("");
 		editBox:Hide();
 	else

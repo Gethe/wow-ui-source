@@ -21,6 +21,8 @@ function PetStable_OnLoad(self)
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("SPELLS_CHANGED");
 
+	PetStableModelScene.ControlFrame:SetModelScene(PetStableModelScene);
+
 	-- Set portrait
 	self:SetPortraitToAsset("Interface\\Icons\\ability_physical_taunt");
 	ButtonFrameTemplate_HideButtonBar(self);
@@ -53,7 +55,7 @@ end
 
 function PetStable_UpdatePetModelScene(self)
 	local forceSceneChange = true;
-	PetStableModelScene:TransitionToModelSceneID(PET_STABLE_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+	PetStableModelScene:TransitionToModelSceneID(PET_STABLE_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
 	local creatureDisplayID = C_PlayerInfo.GetPetStableCreatureDisplayInfoID(PetStableFrame.selectedPet);
 	if creatureDisplayID then
 		local actor = PetStableModelScene:GetActorByTag(PET_STABLE_DEFAULT_ACTOR_TAG);

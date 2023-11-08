@@ -63,11 +63,12 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyGainFlags",
 			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 1,
+			NumValues = 4,
+			MinValue = 0,
 			MaxValue = 4,
 			Fields =
 			{
+				{ Name = "None", Type = "CurrencyGainFlags", EnumValue = 0 },
 				{ Name = "BonusAward", Type = "CurrencyGainFlags", EnumValue = 1 },
 				{ Name = "DroppedFromDeath", Type = "CurrencyGainFlags", EnumValue = 2 },
 				{ Name = "FromAccountServer", Type = "CurrencyGainFlags", EnumValue = 4 },
@@ -91,14 +92,15 @@ local CurrencyConstants =
 		{
 			Name = "LinkedCurrencyFlags",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "IgnoreAdd", Type = "LinkedCurrencyFlags", EnumValue = 1 },
 				{ Name = "IgnoreSubtract", Type = "LinkedCurrencyFlags", EnumValue = 2 },
 				{ Name = "SuppressChatLog", Type = "LinkedCurrencyFlags", EnumValue = 4 },
+				{ Name = "AddIgnoresMax", Type = "LinkedCurrencyFlags", EnumValue = 8 },
 			},
 		},
 		{
@@ -145,6 +147,7 @@ local CurrencyConstants =
 				{ Name = "ARTIFACT_KNOWLEDGE_CURRENCY_ID", Type = "number", Value = 1171 },
 				{ Name = "WAR_RESOURCES_CURRENCY_ID", Type = "number", Value = 1560 },
 				{ Name = "ECHOES_OF_NYALOTHA_CURRENCY_ID", Type = "number", Value = 1803 },
+				{ Name = "DRAGON_ISLES_SUPPLIES_CURRENCY_ID", Type = "number", Value = 2003 },
 				{ Name = "QUESTIONMARK_INV_ICON", Type = "number", Value = 134400 },
 				{ Name = "CURRENCY_ID_RENOWN", Type = "number", Value = 1822 },
 				{ Name = "CURRENCY_ID_RENOWN_KYRIAN", Type = "number", Value = 1829 },

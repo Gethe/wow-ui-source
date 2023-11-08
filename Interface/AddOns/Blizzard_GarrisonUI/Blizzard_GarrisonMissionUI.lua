@@ -376,7 +376,7 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 
 	self:GetMissionPage():UpdateFollowerModel(info);
 
-	self:CheckTutorials();
+	self:CheckTutorials(true);
 end
 
 function GarrisonFollowerMission:RemoveFollowerFromMission(frame, updateValues)

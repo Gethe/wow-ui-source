@@ -180,6 +180,7 @@ end
 
 function CommunitiesListMixin:Update()
 	local clubs = self:GetCommunitiesList();
+	local playerIsInGuild = IsInGuild();
 	self:ValidateTickets();
 	
 	-- TODO:: Determine if this player is at the maximum number of allowed clubs or not.
@@ -214,7 +215,15 @@ function CommunitiesListMixin:Update()
 	end
 
 	local clubFinderEnabled = C_ClubFinder.IsEnabled();
+	local guildFinderFrame = self:GetCommunitiesFrame().GuildFinderFrame;
 	if clubFinderEnabled then
+		guildFinderFrame.isGuildType = true;
+		guildFinderFrame:UpdateType();
+		
+		if not playerIsInGuild then
+			dataProvider:Insert({setGuildFinder = true});
+		end
+
 		dataProvider:Insert({setFindCommunity = true});
 	end
 	
@@ -222,11 +231,7 @@ function CommunitiesListMixin:Update()
 		dataProvider:Insert({setJoinCommunity = true});
 	end
 
-	if clubFinderEnabled then
-		local guildFinderFrame = self:GetCommunitiesFrame().GuildFinderFrame;
-		guildFinderFrame.isGuildType = true;
-		guildFinderFrame:UpdateType()
-
+	if clubFinderEnabled and playerIsInGuild then
 		dataProvider:Insert({setGuildFinder = true});
 	end 
 

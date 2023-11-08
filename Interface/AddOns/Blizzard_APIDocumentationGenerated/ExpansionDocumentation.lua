@@ -167,6 +167,15 @@ local Expansion =
 			},
 		},
 		{
+			Name = "IsDemonHunterAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "available", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsExpansionTrial",
 			Type = "Function",
 

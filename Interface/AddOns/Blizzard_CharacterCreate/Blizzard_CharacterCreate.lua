@@ -64,6 +64,8 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
 	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
+	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
+	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -169,6 +171,11 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "ASSIGN_VAS_RESPONSE" then
 		local token, storeError, vasPurchaseResult = ...;
 		self:OnAssignVASResponse(token, storeError, vasPurchaseResult);
+	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
+		self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
+		local instantRotate = true;
+		self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
+		self:ResetNavBlockers();
 	end
 
 	if showError then
@@ -200,6 +207,15 @@ function CharacterCreateMixin:OnShow()
 	self:UpdateRecruitInfo();
 
 	RaceAndClassFrame:UpdateState(selectedFaction);
+
+	if IsKioskGlueEnabled() then
+		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
+		if templateIndex then
+			C_CharacterCreation.SetCharacterTemplate(templateIndex);
+		else
+			C_CharacterCreation.ClearCharacterTemplate();
+		end
+	end
 end
 
 local rafHelpTipInfo = {

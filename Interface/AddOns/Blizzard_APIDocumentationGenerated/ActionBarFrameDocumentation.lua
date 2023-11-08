@@ -294,6 +294,15 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "ActionUsableChanged",
+			Type = "Event",
+			LiteralName = "ACTION_USABLE_CHANGED",
+			Payload =
+			{
+				{ Name = "changes", Type = "table", InnerType = "ActionUsableState", Nilable = false },
+			},
+		},
+		{
 			Name = "ActionbarHidegrid",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_HIDEGRID",
@@ -366,6 +375,16 @@ local ActionBarFrame =
 
 	Tables =
 	{
+		{
+			Name = "ActionUsableState",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "usable", Type = "bool", Nilable = false },
+				{ Name = "noMana", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

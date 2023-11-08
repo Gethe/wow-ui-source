@@ -131,7 +131,7 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GlueFontDisableSmall" justifyH="LEFT" parentKey="Location">
+						<FontString inherits="GlueFontDisableSmall" justifyH="LEFT" passThroughButtons="LeftButton" parentKey="Location">
 							<Size x="217" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Info" relativePoint="BOTTOMLEFT" x="0" y="1"/>

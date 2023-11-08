@@ -2,7 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_TutorialKeyboardMouseFrame.lua" />
 
-	<Frame name="TutorialKeyboardMouseFrame_Frame" mixin="TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0">
+	<Frame name="TutorialKeyboardMouseFrame_Frame" mixin="TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0" frameLevel="300">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="288" type="number"/>
 			<KeyValue key="heightPadding" value="130" type="number"/>

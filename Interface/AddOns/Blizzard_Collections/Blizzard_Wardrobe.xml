@@ -1797,9 +1797,10 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="Icon" atlas="transmog-icon-revert-small" useAtlasSize="true">
+										<Texture parentKey="Icon" atlas="common-icon-undo" >
+											<Size x="18" y="18"/>
 											<Anchors>
-												<Anchor point="LEFT" x="1"/>
+												<Anchor point="CENTER" />
 											</Anchors>
 										</Texture>
 									</Layer>

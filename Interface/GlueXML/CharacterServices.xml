@@ -314,7 +314,7 @@
 			<OnHide function="CharacterUpgradeSelectFactionFrame_ClearChecked"/>
 		</Scripts>
 	</Frame>
-	<Button name="RPEUpgradeMinimizedFrame" hidden="true" frameStrata="DIALOG">
+	<Button name="RPEUpgradeMinimizedFrame" hidden="true" frameStrata="HIGH">
 		<Size x="300" y="90"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharSelectServicesFlowFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
@@ -335,7 +335,8 @@
 						<Anchor point="TOPLEFT" x="10" y="20" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="TOP" text="RPE_GEAR_UPDATE">
+				<FontString parentKey="Title" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="MIDDLE" text="RPE_GEAR_UPDATE">
+					<Size x="150" y="0"/>
 					<Color color="WHITE_FONT_COLOR"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="-15" />
@@ -390,7 +391,7 @@
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Title" inherits="GameFontNormalHuge2" justifyH="CENTER" justifyV="TOP" text="RPE_GEAR_UPDATE">
-							<Size x="260" y="45"/>
+							<Size x="260" y="0"/>
 							<Color r="1" g="1" b="1"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Glow" relativePoint="BOTTOM" x="0" y="-5" />
@@ -400,7 +401,7 @@
 							<Size x="260" y="90"/>
 							<Color r="1" g="1" b=".2"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="5" />
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5" />
 							</Anchors>
 						</FontString>
 					</Layer>

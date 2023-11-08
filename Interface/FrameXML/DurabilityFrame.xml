@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="DurabilityFrame.lua"/>
 	<Frame name="DurabilityFrame" frameStrata="LOW" hidden="false" parent="UIParent" inherits="EditModeDurabilityFrameSystemTemplate, UIParentRightManagedFrameTemplate" mixin="DurabilityFrameMixin">
 		<Size x="60" y="75"/>

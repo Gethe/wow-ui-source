@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="MovieFrame.lua"/>
 	<MovieFrame name="MovieFrame" setAllPoints="true" hidden="true" enableKeyboard="true">
 		<Layers>
@@ -7,14 +7,6 @@
 				<Texture parentKey="Background" setAllPoints="true">
 					<Color r="0" g="0" b="0" a="1"/>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="MovieFrameSubtitleString" inherits="MovieSubtitleFont" hidden="true">
-					<Size x="800" y="138"/>
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -74,8 +66,6 @@
 			<OnUpdate function="MovieFrame_OnUpdate"/>
 			<OnKeyUp function="MovieFrame_OnKeyUp"/>
 			<OnMovieFinished function="MovieFrame_OnMovieFinished"/>
-			<OnMovieShowSubtitle function="MovieFrame_OnMovieShowSubtitle"/>
-			<OnMovieHideSubtitle function="MovieFrame_OnMovieHideSubtitle"/>
 		</Scripts>
 	</MovieFrame>
 </Ui>

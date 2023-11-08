@@ -1413,7 +1413,7 @@
     ReloadUI();
   </Binding>
 	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		LoadAddOn("Blizzard_DebugTools");
+		C_AddOns.LoadAddOn("Blizzard_DebugTools");
 		FrameStackTooltip_ToggleDefaults();
 	</Binding>
 	<Binding name="TOGGLECUSTOMIZATIONDEBUGINFO" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">

@@ -20,12 +20,6 @@
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0"/>
 				</Texture>
-				<FontString name="MovieFrameSubtitleString" inherits="GlueFontNormalHuge" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="MovieFrameSubtitleArea"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="MovieFrameSubtitleArea"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -47,12 +41,6 @@
 			<OnMovieFinished>
 				MovieFrame_OnMovieFinished(self);
 			</OnMovieFinished>
-			<OnMovieShowSubtitle>
-				MovieFrame_OnMovieShowSubtitle(self, text);
-			</OnMovieShowSubtitle>
-			<OnMovieHideSubtitle>
-				MovieFrame_OnMovieHideSubtitle(self);
-			</OnMovieHideSubtitle>
 		</Scripts>
 	</MovieFrame>
 </Ui>

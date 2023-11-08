@@ -996,6 +996,10 @@ local function QuestLogQuests_GetTitle(displayState, info)
 		title = info.questID.." - "..title;
 	end
 
+	if displayState.displayInternalOnlyStatus and info.isInternalOnly then
+		title = "(Internal only) "..title;
+	end
+
 	if displayState.showReadyToRecord then
 		if info.readyForTranslation ~= nil then
 			if info.readyForTranslation == false then
@@ -1439,6 +1443,7 @@ local function QuestLogQuests_BuildInitialDisplayState(poiTable, questInfoContai
 		questInfoContainer = questInfoContainer,
 		poiTable = poiTable,
 		displayQuestID = GetCVarBool("displayQuestID"),
+		displayInternalOnlyStatus = GetCVarBool("displayInternalOnlyStatus"),
 		showReadyToRecord = GetCVarBool("showReadyToRecord"),
 		questPOI = GetCVarBool("questPOI"),
 	};
@@ -1851,6 +1856,7 @@ function QuestLogPopupDetailFrame_Show(questLogIndex)
 	QuestLogPopupDetailFrame_Update(true);
 	ShowUIPanel(QuestLogPopupDetailFrame);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();

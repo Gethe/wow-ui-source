@@ -332,6 +332,15 @@ function PVPNewRatingMixin:Populate(rowData, dataIndex)
 	FormatCellColor(text, rowData, self.useAlternateColor);
 end
 
+local function ShouldShowRatingColumns()
+	-- Ignore Solo Shuffle/Battleground Blitz brawls which use rating for matchmaking purposes
+	if C_PvP.IsBrawlSoloShuffle() or C_PvP.IsBrawlSoloRBG() then
+		return false;
+	end
+
+	return C_PvP.DoesMatchOutcomeAffectRating();
+end
+
 function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local iconPadding = 2;
 	local textPadding = 15;
@@ -432,7 +441,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local ratingPre = false;
 	local ratingPost = false;
 	local ratingChange = false;
-	if C_PvP.DoesMatchOutcomeAffectRating() then
+	if ShouldShowRatingColumns() then
 		if PVPMatchUtil.IsActiveMatchComplete() then
 			-- Skirmish is considered rated for matchmaking reasons.
 			ratingChange = not IsArenaSkirmish();

@@ -133,19 +133,7 @@
 		<HitRectInsets left="15" right="15" top="15" bottom="15"/>
 	</CheckButton>
 
-	<CheckButton name="CharCustomizeShapeshiftFormButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeShapeshiftFormButtonMixin" virtual="true">
-		<Size x="64" y="64"/>
-		<KeyValues>
-			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
-			<KeyValue key="ringWidth" value="109" type="number"/>
-			<KeyValue key="ringHeight" value="110" type="number"/>
-			<KeyValue key="checkedTextureSize" value="94" type="number"/>
-			<KeyValue key="tooltipYOffset" value="-5" type="number"/>
-			<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
-		</KeyValues>
-	</CheckButton>
-
-	<CheckButton name="CharCustomizeRidingDrakeButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
+	<CheckButton name="CharCustomizeConditionalModelButtonTemplate" inherits="CharCustomizeMaskedButtonTemplate" mixin="CharCustomizeRidingDrakeButtonMixin" virtual="true">
 		<Size x="64" y="64"/>
 		<KeyValues>
 			<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>

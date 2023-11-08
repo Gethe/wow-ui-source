@@ -1385,6 +1385,10 @@ function TalentFrameBaseMixin:SetSelection(nodeID, entryID)
 end
 
 function TalentFrameBaseMixin:ClearCascadeRepurchaseHistory()
+	if not TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled() then
+		return false;
+	end
+
 	C_Traits.ClearCascadeRepurchaseHistory(self:GetConfigID());
 end
 

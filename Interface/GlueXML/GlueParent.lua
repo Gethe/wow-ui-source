@@ -665,7 +665,7 @@ function HideUIPanel(self)
 end
 
 function IsKioskGlueEnabled()
-	return Kiosk.IsEnabled() and not IsCompetitiveModeEnabled();
+	return Kiosk.IsEnabled() and not Kiosk.IsCompetitiveModeEnabled();
 end
 
 function GetDisplayedExpansionLogo(expansionLevel)

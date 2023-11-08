@@ -536,12 +536,10 @@ end
 function AuctionHouseInteractableItemDisplayMixin:SwitchItemWithCursor(skipCallback)
 	local cursorItem = C_Cursor.GetCursorItem();
 	local currentItemLocation = self:GetItemLocation();
-	if self:SetItemLocation(cursorItem, skipCallback) or cursorItem == nil then
+	if (cursorItem or currentItemLocation) and (self:SetItemLocation(cursorItem, skipCallback) or cursorItem == nil) then
 		ClearCursor();
 
-		if currentItemLocation ~= nil then
-			ItemUtil.PickupBagItem(currentItemLocation);
-		end
+		ItemUtil.PickupBagItem(currentItemLocation or cursorItem);
 	end
 end
 

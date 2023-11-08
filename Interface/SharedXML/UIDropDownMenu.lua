@@ -88,6 +88,7 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 	local dropDownList = _G["DropDownList"..level];
 	dropDownList.dropdown = frame;
 	dropDownList.shouldRefresh = true;
+	dropDownList:SetWindow(frame:GetWindow());
 
 	UIDropDownMenu_SetDisplayMode(frame, displayMode);
 end

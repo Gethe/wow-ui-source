@@ -70,12 +70,6 @@
 	<Font name="GameFontNormalLarge" inherits="SystemFont_Shadow_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
-	<Font name="GameFontHighlightLarge" inherits="SystemFont_Shadow_Large" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="GameFontDisableLarge" inherits="SystemFont_Shadow_Large" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
 	<Font name="GameFontNormalMed2Outline" inherits="SystemFont_Shadow_Med2_Outline" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -125,7 +119,7 @@
         <Color r="1.0" g="0.1" b="0.1"/>
     </Font>
 	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
-		<Color r="0" g="1.0" b="0"/>
+		<Color color="GREEN_FONT_COLOR"/>
 	</Font>
 	<Font name="GameFontBlack" inherits="SystemFont_Med1" virtual="true">
 		<Color r="0" g="0" b="0"/>
@@ -157,7 +151,7 @@
 	<Font name="GameFontHighlightSmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GameFontNormalSmallLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true"/>		
+	<Font name="GameFontNormalSmallLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">
@@ -244,4 +238,7 @@
   <Font name="IMEHighlight" inherits="System_IME" justifyH="LEFT" virtual="true">
     <Color r="1.0" g="0.82" b="0"/>
   </Font>
+	<Font name="MovieSubtitleFont" inherits="SystemFont22_Shadow_Outline" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
 </Ui>

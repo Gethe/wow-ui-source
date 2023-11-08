@@ -33,15 +33,22 @@ local function Register()
 	end
 
     -- Enable Ping Sounds and Ping Sounds Volume
-    do
-        local initializer = layout:AddMirroredInitializer(Settings.PingSoundsInitializer);
-        initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+    if not Kiosk.IsEnabled() then
+        do
+            local initializer = layout:AddMirroredInitializer(Settings.PingSoundsInitializer);
+            initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+        end
     end
 
     -- Show Pings in Chat
     do
-        local _, initializer = Settings.SetupCVarCheckBox(category, "showPingsInChat", SHOW_PINGS_IN_CHAT, OPTION_TOOLTIP_SHOW_PINGS_IN_CHAT);
-        initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
+        local setting = Settings.RegisterCVarSetting(category, "showPingsInChat", Settings.VarType.Boolean, SHOW_PINGS_IN_CHAT);
+        local function OnButtonClick()
+            ShowUIPanel(ChatConfigFrame);
+            ChatConfigFrameChatTabManager:UpdateSelection(DEFAULT_CHAT_FRAME:GetID());
+		end;
+		local initializer = CreateSettingsCheckBoxWithButtonInitializer(setting, PING_CHAT_SETTINGS, OnButtonClick, true, OPTION_TOOLTIP_SHOW_PINGS_IN_CHAT);
+		layout:AddInitializer(initializer);
     end
 
     -- Keybinds Button
@@ -58,7 +65,8 @@ local function Register()
             end
 		end
 
-		local initializer = CreateSettingsButtonInitializer("", PING_KEYBINDINGS, onButtonClick);
+        local addSearchTags = false;
+		local initializer = CreateSettingsButtonInitializer("", PING_KEYBINDINGS, onButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 

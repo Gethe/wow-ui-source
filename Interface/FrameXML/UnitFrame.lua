@@ -7,20 +7,25 @@ PowerBarColor["COMBO_POINTS"] =		{ r = 1.00, g = 0.96, b = 0.41 };
 PowerBarColor["RUNES"] =			{ r = 0.50, g = 0.50, b = 0.50 };
 PowerBarColor["RUNIC_POWER"] =		{ r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true, atlasElementName="RunicPower" };
 PowerBarColor["SOUL_SHARDS"] =		{ r = 0.50, g = 0.32, b = 0.55 };
-PowerBarColor["LUNAR_POWER"] =		{ r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
+PowerBarColor["LUNAR_POWER"] =		{ r = 0.30, g = 0.52, b = 0.90, atlas="Unit_Druid_AstralPower_Fill", spark = { atlas = "Unit_Druid_AstralPower_EndCap", xOffset = 1, barHeight = "10", showAtMax = true } };
 PowerBarColor["HOLY_POWER"] =		{ r = 0.95, g = 0.90, b = 0.60 };
-PowerBarColor["MAELSTROM"] =		{ r = 0.00, g = 0.50, b = 1.00, atlas = "_Shaman-MaelstromBar", fullPowerAnim=true };
-PowerBarColor["INSANITY"] =			{ r = 0.40, g = 0.00, b = 0.80, atlas = "_Priest-InsanityBar"};
+PowerBarColor["MAELSTROM"] =		{ r = 0.00, g = 0.50, b = 1.00, atlas = "Unit_Shaman_Maelstrom_Fill", fullPowerAnim=true, spark = { atlas = "Unit_Shaman_Maelstrom_EndCap", barHeight = 10, showAtMax = true } };
+PowerBarColor["INSANITY"] =			{ r = 0.40, g = 0.00, b = 0.80, atlas = "Unit_Priest_Insanity_Fill", spark = { atlas = "Unit_Priest_Insanity_EndCap", xOffset = 1, barHeight = 10, showAtMax = false } };
 PowerBarColor["CHI"] =				{ r = 0.71, g = 1.00, b = 0.92 };
 PowerBarColor["ARCANE_CHARGES"] =	{ r = 0.10, g = 0.10, b = 0.98 };
-PowerBarColor["FURY"] =				{ r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
+PowerBarColor["FURY"] =				{ r = 0.788, g = 0.259, b = 0.992, atlas = "Unit_DemonHunter_Fury_Fill", fullPowerAnim=true, spark = { atlas = "Unit_DemonHunter_Fury_EndCap", xOffset = 1, barHeight = "10", showAtMax = true } };
 PowerBarColor["PAIN"] =				{ r = 255/255, g = 156/255, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
 -- vehicle colors
 PowerBarColor["AMMOSLOT"] = 		{ r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = 			{ r = 0.0, g = 0.55, b = 0.5 };
 -- alternate power bar colors
-PowerBarColor["STAGGER"] = { {r = 0.52, g = 1.0, b = 0.52}, {r = 1.0, g = 0.98, b = 0.72}, {r = 1.0, g = 0.42, b = 0.42},};
 PowerBarColor["EBON_MIGHT"] = { r = 0.9, g = 0.55, b = 0.3, atlas = "Unit_Evoker_EbonMight_Fill" };
+PowerBarColor["STAGGER"] = { 
+	green = 	{ r = 0.52, g = 1.0, b = 0.52, atlas = "Unit_Monk_Stagger_Fill_Green" },
+	yellow = 	{ r = 1.0, g = 0.98, b = 0.72, atlas = "Unit_Monk_Stagger_Fill_Yellow" },
+	red = 		{ r = 1.0, g = 0.42, b = 0.42, atlas = "Unit_Monk_Stagger_Fill_Red" },
+	spark = 	{ atlas = "Unit_Monk_Stagger_EndCap", barHeight = 10, xOffset = 1, showAtMax = true }
+};
 
 -- these are mostly needed for a fallback case (in case the code tries to index a power token that is missing from the table,
 -- it will try to index by power type instead)
@@ -554,6 +559,10 @@ function UnitFrameManaBar_UpdateTypeOld(manaBar)
 			if ( manaBar.FullPowerFrame ) then
 				manaBar.FullPowerFrame:Initialize(info.fullPowerAnim);
 			end
+
+			if ( manaBar.Spark ) then
+				manaBar.Spark:SetVisuals(info);
+			end
 		end
 	else
 		if ( not altR ) then
@@ -649,6 +658,11 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		if (manaBar.FullPowerFrame) then
 			manaBar.FullPowerFrame:Initialize(info.fullPowerAnim);
 		end
+
+		if (manaBar.Spark) then
+			manaBar.Spark:SetVisuals(info.spark);
+		end
+
 	else
 		-- If we cannot find the info for what the mana bar should be, default either to Mana or Mana-Status (colorable).
 		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText.."-Bar-Mana";

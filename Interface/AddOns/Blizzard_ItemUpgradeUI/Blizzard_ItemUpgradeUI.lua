@@ -337,7 +337,7 @@ function ItemUpgradeMixin:GetSeasonSourceStringForCostItem(itemID, upgradeInfo)
 	end
 
 	for _, costType in ipairs(upgradeInfo.upgradeCostTypesForSeason) do
-		if costType.itemID == itemID then
+		if costType.itemID and costType.itemID == itemID then
 			return costType.sourceString;
 		end
 	end
@@ -350,19 +350,32 @@ function ItemUpgradeMixin:CanAnyCostsBeDowngradedTo(insufficientCosts, upgradeIn
 		return false;
 	end
 
-	-- Cost items of a higher order index can be downgraded to lower order index items
-	-- So determine if any insufficient cost items could be gained via downgrading
+	-- Cost resources of a higher order index can be downgraded to lower order index resoures
+	-- So determine if any insufficient cost resoures could be gained via downgrading
+
+	-- Hopefully, we never mix and match costs being items AND currencies in one season, but if we do, they'll all share an order index range
+	-- Hopefully, in that situation, we also still make them downgradeable between each other, otherwise we'll need to refactor all this logic to match however that works
 	local highestOrderIndex = -1;
 	local itemIDToOrderIndex = {};
+	local currencyIDToOrderIndex = {};
 	for _, costType in ipairs(upgradeInfo.upgradeCostTypesForSeason) do
-		if costType.orderIndex > highestOrderIndex then
-			highestOrderIndex = costType.orderIndex;
+		if costType.itemID or costType.currencyID then
+			if costType.orderIndex > highestOrderIndex then
+				highestOrderIndex = costType.orderIndex;
+			end
+
+			if costType.itemID then
+				itemIDToOrderIndex[costType.itemID] = costType.orderIndex;
+			elseif costType.currencyID then
+				currencyIDToOrderIndex[costType.currencyID] = costType.orderIndex;
+			end
 		end
-		itemIDToOrderIndex[costType.itemID] = costType.orderIndex;
 	end
 
 	for _, insufficientCost in ipairs(insufficientCosts) do
 		if insufficientCost.itemID and itemIDToOrderIndex[insufficientCost.itemID] and itemIDToOrderIndex[insufficientCost.itemID] < highestOrderIndex then
+			return true;
+		elseif insufficientCost.currencyID and currencyIDToOrderIndex[insufficientCost.currencyID] and currencyIDToOrderIndex[insufficientCost.currencyID] < highestOrderIndex then
 			return true;
 		end
 	end

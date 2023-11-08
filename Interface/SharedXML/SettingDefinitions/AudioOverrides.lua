@@ -20,6 +20,8 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 				enableSetting, ENABLE_PING_SOUNDS, OPTION_TOOLTIP_ENABLE_PING_SOUNDS,
 				volumeSetting, sliderOptions, PING_VOLUME, OPTION_TOOLTIP_PING_VOLUME);
 
+		initializer:AddSearchTags(ENABLE_PING_SOUNDS);
+
 		layout:AddInitializer(initializer);
 
 		-- Mirror in PingSystem
@@ -29,7 +31,8 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 		local function onButtonClick()
 			Settings.OpenToCategory(Settings.PINGSYSTEM_CATEGORY_ID, ENABLE_PINGS);
 		end
-		local initializer = CreateSettingsButtonInitializer("", PING_SYSTEM_SETTINGS, onButtonClick);
+		local addSearchTags = false;
+		local initializer = CreateSettingsButtonInitializer("", PING_SYSTEM_SETTINGS, onButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 end

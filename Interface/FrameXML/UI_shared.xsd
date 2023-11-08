@@ -143,6 +143,14 @@
 			<xs:enumeration value="MIRROR"/>
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<xs:simpleType name="UITextureSliceMode">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Stretched"/>
+			<xs:enumeration value="Tiled"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 
 	<xs:element name="AbsValue">
 		<xs:complexType>
@@ -551,6 +559,19 @@
 			<xs:attribute name="right" type="xs:float"/>
 			<xs:attribute name="top" type="xs:float"/>
 			<xs:attribute name="bottom" type="xs:float"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TextureSliceMargins" substitutionGroup="TextureField">
+		<xs:complexType>
+			<xs:attribute name="left" type="xs:float"/>
+			<xs:attribute name="right" type="xs:float"/>
+			<xs:attribute name="top" type="xs:float"/>
+			<xs:attribute name="bottom" type="xs:float"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TextureSliceMode" substitutionGroup="TextureField">
+		<xs:complexType>
+			<xs:attribute name="mode" type="UITextureSliceMode"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Color" type="ColorType" substitutionGroup="TextureField"/>

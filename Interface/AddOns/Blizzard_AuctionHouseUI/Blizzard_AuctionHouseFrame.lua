@@ -314,8 +314,6 @@ local AUCTION_HOUSE_FRAME_EVENTS = {
 	"OWNED_AUCTIONS_UPDATED",
 	"AUCTION_HOUSE_AUCTION_CREATED",
 	"AUCTION_HOUSE_SHOW_ERROR",
-	"AUCTION_HOUSE_SHOW_NOTIFICATION",
-	"AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION",
 	"AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION",
 };
 
@@ -433,9 +431,6 @@ function AuctionHouseFrameMixin:OnEvent(event, ...)
 	elseif event == "AUCTION_HOUSE_SHOW_ERROR" then
 		local auctionHouseError = ...;
 		UIErrorsFrame:AddExternalErrorMessage(AuctionHouseUtil.GetErrorText(auctionHouseError));
-	elseif (event == "AUCTION_HOUSE_SHOW_NOTIFICATION") or (event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION") then
-		local auctionHouseNotification, formatArg = ...;
-		Chat_AddSystemMessage(AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatArg));
 	elseif event == "AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION" then
 		local commodityName, commodityQuantity = ...;
 		Chat_AddSystemMessage(ERR_AUCTION_COMMODITY_WON_S:format(commodityName, commodityQuantity));

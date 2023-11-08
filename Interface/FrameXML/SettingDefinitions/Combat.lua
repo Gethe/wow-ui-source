@@ -137,9 +137,9 @@ local function Register()
 			OPTION_TOOLTIP_AUTO_SELF_CAST_ALT_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY,
-			OPTION_TOOLTIP_AUTO_SELF_CAST_NONE_KEY,
 		};
-		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT);
+		local mustChooseKey = true;
+		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT, mustChooseKey);
 
 		local function IsUsingKeyPress()
 			local value = selfCastSetting:GetValue();

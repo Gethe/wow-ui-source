@@ -161,9 +161,14 @@ local STANDARD_SIZE_TEXT_WIDTH = 196;
 local WIDE_SIZE_TEXT_WIDTH = 356;
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupOptionText()
-	self.OptionText:ClearText()
-	self.OptionText:SetWidth(self.soloOption and WIDE_SIZE_TEXT_WIDTH or STANDARD_SIZE_TEXT_WIDTH);
-	self.OptionText:SetText(self.optionInfo.description);
+	if self.optionInfo.description == "" then
+		self.OptionText:Hide();
+	else
+		self.OptionText:Show();
+		self.OptionText:ClearText()
+		self.OptionText:SetWidth(self.soloOption and WIDE_SIZE_TEXT_WIDTH or STANDARD_SIZE_TEXT_WIDTH);
+		self.OptionText:SetText(self.optionInfo.description);
+	end
 end
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupButtons()

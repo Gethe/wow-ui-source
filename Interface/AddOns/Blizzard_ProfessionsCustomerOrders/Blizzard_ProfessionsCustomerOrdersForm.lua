@@ -916,7 +916,8 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 
 					local canToggle = orderSource == Enum.CraftingOrderReagentSource.Any and not committed;
 					if not canToggle then
-						SetupSlotOverride(slot, orderSource, canAllocate, committed);
+						local alreadyModified = self.order.isRecraft and transaction:HasModification(reagentSlotSchematic.dataSlotIndex);
+						SetupSlotOverride(slot, orderSource, canAllocate or alreadyModified, committed);
 					end
 				end
 				

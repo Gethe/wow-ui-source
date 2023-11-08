@@ -1408,21 +1408,34 @@ end
 local CHARACTER_SHEET_MODEL_SCENE_ID = 595;
 function PaperDollFrame_SetPlayer()
 	CharacterModelScene:ReleaseAllActors();
-	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, true);
+	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 
 	local form = GetShapeshiftFormID();
-	if form and not UnitOnTaxi("player") then
+	local creatureDisplayID = C_PlayerInfo.GetDisplayID();
+	local nativeDisplayID = C_PlayerInfo.GetNativeDisplayID();
+	if form and creatureDisplayID ~= 0 and not UnitOnTaxi("player") then
 		local actorTag = ANIMAL_FORMS[form] and ANIMAL_FORMS[form].actorTag or nil;
 		if actorTag then
 			local actor = CharacterModelScene:GetPlayerActor(actorTag);
-			local creatureDisplayID = C_PlayerInfo.GetDisplayID();
-			if actor and creatureDisplayID then
-				actor:SetModelByCreatureDisplayID(creatureDisplayID);
-				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-				return;
+			if actor then
+				-- We need to SetModelByCreatureDisplayID() for Shapeshift forms if:
+				-- 1. We have a form active (already checked above)
+				-- 2. The display granted by that form is *not* our native Player display (e.g. anything *but* Glyph of Stars)
+				-- 3. The Player is *not* mirror imaged
+				-- 4. The Player *is* currently their native race (e.g. *not* using a transform Toy of some kind)
+				local displayIDIsNative = (creatureDisplayID == nativeDisplayID);
+				local displayRaceIsNative = C_PlayerInfo.IsDisplayRaceNative();
+				local isMirrorImage = C_PlayerInfo.IsMirrorImage();
+				local useShapeshiftDisplayID = (not displayIDIsNative and not isMirrorImage and displayRaceIsNative);
+				if useShapeshiftDisplayID then
+					actor:SetModelByCreatureDisplayID(creatureDisplayID, true);
+					actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+					return;
+				end
 			end
 		end
 	end
+
 	local actor = CharacterModelScene:GetPlayerActor();
 	if actor then
 		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
@@ -1445,6 +1458,9 @@ function PaperDollFrame_OnShow(self)
 	SetPaperDollBackground(CharacterModelScene, "player");
 	PaperDollBgDesaturate(true);
 	PaperDollSidebarTabs:Show();
+
+	CharacterModelScene.ControlFrame:Show();
+	CharacterModelScene.ControlFrame:SetModelScene(CharacterModelScene);
 
 	PaperDollFrame_SetPlayer();
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
@@ -2393,7 +2409,9 @@ function PaperDollEquipmentManagerPane_InitButton(button, elementData)
 	else
 		local index = elementData.index;
 
-		local equipmentSetIndex = PaperDollFrame.EquipmentManagerPane.equipmentSetIDs[index];
+		local equipmentSetIDs = PaperDollFrame.EquipmentManagerPane.equipmentSetIDs;
+		local equipmentSetIndex = equipmentSetIDs[index];
+		local numRows = #equipmentSetIDs;
 		local name, texture, setID, isEquipped, _, _, _, numLost = C_EquipmentSet.GetEquipmentSetInfo(equipmentSetIndex);
 		button.setID = setID;
 		button.text:SetText(name);
@@ -2428,7 +2446,7 @@ function PaperDollEquipmentManagerPane_InitButton(button, elementData)
 			button.BgMiddle:SetPoint("TOP");
 		end
 
-		if (index == numRows) then
+		if (equipmentSetIndex == numRows) then
 			button.BgBottom:Show();
 			button.BgMiddle:SetPoint("BOTTOM", button.BgBottom, "TOP");
 		else

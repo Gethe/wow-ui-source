@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<Script file="ReadyCheck.lua"/>
 	<Frame name="ReadyCheckStatusTemplate" virtual="true">
 		<!-- <KeyValues>
@@ -13,7 +13,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ReadyCheckFrame" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="ReadyCheckFrame" frameStrata="DIALOG" toplevel="true" parent="UIParent" hidden="true">
 		<Size x="323" y="100"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="-10"/>

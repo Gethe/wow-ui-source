@@ -75,6 +75,15 @@ local PerksActivities =
 			},
 		},
 		{
+			Name = "GetPerksUIThemePrefix",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "kitPrefix", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTrackedPerksActivities",
 			Type = "Function",
 

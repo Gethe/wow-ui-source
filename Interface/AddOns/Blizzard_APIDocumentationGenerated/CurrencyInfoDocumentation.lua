@@ -193,6 +193,15 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetDragonIslesSuppliesCurrencyID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "dragonIslesSuppliesCurrencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFactionGrantedByCurrency",
 			Type = "Function",
 			Documentation = { "Gets the faction ID for currency that is immediately converted into reputation with that faction instead." },

@@ -486,7 +486,6 @@
 							<AbsInset left="0" right="-140" top="0" bottom="0"/>
 						</HitRectInsets>
 						<Scripts>
-							<OnLoad method="OnLoad"/>
 							<OnShow method="OnShow"/>
 							<OnHide method="OnHide"/>
 							<OnEvent method="OnEvent"/>

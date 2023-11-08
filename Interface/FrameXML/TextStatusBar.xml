@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI_shared.xsd">
 	<StatusBar name="TextStatusBar" enableMouseMotion="true" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -22,6 +22,16 @@
 			<OnValueChanged>
 				TextStatusBar_OnValueChanged(self, value);
 			</OnValueChanged>
+			<OnMinMaxChanged>
+				TextStatusBar_OnMinMaxChanged(self, min, max);
+			</OnMinMaxChanged>
 		</Scripts>
 	</StatusBar>
+
+	<!-- Optional spark frame; If added to a TextStatusBar, shows at the right edge of the fill bar -->
+	<Texture name="TextStatusBarSparkTemplate" mixin="TextStatusBarSparkMixin" virtual="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+		<Anchors>
+			<Anchor point="RIGHT"/>
+		</Anchors>
+	</Texture>
 </Ui>
