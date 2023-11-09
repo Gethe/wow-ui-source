@@ -1,13 +1,6 @@
-SelectableButtonMixin = CreateFromMixins(CallbackRegistryMixin);
-
-SelectableButtonMixin:GenerateCallbackEvents(
-	{
-		"SelectionChanged",
-	}
-);
+SelectableButtonMixin = {};
 
 function SelectableButtonMixin:OnLoad()
-	CallbackRegistryMixin.OnLoad(self);
 	self.selected = false;
 end
 
@@ -17,7 +10,7 @@ function SelectableButtonMixin:Reset()
 end
 
 function SelectableButtonMixin:OnClick()
-	self:SetSelected(not self:IsSelected());
+	return self:SetSelected(not self:IsSelected());
 end
 
 function SelectableButtonMixin:CanChangeSelection(newSelected)
@@ -32,32 +25,26 @@ function SelectableButtonMixin:CanChangeSelection(newSelected)
 	return true;
 end
 
-function SelectableButtonMixin:RegisterSelectionChangedCallback(func, owner, ...)
-	return self:RegisterCallback(SelectableButtonMixin.Event.SelectionChanged, func, owner, ...);
-end
-
-function SelectableButtonMixin:UnregisterSelectionChangedCallback(owner)
-	self:UnregisterCallback(SelectableButtonMixin.Event.SelectionChanged, owner);
-end
-
-
 function SelectableButtonMixin:SetSelectionChangeInterrupt(callback)
 	self.SelectionChangeInterrupt = callback;
 end
 
 function SelectableButtonMixin:IsSelected()
-	return self.selected;
+	return not not self.selected;
 end
 
 function SelectableButtonMixin:SetSelected(newSelected)
 	if self:CanChangeSelection(newSelected) then
-		self.selected = newSelected;
-
-		self:TriggerEvent(SelectableButtonMixin.Event.SelectionChanged, self, newSelected);
+		self:SetSelectedState(newSelected);
 		self:OnSelected(newSelected);
 	end
 end
 
 function SelectableButtonMixin:OnSelected(newSelected)
 -- Derive
+end
+
+function SelectableButtonMixin:SetSelectedState(newSelected)
+	-- Derive
+	self.selected = newSelected;
 end

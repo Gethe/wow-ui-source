@@ -1,8 +1,0 @@
-## Interface: 0
-## Title: Blizzard Looking for Group UI
-## Secure: 1
-## LoadOnDemand: 1
-
-Blizzard_LFGParentFrame.xml
-Blizzard_LFGListing.xml
-Blizzard_LFGBrowse.xml

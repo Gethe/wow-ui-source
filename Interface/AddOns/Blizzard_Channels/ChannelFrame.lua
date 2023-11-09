@@ -541,6 +541,9 @@ function ChannelFrameMixin:OnCountUpdate(id, count)
 end
 
 function ChannelFrameMixin:OnGroupFormed(partyCategory, partyGUID)
+	if GetCVarBool("autojoinPartyVoice") then
+		self:TryJoinVoiceChannelByType(Enum.ChatChannelType.PrivateParty, true);
+	end
 end
 
 function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)

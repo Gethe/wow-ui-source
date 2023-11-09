@@ -1,2 +1,2 @@
-LoadAddOn("Blizzard_Console");
-LoadAddOn("Blizzard_FrameEffects");
+C_AddOns.LoadAddOn("Blizzard_Console");
+C_AddOns.LoadAddOn("Blizzard_FrameEffects");

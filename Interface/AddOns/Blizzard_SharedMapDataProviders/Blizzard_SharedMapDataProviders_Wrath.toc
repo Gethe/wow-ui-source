@@ -16,11 +16,13 @@ MapHighlightDataProvider.xml
 AreaLabelDataProvider.xml
 BattlefieldFlagDataProvider.xml
 BonusObjectiveDataProvider.xml
+BonusObjectiveDataProvider_Wrath.lua
 VehicleDataProvider.xml
 StorylineQuestDataProvider.xml
 EncounterJournalDataProvider.xml
 FogOfWarDataProvider.xml
 ..\..\..\Interface_Wrath\AddOns\Blizzard_SharedMapDataProviders\DeathMapDataProvider.xml
+QuestBlobDataProvider.xml
 VignetteDataProvider.xml
 InvasionDataProvider.xml
 GossipDataProvider.xml

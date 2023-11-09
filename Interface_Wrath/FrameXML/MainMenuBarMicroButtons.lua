@@ -9,6 +9,7 @@ MICRO_BUTTONS = {
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
 	"SocialsMicroButton",
+	"CollectionsMicroButton",
 	"PVPMicroButton",
 	"LFGMicroButton",
 	"MainMenuMicroButton",
@@ -71,7 +72,7 @@ function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 	if ( isStacked ) then
 		PVPMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 23);
 	else
-		PVPMicroButton:SetPoint("BOTTOMLEFT", SocialsMicroButton, "BOTTOMRIGHT", -2, 0);
+		PVPMicroButton:SetPoint("BOTTOMLEFT", CollectionsMicroButton, "BOTTOMRIGHT", -2, 0);
 	end
 	UpdateMicroButtons();
 end
@@ -138,10 +139,15 @@ function UpdateMicroButtons()
 		end
 	end
 
-	if (  LFGParentFrame and LFGParentFrame:IsShown() ) then
+	if ( PVEFrame and PVEFrame:IsShown() ) then
 		LFGMicroButton:SetButtonState("PUSHED", true);
 	else
-		LFGMicroButton:SetButtonState("NORMAL");
+		if ( playerLevel < LFGMicroButton.minLevel ) then
+			LFGMicroButton:Disable();
+		else
+			LFGMicroButton:Enable();
+			LFGMicroButton:SetButtonState("NORMAL");
+		end
 	end
 
 	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
@@ -440,4 +446,96 @@ function MicroButtonAlert_CreateAlert(parent, tutorialIndex, text, anchorPoint, 
 
 	MicroButtonAlert_SetText(alert, text);
 	return alert;
+end
+
+CollectionMicroButtonMixin = {};
+
+local function SafeSetCollectionJournalTab(tab)
+	if CollectionsJournal_SetTab then
+		CollectionsJournal_SetTab(CollectionsJournal, tab);
+	else
+		SetCVar("petJournalTab", tab);
+	end
+end
+
+function CollectionMicroButtonMixin:EvaluateAlertVisibility()
+	if Kiosk.IsEnabled() then
+		return false;
+	end
+
+	if CollectionsJournal and CollectionsJournal:IsShown() then
+		return false;
+	end
+
+	local numMountsNeedingFanfare = C_MountJournal.GetNumMountsNeedingFanfare();
+	local numPetsNeedingFanfare = C_PetJournal.GetNumPetsNeedingFanfare();
+	local alertShown = false;
+	if numMountsNeedingFanfare > self.lastNumMountsNeedingFanfare or numPetsNeedingFanfare > self.lastNumPetsNeedingFanfare then
+		MicroButtonPulse(self);
+		SafeSetCollectionJournalTab(numMountsNeedingFanfare > 0 and 1 or 2);
+	end
+	self.lastNumMountsNeedingFanfare = numMountsNeedingFanfare;
+	self.lastNumPetsNeedingFanfare = numPetsNeedingFanfare;
+	return alertShown;
+end
+
+function CollectionMicroButtonMixin:OnLoad()
+	LoadMicroButtonTextures(self, "Mounts");
+	SetDesaturation(self:GetDisabledTexture(), true);
+	self:RegisterEvent("HEIRLOOMS_UPDATED");
+	self:RegisterEvent("TOYS_UPDATED");
+	self:RegisterEvent("COMPANION_LEARNED");
+	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
+end
+
+function CollectionMicroButtonMixin:OnEvent(event, ...)
+	if CollectionsJournal and CollectionsJournal:IsShown() then
+		return;
+	end
+
+	if ( event == "HEIRLOOMS_UPDATED" ) then
+		local itemID, updateReason = ...;
+		if itemID and updateReason == "NEW" then
+			local tabIndex = 4;
+			CollectionsMicroButton_SetAlert(tabIndex);
+		end
+	elseif ( event == "TOYS_UPDATED" ) then
+		local itemID, new = ...;
+		if itemID and new then
+			local tabIndex = 3;
+			CollectionsMicroButton_SetAlert(tabIndex);
+		end
+	elseif ( event == "COMPANION_LEARNED" or event == "PLAYER_ENTERING_WORLD" or event == "PET_JOURNAL_LIST_UPDATE" ) then
+		self:EvaluateAlertVisibility();
+	elseif ( event == "UPDATE_BINDINGS" ) then
+		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
+	end
+end
+
+function CollectionsMicroButton_SetAlert(tabIndex)
+	CollectionsMicroButton_SetAlertShown(true);
+	SafeSetCollectionJournalTab(tabIndex);
+end
+
+function CollectionsMicroButton_SetAlertShown(shown)
+	if shown then
+		MicroButtonPulse(CollectionsMicroButton);
+	else
+		MicroButtonPulseStop(CollectionsMicroButton);
+	end
+end
+
+function CollectionMicroButtonMixin:OnClick(button, down)
+	if ( not KeybindFrames_InQuickKeybindMode() ) then
+		ToggleCollectionsJournal();
+	end
+end
+
+function LFGMicroButton_OnLoad(self)
+	LoadMicroButtonTextures(self, "LFG");
+	self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
+	self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
+	self.minLevel = SHOW_LFD_LEVEL;
 end

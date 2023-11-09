@@ -55,6 +55,19 @@ local FrameAPITabardModelBase =
 			},
 		},
 		{
+			Name = "IsGuildTabard",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isGuildTabard", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Save",
 			Type = "Function",
 

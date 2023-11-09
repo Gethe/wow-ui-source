@@ -29,6 +29,19 @@ local ContentTrackingTypes =
 			},
 		},
 		{
+			Name = "ContentTrackingStopType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Invalidated", Type = "ContentTrackingStopType", EnumValue = 0 },
+				{ Name = "Collected", Type = "ContentTrackingStopType", EnumValue = 1 },
+				{ Name = "Manual", Type = "ContentTrackingStopType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ContentTrackingTargetType",
 			Type = "Enumeration",
 			NumValues = 5,

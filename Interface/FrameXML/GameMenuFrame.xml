@@ -71,9 +71,6 @@
 					<Anchor point="TOP" relativeTo="GameMenuButtonStore" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
-					<OnShow>
-						self:SetEnabled(not Kiosk.IsEnabled());
-					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						SettingsPanel:Open();
@@ -98,7 +95,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						if ( GetNumAddOns() == 0 ) then
+						if ( C_AddOns.GetNumAddOns() == 0 ) then
 							GameMenuButtonAddons:Hide();
 						else
 							GameMenuButtonAddons:Show();
@@ -120,7 +117,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						if ( GetNumAddOns() == 0 ) then
+						if ( C_AddOns.GetNumAddOns() == 0 ) then
 							self:SetParent(GameMenuButtonMacros);
 							self:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -1);
 							GameMenuFrame:SetHeight(270);
@@ -139,7 +136,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						if ( GetNumAddOns() == 0 ) then
+						if ( C_AddOns.GetNumAddOns() == 0 ) then
 							self:SetParent(GameMenuButtonMacros);
 							self:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -16);
 							GameMenuFrame:SetHeight(270);

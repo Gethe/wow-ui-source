@@ -28,6 +28,7 @@ GlueCheck.lua
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\PixelUtilSecure.lua
 ..\SharedXML\AnchorUtil.lua
+..\SharedXML\VectorLib.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
@@ -73,6 +74,7 @@ GlueFontStyles.xml
 ..\..\Interface_Vanilla\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Backdrop.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SharedTooltipTemplates.xml
@@ -91,9 +93,8 @@ GlueContextMenu.xml
 
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
+..\SharedXML\ModelSceneControlFrame.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
@@ -101,6 +102,7 @@ GlueContextMenu.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\GameTooltipTemplate.xml
 ..\SharedXML\FrameStack.lua
+..\SharedXML\DebugBarManager.lua
 
 ##New stuff!!!
 GlueAddons.lua
@@ -150,6 +152,7 @@ GlueMenuFrame.xml
 SocialContract.xml
 HardcorePopUp.xml
 ..\SharedXML\SharedUtils.lua
+..\SharedXML\ToolWindowOwnerMixin.lua
 
 ## Should only load internally
 DesignerMenu.xml

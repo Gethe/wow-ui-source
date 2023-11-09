@@ -201,6 +201,10 @@ function GameTooltip_AddNormalLine(tooltip, text, wrap, leftOffset)
 	GameTooltip_AddColoredLine(tooltip, text, NORMAL_FONT_COLOR, wrap, leftOffset);
 end
 
+function GameTooltip_AddBodyLine(...)
+	GameTooltip_AddNormalLine(...);
+end
+
 function GameTooltip_AddHighlightLine(tooltip, text, wrap, leftOffset)
 	GameTooltip_AddColoredLine(tooltip, text, HIGHLIGHT_FONT_COLOR, wrap, leftOffset);
 end

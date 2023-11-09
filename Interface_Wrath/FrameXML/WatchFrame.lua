@@ -188,7 +188,7 @@ local function WatchFrame_ResetQuestLines ()
 end
 
 local function WatchFrame_ReleaseUnusedQuestLines ()
-	local line
+	local line;
 	for i = questLineIndex, #WATCHFRAME_QUESTLINES do
 		line = WATCHFRAME_QUESTLINES[i];
 		WatchFrame.linePool:Release(line);
@@ -204,9 +204,16 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:RegisterEvent("QUEST_ACCEPTED");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.linePool = CreateFramePool("FRAME", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonPool = CreateFramePool("BUTTON", WatchFrameLines, "WatchFrameLinkButtonTemplate");
+
+	local onCreateFunc = nil;
+	local useHighlightManager = false;
+	QuestPOI_Initialize(WatchFrameLines, onCreateFunc, useHighlightManager);
+
 	watchFrameTestLine = self.linePool:Acquire();
 	local titleWidth = WatchFrameTitle:GetWidth();
 	WATCHFRAME_COLLAPSEDWIDTH = WatchFrameTitle:GetWidth() + 70;
@@ -228,10 +235,23 @@ function WatchFrame_OnEvent (self, event, ...)
 			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
 		end
 	elseif ( event == "QUEST_LOG_UPDATE" and not self.updating ) then -- May as well check here too and save some time
+		if ( WatchFrame.showObjectives ) then
+			WatchFrame_GetCurrentMapQuests();
+		end	
 		WatchFrame_Update(self);
 		if ( self.collapsed ) then
 			UIFrameFlash(WatchFrameTitleButtonHighlight, .5, .5, 5, false);
 		end
+	elseif ( event == "QUEST_POI_UPDATE" ) then
+		if ( WatchFrame.showObjectives ) then
+			WatchFrame_GetCurrentMapQuests();
+		end		
+		WatchFrame_Update(self);
+	elseif ( event == "QUEST_ACCEPTED" ) then
+		if ( WatchFrame.showObjectives ) then
+			WatchFrame_GetCurrentMapQuests();
+		end		
+		WatchFrame_Update(self);
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		local achievementID, criteriaID, elapsed, duration = ...;
 
@@ -281,8 +301,7 @@ function WatchFrame_OnUpdate(self, elapsed)
 end
 
 function WatchFrame_OnSizeChanged(self)
-	WatchFrame_ClearDisplay();
-	WatchFrame_Update(self)
+	WatchFrame_Update(self);
 end
 
 function WatchFrame_Collapse (self)
@@ -334,6 +353,7 @@ function WatchFrame_ClearDisplay ()
 	for _, questLine in pairs(WATCHFRAME_QUESTLINES) do
 		questLine:Reset();
 	end
+	QuestPOI_HideAllButtons(WatchFrameLines);
 end
 
 function WatchFrame_Update (self)
@@ -358,6 +378,7 @@ function WatchFrame_Update (self)
 	local totalObjectives = 0;
 
 	WatchFrame_ResetLinkButtons();
+	QuestPOI_ResetUsage(WatchFrameLines);
 
 	for i = 1, #WATCHFRAME_OBJECTIVEHANDLERS do
 		pixelsUsed, maxLineWidth, numObjectives = WATCHFRAME_OBJECTIVEHANDLERS[i](lineFrame, totalOffset, maxHeight, maxFrameWidth);
@@ -765,13 +786,20 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 
 	local playerMoney = GetMoney();
 	local selectedQuestId;
+	if ( WorldMapFrame and WorldMapFrame:IsShown() ) then
+		selectedQuestId = QuestMapFrame_GetFocusedQuestID();
+	end
+	-- Set our current zone
+	local currentZone = C_Map.GetBestMapForUnit("player");
 	-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
 	-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
 	-- open to a different zone.
 	table.wipe(LOCAL_MAP_QUESTS);
-	-- Set our current zone
-	local currentZone = C_Map.GetBestMapForUnit("player");
-
+	LOCAL_MAP_QUESTS["zone"] = currentZone;
+	for id in pairs(CURRENT_MAP_QUESTS) do
+		LOCAL_MAP_QUESTS[id] = true;
+	end	
+	
 	table.wipe(VISIBLE_WATCHES);
 	WatchFrame_ResetQuestLines();
 
@@ -791,7 +819,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 			local filterOK = true;
 			if ( isComplete and bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) ~= WATCHFRAME_FILTER_COMPLETED_QUESTS ) then
 				filterOK = false;
-			elseif ( bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_REMOTE_ZONES) ~= WATCHFRAME_FILTER_REMOTE_ZONES and currentZone ~= GetQuestUiMapID(questID)) then
+			elseif ( bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_REMOTE_ZONES) ~= WATCHFRAME_FILTER_REMOTE_ZONES and currentZone ~= GetQuestUiMapID(questID) and not LOCAL_MAP_QUESTS[questID]) then
 				filterOK = false;
 			end
 
@@ -890,6 +918,23 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 				linkButton.startLine = questLineIndex - numLines;
 				linkButton.lastLine = questLineIndex - 1;
 				linkButton:Show();
+				-- quest POI icon
+				if ( WatchFrame.showObjectives ) then
+					local poiButton;
+					if ( LOCAL_MAP_QUESTS[questID] ) then
+						if ( isComplete ) then
+							poiButton = QuestPOI_GetButton(WatchFrameLines, questID, "completed", nil);
+						else
+							numPOINumeric = numPOINumeric + 1;
+							poiButton = QuestPOI_GetButton(WatchFrameLines, questID, "numeric", numPOINumeric);
+						end
+					elseif ( isComplete ) then
+						poiButton = QuestPOI_GetButton(WatchFrameLines, questID, "completed", nil);
+					end
+					if ( poiButton ) then
+						poiButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
+					end				
+				end
 
 				if ( lastBottom ) then
 					heightUsed = topEdge - lastLine:GetBottom();
@@ -905,6 +950,12 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, initialOffset, maxHeight, f
 	end
 
 	WatchFrame_ReleaseUnusedQuestLines();
+
+	QuestPOI_HideUnusedButtons(WatchFrameLines);
+
+	if ( selectedQuestId ) then
+		QuestPOI_SelectButtonByQuestID(WatchFrameLines, selectedQuestId);	
+	end
 
 	return heightUsed, maxWidth, numQuestWatches;
 end
@@ -978,13 +1029,12 @@ end
 function WatchFrame_StopTrackingQuest (button, arg1, arg2, checked)
 	RemoveQuestWatch(GetQuestIndexForWatch(arg1));
 	WatchFrame_Update();
-	QuestLog_Update();
 end
 
 function WatchFrame_OpenMapToQuest (button, arg1)
 	local index = GetQuestIndexForWatch(arg1);
-	local questID = select(9, GetQuestLogTitle(index));
-	WorldMap_OpenToQuest(questID);
+	local questID = select(8, GetQuestLogTitle(index));
+	QuestMapFrame_OpenToQuestDetails(questID);
 end
 
 function WatchFrame_OpenAchievementFrame (button, arg1, arg2, checked)
@@ -1266,8 +1316,29 @@ function WatchFrameLinkButtonTemplate_Highlight(self, onEnter)
 			end
 		end
 	end
-	local questIndex = GetQuestIndexForWatch(self.index);
-	EventRegistry:TriggerEvent("WatchFrame.MouseOver", self, questIndex);
+	if(self.index) then
+		local questIndex = GetQuestIndexForWatch(self.index);
+		EventRegistry:TriggerEvent("WatchFrame.MouseOver", self, questIndex);
+	end
+end
+
+function WatchFrame_GetCurrentMapQuests()
+	local numQuests = QuestMapUpdateAllQuests();
+	table.wipe(CURRENT_MAP_QUESTS);	
+	for i = 1, numQuests do
+		local questId = QuestPOIGetQuestIDByVisibleIndex(i);
+		CURRENT_MAP_QUESTS[questId] = i;
+	end
+end
+
+function WatchFrameQuestPOI_OnClick(self, button)
+	QuestPOI_SelectButtonByQuestId(WatchFrameLines, self.questId);
+	if ( WorldMapFrame:IsShown() ) then
+		WorldMapFrame_SelectQuestById(self.questId);
+		QuestPOI_SelectButtonByQuestID(WorldMapFrame, questID)
+	end
+	--SetSuperTrackedQuestID(self.questId);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function WatchFrame_SetWidth(width)

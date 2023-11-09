@@ -176,6 +176,7 @@ function ChannelRosterButtonMixin:OnClick(button)
 		dropdown.channelName = channel:GetChannelName();
 		dropdown.category = channel:GetCategory();
 		dropdown.channelType = channel:GetChannelType();
+		dropdown.playerLocation = playerLocation;
 		dropdown.guid = guid;
 		dropdown.isSelf = self:IsLocalPlayer();
 		dropdown.voiceChannel = channel:GetVoiceChannel();

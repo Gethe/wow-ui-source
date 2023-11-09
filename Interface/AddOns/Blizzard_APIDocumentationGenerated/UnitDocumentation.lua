@@ -482,6 +482,15 @@ local Unit =
 			LiteralName = "PLAYER_SOFT_TARGET_INTERACTION",
 		},
 		{
+			Name = "PlayerSpecializationChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_SPECIALIZATION_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerStartedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_LOOKING",

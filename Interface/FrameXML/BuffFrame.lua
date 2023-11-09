@@ -289,7 +289,7 @@ end
 function AuraButton_UpdateDuration(auraButton, timeLeft)
 	local duration = auraButton.duration;
 	if ( SHOW_BUFF_DURATIONS == "1" and timeLeft ) then
-		duration:SetFormattedText(SecondsToTimeAbbrev(timeLeft));
+		duration:SetFormattedText(SecondsToTimeAbbrev(timeLeft, 1.0));
 		if ( timeLeft < BUFF_DURATION_WARNING_TIME ) then
 			duration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 		else

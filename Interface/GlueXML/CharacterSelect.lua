@@ -486,8 +486,8 @@ function CharacterSelect_OnShow(self)
     C_StoreGlue.UpdateVASPurchaseStates();
 
     if (not STORE_IS_LOADED) then
-        STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-        LoadAddOn("Blizzard_AuthChallengeUI");
+        STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+        C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
     end
 
     CharacterSelect_ConditionallyLoadAccountSaveUI();
@@ -1972,8 +1972,8 @@ end
 
 function ToggleStoreUI()
 	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
 	end
 
     if (STORE_IS_LOADED) then
@@ -1988,8 +1988,8 @@ end
 
 function SetStoreUIShown(shown)
 	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
-		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
+		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
 	end
 
 	if (STORE_IS_LOADED) then
@@ -2159,7 +2159,7 @@ end
 function CharacterSelect_ConditionallyLoadAccountSaveUI()
     if (C_AccountServices.IsAccountSaveEnabled()) then
         if (not ACCOUNT_SAVE_IS_LOADED) then
-            ACCOUNT_SAVE_IS_LOADED = LoadAddOn("Blizzard_AccountSaveUI");
+            ACCOUNT_SAVE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_AccountSaveUI");
         end
         if (AccountSaveFrame) then
             AccountSaveFrame:Show();
@@ -2406,6 +2406,8 @@ local function GetVASDistributions()
 					usable = DoesClientThinkTheCharacterIsEligibleForPFC(charID);
 				elseif vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 					usable = DoesClientThinkTheCharacterIsEligibleForPRC(charID);
+				elseif vasType == Enum.ValueAddedServiceType.PaidNameChange then
+					usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
 				end
 				if usable then
 					break;
@@ -2635,6 +2637,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginFlow(PaidFactionChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		BeginFlow(PaidRaceChangeFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.PaidNameChange and PaidNameChangeFlow then
+		BeginFlow(PaidNameChangeFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end

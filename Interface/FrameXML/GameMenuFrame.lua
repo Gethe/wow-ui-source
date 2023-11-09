@@ -20,10 +20,10 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -16);
 	end
 
-	if ( not GameMenuButtonRatings:IsShown() and GetNumAddOns() == 0 ) then
+	if ( not GameMenuButtonRatings:IsShown() and C_AddOns.GetNumAddOns() == 0 ) then
 		GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -16);
 	else
-		if ( GetNumAddOns() ~= 0 ) then
+		if ( C_AddOns.GetNumAddOns() ~= 0 ) then
 			height = height + 20;
 			GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -16);
 		end

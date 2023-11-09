@@ -5,7 +5,7 @@ do
 	frameStackLoader:SetScript("OnEvent", function(self, event, ...)
 		if (event == "TOGGLE_FRAMESTACK") then
 			if (IsOnGlueScreen()) then
-				LoadAddOn("Blizzard_DebugTools");
+				C_AddOns.LoadAddOn("Blizzard_DebugTools");
 			else
 				UIParentLoadAddOn("Blizzard_DebugTools");
 			end

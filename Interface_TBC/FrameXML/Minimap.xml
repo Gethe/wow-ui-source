@@ -543,7 +543,7 @@
 										if ( button == "RightButton" ) then
 											ToggleDropDownMenu(1, nil, MiniMapLFGDropDown, "MiniMapLFGFrame", 10, -5);
 										else
-											ToggleLFGParentFrame();
+											PVEFrame_ToggleFrame();
 										end
 									</OnClick>
 									<OnEvent>

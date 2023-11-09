@@ -38,7 +38,12 @@ local InteractionManagerFrameInfo = {
 	{
 		frame = "GuildRegistrarFrame"
 	}, 
-	[Enum.PlayerInteractionType.TabardVendor] = 
+	[Enum.PlayerInteractionType.GuildTabardVendor] = 
+	{ 
+		frame = "TabardFrame", 
+		showFunc = TabardFrame_Open 
+	},
+	[Enum.PlayerInteractionType.PersonalTabardVendor] = 
 	{ 
 		frame = "TabardFrame", 
 		showFunc = TabardFrame_Open 
@@ -124,7 +129,7 @@ local InteractionManagerFrameInfo = {
 	},
 	[Enum.PlayerInteractionType.Soulbind] = {
 		frame = "SoulbindViewer",
-		loadFunc = function() LoadAddOn("Blizzard_Soulbinds"); end; 
+		loadFunc = function() C_AddOns.LoadAddOn("Blizzard_Soulbinds"); end; 
 		showFunc = function() SoulbindViewer:Open(); end; 
 	},
 	[Enum.PlayerInteractionType.CovenantSanctum] = {

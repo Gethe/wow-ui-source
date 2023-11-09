@@ -47,9 +47,6 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
-		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
 	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -134,6 +131,15 @@
 		<Color r="0" g="0" b="0"/>
 	</Font>
 	<Font name="QuestTitleFontBlackShadow" inherits="QuestFont_Shadow_Huge" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1" g=".82" b="0"/>
+	</Font>
+	<Font name="QuestTitleFontBlackShadowSmaller" inherits="QuestFont_Shadow_Larger" virtual="true">
 		<Shadow>
 			<Offset>
 				<AbsDimension x="1" y="-1"/>
@@ -302,7 +308,7 @@
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow x="1" y="-1"/>
 	</Font>
-	
+
 	<Font name="CommentatorVictoryFanfare" inherits="Game120Font" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow>
@@ -312,7 +318,7 @@
 			</Offset>
 		</Shadow>
 	</Font>
-	
+
 	<Font name="CommentatorVictoryFanfareTeam" inherits="Game72Font" virtual="true">
 		<Color r="1" g="1" b="1" a="1"/>
 		<Shadow>

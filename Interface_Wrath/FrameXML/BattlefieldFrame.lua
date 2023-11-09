@@ -80,7 +80,7 @@ function BattlefieldTimerFrame_OnUpdate(self, elapsed)
 
 	BATTLEFIELD_SHUTDOWN_TIMER = BATTLEFIELD_SHUTDOWN_TIMER - elapsed;
 	-- Set the time for the score frame
-	WorldStateScoreFrameTimer:SetFormattedText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER));
+	WorldStateScoreFrameTimer:SetFormattedText(SecondsToTimeAbbrev(BATTLEFIELD_SHUTDOWN_TIMER, 1.0));
 	-- Check if I should send a message only once every 3 seconds (BATTLEFIELD_TIMER_DELAY)
 	BattlefieldFrame.timerDelay = BattlefieldFrame.timerDelay + elapsed;
 	if ( BattlefieldFrame.timerDelay < BATTLEFIELD_TIMER_DELAY ) then

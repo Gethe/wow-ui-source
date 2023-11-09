@@ -631,14 +631,12 @@ function MiniMapLFGDropDown_OnLoad(self)
 end
 
 function MiniMapLFGDropDown_Initialize()
-	if (IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
-		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = LFG_LIST_UNLIST;
-			info.func = wrapFunc(C_LFGList.RemoveListing);
-			info.disabled = not C_LFGList.HasActiveEntryInfo();
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-		end
+	if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = LFG_LIST_UNLIST;
+		info.func = wrapFunc(C_LFGList.RemoveListing);
+		info.disabled = not C_LFGList.HasActiveEntryInfo();
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
 	end
 end

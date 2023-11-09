@@ -555,8 +555,8 @@ function TargetFrame_UpdateAuras (self)
 					end
 
 					-- Handle cooldowns
-					--frameCooldown = _G[frameName.."Cooldown"];
-					--CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
+					frameCooldown = _G[frameName.."Cooldown"];
+					CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
 					-- set debuff type color
 					if ( debuffType ) then
@@ -1020,10 +1020,10 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 end
 
 function Target_Spellbar_OnEvent(self, event, ...)
-	--[[local arg1 = ...
-
+	local arg1 = ...
+	
 	--	Check for target specific events
-	if ( (event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "SHOW_TARGET_CASTBAR")) ) then
+	if ( (event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "showTargetCastbar")) ) then
 		if ( GetCVar("showTargetCastbar") == "0") then
 			self.showCastbar = false;
 		else
@@ -1057,7 +1057,7 @@ function Target_Spellbar_OnEvent(self, event, ...)
 		-- The position depends on the classification of the target
 		Target_Spellbar_AdjustPosition(self);
 	end
-	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));]]
+	CastingBarFrame_OnEvent(self, event, arg1, select(2, ...));
 end
 
 function Target_Spellbar_AdjustPosition(self)

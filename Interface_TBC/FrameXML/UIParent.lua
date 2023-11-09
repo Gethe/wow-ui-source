@@ -87,7 +87,6 @@ UIPanelWindows["AuctionFrame"] =				{ area = "doublewide",		pushable = 0,		xoffs
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	showFailedFunc = CloseTaxiMap };
 UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["ArenaFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
-UIPanelWindows["LFGParentFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 
 -- Frames NOT using the new Templates
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -289,6 +288,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ALERT_REGIONAL_CHAT_DISABLED");
 	self:RegisterEvent("BARBER_SHOP_OPEN");
 	self:RegisterEvent("BARBER_SHOP_CLOSE");
+	self:RegisterEvent("LFG_ENABLED_STATE_CHANGED");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -357,6 +357,9 @@ function UIParent_OnLoad(self)
 
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
+	
+    -- Event(s) for Notched displays
+    self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");	
 end
 
 function UIParent_OnShow(self)
@@ -391,7 +394,7 @@ end
 local FailedAddOnLoad = {};
 
 function UIParentLoadAddOn(name)
-	local loaded, reason = LoadAddOn(name);
+	local loaded, reason = C_AddOns.LoadAddOn(name);
 	if ( not loaded ) then
 		if ( not FailedAddOnLoad[name] ) then
 			message(format(ADDON_LOAD_FAILED, name, _G["ADDON_"..reason]));
@@ -478,7 +481,7 @@ function TokenFrame_LoadUI()
 end
 
 function GMChatFrame_LoadUI(...)
-	if ( IsAddOnLoaded("Blizzard_GMChatUI") ) then
+	if ( C_AddOns.IsAddOnLoaded("Blizzard_GMChatUI") ) then
 		return;
 	else
 		UIParentLoadAddOn("Blizzard_GMChatUI");
@@ -952,10 +955,12 @@ function UIParent_OnEvent(self, event, ...)
 
 		self.battlefieldBannerShown = nil;
 
-		SetLookingForGroupUIAvailable(C_LFGList.IsLookingForGroupEnabled());
+		SetLookingForGroupUIAvailable(C_LFGInfo.IsGroupFinderEnabled());
 
+		UpdateUIParentPosition();
+		
 		if Kiosk.IsEnabled() then
-			LoadAddOn("Blizzard_Kiosk");
+			C_AddOns.LoadAddOn("Blizzard_Kiosk");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);
@@ -1525,7 +1530,7 @@ function UIParent_OnEvent(self, event, ...)
 		ToggleOrderHallTalentUI();
 	elseif ( event == "BEHAVIORAL_NOTIFICATION") then
 		self:UnregisterEvent("BEHAVIORAL_NOTIFICATION");
-		LoadAddOn("Blizzard_BehavioralMessaging");
+		C_AddOns.LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
@@ -1621,6 +1626,10 @@ function UIParent_OnEvent(self, event, ...)
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
 		end
+    elseif (event == "NOTCHED_DISPLAY_MODE_CHANGED") then
+        UpdateUIParentPosition();		
+	elseif (event == "LFG_ENABLED_STATE_CHANGED") then
+		SetLookingForGroupUIAvailable(C_LFGInfo.IsGroupFinderEnabled());
 	end
 end
 
@@ -4116,7 +4125,7 @@ function RaidBrowser_IsEmpowered()
 end
 
 function GetLFGMode(category, lfgID)
-	--[[if ( category ~= LE_LFG_CATEGORY_RF ) then
+	if ( category ~= LE_LFG_CATEGORY_RF ) then
 		lfgID = nil; --HACK - RF works differently from everything else. You can queue for multiple RF slots with different ride tickets.
 	end
 
@@ -4157,7 +4166,7 @@ function GetLFGMode(category, lfgID)
 		return "lfgparty", "noteleport";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "abandonedInDungeon";
-	end]]
+	end
 end
 
 function IsLFGModeActive(category)
@@ -4641,18 +4650,40 @@ function DisplayInterfaceActionBlockedMessage()
 end
 -- Set the overall UI state to show or not show the LFG UI.
 function SetLookingForGroupUIAvailable(available)
-	local success = false;
 	if (available) then
-		success = UIParentLoadAddOn("Blizzard_LookingForGroupUI");
-	end
-
-	if (success) then
-		WorldMapMicroButton:Hide()
+		WorldMapMicroButton:Hide();
 		LFGMicroButton:Show();
 		MiniMapWorldMapButton:Show();
 	else
-		WorldMapMicroButton:Show()
+		WorldMapMicroButton:Show();
 		LFGMicroButton:Hide();
 		MiniMapWorldMapButton:Hide();
 	end
+end
+
+function GetNotchHeight()
+    local notchHeight = 0;
+
+    if (C_UI.ShouldUIParentAvoidNotch()) then
+        notchHeight = select(4, C_UI.GetTopLeftNotchSafeRegion());
+        if (notchHeight) then
+            local _, physicalHeight = GetPhysicalScreenSize();
+            local normalizedHeight = notchHeight / physicalHeight;
+            local _, uiParentHeight = UIParent:GetSize();
+            notchHeight = normalizedHeight * uiParentHeight;
+        end
+    end
+
+	return notchHeight;
+end
+
+function GetUIParentOffset()
+    local notchHeight = GetNotchHeight();
+	local debugBarsHeight = DebugBarManager:GetTotalHeight();
+	return math.max(debugBarsHeight, notchHeight);
+end
+
+function UpdateUIParentPosition()
+	local topOffset = GetUIParentOffset();
+	UIParent:SetPoint("TOPLEFT", 0, -topOffset);
 end

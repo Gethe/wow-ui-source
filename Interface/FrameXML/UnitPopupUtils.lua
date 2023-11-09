@@ -66,7 +66,7 @@ function UnitPopupSharedUtil:GetFullPlayerName()
 end		
 
 function UnitPopupSharedUtil:HasLFGRestrictions()
-	return false; 
+	return HasLFGRestrictions();
 end	
 
 function UnitPopupSharedUtil:TryInvite(inviteType, fullname)

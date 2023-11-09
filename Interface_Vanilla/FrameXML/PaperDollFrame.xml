@@ -932,6 +932,31 @@
 						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 						<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 					</Button>
+					<CheckButton name="RuneFrameControlButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterHandsSlot" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="RuneFrameControlButton_OnLoad"/>
+							<OnClick function="RuneFrameControlButton_OnClick"/>
+							<OnEnter>
+								GameTooltip:SetOwner(self,"ANCHOR_RIGHT");
+								GameTooltip:SetText(RUNES,1.0,1.0,1.0);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file="Interface\Icons\INV_Misc_Rune_06"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+						<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>
@@ -939,6 +964,7 @@
 			<OnLoad function="PaperDollFrame_OnLoad"/>
 			<OnEvent function="PaperDollFrame_OnEvent"/>
 			<OnShow function="PaperDollFrame_OnShow"/>
+			<OnHide function="PaperDollFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

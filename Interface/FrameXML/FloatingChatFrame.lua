@@ -1768,7 +1768,12 @@ function FCF_ResetChatWindows()
 	DEFAULT_CHAT_FRAME.chatframe = DEFAULT_CHAT_FRAME;
 
 	FCF_ResetChatWindow(ChatFrame2, COMBAT_LOG);
-	FCF_ResetChatWindow(ChatFrame3, VOICE);
+
+	local showingVoiceTab = (GetCVarBool("speechToText") and C_VoiceChat.IsTranscribing()) or C_VoiceChat.IsSpeakForMeActive();
+
+	if(showingVoiceTab) then
+		FCF_ResetChatWindow(ChatFrame3, VOICE);
+	end
 
 
 	for _, chatFrameName in ipairs(CHAT_FRAMES) do
@@ -1790,7 +1795,10 @@ function FCF_ResetChatWindows()
 	ChatFrame1.init = 0;
 	FCF_DockFrame(ChatFrame1, 1, true);
 	FCF_DockFrame(ChatFrame2, 2);
-	FCF_DockFrame(ChatFrame3, 3);
+
+	if(showingVoiceTab) then
+		FCF_DockFrame(ChatFrame3, 3);
+	end
 
 	-- resets to hard coded defaults
 	ResetChatWindows();
@@ -1799,7 +1807,7 @@ function FCF_ResetChatWindows()
 end
 
 function IsCombatLog(frame)
-	if ( frame == ChatFrame2 and IsAddOnLoaded("Blizzard_CombatLog") ) then
+	if ( frame == ChatFrame2 and C_AddOns.IsAddOnLoaded("Blizzard_CombatLog") ) then
 		return true;
 	else
 		return false;

@@ -61,6 +61,10 @@ GridLayoutMixin.Direction = {
 	BottomRightToTopLeft = { x = -1, y = 1 },
 	TopLeftToBottomRightVertical = { x = 1, y = -1, isVertical = true },
 	TopRightToBottomLeftVertical = { x = -1, y = -1, isVertical = true },
+	LeftToRight = { x = 1, y = 0 },
+	RightToLeft = { x = -1, y = 0 },
+	TopToBottom = { x = 0, y = 1, isVertical = true },
+	BottomToTop = { x = 0, y = -1, isVertical = true },
 };
 
 function GridLayoutMixin:Init(direction, stride, paddingX, paddingY, horizontalSpacing, verticalSpacing)
@@ -89,7 +93,6 @@ AnchorUtil = {};
 
 AnchorUtil.CreateAnchor = GenerateClosure(CreateAndInitFromMixin, AnchorMixin);
 AnchorUtil.CreateGridLayout = GenerateClosure(CreateAndInitFromMixin, GridLayoutMixin);
-
 
 function AnchorUtil.CreateAnchorFromPoint(region, pointIndex)
 	local anchor = AnchorUtil.CreateAnchor();
@@ -122,6 +125,36 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 		local extraOffsetX = (col - 1) * (width + paddingX) * direction.x + customOffsetX;
 		local extraOffsetY = (row - 1) * (height + paddingY) * direction.y + customOffsetY;
 		initialAnchor:SetPointWithExtraOffset(frame, clearAllPoints, extraOffsetX, extraOffsetY);
+	end
+end
+
+local function UpdateAnchorForChain(previousFrame, anchor, layout)
+	local point, relativeTo, relativePoint, x, y = anchor:Get();
+	if layout then
+		x = layout.horizontalSpacing or x;
+		y = layout.verticalSpacing or y;
+	end
+
+	local direction = (layout and layout.direction) or GridLayoutMixin.Direction.LeftToRight;
+
+	if direction == GridLayoutMixin.Direction.LeftToRight then
+		point, relativeTo, relativePoint = "LEFT", previousFrame, "RIGHT";
+	elseif direction == GridLayoutMixin.Direction.RightToLeft then
+		point, relativeTo, relativePoint = "RIGHT", previousFrame, "LEFT";
+	elseif direction == GridLayoutMixin.Direction.TopToBottom then
+		point, relativeTo, relativePoint = "TOP", previousFrame, "BOTTOM";
+	elseif direction == GridLayoutMixin.Direction.BottomToTop then
+		point, relativeTo, relativePoint = "BOTTOM", previousFrame, "TOP";
+	end
+
+	anchor:Set(point, relativeTo, relativePoint, x, y);
+end
+
+function AnchorUtil.ChainLayout(frames, initialAnchor, layout)
+	local anchor = CreateAnchor(initialAnchor:Get());
+	for i, frame in ipairs(frames) do
+		anchor:SetPoint(frame);
+		UpdateAnchorForChain(frame, anchor, layout);
 	end
 end
 
@@ -195,6 +228,55 @@ function AnchorUtil.GridLayoutFactory(factoryFunction, initialAnchor, totalWidth
 	local direction = overrideDirection or GridLayoutMixin.Direction.TopLeftToBottomRight;
 
 	AnchorUtil.GridLayout(frames, initialAnchor, AnchorUtil.CreateGridLayout(direction, rowSize, spacingX, spacingY));
+end
+
+local function LongestCommonPrefix(s1, s2)
+	if s1 == s2 then
+		return s1;
+	end
+
+	for i = 1, math.min(#s1, #s2) do
+		if s1:byte(i) ~= s2:byte(i) then
+			return (i > 1) and s1:sub(1, i - 1) or "";
+		end
+	end
+
+	-- If one string is empty and the other isn't, then we won't enter the loop.
+	-- Returning the empty string since there's no common prefix.
+	return "";
+end
+
+function AnchorUtil.GetRelativeToAttributeStrings(target, relativeTo, alwaysReturnAttributesIfPossible)
+	-- Maybe this is just anchored to its parent and we don't need a relativeTo attribute
+	local anchoredToParent = relativeTo and target:GetParent() == relativeTo;
+	if not relativeTo or anchoredToParent then
+		if alwaysReturnAttributesIfPossible then
+			return "relativeKey", "$parent";
+		end
+
+		return;
+	end
+
+	local relativeToName = relativeTo:GetDebugName();
+	local targetName = target:GetDebugName();
+	local useRelativeKey = relativeToName:find(".", 1, true) ~= nil;
+	local delimiter = useRelativeKey and "." or "";
+	local s, e = relativeToName:find(LongestCommonPrefix(targetName, relativeToName));
+
+	-- Found that some substring of targetName was relativeToName.
+	if e ~= nil then
+		local relativeToValue = relativeToName:sub(e + 1);
+		local value = "$parent" .. delimiter .. relativeToValue;
+
+		if useRelativeKey then
+			return "relativeKey", value;
+		else
+			return "relativeTo", value;
+		end
+	end
+
+	-- If there's no match here, then just use the full name of relativeTo
+	return "relativeTo", relativeToName;
 end
 
 -- Mirrors an array of regions along the specified axis. For example, if horizontal, a region

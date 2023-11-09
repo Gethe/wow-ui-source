@@ -196,13 +196,7 @@ local function Register()
 	do
 		local setting = Settings.RegisterCVarSetting(category, "showTutorials", Settings.VarType.Boolean, SHOW_TUTORIALS);
 		local function OnButtonClick(button, buttonName, down)
-			SetCVar("closedInfoFrames", ""); -- reset the help plates too
-			SetCVar("closedInfoFramesAccountWide", "");
-			SetCVar("showNPETutorials", "1");
-			ResetTutorials();
-			TutorialFrame_ClearQueue();
-			NPETutorial_AttemptToBegin();
-			TriggerTutorial(1);
+			InterfaceOverrides.ShowTutorialsOnButtonClick();
 
 			button:Disable();
 
@@ -335,7 +329,7 @@ local function Register()
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
 
 	-- Some 3rd party addons like to disable this addon. Don't initialize the settings for it and display a "disabled" label in its place if it is disabled.
-	if (IsAddOnLoaded("Blizzard_CUFProfiles") ) then
+	if (C_AddOns.IsAddOnLoaded("Blizzard_CUFProfiles") ) then
 		InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	else
 		layout:AddInitializer(CreateSettingsAddOnDisabledLabelInitializer());

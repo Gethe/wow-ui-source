@@ -663,7 +663,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8"/>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -865,7 +865,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1024,7 +1024,7 @@
 						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1216,7 +1216,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1392,7 +1392,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ReversedLightingModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -2062,7 +2062,7 @@
 						<!--
 									WARNING: ScopeModifiers don't work for templates!
 						These functions will fail to load properly if this template is instantiated outside
-						of the initial LoadAddon call becuase we'll have lost the scoped modifiers and the
+						of the initial C_AddOns.LoadAddon call becuase we'll have lost the scoped modifiers and the
 						reference to the addon environment if we instantiate them later.
 				
 						Except for the first category, which is declared in .xml, we have to manually set these

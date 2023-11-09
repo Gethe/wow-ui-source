@@ -17,7 +17,7 @@ local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
 if ( InGlue() ) then
 	AddonDialogTypes = { };
 	HasShownAddonOutOfDateDialog = false;
-	
+
 	AddonDialogTypes["ADDONS_OUT_OF_DATE"] = {
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
@@ -35,7 +35,7 @@ if ( InGlue() ) then
 		button1 = OKAY,
 		button2 = CANCEL,
 		OnAccept = function()
-			SetAddonVersionCheck(false);
+			C_AddOns.SetAddonVersionCheck(false);
 		end,
 		OnCancel = function()
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
@@ -123,9 +123,9 @@ if ( InGlue() ) then
 	UIDropDownMenu_SetSelectedValue = GlueDropDownMenu_SetSelectedValue
 
 	function UpdateAddonButton(checkVersion)
-		if ( GetNumAddOns() > 0 ) then
+		if ( C_AddOns.GetNumAddOns() > 0 ) then
 			-- Check to see if any of them are out of date and not disabled
-			if ( checkVersion and IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
+			if ( checkVersion and C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
 				AddonDialog_Show("ADDONS_OUT_OF_DATE");
 				HasShownAddonOutOfDateDialog = true;
 			end
@@ -143,17 +143,26 @@ else
 	AddonTooltip = GameTooltip
 end
 
+local function GetAddonCharacterDropdownSelectedValue()
+	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
+	if character == true then
+		return nil;
+	end
+
+	return character;
+end
+
 function AddonList_HasAnyChanged()
-	if (AddonList.outOfDate and not IsAddonVersionCheckEnabled() or (not AddonList.outOfDate and IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate())) then
+	if (AddonList.outOfDate and not C_AddOns.IsAddonVersionCheckEnabled() or (not AddonList.outOfDate and C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate())) then
 		return true;
 	end
-	for i=1,GetNumAddOns() do
+	for i = 1, C_AddOns.GetNumAddOns() do
 		local character = nil;
 		if (not InGlue()) then
 			character = UnitName("player");
 		end
-		local enabled = (GetAddOnEnableState(character, i) > 0);
-		local reason = select(5,GetAddOnInfo(i))
+		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
+		local reason = select(5, C_AddOns.GetAddOnInfo(i))
 		if ( enabled ~= AddonList.startStatus[i] and reason ~= "DEP_DISABLED" ) then
 			return true
 		end
@@ -163,8 +172,8 @@ end
 
 function AddonList_HasNewVersion()
 	local hasNewVersion = false;
-	for i=1, GetNumAddOns() do
-		local name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo(i);
+	for i = 1, C_AddOns.GetNumAddOns() do
+		local name, title, notes, loadable, reason, security, newVersion = C_AddOns.GetAddOnInfo(i);
 		if ( newVersion ) then
 			hasNewVersion = true;
 			break;
@@ -215,11 +224,12 @@ function AddonList_OnLoad(self)
 		template = "UIDropDownMenuTemplate"
 		self.startStatus = {};
 		self.shouldReload = false;
-		self.outOfDate = IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
+		self.outOfDate = C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
 		self.outOfDateIndexes = {};
-		for i=1,GetNumAddOns() do
-			self.startStatus[i] = (GetAddOnEnableState(UnitName("player"), i) > 0);
-			if (select(5, GetAddOnInfo(i)) == "INTERFACE_VERSION") then
+		local playerName = UnitName("player");
+		for i = 1, C_AddOns.GetNumAddOns() do
+			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, playerName) > 0);
+			if (select(5, C_AddOns.GetAddOnInfo(i)) == "INTERFACE_VERSION") then
 				tinsert(self.outOfDateIndexes, i);
 			end
 		end
@@ -279,7 +289,7 @@ local function TriStateCheckbox_SetState(checked, checkButton)
 end
 
 function AddonList_Update()
-	local numEntrys = GetNumAddOns();
+	local numEntrys = C_AddOns.GetNumAddOns();
 	local name, title, notes, enabled, loadable, reason, security;
 	local addonIndex;
 	local entry, checkbox, string, status, urlButton, securityIcon, versionButton;
@@ -290,18 +300,15 @@ function AddonList_Update()
 		if ( addonIndex > numEntrys ) then
 			entry:Hide();
 		else
-			name, title, notes, loadable, reason, security = GetAddOnInfo(addonIndex);
+			name, title, notes, loadable, reason, security = C_AddOns.GetAddOnInfo(addonIndex);
 
 			-- Get the character from the current list (nil is all characters)
-			local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-			if ( character == true ) then
-				character = nil;
-			end
+			local character = GetAddonCharacterDropdownSelectedValue();
 
 			checkbox = _G["AddonListEntry"..i.."Enabled"];
-			local checkboxState = GetAddOnEnableState(character, addonIndex);
+			local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
 			if ( not InGlue() ) then
-				enabled = (GetAddOnEnableState(UnitName("player"), addonIndex) > 0);
+				enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > 0);
 			else
 				enabled = (checkboxState > 0);
 			end
@@ -343,8 +350,8 @@ function AddonList_Update()
 			end
 
 			if ( not InGlue() ) then
-				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" or 
-					(reason ~= "INTERFACE_VERSION" and tContains(AddonList.outOfDateIndexes, addonIndex)) or 
+				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" or
+					(reason ~= "INTERFACE_VERSION" and tContains(AddonList.outOfDateIndexes, addonIndex)) or
 					(reason == "INTERFACE_VERSION" and not tContains(AddonList.outOfDateIndexes, addonIndex))) then
 					if ( enabled ) then
 						-- special case for loadable on demand addons
@@ -394,12 +401,12 @@ end
 
 function AddonList_IsAddOnLoadOnDemand(index)
 	local lod = false
-	if ( IsAddOnLoadOnDemand(index) ) then
-		local deps = GetAddOnDependencies(index)
+	if ( C_AddOns.IsAddOnLoadOnDemand(index) ) then
+		local deps = C_AddOns.GetAddOnDependencies(index)
 		local okay = true;
 		for i = 1, select('#', deps) do
 			local dep = select(i, deps)
-			if ( dep and not IsAddOnLoaded(select(i, deps)) ) then
+			if ( dep and not C_AddOns.IsAddOnLoaded(select(i, deps)) ) then
 				okay = false;
 				break;
 			end
@@ -411,31 +418,32 @@ end
 
 function AddonList_Enable(index, enabled)
 
-	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
+	local character = GetAddonCharacterDropdownSelectedValue();
+
 	if ( enabled ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		EnableAddOn(index,character);
+		C_AddOns.EnableAddOn(index,character);
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-		DisableAddOn(index,character);
+		C_AddOns.DisableAddOn(index,character);
 	end
 	AddonList_Update();
 end
 
 function AddonList_EnableAll(self, button, down)
-	EnableAllAddOns(UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown));
+	C_AddOns.EnableAllAddOns(GetAddonCharacterDropdownSelectedValue());
 	AddonList_Update();
 end
 
 function AddonList_DisableAll(self, button, down)
-	DisableAllAddOns(UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown));
+	C_AddOns.DisableAllAddOns(GetAddonCharacterDropdownSelectedValue());
 	AddonList_Update();
 end
 
 function AddonList_LoadAddOn(index)
 	if ( not AddonList_IsAddOnLoadOnDemand(index) ) then return end
-	LoadAddOn(index)
-	if ( IsAddOnLoaded(index) ) then
+	C_AddOns.LoadAddOn(index)
+	if ( C_AddOns.IsAddOnLoaded(index) ) then
 		AddonList.startStatus[index] = true
 	end
 	AddonList_Update()
@@ -472,7 +480,7 @@ function AddonList_OnShow(self)
 		GlueParent_AddModalFrame(self);
 	end
 	UIDropDownMenu_Initialize(AddonCharacterDropDown, AddonListCharacterDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue( AddonCharacterDropDown, UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown) );
+	UIDropDownMenu_SetSelectedValue( AddonCharacterDropDown, UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown) ); -- Use the actual dropdown API here, don't translate to nil.
 	AddonList_Update();
 end
 
@@ -481,22 +489,22 @@ function AddonList_OnHide(self)
 		GlueParent_RemoveModalFrame(self);
 	end
 	if ( self.save ) then
-		SaveAddOns();
+		C_AddOns.SaveAddOns();
 	else
-		ResetAddOns();
+		C_AddOns.ResetAddOns();
 	end
 	self.save = false;
 end
 
 function AddonList_HasOutOfDate()
 	local hasOutOfDate = false;
-	for i=1, GetNumAddOns() do
-		local name, title, notes, loadable, reason = GetAddOnInfo(i);
+	for i=1, C_AddOns.GetNumAddOns() do
+		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
 			character = UnitName("player");
 		end
-		local enabled = (GetAddOnEnableState(character, i) > 0);
+		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
 			hasOutOfDate = true;
 			break;
@@ -516,18 +524,18 @@ function AddonList_SetSecurityIcon(texture, index)
 end
 
 function AddonList_DisableOutOfDate()
-	for i=1, GetNumAddOns() do
-		local name, title, notes, loadable, reason = GetAddOnInfo(i);
+	for i=1, C_AddOns.GetNumAddOns() do
+		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
 			character = UnitName("player");
 		end
-		local enabled = (GetAddOnEnableState(character , i) > 0);
+		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
-			DisableAddOn(i, true);			
+			C_AddOns.DisableAddOn(i); -- passing nil as second argument means disable for all.
 		end
 	end
-	SaveAddOns();
+	C_AddOns.SaveAddOns();
 end
 
 function AddonListCharacterDropDown_OnClick(self)
@@ -536,7 +544,7 @@ function AddonListCharacterDropDown_OnClick(self)
 end
 
 function AddonListCharacterDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
+	local selectedValue = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown); -- Use the actual current value here.
 	local info = UIDropDownMenu_CreateInfo();
 	info.text = ALL;
 	info.value = true;
@@ -583,7 +591,7 @@ function AddonTooltip_BuildDeps(...)
 end
 
 function AddonTooltip_Update(owner)
-	local name, title, notes, _, _, security = GetAddOnInfo(owner:GetID());
+	local name, title, notes, _, _, security = C_AddOns.GetAddOnInfo(owner:GetID());
 	if ( InGlue() ) then
 		AddonTooltip:Clear()
 	else
@@ -598,7 +606,7 @@ function AddonTooltip_Update(owner)
 			AddonTooltip:AddLine(name);
 		end
 		AddonTooltip:AddLine(notes, 1.0, 1.0, 1.0);
-		AddonTooltip:AddLine(AddonTooltip_BuildDeps(GetAddOnDependencies(owner:GetID())));
+		AddonTooltip:AddLine(AddonTooltip_BuildDeps(C_AddOns.GetAddOnDependencies(owner:GetID())));
 	end
 	AddonTooltip:Show()
 end

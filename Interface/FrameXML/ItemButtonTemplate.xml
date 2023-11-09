@@ -49,6 +49,12 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture name="$parentSubIconTexture" parentKey="subicon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">

@@ -10,7 +10,6 @@ function QuestDataProviderMixin:OnAdded(mapCanvas)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_POI_UPDATE");
-	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 
 	if not self.poiQuantizer then
 		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
@@ -70,7 +69,7 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	if not GetCVarBool("questPOI") then
+	if not GetCVarBool("questPOI") or not GetCVarBool("questHelper") then
 		return;
 	end
 	
@@ -101,9 +100,6 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives)
-	if self.focusedQuestID and self.focusedQuestID ~= questID then
-		return false;
-	end
 	if QuestUtils_IsQuestWorldQuest(questID) then
 		if not doesMapShowTaskObjectives then
 			return false;
@@ -139,16 +135,12 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
 	pin.questID = questID;
 
-	local isSuperTracked = questID == GetSuperTrackedQuestID();
+	local isSuperTracked = questID == QuestMapFrame.DetailsFrame.questID;
 	local isComplete = IsQuestComplete(questID);
 
 	pin.isSuperTracked = isSuperTracked;
 
-	if isSuperTracked then
-		pin:UseFrameLevelType("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
-	else
-		pin:UseFrameLevelType("PIN_FRAME_LEVEL_ACTIVE_QUEST", frameLevelOffset);
-	end
+	pin:UseFrameLevelType("PIN_FRAME_LEVEL_ACTIVE_QUEST", frameLevelOffset);
 
 	pin.Number:ClearAllPoints();
 	pin.Number:SetPoint("CENTER");
@@ -186,7 +178,7 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 			pin.Highlight:SetTexCoord(0.5, 1, 0, 0.5);
 			pin.moveHighlightOnMouseDown = true;
 			pin.Number:Hide();
-		end
+		end	
 	else
 		pin.style = "numeric";	-- for tooltip
 		pin.Texture:SetSize(75, 75);
@@ -210,11 +202,10 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset)
 		pin.Highlight:SetTexCoord(0.625, 0.750, 0.375, 0.5);
 
 		-- try to match the number with tracker POI if possible
-		local poiButton = QuestPOI_FindButton(ObjectiveTrackerFrame.BlocksFrame, questID);
+		local poiButton =  QuestPOI_FindButton(QuestScrollFrame.Contents, questID);
 		if poiButton and poiButton.style == "numeric" then
 			local questNumber = poiButton.index;
 			self.usedQuestNumbers[questNumber] = true;
-
 			pin:AssignQuestNumber(questNumber);
 		else
 			table.insert(self.pinsMissingNumbers, pin);
@@ -266,11 +257,13 @@ function QuestPinMixin:OnMouseEnter()
 		end
 	end
 	WorldMapTooltip:Show();
+	self:GetMap():TriggerEvent("SetHighlightedQuestID", self.questID);
 	self:GetMap():TriggerEvent("SetHighlightedQuestPOI", self.questID);
 end
 
 function QuestPinMixin:OnMouseLeave()
 	WorldMapTooltip:Hide();
+	self:GetMap():TriggerEvent("ClearHighlightedQuestID");
 	self:GetMap():TriggerEvent("ClearHighlightedQuestPOI");
 end
 

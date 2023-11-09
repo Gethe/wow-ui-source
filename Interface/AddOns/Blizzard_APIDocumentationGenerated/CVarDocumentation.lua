@@ -64,6 +64,26 @@ local CVar =
 			},
 		},
 		{
+			Name = "GetCVarInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+				{ Name = "defaultValue", Type = "cstring", Nilable = false },
+				{ Name = "isStoredServerAccount", Type = "bool", Nilable = false },
+				{ Name = "isStoredServerCharacter", Type = "bool", Nilable = false },
+				{ Name = "isLockedFromUser", Type = "bool", Nilable = false },
+				{ Name = "isSecure", Type = "bool", Nilable = false },
+				{ Name = "isReadOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterCVar",
 			Type = "Function",
 
@@ -118,6 +138,20 @@ local CVar =
 
 	Tables =
 	{
+		{
+			Name = "CVarInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+				{ Name = "defaultValue", Type = "cstring", Nilable = false },
+				{ Name = "isStoredServerAccount", Type = "bool", Nilable = false },
+				{ Name = "isStoredServerCharacter", Type = "bool", Nilable = false },
+				{ Name = "isLockedFromUser", Type = "bool", Nilable = false },
+				{ Name = "isSecure", Type = "bool", Nilable = false },
+				{ Name = "isReadOnly", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

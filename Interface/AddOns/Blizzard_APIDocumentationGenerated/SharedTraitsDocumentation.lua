@@ -45,6 +45,7 @@ local SharedTraits =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "entryID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -91,6 +92,20 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "hasChanges", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GenerateImportString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "importString", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -450,6 +465,7 @@ local SharedTraits =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "clearEdges", Type = "bool", Nilable = true },
 			},
 
 			Returns =
@@ -511,6 +527,7 @@ local SharedTraits =
 				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "nodeID", Type = "number", Nilable = false },
 				{ Name = "nodeEntryID", Type = "number", Nilable = true },
+				{ Name = "clearEdges", Type = "bool", Nilable = true },
 			},
 
 			Returns =
@@ -782,6 +799,7 @@ local SharedTraits =
 				{ Name = "currentRank", Type = "number", Nilable = true },
 				{ Name = "meetsEdgeRequirements", Type = "bool", Nilable = true },
 				{ Name = "isCascadeRepurchasable", Type = "bool", Nilable = true },
+				{ Name = "activeEntryID", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -32,6 +32,7 @@ local DefaultLegacySettings =  {
 		["CHAT_MSG_INSTANCE_CHAT_LEADER"] = true,
 		["CHAT_MSG_INSTANCE_CHAT"] = true,
 		["CHAT_MSG_BN_WHISPER"] = true,
+		["CHAT_MSG_PING"] = true,
 	},
 	enabledChannelTypes = {},
 };

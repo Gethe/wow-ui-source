@@ -201,6 +201,10 @@ local GossipInfo =
 			Name = "GossipClosed",
 			Type = "Event",
 			LiteralName = "GOSSIP_CLOSED",
+			Payload =
+			{
+				{ Name = "interactionIsContinuing", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "GossipConfirm",

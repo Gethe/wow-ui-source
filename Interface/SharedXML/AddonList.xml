@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="AddonList.lua"/>
-	
+
 	<Button name="AddonListEntryTemplate" virtual="true">
 		<Size x="520" y="16"/>
 		<Layers>
@@ -71,7 +71,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 			 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture name="$parentCheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>		
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 			<Button name="$parentLoad" inherits="UIPanelButtonTemplate" text="LOAD_ADDON" hidden="true" parentKey="LoadAddonButton">
 				<Size x="100" y="22"/>
@@ -157,19 +157,15 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						if ( IsAddonVersionCheckEnabled() ) then
-							self:SetChecked(false);
-						else
-							self:SetChecked(true);
-						end
+						self:SetChecked(not C_AddOns.IsAddonVersionCheckEnabled());
 					</OnShow>
 					<OnClick>
 						if ( self:GetChecked() ) then
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-							SetAddonVersionCheck(false);
+							C_AddOns.SetAddonVersionCheck(false);
 						else
 							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-							SetAddonVersionCheck(true);
+							C_AddOns.SetAddonVersionCheck(true);
 						end
 						AddonList_Update();
 					</OnClick>

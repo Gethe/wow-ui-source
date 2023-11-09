@@ -1,4 +1,8 @@
 local function Register()
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
 	local category, layout = Settings.RegisterVerticalLayoutCategory(NETWORK_LABEL);
 
 	-- Optimize Net for Speed

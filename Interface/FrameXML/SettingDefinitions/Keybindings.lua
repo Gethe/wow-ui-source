@@ -226,6 +226,7 @@ local function Register()
 	retained.layout = layout;
 	retained.category = category;
 	Settings.SetKeybindingsCategory(category);
+	Settings.KEYBINDINGS_CATEGORY_ID = category:GetID();
 
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[SETTINGS_KEYBINDINGS_LABEL]);

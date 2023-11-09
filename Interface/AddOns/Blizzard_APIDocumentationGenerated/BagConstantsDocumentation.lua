@@ -5,9 +5,9 @@ local BagConstants =
 		{
 			Name = "BagSlotFlags",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 1,
-			MaxValue = 63,
+			MaxValue = 127,
 			Fields =
 			{
 				{ Name = "DisableAutoSort", Type = "BagSlotFlags", EnumValue = 1 },
@@ -16,7 +16,8 @@ local BagConstants =
 				{ Name = "PriorityTradeGoods", Type = "BagSlotFlags", EnumValue = 8 },
 				{ Name = "PriorityJunk", Type = "BagSlotFlags", EnumValue = 16 },
 				{ Name = "PriorityQuestItems", Type = "BagSlotFlags", EnumValue = 32 },
-				{ Name = "BagSlotValidFlagsAll", Type = "BagSlotFlags", EnumValue = 63 },
+				{ Name = "ExcludeJunkSell", Type = "BagSlotFlags", EnumValue = 64 },
+				{ Name = "BagSlotValidFlagsAll", Type = "BagSlotFlags", EnumValue = 127 },
 				{ Name = "BagSlotPriorityFlagsAll", Type = "BagSlotFlags", EnumValue = 62 },
 			},
 		},
