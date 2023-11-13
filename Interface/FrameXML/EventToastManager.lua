@@ -165,8 +165,6 @@ function EventToastManagerFrameMixin:AreAnimationsPaused()
 end
 
 function EventToastManagerFrameMixin:PauseAnimations()
-	-- TODO: Tech debt: currentDisplayingToast does not take non-EventToastManager toasts into consideration <WOW10-127543>
-	-- ^ We should be setting it or checking to see if there are other TopBannerManager toasts playing or paused...
 	if(self.animationsPaused or not (self.currentDisplayingToast and (self.currentDisplayingToast:GetAlpha() > 0))) then 
 		return;
 	end
