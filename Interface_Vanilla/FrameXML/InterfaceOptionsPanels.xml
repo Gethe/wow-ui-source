@@ -335,12 +335,12 @@
 						self.cvar = "enableFloatingCombatText";
 						self.uvar = "SHOW_COMBAT_TEXT";
 						self.setFunc = function (value)
-							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
 								UIParentLoadAddOn("Blizzard_CombatText");
 							end
 							BlizzardOptionsPanel_UpdateCombatText();
 							InterfaceOptions_CombatTextComboPoints(value);
-						end;
+						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -401,11 +401,11 @@
 						self.cvar = "floatingCombatTextLowManaHealth";
 						self.uvar = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -426,11 +426,11 @@
 						self.cvar = "floatingCombatTextAuras";
 						self.uvar = "COMBAT_TEXT_SHOW_AURAS";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -451,11 +451,11 @@
 						self.cvar = "floatingCombatTextAuraFade";
 						self.uvar = "COMBAT_TEXT_SHOW_AURA_FADE";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -476,11 +476,11 @@
 							self.cvar = "floatingCombatTextCombatState";
 							self.uvar = "COMBAT_TEXT_SHOW_COMBAT_STATE";
 							self.setFunc = function (value)
-							if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-							UIParentLoadAddOn("Blizzard_CombatText");
+								if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+									UIParentLoadAddOn("Blizzard_CombatText");
+								end
+								BlizzardOptionsPanel_UpdateCombatText();
 							end
-							BlizzardOptionsPanel_UpdateCombatText();
-							end;
 							BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 							BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 						</OnLoad>
@@ -501,11 +501,11 @@
 						self.cvar = "floatingCombatTextDodgeParryMiss";
 						self.uvar = "COMBAT_TEXT_SHOW_DODGE_PARRY_MISS";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -526,11 +526,11 @@
 						self.cvar = "floatingCombatTextDamageReduction";
 						self.uvar = "COMBAT_TEXT_SHOW_RESISTANCES";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -551,11 +551,11 @@
 						self.cvar = "floatingCombatTextRepChanges";
 						self.uvar = "COMBAT_TEXT_SHOW_REPUTATION";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -576,11 +576,11 @@
 						self.cvar = "floatingCombatTextReactives";
 						self.uvar = "COMBAT_TEXT_SHOW_REACTIVES";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -601,11 +601,11 @@
 						self.cvar = "floatingCombatTextFriendlyHealers";
 						self.uvar = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -626,11 +626,11 @@
 						self.cvar = "floatingCombatTextComboPoints";
 						self.uvar = "COMBAT_TEXT_SHOW_COMBO_POINTS";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						--BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 						InterfaceOptions_CombatTextComboPoints(GetCVarBool("enableFloatingCombatText"));
@@ -652,11 +652,11 @@
 						self.cvar = "floatingCombatTextEnergyGains";
 						self.uvar = "COMBAT_TEXT_SHOW_ENERGIZE";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -677,11 +677,11 @@
 						self.cvar = "floatingCombatTextHonorGains";
 						self.uvar = "COMBAT_TEXT_SHOW_HONOR_GAINED";
 						self.setFunc = function (value)
-						if ( value == "1" and not IsAddOnLoaded("Blizzard_CombatText") ) then
-						UIParentLoadAddOn("Blizzard_CombatText");
+							if ( value == "1" and not C_AddOns.IsAddOnLoaded("Blizzard_CombatText") ) then
+								UIParentLoadAddOn("Blizzard_CombatText");
+							end
+							BlizzardOptionsPanel_UpdateCombatText();
 						end
-						BlizzardOptionsPanel_UpdateCombatText();
-						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatPanelEnableFloatingCombatText, self);
 					</OnLoad>
@@ -965,10 +965,10 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showMinimapClock";
 						self.setFunc = function (value)
-							if (IsAddOnLoaded("Blizzard_TimeManager")) then
+							if (C_AddOns.IsAddOnLoaded("Blizzard_TimeManager")) then
 								TimeManagerClockButton_UpdateShowClockSetting();
 							end
-						end;
+						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -2532,7 +2532,7 @@
 							if ( value == "1" ) then
 								UIParentLoadAddOn("Blizzard_MovePad");
 								MovePadFrame:Show();
-							elseif(IsAddOnLoaded("Blizzard_MovePad")) then
+							elseif(C_AddOns.IsAddOnLoaded("Blizzard_MovePad")) then
 								MovePadFrame:Hide();
 							end
 						end
@@ -2575,7 +2575,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>--> 
+			</CheckButton>-->
 			<!--<CheckButton name="$parentQuestTextContrast" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCinematicSubtitles" relativePoint="BOTTOMLEFT" x="0" y="-8" />
@@ -2722,7 +2722,7 @@
 					<OnLoad function="InterfaceOptionsAccessibilityPanelCursorSizeDropdown_OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
     </Frames>
     <Scripts>
       <OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
@@ -2936,7 +2936,7 @@
 
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-					
+
 					<OnValueChanged>
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor(value * 100));
@@ -2961,7 +2961,7 @@
 		</Scripts>
 	</Frame>
 
-	
+
 
   <!-- Social Browser Frame -->
 

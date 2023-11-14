@@ -458,7 +458,7 @@ local function AudioOptionsPanelVoiceChatSlider_BaseOnLoad(self, cvar, getCurren
 	self.Text:ClearAllPoints();
 	self.Text:SetPoint("LEFT", self, "RIGHT", 6, 1);
 
-	local current, defaultValue = GetCVarInfo(cvar);
+	local current, defaultValue = C_CVar.GetCVarInfo(cvar);
 	self.defaultValue = defaultValue;
 
 	self.GetCurrentValue = function(self)

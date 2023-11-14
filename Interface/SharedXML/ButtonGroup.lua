@@ -12,6 +12,12 @@ function ButtonGroupBaseMixin:Init()
 	self.buttons = {};
 end
 
+function ButtonGroupBaseMixin:SetShown(shown)
+	for index, button in ipairs(self.buttons) do
+		button:SetShown(shown);
+	end
+end
+
 function ButtonGroupBaseMixin:AddButton(button)
 	self:AddInternal(button);
 end
@@ -22,9 +28,30 @@ function ButtonGroupBaseMixin:AddButtons(buttons)
 	end
 end
 
-function ButtonGroupBaseMixin:AddInternal(button, func, owner)
+function ButtonGroupBaseMixin:AddInternal(button, func, group)
 	table.insert(self.buttons, button);
-	button:RegisterSelectionChangedCallback(func, owner);
+
+	-- NOTE: The SelectableButton that this is intended to be used with doesn't actually care about the mouseButton argument.
+	local previousOnClickScript = button:GetScript("OnClick");
+	assert(not button.previousOnClickScript);
+	button.previousOnClickScript = previousOnClickScript;
+
+	button:SetScript("OnClick", function(o, mouseButton)
+		-- Only run our group's selection changed callback if the button object didn't have a mixin-OnClick method,
+		-- or if the OnClick method indicated that selection state actually changed.
+		local wasSelected = button:IsSelected();
+
+		if previousOnClickScript then
+			previousOnClickScript(button, mouseButton);
+		end
+
+		local isSelected = button:IsSelected();
+		local selectionChanged = wasSelected ~= isSelected;
+
+		if not previousOnClickScript or selectionChanged then
+			func(group, button, button:IsSelected());
+		end
+	end);
 end
 
 function ButtonGroupBaseMixin:RemoveButton(button)
@@ -43,7 +70,10 @@ end
 
 function ButtonGroupBaseMixin:RemoveInternal(button)
 	tDeleteItem(self.buttons, button);
-	button:UnregisterSelectionChangedCallback(self);
+
+	-- Restore the button's OnClick to whatever it used to be.
+	button:SetScript("OnClick", button.previousOnClickScript);
+	button.previousOnClickScript = nil;
 end
 
 function ButtonGroupBaseMixin:SetButtons(buttons)
@@ -90,29 +120,31 @@ function ButtonGroupBaseMixin:Unselect(button)
 	self:UnselectAtIndex(self:GetButtonIndex(button));
 end
 
-function ButtonGroupBaseMixin:Select(button, isInitializing)
-	self:SelectAtIndex(self:GetButtonIndex(button), isInitializing);
+function ButtonGroupBaseMixin:Select(button)
+	self:SelectAtIndex(self:GetButtonIndex(button));
+end
+
+function ButtonGroupBaseMixin:SelectAtIndex(index)
+	self:SetSelectedAtIndex(index, true);
 end
 
 function ButtonGroupBaseMixin:UnselectAtIndex(index)
-	local button = self:GetAtIndex(index);
-	if button then
-		local isInitializing = false;
-		button:SetSelected(false, isInitializing);
-	end
+	self:SetSelectedAtIndex(index, false);
 end
 
-function ButtonGroupBaseMixin:SelectAtIndex(index, isInitializing)
-	local button = self:GetAtIndex(index);
-	if button then
-		button:SetSelected(true, isInitializing);
-	end
+local function SetButtonSelectedAndGetWasChanged(button, selected)
+	local wasSelected = button:IsSelected();
+	button:SetSelected(selected);
+	return wasSelected ~= button:IsSelected();
 end
 
-function ButtonGroupBaseMixin:UnselectAtIndex(index)
+function ButtonGroupBaseMixin:SetSelectedAtIndex(index, selected)
 	local button = self:GetAtIndex(index);
 	if button then
-		button:SetSelected(false);
+
+		if SetButtonSelectedAndGetWasChanged(button, selected) then
+			self:OnSelectionChange(button, selected);
+		end
 	end
 end
 
@@ -154,15 +186,19 @@ function RadioButtonGroupMixin:CanChangeSelection(button, newSelected)
 end
 
 function RadioButtonGroupMixin:OnSelectionChange(button, newSelected)
-	if newSelected then
-		for selectedButtonIndex, selectedButton in ipairs(self:GetSelectedButtons()) do
-			if selectedButton ~= button then
-				selectedButton:SetSelected(false);
-				self:TriggerEvent(ButtonGroupBaseMixin.Event.Unselected, selectedButton, self:GetButtonIndex(selectedButton));
-			end
+	-- Deselect everything that was selected
+	for selectedButtonIndex, selectedButton in ipairs(self:GetSelectedButtons()) do
+		if selectedButton ~= button then
+			selectedButton:SetSelected(false);
+			self:TriggerEvent(ButtonGroupBaseMixin.Event.Unselected, selectedButton, self:GetButtonIndex(selectedButton));
 		end
-	
+	end
+
+	-- Select the new thing if appropriate
+	if newSelected then
 		self:TriggerEvent(ButtonGroupBaseMixin.Event.Selected, button, self:GetButtonIndex(button));
+	else
+		self:TriggerEvent(ButtonGroupBaseMixin.Event.Unselected, button, self:GetButtonIndex(button));
 	end
 end
 
@@ -176,6 +212,17 @@ function RadioButtonGroupMixin:RemoveInternal(button)
 	ButtonGroupBaseMixin.RemoveInternal(self, button);
 end
 
+DeselectableRadioButtonGroupMixin = CreateFromMixins(RadioButtonGroupMixin);
+
+function DeselectableRadioButtonGroupMixin:CanChangeSelection(button, newSelected)
+	return true;
+end
+
 function CreateRadioButtonGroup()
 	return CreateAndInitFromMixin(RadioButtonGroupMixin);
 end
+
+function CreateDeselectableRadioButtonGroup()
+	return CreateAndInitFromMixin(DeselectableRadioButtonGroupMixin);
+end
+

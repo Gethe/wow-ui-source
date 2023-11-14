@@ -299,6 +299,60 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	editBox:ClearFocus();
 end
 
+PanelTabButtonMixin = {};
+
+function PanelTabButtonMixin:OnLoad()
+	self:SetFrameLevel(self:GetFrameLevel() + 4);
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+end
+
+function PanelTabButtonMixin:OnEvent(event, ...)
+	if self:IsVisible() then
+		PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+	end
+end
+
+function PanelTabButtonMixin:OnShow()
+	PanelTemplates_TabResize(self, self:GetParent().tabPadding, nil, self:GetParent().minTabWidth, self:GetParent().maxTabWidth);
+end
+
+function PanelTabButtonMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText());
+	end
+end
+
+function PanelTabButtonMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+PanelTopTabButtonMixin = {};
+
+local TOP_TAB_HEIGHT_PERCENT = 0.75;
+local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT;
+
+function PanelTopTabButtonMixin:OnLoad()
+	PanelTabButtonMixin.OnLoad(self);
+
+	for _, tabTexture in ipairs(self.TabTextures) do
+		tabTexture:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD);
+		tabTexture:SetHeight(tabTexture:GetHeight() * TOP_TAB_HEIGHT_PERCENT);
+	end
+
+	self.Left:ClearAllPoints();
+	self.Left:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, 0);
+	self.Right:ClearAllPoints();
+	self.Right:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, 0);
+
+	self.LeftActive:ClearAllPoints();
+	self.LeftActive:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -1, 0);
+	self.RightActive:ClearAllPoints();
+	self.RightActive:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 8, 0);
+
+	self.isTopTab = true;
+end
+
 -- functions to manage tab interfaces where only one tab of a group may be selected
 function PanelTemplates_Tab_OnClick(self, frame)
 	PanelTemplates_SetTab(frame, self:GetID())
@@ -1263,28 +1317,62 @@ function UIButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor
 	self:SetMotionScriptsWhileDisabled(disabledTooltip ~= nil);
 end
 
-SquareIconButtonMixin = CreateFromMixins(UIButtonMixin);
+IconButtonMixin = CreateFromMixins(UIButtonMixin);
 
-function SquareIconButtonMixin:OnLoad()
+function IconButtonMixin:OnLoad()
 	if self.icon then
 		self:SetIcon(self.icon);
 	elseif self.iconAtlas then
-		self:SetAtlas(self.iconAtlas);
+		self:SetAtlas(self.iconAtlas, self.useAtlasSize);
 	end
-	
-	self.tooltipOffsetX = -8;
-	self.tooltipOffsetY = -8;
+
+	if self.useIconAsHighlight then
+		if self.icon then
+			self:SetHighlightTexture(self.icon, "ADD");
+		elseif self.iconAtlas then
+			self:SetHighlightAtlas(self.iconAtlas, "ADD");
+		end
+
+		local highlightTexture = self:GetHighlightTexture();
+		highlightTexture:SetPoint("TOPLEFT", self.Icon, "TOPLEFT");
+		highlightTexture:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT");
+	end
+
+	if self.iconSize then
+		self.Icon:SetSize(self.iconSize, self.iconSize);
+	elseif self.iconWidth then
+		self.Icon:SetSize(self.iconWidth, self.iconHeight);
+	end
 end
 
-function SquareIconButtonMixin:SetIcon(icon)
+function IconButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", 1, -1);
+	end
+end
+
+function IconButtonMixin:OnMouseUp()
+	self.Icon:SetPoint("CENTER", self, "CENTER");
+end
+
+function IconButtonMixin:SetIcon(icon)
 	self.Icon:SetTexture(icon);
 end
 
-function SquareIconButtonMixin:SetAtlas(atlas)
-	self.Icon:SetAtlas(atlas);
+function IconButtonMixin:SetAtlas(atlas, useAtlasSize)
+	self.Icon:SetAtlas(atlas, useAtlasSize);
 end
 
+function IconButtonMixin:SetEnabledState(enabled)
+	self:SetEnabled(enabled);
+	self.Icon:SetDesaturated(not enabled);
+end
+
+SquareIconButtonMixin = CreateFromMixins(IconButtonMixin);
+
 function SquareIconButtonMixin:OnMouseDown()
+	-- Overrides IconButtonMixin.
+
 	if self:IsEnabled() then
 		-- Square icon button template still uses down-to-the-left depress behavior to match the existing art.
 		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
@@ -1292,12 +1380,9 @@ function SquareIconButtonMixin:OnMouseDown()
 end
 
 function SquareIconButtonMixin:OnMouseUp()
-	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
-end
+	-- Overrides IconButtonMixin.
 
-function SquareIconButtonMixin:SetEnabledState(enabled)
-	self:SetEnabled(enabled);
-	self.Icon:SetDesaturated(not enabled);
+	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
 end
 
 SelectionPopoutButtonMixin = CreateFromMixins(CallbackRegistryMixin, EventButtonMixin);
@@ -2089,6 +2174,22 @@ end
 
 function SelectedIconButtonMixin:SetIconSelector(iconSelector)
 	self.selectedIconButtonIconSelector = iconSelector;
+end
+
+
+-- Allows inheriting buttons to override OnLoad and OnShow
+ButtonControllerMixin = {};
+
+function ButtonControllerMixin:OnLoad()
+	if self:GetParent().InitButton then
+		self:GetParent():InitButton();
+	end
+end
+
+function ButtonControllerMixin:OnShow()
+	if self:GetParent().UpdateButton then
+		self:GetParent():UpdateButton();
+	end
 end
 
 AlphaHighlightButtonMixin = {};

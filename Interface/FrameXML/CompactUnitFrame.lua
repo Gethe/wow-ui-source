@@ -1099,8 +1099,8 @@ function CompactUnitFrame_HideAllBuffs(frame)
 	end
 end
 
-function CompactUnitFrame_UpdateCooldownFrame(frame, expirationTime, duration)
-	if GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE then
+function CompactUnitFrame_UpdateCooldownFrame(frame, expirationTime, duration, buff)
+	if GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE and buff then
 		return;
 	end
 
@@ -1127,7 +1127,7 @@ function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 		buffFrame.count:Hide();
 	end
 	buffFrame:SetID(index);
-	CompactUnitFrame_UpdateCooldownFrame(buffFrame, expirationTime, duration);
+	CompactUnitFrame_UpdateCooldownFrame(buffFrame, expirationTime, duration, true);
 	buffFrame:Show();
 end
 
@@ -1201,7 +1201,7 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBoss
 		debuffFrame.count:Hide();
 	end
 	debuffFrame:SetID(index);
-	CompactUnitFrame_UpdateCooldownFrame(debuffFrame, expirationTime, duration);
+	CompactUnitFrame_UpdateCooldownFrame(debuffFrame, expirationTime, duration, false);
 
 	local color = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
 	debuffFrame.border:SetVertexColor(color.r, color.g, color.b);

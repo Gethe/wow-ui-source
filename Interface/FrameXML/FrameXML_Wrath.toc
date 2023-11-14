@@ -17,6 +17,7 @@ FontStyles.xml
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
@@ -31,10 +32,10 @@ FontStyles.xml
 ..\SharedXML\PredictedSetting.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
+..\SharedXML\VectorLib.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\Backdrop.xml
-..\SharedXML\TextureUtil.lua
 ..\SharedXML\MathUtil.lua
 ..\SharedXML\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
@@ -56,8 +57,6 @@ FontStyles.xml
 ..\SharedXML\LoopingSoundEffect.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ManagedLayoutFrame.xml
@@ -74,6 +73,7 @@ FontStyles.xml
 ..\SharedXML\ScriptAnimationUtil.lua
 
 ..\SharedXML\GlobalCallbackRegistry.lua
+..\SharedXML\DebugBarManager.lua
 
 ..\SharedXML\SelectableButton.xml
 ..\SharedXML\ButtonGroup.lua
@@ -114,6 +114,7 @@ FontStyles.xml
 ..\SharedXML\AnimationTemplates.xml
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\ModelSceneControlFrame.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
@@ -133,6 +134,7 @@ PlayerMovementFrameFader.lua
 ..\SharedXML\PropertyButton.xml
 ..\SharedXML\PropertyFontString.xml
 ..\SharedXML\PropertySlider.xml
+..\..\Interface_Wrath\FrameXML\QuestLogOwnerMixin.lua
 
 ObjectAPI\ContinuableContainer.lua
 ObjectAPI\ItemLocation.lua
@@ -145,6 +147,7 @@ ChatBubbleTemplates.xml
 WorldFrame.xml
 ..\..\Interface_Wrath\FrameXML\UIParent.lua
 UIParent.xml
+PartyUtil.lua
 ..\SharedXML\ScriptedAnimations\ScriptedAnimationEffects.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ..\SharedXML\ScriptedAnimations\ScriptAnimatedEffectController.lua
@@ -222,6 +225,7 @@ ActionBarController.xml
 OverrideActionBar.xml
 PossessActionBar.xml
 TutorialFrame.xml
+QueueStatusFrame.xml
 ..\..\Interface_Wrath\FrameXML\Minimap.xml
 ..\..\Interface_Wrath\FrameXML\GameTime.xml
 BuffFrame.xml
@@ -266,6 +270,7 @@ SkillFrame.xml
 ..\..\Interface_Wrath\FrameXML\ReputationFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestFrameTemplates.xml
 ..\..\Interface_TBC\FrameXML\QuestFrame.xml
+..\..\Interface_Wrath\FrameXML\QuestPOI.xml
 ..\..\Interface_Wrath\FrameXML\QuestLogFrame.xml
 ..\..\Interface_Wrath\FrameXML\QuestInfo.xml
 ..\..\Interface_Wrath\FrameXML\WatchFrame.xml
@@ -284,6 +289,8 @@ PetActionBarFrame.xml
 MultiCastActionBarFrame.xml
 ..\..\Interface_Wrath\FrameXML\MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
+..\..\Interface_Wrath\FrameXML\WorldMapFrame.xml
+..\..\Interface_Wrath\FrameXML\QuestMapFrame.xml
 RaidWarning.xml
 CinematicFrame.xml
 ComboFrame.xml
@@ -299,6 +306,11 @@ MailFrame.xml
 ..\..\Interface_Wrath\FrameXML\VehicleSeatIndicator.xml
 DurabilityFrame.xml
 BattlegroundChatFilters.xml
+QueueUpdater.lua
+PVEFrame.xml
+LFGFrame.xml
+LFDFrame.xml
+LFGList.xml
 ..\..\Interface_TBC\FrameXML\WorldStateFrame.xml
 RatingMenuFrame.xml
 ..\..\Interface_Wrath\FrameXML\TalentFrameBase.lua
@@ -310,7 +322,8 @@ VoiceChatTranscriptionFrame.xml
 TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
-..\..\Interface_Wrath\FrameXML\ChatConfigFrame_Wrath.xml
+..\..\Interface_Wrath\FrameXML\ChatConfigFrame_Wrath.lua
+ChatConfigFrame.xml
 MovieFrame.xml
 AnimationSystem.lua
 ..\..\Interface_Wrath\FrameXML\CompactUnitFrame.xml
@@ -318,6 +331,7 @@ CompactRaidGroup.xml
 CompactPartyFrame.xml
 ..\..\Interface_Wrath\FrameXML\RolePoll.xml
 StreamingFrame.xml
+IconIntroAnimation.xml
 LootHistory.xml
 CurrencyContainer.lua
 StaticPopupSpecial.xml
@@ -333,9 +347,9 @@ ArenaRegistrarFrame.xml
 RuneFrame.xml
 ..\..\Interface_Wrath\FrameXML\EquipmentManager.lua
 PlayerInteractionFrameManager.xml
-QueueReadyCheckFrame.xml
 SocialQueue.xml
 InviteConfirmationDialog.lua
+..\SharedXML\ToolWindowOwnerMixin.lua
 
 
 #Save off whatever we need available unmodified.

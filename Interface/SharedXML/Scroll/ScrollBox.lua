@@ -138,6 +138,8 @@ function ScrollBoxBaseMixin:OnSizeChanged(width, height)
 	self:TriggerEvent("OnSizeChanged", width, height, self:GetVisibleExtentPercentage());
 end
 
+-- Fixme: Replace calls to FullUpdate() with Rebuild() where appropriate so that existing frames 
+-- will also be reinitialized, which is probably the expectation given this function's name.
 function ScrollBoxBaseMixin:FullUpdate(immediately)
 	if immediately then
 		self:SetScript("OnUpdate", nil);
@@ -546,6 +548,10 @@ function ScrollBoxListMixin:EnumerateFrames()
 	return self:GetView():EnumerateFrames();
 end
 
+function ScrollBoxListMixin:ReinitializeFrames()
+	self:GetView():ReinitializeFrames();
+end
+
 -- Considering doing a conversion in 11.0 to rename EntireRange to become Enumerate, 
 -- and Enumerate to be renamed to EnumerateRange(min, max). It is a bit counter-intuitive
 -- for Enumerate to do anything other than iterate the entire range, and additionally
@@ -657,8 +663,11 @@ function ScrollBoxListMixin:OnViewDataChanged()
 	self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 end
 
-function ScrollBoxListMixin:Rebuild()
-	self:GetView():Rebuild();
+function ScrollBoxListMixin:Rebuild(retainScrollPosition)
+	local view = self:GetView();
+	if view then
+		self:SetDataProvider(view:GetDataProvider(), retainScrollPosition);
+	end
 end
 
 function ScrollBoxListMixin:OnViewAcquiredFrame(frame, elementData, new)

@@ -332,7 +332,7 @@ end
 function GlyphFrame_OnEvent (self, event, ...)
 	if ( event == "ADDON_LOADED" ) then
 		local name = ...;
-		if ( name == "Blizzard_GlyphUI" and IsAddOnLoaded("Blizzard_TalentUI") or name == "Blizzard_TalentUI" ) then
+		if ( name == "Blizzard_GlyphUI" and C_AddOns.IsAddOnLoaded("Blizzard_TalentUI") or name == "Blizzard_TalentUI" ) then
 			self:ClearAllPoints();
 			self:SetParent(PlayerTalentFrame);
 			self:SetAllPoints();

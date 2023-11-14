@@ -55,7 +55,9 @@ local FrameAPICinematicModel =
 
 			Arguments =
 			{
-				{ Name = "position", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "positionX", Type = "number", Nilable = false },
+				{ Name = "positionY", Type = "number", Nilable = false },
+				{ Name = "positionZ", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -64,7 +66,9 @@ local FrameAPICinematicModel =
 
 			Arguments =
 			{
-				{ Name = "position", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "positionX", Type = "number", Nilable = false },
+				{ Name = "positionY", Type = "number", Nilable = false },
+				{ Name = "positionZ", Type = "number", Nilable = false },
 			},
 		},
 		{

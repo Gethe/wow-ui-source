@@ -83,6 +83,16 @@ local Video =
 			LiteralName = "GLUE_SCREENSHOT_FAILED",
 		},
 		{
+			Name = "GlueScreenshotStarted",
+			Type = "Event",
+			LiteralName = "GLUE_SCREENSHOT_STARTED",
+		},
+		{
+			Name = "GlueScreenshotSucceeded",
+			Type = "Event",
+			LiteralName = "GLUE_SCREENSHOT_SUCCEEDED",
+		},
+		{
 			Name = "GxRestarted",
 			Type = "Event",
 			LiteralName = "GX_RESTARTED",

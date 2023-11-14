@@ -3,6 +3,11 @@ READY_CHECK_READY_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-Ready";
 READY_CHECK_NOT_READY_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
 READY_CHECK_AFK_TEXTURE = "Interface\\RaidFrame\\ReadyCheck-NotReady";
 
+READY_CHECK_WAITING_ATLAS = "UI-LFG-PendingMark";
+READY_CHECK_READY_ATLAS = "UI-LFG-ReadyMark";
+READY_CHECK_NOT_READY_ATLAS = "UI-LFG-DeclineMark";
+READY_CHECK_AFK_ATLAS = "UI-LFG-DeclineMark";
+
 
 --
 -- ReadyCheckFrame

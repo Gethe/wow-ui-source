@@ -180,6 +180,15 @@ local Club =
 			},
 		},
 		{
+			Name = "DoesAnyCommunityHaveUnreadMessages",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasUnreadMessages", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EditClub",
 			Type = "Function",
 			Documentation = { "nil arguments will not change existing club data" },

@@ -219,12 +219,11 @@
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="2" y="1"/>
+					<Anchor point="TOPRIGHT" x="-2" y="-4"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="TitleButton" inherits="TruncatedTooltipScriptTemplate">
+			<Button parentKey="TitleButton" inherits="TruncatedTooltipScriptTemplate, PanelDragBarTemplate">
 				<Size x="375" y="16"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TitleBG"/>
@@ -251,21 +250,6 @@
 						</Layers>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad inherit="prepend">
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						local parent = self:GetParent();
-						parent.moving = true;
-						parent:StartMoving();
-					</OnDragStart>
-					<OnDragStop>
-						local parent = self:GetParent();
-						parent.moving = nil;
-						parent:StopMovingOrSizing();
-					</OnDragStop>
-				</Scripts>
 			</Button>
 			<ScrollFrame parentKey="LinesScrollFrame" inherits="ScrollFrameTemplate">
 				<KeyValues>

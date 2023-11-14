@@ -59,7 +59,7 @@ function SetItemRef(link, text, button, chatFrame)
 				if ( ChatEdit_GetActiveWindow() ) then
 					ChatEdit_InsertLink(name);
 				else
-					C_FriendList.SendWho(WHO_TAG_EXACT..name);
+					C_FriendList.SendWho(WHO_TAG_EXACT..name, Enum.SocialWhoOrigin.Item);
 				end
 
 			elseif ( button == "RightButton" and (not isGMLink) ) then
@@ -402,7 +402,7 @@ function SetItemRef(link, text, button, chatFrame)
 		ShowUIPanel(ChatConfigFrame);
 		return;
 	elseif ( strsub(link, 1, 10) == "lfglisting" ) then
-		ShowLFGParentFrame(1);
+		PVEFrame_ShowFrame();
 		return;
 	elseif ( strsub(link, 1, 5) == "addon" ) then
 		-- local links only

@@ -146,7 +146,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="Background" inherits="DeveloperConsoleBackgroundTemplate" />
+					<Frame parentKey="Background" inherits="DeveloperConsoleBackgroundTemplate" />
 
 					<StatusBar parentKey="ProgressBar" drawLayer="BORDER" useParentLevel="true" mixin="SmoothStatusBarMixin" alpha="0">
 						<Anchors>
@@ -252,8 +252,8 @@
 						self.Icon:SetPoint("RIGHT", self.Label, "LEFT", -2, 0);
 					</OnLoad>
 					<OnClick>
-						EnableAddOn("CheatBrowser");
-						LoadAddOn("CheatBrowser");
+						C_AddOns.EnableAddOn("CheatBrowser");
+						C_AddOns.LoadAddOn("CheatBrowser");
 						CheatBrowser:Toggle();
 					</OnClick>
 				</Scripts>

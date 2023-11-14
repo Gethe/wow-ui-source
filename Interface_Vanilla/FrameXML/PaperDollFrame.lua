@@ -38,6 +38,13 @@ function PaperDollFrame_OnShow(self)
 	end
 end
 
+function PaperDollFrame_OnHide(self)
+	if ( EngravingFrame and EngravingFrame:IsVisible() ) then
+		EngravingFrame:Hide();
+		RuneFrameControlButton:SetChecked(false);
+	end
+end
+
 function PaperDollFrame_OnEvent(self, event, ...)
 	local unit = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" or
@@ -697,7 +704,20 @@ function PaperDollItemSlotButton_OnShow(self, isBag)
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	end
+	self:RegisterEvent("ENGRAVING_MODE_CHANGED");
+	self:RegisterEvent("ENGRAVING_TARGETING_MODE_CHANGED");
+	self:RegisterEvent("RUNE_UPDATED");
 	PaperDollItemSlotButton_Update(self);
+
+	local slotName = self:GetName();
+	local texture = _G[slotName.."SubIconTexture"];
+	if(texture) then
+		texture:Hide();
+	end
+
+	if ( GetCVar("alwaysShowRuneIcons") == "1") then
+		PaperDollItemSlotButton_RefreshRuneIcon(self, true);
+	end
 end
 
 function PaperDollItemSlotButton_OnHide(self)
@@ -708,6 +728,9 @@ function PaperDollItemSlotButton_OnHide(self)
 	self:UnregisterEvent("CURSOR_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("UPDATE_INVENTORY_ALERTS");
+	self:UnregisterEvent("ENGRAVING_MODE_CHANGED");
+	self:UnregisterEvent("ENGRAVING_TARGETING_MODE_CHANGED");
+	self:UnregisterEvent("RUNE_UPDATED");
 end
 
 function PaperDollItemSlotButton_OnEvent(self, event, ...)
@@ -715,6 +738,7 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
 		if ( self:GetID() == arg1 ) then
 			PaperDollItemSlotButton_Update(self);
+			PaperDollItemSlotButton_RefreshRuneIcon(self, C_Engraving.GetEngravingModeEnabled());
 		end
 	elseif ( event == "UNIT_INVENTORY_CHANGED" ) then
 		if ( arg1 == "player" ) then
@@ -738,6 +762,12 @@ function PaperDollItemSlotButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UPDATE_INVENTORY_ALERTS" ) then
 		PaperDollItemSlotButton_Update(self);
+	elseif (event == "ENGRAVING_MODE_CHANGED") then
+		PaperDollItemSlotButton_RefreshRuneIcon(self, arg1);
+	elseif (event == "ENGRAVING_TARGETING_MODE_CHANGED") then
+		PaperDollItemSlotButton_EngravingTargetingModeChanged(self, arg1);
+	elseif (event == "RUNE_UPDATED") then
+		PaperDollItemSlotButton_RefreshRuneIcon(self, C_Engraving.GetEngravingModeEnabled());
 	end
 end
 
@@ -836,4 +866,58 @@ function PaperDollItemSlotButton_OnLeave(self)
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
 	GameTooltip:Hide();
 	ResetCursor();
+end
+
+function PaperDollItemSlotButton_RefreshRuneIcon(self, enabled)
+	if GetCVar("alwaysShowRuneIcons") == "1" then
+		enabled = true;
+		C_Engraving.RefreshRunesList();
+	end
+
+	local slotName = self:GetName();
+	local texture = _G[slotName.."SubIconTexture"];
+
+	if not texture then
+		return;
+	end
+
+	if ( C_Engraving.IsEngravingEnabled() and enabled and C_Engraving.IsEquipmentSlotEngravable(self:GetID()) ) then
+		local engravingInfo = C_Engraving.GetRuneForEquipmentSlot(self:GetID());
+		if(engravingInfo) then
+			texture:SetTexture(engravingInfo.iconTexture);
+		else
+			texture:SetTexture("Interface\\PaperDoll\\UI-Backpack-EmptySlot");
+		end
+
+		texture:Show();
+	else
+		texture:Hide();
+	end
+end
+
+function PaperDollItemSlotButton_EngravingTargetingModeChanged(self, enabled)
+	if(enabled) then
+		local engravingInfo = C_Engraving.GetCurrentRuneCast();
+		local highlight = engravingInfo and self:GetID() == engravingInfo.equipmentSlot;
+		SetItemButtonDesaturated(self, not highlight);
+	else
+		SetItemButtonDesaturated(self, false);
+	end
+end
+
+function RuneFrameControlButton_OnLoad(self)
+	if not C_Engraving.IsEngravingEnabled() then
+		self:Hide();
+	end
+end
+
+function RuneFrameControlButton_OnClick(self)
+	if ( EngravingFrame and EngravingFrame:IsVisible() ) then
+		EngravingFrame:Hide();
+	else
+		if ( not C_AddOns.IsAddOnLoaded("Blizzard_EngravingUI") ) then
+			UIParentLoadAddOn("Blizzard_EngravingUI");
+		end
+		EngravingFrame:Show();
+	end
 end

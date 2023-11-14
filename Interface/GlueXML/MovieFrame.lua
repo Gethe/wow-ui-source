@@ -22,6 +22,7 @@ function MovieFrame_PlayMovie(self, index)
 		end
 		GlueParent_CloseSecondaryScreen();
 	end
+	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicPlay", self);
 end
 
 function MovieFrame_PlayNextMovie(self)
@@ -44,22 +45,18 @@ function MovieFrame_OnShow(self)
 end
 
 function MovieFrame_OnHide(self)
-	MovieFrameSubtitleString:Hide();
+	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
 	self:StopMovie();
 	ShowCursor();
 end
 
 function MovieFrame_OnUpdate(self, elapsed)
-	if ( MovieFrameSubtitleString:IsShown() and self.fadingAlpha ) then
+	if ( self.fadingAlpha ) then
 		self.fadingAlpha = self.fadingAlpha + ((elapsed / self.fadeSpeed) * self.fadeDirection);
 		if ( self.fadingAlpha > 1.0 ) then
-			MovieFrameSubtitleString:SetAlpha(1.0);
 			self.fadingAlpha = nil;
 		elseif ( self.fadingAlpha < 0.0 ) then
-			MovieFrameSubtitleString:Hide();
 			self.fadingAlpha = nil;
-		else
-			MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
 		end
 	end
 end
@@ -78,19 +75,4 @@ function MovieFrame_OnMovieFinished(self)
 	end
 end
 
-function MovieFrame_OnMovieShowSubtitle(self, text)
-	MovieFrameSubtitleString:SetText(text);
-	MovieFrameSubtitleString:Show();
-	self.fadingAlpha = 0.0;
-	self.fadeDirection = 1.0;
-	self.fadeSpeed = MOVIE_CAPTION_FADE_TIME;
-	MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
-end
-
-function MovieFrame_OnMovieHideSubtitle(self)
-	self.fadingAlpha = 1.0;
-	self.fadeDirection = -1.0;
-	self.fadeSpeed = MOVIE_CAPTION_FADE_TIME / 2;
-	MovieFrameSubtitleString:SetAlpha(self.fadingAlpha);
-end
 

@@ -135,7 +135,6 @@ ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, 
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["GUILD_DEATHS"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-
 --NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
@@ -2175,7 +2174,7 @@ SlashCmdList["WHO"] = function(msg)
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
-	C_FriendList.SendWho(msg);
+	C_FriendList.SendWho(msg, Enum.SocialWhoOrigin.Chat);
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)
@@ -2314,17 +2313,17 @@ SlashCmdList["RESETCHAT"] = function(msg)
 end
 
 SlashCmdList["ENABLE_ADDONS"] = function(msg)
-	EnableAllAddOns(msg);
+	C_AddOns.EnableAllAddOns(msg);
 	ReloadUI();
 end
 
 SlashCmdList["DISABLE_ADDONS"] = function(msg)
-	DisableAllAddOns(msg);
+	C_AddOns.DisableAllAddOns(msg);
 	ReloadUI();
 end
 
 SlashCmdList["STOPWATCH"] = function(msg)
-	if ( not IsAddOnLoaded("Blizzard_TimeManager") ) then
+	if ( not C_AddOns.IsAddOnLoaded("Blizzard_TimeManager") ) then
 		UIParentLoadAddOn("Blizzard_TimeManager");
 	end
 	if ( StopwatchFrame ) then
@@ -2377,7 +2376,7 @@ SlashCmdList["STOPWATCH"] = function(msg)
 end
 
 --[[SlashCmdList["CALENDAR"] = function(msg)
-	if ( not IsAddOnLoaded("Blizzard_Calendar") ) then
+	if ( not C_AddOns.IsAddOnLoaded("Blizzard_Calendar") ) then
 		UIParentLoadAddOn("Blizzard_Calendar");
 	end
 	if ( Calendar_Toggle ) then
@@ -2530,7 +2529,7 @@ SlashCmdList["API"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2558,7 +2557,7 @@ SlashCmdList["COMMENTATOR_OVERRIDE"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2582,7 +2581,7 @@ SlashCmdList["COMMENTATOR_NAMETEAM"] = function(msg)
 end
 
 SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2598,7 +2597,7 @@ SlashCmdList["COMMENTATOR_ASSIGNPLAYER"] = function(msg)
 end
 
 SlashCmdList["RESET_COMMENTATOR_SETTINGS"] = function(msg)
-	if not IsAddOnLoaded("Blizzard_Commentator") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_Commentator") then
 		return;
 	end
 
@@ -2989,27 +2988,33 @@ function ChatFrame_ReceiveAllPrivateMessages(chatFrame)
 	chatFrame.excludePrivateMessageList = nil;
 end
 
+local macroEditBox;
+local function IsMacroEditBox(editBox)
+	return editBox == macroEditBox;
+end
+
 -- Set up a private editbox to handle macro execution
 do
 	local function GetDefaultChatEditBox(field)
 		return DEFAULT_CHAT_FRAME.editBox;
 	end
 
-    local editbox = CreateFrame("Editbox", "MacroEditBox");
-    editbox:RegisterEvent("EXECUTE_CHAT_LINE");
-    editbox:SetScript("OnEvent",
-		function(self,event,line)
-			if ( event == "EXECUTE_CHAT_LINE" ) then
+	macroEditBox = CreateFrame("Editbox");
+	macroEditBox:Hide();
+
+	local setMacroExecutionCallback = C_Macro.SetMacroExecuteLineCallback;
+	C_Macro.SetMacroExecuteLineCallback = nil; -- explicitly only set this once per ui-instance
+
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
+		setMacroExecutionCallback(function(line)
 				local defaulteditbox = securecall(GetDefaultChatEditBox);
-				self:SetAttribute("chatType", defaulteditbox:GetAttribute("chatType"));
-				self:SetAttribute("tellTarget", defaulteditbox:GetAttribute("tellTarget"));
-				self:SetAttribute("channelTarget", ChatEdit_GetChannelTarget(defaulteditbox));
-				self:SetText(line);
-				ChatEdit_SendText(self);
-			end
-		end
-	);
-	editbox:Hide();
+		macroEditBox:SetAttribute("chatType", defaulteditbox:GetAttribute("chatType"));
+		macroEditBox:SetAttribute("tellTarget", defaulteditbox:GetAttribute("tellTarget"));
+		macroEditBox:SetAttribute("channelTarget", ChatEdit_GetChannelTarget(defaulteditbox));
+		macroEditBox:SetText(line);
+		ChatEdit_SendText(macroEditBox);
+	end);
+	end);
 end
 
 function ChatFrame_OnEvent(self, event, ...)
@@ -4503,6 +4508,10 @@ function ChatEdit_SetLastToldTarget(name, chatType)
 end
 
 function ChatEdit_UpdateHeader(editBox)
+	if IsMacroEditBox(editBox) then
+		return;
+	end
+
 	local type = editBox:GetAttribute("chatType");
 	if ( not type ) then
 		return;
@@ -4681,7 +4690,7 @@ end
 
 function ChatEdit_ClearChat(editBox)
 	ChatEdit_ResetChatTypeToSticky(editBox);
-	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox) ) then
+	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or IsMacroEditBox(editBox)) ) then
 		editBox:SetText("");
 		editBox:Hide();
 	else

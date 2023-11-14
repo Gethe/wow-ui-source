@@ -75,6 +75,13 @@ function MainMenuBar_OnLoad(self)
 
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
+
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		--starting in 3.4.3 we need to make space for the new Collections micro button
+		UpdateMainMenuBarArt(self);
+	else
+		MainMenuBarTextureExtender:Hide();
+	end
 end
 
 
@@ -213,6 +220,26 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		UIParent_ManageFramePositions();
 		UpdateContainerFrameAnchors();
 	end
+end
+
+function UpdateMainMenuBarArt(self)
+	--adjust sizing to make space for MainMenuBarTextureExtender
+	MainMenuBar:SetSize(1044, 53);
+	MainMenuExpBar:SetSize(1044, 13);
+	MainMenuBarTexture0:SetPoint("BOTTOM", -394, 0);
+	MainMenuBarTexture1:SetPoint("BOTTOM", -138, 0);
+	MainMenuBarTexture2:SetPoint("BOTTOM", 118, 0);
+	MainMenuBarTexture3:SetPoint("BOTTOM", 394, 0);
+	MainMenuBarLeftEndCap:SetPoint("BOTTOM", -554, 0);
+	MainMenuBarRightEndCap:SetPoint("BOTTOM", 554, 0);
+	MainMenuBarPageNumber:SetPoint("CENTER", 20, -5);
+
+	--stretch XP texture to cover added space
+	MainMenuXPBarTexture0:SetSize(261, 10);
+	MainMenuXPBarTexture1:SetSize(261, 10);
+	MainMenuXPBarTexture2:SetSize(261, 10);
+	MainMenuXPBarTexture3:SetSize(261, 10);
+	MainMenuXPBarTexture3:SetPoint("BOTTOM", 389, 3);
 end
 
 function MainMenuTrackingBar_Configure(frame, isOnTop)
@@ -562,7 +589,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	UpdateAddOnMemoryUsage();
 	local totalMem = 0;
 
-	for i=1, GetNumAddOns(), 1 do
+	for i=1, C_AddOns.GetNumAddOns(), 1 do
 		local mem = GetAddOnMemoryUsage(i);
 		totalMem = totalMem + mem;
 		for j=1, NUM_ADDONS_TO_DISPLAY, 1 do
@@ -570,7 +597,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 				for k=NUM_ADDONS_TO_DISPLAY, 1, -1 do
 					if(k == j) then
 						topAddOns[k].value = mem;
-						topAddOns[k].name = GetAddOnInfo(i);
+						topAddOns[k].name = C_AddOns.GetAddOnInfo(i);
 						break;
 					elseif(k ~= 1) then
 						topAddOns[k].value = topAddOns[k-1].value;

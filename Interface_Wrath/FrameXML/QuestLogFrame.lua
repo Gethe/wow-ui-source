@@ -40,12 +40,13 @@ local function _QuestLog_HighlightQuest(questLogTitle)
 	end
 end
 
-
 function ToggleQuestLog()
-	if ( QuestLogFrame:IsVisible() ) then
-		HideUIPanel(QuestLogFrame);
-	else
-		ShowUIPanel(QuestLogFrame);
+	if ( not QuestMapFrame:IsVisible() ) then
+		if ( QuestLogFrame:IsVisible() ) then
+			HideUIPanel(QuestLogFrame);
+		else
+			ShowUIPanel(QuestLogFrame);
+		end
 	end
 end
 
@@ -110,6 +111,7 @@ function QuestLog_OnEvent(self, event, ...)
 		if ( GetCVar("autoQuestWatch") == "1" ) then
 			_QuestLog_ToggleQuestWatch(arg1);
 		end
+		QuestLog_Update();
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
 		QuestLog_Update();
 	elseif ( event == "QUEST_DETAIL" ) then
@@ -139,7 +141,7 @@ function QuestLog_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 	QuestLogControlPanel_UpdatePosition();
-	-- QuestLogShowMapPOI_UpdatePosition();
+	QuestLogShowMapPOI_UpdatePosition();
 	QuestLog_SetSelection(GetQuestLogSelection());
 	QuestLogDetailFrame_AttachToQuestLog();
 	QuestLog_Update();
@@ -149,6 +151,7 @@ end
 function QuestLog_OnHide(self)
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
+	QuestLogShowMapPOI_UpdatePosition();
 	QuestLogControlPanel_UpdatePosition();
 
 	QuestLogDetailFrame_DetachFromQuestLog();
@@ -161,6 +164,14 @@ function QuestLog_OnUpdate(self, elapsed)
 			QuestLogTimerText:SetText(TIME_REMAINING.." "..SecondsToTime(GetQuestLogTimeLeft()));
 			QuestLogFrame.timePassed = 0;
 		end
+	end
+end
+
+function QuestLog_UpdateMapButton()
+	if ( WatchFrame.showObjectives and GetNumQuestLogEntries() ~= 0 and GetCVarBool("questPOI") and GetCVarBool("questHelper")) then
+		QuestLogFrameShowMapButton:Show();
+	else
+		QuestLogFrameShowMapButton:Hide();
 	end
 end
 
@@ -614,14 +625,14 @@ end
 
 function QuestLogDetailFrame_OnShow(self)
 	QuestLogControlPanel_UpdatePosition();
-	--QuestLogShowMapPOI_UpdatePosition();
+	QuestLogShowMapPOI_UpdatePosition();
 	QuestLog_UpdateQuestDetails();
 end
 
 function QuestLogDetailFrame_OnHide(self)
 	-- this function effectively deselects the selected quest
 	QuestLogControlPanel_UpdatePosition();
-	--QuestLogShowMapPOI_UpdatePosition();
+	QuestLogShowMapPOI_UpdatePosition();
 end
 
 function QuestLogDetailFrame_AttachToQuestLog()
@@ -695,6 +706,20 @@ function QuestLogControlPanel_UpdateState()
 	end
 end
 
+function QuestLogShowMapPOI_UpdatePosition()
+	local parent;
+	if ( QuestLogFrame:IsShown() ) then
+		parent = QuestLogFrame;
+	elseif ( QuestLogDetailFrame:IsShown() ) then
+		parent = QuestLogDetailFrame;
+	end
+	
+	if ( parent ) then
+		QuestLogFrameShowMapButton:SetParent(parent);
+		QuestLogFrameShowMapButton:SetPoint("TOPRIGHT", -25, -38);
+	end
+end
+
 --
 -- QuestLogListScrollFrame
 --
@@ -719,6 +744,7 @@ function _QuestLog_ToggleQuestWatch(questIndex)
 		AddQuestWatch(questIndex);
 		WatchFrame_Update();
 	end
+	QuestMapFrame_UpdateAll();
 end
 
 function QuestLogFrameTrackButton_OnClick(self)

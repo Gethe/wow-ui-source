@@ -20,11 +20,6 @@
 		</ModelScene>
 		<ModelScene name="NoZoomModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoZoomModelSceneMixin" virtual="true"/>
 		<ModelScene name="PanningModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="PanningModelSceneMixin" virtual="true" />
-		<ModelScene name="ReversedLightingModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" virtual="true">
-			<KeyValues>
-				<KeyValue key="reversedLighting" value="true" type="boolean"/>
-			</KeyValues>
-		</ModelScene>
-		<ModelScene name="NoCameraControlModelSceneMixinTemplate" inherits="ReversedLightingModelSceneMixinTemplate" mixin="NoCameraControlModelSceneMixin" virtual="true" />
+		<ModelScene name="NoCameraControlModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoCameraControlModelSceneMixin" virtual="true" />
 	</ScopedModifier>
 </Ui>

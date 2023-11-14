@@ -262,8 +262,15 @@ function MerchantFrame_UpdateMerchantInfo()
 			MerchantFrameItem_UpdateQuality(merchantButton, itemLink);
 
 			local merchantItemID = GetMerchantItemID(index);
-			local isHeirloom = false;--merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
-			local isKnownHeirloom = false;--isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
+
+			local isHeirloom, isKnownHeirloom;
+			if(ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING)) then
+				isHeirloom = merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
+				isKnownHeirloom = isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
+			else
+				isHeirloom = false;
+				isKnownHeirloom = false;
+			end
 
 			itemButton.showNonrefundablePrompt = isHeirloom;
 

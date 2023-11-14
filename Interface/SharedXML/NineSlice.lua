@@ -19,6 +19,7 @@ if tbl then
 	Import("ipairs");
 	Import("GetFinalNameFromTextureKit");
 	Import("C_Texture");
+	Import("Vector2DMixin");
 end
 ---------------
 

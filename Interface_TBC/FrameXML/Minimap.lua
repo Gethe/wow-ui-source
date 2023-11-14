@@ -20,6 +20,7 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 end
 
 function ToggleMinimap()
@@ -94,6 +95,8 @@ function Minimap_OnEvent(self, event, ...)
 		elseif ( zoom == 0 ) then
 			MinimapZoomOut:Disable();
 		end
+	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+		Minimap_Update();
 	end
 end
 
@@ -631,14 +634,12 @@ function MiniMapLFGDropDown_OnLoad(self)
 end
 
 function MiniMapLFGDropDown_Initialize()
-	if (IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
-		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = LFG_LIST_UNLIST;
-			info.func = wrapFunc(C_LFGList.RemoveListing);
-			info.disabled = not C_LFGList.HasActiveEntryInfo();
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-		end
+	if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = LFG_LIST_UNLIST;
+		info.func = wrapFunc(C_LFGList.RemoveListing);
+		info.disabled = not C_LFGList.HasActiveEntryInfo();
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
 	end
 end

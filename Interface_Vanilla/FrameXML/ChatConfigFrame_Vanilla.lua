@@ -32,19 +32,3 @@ COMBAT_CONFIG_MESSAGETYPES_MISC = {
 		tooltip = UNIT_LOYALTY_COMBATLOG_TOOLTIP,
 	},
 };
-
-function GetTemplateForChatConfigFrame()
-	return "ChatConfigWideCheckBoxWithSwatchTemplate";
-end
-
-function GetChatConfigChannelInfo()
-	return "MovableChatConfigWideCheckBoxWithSwatchTemplate", CHAT_CONFIG_CHANNEL_SETTINGS_TITLE_WITH_DRAG_INSTRUCTIONS;
-end
-
-function UpdateColorClassCheckboxes(baseName, value)
-	return;
-end
-
-function HideClassColors(value, checkBoxName)
-	return;
-end

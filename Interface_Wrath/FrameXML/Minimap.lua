@@ -21,6 +21,7 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 end
 
 function ToggleMinimap()
@@ -95,6 +96,8 @@ function Minimap_OnEvent(self, event, ...)
 		elseif ( zoom == 0 ) then
 			MinimapZoomOut:Disable();
 		end
+	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+		Minimap_Update();
 	end
 end
 
@@ -143,54 +146,90 @@ function Minimap_ZoomOut()
 	MinimapZoomOut:Click();
 end
 
-local MAX_VERBOSE_LFG_ACTIVITIES_MINIMAP_TOOLTIP = 20;
-function MiniMapLFGFrame_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+function MiniMapLFGFrame_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("LFG_UPDATE");
+	self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:SetFrameLevel(self:GetFrameLevel()+1)
 
-	if (activeEntryInfo) then
-		local numActivities = #activeEntryInfo.activityIDs;
-		if (numActivities > 0) then
-			local verbose = numActivities <= MAX_VERBOSE_LFG_ACTIVITIES_MINIMAP_TOOLTIP;
-			GameTooltip:SetText(LFG_LIST_MY_ACTIVITY_LIST_HEADER, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			
-			local organizedActivities = LFGUtil_OrganizeActivitiesByActivityGroup(activeEntryInfo.activityIDs);
-			local activityGroupIDs = GetKeysArray(organizedActivities);
-			LFGUtil_SortActivityGroupIDs(activityGroupIDs);
-			for _, activityGroupID in ipairs(activityGroupIDs) do
-				local activityIDs = organizedActivities[activityGroupID];
-				if (activityGroupID == 0) then -- Free-floating activities (no group)
-					for _, activityID in ipairs(activityIDs) do
-						local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-						if (activityInfo and activityInfo.fullName ~= "") then
-							GameTooltip:AddLine(activityInfo.fullName);
-						end
-					end
-				else -- Grouped activities
-					local activityGroupName = C_LFGList.GetActivityGroupInfo(activityGroupID);
-					if (verbose) then
-						GameTooltip:AddLine(activityGroupName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-						for _, activityID in ipairs(activityIDs) do
-							local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
-							if (activityInfo and activityInfo.fullName ~= "") then
-								GameTooltip:AddLine(string.format(LFG_LIST_INDENT, activityInfo.fullName));
-							end
-						end
-					else
-						GameTooltip:AddLine(activityGroupName.." ("..string.format(LFGBROWSE_ACTIVITY_COUNT, #activityIDs)..")", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-					end
+	UIDropDownMenu_Initialize(self.DropDown, QueueStatusDropDown_Update, "MENU");
+end
+
+function MiniMapLFGFrame_OnClick(self, button)
+	if ( button == "RightButton" ) then
+		QueueStatusDropDown_Show(self.DropDown, self:GetName());
+	else
+		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
+		if ( IsInLFDBattlefield() ) then
+			inBattlefield = true;
+			showScoreboard = true;
+		end
+		local lfgListActiveEntry = C_LFGList.HasActiveEntryInfo();
+		if ( inBattlefield ) then
+			if ( showScoreboard ) then
+				TogglePVPScoreboardOrResults();
+			end
+		elseif ( lfgListActiveEntry ) then
+			LFGListUtil_OpenBestWindow(true);
+		else
+			--See if we have any active LFGList applications
+			local apps = C_LFGList.GetApplications();
+			for i=1, #apps do
+				local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+				if ( appStatus == "applied" or appStatus == "invited" ) then
+					--We want to open to the LFGList screen
+					LFGListUtil_OpenBestWindow(true);
+					return;
 				end
 			end
 
-			if (activeEntryInfo.comment and activeEntryInfo.comment ~= "") then
-				GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, activeEntryInfo.comment), DISABLED_FONT_COLOR.r, DISABLED_FONT_COLOR.g, DISABLED_FONT_COLOR.b);
-			end
-
-			GameTooltip:Show();
-		else
-			GameTooltip:Hide();
+			PVEFrame_ShowFrame();
 		end
 	end
+end
+
+function MiniMapLFGFrame_OnEvent(self, event, ...)
+	if (	event == "PLAYER_ENTERING_WORLD" or
+			event == "GROUP_ROSTER_UPDATE" or
+			event == "LFG_UPDATE" or 
+			event == "LFG_QUEUE_STATUS_UPDATE" ) then
+		--Try each LFG type
+		local hasLFGMode = false;
+		for i=1, NUM_LE_LFG_CATEGORYS do
+			local mode, submode = GetLFGMode(i);
+			if ( mode and submode ~= "noteleport" ) then
+				hasLFGMode = true;
+				break;
+			end
+		end
+
+		--Try LFGList entries
+		local hasApp = false;
+		local apps = C_LFGList.GetApplications();
+		for i=1, #apps do
+			local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+			if ( appStatus == "applied" or appStatus == "invited" ) then
+				hasApp = true;
+				break;
+			end
+		end
+
+		if ( C_LFGList.HasActiveEntryInfo() or hasLFGMode or hasApp) then
+			self:Show();
+		else
+			self:Hide();
+		end
+	end
+end
+
+function MiniMapLFGFrame_OnEnter(self)
+	QueueStatusFrame:Show();
+end
+
+function MiniMapLFGFrame_OnLeave(self)
+	QueueStatusFrame:Hide();
 end
 
 function EyeTemplate_OnUpdate(self, elapsed)
@@ -693,20 +732,18 @@ function MiniMapLFGDropDown_OnLoad(self)
 end
 
 function MiniMapLFGDropDown_Initialize()
-	if (IsAddOnLoaded("Blizzard_LookingForGroupUI")) then
-		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = LFG_LIST_EDIT;
-			info.func = function() ShowLFGParentFrame(1); end;
-			info.disabled = not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing());
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
+	if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = LFG_LIST_EDIT;
+		info.func = function() PVEFrame_ShowFrame(); end;
+		info.disabled = not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing());
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
 
-			info.text = LFG_LIST_UNLIST;
-			info.func = wrapFunc(C_LFGList.RemoveListing);
-			info.disabled = not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing());
-			info.notCheckable = 1;
-			UIDropDownMenu_AddButton(info);
-		end
+		info.text = LFG_LIST_UNLIST;
+		info.func = wrapFunc(C_LFGList.RemoveListing);
+		info.disabled = not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing());
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
 	end
 end

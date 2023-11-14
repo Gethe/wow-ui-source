@@ -41,7 +41,7 @@
 			<TextInsets left="10" right="10" bottom="5" top="0"/>
 		</EditBox>
 
-		<EditBox name="InputBoxTemplate" inherits="InputBoxScriptTemplate" virtual="true">
+		<EditBox name="InputBoxVisualTemplate" virtual="true">
 			<Layers>
 				<Layer level="BACKGROUND">
 					<Texture parentKey="Left" atlas="common-search-border-left" useAtlasSize="false">
@@ -68,6 +68,8 @@
 			<FontString inherits="ChatFontNormal"/>
 		</EditBox>
 
+		<EditBox name="InputBoxTemplate" inherits="InputBoxScriptTemplate, InputBoxVisualTemplate" virtual="true"/>
+
 		<!--No longer to be used to create scroll bars. See the new scroll bar components instead.-->
 		<Texture name="UIPanelScrollBarButton" virtual="true">
 			<TexCoords left="0.20" right="0.80" top="0.25" bottom="0.75"/>
@@ -88,7 +90,7 @@
 			<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
 			<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
 		</Button>
-	
+
 		<ScrollFrame name="ScrollFrameTemplate" virtual="true">
 			<!--
 			<KeyValues>

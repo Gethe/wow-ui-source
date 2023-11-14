@@ -55,6 +55,19 @@ function SetItemButtonTexture(button, texture)
 	icon:SetTexture(texture);
 end
 
+function SetItemButtonSubTexture(button, texture)
+	if ( not button ) then
+		return;
+	end
+	local icon = button.subicon or _G[button:GetName().."SubIconTexture"];
+	if ( texture ) then
+		icon:Show();
+	else
+		icon:Hide();
+	end
+	icon:SetTexture(texture);
+end
+
 function SetItemButtonTextureVertexColor(button, r, g, b)
 	if ( not button ) then
 		return;

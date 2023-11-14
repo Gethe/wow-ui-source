@@ -484,6 +484,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="QuestFont_Larger" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.ttf" height="16"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="13" spacing="8"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="16"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="16"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.TTF" height="16"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="QuestFont_Huge" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.ttf" height="18"/>

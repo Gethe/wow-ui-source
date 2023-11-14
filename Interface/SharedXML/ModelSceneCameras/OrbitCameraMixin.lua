@@ -86,13 +86,6 @@ function OrbitCameraMixin:ApplyFromModelSceneCameraInfo(modelSceneCameraInfo, tr
 		self:SnapAllInterpolatedValues();
 	end
 	self:UpdateCameraOrientationAndPosition();
-
-	self:SaveInitialTransform(transitionalCameraInfo);
-end
-
-function OrbitCameraMixin:SaveInitialTransform(cameraInfo)
-	self.initialLightYaw, self.initialLightPitch = Vector3D_CalculateYawPitchFromNormal(Vector3D_Normalize(self:GetOwningScene():GetLightDirection()));
-	self.initialCameraYaw, self.initialCameraPitch = self:GetYaw(), self:GetPitch();
 end
 
 function OrbitCameraMixin:SetTarget(x, y, z)
@@ -596,15 +589,8 @@ end
 
 function OrbitCameraMixin:UpdateLight()
 	if self:ShouldAlignLightToOrbitDelta() then
-		local yaw, pitch, roll = self:GetInterpolatedOrientation();
- 
-		local cameraDeltaYaw = yaw - self.initialCameraYaw;
-		local cameraDeltaPitch = pitch - self.initialCameraPitch;
-
-		local lightYaw = self.initialLightYaw + cameraDeltaYaw;
-		local lightPitch = self.initialLightPitch + cameraDeltaPitch;
-
-		self:GetOwningScene():SetLightDirection(Vector3D_CalculateNormalFromYawPitch(lightYaw, lightPitch));
+		local owningScene = self:GetOwningScene();
+		owningScene:SetLightDirection(self:GetForwardVector());
 	end
 end
 

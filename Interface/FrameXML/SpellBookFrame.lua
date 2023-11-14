@@ -486,8 +486,10 @@ function SpellButton_UpdateButton(self)
 		texture = GetSpellTexture(slot, SpellBookFrame.bookType);
 	end
 
+	local hidden = GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING and slot and IsSpellHidden(slot, SpellBookFrame.bookType);
+
 	-- If no spell, hide everything and return, or kiosk mode and future spell
-	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and Kiosk.IsEnabled())) then
+	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and Kiosk.IsEnabled()) or hidden) then
 		iconTexture:Hide();
 		spellString:Hide();
 		subSpellString:Hide();

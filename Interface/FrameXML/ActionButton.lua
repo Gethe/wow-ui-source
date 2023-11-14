@@ -979,3 +979,10 @@ function ActionButton_UpdateFlyout(self)
 		self.FlyoutArrow:Hide();
 	end
 end
+
+ActionBarActionButtonMixin = {};
+
+function ActionBarActionButtonMixin:UpdateAction(force)
+	-- This is a wrapper for Classic until we update to use the full mixin.
+	ActionButton_UpdateAction(self);
+end

@@ -14,7 +14,8 @@ function GossipFrameMixin:OnEvent(event, ...)
 		NPCFriendshipStatusBar_Update(self);
 		self:Update();
 	elseif ( event == "GOSSIP_CLOSED" ) then
-		self:HandleHide();
+		local interactionIsContinuing = ...;
+		self:HandleHide(interactionIsContinuing);
 	elseif ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
 		self:Update();
 	end

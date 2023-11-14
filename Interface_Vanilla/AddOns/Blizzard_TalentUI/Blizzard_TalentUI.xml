@@ -185,47 +185,6 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<Button name="PlayerTalentFrameRoleButton">
-				<Size x="34" y="34"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="PlayerTalentFrame" x="-45" y="-39"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
-							<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="PlayerTalentFrameRoleDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
-						<Scripts>
-							<OnLoad>
-								PlayerTalentFrameRoleDropDown_OnLoad(self);
-							</OnLoad>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(ROLE, 1, 1, 1);
-						GameTooltip:AddLine(SET_ROLE_TOOLTIP, nil, nil, nil, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						ToggleDropDownMenu(1, nil, PlayerTalentFrameRoleDropDown, "PlayerTalentFrameRoleButton", 17, 4);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
-				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-			</Button>
 			<Frame name="PlayerTalentFrameStatusFrame" hidden="true">
 				<Size x="224" y="20"/>
 				<Anchors>

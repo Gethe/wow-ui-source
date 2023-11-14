@@ -64,6 +64,17 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "SpellPushedToActionbar",
+			Type = "Event",
+			LiteralName = "SPELL_PUSHED_TO_ACTIONBAR",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "page", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellTextUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_TEXT_UPDATE",

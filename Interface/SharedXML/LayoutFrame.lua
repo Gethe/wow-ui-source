@@ -132,6 +132,43 @@ function BaseLayoutMixin:OnCleaned()
 	-- implement in derived if you want
 end
 
+function BaseLayoutMixin:SetFixedWidth(width)
+	self.fixedWidth = width;
+end
+
+function BaseLayoutMixin:SetFixedHeight(height)
+	self.fixedHeight = height;
+end
+
+function BaseLayoutMixin:SetFixedSize(width, height)
+	self:SetFixedWidth(width);
+	self:SetFixedHeight(height);
+end
+
+function BaseLayoutMixin:GetFixedWidth()
+	return self.fixedWidth;
+end
+
+function BaseLayoutMixin:GetFixedHeight()
+	return self.fixedHeight;
+end
+
+function BaseLayoutMixin:GetFixedSize()
+	return self.fixedWidth, self.fixedHeight;
+end
+
+function BaseLayoutMixin:SetHeightPadding(padding)
+	self.heightPadding = padding;
+end
+
+function BaseLayoutMixin:GetHeightPadding()
+	return self.heightPadding or 0;
+end
+
+function BaseLayoutMixin:GetWidthPadding()
+	return self.widthPadding or 0;
+end
+
 --------------------------------------------------------------------------------
 -- Layout Mixin
 --------------------------------------------------------------------------------
@@ -162,8 +199,15 @@ local function GetSize(desired, fixed, minimum, maximum)
 	return fixed or Clamp(desired, minimum or desired, maximum or desired);
 end
 
+local function GetSizeHelper(expand, fixedSize, childSize)
+	if expand and fixedSize and childSize > fixedSize then
+		return childSize;
+	else
+		return fixedSize or childSize;
+	end
+end
+
 function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
-	local frameWidth, frameHeight;
 	local leftPadding, rightPadding, topPadding, bottomPadding = self:GetPadding();
 
 	childrenWidth = childrenWidth + leftPadding + rightPadding;
@@ -171,16 +215,8 @@ function LayoutMixin:CalculateFrameSize(childrenWidth, childrenHeight)
 
 	-- Expand this frame if the "expand" keyvalue is set and children width or height is larger.
 	-- Otherwise, set this frame size to the fixed size if set, or the size of the children
-	if (self.expand and self.fixedWidth and childrenWidth > self.fixedWidth) then
-		frameWidth = childrenWidth;
-	else
-		frameWidth = self.fixedWidth or childrenWidth;
-	end
-	if (self.expand and self.fixedHeight and childrenHeight > self.fixedHeight) then
-		frameHeight = childrenHeight;
-	else
-		frameHeight = self.fixedHeight or childrenHeight;
-	end
+	local frameWidth = GetSizeHelper(self.expand, self:GetFixedWidth(), childrenWidth);
+	local frameHeight = GetSizeHelper(self.expand, self:GetFixedHeight(), childrenHeight);
 	return GetSize(frameWidth, nil, self.minimumWidth, self.maximumWidth), GetSize(frameHeight, nil, self.minimumHeight, self.maximumHeight);
 end
 
@@ -379,8 +415,8 @@ function ResizeLayoutMixin:Layout()
 	end
 
 	if left and right and top and bottom then
-		local width = GetSize((right - left) + (self.widthPadding or 0), self.fixedWidth, self.minimumWidth, self.maximumWidth);
-		local height = GetSize((top - bottom) + (self.heightPadding or 0), self.fixedHeight, self.minimumHeight, self.maximumHeight);
+		local width = GetSize((right - left) + self:GetWidthPadding(), self:GetFixedWidth(), self.minimumWidth, self.maximumWidth);
+		local height = GetSize((top - bottom) + self:GetHeightPadding(), self:GetFixedHeight(), self.minimumHeight, self.maximumHeight);
 
 		self:SetSize(width, height);
 	end

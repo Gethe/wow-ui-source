@@ -6,6 +6,101 @@ local LFGInfo =
 
 	Functions =
 	{
+		{
+			Name = "CanPlayerUseGroupFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFD",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFR",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePremadeGroup",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLFDLockStates",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "lockInfo", Type = "table", InnerType = "LFGLockInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRoleCheckDifficultyDetails",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = true },
+				{ Name = "isLevelReduced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGroupFinderEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLFDEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLFREnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPremadeGroupEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -29,6 +124,11 @@ local LFGInfo =
 			Name = "LfgCompletionReward",
 			Type = "Event",
 			LiteralName = "LFG_COMPLETION_REWARD",
+		},
+		{
+			Name = "LfgEnabledStateChanged",
+			Type = "Event",
+			LiteralName = "LFG_ENABLED_STATE_CHANGED",
 		},
 		{
 			Name = "LfgInvalidErrorMessage",

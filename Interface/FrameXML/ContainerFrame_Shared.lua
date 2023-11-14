@@ -34,6 +34,7 @@ ADVERTISE_SLOTS_LEVEL = 20; -- Don't show the "Add Slots" button below this leve
 
 function ContainerFrame_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
+
 	if ( event == "BAG_OPEN" ) then
 		if ( self:GetID() == arg1 ) then
 			self:Show();
@@ -49,6 +50,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 	elseif ( event == "BAG_UPDATE" ) then
 		if ( self:GetID() == arg1 ) then
  			ContainerFrame_Update(self);
+			ContainerFrame_RefreshRuneIcons(self, C_Engraving.GetEngravingModeEnabled());
 		end
 	elseif ( event == "ITEM_LOCK_CHANGED" ) then
 		local bag, slot = arg1, arg2;
@@ -83,6 +85,12 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
 		BackpackTokenFrame_Update();
+	elseif (event == "ENGRAVING_MODE_CHANGED") then
+		ContainerFrame_RefreshRuneIcons(self, arg1);
+	elseif (event == "ENGRAVING_TARGETING_MODE_CHANGED") then
+		ContainerFrame_EngravingTargetingModeChanged(self, arg1);
+	elseif (event == "RUNE_UPDATED") then
+		ContainerFrame_RefreshRuneIcons(self, C_Engraving.GetEngravingModeEnabled());
 	end
 end
 
@@ -169,6 +177,9 @@ function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
 	self:UnregisterEvent("BAG_NEW_ITEMS_UPDATED");
 	self:UnregisterEvent("BAG_SLOT_FLAGS_UPDATED");
+	self:UnregisterEvent("ENGRAVING_MODE_CHANGED");
+	self:UnregisterEvent("ENGRAVING_TARGETING_MODE_CHANGED");
+	self:UnregisterEvent("RUNE_UPDATED");
 
 	UpdateNewItemList(self);
 
@@ -228,6 +239,9 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED");
 	self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED");
+	self:RegisterEvent("ENGRAVING_MODE_CHANGED");
+	self:RegisterEvent("ENGRAVING_TARGETING_MODE_CHANGED");
+	self:RegisterEvent("RUNE_UPDATED");
 
 	--self.FilterIcon:Hide();
 	if ( self:GetID() == Enum.BagIndex.Backpack ) then
@@ -295,6 +309,8 @@ function ContainerFrame_OnShow(self)
 	if ( ManageBackpackTokenFrame ) then
 		ManageBackpackTokenFrame();
 	end
+
+	ContainerFrame_RefreshRuneIcons(self, C_Engraving.GetEngravingModeEnabled());
 end
 
 function OpenBag(id, force)
@@ -1061,6 +1077,52 @@ function ContainerFrameItemButton_OnLoad(self)
 	end
 	self.UpdateTooltip = ContainerFrameItemButton_OnEnter;
 	self.timeSinceUpgradeCheck = 0;
+end
+
+function ContainerFrame_RefreshRuneIcons(self, enabled)
+	if GetCVar("alwaysShowRuneIcons") == "1" then
+		enabled = true;
+		C_Engraving.RefreshRunesList();
+	end
+
+	for c = 1, NUM_CONTAINER_FRAMES, 1 do
+		local frame = _G["ContainerFrame"..c];
+		local name = frame:GetName();
+		if (frame:IsShown()) then
+			for s = 1, frame.size, 1 do
+				local itemButton = _G[name.."Item"..s];
+				local texture = "Interface\\PaperDoll\\UI-Backpack-EmptySlot";
+				if ( C_Engraving.IsEngravingEnabled() and enabled and C_Engraving.IsInventorySlotEngravable(frame:GetID(), itemButton:GetID()) ) then
+					local engravingInfo = C_Engraving.GetRuneForInventorySlot(frame:GetID(), itemButton:GetID());
+					if(engravingInfo) then
+						texture = engravingInfo.iconTexture;
+					end
+
+					SetItemButtonSubTexture(itemButton, texture);
+				else
+					SetItemButtonSubTexture(itemButton, nil);
+				end
+			end
+		end
+	end
+end
+
+function ContainerFrame_EngravingTargetingModeChanged(self, enabled)
+	for c = 1, NUM_CONTAINER_FRAMES, 1 do
+		local frame = _G["ContainerFrame"..c];
+		local name = frame:GetName();
+		if (frame:IsShown()) then
+			for s = 1, frame.size, 1 do
+				local itemButton = _G[name.."Item"..s];
+				if(enabled) then
+					local engravable = C_Engraving.IsInventorySlotEngravableByCurrentRuneCast(frame:GetID(), itemButton:GetID());
+					SetItemButtonDesaturated(itemButton, not engravable);
+				else
+					SetItemButtonDesaturated(itemButton, false);
+				end
+			end
+		end
+	end
 end
 
 --[[

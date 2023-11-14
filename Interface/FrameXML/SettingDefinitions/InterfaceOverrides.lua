@@ -5,7 +5,7 @@ function InterfaceOverrides.CreateLargerNameplateSetting(category)
 end
 
 function InterfaceOverrides.AdjustNameplateSettings(category)
-	do
+	if GetClassicExpansionLevel() > LE_EXPANSION_CLASSIC then
 		-- Nameplate Distance
 		local minValue, maxValue, step = 20, 41, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -100,7 +100,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 	do
 		-- Show Minimap Clock
 		local function CVarChangedCB()
-			if (IsAddOnLoaded("Blizzard_TimeManager")) then
+			if (C_AddOns.IsAddOnLoaded("Blizzard_TimeManager")) then
 				TimeManagerClockButton_UpdateShowClockSetting();
 			end
 		end
@@ -131,6 +131,15 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 
 	--Show Aggro Percentages
 	Settings.SetupCVarCheckBox(category, "threatShowNumeric", SHOW_AGGRO_PERCENTAGES, OPTION_TOOLTIP_SHOW_NUMERIC_THREAT);
+
+	--Show Enemy Castbars
+	if GetClassicExpansionLevel() == LE_EXPANSION_CLASSIC then
+		Settings.SetupCVarCheckBox(category, "showTargetCastbar", SHOW_ENEMY_CASTBARS, OPTION_TOOLTIP_SHOW_ENEMY_CASTBARS);		
+	end
+
+	if C_Engraving.IsEngravingEnabled() then
+		Settings.SetupCVarCheckBox(category, "alwaysShowRuneIcons", ALWAYS_SHOW_RUNE_ICONS, OPTION_TOOLTIP_ALWAYS_SHOW_RUNE_ICONS);		
+	end
 
 	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
 		do
@@ -270,7 +279,7 @@ function InterfaceOverrides.SetRaidProfileOption(option, value)
 end
 
 function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
-	if ( not IsAddOnLoaded("Blizzard_CUFProfiles") ) then
+	if ( not C_AddOns.IsAddOnLoaded("Blizzard_CUFProfiles") ) then
 		UIParentLoadAddOn("Blizzard_CUFProfiles");
 	end
 
@@ -755,4 +764,11 @@ end
 
 function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
 	--No setting in Classic
+end
+
+function InterfaceOverrides.ShowTutorialsOnButtonClick()
+		SetCVar("closedInfoFrames", ""); -- reset the help plates too
+		SetCVar("showTutorials", "1");
+		ResetTutorials();
+		TutorialFrame_HideAllAlerts();
 end

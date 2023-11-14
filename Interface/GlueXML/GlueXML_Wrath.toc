@@ -13,6 +13,7 @@ GlueCheck.lua
 ..\SharedXML\LocaleUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
+..\SharedXML\AddOnUtil.lua
 ..\SharedXML\Flags.lua
 ..\SharedXML\CallbackRegistry.lua
 ..\SharedXML\CvarUtil.lua
@@ -28,6 +29,7 @@ GlueCheck.lua
 ..\SharedXML\SecureUtil.lua
 ..\SharedXML\TimeUtil.lua
 ..\SharedXML\PixelUtilSecure.lua
+..\SharedXML\VectorLib.xml
 ..\SharedXML\NineSliceLayouts.lua
 ..\SharedXML\NineSlice.lua
 ..\SharedXML\BindingUtil.lua
@@ -39,8 +41,6 @@ GlueCheck.lua
 ..\SharedXML\Pools.lua
 ..\SharedXML\CircularBuffer.lua
 ..\SharedXML\FontableFrameMixin.lua
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
 ..\SharedXML\KeyCommand.lua
 ..\SharedXML\PixelUtilSecure.lua
@@ -78,7 +78,6 @@ GlueFonts.xml
 GlueFontStyles.xml
 ..\..\Interface_Wrath\GlueXML\GlueLocalization.xml
 ..\SharedXML\SecureCurrencyUtil.lua
-..\SharedXML\TextureUtil.lua
 ..\SharedXML\Backdrop.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SharedTooltipTemplates.xml
@@ -97,9 +96,8 @@ GlueContextMenu.xml
 
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
-..\SharedXML\Vector2D.lua
-..\SharedXML\Vector3D.lua
 ..\SharedXML\Spline.lua
+..\SharedXML\ModelSceneControlFrame.xml
 ..\SharedXML\ModelSceneTemplates.xml
 ..\SharedXML\ModelSceneMixin.xml
 ..\SharedXML\ModelSceneActorMixin.xml
@@ -107,6 +105,7 @@ GlueContextMenu.xml
 ..\SharedXML\BulletPoint.xml
 ..\SharedXML\GameTooltipTemplate.xml
 ..\SharedXML\FrameStack.lua
+..\SharedXML\DebugBarManager.lua
 
 ##New stuff!!!
 GlueAddons.lua
@@ -135,6 +134,7 @@ KioskModeSplash.xml
 CharacterServicesShared.lua
 CharacterServicesTemplates.xml
 CharacterServices.xml
+..\SharedXML\CharacterServicesPaidNameChange.xml
 CharacterServicesPaidCharacterTransfer.xml
 CharacterServicesPaidFactionChange.xml
 CharacterServicesPaidRaceChange.xml
@@ -155,6 +155,7 @@ MovieFrame.xml
 GlueMenuFrame.xml
 SocialContract.xml
 ..\SharedXML\SharedUtils.lua
+..\SharedXML\ToolWindowOwnerMixin.lua
 
 ## Should only load internally
 DesignerMenu.xml

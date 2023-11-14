@@ -71,7 +71,7 @@ local function CreateQualitySliderSetting(cvar, label, proxyName, tooltip)
 	local defaultValue = tonumber(GetCVarDefault(cvar));
 	local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation,
 		Settings.VarType.Number, label, defaultValue, getValue, nil, commitValue);
-	
+
 	local minValue, maxValue, step = 0, 9, 1;
 	local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 	options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
@@ -89,14 +89,14 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local function AddRecommended(container, cvar)
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
 		local defaultValue = getDefaultValue();
-	
+
 		for index, data in ipairs(container:GetData()) do
 			if data.value == defaultValue then
 				data.recommend = true;
 			end
 		end
 	end
-	
+
 	local function AddValidatedSettingOption(container, cvar, raid, value, label, tooltip)
 		local data = container:Add(value, label, tooltip);
 		local error = IsGraphicsSettingValueSupported(cvar, value, raid);
@@ -237,7 +237,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local function OnDropDownValueChanged(self, option)
 			setting:SetValue(option.value);
 		end
-		
+
 		self.cbrHandles:RegisterCallback(dropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
 
 		local initTooltip = Settings.CreateOptionsInitTooltip(setting, name, tooltip, options);
@@ -292,13 +292,13 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 
 			if value then
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			else 
+			else
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			end
 
 			control.SliderWithSteppers:SetEnabled_(value);
 		end
-		
+
 		local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbName, cbTooltip);
 		control.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
 		control:SetTooltipFunc(cbInitTooltip);
@@ -320,7 +320,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 
 		if raid then
 			SetControlsEnabled(Settings.GetValue(RaidSettingsEnabledCVar));
-			
+
 			local function OnSettingValueChanged(o, setting, value)
 				SetControlsEnabled(value);
 			end
@@ -329,7 +329,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 			SetControlsEnabled(true);
 		end
 	end
-	
+
 	local minValue, maxValue, step = 0, 9, 1;
 	local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 	options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
@@ -361,13 +361,18 @@ end
 
 SettingsAdvancedQualitySectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
 
-function SettingsAdvancedQualitySectionMixin:Init(initializer)
+function SettingsAdvancedQualitySectionMixin:OnLoad()
 	self.tabsGroup = CreateRadioButtonGroup();
-
 	self.tabsGroup:AddButtons({self.BaseTab, self.RaidTab});
 	self.tabsGroup:SelectAtIndex(1);
 	self.tabsGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.OnTabSelected, self);
 
+	EventRegistry:RegisterCallback("Settings.CategoryChanged", function()
+		self.tabsGroup:SelectAtIndex(1);
+	end);
+end
+
+function SettingsAdvancedQualitySectionMixin:Init(initializer)
 	local data = initializer.data;
 	local raid = data.raid;
 	local settings = data.settings;
@@ -423,7 +428,6 @@ end
 SettingsAdvancedDropdownMixin = CreateFromMixins(DefaultTooltipMixin);
 
 function SettingsAdvancedDropdownMixin:OnLoad()
-	Mixin(self.DropDown.Button, DefaultTooltipMixin);
 	DefaultTooltipMixin.OnLoad(self);
 	self:SetCustomTooltipAnchoring(self.DropDown, "ANCHOR_TOPLEFT", -40, 0);
 
@@ -447,12 +451,16 @@ function CreateAdvancedQualitySectionInitializer(name, settings, raidSettings)
 	local initializer = CreateFromMixins(SettingsAdvancedQualitySectionInitializer, SettingsElementHierarchyMixin);
 	initializer:Init("SettingsAdvancedQualitySectionTemplate");
 	initializer.data = {name=name, settings=settings, raidSettings=raidSettings};
-	initializer:AddSearchTags(BASE_GRAPHICS_QUALITY, SETTINGS_RAID_GRAPHICS_QUALITY, SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS, 
+	initializer:AddSearchTags(BASE_GRAPHICS_QUALITY, SETTINGS_RAID_GRAPHICS_QUALITY, SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS,
 		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
 	return initializer;
 end
 
 local function Register()
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
 	local function AddValidatedCVarOption(container, cvar, value, label, tooltip)
 		local data = container:Add(value, label, tooltip);
 		local error = IsGraphicsCVarValueSupported(cvar, value);
@@ -472,11 +480,11 @@ local function Register()
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			
+
 			local name = GetMonitorName(DEFAULT_MONITOR_VALUE + 1) or VIDEO_OPTIONS_MONITOR_PRIMARY;
 			container:Add(DEFAULT_MONITOR_VALUE, name);
-			
-			for index = 2, GetMonitorCount() do 
+
+			for index = 2, GetMonitorCount() do
 				local value = index - 1;
 				local label = GetMonitorName(index) or string.format(VIDEO_OPTIONS_MONITOR, value);
 				container:Add(value, label);
@@ -487,7 +495,7 @@ local function Register()
 		monitorSetting = Settings.RegisterProxySetting(category, "PROXY_PRIMARY_MONITOR", Settings.DefaultVarLocation,
 			Settings.VarType.Number, PRIMARY_MONITOR, DEFAULT_MONITOR_VALUE, getValue, nil, commitValue);
 		monitorSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
-		
+
 		Settings.CreateDropDown(category, monitorSetting, GetOptions, OPTION_TOOLTIP_PRIMARY_MONITOR);
 
 		local function UpdateSettingFromCVar()
@@ -521,11 +529,11 @@ local function Register()
 		if not cachedResolutions[monitor] then
 			cachedResolutions[monitor] = {};
 		end
-		
+
 		if not cachedResolutions[monitor][fullscreen] then
 			cachedResolutions[monitor][fullscreen] = C_VideoOptions.GetGameWindowSizes(monitor, fullscreen);
 		end
-		
+
 		return cachedResolutions[monitor][fullscreen];
 		-- Breaks custom res in dropdown, but we probably wont use it.
 		--return C_VideoOptions.GetGameWindowSizes(monitor, fullscreen);
@@ -539,7 +547,7 @@ local function Register()
 			local container = Settings.CreateControlTextContainer();
 			local monitor = monitorSetting:GetValue();
 			local fullscreen = displayModeSetting:GetValue();
-			
+
 			if fullscreen then
 				local autoSizeValue = FormatScreenResolution(0, 0);
 				container:Add(autoSizeValue, DEFAULT);
@@ -552,7 +560,7 @@ local function Register()
 			end
 			return container:GetData();
 		end
-	
+
 		local function GetValue()
 			local monitor = monitorSetting:GetValue();
 			local fullscreen = displayModeSetting:GetValue();
@@ -571,7 +579,7 @@ local function Register()
 			Settings.VarType.String, WINDOW_SIZE, defaultValue, GetValue, nil, CommitValue);
 		resolutionSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UpdateWindow, Settings.CommitFlag.Revertable);
 		resolutionSetting:SetCommitOrder(1);
-		
+
 		resolutionInitializer = Settings.CreateDropDown(category, resolutionSetting, GetOptions, OPTION_TOOLTIP_WINDOW_SIZE);
 		CreateSettingsSelectionCustomSelectedData(resolutionInitializer.data, CUSTOM);
 		resolutionInitializer.reinitializeOnValueChanged = true;
@@ -586,14 +594,14 @@ local function Register()
 			end
 		end;
 		Settings.SetOnValueChangedCallback(displayModeSetting:GetVariable(), OnDisplayModeValueChanged);
-		
+
 		local function OnMonitorValueChanged(o, s, value)
 			local newValue = GetValue();
 			resolutionSetting:ReinitializeValue(newValue);
 		end;
 		Settings.SetOnValueChangedCallback(monitorSetting:GetVariable(), OnMonitorValueChanged);
 	end
-	
+
 	-- Resolution/Render Scale
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("RenderScale", Settings.VarType.Number);
@@ -601,7 +609,7 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "PROXY_RESOLUTION_RENDER_SCALE", Settings.DefaultVarLocation,
 			Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply);
-		
+
 		local function FormatDisplayableResolution(value)
 			local x, y = ExtractSizeFromFormattedSize(resolutionSetting:GetValue());
 			if x == 0 or y == 0 then
@@ -717,7 +725,7 @@ local function Register()
 					return 3;
 				end
 			end
-		
+
 			local function SetValue(value)
 				if value == AA_NONE then
 					aaSettings.fxaa:SetValue(0);
@@ -728,7 +736,7 @@ local function Register()
 					aaSettings.fxaa:SetValue(0);
 				end
 			end
-	
+
 			local function GetOptions()
 				local container = Settings.CreateControlTextContainer();
 				container:Add(AA_NONE, VIDEO_OPTIONS_NONE);
@@ -780,20 +788,20 @@ local function Register()
 
 		-- Multisample
 		do
-			
+
 			local function GetValue()
 				local msaa, coverage = SplitMSAACVar();
 				return msaa;
 			end
-		
+
 			local function CommitValue(value)
 				SetCVar("MSAAQuality", value);
 			end
-	
+
 			local function GetOptions()
 				local container = Settings.CreateControlTextContainer();
 				container:Add(0, VIDEO_OPTIONS_NONE);
-				
+
 				local function GenerateMSAAOptions(container, ...)
 					for i = 1, select("#", ...), 3 do
 						local msaaQuality, sampleCount, coverageCount = select(i, ...);
@@ -827,7 +835,7 @@ local function Register()
 			local normalScale = 1.0;
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Boolean);
 			local commitValue = setValue;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA_ALPHA", Settings.DefaultVarLocation, 
+			local setting = Settings.RegisterProxySetting(category, "PROXY_MSAA_ALPHA", Settings.DefaultVarLocation,
 				Settings.VarType.Boolean, MULTISAMPLE_ALPHA_TEST, getDefaultValue(), getValue, nil, commitValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 			aaSettings.msaaAlpha = setting;
@@ -854,7 +862,7 @@ local function Register()
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("cameraFov", Settings.VarType.Number);
 			local commitValue = setValue;
 			local _, minValue, maxValue = C_CameraDefaults.GetCameraFOVDefaults();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation, 
+			local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation,
 				Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, nil, commitValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);
 
@@ -863,6 +871,11 @@ local function Register()
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
 			Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_CAMERA_FOV);
 		end
+	end
+
+	local function FormatPercentageRounded(value)
+		local roundToNearestInteger = true;
+		return FormatPercentage(value, roundToNearestInteger);
 	end
 
 	-- UI Scale
@@ -874,7 +887,7 @@ local function Register()
 			local useUIScaleSetting = Settings.RegisterProxySetting(category, "PROXY_USE_UI_SCALE", Settings.DefaultVarLocation,
 				Settings.VarType.Boolean, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
 			useUIScaleSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
-	
+
 			-- Resolution Scale
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("uiscale", Settings.VarType.Number);
 			local commitValue = setValue;
@@ -882,9 +895,9 @@ local function Register()
 				Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
 			uiScaleSliderSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
 
-			local minValue, maxValue, step = .65, 1.15, .05;
+			local minValue, maxValue, step = .65, 1.15, .01;
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage)
+			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentageRounded)
 
 			local initializer = CreateSettingsCheckBoxSliderInitializer(
 				useUIScaleSetting, USE_UISCALE, OPTION_TOOLTIP_USE_UISCALE,
@@ -893,12 +906,12 @@ local function Register()
 			layout:AddInitializer(initializer);
 		end
 	end
-	
+
 	-- Graphics Quality
 	function AddAdvancedQualitySetting(settings, category, cvar, name, proxyName, minQualityValue)
 		settings[cvar] = CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue);
 	end
-	
+
 	local advSettings = GraphicsOverrides.CreateAdvancedSettingsTable(category, AddAdvancedQualitySetting);
 	local advRaidSettings = GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, AddAdvancedQualitySetting);
 
@@ -945,7 +958,7 @@ local function Register()
 		local function GetValue()
 			return getValue() == FRAME_LATENCY_ENABLED;
 		end
-		
+
 		local SetValue = nil;
 
 		local function CommitValue(value)
@@ -953,7 +966,7 @@ local function Register()
 		end
 
 		local defaultValue = true;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_TRIPLE_BUFFERING", Settings.DefaultVarLocation, 
+		local setting = Settings.RegisterProxySetting(category, "PROXY_TRIPLE_BUFFERING", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, TRIPLE_BUFFER, defaultValue, GetValue, SetValue, CommitValue);
 		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.GxRestart);
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_TRIPLE_BUFFER);
@@ -1053,7 +1066,7 @@ local function Register()
 			local found = tIndexOf(apis, gxapi);
 			return apis[found or #apis];
 		end
-		
+
 		local SetValue = nil;
 
 		local function CommitValue(value)
@@ -1065,7 +1078,7 @@ local function Register()
 			local currentApiCvar = GetCurrentGraphicsAPI();
 			local requestedApi = GetCVar("gxapi");
 			for index, api in ipairs(apis) do
-				
+
 				local tooltip = nil;
 				local name =  _G["GXAPI_"..strupper(api)];
 
@@ -1089,7 +1102,7 @@ local function Register()
 				else
 					container:Add(api, name, tooltip);
 				end
-				
+
 			end
 			return container:GetData();
 		end
@@ -1168,14 +1181,14 @@ local function Register()
 	-- Max foreground FPS
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useMaxFPS", Settings.VarType.Boolean);
-		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS_ENABLED", Settings.DefaultVarLocation, 
+		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS_ENABLED", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, MAXFPS_CHECK, getDefaultValue(), getValue, setValue);
-		
+
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPS", Settings.VarType.Number);
 		local commitValue = setValue;
-		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS", Settings.DefaultVarLocation, 
+		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, MAXFPS, getDefaultValue(), getValue, nil, commitValue);
-		
+
 		local minValue, maxValue, step = 8, 200, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatFPS);
@@ -1183,51 +1196,53 @@ local function Register()
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, MAXFPS_CHECK, OPTION_MAXFPS_CHECK,
 			fpsSliderSetting, options, MAXFPS_CHECK, OPTION_MAXFPS_CHECK);
+		initializer:AddSearchTags(MAXFPS_CHECK);
 		layout:AddInitializer(initializer);
 	end
 
 	-- Max background FPS
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useMaxFPSBk", Settings.VarType.Boolean);
-		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS_ENABLED", Settings.DefaultVarLocation, 
+		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS_ENABLED", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, MAXFPSBK_CHECK, getDefaultValue(), getValue, setValue);
-	
+
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPSBk", Settings.VarType.Number);
 		local commitValue = setValue;
-		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS", Settings.DefaultVarLocation, 
+		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, MAXFPSBK, getDefaultValue(), getValue, nil, commitValue);
-		
+
 		local minValue, maxValue, step = 8, 200, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatFPS);
-		
+
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, MAXFPSBK, OPTION_MAXFPSBK_CHECK,
 			fpsSliderSetting, options, MAXFPSBK, OPTION_MAXFPSBK_CHECK);
+		initializer:AddSearchTags(MAXFPSBK);
 		layout:AddInitializer(initializer);
 	end
 
 	-- Max Target FPS
 	do
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useTargetFPS", Settings.VarType.Boolean);
-		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS_ENABLED", Settings.DefaultVarLocation, 
+		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS_ENABLED", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, TARGETFPS, getDefaultValue(), getValue, setValue);
-			
+
 		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("targetFPS", Settings.VarType.Number);
 		local commitValue = setValue;
-		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS", Settings.DefaultVarLocation, 
+		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, TARGETFPS, getDefaultValue(), getValue, nil, commitValue);
 
 		local minValue, maxValue, step = 8, 200, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatFPS);
-		
+
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
 			fpsSetting, TARGETFPS, OPTION_TARGETFPS_CHECK,
 			fpsSliderSetting, options, TARGETFPS, OPTION_TARGETFPS_CHECK);
 		layout:AddInitializer(initializer);
 	end
-	
+
 	local function FormatScaledPercentage(value)
 		return FormatPercentage(value/100);
 	end

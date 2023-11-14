@@ -20,6 +20,7 @@ end
 
 GossipSharedQuestButtonMixin = CreateFromMixins(GossipSharedTitleButtonMixin);
 function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, isIgnored, isTrivial)
+
 	if ( isIgnored ) then
 		self:SetFormattedText(IGNORED_QUEST_DISPLAY, titleText);
 		self.Icon:SetVertexColor(0.5,0.5,0.5);
@@ -31,7 +32,16 @@ function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, is
 		self.Icon:SetVertexColor(1,1,1);
 	end
 
+	if QuestUtil.QuestTextContrastUseLightText() then
+		self:GetFontString():SetFixedColor(true);
+		self:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
+	else
+		self:GetFontString():SetFixedColor(false);
+		self:GetFontString():SetTextColor(PARCHMENT_MATERIAL_TEXT_COLOR:GetRGB());
+	end
+
 	self:Resize();
+
 end
 
 GossipSharedAvailableQuestButtonMixin = CreateFromMixins(GossipSharedQuestButtonMixin);
@@ -77,6 +87,14 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 
 	self:Resize();
 	self:Show();
+
+	if QuestUtil.QuestTextContrastUseLightText() then
+		local textColor, titleTextColor = GetMaterialTextColors("Stone");
+		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
+	else
+		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
+		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
+	end
 end
 function GossipOptionButtonMixin:OnClick(button)
 	C_GossipInfo.SelectOptionByIndex(self:GetID());
@@ -87,6 +105,13 @@ function GossipGreetingTextMixin:Setup(text)
 	self.GreetingText:SetText(text);
 	self:Show();
 	self:SetSize(270, self.GreetingText:GetHeight());
+	if QuestUtil.QuestTextContrastUseLightText() then
+		local textColor, titleTextColor = GetMaterialTextColors("Stone");
+		self.GreetingText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+	else
+		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
+		self.GreetingText:SetTextColor(textColor[1], textColor[2], textColor[3]);
+	end
 end
 
 local function GreetingTextInitializer(button, elementData)
@@ -154,9 +179,14 @@ function GossipFrameSharedMixin:OnShow()
 end
 
 function GossipFrameSharedMixin:OnHide()
-	PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
-	C_GossipInfo.CloseGossip();
 	self.gossipOptions = {};
+
+	if self.interactionIsContinuing then
+		self.interactionIsContinuing = nil;
+	else
+		PlaySound(SOUNDKIT.IG_QUEST_LIST_CLOSE);
+		C_GossipInfo.CloseGossip();
+	end
 end
 
 function GossipOptionSort(leftInfo, rightInfo)
@@ -183,8 +213,15 @@ function GossipFrameSharedMixin:HandleShow()
 	end
 end
 
-function GossipFrameSharedMixin:HandleHide()
+function GossipFrameSharedMixin:HandleHide(interactionIsContinuing)
+	if interactionIsContinuing and self:IsShown() then
+		self:SetInteractionIsContinuing(interactionIsContinuing);
+	end
 	HideUIPanel(self);
+end
+
+function GossipFrameSharedMixin:SetInteractionIsContinuing(interactionIsContinuing)
+	self.interactionIsContinuing = true;
 end
 
 --This is an API for players and addon authors to continue to be able to select by index rather than ID

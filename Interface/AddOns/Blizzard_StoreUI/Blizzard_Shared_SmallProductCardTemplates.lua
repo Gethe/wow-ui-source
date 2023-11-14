@@ -49,27 +49,14 @@ SmallStoreCardMixin = CreateFromMixins(StoreCardMixin);
 function SmallStoreCardMixin:ShowDiscount(discountText)
 	StoreCardMixin.ShowDiscount(self, discountText);
 
-	local width = self.NormalPrice:GetStringWidth() + self.SalePrice:GetStringWidth();
-
 	self.NormalPrice:ClearAllPoints();
 	self.SalePrice:ClearAllPoints();
 
-	if ((width + 20 + (self:GetWidth()/8)) > self:GetWidth()) then
-		self.NormalPrice:SetJustifyH("CENTER");
-		self.NormalPrice:SetPoint(unpack(self.basePoint));
+	self.NormalPrice:SetJustifyH("CENTER");
+	self.NormalPrice:SetPoint(unpack(self.basePoint));
 
-		self.SalePrice:SetJustifyH("CENTER");
-		self.SalePrice:SetPoint("TOP", self.NormalPrice, "BOTTOM", 0, -4);		
-	else
-		local diff = self.NormalPrice:GetStringWidth() - self.SalePrice:GetStringWidth();
-		local yOffset = select(5, unpack(self.basePoint));
-
-		self.NormalPrice:SetJustifyH("RIGHT");
-		self.NormalPrice:SetPoint("BOTTOMRIGHT", self, "BOTTOM", diff/2, yOffset);
-
-		self.SalePrice:SetJustifyH("LEFT");
-		self.SalePrice:SetPoint("BOTTOMLEFT", self.NormalPrice, "BOTTOMRIGHT", 4, -1);
-	end
+	self.SalePrice:SetJustifyH("CENTER");
+	self.SalePrice:SetPoint("TOP", self.NormalPrice, "BOTTOM", 0, -4);
 end
 
 function SmallStoreCardMixin:SetDisabledOverlayShown(showDisabledOverlay)

@@ -260,6 +260,11 @@ local PvpInfo =
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
 		},
 		{
+			Name = "PvpBrawlInfoUpdated",
+			Type = "Event",
+			LiteralName = "PVP_BRAWL_INFO_UPDATED",
+		},
+		{
 			Name = "PvpRatedStatsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_RATED_STATS_UPDATE",
@@ -294,6 +299,22 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "WargameInviteSent",
+			Type = "Event",
+			LiteralName = "WARGAME_INVITE_SENT",
+		},
+		{
+			Name = "WargameRequestResponse",
+			Type = "Event",
+			LiteralName = "WARGAME_REQUEST_RESPONSE",
+			Payload =
+			{
+				{ Name = "responderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "responderName", Type = "cstring", Nilable = true },
+				{ Name = "accepted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "WargameRequested",
 			Type = "Event",
 			LiteralName = "WARGAME_REQUESTED",
@@ -317,9 +338,9 @@ local PvpInfo =
 		{
 			Name = "BrawlType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "None", Type = "BrawlType", EnumValue = 0 },
@@ -327,6 +348,7 @@ local PvpInfo =
 				{ Name = "Arena", Type = "BrawlType", EnumValue = 2 },
 				{ Name = "LFG", Type = "BrawlType", EnumValue = 3 },
 				{ Name = "SoloShuffle", Type = "BrawlType", EnumValue = 4 },
+				{ Name = "SoloRbg", Type = "BrawlType", EnumValue = 5 },
 			},
 		},
 		{
@@ -412,6 +434,7 @@ local PvpInfo =
 				{ Name = "shortDescription", Type = "string", Nilable = false },
 				{ Name = "longDescription", Type = "string", Nilable = false },
 				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 				{ Name = "groupsAllowed", Type = "bool", Nilable = false },
@@ -420,6 +443,29 @@ local PvpInfo =
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
+				{ Name = "minItemLevel", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "PVPPersonalRatedInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "personalRating", Type = "number", Nilable = false },
+				{ Name = "bestSeasonRating", Type = "number", Nilable = false },
+				{ Name = "bestWeeklyRating", Type = "number", Nilable = false },
+				{ Name = "seasonPlayed", Type = "number", Nilable = false },
+				{ Name = "seasonWon", Type = "number", Nilable = false },
+				{ Name = "weeklyPlayed", Type = "number", Nilable = false },
+				{ Name = "weeklyWon", Type = "number", Nilable = false },
+				{ Name = "lastWeeksBestRating", Type = "number", Nilable = false },
+				{ Name = "hasWonBracketToday", Type = "bool", Nilable = false },
+				{ Name = "tier", Type = "number", Nilable = false },
+				{ Name = "ranking", Type = "number", Nilable = true },
+				{ Name = "roundsSeasonPlayed", Type = "number", Nilable = false },
+				{ Name = "roundsSeasonWon", Type = "number", Nilable = false },
+				{ Name = "roundsWeeklyPlayed", Type = "number", Nilable = false },
+				{ Name = "roundsWeeklyWon", Type = "number", Nilable = false },
 			},
 		},
 		{

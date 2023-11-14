@@ -405,7 +405,19 @@ function UnitPopupBnetTargetButtonMixin:IsEnabled()
 end 
 
 function UnitPopupVoteToKickButtonMixin:CanShow()
-	return false; 
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	local _, instanceType = IsInInstance();
+	if ( not C_LFGInfo.IsGroupFinderEnabled() or not IsInGroup() or not UnitPopupSharedUtil.IsPlayer(dropdownMenu) or (instanceType == "pvp") or (instanceType == "arena") or (not UnitPopupSharedUtil.HasLFGRestrictions()) or IsInActiveWorldPVP() ) then
+		return false;
+	end
+	return true;
+end
+
+function UnitPopupVoteToKickButtonMixin:IsEnabled()
+	if (not C_LFGInfo.IsGroupFinderEnabled() or not IsInGroup() or not HasLFGRestrictions()) then
+		return false;
+	end
+	return true; 
 end
 
 function UnitPopupDungeonDifficultyButtonMixin:GetButtons()
@@ -429,4 +441,11 @@ end
 
 function UnitPopupPartyLeaveButtonMixin:OnClick()
 	LeaveParty();
+end
+
+function UnitPopupRaidTargetButtonMixin:CanShow()
+	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
+		return true;
+	end
+	return false;
 end

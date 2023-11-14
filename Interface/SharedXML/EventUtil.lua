@@ -50,7 +50,7 @@ function EventUtil.ContinueOnVariablesLoaded(callback)
 end
 
 function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
-	local isLoadedOrLoading, isLoaded = IsAddOnLoaded(addOnName);
+	local isLoadedOrLoading, isLoaded = C_AddOns.IsAddOnLoaded(addOnName);
 	if isLoaded then
 		callback();
 		return;

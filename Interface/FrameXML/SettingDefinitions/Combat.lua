@@ -38,7 +38,8 @@ local function Register()
 
 	-- Raid Self Highlight
 	do
-		CombatOverrides.CreateRaidSelfHighlightSetting(category)
+		local setting, initializer = CombatOverrides.CreateRaidSelfHighlightSetting(category)
+		Settings.RaidSelfHighlightInitializer = initializer;
 	end
 
 	-- Target of Target
@@ -136,9 +137,9 @@ local function Register()
 			OPTION_TOOLTIP_AUTO_SELF_CAST_ALT_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_CTRL_KEY,
 			OPTION_TOOLTIP_AUTO_SELF_CAST_SHIFT_KEY,
-			OPTION_TOOLTIP_AUTO_SELF_CAST_NONE_KEY,
 		};
-		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT);
+		local mustChooseKey = true;
+		local selfCastKeySetting, selfCastKeyInitializer = Settings.SetupModifiedClickDropDown(category, "SELFCAST", "ALT", AUTO_SELF_CAST_KEY_TEXT, tooltips, OPTION_TOOLTIP_AUTO_SELF_CAST_KEY_TEXT, mustChooseKey);
 
 		local function IsUsingKeyPress()
 			local value = selfCastSetting:GetValue();
@@ -178,16 +179,19 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentage);
 
-		local setting = Settings.SetupCVarSlider(category, "spellActivationOverlayOpacity", options, SPELL_ALERT_OPACITY, OPTION_TOOLTIP_SPELL_ALERT_OPACITY);
+		local setting, initializer = Settings.SetupCVarSlider(category, "spellActivationOverlayOpacity", options, SPELL_ALERT_OPACITY, OPTION_TOOLTIP_SPELL_ALERT_OPACITY);
 		local function OnValueChanged(o, setting, value)
 			SetCVar("displaySpellActivationOverlays", value > 0);
 		end
 		Settings.SetOnValueChangedCallback("spellActivationOverlayOpacity", OnValueChanged);
+
+		Settings.SpellAlertOpacityInitializer = initializer;
 	end
 
 	-- Hold Button
 	if C_CVar.GetCVar("ActionButtonUseKeyHeldSpell") then
-		Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
+		local setting, initializer = Settings.SetupCVarCheckBox(category, "ActionButtonUseKeyHeldSpell", PRESS_AND_HOLD_CASTING_OPTION, PRESS_AND_HOLD_CASTING_OPTION_TOOLTIP);
+		Settings.PressAndHoldCastingInitializer = initializer;
 	end
 
 	-- Enable Action Targeting

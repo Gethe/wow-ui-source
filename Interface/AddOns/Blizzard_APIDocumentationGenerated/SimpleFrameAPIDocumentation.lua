@@ -464,6 +464,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetWindow",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "window", Type = "SimpleWindow", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFixedFrameLevel",
 			Type = "Function",
 
@@ -691,6 +704,14 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "LockHighlight",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "Lower",
 			Type = "Function",
 
@@ -887,6 +908,15 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetHighlightLocked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetHitRectInsets",
 			Type = "Function",
 
@@ -1019,6 +1049,15 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetWindow",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "window", Type = "SimpleWindow", Nilable = true },
+			},
+		},
+		{
 			Name = "Show",
 			Type = "Function",
 
@@ -1047,6 +1086,14 @@ local SimpleFrameAPI =
 		},
 		{
 			Name = "StopMovingOrSizing",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "UnlockHighlight",
 			Type = "Function",
 
 			Arguments =

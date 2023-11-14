@@ -305,15 +305,14 @@ function ReportInfo:CreateMailReportInfo(reportType, mailIndex)
 	return reportInfo;
 end
 
--- Disabled for 10.1.5 release but will return shortly.
---function ReportInfo:CreateCraftingOrderReportInfo(reportType, craftingOrderID)
---	if(reportType ~= Enum.ReportType.CraftingOrder) then
---		return nil;
---	end
---	local reportInfo = self:CreateReportInfoFromType(reportType);
---	reportInfo:SetCraftingOrderID(craftingOrderID);
---	return reportInfo;
---end
+function ReportInfo:CreateCraftingOrderReportInfo(reportType, craftingOrderID)
+	if(reportType ~= Enum.ReportType.CraftingOrder) then
+		return nil;
+	end
+	local reportInfo = self:CreateReportInfoFromType(reportType);
+	reportInfo:SetCraftingOrderID(craftingOrderID);
+	return reportInfo;
+end
 
 ReportInfoMixin = { };
 function ReportInfoMixin:Clear()
@@ -347,6 +346,10 @@ end
 
 function ReportInfoMixin:SetGroupFinderSearchResultID(groupFinderSearchResultID)
 	self.groupFinderSearchResultID = groupFinderSearchResultID
+end
+
+function ReportInfoMixin:SetReportedChatInline()
+	self.reportedChatInline = true;
 end
 
 function ReportInfoMixin:SetGroupFinderApplicantID(groupFinderApplicantID)

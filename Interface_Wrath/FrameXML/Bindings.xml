@@ -1040,6 +1040,25 @@
 		TogglePVPFrame();
 	</Binding>
 
+	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal();
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSTOYBOX" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
+	</Binding>
+	<!--<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
+	</Binding>-->
+
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
@@ -1101,6 +1120,9 @@
 	</Binding>
 	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleChannelFrame();
+	</Binding>
+	<Binding name="TOGGLEGROUPFINDER" category="BINDING_HEADER_INTERFACE">
+		PVEFrame_ToggleFrame();
 	</Binding>
 
 	<!-- Misc header="MISC" -->
@@ -1180,7 +1202,7 @@
 		ReloadUI();
 	</Binding>
 	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		LoadAddOn("Blizzard_DebugTools");
+		C_AddOns.LoadAddOn("Blizzard_DebugTools");
 		FrameStackTooltip_ToggleDefaults();
 	</Binding>
 	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
