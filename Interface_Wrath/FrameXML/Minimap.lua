@@ -21,6 +21,7 @@ function Minimap_OnLoad(self)
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 end
 
 function ToggleMinimap()
@@ -95,6 +96,8 @@ function Minimap_OnEvent(self, event, ...)
 		elseif ( zoom == 0 ) then
 			MinimapZoomOut:Disable();
 		end
+	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+		Minimap_Update();
 	end
 end
 
