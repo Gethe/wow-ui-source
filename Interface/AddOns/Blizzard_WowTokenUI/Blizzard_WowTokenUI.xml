@@ -141,9 +141,10 @@
 						</Layer>
 					</Layers>
 					<Frames>
-						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
+							<Size x="40" y="40"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-235"/>
+								<Anchor point="TOP" x="0" y="-245"/>
 							</Anchors>
 						</Frame>
 						<Button parentKey="RedeemButton" inherits="WowTokenButtonTemplate" text="TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL" id="1">
@@ -201,9 +202,10 @@
 							</Scripts>
 							<FontString inherits="GameFontNormal" justifyH="LEFT" />
 						</SimpleHTML>
-						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
+							<Size x="40" y="40"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-235"/>
+								<Anchor point="TOP" x="0" y="-245"/>
 							</Anchors>
 						</Frame>
 						<Button parentKey="RedeemButton" inherits="WowTokenButtonTemplate" text="TOKEN_REDEEM_BALANCE_BUTTON_LABEL" id="2">
@@ -287,9 +289,10 @@
 			</Layers>
 			<Frames>
 				<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate"/>
-				<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+				<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
+					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="16"/>
+						<Anchor point="BOTTOM" x="0" y="24"/>
 					</Anchors>
 				</Frame>
 				<Button parentKey="Button1" inherits="WowTokenButtonTemplate" text="OKAY" id="1">

@@ -12,12 +12,9 @@ function PlayerFrame_OnLoad(self)
 						 healthBar.MyHealPredictionBar,
 						 healthBar.OtherHealPredictionBar,
 						 healthBar.TotalAbsorbBar,
-						 healthBar.TotalAbsorbBarOverlay,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
 						 healthBar.HealAbsorbBar,
-						 healthBar.HealAbsorbBarLeftShadow,
-						 healthBar.HealAbsorbBarRightShadow,
 						 manaBar.ManaCostPredictionBar);
 
 	self.statusCounter = 0;
@@ -39,7 +36,7 @@ function PlayerFrame_OnLoad(self)
 	manaBarTexture:SetTexelSnappingBias(0);
 	manaBarTexture:SetSnapToPixelGrid(false);
 
-	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
+	CombatFeedback_Initialize(self, PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HitIndicator.HitText, 30);
 	PlayerFrame_Update();
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -379,15 +376,14 @@ function PlayerFrame_UpdateRolesAssigned()
 	-- Only show role icons when in instanced content areas (raids, dungeons, battleground, etc.)
 	local _, instanceType = GetInstanceInfo();
 	if instanceType ~= "none" then
-		local role = UnitGroupRolesAssigned("player");
-
-		if (role == "TANK") then
+		local role = UnitGroupRolesAssignedEnum("player");
+		if (role == Enum.LFGRole.Tank) then
 			roleIcon:SetAtlas("roleicon-tiny-tank", TextureKitConstants.IgnoreAtlasSize);
 			hasIcon = true;
-		elseif (role == "HEALER") then
+		elseif (role == Enum.LFGRole.Healer) then
 			roleIcon:SetAtlas("roleicon-tiny-healer", TextureKitConstants.IgnoreAtlasSize);
 			hasIcon = true;
-		elseif (role == "DAMAGER") then
+		elseif (role == Enum.LFGRole.Damage) then
 			roleIcon:SetAtlas("roleicon-tiny-dps", TextureKitConstants.IgnoreAtlasSize);
 			hasIcon = true;
 		end

@@ -211,17 +211,17 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetMapBinding()
-	return GetBindingKey("TOGGLEWORLDMAP") or "";
+	return GetBindingKey("TOGGLEWORLDMAP") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetCharacterBinding()
-	return GetBindingKey("TOGGLECHARACTER0") or "";
+	return GetBindingKey("TOGGLECHARACTER0") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetBagBinding()
-	return GetBindingKey("OPENALLBAGS") or "";
+	return GetBindingKey("OPENALLBAGS") or NPE_UNBOUND_KEYBIND;
 end
 
 
@@ -964,7 +964,7 @@ function Class_ActionBarCallout:HighlightPointer(spellID, textID)
 		-- Prompt the user to use the spell
 		local name, _, icon = GetSpellInfo(spellID);
 		local prompt = formatStr(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
-		local binding = GetBindingKey("ACTIONBUTTON" .. btn.action) or "?";
+		local binding = GetBindingKey("ACTIONBUTTON" .. btn.action) or NPE_UNBOUND_KEYBIND;
 		local finalString = string.format(prompt, binding, name, icon);
 
 		self:ShowPointerTutorial(finalString, "DOWN", btn);

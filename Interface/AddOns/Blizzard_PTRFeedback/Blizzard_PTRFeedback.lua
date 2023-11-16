@@ -46,6 +46,7 @@ PTR_IssueReporter.Assets = {
     BossReportIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
     PetReportIcon = "Interface\\Icons\\tracking_wildpet",
     EditModeIcon = "Interface\\Icons\\ability_siege_engineer_pattern_recognition",
+    AIBotIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.Init()

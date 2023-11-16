@@ -65,12 +65,9 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 						 healthBar.MyHealPredictionBar,
 						 healthBar.OtherHealPredictionBar,
 						 healthBar.TotalAbsorbBar,
-						 healthBar.TotalAbsorbBarOverlay,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
-						 healthBar.HealAbsorbBar,
-						 healthBar.HealAbsorbBarLeftShadow,
-						 healthBar.HealAbsorbBarRightShadow);
+						 healthBar.HealAbsorbBar);
 
 	self.auraPools = CreateFramePoolCollection();
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
@@ -369,7 +366,8 @@ end
 
 function TargetFrameMixin:CheckBattlePet()
 	if (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
-		local petType = UnitBattlePetType(self.unit);
+		-- Weird indexing via an enum and in conjuction with the way PET_TYPE_SUFFIX is being used it would be too much work to convert this to a luaIndex to fix it properly
+		local petType = UnitBattlePetType(self.unit) + 1;
 		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
 	else

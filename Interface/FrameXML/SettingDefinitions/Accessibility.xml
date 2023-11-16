@@ -1,0 +1,38 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\UI_shared.xsd">
+	<Script file="Accessibility.lua"/>
+
+	<Frame parentKey="QuestTextPreview" parent="SettingsPanel" inherits="TooltipBackdropTemplate" mixin="QuestTextPreviewMixin" hidden="true" frameStrata="TOOLTIP">
+		<Size x="200" y="250"/>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="RIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Size x="180" y="230"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleText" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_TEXT_PREVIEW_TITLE">
+					<Size x="160" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BodyText" inherits="QuestFont" justifyH="LEFT" text="QUEST_TEXT_PREVIEW_BODY">
+					<Size x="160" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow  method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

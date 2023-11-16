@@ -652,7 +652,16 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 			self.MainModelScene:SetViewInsets(DefaultInsets.left, DefaultInsets.right, DefaultInsets.top, DefaultInsets.bottom);
 			actor:SetModelByCreatureDisplayID(creatureDisplayID);
 			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-						
+
+			local function tryOnHandItem(appeanceID, slot)
+				if (appeanceID) then
+					local itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appeanceID);
+					actor:SetItemTransmogInfo(itemTransmogInfo, slot, true);
+				end
+			end
+			tryOnHandItem(data.displayData.mainHandItemModifiedAppearanceID, INVSLOT_MAINHAND);
+			tryOnHandItem(data.displayData.offHandItemModifiedAppearanceID, INVSLOT_OFFHAND);
+
 			local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
 			UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID);
 		end

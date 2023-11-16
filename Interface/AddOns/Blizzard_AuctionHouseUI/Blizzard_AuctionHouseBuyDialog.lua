@@ -219,7 +219,6 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 	self.CancelButton:SetEnabled(buyNowEnabled);
 	self.OkayButton:SetShown(okayShown);
 	self.LoadingSpinner:SetShown(spinnerShown);
-	self.SpinnerAnim:SetPlaying(spinnerShown);
 	self.DarkOverlay:SetShown(darkOverlayShown);
 	self.Notification:SetShown(notificationText ~= nil);
 	self.Notification:SetNotificationText(notificationText or "", notificationFontObject, showNotificationIcon);

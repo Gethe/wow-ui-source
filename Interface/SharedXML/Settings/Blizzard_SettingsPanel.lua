@@ -497,6 +497,9 @@ function SettingsPanelMixin:CancelPendingRevertTimer()
 end
 
 function SettingsPanelMixin:SetAllSettingsToDefaults()
+	local keys = {GetCVarDefault("VoicePushToTalkKeybind")}
+	C_VoiceChat.SetPushToTalkBinding(keys);
+
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;

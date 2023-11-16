@@ -312,7 +312,25 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Favorite" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="collections-icon-favorites" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="-5" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
@@ -494,10 +512,10 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="false">
-										<Size x="38" y="38"/>
+									<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="false">
+										<Size x="20" y="20"/>
 										<Anchors>
-											<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="4"/>
+											<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-5"/>
 										</Anchors>
 									</Frame>
 								</Frames>

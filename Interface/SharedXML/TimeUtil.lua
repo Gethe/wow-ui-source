@@ -362,9 +362,13 @@ function MinutesToTime(mins, hideDays)
 end
 
 -- Deprecated. See SecondsFormatter for intended replacement
-function SecondsToTimeAbbrev(seconds)
+function SecondsToTimeAbbrev(seconds, thresholdOverride)
 	local tempTime;
-	local threshold = 1.5
+	local threshold = 1.5;
+	if thresholdOverride then
+		threshold = thresholdOverride;
+	end
+
 	if ( seconds >= SECONDS_PER_DAY * threshold ) then
 		tempTime = ceil(seconds / SECONDS_PER_DAY);
 		return DAY_ONELETTER_ABBR, tempTime;

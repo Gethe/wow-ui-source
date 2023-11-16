@@ -1,49 +1,3 @@
-PowerBarColor = {};
-PowerBarColor["MANA"] =				{ r = 0.00, g = 0.00, b = 1.00, atlasElementName="Mana", hasClassResourceVariant = true };
-PowerBarColor["RAGE"] =				{ r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true, atlasElementName="Rage" };
-PowerBarColor["FOCUS"] =			{ r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true, atlasElementName="Focus" };
-PowerBarColor["ENERGY"] =			{ r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true, atlasElementName="Energy", hasClassResourceVariant = true };
-PowerBarColor["COMBO_POINTS"] =		{ r = 1.00, g = 0.96, b = 0.41 };
-PowerBarColor["RUNES"] =			{ r = 0.50, g = 0.50, b = 0.50 };
-PowerBarColor["RUNIC_POWER"] =		{ r = 0.00, g = 0.82, b = 1.00, fullPowerAnim=true, atlasElementName="RunicPower" };
-PowerBarColor["SOUL_SHARDS"] =		{ r = 0.50, g = 0.32, b = 0.55 };
-PowerBarColor["LUNAR_POWER"] =		{ r = 0.30, g = 0.52, b = 0.90, atlas="Unit_Druid_AstralPower_Fill", spark = { atlas = "Unit_Druid_AstralPower_EndCap", xOffset = 1, barHeight = "10", showAtMax = true } };
-PowerBarColor["HOLY_POWER"] =		{ r = 0.95, g = 0.90, b = 0.60 };
-PowerBarColor["MAELSTROM"] =		{ r = 0.00, g = 0.50, b = 1.00, atlas = "Unit_Shaman_Maelstrom_Fill", fullPowerAnim=true, spark = { atlas = "Unit_Shaman_Maelstrom_EndCap", barHeight = 10, showAtMax = true } };
-PowerBarColor["INSANITY"] =			{ r = 0.40, g = 0.00, b = 0.80, atlas = "Unit_Priest_Insanity_Fill", spark = { atlas = "Unit_Priest_Insanity_EndCap", xOffset = 1, barHeight = 10, showAtMax = false } };
-PowerBarColor["CHI"] =				{ r = 0.71, g = 1.00, b = 0.92 };
-PowerBarColor["ARCANE_CHARGES"] =	{ r = 0.10, g = 0.10, b = 0.98 };
-PowerBarColor["FURY"] =				{ r = 0.788, g = 0.259, b = 0.992, atlas = "Unit_DemonHunter_Fury_Fill", fullPowerAnim=true, spark = { atlas = "Unit_DemonHunter_Fury_EndCap", xOffset = 1, barHeight = "10", showAtMax = true } };
-PowerBarColor["PAIN"] =				{ r = 255/255, g = 156/255, b = 0, atlas = "_DemonHunter-DemonicPainBar", fullPowerAnim=true };
--- vehicle colors
-PowerBarColor["AMMOSLOT"] = 		{ r = 0.80, g = 0.60, b = 0.00 };
-PowerBarColor["FUEL"] = 			{ r = 0.0, g = 0.55, b = 0.5 };
--- alternate power bar colors
-PowerBarColor["EBON_MIGHT"] = { r = 0.9, g = 0.55, b = 0.3, atlas = "Unit_Evoker_EbonMight_Fill" };
-PowerBarColor["STAGGER"] = { 
-	green = 	{ r = 0.52, g = 1.0, b = 0.52, atlas = "Unit_Monk_Stagger_Fill_Green" },
-	yellow = 	{ r = 1.0, g = 0.98, b = 0.72, atlas = "Unit_Monk_Stagger_Fill_Yellow" },
-	red = 		{ r = 1.0, g = 0.42, b = 0.42, atlas = "Unit_Monk_Stagger_Fill_Red" },
-	spark = 	{ atlas = "Unit_Monk_Stagger_EndCap", barHeight = 10, xOffset = 1, showAtMax = true }
-};
-
--- these are mostly needed for a fallback case (in case the code tries to index a power token that is missing from the table,
--- it will try to index by power type instead)
-PowerBarColor[0] = PowerBarColor["MANA"];
-PowerBarColor[1] = PowerBarColor["RAGE"];
-PowerBarColor[2] = PowerBarColor["FOCUS"];
-PowerBarColor[3] = PowerBarColor["ENERGY"];
-PowerBarColor[4] = PowerBarColor["CHI"];
-PowerBarColor[5] = PowerBarColor["RUNES"];
-PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
-PowerBarColor[7] = PowerBarColor["SOUL_SHARDS"];
-PowerBarColor[8] = PowerBarColor["LUNAR_POWER"];
-PowerBarColor[9] = PowerBarColor["HOLY_POWER"];
-PowerBarColor[11] = PowerBarColor["MAELSTROM"];
-PowerBarColor[13] = PowerBarColor["INSANITY"];
-PowerBarColor[17] = PowerBarColor["FURY"];
-PowerBarColor[18] = PowerBarColor["PAIN"];
-
 local ManaBarFrequentUpdateUnitTypes = {
 	"player",
 	"pet",
@@ -59,10 +13,6 @@ local replacePortraitCvarNames = {
 	"ReplaceOtherPlayerPortraits",
 };
 
-function GetPowerBarColor(powerType)
-	return PowerBarColor[powerType];
-end
-
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
 	This "Initialize" function registers the events to handle.
@@ -74,8 +24,7 @@ end
 ]]--
 
 function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
-	myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, totalAbsorbBarOverlay, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, healAbsorbBarLeftShadow,
-	healAbsorbBarRightShadow, myManaCostPredictionBar)
+	myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, overAbsorbGlow, overHealAbsorbGlow, healAbsorbBar, myManaCostPredictionBar)
 	self.unit = unit;
 	self.name = name;
 	self.frameType = frameType;
@@ -87,38 +36,17 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
 	self.totalAbsorbBar = totalAbsorbBar;
-	self.totalAbsorbBarOverlay = totalAbsorbBarOverlay;
 	self.overAbsorbGlow = overAbsorbGlow;
 	self.overHealAbsorbGlow = overHealAbsorbGlow;
 	self.healAbsorbBar = healAbsorbBar;
-	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
-	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
 
-	if (self.myHealPredictionBar) then
-		self.myHealPredictionBar:ClearAllPoints();
-	end
-	if (self.otherHealPredictionBar) then
-		self.otherHealPredictionBar:ClearAllPoints();
-	end
-	if (self.totalAbsorbBar) then
-		self.totalAbsorbBar:ClearAllPoints();
-	end
-	if (self.myManaCostPredictionBar) then
-		self.myManaCostPredictionBar:ClearAllPoints();
-	end
-
-	if (self.totalAbsorbBarOverlay) then
-		self.totalAbsorbBar.overlay = self.totalAbsorbBarOverlay;
-		self.totalAbsorbBarOverlay:SetAllPoints(self.totalAbsorbBar);
-		self.totalAbsorbBarOverlay.tileSize = 32;
-	end
 	if (self.overAbsorbGlow) then
 		self.overAbsorbGlow:ClearAllPoints();
 		self.overAbsorbGlow:SetPoint("TOPLEFT", self.healthbar, "TOPRIGHT", -7, 0);
 		self.overAbsorbGlow:SetPoint("BOTTOMLEFT", self.healthbar, "BOTTOMRIGHT", -7, 0);
 	end
-	if (self.healAbsorbBar) then
+	if (self.healAbsorbBar and not self.healAbsorbBar.UpdateFillPosition) then
 		self.healAbsorbBar:ClearAllPoints();
 		self.healAbsorbBar:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
 	end
@@ -126,12 +54,6 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 		self.overHealAbsorbGlow:ClearAllPoints();
 		self.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", self.healthbar, "BOTTOMLEFT", 7, 0);
 		self.overHealAbsorbGlow:SetPoint("TOPRIGHT", self.healthbar, "TOPLEFT", 7, 0);
-	end
-	if (healAbsorbBarLeftShadow) then
-		self.healAbsorbBarLeftShadow:ClearAllPoints();
-	end
-	if (healAbsorbBarRightShadow) then
-		self.healAbsorbBarRightShadow:ClearAllPoints();
 	end
 
 	if (self.healthbar) then
@@ -218,17 +140,21 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 end
 
 function UnitFrame_Update (self, isParty)
-	if (self.name) then
+	if ( self.name ) then
 		local name;
 		if ( self.overrideName ) then
 			name = self.overrideName;
 		else
 			name = self.unit;
 		end
-		if (isParty) then
-			self.name:SetText(GetUnitName(name, true));
-		else
-			self.name:SetText(GetUnitName(name));
+
+		local nameText = GetUnitName(name, isParty);
+		if ( nameText ) then
+			if ( UnitInPartyIsAI(self.unit) and C_LFGInfo.IsInLFGFollowerDungeon() ) then
+				nameText = LFG_FOLLOWER_NAME_PREFIX:format(nameText);
+			end
+
+			self.name:SetText(nameText);
 		end
 	end
 
@@ -273,7 +199,6 @@ function UnitFrame_OnEvent(self, event, ...)
 			end
 		elseif ( event == "UNIT_MAXHEALTH" ) then
 			UnitFrameHealPredictionBars_UpdateMax(self);
-			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
 			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
@@ -290,18 +215,10 @@ function UnitFrame_OnEvent(self, event, ...)
 end
 
 function UnitFrameHealPredictionBars_UpdateMax(self)
-	if ( not self.myHealPredictionBar ) then
-		return;
-	end
-
 	UnitFrameHealPredictionBars_Update(self);
 end
 
 function UnitFrameHealPredictionBars_UpdateSize(self)
-	if ( not self.myHealPredictionBar or not self.otherHealPredictionBar ) then
-		return;
-	end
-
 	UnitFrameHealPredictionBars_Update(self);
 end
 
@@ -309,7 +226,7 @@ end
 --If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
 function UnitFrameHealPredictionBars_Update(frame)
-	if ( not frame.myHealPredictionBar ) then
+	if ( not frame.myHealPredictionBar and not frame.otherHealPredictionBar and not frame.healAbsorbBar and not frame.totalAbsorbBar ) then
 		return;
 	end
 
@@ -383,41 +300,31 @@ function UnitFrameHealPredictionBars_Update(frame)
 			local shownHealAbsorb = myCurrentHealAbsorb - allIncomingHeal;
 			local shownHealAbsorbPercent = shownHealAbsorb / maxHealth;
 
-			healAbsorbTexture = UnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.healAbsorbBar, shownHealAbsorb, -shownHealAbsorbPercent);
+			healAbsorbTexture = frame.healAbsorbBar:UpdateFillPosition(healthTexture, shownHealAbsorb, -shownHealAbsorbPercent);
 
 			--If there are incoming heals the left shadow would be overlayed by the incoming heals
 			--so it isn't shown.
-			if ( allIncomingHeal > 0 ) then
-				frame.healAbsorbBarLeftShadow:Hide();
-			else
-				frame.healAbsorbBarLeftShadow:SetPoint("TOPLEFT", healAbsorbTexture, "TOPLEFT", 0, 0);
-				frame.healAbsorbBarLeftShadow:SetPoint("BOTTOMLEFT", healAbsorbTexture, "BOTTOMLEFT", 0, 0);
-				frame.healAbsorbBarLeftShadow:Show();
-			end
+			frame.healAbsorbBar.LeftShadow:SetShown(allIncomingHeal <= 0);
 
 			-- The right shadow is only shown if there are absorbs on the health bar.
-			if ( totalAbsorb > 0 ) then
-				frame.healAbsorbBarRightShadow:SetPoint("TOPLEFT", healAbsorbTexture, "TOPRIGHT", -8, 0);
-				frame.healAbsorbBarRightShadow:SetPoint("BOTTOMLEFT", healAbsorbTexture, "BOTTOMRIGHT", -8, 0);
-				frame.healAbsorbBarRightShadow:Show();
-			else
-				frame.healAbsorbBarRightShadow:Hide();
-			end
+			frame.healAbsorbBar.RightShadow:SetShown(totalAbsorb > 0)
 		else
 			frame.healAbsorbBar:Hide();
-			frame.healAbsorbBarLeftShadow:Hide();
-			frame.healAbsorbBarRightShadow:Hide();
 		end
 	end
 
 	--Show myIncomingHeal on the health bar.
-	local incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.myHealPredictionBar, myIncomingHeal, -myCurrentHealAbsorbPercent);
+	local incomingHealTexture;
+	if ( frame.myHealPredictionBar ) then
+		incomingHealTexture = frame.myHealPredictionBar:UpdateFillPosition(healthTexture, myIncomingHeal, -myCurrentHealAbsorbPercent);
+	end
+
+	local otherHealLeftTexture = (myIncomingHeal > 0) and incomingHealTexture or healthTexture;
+	local xOffset = (myIncomingHeal > 0) and 0 or -myCurrentHealAbsorbPercent;
 
 	--Append otherIncomingHeal on the health bar
-	if (myIncomingHeal > 0) then
-		incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, incomingHealTexture, frame.otherHealPredictionBar, otherIncomingHeal);
-	else
-		incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.otherHealPredictionBar, otherIncomingHeal, -myCurrentHealAbsorbPercent);
+	if ( frame.otherHealPredictionBar ) then
+		incomingHealTexture = frame.otherHealPredictionBar:UpdateFillPosition(otherHealLeftTexture, otherIncomingHeal, xOffset);
 	end
 
 	--Append absorbs to the correct section of the health bar.
@@ -426,17 +333,19 @@ function UnitFrameHealPredictionBars_Update(frame)
 		--If there is a healAbsorb part shown, append the absorb to the end of that.
 		appendTexture = healAbsorbTexture;
 	else
-		--Otherwise, append the absorb to the end of the the incomingHeals part;
-		appendTexture = incomingHealTexture;
+		--Otherwise, append the absorb to the end of the the incomingHeals or health part;
+		appendTexture = incomingHealTexture or healthTexture;
 	end
-	UnitFrameUtil_UpdateFillBar(frame, appendTexture, frame.totalAbsorbBar, totalAbsorb)
+
+	if ( frame.totalAbsorbBar ) then
+		frame.totalAbsorbBar:UpdateFillPosition(appendTexture, totalAbsorb);
+	end
 end
 
 function UnitFrameManaCostPredictionBars_Update(frame, isStarting, startTime, endTime, spellID)
 	if (not frame.manabar or not frame.myManaCostPredictionBar) then
 		return;
 	end
-
 	local cost = 0;
 	if (not isStarting or startTime == endTime) then
         local currentSpellID = select(9, UnitCastingInfo(frame.unit));
@@ -457,48 +366,7 @@ function UnitFrameManaCostPredictionBars_Update(frame, isStarting, startTime, en
 	end
 	local manaBarTexture = frame.manabar:GetStatusBarTexture();
 	UnitFrameManaBar_Update(frame.manabar, frame.unit);
-	UnitFrameUtil_UpdateManaFillBar(frame, manaBarTexture, frame.myManaCostPredictionBar, cost);
-end
-
---WARNING: This function is very similar to the function CompactUnitFrameUtil_UpdateFillBar in CompactUnitFrame.lua.
---If you are making changes here, it is possible you may want to make changes there as well.
-function UnitFrameUtil_UpdateFillBarBase(frame, realbar, previousTexture, bar, amount, barOffsetXPercent)
-	if ( amount == 0 ) then
-		bar:Hide();
-		if ( bar.overlay ) then
-			bar.overlay:Hide();
-		end
-		return previousTexture;
-	end
-
-	local barOffsetX = 0;
-	if ( barOffsetXPercent ) then
-		local realbarSizeX = realbar:GetWidth();
-		barOffsetX = realbarSizeX * barOffsetXPercent;
-	end
-
-	bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", barOffsetX, 0);
-	bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", barOffsetX, 0);
-
-	local totalWidth, totalHeight = realbar:GetSize();
-	local _, totalMax = realbar:GetMinMaxValues();
-
-	local barSize = (amount / totalMax) * totalWidth;
-	bar:SetWidth(barSize);
-	bar:Show();
-	if ( bar.overlay ) then
-		bar.overlay:SetTexCoord(0, barSize / bar.overlay.tileSize, 0, totalHeight / bar.overlay.tileSize);
-		bar.overlay:Show();
-	end
-	return bar;
-end
-
-function UnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount, barOffsetXPercent)
-	return UnitFrameUtil_UpdateFillBarBase(frame, frame.healthbar, previousTexture, bar, amount, barOffsetXPercent);
-end
-
-function UnitFrameUtil_UpdateManaFillBar(frame, previousTexture, bar, amount, barOffsetXPercent)
-	return UnitFrameUtil_UpdateFillBarBase(frame, frame.manabar, previousTexture, bar, amount, barOffsetXPercent);
+	frame.myManaCostPredictionBar:UpdateFillPosition(manaBarTexture, cost);
 end
 
 function UnitFrame_OnEnter (self)
@@ -629,6 +497,7 @@ function UnitFrameManaBar_UpdateType(manaBar)
 	end
 
 	if (info) then
+		local manaBarAtlas;
 		if (manaBar.unitFrame.frameType and info.atlasElementName) then
 			
 			-- Some player spec/classes use a third "alternate" bar, requiring their primary bar to use slightly different bar art
@@ -640,8 +509,10 @@ function UnitFrameManaBar_UpdateType(manaBar)
 
 			local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText..classResourceText.."-Bar-"..info.atlasElementName;
 			manaBar:SetStatusBarTexture(manaBarTexture);
+			manaBarAtlas = manaBarTexture;
 		elseif (info.atlas) then
 			manaBar:SetStatusBarTexture(info.atlas);
+			manaBarAtlas = info.atlas;
 		end
 
 		manaBar:SetStatusBarColor(1, 1, 1);
@@ -652,7 +523,8 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		statusBarTexture:SetAlpha(playerDeadOrGhost and 0.5 or 1);
 
 		if (manaBar.FeedbackFrame) then
-			manaBar.FeedbackFrame:Initialize(info, manaBar.unit, powerType);
+			-- Ensure feedback frame gets the atlas we actually used rather than having it duplicate the same handling
+			manaBar.FeedbackFrame:Initialize({atlas = manaBarAtlas}, manaBar.unit, powerType);
 		end
 
 		if (manaBar.FullPowerFrame) then
@@ -662,7 +534,6 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		if (manaBar.Spark) then
 			manaBar.Spark:SetVisuals(info.spark);
 		end
-
 	else
 		-- If we cannot find the info for what the mana bar should be, default either to Mana or Mana-Status (colorable).
 		local manaBarTexture = "UI-HUD-UnitFrame-"..manaBar.unitFrame.frameType.."-"..portraitType..vehicleText.."-Bar-Mana";
@@ -692,7 +563,18 @@ function UnitFrameManaBar_UpdateType(manaBar)
 		manaBar.currValue = UnitPower("player", powerType);
 		if (manaBar.unitFrame.myManaCostPredictionBar) then
 			manaBar.unitFrame.myManaCostPredictionBar:Hide();
+
+			local predictionColor;
+			if (info and info.predictionColor) then
+				predictionColor = info.predictionColor;
+			else
+				-- No prediction color set, default to mana prediction color
+				predictionColor = POWERBAR_PREDICTION_COLOR_MANA;
+			end
+	
+			manaBar.unitFrame.myManaCostPredictionBar:SetFillColor(predictionColor);
 		end
+
 		manaBar.unitFrame.predictedPowerCost = 0;
 	end
 

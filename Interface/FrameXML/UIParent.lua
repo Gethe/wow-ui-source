@@ -31,6 +31,42 @@ local FRAME_POSITION_KEYS = {
 	fullscreen = 5,
 };
 
+--[[ 
+UIPanelWindow attributes
+======================================================
+area: [string]  --  Desired area of UIParent the frame should show in. Depending on chosen area and other settings, where a frame actually shows can vary when multiple frames are open.
+	full: Take up the full screen. Other non-full frames can't show with or replace a fullscreen frame.
+	center: Take up center area. Can't be shown with any other frames in the left/center/right areas, but may be replaced by other frames if allowOtherPanels is 1.
+	left: Take leftmost area of the screen. If pushable, may be shifted to center or right if other pushable frames are shown.
+	doublewide: Take up left and center areas. Can be shown with another single-area frame if it's pushable.
+	centerOrLeft: Take up center area when no other frames are showing, or use "left" behavior if other frames are shown.
+centerFrameSkipAnchoring: [bool]  --  If true on a frame using area "center," skips updating the frame's anchors when positioned
+neverAllowOtherPanels: [0,1]  --  If 1 on a frame using area "center" or "full", prevents trying to show any other panel while that frame is shown
+allowOtherPanels: [0,1]   -- (default 0 for "center" frames, otherwise 1)
+						  -- If 1 on non center or full area frames, allows other panels to be shown in other areas at the same time.
+						  -- If 1 on center frames, allows other frames to replace this one when opened. Also allows bags to be opened while this frame is open.
+pushable: [0,1,..n]  --  (attribute used by frames using areas left/doublewide/centerOrLeft)
+					 --  If 0, frame is not pushable to other areas; exact behavior is complicated. (Needs to be investigated to figure out what's actually intentional behavior vs legacy bugs)
+					 --  If > 0, frame can be pushed to other areas than area attribute when other frames are also open.
+					 --  Pushable frames are sorted by their pushable values, lower to higher, left to right.
+					 --  Equal pushable value frames are sorted by how recently they were shown, oldest to newest, left to right.
+whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead. 
+ignoreControlLost: [bool]  --  If true, do not close the frame when player loses control of character (ie when feared).
+showFailedFunc: [func]  --  Function to call when attempting to show the frame via ShowUIPanel fails.
+width: [number]  --  Override width to use instead of the frame's actual width for layout/position calculations.
+height: [number]  --  Override width to use instead of the frame's actual height for layout/position calculations.
+extraWidth: [number]  --  Extra buffer width to add when checking frame's width for layout/position calculations. Is added to 'width' if also set, otherwise is added to frame's actual width.
+extraHeight: [number]  --  Extra buffer height to add when checking frame's height for layout/position calculations. Is added to 'height' if also set, otherwise is added to frame's actual height.
+xoffset: [number]  --  X offset to add when positioning the frame within the UI parent.
+yoffset: [number]  --  Y offset to add when positioning the frame within the UI parent. Actual y position is also clamped based on minYOffset & bottomClampOverride.
+minYOffset: [number]  --  (default -10) Custom minimum amount of y offset the frame should have. Since Y offsets from the top are negative, this is numerically a "max" (ex: -20 is "more" offset than -10).
+bottomClampOverride: [number]  --  (default 140) Custom bottom-most edge that a frame can be positioned to reach. Frame's y offset is calculated by taking this + minYOffset into account.
+maximizePoint: [string]  --  [WARNING: Don't use this; this maximize/restore flow is very one-off specific to the World Map] Point that's passed to SetPoint if the frame is maximized via MaximizeUIPanel.
+checkFit: [0,1]  --  If 1, frame is scaled down if needed to fit within the current size of the UIParent. This can help large frames stay visible on varying screen sizes/UI scales.
+checkFitExtraWidth: [number]  --  (default 20) Extra buffer width added when checking the frame's current size when rescaling for checkFit.
+checkFitExtraHeight: [number]  --  (default 20) Extra buffer height added when checking the frame's current size when rescaling for checkFit. 
+]]--
+
 
 -- Per panel settings
 UIPanelWindows = {};
@@ -361,7 +397,6 @@ function UIParent_OnLoad(self)
 
 	-- Events for PerksProgram Handling
 	self:RegisterEvent("PERKS_PROGRAM_OPEN");
-	self:RegisterEvent("PERKS_PROGRAM_CLOSE");
 	self:RegisterEvent("PERKS_PROGRAM_DISABLED");
 
 	--Events for GMChatUI
@@ -1166,7 +1201,7 @@ COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
 
 function ToggleCollectionsJournal(tabIndex)
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -1180,7 +1215,7 @@ function ToggleCollectionsJournal(tabIndex)
 end
 
 function SetCollectionsJournalShown(shown, tabIndex)
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -1200,7 +1235,7 @@ function SetCollectionsJournalShown(shown, tabIndex)
 end
 
 function ToggleToyCollection(autoPageToCollectedToyID)
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -2150,10 +2185,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		ShowUIPanel(PerksProgramFrame);
-	elseif ( event == "PERKS_PROGRAM_CLOSE" ) then
-		if ( PerksProgramFrame and PerksProgramFrame:IsVisible() ) then
-			HideUIPanel(PerksProgramFrame);
-		end
 	elseif ( event == "PERKS_PROGRAM_DISABLED" ) then
 		StaticPopup_Show("PERKS_PROGRAM_DISABLED");
 
@@ -2708,11 +2739,11 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	local centerFrame = self:GetUIPanel("center");
 	local centerArea, centerPushable;
 	if ( centerFrame ) then
-		if ( GetUIPanelAttribute(centerFrame, "allowOtherPanels") ) then
+		centerArea = GetUIPanelAttribute(centerFrame, "area");
+		if ( centerArea == "center" and GetUIPanelAttribute(centerFrame, "allowOtherPanels") ) then
 			HideUIPanel(centerFrame);
 			centerFrame = nil;
 		else
-			centerArea = GetUIPanelAttribute(centerFrame, "area");
 			if ( centerArea and (centerArea == "center") and (frameArea ~= "center") and (frameArea ~= "full") ) then
 				if ( force ) then
 					self:SetUIPanel("center", nil, 1);
@@ -3112,7 +3143,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			xOff = xOff + xSpacing; -- add separating space
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset + xOff, yPos);
 		else
 			if ( frame == currentFrame ) then
 				frame = GetUIPanel("center") or GetUIPanel("left") or GetUIPanel("doublewide");
@@ -3314,8 +3345,10 @@ function ClampUIPanelY(frame, yOffset, minYOffset, bottomClampOverride)
 	if (bottomPos < bottomClamp) then
 		yOffset = yOffset + (bottomClamp - bottomPos);
 	end
-	if (yOffset > -10) then
-		yOffset = minYOffset or -10;
+	-- The minimum amount the y can be offset (mathematically speaking it's a max since y offsets from the top are negative)
+	local minimumOffset = minYOffset or -10;
+	if (yOffset > minimumOffset) then
+		yOffset = minimumOffset;
 	end
 	return yOffset;
 end

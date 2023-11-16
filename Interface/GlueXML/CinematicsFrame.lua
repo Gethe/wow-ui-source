@@ -186,6 +186,7 @@ function CinematicsButton_Update(self)
 		self:GetNormalTexture():SetDesaturated(false);
 		self:GetPushedTexture():SetDesaturated(false);
 		self.PlayButton:Show();
+		self.PlayButton:SetDesaturated(false);
 		self.DownloadIcon:Hide();
 		self.StreamingIcon:Hide();
 		self.StatusBar:Hide();
@@ -217,6 +218,7 @@ function CinematicsButton_Update(self)
 			self:GetNormalTexture():SetDesaturated(false);
 			self:GetPushedTexture():SetDesaturated(false);
 			self.PlayButton:Show();
+			self.PlayButton:SetDesaturated(false);
 			self.DownloadIcon:Hide();
 			self.StreamingIcon:Hide();
 			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
@@ -224,10 +226,10 @@ function CinematicsButton_Update(self)
 		elseif (inProgress) then
 			self:GetNormalTexture():SetDesaturated(true);
 			self:GetPushedTexture():SetDesaturated(true);
-			self.PlayButton:Hide();
+			self.PlayButton:Show();
+			self.PlayButton:SetDesaturated(true);
 			self.DownloadIcon:Hide();
 			self.StreamingIcon:Show();
-			self.StreamingIcon.Loop:Play();
 			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
 			self:SetScript("OnUpdate", CinematicsButton_Update);
 		else

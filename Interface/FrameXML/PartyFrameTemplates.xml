@@ -1,5 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI_shared.xsd">
+	<Frame name="PartyFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillAtlas" value="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Status" type="string"/>
+		</KeyValues>
+	</Frame>
 	<Frame name="PartyBuffFrameTemplate" mixin="PartyBuffFrameMixin" virtual="true" enableMouse="true" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
@@ -126,7 +131,7 @@ UI_shared.xsd">
 	<!--IMPORTANT
 		If you change anything in this file, be sure to check in PartyMemberFrame.lua if these values get set there as well.
 		IMPORTANT-->
-	<Button name="PartyMemberFrameTemplate" mixin="PartyMemberFrameMixin, PingableType_UnitFrameMixin" hidden="true" inherits="SecureUnitButtonTemplate, PingReceiverAttributeTemplate" virtual="true">
+	<Button name="PartyMemberFrameTemplate" mixin="PartyMemberFrameMixin" hidden="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" virtual="true">
 		<Size x="120" y="53"/>
 		<KeyValues>
 			<KeyValue key="frameType" value="Party" type="string"/>
@@ -190,21 +195,20 @@ UI_shared.xsd">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="45" y="-19"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="MyHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame parentKey="OtherHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame parentKey="HealAbsorbBar" inherits="PartyFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame parentKey="TotalAbsorbBar" inherits="PartyFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+				</Frames>
 				<Layers>
 					<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
 					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-						<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-						<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-						<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-						<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-						<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
 						<Texture parentKey="Background" setAllPoints="true" hidden="true">
 							<Color color="BLACK_FONT_COLOR"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 						<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 						<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 					</Layer>
@@ -231,16 +235,16 @@ UI_shared.xsd">
 								<Anchor point="TOPLEFT" x="-29" y="3"/>
 							</Anchors>
 							<MaskedTextures>
-								<MaskedTexture childKey="MyHealPredictionBar"/>
-								<MaskedTexture childKey="OtherHealPredictionBar"/>
-								<MaskedTexture childKey="TotalAbsorbBar"/>
-								<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+								<MaskedTexture childKey="MyHealPredictionBar.Fill"/>
+								<MaskedTexture childKey="OtherHealPredictionBar.Fill"/>
+								<MaskedTexture childKey="TotalAbsorbBar.Fill"/>
+								<MaskedTexture childKey="TotalAbsorbBar.TiledFillOverlay"/>
 								<MaskedTexture childKey="OverAbsorbGlow"/>
 								<MaskedTexture childKey="OverHealAbsorbGlow"/>
-								<MaskedTexture childKey="HealAbsorbBar"/>
-								<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
-								<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
-							<MaskedTexture childKey="Background"/>
+								<MaskedTexture childKey="HealAbsorbBar.Fill"/>
+								<MaskedTexture childKey="HealAbsorbBar.LeftShadow"/>
+								<MaskedTexture childKey="HealAbsorbBar.RightShadow"/>
+								<MaskedTexture childKey="Background"/>
 							</MaskedTextures>
 						</MaskTexture>
 					</Layer>

@@ -294,6 +294,11 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "PerksProgramResultError",
+			Type = "Event",
+			LiteralName = "PERKS_PROGRAM_RESULT_ERROR",
+		},
+		{
 			Name = "PerksProgramSetFrozenItem",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_SET_FROZEN_ITEM",
@@ -347,6 +352,8 @@ local PerksProgram =
 			{
 				{ Name = "overrideModelSceneID", Type = "number", Nilable = true },
 				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
+				{ Name = "mainHandItemModifiedAppearanceID", Type = "number", Nilable = true },
+				{ Name = "offHandItemModifiedAppearanceID", Type = "number", Nilable = true },
 			},
 		},
 		{

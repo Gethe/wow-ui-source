@@ -6,6 +6,7 @@ KioskFrameMixin = {}
 function KioskFrameMixin:OnLoad()
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_WARNING");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
+	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
 	self.whitelistedMapIDs = { };
 end
 
@@ -31,6 +32,8 @@ function KioskFrameMixin:OnEvent(event, ...)
 		PlaySound(expirationWarningSoundKit);
 	elseif event == "KIOSK_SESSION_EXPIRATION_CHANGED" then
 		UIErrorsFrame:AddExternalWarningMessage(KIOSK_SESSION_TIMER_CHANGED);
+	elseif event == "KIOSK_SESSION_SHUTDOWN" then
+		SettingsPanel:SetAllSettingsToDefaults();
 	end
 end
 

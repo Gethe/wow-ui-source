@@ -11,6 +11,7 @@ PTR_IssueReporter.TooltipTypes = {
     azerite = "Azerite Essence",
     talent = "Talent",
     recipe = "Recipe",
+    aibot = "Follower",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -86,17 +87,28 @@ function PTR_IssueReporter.SetupItemTooltips()
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, onTooltipSetItemFunction)
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.IsUnitAIFollower(unit)
+    return UnitExists(unit) and not UnitPlayerControlled(unit) and UnitInParty(unit)
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupUnitTooltips()
     local function onTooltipSetUnitFunction(tooltip, tooltipData)
         if (C_PetBattles.IsInBattle()) then
             return
-        end
+        end        
+        
         local name, unit = tooltip:GetUnit()
+        local isBot = PTR_IssueReporter.IsUnitAIFollower(unit)
         if (name) and (unit) then
             local guid = UnitGUID(unit) or ""
             local id = tonumber(guid:match("-(%d+)-%x+$"), 10)
             if (id) and (guid:match("%a+") ~= "Player") then
-                PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.unit, id, name)
+                local tooltipType = PTR_IssueReporter.TooltipTypes.unit
+                if (isBot) then
+                    tooltipType = PTR_IssueReporter.TooltipTypes.aibot
+                end
+                
+                PTR_IssueReporter.HookIntoTooltip(GameTooltip, tooltipType, id, name)
             end
         end
     end

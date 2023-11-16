@@ -111,6 +111,7 @@ PlatformDocumentation.lua
 PlayerInfoDocumentation.lua
 PlayerInteractionManagerDocumentation.lua
 PlayerLocationDocumentation.lua
+PlayerScriptDocumentation.lua
 PonyDocumentation.lua
 PortraitDocumentation.lua
 PvpInfoDocumentation.lua
@@ -139,6 +140,7 @@ SimpleAnimScaleLineAPIDocumentation.lua
 SimpleAnimTextureCoordTranslationAPIDocumentation.lua
 SimpleAnimTranslationAPIDocumentation.lua
 SimpleAnimTranslationLineAPIDocumentation.lua
+SimpleAnimVertexColorAPIDocumentation.lua
 SimpleAnimatableObjectAPIDocumentation.lua
 SimpleBrowserAPIDocumentation.lua
 SimpleButtonAPIDocumentation.lua

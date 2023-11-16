@@ -285,7 +285,7 @@ UI_shared.xsd">
 			<OnHide function="QuestFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate">
+	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate" hidden="true">
 		<Size x="198" y="230"/>
 		<KeyValues>
 			<KeyValue key="normalIntensity" value="0.75" type="number"/>

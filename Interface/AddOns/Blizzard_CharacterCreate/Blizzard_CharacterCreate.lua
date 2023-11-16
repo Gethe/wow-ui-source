@@ -64,8 +64,6 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
 	self:RegisterEvent("ASSIGN_VAS_RESPONSE");
-	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
-	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
 
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
@@ -171,11 +169,6 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "ASSIGN_VAS_RESPONSE" then
 		local token, storeError, vasPurchaseResult = ...;
 		self:OnAssignVASResponse(token, storeError, vasPurchaseResult);
-	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
-		self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
-		local instantRotate = true;
-		self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
-		self:ResetNavBlockers();
 	end
 
 	if showError then
@@ -203,6 +196,7 @@ function CharacterCreateMixin:OnShow()
 	local instantRotate = true;
 	self:SetMode(CHAR_CREATE_MODE_CLASS_RACE, instantRotate);
 	self:ResetNavBlockers();
+	self:RefreshCurrentNavBlocker();
 
 	self:UpdateRecruitInfo();
 
@@ -1311,6 +1305,7 @@ end
 
 function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 	return C_CharacterServices.IsTrialBoostEnabled() and
+		not IsKioskGlueEnabled() and
 		not C_CharacterCreation.IsNewPlayerRestricted() and
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and

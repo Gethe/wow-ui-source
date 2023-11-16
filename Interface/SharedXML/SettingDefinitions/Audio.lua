@@ -375,10 +375,6 @@ local function InitVoiceSettings(category, layout)
 end
 
 local function Register()
-	if Kiosk.IsEnabled() then
-		return;
-	end
-
 	local category, layout = Settings.RegisterVerticalLayoutCategory(AUDIO_LABEL);
 	Settings.AUDIO_CATEGORY_ID = category:GetID();
 

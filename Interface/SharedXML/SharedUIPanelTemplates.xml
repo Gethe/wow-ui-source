@@ -2949,10 +2949,10 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="spinner" inherits="LoadingSpinnerTemplate" hidden="false">
-								<Size x="40" y="40"/>
+							<Frame parentKey="spinner" inherits="SpinnerTemplate" hidden="false">
+								<Size x="23" y="23"/>
 								<Anchors>
-									<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT"/>
+									<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT" x="-9" y="0"/>
 								</Anchors>
 							</Frame>
 						</Frames>

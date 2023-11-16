@@ -1078,7 +1078,7 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 
 QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth = 244,
 	elements = {
-		QuestInfo_ShowRewards, 8, -42,
+		QuestInfo_ShowRewards, 8, 0,
 	}
 }
 

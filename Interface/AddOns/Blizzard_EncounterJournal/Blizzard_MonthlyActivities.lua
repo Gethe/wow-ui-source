@@ -27,6 +27,70 @@ MonthlyActivities_HelpPlate = {
 	[2] = { ButtonPos = { x = 230,  y = -176 }, HighLightBox = { x = 230, y = -176, width = 560, height = 295 },	ToolTipDir = "RIGHT",   ToolTipText = MONTHLY_ACTIVITIES_HELP_2 },
 }
 
+local function IsActivityPendingComplete(activityID)
+	return EncounterJournal.MonthlyActivitiesFrame:IsActivityPendingComplete(activityID);
+end
+
+local function GetPendingCompleteActivityAnimStartTime(activityID)
+	return EncounterJournal.MonthlyActivitiesFrame:GetPendingCompleteActivityAnimStartTime(activityID);
+end
+
+local function IsTimedActivity(activityData)
+	return activityData.eventStartTime and activityData.eventEndTime;
+end
+
+local function HasTimedActivityBegun(activityData)
+	if not IsTimedActivity(activityData) then
+		return false;
+	end
+	local currentTime = GetServerTime();
+	return currentTime > activityData.eventStartTime;
+end
+
+local function HasTimedActivityExpired(activityData)
+	if not IsTimedActivity(activityData) then
+		return false;
+	end
+	local currentTime = GetServerTime();
+	return currentTime > activityData.eventEndTime;
+end
+
+local function IsTimedActivityActive(activityData)
+	return HasTimedActivityBegun(activityData) and not HasTimedActivityExpired(activityData);
+end
+
+local function GetActivityTimeRemaining(activityData)
+	if not IsTimedActivityActive(activityData) then
+		return 0;
+	end
+
+	local currentTime = GetServerTime();
+	return activityData.eventEndTime - currentTime;
+end
+
+local function IsTimedActivityCloseToExpiring(activityData)
+	if not IsTimedActivityActive(activityData) then
+		return false;
+	end
+
+	local timeRemaining = GetActivityTimeRemaining(activityData);
+	local timeRemainingUnits = ConvertSecondsToUnits(timeRemaining);
+
+	local totalEventTime = activityData.eventEndTime - activityData.eventStartTime;
+	local totalEventTimeUnits = ConvertSecondsToUnits(totalEventTime);
+	if totalEventTimeUnits.days >= 7 then
+		return timeRemainingUnits.days <= 3;
+	else
+		return timeRemainingUnits.days <= 1;
+	end
+end
+
+local ActivityTimeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
+ActivityTimeRemainingFormatter:Init(0, SecondsFormatter.Abbreviation.None, false, true);
+function ActivityTimeRemainingFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Hours;
+end
+
 function MonthlyActivities_ToggleTutorial()
 	local helpPlate = MonthlyActivities_HelpPlate;
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
@@ -40,48 +104,145 @@ function AreMonthlyActivitiesRestricted()
 	return IsTrialAccount() or IsVeteranTrialAccount();
 end
 
+-- MonthlyActivityButtonTextContainerMixin
+MonthlyActivitiesButtonTextContainerMixin = {};
+function MonthlyActivitiesButtonTextContainerMixin:OnLoad()
+	self.NameText:SetMaxLines(2);
+	self.ConditionsText:SetMaxLines(1);
+end
+
+function MonthlyActivitiesButtonTextContainerMixin:GetClockAtlasText(data)
+	if data.completed then
+		return CreateAtlasMarkup("activities-clock-completed");
+	elseif not data.areAllConditionsMet then
+		return CreateAtlasMarkup("activities-clock-ineligible");
+	elseif IsTimedActivityCloseToExpiring(data) then
+		return CreateAtlasMarkup("activities-clock-expiringsoon");
+	elseif not IsTimedActivityActive(data) then
+		return CreateAtlasMarkup("activities-clock-disabled");
+	end
+	return CreateAtlasMarkup("activities-clock-standard");
+end
+
+function MonthlyActivitiesButtonTextContainerMixin:UpdateTextColor(data)
+	local isTimedActivity = IsTimedActivity(data);
+
+	-- NameText
+	if data.completed then
+		-- Changing font too since GameFontHighlightMedium looked off when colored black
+		self.NameText:SetFontObject("GameFontBlackMedium");
+		self.NameText:SetTextColor(BLACK_FONT_COLOR:GetRGB());
+	else
+		self.NameText:SetFontObject("GameFontHighlightMedium");
+		if isTimedActivity and HasTimedActivityExpired(data) then
+			self.NameText:SetTextColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+		else
+			self.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		end
+	end
+
+	-- ConditionsText
+	if data.completed then
+		self.ConditionsText:SetFontObject("GameFontBlack");
+		self.ConditionsText:SetTextColor(BLACK_FONT_COLOR:GetRGB());
+	else
+		self.ConditionsText:SetFontObject("GameFontNormal");
+		if isTimedActivity and not IsTimedActivityActive(data) then
+			self.ConditionsText:SetTextColor(LIGHTGRAY_FONT_COLOR:GetRGB());
+		elseif not data.areAllConditionsMet then
+			self.ConditionsText:SetTextColor(RED_FONT_COLOR:GetRGB());
+		elseif isTimedActivity and IsTimedActivityCloseToExpiring(data) then
+			self.ConditionsText:SetTextColor(ORANGE_FONT_COLOR:GetRGB());
+		else
+			self.ConditionsText:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		end
+	end
+end
+
+function MonthlyActivitiesButtonTextContainerMixin:UpdateConditionsText(data)
+	local conditionsText = "";
+	if not data.isChild then
+		if IsTimedActivity(data) then
+			conditionsText = self:GetClockAtlasText(data);
+
+			if not data.completed and IsTimedActivityCloseToExpiring(data) then
+				local timeRemainingText = ActivityTimeRemainingFormatter:Format(GetActivityTimeRemaining(data));
+				conditionsText = conditionsText.." "..MONTHLY_ACTIVITIES_EVENT_TIME_LEFT:format(timeRemainingText);
+			else
+				if data.eventName then
+					conditionsText = conditionsText.." "..data.eventName;
+				end
+
+				local eventStartTimeUnits = date("*t", data.eventStartTime);
+				local eventStartDate = FormatShortDate(eventStartTimeUnits.day, eventStartTimeUnits.month);
+
+				local eventEndTimeUnits = date("*t", data.eventEndTime);
+				local eventEndDate = FormatShortDate(eventEndTimeUnits.day, eventEndTimeUnits.month);
+
+				local durationText = MONTHLY_ACTIVITIES_EVENT_DURATION:format(eventStartDate, eventEndDate);
+				conditionsText = conditionsText.." "..durationText;
+			end
+		end
+
+		for index, condition in ipairs(data.conditions) do
+			if conditionsText ~= "" then
+				conditionsText = conditionsText..", ";
+			end
+			conditionsText = conditionsText..condition.text;
+		end
+	end
+
+	self.ConditionsText:SetText(conditionsText);
+end
+
+function MonthlyActivitiesButtonTextContainerMixin:UpdateText(data)
+	self.NameText:SetText(data.name);
+	self:UpdateConditionsText(data);
+	self:UpdateTextColor(data);
+	self:Layout();
+end
+
 -- MonthlyActivitiesButton
 MonthlyActivitiesButtonMixin = { };
-function MonthlyActivitiesButtonMixin:Init(node)
-	-- Handle scrolling down the list while anims are playing on an existing button
-	if self.CheckmarkAnim:IsPlaying() or self.CoinAnim:IsPlaying() then
-		self.CheckmarkAnim:Stop();
-		self.CoinAnim:Stop();
-		self.pendingComplete = false;
-		MonthlyActivities_PendingAnimComplete();
-	end
-	
-	self:UpdateButtonState();
-	self:Show();
-end
 
-function MonthlyActivitiesButtonMixin:OnShow()
+function MonthlyActivitiesButtonMixin:Init()
 	self:GetElementData():SetCollapsed(true);
 	self:UpdateButtonState();
+
+	-- Handle scrolling down the list while anims are playing on an existing button
+	self.CheckmarkAnim:Stop();
+	self.CoinAnim:Stop();
+
+	local data = self:GetData();
+	if data then
+		EncounterJournal.MonthlyActivitiesFrame:PlayPendingCompleteActivityAnim(self, data.ID);
+	end
 end
 
-function MonthlyActivitiesButtonMixin:SetButtonData()
-	local node = self:GetElementData();
-	if not node then
+function MonthlyActivitiesButtonMixin:NeedsToAnimatePendingComplete()
+	local data = self:GetData();
+	if not data then
+		return false;
+	end
+
+	return EncounterJournal.MonthlyActivitiesFrame:NeedsToAnimatePendingComplete(data.ID);
+end
+
+function MonthlyActivitiesButtonMixin:UpdateButtonStateShared()
+	local data = self:GetData();
+	if not data then
 		return;
 	end
-	local data = node:GetData();
 
-	self.id = data.id;
-	self.requirementsList = data.requirementsList;
-	self.activityName = data.name;
-	self.description = data.description;
-	self.completed = data.completed;
+	local needsToAnimatePendingComplete = self:NeedsToAnimatePendingComplete();
 
+	self:UpdateDesaturated();
 	self:UpdateTracked();
-
-	self.Name:SetText(data.name);
-	self.Name:SetFontObject(data.completed and "GameFontBlackMedium" or "GameFontHighlightMedium");
+	self.TextContainer:UpdateText(data);
 	self.Points:SetText(data.points);
-	self.Points:SetShown(not data.restricted and not data.completed and data.rewardAvailable and not data.pendingComplete);
-	self.Checkmark:SetShown(not data.restricted and data.completed and not data.pendingComplete);
-	self.CheckmarkFlipbook:SetShown(data.pendingComplete);
-	local normalActiveTexture = self.id == MonthlyActivitySelectedID and "activities-incomplete-active" or "activities-incomplete"
+	self.Points:SetShown(not data.restricted and not data.completed and data.rewardAvailable and not needsToAnimatePendingComplete);
+	self.Checkmark:SetShown(not data.restricted and data.completed and not needsToAnimatePendingComplete);
+	local normalActiveTexture = data.ID == MonthlyActivitySelectedID and "activities-incomplete-active" or "activities-incomplete"
 	self:SetNormalAtlas(data.completed and "activities-complete" or normalActiveTexture);
 
 	-- Prevent hover state and tooltip when restricted
@@ -89,25 +250,22 @@ function MonthlyActivitiesButtonMixin:SetButtonData()
 end
 
 function MonthlyActivitiesButtonMixin:UpdateTracked()
-	local node = self:GetElementData();
-	if node then
-		local data = node:GetData();
-		self.tracked = data.tracked;
-	else
-		self.tracked = false;
-	end
-	self.TrackingCheckmark:SetShown(self.tracked and not self.completed);
+	local data = self:GetData();
+	self.TrackingCheckmark:SetShown(data and data.tracked);
 end
 
 function MonthlyActivitiesButtonMixin:UpdateButtonState()
-	local node = self:GetElementData();
-	if not node then
+	local data = self:GetData();
+	if not data then
 		return;
 	end
-	local data = node:GetData();
+
+	self.CheckmarkFlipbook:SetShown(self:NeedsToAnimatePendingComplete());
 
 	local showRibbon = not data.restricted and (data.completed or data.rewardAvailable);
+	local node = self:GetElementData();
 	local isCollapsed = node:IsCollapsed();
+
 	if data.hasChild then
 		self.HeaderCollapseIndicator:SetAtlas(isCollapsed and "campaign_headericon_closed" or "campaign_headericon_open");
 		self.HeaderCollapseIndicator:SetShown(true);
@@ -118,11 +276,17 @@ function MonthlyActivitiesButtonMixin:UpdateButtonState()
 		self.RibbonStacked:SetShown(false);
 		self.Ribbon:SetShown(showRibbon);
 	end
-	self:SetButtonData();
+
+	self:UpdateButtonStateShared();
 end
 
 function MonthlyActivitiesButtonMixin:OnEnter()
-	if self.requirementsList then
+	local data = self:GetData();
+	if not data then
+		return;
+	end
+
+	if data.requirementsList then
 		self.showingTooltip = true;
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 		self:ShowTooltip();
@@ -132,17 +296,22 @@ end
 -- Returns true if this method acted on the click
 -- This may be needed since if the internal method handles the click in a way which leads to the button being released back to the pool then we won't want to continue after
 function MonthlyActivitiesButtonMixin:OnClick_Internal()
+	local data = self:GetData();
+	if not data then
+		return false;
+	end
+
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(self.id);
+		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(data.ID);
 		ChatEdit_InsertLink(perksActivityLink);
 		return true;
 	end
 
 	if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
-		if self.tracked then
-			C_PerksActivities.RemoveTrackedPerksActivity(self.id);
-		elseif not self.completed then
-			C_PerksActivities.AddTrackedPerksActivity(self.id);
+		if data.tracked then
+			C_PerksActivities.RemoveTrackedPerksActivity(data.ID);
+		elseif self:CanTrack() then
+			C_PerksActivities.AddTrackedPerksActivity(data.ID);
 		end
 		if self.showingTooltip then
 			self:ShowTooltip();
@@ -160,13 +329,11 @@ function MonthlyActivitiesButtonMixin:OnClick()
 		return;
 	end
 
-	local node = self:GetElementData();
-	if node then
-		local data = node:GetData();
-		if data and data.hasChild then
-			node:ToggleCollapsed();
-			self:UpdateButtonState();
-		end
+	local data = self:GetData();
+	if data and data.hasChild then
+		local node = self:GetElementData();
+		node:ToggleCollapsed();
+		self:UpdateButtonState();
 	end
 end
 
@@ -176,44 +343,139 @@ function MonthlyActivitiesButtonMixin:OnLeave()
 end
 
 function MonthlyActivitiesButtonMixin:ShowTooltip()
-	GameTooltip_SetTitle(GameTooltip, self.activityName, NORMAL_FONT_COLOR, true);
+	local data = self:GetData();
+	if not data then
+		return;
+	end
+
+	GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR, true);
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
-	if #self.description > 0 then
-		GameTooltip:AddLine(self.description, 1, 1, 1, true);
+	if #data.description > 0 then
+		GameTooltip:AddLine(data.description, 1, 1, 1, true);
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	end
 
-	for _, requirement in ipairs(self.requirementsList) do
+	for _, requirement in ipairs(data.requirementsList) do
 		local tooltipLine = requirement.requirementText;
 		tooltipLine = string.gsub(tooltipLine, " / ", "/");
 		local color = not requirement.completed and WHITE_FONT_COLOR or DISABLED_FONT_COLOR;
 		GameTooltip:AddLine(tooltipLine, color.r, color.g, color.b, true);
 	end
 
-	if self.tracked then
+	local conditionLines = {};
+	local function AddConditionLine(text, r, g, b)
+		table.insert(conditionLines, {
+			text = text,
+			r = r,
+			g = g,
+			b = b,
+		});
+	end
+
+	if not data.completed and IsTimedActivity(data) then
+		if not HasTimedActivityBegun(data) then
+			AddConditionLine(MONTHLY_ACTIVITIES_EVENT_NOT_BEGUN, 1, 0, 0);
+		elseif HasTimedActivityExpired(data) then
+			AddConditionLine(MONTHLY_ACTIVITIES_EVENT_EXPIRED, 1, 0, 0);
+		end
+	end
+
+	for index, condition in ipairs(data.conditions) do
+		AddConditionLine(condition.text, 1, condition.isMet and 1 or 0, condition.isMet and 1 or 0);
+	end
+
+	if #conditionLines > 0 then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		for index, conditionLine in ipairs(conditionLines) do
+			GameTooltip:AddLine(conditionLine.text, conditionLine.r, conditionLine.g, conditionLine.b);
+		end
+	end
+
+	if data.tracked then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip:AddLine(MONTHLY_ACTIVITIES_UNTRACK, 0, 1, 0);
-	elseif not self.completed then
+	elseif self:CanTrack() then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip:AddLine(MONTHLY_ACTIVITIES_TRACK, 0, 1, 0);
 	end
+
 	GameTooltip:Show();
+end
+
+function MonthlyActivitiesButtonMixin:GetData()
+	local node = self:GetElementData();
+	if not node then
+		return nil;
+	end
+	return node:GetData();
+end
+
+function MonthlyActivitiesButtonMixin:CanTrack()
+	local data = self:GetData();
+	if not data then
+		return false;
+	end
+
+	if IsTimedActivity(data) and HasTimedActivityExpired(data) then
+		return false;
+	end
+
+	return not data.completed;
+end
+
+function MonthlyActivitiesButtonMixin:UpdateDesaturatedShared()
+	local desaturate = false;
+	local data = self:GetData();
+	if data then
+		desaturate = not data.completed and HasTimedActivityExpired(data);
+	end
+
+	self.TrackingCheckmark:SetDesaturated(desaturate);
+	self.Checkmark:SetDesaturated(desaturate);
+	self.NormalTexture:SetDesaturated(desaturate);
+	self.HighlightTexture:SetDesaturated(desaturate);
+	self.Points:SetFontObject(desaturate and "GameFontDisableMed2" or "GameFontHighlightMed2");
+
+	return desaturate;
+end
+
+function MonthlyActivitiesButtonMixin:UpdateDesaturated()
+	local desaturate = self:UpdateDesaturatedShared();
+	self.Coin:SetDesaturated(desaturate);
+	self.Ribbon:SetDesaturated(desaturate);
+	self.RibbonStacked:SetDesaturated(desaturate);
+	self.HeaderCollapseIndicator:SetDesaturated(desaturate);
+end
+
+function MonthlyActivitiesButtonMixin:GetCheckmarkAnimDuration()
+	return self.CheckmarkAnim:GetDuration();
+end
+
+-- Make sure to call the ActivitiesFrame's PlayPendingCompleteActivityAnim first so all pending complete anims can sync up
+function MonthlyActivitiesButtonMixin:PlayPendingCompleteAnim(timeOffset)
+	self.CoinAnim:Restart(false, timeOffset);
+	self.CheckmarkAnim:Restart(false, timeOffset);
+	PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_ACTIVITY);
 end
 
 -- MonthlySupersedeActivitiesButton
 MonthlySupersedeActivitiesButtonMixin = CreateFromMixins(MonthlyActivitiesButtonMixin);
-function MonthlySupersedeActivitiesButtonMixin:Init(node)
+
+function MonthlySupersedeActivitiesButtonMixin:Init()
 	self:UpdateButtonState();
-	self:Show();
 end
 
 function MonthlySupersedeActivitiesButtonMixin:UpdateButtonState()
-	MonthlyActivitiesButtonMixin.SetButtonData(self);
+	MonthlyActivitiesButtonMixin.UpdateButtonStateShared(self);
 end
 
 function MonthlySupersedeActivitiesButtonMixin:OnClick()
 	MonthlyActivitiesButtonMixin.OnClick_Internal(self);
+end
+
+function MonthlySupersedeActivitiesButtonMixin:UpdateDesaturated()
+	MonthlyActivitiesButtonMixin.UpdateDesaturatedShared(self);
 end
 
 -- MonthlyActivitiesThresholdMixin
@@ -473,8 +735,16 @@ end
 -- MonthlyActivitiesFrame
 MonthlyActivitiesFrameMixin = { };
 
+local MonthlyActivitiesFrameEvents =
+{
+	"PERKS_ACTIVITIES_TRACKED_UPDATED",
+	"PERKS_ACTIVITIES_UPDATED",
+	"CHEST_REWARDS_UPDATED_FROM_SERVER",
+	"PERKS_ACTIVITY_COMPLETED",
+};
+
 function MonthlyActivitiesFrameMixin:OnLoad()
-	self.pendingComplete = { };
+	self:ResetCachedPendingCompleteActivities();
 
 	-- Anchors can't be set on BarFill in layout, has to be OnLoad
 	self.ThresholdBar.BarFillGlow:SetPoint("LEFT", self.ThresholdBar.BarFill, "LEFT", 0, 0);
@@ -488,9 +758,9 @@ function MonthlyActivitiesFrameMixin:OnLoad()
 	view:SetPanExtent(20);
 
 	myView = view;
-		
-	local function Initializer(button, node)		
-		button:Init(node);
+
+	local function Initializer(button, node)
+		button:Init();
 	end
 
 	view:SetElementFactory(function(factory, node)
@@ -502,12 +772,6 @@ function MonthlyActivitiesFrameMixin:OnLoad()
 
 	self.FilterList:UpdateFilters();
 
-	self:RegisterEvent("PERKS_ACTIVITIES_TRACKED_UPDATED");
-	self:RegisterEvent("PERKS_ACTIVITIES_UPDATED");
-	self:RegisterEvent("CHEST_REWARDS_UPDATED_FROM_SERVER");
-	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
-	self:UpdateActivities();
-
 	C_PerksProgram.RequestPendingChestRewards();
 end
 
@@ -518,7 +782,24 @@ function MonthlyActivitiesFrameMixin:CollapseAllMonthlyActivities()
 	end
 end
 
+function MonthlyActivitiesFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, MonthlyActivitiesFrameEvents);
+
+	self.ScrollBox:ScrollToBegin();
+	self:UpdateActivities();
+end
+
 function MonthlyActivitiesFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, MonthlyActivitiesFrameEvents);
+
+	self:UpdateBarTargetValue();
+	if self.targetValue then
+		self:SetCurrentPoints(self.targetValue);
+	end
+
+	self:ResetCachedPendingCompleteActivities();
+	C_PerksActivities.ClearPerksActivitiesPendingCompletion();
+
 	if self.progressionSoundHandle then
 		StopSound(self.progressionSoundHandle);
 		self.progressionSoundHandle = nil;
@@ -528,6 +809,8 @@ function MonthlyActivitiesFrameMixin:OnHide()
 	if ( helpPlate and HelpPlate_IsShowing(helpPlate) ) then
 		HelpPlate_Hide(false);
 	end
+
+	self:SetSelectedActivityID(nil);
 end
 
 function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
@@ -541,15 +824,20 @@ function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
 		local excludeCollapsed = false;
 		dataProvider:ForEach(function(elementData)
 			local data = elementData:GetData();
-			data.tracked = tContains(trackedActivityIDs, data.id);
+			data.tracked = tContains(trackedActivityIDs, data.ID);
 		end, excludeCollapsed);
 		self.ScrollBox:ForEachFrame(function(frame, elementData)
 			frame:UpdateTracked();
 		end);
+
+		if MonthlyActivitySelectedID and not tContains(trackedActivityIDs, MonthlyActivitySelectedID) then
+			self:SetSelectedActivityID(nil);
+		end
 	elseif ( event == "CHEST_REWARDS_UPDATED_FROM_SERVER" ) then
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		self:CollapseAllMonthlyActivities();
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
+		self.ScrollBox:ScrollToBegin();
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition);
 		Chat_AddSystemMessage(MONTHLY_ACTIVITIES_UPDATED);
 	end
@@ -559,7 +847,7 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	if not activitiesInfo then
 		activitiesInfo = C_PerksActivities.GetPerksActivitiesInfo();
 	end
-	
+
 	-- Gather info based on all activities, thresholds, and pending rewards that will affect how they are all displayed
 	local pendingRewards = C_PerksProgram.GetPendingChestRewards();
 
@@ -588,8 +876,6 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 		thresholdMax = 1000;
 	end
 
-	self.pendingComplete = { };
-
 	local earnedThresholdAmount = 0;
 	for _, activity in pairs(activitiesInfo.activities) do
 		if activity.completed then
@@ -598,9 +884,9 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 	end
 	earnedThresholdAmount = math.min(earnedThresholdAmount, thresholdMax);
 
-	local pendingIDs = C_PerksActivities.GetPerksActivitiesPendingCompletion().pendingIDs;
-	for _, id in ipairs(pendingIDs) do
-		self.pendingComplete[id] = true;
+	local pendingCompletionIDs = C_PerksActivities.GetPerksActivitiesPendingCompletion().pendingIDs;
+	for _, id in ipairs(pendingCompletionIDs) do
+		self.pendingCompleteActivities[id] = true;
 	end
 
 	-- Build UI - rewards text or threshold bar at the top, activities list below
@@ -615,52 +901,109 @@ function MonthlyActivitiesFrameMixin:UpdateActivities(retainScrollPosition, acti
 		SetCVar("perksActivitiesLastPoints", 0);
 	end
 
-	-- Reset bar animation targets if already started from a previous update
-	self.pendingTargetValue = nil;
-	self.targetValue = nil;
-
 	local lastPoints = tonumber(GetCVar("perksActivitiesLastPoints"));
-	self:SetCurrentPoints(lastPoints, lastPoints);
+	self:SetCurrentPoints(lastPoints);
 
-	if earnedThresholdAmount ~= lastPoints or not TableIsEmpty(self.pendingComplete) then
+	if earnedThresholdAmount ~= lastPoints then
 		self.pendingTargetValue = earnedThresholdAmount;
-		self.PauseAnim:Play();
 	end
 end
 
-function MonthlyActivitiesFrameMixin:TriggerNextPending()
-	local frame = self.ScrollBox:FindFrameByPredicate(function(frame)
-		return self.pendingComplete[frame.id];
-	end);
-	if frame then
-		self.pendingComplete[frame.id] = nil;
-		frame:GetElementData().pendingComplete = false;
-		frame.CoinAnim:Play();
-		frame.CheckmarkAnim:Play();
-		self:SetAnimating(true);
+function MonthlyActivitiesFrameMixin:UpdateBarTargetValue(playSfx)
+	if self.pendingTargetValue then
+		self.targetValue = self.pendingTargetValue;
+		self.pendingTargetValue = nil;
 
-		if self:IsVisible() then
-			PlaySound(SOUNDKIT.TRADING_POST_UI_COMPLETED_ACTIVITY);
-		end
-	else
-		self.pendingComplete = { };
-		self.ScrollBox:GetDataProvider():ForEach(function(elementData)
-			elementData.pendingComplete = false;
-		end, TreeDataProviderConstants.IncludeCollapsed);
-		C_PerksActivities.ClearPerksActivitiesPendingCompletion();
-
-		if self.pendingTargetValue then
-			self.targetValue = self.pendingTargetValue;
-			self.pendingTargetValue = nil;
+		if playSfx then
 			self.progressionSFXQueued = true;
 		end
 	end
 end
 
-function MonthlyActivities_PendingAnimComplete(anim)
-	EncounterJournal.MonthlyActivitiesFrame:TriggerNextPending();
+function MonthlyActivitiesFrameMixin:ClearCurrentAnimWindow()
+	if not self.pendingCompleteCurrentAnimWindow then
+		return;
+	end
+
+	if self.pendingCompleteCurrentAnimWindow.timer then
+		self.pendingCompleteCurrentAnimWindow.timer:Cancel();
+	end
+
+	table.insert(self.pendingCompleteFinishedAnimWindows, self.pendingCompleteCurrentAnimWindow);
+
+	self.pendingCompleteCurrentAnimWindow = nil;
 end
 
+function MonthlyActivitiesFrameMixin:ResetCachedPendingCompleteActivities()
+	self.pendingCompleteActivities = {};
+	self:ClearCurrentAnimWindow();
+	self.pendingCompleteFinishedAnimWindows = {};
+end
+
+function MonthlyActivitiesFrameMixin:IsActivityPendingComplete(activityID)
+	return self.pendingCompleteActivities[activityID];
+end
+
+function MonthlyActivitiesFrameMixin:HasPendingCompleteActivityFinishedAnimating(activityID)
+	for _, animWindow in pairs(self.pendingCompleteFinishedAnimWindows) do
+		if animWindow.activityIDs[activityID] then
+			return true;
+		end
+	end
+	return false;
+end
+
+function MonthlyActivitiesFrameMixin:NeedsToAnimatePendingComplete(activityID)
+	return self:IsActivityPendingComplete(activityID) and not self:HasPendingCompleteActivityFinishedAnimating(activityID);
+end
+
+function MonthlyActivitiesFrameMixin:GetPendingCompleteActivityAnimStartTime(activityID)
+	if self.pendingCompleteCurrentAnimWindow and self.pendingCompleteCurrentAnimWindow.activityIDs[activityID] then
+		return self.pendingCompleteCurrentAnimWindow.startTime;
+	end
+
+	for _, animWindow in pairs(self.pendingCompleteFinishedAnimWindows) do
+		if animWindow.activityIDs[activityID] then
+			return animWindow.startTime;
+		end
+	end
+
+	return nil;
+end
+
+function MonthlyActivitiesFrameMixin:PlayPendingCompleteActivityAnim(activityFrame, activityID)
+	if not self:IsActivityPendingComplete(activityID) then
+		return;
+	end
+
+	-- If this activity already animated then we shouldn't animate
+	if self:HasPendingCompleteActivityFinishedAnimating(activityID) then
+		return;
+	end
+
+	-- If we don't already have a current animation window then make one
+	-- These animation windows represent groups of pending complete activities all animating together
+	-- The idea is that all pending complete activities will animate together and new complete activities can join late if need be
+	-- Then once a window is complete we animate the bar and if we get new completions after that we'll start a new window
+	if not self.pendingCompleteCurrentAnimWindow then
+		local timerDuration = activityFrame:GetCheckmarkAnimDuration();
+		self.pendingCompleteCurrentAnimWindow = {
+			startTime = GetTime(),
+			timer = C_Timer.NewTimer(timerDuration, function()
+				local playSfx = true;
+				self:UpdateBarTargetValue(playSfx);
+				self:ClearCurrentAnimWindow();
+			end),
+			activityIDs = {},
+		};
+	end
+	self.pendingCompleteCurrentAnimWindow.activityIDs[activityID] = true;
+
+	-- Offset animations based on elapsed time in the current window so that all animations in a given window sync up
+	local animWindowElapsedTimeOffset = GetTime() - self.pendingCompleteCurrentAnimWindow.startTime;
+	activityFrame:PlayPendingCompleteAnim(animWindowElapsedTimeOffset);
+	self:SetAnimating(true);
+end
 
 local function FindActivity(activityID, activities)	
 	local function CheckChildren(activityID, activity)
@@ -723,6 +1066,195 @@ local function BuildActivityTree(activities)
 	return parentActivities;
 end
 
+--[[
+Order that activities should appear once sorted:
+0. Pending Completion (completed tasks which still need to animate)
+	1. Sort by Anim Start Time (most recent to top)
+	2. Sort by points (highest points to the top)
+	3. Sort by Alphabetical
+1. Close to expiring activities
+	1. Sort by end time (expiring soonest to the top)
+	2. Sort by In Progress (in progress to the top)
+	3. Sort by points (highest points to the top)
+	4. Sort by Alphabetical
+2. Non-expired In-Progress activities
+	1. Sort by end time (expiring soonest to the top)
+	2. Sort by points
+	3. Sort by Alphabetical
+3. Active timed activities
+	2. Sort by end time (expiring soonest to the top)
+	3. Sort by points
+	4. Sort by Alphabetical
+4. Non-timed activities
+	1. Sort by points
+	2. Sort by Alphabetical
+5. Not yet begun timed activities
+	1. Sort by start time (starting soonest to the top)
+	2. Sort by points
+	3. Sort by Alphabetical
+6. Expired timed activities
+	1. Sort by end time (most recently expired to the top)
+	2. Sort by points
+	3. Sort by Alphabetical
+7. Completed activities
+	1. Non-timed
+		1. Points
+		2. Alphabetical
+	2. Sort by starting time (earliest to top)
+		1. Sort by points
+		2. Sort by Alphabetical
+--]]
+local function ActivitySortFallbackSortComparator(aData, bData)
+	-- Fallback to sorting by points and alphabetical
+	if aData.points ~= bData.points then
+		return aData.points > bData.points;
+	end
+
+	return aData.name < bData.name;
+end
+local function ActivitySortComparator(a, b)
+	if not a or not b then
+		return a ~= nil;
+	end
+
+	local aData = a:GetData();
+	local bData = b:GetData();
+
+	-- Put pending complete to the top
+	local aIsPendingComplete, bIsPendingComplete = IsActivityPendingComplete(aData.ID), IsActivityPendingComplete(bData.ID)
+	if aIsPendingComplete ~= bIsPendingComplete then
+		return aIsPendingComplete;
+	elseif aIsPendingComplete and bIsPendingComplete then
+		-- Sort by animation start times putting most recent to the top
+		-- If a frame has no anim start time yet then assume it will be most recent once it does start animating
+		-- We want this sorting so animating frames appear at the top and are seen when we force a scroll to the top when new stuff is completed and begins to animate
+		local aAnimStartTime, bAnimStartTime = GetPendingCompleteActivityAnimStartTime(aData.ID), GetPendingCompleteActivityAnimStartTime(bData.ID);
+		if not aAnimStartTime and bAnimStartTime then
+			return true;
+		elseif aAnimStartTime and not bAnimStartTime then
+			return false;
+		elseif aAnimStartTime and bAnimStartTime then
+			return aAnimStartTime > bAnimStartTime;
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put completed to bottom
+	local aIsTimed, bIsTimed = IsTimedActivity(aData), IsTimedActivity(bData);
+	local aIsNotTimed, bIsNotTimed = not aIsTimed, not bIsTimed;
+	if aData.completed ~= bData.completed then
+		return bData.completed;
+	elseif aData.completed and bData.completed then
+		-- Put non-timed activities to top
+		if aIsNotTimed ~= bIsNotTimed then
+			return aIsNotTimed;
+		elseif aIsNotTimed and bIsNotTimed then
+			return ActivitySortFallbackSortComparator(aData, bData);
+		end
+
+		-- Put earliest starting timed activities next
+		if aData.eventStartTime ~= bData.eventStartTime then
+			return aData.eventStartTime < bData.eventStartTime;
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put close to expiring activities to the top
+	local aIsCloseToExpiring, bIsCloseToExpiring = IsTimedActivityCloseToExpiring(aData), IsTimedActivityCloseToExpiring(bData);
+	if aIsCloseToExpiring ~= bIsCloseToExpiring then
+		return aIsCloseToExpiring;
+	elseif aIsCloseToExpiring and bIsCloseToExpiring then
+		-- Put expiring soonest to top
+		if aData.eventEndTime ~= bData.eventEndTime then
+			return aData.eventEndTime < bData.eventEndTime;
+		end
+
+		-- Put in progress next
+		if aData.inProgress ~= bData.inProgress then
+			return aData.inProgress;
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put Non-expired In-Progress activities to top
+	local aHasExpired, bHasExpired = HasTimedActivityExpired(aData), HasTimedActivityExpired(bData);
+	local aIsInProgressAndNotExpired = aData.inProgress and not aHasExpired;
+	local bIsInProgressAndNotExpired = bData.inProgress and not bHasExpired;
+	if aIsInProgressAndNotExpired ~= bIsInProgressAndNotExpired then
+		return aIsInProgressAndNotExpired;
+	elseif aIsInProgressAndNotExpired and bIsInProgressAndNotExpired then
+		-- Put expiring soonest to top
+		if aIsTimed ~= bIsTimed then
+			return aIsTimed;
+		elseif aIsTimed and bIsTimed then
+			if aData.eventEndTime ~= bData.eventEndTime then
+				return aData.eventEndTime < bData.eventEndTime;
+			end
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put active timed activities next
+	local aIsTimedAndActive, bIsTimedAndActive = IsTimedActivityActive(aData), IsTimedActivityActive(bData);
+	if aIsTimedAndActive ~= bIsTimedAndActive then
+		return aIsTimedAndActive;
+	elseif aIsTimedAndActive and aIsTimedAndActive then
+		-- Put expiring soonest to top
+		if aData.eventEndTime ~= bData.eventEndTime then
+			return aData.eventEndTime < bData.eventEndTime;
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put non-timed activities next
+	if aIsNotTimed ~= bIsNotTimed then
+		return aIsNotTimed;
+	elseif aIsNotTimed and bIsNotTimed then
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put timed activities which haven't begun yet
+	local aHasNotBegun, bHasNotBegun = not HasTimedActivityBegun(aData), not HasTimedActivityBegun(bData);
+	if aHasNotBegun ~= bHasNotBegun then
+		return aHasNotBegun;
+	elseif aHasNotBegun and bHasNotBegun then
+		-- Put starting soonest to top
+		if aData.eventStartTime ~= bData.eventStartTime then
+			return aData.eventStartTime < bData.eventStartTime;
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	-- Put expired timed activities next
+	local aHasExpired, bHasExpired = HasTimedActivityExpired(aData), HasTimedActivityExpired(bData);
+	if aHasExpired ~= bHasExpired then
+		return aHasExpired;
+	elseif aHasExpired and bHasExpired then
+		-- Put most recently expired to top
+		if aData.eventEndTime ~= bData.eventEndTime then
+			return aData.eventEndTime > bData.eventEndTime;
+		end
+
+		return ActivitySortFallbackSortComparator(aData, bData);
+	end
+
+	return ActivitySortFallbackSortComparator(aData, bData);
+end
+
+local function ActivityConditionSortComparator(lhs, rhs)
+	if lhs.uiPriority ~= rhs.uiPriority then
+		return lhs.uiPriority > rhs.uiPriority;
+	end
+
+	return lhs.text < rhs.text;
+end
+
 function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosition)
 	local selected = MonthlyActivityFilterSelection:GetFirstSelectedElementData();
 	local selectedFilter = selected and selected.filter;
@@ -731,25 +1263,17 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 	local activityTree = BuildActivityTree(activities);
 
 	local function DataProviderAdd(dataProvider, activity)
-		dataProvider:Insert({
-			id = activity.ID,
-			name = activity.activityName,
-			description = activity.description,
-			points = activity.thresholdContributionAmount,
-			completed = activity.completed,
-			requirementsList = activity.requirementsList,
-			tracked = activity.tracked,
-			rewardAvailable = not self.allRewardsEarned,
-			pendingComplete = self.pendingComplete[activity.ID],
-			thresholdMax = self.thresholdMax,
-			restricted = restricted,
-			uiPriority = activity.uiPriority,
-			hasChild = activity.hasChild or false;
-			isChild = activity.isChild or false;
-			supersedes = activity.supersedes,
-			eventStartTime = activity.eventStartTime,
-			eventEndTime = activity.eventEndTime,
-		});
+		activity.rewardAvailable = not self.allRewardsEarned;
+		activity.thresholdMax = self.thresholdMax;
+		activity.restricted = restricted;
+		activity.name = activity.activityName;
+		activity.hasChild = activity.hasChild or false;
+		activity.isChild = activity.isChild or false;
+		activity.points = activity.thresholdContributionAmount;
+
+		table.sort(activity.conditions, ActivityConditionSortComparator);
+
+		dataProvider:Insert(activity);
 	end
 	local dataProvider = CreateTreeDataProvider();
 
@@ -767,15 +1291,15 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 			local function FindNode(ID)
 				return dataProvider:FindElementDataByPredicate(function(node)
 					local data = node:GetData();
-					return data.id == ID;
+					return data.ID == ID;
 				end, TreeDataProviderConstants.IncludeCollapsed);
 			end
 			local parentNode = FindNode(activity.ID);
-			
+
 			local child = activity.child;
 			while child do
 				local parentData = parentNode:GetData();
-				if parentData.completed  then 
+				if parentData.completed  then
 					DataProviderAdd(dataProvider, child);
 					parentNode = FindNode(child.ID);
 				elseif child.completed then
@@ -783,57 +1307,14 @@ function MonthlyActivitiesFrameMixin:SetActivities(activities, retainScrollPosit
 				else
 					child.isChild = true;
 					DataProviderAdd(parentNode, child);
-					parentData.hasChild = true;				
+					parentData.hasChild = true;
 				end
 				child = child.child;
 			end
 		end
 	end
 
-	dataProvider:SetSortComparator(function(a, b)
-		local aData = a:GetData();
-		local bData = b:GetData();
-
-		-- Sort pending complete to the top
-		if aData.pendingComplete ~= bData.pendingComplete then
-			return aData.pendingComplete;
-		end
-
-		-- But sort already completed to the bottom
-		if aData.completed ~= bData.completed then
-			return bData.completed;
-		end
-
-		-- Put non events before events
-		if not aData.eventStartTime and bData.eventStartTime then
-			return true;
-		elseif aData.eventStartTime and not bData.eventStartTime then
-			return false;
-		end
-
-		-- If both are events
-		if aData.eventStartTime and bData.eventStartTime then
-			-- Sort by which event starts or ends first
-			if aData.eventStartTime ~= bData.eventStartTime then
-				return aData.eventStartTime < bData.eventStartTime;
-			elseif aData.eventEndTime ~= bData.eventEndTime then
-				return aData.eventEndTime < bData.eventEndTime;
-			end
-		end
-
-		-- Sort by data driven ui priority field
-		if aData.uiPriority ~= bData.uiPriority then
-			return aData.uiPriority > bData.uiPriority;
-		end
-
-		-- Then sort by points descending
-		if aData.points ~= bData.points then
-			return aData.points > bData.points;
-		end
-
-		-- Last sort by alphabetical name
-		return aData.name < bData.name;
-	end);
+	dataProvider:SetSortComparator(ActivitySortComparator);
 	self.ScrollBox:SetDataProvider(dataProvider, retainScrollPosition);
 end
 
@@ -853,13 +1334,7 @@ function MonthlyActivitiesFrameMixin:OnUpdate()
 
 	local curValue = self.ThresholdBar:GetValue();
 	local barValue = math.min(curValue + 5, self.targetValue);
-	self:SetCurrentPoints(curValue, barValue);
-
 	if barValue >= self.targetValue then
-		SetCVar("perksActivitiesLastPoints", self.targetValue);
-		self.targetValue = nil;
-		self:SetAnimating(false);
-
 		if self.progressionSoundHandle then
 			StopSound(self.progressionSoundHandle);
 			self.progressionSoundHandle = nil;
@@ -870,13 +1345,12 @@ function MonthlyActivitiesFrameMixin:OnUpdate()
 		else
 			PlaySound(SOUNDKIT.TRADING_POST_UI_ACTIVITY_PROGRESSION_STOP);
 		end
-
-		-- Re-sort completed activities to bottom once all animations are complete.
-		self.ScrollBox:GetDataProvider():Sort();
 	end
+
+	self:SetCurrentPoints(barValue);
 end
 
-function MonthlyActivitiesFrameMixin:SetCurrentPoints(curValue, barValue)
+function MonthlyActivitiesFrameMixin:SetCurrentPoints(barValue)
 	self.ThresholdBar:SetValue(barValue);
 	self.ThresholdBar.BarFillGlow:SetTexCoord(self.ThresholdBar.BarFill:GetTexCoord());
 
@@ -889,6 +1363,15 @@ function MonthlyActivitiesFrameMixin:SetCurrentPoints(curValue, barValue)
 
 	local allRewardsEarned = barValue >= self.thresholdMax;
 	self:SetRewardsEarnedAndCollected(allRewardsEarned, self.allRewardsCollected);
+
+	if self.targetValue and barValue >= self.targetValue then
+		SetCVar("perksActivitiesLastPoints", self.targetValue);
+		self.targetValue = nil;
+	end
+
+	if not self.targetValue then
+		self:SetAnimating(false);
+	end
 end
 
 function MonthlyActivitiesFrameMixin:SetAnimating(isAnimating)
@@ -1032,7 +1515,7 @@ function MonthlyActivitiesFrameMixin:ScrollToPerksActivityID(activityID)
 		if dataProvider then
 			return dataProvider:FindElementDataByPredicate(function(node)
 				local data = node:GetData();
-				return data.id == ID;
+				return data.ID == ID;
 			end, TreeDataProviderConstants.IncludeCollapsed);
 		end
 	end

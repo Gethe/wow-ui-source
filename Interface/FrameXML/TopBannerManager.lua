@@ -37,8 +37,6 @@ end
 function TopBannerManager_LoadingScreenEnabled()
 	if ( TopBannerMgr.currentBanner ) then
 		TopBannerMgr.currentBanner.frame:StopBanner();
-		
-		TopBannerQueue = {}; -- clear out banner queue;
 	end
 end
 
@@ -47,7 +45,7 @@ function TopBannerManager_LoadingScreenDisabled()
 	if ( currentBanner and currentBanner.frame.ResumeBanner ) then
 		currentBanner.frame:ResumeBanner(currentBanner.data);
 	else
-		TopBannerMgr.currentBanner = nil;
+		TopBannerManager_BannerFinished();
 	end
 end
 

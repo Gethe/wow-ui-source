@@ -75,8 +75,8 @@ UI_shared.xsd">
 					<OnLoad>
 						local showDisabled = false;
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:SetNormalAtlas(GetIconForRole("TANK", showDisabled), TextureKitConstants.IgnoreAtlasSize);
-						self.role = "TANK";
+						self:SetNormalAtlas(GetIconForRoleEnum(Enum.LFGRole.Tank, showDisabled), TextureKitConstants.IgnoreAtlasSize);
+						self.role = Enum.LFGRole.Tank;
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -89,8 +89,8 @@ UI_shared.xsd">
 					<OnLoad>
 						local showDisabled = false;
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:SetNormalAtlas(GetIconForRole("HEALER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
-						self.role = "HEALER";
+						self:SetNormalAtlas(GetIconForRoleEnum(Enum.LFGRole.Healer, showDisabled), TextureKitConstants.IgnoreAtlasSize);
+						self.role = Enum.LFGRole.Healer;
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -103,8 +103,8 @@ UI_shared.xsd">
 					<OnLoad>
 						local showDisabled = false;
 						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
-						self:SetNormalAtlas(GetIconForRole("DAMAGER", showDisabled), TextureKitConstants.IgnoreAtlasSize);
-						self.role = "DAMAGER";
+						self:SetNormalAtlas(GetIconForRoleEnum(Enum.LFGRole.Damage, showDisabled), TextureKitConstants.IgnoreAtlasSize);
+						self.role = Enum.LFGRole.Damage;
 					</OnLoad>
 				</Scripts>
 			</Button>

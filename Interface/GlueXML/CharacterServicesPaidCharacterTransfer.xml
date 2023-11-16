@@ -42,7 +42,18 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-5" y="-28"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="LoadingSpinner" inherits="LoadingSpinnerTemplate"/>
+					<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate">
+						<Size x="30" y="30"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="SearchingText" inherits="GameFontNormal" text="SEARCHING">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 			</Frame>
 		</Frames>

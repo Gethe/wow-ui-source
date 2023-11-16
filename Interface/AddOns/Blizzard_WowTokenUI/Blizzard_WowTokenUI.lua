@@ -1020,9 +1020,9 @@ function WowTokenDialog_SetDialog(self, dialogName, dialogData)
 		self.Spinner:Show();
 		self.Spinner:ClearAllPoints();
 		if (dialog.noButtons) then
-			self.Spinner:SetPoint("BOTTOM", 0, 16);
+			self.Spinner:SetPoint("BOTTOM", 0, 20);
 		else
-			self.Spinner:SetPoint("BOTTOM", 0, 32);
+			self.Spinner:SetPoint("BOTTOM", 0, 45);
 			height = height + 16;
 		end
 		self.Button1:Disable();

@@ -2565,8 +2565,8 @@ function Class_LookingForGroup:OnBegin()
 	Dispatcher:RegisterEvent("LFG_UPDATE", self);
 	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
 
-	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self.EmptyDungeonList, self);
-	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self.ReadyDungeonList, self);
+	EventRegistry:RegisterCallback("LFDQueueFrameList_Update.EmptyDungeonList", self.EmptyDungeonList, self);
+	EventRegistry:RegisterCallback("LFDQueueFrameList_Update.DungeonListReady", self.ReadyDungeonList, self);
 	EventRegistry:RegisterCallback("LFGDungeonList.DungeonEnabled", self.DungeonEnabled, self);
 	EventRegistry:RegisterCallback("LFGDungeonList.DungeonDisabled", self.DungeonDisabled, self);
 
@@ -2694,8 +2694,8 @@ function Class_LookingForGroup:OnComplete()
 	Dispatcher:UnregisterEvent("LFG_UPDATE", self);
 	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 
-	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self);
-	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self);
+	EventRegistry:UnregisterCallback("LFDQueueFrameList_Update.EmptyDungeonList", self);
+	EventRegistry:UnregisterCallback("LFDQueueFrameList_Update.DungeonListReady", self);
 	EventRegistry:UnregisterCallback("LFGDungeonList.DungeonEnabled", self);
 	EventRegistry:UnregisterCallback("LFGDungeonList.DungeonDisabled", self);
 

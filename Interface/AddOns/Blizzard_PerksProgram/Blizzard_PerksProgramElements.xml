@@ -241,6 +241,18 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="PurchasePendingSpinner" inherits="SpinnerTemplate" mixin="PerksProgramPurchasePendingSpinnerMixin" passThroughButtons="LeftButton, RightButton" hidden="true">
+						<Size x="25" y="25"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.Price" x="1" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -477,13 +489,6 @@
 		<Size x="180" y="46"/>
 		<Scripts>
 			<OnClick method="OnClick" />
-		</Scripts>
-	</Button>
-
-	<Button name="PerksProgramPurchaseButtonTemplate" inherits="PerksProgramButtonTemplate" mixin="PerksProgramPurchaseButtonMixin" virtual="true" >
-		<Size x="180" y="46"/>
-		<Scripts>
-			<OnLoad method="OnLoad" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />
 		</Scripts>

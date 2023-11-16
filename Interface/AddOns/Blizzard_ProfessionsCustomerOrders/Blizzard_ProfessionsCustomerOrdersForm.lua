@@ -1627,7 +1627,6 @@ end
 function ProfessionsCustomerOrderFormMixin:RequestCurrentListings()
 	self.CurrentListings.OrderList.ResultsText:Hide();
 	self.CurrentListings.OrderList.LoadingSpinner:Show();
-	self.CurrentListings.OrderList.SpinnerAnim:Restart();
 	self.CurrentListings.OrderList.ScrollBox:Hide();
 
 	local selectedSkillLineAbility = self.order.skillLineAbilityID;
@@ -1677,7 +1676,6 @@ end
 
 function ProfessionsCustomerOrderFormMixin:DisplayCurrentListings(offset, isSorted)
 	self.CurrentListings.OrderList.LoadingSpinner:Hide();
-	self.CurrentListings.OrderList.SpinnerAnim:Stop();
 	self.CurrentListings.OrderList.ScrollBox:Show();
 
 	local orders = C_CraftingOrders.GetCustomerOrders();

@@ -451,3 +451,7 @@ function MapCanvasPinMixin:GetHighlightType()
 	-- Override this in your mixin if your pin needs highlight functionality, determines what kind of highlight to apply to the pin (See MapPinHighlightType)
 	return MapPinHighlightType.None;
 end
+
+function MapCanvasPinMixin:GetDebugInspectionSystem()
+	return "MapCanvasPin";
+end

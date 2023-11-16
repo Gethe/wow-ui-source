@@ -145,14 +145,31 @@ function ArenaEnemyMatchFrameMixin:OnLoad()
 	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
 	local prefix = "ArenaEnemyMatchFrame"..id;
+
+	local healthBar = _G[prefix.."HealthBar"];
+
+	local myHealPredictionBar = _G[prefix.."MyHealPredictionBar"];
+	myHealPredictionBar:SetStatusBar(healthBar);
+	local otherHealPredictionBar = _G[prefix.."OtherHealPredictionBar"];
+	otherHealPredictionBar:SetStatusBar(healthBar);
+	local totalAbsorbBar = _G[prefix.."TotalAbsorbBar"];
+	totalAbsorbBar:SetStatusBar(healthBar);
+	local healAbsorbBar = _G[prefix.."HealAbsorbBar"];
+	healAbsorbBar:SetStatusBar(healthBar);
+
 	UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil, nil,
-			_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
-			_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
-			_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
-			_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
-			_G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
-			_G[prefix.."HealAbsorbBarRightShadow"]);
-	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+			healthBar,
+			_G[prefix.."HealthBarText"],
+			_G[prefix.."ManaBar"],
+			_G[prefix.."ManaBarText"],
+			nil, nil, nil,
+			myHealPredictionBar,
+			otherHealPredictionBar,
+			totalAbsorbBar,
+			_G[prefix.."OverAbsorbGlow"],
+			_G[prefix.."OverHealAbsorbGlow"],
+			healAbsorbBar);
+	SetTextStatusBarTextZeroText(healthBar, DEAD);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;

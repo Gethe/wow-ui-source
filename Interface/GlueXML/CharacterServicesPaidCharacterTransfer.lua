@@ -126,7 +126,7 @@ function PCTDestinationSelectBlock:Initialize(results, wasFromRewind)
 		self.frame.ControlsFrame.FollowGuildCheckbox:SetOnClickedCallback(checkUpdate);
 
 		self.frame.ControlsFrame.LoadingSpinner:ClearAllPoints();
-		self.frame.ControlsFrame.LoadingSpinner:SetPoint("TOP", self.frame.ControlsFrame:GetParent().StepActiveLabel, "BOTTOM");
+		self.frame.ControlsFrame.LoadingSpinner:SetPoint("TOPLEFT", self.frame.ControlsFrame:GetParent().StepActiveLabel, "BOTTOMLEFT", 0, -10);
 		self.frame.ControlsFrame.FollowGuildCheckbox.Label:SetSize(250, 32);
 	end
 

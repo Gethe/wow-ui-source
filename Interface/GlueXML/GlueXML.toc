@@ -74,6 +74,7 @@
 ..\SharedXML\MixinUtil.lua
 ..\SharedXML\PingAttributes.xml
 ..\SharedXML\DebugBarManager.lua
+..\SharedXML\ScrollableTabsContainer.xml
 
 ## intrinsics
 ..\SharedXML\ScrollingMessageFrame.xml
@@ -87,6 +88,7 @@ GlueLocalization.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\ScrollDefine.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
+..\SharedXML\Spinner.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\Tabs\MinimalTab.xml
 ..\SharedXML\SharedBasicControls.xml

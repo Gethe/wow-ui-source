@@ -557,7 +557,7 @@
 							<KeyValue key="perksProgramOnClickMethod" value="Leave" type="string"/>
 						</KeyValues>
 					</Button>
-					<Button parentKey="PurchaseButton" inherits="PerksProgramPurchaseButtonTemplate" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_PURCHASE" hidden="true">
+					<Button parentKey="PurchaseButton" inherits="PerksProgramButtonTemplate" mixin="PerksProgramPurchaseButtonMixin" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_PURCHASE" hidden="true">
 						<Size x="180" y="46"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.$parent.ProductsFrame.PerksProgramProductDetailsContainerFrame" relativePoint="RIGHT"/>
@@ -566,8 +566,17 @@
 						<KeyValues>
 							<KeyValue key="perksProgramOnClickMethod" value="ConfirmPurchase" type="string"/>
 						</KeyValues>
+						<Frames>
+							<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+								<Size x="18" y="18"/>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
 					</Button>
-					<Button parentKey="RefundButton" inherits="PerksProgramButtonTemplate" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_REFUND" hidden="true">
+					<Button parentKey="RefundButton" inherits="PerksProgramButtonTemplate" mixin="PerksProgramRefundButtonMixin" frameLevel="2000" ignoreParentScale="true" text="PERKS_PROGRAM_REFUND" hidden="true">
 						<Size x="180" y="46"/>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.$parent.ProductsFrame.PerksProgramProductDetailsContainerFrame" relativePoint="RIGHT"/>
@@ -577,6 +586,21 @@
 							<KeyValue key="perksProgramOnClickMethod" value="ConfirmRefund" type="string"/>
 						</KeyValues>
 					</Button>
+					<Frame parentKey="ErrorIndicator" frameLevel="2000" ignoreParentScale="true" enableMouse="true" hidden="true" mixin="PerksProgramErrorIndicatorMixin">
+						<Size x="52" y="52"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.PurchaseButton" relativePoint="LEFT" x="-15" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="ErrorIcon" atlas="perks-maintenance" useAtlasSize="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="RotateButtonContainer">
 						<Size x="100" y="48"/>
 						<Anchors>
@@ -635,7 +659,6 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								
 								<FontString parentKey="RefundText" justifyH="LEFT" inherits="GameFontNormalMed3">
 									<Size x="200" y="39"/>
 									<Color color="NORMAL_FONT_COLOR"/>
@@ -649,7 +672,6 @@
 										<Anchor point="RIGHT" relativeKey="$parent.RefundText" relativePoint="LEFT" x="-10" y="0"/>
 									</Anchors>
 								</Texture>
-
 								<FontString parentKey="PurchasedText" justifyH="LEFT" text="PERKS_PROGRAM_PURCHASED_TEXT" inherits="GameFontNormalMed3">
 									<Size x="200" y="39"/>
 									<Color color="NORMAL_FONT_COLOR"/>
@@ -663,16 +685,12 @@
 										<Anchor point="RIGHT" relativeKey="$parent.PurchasedText" relativePoint="LEFT" x="-12" y="0"/>
 									</Anchors>
 								</Texture>
-								
 							</Layer>
 						</Layers>
 					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />
-					<OnShow method="OnShow" />
-					<OnHide method="OnHide" />
-					<OnEvent method="OnEvent" />
 				</Scripts>
 			</Frame>
 

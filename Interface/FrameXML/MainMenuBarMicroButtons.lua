@@ -1080,10 +1080,6 @@ local function SafeSetCollectionJournalTab(tab)
 end
 
 function CollectionMicroButtonMixin:EvaluateAlertVisibility()
-	if Kiosk.IsEnabled() then
-		return false;
-	end
-
 	if CollectionsJournal and CollectionsJournal:IsShown() then
 		return false;
 	end
@@ -1171,13 +1167,8 @@ function CollectionMicroButtonMixin:UpdateMicroButton()
 	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
 		self:SetPushed();
 	else
-		if ( not Kiosk.IsEnabled() ) then
-			self:Enable();
-			self:SetNormal();
-		else
-			SetKioskTooltip(self);
-			self:Disable();
-		end
+		self:Enable();
+		self:SetNormal();
 	end
 end
 

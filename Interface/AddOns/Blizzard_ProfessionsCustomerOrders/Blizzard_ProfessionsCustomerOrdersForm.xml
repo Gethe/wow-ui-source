@@ -582,16 +582,11 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="8" y="3"/>
 								</Anchors>
 							</EventFrame>
-							<Frame parentKey="LoadingSpinner" hidden="true" frameLevel="2000">
-								<Size x="60" y="60"/>
+							<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true" frameLevel="2000">
+								<Size x="80" y="80"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="0"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Spinner" setAllPoints="true" atlas="auctionhouse-ui-loadingspinner"/>
-									</Layer>
-								</Layers>
 							</Frame>
 						</Frames>
 						<Layers>
@@ -611,11 +606,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Animations>
-							<AnimationGroup parentKey="SpinnerAnim" looping="REPEAT">
-								<Rotation childKey="LoadingSpinner.Spinner" order="1" duration="1" degrees="-360"/>
-							</AnimationGroup>
-						</Animations>
 					</Frame>
 
 					<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">

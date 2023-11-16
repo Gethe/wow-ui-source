@@ -23,44 +23,11 @@
 		</Layers>
 
 		<Frames>
-			<Frame name="$parentStreamingIcon" hidden="true" parentKey="StreamingIcon">
-				<Animations>
-					<AnimationGroup parentKey="Loop" looping="REPEAT" >
-						<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
-					</AnimationGroup>
-				</Animations>
-				<Size x="48" y="48"/>
+			<Frame name="$parentStreamingIcon" inherits="SpinnerTemplate" hidden="true" parentKey="StreamingIcon">
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="-2" y="5"/>
+					<Anchor point="RIGHT" x="-11" y="1"/>
 				</Anchors>
-				<Frames>
-					<Frame name="$parentFrame" setAllPoints="true" parentKey="Frame" >
-						<Layers>
-							<Layer level="BACKGROUND" >
-								<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" parentKey="Background"/>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\COMMON\StreamFrame" parentKey="Alpha" setAllPoints="true" />
-							</Layer>
-						</Layers>
-					</Frame>
-					<Frame name="$parentSpin" setAllPoints="true" parentKey="Spin">
-						<Layers>
-							<Layer level="BACKGROUND" >
-								<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" parentKey="Spinner"/>
-							</Layer>
-							<Layer level="OVERLAY" >
-								<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Spin.Spinner:SetVertexColor(0,1,0);
-						self.Frame.Background:SetVertexColor(0,1,0);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<StatusBar name="$parentStatusBar" hidden="true" parentKey="StatusBar">
 				<Size x="168" y="2"/>

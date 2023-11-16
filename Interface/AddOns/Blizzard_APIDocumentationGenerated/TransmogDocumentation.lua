@@ -311,6 +311,16 @@ local Transmog =
 			LiteralName = "TRANSMOG_COLLECTION_CAMERA_UPDATE",
 		},
 		{
+			Name = "TransmogCollectionItemFavoriteUpdate",
+			Type = "Event",
+			LiteralName = "TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE",
+			Payload =
+			{
+				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "TransmogCollectionItemUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_ITEM_UPDATE",

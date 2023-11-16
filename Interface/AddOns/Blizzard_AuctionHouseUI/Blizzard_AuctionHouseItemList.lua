@@ -134,8 +134,6 @@ function AuctionHouseItemListMixin:Init()
 		return;
 	end
 
-	self.SpinnerAnim:Play();
-
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementFactory(function(factory, elementData)
 		local function Initializer(button, elementData)

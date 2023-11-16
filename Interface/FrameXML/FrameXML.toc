@@ -87,6 +87,7 @@
 ..\SharedXML\Dump.lua
 ..\SharedXML\MixinUtil.lua
 ..\SharedXML\DebugBarManager.lua
+..\SharedXML\ScrollableTabsContainer.xml
 IconDataProvider.lua
 
 ..\SharedXML\Tooltip\TooltipUtil.lua
@@ -201,6 +202,7 @@ MoneyInputFrame.xml
 ..\SharedXML\ScrollDefine.xml
 ..\SharedXML\SecureScrollTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
+..\SharedXML\Spinner.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\Tabs\MinimalTab.xml
 RAFUtil.lua
@@ -287,6 +289,8 @@ StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
 BuilderSpenderFrame.xml
+PowerBarColorUtil.lua
+StatusBarOverlaySegment.xml
 UnitFrame.xml
 Cooldown.xml
 PVPUITemplates.xml

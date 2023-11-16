@@ -58,6 +58,24 @@ LFG_LIST_GROUP_DATA_ATLASES = {
 	DAMAGER = GetMicroIconForRole("DAMAGER"),
 };
 
+local LFG_STRING_FROM_ENUM = {
+	[Enum.LFGRole.Tank] = "TANK",
+	[Enum.LFGRole.Healer] = "HEALER",
+	[Enum.LFGRole.Damage] = "DAMAGER",
+};
+
+function GetLFGStringFromEnum(role)
+	local stringName = LFG_STRING_FROM_ENUM[role];
+	
+	if not stringName then
+		assertsafe("Bad role enum: " .. tostring(role));
+		return "";
+	end
+
+	return _G[stringName];
+end
+	
+
 --Fill out classes
 for i=1, #CLASS_SORT_ORDER do
 	LFG_LIST_GROUP_DATA_ATLASES[CLASS_SORT_ORDER[i]] = "groupfinder-icon-class-"..string.lower(CLASS_SORT_ORDER[i]);
@@ -1874,7 +1892,10 @@ function LFGListApplicantMember_OnEnter(self)
 		GameTooltip:SetText(name, classTextColor.r, classTextColor.g, classTextColor.b);
 		local classSpecializationName = localizedClass;
 		if(specID) then
-			classSpecializationName = CLUB_FINDER_LOOKING_FOR_CLASS_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specID), classSpecializationName);
+			local specName = PlayerUtil.GetSpecNameBySpecID(specID);
+			if(specName) then
+				classSpecializationName = CLUB_FINDER_LOOKING_FOR_CLASS_SPEC:format(specName, classSpecializationName);
+			end
 		end
 		if(UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[factionGroup]) then
 			GameTooltip_AddHighlightLine(GameTooltip, UNIT_TYPE_LEVEL_FACTION_TEMPLATE:format(level, classSpecializationName, FACTION_STRINGS[factionGroup]));
@@ -3164,15 +3185,15 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 end
 
 local roleRemainingKeyLookup = {
-	["TANK"] = "TANK_REMAINING",
-	["HEALER"] = "HEALER_REMAINING",
-	["DAMAGER"] = "DAMAGER_REMAINING",
+	[Enum.LFGRole.Tank] = "TANK_REMAINING",
+	[Enum.LFGRole.Healer] = "HEALER_REMAINING",
+	[Enum.LFGRole.Damage] = "DAMAGER_REMAINING",
 };
 
 local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
 	local roles = C_LFGList.GetSearchResultMemberCounts(lfgSearchResultID);
 	if roles then
-		local playerRole = GetSpecializationRole(GetSpecialization());
+		local playerRole = GetSpecializationRoleEnum(GetSpecialization());
 		if playerRole then
 			local remainingRoleKey = roleRemainingKeyLookup[playerRole];
 			if remainingRoleKey then

@@ -2,7 +2,7 @@
 UI_shared.xsd">
 	<Script file="LootHistory.lua"/>
 
-	<Frame name="LootHistoryElementTemplate" mixin="LootHistoryElementMixin" virtual="true">
+	<Frame name="LootHistoryElementTemplate" mixin="LootHistoryElementMixin" virtual="true" frameLevel="500">
 		<Size x="218" y="58"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -266,6 +266,154 @@ UI_shared.xsd">
 					</Layer>
 				</Layers>
 			</Button>
+
+			<Frame parentKey="PerfectAnimFrame" mixin="LootHistoryElementAnimationMixin" inherits="LootHistoryElementTemplate" virtual="true" hidden="true">
+				<Size x="218" y="58"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PerfectRollFrame" setAllPoints="true" frameLevel="400">
+						<Size x="128" y="128"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="outerGlow_2" alpha="0" atlas="roll100-outerGlow-2" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture parentKey="innerGlow" alpha="0" atlas="roll100-cardBG-glow-inner" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="2">
+								<Texture parentKey="slamGlow" alpha="0" atlas="roll100-cardBG-slam-gradient" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="outerGlow_1" alpha="0" atlas="roll100-outerGlow-1" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="outerGlow_3" alpha="0" atlas="roll100-outerGlow-3" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="ShineSwipe" alpha="0" atlas="rolls100-shine-anim">
+									<Size x="219" y="59"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="outlineTop" alpha="0" atlas="roll100-outline-top" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+								<FlipBook childKey="ShineSwipe" duration="0.4" order="1" startDelay="0.93" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Alpha childKey="ShineSwipe" duration="0.93" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="ShineSwipe" duration="0.4" order="1" startDelay="0.93" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="ShineSwipe" duration="0.3" order="1" startDelay="1.33" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outlineTop" duration="0.27" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outlineTop" duration="0.3" order="1" startDelay="0.27" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outlineTop" duration="0.53" order="1" startDelay="0.57" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="outlineTop" duration="0.67" order="1" startDelay="1.1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="slamGlow" duration="0.17" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="slamGlow" duration="0.1" order="1" startDelay="0.17" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="slamGlow" duration="0.6" order="1" startDelay="0.27" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="slamGlow" duration="0.43" order="1" startDelay="0.87" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="innerGlow" duration="0.47" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="innerGlow" duration="0.3" order="1" startDelay="0.47" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="innerGlow" duration="0.47" order="1" startDelay="0.77" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="innerGlow" duration="0.4" order="1" startDelay="1.24" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outerGlow_1" duration="0.47" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outerGlow_1" duration="0.43" order="1" startDelay="0.47" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outerGlow_1" duration="0.2" order="1" startDelay="0.9" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="outerGlow_1" duration="0.2" order="1" startDelay="1.1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outerGlow_2" duration="0.87" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outerGlow_2" duration="0.23" order="1" startDelay="0.87" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outerGlow_2" duration="0.33" order="1" startDelay="1.1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="outerGlow_3" duration="0.17" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="outerGlow_3" duration="0.1" order="1" startDelay="0.17" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="outerGlow_3" duration="0.2" order="1" startDelay="0.27" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="outerGlow_3" duration="0.83" order="1" startDelay="0.47" fromAlpha="1" toAlpha="0.4"/>
+								<Alpha childKey="outerGlow_3" duration="0.2" order="1" startDelay="1.3" fromAlpha="0.4" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+					<Frame parentKey="PerfectRollTopFrame" setAllPoints="true" frameLevel="1500">
+						<Size x="128" y="128"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture parentKey="sparkSlam1" alpha="0" atlas="roll100-sparkFX-1" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="sparksTrail1" alpha="0" atlas="rolls100-sparks1-anim">
+									<Size x="130" y="20"/>
+									<Anchors>
+										<Anchor point="CENTER" x="-40" y="30"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="sparksTrail2" alpha="0" atlas="rolls100-sparks2-anim">
+									<Size x="170" y="22"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="-25"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="slamCard" alpha="0" atlas="roll100-cardBG-slam" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+								<FlipBook childKey="sparksTrail1" duration="1" order="1" startDelay="0.93" flipBookRows="5" flipBookColumns="6" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Alpha childKey="sparksTrail1" duration="0.93" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="sparksTrail1" duration="2" order="1" startDelay="0.93" fromAlpha="1" toAlpha="1"/>
+								<FlipBook childKey="sparksTrail2" duration="0.97" order="1" startDelay="1" flipBookRows="6" flipBookColumns="5" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+								<Alpha childKey="sparksTrail2" duration="1" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="sparksTrail2" duration="2" order="1" startDelay="1" fromAlpha="1" toAlpha="1"/>
+								<Alpha childKey="slamCard" duration="0.27" order="1" fromAlpha="0.3" toAlpha="0.3"/>
+								<Alpha childKey="slamCard" duration="0.1" order="1" startDelay="0.27" fromAlpha="0.3" toAlpha="0"/>
+								<Scale childKey="slamCard" duration="0.27" order="1" smoothing="OUT" fromScaleX="1.9" fromScaleY="1.9" toScaleX="1" toScaleY="1"/>
+								<Alpha childKey="sparkSlam1" duration="0.27" order="1" fromAlpha="0" toAlpha="0"/>
+								<Alpha childKey="sparkSlam1" duration="0.3" order="1" startDelay="0.27" fromAlpha="1" toAlpha="0"/>
+								<Scale childKey="sparkSlam1" duration="0.27" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+								<Scale childKey="sparkSlam1" duration="0.23" order="1" startDelay="0.27" fromScaleX="1" fromScaleY="1" toScaleX="1.02" toScaleY="1.02"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
+				</Frames>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

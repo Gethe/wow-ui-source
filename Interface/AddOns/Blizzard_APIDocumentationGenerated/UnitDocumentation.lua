@@ -171,6 +171,34 @@ local Unit =
 			},
 		},
 		{
+			Name = "IsFalling",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFlying",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerInGuildFromGUID",
 			Type = "Function",
 
@@ -182,6 +210,34 @@ local Unit =
 			Returns =
 			{
 				{ Name = "IsInGuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSubmerged",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSwimming",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -408,6 +464,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitClassification",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitDistanceSquared",
 			Type = "Function",
 
@@ -453,6 +523,35 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitFullName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "unitServer", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "WOWGUID", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitGroupRolesAssigned",
 			Type = "Function",
 
@@ -464,6 +563,91 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGroupRolesAssignedEnum",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealthMax",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealth",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHonor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHonorLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHonorMax",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -504,6 +688,20 @@ local Unit =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInPartyIsAI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
 			},
 
 			Returns =
@@ -600,6 +798,20 @@ local Unit =
 		},
 		{
 			Name = "UnitIsBattlePetCompanion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsBossMob",
 			Type = "Function",
 
 			Arguments =
@@ -855,6 +1067,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsQuestBoss",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsRaidOfficer",
 			Type = "Function",
 
@@ -912,6 +1138,36 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "unitServer", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitNameUnmodified",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "unitServer", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitNameplateShowsWidgetsOnly",
 			Type = "Function",
 
@@ -923,6 +1179,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "nameplateShowsWidgetsOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPVPName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1131,6 +1401,53 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitRealmRelationship",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "realmRelationship", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitSelectionColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "useExtendedColors", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "resultR", Type = "number", Nilable = false },
+				{ Name = "resultG", Type = "number", Nilable = false },
+				{ Name = "resultB", Type = "number", Nilable = false },
+				{ Name = "resultA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSelectionType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "useExtendedColors", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitSex",
 			Type = "Function",
 
@@ -1142,6 +1459,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "sex", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitStagger",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1189,6 +1520,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitTrialXP",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitWidgetSet",
 			Type = "Function",
 
@@ -1200,6 +1545,48 @@ local Unit =
 			Returns =
 			{
 				{ Name = "uiWidgetSet", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitXP",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitXPMax",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "WorldLootObjectExists",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 	},

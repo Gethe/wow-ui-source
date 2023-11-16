@@ -256,6 +256,9 @@
 				</Anchors>
 			</Button>
 			<Frame parentKey="TutorialFrame" inherits="PortraitFrameTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+				</KeyValues>
 				<Size x="496" y="253"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPLEFT" x="300" y="0"/>
