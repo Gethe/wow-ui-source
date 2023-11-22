@@ -2174,7 +2174,7 @@ SlashCmdList["WHO"] = function(msg)
 		ShowWhoPanel();
 	end
 	WhoFrameEditBox:SetText(msg);
-	C_FriendList.SendWho(msg, Enum.SocialWhoOrigin.CHAT);
+	C_FriendList.SendWho(msg, Enum.SocialWhoOrigin.Chat);
 end
 
 SlashCmdList["CHANNEL"] = function(msg, editBox)

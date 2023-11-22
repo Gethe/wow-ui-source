@@ -172,7 +172,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, true) ) then
+						if (self:GetParent().activeIndex and AcceptBattlefieldPort(self:GetParent().activeIndex, true )) then
 						if( StaticPopup_Visible( "DEATH" ) ) then
 						StaticPopup_Hide( "DEATH" );
 						end
