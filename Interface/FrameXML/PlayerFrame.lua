@@ -36,6 +36,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITING_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
@@ -111,6 +112,9 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPVPIconHitArea.tooltipTitle = PVPFFA;
 		PlayerPVPIconHitArea.tooltipText = NEWBIE_TOOLTIP_PVPFFA;
 		PlayerPVPIconHitArea:Show();
+
+		PlayerPVPTimerText:Hide();
+		PlayerPVPTimerText.timeLeft = nil;
 	elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player") ) then
 		if ( not PlayerPVPIcon:IsShown() ) then
 			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
@@ -132,6 +136,19 @@ function PlayerFrame_UpdatePvPStatus()
 		PlayerPrestigeBadge:Hide();
 		PlayerPVPIcon:Hide();
 		PlayerPVPIconHitArea:Hide();
+
+		PlayerPVPTimerText:Hide();
+		PlayerPVPTimerText.timeLeft = nil;
+	end
+end
+
+function PlayerFrame_UpdatePVPTimer()
+	if ( IsPVPTimerRunning() ) then
+		PlayerPVPTimerText:Show();
+		PlayerPVPTimerText.timeLeft = GetPVPTimer();
+	else
+		PlayerPVPTimerText:Hide();
+		PlayerPVPTimerText.timeLeft = nil;
 	end
 end
 
@@ -159,6 +176,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 		self.onHateList = nil;
 		PlayerFrame_Update();
 		PlayerFrame_UpdateStatus();
+		PlayerFrame_UpdatePVPTimer();
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
 		self.inCombat = 1;
 		PlayerFrame_UpdateStatus();
@@ -217,6 +235,8 @@ function PlayerFrame_OnEvent(self, event, ...)
 			self.inSeat = true;
 			PlayerFrame_UpdateArt(self);
 		end
+	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+		PlayerFrame_UpdatePVPTimer();
 	elseif ( event == "VARIABLES_LOADED" ) then
 		PlayerFrame_SetLocked(not PLAYER_FRAME_UNLOCKED);
 		if ( PLAYER_FRAME_CASTBARS_SHOWN ) then
@@ -392,6 +412,17 @@ function PlayerFrame_OnUpdate (self, elapsed)
 		end
 		PlayerStatusTexture:SetAlpha(alpha);
 		PlayerStatusGlow:SetAlpha(alpha);
+	end
+
+	if ( PlayerPVPTimerText.timeLeft ) then
+		PlayerPVPTimerText.timeLeft = PlayerPVPTimerText.timeLeft - elapsed*1000;
+		local timeLeft = PlayerPVPTimerText.timeLeft;
+		if ( timeLeft < 0 ) then
+			PlayerPVPTimerText:Hide()
+		end
+		PlayerPVPTimerText:SetFormattedText(SecondsToTimeAbbrev(floor(timeLeft/1000)));
+	else
+		PlayerPVPTimerText:Hide();
 	end
 
 	CombatFeedback_OnUpdate(self, elapsed);
