@@ -36,6 +36,9 @@ function PaperDollFrame_OnShow(self)
 	else
 		CharacterAmmoSlot:Show();
 	end
+
+	ToggleEngravingFrame();
+	RefreshRuneFrameControlButton()
 end
 
 function PaperDollFrame_OnHide(self)
@@ -905,13 +908,15 @@ function PaperDollItemSlotButton_EngravingTargetingModeChanged(self, enabled)
 	end
 end
 
-function RuneFrameControlButton_OnLoad(self)
-	if not C_Engraving.IsEngravingEnabled() then
-		self:Hide();
-	end
+function RefreshRuneFrameControlButton()
+	RuneFrameControlButton:SetChecked(EngravingFrame and EngravingFrame:IsVisible());
 end
 
-function RuneFrameControlButton_OnClick(self)
+function ToggleEngravingFrame()
+	if not C_Engraving.IsEngravingEnabled() then
+		return;
+	end
+
 	if ( EngravingFrame and EngravingFrame:IsVisible() ) then
 		EngravingFrame:Hide();
 	else
@@ -920,4 +925,18 @@ function RuneFrameControlButton_OnClick(self)
 		end
 		EngravingFrame:Show();
 	end
+end
+
+function RuneFrameControlButton_OnLoad(self)
+	if not C_Engraving.IsEngravingEnabled() then
+		self:Hide();
+	end
+end
+
+function RuneFrameControlButton_OnShow(self)
+	RefreshRuneFrameControlButton();
+end
+
+function RuneFrameControlButton_OnClick(self)
+	ToggleEngravingFrame();
 end

@@ -943,6 +943,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad function="RuneFrameControlButton_OnLoad"/>
+							<OnShow function="RuneFrameControlButton_OnShow"/>
 							<OnClick function="RuneFrameControlButton_OnClick"/>
 							<OnEnter>
 								GameTooltip:SetOwner(self,"ANCHOR_RIGHT");

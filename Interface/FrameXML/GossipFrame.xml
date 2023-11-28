@@ -157,15 +157,15 @@
 						</Scripts>
 					</Button>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-						<Size x="300" y="403"/>
+						<Size x="300" y="334"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="20" y="-85"/>
+							<Anchor point="TOPLEFT" x="20" y="-81"/>
 						</Anchors>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="6" y="8"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="-6" y="68"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="-6" y="0"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
