@@ -37,6 +37,7 @@ function CharacterCreateEnumerateRaces()
 		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
+		button.tooltip = nil;
 
 		local disable = true;
 		if CharacterCreateFrame.paidServiceType == PAID_FACTION_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange then
@@ -61,6 +62,9 @@ function CharacterCreateEnumerateRaces()
 		elseif isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictRace(CharacterUpgradeFlow.data.boostType, raceData.raceID) then
 			disable = true;
 			button.tooltip = CHAR_CREATE_NO_BOOST;
+		elseif not raceData.enabled then
+			disable = true;
+			button.tooltip = CHAR_CREATE_FACTION_BALANCE;
 		else
 			disable = false;
 		end
@@ -72,7 +76,6 @@ function CharacterCreateEnumerateRaces()
 				texture:SetDesaturated(true);
 			end
 			button:SetText("");
-			button.tooltip = nil;
 		else
 			button:Enable();
 			local texture = button:GetNormalTexture();

@@ -24,18 +24,21 @@
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 		-->
 	</CheckButton>
-	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
+	<CheckButton name="CharacterCreateRaceButtonTemplate" inherits="CharacterCreateIconButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Scripts>
 			<OnClick>
 				CharacterRace_OnClick(self, self.raceID);
 				GlueTooltip:Hide();
 			</OnClick>
 			<OnEnter>
-				if ( CharacterCreate.selectedRace == self:GetID() ) then
-					return;
+				if ( self.tooltip ~= nil and not self:IsEnabled() ) then
+					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, -8);
+					GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
+					GlueTooltip:Show();
+				elseif ( CharacterCreate.selectedRace ~= self:GetID() ) then
+					GlueTooltip_SetOwner(nil,nil, -3, -5);
+					GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
 				end
-				GlueTooltip_SetOwner(nil,nil, -3, -5);
-				GlueTooltip:SetText(self.tooltip, nil, 1.0, 1.0, 1.0);
 			</OnEnter>
 			<OnLeave>
 				GlueTooltip:Hide();
