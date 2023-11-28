@@ -29,6 +29,15 @@ local Build =
 			},
 		},
 		{
+			Name = "IsDebugBuild",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDebugBuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLinuxClient",
 			Type = "Function",
 

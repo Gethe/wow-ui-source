@@ -37,6 +37,7 @@ ClientSceneDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
+ConnectionDocumentation.lua
 ConsoleDocumentation.lua
 ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
@@ -46,6 +47,7 @@ CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
 CursorUtilDocumentation.lua
 DeathInfoDocumentation.lua
+DebugToggleDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
@@ -89,6 +91,7 @@ LocaleDocumentation.lua
 LocalizationDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
+MacOptionsDocumentation.lua
 MapExplorationDocumentation.lua
 MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
@@ -183,6 +186,7 @@ StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 SystemTimeDocumentation.lua
 TTSSettingsDocumentation.lua
+TargetScriptDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
 TooltipComparisonDocumentation.lua

@@ -21,6 +21,20 @@ local Localization =
 			},
 		},
 		{
+			Name = "CaseAccentInsensitiveParse",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "DeclineName",
 			Type = "Function",
 
@@ -49,6 +63,20 @@ local Localization =
 			Returns =
 			{
 				{ Name = "numDeclensionSets", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "LocalizedClassList",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "isFemale", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaValueVariant", Nilable = false },
 			},
 		},
 	},

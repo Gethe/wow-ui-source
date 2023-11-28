@@ -46,10 +46,6 @@ function UnitFrame_Initialize (self, unit, name, frameType, portrait, healthbar,
 		self.overAbsorbGlow:SetPoint("TOPLEFT", self.healthbar, "TOPRIGHT", -7, 0);
 		self.overAbsorbGlow:SetPoint("BOTTOMLEFT", self.healthbar, "BOTTOMRIGHT", -7, 0);
 	end
-	if (self.healAbsorbBar and not self.healAbsorbBar.UpdateFillPosition) then
-		self.healAbsorbBar:ClearAllPoints();
-		self.healAbsorbBar:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
-	end
 	if (self.overHealAbsorbGlow) then
 		self.overHealAbsorbGlow:ClearAllPoints();
 		self.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", self.healthbar, "BOTTOMLEFT", 7, 0);

@@ -207,7 +207,7 @@ function DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys)
 			end
 		end
 		if hasNonMetaKey then
-			if not MacOptions_IsInputMonitoringEnabled() then
+			if not C_MacOptions.IsInputMonitoringEnabled() then
 				ShowAppropriateDialog("MAC_OPEN_INPUT_MONITORING");
 			end
 		end

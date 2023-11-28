@@ -62,9 +62,9 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function Dispatcher:OnSlash_Verbose(value)
-	local boolVal = string.toboolean(value);
+	local boolVal = StringToBoolean(value or "", nil);
 
-	if (string.isNilOrEmpty(value) or (boolVal == nil)) then
+	if (boolVal == nil) then
 		self.DebugVerbose = not self.DebugVerbose;
 	else
 		self.DebugVerbose = boolVal;

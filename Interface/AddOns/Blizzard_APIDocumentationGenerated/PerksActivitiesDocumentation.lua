@@ -109,19 +109,11 @@ local PerksActivities =
 			Name = "PerksActivitiesTrackedUpdated",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITIES_TRACKED_UPDATED",
-			Payload =
-			{
-				{ Name = "trackedPerksActivities", Type = "PerksActivitiesTracked", Nilable = false },
-			},
 		},
 		{
 			Name = "PerksActivitiesUpdated",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITIES_UPDATED",
-			Payload =
-			{
-				{ Name = "info", Type = "PerksActivitiesInfo", Nilable = false },
-			},
 		},
 		{
 			Name = "PerksActivityCompleted",

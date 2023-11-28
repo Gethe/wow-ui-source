@@ -146,10 +146,13 @@ function PTR_IssueReporter.CreateReports()
             return
         end
         
-        local array = StringHelper.StringToArrayByCharacter(guid, "-")
+		local lines = {}
+		for s in guid:gmatch("[^-]+") do
+			table.insert(lines, s)
+		end
         
-        if (array[6]) then
-            return array[6]
+        if (lines[6]) then
+            return lines[6]
         end
     end
     

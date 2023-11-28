@@ -4798,7 +4798,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		-- Other components (like the moneyFrame) can be anchored under subtext so we anchor to the item frame instead of the bottom of the window.
 		dialog.SubText:SetPoint("TOP", dialog.ItemFrame, "BOTTOM", -itemFrameXOffset, subTextSpacingYOffset);
 	else
-		dialog.ItemFrame:SetPoint("BOTTOM", itemFrameXOffset, bottomSpace + 29);
+		dialog.ItemFrame:SetPoint("BOTTOM", itemFrameXOffset, bottomSpace + (info.compactItemFrame and 29 or 39));
 		dialog.SubText:SetPoint("TOP", dialog.text, "BOTTOM", 0, subTextSpacingYOffset);
 	end
 

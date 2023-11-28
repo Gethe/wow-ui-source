@@ -366,8 +366,7 @@ end
 
 function TargetFrameMixin:CheckBattlePet()
 	if (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
-		-- Weird indexing via an enum and in conjuction with the way PET_TYPE_SUFFIX is being used it would be too much work to convert this to a luaIndex to fix it properly
-		local petType = UnitBattlePetType(self.unit) + 1;
+		local petType = UnitBattlePetType(self.unit);
 		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
 	else

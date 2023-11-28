@@ -815,10 +815,10 @@ end
 
 function MonthlyActivitiesFrameMixin:OnEvent(event, ...)
 	if ( event == "PERKS_ACTIVITIES_UPDATED" ) then
-		local activitiesInfo = ...;
+		local activitiesInfo = C_PerksActivities.GetPerksActivitiesInfo();
 		self:UpdateActivities(ScrollBoxConstants.RetainScrollPosition, activitiesInfo);
 	elseif ( event == "PERKS_ACTIVITIES_TRACKED_UPDATED" ) then
-		local perksActivitiesTracked = ...;
+		local perksActivitiesTracked = C_PerksActivities.GetTrackedPerksActivities();
 		local trackedActivityIDs = perksActivitiesTracked.trackedIDs;
 		local dataProvider = self.ScrollBox:GetDataProvider();
 		local excludeCollapsed = false;

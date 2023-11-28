@@ -39,13 +39,12 @@ area: [string]  --  Desired area of UIParent the frame should show in. Depending
 	center: Take up center area. Can't be shown with any other frames in the left/center/right areas, but may be replaced by other frames if allowOtherPanels is 1.
 	left: Take leftmost area of the screen. If pushable, may be shifted to center or right if other pushable frames are shown.
 	doublewide: Take up left and center areas. Can be shown with another single-area frame if it's pushable.
-	centerOrLeft: Take up center area when no other frames are showing, or use "left" behavior if other frames are shown.
 centerFrameSkipAnchoring: [bool]  --  If true on a frame using area "center," skips updating the frame's anchors when positioned
 neverAllowOtherPanels: [0,1]  --  If 1 on a frame using area "center" or "full", prevents trying to show any other panel while that frame is shown
 allowOtherPanels: [0,1]   -- (default 0 for "center" frames, otherwise 1)
 						  -- If 1 on non center or full area frames, allows other panels to be shown in other areas at the same time.
 						  -- If 1 on center frames, allows other frames to replace this one when opened. Also allows bags to be opened while this frame is open.
-pushable: [0,1,..n]  --  (attribute used by frames using areas left/doublewide/centerOrLeft)
+pushable: [0,1,..n]  --  (attribute used by frames using areas left/doublewide)
 					 --  If 0, frame is not pushable to other areas; exact behavior is complicated. (Needs to be investigated to figure out what's actually intentional behavior vs legacy bugs)
 					 --  If > 0, frame can be pushed to other areas than area attribute when other frames are also open.
 					 --  Pushable frames are sorted by their pushable values, lower to higher, left to right.
@@ -54,7 +53,7 @@ whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead.
 ignoreControlLost: [bool]  --  If true, do not close the frame when player loses control of character (ie when feared).
 showFailedFunc: [func]  --  Function to call when attempting to show the frame via ShowUIPanel fails.
 width: [number]  --  Override width to use instead of the frame's actual width for layout/position calculations.
-height: [number]  --  Override width to use instead of the frame's actual height for layout/position calculations.
+height: [number]  --  Override height to use instead of the frame's actual height for layout/position calculations.
 extraWidth: [number]  --  Extra buffer width to add when checking frame's width for layout/position calculations. Is added to 'width' if also set, otherwise is added to frame's actual width.
 extraHeight: [number]  --  Extra buffer height to add when checking frame's height for layout/position calculations. Is added to 'height' if also set, otherwise is added to frame's actual height.
 xoffset: [number]  --  X offset to add when positioning the frame within the UI parent.

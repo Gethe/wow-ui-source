@@ -204,33 +204,7 @@ local function BarberShopClosedHandler()
 end
 ----------------------------------------------------------------------------------------------------
 local function GroupRosterChanged()
-    if IsInRaid() then
-        return
-    end
-    
-    if not IsInGroup() then
-        return
-    end
-    
-    local groupHasAIFollowers = false
-    for i = 1, GetNumGroupMembers(), 1 do
-        local unit = "party"..i
-        if (PTR_IssueReporter.IsUnitAIFollower(unit)) then
-            groupHasAIFollowers = true
-        end
-    end
-    
-    if (groupHasAIFollowers) then        
-        groupHasAIBots = true
-        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.AIBotsJoinedParty)
-    else
-        if not groupHasAIBots then
-            return
-        end
-        
-        groupHasAIBots = false
-        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.AIBotsLeftParty)
-    end
+    PTR_IssueReporter.HandleGroupRosterChanged()
 end
 ----------------------------------------------------------------------------------------------------
 C_Timer.NewTicker(1, QuestProgressHandler)
