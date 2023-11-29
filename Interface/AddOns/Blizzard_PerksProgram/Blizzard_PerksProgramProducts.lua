@@ -90,8 +90,7 @@ function PerksProgramProductsFrameMixin:OnEvent(event, ...)
 			return elementData.perksVendorItemID == vendorItemID;
 		end);
 		if foundElementData then
-			foundElementData.purchased = vendorItemInfo.purchased;
-			foundElementData.refundable = vendorItemInfo.refundable;
+			SetTablePairsToTable(foundElementData, vendorItemInfo);
 		end
 
 		EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", vendorItemInfo);
