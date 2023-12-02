@@ -270,14 +270,22 @@ function RealmList_OnOk()
 
 		if ( populationState == "FULL" and numChars == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
+		elseif ( populationState == "LOCKED" and numChars == 0 ) then
+			GlueDialog_Show("REALM_IS_LOCKED");
 		else
-			if (seasonID == Enum.SeasonID.Hardcore and numChars == 0) then
-				HardcorePopUpFrame:SetRealmInfo(RealmList.selectedRealm)
-				HardcorePopUpFrame:ShowRealmSelectionWarning();
-			else
-				C_RealmList.ConnectToRealm(RealmList.selectedRealm);
-			end
+			RealmList_OnConnectToRealm();
 		end
+	end
+end
+
+function RealmList_OnConnectToRealm()
+	local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+
+	if (seasonID == Enum.SeasonID.Hardcore and numChars == 0) then
+		HardcorePopUpFrame:SetRealmInfo(RealmList.selectedRealm)
+		HardcorePopUpFrame:ShowRealmSelectionWarning();
+	else
+		C_RealmList.ConnectToRealm(RealmList.selectedRealm);
 	end
 end
 
