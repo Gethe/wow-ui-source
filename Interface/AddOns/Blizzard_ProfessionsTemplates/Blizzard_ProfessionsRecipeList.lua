@@ -151,19 +151,9 @@ function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)
 	local info = UIDropDownMenu_CreateInfo();
 	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeInfo.recipeID);
 
-	local HandleSetRecipeFavorite = function()
-		C_TradeSkillUI.SetRecipeFavorite(recipeInfo.recipeID, not currentlyFavorite);
-
-		local isRecipeCurrentlySelected = self.selectionBehavior:GetFirstSelectedElementData().data.recipeInfo.recipeID == recipeInfo.recipeID;
-		if(isRecipeCurrentlySelected) then
-			self:GetParent().SchematicForm.FavoriteButton:SetIsFavorite(not currentlyFavorite);
-			self:GetParent().SchematicForm.FavoriteButton:SetChecked(not currentlyFavorite);
-		end
-	end
-
 	info.notCheckable = true;
 	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = HandleSetRecipeFavorite;
+	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, recipeInfo.recipeID, not currentlyFavorite);
 
 	UIDropDownMenu_AddButton(info, level);
 end

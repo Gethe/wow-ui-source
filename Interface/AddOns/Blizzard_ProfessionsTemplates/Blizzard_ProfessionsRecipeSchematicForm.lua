@@ -82,6 +82,7 @@ local ProfessionsRecipeFormEvents =
 	"TRACKED_RECIPE_UPDATE",
 	"TRADE_SKILL_ITEM_UPDATE",
 	"CRAFTING_DETAILS_UPDATE",
+	"TRADE_SKILL_FAVORITES_CHANGED"
 };
 
 function ProfessionsRecipeSchematicFormMixin:OnLoad()
@@ -227,6 +228,12 @@ function ProfessionsRecipeSchematicFormMixin:OnEvent(event, ...)
 		end
 	elseif event == "CRAFTING_DETAILS_UPDATE" then
 		self:UpdateDetailsStats();
+	elseif event == "TRADE_SKILL_FAVORITES_CHANGED" then
+		local isFavorite = ...;
+		if self.FavoriteButton:IsShown() then
+			self.FavoriteButton:SetChecked(isFavorite);
+			self.FavoriteButton:SetIsFavorite(isFavorite);
+		end
 	end
 end
 
