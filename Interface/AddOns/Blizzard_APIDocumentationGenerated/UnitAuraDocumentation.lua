@@ -95,6 +95,22 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetAuraDataBySpellName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "spellName", Type = "cstring", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAuraSlots",
 			Type = "Function",
 

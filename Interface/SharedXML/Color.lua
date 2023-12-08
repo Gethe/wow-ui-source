@@ -10,11 +10,14 @@ function ColorMixin:OnLoad(r, g, b, a)
 	self:SetRGBA(r, g, b, a);
 end
 
+function ColorMixin:IsRGBEqualTo(otherColor)
+	return self.r == otherColor.r 
+		and self.g == otherColor.g 
+		and self.b == otherColor.b;
+end
+
 function ColorMixin:IsEqualTo(otherColor)
-	return self.r == otherColor.r
-		and self.g == otherColor.g
-		and self.b == otherColor.b
-		and self.a == otherColor.a;
+	return self:IsRGBEqualTo(otherColor) and self.a == otherColor.a;
 end
 
 function ColorMixin:GetRGB()

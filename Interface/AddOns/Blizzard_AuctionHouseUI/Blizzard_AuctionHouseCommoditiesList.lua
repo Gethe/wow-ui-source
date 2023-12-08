@@ -159,12 +159,8 @@ function AuctionHouseCommoditiesBuyListMixin:UpdateListHighlightCallback()
 	else
 		self:SetHighlightCallback(function(currentRowData, selectedRowData, currentRowIndex)
 			local shouldHighlight = currentRowIndex <= (self.resultsMaxHighlightIndex or 0);
-			local highlightAlpha = 1.0;
-			-- Temporary fix for unexpected invalid row data.
-			if currentRowData then
-				highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
+			local highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
 					(currentRowIndex == self.resultsMaxHighlightIndex and self.resultsPartiallyPurchased)) and 0.5 or 1.0;
-			end
 			return shouldHighlight, highlightAlpha;
 		end);
 	end

@@ -678,74 +678,346 @@ function PerksProgramDividerFrameMixin:OnProductSelectedAfterModel(data)
 	self:SetShown(showDivider);
 end
 
-----------------------------------------------------------------------------------
--- PerksProgramCarouselFrameMixin
-----------------------------------------------------------------------------------
-PerksProgramCarouselFrameMixin = {};
-function PerksProgramCarouselFrameMixin:OnLoad()
-	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
+local function PerksProgramProductDetails_ProcessLines(itemID, perksVendorCategoryID)
+	local tooltipLineTypes = { Enum.TooltipDataLineType.RestrictedRaceClass,
+								Enum.TooltipDataLineType.RestrictedFaction,
+								Enum.TooltipDataLineType.RestrictedSkill,
+								Enum.TooltipDataLineType.RestrictedPVPMedal,
+								Enum.TooltipDataLineType.RestrictedReputation,
+								Enum.TooltipDataLineType.RestrictedLevel, };
 
-	local function OnCarouselButtonClick(button, buttonName, down)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		self.carouselIndex = self.carouselIndex + button.incrementAmount;
-		self.carouselIndex = Clamp(self.carouselIndex, 1, #self.items);
-		self:UpdateCarousel();
+	if IsPerksVendorCategoryTransmog(perksVendorCategoryID) then
+		table.insert(tooltipLineTypes, Enum.TooltipDataLineType.EquipSlot);
 	end
-	self.IncrementButton.incrementAmount = 1;
-	self.IncrementButton:SetScript("OnClick", OnCarouselButtonClick );
-	self.DecrementButton.incrementAmount = -1;
-	self.DecrementButton:SetScript("OnClick", OnCarouselButtonClick );
-end
 
-function PerksProgramCarouselFrameMixin:OnProductSelectedAfterModel(data)	
-	local perksVendorCategoryID = data.perksVendorCategoryID;
-	local items = nil;
-	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
-		items = data.creatureDisplays;
-	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Pet then
-		items = nil; -- not yet
-	elseif perksVendorCategoryID == Enum.PerksVendorCategoryType.Toy then
-		items = nil; -- not yet
-	elseif IsPerksVendorCategoryTransmog(perksVendorCategoryID) then
-		local itemModifiedAppearanceIDs = data and C_TransmogSets.GetAllSourceIDs(data.transmogSetID);
-		if itemModifiedAppearanceIDs and PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs) then				
-			items = itemModifiedAppearanceIDs;
+	local result = TooltipUtil.FindLinesFromGetter(tooltipLineTypes, "GetItemByID", itemID);
+	if not result then
+		return "";
+	end
+
+	local equipSlotLines = {};
+	local otherLines = {};
+	for i, lineData in ipairs(result) do
+		if lineData.type == Enum.TooltipDataLineType.EquipSlot then
+			if lineData.rightText and lineData.leftText then
+				local lineText = lineData.rightText.." ".."("..lineData.leftText..")";
+				local color = (lineData.isValidItemType and lineData.isValidInvSlot) and WHITE_FONT_COLOR or RED_FONT_COLOR;
+				lineText = color:WrapTextInColorCode(lineText);
+				table.insert(equipSlotLines, lineText);
+			elseif lineData.leftText then
+				local lineText = lineData.leftColor:WrapTextInColorCode(lineData.leftText);
+				table.insert(equipSlotLines, lineText);
+			end
+		else
+			if lineData.leftText then
+				local lineText = lineData.leftColor:WrapTextInColorCode(lineData.leftText);
+				table.insert(otherLines, lineText);
+			end
 		end
 	end
-	self:SetCarouselItems(data, items, perksVendorCategoryID);
+
+	local description = "\n";
+	local function AddLinesToDescription(linesTable)
+		for index, lineText in ipairs(linesTable) do
+			description = description.."\n"..lineText;
+		end
+	end
+	AddLinesToDescription(otherLines);
+	AddLinesToDescription(equipSlotLines);
+	return description;
 end
 
-function PerksProgramCarouselFrameMixin:UpdateCarouselText()
-	local carouselText = format(PERKS_PROGRAM_CAROUSEL_INDEX, self.carouselIndex, #self.items);
-	self.CarouselText:SetText(carouselText);
-end
+----------------------------------------------------------------------------------
+-- PerksProgramSetDetailsListMixin
+----------------------------------------------------------------------------------
 
-function PerksProgramCarouselFrameMixin:UpdateCarouselButtons()
-	local count = #self.items;
-	local enablePreviousButton = self.carouselIndex > 1;
-	local enableNextButton = self.carouselIndex < count;
-	self.DecrementButton:SetEnabled(enablePreviousButton);
-	self.IncrementButton:SetEnabled(enableNextButton);
-end
+PerksProgramSetDetailsListMixin = {}
 
-function PerksProgramCarouselFrameMixin:UpdateCarousel()
-	local count = self.items and #self.items or 0;
-	local showCarousel = count > 1;
-	if showCarousel then
-		self:UpdateCarouselText();
-		self:UpdateCarouselButtons();
+local function ConvertInvTypeToSelectionKey(invType)
+	if invType == "INVTYPE_SHIELD" or invType == "INVTYPE_WEAPONOFFHAND" or invType == "INVTYPE_HOLDABLE" then
+		return "SELECTIONTYPE_OFFHAND";
 	end
 
-	self:SetShown(showCarousel);
-	EventRegistry:TriggerEvent("PerksProgram.OnCarouselUpdated", self.data, self.perksVendorCategoryID, self.carouselIndex, showCarousel);
+	if invType == "INVTYPE_2HWEAPON" or invType == "INVTYPE_RANGED" or invType == "INVTYPE_RANGEDRIGHT" or invType == "INVTYPE_THROWN" then
+		return "SELECTIONTYPE_TWOHAND";
+	end
+	
+	if invType == "INVTYPE_WEAPON" or invType == "INVTYPE_WEAPONMAINHAND" then
+		return "SELECTIONTYPE_MAINHAND";
+	end
+
+	return string.gsub(invType, "INVTYPE", "SELECTIONTYPE");
 end
 
-function PerksProgramCarouselFrameMixin:SetCarouselItems(data, items, perksVendorCategoryID)
-	self.carouselIndex = 1;
+local function DeselectItemByType(selectionList, selectionType)
+	if selectionList[selectionType] then
+		selectionList[selectionType].elementData.selected = false;
+		selectionList[selectionType] = nil;
+	end
+end
+
+local function SelectItem(selectionList, selectionType, itemToSelect)
+	if selectionType == "SELECTIONTYPE_TWOHAND" then
+		DeselectItemByType(selectionList, "SELECTIONTYPE_OFFHAND");
+		DeselectItemByType(selectionList, "SELECTIONTYPE_MAINHAND");
+	elseif selectionType == "SELECTIONTYPE_MAINHAND" or selectionType == "SELECTIONTYPE_OFFHAND" then
+		DeselectItemByType(selectionList, "SELECTIONTYPE_TWOHAND");
+	end
+
+	DeselectItemByType(selectionList, selectionType)
+	selectionList[selectionType] = itemToSelect;
+end
+
+function PerksProgramSetDetailsListMixin:OnLoad()
+	local DefaultPad = 0;
+	local DefaultSpacing = 1;
+	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
+	view:SetElementInitializer("PerksProgramDetailsFrameScrollButtonTemplate", function(button, elementData)
+		button:InitItem(elementData);
+		button:SetScript("OnClick", function(button, buttonName, down)
+			self:OnItemSelected(button, elementData);
+		end);
+	end);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+	--local scrollBoxAnchorsWithBar = {
+	--	CreateAnchor("TOPLEFT", -16, 0),
+	--	CreateAnchor("BOTTOMRIGHT", 0, 0);
+	--};
+	--local scrollBoxAnchorsWithoutBar = {
+	--	CreateAnchor("TOPLEFT", 0, 0),
+	--	CreateAnchor("BOTTOMRIGHT", 0, 0);
+	--};
+	--ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
+
+	EventRegistry:RegisterCallback("PerksProgram.UpdateDetailsSetScollBox", self.Init, self);
+end
+
+function PerksProgramSetDetailsListMixin:ClearData()
+	self.data = {};
+	self.setID = 0;
+	self.perksVendorCategoryID = 0;
+	self.selectedItems = {};
+	self.subItems = {};
+end
+
+function PerksProgramSetDetailsListMixin:Init(data)
+	if not data or not #data.subItems == 0 or not data.subItemsLoaded then
+		self:ClearData();
+		self:Hide();
+		return;
+	end
+
+	self:Show();
+
+	if self.data and self.data.perksVendorItemID == data.perksVendorItemID then
+		self:RefreshItems();
+		self:UpdateSelectedAppearances();
+
+		return;
+	end
+
 	self.data = data;
-	self.items = items;
-	self.perksVendorCategoryID = perksVendorCategoryID;
-	self:UpdateCarousel();
+	self.setID = data.transmogSetID;
+	self.perksVendorCategoryID = data.perksVendorCategoryID;
+	self.selectedItems = {};
+	self.subItems = data.subItems;
+
+	local dataProvider = CreateDataProvider();
+	for index, subItem in ipairs(self.subItems) do
+		if subItem.itemID then
+			local tooltipLineTypes = { Enum.TooltipDataLineType.EquipSlot, };
+			local result = TooltipUtil.FindLinesFromGetter(tooltipLineTypes, "GetItemByID", subItem.itemID);
+			if result and #result ~= 0 then
+				local coloredItemName = ITEM_QUALITY_COLORS[subItem.quality].color:WrapTextInColorCode(subItem.name);
+			
+				local itemIcon = C_Item.GetItemIconByID(subItem.itemID);
+				local selectionType = ConvertInvTypeToSelectionKey(subItem.invType);
+
+				local selected = false;
+				if selectionType == "SELECTIONTYPE_TWOHAND" then 
+					selected = not self.selectedItems["SELECTIONTYPE_TWOHAND"] and not self.selectedItems["SELECTIONTYPE_MAINHAND"] and not self.selectedItems["SELECTIONTYPE_OFFHAND"];
+				else
+					selected = not self.selectedItems[selectionType];
+				end
+
+				local elementData = {
+					 selected = selected,
+					 itemName = coloredItemName, 
+					 itemSlot = result[1],
+					 itemIcon = itemIcon,
+					 itemQuality = subItem.quality,
+					 itemOverlay = "CosmeticIconFrame",
+					 itemID = subItem.itemID,
+					 itemModifiedAppearanceID = subItem.itemAppearanceID,
+					 selectionType = selectionType,
+				};
+
+				dataProvider:Insert(elementData);
+
+				if selected then
+					SelectItem(self.selectedItems, selectionType, { itemID=subItem.itemID, elementData=elementData });
+				end
+			end
+		end
+	end
+
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	-- Makes it so the ScrollBox resizes if there are less than 3 elements in the list
+	local individualItemHeight = self.ScrollBox:GetElementExtent(1);
+	self:SetHeight(min(#self.subItems * individualItemHeight + #self.subItems, 3 * individualItemHeight + individualItemHeight / 2 + 3));
+
+	if #self.subItems > 3 then
+		self.ScrollBar:Show();
+		self.ScrollBox:SetPoint("TOPLEFT", -16, 0);
+	else
+		self.ScrollBar:Hide();
+		self.ScrollBox:SetPoint("TOPLEFT", 0, 0);
+	end
+
+	self:RefreshItems();
+	self:UpdateSelectedAppearances();
+end
+
+function PerksProgramSetDetailsListMixin:OnItemSelected(element, elementData)
+	for selectionType, selectedElementData in pairs(self.selectedItems) do
+		if selectedElementData.itemID == elementData.itemID then
+			if elementData.selected then
+				self.selectedItems[selectionType] = nil;
+				element:SetSelected(false);
+				self:UpdateSelectedAppearances();
+
+				return;
+			end
+
+			break;
+		end
+	end
+
+	SelectItem(self.selectedItems, elementData.selectionType, { itemID = elementData.itemID, elementData = elementData });
+	element:SetSelected(true);
+	self:RefreshItems();
+	self:UpdateSelectedAppearances();
+end
+
+function PerksProgramSetDetailsListMixin:RefreshItems()
+	self.ScrollBox:ForEachFrame(function(element, elementData)
+		element:Refresh();
+	end);
+end
+
+function PerksProgramSetDetailsListMixin:UpdateSelectedAppearances()
+	local selectedItemModifiedAppearances = {};
+	for _, itemData in pairs(self.selectedItems) do
+		tinsert(selectedItemModifiedAppearances, itemData.elementData.itemModifiedAppearanceID);
+	end
+
+	EventRegistry:TriggerEvent("PerksProgram.OnItemSetSelectionUpdated", self.data, self.perksVendorCategoryID, selectedItemModifiedAppearances);
+end
+
+----------------------------------------------------------------------------------
+-- PerksProgramSetDetailsItemMixin
+----------------------------------------------------------------------------------
+PerksProgramSetDetailsItemMixin = {}
+
+function PerksProgramSetDetailsItemMixin:InitItem(elementData)
+	self:Show();
+	self.elementData = elementData;
+	self:SetSelected(self.elementData.selected);
+
+	local itemSlot = elementData.itemSlot;
+	local leftText = itemSlot.leftText or "";
+	local rightText = itemSlot.rightText or "";
+
+	local wrapLeftInColor = itemSlot.leftColor and not itemSlot.leftColor:IsRGBEqualTo(WHITE_FONT_COLOR);
+	local wrapRightInColor = itemSlot.rightColor and not itemSlot.rightColor:IsRGBEqualTo(WHITE_FONT_COLOR);
+
+	if wrapLeftInColor then
+		leftText = itemSlot.leftColor:WrapTextInColorCode(itemSlot.leftText);
+	end
+	if wrapRightInColor then
+		rightText = itemSlot.rightColor:WrapTextInColorCode(itemSlot.rightText);
+	end
+
+	self.ItemSlotLeft:SetText(leftText);
+	self.ItemSlotRight:SetText(rightText);
+	
+	-- Want to reset to the initial widths everytime if it's been overriden once
+	if self.initialRightWidth then
+		self.ItemSlotRight:SetWidth(self.initialRightWidth);
+		self.ItemSlotLeft:SetWidth(self.initialLeftWidth);
+	end
+	
+	-- This code is allowing for the slot text to be longer if only the left or right text exist.
+	-- I.E. (- is equivalent to empty space. | is the divide between left and right text)
+	-- L&R text: One-hand--- | ----Sword
+	-- L text:   One-hand---------------
+	-- R text:   ------------------Sword
+	if rightText == "" or leftText == "" then
+		self.initialRightWidth = self.ItemSlotRight:GetWidth();
+		self.initialLeftWidth = self.ItemSlotLeft:GetWidth();
+		if rightText == "" then
+			self.ItemSlotLeft:SetWidth(self.initialLeftWidth + self.initialRightWidth);
+		else
+			self.ItemSlotRight:SetWidth(self.initialLeftWidth + self.initialRightWidth);
+		end
+	end
+
+	self.Icon:SetTexture(elementData.itemIcon);
+	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[elementData.itemQuality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
+	self.IconOverlay:SetAtlas(elementData.itemOverlay);
+end
+
+function PerksProgramSetDetailsItemMixin:Refresh()
+	self.SelectedTexture:SetShown(self.elementData.selected);
+	self.ItemName:SetText(self.elementData.itemName);
+end
+
+function PerksProgramSetDetailsItemMixin:SetSelected(selected)
+	self.elementData.selected = selected;
+	self:Refresh();
+end
+
+function PerksProgramSetDetailsItemMixin:OnEnter()
+	self.HighlightTexture:Show();
+
+	PerksProgramTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -20);
+	PerksProgramTooltip:SetItemByID(self.elementData.itemID);
+	PerksProgramTooltip:Show();
+end
+
+function PerksProgramSetDetailsItemMixin:OnLeave()
+	self.HighlightTexture:Hide();
+	PerksProgramTooltip:Hide();
+end
+
+----------------------------------------------------------------------------------
+-- PerksDetailsScrollBarMixin
+----------------------------------------------------------------------------------
+
+PerksDetailsScrollBarMixin = {}
+
+function PerksDetailsScrollBarMixin:OnShow()
+	EventRegistry:TriggerEvent("PerksProgram.SetDetailsScrollShownUpdated", true);
+end
+
+function PerksDetailsScrollBarMixin:OnHide()
+	EventRegistry:TriggerEvent("PerksProgram.SetDetailsScrollShownUpdated", false);
+end
+
+----------------------------------------------------------------------------------
+-- PerksDetailsScrollBoxFadeMixin
+----------------------------------------------------------------------------------
+
+PerksDetailsScrollBoxFadeMixin = {}
+
+function PerksDetailsScrollBoxFadeMixin:OnLoad()
+	EventRegistry:RegisterCallback("PerksProgram.SetDetailsScrollShownUpdated", self.UpdateShown, self);
+end
+
+function PerksDetailsScrollBoxFadeMixin:UpdateShown(shown)
+	self:SetShown(shown);
 end
 
 ----------------------------------------------------------------------------------
@@ -822,9 +1094,6 @@ PerksProgramProductDetailsFrameMixin = {};
 function PerksProgramProductDetailsFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("PerksProgramModel.OnProductSelectedAfterModel", self.OnProductSelectedAfterModel, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnProductInfoChanged", self.OnProductInfoChanged, self);
-	EventRegistry:RegisterCallback("PerksProgram.OnCarouselUpdated", self.OnCarouselUpdated, self);
-
-	self.carouselIndex = 1;
 end
 
 function PerksProgramProductDetailsFrameMixin:OnShow()
@@ -832,80 +1101,17 @@ function PerksProgramProductDetailsFrameMixin:OnShow()
 	self.DescriptionText:SetFontObject(newFont);
 end
 
-function PerksProgramProductDetailsFrameMixin:OnCarouselUpdated(data, perksVendorCategoryID, index, isCarouselShown)
-	self.carouselIndex = index;
-	self.isCarouselShown = isCarouselShown;
-	self:Refresh();
-end
-
 function PerksProgramProductDetailsFrameMixin:SetData(data)
 	self.data = data;
 
-	-- Cache the sub-items if there are any so we can show specific info about each sub item
-	self.subItemIDs = {};
-	local perksVendorCategoryID = self.data.perksVendorCategoryID;
-	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset then
-		local itemModifiedAppearanceIDs = C_TransmogSets.GetAllSourceIDs(self.data.transmogSetID);
-		if itemModifiedAppearanceIDs then
-			for index, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
-				local itemID = C_Transmog.GetItemIDForSource(itemModifiedAppearanceID);
-				if itemID then
-					table.insert(self.subItemIDs, itemID);
-				end
-			end
-		end
+	if #self.data.subItems > 0 then
+		self:GetParent().SetDetailsScrollBoxContainer:Init(self.data);
+	else
+		self:GetParent().SetDetailsScrollBoxContainer:ClearData();
+		self:GetParent().SetDetailsScrollBoxContainer:Hide();
 	end
 
 	self:Refresh();
-end
-
-local function PerksProgramProductDetails_ProcessLines(itemID, perksVendorCategoryID)
-	local tooltipLineTypes = { Enum.TooltipDataLineType.RestrictedRaceClass,
-								Enum.TooltipDataLineType.RestrictedFaction,
-								Enum.TooltipDataLineType.RestrictedSkill,
-								Enum.TooltipDataLineType.RestrictedPVPMedal,
-								Enum.TooltipDataLineType.RestrictedReputation,
-								Enum.TooltipDataLineType.RestrictedLevel, };
-
-	if IsPerksVendorCategoryTransmog(perksVendorCategoryID) then
-		table.insert(tooltipLineTypes, Enum.TooltipDataLineType.EquipSlot);
-	end
-
-	local result = TooltipUtil.FindLinesFromGetter(tooltipLineTypes, "GetItemByID", itemID);
-	if not result then
-		return "";
-	end
-
-	local equipSlotLines = {};
-	local otherLines = {};
-	for i, lineData in ipairs(result) do
-		if lineData.type == Enum.TooltipDataLineType.EquipSlot then
-			if lineData.rightText and lineData.leftText then
-				local lineText = lineData.rightText.." ".."("..lineData.leftText..")";
-				local color = (lineData.isValidItemType and lineData.isValidInvSlot) and WHITE_FONT_COLOR or RED_FONT_COLOR;
-				lineText = color:WrapTextInColorCode(lineText);
-				table.insert(equipSlotLines, lineText);
-			elseif lineData.leftText then
-				local lineText = lineData.leftColor:WrapTextInColorCode(lineData.leftText);
-				table.insert(equipSlotLines, lineText);
-			end
-		else
-			if lineData.leftText then
-				local lineText = lineData.leftColor:WrapTextInColorCode(lineData.leftText);
-				table.insert(otherLines, lineText);
-			end
-		end
-	end
-
-	local description = "\n";
-	local function AddLinesToDescription(linesTable)
-		for index, lineText in ipairs(linesTable) do
-			description = description.."\n"..lineText;
-		end
-	end
-	AddLinesToDescription(otherLines);
-	AddLinesToDescription(equipSlotLines);
-	return description;
 end
 
 function PerksProgramProductDetailsFrameMixin:Refresh()
@@ -925,7 +1131,7 @@ function PerksProgramProductDetailsFrameMixin:Refresh()
 			descriptionText = toyDescription;
 		end
 	else
-		local itemID = self.isCarouselShown and self.subItemIDs[self.carouselIndex] or self.data.itemID;
+		local itemID = self.data.itemID;
 		descriptionText = self.data.description..PerksProgramProductDetails_ProcessLines(itemID, self.data.perksVendorCategoryID);
 	end
 	self.DescriptionText:SetText(descriptionText);

@@ -212,6 +212,7 @@ end
 function LootHistoryElementAnimationMixin:PlayPerfectRollAnim()
 	self:Show();
 
+	PlaySound(SOUNDKIT.UI_NEED_ROLL_ONE_HUNDRED);
 	self.PerfectRollFrame.Anim:Play();
 	self.PerfectRollTopFrame.Anim:Play();
 end

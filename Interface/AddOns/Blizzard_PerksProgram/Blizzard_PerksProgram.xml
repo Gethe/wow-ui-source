@@ -315,7 +315,7 @@
 									<KeyValue key="layoutIndex" value="10" type="number"/>
 									<KeyValue key="topPadding" value="16" type="number"/>
 									<KeyValue key="leftPadding" value="20" type="number"/>
-									<KeyValue key="bottomPadding" value="16" type="number"/>
+									<KeyValue key="bottomPadding" value="36" type="number"/>
 									<KeyValue key="timeTextColor" value="WHITE_FONT_COLOR" type="global"/>
 									<KeyValue key="timeValueColor" value="WHITE_FONT_COLOR" type="global"/>
 								</KeyValues>								
@@ -326,7 +326,7 @@
 									<KeyValue key="layoutIndex" value="20" type="number"/>
 									<KeyValue key="topPadding" value="12" type="number"/>
 									<KeyValue key="leftPadding" value="10" type="number"/>
-									<KeyValue key="bottomPadding" value="12" type="number"/>
+									<KeyValue key="bottomPadding" value="36" type="number"/>
 								</KeyValues>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -337,44 +337,53 @@
 									<OnLoad method="OnLoad"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="CarouselFrame" mixin="PerksProgramCarouselFrameMixin" hidden="true">
+							<Frame parentKey="OverlayTextureContainer" mixin="PerksDetailsScrollBoxFadeMixin" frameLevel="2000" hidden="true" alpha="0.6">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="2" y="2"/>
+									<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-2" y="107"/>
+								</Anchors>
 								<KeyValues>
-									<KeyValue key="layoutIndex" value="30" type="number"/>
-									<KeyValue key="leftPadding" value="40" type="number"/>
-									<KeyValue key="bottomPadding" value="12" type="number"/>
+									<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 								</KeyValues>
-								<Size x="280" y="42"/>
-								<Frames>
-									<Button parentKey="DecrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-										<Size x="42" y="42"/>
-										<NormalTexture parentKey="NormalTexture" atlas="perks-backbutton"/>
-										<PushedTexture parentKey="PushedTexture" atlas="perks-backbutton-down"/>
-										<DisabledTexture atlas="perks-backbutton-disabled"/>
-										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="0" y="0"/>
-										</Anchors>
-									</Button>
-								</Frames>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="OverlayFadeMask" atlas="perks-list-fademask" setAllPoints="true"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="SetDetailsScrollBoxContainer" mixin="PerksProgramSetDetailsListMixin" hidden="true">
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="40" type="number"/>
+									<KeyValue key="bottomPadding" value="45" type="number"/>
+									<KeyValue key="align" value="center" type="string"/>
+								</KeyValues>
+								<!-- Height is set dynamically via code in PerksProgramSetDetailsListMixin:Init -->
+								<Size x="255" y="200" />
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="CarouselText" justifyH="CENTER" text="PERKS_PROGRAM_CAROUSEL_INDEX" inherits="SystemFont_Huge2">
-											<Size x="196" y="42"/>
+										<FontString text="PERKS_PROGRAM_SET_SELECTION_DESC" justifyH="CENTER" inherits="GameFontNormalMed3">
+											<Color color="DISABLED_FONT_COLOR"/>
 											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.DecrementButton" relativePoint="RIGHT" x="0" y="0"/>
+												<Anchor point="BOTTOM" relativePoint="TOP" y="10"/>
 											</Anchors>
 										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
-									<Button parentKey="IncrementButton" inherits="AlphaHighlightButtonTemplate" motionScriptsWhileDisabled="true">
-										<Size x="42" y="42"/>
-										<NormalTexture parentKey="NormalTexture" atlas="perks-nextbutton"/>
-										<PushedTexture parentKey="PushedTexture" atlas="perks-nextbutton-down"/>
-										<DisabledTexture atlas="perks-nextbutton-disabled"/>
+									<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true"/>
+									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" mixin="PerksDetailsScrollBarMixin" frameLevel="2500">
 										<Anchors>
-											<Anchor point="LEFT" relativeKey="$parent.CarouselText" relativePoint="RIGHT" x="0" y="0"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="12" y="-4"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="12" y="8"/>
 										</Anchors>
-									</Button>
+										<Scripts>
+											<OnShow method="OnShow"/>
+											<OnHide method="OnHide"/>
+										</Scripts>
+									</EventFrame>
 								</Frames>
 								<Scripts>
 									<OnLoad method="OnLoad"/>

@@ -604,6 +604,10 @@ function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 		return 0, 0;
 	end
 
+	if scrollBox:GetVisibleExtent() == 0 then
+		return 0, 0;
+	end
+
 	if not self:IsVirtualized() then
 		return CheckDataIndicesReturn(1, size);
 	end

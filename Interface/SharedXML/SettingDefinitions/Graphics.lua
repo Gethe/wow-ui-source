@@ -1194,9 +1194,9 @@ local function Register()
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatFPS);
 
 		local initializer = CreateSettingsCheckBoxSliderInitializer(
-			fpsSetting, MAXFPS_CHECK, OPTION_MAXFPS_CHECK,
-			fpsSliderSetting, options, MAXFPS_CHECK, OPTION_MAXFPS_CHECK);
-		initializer:AddSearchTags(MAXFPS_CHECK);
+			fpsSetting, MAXFPS, OPTION_MAXFPS_CHECK,
+			fpsSliderSetting, options, MAXFPS, OPTION_MAXFPS_CHECK);
+		initializer:AddSearchTags(MAXFPS);
 		layout:AddInitializer(initializer);
 	end
 

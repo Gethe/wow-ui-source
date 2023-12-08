@@ -42,20 +42,14 @@ function AuraUtil.FindAura(predicate, unit, filter, predicateArg1, predicateArg2
 	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataByIndex(unit, auraIndex, filter)));
 end
 
-do
-	local function NamePredicate(auraNameToFind, _, _, auraName)
-		return auraNameToFind == auraName;
-	end
-
-	-- Finds the first aura that matches the name
-	-- Notes:
-	--		aura names are not unique!
-	--		aura names are localized, what works in one locale might not work in another
-	--			consider that in English two auras might have different names, but once localized they have the same name, so even using the localized aura name in a search it could result in different behavior
-	--		the unit could have multiple auras with the same name, this will only find the first
-	function AuraUtil.FindAuraByName(auraName, unit, filter)
-		return AuraUtil.FindAura(NamePredicate, unit, filter, auraName);
-	end
+-- Finds the first aura that matches the name
+-- Notes:
+--		aura names are not unique!
+--		aura names are localized, what works in one locale might not work in another
+--			consider that in English two auras might have different names, but once localized they have the same name, so even using the localized aura name in a search it could result in different behavior
+--		the unit could have multiple auras with the same name, this will only find the first
+function AuraUtil.FindAuraByName(auraName, unit, filter)
+	return AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataBySpellName(unit, auraName, filter));
 end
 
 do

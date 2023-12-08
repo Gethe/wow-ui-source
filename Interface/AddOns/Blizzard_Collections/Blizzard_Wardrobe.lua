@@ -2596,6 +2596,10 @@ function WardrobeItemsModelMixin:GetSourceInfoForTracking()
 end
 
 function WardrobeItemsModelMixin:OnMouseDown(button)
+	if ( not self.visualInfo ) then
+		return;
+	end
+
 	local itemsCollectionFrame = self:GetParent();
 	local isChatLinkClick = IsModifiedClick("CHATLINK");
 	if ( isChatLinkClick ) then

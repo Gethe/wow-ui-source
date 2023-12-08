@@ -30,7 +30,7 @@ end
 function PerksProgramProductsFrameMixin:Init()
 	local scrollContainer = self.ProductsScrollBoxContainer;
 
-	local DefaultPad = 0;
+	local DefaultPad = 5;
 	local DefaultSpacing = 1;
 
 	local function InitializeHeader(frame, headerInfo)
@@ -199,12 +199,20 @@ end
 local function GetDefaultActorInfo(modelSceneID, playerRaceName, playerRaceNameActorTag)
 	local _, _, defaultActorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
 	if #defaultActorIDs > 0 then
+		local returnActorInfo;
 		for i, defaultActorID in ipairs(defaultActorIDs) do
 			local tempActorInfo = C_ModelInfo.GetModelSceneActorInfoByID(defaultActorID);
-			if tempActorInfo.scriptTag == playerRaceNameActorTag or tempActorInfo.scriptTag == playerRaceName then
+			
+			if tempActorInfo.scriptTag == playerRaceNameActorTag then
 				return tempActorInfo;
 			end
+
+			if tempActorInfo.scriptTag == playerRaceName then
+				returnActorInfo = tempActorInfo;
+			end
 		end
+
+		return returnActorInfo;
 	end
 end
 

@@ -70,7 +70,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true },
+				{ Name = "category", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -166,7 +166,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
 			},
 
 			Returns =
@@ -199,7 +199,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
 			},
 
 			Returns =
@@ -213,7 +213,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
 			},
 
 			Returns =
@@ -237,7 +237,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true },
+				{ Name = "category", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{

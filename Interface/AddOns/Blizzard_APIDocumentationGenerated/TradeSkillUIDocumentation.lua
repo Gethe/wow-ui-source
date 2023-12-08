@@ -1158,6 +1158,10 @@ local TradeSkillUI =
 			Name = "TradeSkillFavoritesChanged",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_FAVORITES_CHANGED",
+			Payload =
+			{
+				{ Name = "isFavorite", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "TradeSkillItemCraftedResult",

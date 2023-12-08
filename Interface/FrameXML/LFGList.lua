@@ -58,12 +58,6 @@ LFG_LIST_GROUP_DATA_ATLASES = {
 	DAMAGER = GetMicroIconForRole("DAMAGER"),
 };
 
-local LFG_LIST_GROUP_DATA_ATLASES_BORDERLESS = {
-	TANK = "groupfinder-icon-role-micro-tank",
-	HEALER = "groupfinder-icon-role-micro-heal",
-	DAMAGER = "groupfinder-icon-role-micro-dps",
-}
-
 local LFG_STRING_FROM_ENUM = {
 	[Enum.LFGRole.Tank] = "TANK",
 	[Enum.LFGRole.Healer] = "HEALER",
@@ -1436,8 +1430,7 @@ function LFGListApplicationViewer_UpdateGroupData(self)
 	end
 
 	local data = GetGroupMemberCountsForDisplay();
-	local disabled, showClassesByRole = false, false;
-	LFGListGroupDataDisplay_Update(self.DataDisplay, activeEntryInfo.activityID, data, disabled, showClassesByRole);
+	LFGListGroupDataDisplay_Update(self.DataDisplay, activeEntryInfo.activityID, data);
 end
 
 function LFGListApplicationViewer_UpdateInfo(self)
@@ -2571,8 +2564,7 @@ function LFGListSearchEntry_Update(self)
 	self.VoiceChat.tooltip = searchResultInfo.voiceChat;
 
 	local displayData = C_LFGList.GetSearchResultMemberCounts(resultID);
-	local showClassesByRole = true;
-	LFGListGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityID, displayData, searchResultInfo.isDelisted, showClassesByRole);
+	LFGListGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityID, displayData, searchResultInfo.isDelisted);
 
 	local nameWidth = isApplication and 165 or 176;
 	if ( searchResultInfo.voiceChat ~= "" ) then
@@ -2929,7 +2921,7 @@ end
 -------------------------------------------------------
 ----------Group Data Display functions
 -------------------------------------------------------
-function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled, showClassesByRole)
+function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled)
 	local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 	if(not activityInfo) then
 		return;
@@ -2943,12 +2935,12 @@ function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled,
 		self.RoleCount:Hide();
 		self.Enumerate:Show();
 		self.PlayerCount:Hide();
-		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_ROLE_ORDER, showClassesByRole);
+		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_ROLE_ORDER);
 	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.ClassEnumerate ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Show();
 		self.PlayerCount:Hide();
-		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER, showClassesByRole);
+		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, activityInfo.maxNumPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER);
 	elseif ( activityInfo.displayType == Enum.LFGListDisplayType.PlayerCount ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
@@ -2986,19 +2978,15 @@ function LFGListGroupDataDisplayRoleCount_Update(self, displayData, disabled)
 	self.DamagerIcon:SetAlpha(disabled and 0.5 or 0.70);
 end
 
-function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, disabled, iconOrder, showClassesByRole)
-
+function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, disabled, iconOrder)
 	--Show/hide the required icons
 	for i=1, #self.Icons do
-		local icon = self.Icons[i];
 		if ( i > numPlayers ) then
-			icon:Hide();
+			self.Icons[i]:Hide();
 		else
-			icon:Show();
-			for _, texture in ipairs(icon.Textures) do
-				texture:SetDesaturated(disabled);
-				texture:SetAlpha(disabled and 0.5 or 1.0);
-			end
+			self.Icons[i]:Show();
+			self.Icons[i]:SetDesaturated(disabled);
+			self.Icons[i]:SetAlpha(disabled and 0.5 or 1.0);
 		end
 	end
 
@@ -3006,47 +2994,16 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 	local iconIndex = numPlayers;
 	for i=1, #iconOrder do
 		for j=1, displayData[iconOrder[i]] do
-			local role = iconOrder[i];
-			if not showClassesByRole then
-				local icon = self.Icons[iconIndex];
-				icon.RoleIconWithBackground:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role], false);
-				icon.RoleIcon:Hide();
-				icon.ClassCircle:Hide();
-
-				iconIndex = iconIndex - 1;
-				if ( iconIndex < 1 ) then
-					return;
-				end
-			else
-				local classesByRole = displayData.classesByRole[role];
-				for class, num in pairs(classesByRole) do
-					local r, g, b = GetClassColor(class);
-					for k=1, num do
-						local icon = self.Icons[iconIndex];
-						icon.RoleIconWithBackground:Hide();
-						icon.RoleIcon:Show();
-						icon.RoleIcon:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES_BORDERLESS[role], false);
-						icon.ClassCircle:Show();
-						icon.ClassCircle:SetAtlas("groupfinder-icon-class-color-"..class, false);
-					
-						iconIndex = iconIndex - 1;
-						if ( iconIndex < 1 ) then
-							return;
-						end
-					end
-				end
+			self.Icons[iconIndex]:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[iconOrder[i]], false);
+			iconIndex = iconIndex - 1;
+			if ( iconIndex < 1 ) then
+				return;
 			end
-
 		end
 	end
 
 	for i=1, iconIndex do
-		local icon = self.Icons[i];
-		icon:Show();
-		icon.RoleIconWithBackground:Show();
-		icon.RoleIconWithBackground:SetAtlas("groupfinder-icon-emptyslot", false);
-		icon.ClassCircle:Hide();
-		icon.RoleIcon:Hide();
+		self.Icons[i]:SetAtlas("groupfinder-icon-emptyslot", false);
 	end
 end
 

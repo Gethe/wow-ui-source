@@ -811,8 +811,9 @@ local function CreateChargeCooldownFrame(parent)
 	local cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numChargeCooldowns, parent, "CooldownFrameTemplate");
 	cooldown:SetHideCountdownNumbers(true);
 	cooldown:SetDrawSwipe(false);
-	cooldown:SetPoint("TOPLEFT", parent.icon, "TOPLEFT", 2, -2);
-	cooldown:SetPoint("BOTTOMRIGHT", parent.icon, "BOTTOMRIGHT", -2, 2);
+	local icon = parent.Icon or parent.icon;
+	cooldown:SetPoint("TOPLEFT", icon, "TOPLEFT", 2, -2);
+	cooldown:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", -2, 2);
 	cooldown:SetFrameLevel(parent:GetFrameLevel());
 	return cooldown;
 end
@@ -1483,7 +1484,7 @@ end
 BaseActionButtonMixin = {}
 
 function BaseActionButtonMixin:BaseActionButtonMixin_OnLoad()
-	self:UpdateButtonArt(self.isLastActionButton);
+	self:UpdateButtonArt();
 
 	self.NormalTexture:SetDrawLayer("OVERLAY");
 	self.PushedTexture:SetDrawLayer("OVERLAY");
@@ -1507,35 +1508,12 @@ function BaseActionButtonMixin:SetShowGrid(showGrid, reason)
 	end
 end
 
-function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
+function BaseActionButtonMixin:UpdateButtonArt()
 	if (not self.SlotArt or not self.SlotBackground) then
 		return;
 	end
 
-	local function SetDividerShown(shown)
-		if (not self.RightDivider or not self.BottomDivider) then
-			return;
-		end
-
-		-- Don't show dividers if we have multiple rows or any extra padding
-		if (not self.bar or not shown or self.bar.numRows > 1 or self.bar.buttonPadding > self.bar.minButtonPadding) then
-			self.RightDivider:Hide();
-			self.BottomDivider:Hide();
-			return;
-		end
-
-		-- Right now buttons are only added to the right for horizontal and below for vertical
-		if (self.bar.isHorizontal) then
-			self.RightDivider:Show();
-			self.BottomDivider:Hide();
-		else
-			self.RightDivider:Hide();
-			self.BottomDivider:Show();
-		end
-	end
-
-	if (self.showButtonArt) then
-		SetDividerShown(not hideDivider);
+	if (self.bar and not self.bar.hideBarArt) then
 		self.SlotArt:Show();
 		self.SlotBackground:Hide();
 
@@ -1547,7 +1525,6 @@ function BaseActionButtonMixin:UpdateButtonArt(hideDivider)
 		self.PushedTexture:SetDrawLayer("OVERLAY");
 		self.PushedTexture:SetSize(46, 45);
 	else
-		SetDividerShown(false);
 		self.SlotArt:Hide();
 		self.SlotBackground:Show();
 
@@ -1601,8 +1578,8 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.cooldown:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -1, 1);
 end
 
-function SmallActionButtonMixin:UpdateButtonArt(hideDivider)
-	BaseActionButtonMixin.UpdateButtonArt(self, hideDivider);
+function SmallActionButtonMixin:UpdateButtonArt()
+	BaseActionButtonMixin.UpdateButtonArt(self);
 
 	-- Gotta set these texture sizes here since BaseActionButtonMixin.UpdateButtonArt changes their size
 	self.NormalTexture:SetSize(35, 35);

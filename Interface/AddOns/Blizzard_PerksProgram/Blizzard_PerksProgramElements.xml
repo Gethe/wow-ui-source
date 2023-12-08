@@ -576,6 +576,66 @@
 		</Scripts>
 	</Frame>
 
+	<Button name="PerksProgramDetailsFrameScrollButtonTemplate" mixin="PerksProgramSetDetailsItemMixin" virtual="true">
+		<Size x="200" y="84" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTexture" atlas="petlist-buttonbackground" alphaMode="BLEND" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="LEFT" x="16" y=""/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" atlas="petlist-buttonselect" hidden="true" alphaMode="ADD" setAllPoints="true"/>
+				<Texture parentKey="HighlightTexture" atlas="petlist-buttonhighlight" hidden="true" alphaMode="ADD" setAllPoints="true"/>
+				
+				<Texture parentKey="IconBorder" atlas="loottoast-itemborder-green">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ItemSlotLeft" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="70" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="8" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ItemSlotRight" inherits="GameFontNormal" justifyH="RIGHT">
+					<Size x="70" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemSlotLeft" relativePoint="TOPRIGHT" x="6" y="0"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Size x="160" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemSlotLeft" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						<Anchor point="TOPRIGHT" relativePoint="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay">
+					<Size x="56" y="56"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
 	<Button name="PerksModelSceneControlButtonTemplate" mixin="PerksModelSceneControlButtonMixin" virtual="true">
 		<Size x="48" y="48"/>
 		<KeyValues>

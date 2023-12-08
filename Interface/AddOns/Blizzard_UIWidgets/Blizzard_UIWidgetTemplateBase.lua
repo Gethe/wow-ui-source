@@ -1360,8 +1360,8 @@ end
 function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconInfo, shouldGlow, glowAnimType)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 
-	if not self.continuableContainer then
-		self.continuableContainer = ContinuableContainer:Create();
+	if self.continuableContainer then
+		self.continuableContainer:Cancel();
 	end
 
 	SetupTextureKitOnRegions(textureKit, self, iconTextureKitRegions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
@@ -1389,15 +1389,26 @@ function UIWidgetBaseIconTemplateMixin:Setup(widgetContainer, textureKit, iconIn
 
 	if iconInfo.sourceType == Enum.WidgetIconSourceType.Spell then
 		local iconTexture = select(3, GetSpellInfo(iconInfo.sourceID));
-		self.Icon:SetTexture(iconTexture);
-	else
-		local item = Item:CreateFromItemID(iconInfo.sourceID);
-		self.continuableContainer:AddContinuable(item);
-
-		self.continuableContainer:ContinueOnLoad(function()
-			local iconTexture = select(10, GetItemInfo(iconInfo.sourceID));
+		if iconTexture then
 			self.Icon:SetTexture(iconTexture);
-		end);
+			self:Show();
+		else
+			self:Hide();
+		end
+	else
+		self:Hide();
+		if iconInfo.sourceID > 0 then
+			local item = Item:CreateFromItemID(iconInfo.sourceID);
+
+			self.continuableContainer = ContinuableContainer:Create();
+			self.continuableContainer:AddContinuable(item);
+
+			self.continuableContainer:ContinueOnLoad(function()
+				local iconTexture = select(10, GetItemInfo(iconInfo.sourceID));
+				self.Icon:SetTexture(iconTexture);
+				self:Show();
+			end);
+		end
 	end
 	self.iconInfo = iconInfo;
 
