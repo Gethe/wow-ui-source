@@ -311,6 +311,7 @@ function ContainerFrame_OnShow(self)
 	end
 
 	ContainerFrame_RefreshRuneIcons(self, C_Engraving.GetEngravingModeEnabled());
+	ContainerFrame_EngravingTargetingModeChanged(self, C_Engraving.GetCurrentRuneCast() ~= nil);
 end
 
 function OpenBag(id, force)

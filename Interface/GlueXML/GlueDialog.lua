@@ -355,6 +355,15 @@ GlueDialogTypes["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	anchorOffsetY = 150,
 }
 
+GlueDialogTypes["REALM_IS_LOCKED"] = {
+	text = CHAR_CREATE_ONLY_EXISTING,
+	button1 = CONTINUE,
+	button2 = CANCEL,
+	OnAccept = function()
+		RealmList_OnConnectToRealm();
+	end
+}
+
 function GlueDialog_Queue(which, text, data)
 	table.insert(QUEUED_GLUE_DIALOGS, {which = which, text = text, data = data});
 end

@@ -137,6 +137,11 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		Settings.SetupCVarCheckBox(category, "showTargetCastbar", SHOW_ENEMY_CASTBARS, OPTION_TOOLTIP_SHOW_ENEMY_CASTBARS);		
 	end
 
+	--Show active player debuffs larger on target
+	if GetClassicExpansionLevel() == LE_EXPANSION_CLASSIC then
+		Settings.SetupCVarCheckBox(category, "showDynamicBuffSize", SHOW_DYNAMIC_BUFF_SIZE, OPTION_TOOLTIP_SHOW_DYNAMIC_BUFF_SIZE);		
+	end
+
 	if C_Engraving.IsEngravingEnabled() then
 		Settings.SetupCVarCheckBox(category, "alwaysShowRuneIcons", ALWAYS_SHOW_RUNE_ICONS, OPTION_TOOLTIP_ALWAYS_SHOW_RUNE_ICONS);		
 	end

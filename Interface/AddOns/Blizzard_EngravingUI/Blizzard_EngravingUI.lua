@@ -17,7 +17,6 @@ function EngravingFrame_OnShow (self)
 	SetUIPanelAttribute(CharacterFrame, "width", 560);
 	UpdateUIPanelPositions(CharacterFrame);
 
-	OpenAllBags(self);
 	C_Engraving.RefreshRunesList();
 	C_Engraving.SetSearchFilter("");
 
@@ -37,7 +36,6 @@ function EngravingFrame_OnHide (self)
 	UpdateUIPanelPositions(CharacterFrame);
 
 	C_Engraving.SetEngravingModeEnabled(false);
-	CloseAllBags(self);
 end
 
 function EngravingFrame_OnEvent(self, event, ...)
