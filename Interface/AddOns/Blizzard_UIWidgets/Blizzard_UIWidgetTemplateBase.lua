@@ -1128,6 +1128,7 @@ local normalFonts =
 	[Enum.UIWidgetTextSizeType.Small12Pt]	= "SystemFont_Med1",
 	[Enum.UIWidgetTextSizeType.Standard14Pt]= "SystemFont_Med3",
 	[Enum.UIWidgetTextSizeType.Medium16Pt]	= "SystemFont_Large",
+	[Enum.UIWidgetTextSizeType.Medium18Pt]	= "SystemFont_Large2",
 	[Enum.UIWidgetTextSizeType.Large20Pt]	= "SystemFont_Huge1",
 	[Enum.UIWidgetTextSizeType.Large24Pt]	= "SystemFont_Huge2",
 	[Enum.UIWidgetTextSizeType.Huge27Pt]	= "SystemFont_Huge4",
@@ -1140,6 +1141,7 @@ local shadowFonts =
 	[Enum.UIWidgetTextSizeType.Small12Pt]	= "SystemFont_Shadow_Med1",
 	[Enum.UIWidgetTextSizeType.Standard14Pt]= "SystemFont_Shadow_Med3",
 	[Enum.UIWidgetTextSizeType.Medium16Pt]	= "SystemFont_Shadow_Large",
+	[Enum.UIWidgetTextSizeType.Medium18Pt]	= "SystemFont_Shadow_Large2",
 	[Enum.UIWidgetTextSizeType.Large20Pt]	= "SystemFont_Shadow_Huge1",
 	[Enum.UIWidgetTextSizeType.Large24Pt]	= "SystemFont_Shadow_Huge2",
 	[Enum.UIWidgetTextSizeType.Huge27Pt]	= "SystemFont_Shadow_Huge4",
@@ -1152,6 +1154,7 @@ local outlineFonts =
 	[Enum.UIWidgetTextSizeType.Small12Pt]	= "SystemFont_Shadow_Med1_Outline",
 	[Enum.UIWidgetTextSizeType.Standard14Pt]= "SystemFont_Shadow_Med3_Outline",
 	[Enum.UIWidgetTextSizeType.Medium16Pt]	= "SystemFont_Shadow_Large_Outline",
+	[Enum.UIWidgetTextSizeType.Medium18Pt]	= "SystemFont_Shadow_Large2_Outline",
 	[Enum.UIWidgetTextSizeType.Large20Pt]	= "SystemFont_Shadow_Huge1_Outline",
 	[Enum.UIWidgetTextSizeType.Large24Pt]	= "SystemFont_Shadow_Huge2_Outline",
 	[Enum.UIWidgetTextSizeType.Huge27Pt]	= "SystemFont_Shadow_Huge4_Outline",
@@ -1182,7 +1185,10 @@ function UIWidgetBaseTextMixin:Setup(text, fontType, textSizeType, enabledState,
 	self:SetFontObject(GetTextFont(fontType, textSizeType));
 	self:SetJustifyH(GetJustifyH(hAlignType))
 	self:SetText(text);
-	self:SetEnabledState(enabledState);
+
+	if enabledState then
+		self:SetEnabledState(enabledState);
+	end
 end
 
 
@@ -1236,6 +1242,8 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 
 	self.EarnedCheck:SetShown(itemInfo.showAsEarned);
 
+	local LEFT_ALIGN = Enum.WidgetTextHorizontalAlignmentType.Left;
+
 	local widgetWidth, widgetHeight;
 	if itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.WorldQuestReward then
 		self.ItemName:Hide()
@@ -1265,7 +1273,7 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.ItemName:ClearAllPoints();
 		self.ItemName:SetPoint("TOPLEFT", self.NameFrame, "TOPLEFT", 4, -2);
 		self.ItemName:SetPoint("BOTTOMRIGHT", self.NameFrame, "BOTTOMRIGHT", -4, 2);
-		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
+		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, nil, LEFT_ALIGN);
 		self.ItemName:Show();
 
 		widgetWidth = iconSize + nameFrameWidth + 2;
@@ -1281,7 +1289,7 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.ItemName:ClearAllPoints();
 		self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
 		self.ItemName:SetSize(itemNameWidth, iconSize);
-		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
+		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, nil, LEFT_ALIGN);
 		self.ItemName:Show();
 
 		widgetWidth = iconSize + self.ItemName:GetWidth() + 10;
@@ -1296,13 +1304,12 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.ItemName:ClearAllPoints();
 		self.ItemName:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
 		self.ItemName:SetSize(textWidth, 0);
-		self.ItemName:SetText(itemInfo.overrideItemName or itemName);
+		self.ItemName:Setup(itemInfo.overrideItemName or itemName, itemInfo.itemNameTextFontType, itemInfo.itemNameTextSizeType, nil, LEFT_ALIGN);
 		self.ItemName:Show();
 
 		if itemInfo.infoText then
 			self.InfoText:SetSize(textWidth, 0);
-			self.InfoText:SetText(itemInfo.infoText);
-			self.InfoText:SetEnabledState(itemInfo.infoTextEnabledState);
+			self.InfoText:Setup(itemInfo.infoText, itemInfo.infoTextFontType, itemInfo.infoTextSizeType, itemInfo.infoTextEnabledState, LEFT_ALIGN);
 			self.InfoText:Show();
 
 			widgetWidth = iconSize + self.InfoText:GetWidth() + 10;

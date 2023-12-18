@@ -2543,6 +2543,10 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonMissionSorter(mission1, mission2)
+	if (mission1.isBuilding ~= mission2.isBuilding ) then
+		return mission1.isBuilding;
+	end
+
 	if ( mission1.followerTypeID ~= mission2.followerTypeID ) then
 		return mission1.followerTypeID > mission2.followerTypeID;
 	end

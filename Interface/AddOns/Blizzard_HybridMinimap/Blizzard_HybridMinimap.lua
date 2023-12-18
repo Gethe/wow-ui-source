@@ -66,18 +66,23 @@ function HybridMinimapMixin:CheckMap()
 	if not mapID then
 		self:Hide();
 	elseif mapID ~= self.mapID then
-		self:SetMapID(mapID);
-		self:Show();
+		local show = self:SetMapID(mapID);
+		self:SetShown(show);
 	end
 end
 
 function HybridMinimapMixin:SetMapID(mapID)
 	self.mapID = mapID;
 	local layers = C_Map.GetMapArtLayers(self.mapID);
-	self.contentWidth = layers[1].layerWidth;
-	self.contentHeight = layers[1].layerHeight;
-	self.MapCanvas:SetMapID(mapID);
-	self:UpdateZoom();
+	if layers then
+		self.contentWidth = layers[1].layerWidth;
+		self.contentHeight = layers[1].layerHeight;
+		self.MapCanvas:SetMapID(mapID);
+		self:UpdateZoom();
+		return true;
+	else
+		return false;
+	end
 end
 
 function HybridMinimapMixin:GetMapID()

@@ -1047,45 +1047,32 @@ function EditModeManagerFrameMixin:ShouldShowSnapPreviewLines()
 	return self:IsSnapEnabled() and self.snapPreviewFrame;
 end
 
-local function RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor)
-	if magneticFrameInfo and lineAnchor then
-		line:Setup(magneticFrameInfo, lineAnchor);
-	else
-		line:Hide();
-	end
-end
-
 function EditModeManagerFrameMixin:RefreshSnapPreviewLines()
+	self:HideSnapPreviewLines();
+
 	if not self:ShouldShowSnapPreviewLines() then
 		return;
 	end
 
-	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo = EditModeMagnetismManager:GetMagneticFrameInfo(self.snapPreviewFrame);
-
-	-- Setup first preview line using primary MagneticFrameInfo and first line anchor we get from it
-	local line = self.MagnetismPreviewLinesContainer.lines[1];
-	local lineAnchors = primaryMagneticFrameInfo and line:GetLineAnchors(primaryMagneticFrameInfo) or {};
-	local lineAnchor = lineAnchors[1];
-	RefreshSnapPreviewLine(line, primaryMagneticFrameInfo, lineAnchor);
-
-	-- Setup second preview line using either primary or secondary MagneticFrameInfo
-	-- If our primary MagneticFrameInfo has a second line anchor then use that
-	-- Otherwise, if possible, get the line anchor using the secondary MagneticFrameInfo
-	line = self.MagnetismPreviewLinesContainer.lines[2];
-	local magneticFrameInfo = primaryMagneticFrameInfo;
-	lineAnchor = lineAnchors[2];
-	if not lineAnchor and secondaryMagneticFrameInfo then
-		lineAnchors = line:GetLineAnchors(secondaryMagneticFrameInfo);
-
-		magneticFrameInfo = secondaryMagneticFrameInfo;
-		lineAnchor = lineAnchors[1];
+	if not self.magnetismPreviewLinesPool then
+		self.magnetismPreviewLinePool = EditModeUtil.CreateLinePool(self.MagnetismPreviewLinesContainer, "MagnetismPreviewLineTemplate");
 	end
-	RefreshSnapPreviewLine(line, magneticFrameInfo, lineAnchor);
+
+	local magneticFrameInfos = EditModeMagnetismManager:GetMagneticFrameInfos(self.snapPreviewFrame);
+	if magneticFrameInfos then
+		for _, magneticFrameInfo in ipairs(magneticFrameInfos) do
+			local lineAnchors = EditModeMagnetismManager:GetPreviewLineAnchors(magneticFrameInfo);
+			for _, lineAnchor in ipairs(lineAnchors) do
+				local line = self.magnetismPreviewLinePool:Acquire();
+				line:Setup(magneticFrameInfo, lineAnchor);
+			end
+		end
+	end
 end
 
 function EditModeManagerFrameMixin:HideSnapPreviewLines()
-	for _, line in ipairs(self.MagnetismPreviewLinesContainer.lines) do
-		line:Hide();
+	if self.magnetismPreviewLinePool then
+		self.magnetismPreviewLinePool:ReleaseAll();
 	end
 end
 
@@ -1462,18 +1449,7 @@ end
 EditModeGridMixin = {}
 
 function EditModeGridMixin:OnLoad()
-	local function resetLine(pool, line)
-		line:Hide();
-		line:ClearAllPoints();
-	end
-
-	self.linePool = CreateObjectPool(
-		function(pool)
-			return self:CreateLine(nil, nil, "EditModeGridLineTemplate");
-		end,
-
-		resetLine
-	);
+	self.linePool = EditModeUtil.CreateLinePool(self, "EditModeGridLineTemplate");
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
@@ -2415,7 +2391,7 @@ end
 function EditModeManagerTutorialMixin:BeginHelpTips()
 	-- Expand the account setttings for the help tips
 	local expanded = true;
-	local isUserInput = true;
+	local isUserInput = false;
 	EditModeManagerFrame.AccountSettings:SetExpandedState(expanded, isUserInput)
 
 	self.currentTipIndex = 1;

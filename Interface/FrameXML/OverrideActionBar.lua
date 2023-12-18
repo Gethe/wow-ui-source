@@ -193,13 +193,13 @@ end
 
 
 function OverrideActionBarMixin:GetMicroButtonAnchor()
-	local x, y = 536, 7;
+	local x, y = 648, 14;
 	if self.HasExit and self.HasPitch then
-		x = 621;
+		x = 746;
 	elseif self.HasPitch then
-		x = 624;
+		x = 749;
 	elseif self.HasExit then
-		x = 532;
+		x = 643;
 	end
 	return x,y
 end

@@ -690,6 +690,7 @@ end
 
 function PerksProgramModelSceneContainerFrameMixin:PlayerTryOnOverrideSet(selectedItems)
 	if self.playerActor.dressed then
+		self.playerActor:Undress();
 		self.playerActor:Dress();
 		self.playerActor:UndressSlot(INVSLOT_MAINHAND);
 		self.playerActor:UndressSlot(INVSLOT_OFFHAND);

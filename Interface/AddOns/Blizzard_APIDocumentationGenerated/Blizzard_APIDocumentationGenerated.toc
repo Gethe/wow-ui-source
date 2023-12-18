@@ -206,6 +206,7 @@ UITimerDocumentation.lua
 UIWidgetManagerDocumentation.lua
 URLDocumentation.lua
 UnitDocumentation.lua
+UnitAuraDocumentation.lua
 UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
@@ -287,7 +288,6 @@ TransmogSetsDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIModifiedInstanceDocumentation.lua
-UnitAuraDocumentation.lua
 WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
 ZoneAbilityDocumentation.lua
@@ -373,6 +373,7 @@ UITextureAssetSharedDocumentation.lua
 UITextureConstantsDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
 UiModelSceneConstantsDocumentation.lua
+UnitConstantsDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua
@@ -397,5 +398,4 @@ QuestConstants_MainlineDocumentation.lua
 SoulbindsConstantsDocumentation.lua
 SuperTrackManagerSharedDocumentation.lua
 TransmogConstantsDocumentation.lua
-UnitConstantsDocumentation.lua
 # End documentation files here

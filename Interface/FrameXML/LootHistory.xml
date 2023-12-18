@@ -21,6 +21,16 @@ UI_shared.xsd">
 					<Anchor point="LEFT" x="6" y="0"/>
 				</Anchors>
 			</ItemButton>
+			<Frame parentKey="BackgroundArtFrame" setAllPoints="true" frameLevel="400">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="NameFrame" atlas="looting_itemcard_bg" useAtlasSize="false" setAllPoints="true"/>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="BorderFrame" atlas="lootroll-itementry-background" useAtlasSize="false" setAllPoints="false"/>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="WinningRollInfo">
 				<Size x="1" y="1"/>
 				<Anchors>
@@ -118,9 +128,6 @@ UI_shared.xsd">
 			</Frame>
 		</Frames>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="NameFrame" atlas="looting_itemcard_bg" useAtlasSize="false" setAllPoints="true"/>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="ItemName" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 					<Size x="150" y="32"/>
@@ -128,9 +135,6 @@ UI_shared.xsd">
 						<Anchor point="TOPLEFT" relativeKey="$parent.Item" relativePoint="TOPRIGHT" x="6" y="-2"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="BorderFrame" atlas="lootroll-itementry-background" useAtlasSize="false" setAllPoints="false"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -273,7 +277,7 @@ UI_shared.xsd">
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Frames>
-					<Frame parentKey="PerfectRollFrame" setAllPoints="true" frameLevel="400">
+					<Frame parentKey="PerfectRollFrame" setAllPoints="true" frameLevel="450">
 						<Size x="128" y="128"/>
 						<Anchors>
 							<Anchor point="CENTER"/>

@@ -3601,8 +3601,8 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	end
 
 	if ( searchResultInfo.leaderName ) then
-		if(searchResultInfo.leaderFactionGroup and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then
-			local factionString = FACTION_STRINGS[searchResultInfo.leaderFactionGroup];
+		local factionString = searchResultInfo.leaderFactionGroup and FACTION_STRINGS[searchResultInfo.leaderFactionGroup];
+		if(factionString and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then
 			tooltip:AddLine(LFG_LIST_TOOLTIP_LEADER_FACTION:format(searchResultInfo.leaderName, factionString))
 		else
 			tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));

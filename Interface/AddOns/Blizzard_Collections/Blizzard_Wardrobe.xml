@@ -337,19 +337,18 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="AlertTrackingFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertTrackingFeatureMixin" virtual="true">
-		<Size x="1" y="1"/>
-	</Frame>
-
 	<Frame name="TrackingInterfaceShortcutsFrame" hidden="true">
 		<Size x="226" y="40"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="HeaderText" inherits="GameFontHighlightLeft" text="WARDROBE_SHORTCUTS_TUTORIAL_2" justifyH="LEFT" justifyV="TOP">
-					<Size x="0" y="0"/>
+					<Size x="196" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
 				</FontString>
 				<FontString parentKey="Text" inherits="GameFontHighlightLeft" text="WARDROBE_SHORTCUTS_TUTORIAL_3" justifyH="LEFT" justifyV="TOP">
-					<Size x="0" y="0"/>
+					<Size x="196" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="-1"/>
 						<Anchor point="LEFT" relativeKey="$parent.HeaderText" relativePoint="LEFT"/>
@@ -357,13 +356,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="NewAlert" inherits="AlertTrackingFeatureTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.HeaderText" relativePoint="RIGHT" x="17"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 	</Frame>
 
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">

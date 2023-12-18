@@ -215,6 +215,8 @@ function TutorialSingleKeyMixin:SetKeyText(keyText)
 end
 
 function TutorialSingleKeyMixin:_SetContent(content)
+	content = content or self.DesiredContent;
+	self.DesiredContent = nil;
 	self:SetKeyText(content.keyText);
 
 	local text = self.ContainerFrame.Text;

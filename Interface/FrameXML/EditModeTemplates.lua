@@ -263,47 +263,10 @@ MagnetismPreviewLineMixin = {};
 
 local magnetismPreviewLinePixelWidth = 1.5;
 
-local MagnetismPreviewLineAnchorsEnum = {
-	Top = 1,
-	Bottom = 2,
-	Left = 3,
-	Right = 4,
-	CenterHorizontal = 5,
-	CenterVertical = 6,
-};
-
-function MagnetismPreviewLineMixin:GetLineAnchors(magneticFrameInfo)
-	local relativePoint = magneticFrameInfo.relativePoint;
-
-	local anchors = {};
-	if string.find(relativePoint, "CENTER") then
-		if magneticFrameInfo.isHorizontal then
-			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.CenterVertical);
-		else
-			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.CenterHorizontal);
-		end
-	else
-		if string.find(relativePoint, "TOP") then
-			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Top);
-		end
-		if string.find(relativePoint, "BOTTOM") then
-			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Bottom);
-		end
-		if string.find(relativePoint, "LEFT") then
-			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Left);
-		end
-		if string.find(relativePoint, "RIGHT") then
-			table.insert(anchors, MagnetismPreviewLineAnchorsEnum.Right);
-		end
-	end
-
-	return anchors;
-end
-
 function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
 	local uiParentWidth, uiParentHeight, uiParentCenterX, uiParentCenterY = EditModeMagnetismManager.uiParentWidth, EditModeMagnetismManager.uiParentHeight, EditModeMagnetismManager.uiParentCenterX, EditModeMagnetismManager.uiParentCenterY;
 	local relativeTo = magneticFrameInfo.frame;
-	local isLineAnchoringHorizontally = lineAnchor == MagnetismPreviewLineAnchorsEnum.Top or lineAnchor == MagnetismPreviewLineAnchorsEnum.Bottom or  lineAnchor == MagnetismPreviewLineAnchorsEnum.CenterHorizontal;
+	local isLineAnchoringHorizontally = lineAnchor == "Top" or lineAnchor == "Bottom" or lineAnchor == "CenterHorizontal";
 
 	local startPoint, endPoint;
 	if isLineAnchoringHorizontally then
@@ -314,18 +277,21 @@ function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
 
 	local offsetX, offsetY = 0, 0;
 	if relativeTo == UIParent then
-		-- RelativeTo is a grid line
-		-- If anchor is CenterHorizontal or CenterVertical then leave offsets at 0, 0
-		-- Otherwise we have to adjust offsets to put line on top of the grid line we're anchoring to
-		if lineAnchor == MagnetismPreviewLineAnchorsEnum.Top or lineAnchor == MagnetismPreviewLineAnchorsEnum.Bottom then
-			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Top then
+		-- RelativeTo is UIParent
+		-- We have to adjust offsets to put line on top of the grid line we're anchoring to
+		if lineAnchor == "CenterHorizontal" then
+			offsetY = magneticFrameInfo.offset;
+		elseif lineAnchor == "CenterVertical" then
+			offsetX = magneticFrameInfo.offset;
+		elseif lineAnchor == "Top" or lineAnchor == "Bottom" then
+			if lineAnchor == "Top" then
 				offsetY = uiParentHeight + magneticFrameInfo.offset;
 			else -- Bottom
 				offsetY = magneticFrameInfo.offset;
 			end
 			offsetY = offsetY - uiParentCenterY;
-		elseif lineAnchor == MagnetismPreviewLineAnchorsEnum.Right or lineAnchor == MagnetismPreviewLineAnchorsEnum.Left then
-			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Right then
+		elseif lineAnchor == "Right" or lineAnchor == "Left" then
+			if lineAnchor == "Right" then
 				offsetX = uiParentWidth + magneticFrameInfo.offset;
 			else -- Left
 				offsetX = magneticFrameInfo.offset;
@@ -341,17 +307,17 @@ function MagnetismPreviewLineMixin:Setup(magneticFrameInfo, lineAnchor)
 		relativeToCenterX, relativeToCenterY = relativeTo:GetScaledSelectionCenter();
 
 		if isLineAnchoringHorizontally then
-			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Top then
+			if lineAnchor == "Top" then
 				offsetY = relativeToTop - uiParentCenterY;
-			elseif lineAnchor == MagnetismPreviewLineAnchorsEnum.Bottom then
+			elseif lineAnchor == "Bottom" then
 				offsetY = relativeToBottom - uiParentCenterY;
 			else -- CenterHorizontal
 				offsetY = relativeToCenterY - uiParentCenterY;
 			end
 		else -- isVerticalAnchor
-			if lineAnchor == MagnetismPreviewLineAnchorsEnum.Left then
+			if lineAnchor == "Left" then
 				offsetX = relativeToLeft - uiParentCenterX;
-			elseif lineAnchor == MagnetismPreviewLineAnchorsEnum.Right then
+			elseif lineAnchor == "Right" then
 				offsetX = relativeToRight - uiParentCenterX;
 			else -- CenterVertical
 				offsetX = relativeToCenterX - uiParentCenterX;

@@ -78,7 +78,7 @@ local scenarioTextureKitOffsets = {
 };
 
 local eventToastTemplatesByToastType = {
-	[Enum.EventToastDisplayType.NormalSingleLine] = {template = "EventToastManagerNormalSingleLineTemplate", frameType = "FRAME", hideAutomatically = true, },
+	[Enum.EventToastDisplayType.NormalSingleLine] = {template = "EventToastManagerNormalSingleLineTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalBlockText] = {template ="EventToastManagerNormalBlockTextTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalTitleAndSubTitle] = {template = "EventToastManagerNormalTitleAndSubtitleTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.NormalTextWithIcon] = {template = "EventToastWithIconNormalTemplate", frameType = "FRAME", hideAutomatically = true,},
@@ -128,7 +128,7 @@ EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin);
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
 
-	self:RegisterEvent("DISPLAY_EVENT_TOASTS"); 
+	self:RegisterEvent("DISPLAY_EVENT_TOASTS");
 end
 
 function EventToastManagerFrameMixin:OnEvent(event, ...)
@@ -136,6 +136,13 @@ function EventToastManagerFrameMixin:OnEvent(event, ...)
 		if (not self:IsCurrentlyToasting()) then 
 			self:DisplayToast(true);
 		end
+	end
+end
+
+function EventToastManagerFrameMixin:OnMouseDown(button)
+	if(button == "RightButton" and not FlagsUtil.IsSet(self.currentDisplayingToast.toastInfo.flags, Enum.EventToastFlags.DisableRightClickDismiss)) then
+		self:CloseActiveToasts();
+		self:Hide();
 	end
 end
 
@@ -517,7 +524,7 @@ function EventToastScenarioExpandToastMixin:OnAnimFinished()
 end
 
 function EventToastScenarioExpandToastMixin:OnClick(button, ...)
-	if (button ~= "RightButton") then
+	if (button ~= "LeftButton") then
 		return; 
 	end
 	self.SubTitle:ClearAllPoints();
@@ -558,15 +565,15 @@ end
 EventToastWeeklyRewardToastMixin = {};
 
 function EventToastWeeklyRewardToastMixin:Setup(toastInfo)
-	self.Title:SetText(toastInfo.title);
-	self.SubTitle:SetText(toastInfo.subtitle);
-	self.flipbook = self.GVUnlockAnim;
+	self.Contents.Title:SetText(toastInfo.title);
+	self.Contents.SubTitle:SetText(toastInfo.subtitle);
+	self.flipbook = self.Contents.GVUnlockAnim;
 	self:ShowToast();
 end
 
 function EventToastWeeklyRewardToastMixin:ShowToast()
-	self.Title:SetAlpha(0);
-	self.SubTitle:SetAlpha(0);
+	self.Contents.Title:SetAlpha(0);
+	self.Contents.SubTitle:SetAlpha(0);
 	self:GetParent():SetAnimationState(self.hideParentAnim);
 	self:Show();
 	self:AnimIn();
@@ -579,9 +586,9 @@ function EventToastWeeklyRewardUpgradeToastMixin:Setup(toastInfo)
 
 	item:ContinueOnItemLoad(function()
 		local ilvl = item:GetCurrentItemLevel();
-		self.Title:SetText(toastInfo.title);
-		self.SubTitle:SetText(ITEM_LEVEL:format(ilvl));
-		self.flipbook = self.GVUpgradeAnim;
+		self.Contents.Title:SetText(toastInfo.title);
+		self.Contents.SubTitle:SetText(ITEM_LEVEL:format(ilvl));
+		self.flipbook = self.Contents.GVUpgradeAnim;
 		self:ShowToast();
 	end);
 end

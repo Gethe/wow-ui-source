@@ -163,6 +163,14 @@ function BossBanner_OnUpdate(self, elapsed)
 	end
 end
 
+function BossBanner_OnMouseDown(...)
+	local frame, button = ...;
+	if ( button == "RightButton" ) then
+		BossBanner_Stop(frame);
+		TopBannerManager_BannerFinished(frame);
+	end
+end
+
 function BossBanner_OnLoad(self)
 	RegisterCVar("PraiseTheSun");
 	self.PlayBanner = BossBanner_Play;

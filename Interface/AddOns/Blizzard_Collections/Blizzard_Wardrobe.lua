@@ -1214,7 +1214,6 @@ function WardrobeCollectionFrameMixin:OnShow()
 		--skip showing info tutorial if we came from suggested content and haven't seen the tracking tutorial
 	elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 		HelpTip:Show(WardrobeCollectionFrame.InfoButton, WardrobeCollectionFrame.InfoButton.helpTipInfo);
-		TrackingInterfaceShortcutsFrame.NewAlert:ValidateIsShown();
 	end
 end
 
@@ -2963,31 +2962,17 @@ function WardrobeCollectionTutorialMixin:OnLoad()
 		offsetX = 32,
 		offsetY = 16,
 		appendFrame = TrackingInterfaceShortcutsFrame,
-		appendFrameYOffset = 15,
 	};
 
 end
 
 function WardrobeCollectionTutorialMixin:OnEnter()
 	HelpTip:Show(self, self.helpTipInfo);
-	TrackingInterfaceShortcutsFrame.NewAlert:ValidateIsShown();
 end
 
 function WardrobeCollectionTutorialMixin:OnLeave()
 	HelpTip:Hide(self, WARDROBE_SHORTCUTS_TUTORIAL_1);
 	TrackingInterfaceShortcutsFrame.NewAlert:ClearAlert();
-end
-
-AlertTrackingFeatureMixin = CreateFromMixins(NewFeatureLabelMixin);
-
-function AlertTrackingFeatureMixin:ClearAlert()
-	NewFeatureLabelMixin.ClearAlert(self);
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE, true);
-	CollectionsMicroButton_SetAlertShown(false);
-end
-
-function AlertTrackingFeatureMixin:ValidateIsShown()
-	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE));
 end
 
 -- ***** WEAPON DROPDOWN

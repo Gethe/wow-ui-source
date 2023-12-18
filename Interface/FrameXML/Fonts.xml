@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI.xsd">
 	<!-- This Fonts.xml is loaded before FontStyles.xml Set up Font objects to be localized in Fonts.xml not FontStyles.xml -->
 	<!-- This Fonts.xml will be overridden by localized files, so any changes here may need to be added or adapted to the localized versions of Fonts.xml -->
 	<Include file="..\SharedXML\SharedFonts.xml"/>

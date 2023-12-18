@@ -114,6 +114,10 @@ function InstanceDifficultyMixin:OnEnter()
 	end
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
 	local isLFR = select(8, GetDifficultyInfo(difficulty))
+
+	if (not DifficultyUtil.GetDifficultyName(difficulty)) then
+		return;
+	end
 	
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
 	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(DifficultyUtil.GetDifficultyName(difficulty)));
@@ -150,6 +154,11 @@ function GuildInstanceDifficultyMixin:OnEnter()
 	local guildName = GetGuildInfo("player");
 	local _, instanceType, difficulty, _, maxPlayers = GetInstanceInfo();
 	local _, numGuildPresent, numGuildRequired, xpMultiplier = InGuildParty();
+
+	if (not DifficultyUtil.GetDifficultyName(difficulty)) then
+		return;
+	end
+	
 	-- hack alert
 	if ( instanceType == "arena" ) then
 		maxPlayers = numGuildRequired;

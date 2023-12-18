@@ -843,6 +843,13 @@ function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
     end
 end
 
+function ChallengeModeCompleteBannerMixin:OnMouseDown(button)
+	if (button == "RightButton") then
+		self:StopBanner();
+		TopBannerManager_BannerFinished(self);
+	end
+end
+
 local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeFormatter:Init(1, SecondsFormatter.Abbreviation.Truncate, false, true, true);
 

@@ -112,6 +112,17 @@ local UIEventToastManager =
 			},
 		},
 		{
+			Name = "EventToastFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "DisableRightClickDismiss", Type = "EventToastFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "EventToastInfo",
 			Type = "Structure",
 			Fields =
@@ -140,6 +151,7 @@ local UIEventToastManager =
 				{ Name = "showSoundKitID", Type = "number", Nilable = true },
 				{ Name = "hideSoundKitID", Type = "number", Nilable = true },
 				{ Name = "colorTint", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "flags", Type = "number", Nilable = false },
 			},
 		},
 	},

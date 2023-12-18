@@ -68,7 +68,7 @@ local AccountConstants =
 		{
 			Name = "AccountStateFlags",
 			Type = "Enumeration",
-			NumValues = 37,
+			NumValues = 40,
 			MinValue = 0,
 			MaxValue = 2147483648,
 			Fields =
@@ -91,7 +91,7 @@ local AccountConstants =
 				{ Name = "ItemCollectionsLoaded", Type = "AccountStateFlags", EnumValue = 16384 },
 				{ Name = "AuctionableTokensLoaded", Type = "AccountStateFlags", EnumValue = 32768 },
 				{ Name = "ConsumableTokensLoaded", Type = "AccountStateFlags", EnumValue = 65536 },
-				{ Name = "PerkTablesLoaded", Type = "AccountStateFlags", EnumValue = 131072 },
+				{ Name = "PerksPastRewardsLoaded", Type = "AccountStateFlags", EnumValue = 131072 },
 				{ Name = "VasTransactionsLoaded", Type = "AccountStateFlags", EnumValue = 262144 },
 				{ Name = "BpayProductitemObjectsLoaded", Type = "AccountStateFlags", EnumValue = 524288 },
 				{ Name = "TrialBoostHistoryLoaded", Type = "AccountStateFlags", EnumValue = 1048576 },
@@ -108,8 +108,11 @@ local AccountConstants =
 				{ Name = "PerksPendingPurchaseLoaded", Type = "AccountStateFlags", EnumValue = 2147483648 },
 				{ Name = "AccountWowlabsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
 				{ Name = "AccountUpgradeComplete", Type = "AccountStateFlags", EnumValue = 0 },
-				{ Name = "BitVectorsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
+				{ Name = "PerksHeldItemLoaded", Type = "AccountStateFlags", EnumValue = 0 },
+				{ Name = "PerksPendingRewardsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
 				{ Name = "WoWTokenPurchaseLoaded", Type = "AccountStateFlags", EnumValue = 0 },
+				{ Name = "PerksRefundsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
+				{ Name = "BitVectorsLoaded", Type = "AccountStateFlags", EnumValue = 0 },
 			},
 		},
 		{

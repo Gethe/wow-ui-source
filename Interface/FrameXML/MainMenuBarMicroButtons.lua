@@ -102,7 +102,7 @@ function ResetMicroMenuPosition()
 end
 
 function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, isStacked)
-	MicroMenu:SetScale(1);
+	MicroMenu:SetScale(0.85);
 	MicroMenu:SetParent(parent);
 
 	MicroMenu.stride = (isStacked and MicroMenu.numButtons / 2 or MicroMenu.numButtons);

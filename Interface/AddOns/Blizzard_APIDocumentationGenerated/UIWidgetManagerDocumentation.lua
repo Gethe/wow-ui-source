@@ -1792,6 +1792,10 @@ local UIWidgetManager =
 				{ Name = "iconSizeType", Type = "WidgetIconSizeType", Nilable = false },
 				{ Name = "infoTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "showAsEarned", Type = "bool", Nilable = false },
+				{ Name = "itemNameTextFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "itemNameTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "infoTextFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "infoTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 			},
 		},
 		{

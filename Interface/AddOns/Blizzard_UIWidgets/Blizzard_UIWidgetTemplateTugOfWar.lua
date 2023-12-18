@@ -36,12 +36,27 @@ local neutralFillGlowColorFromStyleValue = {
 	[Enum.TugOfWarStyleValue.ArchaeologyBrown] = ARCHAEOLOGY_LIGHT_BROWN,
 };
 
+function UIWidgetTemplateTugOfWarMixin:SanitizeAndSetValues(widgetInfo)
+	self.range = widgetInfo.maxValue - widgetInfo.minValue;
+	self.currentValue = Clamp(widgetInfo.currentValue, widgetInfo.minValue, widgetInfo.maxValue);
+	self.currentValuePercent = ClampedPercentageBetween(self.currentValue, widgetInfo.minValue, widgetInfo.maxValue);
+
+	self.neutralZoneCenter = Clamp(widgetInfo.neutralZoneCenter, widgetInfo.minValue, widgetInfo.maxValue);
+	self.neutralCenterPercent = ClampedPercentageBetween(self.neutralZoneCenter, widgetInfo.minValue, widgetInfo.maxValue);
+
+	local maxNeutralZoneSize = ((self.neutralCenterPercent > 0.5) and (widgetInfo.maxValue - self.neutralZoneCenter) or (self.neutralZoneCenter - widgetInfo.minValue)) * 2;
+	self.neutralZoneSize = Clamp(widgetInfo.neutralZoneSize, 0, maxNeutralZoneSize);
+	self.neutralZoneSizePercent = ClampedPercentageBetween(self.neutralZoneSize, 0, self.range);
+end
+
 function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
 
+	self:SanitizeAndSetValues(widgetInfo);
+
 	if not self.oldValue then
-		self.oldValue = widgetInfo.currentValue;
+		self.oldValue = self.currentValue;
 	end
 
 	local textureKits = {widgetInfo.textureKit, widgetInfo.frameTextureKit};
@@ -49,8 +64,7 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 
 	local extraFrameInfo = frameTextureKitInfo[widgetInfo.frameTextureKit];
 
-	local currentValuePercent = ClampedPercentageBetween(widgetInfo.currentValue, widgetInfo.minValue, widgetInfo.maxValue);
-	local markerXOffset = self.BarBackgroundMiddle:GetWidth() * currentValuePercent;
+	local markerXOffset = self.BarBackgroundMiddle:GetWidth() * self.currentValuePercent;
 	local markerYOffset = extraFrameInfo and extraFrameInfo.markerYOffset or 0;
 	self.Marker:SetPoint("CENTER", self.BarBackgroundMiddle, "LEFT", markerXOffset, markerYOffset);
 
@@ -59,20 +73,15 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 	self.LeftArrow:SetPoint("RIGHT", self.Marker, "LEFT", arrowXOffset, arrowYOffset);
 	self.RightArrow:SetPoint("LEFT", self.Marker, "RIGHT", -arrowXOffset, arrowYOffset);
 
-	local neutralCenterPercent = ClampedPercentageBetween(widgetInfo.neutralZoneCenter, widgetInfo.minValue, widgetInfo.maxValue);
-	local maxNeutralZoneSize = ((neutralCenterPercent > 0.5) and (widgetInfo.maxValue - widgetInfo.neutralZoneCenter) or (widgetInfo.neutralZoneCenter - widgetInfo.minValue)) * 2;
-	local neutralZoneSize = Clamp(widgetInfo.neutralZoneSize, 0, maxNeutralZoneSize);
-
 	local hasNeutralFillTexture = self.NeutralFill:IsShown();
-	if hasNeutralFillTexture and neutralZoneSize > 0 then
+	if hasNeutralFillTexture and self.neutralZoneSize > 0 then
 		local neutralFillColor = neutralFillColorFromStyleValue[widgetInfo.neutralFillStyle] or WHITE_FONT_COLOR;
 		self.NeutralFill:SetVertexColor(neutralFillColor:GetRGB());
 
-		local neutralFillXOffset = self.BarBackgroundMiddle:GetWidth() * neutralCenterPercent;
+		local neutralFillXOffset = self.BarBackgroundMiddle:GetWidth() * self.neutralCenterPercent;
 		self.NeutralFill:SetPoint("CENTER", self.BarBackgroundMiddle, "LEFT", neutralFillXOffset, -0.5);
 
-		local neutralZoneSizePercent = ClampedPercentageBetween(neutralZoneSize, 0, widgetInfo.maxValue - widgetInfo.minValue);
-		local neutralFillWidth = neutralZoneSizePercent * self.BarBackgroundMiddle:GetWidth();
+		local neutralFillWidth = self.neutralZoneSizePercent * self.BarBackgroundMiddle:GetWidth();
 		self.NeutralFill:SetWidth(neutralFillWidth);
 
 		self.NeutralFill:Show();
@@ -80,17 +89,17 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 		self.NeutralFill:Hide();
 	end
 
-	local halfNeutralZoneSize = neutralZoneSize / 2;
+	local halfNeutralZoneSize = self.neutralZoneSize / 2;
 
-	local inLeftZone = widgetInfo.currentValue < (widgetInfo.neutralZoneCenter - halfNeutralZoneSize);
-	local inRightZone = widgetInfo.currentValue > (widgetInfo.neutralZoneCenter + halfNeutralZoneSize);
+	local inLeftZone = self.currentValue < (self.neutralZoneCenter - halfNeutralZoneSize);
+	local inRightZone = self.currentValue > (self.neutralZoneCenter + halfNeutralZoneSize);
 	local inNeutralZone = not inLeftZone and not inRightZone;
 
 	self.LeftIcon:Setup(widgetContainer, widgetInfo.textureKit, widgetInfo.leftIconInfo, inLeftZone, widgetInfo.glowAnimType);
 	self.RightIcon:Setup(widgetContainer, widgetInfo.textureKit, widgetInfo.rightIconInfo, inRightZone, widgetInfo.glowAnimType);
 
 	local hasNeutralFillGlowTexture = self.NeutralFillGlow:IsShown();
-	if inNeutralZone and hasNeutralFillGlowTexture then
+	if inNeutralZone and hasNeutralFillGlowTexture and self.neutralZoneSize > 0 then
 		local neutralFillGlowColor = neutralFillGlowColorFromStyleValue[widgetInfo.neutralFillStyle] or WHITE_FONT_COLOR;
 		self.NeutralFillGlow:SetVertexColor(neutralFillGlowColor:GetRGB());
 
@@ -117,24 +126,15 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 		self.RightArrowAnim:Stop();
 		self.RightArrow:Show();
 	else
-		local movedLeft = (widgetInfo.currentValue < self.oldValue);
-		local movedRight = (widgetInfo.currentValue > self.oldValue);
+		local movedLeft = (self.currentValue < self.oldValue);
+		local movedRight = (self.currentValue > self.oldValue);
 
 		if movedLeft then
 			self.LeftArrow:Show();
 			self.LeftArrowAnim:Restart();
-			self.RightArrowAnim:Stop();
-			self.RightArrow:Hide();
 		elseif movedRight then
-			self.LeftArrowAnim:Stop();
-			self.LeftArrow:Hide();
 			self.RightArrow:Show();
 			self.RightArrowAnim:Restart();
-		else
-			self.LeftArrowAnim:Stop();
-			self.LeftArrow:Hide();
-			self.RightArrowAnim:Stop();
-			self.RightArrow:Hide();
 		end
 	end
 
@@ -150,10 +150,10 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 
 	self:SetSize(math.max(widgetWidth, widgetInfo.widgetSizeSetting), widgetHeight);
 
-	self.oldValue = widgetInfo.currentValue;
+	self.oldValue = self.currentValue;
 end
 
-function UIWidgetTemplateTugOfWarMixin:AnimOut()
+function UIWidgetTemplateTugOfWarMixin:OnReset()
 	self.LeftIcon:StopAnims();
 	self.RightIcon:StopAnims();
 	self.NeutralFillGlowPulseAnim:Stop();
@@ -163,5 +163,5 @@ function UIWidgetTemplateTugOfWarMixin:AnimOut()
 	self.RightArrowAnim:Stop();
 	self.RightArrow:Hide();
 	self.oldValue = nil;
-	UIWidgetBaseTemplateMixin.AnimOut(self);
+	UIWidgetBaseTemplateMixin.OnReset(self);
 end

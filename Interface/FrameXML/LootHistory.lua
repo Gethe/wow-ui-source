@@ -197,11 +197,6 @@ end
 
 LootHistoryElementAnimationMixin = {};
 
-function LootHistoryElementAnimationMixin:OnLoad()
-	self.BorderFrame:Hide();
-	self.NameFrame:Hide();
-end
-
 function LootHistoryElementAnimationMixin:InitAndStartAnim(dropInfo)
 	self.Item.IconBorder:SetSize(self.Item:GetWidth(), self.Item:GetHeight());
 

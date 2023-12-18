@@ -352,12 +352,12 @@
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="ItemName" inherits="GameTooltipHeaderText" justifyV="MIDDLE">
+				<FontString parentKey="ItemName" inherits="SystemFont_Med3" justifyH="LEFT" justifyV="MIDDLE" mixin="UIWidgetBaseTextMixin">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="InfoText" inherits="GameTooltipText" justifyV="MIDDLE" mixin="UIWidgetBaseTextMixin">
+				<FontString parentKey="InfoText" inherits="SystemFont_Med1" justifyH="LEFT" justifyV="MIDDLE" mixin="UIWidgetBaseTextMixin">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-2"/>
 					</Anchors>

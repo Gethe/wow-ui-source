@@ -51,6 +51,9 @@
 
 	<Frame name="MapCanvasFrameTemplate" toplevel="true" enableMouse="true" hidden="true" frameStrata="MEDIUM" mixin="MapCanvasMixin" virtual="true">
 		<Size x="1004" y="689"/>
+		<KeyValues>
+			<KeyValue key="debugInspectionSystem" type="string" value="MapCanvas"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnUpdate method="OnUpdate"/>
