@@ -239,7 +239,7 @@ function GlueParent_UpdateDialogs()
 		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local serverName, pvp, rp, down = GetServerName();
-		local waitPosition, waitMinutes, hasFCM, allowedPvpTeamForCharacterCreate = C_Login.GetWaitQueueInfo();
+		local waitPosition, waitMinutes, hasFCM, allowedPvpTeamForCharacterCreate, canCreateOnlyIfExisting = C_Login.GetWaitQueueInfo();
 
 		local queueString;
 		if (serverName) then
@@ -260,7 +260,9 @@ function GlueParent_UpdateDialogs()
 			end
 		end
 
-		if allowedPvpTeamForCharacterCreate ~= nil then
+		if canCreateOnlyIfExisting then
+			queueString = queueString .. "\n\n" .. CHAR_CREATE_ONLY_EXISTING;
+		elseif allowedPvpTeamForCharacterCreate ~= nil then
 			local allowedFactionGroup = PLAYER_FACTION_GROUP[allowedPvpTeamForCharacterCreate];
 			if allowedFactionGroup == FACTION_ALLIANCE then 
 				queueString = queueString .. "\n\n" .. QUEUE_WITH_ALLOWED_FACTION_GROUP_ALLIANCE;

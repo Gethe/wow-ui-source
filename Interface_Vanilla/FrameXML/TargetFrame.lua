@@ -444,8 +444,18 @@ end
 local largeBuffList = {};
 local largeDebuffList = {};
 local function ShouldAuraBeLarge(caster)
-	-- In Classic, all auras will be the same size.
-	return true;
+	if (not GetCVarBool("showDynamicBuffSize")) then
+		return true;
+	end
+	if not caster then
+		return false;
+	end
+
+	for token, value in pairs(PLAYER_UNITS) do
+		if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
+			return value;
+		end
+	end
 end
 
 function TargetFrame_UpdateAuras (self)

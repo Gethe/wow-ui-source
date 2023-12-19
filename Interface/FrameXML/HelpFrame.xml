@@ -20,7 +20,8 @@ UI_shared.xsd">
 		</Frames>
 		<Scripts>
 			<OnExternalLink>
-				StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
+				local baseURL, _ = strsplit("?", url,  2);
+				StaticPopup_Show("EXTERNAL_LINK", baseURL, nil, {url=url, browser=self});
 			</OnExternalLink>
 			<OnEscapePressed>
 				self:ClearFocus();
