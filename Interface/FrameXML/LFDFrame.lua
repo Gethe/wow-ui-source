@@ -109,6 +109,9 @@ function LFDFrame_OnEvent(self, event, ...)
 		local dungeonID = ...;
 		LFDFrame_DisplayDungeonByID(dungeonID);
 		PVEFrame_ShowFrame("GroupFinderFrame", LFDParentFrame);
+
+		-- Force close gossip frame
+		C_GossipInfo.CloseGossip();
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		EXPANSION_LEVEL = GetExpansionLevel();
 	elseif ( event == "AJ_DUNGEON_ACTION" ) then

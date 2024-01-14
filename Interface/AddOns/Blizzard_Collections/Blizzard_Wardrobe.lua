@@ -1310,7 +1310,7 @@ local function IsAnySourceCollected(sources)
 	return false;
 end
 
-function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID, warningString)
+function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID, warningString, slot)
 	self.tooltipContentFrame = contentFrame;
 	local selectedIndex = self.tooltipSourceIndex;
 	local showUseError = true;
@@ -1320,7 +1320,7 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 	if WardrobeCollectionFrame.activeFrame == WardrobeCollectionFrame.SetsCollectionFrame then
 		showTrackingInfo = false;
 	end
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo, slot);
 end
 
 function WardrobeCollectionFrameMixin:HideAppearanceTooltip()
@@ -2972,7 +2972,6 @@ end
 
 function WardrobeCollectionTutorialMixin:OnLeave()
 	HelpTip:Hide(self, WARDROBE_SHORTCUTS_TUTORIAL_1);
-	TrackingInterfaceShortcutsFrame.NewAlert:ClearAlert();
 end
 
 -- ***** WEAPON DROPDOWN

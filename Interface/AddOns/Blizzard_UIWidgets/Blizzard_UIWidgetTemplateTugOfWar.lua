@@ -14,6 +14,7 @@ local textureKitRegionInfo = {
 	["BarBackgroundLeft"] = {formatString = "%s-Background-Left", useAtlasSize = true, setVisibility = true},
 	["BarBackgroundRight"] = {formatString = "%s-Background-Right", useAtlasSize = true, setVisibility = true},
 	["Marker"] = {formatString = "%s-Marker-%s", useAtlasSize = true, setVisibility = true},
+	["Divider"] = {formatString = "%s-Spark-Line", useAtlasSize = true, setVisibility = true},
 	["NeutralFill"] = {formatString = "%s-neutralfill", useAtlasSize = true, setVisibility = true},
 	["NeutralFillGlow"] = {formatString = "%s-neutralfill-glow", useAtlasSize = true, setVisibility = true},
 	["LeftArrow"] = {formatString = "%s-arrow", useAtlasSize = true},
@@ -85,6 +86,7 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 		self.NeutralFill:SetWidth(neutralFillWidth);
 
 		self.NeutralFill:Show();
+		self.Divider:Hide();
 	else
 		self.NeutralFill:Hide();
 	end

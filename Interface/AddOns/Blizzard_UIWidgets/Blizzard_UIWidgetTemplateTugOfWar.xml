@@ -41,6 +41,11 @@
 						<Anchor point="CENTER" relativeKey="$parent.BarBackgroundMiddle"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Divider">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BarBackgroundMiddle"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="LeftArrow" ignoreParentAlpha="true">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Marker" relativePoint="LEFT"/>
