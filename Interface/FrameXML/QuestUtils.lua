@@ -322,32 +322,38 @@ function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isC
 end
 
 function QuestUtil.QuestTextContrastEnabled()
-	return tonumber(GetCVar("QuestTextContrast")) > 0;
+	return GetCVarNumberOrDefault("QuestTextContrast") > 0;
 end
 
 function QuestUtil.QuestTextContrastUseLightText()
+	return QuestUtil.ShouldQuestTextContrastSettingUseLightText(GetCVarNumberOrDefault("QuestTextContrast"));
+end
+
+function QuestUtil.ShouldQuestTextContrastSettingUseLightText(questTextContrastSetting)
 	--Use light text when the background is dark
-	local chosenAccessibilityBackground = tonumber(GetCVar("QuestTextContrast"));
-	return  chosenAccessibilityBackground == 4;
+	return  questTextContrastSetting == 4;
 end
 
 function QuestUtil.GetDefaultQuestBackgroundTexture()
-	local questAccesibilityBackground = tonumber(GetCVar("QuestTextContrast"));
-	if questAccesibilityBackground == 0 then
+	return QuestUtil.GetQuestBackgroundAtlas(GetCVarNumberOrDefault("QuestTextContrast"));
+end
+
+function QuestUtil.GetQuestBackgroundAtlas(questTextContrastSetting)
+	if questTextContrastSetting == 0 then
 		return "QuestBG-Parchment";
-	elseif questAccesibilityBackground == 1 then
+	elseif questTextContrastSetting == 1 then
 		return "QuestBG-Parchment-Accessibility";
-	elseif questAccesibilityBackground == 2 then
+	elseif questTextContrastSetting == 2 then
 		return "QuestBG-Parchment-Accessibility2";
-	elseif questAccesibilityBackground == 3 then
+	elseif questTextContrastSetting == 3 then
 		return "QuestBG-Parchment-Accessibility3";
-	elseif questAccesibilityBackground == 4 then
+	elseif questTextContrastSetting == 4 then
 		return "QuestBG-Parchment-Accessibility4";
 	end 
 end
 
 function QuestUtil.GetDefaultQuestMapBackgroundTexture()
-	local questAccesibilityBackground = tonumber(GetCVar("QuestTextContrast"));
+	local questAccesibilityBackground = GetCVarNumberOrDefault("QuestTextContrast");
 	if questAccesibilityBackground == 0 then
 		return "QuestDetailsBackgrounds";
 	elseif questAccesibilityBackground == 1 then

@@ -132,3 +132,13 @@ function InterfaceOverrides.CreatePvpFrameSettings(category, layout)
 		Settings.SetupCVarDropDown(category, "pvpFramesHealthText", Settings.VarType.String, GetOptions, PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT, OPTION_TOOLTIP_PVP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT);
 	end
 end
+
+function InterfaceOverrides.ShowTutorialsOnButtonClick()
+		SetCVar("closedInfoFrames", ""); -- reset the help plates too
+		SetCVar("closedInfoFramesAccountWide", "");
+		SetCVar("showNPETutorials", "1");
+		ResetTutorials();
+		TutorialFrame_ClearQueue();
+		NPETutorial_AttemptToBegin();
+		TriggerTutorial(1);
+end

@@ -422,6 +422,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetRaisedFrameLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "frameLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRegions",
 			Type = "Function",
 

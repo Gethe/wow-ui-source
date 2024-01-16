@@ -65,12 +65,9 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 						 healthBar.MyHealPredictionBar,
 						 healthBar.OtherHealPredictionBar,
 						 healthBar.TotalAbsorbBar,
-						 healthBar.TotalAbsorbBarOverlay,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
-						 healthBar.HealAbsorbBar,
-						 healthBar.HealAbsorbBarLeftShadow,
-						 healthBar.HealAbsorbBarRightShadow);
+						 healthBar.HealAbsorbBar);
 
 	self.auraPools = CreateFramePoolCollection();
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");

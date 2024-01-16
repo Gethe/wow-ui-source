@@ -1,0 +1,77 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<Script file="StatusBarOverlaySegment.lua"/>
+
+	<Frame name="StatusBarOverlaySegmentTemplate" mixin="StatusBarOverlaySegmentMixin" useParentLevel="true" virtual="true" setAllPoints="true">
+		<!-- 
+		fillAtlas: Name of the UI Texture Atlas element to use for the fill bar (instead of a fillTexture)
+		fillTexture: Name of the Texture to use for the fill bar (instead of a fillAtlas)
+		fillColor: Vertex color to set the fill bar to
+		tiledFillOverlaySize: Optional, if the segment has its own TiledFillOverlay texture, this specifies its tile size so its texcoords can be adjusted at runtime based on size changes
+
+		<KeyValues>
+			<KeyValue key="fillAtlas" value="" type="string"/>
+			<KeyValue key="fillTexture" value="" type="string"/>
+			<KeyValue key="fillColor" value="" type="global"/>
+			<KeyValue key="tiledFillOverlaySize" value="" type="number"/>
+		</KeyValues> -->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Fill takes up the full width/height of the underlying status bar; a segment of the Fill is made visible via the FillMask at runtime -->
+				<Texture parentKey="Fill" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Width and anchors are adjusted dynamically at runtime -->
+				<MaskTexture parentKey="FillMask" atlas="SquareMask" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<MaskedTextures>
+						<MaskedTexture childKey="Fill"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<!-- 
+			Supported Optional Child Textures:
+				<Texture parentArray="fillOverlays"/> One or more - draw layer of all members in the array will be dynamically updated to remain on top of the Fill
+				<Texture parentKey="TiledFillOverlay" /> Tiled texture on top of the Fill, whose tex coords will be updated dynamically according to tiledFillOverlaySize
+			-->
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ShadowedStatusBarOverlaySegmentTemplate" inherits="StatusBarOverlaySegmentTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftShadow" file="Interface\RaidFrame\Absorb-Edge" parentArray="fillOverlays">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FillMask" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.FillMask" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightShadow" file="Interface\RaidFrame\Absorb-Edge" parentArray="fillOverlays">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FillMask" relativePoint="TOPRIGHT" x="-8"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.FillMask" relativePoint="BOTTOMRIGHT" x="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="LinedStatusBarOverlaySegmentTemplate" inherits="StatusBarOverlaySegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tiledFillOverlaySize" value="32" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TiledFillOverlay" file="Interface\RaidFrame\Shield-Overlay" vertTile="true" horizTile="true"  parentArray="fillOverlays">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FillMask" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FillMask" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

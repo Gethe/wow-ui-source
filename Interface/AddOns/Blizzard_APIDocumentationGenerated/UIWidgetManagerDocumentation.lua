@@ -683,6 +683,31 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "TugOfWarMarkerArrowShownState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Never", Type = "TugOfWarMarkerArrowShownState", EnumValue = 0 },
+				{ Name = "Always", Type = "TugOfWarMarkerArrowShownState", EnumValue = 1 },
+				{ Name = "FlashOnMove", Type = "TugOfWarMarkerArrowShownState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "TugOfWarStyleValue",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "DefaultYellow", Type = "TugOfWarStyleValue", EnumValue = 0 },
+				{ Name = "ArchaeologyBrown", Type = "TugOfWarStyleValue", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetBlendModeType",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -1701,6 +1726,8 @@ local UIWidgetManager =
 				{ Name = "glowAnimType", Type = "WidgetGlowAnimType", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "neutralFillStyle", Type = "TugOfWarStyleValue", Nilable = false },
+				{ Name = "markerArrowShownState", Type = "TugOfWarMarkerArrowShownState", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1765,6 +1792,10 @@ local UIWidgetManager =
 				{ Name = "iconSizeType", Type = "WidgetIconSizeType", Nilable = false },
 				{ Name = "infoTextEnabledState", Type = "WidgetEnabledState", Nilable = false },
 				{ Name = "showAsEarned", Type = "bool", Nilable = false },
+				{ Name = "itemNameTextFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "itemNameTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
+				{ Name = "infoTextFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "infoTextSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 			},
 		},
 		{

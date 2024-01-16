@@ -15,7 +15,7 @@
 	<Include file="Social.lua"/>
 	<Include file="PingSystem.xml"/>
 	<Include file="Keybindings.xml"/>
-	<Script file="Accessibility.lua"/>
+	<Include file="Accessibility.xml"/>
 	<Include file="Colorblind.xml"/>
 	<Include file="TextToSpeech.xml"/>
 	<Script file="Mounts.lua"/>

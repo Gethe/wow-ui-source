@@ -1269,6 +1269,11 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "CommoditySearchResultsReceived",
+			Type = "Event",
+			LiteralName = "COMMODITY_SEARCH_RESULTS_RECEIVED",
+		},
+		{
 			Name = "CommoditySearchResultsUpdated",
 			Type = "Event",
 			LiteralName = "COMMODITY_SEARCH_RESULTS_UPDATED",

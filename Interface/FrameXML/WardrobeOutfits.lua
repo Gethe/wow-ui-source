@@ -310,7 +310,8 @@ function WardrobeOutfitFrameMixin:ShowPopup(popup, ...)
 		StaticPopupSpecial_Hide(WardrobeOutfitEditFrame);
 	end
 
-	self.popupDropDown = self.dropDown;
+	-- use either the dropdown that opened us, or a previously cached popupDropDown (ie from StartOutfitSave)
+	self.popupDropDown = self.dropDown or self.popupDropDown;
 	if ( popup == WardrobeOutfitEditFrame ) then
 		StaticPopupSpecial_Show(WardrobeOutfitEditFrame);
 	else
@@ -445,7 +446,9 @@ function WardrobeOutfitFrameMixin:ContinueWithSave()
 	if self.outfitID then
 		C_TransmogCollection.ModifyOutfit(self.outfitID, self.itemTransmogInfoList);
 		self:SaveLastOutfit(self.outfitID);
-		self.popupDropDown:OnOutfitModified(self.outfitID);
+		if ( self.popupDropDown ) then
+			self.popupDropDown:OnOutfitModified(self.outfitID);
+		end
 		WardrobeOutfitFrame:ClosePopups();
 	else
 		WardrobeOutfitFrame:ShowPopup("NAME_TRANSMOG_OUTFIT");
@@ -512,18 +515,12 @@ end
 --===================================================================================================================================
 WardrobeOutfitCheckAppearancesMixin = { };
 
-function WardrobeOutfitCheckAppearancesMixin:OnLoad()
-	self.Anim:Play();
-end
-
 function WardrobeOutfitCheckAppearancesMixin:OnShow()
-	LoadingSpinnerMixin.OnShow(self);
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 end
 
 function WardrobeOutfitCheckAppearancesMixin:OnHide()
-	LoadingSpinnerMixin.OnHide(self);
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 	self.reevaluate = nil;

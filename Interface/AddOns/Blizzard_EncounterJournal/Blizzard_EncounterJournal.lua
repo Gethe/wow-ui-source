@@ -24,18 +24,18 @@ AJ_MAX_NUM_SUGGESTIONS = 3;
 
 -- Priority list for *not my spec*
 local overviewPriorities = {
-	[1] = "DAMAGER",
-	[2] = "HEALER",
-	[3] = "TANK",
-	[4] = "NONE",
+	[1] = Enum.LFGRole.Damage,
+	[2] = Enum.LFGRole.Healer,
+	[3] = Enum.LFGRole.Tank,
+	[4] = Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE,
 }
 
 local NONE_FLAG = -1;
 local flagsByRole = {
-	["DAMAGER"] = 1,
-	["HEALER"] = 2,
-	["TANK"] = 0,
-	["NONE"] = NONE_FLAG,
+	[Enum.LFGRole.Damage] = 1,
+	[Enum.LFGRole.Healer] = 2,
+	[Enum.LFGRole.Tank] = 0,
+	[Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE] = NONE_FLAG,
 }
 
 local EJ_Tabs = {};
@@ -602,9 +602,9 @@ function EncounterJournal_OnShow(self)
 
 		spec = GetSpecialization();
 		if (spec) then
-			role = GetSpecializationRole(spec);
+			role = GetSpecializationRoleEnum(spec);
 		else
-			role = "DAMAGER";
+			role = Enum.LFGRole.Damage;
 		end
 
 		if ( EncounterJournal.overviewDefaultRole ~= role ) then
@@ -1759,9 +1759,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 			spec = GetSpecialization();
 			if (spec) then
-				role = GetSpecializationRole(spec);
+				role = GetSpecializationRoleEnum(spec);
 			else
-				role = "DAMAGER";
+				role = Enum.LFGRole.Damage;
 			end
 
 			local overviewSections = GetOverviewSections(self.rootOverviewSectionID);

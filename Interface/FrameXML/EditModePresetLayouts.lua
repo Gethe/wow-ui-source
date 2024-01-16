@@ -14,6 +14,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.HideBarArt] = 0,
 				[Enum.EditModeActionBarSetting.HideBarScrolling] = 0,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -628,6 +629,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeActionBarSetting.IconPadding] = 2,
 				[Enum.EditModeActionBarSetting.HideBarArt] = 0,
 				[Enum.EditModeActionBarSetting.HideBarScrolling] = 0,
+				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 1,
 			},
 			anchorInfo = {
 				point = "BOTTOM",

@@ -3,8 +3,8 @@
 -- /////////////////////////////////////////////////////////////
 
 -- [[ Versioning ]]
-if ( not Dispatcher or (not DISPATCHER_VERSION or DISPATCHER_VERSION < 1.0) ) then
-DISPATCHER_VERSION = 1.0;
+if ( not Dispatcher or (not DISPATCHER_VERSION or DISPATCHER_VERSION < 2.0) ) then
+DISPATCHER_VERSION = 2.0;
 
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -14,6 +14,7 @@ Dispatcher =
 {
 	EventFrame		= nil;
 	DebugFrame		= nil;
+	DebugVerbose	= false;
 
 	-- Unique identifiers for registration
 	NextEventID		= 1;
@@ -37,18 +38,36 @@ function Dispatcher:Initialize()
 	self.DebugFrame:SetScript("OnEvent", function(obj, ...) self:OnDebugEvent(...) end);
 	self.DebugFrame:Show();
 
-	SLASH_EVENT1 = "/event";
-	SlashCmdList.EVENT = function(msg) self:OnSlash(msg) end;
+	-- When loaded in glue, this doesn't exist yet
+	if (SlashCmdList) then
+		SLASH_EVENT1 = "/event";
+		SlashCmdList.EVENT = function(msg) self:OnSlash_Event(msg) end;
+
+		SLASH_EVENTVERBOSE1 = "/ev";
+		SlashCmdList.EVENTVERBOSE = function(msg) self:OnSlash_Verbose(msg) end;
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function Dispatcher:OnSlash(text)
+function Dispatcher:OnSlash_Event(text)
+	text = string.lower(text);
 	if (text == "all") then
 		self:DebugAllEvents();
 	elseif (text == "none") then
 		self:ClearDebugEvents();
 	else
 		self:ToggleDebugEvent(text);
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function Dispatcher:OnSlash_Verbose(value)
+	local boolVal = StringToBoolean(value or "", nil);
+
+	if (boolVal == nil) then
+		self.DebugVerbose = not self.DebugVerbose;
+	else
+		self.DebugVerbose = boolVal;
 	end
 end
 
@@ -227,6 +246,11 @@ function Dispatcher:RegisterFunction(functionOwner, functionName, callback, oneT
 	-- First, secure hook the func to our internal callback handler.
 	-- There should only ever be one secure hook per object/function for all callbacks
 	if (functionOwner) then
+		if (type(functionOwner[functionName]) ~= "function") then
+			print(string.format("Dispatcher:RegisterFunction - ERROR - Function owner '%s' does not contain function '%s'", tostring(functionOwner), functionName));
+			return;
+		end
+
 		if (not self.Functions[functionOwner]) then
 			self.Functions[functionOwner] = {};
 		end
@@ -236,6 +260,11 @@ function Dispatcher:RegisterFunction(functionOwner, functionName, callback, oneT
 			hooksecurefunc(functionOwner, functionName, function(...) self:OnSecureFunc(functionOwner, functionName, ...) end);
 		end
 	else
+		if (type(_G[functionName]) ~= "function") then
+			print(string.format("Dispatcher:RegisterFunction - ERROR - function '%s' doesn't exist", functionName));
+			return;
+		end
+
 		if (not self.Functions.Global) then
 			self.Functions.Global = {};
 		end
@@ -486,6 +515,12 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 function Dispatcher:OnDebugEvent(event, ...)
 	print("Dispatcher Debug - ", event);
+	if (self.DebugVerbose) then
+		local args = {...};
+		for i, v in ipairs(args) do
+			print(string.format("    [%s] %s", i, tostring(v)));
+		end
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------

@@ -414,6 +414,35 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemStatDelta",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLink1", Type = "cstring", Nilable = false },
+				{ Name = "itemLink2", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "statTable", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemStats",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "statTable", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemUniquenessByID",
 			Type = "Function",
 
@@ -446,6 +475,21 @@ local Item =
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "maxQuantity", Type = "number", Nilable = false },
 				{ Name = "totalEarned", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSetBonusesForSpecializationByItemID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemSetSpellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{

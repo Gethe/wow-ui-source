@@ -149,7 +149,7 @@ function CollectionWardrobeUtil.IsAppearanceUsable(appearanceInfo, inLegionArtif
 	return false;
 end
 
-function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo)
+function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo, slotType)
 	local canCycle = false;
 
 	for i = 1, #sources do
@@ -176,6 +176,10 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	GameTooltip_SetTitle(tooltip, name, nameColor);
 	if subheaderString then
 		GameTooltip_AddHighlightLine(tooltip, subheaderString);
+	end
+
+	if slotType then
+		GameTooltip_AddNormalLine(tooltip, slotType);
 	end
 
 	local sourceLocation, sourceDifficulties;

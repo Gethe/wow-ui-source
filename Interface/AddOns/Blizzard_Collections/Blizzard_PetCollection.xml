@@ -4,7 +4,7 @@
 
 	<Texture name="ExpBar-Divider" atlas="PetJournal-ExpBar-Divider" useAtlasSize="true" virtual="true"/>
 
-	<Button name="CompanionListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="CompanionListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" mixin="PetJournalListItemMixin">
 		<Size x="208" y="46"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -76,7 +76,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="dragButton">
+			<Button parentKey="dragButton" mixin="PetJournalDragButtonMixin">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.icon" x="0" y="0"/>
@@ -109,7 +109,7 @@
 				</Frames>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
-					<OnClick function="PetJournalDragButton_OnClick"/>
+					<OnClick method="OnClick"/>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -120,10 +120,10 @@
 					<OnHide>
 						self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 					</OnHide>
-					<OnEnter function="PetJournalDragButton_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnEvent function="PetJournalDragButton_OnEvent"/>
-					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnEvent method="OnEvent"/>
+					<OnDragStart method="OnDragStart"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -133,10 +133,10 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick function="PetJournalListItem_OnClick"/>
-			<OnDragStart>
-				PetJournalDragButton_OnDragStart(self.dragButton);
-			</OnDragStart>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 	</Button>
 
@@ -604,21 +604,21 @@
 					</OnReceiveDrag>
 				</Scripts>
 			</Button>
-			<Button parentKey="dragButton">
+			<Button parentKey="dragButton" mixin="PetJournalLoadoutDragButtonMixin">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeTo="$parentIcon" x="0" y="0"/>
 				</Anchors>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
-					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>
-					<OnEnter function="PetJournalDragButton_OnEnter"/>
-                    <OnLeave function="GameTooltip_Hide"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+                    <OnLeave method="OnLeave"/>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("RightButtonUp");
 					</OnLoad>
-					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
+					<OnDragStart method="OnDragStart"/>
 				</Scripts>
 			</Button>
 			<Frame name="$parentEmptySlot" parentKey="emptyslot" setAllPoints="true">
@@ -1294,7 +1294,9 @@
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
-							<OnDragStart function="PetJournalDragButton_OnDragStart"/>
+							<OnDragStart>
+								PetJournalDragButtonMixin.OnDragStart(self);
+							</OnDragStart>
 						</Scripts>
 					</Button>
 					<Frame name="$parentTypeInfo" parentKey="TypeInfo">

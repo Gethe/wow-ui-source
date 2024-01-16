@@ -33,7 +33,6 @@ function ActionBarMixin:ActionBar_OnLoad()
         actionButton.bar = self;
         actionButton.container = buttonContainer;
         actionButton.index = i;
-        actionButton.isLastActionButton = i == self.numButtons;
 
         if self.commandNamePrefix then
             actionButton.commandName = self.commandNamePrefix.."BUTTON"..i;
@@ -191,7 +190,7 @@ function ActionBarMixin:UpdateShownButtons()
     for i, actionButton in pairs(self.actionButtons) do
         local showButton = actionButton.index <= self.numButtonsShowable  -- Show button if it is within the num buttons which are showable
             and not actionButton:GetAttribute("statehidden") -- and it isn't being hidden by an attribute
-            and (actionButton:GetShowGrid() or actionButton:HasAction(actionButton)); -- And either the grid is being shown or the button has an action
+            and (actionButton:GetShowGrid() or actionButton:HasAction()); -- And either the grid is being shown or the button has an action
 
         actionButton:SetShown(showButton);
 
@@ -200,6 +199,11 @@ function ActionBarMixin:UpdateShownButtons()
         if showButtonContainer then
             table.insert(self.shownButtonContainers, actionButton.container);
         end
+    end
+
+    -- If visible buttons changed then we may need to update the dividers we're showing between buttons
+    if self.UpdateDividers then
+        self:UpdateDividers();
     end
 end
 

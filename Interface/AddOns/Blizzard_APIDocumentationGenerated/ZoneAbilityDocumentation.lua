@@ -15,6 +15,20 @@ local ZoneAbility =
 				{ Name = "zoneAbilities", Type = "table", InnerType = "ZoneAbilityInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "GetZoneAbilityIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoneAbilitySpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "zoneAbilityIconID", Type = "number", Nilable = true },
+			},
+		},
 	},
 
 	Events =

@@ -2,6 +2,32 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_MonthlyActivities.lua"/>
 
+	<Frame name="MonthlyActivitiesButtonTextContainerTemplate" inherits="VerticalLayoutFrame" mixin="MonthlyActivitiesButtonTextContainerMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="NameText" inherits="GameFontHighlightMedium" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="370" y="0"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="ConditionsText" inherits="GameFontNormal" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="370" y="0"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="MonthlyActivitiesButtonTemplate" mixin="MonthlyActivitiesButtonMixin" hidden="true" virtual="true">
 		<Size x="521" y="78"/>
 		<Layers>
@@ -47,12 +73,6 @@
 						<Anchor point="CENTER" relativeKey="$parent.Ribbon" x="0" y="7"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontBlackMedium" justifyV="MIDDLE" justifyH="LEFT">
-					<Size x="370" y="50"/>
-					<Anchors>
-						<Anchor point="LEFT" x="36" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Points" inherits="GameFontHighlightMed2" justifyV="MIDDLE" justifyH="CENTER" text="100">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Ribbon" x="0" y="7"/>
@@ -71,9 +91,6 @@
 				<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
 				<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="2" fromAlpha="1" toAlpha="1"/>
 				<FlipBook childKey="CheckmarkFlipbook" duration="0.25" order="2" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0" smoothing="OUT"/>
-				<Scripts>
-					<OnFinished function="MonthlyActivities_PendingAnimComplete"/>
-				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="CoinAnim" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate" looping="NONE" setToFinalAlpha="true">
 				<Alpha smoothing="NONE" childKey="Coin" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
@@ -85,10 +102,20 @@
 				<Scale childKey="Mask" duration="0.25" order="1" fromScaleX="0.0" fromScaleY="0.0" toScaleX="1" toScaleY="1"/>
 			</AnimationGroup>
 		</Animations>
-		<NormalTexture atlas="activities-incomplete"/>
-		<HighlightTexture atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
+		<Frames>
+			<Frame parentKey="TextContainer" inherits="MonthlyActivitiesButtonTextContainerTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="370" type="number"/>
+					<KeyValue key="maximumHeight" value="55" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" x="36" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<NormalTexture parentKey="NormalTexture" atlas="activities-incomplete"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
 		<Scripts>
-			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnClick method="OnClick"/>
 			<OnLeave method="OnLeave"/>
@@ -109,27 +136,26 @@
 						<Anchor point="CENTER" x="0" y="7"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontBlackMedium" justifyV="MIDDLE" justifyH="LEFT">
-					<Size x="350" y="48"/>
-					<Anchors>
-						<Anchor point="LEFT" x="40" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Points" inherits="GameFontHighlightMed2" justifyV="MIDDLE" justifyH="CENTER" text="100">
 					<Anchors>
 						<Anchor point="RIGHT" x="-40" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
-					<Size x="98" y="98"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Checkmark" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
-		<NormalTexture atlas="activities-incomplete"/>
-		<HighlightTexture atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
+		<Frames>
+			<Frame parentKey="TextContainer" inherits="MonthlyActivitiesButtonTextContainerTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="350" type="number"/>
+					<KeyValue key="maximumHeight" value="30" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" x="40" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<NormalTexture parentKey="NormalTexture" atlas="activities-incomplete"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnClick method="OnClick"/>
@@ -543,16 +569,9 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="PauseAnim" looping="NONE">
-				<Alpha duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
-				<Scripts>
-					<OnFinished function="MonthlyActivities_PendingAnimComplete"/>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>

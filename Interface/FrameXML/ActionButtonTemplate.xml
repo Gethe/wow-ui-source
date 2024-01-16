@@ -415,31 +415,6 @@ UI_shared.xsd">
 					<Color r="1" g="1" b="1" a="0.8"/>
 				</SwipeTexture>
 			</Cooldown>
-
-			<Frame parentKey="RightDivider" inherits="NineSliceCodeTemplate" hidden="true">
-				<Size x="12"/>
-				<KeyValues>
-					<KeyValue key="layoutType" value="ThreeSliceVerticalLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="-5"/>
-					<Anchor point="TOP"/>
-					<Anchor point="BOTTOM"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="BottomDivider" inherits="NineSliceCodeTemplate" hidden="true">
-				<Size y="12"/>
-				<KeyValues>
-					<KeyValue key="layoutType" value="ThreeSliceHorizontalLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" y="5"/>
-					<Anchor point="LEFT"/>
-					<Anchor point="RIGHT"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 
 		<Scripts>

@@ -324,12 +324,17 @@ function PartyMemberFrameMixin:Setup()
 	self.PetFrame:Setup();
 
 	UnitFrame_Initialize(self, self.unitToken, self.Name, self.frameType, self.Portrait,
-		   self.HealthBar, self.HealthBar.CenterText,
-		   self.ManaBar, self.ManaBar.CenterText,
-		   self.Flash, nil, nil, self.HealthBar.MyHealPredictionBar, self.HealthBar.OtherHealPredictionBar,
-		   self.HealthBar.TotalAbsorbBar, self.HealthBar.TotalAbsorbBarOverlay, self.HealthBar.OverAbsorbGlow,
-		   self.HealthBar.OverHealAbsorbGlow, self.HealthBar.HealAbsorbBar, self.HealthBar.HealAbsorbBarLeftShadow,
-		   self.HealthBar.HealAbsorbBarRightShadow);
+		   self.HealthBar,
+		   self.HealthBar.CenterText,
+		   self.ManaBar,
+		   self.ManaBar.CenterText,
+		   self.Flash, nil, nil,
+		   self.HealthBar.MyHealPredictionBar,
+		   self.HealthBar.OtherHealPredictionBar,
+		   self.HealthBar.TotalAbsorbBar,
+		   self.HealthBar.OverAbsorbGlow,
+		   self.HealthBar.OverHealAbsorbGlow,
+		   self.HealthBar.HealAbsorbBar);
 	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
 
 	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
@@ -519,15 +524,15 @@ end
 
 function PartyMemberFrameMixin:UpdateAssignedRoles()
 	local icon = self.PartyMemberOverlay.RoleIcon;
-	local role = UnitGroupRolesAssigned(self:GetUnit());
+	local role = UnitGroupRolesAssignedEnum(self:GetUnit());
 
-	if role == "TANK" then
+	if role == Enum.LFGRole.Tank then
 		icon:SetAtlas("roleicon-tiny-tank");
 		icon:Show();
-	elseif role == "HEALER" then
+	elseif role == Enum.LFGRole.Healer then
 		icon:SetAtlas("roleicon-tiny-healer");
 		icon:Show();
-	elseif role == "DAMAGER" then
+	elseif role == Enum.LFGRole.Damage then
 		icon:SetAtlas("roleicon-tiny-dps");
 		icon:Show();
 	else
@@ -622,7 +627,9 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 	local arg1, arg2, arg3 = ...;
 	local selfID = self.layoutIndex;
 
-	if event == "PLAYER_ENTERING_WORLD" then
+	if event == "UNIT_NAME_UPDATE" then
+		UnitFrame_Update(self,true);
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		if UnitExists(self:GetUnit()) then
 			self:UpdateMember();
 			self:UpdateOnlineStatus();

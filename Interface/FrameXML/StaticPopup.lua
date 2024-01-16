@@ -4798,7 +4798,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		-- Other components (like the moneyFrame) can be anchored under subtext so we anchor to the item frame instead of the bottom of the window.
 		dialog.SubText:SetPoint("TOP", dialog.ItemFrame, "BOTTOM", -itemFrameXOffset, subTextSpacingYOffset);
 	else
-		dialog.ItemFrame:SetPoint("BOTTOM", itemFrameXOffset, bottomSpace + 29);
+		dialog.ItemFrame:SetPoint("BOTTOM", itemFrameXOffset, bottomSpace + (info.compactItemFrame and 29 or 39));
 		dialog.SubText:SetPoint("TOP", dialog.text, "BOTTOM", 0, subTextSpacingYOffset);
 	end
 
@@ -4979,8 +4979,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		alertIcon:Hide();
 	end
 
-	dialog.LoadingSpinner:Hide();
-	dialog.SpinnerAnim:Stop();
+	dialog.Spinner:Hide();
 
 	if ( info.StartDelay ) then
 		dialog.startDelay = info.StartDelay(dialog);
@@ -5518,16 +5517,16 @@ function StaticPopup_HideExclusive()
 	end
 end
 
-function StaticPopup_OnAcceptWithSpinner(onAcceptCallback, onEventCallback, events, self)
+-- beforeSpinnerWaitTime is the time we wait before showing the spinner after hitting accept
+function StaticPopup_OnAcceptWithSpinner(onAcceptCallback, onEventCallback, events, beforeSpinnerWaitTime, self)
 	onAcceptCallback(self);
 
 	self.button1:Disable();
 	self.button2:Disable();
 
-	local spinnerTimer = C_Timer.NewTimer(2, function()
+	local spinnerTimer = C_Timer.NewTimer(beforeSpinnerWaitTime, function()
 		self.DarkOverlay:Show();
-		self.LoadingSpinner:Show();
-		self.SpinnerAnim:Play();
+		self.Spinner:Show();
 	end);
 
 	FrameUtil.RegisterFrameForEvents(self, events);
@@ -5537,8 +5536,7 @@ function StaticPopup_OnAcceptWithSpinner(onAcceptCallback, onEventCallback, even
 
 	local function OnComplete()
 		spinnerTimer:Cancel();
-		self.LoadingSpinner:Hide();
-		self.SpinnerAnim:Stop();
+		self.Spinner:Hide();
 		self:SetScript("OnEvent", oldOnEvent);
 		self:SetScript("OnHide", oldOnHide);
 		FrameUtil.UnregisterFrameForEvents(self, events);

@@ -1437,18 +1437,12 @@
 	<Binding name="TOGGLEPLAYERBOUNDS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		TogglePlayerBounds();
 	</Binding>
-  <Binding name="TOGGLEPERFORMANCEPAUSE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-    TogglePerformancePause();
-  </Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		TogglePerformanceValues(1);
 	</Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
     TogglePerformanceValues(0);
   </Binding>
-  <Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		ResetPerformanceValues();
-	</Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();
 	</Binding>

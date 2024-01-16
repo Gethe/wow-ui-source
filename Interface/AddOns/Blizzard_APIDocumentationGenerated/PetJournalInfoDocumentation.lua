@@ -7,6 +7,10 @@ local PetJournalInfo =
 	Functions =
 	{
 		{
+			Name = "ClearHoveredBattlePet",
+			Type = "Function",
+		},
+		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
 
@@ -192,6 +196,15 @@ local PetJournalInfo =
 		{
 			Name = "SetDefaultFilters",
 			Type = "Function",
+		},
+		{
+			Name = "SetHoveredBattlePet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
+			},
 		},
 		{
 			Name = "SpellTargetBattlePet",

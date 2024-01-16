@@ -1,13 +1,10 @@
 
-local SERVER_TIMEOUT = 20;
-
 PerksProgramMixin = {};
 function PerksProgramMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_DATA_REFRESH");
 	self:RegisterEvent("PERKS_PROGRAM_PURCHASE_SUCCESS");
 	self:RegisterEvent("PERKS_PROGRAM_REFUND_SUCCESS");
-	EventRegistry:RegisterCallback("PerksProgram.ServerPurchaseCountdownExpired", self.OnServerPurchaseCountdownExpired, self);
-	EventRegistry:RegisterCallback("PerksProgram.ServerRefundCountdownExpired", self.OnServerRefundCountdownExpired, self);
+	self:RegisterEvent("PERKS_PROGRAM_RESULT_ERROR");
 	EventRegistry:RegisterCallback("PerksProgram.OnFrozenItemConfirmationShown", self.OnFrozenItemConfirmationShown, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnFrozenItemConfirmationHidden", self.OnFrozenItemConfirmationHidden, self);
 
@@ -185,6 +182,11 @@ function PerksProgramMixin:FadeInModelScene()
 end
 
 function PerksProgramMixin:OnShow()
+	self:RegisterEvent("Perks_Program_CLOSE");
+
+	local hasErrorOccurred = false;
+	self:SetServerErrorState(hasErrorOccurred);
+
 	self.modelFadeInTimer = C_Timer.NewTimer(1.0, GenerateClosure(self.FadeInModelScene, self));
 	self:SetHideArmorSetting(nil);
 	C_PerksProgram.RequestPendingChestRewards();
@@ -202,6 +204,7 @@ function PerksProgramMixin:OnShow()
 end
 
 function PerksProgramMixin:OnHide()
+	self:UnregisterEvent("Perks_Program_CLOSE");
 
 	StaticPopup_ClearFullScreenFrame();
 	AlertFrame:ClearFullScreenFrame();
@@ -223,6 +226,9 @@ function PerksProgramMixin:OnHide()
 	PlaySound(SOUNDKIT.TRADING_POST_UI_MENU_CLOSE);
 
 	AlertFrame:UnblockLeftClickingAlerts(self);
+
+	self:CancelPurchaseTimer();
+	self:CancelRefundTimer();
 end
 
 function PerksProgramMixin:OnEvent(event, ...)
@@ -231,14 +237,13 @@ function PerksProgramMixin:OnEvent(event, ...)
 		EventRegistry:TriggerEvent("PerksProgram.AllDataRefresh");
 	elseif event =="PERKS_PROGRAM_PURCHASE_SUCCESS" then
 		PlaySound(SOUNDKIT.TRADING_POST_UI_PURCHASE_CELEBRATION);
-		if self.purchaseStateTimer then
-			self.purchaseStateTimer:Cancel();
-		end
+		self:CancelPurchaseTimer();
 	elseif event == "PERKS_PROGRAM_REFUND_SUCCESS" then
 		PlaySound(SOUNDKIT.TRADING_POST_UI_ITEM_REFUND);
-		if self.purchaseStateTimer then
-			self.purchaseStateTimer:Cancel();
-		end
+		self:CancelRefundTimer();
+	elseif event == "PERKS_PROGRAM_RESULT_ERROR" then
+		local hasErrorOccurred = true;
+		self:SetServerErrorState(hasErrorOccurred);
 	elseif event == "GLOBAL_MOUSE_DOWN" then		
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
@@ -250,6 +255,8 @@ function PerksProgramMixin:OnEvent(event, ...)
 		if isDefault and not StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
 			C_PerksProgram.ResetHeldItemDragAndDrop();
 		end
+	elseif event == "PERKS_PROGRAM_CLOSE" then
+		self:Leave();
 	end
 end
 
@@ -276,7 +283,7 @@ function PerksProgramMixin:ConfirmPurchase()
 	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(product.itemID);
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 	local markup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1);
-	
+
 	local data = {};
 	data.product = product;
 	data.link = itemLink;
@@ -286,17 +293,21 @@ function PerksProgramMixin:ConfirmPurchase()
 	StaticPopup_Show("PERKS_PROGRAM_CONFIRM_PURCHASE", product.price, markup, data);
 end
 
-function PerksProgramMixin:OnServerPurchaseCountdownExpired()
-	StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_PURCHASE");
-	StaticPopup_Show("PERKS_PROGRAM_SERVER_ERROR");
+function PerksProgramMixin:CancelPurchaseTimer()
+	StaticPopup_Hide("PERKS_PROGRAM_SLOW_PURCHASE");
+
+	if self.purchaseStateTimer then
+		self.purchaseStateTimer:Cancel();
+	end
 end
 
 function PerksProgramMixin:Purchase(data)
 	C_PerksProgram.RequestPurchase(data.product.perksVendorItemID);
-	if self.purchaseStateTimer then
-		self.purchaseStateTimer:Cancel();
-	end
-	self.purchaseStateTimer = C_Timer.NewTimer(SERVER_TIMEOUT, function() EventRegistry:TriggerEvent("PerksProgram.ServerPurchaseCountdownExpired"); end);
+	self:CancelPurchaseTimer();
+	self.purchaseStateTimer = C_Timer.NewTimer(10, function()
+		StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_PURCHASE");
+		StaticPopup_Show("PERKS_PROGRAM_SLOW_PURCHASE");
+	 end);
 end
 
 function PerksProgramMixin:ConfirmRefund()
@@ -315,17 +326,19 @@ function PerksProgramMixin:ConfirmRefund()
 	StaticPopup_Show("PERKS_PROGRAM_CONFIRM_REFUND", product.price, markup, data);
 end
 
-function PerksProgramMixin:OnServerRefundCountdownExpired()
-	StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_REFUND");
-	StaticPopup_Show("PERKS_PROGRAM_SERVER_ERROR");
+function PerksProgramMixin:CancelRefundTimer()
+	if self.refundStateTimer then
+		self.refundStateTimer:Cancel();
+	end
 end
 
 function PerksProgramMixin:Refund(data)
 	C_PerksProgram.RequestRefund(data.product.perksVendorItemID);
-	if self.purchaseStateTimer then
-		self.purchaseStateTimer:Cancel();
-	end
-	self.purchaseStateTimer = C_Timer.NewTimer(SERVER_TIMEOUT, function() EventRegistry:TriggerEvent("PerksProgram.ServerRefundCountdownExpired"); end);
+	self:CancelRefundTimer();
+	self.refundStateTimer = C_Timer.NewTimer(45, function()
+		-- If refund takes an excessively long time then just act like a server error happened so we don't lock up the UI
+		self:SetServerErrorState(true);
+	 end);
 end
 
 function PerksProgramMixin:OnFrozenItemConfirmationShown()
@@ -401,6 +414,37 @@ function PerksProgramMixin:GetFrozenPerksVendorItemInfo()
 		itemInfo.isFrozen = true;
 	end
 	return BuildPerksVendorItemInfo(itemInfo);
+end
+
+function PerksProgramMixin:HasFrozenItem()
+	return C_PerksProgram.GetFrozenPerksVendorItemInfo() ~= nil;
+end
+
+function PerksProgramMixin:SetServerErrorState(hasErrorOccurred)
+	self.hasServerErrorOccurred = hasErrorOccurred;
+	EventRegistry:TriggerEvent("PerksProgram.OnServerErrorStateChanged");
+
+	-- If we had any confirmation static popup open then close the popup and show the error dialog
+	if self.hasServerErrorOccurred then
+		if StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_PURCHASE") then
+			StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_PURCHASE");
+			self:ShowServerErrorDialog();
+		elseif StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_REFUND") then
+			StaticPopup_Hide("PERKS_PROGRAM_CONFIRM_REFUND");
+			self:ShowServerErrorDialog();
+		elseif StaticPopup_Visible("PERKS_PROGRAM_CONFIRM_OVERRIDE_FROZEN_ITEM") then
+			EventRegistry:TriggerEvent("PerksProgram.CancelFrozenItemConfirmation");
+			self:ShowServerErrorDialog();
+		end
+	end
+end
+
+function PerksProgramMixin:GetServerErrorState()
+	return self.hasServerErrorOccurred;
+end
+
+function PerksProgramMixin:ShowServerErrorDialog()
+	StaticPopup_Show("PERKS_PROGRAM_SERVER_ERROR");
 end
 
 ----------------------------------------------------------------------------------

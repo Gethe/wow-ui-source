@@ -900,7 +900,8 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Frame parentKey="SearchingSpinner" inherits="LoadingSpinnerTemplate">
+			<Frame parentKey="SearchingSpinner" inherits="SpinnerTemplate">
+				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -908,7 +909,7 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="SEARCHING">
 							<Anchors>
-								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="0"/>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="9"/>
 							</Anchors>
 						</FontString>
 					</Layer>

@@ -383,10 +383,6 @@ function FCFOptionsDropDown_Initialize(dropDown)
 	info.r = r;
 	info.g = g;
 	info.b = b;
-	-- Done because the slider is reversed
-	if ( a ) then
-		a = 1- a;
-	end
 	info.opacity = a;
 	info.swatchFunc = FCF_SetChatWindowBackGroundColor;
 	info.func = UIDropDownMenuButton_OpenColorPicker;
@@ -985,7 +981,7 @@ function FCF_SetChatWindowBackGroundColor()
 end
 
 function FCF_SetChatWindowOpacity()
-	local alpha = 1.0 - OpacitySliderFrame:GetValue();
+	local alpha = ColorPickerFrame:GetColorAlpha();
 	FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), alpha);
 end
 
@@ -1021,8 +1017,8 @@ function FCF_CancelWindowColorSettings(previousValues)
 		FCF_SetWindowColor(FCF_GetCurrentChatFrame(), previousValues.r, previousValues.g, previousValues.b)
 		SetChatWindowColor(FCF_GetCurrentChatFrameID(), previousValues.r, previousValues.g, previousValues.b);
 	end
-	if ( previousValues.opacity ) then
-		FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), 1 - previousValues.opacity);
+	if ( previousValues.a ) then
+		FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), previousValues.a);
 	end
 end
 
@@ -1768,7 +1764,11 @@ function FCF_ResetChatWindows()
 	DEFAULT_CHAT_FRAME.chatframe = DEFAULT_CHAT_FRAME;
 
 	FCF_ResetChatWindow(ChatFrame2, COMBAT_LOG);
-	FCF_ResetChatWindow(ChatFrame3, VOICE);
+
+	local showingVoiceTab = (GetCVarBool("speechToText") and C_VoiceChat.IsTranscribing()) or C_VoiceChat.IsSpeakForMeActive();
+	if(showingVoiceTab) then
+		FCF_ResetChatWindow(ChatFrame3, VOICE);
+	end
 
 	for _, chatFrameName in ipairs(CHAT_FRAMES) do
 		if ( chatFrameName ~= "ChatFrame1" ) then
@@ -1789,7 +1789,10 @@ function FCF_ResetChatWindows()
 	ChatFrame1.init = 0;
 	FCF_DockFrame(ChatFrame1, 1, true);
 	FCF_DockFrame(ChatFrame2, 2);
-	FCF_DockFrame(ChatFrame3, 3);
+
+	if(showingVoiceTab) then
+		FCF_DockFrame(ChatFrame3, 3);
+	end
 
 	-- resets to hard coded defaults
 	ResetChatWindows(CHAT_FRAME_DEFAULT_FONT_SIZE);

@@ -8,6 +8,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Deprecated_ArenaUI.lua"/>
+	<Frame name="DeprecatedArenaBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
 	<StatusBar name="ArenaCastingBarFrameTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" virtual="true" hidden="true">
 		<Size x="80" y="14"/>
 		<Layers>
@@ -317,32 +322,25 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Button>
-	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate, PingReceiverAttributeTemplate" mixin="ArenaEnemyMatchFrameMixin, PingableType_UnitFrameMixin" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
-			</Layer>
-		</Layers>
+	<Button name="ArenaEnemyMatchFrameTemplate" frameStrata="LOW" movable="true" hidden="true" inherits="ArenaEnemyPrepFrameTemplate, PingableUnitFrameTemplate" mixin="ArenaEnemyMatchFrameMixin" virtual="true">
 		<Frames>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
-							<Layer level="BACKGROUND" textureSubLevel="-1">
-								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 						</Layers>
+					</Frame>
+					<Frame name="$parentMyHealPredictionBar" inherits="DeprecatedArenaBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame name="$parentOtherHealPredictionBar" inherits="DeprecatedArenaBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame name="$parentHealAbsorbBar" inherits="DeprecatedArenaBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate">
+						<KeyValues>
+							<KeyValue key="fillTexture" value="Interface\RaidFrame\Shield-Fill" type="string"/>
+						</KeyValues>
 					</Frame>
 				</Frames>
 			</Frame>

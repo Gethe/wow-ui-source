@@ -762,6 +762,10 @@ function CompactUnitFrame_UpdateName(frame)
 			end
 		end
 
+		if ( UnitInPartyIsAI(frame.unit) and C_LFGInfo.IsInLFGFollowerDungeon() ) then
+			name = LFG_FOLLOWER_NAME_PREFIX:format(name);
+		end
+
 		frame.name:SetText(name);
 
 		if ( CompactUnitFrame_IsTapDenied(frame) or (UnitIsDead(frame.unit) and not UnitIsPlayer(frame.unit)) ) then
@@ -1118,8 +1122,6 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 	CompactUnitFrameUtil_UpdateFillBar(frame, appendTexture, frame.totalAbsorb, totalAbsorb)
 end
 
---WARNING: This function is very similar to the function UnitFrameUtil_UpdateFillBar in UnitFrame.lua.
---If you are making changes here, it is possible you may want to make changes there as well.
 function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount, barOffsetXPercent)
 	local totalWidth, totalHeight = frame.healthBar:GetSize();
 

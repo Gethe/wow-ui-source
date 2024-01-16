@@ -157,7 +157,7 @@ end
 function PingManager:SetupDefaultPingOptions()
     self.defaultWedgeInfo = {};
 
-    local pingTypeData = C_PingSecure.GetDefaultPingOptions();
+    local pingTypeData = C_Ping.GetDefaultPingOptions();
     table.sort(pingTypeData, SortWedges);
 
     local formattedIcon = "Ping_Wheel_Icon_%s";
@@ -345,7 +345,7 @@ function PingManager:ShowPingSpot(type, posX, posY)
     pingSpot:ClearAllPoints();
     pingSpot:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", posX, posY);
 
-    local uiTextureKit = C_PingSecure.GetTextureKitForType(type);
+    local uiTextureKit = C_Ping.GetTextureKitForType(type);
     pingSpot.GlowIn:SetAtlas(("Ping_SpotGlw_%s_In"):format(uiTextureKit), true);
     pingSpot.GlowOut:SetAtlas(("Ping_SpotGlw_%s_Out"):format(uiTextureKit), true);
 

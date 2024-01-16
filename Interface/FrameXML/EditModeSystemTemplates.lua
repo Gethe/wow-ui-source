@@ -833,7 +833,7 @@ EditModeActionBarSystemMixin = {};
 function EditModeActionBarSystemMixin:UpdateSystem(systemInfo)
 	EditModeSystemMixin.UpdateSystem(self, systemInfo);
 	self:RefreshGridLayout();
-	self:RefreshButtonArt();
+	self:RefreshDividers();
 end
 
 function EditModeActionBarSystemMixin:OnEditModeEnter()
@@ -877,20 +877,17 @@ function EditModeActionBarSystemMixin:UpdateGridLayout()
 	EditModeManagerFrame:UpdateActionBarLayout(self);
 end
 
-function EditModeActionBarSystemMixin:MarkButtonArtDirty()
-	self.buttonArtDirty = true;
+function EditModeActionBarSystemMixin:MarkDividersDirty()
+	self.dividersDirty = true;
 end
 
-function EditModeActionBarSystemMixin:RefreshButtonArt()
-	if self.buttonArtDirty then
-		self:UpdateButtonArt()
-		self.buttonArtDirty = false;
-	end
-end
+function EditModeActionBarSystemMixin:RefreshDividers()
+	if self.dividersDirty then
+		if self.UpdateDividers then
+			self:UpdateDividers();
+		end
 
-function EditModeActionBarSystemMixin:UpdateButtonArt()
-	for i, actionButton in pairs(self.actionButtons) do
-		actionButton:UpdateButtonArt(i >= self.numButtonsShowable);
+		self.dividersDirty = false;
 	end
 end
 
@@ -908,8 +905,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingOrientation()
 	-- Since the orientation changed we'll want to update the grid layout
 	self:MarkGridLayoutDirty();
 
-	-- Update the art since we'll possibly be switching from horizontal to vertical dividers
-	self:MarkButtonArtDirty();
+	-- Update the dividers since we'll possibly be switching from horizontal to vertical dividers
+	self:MarkDividersDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
@@ -918,8 +915,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingNumRows()
 	-- Since the num rows changed we'll want to update the grid layout
 	self:MarkGridLayoutDirty();
 
-	-- Update the art since we hide dividers when num rows > 1
-	self:MarkButtonArtDirty();
+	-- Update the dividers since we hide dividers when num rows > 1
+	self:MarkDividersDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
@@ -929,8 +926,8 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingNumIcons()
 	-- Since the num icons changed we'll want to update the grid layout
 	self:MarkGridLayoutDirty();
 
-	-- Update the art since we'll need to change what dividers are shown specifically for the new last button
-	self:MarkButtonArtDirty();
+	-- Update the dividers since we'll need to change what dividers are shown specifically for the new last button
+	self:MarkDividersDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingIconSize()
@@ -958,22 +955,21 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingIconPadding()
 	-- Since the icon padding changed we'll want to update the grid layout
 	self:MarkGridLayoutDirty();
 
-	-- Update art since we will hide dividers if padding is changed
-	self:MarkButtonArtDirty();
+	-- Update dividers since we will hide dividers if padding is changed
+	self:MarkDividersDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarArt()
-	local hideBarArt = self:GetSettingValueBool(Enum.EditModeActionBarSetting.HideBarArt);
+	self.hideBarArt = self:GetSettingValueBool(Enum.EditModeActionBarSetting.HideBarArt);
 
-	self:UpdateEndCaps(hideBarArt);
-	self.BorderArt:SetShown(not hideBarArt);
-	self.Background:SetShown(not hideBarArt);
+	self:UpdateEndCaps(self.hideBarArt);
+	self.BorderArt:SetShown(not self.hideBarArt);
 
 	for i, actionButton in pairs(self.actionButtons) do
-		actionButton.showButtonArt = not hideBarArt;
+		actionButton:UpdateButtonArt();
 	end
 
-	self:MarkButtonArtDirty();
+	self:MarkDividersDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarScrolling()
@@ -998,6 +994,9 @@ end
 function EditModeActionBarSystemMixin:UpdateSystemSettingAlwaysShowButtons()
 	local alwaysShowButtons = self:GetSettingValueBool(Enum.EditModeActionBarSetting.AlwaysShowButtons);
 	self:SetShowGrid(alwaysShowButtons, ACTION_BUTTON_SHOW_GRID_REASON_CVAR);
+
+	-- Update dividers since some buttons may have hidden and we show dividers based on buttons shown
+	self:MarkDividersDirty();
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -1030,7 +1029,7 @@ function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemU
 
 	if not entireSystemUpdate then
 		self:RefreshGridLayout();
-		self:RefreshButtonArt();
+		self:RefreshDividers();
 	end
 
 	self:ClearDirtySetting(setting);

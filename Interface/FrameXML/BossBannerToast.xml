@@ -351,6 +351,7 @@ UI_shared.xsd">
 			<OnLoad function="BossBanner_OnLoad"/>
 			<OnEvent function="BossBanner_OnEvent"/>
 			<OnUpdate function="BossBanner_OnUpdate"/>
+			<OnMouseDown function="BossBanner_OnMouseDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

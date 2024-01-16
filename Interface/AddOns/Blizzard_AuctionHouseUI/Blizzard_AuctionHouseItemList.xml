@@ -72,6 +72,21 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="9" y="4"/>
 				</Anchors>
 			</EventFrame>
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-12" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="SearchingText" inherits="GameFontNormalHuge4" text="SEARCHING">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -89,19 +104,8 @@
 						<Color r="0" g="0" b="0"/>
 					</Shadow>
 				</FontString>
-				<Texture parentKey="LoadingSpinner" atlas="auctionhouse-ui-loadingspinner" hidden="true">
-					<Size x="146" y="146"/>
-					<Anchors>
-						<Anchor point="CENTER" x="-12" y="0"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="SpinnerAnim" looping="REPEAT">
-				<Rotation childKey="LoadingSpinner" order="1" duration="1" degrees="-360"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

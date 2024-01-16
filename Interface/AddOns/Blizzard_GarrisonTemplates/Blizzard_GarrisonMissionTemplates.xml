@@ -852,19 +852,20 @@
 					</Layer>
 				</Layers>
 			</CinematicModel>
-			<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
+			<Frame parentKey="LoadingFrame" inherits="SpinnerTemplate" hidden="true">
+				<Size x="30" y="30"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="9" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self:SetPoint("TOP", self:GetParent().ViewButton, "BOTTOM", -self.Label:GetWidth()/2, 0);
+						self:SetPoint("TOP", self:GetParent().ViewButton, "BOTTOM", -self.Label:GetWidth()/2, -10);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1344,19 +1345,20 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
+			<Frame parentKey="LoadingFrame" inherits="SpinnerTemplate" hidden="true">
+				<Size x="20" y="20"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="5"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self:SetPoint("TOP", self:GetParent().NextMissionButton, "BOTTOM", -self.Label:GetWidth()/2, 4);
+						self:SetPoint("TOP", self:GetParent().NextMissionButton, "BOTTOM", -self.Label:GetWidth()/2, -9);
 					</OnLoad>
 				</Scripts>
 			</Frame>

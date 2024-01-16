@@ -422,7 +422,6 @@ function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()
 		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
 	else
 		self.BrowseFrame.OrderList.LoadingSpinner:Hide();
-		self.BrowseFrame.OrderList.SpinnerAnim:Stop();
 		self.BrowseFrame.BackButton:Hide();
 
 		self.BrowseFrame.OrderList.ResultsText:SetText(CRAFTER_CRAFTING_ORDERS_BROWSE_FAVORITES_TIP);
@@ -624,7 +623,6 @@ function ProfessionsCraftingOrderPageMixin:SendOrderRequest(request)
 
 		self.BrowseFrame.OrderList.ResultsText:Hide();
 		self.BrowseFrame.OrderList.LoadingSpinner:Show();
-		self.BrowseFrame.OrderList.SpinnerAnim:Restart();
 		self.BrowseFrame.OrderList.ScrollBox:Hide();
 
 		if not request.selectedSkillLineAbility then
@@ -671,7 +669,6 @@ end
 
 function ProfessionsCraftingOrderPageMixin:ShowGeneric(orders, browseType, offset, isSorted)
 	self.BrowseFrame.OrderList.LoadingSpinner:Hide();
-	self.BrowseFrame.OrderList.SpinnerAnim:Stop();
 	self.BrowseFrame.OrderList.ScrollBox:Show();
 
 	local dataProvider;

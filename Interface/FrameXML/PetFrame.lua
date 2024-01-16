@@ -17,24 +17,23 @@ function PetFrameMixin:OnLoad()
 						 PetFrameManaBar, PetFrameManaBarText,
 						 PetFrameFlash, nil, nil,
 						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar,
-						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay,
-						 PetFrameOverAbsorbGlow, PetFrameOverHealAbsorbGlow, PetFrameHealAbsorbBar,
-						 PetFrameHealAbsorbBarLeftShadow, PetFrameHealAbsorbBarRightShadow);
+						 PetFrameTotalAbsorbBar,
+						 PetFrameOverAbsorbGlow, PetFrameOverHealAbsorbGlow, PetFrameHealAbsorbBar);
 
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
 
 	-- Mask the various bar assets, to avoid any overflow with the frame shape.
 	PetFrameHealthBar:GetStatusBarTexture():AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameMyHealPredictionBar:AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameOtherHealPredictionBar:AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameTotalAbsorbBar:AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameTotalAbsorbBarOverlay:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameMyHealPredictionBar.Fill:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameOtherHealPredictionBar.Fill:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameTotalAbsorbBar.Fill:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameTotalAbsorbBar.TiledFillOverlay:AddMaskTexture(PetFrameHealthBarMask);
 	PetFrameOverAbsorbGlow:AddMaskTexture(PetFrameHealthBarMask);
 	PetFrameOverHealAbsorbGlow:AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameHealAbsorbBar:AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameHealAbsorbBarLeftShadow:AddMaskTexture(PetFrameHealthBarMask);
-	PetFrameHealAbsorbBarRightShadow:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameHealAbsorbBar.Fill:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameHealAbsorbBar.LeftShadow:AddMaskTexture(PetFrameHealthBarMask);
+	PetFrameHealAbsorbBar.RightShadow:AddMaskTexture(PetFrameHealthBarMask);
 
 	PetFrameManaBar:GetStatusBarTexture():AddMaskTexture(PetFrameManaBarMask);
 

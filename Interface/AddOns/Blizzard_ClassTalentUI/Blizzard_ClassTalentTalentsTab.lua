@@ -304,7 +304,6 @@ function ClassTalentTalentsTabMixin:OnEvent(event, ...)
 	elseif event == "STARTER_BUILD_ACTIVATION_FAILED" then
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitFailed);
 		self:ResetToLastConfigID();
-		UIErrorsFrame:AddExternalErrorMessage("ERR_INTERNAL_ERROR");
 	elseif event == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateSpecBackground();
 		self:RefreshLoadoutOptions();

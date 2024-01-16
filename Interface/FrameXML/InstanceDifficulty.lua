@@ -55,7 +55,7 @@ function InstanceDifficultyMixin:Update()
 		showDifficultyFrame = guildFrame;
 	elseif ( isChallengeMode ) then
 		showDifficultyFrame = challengeModeFrame;
-	elseif ( instanceType == "raid" or isHeroic or displayMythic or displayHeroic ) then
+	elseif (instanceType ~= "none") then
 		showDifficultyFrame = instanceFrame;
 	end
 
@@ -71,6 +71,7 @@ function InstanceDifficultyMixin:Update()
 		local challengeModeTexture = guildInstance.ChallengeModeTexture;
 		local mythicTexture = guildInstance.MythicTexture;
 		local heroicTexture = guildInstance.HeroicTexture;
+		local normalTexture = guildInstance.NormalTexture;
 
 		local symbolTexture = nil;
 		if ( isChallengeMode ) then
@@ -79,11 +80,14 @@ function InstanceDifficultyMixin:Update()
 			symbolTexture = mythicTexture;
 		elseif ( isHeroic or displayHeroic ) then
 			symbolTexture = heroicTexture;
+		else
+			symbolTexture = normalTexture;
 		end
 		
 		challengeModeTexture:SetShown(symbolTexture == challengeModeTexture);
 		mythicTexture:SetShown(symbolTexture == mythicTexture);
 		heroicTexture:SetShown(symbolTexture == heroicTexture);
+		normalTexture:SetShown(symbolTexture == normalTexture);
 
 		guildInstance:Layout();
 		guildFrame:Layout();
@@ -94,6 +98,7 @@ function InstanceDifficultyMixin:Update()
 		instanceFrame.Text:SetText(instanceGroupSize);
 		instanceFrame.HeroicTexture:SetShown((isHeroic or displayHeroic) and not displayMythic);
 		instanceFrame.MythicTexture:SetShown(displayMythic);
+		instanceFrame.NormalTexture:SetShown(not isHeroic and not displayHeroic and not displayMythic);
 
 		instanceFrame:Layout();
 	end
@@ -104,15 +109,23 @@ function InstanceDifficultyMixin:Update()
 end
 
 function InstanceDifficultyMixin:OnEnter()
+	if ( not self.Instance:IsShown() ) then
+		return;
+	end
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, lfgID = GetInstanceInfo();
 	local isLFR = select(8, GetDifficultyInfo(difficulty))
-	if (isLFR and lfgID) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
-		local name = GetLFGDungeonInfo(lfgID);
-		GameTooltip:SetText(RAID_FINDER, 1, 1, 1);
-		GameTooltip:AddLine(name);
-		GameTooltip:Show();
+
+	if (not DifficultyUtil.GetDifficultyName(difficulty)) then
+		return;
 	end
+	
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(DifficultyUtil.GetDifficultyName(difficulty)));
+	if (isLFR and lfgID) then
+		GameTooltip_SetTitle(GameTooltip, RAID_FINDER);
+	end
+	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(GetNumGroupMembers(), maxPlayers));
+	GameTooltip:Show();
 end
 
 function InstanceDifficultyMixin:OnLeave()
@@ -139,27 +152,35 @@ GuildInstanceDifficultyMixin = { };
 
 function GuildInstanceDifficultyMixin:OnEnter()
 	local guildName = GetGuildInfo("player");
-	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();
+	local _, instanceType, difficulty, _, maxPlayers = GetInstanceInfo();
 	local _, numGuildPresent, numGuildRequired, xpMultiplier = InGuildParty();
+
+	if (not DifficultyUtil.GetDifficultyName(difficulty)) then
+		return;
+	end
+	
 	-- hack alert
 	if ( instanceType == "arena" ) then
 		maxPlayers = numGuildRequired;
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
-	GameTooltip:SetText(GUILD_GROUP, 1, 1, 1);
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(DifficultyUtil.GetDifficultyName(difficulty)));
+	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(GetNumGroupMembers(), maxPlayers));
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddColoredLine(GameTooltip, GUILD_GROUP, GREEN_FONT_COLOR);
 	if ( xpMultiplier < 1 ) then
-		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP, numGuildRequired, maxPlayers, guildName, xpMultiplier * 100), nil, nil, nil, true);
+		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP:format(numGuildRequired, maxPlayers, guildName, xpMultiplier * 100), true);
 	elseif ( xpMultiplier > 1 ) then
-		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP, guildName, xpMultiplier * 100), nil, nil, nil, true);
+		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP:format(guildName, xpMultiplier * 100), true);
 	else
 		if ( instanceType == "party" and maxPlayers == 5 ) then
 			numGuildRequired = 4;
 		end
-		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE, numGuildRequired, maxPlayers, guildName), nil, nil, nil, true);
+		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE:format(numGuildRequired, maxPlayers, guildName), true);
 	end
 	GameTooltip:Show();
 end
 
 function GuildInstanceDifficultyMixin:OnLeave()
-	GameTooltip:Hide();
+	GameTooltip_Hide();
 end

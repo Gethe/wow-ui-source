@@ -64,6 +64,22 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetAuraDataByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAuraDataBySlot",
 			Type = "Function",
 
@@ -71,6 +87,56 @@ local UnitAura =
 			{
 				{ Name = "unitToken", Type = "cstring", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetAuraDataBySpellName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "spellName", Type = "cstring", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetAuraSlots",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "maxSlots", Type = "number", Nilable = true },
+				{ Name = "continuationToken", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "outContinuationToken", Type = "number", Nilable = true },
+				{ Name = "slots", Type = "number", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
+			Name = "GetBuffDataByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -90,6 +156,22 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "cooldownSpellID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDebuffDataByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
 			},
 		},
 		{

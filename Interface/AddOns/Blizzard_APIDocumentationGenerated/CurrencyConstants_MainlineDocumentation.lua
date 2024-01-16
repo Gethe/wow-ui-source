@@ -97,7 +97,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "AccountHwmUpdate", Type = "CurrencySource", EnumValue = 61 },
 				{ Name = "ConvertItemsToCurrencyAndReputation", Type = "CurrencySource", EnumValue = 62 },
 				{ Name = "PhBuffer_63", Type = "CurrencySource", EnumValue = 63 },
-				{ Name = "PhBuffer_64", Type = "CurrencySource", EnumValue = 64 },
+				{ Name = "SpellSkipLinkedCurrency", Type = "CurrencySource", EnumValue = 64 },
 				{ Name = "Last", Type = "CurrencySource", EnumValue = 65 },
 			},
 		},

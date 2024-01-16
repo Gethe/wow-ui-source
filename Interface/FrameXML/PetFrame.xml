@@ -1,8 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI_shared.xsd">
 	<Script file="PetFrame.lua"/>
+
+	<Frame name="PetFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillAtlas" value="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health-Status" type="string"/>
+		</KeyValues>
+	</Frame>
+
 	<!-- Note that pet frame uses target of target frame assets/uses TargetofTarget for the frameType, and this is intentional. -->
-	<Button name="PetFrame" mixin="PetFrameMixin, PingableType_UnitFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate, PingReceiverAttributeTemplate" parent="PlayerFrame">
+	<Button name="PetFrame" mixin="PetFrameMixin" frameStrata="LOW" inherits="PlayerFrameBottomManagedFrameTemplate, SecureUnitButtonTemplate, EditModePetFrameSystemTemplate, PingableUnitFrameTemplate" parent="PlayerFrame">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="48" type="number"/>
@@ -75,22 +82,19 @@ UI_shared.xsd">
 					</Frame>
 				</Frames>
 			</Frame>
-			<StatusBar name="PetFrameHealthBar" inherits="TextStatusBar" mixin="PetHealthBarMixin">
+			<StatusBar name="PetFrameHealthBar" inherits="TextStatusBar" mixin="PetHealthBarMixin" drawLayer="BACKGROUND">
 				<Size x="70" y="10"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeTo="PetPortrait" relativePoint="RIGHT" x="2" y="-3.5"/>
 				</Anchors>
+				<Frames>
+					<Frame name="PetFrameMyHealPredictionBar" inherits="PetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame name="PetFrameOtherHealPredictionBar" inherits="PetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame name="PetFrameHealAbsorbBar" inherits="PetFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame name="PetFrameTotalAbsorbBar" inherits="PetFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+				</Frames>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="PetFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-						<Texture name="PetFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-						<Texture name="PetFrameTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-						<Texture name="PetFrameHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-						<Texture name="PetFrameHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-						<Texture name="PetFrameHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="PetFrameTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 						<Texture name="PetFrameOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 						<Texture name="PetFrameOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 					</Layer>

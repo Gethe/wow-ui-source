@@ -196,13 +196,7 @@ local function Register()
 	do
 		local setting = Settings.RegisterCVarSetting(category, "showTutorials", Settings.VarType.Boolean, SHOW_TUTORIALS);
 		local function OnButtonClick(button, buttonName, down)
-			SetCVar("closedInfoFrames", ""); -- reset the help plates too
-			SetCVar("closedInfoFramesAccountWide", "");
-			SetCVar("showNPETutorials", "1");
-			ResetTutorials();
-			TutorialFrame_ClearQueue();
-			NPETutorial_AttemptToBegin();
-			TriggerTutorial(1);
+			InterfaceOverrides.ShowTutorialsOnButtonClick();
 
 			button:Disable();
 

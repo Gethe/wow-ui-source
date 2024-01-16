@@ -1128,6 +1128,25 @@ function ScrollUtil.RegisterAlternateRowBehavior(scrollBox, callback)
 	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, OnDataRangeChanged);
 end
 
+function ScrollUtil.AlternateDataValue(dataProvider, predicate, field, initValue)
+	if type(initValue) ~= boolean then
+		initValue = true;
+	end
+	if field == nil then
+		field = "odd";
+	end
+	local odd = initValue ~= nil and initValue or true;
+	for index, elementDataIter in dataProvider:EnumerateEntireRange() do
+		local data = elementDataIter:GetData();
+		if predicate and predicate(data) then
+			odd = initValue or true;
+		else
+			data[field] = odd;
+			odd = not odd;
+		end
+	end
+end
+
 function ScrollUtil.RegisterTableBuilder(scrollBox, tableBuilder, elementDataTranslator)
 	local onInitialized = function(o, frame, elementData)
 		tableBuilder:AddRow(frame, elementDataTranslator(elementData));

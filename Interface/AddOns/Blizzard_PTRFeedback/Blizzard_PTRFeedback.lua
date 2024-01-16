@@ -46,6 +46,7 @@ PTR_IssueReporter.Assets = {
     BossReportIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
     PetReportIcon = "Interface\\Icons\\tracking_wildpet",
     EditModeIcon = "Interface\\Icons\\ability_siege_engineer_pattern_recognition",
+    AIBotIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.Init()
@@ -442,7 +443,39 @@ function PTR_IssueReporter.HandleMapEvents()
         PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.MapIDExit, PTR_IssueReporter.Data.PreviousMapID, previousMapDataPackage)
         PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.MapIDEnter, PTR_IssueReporter.Data.CurrentMapID, currentMapDataPackage)
         PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.MapDifficultyIDEnded, PTR_IssueReporter.Data.PreviousMapDifficultyID, previousMapDataPackage)
-        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.MapDifficultyIDStarted, PTR_IssueReporter.Data.CurrentMapDifficultyID, currentMapDataPackage)        
+        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.MapDifficultyIDStarted, PTR_IssueReporter.Data.CurrentMapDifficultyID, currentMapDataPackage)
+
+		PTR_IssueReporter.HandleGroupRosterChanged()
+    end
+end
+----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.HandleGroupRosterChanged()
+	if IsInRaid() then
+        return
+    end
+    
+    if not IsInGroup() then
+        return
+    end
+    
+    local groupHasAIFollowers = false
+    for i = 1, GetNumGroupMembers(), 1 do
+        local unit = "party"..i
+        if (PTR_IssueReporter.IsUnitAIFollower(unit)) then
+            groupHasAIFollowers = true
+        end
+    end
+    
+    if (groupHasAIFollowers) then        
+        groupHasAIBots = true
+        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.AIBotsJoinedParty)
+    else
+        if not groupHasAIBots then
+            return
+        end
+        
+        groupHasAIBots = false
+        PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.AIBotsLeftParty)
     end
 end
 ----------------------------------------------------------------------------------------------------

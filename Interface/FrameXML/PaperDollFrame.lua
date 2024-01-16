@@ -253,8 +253,8 @@ PAPERDOLL_STATCATEGORIES= {
 			[3] = { stat = "INTELLECT", primary = LE_UNIT_STAT_INTELLECT },
 			[4] = { stat = "STAMINA" },
 			[5] = { stat = "ARMOR" },
-			[6] = { stat = "STAGGER", hideAt = 0, roles = { "TANK" }},
-			[7] = { stat = "MANAREGEN", roles =  { "HEALER" } },
+			[6] = { stat = "STAGGER", hideAt = 0, roles = { Enum.LFGRole.Tank }},
+			[7] = { stat = "MANAREGEN", roles =  { Enum.LFGRole.Healer } },
 		},
 	},
 	[2] = {
@@ -267,8 +267,8 @@ PAPERDOLL_STATCATEGORIES= {
 			{ stat = "LIFESTEAL", hideAt = 0 },
 			{ stat = "AVOIDANCE", hideAt = 0 },
 			{ stat = "SPEED", hideAt = 0 },
-			{ stat = "DODGE", roles =  { "TANK" } },
-			{ stat = "PARRY", hideAt = 0, roles =  { "TANK" } },
+			{ stat = "DODGE", roles =  { Enum.LFGRole.Tank } },
+			{ stat = "PARRY", hideAt = 0, roles =  { Enum.LFGRole.Tank } },
 			{ stat = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 		},
 	},
@@ -1924,7 +1924,7 @@ function PaperDollFrame_UpdateStats()
 	local spec, role;
 	spec = GetSpecialization();
 	if spec then
-		role = GetSpecializationRole(spec);
+		role = GetSpecializationRoleEnum(spec);
 	end
 
 	CharacterStatsPane.statsFramePool:ReleaseAll();

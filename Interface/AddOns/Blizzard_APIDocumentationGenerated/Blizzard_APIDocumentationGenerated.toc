@@ -37,6 +37,7 @@ ClientSceneDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
+ConnectionDocumentation.lua
 ConsoleDocumentation.lua
 ConsoleScriptCollectionDocumentation.lua
 ContainerDocumentation.lua
@@ -46,6 +47,7 @@ CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
 CursorUtilDocumentation.lua
 DeathInfoDocumentation.lua
+DebugToggleDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
@@ -89,6 +91,7 @@ LocaleDocumentation.lua
 LocalizationDocumentation.lua
 LootDocumentation.lua
 LossOfControlDocumentation.lua
+MacOptionsDocumentation.lua
 MapExplorationDocumentation.lua
 MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
@@ -111,6 +114,7 @@ PlatformDocumentation.lua
 PlayerInfoDocumentation.lua
 PlayerInteractionManagerDocumentation.lua
 PlayerLocationDocumentation.lua
+PlayerScriptDocumentation.lua
 PonyDocumentation.lua
 PortraitDocumentation.lua
 PvpInfoDocumentation.lua
@@ -139,6 +143,7 @@ SimpleAnimScaleLineAPIDocumentation.lua
 SimpleAnimTextureCoordTranslationAPIDocumentation.lua
 SimpleAnimTranslationAPIDocumentation.lua
 SimpleAnimTranslationLineAPIDocumentation.lua
+SimpleAnimVertexColorAPIDocumentation.lua
 SimpleAnimatableObjectAPIDocumentation.lua
 SimpleBrowserAPIDocumentation.lua
 SimpleButtonAPIDocumentation.lua
@@ -181,6 +186,7 @@ StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 SystemTimeDocumentation.lua
 TTSSettingsDocumentation.lua
+TargetScriptDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
 TooltipComparisonDocumentation.lua
@@ -200,6 +206,7 @@ UITimerDocumentation.lua
 UIWidgetManagerDocumentation.lua
 URLDocumentation.lua
 UnitDocumentation.lua
+UnitAuraDocumentation.lua
 UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
 VideoDocumentation.lua
@@ -281,7 +288,6 @@ TransmogSetsDocumentation.lua
 UIEventToastManagerDocumentation.lua
 UIFrameManagerDocumentation.lua
 UIModifiedInstanceDocumentation.lua
-UnitAuraDocumentation.lua
 WarCampaignDocumentation.lua
 WeeklyRewardsDocumentation.lua
 ZoneAbilityDocumentation.lua
@@ -367,6 +373,7 @@ UITextureAssetSharedDocumentation.lua
 UITextureConstantsDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
 UiModelSceneConstantsDocumentation.lua
+UnitConstantsDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua
@@ -391,5 +398,4 @@ QuestConstants_MainlineDocumentation.lua
 SoulbindsConstantsDocumentation.lua
 SuperTrackManagerSharedDocumentation.lua
 TransmogConstantsDocumentation.lua
-UnitConstantsDocumentation.lua
 # End documentation files here

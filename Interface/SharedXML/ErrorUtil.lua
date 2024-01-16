@@ -2,16 +2,19 @@ function CallErrorHandler(...)
 	return geterrorhandler()(...);
 end
 
-function assertsafe(cond, msg, ...)
+function assertsafe(cond, msgStringOrFunction, ...)
 	if not cond then
-		if type(msg) == 'string' and select('#', ...) > 0 then
-			msg = msg:format(...);
+		local error = msgStringOrFunction;
+		if type(msgStringOrFunction) == 'string' and select('#', ...) > 0 then
+			error = msgStringOrFunction:format(...);
+		elseif type(msgStringOrFunction) == 'function' then
+			error = msgStringOrFunction(...);
 		end
 
 		if HandleLuaError then
-			HandleLuaError(msg);
+			HandleLuaError(error);
 		elseif ProcessExceptionClient then
-			ProcessExceptionClient(msg);
+			ProcessExceptionClient(error);
 		end
 	end
 end

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI.xsd">
 	<Script file="CompactUnitFrame.lua"/>
 	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="AnyDown">
 		<Size x="17" y="17"/>
@@ -68,7 +68,7 @@
 		</Scripts>
 	</Button>
 	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true"/>
-	<Button name="CompactUnitFrameTemplate" mixin="PingableType_UnitFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingReceiverAttributeTemplate" virtual="true">
+	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" parentKey="background" setAllPoints="true" ignoreParentAlpha="true"/>

@@ -81,8 +81,12 @@ end
 
 function FrameStackTooltip_InspectTable(self)
 	if self.highlightFrame then
-		TableAttributeDisplay:InspectTable(self.highlightFrame);
-		TableAttributeDisplay:Show();
+		if DebugInspectionTool then
+			DebugInspectionTool:OpenObject(self.highlightFrame);
+		else
+			TableAttributeDisplay:InspectTable(self.highlightFrame);
+			TableAttributeDisplay:Show();
+		end
 	end
 end
 

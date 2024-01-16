@@ -55,9 +55,10 @@
 					<Button name="GlueDialogButton2" inherits="GlueDialogButtonTemplate" id="2" parentKey="button2"/>
 					<Button name="GlueDialogButton3" inherits="GlueDialogButtonTemplate" id="3" parentKey="button3"/>
 
-					<Frame name="GlueDialogSpinner" inherits="LoadingSpinnerTemplate" hidden="true">
+					<Frame name="GlueDialogSpinner" inherits="SpinnerTemplate" hidden="true">
+						<Size x="30" y="30"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="14" />
+							<Anchor point="BOTTOM" x="0" y="23" />
 						</Anchors>
 					</Frame>
 				</Frames>

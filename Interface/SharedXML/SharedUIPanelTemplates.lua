@@ -859,10 +859,12 @@ end
 local alternateTopLevelParent;
 function SetAlternateTopLevelParent(parent)
 	alternateTopLevelParent = parent;
+	EventRegistry:TriggerEvent("UI.AlternateTopLevelParentChanged", parent);
 end
 
 function ClearAlternateTopLevelParent()
 	alternateTopLevelParent = nil;
+	EventRegistry:TriggerEvent("UI.AlternateTopLevelParentChanged");
 end
 
 function GetAppropriateTopLevelParent()
@@ -1656,6 +1658,8 @@ SelectionPopoutButtonMixin = CreateFromMixins(CallbackRegistryMixin, EventButton
 SelectionPopoutButtonMixin:GenerateCallbackEvents(
 	{
 		"OnValueChanged",
+		"OnPopoutShow",
+		"OnPopoutHide",
 	}
 );
 
@@ -1723,6 +1727,7 @@ end
 
 function SelectionPopoutButtonMixin:HidePopout()
 	self.Popout:Hide();
+	self:TriggerEvent(SelectionPopoutButtonMixin.Event.OnPopoutHide);
 
 	if GetMouseFocus() == self then
 		self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox-hover");
@@ -1740,6 +1745,7 @@ function SelectionPopoutButtonMixin:ShowPopout()
 	SelectionPopouts:CloseAll();
 
 	self.Popout:Show();
+	self:TriggerEvent(SelectionPopoutButtonMixin.Event.OnPopoutShow);
 	self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox-open");
 	self.HighlightTexture:SetAlpha(0.2);
 end

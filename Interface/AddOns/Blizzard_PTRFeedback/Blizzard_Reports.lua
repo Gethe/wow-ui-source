@@ -139,6 +139,66 @@ function PTR_IssueReporter.CreateReports()
     creatureReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this creature?")
 
     creatureReport:RegisterPopEvent(event.Tooltip, tooltips.unit)
+
+     ----------------------------------- AI Bot Reporting ---------------------------------------------
+    local GetCreatureIDFromUnitGuid = function(guid)
+        if (guid == nil) then
+            return
+        end
+        
+		local lines = {}
+		for s in guid:gmatch("[^-]+") do
+			table.insert(lines, s)
+		end
+        
+        if (lines[6]) then
+            return lines[6]
+        end
+    end
+    
+    local GetFollowerCIDString = function()
+        if IsInRaid() then
+            return ""
+        end
+        
+        if not IsInGroup() then
+            return ""
+        end
+        
+        local returnValue = ""
+        for i = 1, GetNumGroupMembers(), 1 do
+            local unit = "party"..i
+            if (PTR_IssueReporter.IsUnitAIFollower(unit)) then
+                if returnValue == "" then
+                    returnValue = GetCreatureIDFromUnitGuid(UnitGUID(unit))
+                else
+                    returnValue = returnValue .. ":" .. GetCreatureIDFromUnitGuid(UnitGUID(unit))
+                end                
+            end
+        end
+        
+        return returnValue
+    end    
+    
+    local aiFollowerReport = PTR_IssueReporter.CreateSurvey(18, "Issue Report: %s")
+    aiFollowerReport:PopulateDynamicTitleToken(1, "Name")
+    aiFollowerReport:AttachModelViewer("ID")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(aiFollowerReport, true)
+    
+    aiFollowerReport:AddDataCollection(collector.FromDataPackage, "ID")
+    aiFollowerReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this follower?")
+    aiFollowerReport:AddDataCollection(collector.RunFunction, GetFollowerCIDString)
+    aiFollowerReport:RegisterPopEvent(event.Tooltip, tooltips.aibot)
+    
+    local aiGroupReport = PTR_IssueReporter.CreateSurvey(19, "AI Follower Issue Report")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(aiGroupReport, true)
+    
+    aiGroupReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with your followers?")
+    aiGroupReport:AddDataCollection(collector.RunFunction, GetFollowerCIDString)
+    
+    aiGroupReport:SetButton("I have found an issue with an AI Follower.", PTR_IssueReporter.Assets.AIBotIcon)
+    aiGroupReport:RegisterButtonEvent(event.AIBotsJoinedParty)
+    aiGroupReport:RegisterButtonEventEnd(event.AIBotsLeftParty)
     
     --------------------------------------- Quest Reporting -------------------------------------------
     local IsQuestDisabledFromQuestSync = function(dataPackage)

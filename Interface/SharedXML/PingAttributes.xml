@@ -12,4 +12,7 @@
 			<Attribute name="ping-top-level-pass-through" type="boolean" value="true"/>
 		</Attributes>
 	</Frame>
+
+	<!-- Convenience template to opt a frame into being a unit frame ping receiver. -->
+	<Frame name="PingableUnitFrameTemplate" mixin="PingableType_UnitFrameMixin" inherits="PingReceiverAttributeTemplate" virtual="true"/>
 </Ui>

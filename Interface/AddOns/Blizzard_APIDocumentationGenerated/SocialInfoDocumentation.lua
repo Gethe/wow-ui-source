@@ -15,7 +15,7 @@ local SocialInfo =
 				{ Name = "achievementID", Type = "number", Nilable = false },
 				{ Name = "achievementName", Type = "string", Nilable = false },
 				{ Name = "achievementDesc", Type = "string", Nilable = false },
-				{ Name = "iconFileID", Type = "fileID", Nilable = false },
+				{ Name = "iconFileID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -26,7 +26,7 @@ local SocialInfo =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "itemName", Type = "string", Nilable = false },
-				{ Name = "iconFileID", Type = "fileID", Nilable = false },
+				{ Name = "iconFileID", Type = "number", Nilable = false },
 				{ Name = "itemQuality", Type = "number", Nilable = false },
 				{ Name = "itemLevel", Type = "number", Nilable = false },
 				{ Name = "itemLinkString", Type = "string", Nilable = false },
@@ -56,7 +56,7 @@ local SocialInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "index", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -138,8 +138,8 @@ local SocialInfo =
 			Payload =
 			{
 				{ Name = "isLinked", Type = "bool", Nilable = false },
-				{ Name = "screenName", Type = "cstring", Nilable = false },
-				{ Name = "error", Type = "cstring", Nilable = false },
+				{ Name = "screenName", Type = "string", Nilable = false },
+				{ Name = "error", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -148,7 +148,7 @@ local SocialInfo =
 			LiteralName = "TWITTER_POST_RESULT",
 			Payload =
 			{
-				{ Name = "result", Type = "luaIndex", Nilable = false },
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -159,7 +159,7 @@ local SocialInfo =
 			{
 				{ Name = "isTwitterEnabled", Type = "bool", Nilable = false },
 				{ Name = "isLinked", Type = "bool", Nilable = false },
-				{ Name = "screenName", Type = "cstring", Nilable = false },
+				{ Name = "screenName", Type = "string", Nilable = false },
 			},
 		},
 	},

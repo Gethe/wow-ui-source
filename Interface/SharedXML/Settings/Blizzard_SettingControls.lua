@@ -497,6 +497,12 @@ function SettingsDropDownControlMixin:InitDropDown()
 
 	self.DropDown.Button.selectedDataFunc = initializer.data.selectedDataFunc;
 	self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
+	if setting.OnShow then
+		self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnPopoutShow, setting.OnShow);
+	end
+	if setting.OnHide then
+		self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnPopoutHide, setting.OnHide);
+	end
 
 	local selectionIndex = Settings.InitSelectionDropDown(self.DropDown, setting, options, 200, initTooltip);
 	if not initializer.skipAssertMissingOption then
@@ -896,6 +902,10 @@ function SettingsSelectionPopoutEntryMixin:OnEnter()
 	SelectionPopoutEntryMixin.OnEnter(self);
 	
 	self.HighlightBGTex:SetAlpha(0.15);
+
+	if self.selectionData.OnEnter then
+		self.selectionData.OnEnter(self.selectionData.value)
+	end
 
 	if not self.isSelected then
 		if self.selectionData.disabled == nil then

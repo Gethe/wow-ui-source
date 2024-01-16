@@ -1,3 +1,6 @@
+COLOR_FORMAT_RGBA = "RRGGBBAA";
+COLOR_FORMAT_RGB = "RRGGBB";
+
 function ExtractColorValueFromHex(str, index)
 	return tonumber(str:sub(index, index + 1), 16) / 255;
 end
@@ -8,6 +11,24 @@ function CreateColorFromHexString(hexColor)
 		return CreateColor(r, g, b, a);
 	else
 		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: AARRGGBB.");
+	end
+end
+
+function CreateColorFromRGBAHexString(hexColor)
+	if #hexColor == #COLOR_FORMAT_RGBA then
+		local r, g, b, a = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
+		return CreateColor(r, g, b, a);
+	else
+		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: RRGGBBAA.");
+	end
+end
+
+function CreateColorFromRGBHexString(hexColor)
+	if #hexColor == #COLOR_FORMAT_RGB then
+		local r, g, b = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5);
+		return CreateColor(r, g, b, 1);
+	else
+		GMError("CreateColorFromRGBHexString input must be hexadecimal digits in this format: RRGGBB.");
 	end
 end
 

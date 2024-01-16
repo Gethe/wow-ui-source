@@ -743,8 +743,7 @@ end
 ClickBindingTutorialMixin = {};
 
 function ClickBindingTutorialMixin:OnLoad()
-	self:SetBorder("ButtonFrameTemplateNoPortrait");
-	self:SetPortraitShown(false);
+	self.Bg:SetPoint("TOPLEFT", 6, 0);
 	self:SetTitle(CLICK_CAST_ABOUT_HEADER);
 end
 

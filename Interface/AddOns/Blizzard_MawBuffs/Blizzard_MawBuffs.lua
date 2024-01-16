@@ -1,8 +1,8 @@
 local MAW_BUFF_MAX_DISPLAY = 44;
 
 function ShouldShowMawBuffs()
-	local _, icon, count = UnitAura("player", 1, "MAW");
-	local hasMawBuff = icon;
+	local auraData = C_UnitAuras.GetAuraDataByIndex("player", 1, "MAW");
+	local hasMawBuff = auraData and auraData.icon;
 	return IsInJailersTower() or hasMawBuff or false;
 end
 
@@ -43,14 +43,14 @@ function MawBuffsContainerMixin:Update()
 	local mawBuffs = {};
 	local totalCount = 0;
 	for i=1, MAW_BUFF_MAX_DISPLAY do
-		local _, icon, count, _, _, _, _, _, _, spellID = UnitAura("player", i, "MAW");
-		if icon then
-			if count == 0 then
-				count = 1;
+		local auraData = C_UnitAuras.GetAuraDataByIndex("player", i, "MAW");
+		if auraData and auraData.icon then
+			if auraData.applications == 0 then
+				auraData.applications = 1;
 			end
 
-			totalCount = totalCount + count;
-			table.insert(mawBuffs, {icon = icon, count = count, slot = i, spellID = spellID});
+			totalCount = totalCount + auraData.applications;
+			table.insert(mawBuffs, {icon = auraData.icon, count = auraData.applications, slot = i, spellID = auraData.spellId});
 		end
 	end
 
