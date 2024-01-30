@@ -917,6 +917,9 @@ local function Register()
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
 	local raidGraphicsSetting = Settings.GetSetting("PROXY_RAID_GRAPHICS_QUALITY");
+	-- Graphics setting must be applied last to prevent the OnGCChanged callback from
+	-- overwriting any child settings that have yet to been applied.
+	raidGraphicsSetting:SetCommitOrder(1);
 
 	local advInitializer = CreateAdvancedQualitySectionInitializer(GRAPHICS_QUALITY, advSettings, advRaidSettings);
 	layout:AddInitializer(advInitializer);
@@ -933,6 +936,10 @@ local function Register()
 	end;
 
 	local graphicsSetting = Settings.GetSetting("PROXY_GRAPHICS_QUALITY");
+	-- Graphics setting must be applied last to prevent the OnGCChanged callback from
+	-- overwriting any child settings that have yet to been applied.
+	graphicsSetting:SetCommitOrder(1);
+
 	local function OnGraphicsQualityChanged(o, s, value)
 		local raid = false;
 		OnGCChanged(advSettings, value, raid);

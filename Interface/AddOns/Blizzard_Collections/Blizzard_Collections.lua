@@ -19,10 +19,6 @@ local function ShouldShowHeirloomTabHelpTip()
 		return false;
 	end
 
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
-		return false;
-	end
-
 	return C_Heirloom.ShouldShowHeirloomHelp();
 end
 
@@ -32,10 +28,6 @@ local function ShouldShowWardrobeTabHelpTip()
 	end
 
 	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 		return false;
 	end
 

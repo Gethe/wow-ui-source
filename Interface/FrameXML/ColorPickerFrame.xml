@@ -73,7 +73,7 @@ UI_shared.xsd">
 		</Scripts>
 	</Frame>
 
-	<Frame name="ColorPickerFrame" mixin="ColorPickerFrameMixin" toplevel="true" parent="UIParent" movable="true" clampedToScreen="true" hidden="true" frameStrata="DIALOG">
+	<Frame name="ColorPickerFrame" mixin="ColorPickerFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" frameStrata="DIALOG">
 		<Size x="388" y="210"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
