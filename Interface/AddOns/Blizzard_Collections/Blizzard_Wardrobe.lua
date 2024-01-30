@@ -1209,12 +1209,6 @@ function WardrobeCollectionFrameMixin:OnShow()
 		self:SetTab(self.selectedCollectionTab);
 	end
 	self:UpdateTabButtons();
-
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK) and WardrobeCollectionFrame.fromSuggestedContent) then
-		--skip showing info tutorial if we came from suggested content and haven't seen the tracking tutorial
-	elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
-		HelpTip:Show(WardrobeCollectionFrame.InfoButton, WardrobeCollectionFrame.InfoButton.helpTipInfo);
-	end
 end
 
 function WardrobeCollectionFrameMixin:OnHide()
@@ -1578,10 +1572,6 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			return;
 		end
 
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
-			return;
-		end
-
 		local sets = C_TransmogSets.GetAllSets();
 		local hasCollected = false;
 		if (sets) then
@@ -1606,10 +1596,6 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	else
 		if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB)) then
-			return;
-		end
-
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 			return;
 		end
 
@@ -2950,7 +2936,7 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 end
 
 -- ***** TUTORIAL
-WardrobeCollectionTutorialMixin = { }
+WardrobeCollectionTutorialMixin = { };
 
 function WardrobeCollectionTutorialMixin:OnLoad()
 

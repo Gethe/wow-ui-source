@@ -789,8 +789,6 @@ function PerksProgramSetDetailsListMixin:OnLoad()
 	--	CreateAnchor("BOTTOMRIGHT", 0, 0);
 	--};
 	--ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
-
-	EventRegistry:RegisterCallback("PerksProgram.UpdateDetailsSetScollBox", self.Init, self);
 end
 
 function PerksProgramSetDetailsListMixin:ClearData()
