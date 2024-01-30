@@ -231,6 +231,7 @@ function CharacterCreateMixin:OnShow()
 			C_CharacterCreation.ClearCharacterTemplate();
 		end
 	end
+	CheckSelfFoundButton()
 end
 
 function CharacterCreateMixin:OnHide()

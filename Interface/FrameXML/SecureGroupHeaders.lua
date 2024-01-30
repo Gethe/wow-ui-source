@@ -1045,7 +1045,16 @@ function SecureAuraHeader_Update(self)
 			-- Classic iteration-style. (TODO: Unify me!)
 			repeat
 				local aura, _, duration = freshTable();
-				aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _, _, _, _, _, _, aura.shouldConsolidate = UnitAura(unit, i, fullFilter);
+				if C_UnitAuras then
+					local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, fullFilter);
+					aura.name = auraData.name;
+					duration = auraData.duration;
+					aura.expires = auraData.expirationTime;
+					aura.caster = auraData.sourceUnit;
+					aura.shouldConsolidate = #auraData.points > 0;
+				else
+					aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _, _, _, _, _, _, aura.shouldConsolidate = UnitAura(unit, i, fullFilter);
+				end
 				if ( aura.name ) then
 					aura.filter = fullFilter;
 					aura.index = i;

@@ -92,16 +92,30 @@ function ScrollBoxListViewMixin:CreateTemplateInfoForTemplate(frameTemplate)
 end
 
 function ScrollBoxListViewMixin:AssignAccessors(frame, elementData)
-	-- Should always return the data stored in the data provider.
+	--[[ 
+	Provides an accessor to the underlying data. If the elements in your data provider 
+	wrap this data in any way (as is done in TreeDataProvider), ensure that the data
+	can be retrieved via your view's TranslateElementDataToUnderlyingData function. Note
+	that this function was provided after all of the conversions occured in 10.0, so many
+	calls to GetElementData() would be correct to be replaced with GetData() below. However,
+	since nearly all of these cases pertain to linear view, the return result is the same.
+	]]--
+
+	local view = self;
+
+	frame.GetData = function(self)
+		return view:TranslateElementDataToUnderlyingData(elementData);
+	end
+	
+	--[[ 
+	Should always return the data stored in the data provider. Views require this function
+	to relate data provider elements with their frame counterpart. This elementData could be
+	the same as the underlying data, or it could be a tree node.
+	]]--
 	frame.GetElementData = function(self)
 		return elementData;
 	end;
 	
-	--[[ Provides a standard accessor to the underlying user data. If your view wraps the 
-	user data in any way, you should reimplement this function accordingly. As an example, 
-	see ScrollBoxListTreeListViewMixin:AssignAccessors().]]--
-	frame.GetData = frame.GetElementData;
-
 	frame.ElementDataMatches = function(self, elementData)
 		return self:GetElementData() == elementData;
 	end;
@@ -587,6 +601,10 @@ end
 function ScrollBoxListViewMixin:CalculateDataIndices(scrollBox, stride, spacing)
 	local size = self:GetDataProviderSize();
 	if size == 0 then
+		return 0, 0;
+	end
+
+	if scrollBox:GetVisibleExtent() == 0 then
 		return 0, 0;
 	end
 

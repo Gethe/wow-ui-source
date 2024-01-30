@@ -3165,17 +3165,17 @@ function UnitPopupSetRoleNoneButton:IsCheckable()
 end
 
 function UnitPopupSetRoleNoneButton:GetRole()
-	return "NONE";
+	return Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE;
 end
 
 function UnitPopupSetRoleNoneButton:OnClick()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	UnitSetRole(dropdownMenu.unit, self:GetRole());
+	UnitSetRoleEnum(dropdownMenu.unit, self:GetRole());
 end
 
 function UnitPopupSetRoleNoneButton:IsChecked()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if ( UnitGroupRolesAssigned(dropdownMenu.unit) == self:GetRole()) then
+	if ( UnitGroupRolesAssignedEnum(dropdownMenu.unit) == self:GetRole()) then
 		return true
 	end
 end
@@ -3186,7 +3186,7 @@ function UnitPopupSetRoleTankButton:GetText()
 end
 
 function UnitPopupSetRoleTankButton:GetRole()
-	return "TANK";
+	return Enum.LFGRole.Tank;
 end
 
 function UnitPopupSetRoleTankButton:IsEnabled()
@@ -3201,7 +3201,7 @@ function UnitPopupSetRoleDpsButton:GetText()
 end
 
 function UnitPopupSetRoleDpsButton:GetRole()
-	return "DAMAGER";
+	return Enum.LFGRole.Damage;
 end
 
 function UnitPopupSetRoleDpsButton:IsEnabled()
@@ -3216,7 +3216,7 @@ function UnitPopupSetRoleHealerButton:GetText()
 end
 
 function UnitPopupSetRoleHealerButton:GetRole()
-	return "HEALER";
+	return Enum.LFGRole.Healer;
 end
 
 function UnitPopupSetRoleHealerButton:IsEnabled()

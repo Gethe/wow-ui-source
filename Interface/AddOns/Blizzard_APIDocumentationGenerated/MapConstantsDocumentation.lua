@@ -34,7 +34,7 @@ local MapConstants =
 				{ Name = "ShowTaskObjectives", Type = "UIMapFlag", EnumValue = 64 },
 				{ Name = "NoWorldPositions", Type = "UIMapFlag", EnumValue = 128 },
 				{ Name = "HideArchaeologyDigs", Type = "UIMapFlag", EnumValue = 256 },
-				{ Name = "Deprecated", Type = "UIMapFlag", EnumValue = 512 },
+				{ Name = "DoNotTranslateBranches", Type = "UIMapFlag", EnumValue = 512 },
 				{ Name = "HideIcons", Type = "UIMapFlag", EnumValue = 1024 },
 				{ Name = "HideVignettes", Type = "UIMapFlag", EnumValue = 2048 },
 				{ Name = "ForceAllOverlayExplored", Type = "UIMapFlag", EnumValue = 4096 },

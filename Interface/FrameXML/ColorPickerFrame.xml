@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<ColorSelect name="ColorPickerFrame" toplevel="true" inherits="BackdropTemplate" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="true" frameStrata="DIALOG">
+<Script file="ColorPickerFrame.lua"/>
+	<ColorSelect name="ColorPickerFrame" mixin="ColorPickerFrameMixin" toplevel="true" inherits="BackdropTemplate" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="true" frameStrata="DIALOG">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 		</KeyValues>
@@ -78,7 +79,7 @@
 				<Scripts>
 					<OnClick>
 						HideUIPanel(self:GetParent());
-						ColorPickerFrame.func();
+						ColorPickerFrame.swatchFunc();
 						if ( ColorPickerFrame.opacityFunc ) then
 							ColorPickerFrame.opacityFunc();
 						end
@@ -156,8 +157,8 @@
 			</OnShow>
 			<OnColorSelect>
 				ColorSwatch:SetColorTexture(r, g, b);
-				if ( self.func ) then
-					self.func();
+				if ( self.swatchFunc ) then
+					self.swatchFunc();
 				end
 			</OnColorSelect>
 			<OnKeyDown>

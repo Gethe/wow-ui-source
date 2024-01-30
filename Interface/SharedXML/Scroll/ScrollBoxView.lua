@@ -24,12 +24,13 @@ ScrollBoxViewMixin = CreateFromMixins(ScrollDirectionMixin);
 
 ScrollBoxViewMixin.FrameLevelPolicy =
 {
-	Ascending = 1,
-	Descending = 2,
+	Default = 1,
+	Ascending = 2,
+	Descending = 3,
 };
 
 function ScrollBoxViewMixin:GetFrameLevelPolicy()
-	return self.frameLevelPolicy or ScrollBoxViewMixin.FrameLevelPolicy.Ascending;
+	return self.frameLevelPolicy or ScrollBoxViewMixin.FrameLevelPolicy.Default;
 end
 
 function ScrollBoxViewMixin:SetFrameLevelPolicy(frameLevelPolicy)

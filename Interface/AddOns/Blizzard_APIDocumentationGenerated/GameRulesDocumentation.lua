@@ -15,6 +15,15 @@ local GameRules =
 				{ Name = "active", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsSelfFoundAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

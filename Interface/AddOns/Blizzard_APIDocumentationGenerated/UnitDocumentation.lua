@@ -104,6 +104,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitInPartyIsAI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsConnected",
 			Type = "Function",
 
@@ -380,6 +394,20 @@ local Unit =
 			Name = "PlayerFocusChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FOCUS_CHANGED",
+		},
+		{
+			Name = "PlayerImpulseApplied",
+			Type = "Event",
+			LiteralName = "PLAYER_IMPULSE_APPLIED",
+		},
+		{
+			Name = "PlayerIsGlidingChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_IS_GLIDING_CHANGED",
+			Payload =
+			{
+				{ Name = "isGliding", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "PlayerLeaveCombat",

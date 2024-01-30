@@ -860,9 +860,10 @@
 								<OnClick function="VASCharacterSelectionContinueButton_OnClick"/>
 							</Scripts>
 						</Button>
-						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Frame parentKey="Spinner" inherits="SpinnerWithShadowTemplate" hidden="true">
+							<Size x="30" y="30"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="22" />
+								<Anchor point="BOTTOM" x="0" y="31" />
 							</Anchors>
 						</Frame>
 						<EditBox parentKey="NewCharacterName" letters="12" inherits="StoreEditBoxTemplate">

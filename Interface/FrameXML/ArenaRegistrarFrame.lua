@@ -127,16 +127,21 @@ end
 
 function PVPBannerFrame_OpenColorPicker(button, texture)
 	local r,g,b = texture:GetVertexColor();
+	local swatchFunc;
 	if ( texture == PVPBannerFrameStandardEmblem ) then
-		ColorPickerFrame.func = PVPBannerFrame_SetEmblemColor;
+		swatchFunc = PVPBannerFrame_SetEmblemColor;
 	elseif ( texture == PVPBannerFrameStandardBanner ) then
-		ColorPickerFrame.func = PVPBannerFrame_SetBannerColor;
+		swatchFunc = PVPBannerFrame_SetBannerColor;
 	elseif ( texture == PVPBannerFrameStandardBorder ) then
-		ColorPickerFrame.func = PVPBannerFrame_SetBorderColor;
+		swatchFunc = PVPBannerFrame_SetBorderColor;
 	end
-	ColorPickerFrame:SetColorRGB(r, g, b);
+
+	local colorPickerInfo = {
+		r = r, g = g, b = b,
+		swatchFunc = swatchFunc,
+	};
+	ColorPickerFrame:SetupColorPickerAndShow(colorPickerInfo);
 	PlaySound(SOUNDKIT.UI_CLASSIC_ARENA_TEAM_COLOR_PICKER);
-	ShowUIPanel(ColorPickerFrame);
 end
 
 function PVPBannerCustomization_Left(id)

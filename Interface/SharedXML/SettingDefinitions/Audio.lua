@@ -196,10 +196,10 @@ MacMicrophoneAccessWarningMixin = {};
 
 function MacMicrophoneAccessWarningMixin:OnLoad()
 	self.OpenAccessButton:SetScript("OnClick", function(button, buttonName, down)
-		MacOptions_OpenMicrophoneRequestDialogue();
+		C_MacOptions.OpenMicrophoneRequestDialogue();
 	end);
 
-	self.Label:SetFormattedText(MAC_MIC_PREMISSIONS_NOTIFICATION, MacOptions_GetGameBundleName());
+	self.Label:SetFormattedText(MAC_MIC_PREMISSIONS_NOTIFICATION, C_MacOptions.GetGameBundleName());
 end
 
 local function InitVoiceSettings(category, layout)
@@ -219,7 +219,7 @@ local function InitVoiceSettings(category, layout)
 	end
 
 	-- System Prefs
-	if IsMacClient() and not MacOptions_IsMicrophoneEnabled() then
+	if IsMacClient() and not C_MacOptions.IsMicrophoneEnabled() then
 		local data = {};
 		local initializer = Settings.CreatePanelInitializer("MacMicrophoneAccessWarningTemplate", data);
 		layout:AddInitializer(initializer);

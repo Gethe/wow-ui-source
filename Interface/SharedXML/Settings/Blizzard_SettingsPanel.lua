@@ -55,6 +55,16 @@ local function UnpackArgs(argTable, expectedNumArgs)
 	return securecallfunction(unpack, argTable, 1, expectedNumArgs);
 end
 
+local function SortTableByCommitOrder(tbl)
+	-- Commit order is necessary under rare circumstances where we need to guarantee that
+	-- a particular option is changed before another. This is necessary in at least two cases:
+	-- 1) Applying the display mode setting prior to the resolution setting
+	-- 2) Applying child graphic settings prior to the graphics or raid graphics setting.
+	table.sort(tbl, function(lhs, rhs)
+		return lhs:GetCommitOrder() < rhs:GetCommitOrder();
+	end);
+end
+
 SettingsPanelMixin = {};
 
 function SettingsPanelMixin:OnLoad()
@@ -406,21 +416,13 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 	local gxRestart = false;
 	local windowUpdate = false;
 
-	local commits = {};
+	local settings = {};
 	for setting, record in pairs(self.modified) do
-		table.insert(commits, setting);
+		table.insert(settings, setting);
 	end
+	SortTableByCommitOrder(settings);
 
-	-- Commit order is necessary under rare circumstances where we need to guarantee that
-	-- a particular option is changed before another, such as the case with display mode
-	-- and resolution lists. Since the display mode dictates the resolution options, the
-	-- display mode always needs to be applied first, especially in the scenario where display
-	-- mode is being reverted.
-	table.sort(commits, function(lhs, rhs)
-		return lhs:GetCommitOrder() < rhs:GetCommitOrder();
-	end);
-
-	for index, setting in ipairs(commits) do
+	for index, setting in ipairs(settings) do
 		saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 		gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 		windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
@@ -504,7 +506,13 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	local gxRestart = false;
 	local windowUpdate = false;
 
+	local settings = {};
 	for setting, category in pairs(self.settings) do
+		table.insert(settings, setting);
+	end
+	SortTableByCommitOrder(settings);
+
+	for index, setting in ipairs(settings) do
 		if securecallfunction(setting.SetValueToDefault, setting) then
 			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
@@ -525,16 +533,22 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	local gxRestart = false;
 	local windowUpdate = false;
 
+	local settings = {};
 	local currentCategory = self:GetCurrentCategory();
 	for setting, category in pairs(self.settings) do
 		if category == currentCategory then
-			if securecallfunction(setting.SetValueToDefault, setting) then
-				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
-				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
-				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
-			end
-			self.modified[setting] = nil;
+			table.insert(settings, setting);
 		end
+	end
+	SortTableByCommitOrder(settings);
+
+	for index, setting in ipairs(settings) do
+		if securecallfunction(setting.SetValueToDefault, setting) then
+			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+		end
+		self.modified[setting] = nil;
 	end
 
 	for _, category in ipairs(self:GetAllCategories()) do

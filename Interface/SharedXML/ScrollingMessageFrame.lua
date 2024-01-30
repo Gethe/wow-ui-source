@@ -139,6 +139,7 @@ end
 
 function ScrollingMessageFrameMixin:CallOnDisplayRefreshed()
 	secureexecuterange(self.onDisplayRefreshedCallbacks, CallCallbacks, self);
+	self.isDisplayDirty = false;
 end
 
 function ScrollingMessageFrameMixin:SetOnScrollChangedCallback(onScrollChangedCallback)
@@ -165,8 +166,6 @@ function ScrollingMessageFrameMixin:SetScrollOffset(offset)
 		if self.onScrollChangedCallback then
 			self.onScrollChangedCallback(self, self.scrollOffset);
 		end
-	elseif newOffset == 0 then
-		self:MarkDisplayDirty();
 	end
 end
 
@@ -543,7 +542,6 @@ function ScrollingMessageFrameMixin:RefreshIfNecessary()
 end
 
 function ScrollingMessageFrameMixin:RefreshDisplay()
-	self.isDisplayDirty = false;
 	if self:GetNumVisibleLines() == 0 then
 		self:CallOnDisplayRefreshed();
 		return;
@@ -625,6 +623,7 @@ function ScrollingMessageFrameMixin:ResetAllFadeTimes()
 	local now = GetTime();
 	self.overrideFadeTimestamp = now;
 	self.oldestFadingLineTimestamp = now;
+	self:MarkDisplayDirty();
 end
 
 function ScrollingMessageFrameMixin:AcquireFontString()

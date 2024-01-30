@@ -90,31 +90,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Spinner">
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate">
 				<Size x="48" y="48"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-				<Animations>
-					<AnimationGroup parentKey="Loop" looping="REPEAT" >
-						<Rotation order="1" duration="6" degrees="-360" />
-					</AnimationGroup>
-				</Animations>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true">
-							<Color r="0" g="1" b="0"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" >
-						<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.Loop:Play();
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

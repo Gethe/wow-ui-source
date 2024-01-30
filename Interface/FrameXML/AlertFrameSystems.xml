@@ -1389,13 +1389,21 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<!--inherits="store-toast"-->
-				<Texture parentKey="Background" file="Interface\Store\Store-Main">
-					<TexCoords left="0.50878906" right="0.79589844" top="0.54199219" bottom="0.62402344"/>
+				<Texture parentKey="Background" file="Interface\AchievementFrame\UI-Achievement-Alert-Background-Mini">
+					<Size x="294" y="84"/>
+				</Texture>
+				<Texture name="Border" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="false">
+					<Size>
+						<AbsDimension x="72" y="72"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="5" y="0"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="44" y="44"/>
+					<Size x="40" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="21" y="0"/>
 					</Anchors>
@@ -1403,12 +1411,12 @@
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="BLIZZARD_STORE_PURCHASE_COMPLETE" justifyV="MIDDLE">
 					<Size x="200" y="24"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="30" y="-15"/>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="20" y="-19"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontHighlight" text="BLIZZARD_STORE_PURCHASE_COMPLETE_DESC">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="30" y="23"/>
+						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="20" y="25"/>
 					</Anchors>
 				</FontString>
 			</Layer>

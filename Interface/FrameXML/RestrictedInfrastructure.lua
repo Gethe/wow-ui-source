@@ -99,7 +99,6 @@ local LOCAL_PrintHandler =
 		if DEFAULT_CHAT_FRAME then
 			DEFAULT_CHAT_FRAME:AddMessage(printMsg);
 		end
-		PrintToDebugWindow(printMsg);
 	end
 
 function setprinthandler(func)
