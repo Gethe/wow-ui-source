@@ -90,9 +90,11 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 
 	if QuestUtil.QuestTextContrastUseLightText() then
 		local textColor, titleTextColor = GetMaterialTextColors("Stone");
+		self:GetFontString():SetFixedColor(true);
 		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
 	else
 		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
+		self:GetFontString():SetFixedColor(false);
 		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
 	end
 end

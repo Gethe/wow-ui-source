@@ -247,3 +247,7 @@ function CharacterCreate_UpdateFacialHairCustomization()
 		CharCreateRandomizeButton:SetPoint("TOP", "CharacterCustomizationButtonFrame5", "BOTTOM", 0, -2);
 	end
 end
+
+function CheckSelfFoundButton()
+	-- Not implemented
+end

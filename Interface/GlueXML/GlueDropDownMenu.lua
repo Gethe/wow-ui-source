@@ -841,14 +841,7 @@ function GlueDropDownMenuButton_OpenColorPicker(self, button)
 		button = self;
 	end
 	GLUEDROPDOWNMENU_MENU_VALUE = button.value;
-	ColorPickerFrame.func = button.swatchFunc;
-	ColorPickerFrame.hasOpacity = button.hasOpacity;
-	ColorPickerFrame.opacityFunc = button.opacityFunc;
-	ColorPickerFrame.opacity = button.opacity;
-	ColorPickerFrame:SetColorRGB(button.r, button.g, button.b);
-	ColorPickerFrame.previousValues = {r = button.r, g = button.g, b = button.b, opacity = button.opacity};
-	ColorPickerFrame.cancelFunc = button.cancelFunc;
-	ShowUIPanel(ColorPickerFrame);
+	ColorPickerFrame:SetupColorPickerAndShow(button);
 end
 
 function GlueDropDownMenu_DisableButton(level, id)

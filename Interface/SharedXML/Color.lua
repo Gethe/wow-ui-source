@@ -1,5 +1,4 @@
 ColorMixin = {};
-COLOR_FORMAT_RGBA = "RRGGBBAA";
 
 function CreateColor(r, g, b, a)
 	local color = CreateFromMixins(ColorMixin);
@@ -11,11 +10,14 @@ function ColorMixin:OnLoad(r, g, b, a)
 	self:SetRGBA(r, g, b, a);
 end
 
+function ColorMixin:IsRGBEqualTo(otherColor)
+	return self.r == otherColor.r 
+		and self.g == otherColor.g 
+		and self.b == otherColor.b;
+end
+
 function ColorMixin:IsEqualTo(otherColor)
-	return self.r == otherColor.r
-		and self.g == otherColor.g
-		and self.b == otherColor.b
-		and self.a == otherColor.a;
+	return self:IsRGBEqualTo(otherColor) and self.a == otherColor.a;
 end
 
 function ColorMixin:GetRGB()
@@ -49,6 +51,10 @@ function ColorMixin:GenerateHexColor()
 	return ("ff%.2x%.2x%.2x"):format(self:GetRGBAsBytes());
 end
 
+function ColorMixin:GenerateHexColorNoAlpha()
+	return ("%.2X%.2X%.2X"):format(self:GetRGBAsBytes());
+end
+
 function ColorMixin:GenerateHexColorMarkup()
 	return "|c"..self:GenerateHexColor();
 end
@@ -71,14 +77,5 @@ do
 		local color = CreateColor(dbColor.color.r, dbColor.color.g, dbColor.color.b, dbColor.color.a);
 		_G[dbColor.baseTag] = color;
 		_G[dbColor.baseTag.."_CODE"] = color:GenerateHexColorMarkup();
-	end
-end
-
-function CreateColorFromRGBAHexString(hexColor)
-	if #hexColor == #COLOR_FORMAT_RGBA then
-		local r, g, b, a = ExtractColorValueFromHex(hexColor, 1), ExtractColorValueFromHex(hexColor, 3), ExtractColorValueFromHex(hexColor, 5), ExtractColorValueFromHex(hexColor, 7);
-		return CreateColor(r, g, b, a);
-	else
-		GMError("CreateColorFromHexString input must be hexadecimal digits in this format: RRGGBBAA.");
 	end
 end

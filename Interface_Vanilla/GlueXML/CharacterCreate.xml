@@ -1078,6 +1078,50 @@
 							<AbsInset left="15"/>
 						</TextInsets>
 					</EditBox>
+					<CheckButton name="CharacterCreateSelfFound" inherits="UICheckButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="CharacterCreateNameEdit" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="80" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GlueFontNormalLarge" text="SELF_FOUND">
+									<Size>
+										<AbsDimension x="256" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-23"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								if ( self:GetChecked() ) then
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+								else
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+								end
+								CharacterCreate_ToggleSelfFound(self)
+							</OnClick>
+							<OnEnter>
+								GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GlueTooltip:AddLine(SELF_FOUND_TOOLTIP_TOGGLE, 1.0, 0.78, 0.0, 1.0, true);
+								GlueTooltip:AddLine(SELF_FOUND_TOOLTIP_INFO, 1.0, 0.78, 0.0, 1.0, true)
+								GlueTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GlueTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
 					<Button name="CharacterCreateRandomName" inherits="GlueButtonSmallTemplate" text="RANDOMIZE" hidden="true">
 						<Size>
 							<AbsDimension x="146" y="30"/>

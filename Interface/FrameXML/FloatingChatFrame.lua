@@ -961,7 +961,7 @@ function FCF_SetChatWindowBackGroundColor()
 end
 
 function FCF_SetChatWindowOpacity()
-	local alpha = 1.0 - OpacitySliderFrame:GetValue();
+	local alpha = 1.0 - ColorPickerFrame:GetColorAlpha();
 	FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), alpha);
 end
 
@@ -997,8 +997,8 @@ function FCF_CancelWindowColorSettings(previousValues)
 		FCF_SetWindowColor(FCF_GetCurrentChatFrame(), previousValues.r, previousValues.g, previousValues.b)
 		SetChatWindowColor(FCF_GetCurrentChatFrameID(), previousValues.r, previousValues.g, previousValues.b);
 	end
-	if ( previousValues.opacity ) then
-		FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), 1 - previousValues.opacity);
+	if ( previousValues.a ) then
+		FCF_SetWindowAlpha(FCF_GetCurrentChatFrame(), 1 - previousValues.a);
 	end
 end
 

@@ -82,6 +82,7 @@ GlueFontStyles.xml
 ..\SharedXML\LayoutFrame.xml
 ..\SharedXML\SharedTooltipTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
+..\SharedXML\Spinner.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\Tabs\MinimalTab.xml
 ..\SharedXML\SharedBasicControls.xml

@@ -75,12 +75,35 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "IsInLFGFollowerDungeon",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsLFDEnabled",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLFGFollowerDungeon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{

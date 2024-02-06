@@ -20,7 +20,10 @@ local function MergeDeferredEvents()
 end
 
 local function OnEvent(self, event, ...)
-	if event == "PLAYER_STARTED_MOVING" or event == "PLAYER_STOPPED_MOVING" then
+	if event == "PLAYER_STARTED_MOVING" 
+	or event == "PLAYER_STOPPED_MOVING" 
+	or event == "PLAYER_IS_GLIDING_CHANGED" 
+	or event == "PLAYER_IMPULSE_APPLIED" then
 		MergeDeferredEvents();
 	end
 end
@@ -34,6 +37,8 @@ local function InitializeDriver()
 		FrameFaderDriver:SetScript("OnEvent", OnEvent);
 		FrameFaderDriver:RegisterEvent("PLAYER_STARTED_MOVING");
 		FrameFaderDriver:RegisterEvent("PLAYER_STOPPED_MOVING");
+		FrameFaderDriver:RegisterEvent("PLAYER_IS_GLIDING_CHANGED");
+		FrameFaderDriver:RegisterEvent("PLAYER_IMPULSE_APPLIED");
 	end
 end
 

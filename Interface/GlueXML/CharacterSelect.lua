@@ -924,6 +924,7 @@ function UpdateCharacterList(skipSelect)
             local infoText = button.buttonText.Info;
             local locationText = button.buttonText.Location;
             local deathIcon = button.buttonText.graveIcon;
+            local selfFoundButton = button.selfFoundButton;
 			locationText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
 
             if (not areCharServicesShown) then
@@ -1031,6 +1032,10 @@ function UpdateCharacterList(skipSelect)
                         if (deathIcon) then
                             deathIcon:Hide();
                         end
+                    end
+
+                    if(selfFoundButton) then
+                        selfFoundButton:SetShown((C_GameRules.IsSelfFoundAllowed() and IsCharacterSelfFound(i+CHARACTER_LIST_OFFSET)));
                     end
 
                     locationText:SetText(zone);

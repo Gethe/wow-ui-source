@@ -355,7 +355,7 @@ function DisplayUniversalAccessDialogIfRequiredForVoiceChatKeybind(keys)
 			end
 		end
 		if hasNonMetaKey then
-			if not MacOptions_IsUniversalAccessEnabled() then
+			if not C_MacOptions.IsUniversalAccessEnabled() then
 				StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
 			end
 		end

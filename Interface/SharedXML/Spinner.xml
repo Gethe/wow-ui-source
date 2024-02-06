@@ -1,0 +1,50 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+
+    <Script file="Spinner.lua"/>
+
+    <Frame name="SpinnerTemplate" virtual="true" mixin="SpinnerMixin">
+        <Size x="142" y="142"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Ring" atlas="Spinner_Ring" setAllPoints="true"/>
+                <Texture parentKey="Sparks" alphaMode="ADD" atlas="Spinner_Sparks" setAllPoints="true"/>
+            </Layer>
+        </Layers>
+        <Animations>
+            <AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+                <Rotation childKey="Ring" duration="2" order="1" degrees="-360">
+                    <Origin point="CENTER"/>
+                </Rotation>
+                <Rotation childKey="Sparks" duration="2" order="1" degrees="-360">
+                    <Origin point="CENTER"/>
+                </Rotation>
+            </AnimationGroup>
+        </Animations>
+        <Scripts>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+        </Scripts>
+    </Frame>
+
+    <Frame name="SpinnerWithShadowTemplate" inherits="SpinnerTemplate" virtual="true" mixin="SpinnerWithShadowMixin">
+        <Size x="142" y="142"/>
+        <KeyValues>
+            <KeyValue key="shadowAlpha" value="0.5" type="number"/> <!-- Set this to adjust the background shadow's alpha -->
+        </KeyValues>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Shadow" atlas="Spinner_Shadow" alphaMode="BLEND" alpha="0.5" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnShow method="SpinnerWithShadow_OnShow" inherit="prepend"/>
+            <OnHide method="SpinnerWithShadow_OnHide" inherit="prepend"/>
+        </Scripts>
+    </Frame>
+
+</Ui>

@@ -12,7 +12,7 @@ local SeasonsConstants =
 			{
 				{ Name = "NoSeason", Type = "SeasonID", EnumValue = 0 },
 				{ Name = "SeasonOfMastery", Type = "SeasonID", EnumValue = 1 },
-				{ Name = "Placeholder", Type = "SeasonID", EnumValue = 2 },
+				{ Name = "SeasonOfDiscovery", Type = "SeasonID", EnumValue = 2 },
 				{ Name = "Hardcore", Type = "SeasonID", EnumValue = 3 },
 			},
 		},

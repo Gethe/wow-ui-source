@@ -251,15 +251,15 @@ StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function ()
-		MacOptions_OpenUniversalAccess();
+		C_MacOptions.OpenUniversalAccess();
 		ShowUIPanel(MacOptionsFrame);
 	end,
 	OnCancel = function()
 		ShowUIPanel(MacOptionsFrame);
 	end,
 	OnShow = function(self)
-		if (MacOptions_HasNewStyleUniversalAccess() and MAC_OPEN_UNIVERSAL_ACCESS1090 ~= nil) then
-			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());
+		if (MAC_OPEN_UNIVERSAL_ACCESS1090 ~= nil) then
+			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, C_MacOptions.GetGameBundleName());
 		else
 			self.text:SetText(MAC_OPEN_UNIVERSAL_ACCESS);
 		end

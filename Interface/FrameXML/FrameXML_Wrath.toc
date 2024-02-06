@@ -98,6 +98,7 @@ FontStyles.xml
 ..\SharedXML\ScrollDefine.xml
 ..\SharedXML\SecureScrollTemplates.xml
 ..\SharedXML\SecureUIPanelTemplates.xml
+..\SharedXML\Spinner.xml
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\SharedBasicControls.xml
 ..\SharedXML\Tabs\MinimalTab.xml

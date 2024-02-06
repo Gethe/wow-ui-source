@@ -65,13 +65,13 @@ function MacKeyboardOptionsFrame_Update()
 	local disableOSShortcutsButton = MacKeyboardOptionsFrameCheckButton9;
 	disableOSShortcutsButton.setFunc = function(checked)
 		VideoOptionsFrameApply:Enable();
-		if ( (not MacOptions_IsUniversalAccessEnabled()) and (checked == "1")  ) then
+		if ( (not C_MacOptions.IsUniversalAccessEnabled()) and (checked == "1")  ) then
 			StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
 			disableOSShortcutsButton:SetChecked(false);
 		end
 	end;
 
-	if ( (not MacOptions_IsUniversalAccessEnabled()) and disableOSShortcutsButton:GetChecked() ) then
+	if ( (not C_MacOptions.IsUniversalAccessEnabled()) and disableOSShortcutsButton:GetChecked() ) then
 		disableOSShortcutsButton:SetChecked(false);
 		SetCVar("MacDisableOSShortcuts", "0");
 	end

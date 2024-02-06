@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+	<Script file="ScrollableTabsContainer.lua"/>
+	
+	<Frame name="ScrollableTabsContainerTemplate" mixin="ScrollableTabsContainerMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="Contents" clipChildren="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -52,6 +52,23 @@ local function Register()
 	end
 
 	-- Dynamic Flight High Speed Motion Sickness Option
+	if C_CVar.GetCVar("DisableAdvancedFlyingFullScreenEffects") then
+		local function GetValue()
+			return not GetCVarBool("DisableAdvancedFlyingFullScreenEffects");
+		end
+		
+		local function SetValue(value)
+			SetCVar("DisableAdvancedFlyingFullScreenEffects", not value);
+		end
+		
+		local defaultValue = true;
+		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_ADV_FLY_SCREEN_EFFECTS", Settings.DefaultVarLocation, 
+			Settings.VarType.Boolean, MOTION_SICKNESS_DRAGONRIDING_SCREEN_EFFECTS, defaultValue, GetValue, SetValue);
+		local initializer = Settings.CreateCheckBox(category, setting, MOTION_SICKNESS_DRAGONRIDING_SCREEN_EFFECTS_TOOLTIP);
+		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
+	end
+
+	-- Dynamic Flight High Speed Motion Sickness Option
 	if C_CVar.GetCVar("DisableAdvancedFlyingVelocityVFX") then
 		local function GetValue()
 			return not GetCVarBool("DisableAdvancedFlyingVelocityVFX");
@@ -65,7 +82,7 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_ADV_FLY_VEL_VFX", Settings.DefaultVarLocation, 
 			Settings.VarType.Boolean, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateCheckBox(category, setting, MOTION_SICKNESS_DRAGONRIDING_SPEED_EFFECTS_TOOLTIP);
-		initializer:AddSearchTags(MOTION_SICKNESS_DROPDOWN);
+		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
 	end
 
 	-- Dynamic Flight Pitch Control

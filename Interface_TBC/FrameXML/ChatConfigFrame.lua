@@ -1423,8 +1423,8 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			CombatConfig_Colorize_Update();
 		end;
 	chatUnitColorCancel = function()
-			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
-			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
+			SetChatUnitColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	spellColorSwatch = function()
@@ -1433,8 +1433,8 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			CombatConfig_Colorize_Update();
 		end;
 	spellColorCancel = function()
-			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell, ColorPicker_GetPreviousValues());
-			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
+			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell, ColorPickerFrame:GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	damageColorSwatch = function()
@@ -1443,12 +1443,12 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			CombatConfig_Colorize_Update();
 		end;
 	damageColorCancel = function()
-			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage, ColorPicker_GetPreviousValues());
-			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
+			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage, ColorPickerFrame:GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorSwatch = function()
-			local messageTypes = ColorPickerFrame.extraInfo;
+			local messageTypes = ColorPickerFrame:GetExtraInfo();
 			if ( messageTypes ) then
 				for index, value in pairs(messageTypes) do
 					ChangeChatColor(FCF_StripChatMsg(value), ColorPickerFrame:GetColorRGB());
@@ -1460,15 +1460,15 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			CombatConfig_Colorize_Update();
 		end;
 	messageTypeColorCancel = function()
-			local messageTypes = ColorPickerFrame.extraInfo;
+			local messageTypes = ColorPickerFrame:GetExtraInfo();
 			if ( messageTypes ) then
 				for index, value in pairs(messageTypes) do
-					ChangeChatColor(FCF_StripChatMsg(value), ColorPicker_GetPreviousValues());
+					ChangeChatColor(FCF_StripChatMsg(value), ColorPickerFrame:GetPreviousValues());
 				end
 			else
-				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPicker_GetPreviousValues());
+				ChangeChatColor(CHAT_CONFIG_CURRENT_COLOR_SWATCH.type, ColorPickerFrame:GetPreviousValues());
 			end
-			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
+			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 }
@@ -1479,7 +1479,7 @@ function ChatUnitColor_OpenColorPicker(self)
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.chatUnitColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.chatUnitColorCancel;
-	OpenColorPicker(info);
+	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
 function SpellColor_OpenColorPicker(self)
@@ -1488,7 +1488,7 @@ function SpellColor_OpenColorPicker(self)
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorCancel;
-	OpenColorPicker(info);
+	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
 function DamageColor_OpenColorPicker(self)
@@ -1497,7 +1497,7 @@ function DamageColor_OpenColorPicker(self)
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorCancel;
-	OpenColorPicker(info);
+	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
 function MessageTypeColor_OpenColorPicker(self)
@@ -1511,7 +1511,7 @@ function MessageTypeColor_OpenColorPicker(self)
 	if ( messageTypeTable ) then
 		info.extraInfo = messageTypeTable;
 	end
-	OpenColorPicker(info);
+	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
 function GetMessageTypeColor(messageType)

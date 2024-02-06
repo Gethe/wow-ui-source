@@ -938,6 +938,8 @@
 						<xs:element name="ColorWheelThumbTexture" type="TextureType"/>
 						<xs:element name="ColorValueTexture" type="TextureType"/>
 						<xs:element name="ColorValueThumbTexture" type="TextureType"/>
+						<xs:element name="ColorAlphaTexture" type="TextureType"/>
+						<xs:element name="ColorAlphaThumbTexture" type="TextureType"/>
 					</xs:choice>
 				</xs:sequence>
 			</xs:extension>
@@ -1528,6 +1530,20 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="FlipBook" type="FlipBookType" substitutionGroup="AnimationRef"/>
+	
+	<xs:complexType name="VertexColorType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:sequence minOccurs="0">
+					<xs:choice maxOccurs="unbounded">
+						<xs:element name="StartColor" type="ColorType"/>
+						<xs:element name="EndColor" type="ColorType"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="VertexColor" type="VertexColorType" substitutionGroup="AnimationRef"/>
 
 	<xs:complexType name="TextureCoordTranslationType">
 		<xs:complexContent>

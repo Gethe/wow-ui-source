@@ -229,3 +229,15 @@ function CharacterCreate_UpdateFacialHairCustomization()
 		CharCreateRandomizeButton:SetPoint("TOP", "CharacterCustomizationButtonFrame5", "BOTTOM", 0, -5);
 	end
 end
+
+function CharacterCreate_ToggleSelfFound(self)
+	C_CharacterCreation.ToggleSelfFoundMode(self:GetChecked());
+end
+
+function CheckSelfFoundButton()
+	if (C_GameRules.IsSelfFoundAllowed()) then
+		CharacterCreateSelfFound:Show();
+	else
+		CharacterCreateSelfFound:Hide();
+	end
+end
