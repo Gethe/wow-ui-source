@@ -382,18 +382,29 @@ function SettingsPanelMixin:Open()
 	end
 end
 
+local function FindCategoryByCategoryID(categories, categoryID)
+	if categories then
+		for index, category in ipairs(categories) do
+			if category:GetID() == categoryID then
+				return category;
+			else
+				FindCategoryByCategoryID(category:GetSubcategories(), categoryID);
+			end
+		end
+	end
+end
+
 function SettingsPanelMixin:OpenToCategory(categoryID, scrollToElementName)
 	self:Open();
 
-	local categoryTbl = self:GetCategoryList():GetCategory(categoryID);
-	if categoryTbl then
-		self:SelectCategory(categoryTbl);
-
-		if scrollToElementName then
-			self:GetSettingsList():ScrollToElementByName(scrollToElementName);
-		end
+	local categoryTbl = FindCategoryByCategoryID(self:GetAllCategories(), categoryID);
+	if not categoryTbl then return false; end
+	
+	self:SelectCategory(categoryTbl);
+	if scrollToElementName then
+		self:GetSettingsList():ScrollToElementByName(scrollToElementName);
 	end
-	return categoryTbl ~= nil;
+	return true;
 end
 
 function SettingsPanelMixin:SetKeybindingsCategory(category)
