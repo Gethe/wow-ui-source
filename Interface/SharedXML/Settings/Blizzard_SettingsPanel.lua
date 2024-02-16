@@ -388,7 +388,8 @@ local function FindCategoryByCategoryID(categories, categoryID)
 			if category:GetID() == categoryID then
 				return category;
 			else
-				FindCategoryByCategoryID(category:GetSubcategories(), categoryID);
+				local subcategory = FindCategoryByCategoryID(category:GetSubcategories(), categoryID);
+				if subcategory then return subcategory; end
 			end
 		end
 	end
