@@ -36,7 +36,7 @@ local function GetPendingCompleteActivityAnimStartTime(activityID)
 end
 
 local function IsTimedActivity(activityData)
-	return activityData.eventStartTime and activityData.eventEndTime;
+	return activityData.eventStartTime ~= nil and activityData.eventEndTime ~= nil;
 end
 
 local function HasTimedActivityBegun(activityData)

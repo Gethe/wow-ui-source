@@ -309,15 +309,15 @@ local function UnitFrameComparator(left, right)
 	local leftRole = left.tempRole;
 	local rightRole = right.tempRole;
 	if leftRole ~= rightRole then
-		if leftRole == "HEALER" then
+		if leftRole == Enum.LFGRole.Healer then
 			return true;
-		elseif rightRole == "HEALER" then
+		elseif rightRole == Enum.LFGRole.Healer then
 			return false;
 		end
 
-		if leftRole == "TANK" then
+		if leftRole == Enum.LFGRole.Tank then
 			return true;
-		elseif rightRole == "TANK" then
+		elseif rightRole == Enum.LFGRole.Tank then
 			return false;
 		end
 	end
