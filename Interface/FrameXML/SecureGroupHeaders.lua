@@ -1047,11 +1047,15 @@ function SecureAuraHeader_Update(self)
 				local aura, _, duration = freshTable();
 				if C_UnitAuras then
 					local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, fullFilter);
-					aura.name = auraData.name;
-					duration = auraData.duration;
-					aura.expires = auraData.expirationTime;
-					aura.caster = auraData.sourceUnit;
-					aura.shouldConsolidate = #auraData.points > 0;
+					if(auraData == nil) then 
+						aura.name = nil;
+					else
+						aura.name = auraData.name;
+						duration = auraData.duration;
+						aura.expires = auraData.expirationTime;
+						aura.caster = auraData.sourceUnit;
+						aura.shouldConsolidate = #auraData.points > 0;
+					end
 				else
 					aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _, _, _, _, _, _, aura.shouldConsolidate = UnitAura(unit, i, fullFilter);
 				end
