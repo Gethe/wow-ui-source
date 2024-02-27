@@ -1,5 +1,30 @@
 AuraUtil = {};
 
+-- For backwards compatibility with old APIs, this helper function returns aura data values unpacked in the same order as before.
+function AuraUtil.UnpackAuraData(auraData)
+	if not auraData then
+		return nil;
+	end
+
+	return auraData.name,
+		auraData.icon,
+		auraData.applications,
+		auraData.dispelName,
+		auraData.duration,
+		auraData.expirationTime,
+		auraData.sourceUnit,
+		auraData.isStealable,
+		auraData.nameplateShowPersonal,
+		auraData.spellId,
+		auraData.canApplyAura,
+		auraData.isBossAura,
+		auraData.isFromPlayerOrPlayerPet,
+		auraData.nameplateShowAll,
+		auraData.timeMod,
+		unpack(auraData.points);
+		-- TODO: Add data for SPELL_ATTRIBUTE_EX_G_UI_AURA_PRIORITY here when Classic updates Aura data.
+end
+
 local function FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, ...)
 	if ... == nil then
 		return nil; -- Not found

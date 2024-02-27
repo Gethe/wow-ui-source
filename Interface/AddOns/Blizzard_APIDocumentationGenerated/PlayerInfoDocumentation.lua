@@ -113,6 +113,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsSelfFoundActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsXPUserDisabled",
 			Type = "Function",
 
