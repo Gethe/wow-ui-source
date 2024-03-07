@@ -43,6 +43,32 @@ local ContributionCollector =
 				{ Name = "InternalError", Type = "ContributionResult", EnumValue = 7 },
 			},
 		},
+		{
+			Name = "ContributionAppearance",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "stateName", Type = "cstring", Nilable = false },
+				{ Name = "stateColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "tooltipLine", Type = "cstring", Nilable = false },
+				{ Name = "tooltipUseTimeRemaining", Type = "bool", Nilable = false },
+				{ Name = "statusBarAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "borderAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "bannerAtlas", Type = "textureAtlas", Nilable = false },
+			},
+		},
+		{
+			Name = "ContributionMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "collectorCreatureID", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

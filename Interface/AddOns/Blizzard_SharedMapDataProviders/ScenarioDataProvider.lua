@@ -100,7 +100,7 @@ function ScenarioPinMixin:OnLoad()
 end
 
 function ScenarioPinMixin:OnAcquired(info)
-	local x1, x2, y1, y2 = GetObjectIconTextureCoords(info.index);
+	local x1, x2, y1, y2 = C_Minimap.GetObjectIconTextureCoords(info.index);
 	self.Icon:SetTexCoord(x1, x2, y1, y2);
 	self:SetPosition(info.x, info.y);
 end

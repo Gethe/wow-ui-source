@@ -21,6 +21,32 @@ local ItemConstants_Classic =
 				{ Name = "Prismatic", Type = "ItemGemSubclass", EnumValue = 8 },
 			},
 		},
+		{
+			Name = "ReforgeFailedReason",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "None", Type = "ReforgeFailedReason", EnumValue = 0 },
+				{ Name = "ReforgeSrcStatNotFound", Type = "ReforgeFailedReason", EnumValue = 1 },
+				{ Name = "ReforgeInsufficientSrcStat", Type = "ReforgeFailedReason", EnumValue = 2 },
+				{ Name = "ReforgeAlreadyHasDstStat", Type = "ReforgeFailedReason", EnumValue = 3 },
+				{ Name = "ReforgeItemTooLowLevel", Type = "ReforgeFailedReason", EnumValue = 4 },
+				{ Name = "NumReforgeFailedReason", Type = "ReforgeFailedReason", EnumValue = 5 },
+			},
+		},
+		{
+			Name = "InventoryConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "NumBagSlots", Type = "number", Value = NUM_BAG_SLOTS },
+				{ Name = "NumGenericBankSlots", Type = "number", Value = BANK_NUM_GENERIC_SLOTS },
+				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
+			},
+		},
 	},
 };
 

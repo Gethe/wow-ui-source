@@ -67,7 +67,7 @@ local WowTokenUI =
 			LiteralName = "TOKEN_REDEEM_CONFIRM_REQUIRED",
 			Payload =
 			{
-				{ Name = "choiceType", Type = "number", Nilable = false },
+				{ Name = "choiceType", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -86,8 +86,8 @@ local WowTokenUI =
 			LiteralName = "TOKEN_REDEEM_RESULT",
 			Payload =
 			{
-				{ Name = "result", Type = "number", Nilable = false },
-				{ Name = "choiceType", Type = "number", Nilable = false },
+				{ Name = "result", Type = "luaIndex", Nilable = false },
+				{ Name = "choiceType", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

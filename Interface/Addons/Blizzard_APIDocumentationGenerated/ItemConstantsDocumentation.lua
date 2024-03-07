@@ -5,9 +5,9 @@ local ItemConstants =
 		{
 			Name = "InventoryType",
 			Type = "Enumeration",
-			NumValues = 29,
+			NumValues = 35,
 			MinValue = 0,
-			MaxValue = 28,
+			MaxValue = 34,
 			Fields =
 			{
 				{ Name = "IndexNonEquipType", Type = "InventoryType", EnumValue = 0 },
@@ -39,6 +39,12 @@ local ItemConstants =
 				{ Name = "IndexRangedrightType", Type = "InventoryType", EnumValue = 26 },
 				{ Name = "IndexQuiverType", Type = "InventoryType", EnumValue = 27 },
 				{ Name = "IndexRelicType", Type = "InventoryType", EnumValue = 28 },
+				{ Name = "IndexProfessionToolType", Type = "InventoryType", EnumValue = 29 },
+				{ Name = "IndexProfessionGearType", Type = "InventoryType", EnumValue = 30 },
+				{ Name = "IndexEquipablespellOffensiveType", Type = "InventoryType", EnumValue = 31 },
+				{ Name = "IndexEquipablespellUtilityType", Type = "InventoryType", EnumValue = 32 },
+				{ Name = "IndexEquipablespellDefensiveType", Type = "InventoryType", EnumValue = 33 },
+				{ Name = "IndexEquipablespellWeaponType", Type = "InventoryType", EnumValue = 34 },
 			},
 		},
 		{
@@ -64,11 +70,28 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "ItemBind",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "None", Type = "ItemBind", EnumValue = 0 },
+				{ Name = "OnAcquire", Type = "ItemBind", EnumValue = 1 },
+				{ Name = "OnEquip", Type = "ItemBind", EnumValue = 2 },
+				{ Name = "OnUse", Type = "ItemBind", EnumValue = 3 },
+				{ Name = "Quest", Type = "ItemBind", EnumValue = 4 },
+				{ Name = "QuestMulti", Type = "ItemBind", EnumValue = 5 },
+				{ Name = "Multi", Type = "ItemBind", EnumValue = 6 },
+			},
+		},
+		{
 			Name = "ItemClass",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 18,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "Consumable", Type = "ItemClass", EnumValue = 0 },
@@ -90,6 +113,7 @@ local ItemConstants =
 				{ Name = "Glyph", Type = "ItemClass", EnumValue = 16 },
 				{ Name = "Battlepet", Type = "ItemClass", EnumValue = 17 },
 				{ Name = "WoWToken", Type = "ItemClass", EnumValue = 18 },
+				{ Name = "Profession", Type = "ItemClass", EnumValue = 19 },
 			},
 		},
 		{
@@ -113,9 +137,9 @@ local ItemConstants =
 		{
 			Name = "ItemGemColor",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 26,
 			MinValue = 1,
-			MaxValue = 8388608,
+			MaxValue = 33554432,
 			Fields =
 			{
 				{ Name = "Meta", Type = "ItemGemColor", EnumValue = 1 },
@@ -142,6 +166,8 @@ local ItemConstants =
 				{ Name = "DominationFrost", Type = "ItemGemColor", EnumValue = 2097152 },
 				{ Name = "DominationUnholy", Type = "ItemGemColor", EnumValue = 4194304 },
 				{ Name = "Cypher", Type = "ItemGemColor", EnumValue = 8388608 },
+				{ Name = "Tinker", Type = "ItemGemColor", EnumValue = 16777216 },
+				{ Name = "Primordial", Type = "ItemGemColor", EnumValue = 33554432 },
 			},
 		},
 		{
@@ -159,6 +185,30 @@ local ItemConstants =
 				{ Name = "Other", Type = "ItemMiscellaneousSubclass", EnumValue = 4 },
 				{ Name = "Mount", Type = "ItemMiscellaneousSubclass", EnumValue = 5 },
 				{ Name = "MountEquipment", Type = "ItemMiscellaneousSubclass", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "ItemProfessionSubclass",
+			Type = "Enumeration",
+			NumValues = 14,
+			MinValue = 0,
+			MaxValue = 13,
+			Fields =
+			{
+				{ Name = "Blacksmithing", Type = "ItemProfessionSubclass", EnumValue = 0 },
+				{ Name = "Leatherworking", Type = "ItemProfessionSubclass", EnumValue = 1 },
+				{ Name = "Alchemy", Type = "ItemProfessionSubclass", EnumValue = 2 },
+				{ Name = "Herbalism", Type = "ItemProfessionSubclass", EnumValue = 3 },
+				{ Name = "Cooking", Type = "ItemProfessionSubclass", EnumValue = 4 },
+				{ Name = "Mining", Type = "ItemProfessionSubclass", EnumValue = 5 },
+				{ Name = "Tailoring", Type = "ItemProfessionSubclass", EnumValue = 6 },
+				{ Name = "Engineering", Type = "ItemProfessionSubclass", EnumValue = 7 },
+				{ Name = "Enchanting", Type = "ItemProfessionSubclass", EnumValue = 8 },
+				{ Name = "Fishing", Type = "ItemProfessionSubclass", EnumValue = 9 },
+				{ Name = "Skinning", Type = "ItemProfessionSubclass", EnumValue = 10 },
+				{ Name = "Jewelcrafting", Type = "ItemProfessionSubclass", EnumValue = 11 },
+				{ Name = "Inscription", Type = "ItemProfessionSubclass", EnumValue = 12 },
+				{ Name = "Archaeology", Type = "ItemProfessionSubclass", EnumValue = 13 },
 			},
 		},
 		{
@@ -218,9 +268,9 @@ local ItemConstants =
 		{
 			Name = "ItemSocketType",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 26,
 			MinValue = 0,
-			MaxValue = 23,
+			MaxValue = 25,
 			Fields =
 			{
 				{ Name = "None", Type = "ItemSocketType", EnumValue = 0 },
@@ -247,6 +297,8 @@ local ItemConstants =
 				{ Name = "PunchcardBlue", Type = "ItemSocketType", EnumValue = 21 },
 				{ Name = "Domination", Type = "ItemSocketType", EnumValue = 22 },
 				{ Name = "Cypher", Type = "ItemSocketType", EnumValue = 23 },
+				{ Name = "Tinker", Type = "ItemSocketType", EnumValue = 24 },
+				{ Name = "Primordial", Type = "ItemSocketType", EnumValue = 25 },
 			},
 		},
 		{
@@ -356,17 +408,34 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "SlotRegion",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "SlotRegion", EnumValue = 0 },
+				{ Name = "PlayerEquip", Type = "SlotRegion", EnumValue = 1 },
+				{ Name = "PlayerInv", Type = "SlotRegion", EnumValue = 2 },
+				{ Name = "Bank", Type = "SlotRegion", EnumValue = 3 },
+				{ Name = "ReagentBank", Type = "SlotRegion", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "UIItemInteractionFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "DisplayWithInset", Type = "UIItemInteractionFlags", EnumValue = 1 },
 				{ Name = "ConfirmationHasDelay", Type = "UIItemInteractionFlags", EnumValue = 2 },
 				{ Name = "ConversionMode", Type = "UIItemInteractionFlags", EnumValue = 4 },
 				{ Name = "ClickShowsFlyout", Type = "UIItemInteractionFlags", EnumValue = 8 },
+				{ Name = "AddCurrency", Type = "UIItemInteractionFlags", EnumValue = 16 },
+				{ Name = "UsesCharges", Type = "UIItemInteractionFlags", EnumValue = 32 },
 			},
 		},
 		{
@@ -382,6 +451,15 @@ local ItemConstants =
 				{ Name = "CleanseCorruption", Type = "UIItemInteractionType", EnumValue = 2 },
 				{ Name = "RunecarverScrapping", Type = "UIItemInteractionType", EnumValue = 3 },
 				{ Name = "ItemConversion", Type = "UIItemInteractionType", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "ItemConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "NUM_ITEM_ENCHANTMENT_SOCKETS", Type = "number", Value = 3 },
+				{ Name = "MAX_LOOT_OBJECT_ITEMS", Type = "number", Value = 31 },
 			},
 		},
 		{

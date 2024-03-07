@@ -7,6 +7,15 @@ local QuestLog =
 	Functions =
 	{
 		{
+			Name = "GetMapForQuestPOIs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMaxNumQuests",
 			Type = "Function",
 			Documentation = { "This is the maximum number of quests a player can be on, including hidden quests, world quests, emissaries etc" },
@@ -55,6 +64,20 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetQuestsOnMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "quests", Type = "table", InnerType = "QuestOnMapInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnQuest",
 			Type = "Function",
 
@@ -80,6 +103,15 @@ local QuestLog =
 			Returns =
 			{
 				{ Name = "isCompleted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMapForQuestPOIs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -134,9 +166,27 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "QuestLogCriteriaUpdate",
+			Type = "Event",
+			LiteralName = "QUEST_LOG_CRITERIA_UPDATE",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "specificTreeID", Type = "number", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "numFulfilled", Type = "number", Nilable = false },
+				{ Name = "numRequired", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "QuestLogUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_LOG_UPDATE",
+		},
+		{
+			Name = "QuestPoiUpdate",
+			Type = "Event",
+			LiteralName = "QUEST_POI_UPDATE",
 		},
 		{
 			Name = "QuestRemoved",
@@ -196,6 +246,19 @@ local QuestLog =
 	Tables =
 	{
 		{
+			Name = "QuestFrequency",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Default", Type = "QuestFrequency", EnumValue = 0 },
+				{ Name = "Daily", Type = "QuestFrequency", EnumValue = 1 },
+				{ Name = "Weekly", Type = "QuestFrequency", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "QuestTag",
 			Type = "Enumeration",
 			NumValues = 10,
@@ -225,6 +288,16 @@ local QuestLog =
 				{ Name = "finished", Type = "bool", Nilable = false },
 				{ Name = "numFulfilled", Type = "number", Nilable = false },
 				{ Name = "numRequired", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "QuestOnMapInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
 			},
 		},
 	},

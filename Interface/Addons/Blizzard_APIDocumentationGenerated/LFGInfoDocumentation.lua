@@ -6,6 +6,138 @@ local LFGInfo =
 
 	Functions =
 	{
+		{
+			Name = "CanPlayerUseGroupFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFD",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUseLFR",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPlayerUsePremadeGroup",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDungeonInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dungeonInfo", Type = "LFGDungeonInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLFDLockStates",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "lockInfo", Type = "table", InnerType = "LFGLockInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRoleCheckDifficultyDetails",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = true },
+				{ Name = "isLevelReduced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGroupFinderEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInLFGFollowerDungeon",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLFDEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLFGFollowerDungeon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsLFREnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPremadeGroupEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -31,6 +163,11 @@ local LFGInfo =
 			LiteralName = "LFG_COMPLETION_REWARD",
 		},
 		{
+			Name = "LfgEnabledStateChanged",
+			Type = "Event",
+			LiteralName = "LFG_ENABLED_STATE_CHANGED",
+		},
+		{
 			Name = "LfgInvalidErrorMessage",
 			Type = "Event",
 			LiteralName = "LFG_INVALID_ERROR_MESSAGE",
@@ -52,7 +189,7 @@ local LFGInfo =
 			LiteralName = "LFG_OFFER_CONTINUE",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "lfgDungeonsID", Type = "number", Nilable = false },
 				{ Name = "typeID", Type = "number", Nilable = false },
 			},
@@ -102,7 +239,7 @@ local LFGInfo =
 			LiteralName = "LFG_READY_CHECK_DECLINED",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -116,7 +253,7 @@ local LFGInfo =
 			LiteralName = "LFG_READY_CHECK_PLAYER_IS_READY",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -149,7 +286,7 @@ local LFGInfo =
 			LiteralName = "LFG_ROLE_CHECK_ROLE_CHOSEN",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isTank", Type = "bool", Nilable = false },
 				{ Name = "isHealer", Type = "bool", Nilable = false },
 				{ Name = "isDamage", Type = "bool", Nilable = false },
@@ -208,6 +345,26 @@ local LFGInfo =
 
 	Tables =
 	{
+		{
+			Name = "LFGDungeonInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
+				{ Name = "link", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "LFGLockInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "lfgID", Type = "number", Nilable = false },
+				{ Name = "reason", Type = "number", Nilable = false },
+				{ Name = "hideEntry", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

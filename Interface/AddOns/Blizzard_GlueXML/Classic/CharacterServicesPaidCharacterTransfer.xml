@@ -1,0 +1,34 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PCTCharacterSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="300" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="PCTDestinationSelect" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="300" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="TransferRealmLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PCT_FLOW_DESTINATION_REALM_LABEL">
+							<Size x="0" y="20"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="TransferRealmEditbox" mixin="TransferRealmEditboxMixin" inherits="CharacterServicesEditBoxWithAutoCompleteTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmLabel" relativePoint="BOTTOMLEFT" x="5" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+						</Scripts>
+					</EditBox>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

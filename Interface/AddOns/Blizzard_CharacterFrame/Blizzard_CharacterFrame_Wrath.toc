@@ -1,0 +1,16 @@
+## Title: Blizzard_CharacterFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_ActionBar
+## SuppressLocalTableRef: 1
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: wrath
+Classic\DressUpFrames.lua
+Classic\DressUpFrames.xml
+Wrath\CharacterFrame.lua
+Wrath\CharacterFrame.xml
+Wrath\PaperDollFrame.lua
+Wrath\PaperDollFrame.xml
+Wrath\PetPaperDollFrame.lua
+Wrath\PetPaperDollFrame.xml

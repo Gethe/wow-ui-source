@@ -1,0 +1,17 @@
+## Title: Blizzard_Options_Frame_Legacy
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_VideoOptions_Shared, Blizzard_GameTooltip, Blizzard_UIPanelTemplates
+## AllowLoad: Game
+## AllowLoadGameType: vanilla
+## SuppressLocalTableRef: 1
+Classic\MacOptionsPanel.lua
+Classic\MacOptionsPanel.xml
+Classic\AudioOptionsFrame.lua
+Classic\AudioOptionsFrame.xml
+Classic\AudioOptionsPanels.lua
+Classic\AudioOptionsPanels.xml
+Classic\InterfaceOptionsFrame.lua
+Classic\InterfaceOptionsFrame.xml
+Vanilla\InterfaceOptionsPanels.lua
+Vanilla\InterfaceOptionsPanels.xml

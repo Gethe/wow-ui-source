@@ -23,11 +23,11 @@ function BannerDataProvider:AddBanner(mapBannerInfo)
 		local minutesLeft = timeLeftMinutes % 60;
 		descriptionLabel = INVASION_TIME_FORMAT:format(hoursLeft, minutesLeft)
 	end
-
-	local atlas, width, height = GetAtlasInfo(mapBannerInfo.atlasName);
+	
+	local info = C_Texture.GetAtlasInfo(mapBannerInfo.atlasName);
 	local bannerLabelTextureInfo = {};
 	bannerLabelTextureInfo.atlas = mapBannerInfo.atlasName;
-	bannerLabelTextureInfo.width = width;
-	bannerLabelTextureInfo.height = height;
+	bannerLabelTextureInfo.width = info and info.width or 0;
+	bannerLabelTextureInfo.height = info and info.height or 0;
 	self:GetMap():TriggerEvent("SetAreaLabel", MAP_AREA_LABEL_TYPE.AREA_POI_BANNER, mapBannerInfo.name, descriptionLabel, INVASION_FONT_COLOR, INVASION_DESCRIPTION_FONT_COLOR, bannerLabelTextureInfo);
 end

@@ -1,4 +1,0 @@
-## Title: Blizzard Macro UI
-## LoadOnDemand: 1
-Blizzard_MacroUI.xml
-Localization.lua

@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UIWidgetManager" toplevel="true" mixin="UIWidgetManagerMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<!--This is a dummy element that Blizzard_SharedWidgetFrames depends on.  We currently don't use the relevant widgets in Classic.  This only exists to avoid errors on startup.-->
+	<Frame name="UIWidgetContainerTemplate" virtual="true" inherits="ResizeLayoutFrame"/>
+</Ui>

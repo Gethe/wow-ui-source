@@ -25,6 +25,11 @@ local AdventureJournal =
 			LiteralName = "AJ_OPEN",
 		},
 		{
+			Name = "AjOpenCollectionsAction",
+			Type = "Event",
+			LiteralName = "AJ_OPEN_COLLECTIONS_ACTION",
+		},
+		{
 			Name = "AjPveLfgAction",
 			Type = "Event",
 			LiteralName = "AJ_PVE_LFG_ACTION",

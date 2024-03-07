@@ -1,0 +1,7 @@
+## Title: Blizzard_FontStyles_Shared
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## SuppressLocalTableRef: 1
+## AllowLoad: Both
+## LoadOnDemand: 1
+SharedFontStyles.xml

@@ -1,0 +1,138 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Frame name="WowClassicScrollBarThumbScripts" inherits="WowTrimScrollBarThumbScripts" virtual="true">
+	</Frame>
+	<EventFrame name="WowClassicScrollBar" inherits="VerticalScrollBarTemplate" mixin="WowTrimScrollBarMixin" virtual="true">
+		<Size x="25" y="560"/>
+		<KeyValues>
+			<KeyValue key="minThumbExtent" value="24" type="number"/>
+			<KeyValue key="fixedThumbExtent" value="24" type="number"/>
+			<KeyValue key="canInterpolateScroll" value="false" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" y="3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Background" useParentLevel="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Begin" atlas="UI-ClassicScrollBar-EndCap-Top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="End" atlas="UI-ClassicScrollBar-EndCap-Bottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="UI-ClassicScrollBar-Center" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"  y="2" relativeKey="$parent.Begin" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.End" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Track" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-20"/>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="20"/>
+				</Anchors>
+				<Frames>
+					<EventButton parentKey="Thumb" inherits="WowClassicScrollBarThumbScripts" enableMouse="true">
+						<Size x="18"/>
+						<Anchors>
+							<Anchor point="LEFT" x="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture parentKey="Middle">
+									<Anchors>
+										<Anchor point="TOPLEFT" y="-5"/>
+										<Anchor point="BOTTOMRIGHT" y="5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="2">
+								<Texture parentKey="Begin">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="End">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture name="$parentThumbTexture" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
+									<Size x="18" y="24"/>
+									<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</EventButton>
+				</Frames>
+			</Frame>
+			<EventButton parentKey="Back" inherits="WowTrimScrollBarStepperScripts">
+				<Size x="17" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-4"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+					<KeyValue key="upTexture" value="UI-ScrollBar-ClassicScrollUpButton-Up" type="string"/>
+					<KeyValue key="downTexture" value="UI-ScrollBar-ClassicScrollUpButton-Down" type="string"/>
+					<KeyValue key="disabledTexture" value="UI-ScrollBar-ClassicScrollUpButton-Disabled" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" atlas="UI-ScrollBar-ClassicScrollUpButton-Highlight" useAtlasSize="true" hidden="true"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+			<EventButton parentKey="Forward" inherits="WowTrimScrollBarStepperScripts">
+				<Size x="17" y="17"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="7" y="4"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+					<KeyValue key="upTexture" value="UI-ScrollBar-ClassicScrollDownButton-Up" type="string"/>
+					<KeyValue key="downTexture" value="UI-ScrollBar-ClassicScrollDownButton-Down" type="string"/>
+					<KeyValue key="disabledTexture" value="UI-ScrollBar-ClassicScrollDownButton-Disabled" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Overlay" atlas="UI-ScrollBar-ClassicScrollDownButton-Highlight" useAtlasSize="true" hidden="true"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EventFrame>
+</Ui>

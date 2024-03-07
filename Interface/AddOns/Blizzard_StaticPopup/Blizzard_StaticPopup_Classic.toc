@@ -1,0 +1,9 @@
+## Title: Blizzard_StaticPopup
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FontStyles_Frame, Blizzard_ItemButton, Blizzard_MoneyFrame, Blizzard_AutoComplete
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: classic
+Classic\StaticPopup.lua
+Classic\StaticPopup.xml

@@ -71,7 +71,7 @@ local BarberShop =
 
 			Returns =
 			{
-				{ Name = "characterData", Type = "BarberShopCharacterData", Nilable = false },
+				{ Name = "characterData", Type = "PlayerInfoCharacterData", Nilable = false },
 			},
 		},
 		{
@@ -94,9 +94,18 @@ local BarberShop =
 
 			Returns =
 			{
-				{ Name = "customizationName", Type = "string", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "customizationName", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isCurrent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetViewingChrModel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "chrModelID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -242,6 +251,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "SetViewingChrModel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "chrModelID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetViewingShapeshiftForm",
 			Type = "Function",
 
@@ -315,25 +333,6 @@ local BarberShop =
 
 	Tables =
 	{
-		{
-			Name = "BarberShopCharacterData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "raceData", Type = "BarberShopRaceData", Nilable = false },
-				{ Name = "sex", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "BarberShopRaceData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "fileName", Type = "string", Nilable = false },
-				{ Name = "alternateFormRaceData", Type = "CharacterAlternateFormData", Nilable = true },
-			},
-		},
 	},
 };
 

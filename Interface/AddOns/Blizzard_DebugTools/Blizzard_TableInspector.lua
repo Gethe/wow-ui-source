@@ -6,7 +6,7 @@ local DEFAULT_DATA_PROVIDERS = {
 	TableInspectorAttributeDataProviderMixin,
 };
 
-TableInspectorMixin = {};
+TableInspectorMixin = CreateFromMixins(ToolWindowOwnerMixin);
 
 function TableInspectorMixin:OnLoad()
 	self:Reset();
@@ -23,7 +23,7 @@ function TableInspectorMixin:Reset()
 		dataProviderInstance:Initialize(self, self.LinesScrollFrame.LinesContainer);
 		self:AddDataProvider(dataProviderInstance);
 	end
-	
+
 	if self.lines then
 		wipe(self.lines);
 	else
@@ -35,7 +35,7 @@ function TableInspectorMixin:Reset()
 	else
 		self.tableNavigation = {};
 	end
-	
+
 	self.tableNavigationIndex = 0;
 end
 
@@ -47,7 +47,7 @@ function TableInspectorMixin:AddDataProvider(dataProvider)
 	if not self.dataProviders then
 		self.dataProviders = {};
 	end
-	
+
 	table.insert(self.dataProviders, dataProvider);
 end
 
@@ -55,7 +55,7 @@ function TableInspectorMixin:ClearData()
 	if not self.dataProviders then
 		return;
 	end
-	
+
 	for _, dataProvider in ipairs(self.dataProviders) do
 		dataProvider:Clear(self.focusedTable);
 	end
@@ -79,9 +79,9 @@ function TableInspectorMixin:UpdateLines()
 	if not self.dataProviders then
 		return;
 	end
-	
+
 	self.lines = {};
-	
+
 	local previousLine = nil;
 	for _, dataProvider in ipairs(self.dataProviders) do
 		dataProvider:HideAllLines();
@@ -93,13 +93,11 @@ function TableInspectorMixin:UpdateLines()
 			else
 				line:SetPoint("TOPLEFT", self.LinesScrollFrame.LinesContainer, "TOPLEFT", 0, 0);
 			end
-			
+
 			previousLine = line;
 			line:Show();
 		end
 	end
-	
-	ScrollFrame_OnScrollRangeChanged(self.LinesScrollFrame);
 end
 
 function TableInspectorMixin:OpenParentDisplay()
@@ -133,9 +131,18 @@ end
 
 function TableInspectorMixin:DuplicateAttributeDisplay()
 	local copy = DisplayTableInspectorWindow(self.focusedTable);
-	copy:ClearAllPoints();
-	local point, parent, relativePoint, xOffset, yOffset = self:GetPoint();
-	copy:SetPoint(point, parent, relativePoint, xOffset + 60, yOffset + 60);
+	local copyWindow = copy:GetWindow();
+	if copyWindow then
+		local selfWindow = self:GetWindow();
+		if selfWindow then
+			local x, y = selfWindow:GetPosition();
+			copyWindow:SetPosition(x + 60, y + 60);
+		end
+	else
+		copy:ClearAllPoints();
+		local point, parent, relativePoint, xOffset, yOffset = self:GetPoint(1);
+		copy:SetPoint(point, parent, relativePoint, xOffset + 60, yOffset + 60);
+	end
 	copy:Show();
 	return copy;
 end
@@ -174,15 +181,15 @@ end
 
 function TableInspectorMixin:UpdateTableNavigation(newFocusedTable)
 	-- We've branched to a new direction
-	if newFocusedTable ~= self.tableNavigation[self.tableNavigationIndex] then		
+	if newFocusedTable ~= self.tableNavigation[self.tableNavigationIndex] then
 		for i = self.tableNavigationIndex + 1, #self.tableNavigation do
 			self.tableNavigation[i] = nil;
 		end
-		
+
 		table.insert(self.tableNavigation, newFocusedTable);
 		self.tableNavigationIndex = #self.tableNavigation;
 	end
-	
+
 	self.NavigateBackwardButton:SetEnabled(self:CanNavigateBackward());
 	self.NavigateForwardButton:SetEnabled(self:CanNavigateForward());
 end
@@ -199,7 +206,7 @@ function TableInspectorMixin:InspectTable(focusedTable, title)
 		self.TitleButton.Text:SetText("No Table Selected");
 		return;
 	end
-	
+
 	if focusedTable.SetShown then
 		self.VisibilityButton:SetChecked(focusedTable:IsShown());
 		self.VisibilityButton:Enable();
@@ -209,19 +216,26 @@ function TableInspectorMixin:InspectTable(focusedTable, title)
 		self.VisibilityButton:Disable();
 		self.HighlightButton:Disable();
 		self.FrameHighlight:Hide();
-	end	
-	
-	if title then
-		self.TitleButton.Text:SetText(title);
-	elseif focusedTable.GetDebugName then
-		self.TitleButton.Text:SetText("Frame Attributes - "..focusedTable:GetDebugName());
-	else
-		self.TitleButton.Text:SetText("Table Attributes");
 	end
+
+	if not title then
+		if focusedTable.GetDebugName then
+			title = "Frame Attributes - "..focusedTable:GetDebugName();
+		else
+			title = "Table Attributes";
+		end
+	end
+
+	self.TitleButton.Text:SetText(title);
 	
+	local window = self:GetWindow();
+	if window then
+		window:SetTitle(title);
+	end
+
 	self:RefreshAllData();
 	self:UpdateLines();
-	
+
 	if self.tableFocusedCallback then
 		self.tableFocusedCallback(selectedTable);
 	end
@@ -267,8 +281,11 @@ function DisplayTableInspectorWindow(focusedTable, customTitle, tableFocusedCall
 	local attributeDisplay = tableInspectorPool:Acquire();
 	attributeDisplay:OnLoad();
 	attributeDisplay:SetTableFocusedCallback(tableFocusedCallback);
+	local inWindow = attributeDisplay:MoveToNewWindow("Table Inspector", 700, 570);
+	if not inWindow then
+		attributeDisplay:SetPoint("LEFT", 64 + math.random(0, 64), math.random(0, 64));
+	end
 	attributeDisplay:InspectTable(focusedTable, customTitle);
-	attributeDisplay:SetPoint("LEFT", 64 + math.random(0, 64), math.random(0, 64));
 	attributeDisplay:Show();
 	return attributeDisplay;
 end

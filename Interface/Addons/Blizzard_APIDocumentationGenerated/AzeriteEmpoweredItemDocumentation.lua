@@ -12,7 +12,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -22,16 +22,12 @@ local AzeriteEmpoweredItem =
 			},
 		},
 		{
-			Name = "CloseAzeriteEmpoweredItemRespec",
-			Type = "Function",
-		},
-		{
 			Name = "ConfirmAzeriteEmpoweredItemRespec",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -40,7 +36,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -54,7 +50,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = true, Documentation = { "Specify a class ID to get tier information about that class, otherwise uses the player's class if left nil" } },
 			},
 
@@ -92,7 +88,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 				{ Name = "level", Type = "AzeritePowerLevel", Nilable = false },
 			},
@@ -122,7 +118,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -136,7 +132,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -150,7 +146,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -164,7 +160,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 			},
 
 			Returns =
@@ -178,7 +174,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "itemInfo", Type = "string", Nilable = false },
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = true, Documentation = { "Specify a class ID to determine if its displayable for that class, otherwise uses the player's class if left nil" } },
 			},
 
@@ -217,7 +213,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -232,7 +228,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
 			},
 
@@ -247,7 +243,7 @@ local AzeriteEmpoweredItem =
 
 			Arguments =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 	},
@@ -269,18 +265,8 @@ local AzeriteEmpoweredItem =
 			LiteralName = "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
 			Payload =
 			{
-				{ Name = "azeriteEmpoweredItemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
-		},
-		{
-			Name = "RespecAzeriteEmpoweredItemClosed",
-			Type = "Event",
-			LiteralName = "RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED",
-		},
-		{
-			Name = "RespecAzeriteEmpoweredItemOpened",
-			Type = "Event",
-			LiteralName = "RESPEC_AZERITE_EMPOWERED_ITEM_OPENED",
 		},
 	},
 

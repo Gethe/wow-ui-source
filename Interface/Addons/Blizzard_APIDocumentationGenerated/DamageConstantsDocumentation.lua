@@ -3,6 +3,40 @@ local DamageConstants =
 	Tables =
 	{
 		{
+			Name = "Causeofdeath",
+			Type = "Enumeration",
+			NumValues = 10,
+			MinValue = 0,
+			MaxValue = 9,
+			Fields =
+			{
+				{ Name = "None", Type = "Causeofdeath", EnumValue = 0 },
+				{ Name = "PlayerPvP", Type = "Causeofdeath", EnumValue = 1 },
+				{ Name = "PlayerDuel", Type = "Causeofdeath", EnumValue = 2 },
+				{ Name = "Creature", Type = "Causeofdeath", EnumValue = 3 },
+				{ Name = "Falling", Type = "Causeofdeath", EnumValue = 4 },
+				{ Name = "Drowning", Type = "Causeofdeath", EnumValue = 5 },
+				{ Name = "Fatigue", Type = "Causeofdeath", EnumValue = 6 },
+				{ Name = "Slime", Type = "Causeofdeath", EnumValue = 7 },
+				{ Name = "Lava", Type = "Causeofdeath", EnumValue = 8 },
+				{ Name = "Fire", Type = "Causeofdeath", EnumValue = 9 },
+			},
+		},
+		{
+			Name = "CauseofdeathFlags",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "NoneNeeded", Type = "CauseofdeathFlags", EnumValue = 0 },
+				{ Name = "PlayerNameNeeded", Type = "CauseofdeathFlags", EnumValue = 1 },
+				{ Name = "CreatureNameNeeded", Type = "CauseofdeathFlags", EnumValue = 2 },
+				{ Name = "ZoneNameNeeded", Type = "CauseofdeathFlags", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "Damageclass",
 			Type = "Enumeration",
 			NumValues = 47,

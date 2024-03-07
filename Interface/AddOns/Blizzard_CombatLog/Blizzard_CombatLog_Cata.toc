@@ -1,0 +1,7 @@
+## Title: Blizzard CombatLog
+## LoadOnDemand: 1
+## SavedVariables: Blizzard_CombatLog_Filters, Blizzard_CombatLog_Filter_Version
+## AllowLoad: game
+## AllowLoadGameType: cata
+Wrath\Blizzard_CombatLog.lua
+Wrath\Blizzard_CombatLog.xml

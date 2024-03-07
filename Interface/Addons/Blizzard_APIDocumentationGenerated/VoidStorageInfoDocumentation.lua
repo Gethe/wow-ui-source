@@ -17,13 +17,8 @@ local VoidStorageInfo =
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
-		},
-		{
-			Name = "VoidStorageClose",
-			Type = "Event",
-			LiteralName = "VOID_STORAGE_CLOSE",
 		},
 		{
 			Name = "VoidStorageContentsUpdate",
@@ -38,11 +33,6 @@ local VoidStorageInfo =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
-		},
-		{
-			Name = "VoidStorageOpen",
-			Type = "Event",
-			LiteralName = "VOID_STORAGE_OPEN",
 		},
 		{
 			Name = "VoidStorageUpdate",

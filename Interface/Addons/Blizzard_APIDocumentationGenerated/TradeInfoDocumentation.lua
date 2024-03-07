@@ -59,7 +59,7 @@ local TradeInfo =
 			LiteralName = "TRADE_REQUEST",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{

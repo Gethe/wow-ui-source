@@ -1,0 +1,258 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ItemAnimTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="flyin">
+				<Scale childKey="animIcon" fromScaleX="0.125" fromScaleY="0.125" toScaleX="1" toScaleY="1" duration="1" order="1"/>
+				<Alpha childKey="animIcon" fromAlpha="0" toAlpha="1" duration="1" order="1"/>
+				<Path childKey="animIcon" curve="SMOOTH" duration="1" order="1">
+					<ControlPoints>
+						<ControlPoint offsetX="-15" offsetY="30"/>
+						<ControlPoint offsetX="-75" offsetY="60"/>
+					</ControlPoints>
+				</Path>
+				<Scripts>
+					<OnPlay>
+						local iconFrame = self:GetParent();
+						self.strata = iconFrame:GetFrameStrata();
+						iconFrame:SetFrameStrata("HIGH");
+						iconFrame.animIcon:Show();
+					</OnPlay>
+					<OnFinished>
+						local iconFrame = self:GetParent();
+						iconFrame:SetFrameStrata(self.strata);
+						iconFrame.animIcon:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture  parentKey="animIcon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="ItemAnim_OnLoad"/>
+			<OnEvent function="ItemAnim_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate, ItemAnimTemplate" virtual="true">
+		<Size x="37" y="37"/>
+		<Scripts>
+			<OnLoad>
+				ItemAnim_OnLoad(self)
+				PaperDollItemSlotButton_OnLoad(self);
+				self:RegisterEvent("BAG_UPDATE_DELAYED");
+				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+				self.isBag = 1;
+				self.UpdateTooltip = BagSlotButton_OnEnter;
+				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
+				self.maxDisplayCount = 999;
+			</OnLoad>
+			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
+				if ( event == "BAG_UPDATE_DELAYED" ) then
+				PaperDollItemSlotButton_Update(self);
+				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
+				if ( C_Container.IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then
+				self.searchOverlay:Show();
+				else
+				self.searchOverlay:Hide();
+				end
+				else
+				PaperDollItemSlotButton_OnEvent(self, event, ...);
+				end
+			</OnEvent>
+			<OnShow>
+				PaperDollItemSlotButton_OnShow(self, true);
+			</OnShow>
+			<OnHide>
+				PaperDollItemSlotButton_OnHide(self);
+			</OnHide>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+				BagSlotButton_OnModifiedClick(self, button);
+				else
+				BagSlotButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnDragStart>
+				BagSlotButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				BagSlotButton_OnClick(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				BagSlotButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+		</Scripts>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-6" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				ItemAnim_OnLoad(self)
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("CVAR_UPDATE");
+				self:RegisterEvent("BAG_UPDATE");
+				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+				_G[self:GetName().."Count"]:ClearAllPoints();
+				_G[self:GetName().."Count"]:SetPoint("CENTER", 1, -7);
+			</OnLoad>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+				BackpackButton_OnModifiedClick(self, button);
+				else
+				BackpackButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnReceiveDrag function="BackpackButton_OnClick"/>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
+				local keyBinding = GetBindingKey("TOGGLEBACKPACK");
+				if ( keyBinding ) then
+				GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..keyBinding..")"..FONT_COLOR_CODE_CLOSE);
+				end
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
+				MainMenuBarBackpackButton_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+	<CheckButton name="CharacterBag0Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="MainMenuBarBackpackButton" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="CharacterBag1Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="CharacterBag0Slot" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="CharacterBag2Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="CharacterBag1Slot" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="CharacterBag3Slot" inherits="BagSlotButtonTemplate" parent="MainMenuBarArtFrame">
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="CharacterBag2Slot" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</CheckButton>
+	<CheckButton name="KeyRingButton" parent="MainMenuBarArtFrame" hidden="true">
+		<Size x="18" y="39"/>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="CharacterBag3Slot" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="flyin">
+				<Scale childKey="animIcon" fromScaleX="0.256944" fromScaleY="0.118590" toScaleX="2.055556" toScaleY="0.948718" duration="1" order="1"/>
+				<Alpha childKey="animIcon" fromAlpha="0" toAlpha="1" duration="1" order="1"/>
+				<Path childKey="animIcon" curve="SMOOTH" duration="1" order="1">
+					<ControlPoints>
+						<ControlPoint offsetX="-15" offsetY="30"/>
+						<ControlPoint offsetX="-75" offsetY="60"/>
+					</ControlPoints>
+				</Path>
+				<Scripts>
+					<OnPlay>
+						local iconFrame = self:GetParent();
+						self.strata = iconFrame:GetFrameStrata();
+						iconFrame:SetFrameStrata("HIGH");
+						iconFrame.animIcon:Show();
+					</OnPlay>
+					<OnFinished>
+						local iconFrame = self:GetParent();
+						iconFrame:SetFrameStrata(self.strata);
+						iconFrame.animIcon:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture  parentKey="animIcon" setAllPoints="true"/>
+				</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				ItemAnim_OnLoad(self)
+				self:SetID(KEYRING_CONTAINER);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				if (CursorHasItem()) then
+					PutKeyInKeyRing();
+				else
+					ToggleBag(KEYRING_CONTAINER);
+				end
+			</OnClick>
+			<OnReceiveDrag>
+				if (CursorHasItem()) then
+					PutKeyInKeyRing();
+				end
+			</OnReceiveDrag>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine();
+			</OnEnter>
+			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</HighlightTexture>
+		<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</PushedTexture>
+	</CheckButton>
+</Ui>

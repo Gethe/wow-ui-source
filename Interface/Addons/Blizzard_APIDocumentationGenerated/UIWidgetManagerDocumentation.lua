@@ -469,7 +469,7 @@ local UIWidgetManager =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "leadingText", Type = "string", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
@@ -484,6 +484,15 @@ local UIWidgetManager =
 				{ Name = "widgetID", Type = "number", Nilable = false },
 				{ Name = "widgetSetID", Type = "number", Nilable = false },
 				{ Name = "widgetType", Type = "UIWidgetVisualizationType", Nilable = false },
+			},
+		},
+		{
+			Name = "UIWidgetTextTooltipPair",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
 			},
 		},
 	},

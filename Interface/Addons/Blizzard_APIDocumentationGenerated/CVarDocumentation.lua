@@ -12,7 +12,7 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -26,8 +26,8 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -41,7 +41,7 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -55,7 +55,7 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -64,13 +64,33 @@ local CVar =
 			},
 		},
 		{
+			Name = "GetCVarInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+				{ Name = "defaultValue", Type = "cstring", Nilable = false },
+				{ Name = "isStoredServerAccount", Type = "bool", Nilable = false },
+				{ Name = "isStoredServerCharacter", Type = "bool", Nilable = false },
+				{ Name = "isLockedFromUser", Type = "bool", Nilable = false },
+				{ Name = "isSecure", Type = "bool", Nilable = false },
+				{ Name = "isReadOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterCVar",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -83,9 +103,9 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "value", Type = "string", Nilable = true },
-				{ Name = "scriptCVar", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "value", Type = "cstring", Nilable = true },
+				{ Name = "scriptCVar", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -99,10 +119,10 @@ local CVar =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "value", Type = "bool", Nilable = false },
-				{ Name = "scriptCVar", Type = "string", Nilable = true },
+				{ Name = "scriptCVar", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -118,6 +138,20 @@ local CVar =
 
 	Tables =
 	{
+		{
+			Name = "CVarInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "value", Type = "cstring", Nilable = false },
+				{ Name = "defaultValue", Type = "cstring", Nilable = false },
+				{ Name = "isStoredServerAccount", Type = "bool", Nilable = false },
+				{ Name = "isStoredServerCharacter", Type = "bool", Nilable = false },
+				{ Name = "isLockedFromUser", Type = "bool", Nilable = false },
+				{ Name = "isSecure", Type = "bool", Nilable = false },
+				{ Name = "isReadOnly", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

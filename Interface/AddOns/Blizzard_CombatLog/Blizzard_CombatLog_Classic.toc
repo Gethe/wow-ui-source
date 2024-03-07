@@ -1,0 +1,7 @@
+## Title: Blizzard CombatLog
+## LoadOnDemand: 1
+## SavedVariables: Blizzard_CombatLog_Filters, Blizzard_CombatLog_Filter_Version
+## AllowLoad: game
+## AllowLoadGameType: vanilla, tbc
+Classic\Blizzard_CombatLog.lua
+Classic\Blizzard_CombatLog.xml

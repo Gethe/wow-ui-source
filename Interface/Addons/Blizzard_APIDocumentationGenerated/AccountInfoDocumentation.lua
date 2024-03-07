@@ -7,12 +7,26 @@ local AccountInfo =
 	Functions =
 	{
 		{
+			Name = "GetIDFromBattleNetAccountGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "battleNetAccountGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "battleNetAccountID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGUIDBattleNetAccountType",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -26,7 +40,7 @@ local AccountInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =

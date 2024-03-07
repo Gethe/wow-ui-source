@@ -45,7 +45,7 @@ local SpellActivationOverlay =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "overlayFileDataID", Type = "number", Nilable = false },
-				{ Name = "locationName", Type = "string", Nilable = false },
+				{ Name = "locationName", Type = "cstring", Nilable = false },
 				{ Name = "scale", Type = "number", Nilable = false },
 				{ Name = "r", Type = "number", Nilable = false },
 				{ Name = "g", Type = "number", Nilable = false },

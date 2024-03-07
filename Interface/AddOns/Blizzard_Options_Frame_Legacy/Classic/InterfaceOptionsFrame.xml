@@ -1,0 +1,190 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<!-- Interface Options Frame Templates -->
+
+	<Button name="InterfaceOptionsListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				OptionsListButton_OnLoad(self, InterfaceOptionsListButton_ToggleSubCategories);
+			</OnLoad>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				InterfaceOptionsListButton_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="InterfaceOptionsFrame" inherits="BackdropTemplate" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="858" y="660"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="68"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="UIOPTIONS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsFrameCancel_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsFrameOkay_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="96" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InterfaceOptionsFrameDefaults_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentCategories" inherits="OptionsFrameListTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="InterfaceOptionsListButtonTemplate" type="string"/>
+					<KeyValue key="update" value="InterfaceCategoryList_Update" type="global"/>
+				</KeyValues>
+				<Size>
+					<AbsDimension x="175" y="569"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentAddOns" inherits="OptionsFrameListTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="labelText" value="ADDONS" type="global"/>
+					<KeyValue key="buttonTemplate" value="InterfaceOptionsListButtonTemplate" type="string"/>
+					<KeyValue key="update" value="InterfaceAddOnsList_Update" type="global"/>
+				</KeyValues>
+				<Size>
+					<AbsDimension x="175" y="569"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPanelContainer" inherits="TooltipBorderBackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCategories" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="1"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parentTab1" inherits="OptionsFrameTabButtonTemplate" text="GAME" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentCategories" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
+						InterfaceOptionsFrame_TabOnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" inherits="OptionsFrameTabButtonTemplate" text="ADDONS" id="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						PanelTemplates_Tab_OnClick(self, InterfaceOptionsFrame);
+						InterfaceOptionsFrame_TabOnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="InterfaceOptionsFrame_OnShow"/>
+			<OnHide function="InterfaceOptionsFrame_OnHide"/>
+			<OnLoad inherit="prepend" function="InterfaceOptionsFrame_OnLoad"/>
+			<OnEvent function="InterfaceOptionsFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

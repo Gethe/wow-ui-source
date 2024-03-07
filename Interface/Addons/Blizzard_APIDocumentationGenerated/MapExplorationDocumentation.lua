@@ -13,7 +13,7 @@ local MapExploration =
 			Arguments =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = false },
-				{ Name = "normalizedPosition", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "normalizedPosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 
 			Returns =
@@ -69,6 +69,7 @@ local MapExploration =
 				{ Name = "offsetX", Type = "number", Nilable = false },
 				{ Name = "offsetY", Type = "number", Nilable = false },
 				{ Name = "isShownByMouseOver", Type = "bool", Nilable = false },
+				{ Name = "isDrawOnTopLayer", Type = "bool", Nilable = false },
 				{ Name = "fileDataIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "hitRect", Type = "UiMapExplorationHitRect", Nilable = false },
 			},

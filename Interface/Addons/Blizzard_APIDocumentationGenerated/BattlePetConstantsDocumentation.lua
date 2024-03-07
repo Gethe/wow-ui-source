@@ -239,9 +239,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlePetSpeciesFlags",
 			Type = "Enumeration",
-			NumValues = 16,
+			NumValues = 17,
 			MinValue = 1,
-			MaxValue = 32768,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "NoRename", Type = "BattlePetSpeciesFlags", EnumValue = 1 },
@@ -260,6 +260,7 @@ local BattlePetConstants =
 				{ Name = "AddsAllowedWithBoss", Type = "BattlePetSpeciesFlags", EnumValue = 8192 },
 				{ Name = "HideUntilLearned", Type = "BattlePetSpeciesFlags", EnumValue = 16384 },
 				{ Name = "MatchPlayerHighPetLevel", Type = "BattlePetSpeciesFlags", EnumValue = 32768 },
+				{ Name = "NoWildPetAddsAllowed", Type = "BattlePetSpeciesFlags", EnumValue = 65536 },
 			},
 		},
 		{
@@ -288,9 +289,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlePetTypes",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Humanoid", Type = "BattlePetTypes", EnumValue = 0 },
@@ -303,6 +304,7 @@ local BattlePetConstants =
 				{ Name = "Beast", Type = "BattlePetTypes", EnumValue = 7 },
 				{ Name = "Aquatic", Type = "BattlePetTypes", EnumValue = 8 },
 				{ Name = "Mechanical", Type = "BattlePetTypes", EnumValue = 9 },
+				{ Name = "NonCombat", Type = "BattlePetTypes", EnumValue = 10 },
 			},
 		},
 		{
@@ -337,9 +339,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlepetDbFlags",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 256,
+			MaxValue = 1024,
 			Fields =
 			{
 				{ Name = "None", Type = "BattlepetDbFlags", EnumValue = 0 },
@@ -352,15 +354,17 @@ local BattlePetConstants =
 				{ Name = "Ability2Selection", Type = "BattlepetDbFlags", EnumValue = 64 },
 				{ Name = "FanfareNeeded", Type = "BattlepetDbFlags", EnumValue = 128 },
 				{ Name = "DisplayOverridden", Type = "BattlepetDbFlags", EnumValue = 256 },
+				{ Name = "AcquiredViaLicense", Type = "BattlepetDbFlags", EnumValue = 512 },
+				{ Name = "TradingPost", Type = "BattlepetDbFlags", EnumValue = 1024 },
 				{ Name = "LockMask", Type = "BattlepetDbFlags", EnumValue = 12 },
 			},
 		},
 		{
 			Name = "BattlepetDeletedReason",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Unknown", Type = "BattlepetDeletedReason", EnumValue = 0 },
@@ -369,6 +373,7 @@ local BattlePetConstants =
 				{ Name = "Gm", Type = "BattlepetDeletedReason", EnumValue = 3 },
 				{ Name = "CageError", Type = "BattlepetDeletedReason", EnumValue = 4 },
 				{ Name = "DelJournal", Type = "BattlepetDeletedReason", EnumValue = 5 },
+				{ Name = "TradingPost", Type = "BattlepetDeletedReason", EnumValue = 6 },
 			},
 		},
 		{

@@ -22,6 +22,50 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetCoinIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "separator", Type = "cstring", Nilable = false, Default = ", " },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinTextureString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "fontHeight", Type = "number", Nilable = false, Default = 14 },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
 
@@ -62,6 +106,35 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "info", Type = "CurrencyInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrencyListLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrencyContainer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCurrencyContainer", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -108,14 +181,15 @@ local CurrencyInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "isHeaderExpanded", Type = "bool", Nilable = false },
 				{ Name = "isTypeUnused", Type = "bool", Nilable = false },
 				{ Name = "isShowInBackpack", Type = "bool", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "trackedQuantity", Type = "number", Nilable = false },
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "maxQuantity", Type = "number", Nilable = false },
 				{ Name = "canEarnPerWeek", Type = "bool", Nilable = false },
 				{ Name = "quantityEarnedThisWeek", Type = "number", Nilable = false },

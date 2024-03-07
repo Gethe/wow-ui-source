@@ -54,7 +54,7 @@ local AchievementInfo =
 
 			Arguments =
 			{
-				{ Name = "textureObject", Type = "table", Nilable = false },
+				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 	},
@@ -101,7 +101,7 @@ local AchievementInfo =
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -115,7 +115,7 @@ local AchievementInfo =
 			LiteralName = "INSPECT_ACHIEVEMENT_READY",
 			Payload =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -150,7 +150,7 @@ local AchievementInfo =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
 				{ Name = "criteriaID", Type = "number", Nilable = true },
-				{ Name = "elapsed", Type = "number", Nilable = true },
+				{ Name = "elapsed", Type = "time_t", Nilable = true },
 				{ Name = "duration", Type = "number", Nilable = true },
 			},
 		},

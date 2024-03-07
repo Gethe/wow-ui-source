@@ -6,6 +6,82 @@ local Minimap =
 
 	Functions =
 	{
+		{
+			Name = "ClearAllTracking",
+			Type = "Function",
+		},
+		{
+			Name = "GetNumTrackingTypes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numTrackingTypes", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetObjectIconTextureCoords",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "textureCoordsX", Type = "number", Nilable = false },
+				{ Name = "textureCoordsY", Type = "number", Nilable = false },
+				{ Name = "textureCoordsZ", Type = "number", Nilable = false },
+				{ Name = "textureCoordsW", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPOITextureCoords",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "textureCoordsX", Type = "number", Nilable = false },
+				{ Name = "textureCoordsY", Type = "number", Nilable = false },
+				{ Name = "textureCoordsZ", Type = "number", Nilable = false },
+				{ Name = "textureCoordsW", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTrackingInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "textureFileID", Type = "fileID", Nilable = false },
+				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "subType", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "SetTracking",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "on", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -16,7 +92,7 @@ local Minimap =
 			LiteralName = "MINIMAP_PING",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 			},
@@ -35,6 +111,28 @@ local Minimap =
 
 	Tables =
 	{
+		{
+			Name = "MinimapScriptTrackingFilter",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "filterID", Type = "MinimapTrackingFilter", Nilable = true },
+			},
+		},
+		{
+			Name = "MinimapScriptTrackingInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "textureFileID", Type = "fileID", Nilable = false },
+				{ Name = "active", Type = "bool", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "subType", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+		},
 	},
 };
 

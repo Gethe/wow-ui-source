@@ -12,7 +12,7 @@ local ItemUpgrade =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 	},
@@ -23,16 +23,6 @@ local ItemUpgrade =
 			Name = "ItemUpgradeFailed",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_FAILED",
-		},
-		{
-			Name = "ItemUpgradeMasterClosed",
-			Type = "Event",
-			LiteralName = "ITEM_UPGRADE_MASTER_CLOSED",
-		},
-		{
-			Name = "ItemUpgradeMasterOpened",
-			Type = "Event",
-			LiteralName = "ITEM_UPGRADE_MASTER_OPENED",
 		},
 		{
 			Name = "ItemUpgradeMasterSetItem",

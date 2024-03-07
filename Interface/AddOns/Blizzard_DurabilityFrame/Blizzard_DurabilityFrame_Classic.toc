@@ -1,0 +1,7 @@
+## Title: Blizzard_DurabilityFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_Minimap
+## AllowLoadGameType: classic
+Classic\DurabilityFrame.lua
+Classic\DurabilityFrame.xml

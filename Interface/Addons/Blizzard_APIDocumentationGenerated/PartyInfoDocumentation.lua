@@ -13,7 +13,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true },
+				{ Name = "category", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -31,7 +31,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "inviteGUID", Type = "string", Nilable = false },
+				{ Name = "inviteGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -40,12 +40,26 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "IsCrossFactionParty",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "isCrossFactionParty", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyFull",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
 			},
 
 			Returns =
@@ -69,7 +83,7 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
-				{ Name = "partyGUID", Type = "string", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -84,7 +98,7 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
-				{ Name = "partyGUID", Type = "string", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -94,7 +108,7 @@ local PartyInfo =
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
-				{ Name = "partyGUID", Type = "string", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -128,13 +142,13 @@ local PartyInfo =
 			LiteralName = "PARTY_INVITE_REQUEST",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isTank", Type = "bool", Nilable = false },
 				{ Name = "isHealer", Type = "bool", Nilable = false },
 				{ Name = "isDamage", Type = "bool", Nilable = false },
 				{ Name = "isNativeRealm", Type = "bool", Nilable = false },
 				{ Name = "allowMultipleRoles", Type = "bool", Nilable = false },
-				{ Name = "inviterGUID", Type = "string", Nilable = false },
+				{ Name = "inviterGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -153,7 +167,7 @@ local PartyInfo =
 			LiteralName = "PARTY_MEMBER_DISABLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -162,7 +176,7 @@ local PartyInfo =
 			LiteralName = "PARTY_MEMBER_ENABLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -186,8 +200,8 @@ local PartyInfo =
 			LiteralName = "READY_CHECK",
 			Payload =
 			{
-				{ Name = "initiatorName", Type = "string", Nilable = false },
-				{ Name = "readyCheckTimeLeft", Type = "number", Nilable = false },
+				{ Name = "initiatorName", Type = "cstring", Nilable = false },
+				{ Name = "readyCheckTimeLeft", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -196,7 +210,7 @@ local PartyInfo =
 			LiteralName = "READY_CHECK_CONFIRM",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "isReady", Type = "bool", Nilable = false },
 			},
 		},
@@ -215,10 +229,10 @@ local PartyInfo =
 			LiteralName = "ROLE_CHANGED_INFORM",
 			Payload =
 			{
-				{ Name = "changedName", Type = "string", Nilable = false },
-				{ Name = "fromName", Type = "string", Nilable = false },
-				{ Name = "oldRole", Type = "string", Nilable = false },
-				{ Name = "newRole", Type = "string", Nilable = false },
+				{ Name = "changedName", Type = "cstring", Nilable = false },
+				{ Name = "fromName", Type = "cstring", Nilable = false },
+				{ Name = "oldRole", Type = "cstring", Nilable = false },
+				{ Name = "newRole", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -227,7 +241,17 @@ local PartyInfo =
 			LiteralName = "ROLE_POLL_BEGIN",
 			Payload =
 			{
-				{ Name = "fromName", Type = "string", Nilable = false },
+				{ Name = "fromName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "VoteKickReasonNeeded",
+			Type = "Event",
+			LiteralName = "VOTE_KICK_REASON_NEEDED",
+			Payload =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "resultGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},

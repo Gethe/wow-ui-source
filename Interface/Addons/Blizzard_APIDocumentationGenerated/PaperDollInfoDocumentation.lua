@@ -120,7 +120,7 @@ local PaperDollInfo =
 			LiteralName = "INSPECT_READY",
 			Payload =
 			{
-				{ Name = "inspecteeGUID", Type = "string", Nilable = false },
+				{ Name = "inspecteeGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -178,6 +178,15 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "PreviewTalentPrimaryTreeChanged",
+			Type = "Event",
+			LiteralName = "PREVIEW_TALENT_PRIMARY_TREE_CHANGED",
+			Payload =
+			{
+				{ Name = "newTabID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellPowerChanged",
 			Type = "Event",
 			LiteralName = "SPELL_POWER_CHANGED",
@@ -189,7 +198,7 @@ local PaperDollInfo =
 			Payload =
 			{
 				{ Name = "groupIndex", Type = "number", Nilable = false },
-				{ Name = "newRole", Type = "string", Nilable = false },
+				{ Name = "newRole", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -211,6 +220,18 @@ local PaperDollInfo =
 
 	Tables =
 	{
+		{
+			Name = "InspectPVPData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "gamesWon", Type = "number", Nilable = false },
+				{ Name = "gamesPlayed", Type = "number", Nilable = false },
+				{ Name = "roundsWon", Type = "number", Nilable = false },
+				{ Name = "roundsPlayed", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

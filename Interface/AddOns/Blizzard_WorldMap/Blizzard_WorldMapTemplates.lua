@@ -131,7 +131,7 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 		UIDropDownMenu_AddButton(info);
 	end]]
 
-	--[[if CanTrackBattlePets() then
+	--[[if C_Minimap.CanTrackBattlePets() then
 		info.text = SHOW_PET_BATTLES_ON_MAP_TEXT;
 		info.value = "tamers";
 		info.checked = GetCVarBool("showTamers");

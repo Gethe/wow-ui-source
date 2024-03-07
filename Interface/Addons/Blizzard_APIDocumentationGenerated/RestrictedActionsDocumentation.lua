@@ -2,10 +2,18 @@ local RestrictedActions =
 {
 	Name = "RestrictedActions",
 	Type = "System",
-	Namespace = "C_RestrictedActions",
 
 	Functions =
 	{
+		{
+			Name = "InCombatLockdown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inCombatLockdown", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -16,8 +24,8 @@ local RestrictedActions =
 			LiteralName = "ADDON_ACTION_BLOCKED",
 			Payload =
 			{
-				{ Name = "isTainted", Type = "string", Nilable = false },
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "isTainted", Type = "cstring", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -26,8 +34,8 @@ local RestrictedActions =
 			LiteralName = "ADDON_ACTION_FORBIDDEN",
 			Payload =
 			{
-				{ Name = "isTainted", Type = "string", Nilable = false },
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "isTainted", Type = "cstring", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -36,7 +44,7 @@ local RestrictedActions =
 			LiteralName = "MACRO_ACTION_BLOCKED",
 			Payload =
 			{
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -45,7 +53,7 @@ local RestrictedActions =
 			LiteralName = "MACRO_ACTION_FORBIDDEN",
 			Payload =
 			{
-				{ Name = "function", Type = "string", Nilable = false },
+				{ Name = "function", Type = "cstring", Nilable = false },
 			},
 		},
 	},

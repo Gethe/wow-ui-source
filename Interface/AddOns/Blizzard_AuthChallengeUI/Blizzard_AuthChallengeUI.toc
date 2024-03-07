@@ -1,4 +1,5 @@
 ## Title: Blizzard Auth Challenge UI
 ## LoadOnDemand: 0
 ## AllowLoad: Both
+..\Blizzard_SharedXML\Spinner.lua
 Blizzard_AuthChallengeUI.xml
