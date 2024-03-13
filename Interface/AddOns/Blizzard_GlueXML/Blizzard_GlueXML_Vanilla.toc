@@ -53,5 +53,5 @@ Classic\GlueMenuFrame.lua
 Classic\GlueMenuFrame.xml
 SocialContract.lua
 SocialContract.xml
-Classic\HardcorePopUp.lua
-Classic\HardcorePopUp.xml
+Classic\HardcoreFrames.lua
+Classic\HardcoreFrames.xml

@@ -44,7 +44,7 @@ function LowHealthFrameMixin:OnEvent(event, ...)
 			self:ListenForHealthEvents();
 		end
 	elseif event == "CVAR_UPDATE" then
-		if arg1 == "FLASH_LOW_HEALTH_WARNING" then
+		if arg1 == "doNotFlashLowHealthWarning" then
 			if not GetCVarBool("doNotFlashLowHealthWarning") then
 				self:ListenForHealthEvents();
 			else
@@ -138,11 +138,9 @@ function LowHealthFrameMixin:EvaluateVisibleState()
 		if not self.pulseAnim:IsPlaying() then
 			self:Show();
 			self.pulseAnim:Play();
-			if (healthState == LOW_HEALTH_FRAME_STATE_FULLSCREEN or healthState == LOW_HEALTH_FRAME_STATE_LOW_HEALTH) then
-				self.fadeStart = GetTime() + 2;
-				self.fadeEnd = GetTime() + 3;
-				self:SetScript("OnUpdate", LowHealth_OnUpdate);
-			end
+			self.fadeStart = GetTime() + 2;
+			self.fadeEnd = GetTime() + 3;
+			self:SetScript("OnUpdate", LowHealth_OnUpdate);
 		end
 	else
 		error("Unknown Low Health Frame State");

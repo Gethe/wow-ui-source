@@ -123,13 +123,13 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.checked = GetCVarBool("questPOI");
 	UIDropDownMenu_AddButton(info);
 
-	--[[local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+	local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 	if arch then
 		info.text = ARCHAEOLOGY_SHOW_DIG_SITES;
 		info.value = "digsites";
 		info.checked = GetCVarBool("digSites");
 		UIDropDownMenu_AddButton(info);
-	end]]
+	end
 
 	--[[if C_Minimap.CanTrackBattlePets() then
 		info.text = SHOW_PET_BATTLES_ON_MAP_TEXT;

@@ -224,7 +224,7 @@ Classic\TutorialFrame.lua
 Classic\TutorialFrame.xml
 ..\..\Interface_TBC\Blizzard_FrameXML\Minimap.xml
 BuffFrame.xml
-Classic\LowHealthFrame.lua
+Shared\LowHealthFrame.lua
 Classic\LowHealthFrame.xml
 Classic\CombatFeedback.lua
 ..\..\Interface_TBC\Blizzard_FrameXML\CastingBarFrame.xml
@@ -284,8 +284,8 @@ MainMenuBarBagButtons.xml
 UnitPositionFrameTemplates.xml
 Classic\RaidWarning.lua
 Classic\RaidWarning.xml
-Classic\CinematicFrame.lua
-Classic\CinematicFrame.xml
+Shared\CinematicFrame.lua
+Shared\CinematicFrame.xml
 ComboFrame.xml
 TabardFrame.xml
 GuildRegistrarFrame.xml

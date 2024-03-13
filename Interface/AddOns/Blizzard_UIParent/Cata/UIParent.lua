@@ -170,8 +170,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
 	
 	-- Events for Archaeology
-	--self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
-	--self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
+	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
+	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 
 	-- Events for Trial caps
 	self:RegisterEvent("TRIAL_CAP_REACHED_MONEY");
@@ -1307,17 +1307,17 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("AUCTION_HOUSE_DEPRECATED");
 
 	-- Events for Archaeology
-	--elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
-	--	ArchaeologyFrame_LoadUI();
-	--	if ( ArchaeologyFrame_Show and not ArchaeologyFrame:IsShown()) then
-	--		ArchaeologyFrame_Show();
-	--	elseif ( ArchaeologyFrame_Hide ) then
-	--		ArchaeologyFrame_Hide();
-	--	end
-	--elseif ( event == "ARCHAEOLOGY_SURVEY_CAST" ) then
-	--	ArchaeologyFrame_LoadUI();
-	--	ArcheologyDigsiteProgressBar_OnEvent(ArcheologyDigsiteProgressBar, event, ...);
-	--	self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
+	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
+		ArchaeologyFrame_LoadUI();
+		if ( ArchaeologyFrame_Show and not ArchaeologyFrame:IsShown()) then
+			ArchaeologyFrame_Show();
+		elseif ( ArchaeologyFrame_Hide ) then
+			ArchaeologyFrame_Hide();
+		end
+	elseif ( event == "ARCHAEOLOGY_SURVEY_CAST" ) then
+		ArchaeologyFrame_LoadUI();
+		--ArcheologyDigsiteProgressBar:OnEvent(event, ...); -- Add this line if we add the Archaeology progress bar back in.
+		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 
 	-- Events for Transmogrify UI handling
 	elseif ( event == "TRANSMOGRIFY_OPEN" ) then

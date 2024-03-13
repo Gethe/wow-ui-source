@@ -423,21 +423,11 @@ function ExhaustionToolTipText()
 	end
 
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
-
-	local exhaustionThreshold = GetXPExhaustion();
 	exhaustionStateMultiplier = exhaustionStateMultiplier * 100;
-	local exhaustionCountdown = nil;
-	if ( GetTimeToWellRested() ) then
-		exhaustionCountdown = GetTimeToWellRested() / 60;
-	end
 	
 	local tooltipText = format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier);
 	local append = nil;
-	if ( IsResting() ) then
-		if ( exhaustionThreshold and exhaustionCountdown ) then
-			append = format(EXHAUST_TOOLTIP4, exhaustionCountdown);
-		end
-	elseif ( (exhaustionStateID == 4) or (exhaustionStateID == 5) ) then
+	if ( ((exhaustionStateID == 4) or (exhaustionStateID == 5)) and not IsResting() ) then
 		append = EXHAUST_TOOLTIP2;
 	end
 

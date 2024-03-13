@@ -384,6 +384,9 @@ function QuestLog_SetSelection(questIndex)
 		end
 		return;
 	end
+
+	QuestLog_UpdatePortrait();
+
 	-- For selection from the watchFrame
 	if ( not QuestLogFrame:IsShown() ) then
 		ShowUIPanel(QuestLogDetailFrame);
@@ -522,6 +525,19 @@ function QuestLog_UpdatePartyInfoTooltip(questLogTitle)
 	end
 end
 
+function QuestLog_UpdatePortrait()
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = GetQuestLogPortraitGiver();
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
+		if (QuestLogDetailFrame.attached) then
+			QuestFrame_ShowQuestPortrait(QuestLogFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -5, -62);
+		else
+			QuestFrame_ShowQuestPortrait(QuestLogDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -62);
+		end
+	else
+		QuestFrame_HideQuestPortrait();
+	end
+end
+
 function QuestLogRewardItem_OnClick(self)
 	if ( IsModifiedClick("DRESSUP") ) then
 		if ( self.rewardType ~= "spell" ) then
@@ -648,6 +664,7 @@ function QuestLogDetailFrame_OnHide(self)
 end
 
 function QuestLogDetailFrame_AttachToQuestLog()
+	QuestLogDetailFrame.attached = true;
 	QuestLogDetailScrollFrame:SetParent(QuestLogFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPRIGHT", QuestLogFrame, "TOPRIGHT", -32, -77);
@@ -655,9 +672,11 @@ function QuestLogDetailFrame_AttachToQuestLog()
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -13);
 	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Hide();
 	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Hide();
+	QuestLog_UpdatePortrait();
 end
 
 function QuestLogDetailFrame_DetachFromQuestLog()
+	QuestLogDetailFrame.attached = false;
 	QuestLogDetailScrollFrame:SetParent(QuestLogDetailFrame);
 	QuestLogDetailScrollFrame:ClearAllPoints();
 	QuestLogDetailScrollFrame:SetPoint("TOPLEFT", QuestLogDetailFrame, "TOPLEFT", 19, -76);
@@ -665,6 +684,7 @@ function QuestLogDetailFrame_DetachFromQuestLog()
 	QuestLogDetailScrollFrameScrollBar:SetPoint("TOPLEFT", QuestLogDetailScrollFrame, "TOPRIGHT", 6, -16);
 	QuestLogDetailScrollFrameScrollBackgroundBottomRight:Show();
 	QuestLogDetailScrollFrameScrollBackgroundTopLeft:Show();
+	QuestLog_UpdatePortrait();
 end
 
 function QuestLogDetailFrame_OnLoad(self)

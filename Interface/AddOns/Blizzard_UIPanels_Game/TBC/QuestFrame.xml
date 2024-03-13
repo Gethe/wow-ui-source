@@ -506,7 +506,7 @@
 		</Scripts>
  	</Frame>
 
-	<PlayerModel name="QuestNPCModel" enableMouse="true" hidden="true">
+	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate" hidden="true">
 		<Size x="198" y="230"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -705,19 +705,11 @@
 						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", self, 7, -6);
 					</OnShow>
 					<OnHide>
-						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestNPCModel, -6, -29);
-						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestNPCModel, 7, -29);
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestModelScene, -6, -29);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestModelScene, 7, -29);
 					</OnHide>
 				</Scripts>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad>
-				Model_OnLoad(self);
-				self:SetPortraitZoom(0.6);
-				self:SetRotation(0);
-			</OnLoad>
-			<OnEvent function="Model_OnEvent"/>
-		</Scripts>
-	</PlayerModel>
+	</ModelScene>
  </Ui>

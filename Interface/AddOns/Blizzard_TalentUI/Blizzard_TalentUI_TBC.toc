@@ -1,5 +1,5 @@
 ## Title: Blizzard Talent UI
 ## LoadOnDemand: 1
-TBC\Blizzard_TalentUI.lua
-TBC\Blizzard_TalentUI.xml
+Classic\Blizzard_TalentUI.lua
+Classic\Blizzard_TalentUI.xml
 Classic\Localization.lua

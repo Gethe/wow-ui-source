@@ -108,7 +108,8 @@ function ArchaeologyFrame_OnShow(self)
 	local _, _, arch = GetProfessions();
 	if arch then
 		local name, texture, rank, maxRank = GetProfessionInfo(arch);
-		self:SetPortraitToAsset(texture);
+		--self:SetPortraitToAsset(texture);
+		SetPortraitToTexture(self.portrait, texture);
 		self.rankBar:SetMinMaxValues(0, maxRank);
 		self.rankBar:SetValue(rank);
 		self.rankBar.text:SetText(rank.."/"..maxRank);
@@ -172,7 +173,8 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 		local _, _, arch = GetProfessions();
 		if arch then
 			local name, texture, rank, maxRank = GetProfessionInfo(arch);
-			self:SetPortraitToAsset(texture);
+			--self:SetPortraitToAsset(texture);
+			SetPortraitToTexture(self.portrait, texture);
 			self.rankBar:SetMinMaxValues(0, maxRank);
 			self.rankBar:SetValue(rank);
 			self.rankBar.text:SetText(rank.."/"..maxRank);

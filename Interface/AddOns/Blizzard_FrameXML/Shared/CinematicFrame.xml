@@ -1,9 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Button name="CinematicDialogButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="119" y="21"/>
-		</Size>
+		<Size x="119" y="21"/>
 		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
 			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.71875"/>
 		</NormalTexture>
@@ -24,9 +22,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="UpperBlackBar" name="UpperBlackBar">
-					<Size>
-						<AbsDimension x="0" y="128"/>
-					</Size>
+					<Size x="0" y="128"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="TOPRIGHT"/>
@@ -34,38 +30,22 @@
 					<Color r="0.0" g="0.0" b="0.0"/>
 				</Texture>
 				<Texture parentKey="LowerBlackBar" name="LowerBlackBar">
-					<Size>
-						<AbsDimension x="0" y="128"/>
-					</Size>
+					<Size x="0" y="128"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0"/>
+					<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Subtitle1" parentArray="Subtitles" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE" hidden="true" mixin="ShrinkUntilTruncateFontStringMixin">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="100" y="20"/>
-						<Anchor point="BOTTOMRIGHT" x="-100" y="20"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentRaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate, BackdropTemplate" parentKey="raidBossEmoteFrame">
-				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-				</KeyValues>
+			<Frame name="$parentRaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parentKey="raidBossEmoteFrame">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentCloseDialog" inherits="BackdropTemplate" parentKey="closeDialog">
-				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
-				</KeyValues>
+			<Frame name="$parentCloseDialog" parentKey="closeDialog">
 				<Size x="320" y="84"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -73,20 +53,15 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
-							<Size>
-								<AbsDimension x="290" y="0"/>
-							</Size>
+							<Size x="290" y="0"/>
 							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="-16"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOP" x="0" y="-16"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
 					<Button name="$parentConfirmButton" inherits="CinematicDialogButtonTemplate" text="YES">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-6" y="16"/>
@@ -120,7 +95,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="CinematicFrame_OnLoad"/>
-			<OnShow function="CinematicFrame_OnShow"/>
+			<OnHide function="CinematicFrame_OnHide"/>
 			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown function="CinematicFrame_OnKeyDown"/>
 			<OnGamePadButtonDown function="CinematicFrame_OnKeyDown"/>

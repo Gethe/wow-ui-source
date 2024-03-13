@@ -103,7 +103,7 @@ FillLocalizedClassList(LOCALIZED_CLASS_NAMES_FEMALE, true);
 -- Glyph
 --
 SHOW_INSCRIPTION_LEVEL = 15;
-
+INSCRIPTION_AVAILABLE = true;
 
 
 --

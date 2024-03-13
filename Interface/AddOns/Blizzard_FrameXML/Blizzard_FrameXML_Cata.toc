@@ -39,13 +39,13 @@ Shared\Cooldown.lua
 Classic\Cooldown.xml
 Classic\TutorialFrame.lua
 Classic\TutorialFrame.xml
-Classic\LowHealthFrame.lua
+Shared\LowHealthFrame.lua
 Classic\LowHealthFrame.xml
 Classic\CombatFeedback.lua
 Classic\RaidWarning.lua
 Classic\RaidWarning.xml
-Classic\CinematicFrame.lua
-Classic\CinematicFrame.xml
+Shared\CinematicFrame.lua
+Shared\CinematicFrame.xml
 Classic\ColorPickerFrame.lua
 Classic\ColorPickerFrame.xml
 TBC\WorldStateFrame.lua

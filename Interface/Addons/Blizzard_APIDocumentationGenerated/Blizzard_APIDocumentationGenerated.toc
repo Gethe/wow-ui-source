@@ -137,6 +137,7 @@ RaidLocksDocumentation.lua
 RecruitAFriendDocumentation.lua
 ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
+ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
 ScreenDocumentation.lua
 ScriptWarningsDocumentation.lua
@@ -239,6 +240,7 @@ CommentatorFrameDocumentation.lua
 CraftInfoDocumentation.lua
 DateAndTimeDocumentation.lua
 EngravingInfoDocumentation.lua
+FrameAPIArchaeologyDigsiteDocumentation.lua
 FrameAPICharacterModelBaseDocumentation.lua
 FrameAPIDressUpModelDocumentation.lua
 FrameAPIModelSceneFrameActorDocumentation.lua
@@ -246,6 +248,7 @@ FrameAPITabardModelDocumentation.lua
 FriendListDocumentation.lua
 MailInfoDocumentation.lua
 MapDocumentation.lua
+ReforgeDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonsDocumentation.lua
 SocialRestrictionsDocumentation.lua

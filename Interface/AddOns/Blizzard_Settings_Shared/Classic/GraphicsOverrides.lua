@@ -9,7 +9,7 @@ function GraphicsOverrides.CreateAdvancedSettingsTable(category, addFunc)
 	addFunc(advSettings, category, "graphicsParticleDensity", PARTICLE_DENSITY, "PROXY_PARTICLE_DENSITY", 1);
 	addFunc(advSettings, category, "graphicsSSAO", SSAO_LABEL, "PROXY_SSAO");
 	addFunc(advSettings, category, "graphicsTextureResolution", TEXTURE_DETAIL, "PROXY_TEXTURE_RESOLUTION");
-	addFunc(advSettings, category, "useHighResTextures", UPREZ_GRAPHICS, "PROXY_UPREZ_GRAPHICS");
+	--addFunc(advSettings, category, "useHighResTextures", UPREZ_GRAPHICS, "PROXY_UPREZ_GRAPHICS");
 	addFunc(advSettings, category, "graphicsSpellDensity", SPELL_DENSITY, "PROXY_SPELL_DENSITY");
 	addFunc(advSettings, category, "graphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_PROJECTED_TEXTURES");
 	addFunc(advSettings, category, "graphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_ENVIRONMENT_DETAIL");
@@ -42,9 +42,7 @@ function GraphicsOverrides.AdjustAdvancedQualityControls(parentElement, settings
 	parentElement.EnvironmentDetail:SetPoint("TOPLEFT", parentElement.ProjectedTextures, "BOTTOMLEFT", 0, -10);
 
 	--Uprez Graphics option can not be overriden with raid/battleground specific options. Reanchor accordingly.
-	if (raid) then
-		parentElement.SpellDensity:SetPoint("TOPLEFT", parentElement.TextureResolution, "BOTTOMLEFT", 0, -10);
-	end
+	parentElement.SpellDensity:SetPoint("TOPLEFT", parentElement.TextureResolution, "BOTTOMLEFT", 0, -10);
 
 	local settingSunshafts = settings["graphicsSunshafts"] or settings["raidGraphicsSunshafts"];
 	local function GetSunshaftsOptions()

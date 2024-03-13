@@ -30,10 +30,6 @@ local shared_l10nTable = {
 			-- zhTW Logo
 			BURNING_CRUSADE_ORIGINAL_LOGO_OVERRIDE = {filename = 'Interface\\Glues\\Common\\GLUES-WOW-TAIWANBCLOGO', uv = { 0, 1, 0, 1 }};
 
-			-- Audio options
-			AudioOptionsSoundPanelSoundChannelsDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelSoundChannelsDropDown, "TOP", 0, 0);
-			AudioOptionsSoundPanelHardwareDropDownLabel:SetPoint("BOTTOM",  AudioOptionsSoundPanelHardwareDropDown, "TOP", 0, 1);
-
 			tbcInfoIconAtlas = "classic-burningcrusade-infoicon-zhtw";
 			tbcInfoPaneInfographicAtlas = "classic-announcementpopup-bcinfographic-zhtw";
 			choicePaneCurrentLogoAtlas = "classic-burningcrusadetransition-choice-logo-current-zhtw";

@@ -147,6 +147,7 @@ ButtonGroup.lua
 HybridScrollFrame.lua
 HybridScrollFrame.xml
 Spline.lua
+ModelSceneTemplates.lua
 ModelSceneControlFrame.lua
 ModelSceneControlFrame.xml
 ModelSceneTemplates.xml

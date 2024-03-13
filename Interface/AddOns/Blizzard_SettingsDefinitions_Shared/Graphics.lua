@@ -983,7 +983,7 @@ local function Register()
 	local function OnGCChanged(settings, value, raid)
 		for cvar, setting in pairs(settings) do
 			local variable = setting:GetVariable();
-			if cvar ~= "graphicsQuality" and cvar ~= "raidGraphicsQuality" then
+			if cvar ~= "graphicsQuality" and cvar ~= "raidGraphicsQuality" and cvar ~= "useHighResTextures" then
 				local newIndex = GetGraphicsCVarValueForQualityLevel(cvar, value, raid);
 				newIndex = setting.minQualityValue > newIndex and setting.minQualityValue or newIndex;
 				setting:SetValue(newIndex);
