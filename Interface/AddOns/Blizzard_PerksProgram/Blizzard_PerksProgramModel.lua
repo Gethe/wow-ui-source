@@ -120,7 +120,7 @@ end
 
 local function PerksTryOn(actor, itemModifiedAppearanceID, allowOffHand)
 	local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
-	local invType = select(4, GetItemInfoInstant(itemID));
+	local invType = select(4, C_Item.GetItemInfoInstant(itemID));
 
 	local isEquippedInOffhand = invType == "INVTYPE_SHIELD"
 							or invType == "INVTYPE_WEAPONOFFHAND"
@@ -307,7 +307,6 @@ function PerksProgramModelSceneContainerFrameMixin:OnLoad()
 			self.AlteredFormButton:SetupAlteredFormButton(characterInfo.alternateFormRaceData, false);
 
 			self.buttonGroup = CreateRadioButtonGroup();
-			self.buttonGroup:Reset();
 			self.buttonGroup:AddButton(self.NormalFormButton);
 			self.buttonGroup:AddButton(self.AlteredFormButton);
 			local defaultIndex = 1;

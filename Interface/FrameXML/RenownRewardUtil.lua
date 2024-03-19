@@ -58,3 +58,39 @@ function RenownRewardUtil.GetRenownRewardInfo(rewardInfo, onItemUpdateCallback)
 	local icon, name, formatString, description = RenownRewardUtil.GetUnformattedRenownRewardInfo(rewardInfo, onItemUpdateCallback);
 	return icon, name and formatString and formatString:format(name) or name, description;
 end
+
+function RenownRewardUtil.AddMajorFactionToTooltip(tooltip, factionID, callback)
+	callback = callback or nop;
+
+	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+	local tooltipTitle = majorFactionData.name;
+	GameTooltip_SetTitle(tooltip, tooltipTitle, NORMAL_FONT_COLOR);
+
+	if not C_MajorFactions.HasMaximumRenown(factionID) then
+		GameTooltip_AddNormalLine(tooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(majorFactionData.renownReputationEarned, majorFactionData.renownLevelThreshold));
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(factionID, C_MajorFactions.GetCurrentRenownLevel(factionID) + 1);
+		if #nextRenownRewards > 0 then
+			RenownRewardUtil.AddRenownRewardsToTooltip(tooltip, nextRenownRewards, callback);
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+		end
+	end
+
+	GameTooltip_AddColoredLine(tooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
+end
+
+function RenownRewardUtil.AddRenownRewardsToTooltip(tooltip, renownRewards, callback)
+	GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_NEXT_REWARDS);
+
+	for i, rewardInfo in ipairs(renownRewards) do
+		local renownRewardString;
+		local icon, name = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, callback);
+		if icon then
+			local file, width, height = icon, 16, 16;
+			local rewardTexture = CreateSimpleTextureMarkup(file, width, height);
+			renownRewardString = rewardTexture .. " " .. name;
+		end
+		local wrapText = false;
+		GameTooltip_AddNormalLine(tooltip, renownRewardString, wrapText);
+	end
+end

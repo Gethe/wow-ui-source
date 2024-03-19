@@ -627,7 +627,7 @@ function CurrencyHorizontalLayoutFrameMixin:AddItem(itemID, overrideAmount, colo
 	-- quantity
 	local fontString = self:GetQuantityFontString();
 	fontString:SetHeight(height);
-	local amountString = BreakUpLargeNumbers(overrideAmount or GetItemCount(itemID, includeBank));
+	local amountString = BreakUpLargeNumbers(overrideAmount or C_Item.GetItemCount(itemID, includeBank));
 	fontString:SetText(amountString);
 	color = color or HIGHLIGHT_FONT_COLOR;
 	fontString:SetTextColor(color:GetRGB());

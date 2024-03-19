@@ -293,6 +293,7 @@ local EncounterJournal =
 				{ Name = "displayAsPerPlayerLoot", Type = "bool", Nilable = true },
 				{ Name = "displayAsVeryRare", Type = "bool", Nilable = true },
 				{ Name = "displayAsExtremelyRare", Type = "bool", Nilable = true },
+				{ Name = "displaySeasonID", Type = "number", Nilable = true },
 			},
 		},
 		{

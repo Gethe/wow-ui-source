@@ -86,7 +86,9 @@ end
 function AddonCompartmentMixin:UpdateDisplay()
 	local addonCount = #self.registeredAddons;
 	self.Text:SetText(addonCount);
-	self:SetShown(addonCount > 0);
+
+	local featureEnabled = IsTestBuild() or C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UserAddOns);
+	self:SetShown(featureEnabled and (addonCount > 0));
 end
 
 function AddonCompartmentDropDown_OnLoad(self)

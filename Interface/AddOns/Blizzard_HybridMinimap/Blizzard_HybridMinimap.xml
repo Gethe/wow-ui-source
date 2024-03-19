@@ -10,10 +10,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<MaskedTextures>
 						<MaskedTexture childKey="Background"/>
 					</MaskedTextures>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
 				</MaskTexture>
 			</Layer>
 		</Layers>

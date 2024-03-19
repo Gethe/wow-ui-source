@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+	<Script file="SocialToast.lua"/>
+
+	<AnimationGroup name="SocialToastAnimInTemplate" parentKey="animIn" virtual="true">
+		<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+		<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+	</AnimationGroup>
+
+	<AnimationGroup name="SocialToastAnimOutTemplate" parentKey="waitAndAnimOut" mixin="DefaultAnimOutMixin" virtual="true">
+		<Alpha startDelay="4" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut"/>
+		<Scripts>
+			<OnFinished method="OnFinished"/>
+		</Scripts>
+	</AnimationGroup>
+
+	<Texture name="SocialToastGlowTemplate" parentKey="glow" file="Interface\FriendsFrame\UI-Toast-Flair" alphaMode="ADD" hidden="true" virtual="true">
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Texture>
+
+	<Button name="SocialToastCloseButtonTemplate" parentKey="CloseButton" mixin="SocialToastCloseButtonMixin" virtual="true">
+		<Size x="18" y="18"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-4" y="-3"/>
+		</Anchors>
+		<NormalTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Up"/>
+		<PushedTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Down"/>
+		<HighlightTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Highlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<ContainedAlertFrame name="SocialToastTemplate" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true" mixin="SocialToastMixin" inherits="BackdropTemplate" virtual="true">
+		<Size x="250" y="50"/>
+		<Animations>
+			<AnimationGroup inherits="SocialToastAnimInTemplate"/>
+			<AnimationGroup inherits="SocialToastAnimOutTemplate"/>
+		</Animations>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlowFrame" inherits="SocialToastGlowTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button inherits="SocialToastCloseButtonTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</ContainedAlertFrame>
+</Ui>

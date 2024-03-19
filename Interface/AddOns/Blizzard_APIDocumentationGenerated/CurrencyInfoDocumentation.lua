@@ -70,6 +70,50 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetCoinIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "separator", Type = "cstring", Nilable = false, Default = ", " },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinTextureString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "fontHeight", Type = "number", Nilable = false, Default = 14 },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
 

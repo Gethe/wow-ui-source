@@ -28,6 +28,7 @@ function QuestLogOwnerMixin:HandleUserActionToggleSelf()
 		end
 	else
 		self.wasShowingQuestLog = nil;
+
 		if self:ShouldBeMinimized() then
 			if self:ShouldShowQuestLogPanel() then
 				displayState = DISPLAY_STATE_OPEN_MINIMIZED_WITH_LOG;
@@ -127,11 +128,13 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 		end
 	end
 
-	if self:IsMaximized() then
-		self.SidePanelToggle:Hide();
-	else
-		self.SidePanelToggle:Show();
-		self.SidePanelToggle:Refresh();
+	if self.SidePanelToggle then
+		if self:IsMaximized() then
+			self.SidePanelToggle:Hide();
+		else
+			self.SidePanelToggle:Show();
+			self.SidePanelToggle:Refresh();
+		end
 	end
 
 	self:RefreshQuestLog();
@@ -169,11 +172,11 @@ function QuestLogOwnerMixin:OnUIClose()
 end
 
 function QuestLogOwnerMixin:ShouldShowQuestLogPanel()
-	return GetCVarBool("questLogOpen");
+	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.QuestLogPanel) and GetCVarBool("questLogOpen");
 end
 
 function QuestLogOwnerMixin:ShouldBeMinimized()
-	return GetCVarBool("miniWorldMap");
+	return not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MaximizeWorldMap) or GetCVarBool("miniWorldMap");
 end
 
 function QuestLogOwnerMixin:ShouldBeMaximized()

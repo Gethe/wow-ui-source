@@ -1,4 +1,6 @@
 ## first
+..\SharedXML\ProjectConstants.lua
+..\SharedXML\WoWLabs\ProjectConstants.lua
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
@@ -126,11 +128,21 @@ GlueParent.xml
 ..\SharedXML\ModelFrames.xml
 ..\SharedXML\ModelPreviewFrame.xml
 ..\SharedXML\CharacterModelFrameMixin.lua
+..\SharedXML\UnitPopupSharedUtils.lua
+..\SharedXML\UnitPopupSharedButtonMixins.lua
+..\SharedXML\UnitPopupShared.xml
+..\SharedXML\UnitPopupSharedMenus.lua
+WoWLabs\GluePartyPoseUI.xml
+WoWLabs\MatchmakingQueueFrame.xml
+WoWLabs\PlunderstormLobby.xml
+..\SharedXML\AutoComplete.xml
 ..\SharedXML\HelpTip.xml
 GlueDialog.xml
 GlueTooltip.xml
 ..\SharedXML\DialogUtil.lua
 ..\SharedXML\ActionStatus.xml
+GlueSummonButtonTemplateOverride.xml
+..\SharedXML\FriendsFrame.xml
 
 ..\SharedXML\Settings\Settings.xml
 ..\SharedXML\SettingDefinitions\OverrideDefinitions.xml
@@ -160,7 +172,19 @@ CinematicsFrame.xml
 MovieFrame.xml
 CreditsFrame.xml
 GlueMenuFrame.xml
+..\SharedXML\UIMenu.xml
 ..\SharedXML\ToolWindowOwnerMixin.lua
+..\SharedXML\AlertFrameIntrinsic.xml
+..\SharedXML\SocialToast.xml
+..\SharedXML\BNetShared.lua
+..\SharedXML\BNet.xml
+..\SharedXML\HistoryKeeper.lua
+EditModeChatFrameSystemTemplateOverride.xml
+..\SharedXML\Chat\ChatFrame.xml
+..\SharedXML\Chat\FloatingChatFrame.xml
+..\SharedXML\RewardTrack\MajorFactionRenownSharedTemplates.lua
+..\SharedXML\RewardTrack\MajorFactionRenownSharedTemplates.xml
+
 
 ## Should only load internally
 DesignerMenu.xml

@@ -603,3 +603,7 @@ function Settings.CreateCallbackHandleContainer()
 	cbrHandles:Init();
 	return cbrHandles;
 end
+
+function Settings.IsPlunderstorm()
+	return C_GameModeManager and (C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm);
+end

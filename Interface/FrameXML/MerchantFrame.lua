@@ -150,7 +150,7 @@ function MerchantFrame_Update()
 end
 
 function MerchantFrameItem_UpdateQuality(self, link, isBound)
-	local quality = link and select(3, GetItemInfo(link)) or nil;
+	local quality = link and select(3, C_Item.GetItemInfo(link)) or nil;
 	if ( quality ) then
 		self.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
 	else
@@ -616,7 +616,7 @@ function MerchantItemButton_OnModifiedClick(self, button)
 				for i = 1, MAX_ITEM_COST do
 					local itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(self:GetID(), i);
 					if (itemLink and not currencyName) then
-						local myCount = GetItemCount(itemLink, false, false, true);
+						local myCount = C_Item.GetItemCount(itemLink, false, false, true);
 						canAfford = min(canAfford, floor(myCount / (itemValue / stackCount)));
 					end
 				end
@@ -682,7 +682,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
 		elseif ( itemLink ) then
-			local itemName, itemLink, itemQuality = GetItemInfo(itemLink);
+			local itemName, itemLink, itemQuality = C_Item.GetItemInfo(itemLink);
 
 			if ( i == 1 and GetMerchantItemCostInfo(index) == 1 ) then
 				local limitedCurrencyItemInfo = MerchantFrame_GetLimitedCurrencyItemInfo(itemLink);
@@ -746,18 +746,18 @@ function MerchantFrame_GetProductInfo(itemButton)
 	local itemQuality = 1;
 	local r, g, b = 1, 1, 1;
 	if(itemButton.link) then
-		itemName, itemHyperlink, itemQuality = GetItemInfo(itemButton.link);
+		itemName, itemHyperlink, itemQuality = C_Item.GetItemInfo(itemButton.link);
 	end
 
 	local specs = {};
 	if ( itemName ) then
 		--It's an item
-		r, g, b = GetItemQualityColor(itemQuality);
-		specs = GetItemSpecInfo(itemButton.link, specs);
+		r, g, b = C_Item.GetItemQualityColor(itemQuality);
+		specs = C_Item.GetItemSpecInfo(itemButton.link);
 	else
 		--Not an item. Could be currency or something. Just use what's on the button.
 		itemName = itemButton.name;
-		r, g, b = GetItemQualityColor(1);
+		r, g, b = C_Item.GetItemQualityColor(1);
 	end
 
 	local productInfo = {

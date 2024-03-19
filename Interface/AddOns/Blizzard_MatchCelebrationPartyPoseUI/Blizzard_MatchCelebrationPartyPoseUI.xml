@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="MatchCelebrationPartyPoseFrame" toplevel="true" parent="UIParent" inherits="PartyPoseFrameTemplate" mixin="MatchCelebrationPartyPoseMixin">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="OverlayElements" frameLevel="510" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Topper">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ModelScene parentKey="ModelScene" enableMouse="false" useParentLevel="true" inherits="PartyPoseModelFrameTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="Score" inherits="UIWidgetContainerTemplate">
+				<Size x="200" y="40"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ModelScene" x="0" y="-45"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnShow>
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Button parentKey="LeaveButton" mixin="MatchCelebrationMainButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="164" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-200" y="-40"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ExtraButton" mixin="MatchCelebrationExtraButtonMixin" text="DEATH_RELEASE" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="164" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ModelScene" x="200" y="-40"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

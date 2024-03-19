@@ -475,6 +475,12 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true"/>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="2" y="-7"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="2" y="4"/>
+						</Anchors>
+					</EventFrame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

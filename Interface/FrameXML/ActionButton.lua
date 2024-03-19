@@ -446,8 +446,11 @@ function ActionBarActionButtonMixin:UpdateHotkeys(actionButtonType)
 			id = self:GetID();
 		end
     end
-
+	
 	self.bindingAction = actionButtonType..id;
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		self.bindingAction = "WOWLABS_"..self.bindingAction;
+	end
     local hotkey = self.HotKey;
     local key = GetBindingKey(self.bindingAction) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");

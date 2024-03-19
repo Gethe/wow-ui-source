@@ -1,10 +1,6 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
--- Alpha animation stuff
-FADEFRAMES = {};
-FLASHFRAMES = {};
-
 -- Pulsing stuff
 PULSEBUTTONS = {};
 
@@ -245,7 +241,7 @@ UIMenus = {
 
 ITEM_QUALITY_COLORS = { };
 for i = 0, Enum.ItemQualityMeta.NumValues - 1 do
-	local r, g, b = GetItemQualityColor(i);
+	local r, g, b = C_Item.GetItemQualityColor(i);
 	local color = CreateColor(r, g, b, 1);
 	ITEM_QUALITY_COLORS[i] = { r = r, g = g, b = b, hex = color:GenerateHexColorMarkup(), color = color };
 end
@@ -933,6 +929,10 @@ function ShowMacroFrame()
 		return;
 	end
 
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Macros) then
+		return;
+	end
+
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
 		MacroFrame_Show();
@@ -1319,24 +1319,33 @@ function ToggleCovenantRenown()
 	ToggleFrame(CovenantRenownFrame);
 end
 
-function ToggleMajorFactionRenown()
+function ToggleMajorFactionRenown(majorFactionID)
 	if (not MajorFactionRenownFrame) then
 		MajorFactions_LoadUI();
 	end
-	ToggleFrame(MajorFactionRenownFrame);
+
+	if not majorFactionID then
+		ToggleFrame(MajorFactionRenownFrame);
+		return;
+	end
+
+	if MajorFactionRenownFrame:IsShown() then
+		if MajorFactionRenownFrame:GetCurrentFactionID() == majorFactionID then
+			HideUIPanel(MajorFactionRenownFrame);
+			return;
+		end
+
+		HideUIPanel(MajorFactionRenownFrame);
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+		ShowUIPanel(MajorFactionRenownFrame);
+	else
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+		ToggleMajorFactionRenown();
+	end
 end
 
 function ToggleExpansionLandingPage()
-	if(TRAIT_SYSTEM_OVERRIDE_MAP) then
-		GenericTraitUI_LoadUI();
-
-		local currentMapID = select(8, GetInstanceInfo());
-		GenericTraitFrame:SetSystemID(TRAIT_SYSTEM_OVERRIDE_MAP[currentMapID]);
-
-		ToggleFrame(GenericTraitFrame);
-	else
-		ToggleFrame(ExpansionLandingPage);
-	end
+	ToggleFrame(ExpansionLandingPage);
 end
 
 
@@ -1565,11 +1574,11 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 		end
-                if (not IGNORE_DEATH_REQUIREMENTS) then
-		if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
-			StaticPopup_Show("DEATH");
+		if (C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost)) then
+			if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
+				StaticPopup_Show("DEATH");
+			end
 		end
-                end
 	elseif ( event == "SELF_RES_SPELL_CHANGED" ) then
 		if ( StaticPopup_Visible("DEATH") ) then
 			StaticPopup_Show("DEATH"); --If we're already showing a death prompt, we should refresh it.
@@ -1579,7 +1588,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("RESURRECT");
-		if ( UnitIsGhost("player") ) then
+		if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) and UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
 			GhostFrame:Hide();
@@ -1775,15 +1784,15 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
-	    if (not IGNORE_DEATH_REQUIREMENTS) then
-		if ( UnitIsGhost("player") ) then
-			GhostFrame:Show();
-		else
-			GhostFrame:Hide();
-		end
-		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
-			StaticPopup_Show("DEATH");
-		end
+	    if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) ) then
+			if ( UnitIsGhost("player") ) then
+				GhostFrame:Show();
+			else
+				GhostFrame:Hide();
+			end
+			if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
+				StaticPopup_Show("DEATH");
+			end
         end
 
 		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
@@ -2369,7 +2378,7 @@ function UIParent_OnEvent(self, event, ...)
 		TopBannerManager_LoadingScreenDisabled()
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
 		local info = ChatTypeInfo["SYSTEM"];
-		local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+		local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 		if (itemName) then
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 		else
@@ -2379,7 +2388,7 @@ function UIParent_OnEvent(self, event, ...)
 		local itemID = ...;
 		if (itemID == WOW_TOKEN_ITEM_ID) then
 			local info = ChatTypeInfo["SYSTEM"];
-			local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+			local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 		end
@@ -3199,7 +3208,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight();
+	local customOverlayHeight = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.CustomActionBarOverlayHeightOffset);
+	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
 	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;
 	UIParentBottomManagedFrameContainer:ClearAllPoints();
@@ -3624,270 +3634,6 @@ function RecentTimeDate(year, month, day, hour)
 		lastOnline = format(LASTONLINE_YEARS, year);
 	end
 	return lastOnline;
-end
-
-
--- Frame fading and flashing --
-
-local frameFadeManager = CreateFrame("FRAME");
-
--- Generic fade function
-function UIFrameFade(frame, fadeInfo)
-	if (not frame) then
-		return;
-	end
-	if ( not fadeInfo.mode ) then
-		fadeInfo.mode = "IN";
-	end
-	local alpha;
-	if ( fadeInfo.mode == "IN" ) then
-		if ( not fadeInfo.startAlpha ) then
-			fadeInfo.startAlpha = 0;
-		end
-		if ( not fadeInfo.endAlpha ) then
-			fadeInfo.endAlpha = 1.0;
-		end
-		alpha = 0;
-	elseif ( fadeInfo.mode == "OUT" ) then
-		if ( not fadeInfo.startAlpha ) then
-			fadeInfo.startAlpha = 1.0;
-		end
-		if ( not fadeInfo.endAlpha ) then
-			fadeInfo.endAlpha = 0;
-		end
-		alpha = 1.0;
-	end
-	frame:SetAlpha(fadeInfo.startAlpha);
-
-	frame.fadeInfo = fadeInfo;
-	frame:Show();
-
-	local index = 1;
-	while FADEFRAMES[index] do
-		-- If frame is already set to fade then return
-		if ( FADEFRAMES[index] == frame ) then
-			return;
-		end
-		index = index + 1;
-	end
-	tinsert(FADEFRAMES, frame);
-	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);
-end
-
--- Convenience function to do a simple fade in
-function UIFrameFadeIn(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {};
-	fadeInfo.mode = "IN";
-	fadeInfo.timeToFade = timeToFade;
-	fadeInfo.startAlpha = startAlpha;
-	fadeInfo.endAlpha = endAlpha;
-	UIFrameFade(frame, fadeInfo);
-end
-
--- Convenience function to do a simple fade out
-function UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {};
-	fadeInfo.mode = "OUT";
-	fadeInfo.timeToFade = timeToFade;
-	fadeInfo.startAlpha = startAlpha;
-	fadeInfo.endAlpha = endAlpha;
-	UIFrameFade(frame, fadeInfo);
-end
-
-function UIFrameFadeRemoveFrame(frame)
-	tDeleteItem(FADEFRAMES, frame);
-end
-
--- Function that actually performs the alpha change
---[[
-Fading frame attribute listing
-============================================================
-frame.timeToFade  [Num]		Time it takes to fade the frame in or out
-frame.mode  ["IN", "OUT"]	Fade mode
-frame.finishedFunc [func()]	Function that is called when fading is finished
-frame.finishedArg1 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg2 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg3 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg4 [ANYTHING]	Argument to the finishedFunc
-frame.fadeHoldTime [Num]	Time to hold the faded state
- ]]
-
-function UIFrameFade_OnUpdate(self, elapsed)
-	local index = 1;
-	local frame, fadeInfo;
-	while FADEFRAMES[index] do
-		frame = FADEFRAMES[index];
-		fadeInfo = FADEFRAMES[index].fadeInfo;
-		-- Reset the timer if there isn't one, this is just an internal counter
-		if ( not fadeInfo.fadeTimer ) then
-			fadeInfo.fadeTimer = 0;
-		end
-		fadeInfo.fadeTimer = fadeInfo.fadeTimer + elapsed;
-
-		-- If the fadeTimer is less then the desired fade time then set the alpha otherwise hold the fade state, call the finished function, or just finish the fade
-		if ( fadeInfo.fadeTimer < fadeInfo.timeToFade ) then
-			if ( fadeInfo.mode == "IN" ) then
-				frame:SetAlpha((fadeInfo.fadeTimer / fadeInfo.timeToFade) * (fadeInfo.endAlpha - fadeInfo.startAlpha) + fadeInfo.startAlpha);
-			elseif ( fadeInfo.mode == "OUT" ) then
-				frame:SetAlpha(((fadeInfo.timeToFade - fadeInfo.fadeTimer) / fadeInfo.timeToFade) * (fadeInfo.startAlpha - fadeInfo.endAlpha)  + fadeInfo.endAlpha);
-			end
-		else
-			frame:SetAlpha(fadeInfo.endAlpha);
-			-- If there is a fadeHoldTime then wait until its passed to continue on
-			if ( fadeInfo.fadeHoldTime and fadeInfo.fadeHoldTime > 0  ) then
-				fadeInfo.fadeHoldTime = fadeInfo.fadeHoldTime - elapsed;
-			else
-				-- Complete the fade and call the finished function if there is one
-				UIFrameFadeRemoveFrame(frame);
-				if ( fadeInfo.finishedFunc ) then
-					fadeInfo.finishedFunc(fadeInfo.finishedArg1, fadeInfo.finishedArg2, fadeInfo.finishedArg3, fadeInfo.finishedArg4);
-					fadeInfo.finishedFunc = nil;
-				end
-			end
-		end
-
-		index = index + 1;
-	end
-
-	if ( #FADEFRAMES == 0 ) then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
-function UIFrameIsFading(frame)
-	for index, value in pairs(FADEFRAMES) do
-		if ( value == frame ) then
-			return 1;
-		end
-	end
-	return nil;
-end
-
-local frameFlashManager = CreateFrame("FRAME");
-
-local UIFrameFlashTimers = {};
-local UIFrameFlashTimerRefCount = {};
-
--- Function to start a frame flashing
-function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime, syncId)
-	if ( frame ) then
-		local index = 1;
-		-- If frame is already set to flash then return
-		while FLASHFRAMES[index] do
-			if ( FLASHFRAMES[index] == frame ) then
-				return;
-			end
-			index = index + 1;
-		end
-
-		if (syncId) then
-			frame.syncId = syncId;
-			if (UIFrameFlashTimers[syncId] == nil) then
-				UIFrameFlashTimers[syncId] = 0;
-				UIFrameFlashTimerRefCount[syncId] = 0;
-			end
-			UIFrameFlashTimerRefCount[syncId] = UIFrameFlashTimerRefCount[syncId]+1;
-		else
-			frame.syncId = nil;
-		end
-
-		-- Time it takes to fade in a flashing frame
-		frame.fadeInTime = fadeInTime;
-		-- Time it takes to fade out a flashing frame
-		frame.fadeOutTime = fadeOutTime;
-		-- How long to keep the frame flashing, -1 means forever
-		frame.flashDuration = flashDuration;
-		-- Show the flashing frame when the fadeOutTime has passed
-		frame.showWhenDone = showWhenDone;
-		-- Internal timer
-		frame.flashTimer = 0;
-		-- How long to hold the faded in state
-		frame.flashInHoldTime = flashInHoldTime;
-		-- How long to hold the faded out state
-		frame.flashOutHoldTime = flashOutHoldTime;
-
-		tinsert(FLASHFRAMES, frame);
-
-		frameFlashManager:SetScript("OnUpdate", UIFrameFlash_OnUpdate);
-	end
-end
-
--- Called every frame to update flashing frames
-function UIFrameFlash_OnUpdate(self, elapsed)
-	local frame;
-	local index = #FLASHFRAMES;
-
-	-- Update timers for all synced frames
-	for syncId, timer in pairs(UIFrameFlashTimers) do
-		UIFrameFlashTimers[syncId] = timer + elapsed;
-	end
-
-	while FLASHFRAMES[index] do
-		frame = FLASHFRAMES[index];
-		frame.flashTimer = frame.flashTimer + elapsed;
-
-		if ( (frame.flashTimer > frame.flashDuration) and frame.flashDuration ~= -1 ) then
-			UIFrameFlashStop(frame);
-		else
-			local flashTime = frame.flashTimer;
-			local alpha;
-
-			if (frame.syncId) then
-				flashTime = UIFrameFlashTimers[frame.syncId];
-			end
-
-			flashTime = flashTime%(frame.fadeInTime+frame.fadeOutTime+(frame.flashInHoldTime or 0)+(frame.flashOutHoldTime or 0));
-			if (flashTime < frame.fadeInTime) then
-				alpha = flashTime/frame.fadeInTime;
-			elseif (flashTime < frame.fadeInTime+(frame.flashInHoldTime or 0)) then
-				alpha = 1;
-			elseif (flashTime < frame.fadeInTime+(frame.flashInHoldTime or 0)+frame.fadeOutTime) then
-				alpha = 1 - ((flashTime - frame.fadeInTime - (frame.flashInHoldTime or 0))/frame.fadeOutTime);
-			else
-				alpha = 0;
-			end
-
-			frame:SetAlpha(alpha);
-			frame:Show();
-		end
-
-		-- Loop in reverse so that removing frames is safe
-		index = index - 1;
-	end
-
-	if ( #FLASHFRAMES == 0 ) then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
--- Function to see if a frame is already flashing
-function UIFrameIsFlashing(frame)
-	for index, value in pairs(FLASHFRAMES) do
-		if ( value == frame ) then
-			return 1;
-		end
-	end
-	return nil;
-end
-
--- Function to stop flashing
-function UIFrameFlashStop(frame)
-	tDeleteItem(FLASHFRAMES, frame);
-	frame:SetAlpha(1.0);
-	frame.flashTimer = nil;
-	if (frame.syncId) then
-		UIFrameFlashTimerRefCount[frame.syncId] = UIFrameFlashTimerRefCount[frame.syncId]-1;
-		if (UIFrameFlashTimerRefCount[frame.syncId] == 0) then
-			UIFrameFlashTimers[frame.syncId] = nil;
-			UIFrameFlashTimerRefCount[frame.syncId] = nil;
-		end
-		frame.syncId = nil;
-	end
-	if ( frame.showWhenDone ) then
-		frame:Show();
-	else
-		frame:Hide();
-	end
 end
 
 -- Functions to handle button pulsing (Highlight, Unhighlight)
@@ -5229,14 +4975,6 @@ function InGlue()
 	return false;
 end
 
-function RGBToColorCode(r, g, b)
-	return format("|cff%02x%02x%02x", r*255, g*255, b*255);
-end
-
-function RGBTableToColorCode(rgbTable)
-	return RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b);
-end
-
 function WillAcceptInviteRemoveQueues()
 	--Dungeon/Raid Finder
 	for i=1, NUM_LE_LFG_CATEGORYS do
@@ -5343,17 +5081,6 @@ function OpenAchievementFrameToAchievement(achievementID)
 	AchievementFrame_SelectAchievement(achievementID);
 end
 
-function ChatClassColorOverrideShown()
-	local value = GetCVar("chatClassColorOverride");
-	if value == "0" then
-		return true;
-	elseif value == "1" then
-		return false;
-	else
-		return nil;
-	end
-end
-
 function IsLevelAtEffectiveMaxLevel(level)
 	return level >= GetMaxLevelForPlayerExpansion();
 end
@@ -5374,4 +5101,9 @@ function DisplayInterfaceActionBlockedMessage()
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 	end
+end
+
+function AllowChatFramesToShow(chatFrame)
+	-- this is InGame - and we always show while InGame.  chatFrame is not referenced, only Glues
+	return true;
 end

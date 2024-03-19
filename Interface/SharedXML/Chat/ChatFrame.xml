@@ -1,0 +1,170 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="ChatFrame.lua"/>
+	<ScrollingMessageFrame name="ChatFrameTemplate" frameStrata="LOW" toplevel="true" hidden="true" virtual="true">
+		<Frames>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ChatFrame_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				ChatFrame_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				ChatFrame_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnHyperlinkClick>
+				ChatFrame_OnHyperlinkShow(self, link, text, button);
+			</OnHyperlinkClick>
+		</Scripts>
+	</ScrollingMessageFrame>
+	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" bytes="1280" visibleBytes="255" invisibleBytes="1023" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+					<Size x="0" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentFocusLeft" file="Interface\ChatFrame\UI-ChatInputBorderFocus-Left" hidden="true" parentKey="focusLeft">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusRight" file="Interface\ChatFrame\UI-ChatInputBorderFocus-Right" hidden="true" parentKey="focusRight">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusMid" file="Interface\ChatFrame\UI-ChatInputBorderFocus-Mid" horizTile="true" hidden="true" parentKey="focusMid">
+					<Size x="0" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFocusLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentFocusRight" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentHeader" inherits="ChatFontNormal" parentKey="header">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="15" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHeaderSuffix" inherits="ChatFontNormal" parentKey="headerSuffix" text="CHAT_HEADER_SUFFIX">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHeader" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="ChatFontNormal" parentKey="languageHeader" text="" hidden="true">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.header" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentNewcomerHint" inherits="ChatFontNormal" parentKey="NewcomerHint">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHeader"/>
+					</Anchors>
+					<Color color="DISABLED_FONT_COLOR"/>
+				</FontString>
+				<FontString name="$parentPrompt" inherits="ChatFontNormal" hidden="true" ignoreParentAlpha="true" parentKey="prompt">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="15" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentLanguage" hidden="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleInputLanguage();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<NormalFont style="DialogButtonNormalText"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ChatEdit_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				ChatEdit_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnShow>
+				ChatEdit_OnShow(self);
+			</OnShow>
+			<OnHide>
+				ChatEdit_OnHide(self);
+			</OnHide>
+			<OnEditFocusGained>
+				ChatEdit_OnEditFocusGained(self);
+			</OnEditFocusGained>
+			<OnEditFocusLost>
+				ChatEdit_OnEditFocusLost(self);
+			</OnEditFocusLost>
+			<OnUpdate>
+				ChatEdit_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnEnterPressed>
+				ChatEdit_OnEnterPressed(self);
+			</OnEnterPressed>
+			<OnEscapePressed>
+				ChatEdit_OnEscapePressed(self);
+			</OnEscapePressed>
+			<OnSpacePressed>
+				ChatEdit_OnSpacePressed(self);
+			</OnSpacePressed>
+			<OnTabPressed>
+				ChatEdit_OnTabPressed(self);
+			</OnTabPressed>
+			<OnTextChanged>
+				ChatEdit_OnTextChanged(self, userInput);
+			</OnTextChanged>
+			<OnTextSet>
+				ChatEdit_OnTextSet(self);
+			</OnTextSet>
+			<OnInputLanguageChanged>
+				ChatEdit_OnInputLanguageChanged(self, language);
+			</OnInputLanguageChanged>
+			<OnChar>
+				ChatEdit_OnChar(self)
+			</OnChar>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	<Frame name="ChatChannelDropDown" inherits="UIDropDownMenuTemplate"/>
+	<Frame name="ChatBNPlayerDropDown" inherits="UIDropDownMenuTemplate"/>
+</Ui>

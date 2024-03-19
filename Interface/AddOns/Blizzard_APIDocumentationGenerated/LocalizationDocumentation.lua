@@ -66,6 +66,15 @@ local Localization =
 			},
 		},
 		{
+			Name = "IsEuropeanNumbers",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LocalizedClassList",
 			Type = "Function",
 
@@ -77,6 +86,15 @@ local Localization =
 			Returns =
 			{
 				{ Name = "result", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "SetEuropeanNumbers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 	},

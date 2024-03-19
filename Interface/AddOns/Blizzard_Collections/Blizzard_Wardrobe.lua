@@ -3540,7 +3540,7 @@ function WardrobeSetsDataProviderMixin:GetIconForSet(setID)
 	if ( not sourceData.icon ) then
 		local sortedSources = self:GetSortedSetSources(setID);
 		if ( sortedSources[1] ) then
-			local _, _, _, _, icon = GetItemInfoInstant(sortedSources[1].itemID);
+			local _, _, _, _, icon = C_Item.GetItemInfoInstant(sortedSources[1].itemID);
 			sourceData.icon = icon;
 		else
 			sourceData.icon = QUESTION_MARK_ICON;

@@ -4,6 +4,7 @@
 ## RequiredDep: Blizzard_PartyPoseUI, Blizzard_UIWidgets
 ## Version: 1.0
 ## LoadOnDemand: 1
+## AllowLoadByGameMode: standard
 
 Blizzard_IslandsPartyPoseUI.lua
 Blizzard_IslandsPartyPoseUI.xml

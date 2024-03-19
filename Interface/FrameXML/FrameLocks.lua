@@ -40,6 +40,28 @@ local HIDE_MOST = {
 	PetActionBar = "hidden",
 }
 
+local SPECTATING_DISPLAY = { 
+	PlayerFrame			= "hidden",
+	ObjectiveTrackerFrame = "hidden",
+	RuneFrame			= "hidden",
+	DurabilityFrame 	= "hidden",
+	CompactRaidFrameManager = "hidden",
+	ConsolidatedBuffs	= "hidden",
+	BuffFrame			= "hidden",
+	MultiBarLeft		= "hidden",
+	MultiBarRight		= "hidden",
+	FocusFrame			= "hidden",
+	TemporaryEnchantFrame = "hidden",
+	ExtraAbilityContainer	= "hidden",
+	OrderHallCommandBar	= "hidden",
+	TalentMicroButtonAlert	="hidden",
+	PVPMatchScoreboard = "hidden",
+	PVPMatchResults = "hidden",
+	StatusTrackingBarManager = "hidden",
+	ContainerFrameCombinedBags = "hidden",
+	TargetFrameToT = "hidden"
+}
+
 --------Data on what locks exist and what frames are ruled by them--------
 FRAMELOCK_STATES = {
 	COMMENTATOR_SPECTATING_MODE = Mixin({
@@ -54,11 +76,13 @@ FRAMELOCK_STATES = {
 		--Additional chat frames are added to this list as they are created.
 	}, HIDE_MOST),
 	PETBATTLES = HIDE_MOST,
+	SPECTATING = SPECTATING_DISPLAY,
 };
 
 FRAMELOCK_STATE_PRIORITIES = {
 	"COMMENTATOR_SPECTATING_MODE",
 	"PETBATTLES",
+	"SPECTATING"
 };
 
 ----------Curent states--------------------------

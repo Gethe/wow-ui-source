@@ -20,9 +20,10 @@ do
 end
 
 function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, mailSenders, _, _, characterServiceRequiresLogin, _, _, _, _, hasVasRevoked = select(7, GetCharacterInfo(characterID));
 	local errors = {};
-
+	
+	CheckAddVASErrorCode(errors, Enum.VasError.CharLocked, not hasVasRevoked)
 	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
 	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
 	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));

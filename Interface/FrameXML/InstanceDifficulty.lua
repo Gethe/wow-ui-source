@@ -43,6 +43,13 @@ function InstanceDifficultyMixin:OnEvent(event, ...)
 end
 
 function InstanceDifficultyMixin:Update()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InstanceDifficultyBanner) then
+		self.Instance:Hide();
+		self.Guild:Hide();
+		self.ChallengeMode:Hide();
+		return;
+	end
+
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
 	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
 

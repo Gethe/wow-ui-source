@@ -21,13 +21,6 @@ WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[C_TradeSkillUI.GetProfessionSkillLineID(Enum.Profession.Skinning)] = "worldquest-icon-skinning",
 };
 
-CHAT_FONT_HEIGHTS = {
-	[1] = 12,
-	[2] = 14,
-	[3] = 16,
-	[4] = 18
-};
-
 HTML_START = "<html><body><p>";
 HTML_START_CENTERED = "<html><body><p align=\"center\">";
 HTML_END = "</p></body></html>";

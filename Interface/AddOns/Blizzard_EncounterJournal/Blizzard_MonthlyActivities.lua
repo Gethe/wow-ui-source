@@ -401,6 +401,7 @@ function MonthlyActivitiesButtonMixin:ShowTooltip()
 	end
 
 	GameTooltip:Show();
+	EventRegistry:TriggerEvent("MonthlyActivities.ActivityTooltipShown", GameTooltip, data);
 end
 
 function MonthlyActivitiesButtonMixin:GetData()
@@ -650,7 +651,16 @@ function MonthlyActivitiesFilterListMixin:OnLoad()
 
 	view:SetElementInitializer("MonthlyActivitiesFilterListButtonTemplate", Initializer);
 
-	self.ScrollBox:Init(view);
+	ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+	local scrollBoxAnchorsWithBar = {
+		CreateAnchor("TOPLEFT", 0, 0),
+		CreateAnchor("BOTTOMRIGHT", -20, 0);
+	};
+	local scrollBoxAnchorsWithoutBar = {
+		CreateAnchor("TOPLEFT", 0, 0),
+		CreateAnchor("BOTTOMRIGHT", 0, 0);
+	};
+	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
 
 	local function OnSelectionChanged(o, elementData, selected)
 		local button = self.ScrollBox:FindFrame(elementData);

@@ -296,7 +296,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	self.historyTitle:ClearAllPoints();
 	local runeName, runeStoneIconPath;
 	if RaceitemID > 0 then
-		runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = GetItemInfo(RaceitemID);
+		runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = C_Item.GetItemInfo(RaceitemID);
 	end
 	local endFound = false;
 	for i=1,ARCHAEOLOGY_MAX_STONES do

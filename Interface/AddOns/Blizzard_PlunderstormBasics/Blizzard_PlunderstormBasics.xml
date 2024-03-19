@@ -1,0 +1,162 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Frame name="PlunderstormBasicsContainerFrame" mixin="PlunderstormBasicsContainerFrameMixin" inherits="VerticalLayoutFrame" frameLevel="1000" >
+		<Size x="476" y="1"/>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="476" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-46" y="-40"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PlunderstormSwords" atlas="plunderstorm-glues-tutorial-swords" >
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="topPadding" value="30" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="142" y="121"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="LifetimePlunder" mixin="PlunderstormBasicsLifetimePlunderMixin" inherits="GameFontHighlightMedium" justifyH="RIGHT" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-23" y="-21"/>
+					</Anchors>
+					<Scripts>
+						<OnEnter method="OnEnter"/>
+						<OnLeave method="OnLeave"/>
+					</Scripts>
+				</FontString>
+				<FontString parentKey="PlunderstormBasicsTitle" inherits="SystemFont_Huge2" text="WOWLABS_GAME_BASICS_TITLE" justifyV="MIDDLE" justifyH="CENTER">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="topPadding" value="26" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="343" y="40"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color color="WHITE_FONT_COLOR"/>
+				</FontString>
+				<Texture parentKey="PlunderstormLine" atlas="plunderstorm-glues-tutorial-line" >
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="topPadding" value="8" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="343" y="2"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="PlunderstormBasicsBody" inherits="Game16Font" text="WOWLABS_GAME_BASICS_BODY" justifyV="TOP" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="4" type="number"/>
+						<KeyValue key="topPadding" value="40" type="number"/>
+						<KeyValue key="bottomPadding" value="60" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="NineSlicePanelTemplate" useParentLevel="true" >
+				<KeyValues>
+					<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="RenownPreview" mixin="PlunderstormRenownPreviewMixin" inherits="VerticalLayoutFrame" >
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="topPadding" value="0" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PreviewTitle" inherits="SystemFont_Huge2" text="WOWLABS_RENOWN_PREVIEW_TITLE" justifyV="MIDDLE" justifyH="CENTER">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+							<Size x="343" y="40"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>		
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+						<Texture parentKey="Separator" atlas="plunderstorm-glues-tutorial-line" >
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="topPadding" value="8" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+							<Size x="343" y="2"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>		
+						</Texture>
+						<FontString parentKey="PreviewDescription" inherits="Game16Font" justifyV="TOP" justifyH="CENTER">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+								<KeyValue key="topPadding" value="20" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+							</KeyValues>
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>		
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="RewardsContainer" inherits="ResizeLayoutFrame">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+							<KeyValue key="topPadding" value="20" type="number"/>
+							<KeyValue key="bottomPadding" value="40" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOP"/>
+							<Anchor point="LEFT"/>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

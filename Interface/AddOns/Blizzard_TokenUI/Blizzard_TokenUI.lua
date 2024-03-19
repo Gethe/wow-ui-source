@@ -202,7 +202,12 @@ end
 
 function BackpackCurrencyCheckBoxMixin:OnClick()
 	local watched = self:GetChecked();
-	TokenFrame_SetTokenWatched(TokenFrame.selectedID, watched);
+	local success = TokenFrame_SetTokenWatched(TokenFrame.selectedID, watched);
+
+	if not success then
+		self:SetChecked(false);
+		return;
+	end
 
 	if watched then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -222,13 +227,14 @@ function TokenFrame_SetTokenWatched(id, watched)
 		local maxWatched = BackpackTokenFrame:GetMaxTokensWatched();
 		if GetNumWatchedTokens() >= maxWatched then
 			UIErrorsFrame:AddMessage(TOO_MANY_WATCHED_TOKENS:format(maxWatched), 1.0, 0.1, 0.1, 1.0);
-			return;
+			return false;
 		end
 	end
 
 	C_CurrencyInfo.SetCurrencyBackpack(id, watched);
 	TokenFrame_Update();
 	BackpackTokenFrame:Update();
+	return true;
 end
 
 BackpackTokenFrameMixin = {};
@@ -346,7 +352,12 @@ function BackpackTokenFrameMixin:GetMaxTokensWatched()
 		self.tokenWidth = info and info.width or 50;
 	end
 
-	-- You can always track at least one token
+	-- If backpack has not been opened at least once since UI load, get approx width of container frame
+	if (self:GetWidth() or 0) <= 1 then
+		return math.max(math.floor(ContainerFrame_GetApproximateWidth() / self.tokenWidth), 1);
+	end
+
+	-- Otherwise, use own width to get max num tokens that can be watched (iow: max tokens that can fit in the frame)
 	return math.max(math.floor(self:GetWidth() / self.tokenWidth), 1);
 end
 

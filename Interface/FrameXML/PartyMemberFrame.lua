@@ -1,6 +1,9 @@
 MAX_PARTY_MEMBERS = 4;
-MAX_PARTY_BUFFS = 4;
-MAX_PARTY_DEBUFFS = 4;
+
+-- Allow these to be overwritten.
+MAX_PARTY_BUFFS = MAX_PARTY_BUFFS or 4;
+MAX_PARTY_DEBUFFS = MAX_PARTY_DEBUFFS or 4;
+
 MAX_PARTY_TOOLTIP_BUFFS = 16;
 MAX_PARTY_TOOLTIP_BUFFS_PER_ROW = 8;
 MAX_PARTY_TOOLTIP_DEBUFFS = 8;
@@ -23,10 +26,12 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 	local ignoreDispelDebuffs = MAX_PARTY_DEBUFFS == 0;
 
 	local debuffsChanged = false;
+	local buffsChanged = false;
 
 	if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate or self.debuffs == nil then
 		self:ParseAllAuras(displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
 		debuffsChanged = true;
+		buffsChanged = true;
 	else
 		if unitAuraUpdateInfo.addedAuras ~= nil then
 			for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
@@ -37,6 +42,7 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 					debuffsChanged = true;
 				elseif type == AuraUtil.AuraUpdateChangedType.Buff then
 					self.buffs[aura.auraInstanceID] = aura;
+					buffsChanged = true;
 				end
 			end
 		end
@@ -57,6 +63,7 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 						newAura.isBuff = true;
 					end
 					self.buffs[auraInstanceID] = newAura;
+					buffsChanged = true;
 				end
 			end
 		end
@@ -68,38 +75,40 @@ function PartyMemberAuraMixin:UpdateAurasInternal(unitAuraUpdateInfo)
 					debuffsChanged = true;
 				elseif self.buffs[auraInstanceID] ~= nil then
 					self.buffs[auraInstanceID] = nil;
+					buffsChanged = true;
 				end
 			end
 		end
 	end
 
-	if debuffsChanged then
+	local showingBuffs = self.showBuffs;
+	if (showingBuffs and buffsChanged) or (not showingBuffs and debuffsChanged) then
+		local iterateList = showingBuffs and self.buffs or self.debuffs;
+		local maxFrames = showingBuffs and MAX_PARTY_BUFFS or MAX_PARTY_DEBUFFS;
 		local frameNum = 1;
-		self.DebuffFramePool:ReleaseAll();
-		self.debuffs:Iterate(function(auraInstanceID, aura)
-			if frameNum > MAX_PARTY_DEBUFFS then
+		self.AuraFramePool:ReleaseAll();
+		iterateList:Iterate(function(auraInstanceID, aura)
+			if frameNum > maxFrames then
 				return true;
 			end
 
-			local debuffFrame = self.DebuffFramePool:Acquire();
-			debuffFrame:Setup(self.unit, frameNum);
-			debuffFrame:SetPoint("TOPLEFT");
-			debuffFrame.layoutIndex = frameNum;			
-			self:SetDebuff(debuffFrame, aura);
+			local auraFrame = self.AuraFramePool:Acquire();
+			auraFrame:SetPoint("TOPLEFT");
+			auraFrame.layoutIndex = frameNum;
+			auraFrame:Setup(self.unit, aura, showingBuffs);
 			frameNum = frameNum + 1;
-
 			return false;
 		end);
 
-		self.DebuffFrameContainer:SetPoint("TOPLEFT", 48, -43);
-		self.DebuffFrameContainer:Layout();
+		self.AuraFrameContainer:SetPoint("TOPLEFT", 48, -43);
+		self.AuraFrameContainer:Layout();
 
 		local unitStatus;
 		if self.PartyMemberOverlay then
 			unitStatus = self.PartyMemberOverlay.Status;
 		end
 
-		if unitStatus then
+		if not showingBuffs and unitStatus then
 			local highestPriorityDebuff = self.debuffs:GetTop();
 			if highestPriorityDebuff then
 				local statusColor = DebuffTypeColor[highestPriorityDebuff.dispelName] or DebuffTypeColor["none"];
@@ -125,7 +134,6 @@ function PartyMemberAuraMixin:ParseAllAuras(displayOnlyDispellableDebuffs, ignor
 	local usePackedAura = true;
 	local function HandleAura(aura)
 		local type = AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs);
-
 		if type == AuraUtil.AuraUpdateChangedType.Debuff or type == AuraUtil.AuraUpdateChangedType.Dispel then
 			self.debuffs[aura.auraInstanceID] = aura;
 		elseif type == AuraUtil.AuraUpdateChangedType.Buff then
@@ -135,37 +143,6 @@ function PartyMemberAuraMixin:ParseAllAuras(displayOnlyDispellableDebuffs, ignor
 	AuraUtil.ForEachAura(self.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful), batchCount, HandleAura, usePackedAura);
 	AuraUtil.ForEachAura(self.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Helpful), batchCount, HandleAura, usePackedAura);
 	AuraUtil.ForEachAura(self.unit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful, AuraUtil.AuraFilters.Raid), batchCount, HandleAura, usePackedAura);
-end
-
-function PartyMemberAuraMixin:SetDebuff(debuffFrame, aura)
-	debuffFrame.auraInstanceID = aura.auraInstanceID;
-	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
-	debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
-
-	if aura.icon then
-		debuffFrame.Icon:SetTexture(aura.icon);
-
-		if ( aura.applications > 1 ) then
-				local countText = aura.applications >= 100 and BUFF_STACKS_OVERFLOW or aura.applications;
-				debuffFrame.Count:Show();
-				debuffFrame.Count:SetText(countText);
-		else
-			debuffFrame.Count:Hide();
-		end
-
-		local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"];
-		debuffFrame.Border:SetVertexColor(color.r, color.g, color.b);
-
-		local enabled = aura.expirationTime and aura.expirationTime ~= 0;
-		if enabled then
-			local startTime = aura.expirationTime - aura.duration;
-			CooldownFrame_Set(debuffFrame.Cooldown, startTime, aura.duration, true);
-		else
-			CooldownFrame_Clear(debuffFrame.Cooldown);
-		end
-
-		debuffFrame:Show();
-	end
 end
 
 PartyMemberFrameMixin=CreateFromMixins(PartyMemberAuraMixin);
@@ -199,23 +176,22 @@ function PartyMemberFrameMixin:ToPlayerArt()
 
 	self.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 
-	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then 
-		self.HealthBar:SetSize(74, 20);
-	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -19);
-		self.HealthBar.Background:Show(); 
-	self:UpdateHealthBarTextAnchors();
+	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then
+		self.HealthBar:SetSize(74, 30);
+		self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -16);
+		self:UpdateHealthBarTextAnchors();
+		self.Texture:SetAtlas("plunderstorm-UI-HUD-UnitFrame-Party-PortraitOn");
 
-	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", false);
-		self.HealthBar.HealthBarMask:SetSize(120, 24);
-	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -22, 3);
-	else 
-	self.HealthBar:SetWidth(70);
-	self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
-		self.HealthBar.Background:Hide(); 
-	self:UpdateHealthBarTextAnchors();
+		self.HealthBar.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-party-portraiton-bar-health-mask", TextureKitConstants.UseAtlasSize);
+		self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -27, 4);
+	else
+		self.HealthBar:SetWidth(70);
+		self.HealthBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+		self:UpdateHealthBarTextAnchors();
+		self.Texture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn");
 
-	self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
+		self.HealthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
 	end
 
 	self.ManaBar:SetWidth(74);
@@ -271,6 +247,7 @@ function PartyMemberFrameMixin:ToVehicleArt()
 end
 
 function PartyMemberFrameMixin:UpdateHealthBarTextAnchors()
+	local healthBarTextOffsetX = 0;
 	local healthBarTextOffsetY = 0;
 	if (LOCALE_koKR) then
 		healthBarTextOffsetY = 1;
@@ -278,9 +255,14 @@ function PartyMemberFrameMixin:UpdateHealthBarTextAnchors()
 		healthBarTextOffsetY = 2;
 	end
 
+	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then
+		healthBarTextOffsetX = 2;
+		healthBarTextOffsetY = healthBarTextOffsetY + 3;
+	end
+	
 	self.HealthBar.CenterText:SetPoint("CENTER", self.HealthBar, "CENTER", 0, healthBarTextOffsetY);
-	self.HealthBar.LeftText:SetPoint("LEFT", self.HealthBar, "LEFT", 0, healthBarTextOffsetY);
-	self.HealthBar.RightText:SetPoint("RIGHT", self.HealthBar, "RIGHT", 0, healthBarTextOffsetY);
+	self.HealthBar.LeftText:SetPoint("LEFT", self.HealthBar, "LEFT", healthBarTextOffsetX, healthBarTextOffsetY);
+	self.HealthBar.RightText:SetPoint("RIGHT", self.HealthBar, "RIGHT", -healthBarTextOffsetX, healthBarTextOffsetY);
 end
 
 function PartyMemberFrameMixin:UpdateManaBarTextAnchors()
@@ -337,8 +319,12 @@ function PartyMemberFrameMixin:Setup()
 		   self.HealthBar.HealAbsorbBar);
 	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
 
-	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
-	self.PetFrame.DebuffFramePool = CreateFramePool("BUTTON", self.PetFrame.DebuffFrameContainer, "PartyDebuffFrameTemplate");
+	if PARTY_FRAME_SHOW_BUFFS then
+		self.showBuffs = true;
+	end
+
+	self.AuraFramePool = CreateFramePool("BUTTON", self.AuraFrameContainer, "PartyAuraFrameTemplate");
+	self.PetFrame.AuraFramePool = CreateFramePool("BUTTON", self.PetFrame.AuraFrameContainer, "PartyAuraFrameTemplate");
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -720,8 +706,11 @@ end
 
 function PartyMemberFrameMixin:OnEnter()
 	UnitFrame_OnEnter(self);
-	PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 47, -25);
-	PartyMemberBuffTooltip:UpdateTooltip(self);
+
+	if not HIDE_PARTY_MEMBER_BUFF_TOOLTIP then
+		PartyMemberBuffTooltip:SetPoint("TOPLEFT", self, "TOPLEFT", 47, -25);
+		PartyMemberBuffTooltip:UpdateTooltip(self);
+	end
 end
 
 function PartyMemberFrameMixin:OnLeave()
@@ -761,9 +750,19 @@ function PartyMemberFrameMixin:PartyMemberHealthCheck(value)
 	else
 		self.unitHPPercent = 0;
 	end
-	if UnitIsDead(self:GetUnit()) then
+
+	local unit = self:GetUnit();
+	local unitIsDead = UnitIsDead(unit);
+	local unitIsGhost = UnitIsGhost(unit);
+	if PARTY_FRAME_RESURRECTABLE_TOOLTIP then
+		local playerIsDeadOrGhost = UnitIsDeadOrGhost("player");
+		local unitIsDeadOrGhost = unitIsDead or unitIsGhost;
+		self.ResurrectableIndicator:SetShown(not playerIsDeadOrGhost and unitIsDeadOrGhost);
+	end
+
+	if unitIsDead then
 		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 1.0);
-	elseif UnitIsGhost(self:GetUnit()) then
+	elseif unitIsGhost then
 		self.Portrait:SetVertexColor(0.2, 0.2, 0.75, 1.0);
 	elseif (self.unitHPPercent > 0) and (self.unitHPPercent <= 0.2) then
 		self.Portrait:SetVertexColor(1.0, 0.0, 0.0);
@@ -856,4 +855,80 @@ end
 
 function PartyDebuffFrameMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+PartyAuraFrameMixin = {};
+function PartyAuraFrameMixin:Setup(unit, aura, isBuff)
+	self.unit = unit;
+	self.auraInstanceID = aura.auraInstanceID;
+
+	local isBossBuff = aura.isBossAura and aura.isHelpful;
+	local filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil;
+	self.isBuff = isBuff;
+	self.isBossBuff = isBossBuff;
+	self.filter = filter;
+
+	if aura.icon then
+		self.Icon:SetTexture(aura.icon);
+
+		if aura.applications > 1 then
+			local countText = aura.applications >= 100 and BUFF_STACKS_OVERFLOW or aura.applications;
+			self.Count:Show();
+			self.Count:SetText(countText);
+		else
+			self.Count:Hide();
+		end
+
+		self.DebuffBorder:SetShown(not isBuff);
+		if not isBuff then
+			local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"];
+			self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+		end
+
+		local enabled = aura.expirationTime and aura.expirationTime ~= 0;
+		if enabled then
+			local startTime = aura.expirationTime - aura.duration;
+			CooldownFrame_Set(self.Cooldown, startTime, aura.duration, true);
+		else
+			CooldownFrame_Clear(self.Cooldown);
+		end
+
+		self:Show();
+	end
+end
+
+function PartyAuraFrameMixin:OnUpdate()
+	if GameTooltip:IsOwned(self) then
+		self:UpdateTooltip();
+	end
+end
+
+function PartyAuraFrameMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	self:UpdateTooltip();
+end
+
+function PartyAuraFrameMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function PartyAuraFrameMixin:UpdateTooltip()
+	if self.isBossBuff then
+		GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
+	elseif self.isBuff then
+		GameTooltip:SetUnitBuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
+	else
+		GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.auraInstanceID, self.filter);
+	end
+end
+
+ResurrectableIndicatorMixin = {};
+function ResurrectableIndicatorMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddNormalLine(GameTooltip, PARTY_FRAME_RESURRECTABLE_TOOLTIP);
+	GameTooltip:Show();
+end
+
+function ResurrectableIndicatorMixin:OnLeave()
+	GameTooltip_Hide();
 end

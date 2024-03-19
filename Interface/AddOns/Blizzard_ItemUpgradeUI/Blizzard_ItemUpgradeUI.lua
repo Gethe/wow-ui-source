@@ -295,7 +295,7 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 	for itemID, itemCostEntry in pairs(itemCostTable) do
 		local includeBank = true;
-		local ownedItemCount = GetItemCount(itemID, includeBank);
+		local ownedItemCount = C_Item.GetItemCount(itemID, includeBank);
 
 		-- Item name won't be available if data for item hasn't been loaded on the client, and first opening this frame is likely the first time this cost item has been asked for
 		-- So pass off a lazy retrieval function for tooltip use as it should be available by the time it does need to be displayed
@@ -505,7 +505,7 @@ function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
 		local hasEnough = true;
 		if checkQuantity then
 			local includeBank = true;
-			local ownedItemCount = GetItemCount(itemID, includeBank);
+			local ownedItemCount = C_Item.GetItemCount(itemID, includeBank);
 			hasEnough = itemCostEntry.cost <= ownedItemCount;
 		end
 

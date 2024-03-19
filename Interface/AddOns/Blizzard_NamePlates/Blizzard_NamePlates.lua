@@ -639,6 +639,18 @@ function NamePlateClassificationFrameMixin:OnSizeChanged()
 	end
 end
 
+NamePlateLevelDiffMixin = {};
+function NamePlateLevelDiffMixin:OnSizeChanged()
+	self.playerLevelDiffIcon:SetScale(1.0);
+	self.playerLevelDiffText:SetScale(1.0);
+
+	local effectiveScale = self:GetEffectiveScale();
+	if self.maxScale and effectiveScale > self.maxScale then
+		self.playerLevelDiffIcon:SetScale(self.maxScale / effectiveScale);
+		self.playerLevelDiffText:SetScale(self.maxScale / effectiveScale);
+	end
+end
+
 --------------------------------------------------------------------------------
 --
 -- Buffs

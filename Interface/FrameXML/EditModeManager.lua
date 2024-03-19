@@ -1200,6 +1200,11 @@ function EditModeManagerFrameMixin:SetOverrideLayout(overrideLayoutIndex)
 	end		
 end
 
+function EditModeManagerFrameMixin:ClearOverrideLayout()
+	self.overrideLayoutInfo = nil;
+	self:UpdateLayoutInfo(C_EditMode.GetLayouts());
+end
+
 function EditModeManagerFrameMixin:GetActiveLayoutInfo()
 	if(self.overrideLayoutInfo) then 
 		return self.overrideLayoutInfo; 
@@ -1443,7 +1448,8 @@ function EditModeManagerFrameMixin:UnblockEnteringEditMode(blockingFrame)
 end
 
 function EditModeManagerFrameMixin:CanEnterEditMode()
-	return not C_PlayerInfo.IsPlayerNPERestricted() and TableIsEmpty(self.FramesBlockingEditMode);
+	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.EditMode) and
+			not C_PlayerInfo.IsPlayerNPERestricted() and TableIsEmpty(self.FramesBlockingEditMode);
 end
 
 EditModeGridMixin = {}

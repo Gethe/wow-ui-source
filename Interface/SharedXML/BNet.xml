@@ -1,0 +1,106 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+	<Script file="BNet.lua"/>
+	<Script file="BNetShared.lua"/>
+
+	<ContainedAlertFrame name="BNToastFrame" inherits="SocialToastTemplate" frameStrata="LOW" mixin="BNToastMixin">
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="50"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" parentKey="IconTexture" file="Interface\FriendsFrame\UI-Toast-ToastIcons">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.5"/>
+				</Texture>
+				<FontString name="$parentTopLine" parentKey="TopLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="44" y="-10"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1"/>
+				</FontString>
+				<FontString name="$parentMiddleLine" parentKey="MiddleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLine" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+					<Color r="0.486" g="0.518" b="0.541" />
+				</FontString>
+				<FontString name="$parentBottomLine" parentKey="BottomLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="196" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MiddleLine" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+					<Color r="0.486" g="0.518" b="0.541" />
+				</FontString>
+				<FontString name="$parentDoubleLine" parentKey="DoubleLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="44" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+					</Anchors>
+					<Color r="0.486" g="0.518" b="0.541" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TooltipFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
+				<Size x="250" y="60"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="FriendsFont_Small" justifyV="TOP" justifyH="LEFT" nonspacewrap="true">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-10"/>
+							</Anchors>
+							<Color r="0.486" g="0.518" b="0.541"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnUpdate>
+						-- need to update in case of alternate alphabet
+						self:SetHeight(self.Text:GetHeight() + 20);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="TimeAlertFrame" inherits="SocialToastTemplate" mixin="BNetTimeAlertMixin">
+		<Size x="250" y="50"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</ContainedAlertFrame>
+</Ui>

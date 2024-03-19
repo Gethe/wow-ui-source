@@ -375,7 +375,7 @@ function PerksProgramFrozenProductButtonMixin:SetupFreezeDraggedItem()
 	end
 
 	local itemData = {};
-	local _, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frozenVendorItem.itemID);
+	local _, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(frozenVendorItem.itemID);
 	itemData.product = frozenVendorItem;
 	itemData.link = itemLink;
 	itemData.name = frozenVendorItem.name;

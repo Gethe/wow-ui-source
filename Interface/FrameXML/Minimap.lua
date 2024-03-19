@@ -33,7 +33,7 @@ end
 
 function MinimapZoneTextButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+	local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 	Minimap_SetTooltip( pvpType, factionName );
 	GameTooltip:AddLine(self.tooltipText);
 	GameTooltip:Show();
@@ -92,7 +92,7 @@ end
 function Minimap_Update()
 	MinimapZoneText:SetText(GetMinimapZoneText());
 
-	local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+	local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 	if ( pvpType == "sanctuary" ) then
 		MinimapZoneText:SetTextColor(0.41, 0.8, 0.94);
 	elseif ( pvpType == "arena" ) then
@@ -297,19 +297,22 @@ function MinimapClusterMixin:CheckTutorials()
 	if not self:IsShown() then
 		return;
 	end
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES) then
-		local helpTipInfo = {
-			text = TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-			offsetX = 0,
-			alignment = HelpTip.Alignment.Right,
-			onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
-			useParentStrata	= false,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, self.Tracking);
+
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Standard then
+		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES) then
+			local helpTipInfo = {
+				text = TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_TRACKING_CHANGES,
+				targetPoint = HelpTip.Point.BottomEdgeCenter,
+				offsetX = 0,
+				alignment = HelpTip.Alignment.Right,
+				onAcknowledgeCallback = GenerateClosure(self.CheckTutorials, self),
+				useParentStrata	= false,
+			};
+			HelpTip:Show(UIParent, helpTipInfo, self.TrackingFrame);
+		end
 	end
 end
 
@@ -336,7 +339,7 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
 
 		self.IndicatorFrame:ClearAllPoints();
-		self.IndicatorFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
+		self.IndicatorFrame:SetPoint("BOTTOMRIGHT", self.TrackingFrame, "TOPRIGHT");
 	else
 		local accountForFrameScaleYes = true;
 		ResetFramePoints(self.MinimapContainer, accountForFrameScaleYes);
@@ -354,8 +357,8 @@ end
 
 
 function MiniMapIndicatorFrame_UpdatePosition()
-	if MinimapCluster.Tracking:IsShown() then
-		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.Tracking, "BOTTOMRIGHT", 2, -1);
+	if MinimapCluster.TrackingFrame:IsShown() then
+		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.TrackingFrame, "BOTTOMRIGHT", 2, -1);
 	else
 		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
 	end
@@ -365,8 +368,10 @@ end
 MiniMapMailFrameMixin = { };
 
 function MiniMapMailFrameMixin:OnLoad()
-	self:RegisterEvent("UPDATE_PENDING_MAIL");
-	self:SetFrameLevel(self:GetFrameLevel()+1);
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameMailNotification) then
+		self:RegisterEvent("UPDATE_PENDING_MAIL");
+		self:SetFrameLevel(self:GetFrameLevel()+1);	
+	end
 end
 
 function MiniMapMailFrameMixin:OnEvent(event)
@@ -475,10 +480,15 @@ end
 MiniMapTrackingButtonMixin = { };
 
 function MiniMapTrackingButtonMixin:OnLoad()
-	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
-	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("CVAR_UPDATE");
-	self:Update();
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameTracking) then
+		self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
+		self:RegisterEvent("VARIABLES_LOADED");
+		self:RegisterEvent("CVAR_UPDATE");
+		MinimapCluster.TrackingFrame:Show();
+		self:Update();
+	else
+		MinimapCluster.TrackingFrame:Hide();
+	end
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
@@ -488,22 +498,22 @@ function MiniMapTrackingButtonMixin:OnEvent(event, arg1)
 end
 
 function MiniMapTrackingButtonMixin:Update()
-	if UIDROPDOWNMENU_OPEN_MENU == MinimapCluster.Tracking.DropDown then
-		UIDropDownMenu_RefreshAll(MinimapCluster.Tracking.DropDown);
+	if UIDROPDOWNMENU_OPEN_MENU == MinimapCluster.TrackingFrame.DropDown then
+		UIDropDownMenu_RefreshAll(MinimapCluster.TrackingFrame.DropDown);
 	end
 end
 
 function MiniMapTrackingButtonMixin:Show(shown)
-	MinimapCluster.Tracking:SetShown(shown);
+	MinimapCluster.TrackingFrame:SetShown(shown);
 	if MinimapCluster.IndicatorFrame then
 		MiniMapIndicatorFrame_UpdatePosition();
 	end
 end
 
 function MiniMapTrackingButtonMixin:OnMouseDown()
-	MinimapCluster.Tracking.DropDown.point = "TOPRIGHT";
-	MinimapCluster.Tracking.DropDown.relativePoint = "BOTTOMLEFT";
-	ToggleDropDownMenu(1, nil, MinimapCluster.Tracking.DropDown, MinimapCluster.Tracking, 8, 5);
+	MinimapCluster.TrackingFrame.DropDown.point = "TOPRIGHT";
+	MinimapCluster.TrackingFrame.DropDown.relativePoint = "BOTTOMLEFT";
+	ToggleDropDownMenu(1, nil, MinimapCluster.TrackingFrame.DropDown, MinimapCluster.TrackingFrame, 8, 5);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
@@ -526,7 +536,7 @@ end
 function MiniMapTrackingDropDown_SetTracking(self, id, unused, on)
 	C_Minimap.SetTracking(id, on);
 
-	UIDropDownMenu_Refresh(MinimapCluster.Tracking.DropDown);
+	UIDropDownMenu_Refresh(MinimapCluster.TrackingFrame.DropDown);
 end
 
 function MiniMapTrackingDropDown_IsActive(button)
@@ -601,7 +611,7 @@ function MiniMapTrackingDropDown_SetTrackingNone()
 		end
 	end
 	
-	UIDropDownMenu_Refresh(MinimapCluster.Tracking.DropDown);
+	UIDropDownMenu_Refresh(MinimapCluster.TrackingFrame.DropDown);
 end
 
 function MiniMapTracking_FilterIsVisible(id)
@@ -726,6 +736,12 @@ end
 
 ExpansionLandingPageMinimapButtonMixin = { };
 
+ExpansionLandingPageMode = {
+	Garrison = 1,
+	ExpansionOverlay = 2,
+	MajorFactionRenown = 3,
+};
+
 local GarrisonLandingPageEvents = {
 	"GARRISON_SHOW_LANDING_PAGE",
 	"GARRISON_HIDE_LANDING_PAGE",
@@ -746,25 +762,41 @@ function ExpansionLandingPageMinimapButtonMixin:OnLoad()
 
 	self.pulseLocks = {};
 
-	FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
-	self.garrisonMode = true;
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
+		self:RefreshButton();
+	else
+		FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
+		self.mode = ExpansionLandingPageMode.Garrison;
+	end
 end
 
 function ExpansionLandingPageMinimapButtonMixin:IsInGarrisonMode()
-	return self.garrisonMode;
+	return self.mode == ExpansionLandingPageMode.Garrison;
+end
+
+function ExpansionLandingPageMinimapButtonMixin:IsInMajorFactionRenownMode()
+	return self.mode == ExpansionLandingPageMode.MajorFactionRenown;
 end
 
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
-	if ExpansionLandingPage:IsOverlayApplied() then
-		if self.garrisonMode then
-			if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
-				HideUIPanel(GarrisonLandingPage);
-			end
-			self:ClearPulses();
-			FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
-			self.garrisonMode = false;
+	local previousMode = self.mode;
+	local wasInGarrisonMode = self:IsInGarrisonMode();
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
+		self.mode = ExpansionLandingPageMode.MajorFactionRenown;
+		self.majorFactionID = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.LandingPageFactionID);
+	elseif ExpansionLandingPage:IsOverlayApplied() then
+		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
+	end
+
+	if wasInGarrisonMode and not self:IsInGarrisonMode() then
+		if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
+			HideUIPanel(GarrisonLandingPage);
 		end
-		
+		self:ClearPulses();
+		FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
+	end
+
+	if self.mode ~= previousMode then
 		self:Hide();
 		self:UpdateIcon();
 		self:Show();
@@ -787,7 +819,7 @@ end
 
 
 function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
-	if self.garrisonMode and tContains(GarrisonLandingPageEvents, event) then
+	if self:IsInGarrisonMode() and tContains(GarrisonLandingPageEvents, event) then
 		self:HandleGarrisonEvent(event, ...);
 	end
 end
@@ -813,7 +845,12 @@ local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, us
 end
 
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
-	if self.garrisonMode then
+	if self:IsInMajorFactionRenownMode() then
+		local useDefaultButtonSize = true;
+		SetLandingPageIconFromAtlases(self, "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", useDefaultButtonSize);
+		self.title = "";
+		self.description = "";
+	elseif self:IsInGarrisonMode() then
 		self:UpdateIconForGarrison();
 	else
 		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
@@ -830,7 +867,9 @@ function ExpansionLandingPageMinimapButtonMixin:OnClick(button)
 end
 
 function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
-	if self.garrisonMode then
+	if self:IsInMajorFactionRenownMode() then
+		ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
+	elseif self:IsInGarrisonMode() then
 		GarrisonLandingPage_Toggle();
 		GarrisonMinimap_HideHelpTip(self);
 	else
@@ -838,11 +877,22 @@ function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
 	end
 end
 
-function ExpansionLandingPageMinimapButtonMixin:OnEnter()
+function ExpansionLandingPageMinimapButtonMixin:SetTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(self.title, 1, 1, 1);
-	GameTooltip:AddLine(self.description, nil, nil, nil, true);
+
+	if self:IsInMajorFactionRenownMode() then
+		RenownRewardUtil.AddMajorFactionToTooltip(GameTooltip, self.majorFactionID, GenerateClosure(self.SetTooltip, self));
+	else
+		GameTooltip:SetText(self.title, 1, 1, 1);
+		GameTooltip:AddLine(self.description, nil, nil, nil, true);
+	end
+
 	GameTooltip:Show();
+
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnEnter()
+	self:SetTooltip();
 end
 
 function ExpansionLandingPageMinimapButtonMixin:OnLeave()

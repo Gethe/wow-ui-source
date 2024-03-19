@@ -13,13 +13,17 @@ local function Register()
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[INTERFACE_LABEL]);
 
 	-- Names
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMES_LABEL));
+	if not Settings.IsPlunderstorm() then
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMES_LABEL));
+	end
 
 	-- My name
-	Settings.SetupCVarCheckBox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
+	if not Settings.IsPlunderstorm() then
+		Settings.SetupCVarCheckBox(category, "UnitNameOwn", UNIT_NAME_OWN, OPTION_TOOLTIP_UNIT_NAME_OWN);
+	end
 
 	-- NPC Names
-	do
+	if not Settings.IsPlunderstorm() then
 		local function GetValue()
 			if GetCVarBool("UnitNameNPC") then
 				return 4;
@@ -90,10 +94,12 @@ local function Register()
 	end
 
 	-- Critters and Companions
-	Settings.SetupCVarCheckBox(category, "UnitNameNonCombatCreatureName", UNIT_NAME_NONCOMBAT_CREATURE, OPTION_TOOLTIP_UNIT_NAME_NONCOMBAT_CREATURE);
+	if not Settings.IsPlunderstorm() then
+		Settings.SetupCVarCheckBox(category, "UnitNameNonCombatCreatureName", UNIT_NAME_NONCOMBAT_CREATURE, OPTION_TOOLTIP_UNIT_NAME_NONCOMBAT_CREATURE);
+	end
 
 	-- Friendly Players
-	do
+	if not Settings.IsPlunderstorm() then
 		local friendlyPlayerNameSetting, friendlyPlayerNameInitializer = Settings.SetupCVarCheckBox(category, "UnitNameFriendlyPlayerName", UNIT_NAME_FRIENDLY, OPTION_TOOLTIP_UNIT_NAME_FRIENDLY);
 
 		-- Minions
@@ -103,7 +109,7 @@ local function Register()
 	end
 	
 	-- Enemy Players
-	do
+	if not Settings.IsPlunderstorm() then
 		local enemyPlayerNameSetting, enemyPlayerNameInitializer = Settings.SetupCVarCheckBox(category, "UnitNameEnemyPlayerName", UNIT_NAME_ENEMY, OPTION_TOOLTIP_UNIT_NAME_ENEMY);
 
 		-- Minions
@@ -116,7 +122,7 @@ local function Register()
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
 
 	-- Always Show Nameplates
-	do
+	if not Settings.IsPlunderstorm() then
 		Settings.SetupCVarCheckBox(category, "nameplateShowAll", UNIT_NAMEPLATES_AUTOMODE, OPTION_TOOLTIP_UNIT_NAMEPLATES_AUTOMODE);
 	end
 
@@ -126,7 +132,7 @@ local function Register()
 	end
 
 	-- Enemy Units
-	do
+	if not Settings.IsPlunderstorm() then
 		local enemyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMIES, "NAMEPLATES");
 		local enemyUnitSetting, enemyUnitInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowEnemies", UNIT_NAMEPLATES_SHOW_ENEMIES, enemyTooltip);
 
@@ -146,7 +152,7 @@ local function Register()
 	end
 
 	-- Friendly nameplates
-	do
+	if not Settings.IsPlunderstorm() then
 		local friendlyTooltip = Settings.WrapTooltipWithBinding(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDS, "FRIENDNAMEPLATES");
 		local friendUnitSetting, friendUnitInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriends", UNIT_NAMEPLATES_SHOW_FRIENDS, friendlyTooltip);
 
@@ -181,19 +187,20 @@ local function Register()
 	----Display
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
 
-	if C_CVar.GetCVar("ShowNamePlateLoseAggroFlash") then
-		-- Hide Adventure Guide Alerts
-		Settings.SetupCVarCheckBox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
-	end
+	-- Plunderstorm doesn't have adventure guide, IGN, or tutorials.
+	if not Settings.IsPlunderstorm() then
+		if C_CVar.GetCVar("hideAdventureJournalAlerts") then
+			-- Hide Adventure Guide Alerts
+			Settings.SetupCVarCheckBox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
+		end
 
-	if C_CVar.GetCVar("showInGameNavigation") then
-		-- In Game Navigation
-		Settings.SetupCVarCheckBox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
-	end
+		if C_CVar.GetCVar("showInGameNavigation") then
+			-- In Game Navigation
+			Settings.SetupCVarCheckBox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+		end
 
-	-- Tutorials
-	-- FIXME DISABLE BUTTON BEHAVIOR
-	do
+		-- Tutorials
+		-- FIXME DISABLE BUTTON BEHAVIOR
 		local setting = Settings.RegisterCVarSetting(category, "showTutorials", Settings.VarType.Boolean, SHOW_TUTORIALS);
 		local function OnButtonClick(button, buttonName, down)
 			InterfaceOverrides.ShowTutorialsOnButtonClick();
@@ -314,29 +321,35 @@ local function Register()
 		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
 	end
 
-	-- ReplaceOtherPlayerPortraits
-	if C_CVar.GetCVar("ReplaceOtherPlayerPortraits") then
-		Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
-	end
+	-- Plunderstorm doesn't have class icons to replace portraits with.
+	if not Settings.IsPlunderstorm() then
+		-- ReplaceOtherPlayerPortraits
+		if C_CVar.GetCVar("ReplaceOtherPlayerPortraits") then
+			Settings.SetupCVarCheckBox(category, "ReplaceOtherPlayerPortraits", REPLACE_OTHER_PLAYER_PORTRAITS, OPTION_TOOLTIP_REPLACE_OTHER_PLAYER_PORTRAITS);
+		end
 
-	-- ReplaceMyPlayerPortrait
-	if C_CVar.GetCVar("ReplaceMyPlayerPortrait") then
-		Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+		-- ReplaceMyPlayerPortrait
+		if C_CVar.GetCVar("ReplaceMyPlayerPortrait") then
+			Settings.SetupCVarCheckBox(category, "ReplaceMyPlayerPortrait", REPLACE_MY_PLAYER_PORTRAIT, OPTION_TOOLTIP_REPLACE_MY_PLAYER_PORTRAIT);
+		end
 	end
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
+	-- Plunderstorm doesn't have raid frames or arena frames
+	if not Settings.IsPlunderstorm() then
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(RAID_FRAMES_LABEL));
 
-	-- Some 3rd party addons like to disable this addon. Don't initialize the settings for it and display a "disabled" label in its place if it is disabled.
-	if (C_AddOns.IsAddOnLoaded("Blizzard_CUFProfiles") ) then
-		InterfaceOverrides.CreateRaidFrameSettings(category, layout)
-	else
-		layout:AddInitializer(CreateSettingsAddOnDisabledLabelInitializer());
+		-- Some 3rd party addons like to disable this addon. Don't initialize the settings for it and display a "disabled" label in its place if it is disabled.
+		if (C_AddOns.IsAddOnLoaded("Blizzard_CUFProfiles") ) then
+			InterfaceOverrides.CreateRaidFrameSettings(category, layout)
+		else
+			layout:AddInitializer(CreateSettingsAddOnDisabledLabelInitializer());
+		end
+
+		InterfaceOverrides.CreatePvpFrameSettings(category, layout);
 	end
-	
-	InterfaceOverrides.CreatePvpFrameSettings(category, layout);
-	
+
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 

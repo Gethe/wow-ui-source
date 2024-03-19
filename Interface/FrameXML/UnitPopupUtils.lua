@@ -2,7 +2,7 @@ function UnitPopupSharedUtil:GetBNetIDAccount()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
 	if dropdownMenu.bnetIDAccount then
 		return dropdownMenu.bnetIDAccount;
-	elseif dropdownMenu.guid and C_AccountInfo.IsGUIDBattleNetAccountType(dropdownMenu.guid) then
+	elseif dropdownMenu.guid and C_AccountInfo and C_AccountInfo.IsGUIDBattleNetAccountType(dropdownMenu.guid) then
 		return C_AccountInfo.GetIDFromBattleNetAccountGUID(dropdownMenu.guid);
 	end
 end

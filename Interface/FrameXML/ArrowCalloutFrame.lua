@@ -34,7 +34,7 @@ local ArrowDirection = {
 	[Enum.ArrowCalloutDirection.Down] = {
 		Anchor			= "BOTTOM";
 		RelativePoint	= "BOTTOM";
-		ContentOffsetY	= -23;
+		ContentOffsetY	= -43;
 	},
 	[Enum.ArrowCalloutDirection.Left] = {
 		Anchor			= "RIGHT";
@@ -62,6 +62,11 @@ function ArrowCalloutMixin:OnLoad()
 	self:RegisterEvent("SHOW_ARROW_CALLOUT");
 	self:RegisterEvent("HIDE_ARROW_CALLOUT");
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
+	
+	if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs then
+		EventRegistry:RegisterCallback("GameTooltip.HideTooltip", function() C_ArrowCalloutManager.HideWorldLootObjectCallout() end);
+	end
+
 	self.currentCallouts = { }; 
 	self.calloutPool = CreateFramePoolCollection();
 	self.calloutPool:CreatePool("FRAME", self, "ArrowCalloutContainerTemplate");
@@ -72,15 +77,17 @@ end
 function ArrowCalloutMixin:OnEvent(event, ...)
 	if(event == "PLAYER_SOFT_INTERACT_CHANGED") then 
 		local previousTarget, currentTarget = ...;
-		if(currentTarget) then 
-			C_ArrowCalloutManager.SetWorldLootObjectCalloutFromGUID(currentTarget); 
-		else 
-			C_ArrowCalloutManager.HideWorldLootObjectCallout(); 
-		end		
+		if (previousTarget ~= currentTarget) then
+			C_ArrowCalloutManager.HideWorldLootObjectCallout();
+
+			if (currentTarget) then 
+				C_ArrowCalloutManager.SetWorldLootObjectCalloutFromGUID(currentTarget); 
+			end
+		end
 	elseif (event == "SHOW_ARROW_CALLOUT") then 
 		local calloutInfo = ...;
 		self:Setup(calloutInfo); 
-	elseif (event == "HIDE_ARROW_CALLOUT")then
+	elseif (event == "HIDE_ARROW_CALLOUT") then
 		local currentCalloutID = ...;
 		self:HideCallout(...); 
 	end

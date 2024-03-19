@@ -457,7 +457,7 @@ function BonusRollFrame_OnUpdate(self, elapsed)
 				self.RollingFrame.LootSpinnerFinalText:SetText(BONUS_ROLL_REWARD_ARTIFACT_POWER);
 			else
 				if self.isSecondaryResult and self.rewardType == "item" then
-					local itemID = GetItemInfoInstant(self.rewardLink);
+					local itemID = C_Item.GetItemInfoInstant(self.rewardLink);
 					if itemID == QUARTERMASTER_COIN_ID then
 						rewardType = "coin";
 					end

@@ -43,15 +43,12 @@ function UIWidgetContainerMixin:OnLoad()
 	end
 end
 
-function UIWidgetContainerMixin:OnShow()
-end
-
 function UIWidgetContainerMixin:OnEvent(event, ...)
 	if event == "UPDATE_ALL_UI_WIDGETS" then
 		self:ProcessAllWidgets();
 	elseif event == "UPDATE_UI_WIDGET" then
 		local widgetInfo = ...;
-		if self:IsRegisteredForWidgetSet(widgetInfo.widgetSetID) and (not widgetInfo.unit or (widgetInfo.unit == self.attachedToUnit)) then
+		if self:IsRegisteredForWidgetSet(widgetInfo.widgetSetID) and (not widgetInfo.unit or (widgetInfo.unit == self.attachedUnit)) then
 			self:ProcessWidget(widgetInfo.widgetID, widgetInfo.widgetType);
 		end
 	end
@@ -88,9 +85,12 @@ function DefaultWidgetLayout(widgetContainerFrame, sortedWidgets, skipContainerL
 		widgetFrame:ClearAllPoints();
 
 		local widgetSetUsesVertical = widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Vertical;
-		local widgetUsesVertical = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical;
+		local widgetSetUsesOverlapLayout = widgetContainerFrame.widgetSetLayoutDirection == Enum.UIWidgetSetLayoutDirection.Overlap;
 
-		local useOverlapLayout = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap;
+		local widgetUsesVertical = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Vertical;
+		local widgetUsesOverlapLayout = widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Overlap;
+
+		local useOverlapLayout = widgetUsesOverlapLayout or (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default and widgetSetUsesOverlapLayout);
 		local useVerticalLayout = widgetUsesVertical or (widgetFrame.layoutDirection == Enum.UIWidgetLayoutDirection.Default and widgetSetUsesVertical);
 
 		if useOverlapLayout then
@@ -235,7 +235,7 @@ function UIWidgetContainerMixin:RegisterForWidgetSet(widgetSetID, widgetLayoutFu
 	self.numWidgetsShowing = 0;
 	self:SetAttachedUnitAndType(attachedUnitInfo)
 
-	self.widgetSetLayoutDirection = widgetSetInfo.layoutDirection;
+	self.widgetSetLayoutDirection = self.forceWidgetSetLayoutDirection or widgetSetInfo.layoutDirection;
 	self.verticalAnchorYOffset = -widgetSetInfo.verticalPadding;
 
 	if self.attachedUnit then

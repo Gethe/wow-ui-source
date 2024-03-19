@@ -208,7 +208,8 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
 	self.hasTooltip = vignetteInfo.hasTooltip or vignetteInfo.type == Enum.VignetteType.PvPBounty;
 	self.isUnique = vignetteInfo.isUnique;
 	self.vignetteID = vignetteInfo.vignetteID;
-	self.widgetSetID = vignetteInfo.widgetSetID;
+	self.tooltipWidgetSet = vignetteInfo.tooltipWidgetSet;
+	self.iconWidgetSet = vignetteInfo.iconWidgetSet;
 	self.vignetteInfo = vignetteInfo;
 	
 	self:EnableMouseMotion(self.hasTooltip);
@@ -221,6 +222,7 @@ function VignettePinMixin:OnAcquired(vignetteGUID, vignetteInfo, frameIndex)
 
 	self:UpdatePosition();
 	self:UpdateSupertrackedHighlight();
+	self:AddIconWidgets();
 
 	self:SetFrameLevelType(frameIndex);
 end
@@ -363,8 +365,8 @@ function VignettePinMixin:OnMouseEnter()
 			titleAdded = self:DisplayTorghastTooltip();
 		end
 
-		if not waitingForData and self.widgetSetID then
-			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, titleAdded and self.vignetteInfo.addPaddingAboveWidgets and 10);
+		if not waitingForData and self.tooltipWidgetSet then
+			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.tooltipWidgetSet, titleAdded and self.vignetteInfo.addPaddingAboveTooltipWidgets and 10);
 			if overflow then
 				verticalPadding = -overflow;
 			end

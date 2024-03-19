@@ -1,0 +1,77 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="PlunderstormCircleDataProvider.lua"/>
+
+	<Frame name="PlunderstormCircleBasePinTemplate" mixin="PlunderstormCircleBasePinMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" atlas="wowlabs_minimapvoid-ring-single" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PlunderstormInnerCirclePinTemplate" inherits="PlunderstormCircleBasePinTemplate" mixin="PlunderstormInnerCirclePinMixin" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="AntsRotate" looping="REPEAT">
+				<Rotation childKey="Icon" duration="360" degrees="360"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Texture name="PlunderstormBoundsStripTemplate" parentArray="Bounds" virtual="true">
+		<Color r="1" g="1" b="1" a="1"/>
+	</Texture>
+
+	<Texture name="PlunderstormOuterCircleLightningTemplate" useAtlasSize="false" alpha="0" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+	</Texture>
+
+	<Frame name="PlunderstormOuterCirclePinTemplate" inherits="PlunderstormCircleBasePinTemplate" mixin="PlunderstormOuterCirclePinMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Lightning1" atlas="wowlabs_minimapvoid-ring-single_lighting_1" inherits="PlunderstormOuterCircleLightningTemplate"/>
+				<Texture parentKey="Lightning2" atlas="wowlabs_minimapvoid-ring-single_lighting_2" inherits="PlunderstormOuterCircleLightningTemplate"/>
+				<Texture parentKey="Lightning3" atlas="wowlabs_minimapvoid-ring-single_lighting_3" inherits="PlunderstormOuterCircleLightningTemplate"/>
+				<Texture parentKey="Lightning4" atlas="wowlabs_minimapvoid-ring-single_lighting_4" inherits="PlunderstormOuterCircleLightningTemplate"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Corners" atlas="wowlabs_minimapvoid-circle_corners" useAtlasSize="false" setAllPoints="true"/>
+				<Texture parentKey="BoundsTL" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsT" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsTR" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsR" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsBR" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsB" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsBL" inherits="PlunderstormBoundsStripTemplate"/>
+				<Texture parentKey="BoundsL" inherits="PlunderstormBoundsStripTemplate"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="LightningPulse" looping="REPEAT">
+				<Alpha childKey="Lightning1" duration="0.4" order="1" startDelay="0.5" fromAlpha="0" toAlpha="0.8"/>
+				<Alpha childKey="Lightning1" duration="1" order="2" startDelay="0.5" fromAlpha="0.8" toAlpha="0"/>
+				<Alpha childKey="Lightning2" duration="0.4" order="3" startDelay="0.5" fromAlpha="0" toAlpha="0.8"/>
+				<Alpha childKey="Lightning2" duration="1" order="4" startDelay="0.5" fromAlpha="0.8" toAlpha="0"/>
+				<Alpha childKey="Lightning3" duration="0.4" order="5" startDelay="0.5" fromAlpha="0" toAlpha="0.8"/>
+				<Alpha childKey="Lightning3" duration="1" order="6" startDelay="0.5" fromAlpha="0.8" toAlpha="0"/>
+				<Alpha childKey="Lightning4" duration="0.4" order="7" startDelay="0.5" fromAlpha="0" toAlpha="0.8"/>
+				<Alpha childKey="Lightning4" duration="1" order="8" startDelay="0.5" fromAlpha="0.8" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

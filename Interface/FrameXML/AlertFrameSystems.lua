@@ -384,6 +384,10 @@ function AchievementAlertFrame_OnClick (self, button, down)
 		return;
 	end
 
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AchievementsPanel) then
+		return;
+	end
+
 	local id = self.id;
 	if ( not id ) then
 		return;
@@ -421,9 +425,20 @@ CriteriaAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CriteriaAlertFram
 
 -- [[ LootAlertFrame shared ]] --
 function LootAlertFrame_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetHyperlink(self.hyperlink);
-	GameTooltip:Show();
+	local itemQuality, _, _, _, _, _, itemEquipLoc = select(3, C_Item.GetItemInfo(self.hyperlink));
+	if (itemEquipLoc == "INDEX_EQUIPABLESPELL_OFFENSIVE_TYPE") or (itemEquipLoc == "INDEX_EQUIPABLESPELL_UTILITY_TYPE") then
+		local itemID = C_Item.GetItemInfoInstant(self.hyperlink);
+		local equipableSpellID = C_Item.GetFirstTriggeredSpellForItem(itemID, itemQuality);
+		if equipableSpellID then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetSpellByID(equipableSpellID, false, true);
+			GameTooltip:Show();
+		end
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetHyperlink(self.hyperlink);
+		GameTooltip:Show();
+	end
 end
 
 -- [[ LootUpgradeFrameTemplate ]] --
@@ -562,7 +577,7 @@ LootAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("LootWonAlertFrameTemp
 
 -- [[ LootUpgradeFrame ]] --
 function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
-	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	local baseQualityColor = ITEM_QUALITY_COLORS[baseQuality];
 	local upgradeQualityColor = ITEM_QUALITY_COLORS[itemRarity];
 
@@ -1099,7 +1114,7 @@ end
 
 -- [[LegendaryItemAlertFrame ]] --
 function LegendaryItemAlertFrame_SetUp(frame, itemLink)
-	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	frame.Icon:SetTexture(itemTexture);
 	frame.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
@@ -1175,6 +1190,10 @@ function NewPetAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CollectionsPanel) then
+		return;
+	end
+
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	PetJournal_SelectPet(PetJournal, self.petID);
 end
@@ -1197,6 +1216,10 @@ end
 
 function NewMountAlertFrameMixin:OnClick(button, down)
 	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CollectionsPanel) then
 		return;
 	end
 

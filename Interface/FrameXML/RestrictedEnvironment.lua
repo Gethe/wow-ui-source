@@ -93,7 +93,7 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
 
 local OTHER_SAFE_FUNCTION_NAMES = {
     "GetBindingKey", "HasAction",
-    "IsHarmfulSpell", "IsHarmfulItem", "IsHelpfulSpell", "IsHelpfulItem", "IsPressHoldReleaseSpell",
+    "IsHarmfulSpell", "IsHelpfulSpell", "IsPressHoldReleaseSpell",
     "GetMultiCastTotemSpells", "FindSpellBookSlotBySpellID", "UnitTargetsVehicleInRaidUI"
 };
 
@@ -109,6 +109,9 @@ end
 
 -- Now create the remainder (ENV is just an alias for brevity)
 local ENV = RESTRICTED_FUNCTIONS_SCOPE;
+
+ENV.IsHarmfulItem = C_Item.IsHarmfulItem;
+ENV.IsHelpfulItem = C_Item.IsHelpfulItem;
 
 function ENV.PlayerCanAttack( unit )
     return UnitCanAttack( "player", unit )

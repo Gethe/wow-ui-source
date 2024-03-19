@@ -566,6 +566,8 @@ function GameTooltip_OnHide(self)
 	if self.StatusBar then
 		self.StatusBar:ClearWatch();
 	end
+
+	EventRegistry:TriggerEvent("GameTooltip.HideTooltip", self);
 end
 
 function GameTooltip_CycleSecondaryComparedItem(self)
@@ -764,7 +766,7 @@ function GameTooltip_AddQuest(self, questID)
 	end
 
 	local widgetSetAdded = false;
-	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(questID);
+	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
 	if ( self.worldQuest or C_QuestLog.IsWorldQuest(questID)) then
@@ -906,7 +908,7 @@ end
 function EmbeddedItemTooltip_SetItemByID(self, id, count)
 	self.itemID = id;
 	self.spellID = nil;
-	local itemName, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(id);
+	local itemName, _, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(id);
 	self:Show();
 	EmbeddedItemTooltip_PrepareForItem(self);
 	self.Tooltip:SetOwner(self, "ANCHOR_NONE");

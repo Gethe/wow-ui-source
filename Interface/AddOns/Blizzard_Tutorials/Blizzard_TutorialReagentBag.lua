@@ -169,7 +169,7 @@ function ReagentBagTutorialMixin:HasReagentBagInInventory()
 		if bag and slot then
 			local info = C_Container.GetContainerItemInfo(bag, slot);
 			if info then
-				local name, enchantLink, displayQuality, itemLevel, requiredLevel, className, subclassName, isStackable, inventoryType, iconFile, sellPrice, itemClassID, itemSubclassID, boundState, expansionID, itemSetID, isTradeskill = GetItemInfo(info.hyperlink);
+				local name, enchantLink, displayQuality, itemLevel, requiredLevel, className, subclassName, isStackable, inventoryType, iconFile, sellPrice, itemClassID, itemSubclassID, boundState, expansionID, itemSetID, isTradeskill = C_Item.GetItemInfo(info.hyperlink);
 
 				if itemClassID == 1 and itemSubclassID == 11 then
 					self.pointAtBagData = { bagID = bag, slotID = slot };

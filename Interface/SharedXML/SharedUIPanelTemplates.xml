@@ -3236,4 +3236,50 @@
 			</AnimationGroup>
 		</Animations>
 	</Button>
+	
+	<Button name="UIPanelInfoButton" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon" parentKey="texture">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.texture:SetPoint("TOPLEFT", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.texture:SetPoint("TOPLEFT", 0, 0);
+			</OnMouseUp>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
+			</Anchors>
+			<Color r="1" g="1" b="1" a="0.4"/>
+		</HighlightTexture>
+	</Button>
+
+	<Frame name="KeyBindingTemplate" virtual="true">
+		<Size x="40" y="35" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="KeyIcon" atlas="newplayertutorial-icon-key" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="KeyBind" inherits="Number16Font">
+					<Color color="BLACK_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.KeyIcon" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

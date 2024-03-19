@@ -1107,7 +1107,7 @@ function Class_EquipFirstItemWatcher:GetBestItemUpgrades()
 		local highestIlvl = 0;
 
 		for i = 1, #items do
-			local ilvl = select(4, GetItemInfo(items[i].ItemID));
+			local ilvl = select(4, C_Item.GetItemInfo(items[i].ItemID));
 			if (ilvl > highestIlvl) then
 				highest = items[i];
 				highestIlvl = ilvl;
@@ -1123,7 +1123,7 @@ function Class_EquipFirstItemWatcher:GetBestItemUpgrades()
 end
 
 function Class_EquipFirstItemWatcher:GetWeaponType(itemID)
-	local loc = select(9, GetItemInfo(itemID));
+	local loc = select(9, C_Item.GetItemInfo(itemID));
 
 	if ((loc == "INVTYPE_RANGED") or (loc == "INVTYPE_RANGEDRIGHT")) then
 		return self.WeaponType.Ranged;
@@ -1148,7 +1148,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 
 		local existingItemID = GetInventoryItemID("player", i);
 		if (existingItemID ~= nil) then
-			existingItemIlvl = select(4, GetItemInfo(existingItemID)) or 0;
+			existingItemIlvl = select(4, C_Item.GetItemInfo(existingItemID)) or 0;
 
 			if (i == INVSLOT_MAINHAND) then
 				existingItemWeaponType = self:GetWeaponType(existingItemID);

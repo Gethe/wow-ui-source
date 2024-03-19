@@ -20,6 +20,7 @@ VehicleDataProvider.xml
 StorylineQuestDataProvider.xml
 EncounterJournalDataProvider.xml
 FogOfWarDataProvider.xml
+PlunderstormCircleDataProvider.xml
 DeathMapDataProvider.xml
 QuestBlobDataProvider.xml
 ScenarioDataProvider.xml

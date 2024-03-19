@@ -62,6 +62,8 @@ Blizzard_UIWidgetTemplateItemDisplay.lua
 Blizzard_UIWidgetTemplateItemDisplay.xml
 Blizzard_UIWidgetTemplateTugOfWar.lua
 Blizzard_UIWidgetTemplateTugOfWar.xml
+Blizzard_UIWidgetTemplateMapPinAnimation.lua
+Blizzard_UIWidgetTemplateMapPinAnimation.xml
 
 Blizzard_UIWidgetTopCenterFrame.lua
 Blizzard_UIWidgetTopCenterFrame.xml
@@ -71,3 +73,5 @@ Blizzard_UIWidgetPowerBarFrame.lua
 Blizzard_UIWidgetPowerBarFrame.xml
 Blizzard_UIWidgetCenterScreenFrame.lua
 Blizzard_UIWidgetCenterScreenFrame.xml
+Blizzard_UIWidgetSubZoneTextFrame.lua
+Blizzard_UIWidgetSubZoneTextFrame.xml

@@ -22,6 +22,10 @@ end
 
 function MajorFactionsRenownToastMixin:AddSwirlEffects(textureKit) -- override
 	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit);
+	if not swirlEffects then
+		return;
+	end
+
 	for i, effect in ipairs(swirlEffects) do
 		local effectDescription = { effectID = effect, soundEnabled = false, };
 		self.IconSwirlModelScene:AddDynamicEffect(effectDescription, self);

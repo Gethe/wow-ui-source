@@ -171,19 +171,29 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		return;
 	end
 
-	-- For a modifying-required reagent slot, if the current allocation is the currently installed modification
-	-- we want to avoid displaying x/y quantity and instead display only the name of the current modification. This
-	-- will be done in ApplySlotInfo(), so we return early here.
-	local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
-	if isModifyingRequiredSlot and self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
-		return;
-	end
-	
-	-- First try only allocations
-	local foundMultiple, foundIndex = self:GetAllocationDetails();
-	if isModifyingRequiredSlot and not foundIndex then
-		-- Only allocations are allowed to be considered when displaying the text for a modifying-required reagent slot.
-		return;
+	-- The allocation text will not be applied to this slot if it is a modifying-required reagent meeting certain conditions. See ApplySlotInfo() for the
+	-- fallback text behavior.
+	local foundMultiple, foundIndex = false, nil;
+	if ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+		if self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
+			-- The current allocation is the currently installed modification, the currently allocated reagent name will be displayed.
+			return;
+		end
+
+		for allocationIndex, allocation in self:GetTransaction():EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+			-- Only one allocation is expected, and is an error otherwise
+			assert(foundIndex == nil, "Cannot have multiple allocations within a modifying-required slot.");
+			foundIndex = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
+				return Professions.CraftingReagentMatches(reagent, allocation.reagent);
+			end);
+		end
+		
+		if foundIndex == nil then
+			-- There is no allocation, the slot name will be displayed.
+			return;
+		end
+	else
+		foundMultiple, foundIndex = self:GetAllocationDetails();
 	end
 
 	-- Then include inventory if necessary

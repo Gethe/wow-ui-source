@@ -46,7 +46,7 @@ UI.xsd">
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="Tracking">
+			<Frame parentKey="TrackingFrame" hidden="true">
 				<Size x="17" y="17"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.BorderTop" relativePoint="LEFT" x="-2" y="0"/>
@@ -86,7 +86,7 @@ UI.xsd">
 					<KeyValue key="fixedHeight" value="15" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Tracking" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TrackingFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="MailFrame" mixin="MiniMapMailFrameMixin" enableMouse="true" hidden="true">

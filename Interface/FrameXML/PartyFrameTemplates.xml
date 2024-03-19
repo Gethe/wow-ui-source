@@ -5,6 +5,8 @@ UI_shared.xsd">
 			<KeyValue key="fillAtlas" value="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Status" type="string"/>
 		</KeyValues>
 	</Frame>
+
+	<!-- Prefer to use PartyAuraFrameTemplate. These are kept for Classic and legacy AddOn usage. -->
 	<Frame name="PartyBuffFrameTemplate" mixin="PartyBuffFrameMixin" virtual="true" enableMouse="true" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
@@ -58,6 +60,46 @@ UI_shared.xsd">
 	<Frame name="PartyPetDebuffFrameTemplate" inherits="PartyDebuffFrameTemplate" virtual="true" hidden="true">
 		<Size x="5" y="5"/>
 	</Frame>
+
+	<!-- Supports buffs and debuffs both -->
+	<Frame name="PartyAuraFrameTemplate" mixin="PartyAuraFrameMixin" virtual="true" enableMouse="true" hidden="true">
+		<Size x="15" y="15"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-1"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="PartyMemberPetFrameTemplate" mixin="PartyMemberPetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
 		<Size x="64" y="23"/>
 		<Anchors>
@@ -112,7 +154,7 @@ UI_shared.xsd">
 				</Scripts>
 				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-health"/>
 			</StatusBar>
-			<Frame parentKey="DebuffFrameContainer" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="AuraFrameContainer" inherits="HorizontalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="2" type="number"/>
 				</KeyValues>
@@ -174,6 +216,11 @@ UI_shared.xsd">
 					<Size x="57" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="46" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ResurrectableIndicator" inherits="ResurrectableIndicatorTemplate" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="44" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -399,7 +446,7 @@ UI_shared.xsd">
 				</Scripts>
 			</Frame>
 			<Button parentKey="PetFrame" inherits="PartyMemberPetFrameTemplate"/>
-			<Frame parentKey="DebuffFrameContainer" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="AuraFrameContainer" inherits="HorizontalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="2" type="number"/>
 				</KeyValues>
@@ -412,4 +459,11 @@ UI_shared.xsd">
 			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Button>
+
+	<FontString name="ResurrectableIndicatorTemplate" mixin="ResurrectableIndicatorMixin" inherits="GameFontGreen" text="WOW_LABS_PARTY_RESURRECTABLE_INDICATOR" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</FontString>
 </Ui>

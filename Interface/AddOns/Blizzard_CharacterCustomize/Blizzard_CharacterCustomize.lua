@@ -1528,7 +1528,9 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 		end
 	end
 
-	self:UpdateAlteredFormButtons();
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.RaceAlteredFormsEnabled) then
+		self:UpdateAlteredFormButtons();
+	end
 
 	if self.numSubcategories > 1 then
 		self.Categories:Show();

@@ -168,7 +168,7 @@ UI_shared.xsd">
 				</Scripts>
 				<BarTexture atlas="UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana"/>
 			</StatusBar>
-			<Frame parentKey="DebuffFrameContainer" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="AuraFrameContainer" inherits="HorizontalLayoutFrame">
 				<KeyValues>
 					<KeyValue key="spacing" value="2" type="number"/>
 				</KeyValues>

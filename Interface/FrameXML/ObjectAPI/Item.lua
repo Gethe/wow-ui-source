@@ -156,7 +156,7 @@ end
 function ItemMixin:GetItemID()
 	local backingItem = self:GetStaticBackingItem();
 	if backingItem then
-		return GetItemInfoInstant(backingItem) or C_Item.GetItemIDForItemInfo(backingItem);
+		return C_Item.GetItemInfoInstant(backingItem) or C_Item.GetItemIDForItemInfo(backingItem);
 	end
 
 	if not self:IsItemEmpty() then
@@ -209,7 +209,7 @@ function ItemMixin:GetItemLink() -- requires item data to be loaded
 	end
 
 	if self.itemID then
-		return (select(2, GetItemInfo(self.itemID)));
+		return (select(2, C_Item.GetItemInfo(self.itemID)));
 	end
 
 	if not self:IsItemEmpty() then
@@ -238,7 +238,7 @@ end
 
 function ItemMixin:GetCurrentItemLevel() -- requires item data to be loaded
 	if self:GetStaticBackingItem() then
-		return (GetDetailedItemLevelInfo(self:GetStaticBackingItem()));
+		return (C_Item.GetDetailedItemLevelInfo(self:GetStaticBackingItem()));
 	end
 
 	if not self:IsItemEmpty() then
@@ -286,7 +286,7 @@ end
 
 function ItemMixin:GetInventoryTypeName()
 	if not self:IsItemEmpty() then
-		return select(4, GetItemInfoInstant(self:GetItemID()));
+		return select(4, C_Item.GetItemInfoInstant(self:GetItemID()));
 	end
 end
 

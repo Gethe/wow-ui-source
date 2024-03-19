@@ -624,6 +624,10 @@ function PerksProgramCurrencyFrameMixin:UpdateCurrencyIcon(hasPendingRewards)
 end
 
 local function HasTenderToRetrieve(pendingRewards)
+	if not pendingRewards then
+		return false;
+	end
+
 	for i, pendingReward in ipairs(pendingRewards) do
 		local hasTender = pendingReward.rewardAmount and pendingReward.rewardAmount > 0;
 		if hasTender then		

@@ -102,9 +102,10 @@ function ResetMicroMenuPosition()
 end
 
 function OverrideMicroMenuPosition(parent, anchor, anchorTo, relAnchor, x, y, isStacked)
-	MicroMenu:SetScale(0.85);
+	MicroMenu:SetScaleAdjustment(0.85);
 	MicroMenu:SetParent(parent);
 
+	MicroMenu.isStacked = isStacked;
 	MicroMenu.stride = (isStacked and MicroMenu.numButtons / 2 or MicroMenu.numButtons);
 	MicroMenu.isHorizontal = true;
 	MicroMenu.layoutFramesGoingRight = true;
@@ -1556,22 +1557,76 @@ end
 
 MicroMenuMixin = {};
 
+function MicroMenuMixin:OnLoad()
+	self:InitializeButtons();
+	self:SetScaleAdjustment(1);
+end
+
+function MicroMenuMixin:InitializeButtons()
+	-- Button, plus GameModeFeatureSetting that controls whether it is shown.
+	local buttonInfos = {
+		{ CharacterMicroButton, Enum.GameModeFeatureSetting.CharacterPanel, },
+		{ SpellbookMicroButton, Enum.GameModeFeatureSetting.SpellbookPanel, },
+		{ TalentMicroButton, Enum.GameModeFeatureSetting.TalentsPanel, },
+		{ AchievementMicroButton, Enum.GameModeFeatureSetting.AchievementsPanel, },
+		{ QuestLogMicroButton, Enum.GameModeFeatureSetting.QuestLogMicroButton, },
+		{ GuildMicroButton, Enum.GameModeFeatureSetting.CommunitiesPanel, },
+		{ LFDMicroButton, Enum.GameModeFeatureSetting.FinderPanel, },
+		{ CollectionsMicroButton, Enum.GameModeFeatureSetting.CollectionsPanel, },
+		{ EJMicroButton, Enum.GameModeFeatureSetting.EncounterJournal, },
+		{ HelpMicroButton, Enum.GameModeFeatureSetting.HelpPanel, },
+		{ StoreMicroButton, Enum.GameModeFeatureSetting.Store, },
+	};
+
+	for i, buttonInfo in ipairs(buttonInfos) do
+		local button, GameModeFeatureSetting = unpack(buttonInfo);
+		if C_GameModeManager.IsFeatureEnabled(GameModeFeatureSetting) then
+			self:AddButton(button);
+		end
+	end
+
+	self:AddButton(MainMenuMicroButton);
+end
+
+function MicroMenuMixin:AddButton(button)
+	self.numButtons = (self.numButtons or 0) + 1;
+	button.layoutIndex = self.numButtons;
+	button:SetParent(self);
+	self.stride = self.isStacked and math.floor(self.numButtons / 2) or self.numButtons;
+	self:MarkDirty();
+end
+
 -- Gets the button on the the extreme edge of the micro menu based on the inputs and the orientation of the bar
 function MicroMenuMixin:GetEdgeButton(rightMost, topMost)
-	local characterButtonX, characterButtonY = CharacterMicroButton:GetCenter();
-	local mainMenuButtonX, mainMenuButtonY = MainMenuMicroButton:GetCenter();
+	local firstButton = nil;
+	local lastButton = nil;
+	for i, child in ipairs({self:GetChildren()}) do
+		if not firstButton or (child.layoutIndex < firstButton.layoutIndex) then
+			firstButton = child;
+		end
+		if not lastButton or (child.layoutIndex > lastButton.layoutIndex) then
+			lastButton = child;
+		end
+	end
+
+	if not firstButton then
+		return nil;
+	end
+
+	local firstButtonX, firstButtonY = firstButton:GetCenter();
+	local lastButtonX, lastButtonY = lastButton:GetCenter();
 
 	if self.isHorizontal then
 		if rightMost then
-			return characterButtonX > mainMenuButtonX and CharacterMicroButton or MainMenuMicroButton;
+			return firstButtonX > lastButtonX and firstButton or lastButton;
 		else -- leftMost
-			return characterButtonX < mainMenuButtonX and CharacterMicroButton or MainMenuMicroButton;
+			return firstButtonX < lastButtonX and firstButton or lastButton;
 		end
 	else
 		if topMost then
-			return characterButtonY > mainMenuButtonY and CharacterMicroButton or MainMenuMicroButton;
+			return firstButtonY > lastButtonY and firstButton or lastButton;
 		else -- bottomMost
-			return characterButtonY < mainMenuButtonY and CharacterMicroButton or MainMenuMicroButton;
+			return firstButtonY < lastButtonY and firstButton or lastButton;
 		end
 	end
 end
@@ -1655,12 +1710,21 @@ function MicroMenuMixin:Layout()
 	self:UpdateHelpTicketButtonAnchor(position);
 end
 
+function MicroMenuMixin:SetScaleAdjustment(scale)
+	local featureScale = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.MicroBarScale);
+	if featureScale ~= 0 then
+		self:SetScale(scale * featureScale);
+	else
+		self:SetScale(scale);
+	end
+end
+
 MicroMenuContainerMixin = {};
 
 -- Manually wrote a layout method since we want to resize even around hidden frames
 -- Also some custom logic for when the micro menu isn't parented to the container
 function MicroMenuContainerMixin:Layout()
-	local isHorizontal = MicroMenu.isHorizontal;
+	local isHorizontal = not MicroMenu or MicroMenu.isHorizontal;
 
 	local width, height = 0, 0;
 	local function AddFrameSize(frame, includeOffset)

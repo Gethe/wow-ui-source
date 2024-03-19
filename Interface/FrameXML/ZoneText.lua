@@ -5,7 +5,7 @@ ZoneFadeOutDuration = 2.0;
 ZonePVPType = nil;
 
 function SetZoneText(showZone)
-	local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+	local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 	PVPArenaTextString:SetText("");
 	PVPInfoTextString:SetText("");
 	local pvpTextString = PVPInfoTextString;

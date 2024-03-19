@@ -2125,7 +2125,7 @@ function EditModeMicroMenuSystemMixin:UpdateSystemSettingOrder()
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingSize()
-	MicroMenu:SetScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
+	MicroMenu:SetScaleAdjustment(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystemSettingEyeSize()

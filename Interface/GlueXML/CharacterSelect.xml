@@ -580,7 +580,7 @@
 		</HighlightTexture>
 	</Button>
 
-	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LeftBlackBar">
@@ -598,7 +598,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="CharacterSelectUI" setAllPoints="true" enableMouse="true">
+			<Frame parentKey="CharacterSelectUI" name="CharacterSelectUI" setAllPoints="true" enableMouse="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharSelectCharacterName" inherits="GlueFontNormalHuge">
@@ -622,22 +622,58 @@
 							<OnUpdate function="CharacterSelect_UpdateModel" />
 						</Scripts>
 					</ModelFFX>
-					<Frame name="LogoHoist" frameStrata="HIGH">
+										
+					<Frame parentKey="LogoHoist" name="LogoHoist" frameStrata="HIGH" >
 						<Size x="1" y="1"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" x="3" y="-17"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="CharacterSelectLogo">
-									<Size x="256" y="128"/>
+									<Size x="244" y="122"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="3" y="-7"/>
+										<Anchor point="TOPLEFT" x="36" y="-23"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
+
+					<Frame parentKey="GameEnvironmentToggleFrame" inherits="GameEnvironmentFrameTemplate, DefaultScaleFrame"/>
+					<Frame parentKey="LimitedTimeEventFrame" mixin="LimitedTimeEventFrameMixin">
+						<Size x="128" y="128"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-5" y="-3" relativePoint="TOPRIGHT" relativeKey="$parent.GameEnvironmentToggleFrame.SelectWoWLabsToggle"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="GlowPulse" atlas="plunderstorm-logo-limitedtimeevent-glow-background" setAllPoints="true" alphaMode="ADD"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="GlowTexture" atlas="plunderstorm-logo-limitedtimeevent-glow">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Text" inherits="NewFeatureLabelNoAnimateTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="label" value="LIMITED_TIME_EVENT" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</Frame>
+						
 					<Button name="CharSelectAccountUpgradeButton" inherits="GlueButtonTemplate" text="UPGRADE">
 						<Size x="215" y="50"/>
 						<Anchors>
@@ -645,14 +681,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentChains1" file="Interface\Glues\AccountUpgrade\golden-main">
+								<Texture name="$parentChains1" parentKey="TopChain1" file="Interface\Glues\AccountUpgrade\golden-main">
 									<Size x="20" y="62"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="38" y="-15"/>
 									</Anchors>
 									<TexCoords left="0.148" right="0.227" top="0.508" bottom="0.777"/>
 								</Texture>
-								<Texture name="$parentChains2" file="Interface\Glues\AccountUpgrade\golden-main">
+								<Texture name="$parentChains2" parentKey="TopChain2" file="Interface\Glues\AccountUpgrade\golden-main">
 									<Size x="20" y="62"/>
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-38" y="-15"/>
@@ -1587,6 +1623,7 @@
 						<Scripts>
 							<OnFinished>
 								CharacterServicesMaster_UpdateServiceButton();
+								CharacterSelectUI_ResetEnvironmentButton();
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -1625,18 +1662,15 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="CharacterSelect_OnLoad"/>
-			<OnShow function="CharacterSelect_OnShow"/>
-			<OnHide function="CharacterSelect_OnHide"/>
-			<OnUpdate function="CharacterSelect_OnUpdate"/>
-			<OnKeyDown>
-				CharacterSelect_OnKeyDown(self,key);
-			</OnKeyDown>
-			<OnEvent>
-				CharacterSelect_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnUpdate method="OnUpdate" />
+			<OnKeyDown method="OnKeyDown" />
+			<OnEvent method="OnEvent" />
 		</Scripts>
 	</Frame>
+	
 	<Frame name="CharacterDeleteDialog" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Frames>
 			<Frame name="CharacterDeleteBackground">

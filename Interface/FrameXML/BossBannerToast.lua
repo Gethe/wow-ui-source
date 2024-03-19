@@ -71,7 +71,7 @@ function BossBanner_AnimLootInsert(self, entry)
 end
 
 function BossBanner_ConfigureLootFrame(lootFrame, data)
-	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture, _, _, _, _, _, setID = GetItemInfo(data.itemLink);
+	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture, _, _, _, _, _, setID = C_Item.GetItemInfo(data.itemLink);
 	lootFrame.ItemName:SetText(itemName);
 	local rarityColor = ITEM_QUALITY_COLORS[itemRarity];
 	lootFrame.ItemName:SetTextColor(rarityColor.r, rarityColor.g, rarityColor.b);
@@ -88,7 +88,7 @@ function BossBanner_ConfigureLootFrame(lootFrame, data)
 	end
 
 	if (setID) then
-		local setName = GetItemSetInfo(setID);
+		local setName = C_Item.GetItemSetInfo(setID);
 		lootFrame.ItemName:ClearAllPoints();
 		lootFrame.ItemName:SetPoint("TOPLEFT", 56, -2);
 		lootFrame.SetName:SetText(BOSS_BANNER_LOOT_SET:format(setName));

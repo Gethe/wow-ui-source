@@ -67,7 +67,7 @@ PVPHonorRewardItemMixin = Mixin({}, PVPHonorRewardInfoMixin);
 function PVPHonorRewardItemMixin:Set(...)
 	local id = ...;
 	self.id = id;
-	self.icon = select(10, GetItemInfo(id));
+	self.icon = select(10, C_Item.GetItemInfo(id));
 	self.waitingOnItem = not self.icon;	
 end
 

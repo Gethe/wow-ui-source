@@ -2,61 +2,6 @@
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_MajorFactionRenown.lua"/>
 
-	<Frame name="MajorFactionRenownRewardTemplate" mixin="MajorFactionRenownRewardMixin" frameLevel="10" virtual="true">
-		<Size x="454" y="120"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Toast" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="70" y="70"/>
-					<Anchors>
-						<Anchor point="LEFT" x="32" y="4"/>
-					</Anchors>
-				</Texture>
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
-					</MaskedTextures>
-				</MaskTexture>
-				<FontString parentKey="Name" inherits="GameFontHighlightHuge" justifyH="LEFT" wordwrap="true">
-					<Size x="310" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" x="122" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="IconBorder" scale="0.85">
-					<Anchors>
-						<Anchor point="LEFT" x="15" y="3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark-Large" useAtlasSize="true">
-					<Size x="315" y="136"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="-13" y="25"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="MajorFactionRenownFrame" mixin="MajorFactionRenownMixin" parent="UIParent" hidden="true" toplevel="true" enableMouse="true">
 		<Size x="820" y="578"/>
 		<Layers>
@@ -89,7 +34,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" setAllPoints="true">
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" frameLevel="600" setAllPoints="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-8" y="8"/>
 					<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
@@ -108,17 +53,17 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="TopLeftBorderDecoration">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.TopLeftBorder" relativePoint="CENTER" x="-40" y="8"/>
+								<Anchor point="LEFT" relativeKey="$parent.TopLeftBorder" relativePoint="CENTER"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="TopRightBorderDecoration">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.TopRightBorder" relativePoint="CENTER" x="40" y="8"/>
+								<Anchor point="RIGHT" relativeKey="$parent.TopRightBorder" relativePoint="CENTER"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="BottomBorderDecoration">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="10"/>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -129,7 +74,7 @@
 					<Anchor point="BOTTOM" x="0" y="28"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="610">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-1" y="-6"/>
 				</Anchors>

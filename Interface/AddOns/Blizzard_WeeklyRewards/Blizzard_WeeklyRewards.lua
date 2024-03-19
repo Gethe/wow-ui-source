@@ -350,7 +350,7 @@ function WeeklyRewardsMixin:FindFirstNonRaidActivityWithClassSetReward(activitie
 			for _, reward in ipairs(activity.rewards) do
 				if reward.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(reward.id) then
 					-- We are working under the assumption that a set item which is class specific is a "Class Set"
-					local setID = select(16, GetItemInfo(reward.id));
+					local setID = select(16, C_Item.GetItemInfo(reward.id));
 					if setID and C_Item.IsItemSpecificToPlayerClass(reward.id) then
 						return activity.type;
 					end
@@ -607,10 +607,10 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 	local itemLink, upgradeItemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(self.info.id);
 	local itemLevel, upgradeItemLevel;
 	if itemLink then
-		itemLevel = GetDetailedItemLevelInfo(itemLink);
+		itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink);
 	end
 	if upgradeItemLink then
-		upgradeItemLevel = GetDetailedItemLevelInfo(upgradeItemLink);
+		upgradeItemLevel = C_Item.GetDetailedItemLevelInfo(upgradeItemLink);
 	end
 	if not itemLevel then
 		GameTooltip_AddErrorLine(GameTooltip, RETRIEVING_ITEM_INFO);
@@ -839,7 +839,7 @@ function WeeklyRewardActivityItemMixin:SetDisplayedItem()
 	local bestItemLevel = 0;
 	for i, rewardInfo in ipairs(self:GetParent().info.rewards) do
 		if rewardInfo.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(rewardInfo.id) then
-			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(rewardInfo.id);
+			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(rewardInfo.id);
 			-- want highest item level of highest quality
 			-- this comparison is not really needed now since the rewards are 1 equippable and 1 non-equippable item
 			if itemQuality > bestItemQuality or (itemQuality == bestItemQuality and itemLevel > bestItemLevel) then
@@ -855,7 +855,7 @@ function WeeklyRewardActivityItemMixin:SetDisplayedItem()
 	if self.displayedItemDBID then
 		local hyperlink = C_WeeklyRewards.GetItemHyperlink(self.displayedItemDBID);
 		if hyperlink then
-			local itemLevel = GetDetailedItemLevelInfo(hyperlink);
+			local itemLevel = C_Item.GetDetailedItemLevelInfo(hyperlink);
 			local progressText = string.format(ITEM_LEVEL, itemLevel);
 			self:GetParent():SetProgressText(progressText);
 		end
@@ -913,7 +913,7 @@ function WeeklyRewardsConcessionMixin:Refresh(activityInfo)
 		-- no mythic keystone items
 		local icon;
 		if rewardInfo.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(rewardInfo.id) then
-			icon = select(5, GetItemInfoInstant(rewardInfo.id));
+			icon = select(5, C_Item.GetItemInfoInstant(rewardInfo.id));
 		elseif rewardInfo.type == Enum.CachedRewardType.Currency then
 			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(rewardInfo.id);
 			icon = currencyInfo and currencyInfo.iconFileID;
@@ -984,7 +984,7 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 	local hasMissingData = false;
 	if self.itemDBID then
 		local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(self.itemDBID);
-		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(itemHyperlink);
 		itemFrame.Icon:SetTexture(itemIcon or QUESTION_MARK_ICON);
 		local count = 0;
 		for i, rewardInfo in ipairs(self.activityInfo.rewards) do
@@ -994,7 +994,7 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 			end
 		end
 		SetItemButtonCount(itemFrame, count);
-		local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
+		local r, g, b = C_Item.GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
 		SetItemButtonQuality(itemFrame, itemQuality, itemHyperlink);
 		if itemName and itemQuality then
 			itemFrame.Name:SetText(itemName);
@@ -1033,12 +1033,12 @@ function WeeklyRewardConfirmSelectionMixin:RefreshRewards()
 			if rewardInfo.itemDBID and rewardInfo.itemDBID ~= self.itemDBID then
 				local frame = alsoItemsFrame.pool:Acquire();
 				local itemHyperlink = C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID);
-				local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(itemHyperlink);
+				local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(itemHyperlink);
 				if not itemIcon or not itemQuality then
 					hasMissingData = true;
 				end
 				frame.Icon:SetTexture(itemIcon or QUESTION_MARK_ICON);
-				local r, g, b = GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
+				local r, g, b = C_Item.GetItemQualityColor(itemQuality or Enum.ItemQuality.Common);
 				frame.IconBorder:SetVertexColor(r, g, b);
 				frame.layoutIndex = i;
 				frame.itemHyperlink = itemHyperlink;

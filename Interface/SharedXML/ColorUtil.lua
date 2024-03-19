@@ -81,3 +81,11 @@ end
 function GetFactionColor(factionGroupTag)
 	return PLAYER_FACTION_COLORS[PLAYER_FACTION_GROUP[factionGroupTag]];
 end
+
+function RGBToColorCode(r, g, b)
+	return format("|cff%02x%02x%02x", r*255, g*255, b*255);
+end
+
+function RGBTableToColorCode(rgbTable)
+	return RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b);
+end

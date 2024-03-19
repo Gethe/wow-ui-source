@@ -527,6 +527,13 @@ UI_shared.xsd">
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CustomBackground">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 	</Frame>
 
@@ -749,7 +756,7 @@ UI_shared.xsd">
 		</Scripts>
 	</Button>
 
-	<Frame name="EventToastManagerWeeklyRewardToastUnlockTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardToastMixin" alpha="0" virtual="true" enableMouse="false">
+	<Frame name="EventToastManagerWeeklyRewardToastUnlockTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardToastMixin" alpha="0" virtual="true">
 		<Size x="520" y="90"/>
 		<KeyValues>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
@@ -758,7 +765,7 @@ UI_shared.xsd">
 			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Contents" inherits="ResizeLayoutFrame">
+			<Frame parentKey="Contents" inherits="ResizeLayoutFrame" mixin="EventToastWeeklyContentsMixin" enableMouse="true">
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
@@ -1087,11 +1094,14 @@ UI_shared.xsd">
 						<Scale childKey="BGtext" duration="0.57" order="1" startDelay="1.8" smoothing="OUT" fromScaleX="0.42" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 					</AnimationGroup>
 				</Animations>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>
 
-	<Frame name="EventToastManagerWeeklyRewardToastUpgradeTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardUpgradeToastMixin" alpha="0" virtual="true" enableMouse="false">
+	<Frame name="EventToastManagerWeeklyRewardToastUpgradeTemplate" inherits="EventToastAnimationsTemplate" mixin="EventToastWeeklyRewardUpgradeToastMixin" alpha="0" virtual="true">
 		<Size x="520" y="90"/>
 		<KeyValues>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
@@ -1100,7 +1110,7 @@ UI_shared.xsd">
 			<KeyValue key="hideParentAnim" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="Contents" inherits="ResizeLayoutFrame">
+			<Frame parentKey="Contents" inherits="ResizeLayoutFrame" mixin="EventToastWeeklyContentsMixin" enableMouse="true">
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
@@ -1343,6 +1353,9 @@ UI_shared.xsd">
 						<Scale childKey="BGtext" duration="0.45" order="1" startDelay="0.67" smoothing="OUT" fromScaleX="0.42" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 					</AnimationGroup>
 				</Animations>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>

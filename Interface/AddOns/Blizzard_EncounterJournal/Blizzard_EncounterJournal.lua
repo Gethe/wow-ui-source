@@ -235,7 +235,7 @@ function EncounterJournalItemMixin:Init(elementData)
 			self.boss:SetFormattedText(BOSS_INFO_STRING_MANY, EJ_GetEncounterInfo(itemInfo.encounterID));
 		end
 
-		local itemName, _, quality = GetItemInfo(itemInfo.link);
+		local itemName, _, quality = C_Item.GetItemInfo(itemInfo.link);
 		SetItemButtonQuality(self, quality, itemInfo.link);
 	else
 		self.name:SetText(RETRIEVING_ITEM_INFO);
@@ -414,8 +414,8 @@ function EncounterJournal_OnLoad(self)
 				local atlas = button.ModifiedInstanceIcon:GetIconTextureAtlas();
 				button.ModifiedInstanceIcon.Icon:SetAtlas(atlas, true)
 				button.ModifiedInstanceIcon:SetSize(button.ModifiedInstanceIcon.Icon:GetSize());
-				button.ModifiedInstanceIcon:Show();
 			end
+			button.ModifiedInstanceIcon:SetShown(modifiedInstanceInfo ~= nil);
 
 		end
 
@@ -573,6 +573,10 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 end
 
 function EncounterJournal_OnShow(self)
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.EncounterJournal) then
+		return;
+	end
+
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
 	if ( tonumber(GetCVar("advJournalLastOpened")) == 0 ) then
 		SetCVar("advJournalLastOpened", GetServerTime() );
@@ -882,7 +886,7 @@ function EncounterJournal_ListInstances()
 		});
 
 		dataIndex = dataIndex + 1;
-		instanceID, name, description, _, buttonImage, _, _, _, link = EJ_GetInstanceByIndex(dataIndex, showRaid);
+		instanceID, name, description, _, buttonImage, _, _, _, link, _, mapID = EJ_GetInstanceByIndex(dataIndex, showRaid);
 	end
 
 	instanceSelect.ScrollBox:Show(); -- Scrollbox children will not have resolvable rects unless the scrollbox is shown first
@@ -2027,10 +2031,18 @@ function EncounterJournal_LootUpdate()
 	local perPlayerLoot = {};
 	local veryRareLoot = {};
 	local extremelyRareLoot = {};
+	local seasonalLoot = {};
+	local currentSeason = C_SeasonInfo.GetCurrentDisplaySeasonID();
+	local currentSeasonExpansion = C_SeasonInfo.GetCurrentDisplaySeasonExpansion();
 
 	for i = 1, EJ_GetNumLoot() do
 		local itemInfo = C_EncounterJournal.GetLootInfoByIndex(i);
-		if itemInfo.displayAsPerPlayerLoot then
+		if itemInfo.displaySeasonID then
+			-- The loot is flagged to be for a specific season, see if it matches the current one.
+			if itemInfo.displaySeasonID == currentSeason then
+				tinsert(seasonalLoot, i);
+			end
+		elseif itemInfo.displayAsPerPlayerLoot then
 			tinsert(perPlayerLoot, i);
 		elseif itemInfo.displayAsExtremelyRare then
 			tinsert(extremelyRareLoot, i);
@@ -2045,10 +2057,17 @@ function EncounterJournal_LootUpdate()
 		dataProvider:Insert({index=val});
 	end
 
+	local seasonalHeaderTitle;
+	local uiSeason = PVPUtil.GetCurrentSeasonNumber();
+	if #seasonalLoot > 0 and currentSeason and currentSeasonExpansion then
+		seasonalHeaderTitle = EXPANSION_SEASON_NAME:format(GetExpansionName(currentSeasonExpansion), uiSeason);
+	end
+
 	local lootCategories = { 
 		{ loot=veryRareLoot,		headerTitle=EJ_ITEM_CATEGORY_VERY_RARE },
 		{ loot=extremelyRareLoot,	headerTitle=EJ_ITEM_CATEGORY_EXTREMELY_RARE },
 		{ loot=perPlayerLoot,		headerTitle=BONUS_LOOT_TOOLTIP_TITLE,			helpText=BONUS_LOOT_TOOLTIP_BODY },
+		{ loot=seasonalLoot,		headerTitle=seasonalHeaderTitle },
 	};
 
 	for _,category in ipairs(lootCategories) do
@@ -3202,7 +3221,7 @@ function AdventureJournal_Reward_OnEnter(self)
 		end
 
 		if ( rewardData.itemLink and rewardData.currencyType ) then
-			local itemName, _, quality = GetItemInfo(rewardData.itemLink);
+			local itemName, _, quality = C_Item.GetItemInfo(rewardData.itemLink);
 			frame.Item1.text:SetText(itemName);
 			frame.Item1.text:Show();
 			frame.Item1.icon:SetTexture(rewardData.itemIcon);
@@ -3266,7 +3285,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			if ( rewardData.itemLink ) then
 				EncounterJournal_SetTooltipWithCompare(tooltip, rewardData.itemLink);
 
-				local quality = select(3, GetItemInfo(rewardData.itemLink));
+				local quality = select(3, C_Item.GetItemInfo(rewardData.itemLink));
 				SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);
 
 				if ( rewardData.itemQuantity and rewardData.itemQuantity > 1 ) then

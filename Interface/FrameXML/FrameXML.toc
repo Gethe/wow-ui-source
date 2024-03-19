@@ -1,3 +1,4 @@
+..\SharedXML\ProjectConstants.lua
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
@@ -12,6 +13,7 @@
 ..\SharedXML\FunctionUtil.lua
 ..\SharedXML\ObjectUpdater.lua
 ..\SharedXML\MathUtil.lua
+..\SharedXML\ExpansionUtil.lua
 ..\SharedXML\ExportUtil.lua
 ..\SharedXML\Rectangle.lua
 ..\SharedXML\TextureUtil.lua
@@ -223,7 +225,7 @@ UIPanelTemplates.lua
 UIPanelTemplates.xml
 ItemButtonTemplate.xml
 ..\SharedXML\UIDropDownMenu.xml
-AutoComplete.xml
+..\SharedXML\AutoComplete.xml
 StaticPopup.xml
 ..\SharedXML\DialogUtil.lua
 ..\SharedXML\Settings\GameplaySettingsGroup.lua
@@ -247,7 +249,7 @@ EditModeManager.lua
 EditModeManager.xml
 
 GameTooltip.xml
-UIMenu.xml
+..\SharedXML\UIMenu.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
@@ -279,10 +281,10 @@ Sound.lua
 UIOptions.xml
 ..\SharedXML\DeprecatedTemplates.xml
 ..\SharedXML\AddonList.xml
-AlertFrameIntrinsic.xml
+..\SharedXML\AlertFrameIntrinsic.xml
 AlertFrames.xml
 AlertFrameSystems.xml
-SocialToast.xml
+..\SharedXML\SocialToast.xml
 MirrorTimer.xml
 CoinPickupFrame.xml
 StackSplitFrame.xml
@@ -296,6 +298,7 @@ Cooldown.xml
 PVPUITemplates.xml
 PVPHonorSystem.xml
 GuildUtil.lua
+ActionBarConstants.lua
 ActionBarController.xml
 InstanceDifficulty.xml
 Minimap.xml
@@ -324,11 +327,15 @@ UnitPopupUtils.lua
 UnitPopupButtons.lua
 UnitPopupMenus.lua
 UnitPopup.xml
-HistoryKeeper.lua
-ChatFrame.xml
-FloatingChatFrame.xml
-VoiceChatTranscriptionFrame.xml
-BNet.xml
+..\SharedXML\HistoryKeeper.lua
+..\SharedXML\Chat\ChatFrame.xml
+..\SharedXML\Chat\FloatingChatFrame.xml
+FloatingChatFrameVoiceChat.xml
+FloatingChatFrameAlertFrame.xml
+FloatingChatFrameMenus.xml
+..\SharedXML\VoiceChatTranscriptionFrame.lua
+..\SharedXML\BNetShared.lua
+..\SharedXML\BNet.xml
 ReadyCheck.xml
 PlayerFrame.xml
 PartyFrame.xml
@@ -356,12 +363,13 @@ BankFrame.xml
 RoleSelectionTemplate.xml
 ItemRef.xml
 SocialQueue.xml
+SummonButtonTemplateOverride.xml
+..\SharedXML\FriendsFrame.xml
 QuickJoinToast.xml
 TextToSpeechFrameConstants.lua
 TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
-FriendsFrame.xml
 QuickJoin.xml
 RaidFrame.xml
 PetActionBar.xml
@@ -432,6 +440,7 @@ SpellActivationOverlay.xml
 GuildInviteFrame.xml
 GhostFrame.xml
 StreamingFrame.xml
+IconIntroAnimation.lua
 IconIntroAnimation.xml
 Timer.xml
 MonkHarmonyBar.xml
@@ -461,6 +470,8 @@ ClassTalentHelper.lua
 MotionSickness.xml
 ArchaeologyProgressBar.xml
 ..\SharedXML\ToolWindowOwnerMixin.lua
+..\SharedXML\RewardTrack\MajorFactionRenownSharedTemplates.lua
+..\SharedXML\RewardTrack\MajorFactionRenownSharedTemplates.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

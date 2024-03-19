@@ -103,6 +103,15 @@ local Console =
 				{ Name = "fontHeightInPixels", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "SetConsoleKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "keystring", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =

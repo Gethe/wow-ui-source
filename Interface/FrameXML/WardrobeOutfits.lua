@@ -95,7 +95,7 @@ local function IsSourceArtifact(sourceID)
 	if not link then
 		return false;
 	end
-	local _, _, quality = GetItemInfo(link);
+	local _, _, quality = C_Item.GetItemInfo(link);
 	return quality == Enum.ItemQuality.Artifact;
 end
 

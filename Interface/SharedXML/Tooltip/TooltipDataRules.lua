@@ -271,3 +271,15 @@ function TooltipDataRules.BattlePet(tooltip, tooltipData)
 	return true;
 end
 TooltipDataProcessor.AddTooltipPreCall(TooltipTypeEnums.BattlePet, TooltipDataRules.BattlePet);
+
+function TooltipDataRules.Separator(tooltip, lineData)
+	local asset = "Interface\\Common\\UI-TooltipDivider-Transparent"
+	local textureSettings = {
+		width = 200,
+		height = 10,
+		margin = { right = 2, top = -2, bottom = -2 },
+		texCoords = { left = 0, right = 1, top = 0, bottom = 1 },
+	};
+	tooltip:AddTexture(asset, textureSettings);
+end
+TooltipDataProcessor.AddLinePostCall(LineTypeEnums.Separator, TooltipDataRules.Separator);

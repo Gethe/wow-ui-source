@@ -1347,10 +1347,10 @@ function GarrisonFollowerPage_SetItem(itemFrame, itemID, itemLevel)
 	if ( itemID and itemID > 0 ) then
 		itemFrame.itemID = itemID;
 		itemFrame.itemLevel = itemLevel;
-		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID);
+		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemID);
 		if ( itemName ) then
 			itemFrame.Icon:SetTexture(itemTexture);
-			local r, g, b = GetItemQualityColor(itemQuality);
+			local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 			itemFrame.Name:SetTextColor(r, g, b);
 			itemFrame.ItemLevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, itemLevel);
 			itemFrame:Show();
@@ -2496,7 +2496,7 @@ function GarrisonEquipment_AddEquipment(self)
 		elseif ( ItemCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
 			popupData.source = "item";
 			local itemType, itemID = GetCursorInfo();
-			equipmentName = GetItemInfo(itemID);
+			equipmentName = C_Item.GetItemInfo(itemID);
 		else
 			return;
 		end

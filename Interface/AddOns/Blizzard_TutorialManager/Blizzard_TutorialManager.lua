@@ -48,8 +48,8 @@ end
 
 function TutorialManager:OnSettingsLoaded(cvar, value)
 	EventRegistry:TriggerEvent("TutorialManager.TutorialsInit");
-	local tutorialsEnabled = Settings.GetSetting("showTutorials");
-	self.IsActive = tutorialsEnabled:GetValue();
+	local tutorialsSetting = Settings.GetSetting("showTutorials");
+	self.IsActive = tutorialsSetting and tutorialsSetting:GetValue() or false;
 	if self.IsActive then
 		EventRegistry:TriggerEvent("TutorialManager.TutorialsEnabled");
 	else
@@ -59,7 +59,11 @@ end
 
 function TutorialManager:OnCVARsUpdated(cvar, value)
 	if (cvar == "showTutorials" ) then
-		self.IsActive = (value == "1");
+		local isActive = (value == "1");
+		if self.IsActive == isActive then
+			return;
+		end
+		self.IsActive = isActive;
 		if self.IsActive then
 			self:Begin();			
 		else

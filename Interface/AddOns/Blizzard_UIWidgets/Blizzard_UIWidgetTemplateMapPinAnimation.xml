@@ -1,0 +1,37 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetTemplateMapPinAnimation" inherits="UIWidgetBaseTemplate, ResizeLayoutFrame" virtual="true" mixin="UIWidgetTemplateMapPinAnimationMixin">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopHighlight" alphaMode="ADD" alpha=".3" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="MapPinTextureCopy" alphaMode="ADD" desaturated="true" hidden="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PinPulse" setToFinalAlpha="false" looping="REPEAT">
+				<Alpha childKey="MapPinTextureCopy" duration="0.4" order="1" fromAlpha="0" toAlpha="0.3"/>
+				<Scale childKey="MapPinTextureCopy" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2"/>
+				<Alpha childKey="MapPinTextureCopy" duration="0.4" order="2" fromAlpha="0.3" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>	
+	</Frame>
+</Ui>

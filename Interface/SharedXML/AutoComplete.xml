@@ -1,0 +1,83 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+	<Script file="AutoComplete.lua"/>
+	<EditBox name="AutoCompleteEditBoxTemplate" virtual="true">
+		<Scripts>
+			<OnTabPressed function="AutoCompleteEditBox_OnTabPressed"/>
+			<OnEnterPressed function="AutoCompleteEditBox_OnEnterPressed"/>
+			<OnTextChanged function="AutoCompleteEditBox_OnTextChanged"/>
+			<OnChar function="AutoCompleteEditBox_OnChar"/>
+			<OnEditFocusLost function="AutoCompleteEditBox_OnEditFocusLost"/>
+			<OnEscapePressed function="AutoCompleteEditBox_OnEscapePressed"/>
+			<OnArrowPressed function="AutoCompleteEditBox_OnArrowPressed"/>
+			<OnKeyDown function="AutoCompleteEditBox_OnKeyDown"/>
+			<OnKeyUp function="AutoCompleteEditBox_OnKeyUp"/>
+		</Scripts>
+	</EditBox>
+	<Button name="AutoCompleteButtonTemplate" virtual="true">
+		<Size x="120" y="14"/>
+		<Scripts>
+			<OnClick function="AutoCompleteButton_OnClick"/>
+			<OnLoad>
+				self:GetFontString():SetPoint("LEFT", self, "LEFT", 15, 0)
+			</OnLoad>
+		</Scripts>
+		<ButtonText name="$parentText"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	</Button>
+	<Frame name="AutoCompleteBox" parent="UIParent" enableMouse="true" hidden="true" inherits="TooltipBackdropTemplate">
+		<Size x="5" y="5"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AutoCompleteInstructions" inherits="GameFontDisableSmall" text="PRESS_TAB">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset x="15" y="10"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="AutoCompleteButton1" inherits="AutoCompleteButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<!--This 10 is a magic number used in AutoComplete_Update when checking whether the AutoComplete box should be above or below the EditBox. Please update the number there if you change it here-->
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="AutoCompleteButton2" inherits="AutoCompleteButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutoCompleteButton1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="AutoCompleteButton3" inherits="AutoCompleteButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutoCompleteButton2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="AutoCompleteButton4" inherits="AutoCompleteButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutoCompleteButton3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="AutoCompleteButton5" inherits="AutoCompleteButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutoCompleteButton4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" function="AutoComplete_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

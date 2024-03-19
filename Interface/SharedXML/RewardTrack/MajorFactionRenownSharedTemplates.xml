@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="MajorFactionRenownRewardTemplate" mixin="MajorFactionRenownRewardMixin" frameLevel="10" virtual="true">
+		<Size x="454" y="120"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Toast" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="70" y="70"/>
+					<Anchors>
+						<Anchor point="LEFT" x="32" y="4"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="Name" inherits="GameFontHighlightHuge" justifyH="LEFT" wordwrap="true">
+					<Size x="310" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" x="122" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" scale="0.85">
+					<Anchors>
+						<Anchor point="LEFT" x="15" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark-Large" useAtlasSize="true">
+					<Size x="315" y="136"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="-13" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

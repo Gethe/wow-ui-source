@@ -212,6 +212,20 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetMapPinAnimationWidgetVisualizationInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "MapPinAnimationWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetObjectiveTrackerWidgetSetID",
 			Type = "Function",
 
@@ -588,6 +602,18 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "MapPinAnimationType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "MapPinAnimationType", EnumValue = 0 },
+				{ Name = "Pulse", Type = "MapPinAnimationType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "SpellDisplayBorderColor",
 			Type = "Enumeration",
 			NumValues = 9,
@@ -790,9 +816,9 @@ local UIWidgetManager =
 		{
 			Name = "UIWidgetTextureAndTextSizeType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Small", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 0 },
@@ -800,6 +826,7 @@ local UIWidgetManager =
 				{ Name = "Large", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 2 },
 				{ Name = "Huge", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 3 },
 				{ Name = "Standard", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 4 },
+				{ Name = "Medium2", Type = "UIWidgetTextureAndTextSizeType", EnumValue = 5 },
 			},
 		},
 		{
@@ -819,6 +846,18 @@ local UIWidgetManager =
 				{ Name = "Right", Type = "UIWidgetTooltipLocation", EnumValue = 6 },
 				{ Name = "BottomRight", Type = "UIWidgetTooltipLocation", EnumValue = 7 },
 				{ Name = "Bottom", Type = "UIWidgetTooltipLocation", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "UIWidgetUpdateAnimType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "UIWidgetUpdateAnimType", EnumValue = 0 },
+				{ Name = "Flash", Type = "UIWidgetUpdateAnimType", EnumValue = 1 },
 			},
 		},
 		{
@@ -848,9 +887,9 @@ local UIWidgetManager =
 		{
 			Name = "WidgetEnabledState",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Disabled", Type = "WidgetEnabledState", EnumValue = 0 },
@@ -860,6 +899,7 @@ local UIWidgetManager =
 				{ Name = "Green", Type = "WidgetEnabledState", EnumValue = 4 },
 				{ Name = "Artifact", Type = "WidgetEnabledState", EnumValue = 5 },
 				{ Name = "Black", Type = "WidgetEnabledState", EnumValue = 6 },
+				{ Name = "BrightBlue", Type = "WidgetEnabledState", EnumValue = 7 },
 			},
 		},
 		{
@@ -1281,6 +1321,7 @@ local UIWidgetManager =
 				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
 				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
 				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+				{ Name = "updateAnimType", Type = "UIWidgetUpdateAnimType", Nilable = false },
 			},
 		},
 		{
@@ -1363,6 +1404,27 @@ local UIWidgetManager =
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "itemInfo", Type = "UIWidgetItemInfo", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MapPinAnimationWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "animType", Type = "MapPinAnimationType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1674,6 +1736,7 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextureAndTextSizeType", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
@@ -1752,6 +1815,8 @@ local UIWidgetManager =
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "tooltip", Type = "string", Nilable = false },
 				{ Name = "isCurrencyMaxed", Type = "bool", Nilable = false },
+				{ Name = "textFontType", Type = "UIWidgetFontType", Nilable = false },
+				{ Name = "textSizeType", Type = "UIWidgetTextSizeType", Nilable = false },
 			},
 		},
 		{

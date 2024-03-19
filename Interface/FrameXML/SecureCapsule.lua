@@ -289,6 +289,7 @@ retain("C_XMLUtil");
 retain("GetFontStringMetatable");
 retain("pcallwithenv");
 retain("UnitGUID");
+retain("C_GameEnvironmentManager");
 
 -- For tooltips
 retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
@@ -745,6 +746,7 @@ retainenum("ValidateNameResult");
 retainenum("TooltipDataLineType");
 retainenum("TooltipDataType");
 retainenum("ModelBlendOperation");
+retainenum("GameEnvironment");
 
 -- For Private Auras
 retainfromtable("AuraUtil", "DefaultAuraCompare");

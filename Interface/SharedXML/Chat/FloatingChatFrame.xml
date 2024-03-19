@@ -1,0 +1,710 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="FloatingChatFrame.lua"/>
+	<Frame name="FloatingBorderedFrame" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" parentKey="Background" file="Interface\ChatFrame\ChatFrameBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+						<Anchor point="TOPRIGHT" x="2" y="3"/>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopLeftTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderCorner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" x="-4" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomLeftTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderCorner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBackground" x="-4" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture name="$parentTopRightTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderCorner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentBackground" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentBottomRightTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderCorner">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackground" x="4" y="-4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture name="$parentLeftTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderLeft" vertTile="true">
+					<Size x="16" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftTexture" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderLeft" vertTile="true">
+					<Size x="16" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTexture" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentBottomTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderTop" horizTile="true">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftTexture" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightTexture" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture name="$parentTopTexture" file="Interface\ChatFrame\UI-ChatFrame-BorderTop" horizTile="true">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftTexture" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightTexture" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="DockManagerOverflowListButtonTemplate" virtual="true">
+		<Size x="150" y="12"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" parentKey="highlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentGlow" file="Interface\ChatFrame\ChatFrameTab-NewMessage" parentKey="glow" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="8" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-8" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentConversationIcon" file="Interface\ChatFrame\UI-ChatConversationIcon" parentKey="conversationIcon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="2" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self.highlight:Show();
+			</OnEnter>
+			<OnLeave>
+				self.highlight:Hide();
+			</OnLeave>
+			<OnClick>
+				FCFDockOverflowListButton_OnClick(self, button)
+			</OnClick>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT" x="20" y="0"/>
+				<Anchor point="RIGHT" x="-20" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmallLeft"/>
+	</Button>
+	<Frame name="DockManagerOverflowListTemplate" hidden="true" clampedToScreen="true" inherits="TooltipBackdropTemplate" virtual="true">
+		<Size x="160" y="12"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentNumTabs" inherits="GameFontDisable" parentKey="numTabs">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self.buttons = {};
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="DockManagerTemplate" frameStrata="LOW" virtual="true" parent="UIParent">
+		<Size x="0" y="26"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentInsertHighlight" file="Interface\ChatFrame\UI-ChatFrame-DockHighlight" alphaMode="ADD" parentKey="insertHighlight">
+					<Size x="32" y="32"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentOverflowButton" parentKey="overflowButton" alpha="0.6">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentList" inherits="DockManagerOverflowListTemplate" parentKey="list">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.width = self:GetWidth();
+						self:RegisterEvent("UPDATE_CHAT_COLOR");
+					</OnLoad>
+					<OnEvent>
+						FCFDockOverflowButton_OnEvent(self, event, ...);
+					</OnEvent>
+					<OnClick>
+						FCFDockOverflowButton_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\chat-tab-arrow"/>
+				<HighlightTexture file="Interface\ChatFrame\chat-tab-arrow-on" alphaMode="ADD"/>
+			</Button>
+			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame">
+				<KeyValues>
+					<KeyValue key="dynTabSize" value="1" type="number"/>
+				</KeyValues>
+				<Size x="0" y="31"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="$parentChild" parentKey="child">
+						<Size x="1" y="26"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</Frame>
+					<!--Frames will be dynamically added to the ScrollChild for now-->
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="FCFDock_OnLoad"/>
+			<OnEvent>
+				FCFDock_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Tab Template-->
+	<Texture name="ChatTabConversationIconTemplate" file="Interface\ChatFrame\UI-ChatConversationIcon" virtual="true">
+		<Size x="16" y="16"/>
+	</Texture>
+	<Button name="ChatTabArtTemplate" virtual="true" alpha="0.4">
+		<Size x="64" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\ChatFrame\ChatFrameTab-BGLeft" >
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\ChatFrame\ChatFrameTab-BGRight">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\ChatFrame\ChatFrameTab-BGMid" horizTile="true">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ActiveLeft" file="Interface\ChatFrame\ChatFrameTab-SelectedLeft" alphaMode="ADD">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActiveMiddle" file="Interface\ChatFrame\ChatFrameTab-SelectedMid" horizTile="true" alphaMode="ADD">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ActiveRight" file="Interface\ChatFrame\ChatFrameTab-SelectedRight" alphaMode="ADD">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentGlow" file="Interface\ChatFrame\ChatFrameTab-NewMessage" parentKey="glow" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="8"/>
+						<Anchor point="BOTTOMRIGHT" x="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightLeft" file="Interface\ChatFrame\ChatFrameTab-HighlightLeft" alphaMode="ADD">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightMiddle" file="Interface\ChatFrame\ChatFrameTab-HighlightMid" horizTile="true" alphaMode="ADD">
+					<Size x="44" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightRight" file="Interface\ChatFrame\ChatFrameTab-HighlightRight" alphaMode="ADD">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="ChatTabTemplate" frameStrata="LOW" parent="UIParent" virtual="true" inherits="ChatTabArtTemplate" parentArray="Tabs">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentFlash" hidden="true">
+				<Size x="5" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Left" x="0" y="-7"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Right" x="0" y="-7"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" x="-80" y="-35"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="FCFOptionsDropDown_OnLoad"/>
+					<OnShow function="FCFOptionsDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				FCF_Tab_OnClick(self, button);
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+			</OnClick>
+			<OnDoubleClick>
+				if ( button ~= "RightButton" ) then
+					local chatFrame = _G["ChatFrame"..self:GetID()];
+					if ( not chatFrame.isDocked ) then
+						FCF_MinimizeFrame(chatFrame, chatFrame.buttonSide);
+					end
+				end
+			</OnDoubleClick>
+			<OnDragStart>
+				local chatFrame = _G["ChatFrame"..self:GetID()];
+				if ( chatFrame == DEFAULT_CHAT_FRAME ) then
+					-- Default frame is managed via edit mode
+					return;
+				elseif ( chatFrame.isDocked ) then
+					FCF_UnDockFrame(chatFrame);
+					FCF_SetLocked(chatFrame, false);
+					local chatTab = _G[chatFrame:GetName().."Tab"];
+					local x,y = chatTab:GetCenter();
+					x = x - (chatTab:GetWidth()/2);
+					y = y - (chatTab:GetHeight()/2);
+					chatTab:ClearAllPoints();
+					chatFrame:ClearAllPoints();
+					chatFrame:SetPoint("TOPLEFT", "UIParent", "BOTTOMLEFT", x, y);
+					FCF_SetTabPosition(chatFrame, 0);
+					chatFrame:StartMoving();
+					MOVING_CHATFRAME = chatFrame;
+					Blizzard_CombatLog_Update_QuickButtons();
+					SELECTED_CHAT_FRAME = chatFrame;
+				else
+					if ( chatFrame.isLocked ) then
+						return;
+					end
+					chatFrame:StartMoving();
+					SELECTED_CHAT_FRAME = chatFrame;
+					MOVING_CHATFRAME = chatFrame;
+				end
+
+				self:LockHighlight();
+
+				--OnUpdate simulates OnDragStop
+				--This is a hack fix we need to do because when SetParent is called, the OnDragStop never fires for the matching OnDragStart.
+				self.dragButton = button;
+				self:SetScript("OnUpdate", FCFTab_OnUpdate);
+			</OnDragStart>
+			<!--OnDragStop>
+				FCF_StopDragging(_G["ChatFrame"..self:GetID()]);
+			</OnDragStop-->
+		</Scripts>
+		<ButtonText parentKey="Text">
+			<Size x="50" y="8"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="-5"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+	</Button>
+
+	<!-- ===============================================================================-->
+	<!-- Floating frame template-->
+	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate,FloatingBorderedFrame" parent="UIParent" hidden="true" clampedToScreen="true" dontSavePosition="true" frameLevel="5" virtual="true">
+		<Size x="430" y="120"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="100" y="100"/>
+		</Anchors>
+		<ResizeBounds>
+			<minResize>
+				<AbsDimension x="250" y="120"/>
+			</minResize>
+			<maxResize>
+				<AbsDimension x="800" y="800"/>
+			</maxResize>
+		</ResizeBounds>
+		<Frames>
+			<Button name="$parentClickAnywhereButton" setAllPoints="true" hidden="true" parentKey="clickAnywhereButton">
+				<Scripts>
+					<OnLoad>
+						FCFClickAnywhereButton_OnLoad(self);
+					</OnLoad>
+					<OnEvent>
+						FCFClickAnywhereButton_OnEvent(self, event, ...);
+					</OnEvent>
+					<OnClick>
+						ChatEdit_SetLastActiveWindow(self:GetParent().editBox);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentResizeButton" parentKey="ResizeButton">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentBackground" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						local chatFrame = self:GetParent();
+						self:SetButtonState("PUSHED", true);
+						--SetCursor("UI-Cursor-Size");	--Hide the cursor
+
+						self:GetHighlightTexture():Hide();
+
+						if( self:GetParent().isDocked ) then
+							GENERAL_CHAT_DOCK.primary:StartSizing("BOTTOMRIGHT");
+						else
+							self:GetParent():StartSizing("BOTTOMRIGHT");
+						end
+
+
+					</OnMouseDown>
+					<OnMouseUp>
+						self:SetButtonState("NORMAL", false);
+						--SetCursor(nil); --Show the cursor again
+
+						self:GetHighlightTexture():Show();
+
+						if( self:GetParent().isDocked ) then
+							GENERAL_CHAT_DOCK.primary:StopMovingOrSizing();
+						else
+							self:GetParent():StopMovingOrSizing();
+						end
+						FCF_SavePositionAndDimensions(self:GetParent());
+					</OnMouseUp>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
+				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
+			</Button>
+			<Frame name="$parentButtonFrame" inherits="FloatingBorderedFrame" parentKey="buttonFrame" alpha="0.2">
+				<Size x="29" y="0"/>
+				<Frames>
+					<Button name="$parentMinimizeButton" parentKey="minimizeButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								local chatFrame = self:GetParent():GetParent();
+								FCF_MinimizeFrame(chatFrame, strupper(chatFrame.buttonSide));
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
+			<Button parentKey="ScrollToBottomButton" alpha="0">
+				<Size x="17" y="15"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ResizeButton" relativePoint="TOPRIGHT" x="-2" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Flash" atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHAT_BOTTOM);
+						self:GetParent():ScrollToBottom();
+					</OnClick>
+				</Scripts>
+				<NormalTexture atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true"/>
+				<PushedTexture atlas="minimal-scrollbar-arrow-returntobottom-down" useAtlasSize="true"/>
+				<HighlightTexture atlas="minimal-scrollbar-arrow-returntobottom-over" useAtlasSize="true"/>
+				<DisabledTexture atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true"/>
+			</Button>
+			<EditBox name="$parentEditBox" inherits="ChatFrameEditBoxTemplate" parentKey="editBox">
+				<Size x="5" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="-5" y="-2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="RIGHT" x="8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.chatFrame = self:GetParent();
+						ChatEdit_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ChatFrame_OnLoad(self);
+				FloatingChatFrame_OnLoad(self);
+			</OnLoad>
+			<OnUpdate>
+				ChatFrame_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				SetChatWindowShown(self:GetID(), true);
+				FCF_StopAlertFlash(self);
+			</OnShow>
+			<OnHide>
+				--If UIParent is hidden (Alt-Z), OnHide is called, but self:IsShown() is still true (self:IsVisible() would be false)
+				if ( not self:IsShown() ) then
+					if ( not self.minimized ) then
+						SetChatWindowShown(self:GetID(), false);
+					end
+				end
+			</OnHide>
+			<OnEvent>
+				ChatFrame_OnEvent(self, event, ...);
+				FloatingChatFrame_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</ScrollingMessageFrame>
+
+	<Button name="FloatingChatFrameMinimizedTemplate" movable="true" clampedToScreen="true" virtual="true">
+		<Size x="180" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\ChatFrame\ChatFrameTab-BGLeft-min">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\ChatFrame\ChatFrameTab-BGRight-min">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\ChatFrame\ChatFrameTab-BGMid-min" horizTile="true">
+					<Size x="0" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentGlow" file="Interface\ChatFrame\ChatFrameTab-NewMessage" parentKey="glow" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="8" y="7"/>
+						<Anchor point="BOTTOMRIGHT" x="-24" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentConversationIcon" file="Interface\ChatFrame\UI-ChatConversationIcon" parentKey="conversationIcon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="12" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightLeft" file="Interface\ChatFrame\ChatFrameTab-HighlightLeft-min" alphaMode="ADD">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightRight" file="Interface\ChatFrame\ChatFrameTab-HighlightRight-min" alphaMode="ADD">
+					<Size x="16" y="32"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightMiddle" file="Interface\ChatFrame\ChatFrameTab-HighlightMid-min" horizTile="true" alphaMode="ADD">
+					<Size x="0" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentMaximizeButton">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						FCF_MaximizeFrame(self:GetParent().maxFrame);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Maximize-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Maximize-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+				self.Text:ClearAllPoints();
+				self.Text:SetPoint("LEFT", self, "LEFT", 15, 0);
+				self.Text:SetPoint("RIGHT", self, "RIGHT", -25, 0);
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+				self:SetUserPlaced(false);	--So that we don't save the position
+			</OnDragStop>
+			<OnDoubleClick>
+				FCF_MaximizeFrame(self.maxFrame);
+			</OnDoubleClick>
+		</Scripts>
+		<ButtonText name="$parentText" parentKey="Text">
+			<Size x="0" y="8"/>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+	</Button>
+
+	<!-- Main dock manager -->
+	<Frame name="GeneralDockManager" inherits="DockManagerTemplate">
+		<Scripts>
+			<OnLoad>
+				FCFDock_OnLoad(self);
+				GENERAL_CHAT_DOCK = self;
+				-- resize for locales
+				local list = self.overflowButton.list;
+				list.numTabs:SetFormattedText(CHAT_WINDOWS_COUNT, 10);
+				list:SetWidth(list.numTabs:GetWidth() + 48);	-- 24 pixel margins
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<!-- Main chat window -->
+	<Button name="ChatFrame1Tab" inherits="ChatTabTemplate" hidden="true" id="1" />
+	<ScrollingMessageFrame name="ChatFrame1" mixin="PrimaryChatFrameMixin" hidden="true" inherits="FloatingChatFrameTemplate, EditModeChatFrameSystemTemplate" id="1">
+		<KeyValues>
+			<KeyValue key="allowAtGlues" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="430" y="120"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="32" y="95"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</ScrollingMessageFrame>
+	<!-- ChatFrame1 Specific buttons -->
+	<Button name="ChatFrameMenuButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChatFrameMenuButtonMixin">
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up"/>
+		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down"/>
+		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+	<Frame name="ChatMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="UIParent">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad inherit="prepend" function="ChatMenu_OnLoad"/>
+			<OnShow function="ChatMenu_OnShow"/>
+		</Scripts>
+	</Frame>
+	<Button name="ChatFrame2Tab" inherits="ChatTabTemplate" id="2"/>
+	<ScrollingMessageFrame name="ChatFrame2" inherits="FloatingChatFrameTemplate" id="2">
+		<Scripts>
+			<OnLoad>
+				ChatFrame_OnLoad(self);
+				FloatingChatFrame_OnLoad(self);
+				self.isStaticDocked = true;
+			</OnLoad>
+		</Scripts>
+	</ScrollingMessageFrame>
+	<Button name="ChatFrame3Tab" inherits="ChatTabTemplate" id="3"/>
+	<ScrollingMessageFrame name="ChatFrame3" inherits="FloatingChatFrameTemplate" id="3"/>
+	<Button name="ChatFrame4Tab" inherits="ChatTabTemplate" id="4"/>
+	<ScrollingMessageFrame name="ChatFrame4" inherits="FloatingChatFrameTemplate" id="4"/>
+	<Button name="ChatFrame5Tab" inherits="ChatTabTemplate" id="5"/>
+	<ScrollingMessageFrame name="ChatFrame5" inherits="FloatingChatFrameTemplate" id="5"/>
+	<Button name="ChatFrame6Tab" inherits="ChatTabTemplate" id="6"/>
+	<ScrollingMessageFrame name="ChatFrame6" inherits="FloatingChatFrameTemplate" id="6"/>
+	<Button name="ChatFrame7Tab" inherits="ChatTabTemplate" id="7"/>
+	<ScrollingMessageFrame name="ChatFrame7" inherits="FloatingChatFrameTemplate" id="7"/>
+	<Button name="ChatFrame8Tab" inherits="ChatTabTemplate" id="8"/>
+	<ScrollingMessageFrame name="ChatFrame8" inherits="FloatingChatFrameTemplate" id="8"/>
+	<Button name="ChatFrame9Tab" inherits="ChatTabTemplate" id="9"/>
+	<ScrollingMessageFrame name="ChatFrame9" inherits="FloatingChatFrameTemplate" id="9"/>
+	<Button name="ChatFrame10Tab" inherits="ChatTabTemplate" id="10"/>
+	<ScrollingMessageFrame name="ChatFrame10" inherits="FloatingChatFrameTemplate" id="10"/>
+
+	<!--This frame is here to work as a single point of entry for events which must fire once and only once-->
+	<Frame name="FloatingChatFrameManager">
+		<Scripts>
+			<OnLoad function="FloatingChatFrameManager_OnLoad"/>
+			<OnEvent function="FloatingChatFrameManager_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

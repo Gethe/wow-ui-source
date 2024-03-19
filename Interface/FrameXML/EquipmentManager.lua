@@ -282,7 +282,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 	elseif ( not bags ) then -- and (player or bank)
 		itemID = GetInventoryItemID("player", slot);
 		isBound = true;
-		name, _, _, _, _, _, _, _, invType, textureName = GetItemInfo(itemID);
+		name, _, _, _, _, _, _, _, invType, textureName = C_Item.GetItemInfo(itemID);
 		if ( textureName ) then
 			count = GetInventoryItemCount("player", slot);
 			durability, maxDurability = GetInventoryItemDurability(slot);
@@ -293,7 +293,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 	else -- bags
 		itemID = C_Container.GetContainerItemID(bag, slot);
-		name, _, _, _, _, _, _, _, invType = GetItemInfo(itemID);
+		name, _, _, _, _, _, _, _, invType = C_Item.GetItemInfo(itemID);
 		local info = C_Container.GetContainerItemInfo(bag, slot);
 		textureName = info.iconFileID;
 		count = info.stackCount;

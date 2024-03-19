@@ -88,6 +88,10 @@ function ContainerFrame_GetContainerNumSlots(bagId)
 end
 
 function ContainerFrame_AllowedToOpenBags()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Bags) then
+		return false;
+	end
+
 	return UIParent:IsShown() and CanOpenPanels();
 end
 
@@ -1277,7 +1281,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		local itemQuantity = itemInfo and itemInfo.itemCount;
 		local itemLink = itemInfo and itemInfo.hyperlink;
 		if ( itemLink ) then
-			local _, _, itemQuality = GetItemInfo(itemLink);
+			local _, _, itemQuality = C_Item.GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
 				itemsString = itemsString .. ", " .. format(ITEM_QUANTITY_TEMPLATE, (itemQuantity or 0) * quantity, itemLink);
@@ -1319,8 +1323,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemTexture = info and info.iconFileID;
 		refundItemLink = info and info.hyperlink;
 	end
-	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
-	local r, g, b = GetItemQualityColor(itemQuality);
+	local itemName, _, itemQuality = C_Item.GetItemInfo(refundItemLink);
+	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 	local textLine2 = "";
 	if (hasEnchants) then
 		textLine2 = "\n\n"..CONFIRM_REFUND_ITEM_ENHANCEMENTS_LOST;
@@ -1791,9 +1795,9 @@ function ContainerFramePortraitButtonMixin:OnEnter()
 		local parent = self:GetParent();
 		local id = parent:GetBagID();
 		local link = GetInventoryItemLink("player", C_Container.ContainerIDToInventoryID(id));
-		local name, _, quality = GetItemInfo(link);
+		local name, _, quality = C_Item.GetItemInfo(link);
 		if name and quality then
-			local r, g, b = GetItemQualityColor(quality);
+			local r, g, b = C_Item.GetItemQualityColor(quality);
 			GameTooltip:SetText(name, r, g, b);
 		else
 			GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
@@ -2580,10 +2584,19 @@ function ContainerFrameCombinedBagsMixin:UpdateMiscellaneousFrames()
 	self:UpdateCurrencyFrames();
 end
 
+-- Used to get approx. width of ContainerFrame if it has not
+-- been made visible since UI (re)load.
+function ContainerFrame_GetApproximateWidth()
+	if ContainerFrameSettingsManager:IsUsingCombinedBags() then
+		return ContainerFrameCombinedBags:CalculateWidth();
+	end
+	return ContainerFrame1:CalculateWidth();
+end
+
 function ContainerFrameCombinedBagsMixin:CalculateWidth()
 	local columns = self:GetColumns();
-	local itemButton = self.Items[1];
-	local itemsWidth = (columns * itemButton:GetWidth()) + ((columns - 1) * ITEM_SPACING_X);
+	local ITEM_BUTTON_WIDTH = 37;
+	local itemsWidth = (columns * ITEM_BUTTON_WIDTH) + ((columns - 1) * ITEM_SPACING_X);
 
 	return itemsWidth + self:GetPaddingWidth();
 end

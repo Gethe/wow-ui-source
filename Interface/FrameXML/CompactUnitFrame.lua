@@ -26,6 +26,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("READY_CHECK");
@@ -50,6 +51,12 @@ function CompactUnitFrame_OnLoad(self)
 end
 
 function CompactUnitFrame_OnEvent(self, event, ...)
+	-- loot objects shouln't run all the regular nameplate functions
+	if ( self.isLootObject ) then
+		CompactUnitFrame_UpdateAll(self);
+		return;
+	end
+
 	local arg1, arg2, arg3, arg4 = ...;
 	if ( event == self.updateAllEvent and (not self.updateAllFilter or self.updateAllFilter(self, event, ...)) ) then
 		CompactUnitFrame_UpdateAll(self);
@@ -65,6 +72,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateAuras(self);	--We filter differently based on whether the player is in Combat, so we need to update when that changes.
 	elseif ( event == "PLAYER_ROLES_ASSIGNED" ) then
 		CompactUnitFrame_UpdateRoleIcon(self);
+	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
+		CompactUnitFrame_UpdatePlayerLevelDiff(self);
 	elseif ( event == "READY_CHECK" ) then
 		CompactUnitFrame_UpdateReadyCheck(self);
 	elseif ( event == "READY_CHECK_FINISHED" ) then
@@ -140,6 +149,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateHealthBorder(self);
 			elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
 				CompactUnitFrame_UpdateClassificationIndicator(self);
+			elseif ( event == "UNIT_LEVEL" ) then
+				CompactUnitFrame_UpdatePlayerLevelDiff(self);
 			elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
 			elseif ( event == "UNIT_IN_RANGE_UPDATE" ) then
@@ -310,6 +321,7 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_CLASSIFICATION_CHANGED", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_LEVEL", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_OTHER_PARTY_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
@@ -399,7 +411,11 @@ function CompactUnitFrame_UpdateAll(frame)
 
 	CompactUnitFrame_UpdateInVehicle(frame);
 	CompactUnitFrame_UpdateVisible(frame);
-	if ( CompactUnitFrame_UnitExists(frame.displayedUnit) ) then
+
+	frame.isLootObject = WorldLootObjectExists(frame.displayedUnit);
+	if ( frame.isLootObject ) then
+		CompactUnitFrame_UpdateLootFrame(frame);
+	elseif ( CompactUnitFrame_UnitExists(frame.displayedUnit) ) then
 		CompactUnitFrame_UpdateMaxHealth(frame);
 		CompactUnitFrame_UpdateHealth(frame);
 		CompactUnitFrame_UpdateMaxPower(frame);
@@ -419,6 +435,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateAuras(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
+		CompactUnitFrame_UpdatePlayerLevelDiff(frame);
 		CompactUnitFrame_UpdateWidgetSet(frame);
 	elseif (UnitIsGameObject(frame.displayedUnit)) then -- Interactable GameObject
 		CompactUnitFrame_SetHideHealth(frame, true, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
@@ -521,15 +538,33 @@ function CompactUnitFrame_IsOnThreatListWithPlayer(unit)
 	return IsOnThreatList(threatStatus);
 end
 
+--[[ 
+This override is due to a discrepancy in the UnitIsFriend code causing us to register "friendly" players of the opposite 
+factions as "enemy" in NamePlateDriverMixin:GetNamePlateTypeFromUnit. This results in us using non-extended colors, which
+is undesirable in the case of the lobby.
+
+This is a hacky fix, but comes in the interest of not creating further bugs. 
+]]
+local function GetPlunderstormPlayerExtendedColorOverride(unit, displayedUnit)
+	return C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm 
+		and UnitIsPlayer(unit) 
+		and not UnitInParty(unit) 
+		and not UnitCanAttack("player", unit)
+		and not CompactUnitFrame_IsOnThreatListWithPlayer(displayedUnit);
+end
+
 function CompactUnitFrame_UpdateHealthColor(frame)
 	local r, g, b;
 	local unitIsConnected = UnitIsConnected(frame.unit);
 	local unitIsDead = unitIsConnected and UnitIsDead(frame.unit);
 	local unitIsPlayer = UnitIsPlayer(frame.unit) or UnitIsPlayer(frame.displayedUnit);
+	local unitIsActivePlayer = UnitIsUnit(frame.unit, "player") or UnitIsUnit(frame.displayedUnit, "player");
 
 	if ( not unitIsConnected or (unitIsDead and not unitIsPlayer) ) then
 		--Color it gray
 		r, g, b = 0.5, 0.5, 0.5;
+	elseif ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.PlayerNamePlateAlternateHealthColor) and unitIsPlayer and not unitIsActivePlayer and UnitCanAttack("player", frame.unit) ) then
+		r, g, b  = PLAYER_NAMEPLATE_ALTERNATE_HEALTH_COLOR:GetRGBA();
 	else
 		if ( frame.optionTable.healthBarColorOverride ) then
 			local healthBarColorOverride = frame.optionTable.healthBarColorOverride;
@@ -551,12 +586,13 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				-- Use color based on the type of unit (neutral, etc.)
 				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) and not UnitIsFriend("player", frame.unit) ) then
 					r, g, b = 1.0, 0.0, 0.0;
-				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) ) then
+				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm ) then
 					-- We don't want to use the selection color for friendly player nameplates because
 					-- it doesn't show player health clearly enough.
 					r, g, b = 0.667, 0.667, 1.0;
 				else
-					r, g, b = UnitSelectionColor(frame.unit, frame.optionTable.colorHealthWithExtendedColors);
+					local useExtendedColors = GetPlunderstormPlayerExtendedColorOverride(frame.unit, frame.displayedUnit) or frame.optionTable.colorHealthWithExtendedColors;
+					r, g, b = UnitSelectionColor(frame.unit, useExtendedColors);
 				end
 			elseif ( UnitIsFriend("player", frame.unit) ) then
 				r, g, b = 0.0, 1.0, 0.0;
@@ -775,7 +811,8 @@ function CompactUnitFrame_UpdateName(frame)
 			if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit)  and not UnitIsFriend("player", frame.unit)  ) then
 				frame.name:SetVertexColor(1.0, 0.0, 0.0);
 			else
-				frame.name:SetVertexColor(UnitSelectionColor(frame.unit, frame.optionTable.colorNameWithExtendedColors));
+				local useExtendedColors = GetPlunderstormPlayerExtendedColorOverride(frame.unit, frame.displayedUnit) or frame.optionTable.colorNameWithExtendedColors;
+				frame.name:SetVertexColor(UnitSelectionColor(frame.unit, useExtendedColors));
 			end
 		else
 			frame.name:SetVertexColor(1.0, 1.0, 1.0);
@@ -1312,12 +1349,64 @@ function CompactUnitFrame_UpdateClassificationIndicator(frame)
 	end
 end
 
+function CompactUnitFrame_UpdatePlayerLevelDiff(frame)
+	if (frame.PlayerLevelDiffFrame) then
+		local levelDiffIcon = frame.PlayerLevelDiffFrame.playerLevelDiffIcon;
+		local levelDiffText = frame.PlayerLevelDiffFrame.playerLevelDiffText;
+
+		local isActivePlayer = UnitIsUnit(frame.unit, "player");
+		if (C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.PlayerNamePlateDifficultyIcon) and UnitIsPlayer(frame.unit) and not isActivePlayer and not UnitInParty(frame.unit)) then
+			local otherUnitLevel = UnitEffectiveLevel(frame.unit);
+			local playerTargetLevelDiff = otherUnitLevel - UnitEffectiveLevel("player");
+			
+			local xOffset = 0;
+			if (otherUnitLevel == 1 or otherUnitLevel == 10) then
+				xOffset = -1;
+			end
+
+			levelDiffText:SetPoint("CENTER", levelDiffIcon, "CENTER", xOffset, 0);
+
+			local textColor;
+			if (playerTargetLevelDiff <= -2) then
+				textColor = EASY_DIFFICULTY_COLOR;
+			elseif (playerTargetLevelDiff <= 1) then
+				textColor = FAIR_DIFFICULTY_COLOR;
+			elseif (playerTargetLevelDiff <= 3) then
+				textColor = DIFFICULT_DIFFICULTY_COLOR;
+			else
+				textColor = IMPOSSIBLE_DIFFICULTY_COLOR;
+			end
+
+			levelDiffText:SetText(textColor:WrapTextInColorCode(otherUnitLevel));
+
+			frame.PlayerLevelDiffFrame:Show();
+		else
+			frame.PlayerLevelDiffFrame:Hide();
+		end
+	end
+end
+
 function CompactUnitFrame_UpdateWidgetSet(frame)
 	if not frame.WidgetContainer then
 		return;
 	end
 
 	local widgetSetID = UnitWidgetSet(frame.unit);
+	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, DefaultWidgetLayout, nil, frame.unit);
+end
+
+function CompactUnitFrame_UpdateLootFrame(frame)
+	if not frame.WidgetContainer then
+		return;
+	end
+
+	frame.classificationIndicator:Hide();
+	frame.PlayerLevelDiffFrame:Hide();
+	frame.healthBar:Hide();
+	frame.name:Hide();
+	frame:SetScale(0.75);
+
+	local widgetSetID = 561;
 	frame.WidgetContainer:RegisterForWidgetSet(widgetSetID, DefaultWidgetLayout, nil, frame.unit);
 end
 
@@ -1341,6 +1430,10 @@ end
 --Other internal functions
 do
 	local function CompactUnitFrame_ParseAllAuras(frame, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs)
+		if frame.isLootObject then
+			return;
+		end
+
 		if frame.debuffs == nil then
 			frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
 			frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
@@ -1375,6 +1468,10 @@ do
 	end
 
 	local function CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo)
+		if frame.isLootObject then
+			return;
+		end
+
 		local displayOnlyDispellableDebuffs = CompactUnitFrame_GetOptionDisplayOnlyDispellableDebuffs(frame, frame.optionTable);
 		local ignoreBuffs = not frame.buffFrames or not frame.optionTable.displayBuffs or frame.maxBuffs == 0;
 		local displayDebuffs = CompactUnitFrame_GetOptionDisplayDebuffs(frame, frame.optionTable);
@@ -1524,6 +1621,10 @@ do
 	end
 
 	function CompactUnitFrame_UpdateAuras(frame, unitAuraUpdateInfo)
+		if frame.isLootObject then
+			return;
+		end
+		
 		CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo);
 		CompactUnitFrame_UpdateClassificationIndicator(frame);
 	end
@@ -1690,6 +1791,11 @@ function CompactUnitFrame_GetOptionDisplayOnlyHealerPowerBars(frame, options)
 end
 
 function CompactUnitFrame_GetOptionUseClassColors(frame, options)
+	-- There are no classes in Plunderstorm
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return false;
+	end
+
 	if CompactUnitFrame_IsPvpFrame(frame) then
 		return options.pvpUseClassColors;
 	else
@@ -2391,6 +2497,9 @@ function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOpt
 	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
 	frame.ClassificationFrame.maxScale = setupOptions.maxClassificationScale or frameOptions.maxClassificationScale;
 	frame.ClassificationFrame:SetScale(setupOptions.classificationScale or frameOptions.classificationScale or 1.0);
+
+	frame.PlayerLevelDiffFrame.maxScale = setupOptions.maxClassificationScale or frameOptions.maxClassificationScale;
+	frame.PlayerLevelDiffFrame:SetScale(setupOptions.classificationScale or frameOptions.classificationScale or 1.0);
 
 	frame.LoseAggroAnim:Stop();
 

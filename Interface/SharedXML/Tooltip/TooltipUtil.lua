@@ -105,7 +105,7 @@ function TooltipUtil.GetDisplayedItem(tooltip)
 			hyperlink = tooltipData.hyperlink;
 		end
 		if hyperlink then
-			local name = GetItemInfo(hyperlink);
+			local name = C_Item.GetItemInfo(hyperlink);
 			return name, hyperlink, tooltipData.id;
 		end
 	end

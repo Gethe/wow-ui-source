@@ -54,9 +54,9 @@ local ItemConstants_Mainline =
 		{
 			Name = "PointsModifierSourceType",
 			Type = "Enumeration",
-			NumValues = 65,
+			NumValues = 66,
 			MinValue = 0,
-			MaxValue = 64,
+			MaxValue = 65,
 			Fields =
 			{
 				{ Name = "PlayerLevel", Type = "PointsModifierSourceType", EnumValue = 0 },
@@ -124,6 +124,7 @@ local ItemConstants_Mainline =
 				{ Name = "ProfessionRatingPerceptionPercent", Type = "PointsModifierSourceType", EnumValue = 62 },
 				{ Name = "ProfessionTraitRanksByLabel", Type = "PointsModifierSourceType", EnumValue = 63 },
 				{ Name = "CreatureHealthMod", Type = "PointsModifierSourceType", EnumValue = 64 },
+				{ Name = "FirstTimeQuestCompletionRewards", Type = "PointsModifierSourceType", EnumValue = 65 },
 			},
 		},
 		{

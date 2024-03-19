@@ -354,7 +354,7 @@ function PTR_IssueReporter.CreateReports()
     
     ------------------------------------- Item Reporting -----------------------------------------------
     local GetIconFromItemID = function(value)
-        return select(10, GetItemInfo(value))
+        return select(10, C_Item.GetItemInfo(value))
     end    
     
     local GetBonusListFromID = function(value)

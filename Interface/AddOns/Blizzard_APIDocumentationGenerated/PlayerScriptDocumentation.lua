@@ -6,6 +6,10 @@ local PlayerScript =
 	Functions =
 	{
 		{
+			Name = "AcceptAreaSpiritHeal",
+			Type = "Function",
+		},
+		{
 			Name = "AcceptGuild",
 			Type = "Function",
 		},
@@ -14,8 +18,115 @@ local PlayerScript =
 			Type = "Function",
 		},
 		{
+			Name = "Ambiguate",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "fullName", Type = "cstring", Nilable = false },
+				{ Name = "context", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AreAccountAchievementsHidden",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AutoEquipCursorItem",
 			Type = "Function",
+		},
+		{
+			Name = "BeginTrade",
+			Type = "Function",
+		},
+		{
+			Name = "CanDualWield",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanInspect",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetGUID", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanLootUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetUnit", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasLoot", Type = "bool", Nilable = false },
+				{ Name = "canLoot", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CancelAreaSpiritHeal",
+			Type = "Function",
+		},
+		{
+			Name = "CancelPendingEquip",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CancelTrade",
+			Type = "Function",
+		},
+		{
+			Name = "CheckInteractDistance",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "UnitToken", Nilable = false },
+				{ Name = "distIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CheckTalentMasterDist",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "ConfirmTalentWipe",
@@ -34,12 +145,40 @@ local PlayerScript =
 			Type = "Function",
 		},
 		{
+			Name = "EquipPendingItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "FollowUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false, Default = "0" },
+				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "GetAllowLowLevelRaid",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAreaSpiritHealerTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -76,7 +215,25 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetBindLocation",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBlockChance",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCemeteryPreference",
 			Type = "Function",
 
 			Returns =
@@ -125,6 +282,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCorpseRecoveryDelay",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -226,6 +392,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLootSpecialization",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -518,6 +693,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetReleaseTimeRemaining",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetResSicknessDuration",
 			Type = "Function",
 
@@ -535,6 +719,17 @@ local PlayerScript =
 				{ Name = "exhaustionID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "factor", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRestrictedAccountData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "maxMoney", Type = "WOWMONEY", Nilable = false },
+				{ Name = "professionCap", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -713,6 +908,24 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "HasIgnoreDualWieldWeapon",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasKey",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasKey", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasNoReleaseAura",
 			Type = "Function",
 
@@ -733,6 +946,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "InitiateTrade",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAccountSecured",
 			Type = "Function",
 
@@ -748,6 +970,24 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCemeterySelectionAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCharacterNewlyBoosted",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "newlyBoosted", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -882,6 +1122,24 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "IsPlayerInWorld",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPlayerMoving",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRangedWeapon",
 			Type = "Function",
 
@@ -892,6 +1150,15 @@ local PlayerScript =
 		},
 		{
 			Name = "IsResting",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRestrictedAccount",
 			Type = "Function",
 
 			Returns =
@@ -927,6 +1194,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "NotifyInspect",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "targetGUID", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "PartialPlayTime",
 			Type = "Function",
 
@@ -956,7 +1232,25 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "PortGraveyard",
+			Type = "Function",
+		},
+		{
+			Name = "RandomRoll",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "min", Type = "number", Nilable = false },
+				{ Name = "max", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RepopMe",
+			Type = "Function",
+		},
+		{
+			Name = "RequestTimePlayed",
 			Type = "Function",
 		},
 		{
@@ -966,6 +1260,33 @@ local PlayerScript =
 			Arguments =
 			{
 				{ Name = "acceptLock", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ResurrectGetOfferer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ResurrectHasSickness",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ResurrectHasTimer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -991,6 +1312,24 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "SetCemeteryPreference",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "cemetaryID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetLootSpecialization",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTaxiBenchmarkMode",
 			Type = "Function",
 
@@ -1000,8 +1339,111 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "ShouldShowIslandsWeeklyPOI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowSpecialSplashScreen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowAccountAchievements",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "hide", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "ShowCloak",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "show", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowHelm",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "show", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowingCloak",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShowingHelm",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SitStandOrDescendStart",
+			Type = "Function",
+		},
+		{
+			Name = "SplashFrameCanBeShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "StartAttack",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "StopAttack",
+			Type = "Function",
+		},
+		{
+			Name = "Stuck",
+			Type = "Function",
+		},
+		{
 			Name = "TimeoutResurrect",
 			Type = "Function",
+		},
+		{
+			Name = "ToggleSelfHighlight",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "ToggleSheath",

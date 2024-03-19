@@ -76,9 +76,11 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	self.areaPoiID = poiInfo.areaPoiID;
 	self.factionID = poiInfo.factionID;
 	self.shouldGlow = poiInfo.shouldGlow;
-	self.addPaddingAboveWidgets = poiInfo.addPaddingAboveWidgets;
+	self.addPaddingAboveTooltipWidgets = poiInfo.addPaddingAboveTooltipWidgets;
 	self:SetupHoverInfo(poiInfo);
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
+
+	self:AddIconWidgets();
 
 	if self.textureKit == "OribosGreatVault" then
 		local function OribosGreatVaultPOIOnMouseUp(self, button, upInside)
@@ -151,7 +153,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 	local hasDescription = self.description and self.description ~= "";
 	local isTimed, hideTimer = C_AreaPoiInfo.IsAreaPOITimed(self.areaPoiID);
 	local showTimer = isTimed and not hideTimer;
-	local hasWidgetSet = self.widgetSetID ~= nil;
+	local hasWidgetSet = self.tooltipWidgetSet ~= nil;
 
 	local hasTooltip = hasDescription or showTimer or hasWidgetSet;
 	local addedTooltipLine = false;
@@ -186,7 +188,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 		end
 
 		if hasWidgetSet then
-			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, addedTooltipLine and self.addPaddingAboveWidgets and 10);
+			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.tooltipWidgetSet, addedTooltipLine and self.addPaddingAboveTooltipWidgets and 10);
 			if overflow then
 				verticalPadding = -overflow;
 			end

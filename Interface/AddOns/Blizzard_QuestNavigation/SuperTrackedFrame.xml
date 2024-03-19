@@ -23,6 +23,14 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="-12" y="12"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="12" y="-12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

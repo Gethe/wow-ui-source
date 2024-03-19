@@ -61,6 +61,11 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 end
 
 function CompactRaidFrameManager_UpdateShown()
+	if ( not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CompactRaidFrameManager) ) then
+		CompactRaidFrameManager:Hide();
+		return;
+	end
+
 	local showManager = IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown();
 	CompactRaidFrameManager:SetShown(showManager);
 
@@ -437,7 +442,11 @@ function CompactRaidFrameManager_UpdateContainerVisibility()
 	end
 
 	CompactPartyFrame:UpdateVisibility();
-	CompactArenaFrame:UpdateVisibility();
+
+	-- TODO:: WoWLabs temp compatibility changes
+	if CompactArenaFrame then
+		CompactArenaFrame:UpdateVisibility();
+	end
 end
 
 function CompactRaidFrameManager_UpdateContainerBounds()

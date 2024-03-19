@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<Script file="ChatAlertFrameMixin.lua"/>
+
+	<!-- Alerts are only available in-game so these definitions were split out. -->
+	<Frame name="ChatAlertFrame" mixin="ChatAlertFrameMixin" inherits="AlertContainerTemplate">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrame1ButtonFrame" relativePoint="TOPLEFT" x="-1" y="27"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

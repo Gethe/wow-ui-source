@@ -50,6 +50,22 @@ function UIWidgetTemplateTugOfWarMixin:SanitizeAndSetValues(widgetInfo)
 	self.neutralZoneSizePercent = ClampedPercentageBetween(self.neutralZoneSize, 0, self.range);
 end
 
+local trackPaddingValues =
+{
+	[Enum.WidgetIconSizeType.Small]	= 4,
+	[Enum.WidgetIconSizeType.Standard] = 6,
+	[Enum.WidgetIconSizeType.Medium] = 6,
+	[Enum.WidgetIconSizeType.Large]	= 6,
+}
+
+local function GetTrackPadding(iconInfo)
+	if iconInfo.sourceID == 0 then
+		return 0;
+	else
+		return trackPaddingValues[iconInfo.sizeType];
+	end
+end
+
 function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
 	self:SetTooltip(widgetInfo.tooltip);
@@ -65,9 +81,23 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 
 	local extraFrameInfo = frameTextureKitInfo[widgetInfo.frameTextureKit];
 
-	local markerXOffset = self.BarBackgroundMiddle:GetWidth() * self.currentValuePercent;
+	local halfNeutralZoneSize = self.neutralZoneSize / 2;
+
+	local inLeftZone = self.currentValue < (self.neutralZoneCenter - halfNeutralZoneSize);
+	local inRightZone = self.currentValue > (self.neutralZoneCenter + halfNeutralZoneSize);
+	local inNeutralZone = not inLeftZone and not inRightZone;
+
+	self.LeftIcon:Setup(widgetContainer, widgetInfo.textureKit, widgetInfo.leftIconInfo, inLeftZone, widgetInfo.glowAnimType);
+	self.RightIcon:Setup(widgetContainer, widgetInfo.textureKit, widgetInfo.rightIconInfo, inRightZone, widgetInfo.glowAnimType);
+
+	local leftPadding = GetTrackPadding(widgetInfo.leftIconInfo);
+	local rightPadding = GetTrackPadding(widgetInfo.rightIconInfo);
+	local trackPadding = leftPadding + rightPadding;
+	local trackWidth = self.BarBackgroundMiddle:GetWidth() - trackPadding;
+
+	local markerXOffset = trackWidth * self.currentValuePercent;
 	local markerYOffset = extraFrameInfo and extraFrameInfo.markerYOffset or 0;
-	self.Marker:SetPoint("CENTER", self.BarBackgroundMiddle, "LEFT", markerXOffset, markerYOffset);
+	self.Marker:SetPoint("CENTER", self.BarBackgroundMiddle, "LEFT", leftPadding + markerXOffset, markerYOffset);
 
 	local arrowXOffset = extraFrameInfo and extraFrameInfo.arrowXOffset or 0;
 	local arrowYOffset = extraFrameInfo and extraFrameInfo.arrowYOffset or 0;
@@ -79,10 +109,10 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 		local neutralFillColor = neutralFillColorFromStyleValue[widgetInfo.neutralFillStyle] or WHITE_FONT_COLOR;
 		self.NeutralFill:SetVertexColor(neutralFillColor:GetRGB());
 
-		local neutralFillXOffset = self.BarBackgroundMiddle:GetWidth() * self.neutralCenterPercent;
-		self.NeutralFill:SetPoint("CENTER", self.BarBackgroundMiddle, "LEFT", neutralFillXOffset, -0.5);
+		local neutralFillXOffset = trackWidth * self.neutralCenterPercent;
+		self.NeutralFill:SetPoint("CENTER", self.BarBackgroundMiddle, "LEFT", leftPadding + neutralFillXOffset, -0.5);
 
-		local neutralFillWidth = self.neutralZoneSizePercent * self.BarBackgroundMiddle:GetWidth();
+		local neutralFillWidth = self.neutralZoneSizePercent * trackWidth;
 		self.NeutralFill:SetWidth(neutralFillWidth);
 
 		self.NeutralFill:Show();
@@ -90,15 +120,6 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 	else
 		self.NeutralFill:Hide();
 	end
-
-	local halfNeutralZoneSize = self.neutralZoneSize / 2;
-
-	local inLeftZone = self.currentValue < (self.neutralZoneCenter - halfNeutralZoneSize);
-	local inRightZone = self.currentValue > (self.neutralZoneCenter + halfNeutralZoneSize);
-	local inNeutralZone = not inLeftZone and not inRightZone;
-
-	self.LeftIcon:Setup(widgetContainer, widgetInfo.textureKit, widgetInfo.leftIconInfo, inLeftZone, widgetInfo.glowAnimType);
-	self.RightIcon:Setup(widgetContainer, widgetInfo.textureKit, widgetInfo.rightIconInfo, inRightZone, widgetInfo.glowAnimType);
 
 	local hasNeutralFillGlowTexture = self.NeutralFillGlow:IsShown();
 	if inNeutralZone and hasNeutralFillGlowTexture and self.neutralZoneSize > 0 then
@@ -124,8 +145,10 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 		self.RightArrow:Hide();
 	elseif widgetInfo.markerArrowShownState == Enum.TugOfWarMarkerArrowShownState.Always then
 		self.LeftArrowAnim:Stop();
+		self.LeftArrow:SetAlpha(1);
 		self.LeftArrow:Show();
 		self.RightArrowAnim:Stop();
+		self.RightArrow:SetAlpha(1);
 		self.RightArrow:Show();
 	else
 		local movedLeft = (self.currentValue < self.oldValue);
@@ -137,6 +160,14 @@ function UIWidgetTemplateTugOfWarMixin:Setup(widgetInfo, widgetContainer)
 		elseif movedRight then
 			self.RightArrow:Show();
 			self.RightArrowAnim:Restart();
+		else
+			if not self.LeftArrowAnim:IsPlaying() then
+				self.LeftArrow:SetAlpha(0);
+			end
+
+			if not self.RightArrowAnim:IsPlaying() then
+				self.RightArrow:SetAlpha(0);
+			end
 		end
 	end
 

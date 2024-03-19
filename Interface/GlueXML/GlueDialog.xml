@@ -63,7 +63,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<EditBox name="$parentEditBox" historyLines="1" hidden="true">
+			<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
 				<Size x="130" y="32"/>
 				<Anchors>
 					<Anchor point="CENTER"/>

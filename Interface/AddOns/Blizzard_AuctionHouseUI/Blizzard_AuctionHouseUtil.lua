@@ -8,7 +8,7 @@ local RED_TEXT_MINUTES_THRESHOLD = 60;
 local TIME_LEFT_ATLAS_MARKUP = CreateAtlasMarkup("auctionhouse-icon-clock", 16, 16, 2, -2);
 
 local function GetQualityFilterString(itemQuality)
-	local hex = select(4, GetItemQualityColor(itemQuality));
+	local hex = select(4, C_Item.GetItemQualityColor(itemQuality));
 	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
 	return "|c"..hex..text.."|r";
 end
@@ -365,7 +365,7 @@ function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionDa
 		if LinkUtil.IsLinkType(itemLink, "battlepet") then
 			itemQuality = select(3, BattlePetToolTip_UnpackBattlePetLink(itemLink)) or itemQuality;
 		else
-			itemQuality = select(3, GetItemInfo(itemLink)) or itemQuality;
+			itemQuality = select(3, C_Item.GetItemInfo(itemLink)) or itemQuality;
 		end
 	end
 
@@ -611,7 +611,7 @@ function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
 	else
 		local itemID = rowData.itemID or rowData.itemKey.itemID;
 		if itemID ~= nil then
-			local itemLink = select(2, GetItemInfo(itemID));
+			local itemLink = select(2, C_Item.GetItemInfo(itemID));
 			return itemLink;
 		end
 	end

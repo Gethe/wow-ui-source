@@ -94,7 +94,7 @@ StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 		data.callback();
 	end,
 	OnCancel = function(self, data)
-		local cancelCallback = data.cancelCallback;
+		local cancelCallback = data and data.cancelCallback or nil;
 		if cancelCallback ~= nil then
 			cancelCallback();
 		end
@@ -660,7 +660,7 @@ StaticPopupDialogs["CONFIRM_GUILD_DISBAND"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildDisband();
+		C_GuildInfo.Disband();
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -889,7 +889,7 @@ StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		GuildLeave();
+		C_GuildInfo.Leave();
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -901,7 +901,7 @@ StaticPopupDialogs["CONFIRM_GUILD_PROMOTE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, name)
-		GuildSetLeader(name);
+		C_GuildInfo.SetLeader(name);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1820,7 +1820,7 @@ StaticPopupDialogs["USE_BIND"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmBindOnUse();
+		C_Item.ConfirmBindOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1832,7 +1832,7 @@ StaticPopupDialogs["CONFIM_BEFORE_USE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmOnUse();
+		C_Item.ConfirmOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1844,7 +1844,7 @@ StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmNoRefundOnUse();
+		C_Item.ConfirmNoRefundOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2477,7 +2477,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.GUILD_INVITE.include, AUTOCOMPLETE_LIST.GUILD_INVITE.exclude },
 	maxLetters = 48,
 	OnAccept = function(self)
-		GuildInvite(self.editBox:GetText());
+		C_GuildInfo.Invite(self.editBox:GetText());
 	end,
 	OnShow = function(self, data)
 		self.editBox:SetFocus();
@@ -2523,7 +2523,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 		if invitee == "" then
 			ChatFrame_OpenChat("");
 		else
-			GuildInvite(invitee);
+			C_GuildInfo.Invite(invitee);
 			parent:Hide();
 		end
 	end,
@@ -2582,7 +2582,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 				CommunitiesFrame:CloseGuildMemberDetailFrame();
 			end
 		else
-			GuildUninvite(GuildFrame.selectedName);
+			C_GuildInfo.Uninvite(GuildFrame.selectedName);
 			if GuildMemberDetailFrame then
 				GuildMemberDetailFrame:Hide();
 			end
@@ -2902,7 +2902,7 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		BindEnchant();
+		C_Item.BindEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2938,7 +2938,7 @@ StaticPopupDialogs["ACTION_WILL_BIND_ITEM"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ActionBindsItem();
+		C_Item.ActionBindsItem();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2950,7 +2950,7 @@ StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ReplaceEnchant();
+		C_Item.ReplaceEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2962,7 +2962,7 @@ StaticPopupDialogs["REPLACE_TRADESKILL_ENCHANT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ReplaceTradeskillEnchant();
+		C_Item.ReplaceTradeskillEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2974,7 +2974,7 @@ StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ReplaceTradeEnchant();
+		C_Item.ReplaceTradeEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3030,7 +3030,7 @@ StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		EndBoundTradeable(self.data);
+		C_Item.EndBoundTradeable(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3587,6 +3587,19 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
+
+StaticPopupDialogs["CONFIRM_BLOCK_FRIEND"] = {
+	text = "%s",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, accountID)
+		BNSetBlocked(accountID, false);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["PICKUP_MONEY"] = {
 	text = AMOUNT_TO_PICKUP,
 	button1 = ACCEPT,
@@ -3631,7 +3644,7 @@ StaticPopupDialogs["GUILD_DEMOTE_CONFIRM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildDemote(self.data);
+		C_GuildInfo.Demote(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3642,7 +3655,7 @@ StaticPopupDialogs["GUILD_PROMOTE_CONFIRM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildPromote(self.data);
+		C_GuildInfo.Promote(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -4374,7 +4387,7 @@ function StaticPopup_Resize(dialog, which)
 	if ( info.verticalButtonLayout ) then
 		width = width + 30;
 	else
-		if (info.showAlert or info.showAlertGear or info.closeButton or info.wide) then
+		if (info.showAlert or info.showAlertGear or info.customAlertIcon or info.closeButton or info.wide) then
 			width = 420;
 		elseif ( info.editBoxWidth and info.editBoxWidth > 260 ) then
 			width = width + (info.editBoxWidth - 260);
@@ -4969,6 +4982,14 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	elseif ( info.showAlertGear ) then
 		alertIcon:SetTexture(STATICPOPUP_TEXTURE_ALERTGEAR);
 		if ( button3:IsShown() )then
+			alertIcon:SetPoint("LEFT", 24, 0);
+		else
+			alertIcon:SetPoint("LEFT", 24, 0);
+		end
+		alertIcon:Show();
+	elseif ( info.customAlertIcon ) then
+		alertIcon:SetTexture(info.customAlertIcon);
+		if ( button3:IsShown() ) then
 			alertIcon:SetPoint("LEFT", 24, 0);
 		else
 			alertIcon:SetPoint("LEFT", 24, 0);
@@ -5606,15 +5627,15 @@ function StaticPopupItemFrameMixin:SetCustomOnEnter(customOnEnter)
 end
 
 function StaticPopupItemFrameMixin:RetrieveInfo(data)
-	local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(data.link);
+	local itemName, _, itemQuality, _, _, _, _, _, _, texture = C_Item.GetItemInfo(data.link);
 	if ( itemName ) then
 		data.name = itemName;
-		local r, g, b = GetItemQualityColor(itemQuality);
+		local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 		data.color = {r, g, b, 1};
 		data.texture = texture;
 		self.itemID = nil;
 	else
-		local itemID, _, _, _, texture = GetItemInfoInstant(data.link);
+		local itemID, _, _, _, texture = C_Item.GetItemInfoInstant(data.link);
 		data.name = RETRIEVING_ITEM_INFO;
 		data.color = {RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1};
 		data.texture = texture;
@@ -5631,7 +5652,7 @@ function StaticPopupItemFrameMixin:DisplayInfo(link, name, color, texture, count
 	nameText:SetText(name);
 
 	if link then
-		local quality = select(3, GetItemInfo(link));
+		local quality = select(3, C_Item.GetItemInfo(link));
 		SetItemButtonQuality(self, quality, link);
 	end
 

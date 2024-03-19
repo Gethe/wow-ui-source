@@ -173,6 +173,8 @@ function MountJournal_OnLoad(self)
 	self.SlotRequirementLabel = bottomLeftInset.SlotRequirementLabel;
 	self.SlotRequirementLabel:SetText(levelRequiredText);
 	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
+	
+	MountJournal_SetPendingDragonMountChanges(false);
 
 	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
 
@@ -650,11 +652,20 @@ function MountJournalMountButton_ChooseFallbackMountToDisplay(mountID, random)
 	return 0;
 end
 
+function MountJournal_SetPendingDragonMountChanges(isPending)
+	MountJournal.PendingDragonMountChanges = isPending;
+end
+
+function MountJournal_GetPendingDragonMountChanges()
+	return MountJournal.PendingDragonMountChanges;
+end
+
 function MountJournal_UpdateMountDisplay(forceSceneChange)
 	if ( MountJournal.selectedMountID ) then
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
-		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange ) then
+		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange or MountJournal_GetPendingDragonMountChanges()) then
+			MountJournal_SetPendingDragonMountChanges(false);
 			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
 			if not creatureDisplayID then
 				local randomSelection = false;

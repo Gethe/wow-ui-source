@@ -193,12 +193,12 @@ function ContributeButtonMixin:UpdateTooltip()
 				rcAmount = currencyAmount;
 				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_CURRENCY_AMOUNT;
 			elseif itemID then
-				rcName = GetItemInfo(itemID);
+				rcName = C_Item.GetItemInfo(itemID);
 				rcAmount = itemCount;
 				local INCLUDE_BANK = true;
 				local IGNORE_USABLE = true;
 				local INCLUDE_REAGENT_BANK = true;
-				rcAvailable = GetItemCount(itemID, INCLUDE_BANK, IGNORE_USABLE, INCLUDE_REAGENT_BANK);
+				rcAvailable = C_Item.GetItemCount(itemID, INCLUDE_BANK, IGNORE_USABLE, INCLUDE_REAGENT_BANK);
 				rcFormatString = CONTRIBUTION_TOOLTIP_PLAYER_ITEM_AMOUNT;
 			end
 			if rcName then
@@ -258,7 +258,7 @@ function ContributeButtonMixin:Update()
 		if currencyID then
 			self:SetCurrencyFromID(currencyID, currencyAmount, CONTIBUTION_REQUIRED_CURRENCY, colorCode);
 		elseif itemID then
-			local markup = CreateTextureMarkup(GetItemIcon(itemID), 64, 64, 16, 16, 0, 1, 0, 1);
+			local markup = CreateTextureMarkup(C_Item.GetItemIconByID(itemID), 64, 64, 16, 16, 0, 1, 0, 1);
 			local itemString = ("%s%s %s|r"):format(colorCode, BreakUpLargeNumbers(itemCount), markup);
 			self:SetText(CONTIBUTION_REQUIRED_ITEM:format(itemString));
 		end

@@ -94,6 +94,10 @@ local eventToastTemplatesByToastType = {
 EventToastManagerMixin = { };
 function EventToastManagerMixin:OnLoad()
 	self.eventToastPools = CreateFramePoolCollection();
+
+	if EVENT_TOAST_FRAME_STRATA_OVERRIDE then
+		self:SetFrameStrata(EVENT_TOAST_FRAME_STRATA_OVERRIDE);
+	end
 end
 
 function EventToastManagerMixin:ReleaseToasts() 
@@ -128,6 +132,7 @@ EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin);
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
 
+	self:UpdateAnchor();
 	self:RegisterEvent("DISPLAY_EVENT_TOASTS");
 end
 
@@ -144,6 +149,11 @@ function EventToastManagerFrameMixin:OnMouseDown(button)
 		self:CloseActiveToasts();
 		self:Hide();
 	end
+end
+
+function EventToastManagerFrameMixin:UpdateAnchor(customOffsetY)
+	self:ClearAllPoints();
+	self:SetPoint("TOP", 0, customOffsetY or EVENT_TOAST_MANAGER_OFFSET_Y_OVERRIDE or -190);
 end
 
 function EventToastManagerFrameMixin:Reset()
@@ -285,6 +295,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 		local toast = self:GetToastFrame(toastTable);
 		self.currentDisplayingToast = toast;
 		self.shouldAnim = true;
+		self:UpdateAnchor();
 		self.hideAutomatically = toastTable.hideAutomatically;
 		toast.hideAutomatically = toastTable.hideAutomatically;
 		toast.toastInfo = toastInfo;
@@ -698,19 +709,153 @@ function EventToastManagerNormalMixin:OnAnimFinished()
 	self:GetParent():DisplayNextToast();
 end
 
-function EventToastManagerNormalMixin:AnchorWidgetFrame(frame)
+function EventToastManagerNormalMixin:AnchorWidgetFrame(frame, customOffsetY)
 	if (self.WidgetContainer:IsShown()) then 
 		self.WidgetContainer:ClearAllPoints();
-		self.WidgetContainer:SetPoint("TOP", frame, "BOTTOM", 0, -10);
+		self.WidgetContainer:SetPoint("TOP", frame, "BOTTOM", 0, customOffsetY or -10);
 	end
 end
 
 EventToastManagerNormalTitleAndSubtitleMixin = CreateFromMixins(EventToastManagerNormalMixin);
+
+local NormalTitleAndSubtitleTextureKitInfo = {
+	["plunderstorm-toast-levelup-background"] = {
+		useCustomBackground = true,
+		titleFont = "Game48FontShadow",
+		subtitleFont = "SystemFont_Shadow_Huge2",
+		customBackgroundYOffset = 23,
+		customBackgroundIgnoreInLayout = true,
+		anchorWidgetToTitle = true,
+		widgetOffsetY = -26,
+		customTopOffsetY = -240,
+	},
+
+	["plunderstorm-toast-finish-lose"] = {
+		useCustomBackground = true,
+		suppressAnimOut = false,
+		flipTitleAndSubtitle = true,
+		titleFont = "Game40Font_Shadow2",
+		subtitleFont = "SystemFont_Shadow_Large2",
+		textOffsetY = 4,
+		widgetOffsetY = -23,
+	},
+
+	["plunderstorm-toast-finish-win"] = {
+		useCustomBackground = true,
+		suppressAnimOut = true,
+		flipTitleAndSubtitle = true,
+		titleFont = "Game40Font_Shadow2",
+		subtitleFont = "SystemFont_Shadow_Large2",
+		textOffsetY = 4,
+		widgetOffsetY = -23,
+		specialActions = {
+			{
+				label = WOW_LABS_VIEW_REWARDS,
+				action = function()
+					ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
+				end,
+			},
+			{
+				label = WOW_LABS_REMATCH,
+				action = function()
+					PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
+					ForceLogout();
+				end,
+			},
+		},
+	},
+};
+
 function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo) 
 	EventToastManagerNormalMixin.Setup(self, toastInfo);
+
+	local DefaultYSpacing = -3;
+	self.Title:ClearAllPoints();
+	self.SubTitle:ClearAllPoints();
+
+	local uiTextureKit = toastInfo.uiTextureKit;
+	local hasTextureKit = uiTextureKit ~= nil;
+	local textureKitInfo = hasTextureKit and NormalTitleAndSubtitleTextureKitInfo[uiTextureKit] or nil;
+	self:SetSuppressAnimOut(textureKitInfo and textureKitInfo.suppressAnimOut or false);
+	self.Title:SetFontObject(textureKitInfo and textureKitInfo.titleFont or "GameFont_Gigantic");
+	self.SubTitle:SetFontObject(textureKitInfo and textureKitInfo.subtitleFont or "SystemFont_Shadow_Large");
+
+	local useCustomBackground = textureKitInfo and textureKitInfo.useCustomBackground or false;
+	self.CustomBackground:SetShown(useCustomBackground);
+	if useCustomBackground then
+		-- For now uiTextureKit should match the custom background atlas, but we
+		-- could always add support for an override.
+		self.CustomBackground:SetAtlas(uiTextureKit, TextureKitConstants.UseAtlasSize);
+		self.CustomBackground:SetPoint("CENTER", 0, textureKitInfo.customBackgroundYOffset or 0);
+		self.CustomBackground.ignoreInLayout = textureKitInfo.customBackgroundIgnoreInLayout;
+
+		-- We're using a custom background so don't show the usual banner.
+		local hideDefaultBanner = true;
+		self:GetParent():SetAnimationState(hideDefaultBanner);
+	end
+
+	if textureKitInfo and textureKitInfo.flipTitleAndSubtitle then
+		self.Title:SetPoint("CENTER", 0, textureKitInfo and textureKitInfo.textOffsetY or -20);
+		self.SubTitle:SetPoint("TOP", self.Title, "BOTTOM", 0, -4);
+	else
+		self.SubTitle:SetPoint("TOP", 0, textureKitInfo and textureKitInfo.textOffsetY or DefaultYSpacing);
+		self.Title:SetPoint("TOP", self.SubTitle, "BOTTOM", 0, DefaultYSpacing);
+	end
+
+	if textureKitInfo and textureKitInfo.specialActions then
+		if self.specialActionContainer then
+			for i, specialActionButton in ipairs(self.specialActionContainer.buttons) do
+				specialActionButton:Hide();
+			end
+		else
+			self.specialActionContainer = CreateFrame("FRAME", nil, self, "GridLayoutFrame");
+			self.specialActionContainer.childXPadding = 22;
+			self.specialActionContainer.stride = 4;
+			self.specialActionContainer.isHorizontal = true;
+			self.specialActionContainer.buttons = {};
+			self.specialActionContainer:SetPoint("TOP", self, "BOTTOM", 0, -17);
+		end
+
+		local maxButtonWidth = 0;
+		for i, specialActionInfo in ipairs(textureKitInfo.specialActions) do
+			local specialActionButton = self.specialActionContainer.buttons[i];
+			if not specialActionButton then
+				specialActionButton = CreateFrame("BUTTON", nil, self.specialActionContainer, "UIPanelButtonNoTooltipResizeToFitTemplate");
+				specialActionButton.layoutIndex = i;
+				specialActionButton.fixedHeight = 32;
+				specialActionButton.widthPadding = 80;
+				specialActionButton:SetNormalFontObject("GameFontNormalLarge");
+				specialActionButton:SetHighlightFontObject("GameFontHighlightLarge");
+				specialActionButton:SetPoint("LEFT");
+				self.specialActionContainer.buttons[i] = specialActionButton;
+			end
+
+			specialActionButton:SetText(specialActionInfo.label);
+			specialActionButton:FitToText();
+			maxButtonWidth = math.max(maxButtonWidth, specialActionButton:GetWidth());
+			specialActionButton:SetScript("OnClick", specialActionInfo.action);
+		end
+
+		for i, specialActionButton in ipairs(self.specialActionContainer.buttons) do
+			specialActionButton.widthPadding = specialActionButton.widthPadding + (maxButtonWidth - specialActionButton:GetWidth());
+			specialActionButton:FitToText();
+			specialActionButton:Layout();
+		end
+
+		self.specialActionContainer:Layout();
+		self.specialActionContainer:Show();
+	elseif self.specialActionContainer then
+		self.specialActionContainer:Hide();
+	end
+
+	if textureKitInfo and textureKitInfo.customTopOffsetY then
+		self:GetParent():UpdateAnchor(textureKitInfo.customTopOffsetY);
+	end
+
 	self.Title:SetText(toastInfo.title);
 	self.SubTitle:SetText(toastInfo.subtitle);
-	self:AnchorWidgetFrame(self.SubTitle);
+
+	self:AnchorWidgetFrame(textureKitInfo and textureKitInfo.anchorWidgetToTitle and self.Title or self.SubTitle, textureKitInfo and textureKitInfo.widgetOffsetY);
 	self:Show(); 
 	self:AnimIn(); 
 	self:Layout(); 
@@ -812,7 +957,9 @@ function EventToastAnimationsMixin:PauseAnimations()
 end
 
 function EventToastAnimationsMixin:ResumeAnimations()
-	self.hideAnim:Play();
+	if not self:ShouldSuppressAnimOut() then
+		self.hideAnim:Play();
+	end
 end
 
 local defaultAnimInStartDelay = 1.8;
@@ -871,7 +1018,7 @@ function EventToastAnimationsMixin:OnAnimatedIn()
 end
 
 function EventToastAnimationsMixin:AnimOut()
-	if (not self:GetParent():AreAnimationsPaused() and self.hideAutomatically) then 	
+	if (not self:ShouldSuppressAnimOut() and not self:GetParent():AreAnimationsPaused() and self.hideAutomatically) then 	
 		self.hideAnim:Play();
 		C_Timer.After(self.hideAnim.anim1:GetStartDelay(), 
 		function() 
@@ -887,6 +1034,15 @@ function EventToastAnimationsMixin:OnAnimatedOut()
 	self:GetParent():DisplayNextToast();
 	self:OnAnimFinished(); 
 	self:Hide(); 
+end
+
+function EventToastAnimationsMixin:SetSuppressAnimOut(suppressAnimOut)
+	-- Prevents this toast from timing out. This should only be used in rare cases.
+	self.suppressAnimOut = suppressAnimOut;
+end
+
+function EventToastAnimationsMixin:ShouldSuppressAnimOut()
+	return not not self.suppressAnimOut;
 end
 
 function EventToastAnimationsMixin:MouseOverTitle()
@@ -928,4 +1084,10 @@ EventToastHideButtonMixin = { };
 function EventToastHideButtonMixin:OnClick()
 	self:GetParent():CloseActiveToasts(); 
 	self:Hide();
+end
+
+EventToastWeeklyContentsMixin = {};
+
+function EventToastWeeklyContentsMixin:OnMouseDown(...)
+	EventToastManagerFrame:OnMouseDown(...);
 end

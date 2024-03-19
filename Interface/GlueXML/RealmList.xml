@@ -155,10 +155,10 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild, cfgID = C_RealmList.GetRealmInfo(self.realmAddr);
-				if (versionMajor) then
-				GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
-				GlueTooltip:SetText(versionMajor.."."..versionMinor.."."..versionRev.."  "..versionBuild.." CfgID: "..cfgID);
+				local realmInfo = C_RealmList.GetRealmInfo(self.realmAddr);
+				if (realmInfo.version and realmInfo.version.major) then
+					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
+					GlueTooltip:SetText(realmInfo.version.major.."."..realmInfo.version.minor.."."..realmInfo.version.revision.."  "..realmInfo.version.build.." CfgID: "..realmInfo.version.cfgConfigsID);
 				end
 			</OnEnter>
 			<OnLeave>

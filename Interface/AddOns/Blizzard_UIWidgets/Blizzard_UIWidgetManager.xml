@@ -28,7 +28,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnShow method="OnShow"/>
 		</Scripts>
 		<Frames>
 			<ModelScene parentKey="FrontModelScene" inherits="ScriptAnimatedModelSceneTemplate" enableMouse="false">

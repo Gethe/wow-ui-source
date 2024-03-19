@@ -10,7 +10,7 @@ function PetFrameMixin:OnLoad()
 	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
 	PetFrameManaBar.RightText = PetFrameManaBarTextRight;
 
-	self.DebuffFramePool = CreateFramePool("BUTTON", self.DebuffFrameContainer, "PartyDebuffFrameTemplate");
+	self.AuraFramePool = CreateFramePool("BUTTON", self.AuraFrameContainer, "PartyAuraFrameTemplate");
 
 	UnitFrame_Initialize(self, "pet", PetName, self.frameType, PetPortrait,
 						 PetFrameHealthBar, PetFrameHealthBarText,

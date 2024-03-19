@@ -1,6 +1,6 @@
 ## Title: Blizzard NamePlates
 ## LoadOnDemand: 0
-## RequiredDep: Blizzard_UIWidgets
+## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs
 
 Blizzard_NamePlates.xml
 Blizzard_ClassNameplateBar.xml

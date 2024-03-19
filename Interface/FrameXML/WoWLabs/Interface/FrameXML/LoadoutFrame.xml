@@ -1,0 +1,148 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\UI.xsd">
+  <Script file="LoadoutFrame.lua"/>
+
+  <ItemButton name="LoadoutSlotButtonTemplate" mixin="LoadoutSlotButtonMixin" virtual="true">
+    <Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ignoreTexture" file="Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="SpellLabel" justifyH="RIGHT" inherits="GameFontNormalMed3">
+					<Size x="150" y="60"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-160" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate"/>
+		</Frames>
+    <Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+    </Scripts>
+  </ItemButton>
+	
+	<ItemButton name="LoadoutSlotButtonRightTemplate" parentArray="EquipableSpellSlots" inherits="LoadoutSlotButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="52" y="52"/>
+		</Size>
+		<KeyValues>
+			<KeyValue type="boolean" key="IsLeftSide" value="false"/>
+		</KeyValues>
+
+	</ItemButton>
+
+    <Frame name="LoadoutFrame" mixin="LoadoutFrameMixin" frameStrata="BACKGROUND" toplevel="true" enableMouse="true" parent="UIParent">
+			<Size>
+				<AbsDimension x="100" y="300"/>
+			</Size>
+			<Anchors>
+				<Anchor point="RIGHT" x="-300" y="500" />
+			</Anchors>
+        <Frames>
+
+			<Frame parentkey="LoadoutItemsFrame" setAllPoints="true">
+				<Frames>
+					<ItemButton name="CharacterSpell1Slot" inherits="LoadoutSlotButtonRightTemplate">
+						<KeyValues>
+							<KeyValue key="commandName" value="ACTIONBUTTON1" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterSpell2Slot" inherits="LoadoutSlotButtonRightTemplate">
+						<KeyValues>
+							<KeyValue key="commandName" value="ACTIONBUTTON2" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSpell1Slot" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterSpell3Slot" inherits="LoadoutSlotButtonRightTemplate">
+						<KeyValues>
+							<KeyValue key="commandName" value="ACTIONBUTTON3" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSpell2Slot" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterSpell4Slot" inherits="LoadoutSlotButtonRightTemplate">
+						<KeyValues>
+							<KeyValue key="commandName" value="ACTIONBUTTON4" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSpell3Slot" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterUtility1" inherits="LoadoutSlotButtonRightTemplate">
+						<KeyValues>
+							<KeyValue key="commandName" value="WOWLABS_UTILITY1" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSpell4Slot" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</ItemButton>
+					<ItemButton name="CharacterUtility2" inherits="LoadoutSlotButtonRightTemplate">
+						<KeyValues>
+							<KeyValue key="commandName" value="WOWLABS_UTILITY2" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterUtility1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</ItemButton>
+					<CheckButton name="ActionButton7Loadout" inherits="ActionBarButtonTemplate" id="7">
+						<KeyValues>
+							<KeyValue key="WoWLabs_BR_Btn" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CharacterUtility2" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+					
+			<Frame parentkey="CharacterAttack" mixin="CharacterAttackMixin">
+				<KeyValues>
+					<KeyValue key="commandName" value="WOWLABS_ATTACK" type="string"/>
+				</KeyValues>
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ActionButton7Loadout" relativePoint="BOTTOMLEFT" x="40" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="SpellLabel" inherits="GameFontNormalMed3" justifyH="CENTER" text="WOWLABS_ATTACK">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-48" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+        </Scripts>
+    </Frame>
+</Ui>

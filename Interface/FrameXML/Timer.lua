@@ -7,6 +7,22 @@ local TIMER_DATA = {
 	[1] = { mediumMarker = 11, largeMarker = 6, updateInterval = 10 },
 	[2] = { mediumMarker = 100, largeMarker = 100, updateInterval = 100 },
 	[3] = { mediumMarker = 31, largeMarker = 11, updateInterval = 10, finishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_FINISHED, bigNumberSoundKitID = SOUNDKIT.UI_COUNTDOWN_TIMER, mediumNumberFinishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_MEDIUM_NUMBER_FINISHED, barShowSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_STARTS, barHideSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_FINISHED},
+
+	[4] = {
+		mediumMarker = 11,
+		largeMarker = 11,
+		updateInterval = 10,
+		finishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_FINISHED,
+		bigNumberSoundKitID = SOUNDKIT.UI_COUNTDOWN_TIMER,
+		mediumNumberFinishedSoundKitID = SOUNDKIT.UI_COUNTDOWN_MEDIUM_NUMBER_FINISHED,
+		barShowSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_STARTS,
+		barHideSoundKitID = SOUNDKIT.UI_COUNTDOWN_BAR_STATE_FINISHED,
+		customSoundKits = {
+			[10] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN1, SOUNDKIT.PLUNDERSTORM_COUNTDOWN2, SOUNDKIT.PLUNDERSTORM_COUNTDOWN_MUSIC, },
+			[5] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN3, },
+			[3] = { SOUNDKIT.PLUNDERSTORM_COUNTDOWN4, },
+		},
+	},
 };
 
 TIMER_NUMBERS_SETS = {};
@@ -155,29 +171,30 @@ end
 
 function StartTimer_BigNumberOnUpdate(self, elapsed)
 	self.time = self.endTime - GetTime();
+	local timerData = TIMER_DATA[self.type];
 	if C_Commentator.IsSpectating() then
-		if self.time < TIMER_DATA[self.type].mediumMarker then
+		if self.time < timerData.mediumMarker then
 			self:SetAlpha(1);
 		else
 			self.bar:Hide();
 			return;
 		end
 	end
-	
+
 	self.updateTime = self.updateTime - elapsed;
 	local minutes, seconds = floor(self.time/60), floor(mod(self.time, 60)); 
 
-	if ( self.time < TIMER_DATA[self.type].mediumMarker ) then
+	if ( self.time < timerData.mediumMarker ) then
 		self.anchorCenter = false;
-		if self.time < TIMER_DATA[self.type].largeMarker then
+		if self.time < timerData.largeMarker then
 			StartTimer_SwitchToLargeDisplay(self);
 		end
 		self:SetScript("OnUpdate", nil);
 		if ( self.barShowing ) then
 			self.barShowing = false;
 			self.fadeBarOut:Play();
-			if (TIMER_DATA[self.type].barHideSoundKitID) then 
-				PlaySound(TIMER_DATA[self.type].barHideSoundKitID); 
+			if (timerData.barHideSoundKitID) then 
+				PlaySound(timerData.barHideSoundKitID); 
 			end 
 		else
 			self.startNumbers:Play();
@@ -185,11 +202,11 @@ function StartTimer_BigNumberOnUpdate(self, elapsed)
 	elseif not self.barShowing then
 		self.fadeBarIn:Play();
 		self.barShowing = true;
-		if (TIMER_DATA[self.type].barShowSoundKitID) then 
-			PlaySound(TIMER_DATA[self.type].barShowSoundKitID); 
+		if (timerData.barShowSoundKitID) then 
+			PlaySound(timerData.barShowSoundKitID); 
 		end 
 	elseif self.updateTime <= 0 then
-		self.updateTime = TIMER_DATA[self.type].updateInterval;
+		self.updateTime = timerData.updateInterval;
 	end
 
 	self.bar:SetValue(self.time);
@@ -222,7 +239,15 @@ function StartTimer_SetTexNumbers(self, ...)
 	local digit;
 	local style = self.style;
 	local i = 1;
-	
+
+	local timerData = TIMER_DATA[self.type];
+	local customSoundKits = timerData.customSoundKits and timerData.customSoundKits[timeDigits] or nil;
+	if customSoundKits then
+		for _, soundKitID in ipairs(customSoundKits) do
+			PlaySound(soundKitID);
+		end
+	end
+
 	local texCoW = style.w/style.texW;
 	local texCoH = style.h/style.texH;
 	local l,r,t,b;

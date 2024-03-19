@@ -2649,7 +2649,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
 			},
 
 			Returns =

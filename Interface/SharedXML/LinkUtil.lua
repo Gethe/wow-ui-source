@@ -107,3 +107,12 @@ function GetURLIndexAndLoadURLWithSound(self, link)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end
 end
+
+function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)
+	-- Use simplified link if possible
+	if lineID or chatType or chatTarget then
+		return LinkUtil.FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
+	else
+		return LinkUtil.FormatLink("player", linkDisplayText, characterName);
+	end
+end
