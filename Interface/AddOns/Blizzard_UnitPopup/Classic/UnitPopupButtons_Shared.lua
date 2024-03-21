@@ -381,16 +381,15 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow()
 end	
 
 function UnitPopupRafSummonButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if( not C_RecruitAFriend.IsReferAFriendLinked(dropdownMenu.unit) ) then
-		return false; 
+	local guid = UnitPopupSharedUtil.GetGUID();
+	if not guid or not C_RecruitAFriend.IsReferAFriendLinked(guid) then
+		return false;
 	end
 	return true;
 end	
 
 function UnitPopupRafSummonButtonMixin:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu()
-	C_RecruitAFriend.SummonFriend(dropdownMenu.unit); 
+	C_RecruitAFriend.SummonFriend(UnitPopupSharedUtil.GetGUID(), UnitPopupSharedUtil.GetFullPlayerName());
 end
 
 function UnitPopupBnetTargetButtonMixin:IsEnabled()

@@ -1752,10 +1752,12 @@ end
 
 UnitPopupRafSummonButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupRafSummonButtonMixin:GetText()
-	local start, duration = C_RecruitAFriend.GetSummonFriendCooldown();
-	local remaining = start + duration - GetTime();
-	if ( remaining > 0 ) then
-		return format(RAF_SUMMON_WITH_COOLDOWN, SecondsToTime(remaining, true));
+	if ( not IsOnGlueScreen() ) then
+		local start, duration = C_RecruitAFriend.GetSummonFriendCooldown();
+		local remaining = start + duration - GetTime();
+		if ( remaining > 0 ) then
+			return format(RAF_SUMMON_WITH_COOLDOWN, SecondsToTime(remaining, true));
+		end
 	end
 	return RAF_SUMMON;
 end
