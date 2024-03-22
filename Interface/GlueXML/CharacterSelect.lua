@@ -2113,8 +2113,20 @@ function CharacterServicesMaster_UpdateServiceButton()
 
 	local isExpansionTrial, expansionTrialRemainingSeconds = GetExpansionTrialInfo();
 	if isExpansionTrial then
-		upgradeInfo[0] = {hasPaid = false, hasFree = true, amount = 1, isExpansionTrial = true, remainingTime = expansionTrialRemainingSeconds};
+		upgradeInfo[0] = {
+			hasPaid = false,
+			hasFree = true,
+			amount = 1,
+			isExpansionTrial = true,
+			-- Possibly add to character service data
+			remainingTime = expansionTrialRemainingSeconds,
+			hideTimer = true,
+			characterCreateType = Enum.CharacterCreateType.Normal,
+			overrideAtlas = "raceicon128-dracthyr-male",
+		};
 	end
+
+	CharSelectCreateCharacterButton.NewFeature:SetShown(isExpansionTrial);
 
     -- support refund notice for Korea
     if hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW then
@@ -2183,7 +2195,15 @@ local function IsVASTokenUsable(vasTokenInfo)
 	return GetVASTokenStatus(vasTokenInfo) == "normal";
 end
 
+local function AddExtraCharUpgradeDisplayData(charUpgradeDisplayData, upgradeInfo)
+	charUpgradeDisplayData.remainingTime = upgradeInfo.remainingTime;
+	charUpgradeDisplayData.hideTimer = upgradeInfo.hideTimer;
+	charUpgradeDisplayData.characterCreateType = upgradeInfo.characterCreateType;
+end
+
 local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
+	AddExtraCharUpgradeDisplayData(charUpgradeDisplayData, upgradeInfo);
+
 	local frame = CharacterSelect.VASPools:Acquire(template);
 	frame.layoutIndex = CharacterSelect.VASPools:GetNumActive();
 
@@ -2194,13 +2214,19 @@ local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
 	frame.hasFreeBoost = upgradeInfo.hasFree;
 	frame.remainingTime = upgradeInfo.remainingTime;
 
-	SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
-	SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
+	if upgradeInfo.overrideAtlas then
+		frame.Icon:SetAtlas(upgradeInfo.overrideAtlas);
+		frame.Highlight.Icon:SetAtlas(upgradeInfo.overrideAtlas);
+	else
+		SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
+		SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
+	end
+
 	frame.Highlight.IconBorder:SetAtlas(charUpgradeDisplayData.iconBorderAtlas);
 
 	frame:SetAlpha(GetVASTokenAlpha(upgradeInfo));
 
-	if upgradeInfo.remainingTime then
+	if upgradeInfo.remainingTime and not upgradeInfo.hideTimer then
 		frame.Timer:StartTimer(upgradeInfo.remainingTime, 1, true);
 	else
 		frame.Timer:StopTimer();
@@ -2275,7 +2301,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 		popupFrame.Title:SetText(popupData.title);
 
 		local timerHeight = 0;
-		if freeFrame.remainingTime then
+		if freeFrame.remainingTime and not freeFrame.upgradeInfo.hideTimer then
 			popupFrame.Timer:StartTimer(freeFrame.remainingTime, 1, true, true, BOOST_POPUP_TIMER_FORMAT_STRING);
 			popupFrame.Description:SetPoint("TOP", popupFrame.Timer, "BOTTOM", 0, -20);
 			timerHeight = popupFrame.Timer:GetHeight() + 2;
@@ -2289,7 +2315,7 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 
 		local baseHeight;
 		if freeFrame.data.isExpansionTrial then
-			popupFrame.GetStartedButton:SetText(EXPANSION_TRIAL_CREATE_TRIAL_CHARACTER);
+			popupFrame.GetStartedButton:SetText(EXPANSION_TRIAL_CREATE_TRIAL_CHARACTER); -- TODO: Update text to read "Create Dracthyr Evoker" (TODO: Add to Character display info data??)
 			popupFrame.LaterButton:Hide();
 			baseHeight = 160;
 		else
@@ -2381,7 +2407,7 @@ end
 function CharacterUpgradePopup_OnStartClick(self)
     local data = HandleUpgradePopupButtonClick(self);
 	if data.isExpansionTrial then
-		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.TrialBoost);
+		CharacterSelect_CreateNewCharacter(data.characterCreateType or Enum.CharacterCreateType.TrialBoost);
 	else
 		CharacterUpgradePopup_BeginCharacterUpgradeFlow(data);
 	end

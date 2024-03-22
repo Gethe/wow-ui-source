@@ -296,6 +296,11 @@ local SharedTraits =
 			Name = "GetTraitSystemWidgetSetID",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
 			Returns =
 			{
 				{ Name = "uiWidgetSetID", Type = "number", Nilable = false },

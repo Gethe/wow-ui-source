@@ -18,6 +18,9 @@
 		</Layers>
 		<Frames>
 			<ItemButton parentKey="InputSlot" scale="1.1" mixin="ProfessionsRecraftInputSlotMixin">
+				<KeyValues>
+					<KeyValue key="alwaysShowProfessionsQuality" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="17" y="-17"/>
 				</Anchors>
@@ -84,6 +87,9 @@
 				</Layers>
 			</Frame>
 			<ItemButton parentKey="OutputSlot" mixin="ProfessionsRecraftOutputSlotMixin" scale="1.1">
+				<KeyValues>
+					<KeyValue key="alwaysShowProfessionsQuality" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="112" y="-17"/>
 				</Anchors>

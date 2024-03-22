@@ -14,19 +14,26 @@ end
 function PVPReadyPopupMixin:OnEvent(event, ...)
 	if(event == "PVP_ROLE_POPUP_SHOW") then 
 		self.startHide = false;	
-		local roles = ...; 
-		self:Setup(roles); 
+		local readyCheckInfo = ...;
+		self:Setup(readyCheckInfo); 
 	elseif(event == "PVP_ROLE_POPUP_JOINED_MATCH") then 
 		if(self:IsShown()) then 
 			StaticPopupSpecial_Hide(PVPReadyPopup);
 		end		
 	elseif (event == "PVP_ROLE_POPUP_HIDE") then 
 		if(self:IsShown()) then 
-			local roles = ...;
+			local readyCheckInfo = ...;
 			self.startHide = true; 
-			self:Setup(roles); 
+			self:Setup(readyCheckInfo); 
 		end 
 	end		
+end
+
+function PVPReadyPopupMixin:Reset()
+	self.RolePool:ReleaseAll();
+	self.lastRole = nil;
+	
+	self.RolelessButton:Hide();
 end
 
 function PVPReadyPopupMixin:GetCenterOffsetBasedOffNumRoles(roles)
@@ -44,9 +51,7 @@ function PVPReadyPopupMixin:GetCenterOffsetBasedOffNumRoles(roles)
 	return centerOffset;
 end		
 
-function PVPReadyPopupMixin:Setup(roles)
-	self.RolePool:ReleaseAll();
-	self.lastRole = nil; 
+function PVPReadyPopupMixin:SetupRoleButtons(roles)
 	local centerOffset = self:GetCenterOffsetBasedOffNumRoles(roles);
 
 	for _, roleInfo in ipairs(roles) do 
@@ -58,6 +63,22 @@ function PVPReadyPopupMixin:Setup(roles)
 	if(self.lastRole == nil) then 
 		StaticPopupSpecial_Hide(PVPReadyPopup);
 	end 
+end
+
+function PVPReadyPopupMixin:SetupRolelessButton(readyCheckInfo)
+	if (readyCheckInfo.totalNumPlayers > 0) then
+		self.RolelessButton:Setup(readyCheckInfo);
+	end
+end
+
+function PVPReadyPopupMixin:Setup(readyCheckInfo)
+	self:Reset();
+
+	if (#readyCheckInfo.roles > 0) then
+		self:SetupRoleButtons(readyCheckInfo.roles);
+	else
+		self:SetupRolelessButton(readyCheckInfo);
+	end
 
 	StaticPopupSpecial_Show(PVPReadyPopup);
 
@@ -102,4 +123,18 @@ function PvpRoleButtonWithCountMixin:Setup(roleInfo)
 		self.StatusIcon:SetTexture(READY_CHECK_WAITING_TEXTURE);
 	end 
 	self:Show(); 		
+end
+
+PvpRolelessButtonMixin = { };
+function PvpRolelessButtonMixin:OnLoad()
+	-- Interface\LFGFrame\UI-LFG-ICON-ROLES
+	local rolelessIconTexCoords = { 0.5234375, 0.78125, 0, 0.2578125 };
+	self.Texture:SetTexCoord(unpack(rolelessIconTexCoords));
+	self.StatusIcon:SetTexture(READY_CHECK_NOT_READY_TEXTURE);
+end
+
+function PvpRolelessButtonMixin:Setup(readyCheckInfo)
+	self.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, readyCheckInfo.numPlayersAccepted, readyCheckInfo.totalNumPlayers);
+	self.StatusIcon:SetShown(readyCheckInfo.numPlayersDeclined > 0);
+	self:Show();
 end

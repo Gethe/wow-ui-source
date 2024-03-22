@@ -268,6 +268,11 @@ function ClassTalentSpecTabMixin:ActivateSpecByPredicate(predicate)
 		return;
 	end
 
+	if self:IsActivateInProgress() or self:IsCommitInProgress() then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
 	local specFrameToActivate = nil;
 	for specContentFrame in self.SpecContentFramePool:EnumerateActive() do
 		if predicate(specContentFrame) then
@@ -295,7 +300,12 @@ function ClassTalentSpecTabMixin:ActivateSpecByName(specName)
 end
 
 function ClassTalentSpecTabMixin:ActivateSpecByIndex(specIndex)
-	if specIndex <= 0 or specIndex > self.numSpecs then
+	if not self.isInitialized or not self.numSpecs or self.numSpecs == 0 then
+		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
+		return;
+	end
+
+	if not specIndex or specIndex <= 0 or specIndex > self.numSpecs then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_TALENT_FAILED_UNKNOWN);
 		return;
 	end

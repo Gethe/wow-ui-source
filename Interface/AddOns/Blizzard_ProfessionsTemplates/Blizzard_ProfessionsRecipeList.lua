@@ -73,6 +73,8 @@ function ProfessionsRecipeListMixin:OnLoad()
 				end);
 			end
 			factory("ProfessionsRecipeListRecipeTemplate", Initializer);
+		elseif elementData.isDivider then
+			factory("ProfessionsRecipeListDividerTemplate");
 		else
 			factory("Frame");
 		end
@@ -89,6 +91,10 @@ function ProfessionsRecipeListMixin:OnLoad()
 
 		if elementData.categoryInfo then
 			return baseElementHeight + categoryPadding;
+		end
+
+		if elementData.dividerHeight then
+			return elementData.dividerHeight;
 		end
 
 		if elementData.topPadding then
@@ -190,6 +196,9 @@ function ProfessionsRecipeListCategoryMixin:Init(node)
 	local elementData = node:GetData();
 	local categoryInfo = elementData.categoryInfo;
 	self.Label:SetText(categoryInfo.name);
+
+	local color = categoryInfo.unlearned and DISABLED_FONT_COLOR or NORMAL_FONT_COLOR;
+	self.Label:SetVertexColor(color:GetRGB());
 
 	self:SetCollapseState(node:IsCollapsed());
 	if categoryInfo.hasProgressBar and not (C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember()) and not tContains({C_TradeSkillUI.GetCategories()}, categoryInfo.categoryID) then

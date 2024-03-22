@@ -7,10 +7,10 @@
 	<Script file="Blizzard_Category.lua"/>
 	<Include file="Blizzard_CategoryList.xml"/>
 	<Include file="Blizzard_SettingsList.xml"/>
-	<Script file="Blizzard_SettingsPanel.lua"/>
 	<Script file="Blizzard_Setting.lua"/>
-	<Include file="Blizzard_SettingsPanel.xml"/>
 	<Include file="Blizzard_SettingControls.xml"/>
+	<Script file="Blizzard_SettingsPanel.lua"/>
+	<Include file="Blizzard_SettingsPanel.xml"/>
 	<Include file="Blizzard_Keybindings.xml"/>
 	<Script file="Blizzard_Dialogs.lua"/>
 	<Script file="Blizzard_SettingsLayouts.lua"/>

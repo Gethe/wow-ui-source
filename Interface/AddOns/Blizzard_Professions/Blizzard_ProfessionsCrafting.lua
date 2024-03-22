@@ -155,8 +155,7 @@ function ProfessionsCraftingPageMixin:OnEvent(event, ...)
 		self:ValidateControls();
 		self:SetOverrideCastBarActive(false);
 	elseif event == "UNIT_AURA" then
-		self.SchematicForm:Refresh();
-		self:ValidateControls();
+		self.SchematicForm:UpdateDetailsStats();
 	end
 end
 
@@ -622,7 +621,8 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 		for index, node in dataProvider:Enumerate() do
 			local data = node:GetData();
 			local recipeInfo = data.recipeInfo;
-			if recipeInfo then
+			-- Don't select recrafting as the initial recipe, since its filtering can cause confusion
+			if recipeInfo and not recipeInfo.isRecraft then
 				return recipeInfo;
 			end
 		end
@@ -859,7 +859,7 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 end
 
 function ProfessionsCraftingPageMixin:OnViewGuildCraftersClicked()
-	local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	local professionInfo = Professions.GetProfessionInfo();
 	local effectiveSkillLineID = professionInfo.parentProfessionID or professionInfo.professionID;
 	local currentRecipeInfo = self.SchematicForm:GetRecipeInfo();
 	if effectiveSkillLineID and currentRecipeInfo.recipeID then

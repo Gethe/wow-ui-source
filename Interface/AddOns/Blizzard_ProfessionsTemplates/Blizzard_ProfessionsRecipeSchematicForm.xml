@@ -109,7 +109,7 @@
 			
 			<Frame parentKey="Details" inherits="ProfessionsRecipeCrafterDetailsTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-30" y="-85"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-27" y="-85"/>
 				</Anchors>
 			</Frame>
 
@@ -221,6 +221,13 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="recraftSlot" inherits="ProfessionsRecraftSlotTemplate" parentArray="extraSlotFrames" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RecraftingOutputText" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

@@ -65,7 +65,7 @@ end
 local function SwitchToSpecializationByIndexCommand(msg)
 	local specIndex = SecureCmdOptionParse(msg);
 	if specIndex and specIndex ~= "" then
-		specIndex = tonumber(loadoutIndex);
+		specIndex = tonumber(specIndex);
 		if specIndex then
 			ClassTalentHelper.SwitchToSpecializationByIndex(specIndex);
 		end

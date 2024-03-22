@@ -91,6 +91,20 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetProfessionQuality",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "quality", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "HasFlyoutActionButtons",
 			Type = "Function",
 

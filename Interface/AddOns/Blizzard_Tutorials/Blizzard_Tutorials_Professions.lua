@@ -117,7 +117,11 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 				hasBeenShown = AccessoryTutorialShown();
 			end
 			if player and bags and (not hasBeenShown) then
-				table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
+				local itemLocation = ItemLocation:CreateEmpty();
+				itemLocation:SetBagAndSlot(bag, slot);
+				if not C_ArtifactUI.IsArtifactItem(itemLocation) then
+					table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
+				end
 			end
 		end
 	end
@@ -508,6 +512,7 @@ function SpecPointsChecker:CheckShowReminder()
 	end
 end
 
+EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_UNLOCKED", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(checker, isLogin)
 	if isLogin then

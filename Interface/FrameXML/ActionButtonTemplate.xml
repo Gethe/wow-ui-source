@@ -102,6 +102,19 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="ActionButtonProfessionOverlayTemplate" mixin="ActionBarActionEventsFrameMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer>
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+			
 	<CheckButton name="ActionButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
 		<Size x="45" y="45"/>
 

@@ -24,18 +24,8 @@ end
 
 function ProfessionsRankBarMixin:OnEvent(event, ...)
 	if event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE" then
-		self:Update(C_TradeSkillUI.GetChildProfessionInfo());
+		self:Update(Professions.GetProfessionInfo());
 	end
-end
-
-function ProfessionsRankBarMixin:OnEnter()
-	self.Experience:Show();
-	self.Rank:Show();
-end
-
-function ProfessionsRankBarMixin:OnLeave()
-	self.Experience:Hide();
-	self.Rank:Hide();
 end
 
 local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)

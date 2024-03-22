@@ -338,6 +338,24 @@
 			<Font font="Fonts\ARIALN.TTF" height="12"/>
 		</Member>
 	</FontFamily>
+
+	<FontFamily name="Number12FontOutline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_C.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\arheiuhk_bd.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
 	
 	<FontFamily name="Number13Font" virtual="true">
 		<Member alphabet="roman">

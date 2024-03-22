@@ -68,6 +68,34 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="ProfessionsRecipeListDividerTemplate" virtual="true">
+		<Size y="30"/>
+		<Layers>
+			<Layer>
+				<FontString parentKey="Label" text="PROFESSIONS_CATEGORY_UNLEARNED" inherits="GameFontNormal_NoShadow">
+					<Size x="0" y="13"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</FontString>
+				<Texture atlas="Options_HorizontalDivider">
+					<Size x="250" y="2"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="5"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</Texture>
+				<Texture atlas="Options_HorizontalDivider" alphaMode="ADD">
+					<Size x="250" y="2"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="5"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR" a=".5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+			
 	<Button name="ProfessionsRecipeListCategoryTemplate" mixin="ProfessionsRecipeListCategoryMixin" virtual="true">
 		<Size y="25"/>
 		<Layers>

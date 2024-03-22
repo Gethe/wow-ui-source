@@ -87,7 +87,6 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	self.elapsed = 0;
-	self.extraSlotFrames = {};
 
 	local function PoolReset(pool, slot)
 		slot:Reset();
@@ -396,18 +395,18 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.transaction:SetAllocationsChangedHandler(nil);
 	end
 
+	local function AllocateModification(slotIndex, reagentSlotSchematic)
+		local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
+		if modification and modification.itemID > 0 then
+			local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
+			self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+		end
+	end
+
 	if recraftTransitionData then
 		self.transaction:SetRecraftAllocation(recraftTransitionData.itemGUID);
 
 		if newTransaction then
-			local function AllocateModification(slotIndex, reagentSlotSchematic)
-				local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-				if modification and modification.itemID > 0 then
-					local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-					self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
-				end
-			end
-
 			for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
 				if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
 					AllocateModification(slotIndex, reagentSlotSchematic);
@@ -504,7 +503,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		organizer:Add(self.RecipeSourceButton, LayoutEntry.Source, 0, 10);
 	end
 
-	if recipeInfo.learned and not self.RecipeSourceButton:IsVisible() and recipeInfo.firstCraft then
+	if recipeInfo.learned and not self.RecipeSourceButton:IsVisible() and recipeInfo.firstCraft and not isRecraft then
 		self.FirstCraftBonus:Show();
 		organizer:Add(self.FirstCraftBonus, LayoutEntry.FirstCraftBonus, 0, 10);
 	end
@@ -613,16 +612,21 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.RecraftingRequiredTools:Hide();
 		self.RequiredTools:Hide();
 
-		if #C_TradeSkillUI.GetRecipeRequirements(recipeInfo.recipeID) > 0 then
+		if #C_TradeSkillUI.GetRecipeRequirements(recipeID) > 0 then
 			local fontString = isRecraft and self.RecraftingRequiredTools or self.RequiredTools;
 			fontString:Show();
 			
 			self.UpdateRequiredTools = function()
 				-- Requirements need to be fetched on every update because it contains the updated
 				-- .met field that we need to colorize the string correctly.
-				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeInfo.recipeID);
-				local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
-				fontString:SetText(PROFESSIONS_REQUIRED_TOOLS:format(requirementsText));
+				assertsafe(recipeID == self.currentRecipeInfo.recipeID, ("Mismatch between captured recipeID '%s' and frame self.currentRecipeInfo.recipeID '%s'"):format(tostring(recipeID), tostring(self.currentRecipeInfo.recipeID)));
+				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeID);
+				if (#requirements > 0) then
+					local requirementsText = BuildColoredListString(unpack(FormatRequirements(requirements)));
+					fontString:SetText(PROFESSIONS_REQUIRED_TOOLS:format(requirementsText));
+				else
+					fontString:SetText("");
+				end
 			end
 
 			self.UpdateRequiredTools();
@@ -648,11 +652,6 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	};
 
 	if isRecraft then
-		if not self.recraftSlot then
-			self.recraftSlot = CreateFrame("FRAME", nil, self, "ProfessionsRecraftSlotTemplate");
-			self.recraftSlot:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -30);
-			table.insert(self.extraSlotFrames, self.recraftSlot);
-		end
 		self.recraftSlot:Show();
 		self.recraftSlot:Init(self.transaction);
 
@@ -1101,7 +1100,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	local operationInfo;
-	local professionLearned = C_TradeSkillUI.GetChildProfessionInfo().skillLevel > 0;
+	local professionLearned = Professions.GetProfessionInfo().skillLevel > 0;
 	if professionLearned then
 		operationInfo = self:GetRecipeOperationInfo();
 	end

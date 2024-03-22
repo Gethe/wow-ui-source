@@ -697,7 +697,7 @@ end
 
 --This function accepts any or all of categoryID, groupId, and activityID
 function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activityID)
-	filters, categoryID, groupID, activityID = LFGListUtil_AugmentWithBest(bit.bor(self.baseFilters,filters or 0), categoryID, groupID, activityID);
+	filters, categoryID, groupID, activityID = LFGListUtil_AugmentWithBest(bit.bor(self.baseFilters or 0, filters or 0), categoryID, groupID, activityID);
 	self.selectedCategory = categoryID;
 	self.selectedGroup = groupID;
 	self.selectedActivity = activityID;
@@ -1832,12 +1832,13 @@ LFGApplicationBrowseGroupsButtonMixin = { };
 function LFGApplicationBrowseGroupsButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	local panel = self:GetParent();
+	local baseFilters = panel:GetParent().baseFilters;
 	local searchPanel = panel:GetParent().SearchPanel;
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	if(activeEntryInfo) then 
 		local activityInfo = C_LFGList.GetActivityInfoTable(activeEntryInfo.activityID);
 		if(activityInfo) then 
-			LFGListSearchPanel_SetCategory(searchPanel, activityInfo.categoryID, activityInfo.filters);
+			LFGListSearchPanel_SetCategory(searchPanel, activityInfo.categoryID, activityInfo.filters, baseFilters);
 			LFGListFrame_SetActivePanel(panel:GetParent(), searchPanel);
 			LFGListSearchPanel_DoSearch(searchPanel);
 		end
@@ -2084,7 +2085,7 @@ end
 function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilters)
 	self.categoryID = categoryID;
 	self.filters = filters;
-	self.preferredFilters = preferredFilters;
+	self.preferredFilters = preferredFilters or 0;
 
 	local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
 	self.SearchBox.Instructions:SetText(categoryInfo.searchPromptOverride or FILTER);

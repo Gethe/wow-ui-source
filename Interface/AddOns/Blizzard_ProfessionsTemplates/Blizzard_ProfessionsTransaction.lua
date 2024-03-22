@@ -510,6 +510,10 @@ function ProfessionsRecipeTransactionMixin:GetModification(dataSlotIndex)
 end
 
 function ProfessionsRecipeTransactionMixin:GetOriginalModification(dataSlotIndex)
+	if self.recraftOrderID then
+		-- Recrafting an order does not display previous modifications
+		return nil;
+	end
 	return self:GetModificationInternal(dataSlotIndex, self.recraftItemMods);
 end
 

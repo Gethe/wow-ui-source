@@ -45,47 +45,19 @@
 				</Layer>
 			</Layers>
 		<Frames>
-			<Frame parentKey="Rank" frameLevel="5" hidden="true">
+			<Frame parentKey="Rank" frameLevel="5">
 				<Size x="300" y="18"/>
 				<Anchors>
 					<Anchor point="CENTER" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="WhiteNormalNumberFont" justifyH="CENTER">
+						<FontString parentKey="Text" inherits="Number12FontOutline" justifyH="CENTER">
 							<Size x="0" y="9"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Frame parentKey="Experience" alpha=".30" hidden="true">
-				<Size x="300" y="1"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="3">
-						<Texture parentKey="Left" atlas="ProfessionsShadow-ThreeSlice-EdgeLeft" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.$parent.Rank.Text" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Right" atlas="ProfessionsShadow-ThreeSlice-EdgeRight" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.$parent.Rank.Text" x="0" y="-1"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Center" atlas="ProfessionsShadow-ThreeSlice-Center" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Left" relativePoint="BOTTOMRIGHT"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Right" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -103,8 +75,6 @@
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

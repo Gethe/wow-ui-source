@@ -11,7 +11,7 @@ function AddSpecAndTalentTutorials()
 	end
 
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_CHANGES) then
-		TutorialManager:AddTutorial(Class_TalentPoints:new());
+		TutorialManager:AddTutorial(Class_TalentPoints:new(), nil, playerIsDracthyr);
 	end
 end
 
@@ -224,6 +224,10 @@ function Class_TalentPoints:OnAdded(args)
 			Dispatcher:RegisterEvent("PLAYER_TALENT_UPDATE", self);
 			Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 			Dispatcher:RegisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);
+			local playerIsDracthyr = args;
+			if playerIsDracthyr then
+				Dispatcher:RegisterEvent("QUEST_TURNED_IN", self);
+			end
 		end
 	else
 		TutorialManager:RemoveTutorial(self:Name());
@@ -237,6 +241,7 @@ function Class_TalentPoints:StartSelf()
 		Dispatcher:UnregisterEvent("PLAYER_TALENT_UPDATE", self);
 		Dispatcher:UnregisterEvent("PLAYER_LEVEL_CHANGED", self);
 		Dispatcher:UnregisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED", self);
+		Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
 		TutorialManager:Queue(self:Name());
 	end
 end
@@ -251,6 +256,12 @@ end
 
 function Class_TalentPoints:ACTIVE_COMBAT_CONFIG_CHANGED()
 	self:StartSelf();
+end
+
+function Class_TalentPoints:QUEST_TURNED_IN(...)
+	C_Timer.After(1, function()
+		self:StartSelf();
+	end);
 end
 
 function Class_TalentPoints:CanBegin()

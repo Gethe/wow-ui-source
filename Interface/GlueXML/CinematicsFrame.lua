@@ -63,6 +63,14 @@ MOVIE_LIST = {
 	upAtlas="StreamCinematic-Dragonflight-Up", 
 	downAtlas="StreamCinematic-Dragonflight-Down",
   },
+  -- Movie sequence 11
+  { expansion=LE_EXPANSION_DRAGONFLIGHT, 
+	movieIDs = { 973 }, 
+	upAtlas="StreamCinematic-Dragonflight2-Up", 
+	downAtlas="StreamCinematic-Dragonflight2-Down", 
+	title=DRAGONFLIGHT_TOTHESKIES,
+	disableAutoPlay=true,
+  },
 };
 
 do

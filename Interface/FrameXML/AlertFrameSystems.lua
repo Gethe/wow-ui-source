@@ -415,7 +415,7 @@ function CriteriaAlertFrame_SetUp(frame, achievementID, criteriaString)
 	frame.id = achievementID;
 end
 
-CriteriaAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CriteriaAlertFrameTemplate", CriteriaAlertFrame_SetUp, 2, 0);
+CriteriaAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CriteriaAlertFrameTemplate", CriteriaAlertFrame_SetUp, 2, 6);
 
 -- [[ LootAlertFrame shared ]] --
 function LootAlertFrame_OnEnter(self)

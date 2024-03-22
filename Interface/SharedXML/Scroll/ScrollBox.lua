@@ -84,6 +84,10 @@ function ScrollBoxBaseMixin:GetView()
 	return self.view;
 end
 
+function ScrollBoxBaseMixin:HasView()
+	return self:GetView() ~= nil;
+end
+
 function ScrollBoxBaseMixin:GetScrollTarget()
 	return self.ScrollTarget;
 end

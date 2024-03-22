@@ -251,6 +251,7 @@ function ProfessionsCraftingOrderPageMixin:SetSortOrder(sortOrder)
 	end
 
 	if self.lastRequest then
+		self.lastRequest.offset = 0; -- Get a fresh page of sorted results
 		self:SendOrderRequest(self.lastRequest);
 	end
 end
@@ -419,10 +420,11 @@ function ProfessionsCraftingOrderPageMixin:OnShow()
 
 	self.BrowseFrame.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
 
-	C_CraftingOrders.OpenCrafterCraftingOrders();
-	
-	-- Delay a frame so that the recipe list does not get thrashed because of the delayed event from flag changes
-	RunNextFrame(function() self:StartDefaultSearch(); end);
+	if self.professionInfo and C_CraftingOrders.ShouldShowCraftingOrderTab() and C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession) then
+		C_CraftingOrders.OpenCrafterCraftingOrders();
+		-- Delay a frame so that the recipe list does not get thrashed because of the delayed event from flag changes
+		RunNextFrame(function() self:StartDefaultSearch(); end);
+	end
 	self:CheckForClaimedOrder();
 end
 
@@ -570,13 +572,13 @@ end
 local defaultBucketSecondarySort =
 {
 	sortType = Enum.CraftingOrderSortType.MaxTip,
-	reversed = false,
+	reversed = true,
 };
 
 local defaultFlatSecondarySort =
 {
 	sortType = Enum.CraftingOrderSortType.Tip,
-	reversed = false,
+	reversed = true,
 };
 
 function ProfessionsCraftingOrderPageMixin:SendOrderRequest(request)

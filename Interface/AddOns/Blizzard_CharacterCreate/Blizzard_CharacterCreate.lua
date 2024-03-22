@@ -1449,9 +1449,7 @@ function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 		self.selectedFaction = self.selectedRaceData.factionInternalName;
 	end
 
-	if not self.blockedRaces then
-		self:InitBlockedRaces();
-	end
+	self:InitBlockedRaces();
 
 	if not self:IsRaceValid(self.selectedRaceData, self.selectedFaction) and CharacterCreateFrame:HasService() then
 		local randomRaceData = self:GetRandomValidRaceData();
@@ -1546,10 +1544,6 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		return false;
 	end
 
-	if self:IsRaceBlocked(raceData.raceID) then
-		return false;
-	end
-
 	if CharacterCreateFrame.paidServiceType == PAID_CHARACTER_CUSTOMIZATION then
 		local notForPaidService = false;
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
@@ -1568,6 +1562,10 @@ function CharacterCreateRaceAndClassMixin:IsRaceValid(raceData, faction)
 		local currentRace = C_PaidServices.GetCurrentRaceID(notForPaidService);
 		local currentClass = C_PaidServices.GetCurrentClassID();
 		return (currentFaction == faction and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass));
+	end
+
+	if self:IsRaceBlocked(raceData.raceID) then
+		return false;
 	end
 
 	return true;

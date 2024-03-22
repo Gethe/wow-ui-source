@@ -138,32 +138,39 @@ function AuctionHouseCommoditiesBuyListMixin:UpdateListHighlightCallback()
 	else
 		self:SetHighlightCallback(function(currentRowData, selectedRowData, currentRowIndex)
 			local shouldHighlight = currentRowIndex <= (self.resultsMaxHighlightIndex or 0);
-			local highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
-				(currentRowIndex == self.resultsMaxHighlightIndex and self.resultsPartiallyPurchased)) and 0.5 or 1.0;
+			local highlightAlpha = 1.0;
+			-- Temporary fix for unexpected invalid row data.
+			if currentRowData then
+				highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
+					(currentRowIndex == self.resultsMaxHighlightIndex and self.resultsPartiallyPurchased)) and 0.5 or 1.0;
+			end
 			return shouldHighlight, highlightAlpha;
 		end);
 	end
 end
 
 function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
-	if quantity == self.quantitySelected then
+	local canUseSearchResults = self.itemID and C_AuctionHouse.HasSearchResults(C_AuctionHouse.MakeItemKey(self.itemID));
+	local oldQuantitySelected = self.quantitySelected;
+	self.quantitySelected = quantity;
+	if oldQuantitySelected ~= quantity and canUseSearchResults then
+		self.quantitySelected = math.min(C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID), quantity);
+	end
+
+	if not canUseSearchResults then
 		return;
 	end
 
-	local quantityClamped = math.min(C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID), quantity);
-	if quantityClamped == self.quantitySelected then
-		return;
+	if self.resultsMaxHighlightIndex == nil or oldQuantitySelected ~= self.quantitySelected then
+		self.resultsMaxHighlightIndex, self.resultsPartiallyPurchased = select(3, AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, self.quantitySelected));
+		if self.ScrollBox:HasView() and self.ScrollBox:HasDataProvider() then
+			local scrollIndex = math.min(self.ScrollBox:GetDataProviderSize(), self.resultsMaxHighlightIndex + MINIMUM_UNSELECTED_ENTRIES);
+			self.ScrollBox:ScrollToElementDataIndex(scrollIndex, ScrollBoxConstants.AlignEnd, ScrollBoxConstants.NoScrollInterpolation);
+		end
+
+		self:UpdateDynamicCallbacks();
+		self:DirtyScrollFrame();
 	end
-
-	self.quantitySelected = quantityClamped;
-
-	self.resultsMaxHighlightIndex, self.resultsPartiallyPurchased = select(3, AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, self.quantitySelected));
-
-	local scrollIndex = math.min(self.ScrollBox:GetDataProviderSize(), self.resultsMaxHighlightIndex + MINIMUM_UNSELECTED_ENTRIES);
-	self.ScrollBox:ScrollToElementDataIndex(scrollIndex, ScrollBoxConstants.AlignEnd, ScrollBoxConstants.NoScrollInterpolation);
-
-	self:UpdateDynamicCallbacks();
-	self:DirtyScrollFrame();
 end
 
 function AuctionHouseCommoditiesBuyListMixin:OnShow()
@@ -185,6 +192,7 @@ end
 function AuctionHouseCommoditiesBuyListMixin:SetItemID(itemID)
 	AuctionHouseCommoditiesListMixin.SetItemID(self, itemID);
 
+	self.resultsMaxHighlightIndex = nil;
 	self:SetQuantitySelected(1);
 end
 

@@ -10,6 +10,8 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PARTY_FRAMES_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 			<KeyValue key="bottomPadding" value="2" type="number"/>
+			<KeyValue key="breakSnappedFramesOnSave" value="true" type="boolean"/>
+			<KeyValue key="alwaysUseTopLeftAnchor" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Background" mixin="PartyMemberBackgroundMixin" hidden="true" inherits="BackdropTemplate">

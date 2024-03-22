@@ -66,6 +66,14 @@
 					</Button>
 				</Frames>
 			</Frame>
+			<Frame parentKey="RolelessButton" inherits="PvpRoleButtonWithCountTemplate" mixin="PvpRolelessButtonMixin">
+				<Anchors>
+					<Anchor point="CENTER" y="40"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

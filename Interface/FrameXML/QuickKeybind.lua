@@ -147,6 +147,7 @@ function QuickKeybindFrameMixin:OnShow()
 
 	self.mouseOverButton = nil;
 
+	self.previousBagBarEnabled = MainMenuBarBagManager:AreBagButtonsEnabled();
 	MainMenuBarBagManager:SetBagButtonsEnabled(true);
 	ActionButtonUtil.ShowAllActionButtonGrids();
 	ActionButtonUtil.ShowAllQuickKeybindButtonHighlights();
@@ -166,7 +167,7 @@ function QuickKeybindFrameMixin:OnHide()
 		SettingsPanel:Open();
 	end
 
-	MainMenuBarBagManager:SetBagButtonsEnabled(false);
+	MainMenuBarBagManager:SetBagButtonsEnabled(self.previousBagBarEnabled);
 	ActionButtonUtil.HideAllActionButtonGrids();
 	ActionButtonUtil.HideAllQuickKeybindButtonHighlights();
 

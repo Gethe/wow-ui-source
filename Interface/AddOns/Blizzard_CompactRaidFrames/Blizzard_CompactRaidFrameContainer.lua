@@ -337,6 +337,7 @@ function CompactRaidFrameContainerMixin:GetUnitFrame(unit, frameType)
 		CompactRaidFrameReservation_RegisterReservation(self.frameReservations[frameType], frame, mapping);
 	end
 	frame.inUse = true;
+	frame.frameType = frameType;
 	return frame;
 end
 

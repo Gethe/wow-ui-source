@@ -385,6 +385,7 @@ function ActionBarActionButtonMixin:Update()
 		end
 		self:UpdateState();
 		self:UpdateUsable();
+		self:UpdateProfessionQuality();
 		ActionButton_UpdateCooldown(self);
 		self:UpdateFlash();
 		self:UpdateHighlightMark();
@@ -401,6 +402,7 @@ function ActionBarActionButtonMixin:Update()
 
 		self:ClearFlash();
 		self:SetChecked(false);
+		self:ClearProfessionQuality();
 
 		if self.LevelLinkLockIcon then
 			self.LevelLinkLockIcon:SetShown(false);
@@ -514,6 +516,30 @@ function ActionBarActionButtonMixin:UpdateUsable()
 
 	if self.LevelLinkLockIcon then
 		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked);
+	end
+end
+
+function ActionBarActionButtonMixin:UpdateProfessionQuality()
+	if IsItemAction(self.action) then
+		local quality = C_ActionBar.GetProfessionQuality(self.action);
+		if quality then
+			if not self.ProfessionQualityOverlayFrame then
+				self.ProfessionQualityOverlayFrame = CreateFrame("Frame", nil, self, "ActionButtonProfessionOverlayTemplate");
+				self.ProfessionQualityOverlayFrame:SetPoint("TOPLEFT", 14, -14);
+			end
+
+			local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
+			self.ProfessionQualityOverlayFrame:Show();
+			self.ProfessionQualityOverlayFrame.Texture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+			return;
+		end
+	end
+	self:ClearProfessionQuality();
+end
+
+function ActionBarActionButtonMixin:ClearProfessionQuality()
+	if self.ProfessionQualityOverlayFrame then
+		self.ProfessionQualityOverlayFrame:Hide();
 	end
 end
 
@@ -663,24 +689,28 @@ end
 
 
 --Overlay stuff
-local unusedOverlayGlows = {};
-local numOverlays = 0;
-function ActionButton_GetOverlayGlow()
-	local overlay = tremove(unusedOverlayGlows);
-	if ( not overlay ) then
-		numOverlays = numOverlays + 1;
-		overlay = CreateFrame("Frame", "ActionButtonOverlay"..numOverlays, UIParent, "ActionBarButtonSpellActivationAlert");
+function ActionButton_SetupOverlayGlow(button)
+	-- If we already have a SpellActivationAlert then just early return. We should already be setup
+	if button.SpellActivationAlert then
+		return;
 	end
-	return overlay;
+
+	button.SpellActivationAlert = CreateFrame("Frame", nil, button, "ActionBarButtonSpellActivationAlert");
+
+	--Make the height/width available before the next frame:
+	local frameWidth, frameHeight = button:GetSize();
+	button.SpellActivationAlert:SetSize(frameWidth * 1.4, frameHeight * 1.4);
+	button.SpellActivationAlert:SetPoint("CENTER", button, "CENTER", 0, 0);
+	button.SpellActivationAlert:Hide();
 end
 
 function ActionBarActionButtonMixin:UpdateOverlayGlow()
 	local spellType, id, subType  = GetActionInfo(self.action);
-	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
+	if spellType == "spell" and IsSpellOverlayed(id) then
 		ActionButton_ShowOverlayGlow(self);
-	elseif ( spellType == "macro" ) then
+	elseif spellType == "macro" then
 		local spellId = GetMacroSpell(id);
-		if ( spellId and IsSpellOverlayed(spellId) ) then
+		if spellId and IsSpellOverlayed(spellId) then
 			ActionButton_ShowOverlayGlow(self);
 		else
 			ActionButton_HideOverlayGlow(self);
@@ -692,46 +722,39 @@ end
 
 -- Shared between action button and MainMenuBarMicroButton
 function ActionButton_ShowOverlayGlow(button)
-	if ( button.overlay ) then
-		if ( button.overlay.animOut:IsPlaying() ) then
-			button.overlay.animOut:Stop();
-			button.overlay.animIn:Play();
-		end
-	else
-		button.overlay = ActionButton_GetOverlayGlow();
-		local frameWidth, frameHeight = button:GetSize();
-		button.overlay:SetParent(button);
-		button.overlay:ClearAllPoints();
-		--Make the height/width available before the next frame:
-		button.overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4);
-		button.overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2);
-		button.overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2);
-		button.overlay.animIn:Play();
+	ActionButton_SetupOverlayGlow(button);
+
+	if button.SpellActivationAlert.animOut:IsPlaying() then
+		button.SpellActivationAlert.animOut:Stop();
+	end
+
+	if not button.SpellActivationAlert:IsShown() then
+		button.SpellActivationAlert.animIn:Play();
 	end
 end
 
 -- Shared between action button and MainMenuBarMicroButton
 function ActionButton_HideOverlayGlow(button)
-	if ( button.overlay ) then
-		if ( button.overlay.animIn:IsPlaying() ) then
-			button.overlay.animIn:Stop();
-		end
-		if ( button:IsVisible() ) then
-			button.overlay.animOut:Play();
-		else
-			button.overlay.animOut:OnFinished();	--We aren't shown anyway, so we'll instantly hide it.
-		end
+	if not button.SpellActivationAlert then
+		return;
+	end
+
+	if button.SpellActivationAlert.animIn:IsPlaying() then
+		button.SpellActivationAlert.animIn:Stop();
+	end
+
+	if button:IsVisible() then
+		button.SpellActivationAlert.animOut:Play();
+	else
+		button.SpellActivationAlert.animOut:OnFinished();	--We aren't shown anyway, so we'll instantly hide it.
 	end
 end
 
 ActionBarOverlayGlowAnimOutMixin = {};
 
 function ActionBarOverlayGlowAnimOutMixin:OnFinished()
-	local overlay = self:GetParent();
-	local actionButton = overlay:GetParent();
-	overlay:Hide();
-	tinsert(unusedOverlayGlows, overlay);
-	actionButton.overlay = nil;
+	local frame = self:GetParent();
+	frame:Hide();
 end
 
 ActionBarOverlayGlowAnimInMixin = {};

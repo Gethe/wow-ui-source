@@ -15,12 +15,9 @@ function AddDracthyrTutorials()
 		end
 
 		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRACTHYR_LOW_HEALTH) then
-			local usingSelfCast = Settings.GetSetting("autoSelfCast");
-			if usingSelfCast then
-				local class = Class_DracthyrLowHealthWatcher:new();
-				class:OnInitialize();
-				class:StartWatching();
-			end
+			local class = Class_DracthyrLowHealthWatcher:new();
+			class:OnInitialize();
+			class:StartWatching();
 		end
 	end
 end
@@ -120,9 +117,10 @@ end
 
 function Class_DracthyrEmpoweredSpellWatcher:OnQuestAccepted(questID)
 	if questID == self.questID then
+		EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", self.OnQuestTurnedIn, self);
 		EventRegistry:RegisterFrameEventAndCallback("QUEST_REMOVED", self.OnQuestRemoved, self);
 		EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_START", self.OnStartEmpowerCast, self);
-		EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(0.1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
+		EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
 		C_Timer.After(4.0, function()
 			self:ShowHelpTip();
 		end);
@@ -179,7 +177,7 @@ function Class_DracthyrEmpoweredSpellWatcher:StartWatching()
 				EventRegistry:RegisterFrameEventAndCallback("QUEST_TURNED_IN", self.OnQuestTurnedIn, self);
 				EventRegistry:RegisterFrameEventAndCallback("QUEST_REMOVED", self.OnQuestRemoved, self);
 				EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_START", self.OnStartEmpowerCast, self);
-				EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(0.1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
+				EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_EMPOWER_STOP", function() C_Timer.After(1, GenerateClosure(self.OnStopEmpowerCast, self)) end, self);
 				C_Timer.After(0.1, function()
 					self:ShowHelpTip();
 				end);
@@ -236,9 +234,22 @@ function Class_DracthyrLowHealthWatcher:OnUnitHealthChanged(arg1)
 		local healthPercent = UnitHealth(arg1) / UnitHealthMax(arg1);
 		if (not isDeadOrGhost) and healthPercent <= LOW_HEALTH_PERCENTAGE then
 			self.actionButton = TutorialHelper:GetActionButtonBySpellID(self.spellID);
-			if self.actionButton then
-				local keyBind = GetModifiedClick("SELFCAST");
-				self.helpString = TutorialHelper:FormatString(TUTORIAL_DRACTHYR_SELF_CAST:format(keyBind));
+			local selfCastKeyModifier = GetModifiedClick("SELFCAST");
+			local usingSelfCast = selfCastKeyModifier ~= "NONE";
+			if usingSelfCast and self.actionButton then
+				local action = self.actionButton.action or "";
+				local key = GetBindingKey("ACTIONBUTTON"..action);
+				-- There's a key assigned, check the combo
+				if key then
+					local selfCastKeyBind = selfCastKeyModifier.."-"..key;
+					if GetBindingAction(selfCastKeyBind) ~= "" then
+						-- something else uses this, cancel
+						usingSelfCast = false;
+					end
+				end
+			end
+			if usingSelfCast then
+				self.helpString = TutorialHelper:FormatString(TUTORIAL_DRACTHYR_SELF_CAST:format(selfCastKeyModifier));
 				self.helpTipInfo.text = self.helpString;
 				HelpTip:Show(self.actionButton, self.helpTipInfo);				
 			else

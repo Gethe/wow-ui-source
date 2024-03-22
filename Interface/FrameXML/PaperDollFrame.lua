@@ -309,7 +309,6 @@ DUAL_WIELD_HIT_PENALTY = 19.0;
 function PaperDollFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED");
-	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_STATS");
 	self:RegisterEvent("UNIT_RANGEDDAMAGE");
@@ -1436,6 +1435,7 @@ function PaperDollFrame_OnShow(self)
 	PaperDollSidebarTabs:Show();
 
 	PaperDollFrame_SetPlayer();
+	self:RegisterEvent("UNIT_MODEL_CHANGED");
 end
 
 function PaperDollFrame_OnHide(self)
@@ -1443,6 +1443,7 @@ function PaperDollFrame_OnHide(self)
 	CharacterFrame_Collapse();
 	PaperDollSidebarTabs:Hide();
 	PaperDollFrame_HideInventoryFixupComplete(self);
+	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 end
 
 function PaperDollFrame_ClearIgnoredSlots()

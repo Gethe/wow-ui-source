@@ -388,11 +388,11 @@
 		<PushedTexture inherits="_FilterButtonDown-Mid"/>
 		<HighlightTexture inherits="_FilterButtonHighlight-Mid"/>
 		<NormalFont style="GameFontNormalSmall"/>
-		<ButtonText>
+		<ButtonText parentKey="Text">
 			<Size x="0" y="12"/>
 			<Anchors>
-				<Anchor point="LEFT" x="-3" y="0"/>
-				<Anchor point="RIGHT" x="3" y="0"/>
+				<Anchor point="LEFT" x="-8" y="0"/>
+				<Anchor point="RIGHT" x="8" y="0"/>
 			</Anchors>
 			<Color r="0.973" g="0.902" b="0.581"/>
 		</ButtonText>

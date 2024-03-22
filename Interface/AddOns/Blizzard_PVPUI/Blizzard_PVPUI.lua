@@ -1457,11 +1457,11 @@ function ConquestFrameButton_OnEnter(self)
 
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
 	tooltip.WeeklyWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsWeeklyWon) or (PVP_GAMES_WON .. weeklyWon));
-	tooltip.WeeklyPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_WON .. weeklyPlayed));
+	tooltip.WeeklyPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsWeeklyPlayed) or (PVP_GAMES_PLAYED .. weeklyPlayed));
 
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
 	tooltip.SeasonWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsSeasonWon) or (PVP_GAMES_WON .. seasonWon));
-	tooltip.SeasonPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_WON .. seasonPlayed));
+	tooltip.SeasonPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_PLAYED .. seasonPlayed));
 
 	local specStats = isSoloShuffle and C_PvP.GetPersonalRatedSoloShuffleSpecStats();
 	if specStats then

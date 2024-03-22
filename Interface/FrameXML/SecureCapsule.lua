@@ -603,6 +603,7 @@ end
 
 take("SecureMixin");
 take("CreateFromSecureMixins");
+take("CreateSecureMixinCopy");
 
 retain("GetFinalNameFromTextureKit")
 retain("C_Texture");
