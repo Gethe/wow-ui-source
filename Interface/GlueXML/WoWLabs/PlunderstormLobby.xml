@@ -38,7 +38,7 @@
 			<Size x="53" y="63"/>
 			<Layers>
 				<Layer level="ARTWORK">
-					<FontString parentKey="FriendsOnline" inherits="SystemFont_Large2" justifyH="CENTER" text="000">
+					<FontString parentKey="FriendsOnline" inherits="SystemFont_Large2" justifyH="CENTER">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="7"/>
 						</Anchors>
@@ -63,6 +63,7 @@
 				</Layer>				
 			</Layers>
 			<Scripts>
+				<OnLoad method="OnLoad"/>
 				<OnMouseDown method="OnMouseDown"/>
 				<OnMouseUp method="OnMouseUp"/>
 				<OnClick method="OnClick"/>

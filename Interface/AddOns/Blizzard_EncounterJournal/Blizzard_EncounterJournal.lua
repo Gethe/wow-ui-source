@@ -391,9 +391,10 @@ function EncounterJournal_OnLoad(self)
 
 	-- Dungeons/Raids
 	do
+		local TopPad = 5;
 		local Pad = 0;
 		local Spacing = 15;
-		local view = CreateScrollBoxListGridView(4, Pad, Pad, Pad, Pad, Spacing, Spacing);
+		local view = CreateScrollBoxListGridView(4, TopPad, Pad, Pad, Pad, Spacing, Spacing);
 
 		local function Initializer(button, elementData)
 			button.name:SetText(elementData.name);

@@ -104,6 +104,8 @@ end
 function PlunderstormLobbyMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents (self,PlunderstormLobbyEvents);
+	self.PlunderstormLobbyFriendsButton:DisableUntilNextUpdate();
+	CharacterSelect.connectingToPlunderstorm = false;
 end
 
 function PlunderstormLobbyMixin:OnPlayerUpdatedPartyList()
@@ -228,6 +230,11 @@ end
 
 
 PlunderstormLobbyFriendButtonMixin = { };
+
+function PlunderstormLobbyFriendButtonMixin:OnLoad()
+	self:DisableUntilNextUpdate();
+end
+
 function PlunderstormLobbyFriendButtonMixin:OnClick()
 	FriendsFrame:SetShown(not FriendsFrame:IsShown())
 	self.Flash.Anim:SetPlaying(false);
@@ -246,7 +253,13 @@ function PlunderstormLobbyFriendButtonMixin:OnMouseUp()
 end
 
 function PlunderstormLobbyFriendButtonMixin:SetFriendsOnline(numOnlineFriends)
+	self:Enable();
 	self.FriendsOnline:SetText(numOnlineFriends);
+end
+
+function PlunderstormLobbyFriendButtonMixin:DisableUntilNextUpdate()
+	self:Disable();
+	self.FriendsOnline:SetText("");
 end
 
 WoWLabsSubscribeButtonMixin = {};

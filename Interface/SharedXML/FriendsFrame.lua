@@ -386,6 +386,10 @@ function FriendsFrame_OnShow(self)
 	FriendsFrameBattlenetFrame.UnavailableInfoFrame:SetPoint("TOPLEFT", FriendsFrame, "TOPRIGHT", -2, -18);	
 	FriendsFrame_Update();
 	FriendsTabHeaderTab1:OnClick();
+
+	EventRegistry:RegisterCallback("GameEnvironment.Selected", function()
+		self:Hide();
+	end, self);
 end
 
 function FriendsFrame_Update()
@@ -445,7 +449,7 @@ function FriendsFrame_UpdateQuickJoinTab(numGroups)
 	PanelTemplates_TabResize(FriendsFrameTab4, 0);
 end
 
-function FriendsFrame_OnHide()
+function FriendsFrame_OnHide(self)
 	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
 		UpdateMicroButtons();
 		RaidInfoFrame:Hide();
@@ -465,6 +469,8 @@ function FriendsFrame_OnHide()
 	end
 	FriendsFriendsFrame:Hide();
 	FriendsTabHeader.Tab3.New:Hide();
+
+	EventRegistry:UnregisterCallback("GameEnvironment.Selected", self);	
 end
 
 FriendsTabHeaderMixin = {};
@@ -484,7 +490,7 @@ end
 
 function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
 	if rafEnabled then
-		rafEnabled = not IsOnGlueScreen() and not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList);
+		rafEnabled = not IsOnGlueScreen() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList);
 	end
 
 	FRIEND_HEADER_TAB_COUNT = rafEnabled and 3 or 2;
