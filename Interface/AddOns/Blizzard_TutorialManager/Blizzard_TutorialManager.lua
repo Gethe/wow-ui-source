@@ -59,7 +59,11 @@ end
 
 function TutorialManager:OnCVARsUpdated(cvar, value)
 	if (cvar == "showTutorials" ) then
-		self.IsActive = (value == "1");
+		local isActive = (value == "1");
+		if self.IsActive == isActive then
+			return;
+		end
+		self.IsActive = isActive;
 		if self.IsActive then
 			self:Begin();			
 		else
