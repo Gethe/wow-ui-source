@@ -16,10 +16,30 @@ jobs:
         shopt -s extglob
         rm -r !(*.git*|*.sublime-*|*.md)
 
+    - name: Install Packages
+      run: sudo apt-get install libcurl4-openssl-dev
+
     - name: Install Lua
       uses: leafo/gh-actions-lua@v10.0.0
       with:
-        luaVersion: "5.2"
+        luaVersion: "5.1"
+
+    - name: Install Luarocks
+      uses: leafo/gh-actions-luarocks@v4
+      with:
+        luarocksVersion: "3.11.0"
+
+    - name: Install lua-zlib
+      run: luarocks install lua-zlib
+
+    - name: Install luacurl
+      run: luarocks install luacurl CURL_INCDIR=/usr/include/$(gcc -dumpmachine)
+
+    - name: Install LuaFileSystem
+      run: luarocks install LuaFileSystem
+
+    - name: Install md5
+      run: luarocks install md5
 
     - name: Checkout InterfaceExport
       uses: actions/checkout@v3
