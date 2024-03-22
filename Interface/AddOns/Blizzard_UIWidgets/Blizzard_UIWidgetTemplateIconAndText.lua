@@ -18,12 +18,18 @@ local textureKitRegions = {
 function UIWidgetTemplateIconAndTextMixin:OnAcquired(widgetInfo)
 	self.Text:ClearAllPoints();
 
+	-- Because the icon does not span the entirety of its atlas tile, use magic numbers to offset the UI element.
+	local iconEmptySpaceWidthOffset = -12;
+	local iconEmptySpaceHeightOffset = -6;
+
 	if self.Icon:IsShown() then
-		self.alignWidth = self.Icon:GetWidth()- 12 + self.Text:GetStringWidth();
-		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", -12, -6);
+		-- The icon offsets the text position.
+		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", iconEmptySpaceWidthOffset, iconEmptySpaceHeightOffset);
+		self.alignWidth = self.Icon:GetWidth() + iconEmptySpaceWidthOffset + self.Text:GetStringWidth();
 	else
+		-- The icon does not offset the text position.
+		self.Text:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", 0, iconEmptySpaceHeightOffset);
 		self.alignWidth = self.Text:GetStringWidth();
-		self.Text:SetPoint("TOP", self.Icon, "TOPLEFT", 0, -6);
 	end
 
 	self:SetWidth(self.alignWidth);
