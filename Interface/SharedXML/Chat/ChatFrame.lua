@@ -1215,6 +1215,10 @@ end
 
 -- We want to prefer spells for /cast and items for /use but we can use either
 SecureCmdList["CAST"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
 		local spellExists = DoesSpellExist(action)
@@ -1228,6 +1232,10 @@ SecureCmdList["CAST"] = function(msg)
 end
 
 SecureCmdList["USE"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
 		local name, bag, slot = SecureCmdItemParse(action);
@@ -1240,6 +1248,10 @@ SecureCmdList["USE"] = function(msg)
 end
 
 SecureCmdList["CASTRANDOM"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local actions, target = SecureCmdOptionParse(msg);
 	if ( actions ) then
 		local action = ExecuteCastRandom(actions);
@@ -1254,6 +1266,10 @@ end
 SecureCmdList["USERANDOM"] = SecureCmdList["CASTRANDOM"];
 
 SecureCmdList["CASTSEQUENCE"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local sequence, target = SecureCmdOptionParse(msg);
 	if ( sequence and sequence ~= "" ) then
 		ExecuteCastSequence(sequence, target);
@@ -1645,6 +1661,10 @@ SecureCmdList["EQUIP_SET"] = function(msg)
 end
 
 SecureCmdList["WORLD_MARKER"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local marker, target = SecureCmdOptionParse(msg);
 	if ( tonumber(marker) ) then
 		PlaceRaidMarker(tonumber(marker), target);
@@ -1661,6 +1681,10 @@ SecureCmdList["CLEAR_WORLD_MARKER"] = function(msg)
 end
 
 SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local pet = SecureCmdOptionParse(msg);
 	if ( type(pet) == "string" ) then
 		local _, petID = C_PetJournal.FindPetIDByName(string.trim(pet));
@@ -1673,18 +1697,30 @@ SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
 end
 
 SecureCmdList["RANDOMPET"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	if ( SecureCmdOptionParse(msg) ) then
 		C_PetJournal.SummonRandomPet(false);
 	end
 end
 
 SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	if ( SecureCmdOptionParse(msg) ) then
 		C_PetJournal.SummonRandomPet(true);
 	end
 end
 
 SecureCmdList["DISMISSBATTLEPET"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	if ( SecureCmdOptionParse(msg) ) then
 		local petID = C_PetJournal.GetSummonedPetGUID();
 		if ( petID ) then
@@ -1702,6 +1738,10 @@ SecureCmdList["PET_DISMISS"] = function(msg)
 end
 
 SecureCmdList["USE_TOY"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	local toyName = SecureCmdOptionParse(msg);
 	if ( toyName and toyName ~= "" ) then
 		UseToyByName(toyName)
@@ -1932,6 +1972,10 @@ SlashCmdList["TRADE"] = function(msg)
 end
 
 SlashCmdList["INSPECT"] = function(msg)
+	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
 	InspectUnit("target");
 end
 
