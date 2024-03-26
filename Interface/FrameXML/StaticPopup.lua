@@ -622,7 +622,7 @@ StaticPopupDialogs["CONFIRM_GUILD_DISBAND"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildDisband();
+		C_GuildInfo.Disband();
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -938,7 +938,7 @@ StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		GuildLeave();
+		C_GuildInfo.Leave();
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -950,7 +950,7 @@ StaticPopupDialogs["CONFIRM_GUILD_PROMOTE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, name)
-		GuildSetLeader(name);
+		C_GuildInfo.SetLeader(name);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -1958,7 +1958,7 @@ StaticPopupDialogs["USE_BIND"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmBindOnUse();
+		C_Item.ConfirmBindOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1970,7 +1970,7 @@ StaticPopupDialogs["CONFIM_BEFORE_USE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmOnUse();
+		C_Item.ConfirmOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1982,7 +1982,7 @@ StaticPopupDialogs["USE_NO_REFUND_CONFIRM"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ConfirmNoRefundOnUse();
+		C_Item.ConfirmNoRefundOnUse();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -2559,7 +2559,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	autoCompleteArgs = { AUTOCOMPLETE_LIST.GUILD_INVITE.include, AUTOCOMPLETE_LIST.GUILD_INVITE.exclude },
 	maxLetters = 48,
 	OnAccept = function(self)
-		GuildInvite(self.editBox:GetText());
+		C_GuildInfo.Invite(self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetFocus();
@@ -2570,7 +2570,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		GuildInvite(parent.editBox:GetText());
+		C_GuildInfo.Invite(parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2641,7 +2641,7 @@ StaticPopupDialogs["REMOVE_GUILDMEMBER"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildUninvite(GuildFrame.selectedName);
+		C_GuildInfo.Uninvite(GuildFrame.selectedName);
 		if GuildMemberDetailFrame then
 			GuildMemberDetailFrame:Hide();
 		end
@@ -2702,7 +2702,7 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 	wide = true,
 	editBoxWidth = 350,
 	OnAccept = function(self)
-		GuildSetMOTD(self.editBox:GetText());
+		C_GuildInfo.SetMOTD(self.editBox:GetText());
 	end,
 	OnShow = function(self)
 		self.editBox:SetText(GetGuildRosterMOTD());
@@ -2714,7 +2714,7 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
-		GuildSetMOTD(parent.editBox:GetText());
+		C_GuildInfo.SetMOTD(parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2884,6 +2884,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		text = HARDCORE_DEATH,
 		button1 = HARDCORE_GO_AGAIN,
 		button2 = DEATH_RELEASE,
+		button3 = DEATH_REINCARNATE_CHARACTER,
 		selectCallbackByIndex = true,
 		OnShow = function(self)
 			self.button1:Enable();
@@ -2896,6 +2897,13 @@ if (C_GameRules.IsHardcoreActive()) then
 		end,
 		OnButton2 = function(self)
 			RepopMe();
+		end,
+		OnButton3 = function(self)
+			-- Set some state, then start logout process as normal
+			local guid = UnitGUID("player");
+			local _, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
+			C_Reincarnation.StartReincarnation(guid, characterName);
+			Logout();
 		end,
 		OnUpdate = function(self, elapsed)
 			-- If button text is too long, widen out the dialogue
@@ -2952,7 +2960,7 @@ if (C_GameRules.IsHardcoreActive()) then
 			if ( self.button1:IsEnabled() ) then
 				-- Pass guild lead
 				local text = self.editBox:GetText();
-				GuildSetLeader(text);
+				C_GuildInfo.SetLeader(text);
 				self:Hide();
 				if (UnitIsDead("player")) then
 					StaticPopup_Show("HARDCORE_DEATH");
@@ -2979,7 +2987,7 @@ if (C_GameRules.IsHardcoreActive()) then
 			if ( parent.button1:IsEnabled() ) then
 				-- Pass guild lead
 				local text = parent.editBox:GetText();
-				GuildSetLeader(text);
+				C_GuildInfo.SetLeader(text);
 				parent:Hide();
 				if (UnitIsDead("player")) then
 					StaticPopup_Show("HARDCORE_DEATH");
@@ -3337,7 +3345,7 @@ StaticPopupDialogs["BIND_ENCHANT"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		BindEnchant();
+		C_Item.BindEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3361,7 +3369,7 @@ StaticPopupDialogs["ACTION_WILL_BIND_ITEM"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		ActionBindsItem();
+		C_Item.ActionBindsItem();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3373,7 +3381,7 @@ StaticPopupDialogs["REPLACE_ENCHANT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ReplaceEnchant();
+		C_Item.ReplaceEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3385,7 +3393,7 @@ StaticPopupDialogs["TRADE_REPLACE_ENCHANT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ReplaceTradeEnchant();
+		C_Item.ReplaceTradeEnchant();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -3441,7 +3449,7 @@ StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		EndBoundTradeable(self.data);
+		C_Item.EndBoundTradeable(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -4087,7 +4095,7 @@ StaticPopupDialogs["GUILD_DEMOTE_CONFIRM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildDemote(self.data);
+		C_GuildInfo.Demote(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -4098,7 +4106,7 @@ StaticPopupDialogs["GUILD_PROMOTE_CONFIRM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		GuildPromote(self.data);
+		C_GuildInfo.Promote(self.data);
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -5761,15 +5769,15 @@ function StaticPopupItemFrame_OnEvent(self, event, ...)
 end
 
 function StaticPopupItemFrame_RetrieveInfo(self, data)
-	local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(data.link);
+	local itemName, _, itemQuality, _, _, _, _, _, _, texture = C_Item.GetItemInfo(data.link);
 	if ( itemName ) then
 		data.name = itemName;
-		local r, g, b = GetItemQualityColor(itemQuality);
+		local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 		data.color = {r, g, b, 1};
 		data.texture = texture;
 		self.itemID = nil;
 	else
-		local itemID, _, _, _, texture = GetItemInfoInstant(data.link);
+		local itemID, _, _, _, texture = C_Item.GetItemInfoInstant(data.link);
 		data.name = RETRIEVING_ITEM_INFO;
 		data.color = {RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1};
 		data.texture = texture;
@@ -5785,7 +5793,7 @@ function StaticPopupItemFrame_DisplayInfo(self, link, name, color, texture, coun
 	nameText:SetText(name);
 
 	if link then
-		local quality = select(3, GetItemInfo(link));
+		local quality = select(3, C_Item.GetItemInfo(link));
 		SetItemButtonQuality(self, quality, link);
 	end
 

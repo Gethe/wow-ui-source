@@ -181,7 +181,7 @@ UIMenus = {
 
 ITEM_QUALITY_COLORS = { };
 for i = 0, NUM_LE_ITEM_QUALITYS - 1 do
-	local r, g, b = GetItemQualityColor(i);
+	local r, g, b = C_Item.GetItemQualityColor(i);
 	local color = CreateColor(r, g, b, 1);
 	ITEM_QUALITY_COLORS[i] = { r = r, g = g, b = b, hex = color:GenerateHexColorMarkup(), color = color };
 end
@@ -1533,7 +1533,7 @@ function UIParent_OnEvent(self, event, ...)
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
 		local info = ChatTypeInfo["SYSTEM"];
-		local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+		local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 		if (itemName) then
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 		else
@@ -1543,7 +1543,7 @@ function UIParent_OnEvent(self, event, ...)
 		local itemID = ...;
 		if (itemID == WOW_TOKEN_ITEM_ID) then
 			local info = ChatTypeInfo["SYSTEM"];
-			local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+			local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 		end

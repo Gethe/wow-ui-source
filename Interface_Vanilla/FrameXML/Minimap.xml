@@ -95,7 +95,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+						local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 						Minimap_SetTooltip( pvpType, factionName );
 						GameTooltip:Show();
 					</OnEnter>
@@ -179,10 +179,10 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								self:RegisterEvent("UNIT_AURA");
+								self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
 							</OnLoad>
 							<OnEvent>
-								if ( event == "UNIT_AURA" ) then
+								if ( event == "MINIMAP_UPDATE_TRACKING" ) then
 									local icon = GetTrackingTexture();
 									if ( icon ) then
 										MiniMapTrackingIcon:SetTexture(icon);

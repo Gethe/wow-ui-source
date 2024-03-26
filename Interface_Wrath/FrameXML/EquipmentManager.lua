@@ -277,7 +277,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, _;
 	if ( not bags ) then -- and (player or bank) 
 		id = GetInventoryItemID("player", slot);
-		name, _, _, _, _, _, _, _, invType, textureName = GetItemInfo(id);
+		name, _, _, _, _, _, _, _, invType, textureName = C_Item.GetItemInfo(id);
 		if ( textureName ) then
 			count = GetInventoryItemCount("player", slot);
 			durability, maxDurability = GetInventoryItemDurability(slot);
@@ -288,7 +288,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		gem1, gem2, gem3 = GetInventoryItemGems(slot);
 	else -- bags
 		id = C_Container.GetContainerItemID(bag, slot);
-		name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
+		name, _, _, _, _, _, _, _, invType = C_Item.GetItemInfo(id);
 		local info = C_Container.GetContainerItemInfo(bag, slot);
 		textureName = info and info.iconFileID;
 		count = info and info.stackCount;

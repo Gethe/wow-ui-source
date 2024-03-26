@@ -63,7 +63,7 @@ function AccountLogin_OnShow(self)
 	SetGameLogo(self.UI.GameLogo);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
-
+    CharacterCreate_CancelReincarnation(); -- If we're back at this screen, we're not reincarnating
 	AccountLogin_Update();
 	AccountLogin_CheckAutoLogin();
 end

@@ -456,15 +456,22 @@ end
 UnitPopupRemoveBnetFriendButtonMixin = CreateFromMixins(UnitPopupRemoveFriendButtonMixin);
 function UnitPopupRemoveBnetFriendButtonMixin:OnClick()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if dropdownMenu.accountInfo then
-		local promptText;
-		if dropdownMenu.accountInfo.isBattleTagFriend then
-			promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, dropdownMenu.accountInfo.accountName);
-		else
-			promptText = string.format(REMOVE_FRIEND_CONFIRMATION, dropdownMenu.accountInfo.accountName);
+	local promptText;
+	if not IsOnGlueScreen() then 
+		if dropdownMenu.accountInfo then
+			if dropdownMenu.accountInfo.isBattleTagFriend then
+				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, dropdownMenu.accountInfo.accountName);
+			else
+				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, dropdownMenu.accountInfo.accountName);
+			end
+			StaticPopup_Show("CONFIRM_REMOVE_FRIEND", promptText, nil, dropdownMenu.accountInfo.bnetAccountID);
 		end
-		StaticPopup_Show("CONFIRM_REMOVE_FRIEND", promptText, nil, dropdownMenu.accountInfo.bnetAccountID);
+	else
+		promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, dropdownMenu.battleTag);
+		GlueDialog_Show("CONFIRM_REMOVE_FRIEND", promptText, dropdownMenu.bnetIDAccount);
 	end
+
+
 end
 
 UnitPopupSetBNetNoteButtonMixin = CreateFromMixins(UnitPopupSetNoteButtonMixin);
@@ -976,7 +983,6 @@ end
 
 function UnitPopupReportGroupMemberButtonMixin:CanShow()
 	local isBattleground = UnitInBattleground("player");
-	local inBattleground = UnitInBattleground("player");
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	if (inBattleground) then
 		return false; 
@@ -1436,7 +1442,7 @@ function UnitPopupPvpEnableButtonMixin:IsChecked()
 end
 
 function UnitPopupPvpEnableButtonMixin:OnClick()
-	SetPVP(1);
+	C_PvP.SetPVP(1);
 end
 
 UnitPopupPvpDisableButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1457,7 +1463,7 @@ function UnitPopupPvpDisableButtonMixin:IsChecked()
 end
 
 function UnitPopupPvpDisableButtonMixin:OnClick()
-	SetPVP(nil);
+	C_PvP.SetPVP(nil);
 end
 
 UnitPopupSelectLootSpecializationButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -1746,10 +1752,12 @@ end
 
 UnitPopupRafSummonButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupRafSummonButtonMixin:GetText()
-	local start, duration = GetSummonFriendCooldown();
-	local remaining = start + duration - GetTime();
-	if ( remaining > 0 ) then
-		return format(RAF_SUMMON_WITH_COOLDOWN, SecondsToTime(remaining, true));
+	if ( not IsOnGlueScreen() ) then
+		local start, duration = C_RecruitAFriend.GetSummonFriendCooldown();
+		local remaining = start + duration - GetTime();
+		if ( remaining > 0 ) then
+			return format(RAF_SUMMON_WITH_COOLDOWN, SecondsToTime(remaining, true));
+		end
 	end
 	return RAF_SUMMON;
 end
@@ -3223,4 +3231,54 @@ function UnitPopupSetRoleHealerButton:IsEnabled()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles(dropdownMenu.unit);
 	return canBeHealer;
+end
+
+UnitPopupGlueInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupGlueInviteButtonMixin:GetButtonName()
+	return "GLUE_INVITE";
+end
+
+function UnitPopupGlueInviteButtonMixin:GetText()
+	return PARTY_INVITE;
+end
+
+function UnitPopupGlueInviteButtonMixin:CanShow()
+	return true;
+end
+
+function UnitPopupGlueInviteButtonMixin:OnClick()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu()
+	if dropdownMenu and dropdownMenu.bnetIDAccount then
+		local success = C_WoWLabsMatchmaking.SendPartyInvite(dropdownMenu.bnetIDAccount);
+	end
+end
+
+function UnitPopupGlueInviteButtonMixin:IsEnabled()
+	return not C_WoWLabsMatchmaking.IsPartyFull();
+end
+
+UnitPopupGlueLeavePartyButton = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupGlueLeavePartyButton:GetText()
+	return GLUE_LEAVE_PARTY; 
+end
+
+function UnitPopupGlueLeavePartyButton:CanShow()
+	return C_WoWLabsMatchmaking.IsPlayer(self:GetGUID()) and not C_WoWLabsMatchmaking.IsAloneInWoWLabsParty();
+end 
+
+function UnitPopupGlueLeavePartyButton:OnClick()
+	C_WoWLabsMatchmaking.LeaveParty();
+end 
+
+UnitPopupGlueRemovePartyButton = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupGlueRemovePartyButton:GetText()
+	return GLUE_REMOVE_FROM_PARTY; 
+end
+
+function UnitPopupGlueRemovePartyButton:CanShow()
+	return C_WoWLabsMatchmaking.IsPartyLeader() and not C_WoWLabsMatchmaking.IsPlayer(self:GetGUID());
+end
+
+function UnitPopupGlueRemovePartyButton:OnClick()
+	C_WoWLabsMatchmaking.RemovePlayerFromParty(self:GetGUID()); 
 end

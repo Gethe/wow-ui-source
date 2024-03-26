@@ -102,7 +102,7 @@ end
 -----------  RAID WARNING 
 function RaidWarningFrame_OnLoad(self)
 	self:RegisterEvent("CHAT_MSG_RAID_WARNING");
-	self:RegisterEvent("GUILD_MEMBER_DIED");
+	self:RegisterEvent("HARDCORE_DEATHS");
 	self.slot1 = RaidWarningFrameSlot1;
 	self.slot2 = RaidWarningFrameSlot2;
 	RaidNotice_FadeInit( self.slot1 );
@@ -120,9 +120,8 @@ function RaidWarningFrame_OnEvent(self, event, message)
 		
 		RaidNotice_AddMessage( self, message, ChatTypeInfo["RAID_WARNING"] );
 		PlaySound(SOUNDKIT.RAID_WARNING);
-	elseif ( event == "GUILD_MEMBER_DIED") then
-		message = HARDCORE_GUILD_MEMBER_DEATH:format(message);
-		RaidNotice_AddMessage( self, message, ChatTypeInfo["GUILD_DEATHS"] );
+	elseif ( event == "HARDCORE_DEATHS") then
+		RaidNotice_AddMessage( self, message, {r = 255, g= 50, b = 50} );
 	end
 end
 

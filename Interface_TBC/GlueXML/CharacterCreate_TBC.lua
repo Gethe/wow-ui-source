@@ -247,3 +247,7 @@ end
 function CheckSelfFoundButton()
 	-- Not implemented
 end
+
+function CharacterCreate_CancelReincarnation()
+	-- Not implemented
+end

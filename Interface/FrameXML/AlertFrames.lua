@@ -578,7 +578,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "QUEST_LOOT_RECEIVED" ) then
 		local questID, rewardItemLink = ...;
-		local _, _, _, _, texture = GetItemInfoInstant(rewardItemLink);
+		local _, _, _, _, texture = C_Item.GetItemInfoInstant(rewardItemLink);
 		if QuestUtils_IsQuestWorldQuest(questID) then
 			WorldQuestCompleteAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		else

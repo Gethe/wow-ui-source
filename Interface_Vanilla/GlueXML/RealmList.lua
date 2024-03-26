@@ -60,23 +60,24 @@ function RealmList_Update()
 
 		if ( idx <= #realms ) then
 			local realmAddr = realms[idx];
-			local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+			local realmInfo = C_RealmList.GetRealmInfo(realmAddr);
 
 			button.realmAddr = realmAddr;
 			local isSelectedRealm = realmAddr == RealmList.selectedRealm;
 
+			local seasonID = realmInfo.seasonID;
 			--Update RealmType
 			local realmType = "";
 			if (seasonID and SEASON_NAMES[seasonID] ~= nil) then
 				realmType = SEASON_NAMES[seasonID] .. " ";
 			end
-			if ( isPvP and isRP ) then
+			if ( realmInfo.isPvP and realmInfo.isRP ) then
 				realmType = realmType .. RPPVP_PARENTHESES;
 				button.RealmType:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-			elseif ( isRP ) then
+			elseif ( realmInfo.isRP ) then
 				realmType = realmType .. RP_PARENTHESES;
 				button.RealmType:SetTextColor(GREEN_FONT_COLOR:GetRGB());
-			elseif ( isPvP ) then
+			elseif ( realmInfo.isPvP ) then
 				realmType = realmType .. PVP_PARENTHESES;
 				button.RealmType:SetTextColor(RED_FONT_COLOR:GetRGB());
 			else
@@ -84,7 +85,7 @@ function RealmList_Update()
 				button.RealmType:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 			end
 			if (seasonID) then
-				if( isPvP ) then
+				if( realmInfo.isPvP ) then
 					button.RealmType:SetTextColor(BLUE_FONT_COLOR:GetRGB());
 			else
 					button.RealmType:SetTextColor(GREEN_FONT_COLOR:GetRGB());
@@ -92,8 +93,9 @@ function RealmList_Update()
 			end
 			button.RealmType:SetText(realmType);
 
+			local populationState = realmInfo.populationState;
+			local versionMismatch = realmInfo.versionMismatch;
 			--Update Load text
-
 			if ( populationState == "OFFLINE" ) then
 				button.Load:SetText(REALM_DOWN);
 				button.Load:SetTextColor(GRAY_FONT_COLOR:GetRGB());
@@ -127,6 +129,7 @@ function RealmList_Update()
 				button.Load:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 			end
 
+			local numChars = realmInfo.numCharacters;
 			--Update selected state
 			if ( isSelectedRealm ) then
 				button:LockHighlight();
@@ -174,10 +177,10 @@ function RealmList_Update()
 			end
 
 			--Update name
-			if ( versionMajor ) then
-				button:SetText(name.." ("..versionMajor.."."..versionMinor.."."..versionRev..")");
+			if ( realmInfo.version ) then
+				button:SetText(realmInfo.name.." ("..realmInfo.version.major.."."..realmInfo.version.minor.."."..realmInfo.version.revision..")");
 			else
-				button:SetText(name);
+				button:SetText(realmInfo.name);
 			end
 
 
@@ -207,7 +210,7 @@ function RealmList_UpdateOKButton()
 		return;
 	end
 
-	local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	local populationState = C_RealmList.GetRealmInfo(RealmList.selectedRealm).populationState;
 	RealmListOkButton:SetEnabled(populationState and populationState ~= "OFFLINE");
 end
 
@@ -266,11 +269,11 @@ end
 function RealmList_OnOk()
 	if (RealmList.selectedRealm) then
 		-- If trying to join a Full realm then popup a dialog
-		local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+		local realmInfo = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
-		if ( populationState == "FULL" and numChars == 0 ) then
+		if ( realmInfo.populationState == "FULL" and realmInfo.numCharacters == 0 ) then
 			GlueDialog_Show("REALM_IS_FULL");
-		elseif ( populationState == "LOCKED" and numChars == 0 ) then
+		elseif ( realmInfo.populationState == "LOCKED" and realmInfo.numCharacters == 0 ) then
 			GlueDialog_Show("REALM_IS_LOCKED");
 		else
 			RealmList_OnConnectToRealm();
@@ -279,9 +282,9 @@ function RealmList_OnOk()
 end
 
 function RealmList_OnConnectToRealm()
-	local name, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	local realmInfo = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
-	if (seasonID == Enum.SeasonID.Hardcore and numChars == 0) then
+	if (realmInfo.seasonID == Enum.SeasonID.Hardcore and realmInfo.numCharacters == 0) then
 		HardcorePopUpFrame:SetRealmInfo(RealmList.selectedRealm)
 		HardcorePopUpFrame:ShowRealmSelectionWarning();
 	else
@@ -356,7 +359,7 @@ function RealmList_GetInfoFromName(name)
 		local realms = C_RealmList.GetRealmsInCategory(categories[i]);
 		for j=1, #realms do
 			local realmAddr = realms[j];
-			local realmName, numChars, versionMismatch, isPvP, isRP, populationState, nameReservation, seasonID, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+			local realmName = C_RealmList.GetRealmInfo(realmAddr).name;
 
 			if ( realmName == name ) then
 				return realmAddr, categories[i];
@@ -400,8 +403,8 @@ REALM_LIST_POPULATION_ORDERING = {
 REALM_LIST_SORT_DEFINITIONS = {
 	compatible = {
 		func = function(realm1, realm2)
-			local versionMismatch1 = select(3, C_RealmList.GetRealmInfo(realm1));
-			local versionMismatch2 = select(3, C_RealmList.GetRealmInfo(realm2));
+			local versionMismatch1 = C_RealmList.GetRealmInfo(realm1).versionMismatch;
+			local versionMismatch2 = C_RealmList.GetRealmInfo(realm2).versionMismatch;
 			if ( versionMismatch1 == versionMismatch2 ) then
 				return 0;
 			elseif ( versionMismatch1 ) then
@@ -413,19 +416,19 @@ REALM_LIST_SORT_DEFINITIONS = {
 	},
 	name = {
 		func = function(realm1, realm2)
-			local name1 = select(1, C_RealmList.GetRealmInfo(realm1));
-			local name2 = select(1, C_RealmList.GetRealmInfo(realm2));
+			local name1 = C_RealmList.GetRealmInfo(realm1).name;
+			local name2 = C_RealmList.GetRealmInfo(realm2).name;
 			return strcmputf8i(name1, name2);
 		end
 	},
 	realmType = {
 		func = function(realm1, realm2)
-			local pvp1, rp1 = select(4, C_RealmList.GetRealmInfo(realm1));
-			local pvp2, rp2 = select(4, C_RealmList.GetRealmInfo(realm2));
-			if ( rp1 ~= rp2 ) then
-				return rp1 and 1 or -1;
-			elseif ( pvp1 ~= pvp2 ) then
-				return pvp1 and 1 or -1;
+			local realmInfo1 = C_RealmList.GetRealmInfo(realm1);
+			local realmInfo2 = C_RealmList.GetRealmInfo(realm2);
+			if ( realmInfo1.isRP ~= realmInfo2.isRP ) then
+				return realmInfo1.isRP and 1 or -1;
+			elseif ( realmInfo1.isPvP ~= realmInfo2.isPvP ) then
+				return realmInfo1.isPvP and 1 or -1;
 			else
 				return 0;
 			end
@@ -433,15 +436,15 @@ REALM_LIST_SORT_DEFINITIONS = {
 	},
 	numCharacters = {
 		func = function(realm1, realm2)
-			local numChars1 = select(2, C_RealmList.GetRealmInfo(realm1));
-			local numChars2 = select(2, C_RealmList.GetRealmInfo(realm2));
+			local numChars1 = C_RealmList.GetRealmInfo(realm1).numCharacters;
+			local numChars2 = C_RealmList.GetRealmInfo(realm2).numCharacters;
 			return numChars2 - numChars1;
 		end
 	},
 	population = {
 		func = function(realm1, realm2)
-			local population1 = select(6, C_RealmList.GetRealmInfo(realm1));
-			local population2 = select(6, C_RealmList.GetRealmInfo(realm2));
+			local population1 = C_RealmList.GetRealmInfo(realm1).populationState;
+			local population2 = C_RealmList.GetRealmInfo(realm2).populationState;
 			return REALM_LIST_POPULATION_ORDERING[population1] - REALM_LIST_POPULATION_ORDERING[population2];
 		end
 	}
@@ -519,7 +522,7 @@ function RealmListUtility_SortRealms(realms)
 end
 
 function RealmListUtility_GetTypeTooltip(realmAddr)
-	local seasonID = select(8, C_RealmList.GetRealmInfo(realmAddr));
+	local seasonID = C_RealmList.GetRealmInfo(realmAddr).seasonID;
 	return seasonID == 0 and nil or SEASON_TOOLTIPS[seasonID];
 end
 

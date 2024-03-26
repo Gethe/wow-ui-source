@@ -12,17 +12,6 @@ local ServerAlertOffsets = {
 		scrollY2 = 13
 		--no centerX or centerY needed
 	},
-
-	darkmoonlights = {
-		titleX = 0,
-		titleY = -30,
-		scrollX1 = 25,
-		scrollY1 = -56,
-		scrollX2 = -47,
-		scrollY2 = 27,
-		centerX = 8,
-		centerY = -10
-	}
 };
 
 function ServerAlert_OnEvent(self, event, ...)

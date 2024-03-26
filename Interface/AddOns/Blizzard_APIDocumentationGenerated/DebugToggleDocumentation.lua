@@ -6,11 +6,19 @@ local DebugToggle =
 	Functions =
 	{
 		{
+			Name = "ToggleAnimKitDisplay",
+			Type = "Function",
+		},
+		{
 			Name = "ToggleCollision",
 			Type = "Function",
 		},
 		{
 			Name = "ToggleCollisionDisplay",
+			Type = "Function",
+		},
+		{
+			Name = "ToggleDebugAIDisplay",
 			Type = "Function",
 		},
 		{

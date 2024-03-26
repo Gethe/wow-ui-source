@@ -50,7 +50,6 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<!--
 	<Button name="PlayerGlyphTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -70,7 +69,6 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	-->
 	<Button name="PlayerTalentButtonTemplate" inherits="TalentButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -686,7 +684,6 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			<!--
 			<Button name="PlayerTalentFrameTab4" inherits="PlayerGlyphTabTemplate" text="GLYPHS" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab3" relativePoint="RIGHT">
@@ -696,7 +693,6 @@
 					</Anchor>
 				</Anchors>
 			</Button>
-			-->
 			<CheckButton name="PlayerSpecTab1" inherits="PlayerSpecTabTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">

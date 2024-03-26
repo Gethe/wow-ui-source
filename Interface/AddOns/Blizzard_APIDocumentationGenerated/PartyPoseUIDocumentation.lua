@@ -38,6 +38,7 @@ local PartyPoseUI =
 				{ Name = "defeatSoundKitID", Type = "number", Nilable = false },
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
 				{ Name = "titleText", Type = "string", Nilable = true },
+				{ Name = "extraButtonText", Type = "string", Nilable = true },
 			},
 		},
 	},

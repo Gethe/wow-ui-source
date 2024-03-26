@@ -1234,7 +1234,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		local itemQuantity = info and info.itemCount;
 		local itemLink = info and info.hyperlink;
 		if ( itemLink ) then
-			local _, _, itemQuality = GetItemInfo(itemLink);
+			local _, _, itemQuality = C_Item.GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
 				itemsString = itemsString .. ", " .. format(ITEM_QUANTITY_TEMPLATE, (itemQuantity or 0) * quantity, itemLink);
@@ -1282,8 +1282,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemTexture = info and info.iconFileID;
 		refundItemLink = info and info.hyperlink;
 	end
-	local itemName, _, itemQuality = GetItemInfo(refundItemLink);
-	local r, g, b = GetItemQualityColor(itemQuality);
+	local itemName, _, itemQuality = C_Item.GetItemInfo(refundItemLink);
+	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 	local textLine2 = "";
 	if (hasEnchants) then
 		textLine2 = "\n\n"..CONFIRM_REFUND_ITEM_ENHANCEMENTS_LOST;

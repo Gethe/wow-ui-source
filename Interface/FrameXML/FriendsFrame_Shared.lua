@@ -135,7 +135,7 @@ function FriendsFrame_ShouldShowSummonButton(self)
 			return false, false;
 		end
 
-		return true, CanSummonFriend(info.name);
+		return true, C_RecruitAFriend.CanSummonFriend(info.name);
 	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		--Get the information by BNet friends list ID.
 		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend = BNGetFriendInfo(id);
@@ -154,7 +154,7 @@ function FriendsFrame_SummonButton_Update (self)
 	local shouldShow, enable = FriendsFrame_ShouldShowSummonButton(self);
 	self:SetShown(shouldShow);
 
-	local start, duration = GetSummonFriendCooldown();
+	local start, duration = C_RecruitAFriend.GetSummonFriendCooldown();
 
 	if ( duration > 0 ) then
 		self.duration = duration;
@@ -188,7 +188,7 @@ function FriendsFrame_ClickSummonButton (self)
 		--Summon by WoW friends list ID (not BNet id.)
 		local info = C_FriendList.GetFriendInfoByIndex(id);
 
-		SummonFriend(info.name);
+		C_RecruitAFriend.SummonFriend(info.name);
 	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		--Summon by BNet friends list ID (index in this case.)
 		BNSummonFriendByIndex(id);

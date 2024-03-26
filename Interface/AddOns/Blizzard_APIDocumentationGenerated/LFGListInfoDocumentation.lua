@@ -537,6 +537,8 @@ local LFGListInfo =
 				{ Name = "mapName", Type = "string", Nilable = false },
 				{ Name = "bestRunLevel", Type = "number", Nilable = false },
 				{ Name = "finishedSuccess", Type = "bool", Nilable = false },
+				{ Name = "bestRunDurationMs", Type = "number", Nilable = false },
+				{ Name = "bestLevelIncrement", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -657,6 +659,7 @@ local LFGListInfo =
 				{ Name = "age", Type = "time_t", Nilable = false },
 				{ Name = "leaderOverallDungeonScore", Type = "number", Nilable = true },
 				{ Name = "leaderDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },
+				{ Name = "leaderBestDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },
 				{ Name = "leaderPvpRatingInfo", Type = "PvpRatingInfo", Nilable = true },
 				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },

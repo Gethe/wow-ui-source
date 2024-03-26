@@ -1196,7 +1196,7 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 			UIErrorsFrame:AddMessage(ERR_AUCTION_DATABASE_ERROR, 1.0, 0.1, 0.1, 1.0);
 		else
 			local info = ChatTypeInfo["SYSTEM"];
-			local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+			local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_WON_S:format(itemName), info.r, info.g, info.b, info.id);
 			C_WowTokenPublic.UpdateTokenCount();
 		end
@@ -1249,7 +1249,7 @@ function BrowseWowTokenResults_Update()
 			marketPrice = C_WowTokenPublic.GetCurrentMarketPrice();
 		end
 		BrowseWowTokenResults:Show();
-		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(WOW_TOKEN_ITEM_ID);
+		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 		if (itemName) then
 			BrowseWowTokenResults.Token.Icon:SetTexture(itemTexture)
 			BrowseWowTokenResults.Token.Name:SetText(itemName);
@@ -1608,7 +1608,7 @@ function AuctionFrameAuctions_Update()
 				count = 1;
 				canUse = true;
 				bidAmount = 0;
-				name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemID);
+				name, _, quality, _, _, _, _, _, _, texture = C_Item.GetItemInfo(itemID);
 				isWowToken = true;
 				if (not name) then
 					AuctionsWowTokenAuctionFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED");

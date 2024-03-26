@@ -134,7 +134,6 @@ ChatTypeInfo["BN_INLINE_TOAST_BROADCAST_INFORM"]		= { sticky = 0, flashTab = tru
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMMUNITIES_CHANNEL"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["VOICE_TEXT"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["GUILD_DEATHS"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 --NEW_CHAT_TYPE -Add the info here.
 
 ChatTypeGroup = {};
@@ -293,9 +292,6 @@ ChatTypeGroup["BN_INLINE_TOAST_ALERT"] = {
 };
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
-};
-ChatTypeGroup["GUILD_DEATHS"] = {
-	"CHAT_MSG_GUILD_DEATHS",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.
@@ -841,8 +837,8 @@ local function CreateCanonicalActions(entry, ...)
 		local action = strlower(strtrim((select(i, ...))));
 		if ( action and action ~="" ) then
 			count = count + 1;
-			if ( GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
-				local spellName, spellID = GetItemSpell(action);
+			if ( C_Item.GetItemInfo(action) or select(3, SecureCmdItemParse(action)) ) then
+				local spellName, spellID = C_Item.GetItemSpell(action);
 				entry.items[count] = action;
 				entry.spells[count] = strlower(spellName or "");
 				entry.spellNames[count] = entry.spells[count];
@@ -1010,7 +1006,7 @@ local function ExecuteCastSequence(sequence, target)
 			local spellID;
 			if ( name ) then
 				local spellName;
-				spellName, spellID = GetItemSpell(name);
+				spellName, spellID = C_Item.GetItemSpell(name);
 				spell = strlower(spellName or "");
 			else
 				spell = "";
@@ -1018,8 +1014,8 @@ local function ExecuteCastSequence(sequence, target)
 			entry.spellNames[entry.index] = spell;
 			entry.spellID[entry.index] = spellID;
 		end
-		if ( IsEquippableItem(name) and not IsEquippedItem(name) ) then
-			EquipItemByName(name);
+		if ( C_Item.IsEquippableItem(name) and not C_Item.IsEquippedItem(name) ) then
+			C_Item.EquipItemByName(name);
 		else
 			SecureCmdUseItem(name, bag, slot, target);
 		end
@@ -1051,8 +1047,8 @@ function QueryCastSequence(sequence)
 				spells = sequence;
 			end
 			local action = strlower(strtrim((strsplit(",", spells))));
-			if ( select(3, SecureCmdItemParse(action)) or GetItemInfo(action) ) then
-				item, spell = action, strlower(GetItemSpell(action) or "");
+			if ( select(3, SecureCmdItemParse(action)) or C_Item.GetItemInfo(action) ) then
+				item, spell = action, strlower(C_Item.GetItemSpell(action) or "");
 			else
 				item, spell = nil, action;
 			end
@@ -1062,7 +1058,7 @@ function QueryCastSequence(sequence)
 		local name, bag, slot = SecureCmdItemParse(item);
 		if ( slot ) then
 			if ( name ) then
-				spell = strlower(GetItemSpell(name) or "");
+				spell = strlower(C_Item.GetItemSpell(name) or "");
 			else
 				spell = "";
 			end
@@ -1170,7 +1166,7 @@ function SecureCmdUseItem(name, bag, slot, target)
 	elseif ( slot ) then
 		UseInventoryItem(slot, target);
 	else
-		UseItemByName(name, target);
+		C_Item.UseItemByName(name, target);
 	end
 end
 
@@ -1228,7 +1224,7 @@ SecureCmdList["CAST"] = function(msg)
 		local name, bag, slot = SecureCmdItemParse(action);
 		if ( spellExists ) then
 			CastSpellByName(action, target);
-		elseif ( slot or GetItemInfo(name) ) then
+		elseif ( slot or C_Item.GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);
 		end
     end
@@ -1238,7 +1234,7 @@ SecureCmdList["USE"] = function(msg)
     local action, target = SecureCmdOptionParse(msg);
     if ( action ) then
 		local name, bag, slot = SecureCmdItemParse(action);
-		if ( slot or GetItemInfo(name) ) then
+		if ( slot or C_Item.GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);
 		else
 			CastSpellByName(action, target);
@@ -1251,7 +1247,7 @@ SecureCmdList["CASTRANDOM"] = function(msg)
 	if ( actions ) then
 		local action = ExecuteCastRandom(actions);
 		local name, bag, slot = SecureCmdItemParse(action);
-		if ( slot or GetItemInfo(name) ) then
+		if ( slot or C_Item.GetItemInfo(name) ) then
 			SecureCmdUseItem(name, bag, slot, target);
 		else
 			CastSpellByName(action, target);
@@ -1295,7 +1291,7 @@ end
 SecureCmdList["EQUIP"] = function(msg)
 	local item = SecureCmdOptionParse(msg);
 	if ( item ) then
-		EquipItemByName((SecureCmdItemParse(item)));
+		C_Item.EquipItemByName((SecureCmdItemParse(item)));
 	end
 end
 
@@ -1305,7 +1301,7 @@ SecureCmdList["EQUIP_TO_SLOT"] = function(msg)
 		local slot, item = strmatch(action, "^(%d+)%s+(.*)");
 		if ( item ) then
 			if ( PaperDoll_IsEquippedSlot(slot) ) then
-				EquipItemByName(SecureCmdItemParse(item), slot);
+				C_Item.EquipItemByName(SecureCmdItemParse(item), slot);
 			else
 				-- user specified a bad slot number (slot that you can't equip an item to)
 				ChatFrame_DisplayUsageError(format(ERROR_SLASH_EQUIP_TO_SLOT, EQUIPPED_FIRST, EQUIPPED_LAST));
@@ -1660,7 +1656,7 @@ SecureCmdList["GUILD_UNINVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
-	GuildUninvite(msg);
+	C_GuildInfo.Uninvite(msg);
 end
 
 SecureCmdList["GUILD_PROMOTE"] = function(msg)
@@ -1668,7 +1664,7 @@ SecureCmdList["GUILD_PROMOTE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
-	GuildPromote(msg);
+	C_GuildInfo.Promote(msg);
 end
 
 SecureCmdList["GUILD_DEMOTE"] = function(msg)
@@ -1676,7 +1672,7 @@ SecureCmdList["GUILD_DEMOTE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
-	GuildDemote(msg);
+	C_GuildInfo.Demote(msg);
 end
 
 SecureCmdList["GUILD_LEADER"] = function(msg)
@@ -1684,11 +1680,11 @@ SecureCmdList["GUILD_LEADER"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
-	GuildSetLeader(msg);
+	C_GuildInfo.SetLeader(msg);
 end
 
 SecureCmdList["GUILD_LEAVE"] = function(msg)
-	GuildLeave();
+	C_GuildInfo.Leave();
 end
 
 SecureCmdList["GUILD_DISBAND"] = function(msg)
@@ -2136,11 +2132,11 @@ SlashCmdList["GUILD_INVITE"] = function(msg)
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
-	GuildInvite(msg);
+	C_GuildInfo.Invite(msg);
 end
 
 SlashCmdList["GUILD_MOTD"] = function(msg)
-	GuildSetMOTD(msg)
+	C_GuildInfo.SetMOTD(msg)
 end
 
 SlashCmdList["GUILD_INFO"] = function(msg)
@@ -2226,7 +2222,7 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	if ( not ScriptsDisallowedForBeta() ) then
+	if ( not C_AddOns.GetScriptsDisallowedForBeta() ) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -2274,7 +2270,7 @@ SlashCmdList["MACRO"] = function(msg)
 end
 
 SlashCmdList["PVP"] = function(msg)
-	TogglePVP();
+	C_PvP.TogglePVP();
 end
 
 SlashCmdList["RAID_INFO"] = function(msg)
@@ -2441,7 +2437,7 @@ SlashCmdList["PERFREPORT"] = function(msg)
 end
 
 SlashCmdList["TABLEINSPECT"] = function(msg)
-	if ( Kiosk.IsEnabled() or ScriptsDisallowedForBeta() ) then
+	if ( Kiosk.IsEnabled() or C_AddOns.GetScriptsDisallowedForBeta() ) then
 		return;
 	end
 	if ( not AreDangerousScriptsAllowed() ) then
@@ -2471,7 +2467,7 @@ end
 
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not Kiosk.IsEnabled() and not ScriptsDisallowedForBeta()) then
+	if (not Kiosk.IsEnabled() and not C_AddOns.GetScriptsDisallowedForBeta()) then
 		if ( not AreDangerousScriptsAllowed() ) then
 			StaticPopup_Show("DANGEROUS_SCRIPTS_WARNING");
 			return;
@@ -3640,7 +3636,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					end
 				else
 					if ( not showLink or arg2 == "" ) then
-						if ( type == "TEXT_EMOTE" or type == "GUILD_DEATHS") then
+						if ( type == "TEXT_EMOTE") then
 							outMsg = message;
 						else
 							outMsg = format(_G["CHAT_"..type.."_GET"]..message, pflag..arg2, arg2);
@@ -4367,7 +4363,7 @@ end
 
 function ChatEdit_LinkItem(itemID, itemLink)
 	if ( not itemLink ) then
-		itemLink = select(2, GetItemInfo(itemID));
+		itemLink = select(2, C_Item.GetItemInfo(itemID));
 	end
 	if ( itemLink ) then
 		if ( ChatEdit_GetActiveWindow() ) then
@@ -4394,7 +4390,7 @@ function ChatEdit_InsertLink(text)
 			local petName = strmatch(text, "%[(.+)%]");
 			item = petName;
 		elseif ( strfind(text, "item:", 1, true) ) then
-			item = GetItemInfo(text);
+			item = C_Item.GetItemInfo(text);
 		end
 		if ( item ) then
 			BrowseName:SetText('"'..item..'"');
@@ -4404,12 +4400,12 @@ function ChatEdit_InsertLink(text)
 	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
-			item = GetItemInfo(text);
+			item = C_Item.GetItemInfo(text);
 		end
 		local cursorPosition = MacroFrameText:GetCursorPosition();
 		if (cursorPosition == 0 or strsub(MacroFrameText:GetText(), cursorPosition, cursorPosition) == "\n" ) then
 			if ( item ) then
-				if ( GetItemSpell(text) ) then
+				if ( C_Item.GetItemSpell(text) ) then
 					MacroFrameText:Insert(SLASH_USE1.." "..item.."\n");
 				else
 					MacroFrameText:Insert(SLASH_EQUIP1.." "..item.."\n");

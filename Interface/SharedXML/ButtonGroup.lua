@@ -1,3 +1,8 @@
+--[[
+	Required Elements - all buttons in the group need to inherit from SelectableButtonMixin
+	and have the OnClick handler defined in XML
+]]
+
 ButtonGroupBaseMixin = CreateFromMixins(CallbackRegistryMixin);
 
 ButtonGroupBaseMixin:GenerateCallbackEvents(

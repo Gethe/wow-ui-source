@@ -21,6 +21,29 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSchoolString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "schoolMask", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellQueueWindow",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSpellDataCached",
 			Type = "Function",
 
@@ -41,6 +64,15 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "TargetSpellReplacesBonusTree",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 	},

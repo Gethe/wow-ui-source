@@ -861,7 +861,7 @@ local function Register()
 		do
 			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("cameraFov", Settings.VarType.Number);
 			local commitValue = setValue;
-			local _, minValue, maxValue = C_CameraDefaults.GetCameraFOVDefaults();
+			local _, minValue, maxValue = GetCameraFOVDefaults();
 			local setting = Settings.RegisterProxySetting(category, "PROXY_CAMERA_FOV", Settings.DefaultVarLocation,
 				Settings.VarType.Number, CAMERA_FOV, getDefaultValue(), getValue, nil, commitValue);
 			setting:SetCommitFlags(Settings.CommitFlag.Apply);

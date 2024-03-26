@@ -171,13 +171,17 @@ function ButtonFrameTemplate_ShowPortrait(self)
 end
 
 -- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
-function PortraitFrameCloseButton_OnClick(self)
-	if ( self:GetParent().onCloseCallback) then
-		self:GetParent().onCloseCallback(self);
-	elseif ( IsOnGlueScreen() ) then
-		self:GetParent():Hide();
-	else
-		HideParentPanel(self);
+function UIPanelCloseButton_OnClick(self)
+	local parent = self:GetParent();
+	if parent then
+		local continueHide = true;
+		if parent.onCloseCallback then
+			continueHide = parent.onCloseCallback(self);
+		end
+
+		if continueHide then
+			HideUIPanel(parent);
+		end
 	end
 end
 
@@ -1868,23 +1872,54 @@ PanelDragBarMixin = {};
 
 function PanelDragBarMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
+	self:SetTarget(self:GetParent());
 end
 
 function PanelDragBarMixin:Init(target)
+	self:SetTarget(target);
+end
+
+function PanelDragBarMixin:SetTarget(target)
 	self.target = target;
 end
 
 function PanelDragBarMixin:OnDragStart()
-	self.target:StartMoving();
+	local target = self.target;
+
+	local continueDragStart = true;
+	if target.onDragStartCallback then
+		continueDragStart = target.onDragStartCallback(self);
+	end
+
+	if continueDragStart then
+		target:StartMoving();
+	end
+
+	if SetCursor then
+		SetCursor("UI_MOVE_CURSOR");
+	end
 end
 
 function PanelDragBarMixin:OnDragStop()
-	self.target:StopMovingOrSizing();
+	local target = self.target;
+
+	local continueDragStop = true;
+	if target.onDragStopCallback then
+		continueDragStop = target.onDragStopCallback(self);
+	end
+
+	if continueDragStop then
+		target:StopMovingOrSizing();
+	end
+
+	if SetCursor then
+		SetCursor(nil);
+	end
 end
 
 PanelResizeButtonMixin = {};
 
-function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxHeight)
+function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxHeight, rotationDegrees)
 	self.target = target;
 	self.minWidth = minWidth;
 	self.minHeight = minHeight;
@@ -1907,20 +1942,87 @@ function PanelResizeButtonMixin:Init(target, minWidth, minHeight, maxWidth, maxH
 			target:SetHeight(self.maxHeight);
 		end
 	end);
+
+	if rotationDegrees ~= nil then
+		self:SetRotationDegrees(rotationDegrees);
+	end
+end
+
+function PanelResizeButtonMixin:OnEnter()
+	if SetCursor then
+		SetCursor("UI_RESIZE_CURSOR");
+	end
+end
+
+function PanelResizeButtonMixin:OnLeave()
+	if SetCursor then
+		SetCursor(nil);
+	end
 end
 
 function PanelResizeButtonMixin:OnMouseDown()
-	if self.target then
-		self.target:StartSizing("BOTTOMRIGHT");
+	self.isActive = true;
+
+	local target = self.target;
+	if not target then
+		return;
+	end
+
+	local continueResizeStart = true;
+	if target.onResizeStartCallback then
+		continueResizeStart = target.onResizeStartCallback(self);
+	end
+
+	if continueResizeStart then
+		local alwaysStartFromMouse = true;
+		self.target:StartSizing("BOTTOMRIGHT", alwaysStartFromMouse);
 	end
 end
 
 function PanelResizeButtonMixin:OnMouseUp()
-	if self.target then
-		self.target:StopMovingOrSizing();
+	self.isActive = false;
 
-		if self.resizeStoppedCallback ~= nil then
-			self.resizeStoppedCallback(self.target);
+	local target = self.target;
+	if not target then
+		return;
+	end
+
+	local continueResizeStop = true;
+	if target.onResizeStopCallback then
+		continueResizeStop = target.onResizeStopCallback(self);
+	end
+
+	if continueResizeStop then
+		target:StopMovingOrSizing();
+	end
+
+	if self.resizeStoppedCallback ~= nil then
+		self.resizeStoppedCallback(self.target);
+	end
+end
+
+function PanelResizeButtonMixin:IsActive()
+	return not not self.isActive;
+end
+
+function PanelResizeButtonMixin:SetMinWidth(minWidth)
+	self.minWidth = minWidth;
+end
+
+function PanelResizeButtonMixin:SetMinHeight(minHeight)
+	self.minHeight = minHeight;
+end
+
+function PanelResizeButtonMixin:SetRotationDegrees(rotationDegrees)
+	local rotationRadians = (rotationDegrees / 180) * math.pi;
+	self:SetRotationRadians(rotationRadians);
+end
+
+function PanelResizeButtonMixin:SetRotationRadians(rotationRadians)
+	local childRegions = { self:GetRegions() };
+	for i, child in ipairs(childRegions) do
+		if child.SetRotation ~= nil then
+			child:SetRotation(rotationRadians);
 		end
 	end
 end
@@ -2055,7 +2157,7 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 		if ( cursorType == validType ) then
 			local icon;
 			if ( cursorType == "item" ) then
-				icon = select(10, GetItemInfo(ID));
+				icon = select(10, C_Item.GetItemInfo(ID));
 			elseif ( cursorType == "spell" ) then
 				-- 'ID' field for spells would actually be the slot number, not the actual spellID, so we get this separately.
 				local spellID = select(4, GetCursorInfo());

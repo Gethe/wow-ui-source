@@ -28,8 +28,10 @@ local function Register()
 		resourceInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 
 		-- Show Personal Cooldowns
-		local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
-		cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+		if not Settings.IsPlunderstorm() then
+			local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
+			cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+		end
 
 		-- Show Friendly Buffs
 		local buffsSetting, buffsInitializer = Settings.SetupCVarCheckBox(category, "nameplateShowFriendlyBuffs", DISPLAY_PERSONAL_FRIENDLY_BUFFS, OPTION_TOOLTIP_DISPLAY_PERSONAL_FRIENDLY_BUFFS);
@@ -195,7 +197,7 @@ local function Register()
 	end
 
 	-- Enable Action Targeting
-	do
+	if not Settings.IsPlunderstorm() then
 		local function GetValue()
 			return tonumber(GetCVar("softTargetEnemy")) == Enum.SoftTargetEnableFlags.Any;
 		end

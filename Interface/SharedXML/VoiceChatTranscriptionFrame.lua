@@ -110,7 +110,8 @@ function VoiceTranscriptionFrame_UpdateVoiceTab(self)
 	local tab = self.Tab;
 	tab.selectedColorTable = { r = chatInfo.r, g = chatInfo.g, b = chatInfo.b };
 	tab.sizePadding = 12;
-	FCFTab_UpdateColors(tab, not self.isDocked or self == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK))
+
+	FCFTab_UpdateColors(tab, not self.isDocked or self == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
 
 	-- Set chat type to the appropriate remote text to speech type if enabled
 	if ( C_VoiceChat.IsSpeakForMeActive() ) then
@@ -188,8 +189,8 @@ function VoiceTranscriptionFrame_Init(self)
 	self:RegisterEvent("VOICE_CHAT_MUTED_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
-	ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_HEADER);
 
+	ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_HEADER);
 	VoiceTranscriptionFrame_UpdateVisibility(self);
 	VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	VoiceTranscriptionFrame_UpdateEditBox(self);

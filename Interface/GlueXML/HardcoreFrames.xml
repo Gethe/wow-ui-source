@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI_shared.xsd">
-    <Script file="HardcorePopUp.lua"/>
+    <Script file="HardcoreFrames.lua"/>
 
     <Frame name="HardcorePopUpFrame" inherits="DefaultScaleFrame" mixin="HardcorePopUpFrameMixin" parent="GlueParent" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
         <Size x="510" y="580"/>
@@ -108,4 +108,136 @@
             <OnKeyUp function="nop"/>
         </Scripts>
     </Frame>
+
+	<Frame name="CharacterReincarnatePopUpDialog" mixin="CharacterReincarnatePopUpDialogMixin" parent="GlueParent" setAllPoints="true" frameStrata="DIALOG" hidden="true" toplevel="true" enableMouse="true">
+		<Frames>
+			<Frame name="CharacterReincarnatePopUpBackground" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+				</KeyValues>
+				<Size x="512" y="256"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="CharacterReincarnatePopUpText1" inherits="GlueFontNormal">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="CharacterReincarnatePopUpText2" inherits="GlueFontNormalSmall" text="CONFIRM_CHAR_REINCARNATE_INSTRUCTIONS">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="CharacterReincarnatePopUpText1" relativePoint="BOTTOM" x="0" y="-3"/>
+							</Anchors>
+						</FontString>
+						<Texture name="CharacterReincarnatePopUpAlertIcon" file="Interface\DialogFrame\DialogAlertIcon">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="LEFT" x="12" y="10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="CharacterReincarnatePopUpButton1" inherits="GlueDialogButtonTemplate" id="1" text="OKAY">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="CharacterReincarnatePopUpBackground" relativePoint="BOTTOM">
+								<Offset x="-6" y="16"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:Disable();
+								ReincarnateInProgressSpinner:Show()
+								C_CharacterCreation.FinalizeReincarnation();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="CharacterReincarnatePopUpButton2" inherits="GlueDialogButtonTemplate" id="2" text="CANCEL">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CharacterReincarnatePopUpButton1" relativePoint="RIGHT" x="13" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CharacterReincarnatePopUpDialog:Hide();
+								PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="ReincarnateInProgressSpinner" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="CharacterReincarnatePopUpText2" relativePoint="TOPCENTER" x="0" y="25" />
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								self.Anim:Play();
+							</OnShow>
+							<OnHide>
+								self.Anim:Stop();
+							</OnHide>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<EditBox name="CharacterReincarnatePopUpEditBox" letters="32" historyLines="1">
+				<Size x="130" y="32"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CharacterReincarnatePopUpText2" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size x="75" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-10" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size x="75" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+							<TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged>
+						if ( strupper(self:GetText()) == strupper(REINCARNATE_CONFIRM_STRING) ) then
+							CharacterReincarnatePopUpButton1:Enable();
+						else
+							CharacterReincarnatePopUpButton1:Disable();
+						end
+					</OnTextChanged>
+					<OnEnterPressed>
+						if ( CharacterReincarnatePopUpButton1:IsEnabled() ) then
+							ReincarnateInProgressSpinner:Show()
+							CharacterReincarnatePopUpButton1:Disable();
+							C_CharacterCreation.FinalizeReincarnation();
+						end
+					</OnEnterPressed>
+					<OnEscapePressed>
+						CharacterReincarnatePopUpDialog:Hide();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="GlueFontHighlight"/>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow>
+				self:Raise();
+				ReincarnateInProgressSpinner:Hide()
+			</OnShow>
+			<OnHide>
+				CharacterReincarnatePopUpEditBox:SetText("");
+			</OnHide>
+		</Scripts>
+	</Frame>
+
 </Ui>

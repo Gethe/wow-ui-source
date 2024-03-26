@@ -1,3 +1,4 @@
+..\SharedXML\ProjectConstants.lua
 ..\SharedXML\SharedConstants.lua
 ##DebugHook.lua
 
@@ -151,7 +152,7 @@ MovieFrame.xml
 ..\..\Interface_Vanilla\GlueXML\CreditsFrame.xml
 GlueMenuFrame.xml
 SocialContract.xml
-HardcorePopUp.xml
+HardcoreFrames.xml
 ..\SharedXML\SharedUtils.lua
 ..\SharedXML\ToolWindowOwnerMixin.lua
 

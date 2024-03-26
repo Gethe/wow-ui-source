@@ -124,10 +124,13 @@ end
 
 function GlueParent_GetBestScreen()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList = C_Login.GetState();
+	local reincarnating = C_Reincarnation.IsReincarnating();
 	if ( hasRealmList ) then
 		return "realmlist";
-	elseif ( connectedToWoW ) then
+	elseif ( connectedToWoW and not reincarnating) then
 		return "charselect";
+	elseif ( connectedToWoW and reincarnating) then
+		return "charcreate";
 	else
 		return "login";
 	end

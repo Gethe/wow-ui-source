@@ -259,7 +259,7 @@ function PlayerTalentFrame_OnLoad(self)
 	end
 
 	-- setup tabs
-	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS);	-- add one for the GLYPH_TALENT_TAB (not in Vanilla!)
+	PanelTemplates_SetNumTabs(self, MAX_TALENT_TABS + 1);	-- add one for the GLYPH_TALENT_TAB
 
 	-- initialize active spec as a fail safe
 	local activeTalentGroup = GetActiveTalentGroup();
@@ -370,6 +370,7 @@ end
 
 function PlayerTalentFrame_Refresh()
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	EventRegistry:TriggerEvent("PlayerTalentFrame.TabShow", selectedTab);
 	if ( selectedTab == GLYPH_TALENT_TAB ) then
 		PlayerTalentFrame_ShowGlyphFrame();
 	else
@@ -515,7 +516,6 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 		-- unsquish frames since the bar is now hidden
 		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
 	end
-
 end
 
 function PlayerTalentFrameActivateButton_OnLoad(self)
@@ -629,10 +629,9 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 
 	local spec = specs[selectedSpec];
 
---[[
 	-- setup glyph tabs, right now there is only one
 	playerLevel = playerLevel or UnitLevel("player");
-	local meetsGlyphLevel = false;
+	local meetsGlyphLevel = INSCRIPTION_AVAILABLE and (playerLevel >= SHOW_INSCRIPTION_LEVEL);
 	tab = _G["PlayerTalentFrameTab"..GLYPH_TALENT_TAB];
 	if ( meetsGlyphLevel and spec.hasGlyphs ) then
 		tab:Show();
@@ -644,9 +643,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 		tab:Hide();
 		talentTabWidthCache[GLYPH_TALENT_TAB] = 0;
 	end
-	
---]]
-	local numGlyphTabs = 0;
+	local numGlyphTabs = 1;
 
 	-- select the first shown tab if the selected tab does not exist for the selected spec
 	tab = _G["PlayerTalentFrameTab"..selectedTab];
@@ -834,7 +831,6 @@ function PlayerSpecTab_Update(self, ...)
 
 	local specIndex = self.specIndex;
 	local spec = specs[specIndex];
-
 	-- determine whether or not we need to hide the tab
 	local canShow;
 	if ( spec.pet ) then

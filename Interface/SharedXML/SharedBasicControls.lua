@@ -212,6 +212,9 @@ function ScriptErrorsFrameMixin:OnError(msg, warnType, keepHidden)
 	local stack = debugstack(DEBUGLOCALS_LEVEL);
 	local locals = debuglocals(DEBUGLOCALS_LEVEL);
 
+	-- Prevent K-string locals from causing SetText to fail validation
+	locals = string.gsub(locals, "|([kK])", "%1");
+
 	if LogAuroraClient then
 		LogAuroraClient("ae", "Lua Error ", "message", msg, "stack", stack);
 	end

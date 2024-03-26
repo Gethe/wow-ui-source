@@ -255,9 +255,7 @@
 	</Button>	
 	<Button name="UIPanelCloseButton" inherits="UIPanelCloseButtonNoScripts" virtual="true">
 		<Scripts>
-			<OnClick>
-				HideParentPanel(self);
-			</OnClick>
+			<OnClick function="UIPanelCloseButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Button name="UIPanelCloseButtonDefaultAnchors" inherits="UIPanelCloseButton" virtual="true">
@@ -612,7 +610,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="PortraitFrameCloseButton_OnClick" />
+					<OnClick function="UIPanelCloseButton_OnClick" />
 				</Scripts>
 			</Button>
 		</Frames>
@@ -727,7 +725,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick function="PortraitFrameCloseButton_OnClick" />
+					<OnClick function="UIPanelCloseButton_OnClick" />
 				</Scripts>
 			</Button>
 		</Frames>

@@ -114,10 +114,10 @@ function SettingsKeybindingSectionInitializer:GetExtent()
 	return bindingHeight;
 end
 
-function CreateKeybindingSectionInitializer(name, bindingsCategories, requiredSettingName)
+function CreateKeybindingSectionInitializer(name, bindingsCategories, requiredSettingName, expanded)
 	local initializer = CreateFromMixins(SettingsKeybindingSectionInitializer);
 	initializer:Init("SettingsKeybindingSectionTemplate");
-	initializer.data = {name=name, bindingsCategories=bindingsCategories};
+	initializer.data = {name=name, bindingsCategories=bindingsCategories, expanded=expanded};
 
 	local function ShouldShowKeybindingSection()
 		local requiredSetting = Settings.GetSetting(requiredSettingName);
@@ -180,9 +180,9 @@ local function CreateKeybindingInitializers(category, layout)
 	-- Keybinding sections
 	local bindingsCategories = {};
 	local nextOrder = 1;
-	local function AddBindingCategory(key, requiredSettingName)
+	local function AddBindingCategory(key, requiredSettingName, expanded)
 		if not bindingsCategories[key] then
-			bindingsCategories[key] = {order = nextOrder, bindings = {}, requiredSettingName = requiredSettingName};
+			bindingsCategories[key] = {order = nextOrder, bindings = {}, requiredSettingName = requiredSettingName, expanded = expanded};
 			nextOrder = nextOrder + 1;
 		end
 	end
@@ -208,12 +208,12 @@ local function CreateKeybindingInitializers(category, layout)
 	local sortedCategories = {};
 
 	for cat, bindingCategory in pairs(bindingsCategories) do
-		sortedCategories[bindingCategory.order] = {cat = cat, bindings = bindingCategory.bindings, requiredSettingName = bindingCategory.requiredSettingName};
+		sortedCategories[bindingCategory.order] = {cat = cat, bindings = bindingCategory.bindings, requiredSettingName = bindingCategory.requiredSettingName, expanded = bindingCategory.expanded};
 	end
 
 	for _, categoryInfo in ipairs(sortedCategories) do
 		if #(categoryInfo.bindings) > 0 then
-			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryInfo.cat, categoryInfo.bindings, categoryInfo.requiredSettingName));
+			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryInfo.cat, categoryInfo.bindings, categoryInfo.requiredSettingName, categoryInfo.expanded));
 		end
 	end
 	
@@ -232,7 +232,8 @@ local function Register()
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[SETTINGS_KEYBINDINGS_LABEL]);
 
 	-- Binding set
-	do
+	-- Plunderstorm doesn't have character-specific bindings.
+	if not Settings.IsPlunderstorm() then
 		local function GetValue()
 			return GetCurrentBindingSet() == Enum.BindingSet.Character;
 		end

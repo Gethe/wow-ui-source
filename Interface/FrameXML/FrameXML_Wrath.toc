@@ -1,3 +1,4 @@
+..\SharedXML\ProjectConstants.lua
 ..\SharedXML\SharedConstants.lua
 
 ## add C namespace augmentations here
@@ -250,9 +251,10 @@ UnitPopupButtons_Shared.lua
 ..\..\Interface_Wrath\FrameXML\UnitPopupButtons.lua
 ..\..\Interface_Wrath\FrameXML\UnitPopupMenus.lua
 ..\..\Interface_TBC\FrameXML\UnitPopup.xml
-HistoryKeeper.lua
+..\SharedXML\HistoryKeeper.lua
 ChatFrame.xml
 FloatingChatFrame.xml
+..\SharedXML\BNetShared.lua
 BNet.xml
 ReadyCheck.xml
 PlayerFrame.xml
@@ -319,7 +321,7 @@ Blizzard_TalentUITemplates.xml
 EasyMenu.lua
 TextToSpeechFrameConstants.lua
 VoiceChatTranscriptionButton.xml
-VoiceChatTranscriptionFrame.xml
+..\SharedXML\VoiceChatTranscriptionFrame.lua
 TextToSpeechCommands.lua
 TextToSpeechFrame.xml
 TextToSpeech.xml
@@ -332,6 +334,7 @@ CompactRaidGroup.xml
 CompactPartyFrame.xml
 ..\..\Interface_Wrath\FrameXML\RolePoll.xml
 StreamingFrame.xml
+IconIntroAnimation.lua
 IconIntroAnimation.xml
 LootHistory.xml
 CurrencyContainer.lua

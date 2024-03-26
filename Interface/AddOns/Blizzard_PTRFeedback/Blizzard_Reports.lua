@@ -97,7 +97,7 @@ function PTR_IssueReporter.CreateReports()
     
     ------------------------------------- Item Reporting -----------------------------------------------
     local GetIconFromItemID = function(value)
-        return select(10, GetItemInfo(value))
+        return select(10, C_Item.GetItemInfo(value))
     end    
     
     local itemReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 6, "Bug Report: %s")

@@ -76,3 +76,25 @@ HardcorePopUpDeclineButtonMixin = {};
 function HardcorePopUpDeclineButtonMixin:OnClick()
 	self:GetParent():Hide();
 end
+
+CharacterReincarnatePopUpDialogMixin = {};
+
+function CharacterReincarnatePopUpDialogMixin:OnLoad()
+    self:RegisterEvent("CHARACTER_LIST_UPDATE");
+    self:RegisterEvent("CHARACTER_DELETION_RESULT");
+end
+
+function CharacterReincarnatePopUpDialogMixin:ShowWarning()
+    local guid, name = C_Reincarnation.GetReincarnatingCharacter();
+    local _, _, _, class, _, _, level = GetCharacterInfoByGUID(guid);
+    CharacterReincarnatePopUpText1:SetFormattedText(REINCARNATE_CHARACTER_CONFIRMATION, name, level, class);
+    CharacterReincarnatePopUpText1:SetHeight(16 + CharacterDeleteText1:GetHeight() + CharacterDeleteText2:GetHeight() + 23 + CharacterDeleteEditBox:GetHeight() + 8 + CharacterDeleteButton1:GetHeight() + 16);
+    CharacterReincarnatePopUpButton1:Disable();
+    self:Show()
+end
+
+function CharacterReincarnatePopUpDialogMixin:OnEvent(event, ...)
+    if (event == "CHARACTER_LIST_UPDATE" or event == "CHARACTER_DELETION_RESULT") then
+        self:Hide();
+    end
+end

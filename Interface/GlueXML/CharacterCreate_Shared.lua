@@ -203,7 +203,16 @@ function CharacterCreateMixin:OnShow()
 		self.currentPaidServiceName = nil;
 		--randomly selects a combination
 		C_CharacterCreation.ResetCharCustomize();
-		CharacterCreateNameEdit:SetText("");
+		if (not C_Reincarnation.IsReincarnating()) then
+			CharacterCreateNameEdit:SetText("");
+			CharCreateOkayButton:SetText(CHARACTER_CREATE_ACCEPT);
+		else
+			local guid, charName = C_Reincarnation.GetReincarnatingCharacter();
+			CharacterCreateNameEdit:SetText(charName);
+			CharacterCreateNameEdit:Disable();
+			CharacterCreateRandomName:Disable();
+			CharCreateOkayButton:SetText(DEATH_REINCARNATE_CHARACTER);
+		end
 	end
 
 	CharacterCreateEnumerateRaces();
@@ -232,6 +241,9 @@ function CharacterCreateMixin:OnShow()
 		end
 	end
 	CheckSelfFoundButton()
+	if (CharacterReincarnatePopUpDialog) then
+		CharacterReincarnatePopUpDialog:Hide();
+	end
 end
 
 function CharacterCreateMixin:OnHide()
@@ -263,7 +275,10 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		if ( success ) then
 			CharacterSelect.selectGuid = guid;
 			GlueParent_SetScreen("charselect");
-		else
+		elseif (C_Reincarnation.IsReincarnating()) then
+			GlueDialog_Show("OKAY", CHAR_CREATE_REINCARNATION_FAILED);
+			-- Kick them back out to character select
+		else	
 			GlueDialog_Show("OKAY", _G[errorCode]);
 		end
 	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
@@ -430,6 +445,8 @@ function CharacterCreate_Okay()
 		GlueDialog_Show("CONFIRM_PAID_SERVICE");
 	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
+	elseif C_Reincarnation.IsReincarnating() then
+		CharacterReincarnatePopUpDialog:ShowWarning();
 	else
 		if( Kiosk.IsEnabled() ) then
 			KioskModeSplash:SetAutoEnterWorld(true);

@@ -7,9 +7,12 @@ IconIntroTrackerMixin = {};
 
 function IconIntroTrackerMixin:OnLoad()
 	self.iconList = {};
-	self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
+	self:RegisterEvents();
 end
 
+function IconIntroTrackerMixin:RegisterEvents()
+	self:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR");
+end
 
 function IconIntroTrackerMixin:OnEvent(event, ...)
 	if event == "SPELL_PUSHED_TO_ACTIONBAR" then

@@ -256,7 +256,7 @@ function ArenaEnemyFrame_OnEvent(self, event, unit, ...)
 				self.CC.spellID = spellID;
 
 				if(itemID ~= 0) then
-					local itemTexture = GetItemIcon(itemID);
+					local itemTexture = C_Item.GetItemIconByID(itemID);
 					self.CC.Icon:SetTexture(itemTexture);
 				else
 					local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID);
@@ -274,7 +274,7 @@ function ArenaEnemyFrame_UpdateCrowdControl(self)
 			self.CC.spellID = spellID;
 
 			if(itemID ~= 0) then
-				local itemTexture = GetItemIcon(itemID);
+				local itemTexture = C_Item.GetItemIconByID(itemID);
 				self.CC.Icon:SetTexture(itemTexture);
 			else
 				local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID);

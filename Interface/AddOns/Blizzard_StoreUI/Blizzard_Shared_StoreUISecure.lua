@@ -815,7 +815,7 @@ function StoreFrame_CurrencyInfo()
 		currencyRegion = currencyInfo.sharedData.regionID;
 		FormatCurrencyStringShort = currencyInfo.sharedData.formatShort;
 		FormatCurrencyStringLong = currencyInfo.sharedData.formatLong;
-		info = currencySpecific[currencyRegion];
+		info = currencySpecific[currencyRegion] or currencySpecific[REGION_US];
 		if currencyInfo.sharedData.licenseAcceptText ~= "" then
 			info.licenseAcceptText = currencyInfo.sharedData.licenseAcceptText;
 		end;

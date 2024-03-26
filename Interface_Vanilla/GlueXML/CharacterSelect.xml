@@ -1261,6 +1261,31 @@
 									<OnDisable/>
 								</Scripts>
 							</Button>
+							<Button name="CharSelectReincarnateCharacterButton" inherits="GluePanelButtonTemplate" motionScriptsWhileDisabled="true" text="REINCARNATE_CHARACTER" hidden="true">
+								<Size x="200" y="45"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM" x="0" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:SetWidth(self:GetTextWidth() + 50);
+									</OnLoad>
+									<OnMouseDown>
+										self.down = true;
+									</OnMouseDown>
+									<OnMouseUp>
+										self.down = false;
+									</OnMouseUp>
+									<OnClick>
+										Reincarnation_StartReincarnation();
+									</OnClick>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+									<OnShow/>
+									<OnEnable/>
+									<OnDisable/>
+								</Scripts>
+							</Button>
 							<Button name="CharSelectPaidService1" inherits="CharSelectPaidServiceTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="TOP" x="0" y="6"/>

@@ -234,7 +234,8 @@ function CharacterUpgradeFlow:IsUnrevoke()
 		return nil;
 	end
 	
-	local experienceLevel = select(7, GetCharacterInfo(results.charid));
+	local experienceLevel = select(7, 
+	(results.charid));
 	return experienceLevel >= self.data.level;
 end
 
@@ -440,8 +441,8 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not C_CharacterServices.IsTrialBoostEnabled() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
-	if (boostInProgress or vasServiceInProgress) then
+local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken)
+	if (boostInProgress or vasServiceInProgress or hasWowToken) then
 		return false;
 	end
 
@@ -476,8 +477,8 @@ local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, bo
 	return true;
 end
 
-local function CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter)
-	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
+local function CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken);
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
@@ -735,8 +736,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
-		local canBoostCharacter = CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter);
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID, _, hasWowToken = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local canBoostCharacter = CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -766,8 +767,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID = GetCharacterInfo(GetCharIDFromIndex(i));
-		if CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter) then
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID, _, hasWowToken = GetCharacterInfo(GetCharIDFromIndex(i));
+		if CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end

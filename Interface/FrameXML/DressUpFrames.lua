@@ -1,6 +1,6 @@
 function DressUpItemLink(link)
 	if( link ) then 
-		if ( IsDressableItem(link) ) then
+		if ( C_Item.IsDressableItem(link) ) then
 			return DressUpVisual(link);
 		end
 	end
