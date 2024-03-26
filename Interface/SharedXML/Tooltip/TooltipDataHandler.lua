@@ -628,6 +628,7 @@ do
 		SetSlottedKeystone = "GetSlottedKeystone",
 		SetItemInteractionItem = "GetItemInteractionItem",
 		SetItemByGUID = "GetItemByGUID",
+		SetWorldLootObject = "GetWorldLootObject",
 	};
 
 	local handler = TooltipDataHandlerMixin;

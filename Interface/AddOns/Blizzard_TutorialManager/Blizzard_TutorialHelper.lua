@@ -265,17 +265,17 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetMapBinding()
-	return GetBindingKey("TOGGLEWORLDMAP") or "";
+	return GetBindingKey("TOGGLEWORLDMAP") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetCharacterBinding()
-	return GetBindingKey("TOGGLECHARACTER0") or "";
+	return GetBindingKey("TOGGLECHARACTER0") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetBagBinding()
-	return GetBindingKey("OPENALLBAGS") or "";
+	return GetBindingKey("OPENALLBAGS") or NPE_UNBOUND_KEYBIND;
 end
 
 function TutorialHelper:GetCreatureIDFromGUID(guid)

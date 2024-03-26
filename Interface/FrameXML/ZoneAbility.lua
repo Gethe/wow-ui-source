@@ -255,7 +255,8 @@ function ZoneAbilityFrameSpellButtonMixin:OnLeave()
 end
 
 function ZoneAbilityFrameSpellButtonMixin:OnClick()
-	CastSpellByID(self:GetSpellID());
+	local unitToken, tryToggleSpell = nil, true;
+	CastSpellByID(self:GetSpellID(), unitToken, tryToggleSpell);
 end
 
 function ZoneAbilityFrameSpellButtonMixin:OnDragStart()
@@ -271,8 +272,8 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local start, duration, enable = GetSpellCooldown(spellID);
 	local usesCount = GetSpellCount(spellID);
 
-	local texture = select(3, GetSpellInfo(spellID));
-	self.Icon:SetTexture(texture);
+	local icon = C_ZoneAbility.GetZoneAbilityIcon(spellID);
+	self.Icon:SetTexture(icon);
 
 	local spellCount = nil;
 	if maxCharges and maxCharges > 1 then

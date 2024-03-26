@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI.xsd">
 
 	<EditBox name="BagSearchBoxTemplate" inherits="SearchBoxTemplate" autoFocus="false" virtual="true">
 		<Scripts>
@@ -176,33 +176,6 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-
-	<Button name="UIPanelInfoButton" virtual="true">
-		<Size x="16" y="16"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon" parentKey="texture">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown>
-				self.texture:SetPoint("TOPLEFT", 1, -1);
-			</OnMouseDown>
-			<OnMouseUp>
-				self.texture:SetPoint("TOPLEFT", 0, 0);
-			</OnMouseUp>
-		</Scripts>
-		<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
-			</Anchors>
-			<Color r="1" g="1" b="1" a="0.4"/>
-		</HighlightTexture>
-	</Button>
 
 	<!-- size=64,64
 	<Texture name="UI-SilverButton-Delete.png" >

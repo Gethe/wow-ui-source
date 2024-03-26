@@ -56,7 +56,7 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.ItemRecrafting;
 	elseif RuneforgeFrame and RuneforgeFrame:IsShown() then
 		return RuneforgeFrame:GetItemContext();
-	elseif TargetSpellReplacesBonusTree() then
+	elseif C_Spell.TargetSpellReplacesBonusTree() then
 		return ItemButtonUtil.ItemContextEnum.ReplaceBonusTree;
 	elseif SoulbindViewer and SoulbindViewer:IsShown() then
 		return ItemButtonUtil.ItemContextEnum.Soulbinds;
@@ -184,13 +184,13 @@ function ItemUtil.GetItemDetails(itemLink, quantity, isCurrency, lootSource)
 
 		return itemName, itemTexture, quantity, itemRarity, itemLink;
 	else
-		itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+		itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 		return itemName, itemTexture, quantity, itemRarity, itemLink;
 	end
 end
 
 function ItemUtil.GetItemHyperlink(itemID)
-	return select(2, GetItemInfo(itemID));
+	return select(2, C_Item.GetItemInfo(itemID));
 end
 
 function ItemUtil.PickupBagItem(itemLocation)
@@ -204,7 +204,7 @@ function ItemUtil.GetCraftingReagentCount(itemID)
 	local includeBank = true;
 	local includeUses = false;
 	local includeReagentBank = true;
-	return GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
+	return C_Item.GetItemCount(itemID, includeBank, includeUses, includeReagentBank);
 end
 
 function ItemUtil.IterateBagSlots(bag, callback)

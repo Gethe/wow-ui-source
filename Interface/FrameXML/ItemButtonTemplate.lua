@@ -276,10 +276,10 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("AzeriteIconFrame");
 		button.IconOverlay:Show();
-	elseif IsCorruptedItem(itemIDOrLink) then
+	elseif C_Item.IsCorruptedItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("Nzoth-inventory-icon");
 		button.IconOverlay:Show();
-	elseif IsCosmeticItem(itemIDOrLink) then
+	elseif C_Item.IsCosmeticItem(itemIDOrLink) then
 		button.IconOverlay:SetAtlas("CosmeticIconFrame");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
@@ -582,7 +582,7 @@ function ItemButtonMixin:GetItemInfo()
 	else
 		local item = self:GetItem();
 		if item then
-			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(item);
+			local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(item);
 			return itemLink, itemQuality, itemIcon;
 		end
 	end
@@ -595,7 +595,7 @@ function ItemButtonMixin:GetItemID()
 	end
 
 	-- Storing in a local for clarity, and to avoid additional returns.
-	local itemID = GetItemInfoInstant(itemLink);
+	local itemID = C_Item.GetItemInfoInstant(itemLink);
 	return itemID;
 end
 

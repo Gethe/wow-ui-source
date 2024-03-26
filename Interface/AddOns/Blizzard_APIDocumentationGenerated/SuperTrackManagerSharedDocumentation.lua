@@ -5,9 +5,9 @@ local SuperTrackManagerShared =
 		{
 			Name = "SuperTrackingType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Quest", Type = "SuperTrackingType", EnumValue = 0 },
@@ -15,6 +15,7 @@ local SuperTrackManagerShared =
 				{ Name = "Corpse", Type = "SuperTrackingType", EnumValue = 2 },
 				{ Name = "Scenario", Type = "SuperTrackingType", EnumValue = 3 },
 				{ Name = "Content", Type = "SuperTrackingType", EnumValue = 4 },
+				{ Name = "PartyMember", Type = "SuperTrackingType", EnumValue = 5 },
 			},
 		},
 	},

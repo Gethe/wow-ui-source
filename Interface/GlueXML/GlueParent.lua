@@ -3,6 +3,7 @@ GLUE_SCREENS = {
 	["login"] = 		{ frame = "AccountLogin", 			playMusic = true,	playAmbience = true },
 	["realmlist"] = 	{ frame = "RealmListUI", 			playMusic = true,	playAmbience = false },
 	["charselect"] = 	{ frame = "CharacterSelect",		playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
+	["plunderstorm"] = 	{ frame = "PlunderstormLobbyFrame",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end, allowChat = true, },
 	["charcreate"] =	{ frame = "CharacterCreateFrame",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 	["kioskmodesplash"]={ frame = "KioskModeSplash",		playMusic = true,	playAmbience = false },
 };
@@ -58,6 +59,8 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
+	self:RegisterEvent("GAME_ENVIRONMENT_SWITCHED");
+	self:RegisterEvent("CONNECT_TO_PLUNDERSTORM_FAILED");
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
@@ -97,6 +100,17 @@ function GlueParent_OnEvent(self, event, ...)
 		if not StoreFrame_IsShown() then
 			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
+	elseif ( event == "GAME_ENVIRONMENT_SWITCHED" ) then
+		local environment = ...;
+		local isWoWLabs = environment == Enum.GameEnvironment.WoWLabs;
+		WOW_PROJECT_ID = isWoWLabs and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
+		local screen = isWoWLabs and "plunderstorm" or "charselect";
+		GlueParent_SetScreen(screen);
+		GlueDialog_Hide("SWAPPING_ENVIRONMENT");
+	elseif ( event == "CONNECT_TO_PLUNDERSTORM_FAILED" ) then
+		CharacterSelect.connectingToPlunderstorm = false;
+		C_RealmList.ClearRealmList();
+		GlueDialog_Show("ERROR_CONNECT_TO_PLUNDERSTORM_FAILED");
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
 		if not IsGlobalMouseEventHandled(buttonID, event) then
@@ -129,7 +143,7 @@ end
 
 function GlueParent_IsScreenValid(screen)
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList = C_Login.GetState();
-	if ( screen == "charselect" or screen == "charcreate" or screen == "kioskmodesplash" ) then
+	if ( screen == "plunderstorm" or screen == "charselect" or screen == "charcreate" or screen == "kioskmodesplash" ) then
 		return auroraState == LE_AURORA_STATE_NONE and (connectedToWoW or wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING) and not hasRealmList;
 	elseif ( screen == "realmlist" ) then
 		return hasRealmList;
@@ -145,7 +159,11 @@ function GlueParent_GetBestScreen()
 	if ( hasRealmList ) then
 		return "realmlist";
 	elseif ( connectedToWoW ) then
-		return "charselect";
+		if CharacterSelect.connectingToPlunderstorm then
+			return "plunderstorm";
+		end
+		local screen = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and "plunderstorm" or "charselect";
+		return screen;
 	else
 		return "login";
 	end
@@ -312,6 +330,17 @@ function GlueParent_EnsureValidScreen()
 	end
 end
 
+local function GlueParent_UpdateScreenSound(screenInfo)
+	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+	if ( screenInfo.playMusic ) then
+		local musicSoundKit = C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel);
+		PlayGlueMusic(musicSoundKit);
+	end
+	if ( screenInfo.playAmbience ) then
+		PlayGlueAmbience(SafeGetExpansionData(EXPANSION_GLUE_AMBIENCE, displayedExpansionLevel), 4.0);
+	end	
+end
+
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
 	LogAuroraClient("ae", "Switching to screen ",
 			"screen", screenInfo.frame);
@@ -324,13 +353,7 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable)
 	end
 
 	--Start music. Have to do this before showing screen in case its OnShow changes screen.
-	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
-	if ( screenInfo.playMusic ) then
-		PlayGlueMusic(SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel));
-	end
-	if ( screenInfo.playAmbience ) then
-		PlayGlueAmbience(SafeGetExpansionData(EXPANSION_GLUE_AMBIENCE, displayedExpansionLevel), 4.0);
-	end
+	GlueParent_UpdateScreenSound(screenInfo);
 
 	--Actually show this screen
 	_G[screenInfo.frame]:Show();
@@ -412,13 +435,7 @@ function GlueParent_CloseSecondaryScreen()
 		--The secondary screen may have started music. Start the primary screen's music if so
 		local primaryScreen = GlueParent.currentScreen;
 		if ( primaryScreen and GLUE_SCREENS[primaryScreen] ) then
-			local displayedExpansionLevel = GetClientDisplayExpansionLevel();
-			if ( GLUE_SCREENS[primaryScreen].playMusic ) then
-				PlayGlueMusic(SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel));
-			end
-			if ( GLUE_SCREENS[primaryScreen].playAmbience ) then
-				PlayGlueAmbience(SafeGetExpansionData(EXPANSION_GLUE_AMBIENCE, displayedExpansionLevel), 4.0);
-			end
+			GlueParent_UpdateScreenSound(GLUE_SCREENS[primaryScreen]);
 		end
 
 		_G[screenInfo.frame]:Hide();
@@ -430,6 +447,22 @@ function GlueParent_CloseSecondaryScreen()
 				GlueParent_SetScreen(GlueParent.currentScreen);
 			end
 		end
+	end
+end
+
+function GlueParent_GetCurrentScreenInfo()
+	local screen = GlueParent_GetSecondaryScreen();
+	local info;
+	if screen then
+		info = GLUE_SECONDARY_SCREENS[screen];
+		if info then
+			return info;
+		end
+	end
+
+	screen = GlueParent_GetCurrentScreen();
+	if screen then
+		return GLUE_SCREENS[screen];
 	end
 end
 
@@ -772,6 +805,14 @@ end
 ConsolePrint = print;
 SecureMixin = Mixin;
 CreateFromSecureMixins = CreateFromMixins;
+
+function AllowChatFramesToShow(chatFrame)
+	local info = GlueParent_GetCurrentScreenInfo();
+	if chatFrame and info and info.allowChat then
+	    return chatFrame.allowAtGlues;
+	end
+	return false;
+end
 
 -- =============================================================
 -- Backwards Compatibility

@@ -44,6 +44,10 @@ local function IsJailersTowerTextureKit(textureKit)
 	return string.sub(textureKit, 1, 21) == "jailerstower-scorebar";
 end
 
+local function IsPlunderstormStormBarTextureKit(textureKit)
+	return string.sub(textureKit, 1, 21) == "plunderstorm-stormbar";
+end
+
 function UIWidgetTemplateStatusBarMixin:SanitizeTextureKits(widgetInfo)
 	widgetInfo.frameTextureKit = widgetInfo.frameTextureKit or "widgetstatusbar";
 	widgetInfo.fillTextureKit = widgetInfo.textureKit or "white";
@@ -77,7 +81,13 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 
-	local borderXOffset = self.isJailersTowerBar and 13 or 8;
+	local borderXOffset = 8;
+	if self.isJailersTowerBar then
+		borderXOffset = 13;
+	elseif IsPlunderstormStormBarTextureKit(widgetInfo.frameTextureKit) then
+		borderXOffset = 2;
+	end
+
 	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar,  -borderXOffset, 0);
 	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, borderXOffset , 0);
 	self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);

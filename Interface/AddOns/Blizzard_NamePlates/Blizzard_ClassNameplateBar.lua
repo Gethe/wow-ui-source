@@ -126,7 +126,7 @@ end
 ClassNameplateManaBar = {};
 
 local NameplatePowerBarColor = {
-	["MANA"] = { r = 0.1, g = 0.25, b = 1.00 }
+	["MANA"] = { r = 0.1, g = 0.25, b = 1.00, predictionColor = POWERBAR_PREDICTION_COLOR_MANA }
 };
 
 function ClassNameplateManaBar:OnLoad()
@@ -194,8 +194,9 @@ end
 
 function ClassNameplateManaBar:SetupBar()
 	local powerType, powerToken, altR, altG, altB = UnitPowerType("player");
+	local info;
 	if (powerToken) then
-		local info = NameplatePowerBarColor[powerToken] or PowerBarColor[powerToken];
+		info = NameplatePowerBarColor[powerToken] or PowerBarColor[powerToken];
 		if not info then
 			if altR then
 				info = CreateColor(altR, altG, altB);
@@ -225,6 +226,18 @@ function ClassNameplateManaBar:SetupBar()
 		self.powerType = powerType;
 		self.FullPowerFrame:RemoveAnims();
 		self:UpdatePredictedPowerCost(true);
+
+		if (self.ManaCostPredictionBar) then
+			local predictionColor;
+			if (info and info.predictionColor) then
+				predictionColor = info.predictionColor;
+			else
+				-- No prediction color set, default to mana prediction color
+				predictionColor = POWERBAR_PREDICTION_COLOR_MANA;
+			end
+	
+			self.ManaCostPredictionBar:SetVertexColor(predictionColor:GetRGBA());
+		end
 	end
 
 	self.currValue = UnitPower("player", powerType) - self.predictedPowerCost;

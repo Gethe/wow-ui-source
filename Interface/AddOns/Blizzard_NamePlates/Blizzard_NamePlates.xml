@@ -184,8 +184,8 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="ui-castingbar-background">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="-1"/>
-								<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+								<Anchor point="TOPLEFT" x="1" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -262,6 +262,32 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+				</Layers>
+				<Scripts>
+					<OnSizeChanged method="OnSizeChanged"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="PlayerLevelDiffFrame" mixin="NamePlateLevelDiffMixin" frameStrata="HIGH" hidden="true">
+				<Size x="28" y="28" />
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.healthBar" relativePoint="LEFT" x="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="playerLevelDiffIcon" atlas="plunderstorm-nameplates-icon-ring">
+							<Size x="18" y="18" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="playerLevelDiffText" inherits="GameFontWhiteTiny2">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" x="1" relativeKey="$parent.playerLevelDiffIcon"/>
+							</Anchors>
+						</FontString>
+					</Layer>	
 				</Layers>
 				<Scripts>
 					<OnSizeChanged method="OnSizeChanged"/>

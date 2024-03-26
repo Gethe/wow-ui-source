@@ -30,7 +30,7 @@ end
 function PerksProgramProductsFrameMixin:Init()
 	local scrollContainer = self.ProductsScrollBoxContainer;
 
-	local DefaultPad = 0;
+	local DefaultPad = 5;
 	local DefaultSpacing = 1;
 
 	local function InitializeHeader(frame, headerInfo)
@@ -91,6 +91,7 @@ function PerksProgramProductsFrameMixin:OnEvent(event, ...)
 		end);
 		if foundElementData then
 			SetTablePairsToTable(foundElementData, vendorItemInfo);
+			foundElementData.isPurchasePending = vendorItemInfo.isPurchasePending;
 		end
 
 		EventRegistry:TriggerEvent("PerksProgram.OnProductPurchasedStateChange", vendorItemInfo);
@@ -198,19 +199,26 @@ end
 local function GetDefaultActorInfo(modelSceneID, playerRaceName, playerRaceNameActorTag)
 	local _, _, defaultActorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
 	if #defaultActorIDs > 0 then
+		local returnActorInfo;
 		for i, defaultActorID in ipairs(defaultActorIDs) do
 			local tempActorInfo = C_ModelInfo.GetModelSceneActorInfoByID(defaultActorID);
-			if tempActorInfo.scriptTag == playerRaceNameActorTag or tempActorInfo.scriptTag == playerRaceName then
+			
+			if tempActorInfo.scriptTag == playerRaceNameActorTag then
 				return tempActorInfo;
 			end
+
+			if tempActorInfo.scriptTag == playerRaceName then
+				returnActorInfo = tempActorInfo;
+			end
 		end
+
+		return returnActorInfo;
 	end
 end
 
 function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 	local newData = {};
 	local modelSceneID = displayInfo.overrideModelSceneID or displayInfo.defaultModelSceneID;
-	local creatureDisplayInfoID = displayInfo.creatureDisplayInfoID;
 	if modelSceneID then
 		local _, cameraIDs, actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
 		
@@ -288,7 +296,9 @@ function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 	newData.defaultModelSceneID = displayInfo.defaultModelSceneID;
 	newData.overrideModelSceneID = displayInfo.overrideModelSceneID;
 	newData.selectedModelSceneID = modelSceneID;
-	newData.creatureDisplayInfoID = creatureDisplayInfoID;
+	newData.creatureDisplayInfoID = displayInfo.creatureDisplayInfoID;
+	newData.mainHandItemModifiedAppearanceID = displayInfo.mainHandItemModifiedAppearanceID;
+	newData.offHandItemModifiedAppearanceID = displayInfo.offHandItemModifiedAppearanceID;
 	return newData;
 end
 
@@ -358,10 +368,11 @@ local function ProductSortComparator(lhs, rhs)
 	local sortByTimeRemaining = sortField == "timeRemaining";
 
 	if sortByPrice or sortByTimeRemaining then
-		-- Update sortValue based on our purchased state
 		local huge = math.max(lhsValue, rhsValue) + 1000;
 		local function GetSortValue(itemInfo, baseValue)
-			if itemInfo.refundable then
+			if itemInfo.isPurchasePending then
+				return sortByPrice and -1 or (huge - 2);
+			elseif itemInfo.refundable then
 				return sortByPrice and -2 or (huge - 1);
 			elseif itemInfo.purchased then
 				return sortByPrice and -3 or huge;
@@ -592,8 +603,8 @@ function PerksProgramCurrencyFrameMixin:OnEvent(event, ...)
 		local vendorItemID = ...;
 		self:UpdateCurrencyAmount();
 	elseif event == "CHEST_REWARDS_UPDATED_FROM_SERVER" then
-		self.pendingRewards = C_PerksProgram.GetPendingChestRewards();
-		local hasPendingRewards = self.pendingRewards and #self.pendingRewards > 0;
+		self.pendingChestRewards = C_PerksProgram.GetPendingChestRewards();
+		local hasPendingRewards = self.pendingChestRewards and #self.pendingChestRewards > 0;
 		self:UpdateCurrencyIcon(hasPendingRewards);
 	end
 end
@@ -613,6 +624,10 @@ function PerksProgramCurrencyFrameMixin:UpdateCurrencyIcon(hasPendingRewards)
 end
 
 local function HasTenderToRetrieve(pendingRewards)
+	if not pendingRewards then
+		return false;
+	end
+
 	for i, pendingReward in ipairs(pendingRewards) do
 		local hasTender = pendingReward.rewardAmount and pendingReward.rewardAmount > 0;
 		if hasTender then		
@@ -648,7 +663,7 @@ function PerksProgramCurrencyFrameMixin:OnEnter()
 		GameTooltip_AddNormalLine(self.tooltip, PERKS_PROGRAM_NEGATIVE_TENDER);
 	end
 
-	if HasTenderToRetrieve(self.pendingRewards) then
+	if HasTenderToRetrieve(self.pendingChestRewards) then
 		GameTooltip_AddBlankLineToTooltip(self.tooltip);
 		GameTooltip_AddNormalLine(self.tooltip, PERKS_PROGRAM_UNCOLLECTED_TENDER);
 	end

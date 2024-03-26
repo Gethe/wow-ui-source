@@ -1,6 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI_shared.xsd">
 	<Script file="TargetFrame.lua"/>
+
+	<Frame name="TargetFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillAtlas" value="UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Status" type="string"/>
+		</KeyValues>
+	</Frame>
 	<Frame name="TargetofTargetDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="12" y="12"/>
 		<Layers>
@@ -213,18 +219,14 @@ UI_shared.xsd">
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.$parent.TargetFrameContainer" relativePoint="LEFT" x="148" y="2"/>
 								</Anchors>
+								<Frames>
+									<Frame parentKey="MyHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+									<Frame parentKey="OtherHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+									<Frame parentKey="HealAbsorbBar" inherits="TargetFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+									<Frame parentKey="TotalAbsorbBar" inherits="TargetFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+								</Frames>
 								<Layers>
-									<!-- Setting textureSubLevel to 2 to ensure things are layered above the StatusBar's BarTexture. -->
-									<Layer level="BACKGROUND" textureSubLevel="2">
-										<Texture parentKey="MyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-										<Texture parentKey="OtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-										<Texture parentKey="TotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
-										<Texture parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-										<Texture parentKey="HealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-										<Texture parentKey="HealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
-									</Layer>
 									<Layer level="ARTWORK">
-										<Texture parentKey="TotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 										<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 										<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 									</Layer>
@@ -261,15 +263,15 @@ UI_shared.xsd">
 												<Anchor point="TOPLEFT" x="-1" y="6"/>
 											</Anchors>
 											<MaskedTextures>
-												<MaskedTexture childKey="MyHealPredictionBar"/>
-												<MaskedTexture childKey="OtherHealPredictionBar"/>
-												<MaskedTexture childKey="TotalAbsorbBar"/>
-												<MaskedTexture childKey="TotalAbsorbBarOverlay"/>
+												<MaskedTexture childKey="MyHealPredictionBar.Fill"/>
+												<MaskedTexture childKey="OtherHealPredictionBar.Fill"/>
+												<MaskedTexture childKey="TotalAbsorbBar.Fill"/>
+												<MaskedTexture childKey="TotalAbsorbBar.TiledFillOverlay"/>
 												<MaskedTexture childKey="OverAbsorbGlow"/>
 												<MaskedTexture childKey="OverHealAbsorbGlow"/>
-												<MaskedTexture childKey="HealAbsorbBar"/>
-												<MaskedTexture childKey="HealAbsorbBarLeftShadow"/>
-												<MaskedTexture childKey="HealAbsorbBarRightShadow"/>
+												<MaskedTexture childKey="HealAbsorbBar.Fill"/>
+												<MaskedTexture childKey="HealAbsorbBar.LeftShadow"/>
+												<MaskedTexture childKey="HealAbsorbBar.RightShadow"/>
 											</MaskedTextures>
 										</MaskTexture>
 									</Layer>
@@ -441,7 +443,7 @@ UI_shared.xsd">
 			<OnLeave function="UnitFrame_OnLeave"/>
 		</Scripts>
 	</Button>
-	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate, PingReceiverAttributeTemplate" mixin="BossTargetFrameMixin, PingableType_UnitFrameMixin" toplevel="false" virtual="true">
+	<Button name="BossTargetFrameTemplate" inherits="TargetFrameTemplate, PingableUnitFrameTemplate" mixin="BossTargetFrameMixin" toplevel="false" virtual="true">
 		<KeyValues>
 			<KeyValue key="align" value="right" type="string"/>
 			<KeyValue key="frameType" value="Target-Boss-Small" type="string"/>
@@ -464,7 +466,7 @@ UI_shared.xsd">
 			<OnHide method="OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate, PingReceiverAttributeTemplate" mixin="TargetOfTargetMixin, PingableType_UnitFrameMixin" virtual="true" hidden="true">
+	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" mixin="TargetOfTargetMixin" virtual="true" hidden="true">
 		<Size x="120" y="49"/>
 		<KeyValues>
 			<KeyValue key="frameType" value="TargetofTarget" type="string"/>

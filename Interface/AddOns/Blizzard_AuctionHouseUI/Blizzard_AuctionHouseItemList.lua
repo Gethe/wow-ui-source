@@ -129,12 +129,13 @@ function AuctionHouseItemListMixin:SetCustomError(errorText)
 	self.ResultsText:SetText(errorText);
 end
 
+-- Can be removed once the exceptions on related to nil rowData have been confirmed fixed.
+local canAssertOnInvalidRowData = true;
+
 function AuctionHouseItemListMixin:Init()
 	if self.isInitialized then
 		return;
 	end
-
-	self.SpinnerAnim:Play();
 
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementFactory(function(factory, elementData)
@@ -166,23 +167,35 @@ function AuctionHouseItemListMixin:Init()
 	if self.getEntry then
 		self.tableBuilder:SetDataProvider(self.getEntry);
 	end
+	
+	ScrollUtil.RegisterAlternateRowBehavior(self.ScrollBox, function(button, alternate)
+		if self.highlightCallback then
+			local highlightShow = false;
+			local highlightAlpha = 1.0;
 
-	self.ScrollBox:RegisterCallback("OnDataRangeChanged", self.OnScrollBoxRangeChanged, self);
+			-- rowData and elementData are expected to be non-nil.
+			local rowData = button.rowData;
+			local elementData = button:GetElementData();
+			if rowData and elementData then
+				highlightShown, highlightAlpha = self.highlightCallback(rowData, self.selectedRowData, elementData);
+			elseif canAssertOnInvalidRowData then
+				-- We don't need/want an assert for every element in the range. Once will suffice.
+				canAssertOnInvalidRowData = false;
+				assertsafe(false, "Missing row data for auction house item list.")
+			end
+
+			if not self.hideStripes then
+				button:GetNormalTexture():SetAtlas(alternate and "auctionhouse-rowstripe-1" or "auctionhouse-rowstripe-2");
+			end
+
+			button.SelectedHighlight:SetShown(highlightShown);
+			button.SelectedHighlight:SetAlpha(highlightAlpha or 1.0);
+		else
+			button.SelectedHighlight:Hide();
+		end
+	end);
 
 	self.isInitialized = true;
-end
-
-function AuctionHouseItemListMixin:OnScrollBoxRangeChanged(sortPending)
-	if not self.hideStripes then
-		local index = self.ScrollBox:GetDataIndexBegin();
-		self.ScrollBox:ForEachFrame(function(button)
-			local alternate = index % 2 == 1;
-			button:GetNormalTexture():SetAtlas(alternate and "auctionhouse-rowstripe-1" or "auctionhouse-rowstripe-2");
-			index = index + 1;
-		end);
-	end;
-
-	self:UpdateSelectionHighlights();
 end
 
 function AuctionHouseItemListMixin:SetLineOnEnterCallback(callback)
@@ -317,18 +330,6 @@ function AuctionHouseItemListMixin:DirtyScrollFrame()
 	self.scrollFrameDirty = true;
 end
 
-function AuctionHouseItemListMixin:UpdateSelectionHighlights()
-	self.ScrollBox:ForEachFrame(function(button)
-		if self.highlightCallback then
-			local highlightShown, highlightAlpha = self.highlightCallback(button.rowData, self.selectedRowData, button:GetElementData());
-			button.SelectedHighlight:SetShown(highlightShown);
-			button.SelectedHighlight:SetAlpha(highlightAlpha or 1.0);
-		else
-			button.SelectedHighlight:Hide();
-		end
-	end);
-end
-
 function AuctionHouseItemListMixin:RefreshScrollFrame()
 	self.scrollFrameDirty = false;
 
@@ -357,7 +358,6 @@ function AuctionHouseItemListMixin:RefreshScrollFrame()
 	local dataProvider = CreateIndexRangeDataProvider(numResults);
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	
-	self:UpdateSelectionHighlights();
 	self:CallRefreshCallback();
 end
 

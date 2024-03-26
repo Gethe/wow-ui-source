@@ -433,6 +433,11 @@ function BagsBarMixin:OnLoad()
 	self.bagBarExpandToggleInitialWidth = BagBarExpandToggle:GetWidth();
 	self.bagBarExpandToggleInitialHeight = BagBarExpandToggle:GetHeight();
 
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Bags) then
+		self:Hide();
+		return;
+	end
+
 	EventUtil.ContinueOnVariablesLoaded(GenerateClosure(self.Layout, self));
 	EventRegistry:RegisterCallback("MainMenuBarManager.OnExpandChanged", self.Layout, self);
 end

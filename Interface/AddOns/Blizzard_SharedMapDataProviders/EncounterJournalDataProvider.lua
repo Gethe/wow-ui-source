@@ -188,7 +188,7 @@ function EncounterMapTrackingPinMixin:OnMouseEnter()
 		end
 		local qualityColor = ITEM_EPIC_COLOR; --default to item epic color if somehow the item is not loaded
 		if quality then
-			local r, g, b = GetItemQualityColor(quality);
+			local r, g, b = C_Item.GetItemQualityColor(quality);
 			qualityColor = CreateColor(r, g, b, 1);
 		end
 		local difficultyColor = RED_FONT_COLOR;

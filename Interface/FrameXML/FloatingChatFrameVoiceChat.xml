@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<Script file="ChannelFrameButtonMixin.lua"/>
+
+	<!-- Voice chat is only available in-game so these definitions were split out. -->
+	<Button name="ChatFrameChannelButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativePoint="TOP" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Flash" atlas="chatframe-button-highlightalert" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="ChatFrameToggleVoiceDeafenButton" frameStrata="MEDIUM" parent="UIParent" inherits="ToggleVoiceDeafenButtonTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="ChatFrameChannelButton" relativePoint="BOTTOM" x="0" y="-2" />
+		</Anchors>
+	</Button>
+	<Button name="ChatFrameToggleVoiceMuteButton" frameStrata="MEDIUM" parent="UIParent" inherits="ToggleVoiceMuteButtonTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="ChatFrameToggleVoiceDeafenButton" relativePoint="BOTTOM" x="0" y="-2" />
+		</Anchors>
+	</Button>
+</Ui>

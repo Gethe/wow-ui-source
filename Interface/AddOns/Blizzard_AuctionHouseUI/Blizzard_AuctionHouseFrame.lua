@@ -24,7 +24,7 @@ StaticPopupDialogs["BUYOUT_AUCTION"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnAccept = GenerateClosure(StaticPopup_OnAcceptWithSpinner, BuyoutDialogOnAccept, BuyoutDialogOnEvent, {"AUCTION_HOUSE_PURCHASE_COMPLETED", "AUCTION_HOUSE_SHOW_ERROR"}),
+	OnAccept = GenerateClosure(StaticPopup_OnAcceptWithSpinner, BuyoutDialogOnAccept, BuyoutDialogOnEvent, {"AUCTION_HOUSE_PURCHASE_COMPLETED", "AUCTION_HOUSE_SHOW_ERROR"}, 2),
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, self.data.buyout);
 	end,

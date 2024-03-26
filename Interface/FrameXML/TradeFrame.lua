@@ -94,7 +94,7 @@ function TradeFrame_UpdatePlayerItem(id)
 	else
 		buttonText:SetText(name);
 		if ( quality ) then
-			local r, g, b = GetItemQualityColor(quality);
+			local r, g, b = C_Item.GetItemQualityColor(quality);
 			buttonText:SetTextColor(r, g, b);
 		else
 			buttonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);

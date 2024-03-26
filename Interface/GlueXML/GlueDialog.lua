@@ -86,6 +86,12 @@ GlueDialogTypes["ERROR_CINEMATIC"] = {
 	button2 = nil,
 }
 
+GlueDialogTypes["ERROR_CONNECT_TO_PLUNDERSTORM_FAILED"] = {
+	text = ERROR_CONNECT_TO_PLUNDERSTORM_FAILED_DIALOG,
+	button1 = OKAY,
+	button2 = nil,
+}
+
 GlueDialogTypes["CLIENT_RESTART_ALERT"] = {
 	text = CLIENT_RESTART_ALERT,
 	button1 = OKAY,
@@ -363,6 +369,57 @@ GlueDialogTypes["EVOKER_NEW_PLAYER_CONFIRMATION"] = {
 	end,
 }
 
+GlueDialogTypes["ADD_FRIEND"] = {
+	text = ADD_BATTLENET_FRIEND_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	autoCompleteSource = GetAutoCompleteResults,
+	autoCompleteArgs = { AUTOCOMPLETE_LIST.ADDFRIEND.include, AUTOCOMPLETE_LIST.ADDFRIEND.exclude },
+	maxLetters = 12 + 1 + 64,
+	OnAccept = function(self)
+		GlueAddFriendAccept(GlueDialogEditBox:GetText());
+	end,
+	OnShow = function(self)
+		GlueDialogEditBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		GlueDialogEditBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		GlueAddFriendAccept(GlueDialogEditBox:GetText());
+		self:GetParent():Hide();
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+GlueDialogTypes["CONFIRM_REMOVE_FRIEND"] = {
+	text = "%s",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self, bnetIDAccount)
+		BNRemoveFriend(bnetIDAccount);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+GlueDialogTypes["SWAPPING_ENVIRONMENT"] = {
+    text = "SWAPPING_ENVIRONMENT",
+    button1 = nil,
+    button2 = nil,
+    ignoreKeys = true,
+    spinner = true,
+}
+
 local function GlueDialog_SetCustomOnHideScript(self, script)
 	self.customOnHideScript = script;
 end
@@ -569,7 +626,7 @@ function GlueDialog_Show(which, text, data, customOnHideScript)
 		end
 		GlueDialogEditBox:SetText("");
 		if ( dialogInfo.editBoxWidth ) then
-			GlueDialogEditBox:SetWidth(info.editBoxWidth);
+			GlueDialogEditBox:SetWidth(dialogInfo.editBoxWidth);
 		else
 			GlueDialogEditBox:SetWidth(130);
 		end
@@ -749,7 +806,8 @@ function GlueDialog_OnClick(self, button, down)
 		func = info.OnAlt or info.OnButton3;
 	end
 	if ( func ) then
-		func();
+		local dialog = self:GetParent():GetParent();
+		func(dialog, dialog.data);
 	end
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end

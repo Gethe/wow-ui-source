@@ -1193,7 +1193,7 @@ function RecruitAFriendRewardButtonMixin:OnClick()
 	elseif IsModifiedClick("CHATLINK") then
 		local itemID = self.rewardInfo.itemID;
 		if itemID then
-			local name, link = GetItemInfo(itemID);
+			local name, link = C_Item.GetItemInfo(itemID);
 			if not ChatEdit_InsertLink(link) then
 				ChatFrame_OpenChat(link);
 			end

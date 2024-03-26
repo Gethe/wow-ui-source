@@ -147,10 +147,6 @@ end
 function ScrollBoxListTreeListViewMixin:AssignAccessors(frame, elementData)
 	ScrollBoxListViewMixin.AssignAccessors(self, frame, elementData);
 
-	frame.GetData = function(self)
-		return elementData:GetData();
-	end;
-
 	frame.IsCollapsed = function(self)
 		return elementData:IsCollapsed();
 	end;

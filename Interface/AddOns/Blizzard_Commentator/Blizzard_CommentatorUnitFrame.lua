@@ -93,9 +93,9 @@ function CommentatorUnitFrameMixin:Init(isAlignedLeft, playerData, teamIndex)
 		
 		self.ModelScene:Init(self.unitToken, self.guid, self.Circle);
 
-		self.role = GetSpecializationRoleByID(playerData.specialization);
-		local isRoleHealer = self.role == "HEALER";
-		local isRoleTank = self.role == "TANK"
+		self.role = GetSpecializationRoleEnumByID(playerData.specialization);
+		local isRoleHealer = self.role == Enum.LFGRole.Healer;
+		local isRoleTank = self.role == Enum.LFGRole.Tank;
 		if isRoleHealer or isRoleTank then
 			local useAtlasSize = true;
 			if isRoleHealer then

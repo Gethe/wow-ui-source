@@ -370,7 +370,7 @@ function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
 		self.itemRewards = { };
 		for  _, reward in ipairs(self.rewards) do
 			if	(reward.rewardType == Enum.GossipOptionRewardType.Item) then 
-				local name, _, quality, _, _, _, _, _, _, itemIcon = GetItemInfo(reward.id);
+				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
 				table.insert(self.itemRewards, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name});
 			end
 		end
@@ -405,7 +405,7 @@ end
 
 function TorghastLevelPickerRewardCircleMixin:SetRewardIcon()
 	if (self.itemRewards and self.itemRewards[1]) then 
-		local texture = select(5, GetItemInfoInstant(self.itemRewards[1].id));
+		local texture = select(5, C_Item.GetItemInfoInstant(self.itemRewards[1].id));
 		self.Icon:SetTexture(texture);
 		return; 
 	end 

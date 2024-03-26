@@ -100,6 +100,7 @@ function ModelControlPanButtonMixin:OnMouseDown()
 end
 
 function ModelControlPanButtonMixin:OnMouseUp()
+	ModelControlButtonMixin.OnMouseUp(self);
 	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
@@ -165,7 +166,7 @@ end
 function ModelPanningFrameMixin:OnUpdate()
     local model = self.model;
 	local controlFrame = self.model.controlFrame;
-    if ( not IsMouseButtonDown(controlFrame.panButton) ) then
+    if ( not IsMouseButtonDown() ) then
         model:StopPanning();
         if ( controlFrame.buttonDown ) then
 			controlFrame.buttonDown:OnMouseUp();

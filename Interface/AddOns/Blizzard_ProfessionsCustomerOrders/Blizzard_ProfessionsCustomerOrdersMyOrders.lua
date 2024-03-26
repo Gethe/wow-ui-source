@@ -247,7 +247,6 @@ function ProfessionsCustomerOrdersMyOrdersMixin:RefreshOrders()
 	self.RefreshButton:SetEnabledState(false);
 	self.OrderList.ResultsText:Hide();
 	self.OrderList.LoadingSpinner:Show();
-	self.OrderList.SpinnerAnim:Restart();
 	self.OrderList.ScrollBox:Hide();
 
 	local offset = 0;
@@ -256,7 +255,6 @@ end
 
 function ProfessionsCustomerOrdersMyOrdersMixin:UpdateOrderList(result, expectMoreRows, offset, isSorted)
 	self.OrderList.LoadingSpinner:Hide();
-	self.OrderList.SpinnerAnim:Stop();
 	self.OrderList.ScrollBox:Show();
 
 	self.expectMoreRows = expectMoreRows;

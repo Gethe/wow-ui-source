@@ -65,12 +65,9 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 						 healthBar.MyHealPredictionBar,
 						 healthBar.OtherHealPredictionBar,
 						 healthBar.TotalAbsorbBar,
-						 healthBar.TotalAbsorbBarOverlay,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
-						 healthBar.HealAbsorbBar,
-						 healthBar.HealAbsorbBarLeftShadow,
-						 healthBar.HealAbsorbBarRightShadow);
+						 healthBar.HealAbsorbBar);
 
 	self.auraPools = CreateFramePoolCollection();
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
@@ -322,7 +319,7 @@ function TargetFrameMixin:CheckFaction()
 		end
 	end
 
-	if (self.showPVP) then
+	if (self.showPVP and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UnitFramePvPContextual)) then
 		local factionGroup = UnitFactionGroup(self.unit);
 		local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
 		if (UnitIsPVPFreeForAll(self.unit)) then
@@ -517,7 +514,7 @@ function TargetFrameMixin:ProcessAura(aura)
 		return AuraUpdateChangedType.None;
 	end
 
-	if aura.isHelpful and not aura.isNameplateOnly then
+	if aura.isHelpful and not aura.isNameplateOnly and self:ShouldShowBuffs() then
 		self.activeBuffs[aura.auraInstanceID] = aura;
 		return AuraUpdateChangedType.Buff;
 	elseif aura.isHarmful and self:ShouldShowDebuffs(self.unit, aura.sourceUnit, aura.nameplateShowAll, aura.isFromPlayerOrPlayerPet) then
@@ -673,6 +670,10 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	if self.spellbar ~= nil then
 		self.spellbar:AdjustPosition();
 	end
+end
+
+function TargetFrameMixin:ShouldShowBuffs()
+	return C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.TargetFrameBuffs);
 end
 
 --

@@ -1,3 +1,6 @@
+
+local PartyMemberIconUpdateFrequencySeconds = 1.0;
+
 SuperTrackedFrameMixin = {};
 
 function SuperTrackedFrameMixin:OnLoad()
@@ -20,7 +23,7 @@ function SuperTrackedFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function SuperTrackedFrameMixin:OnUpdate()
+function SuperTrackedFrameMixin:OnUpdate(dt)
 	self:CheckInitializeNavigationFrame(false);
 
 	if self.navFrame then
@@ -29,6 +32,18 @@ function SuperTrackedFrameMixin:OnUpdate()
 		self:UpdateArrow();
 		self:UpdateDistanceText();
 		self:UpdateAlpha();
+	end
+
+	-- If we're tracking a party member we need to update frequently to make sure we're displaying
+	-- the portrait of the closest party member.
+	self.timeSinceLastPartyMemberUpdate = (self.timeSinceLastPartyMemberUpdate or 0) + dt;
+	if self.timeSinceLastPartyMemberUpdate > PartyMemberIconUpdateFrequencySeconds then
+		self.timeSinceLastPartyMemberUpdate = 0;
+
+		local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
+		if superTrackingType == Enum.SuperTrackingType.PartyMember then
+			self:UpdateIcon();
+		end
 	end
 end
 
@@ -59,6 +74,12 @@ do
 
 	function SuperTrackedFrameMixin:GetTargetAlphaBaseValue()
 		local state = C_Navigation.GetTargetState();
+
+		local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
+		if (superTrackingType == Enum.SuperTrackingType.PartyMember) and not self.isClamped and (state ~= Enum.NavigationState.Occluded) then
+			return 0;
+		end
+
 		local alpha = navStateToTargetAlpha[state];
 		if alpha and alpha > 0 then
 			if self.isClamped then
@@ -204,10 +225,29 @@ local iconLookup = {
 	[Enum.SuperTrackingType.Corpse] = "Navigation-Tombstone-Icon",
 };
 
+local iconBorderLookup = {
+	[Enum.SuperTrackingType.PartyMember] = "plunderstorm-waypoint-ring",
+};
+
 function SuperTrackedFrameMixin:UpdateIcon()
 	local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType() or Enum.SuperTrackingType.Quest;
-	local atlas = iconLookup[superTrackingType] or "Navigation-Tracked-Icon";
-	self.Icon:SetAtlas(atlas, true);
+	local isTrackingPartyMember = (superTrackingType == Enum.SuperTrackingType.PartyMember);
+	local nearestPartyMemberToken = isTrackingPartyMember and C_Navigation.GetNearestPartyMemberToken() or nil;
+	if nearestPartyMemberToken then
+		SetPortraitTexture(self.Icon, nearestPartyMemberToken);
+		self.Icon:SetSize(40, 40);
+	else
+		local atlas = iconLookup[superTrackingType] or "Navigation-Tracked-Icon";
+		self.Icon:SetAtlas(atlas, true);
+	end
+
+	local iconBorderAtlas = iconBorderLookup[superTrackingType];
+	local hasIconBorder = iconBorderAtlas ~= nil;
+	self.IconBorder:SetShown(hasIconBorder);
+	if hasIconBorder then
+		self.IconBorder:SetAtlas(iconBorderAtlas, TextureKitConstants.IgnoreAtlasSize);
+	end
+
 	self:UpdateIconSize();
 end
 

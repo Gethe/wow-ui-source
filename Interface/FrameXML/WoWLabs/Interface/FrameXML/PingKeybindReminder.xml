@@ -1,0 +1,64 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\UI.xsd">
+	<Frame name="KeybindReminderTemplate" mixin="KeybindReminderMixin" virtual="true">
+		<!--
+		keybind: keybind to take name and binding string from.
+		overrideBindingActionText: text to use instead of the usual BINDING_NAME_ text
+		<KeyValues>
+			<KeyValue key="keybind" value="TOGGLEPINGLISTENER" type="string"/>
+			<KeyValue key="overrideBindingActionText" value="INTERACTTARGET" type="string"/>
+		</KeyValues>
+		-->
+		<Size x="40" y="35"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="UnboundText" inherits="SystemFont_Shadow_Large2">
+					<Color color="DISABLED_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="KeyIcon" atlas="plunderstorm-icon-key" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="KeyBind" inherits="SystemFont_Shadow_Large2">
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.KeyIcon" x="1" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BindingAction" inherits="SystemFont_Shadow_Large2">
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="10" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PingKeybindReminder" inherits="KeybindReminderTemplate" toplevel="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="keybind" value="TOGGLEPINGLISTENER" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-200" y="80"/>
+		</Anchors>
+	</Frame>
+
+	<Frame name="InteractKeybindReminder" inherits="KeybindReminderTemplate" toplevel="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="keybind" value="INTERACTTARGET" type="string"/>
+			<KeyValue key="overrideBindingActionText" value="PLUNDERSTORM_INTERACT_REMINDER_TEXT" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="PingKeybindReminder" relativePoint="TOPLEFT" x="0" y="10"/>
+		</Anchors>
+	</Frame>
+</Ui>

@@ -57,6 +57,10 @@ local tinsert = tinsert;
 local tremove = tremove;
 
 function ToggleSpellBook(bookType)
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.SpellbookPanel) then
+		return;
+	end
+
 	HelpPlate_Hide();
 	if ( (not HasPetSpells() or not PetHasSpellbook()) and bookType == BOOKTYPE_PET ) then
 		return;

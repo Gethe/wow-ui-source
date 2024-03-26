@@ -3,6 +3,10 @@ MAX_PARTY_MEMBERS = 4;
 PartyFrameMixin={};
 
 function PartyFrameMixin:OnLoad()
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ForcedPartyFrameScale) then
+		self:SetScale(C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.ForcedPartyFrameScale));
+	end
+
 	local function PartyMemberFrameReset(framePool, frame)
 		frame.layoutIndex = nil;
 		FramePool_HideAndClearAnchors(framePool, frame);
@@ -10,6 +14,12 @@ function PartyFrameMixin:OnLoad()
 
 	self.PartyMemberFramePool = CreateFramePool("BUTTON", self, "PartyMemberFrameTemplate", PartyMemberFrameReset);
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+end
+
+function PartyFrameMixin:UpdateSystemSettingFrameSize()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ForcedPartyFrameScale) then
+		EditModeUnitFrameSystemMixin.UpdateSystemSettingFrameSize(self);
+	end
 end
 
 function PartyFrameMixin:OnShow()
@@ -129,8 +139,8 @@ end
 
 PartyMemberBuffTooltipMixin = {};
 function PartyMemberBuffTooltipMixin:OnLoad()
-	self.PartyMemberBuffPool = CreateFramePool("BUTTON", self.BuffContainer, "PartyBuffFrameTemplate");
-	self.PartyMemberDebuffPool = CreateFramePool("BUTTON", self.DebuffContainer, "PartyDebuffFrameTemplate");
+	self.PartyMemberBuffPool = CreateFramePool("BUTTON", self.BuffContainer, "PartyAuraFrameTemplate");
+	self.PartyMemberDebuffPool = CreateFramePool("BUTTON", self.DebuffContainer, "PartyAuraFrameTemplate");
 end
 
 function PartyMemberBuffTooltipMixin:UpdateGridLayout(frames, numFrames, anchor)
@@ -163,9 +173,9 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 
 		if aura.icon then
 			local buffFrame = self.PartyMemberBuffPool:Acquire();
-			buffFrame:Setup(frame.unit, frameNum);
+			local isBuff = true;
+			buffFrame:Setup(frame.unit, aura, isBuff);
 			buffFrame.Icon:SetTexture(aura.icon);
-			buffFrame:Show();
 			buffFrames[frameNum] = buffFrame;
 
 			frameNum = frameNum + 1;
@@ -186,12 +196,8 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 
 		if aura.icon then
 			local debuffFrame = self.PartyMemberDebuffPool:Acquire();
-			debuffFrame:Setup(frame.unit, frameNum);
-			frame:SetDebuff(debuffFrame, aura, frameNum);
-			debuffFrame.Icon:SetTexture(aura.icon);
-			local color = aura.dispelName and DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"]
-			debuffFrame.Border:SetVertexColor(color.r, color.g, color.b);
-			debuffFrame:Show();
+			local isBuff = false;
+			debuffFrame:Setup(frame.unit, aura, isBuff);
 			debuffFrames[frameNum] = debuffFrame;
 
 			frameNum = frameNum + 1;

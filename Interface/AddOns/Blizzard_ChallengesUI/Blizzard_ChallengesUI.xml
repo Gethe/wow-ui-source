@@ -719,6 +719,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
 	</Frame>
 

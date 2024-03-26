@@ -168,7 +168,7 @@ local CooldownFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "FileAsset", Nilable = false },
+				{ Name = "texture", Type = "string", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
@@ -222,7 +222,7 @@ local CooldownFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "fontName", Type = "cstring", Nilable = false },
+				{ Name = "fontName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -267,7 +267,7 @@ local CooldownFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "FileAsset", Nilable = false },
+				{ Name = "texture", Type = "string", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
@@ -310,7 +310,7 @@ local CooldownFrameAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "SingleColorValue", Nilable = true },
+				{ Name = "a", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -319,7 +319,7 @@ local CooldownFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "FileAsset", Nilable = false },
+				{ Name = "texture", Type = "string", Nilable = false },
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
@@ -332,8 +332,8 @@ local CooldownFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "low", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "high", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "low", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "high", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{

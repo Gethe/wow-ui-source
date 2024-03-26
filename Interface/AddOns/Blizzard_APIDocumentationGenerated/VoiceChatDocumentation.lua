@@ -538,6 +538,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsTranscribing",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isTranscribing", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTranscriptionAllowed",
 			Type = "Function",
 

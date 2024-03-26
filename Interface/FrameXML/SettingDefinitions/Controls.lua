@@ -60,7 +60,10 @@ local function Register()
 		Settings.CreateCheckBox(category, setting, OPTION_TOOLTIP_GAMEFIELD_DESELECT);
 	end
 
-	ControlsOverrides.SetupAutoDismountSetting(category);
+	-- Plunderstorm doesn't have mounts.
+	if not Settings.IsPlunderstorm() then
+		ControlsOverrides.SetupAutoDismountSetting(category);
+	end
 
 	-- Auto Cancel AFK
 	Settings.SetupCVarCheckBox(category, "autoClearAFK", CLEAR_AFK, OPTION_TOOLTIP_CLEAR_AFK);
@@ -68,26 +71,27 @@ local function Register()
 	-- Interact on Left Click
 	Settings.SetupCVarCheckBox(category, "interactOnLeftClick", INTERACT_ON_LEFT_CLICK_TEXT, OPTION_TOOLTIP_INTERACT_ON_LEFT_CLICK);
 
-	-- Open Loot Window at Mouse
-	Settings.SetupCVarCheckBox(category, "lootUnderMouse", LOOT_UNDER_MOUSE_TEXT, OPTION_TOOLTIP_LOOT_UNDER_MOUSE);
+	-- Plunderstorm doesn't have loots and handles bags differently.
+	if not Settings.IsPlunderstorm() then
+		-- Open Loot Window at Mouse
+		Settings.SetupCVarCheckBox(category, "lootUnderMouse", LOOT_UNDER_MOUSE_TEXT, OPTION_TOOLTIP_LOOT_UNDER_MOUSE);
 
-	-- Auto Loot
-	Settings.SetupCVarCheckBox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
+		-- Auto Loot
+		Settings.SetupCVarCheckBox(category, "autoLootDefault", AUTO_LOOT_DEFAULT_TEXT, OPTION_TOOLTIP_AUTO_LOOT_DEFAULT);
 
-	-- Auto Loot Key
-	do
+		-- Auto Loot Key
 		local setting = Settings.RegisterModifiedClickSetting(category, "AUTOLOOTTOGGLE", AUTO_LOOT_KEY_TEXT, "SHIFT");
 		local initializer = CreateAutoLootInitializer(setting);
 		layout:AddInitializer(initializer);
-	end
 
-	if C_CVar.GetCVar("combinedBags") then
-		-- Use Combined Inventory Bags
-		Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
+		if C_CVar.GetCVar("combinedBags") then
+			-- Use Combined Inventory Bags
+			Settings.SetupCVarCheckBox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
+		end
 	end
 
 	-- Enable Interact Key
-	do
+	if not Settings.IsPlunderstorm() then
 		local function GetValue()
 			return tonumber(GetCVar("softTargetInteract")) == Enum.SoftTargetEnableFlags.Any;
 		end

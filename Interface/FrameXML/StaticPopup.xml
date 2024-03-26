@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI.xsd">
 	<Script file="StaticPopup.lua"/>
 	<Button name="StaticPopupButtonTemplate" virtual="true">
 		<Size x="128" y="21"/>
@@ -227,16 +227,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="LoadingSpinner" hidden="true" frameLevel="1000">
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true" frameLevel="1000">
 				<Size x="60" y="60"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Spinner" setAllPoints="true" atlas="auctionhouse-ui-loadingspinner"/>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -255,11 +250,6 @@
 			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>
 			<OnHyperlinkLeave function="StaticPopup_OnHyperlinkLeave"/>
 		</Scripts>
-		<Animations>
-			<AnimationGroup parentKey="SpinnerAnim" looping="REPEAT">
-				<Rotation childKey="LoadingSpinner.Spinner" order="1" duration="1" degrees="-360"/>
-			</AnimationGroup>
-		</Animations>
 	</Frame>
 	<Frame name="StaticPopup1" inherits="StaticPopupTemplate" parent="UIParent" id="1">
 		<Anchors>

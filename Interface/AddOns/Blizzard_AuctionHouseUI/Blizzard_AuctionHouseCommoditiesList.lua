@@ -7,6 +7,7 @@ AuctionHouseCommoditiesListMixin = CreateFromMixins(AuctionHouseItemListMixin, A
 
 local AUCTION_HOUSE_COMMODITIES_LIST_EVENTS = {
 	"COMMODITY_SEARCH_RESULTS_UPDATED",
+	"COMMODITY_SEARCH_RESULTS_RECEIVED",
 	"COMMODITY_SEARCH_RESULTS_ADDED",
 };
 
@@ -18,6 +19,8 @@ function AuctionHouseCommoditiesListMixin:OnLoad()
 	end
 
 	local function CommoditiesListRefreshResults()
+		self.resultsLoaded = false;
+
 		if self.itemID then
 			self:GetAuctionHouseFrame():RefreshSearchResults(self.searchContext, C_AuctionHouse.MakeItemKey(self.itemID));
 		end
@@ -28,6 +31,8 @@ end
 
 function AuctionHouseCommoditiesListMixin:OnShow()
 	self:UpdateDataProvider();
+
+	self.resultsLoaded = false;
 
 	AuctionHouseItemListMixin.OnShow(self);
 
@@ -40,6 +45,9 @@ end
 
 function AuctionHouseCommoditiesListMixin:OnEvent(event, ...)
 	if event == "COMMODITY_SEARCH_RESULTS_UPDATED" then
+		self:Reset();
+	elseif event == "COMMODITY_SEARCH_RESULTS_RECEIVED" then
+		self.resultsLoaded = true;
 		self:Reset();
 	elseif event == "COMMODITY_SEARCH_RESULTS_ADDED" then
 		self:DirtyScrollFrame();
@@ -97,10 +105,23 @@ end
 AuctionHouseCommoditiesBuyListMixin = CreateFromMixins(AuctionHouseCommoditiesListMixin);
 
 function AuctionHouseCommoditiesBuyListMixin:OnLoad()
-	AuctionHouseCommoditiesListMixin.OnLoad(self);
+	AuctionHouseItemListMixin.OnLoad(self);
+	
+	local function CommoditiesListGetTotalQuantity()
+		return self.itemID and C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID) or 0;
+	end
+
+	local function CommoditiesListRefreshResults()
+		self.resultsLoaded = false;
+		self:GetParent().BuyDisplay.resultsLoaded = false;
+
+		if self.itemID then
+			self:GetAuctionHouseFrame():RefreshSearchResults(self.searchContext, C_AuctionHouse.MakeItemKey(self.itemID));
+		end
+	end
+	self:SetRefreshFrameFunctions(CommoditiesListGetTotalQuantity, CommoditiesListRefreshResults);
 
 	self:SetTableBuilderLayout(AuctionHouseTableBuilder.GetCommoditiesBuyListLayout(self));
-
 	self.quantitySelected = 1;
 
 	self.getEntryInfoCallback = function(index)
@@ -138,26 +159,21 @@ function AuctionHouseCommoditiesBuyListMixin:UpdateListHighlightCallback()
 	else
 		self:SetHighlightCallback(function(currentRowData, selectedRowData, currentRowIndex)
 			local shouldHighlight = currentRowIndex <= (self.resultsMaxHighlightIndex or 0);
-			local highlightAlpha = 1.0;
-			-- Temporary fix for unexpected invalid row data.
-			if currentRowData then
-				highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
+			local highlightAlpha = (currentRowData.containsOwnerItem or currentRowData.containsAccountItem or 
 					(currentRowIndex == self.resultsMaxHighlightIndex and self.resultsPartiallyPurchased)) and 0.5 or 1.0;
-			end
 			return shouldHighlight, highlightAlpha;
 		end);
 	end
 end
 
 function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
-	local canUseSearchResults = self.itemID and C_AuctionHouse.HasSearchResults(C_AuctionHouse.MakeItemKey(self.itemID));
+	local canUseSearchResults = self.itemID and C_AuctionHouse.HasSearchResults(C_AuctionHouse.MakeItemKey(self.itemID)) and self.resultsLoaded;
 	local oldQuantitySelected = self.quantitySelected;
 	self.quantitySelected = quantity;
-	if oldQuantitySelected ~= quantity and canUseSearchResults then
-		self.quantitySelected = math.min(C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID), quantity);
-	end
-
-	if not canUseSearchResults then
+	if canUseSearchResults then
+		local totalItemQuantity = C_AuctionHouse.GetCommoditySearchResultsQuantity(self.itemID);
+		self.quantitySelected = math.min(totalItemQuantity, quantity);
+	else 
 		return;
 	end
 
@@ -170,6 +186,8 @@ function AuctionHouseCommoditiesBuyListMixin:SetQuantitySelected(quantity)
 
 		self:UpdateDynamicCallbacks();
 		self:DirtyScrollFrame();
+	elseif self.resultsLoaded then
+		self.resultsMaxHighlightIndex, self.resultsPartiallyPurchased = select(3, AuctionHouseUtil.AggregateSearchResultsByQuantity(self.itemID, self.quantitySelected));
 	end
 end
 

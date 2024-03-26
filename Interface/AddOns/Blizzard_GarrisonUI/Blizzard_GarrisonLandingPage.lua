@@ -609,7 +609,7 @@ function GarrisonLandingPageReportList_InitButtonAvailable(button, elementData)
 		if (reward.itemID) then
 			Reward.itemID = reward.itemID;
 			Reward.itemLink = reward.itemLink;
-			local _, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemLink or reward.itemID);
+			local _, _, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(reward.itemLink or reward.itemID);
 			Reward.Icon:SetTexture(itemTexture);
 			SetItemButtonQuality(Reward, quality, reward.itemID);
 

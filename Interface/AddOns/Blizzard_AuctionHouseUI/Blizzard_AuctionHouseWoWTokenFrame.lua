@@ -105,7 +105,7 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 			UIErrorsFrame:AddMessage(ERR_AUCTION_DATABASE_ERROR, 1.0, 0.1, 0.1, 1.0);
 		else
 			local info = ChatTypeInfo["SYSTEM"];
-			local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+			local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_WON_S:format(itemName), info.r, info.g, info.b, info.id);
 			C_WowTokenPublic.UpdateTokenCount();
 		end

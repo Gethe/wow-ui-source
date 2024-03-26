@@ -44,15 +44,20 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	self.CreateButton:SetScript("OnClick", GenerateClosure(self.Create, self));
 	self.CreateAllButton:SetScript("OnClick", GenerateClosure(self.CreateAll, self));
 
-	local function SetSearchText(text)
-		self.RecipeList.SearchBox:SetText(text);
-		self.MinimizedSearchBox:SetText(text);
+	local function SyncSearchText(editBox)
+		local text = editBox:GetText();
+		if editBox ~= self.RecipeList.SearchBox then
+			self.RecipeList.SearchBox:SetText(text);
+		end
+		if editBox ~= self.MinimizedSearchBox then
+			self.MinimizedSearchBox:SetText(text);
+		end
 		Professions.OnRecipeListSearchTextChanged(text);
 	end
 
 	self.RecipeList.SearchBox:SetScript("OnTextChanged", function(editBox)
 		SearchBoxTemplate_OnTextChanged(editBox);
-		SetSearchText(editBox:GetText());
+		SyncSearchText(editBox);
 	end);
 
 	self.LinkButton:SetScript("OnClick", function()
@@ -170,7 +175,7 @@ function ProfessionsCraftingPageMixin:OnLoad()
 
 	self.MinimizedSearchBox:SetScript("OnTextChanged", function(editBox)
 		local valid, text = SearchBoxListMixin.OnTextChanged(editBox);
-		SetSearchText(editBox:GetText());
+		SyncSearchText(editBox);
 
 		self.MinimizedSearchResults:Hide();
 	end);

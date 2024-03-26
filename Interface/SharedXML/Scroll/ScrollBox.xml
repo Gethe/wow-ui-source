@@ -27,6 +27,7 @@
 	<Frame name="ScrollBoxBaseTemplate" clipChildren="true" mixin="ScrollBoxBaseMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="canInterpolateScroll" value="false" type="boolean"/>
+			<KeyValue key="debugInspectionSystem" value="ScrollBox" type="string"/>
 			<!--
 			<KeyValue key="upperShadow" value="atlasName" type="string"/>
 			<KeyValue key="lowerShadow" value="atlasName" type="string"/>

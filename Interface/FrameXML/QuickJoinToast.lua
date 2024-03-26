@@ -33,6 +33,10 @@ function QuickJoinToastMixin:OnLoad()
 		group:MarkAllAsDisplayed();
 		self.groups[groups[i]] = group;
 	end
+	
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameFriendsList) then
+		self:Hide();
+	end
 end
 
 function QuickJoinToastMixin:OnShow()

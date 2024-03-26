@@ -66,6 +66,23 @@ function EditModeUtil:GetSettingMapFromSettings(settings, displayInfoMap)
 	return settingMap;
 end
 
+function EditModeUtil.CreateLinePool(ownerFrame, template)
+	local function resetLine(pool, line)
+		line:Hide();
+		line:ClearAllPoints();
+	end
+
+	local linePool = CreateObjectPool(
+		function(pool)
+			return ownerFrame:CreateLine(nil, nil, template);
+		end,
+
+		resetLine
+	);
+
+	return linePool;
+end
+
 EditModeMagnetismManager = {};
 
 hooksecurefunc("UpdateUIParentPosition", function() EditModeMagnetismManager:UpdateUIParentPoints() end);
@@ -145,78 +162,112 @@ function EditModeMagnetismManager:GetMagneticFrameInfoTable(frame, point, relati
 	return { frame = frame, point = point, relativePoint = relativePoint, distance = distance, offset = offset, isHorizontal = isHorizontal, isCornerSnap = isCornerSnap };
 end
 
-function EditModeMagnetismManager:CheckReplaceMagneticFrame(currentFrame, frame, point, relativePoint, distance, offset, isHorizontal)
+function EditModeMagnetismManager:CheckReplaceMagneticFrameInfo(currentMagneticFrameInfo, frame, point, relativePoint, distance, offset, isHorizontal)
 	local scaledDistance = distance * UIParent:GetEffectiveScale();
 	if scaledDistance > self.magnetismRange then
-		return currentFrame;
+		return currentMagneticFrameInfo;
 	end
 
-	if not currentFrame or scaledDistance < currentFrame.distance then
+	if not currentMagneticFrameInfo or scaledDistance < currentMagneticFrameInfo.distance then
 		return self:GetMagneticFrameInfoTable(frame, point, relativePoint, scaledDistance, offset, isHorizontal);
 	else
-		return currentFrame;
+		return currentMagneticFrameInfo;
 	end
 end
 
+-- Returns the points we want to check when seeing if a point relative to UIParent is close enough to snap to.
+function EditModeMagnetismManager:GetUIParentCheckPoints(systemFrame, verticalLines)
+	local systemFrameCenterX, systemFrameCenterY = systemFrame:GetScaledSelectionCenter();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+
+	return verticalLines
+	and {
+		{ point = "LEFT", relativePoint = "LEFT", source = systemFrameLeft, target = self.uiParentLeft },
+		{ point = "RIGHT", relativePoint = "RIGHT", source = systemFrameRight, target = self.uiParentRight },
+		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterX, target = self.uiParentCenterX },
+		{ point = "LEFT", relativePoint = "CENTER", source = systemFrameLeft, target = self.uiParentCenterX },
+		{ point = "RIGHT", relativePoint = "CENTER", source = systemFrameRight, target = self.uiParentCenterX },
+	}
+	or {
+		{ point = "TOP", relativePoint = "TOP", source = systemFrameTop, target = self.uiParentTop },
+		{ point = "BOTTOM", relativePoint = "BOTTOM", source = systemFrameBottom, target = self.uiParentBottom },
+		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterY, target = self.uiParentCenterY },
+		{ point = "TOP", relativePoint = "CENTER", source = systemFrameTop, target = self.uiParentCenterY },
+		{ point = "BOTTOM", relativePoint = "CENTER", source = systemFrameBottom, target = self.uiParentCenterY },
+	};
+end
+
+-- Returns the points we want to check when seeing if a grid line is close enough to snap to.
+function EditModeMagnetismManager:GetGridLineCheckPoints(systemFrame, verticalLines)
+	local systemFrameCenterX, systemFrameCenterY = systemFrame:GetScaledSelectionCenter();
+	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
+
+	return verticalLines
+	and {
+		{ point = "LEFT", relativePoint = "LEFT", source = systemFrameLeft },
+		{ point = "RIGHT", relativePoint = "RIGHT", source = systemFrameRight },
+		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterX },
+	}
+	or {
+		{ point = "TOP", relativePoint = "TOP", source = systemFrameTop },
+		{ point = "BOTTOM", relativePoint = "BOTTOM", source = systemFrameBottom },
+		{ point = "CENTER", relativePoint = "CENTER", source = systemFrameCenterY },
+	};
+end
+
 -- Find the closest grid line (or UIParent side/center point) and returns the distance, point and offset to use (if it ends up being closer than any magnetic frames)
-function EditModeMagnetismManager:FindClosestLine(systemFrame, verticalLines)
+function EditModeMagnetismManager:FindClosestGridLine(systemFrame, verticalLines)
+	local closestDistance, closestPoint, closestRelativePoint;
+	local closestOffset = 0;
+
+	-- First find the closest distance to the sides and center of UIParent
+	local uiParentCheckPoints = self:GetUIParentCheckPoints(systemFrame, verticalLines);
+	for _, checkPoint in ipairs(uiParentCheckPoints) do
+		local distance = abs(checkPoint.target - checkPoint.source);
+		if not closestDistance or distance < closestDistance then
+			closestDistance = distance;
+			closestPoint = checkPoint.point;
+			closestRelativePoint = checkPoint.relativePoint;
+		end
+	end
+
+	-- Then if the grid is on, see if we can find a closer grid line
 	local gridLines;
 	if self.magneticGridLines then
 		gridLines = verticalLines and self.magneticGridLines.vertical or self.magneticGridLines.horizontal;
 	end
 
-	local systemFrameCenterX, systemFrameCenterY = systemFrame:GetScaledSelectionCenter();
-	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
-
-	local checkPointsTable;
-
-	-- First find the closest distance to the sides and center of UIParent
-	if verticalLines then
-		checkPointsTable = { LEFT = { self.uiParentLeft, systemFrameLeft }, RIGHT = { self.uiParentRight, systemFrameRight }, CENTER = { self.uiParentCenterX, systemFrameCenterX } };
-	else
-		checkPointsTable = { TOP = { self.uiParentTop, systemFrameTop }, BOTTOM = { self.uiParentBottom, systemFrameBottom }, CENTER = { self.uiParentCenterY, systemFrameCenterY } };
-	end
-
-	local closestDistance, closestPoint;
-	local closestOffset = 0;
-	for point, checkPoints in pairs(checkPointsTable) do
-		local distance = abs(checkPoints[1] - checkPoints[2]);
-		if not closestDistance or distance < closestDistance then
-			closestDistance = distance;
-			closestPoint = point;
-		end
-	end
-
-	-- Then if the grid is on, see if we can find a closer grid line
 	if gridLines then
-		if verticalLines then
-			checkPointsTable = { LEFT = systemFrameLeft, RIGHT = systemFrameRight } ;
-		else
-			checkPointsTable = { TOP = systemFrameTop, BOTTOM = systemFrameBottom } ;
-		end
-
-		for _, offset in pairs(gridLines) do
-			for point, checkPoint in pairs(checkPointsTable) do
-				local distance = abs(checkPoint - offset);
+		local gridLineCheckPoints = self:GetGridLineCheckPoints(systemFrame, verticalLines);
+		for _, gridLineOffset in pairs(gridLines) do
+			for _, checkPoint in ipairs(gridLineCheckPoints) do
+				local distance = abs(gridLineOffset - checkPoint.source);
 				if distance < closestDistance then
 					-- This grid line is closer, use it instead
 					closestDistance = distance;
-					closestPoint = point;
+					closestPoint = checkPoint.point;
+					closestRelativePoint = checkPoint.relativePoint;
 
-					-- If the line is above or to the right of the system frame we need to invert the offset 
-					if point == "TOP" then
-						closestOffset = offset - self.uiParentTop;
-					elseif point == "RIGHT" then
-						closestOffset = offset - self.uiParentRight;
+					-- In some scenarios we need to invert the offset
+					if checkPoint.point == "TOP" then
+						closestOffset = gridLineOffset - self.uiParentTop;
+					elseif checkPoint.point == "RIGHT" then
+						closestOffset = gridLineOffset - self.uiParentRight;
+					elseif checkPoint.point == "CENTER" then
+						if verticalLines then
+							closestOffset = gridLineOffset - self.uiParentCenterX;
+						else
+							closestOffset = gridLineOffset - self.uiParentCenterY;
+						end
 					else
-						closestOffset = offset;
+						closestOffset = gridLineOffset;
 					end
 				end
 			end
 		end
 	end
 
-	return closestDistance, closestPoint, closestOffset;
+	return closestDistance, closestPoint, closestRelativePoint, closestOffset;
 end
 
 function EditModeMagnetismManager:IsPotentialMagneticCornerFrame(frame)
@@ -229,7 +280,7 @@ end
 
 -- Attempts to get a MagneticFrameInfoTable for a corner snap between the input frame and relativeToFrameInfo
 -- If no corner is within range will return nil
-function EditModeMagnetismManager:GetMagneticCornerFrameInfo(frame, relativeToFrameInfo)
+function EditModeMagnetismManager:GetCornerMagneticFrameInfo(frame, relativeToFrameInfo)
 	if not self:IsPotentialMagneticCornerFrame(frame) or not relativeToFrameInfo or not self:IsPotentialMagneticCornerFrame(relativeToFrameInfo.frame) then
 		return nil;
 	end
@@ -278,29 +329,25 @@ function EditModeMagnetismManager:GetMagneticCornerFrameInfo(frame, relativeToFr
 	return nil;
 end
 
--- Finds up to 3 frames or grid lines that are within magnetic range of systemFrame
-function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
+-- Returns a horizontal, a vertical, and a corner MagneticFrameInfo option.
+-- Only returns options which are within magnetism range.
+-- If no frames are in range, returns nil for that option.
+function EditModeMagnetismManager:GetMagneticFrameInfoOptions(systemFrame)
 	local eligibleFrames = self:GetEligibleMagneticFrames(systemFrame);
-	local magneticHorizontalFrame, magneticVerticalFrame;
-
-	-- Also track magnetic frames which can potentially be corner snapped to so we can look for corner snap opportunities even if
-	-- the closest horizontal or vertical frames cannot be corner snapped to (like UIParent).
-	-- We do this since we want to prioritize corner snaps when possible.
-	local potentialMagneticHorizontalCornerFrame, potentialMagneticVerticalCornerFrame;
+	local horizontalMagneticFrameInfo, verticalMagneticFrameInfo;
+	local potentialHorizontalCornerMagneticFrame, potentialVerticalCornerMagneticFrame;
 
 	local distance, point, relativePoint, offset;
 	local systemFrameLeft, systemFrameRight, systemFrameBottom, systemFrameTop = systemFrame:GetScaledSelectionSides();
 
-	-- Loop through all frames that are eligible for systemFrame to snap to horizontally and see if any are in range
+	-- Find closest in range horizontal frame
 	local horizontalYes = true;
 	for _, frame in ipairs(eligibleFrames.horizontal) do
 		if frame == UIParent then
 			local verticalLinesYes = true;
-			distance, point, offset = self:FindClosestLine(systemFrame, verticalLinesYes);
-			relativePoint = point;
+			distance, point, relativePoint, offset = self:FindClosestGridLine(systemFrame, verticalLinesYes);
 		else
-			local frameLeft, frameRight, frameBottom, frameTop = frame:GetScaledSelectionSides();
-
+			local frameLeft, frameRight = frame:GetScaledSelectionSides();
 			if frame:IsToTheLeftOfFrame(systemFrame) then
 				distance = systemFrameLeft - frameRight;
 				point = "LEFT";
@@ -314,21 +361,21 @@ function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 			offset = 0;
 		end
 
+		horizontalMagneticFrameInfo = self:CheckReplaceMagneticFrameInfo(horizontalMagneticFrameInfo, frame, point, relativePoint, distance, offset, horizontalYes);
+
 		if self:IsPotentialMagneticCornerFrame(frame) then
-			potentialMagneticHorizontalCornerFrame = self:CheckReplaceMagneticFrame(potentialMagneticHorizontalCornerFrame, frame, point, relativePoint, distance, offset, horizontalYes);
+			potentialHorizontalCornerMagneticFrame = self:CheckReplaceMagneticFrameInfo(potentialHorizontalCornerMagneticFrame, frame, point, relativePoint, distance, offset, horizontalYes);
 		end
-		magneticHorizontalFrame = self:CheckReplaceMagneticFrame(magneticHorizontalFrame, frame, point, relativePoint, distance, offset, horizontalYes);
 	end
 
-	-- Loop through all frames that are eligible for systemFrame to snap to vertically and see if any are in range
+	-- Find closest in range vertical frame
 	local horizontalNo = false;
 	for _, frame in ipairs(eligibleFrames.vertical) do
 		if frame == UIParent then
 			local verticalLinesNo = false;
-			distance, point, offset = self:FindClosestLine(systemFrame, verticalLinesNo);
-			relativePoint = point;
+			distance, point, relativePoint, offset = self:FindClosestGridLine(systemFrame, verticalLinesNo);
 		else
-			local frameLeft, frameRight, frameBottom, frameTop = frame:GetScaledSelectionSides();
+			local _, _, frameBottom, frameTop = frame:GetScaledSelectionSides();
 
 			if frame:IsAboveFrame(systemFrame) then
 				distance = frameBottom - systemFrameTop;
@@ -343,68 +390,89 @@ function EditModeMagnetismManager:FindMagneticFrames(systemFrame)
 			offset = 0;
 		end
 
+		verticalMagneticFrameInfo = self:CheckReplaceMagneticFrameInfo(verticalMagneticFrameInfo, frame, point, relativePoint, distance, offset, horizontalNo);
+
 		if self:IsPotentialMagneticCornerFrame(frame) then
-			potentialMagneticVerticalCornerFrame = self:CheckReplaceMagneticFrame(potentialMagneticVerticalCornerFrame, frame, point, relativePoint, distance, offset, horizontalNo);
+			potentialVerticalCornerMagneticFrame = self:CheckReplaceMagneticFrameInfo(potentialVerticalCornerMagneticFrame, frame, point, relativePoint, distance, offset, horizontalNo);
 		end
-		magneticVerticalFrame = self:CheckReplaceMagneticFrame(magneticVerticalFrame, frame, point, relativePoint, distance, offset, horizontalNo);
 	end
 
 	-- Check for magnetic corners
-	local magneticHorizontalCornerFrameInfo = self:GetMagneticCornerFrameInfo(systemFrame, potentialMagneticHorizontalCornerFrame);
-	local magneticVerticalCornerFrameInfo = self:GetMagneticCornerFrameInfo(systemFrame, potentialMagneticVerticalCornerFrame);
-	local magneticCornerFrame;
-	if magneticHorizontalCornerFrameInfo and (not magneticVerticalCornerFrameInfo or magneticHorizontalCornerFrameInfo.distance < magneticVerticalCornerFrameInfo.distance) then
-		magneticCornerFrame = magneticHorizontalCornerFrameInfo;
-	elseif magneticVerticalCornerFrameInfo then
-		magneticCornerFrame = magneticVerticalCornerFrameInfo;
+	local horizontalCornerMagneticFrameInfo = self:GetCornerMagneticFrameInfo(systemFrame, potentialHorizontalCornerMagneticFrame);
+	local verticalCornerMagneticFrameInfo = self:GetCornerMagneticFrameInfo(systemFrame, potentialVerticalCornerMagneticFrame);
+	local cornerMagneticFrameInfo;
+	if horizontalCornerMagneticFrameInfo and (not verticalCornerMagneticFrameInfo or horizontalCornerMagneticFrameInfo.distance < verticalCornerMagneticFrameInfo.distance) then
+		cornerMagneticFrameInfo = horizontalCornerMagneticFrameInfo;
+	elseif verticalCornerMagneticFrameInfo then
+		cornerMagneticFrameInfo = verticalCornerMagneticFrameInfo;
 	end
 
-	-- Return the magnetic horizontal and vertical frames (these can be nil if none is found)
-	return magneticHorizontalFrame, magneticVerticalFrame, magneticCornerFrame;
+	return horizontalMagneticFrameInfo, verticalMagneticFrameInfo, cornerMagneticFrameInfo;
 end
 
-function EditModeMagnetismManager:GetMagneticFrameInfo(systemFrame)
-	local magneticHorizontalFrame, magneticVerticalFrame, magneticCornerFrame = self:FindMagneticFrames(systemFrame);
+local function IsGridLineOrUIParent(frame)
+	return frame and (frame.isGridLine or frame == UIParent);
+end
 
-	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo;
-	if magneticHorizontalFrame or magneticVerticalFrame or magneticCornerFrame then
-		if magneticCornerFrame then
-			-- Prioritize snapping to the corner of another frame
-			primaryMagneticFrameInfo = magneticCornerFrame;
-		elseif magneticHorizontalFrame and magneticVerticalFrame and magneticHorizontalFrame.frame == magneticVerticalFrame.frame then
-			-- This can only happen if both magnetic frames are UIParent
-			-- If one of the frames is a center alignment (systemFrame is going to be snapped to one of UIParent's center lines) then ignore the other one
-			if magneticHorizontalFrame.point == "CENTER" then
-				primaryMagneticFrameInfo = magneticHorizontalFrame;
-			elseif magneticVerticalFrame.point == "CENTER" then
-				primaryMagneticFrameInfo = magneticVerticalFrame;
-			else
-				-- Otherwise snap to both (note that this is only safe in the UIParent case because anchor cycles can result otherwise)
-				primaryMagneticFrameInfo = magneticHorizontalFrame;
-				secondaryMagneticFrameInfo =  magneticVerticalFrame;
-			end
+-- Returns a table of frames this input frame would snap to.
+function EditModeMagnetismManager:GetMagneticFrameInfos(systemFrame)
+	local horizontalMagneticFrameInfo, verticalMagneticFrameInfo, cornerMagneticFrameInfo = self:GetMagneticFrameInfoOptions(systemFrame);
+
+	if cornerMagneticFrameInfo then
+		-- Prioritize corner snaps
+		return { cornerMagneticFrameInfo };
+	elseif horizontalMagneticFrameInfo and IsGridLineOrUIParent(horizontalMagneticFrameInfo.frame) and verticalMagneticFrameInfo and IsGridLineOrUIParent(verticalMagneticFrameInfo.frame) then
+		-- If horizontal and vertical are both grid lines or UIParent then we are gonna double snap to them
+		return { horizontalMagneticFrameInfo, verticalMagneticFrameInfo };
+	elseif horizontalMagneticFrameInfo or verticalMagneticFrameInfo then
+		-- Snap to the closest frame info between the horizontal and vertical
+		if horizontalMagneticFrameInfo and (not verticalMagneticFrameInfo or horizontalMagneticFrameInfo.distance < verticalMagneticFrameInfo.distance) then
+			return { horizontalMagneticFrameInfo };
 		else
-			-- Otherwise pick the closest magnetic frame and ignore the other
-			local useHorizontalFrame = magneticHorizontalFrame and (not magneticVerticalFrame or magneticHorizontalFrame.distance < magneticVerticalFrame.distance);
-			if useHorizontalFrame then
-				primaryMagneticFrameInfo = magneticHorizontalFrame;
-			else
-				primaryMagneticFrameInfo = magneticVerticalFrame;
-			end
+			return { verticalMagneticFrameInfo };
 		end
 	end
 
-	return primaryMagneticFrameInfo, secondaryMagneticFrameInfo;
+	return nil;
 end
 
 function EditModeMagnetismManager:ApplyMagnetism(systemFrame)
-	local primaryMagneticFrameInfo, secondaryMagneticFrameInfo = self:GetMagneticFrameInfo(systemFrame);
-	if primaryMagneticFrameInfo then
+	local magneticFrameInfos = self:GetMagneticFrameInfos(systemFrame);
+	if magneticFrameInfos then
 		systemFrame:ClearAllPoints();
 
-		systemFrame:SnapToFrame(primaryMagneticFrameInfo);
-		if secondaryMagneticFrameInfo then
-			systemFrame:SnapToFrame(secondaryMagneticFrameInfo);
+		for index, magneticFrameInfo in ipairs(magneticFrameInfos) do
+			systemFrame:SnapToFrame(magneticFrameInfo);
 		end
 	end
+end
+
+-- Returns the positions that preview lines should anchor given a magnetic frame info.
+-- This is specifically useful for corner snaps which have multiple preview lines we want to show.
+function EditModeMagnetismManager:GetPreviewLineAnchors(magneticFrameInfo)
+	local relativePoint = magneticFrameInfo.relativePoint;
+
+	local anchors = {};
+	if string.find(relativePoint, "CENTER") then
+		if magneticFrameInfo.isHorizontal then
+			table.insert(anchors, "CenterVertical");
+		else
+			table.insert(anchors, "CenterHorizontal");
+		end
+	else
+		if string.find(relativePoint, "TOP") then
+			table.insert(anchors, "Top");
+		end
+		if string.find(relativePoint, "BOTTOM") then
+			table.insert(anchors, "Bottom");
+		end
+		if string.find(relativePoint, "LEFT") then
+			table.insert(anchors, "Left");
+		end
+		if string.find(relativePoint, "RIGHT") then
+			table.insert(anchors, "Right");
+		end
+	end
+
+	return anchors;
 end

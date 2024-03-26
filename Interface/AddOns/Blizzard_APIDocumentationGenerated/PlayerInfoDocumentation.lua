@@ -253,6 +253,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsSelfFoundActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTradingPostAvailable",
 			Type = "Function",
 

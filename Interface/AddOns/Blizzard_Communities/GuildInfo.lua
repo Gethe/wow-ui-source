@@ -127,7 +127,7 @@ end
 
 function CommunitiesGuildTextEditFrame_OnAccept()
 	if ( CommunitiesGuildTextEditFrame.type == "motd" ) then
-		GuildSetMOTD(CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText());
+		C_GuildInfo.SetMOTD(CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText());
 	elseif ( CommunitiesGuildTextEditFrame.type == "info" ) then
 		local infoText = CommunitiesGuildTextEditFrame.Container.ScrollFrame.EditBox:GetText();
 		SetGuildInfoText(infoText);

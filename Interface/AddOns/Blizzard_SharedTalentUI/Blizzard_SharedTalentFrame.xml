@@ -83,8 +83,8 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="CommitSpinner" inherits="OutlineLoadingSpinnerTemplate" frameLevel="4001" hidden="true">
-				<Size x="200" y="200"/>
+			<Frame parentKey="CommitSpinner" inherits="SpinnerTemplate" frameLevel="4001" hidden="true">
+				<Size x="110" y="110"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.DisabledOverlay"/>
 				</Anchors>

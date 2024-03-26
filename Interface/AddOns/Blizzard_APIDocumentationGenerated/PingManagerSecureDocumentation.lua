@@ -24,24 +24,6 @@ local PingManagerSecure =
 			},
 		},
 		{
-			Name = "GetCooldownInfo",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "cooldownInfo", Type = "PingCooldownInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetDefaultPingOptions",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "pingTypes", Type = "table", InnerType = "PingTypeInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "GetTargetPingReceiver",
 			Type = "Function",
 
@@ -78,20 +60,6 @@ local PingManagerSecure =
 			Returns =
 			{
 				{ Name = "result", Type = "ContextualWorldPingResult", Nilable = false },
-			},
-		},
-		{
-			Name = "GetTextureKitForType",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "type", Type = "PingSubjectType", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "uiTextureKitID", Type = "textureKit", Nilable = false },
 			},
 		},
 		{

@@ -12,12 +12,9 @@ function PlayerFrame_OnLoad(self)
 						 healthBar.MyHealPredictionBar,
 						 healthBar.OtherHealPredictionBar,
 						 healthBar.TotalAbsorbBar,
-						 healthBar.TotalAbsorbBarOverlay,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
 						 healthBar.HealAbsorbBar,
-						 healthBar.HealAbsorbBarLeftShadow,
-						 healthBar.HealAbsorbBarRightShadow,
 						 manaBar.ManaCostPredictionBar);
 
 	self.statusCounter = 0;
@@ -39,7 +36,7 @@ function PlayerFrame_OnLoad(self)
 	manaBarTexture:SetTexelSnappingBias(0);
 	manaBarTexture:SetSnapToPixelGrid(false);
 
-	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
+	CombatFeedback_Initialize(self, PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HitIndicator.HitText, 30);
 	PlayerFrame_Update();
 
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -281,13 +278,20 @@ function PlayerFrame_CanPlayPVPUpdateSound()
 end
 
 function PlayerFrame_UpdatePvPStatus()
-	local factionGroup, factionName = UnitFactionGroup("player");
-
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	local pvpIcon = playerFrameTargetContextual.PVPIcon;
 	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
 	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
-	
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.UnitFramePvPContextual) then
+		prestigePortrait:Hide();
+		prestigeBadge:Hide();
+		pvpIcon:Hide();
+		PlayerPVPTimerText:Hide();
+		PlayerPVPTimerText.timeLeft = nil;
+		return;
+	end
+
+	local factionGroup, factionName = UnitFactionGroup("player");
 	local activePvPBadgeContainer = nil;
 
 	if (UnitIsPVPFreeForAll("player")) then
@@ -379,15 +383,14 @@ function PlayerFrame_UpdateRolesAssigned()
 	-- Only show role icons when in instanced content areas (raids, dungeons, battleground, etc.)
 	local _, instanceType = GetInstanceInfo();
 	if instanceType ~= "none" then
-		local role = UnitGroupRolesAssigned("player");
-
-		if (role == "TANK") then
+		local role = UnitGroupRolesAssignedEnum("player");
+		if (role == Enum.LFGRole.Tank) then
 			roleIcon:SetAtlas("roleicon-tiny-tank", TextureKitConstants.IgnoreAtlasSize);
 			hasIcon = true;
-		elseif (role == "HEALER") then
+		elseif (role == Enum.LFGRole.Healer) then
 			roleIcon:SetAtlas("roleicon-tiny-healer", TextureKitConstants.IgnoreAtlasSize);
 			hasIcon = true;
-		elseif (role == "DAMAGER") then
+		elseif (role == Enum.LFGRole.Damage) then
 			roleIcon:SetAtlas("roleicon-tiny-dps", TextureKitConstants.IgnoreAtlasSize);
 			hasIcon = true;
 		end
@@ -618,12 +621,22 @@ function PlayerFrame_ToPlayerArt(self)
 
 	-- Swap frame textures
 	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Hide();
-	PlayerFrame.PlayerFrameContainer.FrameTexture:SetShown(alternatePowerBar == nil);
-	PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:SetShown(alternatePowerBar ~= nil);
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then
+		PlayerFrame.PlayerFrameContainer.FrameTexture:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton");
+		PlayerFrame.PlayerFrameContainer.FrameTexture:Show();
+		PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:Hide();
+	else
+		PlayerFrame.PlayerFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn");
+		PlayerFrame.PlayerFrameContainer.FrameTexture:SetShown(alternatePowerBar == nil);
+		PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:SetShown(alternatePowerBar ~= nil);
+	end
 
 	-- Update Flash and Status Textures
 	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
-	if alternatePowerBar then
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then
+		frameFlash:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-incombat", TextureKitConstants.UseAtlasSize);
+		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1, 0.5);
+	elseif alternatePowerBar then
 		frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-ClassResource-InCombat", TextureKitConstants.UseAtlasSize);
 		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -2, 0.5);
 	else
@@ -635,16 +648,20 @@ function PlayerFrame_ToPlayerArt(self)
 	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
 	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
 
-	-- Update health bar
-	if UNIT_FRAME_SHOW_HEALTH_ONLY then
-		healthBar:SetHeight(32);
-	else 
-		healthBar:SetHeight(20);
-	end
 	healthBar:SetWidth(124);
-	healthBar:SetPoint("TOPLEFT", 85, -40);
+	healthBar:SetPoint("TOPLEFT", 85, -41);
 
 	healthBar.HealthBarMask:SetPoint("TOPLEFT", healthBar.HealthBarMask:GetParent(), "TOPLEFT", -2, 6);
+
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then
+		healthBar:SetHeight(32);
+		healthBar.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-bar-health-mask");
+		healthBar.HealthBarMask:SetHeight(37);
+	else
+		healthBar:SetHeight(19);
+		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask");
+		healthBar.HealthBarMask:SetHeight(31);
+	end
 
 	-- Update mana bar
 	manaBar:SetHeight(10);

@@ -361,9 +361,9 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, frameHeight, n
 	if primaryStat and primaryStat ~= 0 then
 		self.Description:SetText(description.."|n"..SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));
 	end
-	local role = GetSpecializationRole(index, false, false);
-	self.RoleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
-	self.RoleName:SetText(_G[role]);
+	local role = GetSpecializationRoleEnum(index, false, false);
+	self.RoleIcon:SetAtlas(GetMicroIconForRoleEnum(role), TextureKitConstants.IgnoreAtlasSize);
+	self.RoleName:SetText(GetLFGStringFromEnum(role));
 
 	-- set positions
 	local length = (self.RoleIcon:GetWidth() + self.RoleName:GetWidth() + ROLE_ICON_TEXT_MARGIN)/2;

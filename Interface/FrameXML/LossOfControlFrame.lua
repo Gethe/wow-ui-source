@@ -140,7 +140,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, data)
 		if ( locType == "SCHOOL_INTERRUPT" ) then
 			-- Replace text with school-specific lockout text
 			if(lockoutSchool and lockoutSchool ~= 0) then
-				text = string.format(LOSS_OF_CONTROL_DISPLAY_INTERRUPT_SCHOOL, GetSchoolString(lockoutSchool));
+				text = string.format(LOSS_OF_CONTROL_DISPLAY_INTERRUPT_SCHOOL, C_Spell.GetSchoolString(lockoutSchool));
 			end
 		end
 		self.AbilityName:SetText(text);

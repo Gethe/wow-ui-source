@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI.xsd">
+	<Script file="FloatingChatFrameMenus.lua"/>
+
+	<Frame name="EmoteMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
+		<Scripts>
+			<OnLoad inherit="prepend" function="EmoteMenu_OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="LanguageMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu" mixin="LanguageMenuMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	<Frame name="VoiceMacroMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="ChatMenu">
+		<Scripts>
+			<OnLoad inherit="prepend" function="VoiceMacroMenu_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

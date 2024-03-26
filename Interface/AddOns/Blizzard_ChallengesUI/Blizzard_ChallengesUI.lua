@@ -722,7 +722,7 @@ function ChallengesKeystoneSlotMixin:OnEvent(event, ...)
 	if (event == "CHALLENGE_MODE_KEYSTONE_SLOTTED") then
 		local itemID= ...;
 
-		local texture = select(10, GetItemInfo(itemID));
+		local texture = select(10, C_Item.GetItemInfo(itemID));
 
 		SetPortraitToTexture(self.Texture, texture);
 
@@ -841,6 +841,13 @@ function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
 			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels, isMapRecord = isMapRecord, isAffixRecord = isAffixRecord, primaryAffix = primaryAffix, isEligibleForScore = isEligibleForScore, upgradeMembers = upgradeMembers });
 		end
     end
+end
+
+function ChallengeModeCompleteBannerMixin:OnMouseDown(button)
+	if (button == "RightButton") then
+		self:StopBanner();
+		TopBannerManager_BannerFinished(self);
+	end
 end
 
 local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
@@ -966,10 +973,12 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
 
     local sortedUnitTokens = {};
 
+	local noRole = Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE;
+
     for i = 1, #self.unitTokens do
         if (UnitExists(self.unitTokens[i])) then
-            local role = UnitGroupRolesAssigned(self.unitTokens[i]);
-            if (role == "DAMAGER" or role == "NONE") then
+            local role = UnitGroupRolesAssignedEnum(self.unitTokens[i]);
+            if (role == Enum.LFGRole.Damage or role == noRole) then
                 if (not unitRoleMap[role]) then
                     unitRoleMap[role] = {};
                 end
@@ -980,23 +989,23 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
         end
     end
 
-    if (unitRoleMap["TANK"]) then
-        tinsert(sortedUnitTokens, unitRoleMap["TANK"]);
+    if (unitRoleMap[Enum.LFGRole.Tank]) then
+        tinsert(sortedUnitTokens, unitRoleMap[Enum.LFGRole.Tank]);
     end
 
-    if (unitRoleMap["HEALER"]) then
-        tinsert(sortedUnitTokens, unitRoleMap["HEALER"]);
+    if (unitRoleMap[Enum.LFGRole.Healer]) then
+        tinsert(sortedUnitTokens, unitRoleMap[Enum.LFGRole.Healer]);
     end
 
-    if (unitRoleMap["DAMAGER"]) then
-        for i = 1, #unitRoleMap["DAMAGER"] do
-            tinsert(sortedUnitTokens, unitRoleMap["DAMAGER"][i]);
+    if (unitRoleMap[Enum.LFGRole.Damage]) then
+        for i = 1, #unitRoleMap[Enum.LFGRole.Damage] do
+            tinsert(sortedUnitTokens, unitRoleMap[Enum.LFGRole.Damage][i]);
         end
     end
 
-    if (unitRoleMap["NONE"]) then
-        for i = 1, #unitRoleMap["NONE"] do
-            tinsert(sortedUnitTokens, unitRoleMap["NONE"][i]);
+    if (unitRoleMap[noRole]) then
+        for i = 1, #unitRoleMap[noRole] do
+            tinsert(sortedUnitTokens, unitRoleMap[noRole][i]);
         end
     end
 
@@ -1043,9 +1052,9 @@ function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
     local classColorStr = RAID_CLASS_COLORS[classFileName].colorStr;
     self.Name:SetText(("|c%s%s|r"):format(classColorStr, name));
 
-    local role = UnitGroupRolesAssigned(unitToken);
-    if ( role == "TANK" or role == "HEALER" or role == "DAMAGER" ) then
-		self.RoleIcon:SetAtlas(GetMicroIconForRole(role), TextureKitConstants.IgnoreAtlasSize);
+    local role = UnitGroupRolesAssignedEnum(unitToken);
+    if ( role == Enum.LFGRole.Tank or role == Enum.LFGRole.Healer or role == Enum.LFGRole.Damage ) then
+		self.RoleIcon:SetAtlas(GetMicroIconForRoleEnum(role), TextureKitConstants.IgnoreAtlasSize);
 		self.RoleIcon:Show();
 	else
 		self.RoleIcon:Hide();

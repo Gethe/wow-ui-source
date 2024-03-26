@@ -145,7 +145,7 @@ local function PickupAny(kind, target, detail, ...)
 	elseif kind == 'inventory' then
 		PickupInventoryItem(target)
 	elseif kind == 'item' then
-		PickupItem(target)
+		C_Item.PickupItem(target)
 	elseif kind == 'macro' then
 		PickupMacro(target)
 	elseif kind == 'merchant' then

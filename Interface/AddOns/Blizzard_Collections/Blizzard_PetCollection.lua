@@ -902,7 +902,9 @@ function PetJournal_OnSearchTextChanged(self)
 	C_PetJournal.SetSearchFilter(self:GetText());
 end
 
-function PetJournalListItem_OnClick(self, button)
+PetJournalListItemMixin = {}
+
+function PetJournalListItemMixin:OnClick(button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local id = self.petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
@@ -925,18 +927,42 @@ function PetJournalListItem_OnClick(self, button)
 	end
 end
 
-function PetJournalDragButton_OnEnter(self)
+function PetJournalListItemMixin:OnEnter()
+	if ( self.petID ) then
+		C_PetJournal.SetHoveredBattlePet(self.petID);
+	end
+end
+
+function PetJournalListItemMixin:OnLeave()
+	C_PetJournal.ClearHoveredBattlePet();
+end
+
+function PetJournalListItemMixin:OnDragStart()
+	PetJournalDragButtonMixin.OnDragStart(self.dragButton);
+end
+
+PetJournalDragButtonMixin = {}
+
+function PetJournalDragButtonMixin:OnEnter()
 	local petID = self:GetParent().petID;
 	if (not petID) then
 		return;
 	end
+
+	C_PetJournal.SetHoveredBattlePet(petID);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetCompanionPet(petID);
 	GameTooltip:Show();
 end
 
-function PetJournalDragButton_OnClick(self, button)
+function PetJournalDragButtonMixin:OnLeave()
+	C_PetJournal.ClearHoveredBattlePet();
+
+	GameTooltip_Hide();
+end
+
+function PetJournalDragButtonMixin:OnClick(button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local id = self:GetParent().petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
@@ -956,30 +982,11 @@ function PetJournalDragButton_OnClick(self, button)
 		PetJournal_UpdatePetLoadOut();
 		ClearCursor();
 	else
-		PetJournalDragButton_OnDragStart(self);
+		self:OnDragStart();
 	end
 end
 
-function PetJournalPetLoadoutDragButton_OnClick(self, button)
-	local loadout = self:GetParent();
-	if (button == "RightButton" and loadout.petID) then
-		PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
-		return;
-	end
-	if ( IsModifiedClick("CHATLINK") ) then
-		local id = self:GetParent().petID;
-		if ( id and MacroFrame and MacroFrame:IsShown() ) then
-			-- Macros are not yet supported
-		elseif (id) then
-			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
-		end
-	else
-		PetJournalDragButton_OnDragStart(self);
-	end
-end
-
-function PetJournalDragButton_OnDragStart(self)
+function PetJournalDragButtonMixin:OnDragStart()
 	if (not self:GetParent().petID) then
 		return;
 	end
@@ -998,13 +1005,49 @@ function PetJournalDragButton_OnDragStart(self)
 	end
 end
 
-function PetJournalDragButton_OnEvent(self, event, ...)
+function PetJournalDragButtonMixin:OnEvent(event, ...)
 	if ( event == "SPELL_UPDATE_COOLDOWN" and self:GetParent().petID) then
 		local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(self:GetParent().petID);
 		if (start) then
 			CooldownFrame_Set(self.Cooldown, start, duration, enable);
 		end
 	end
+end
+
+PetJournalLoadoutDragButtonMixin = CreateFromMixins(PetJournalDragButtonMixin);
+
+function PetJournalLoadoutDragButtonMixin:OnClick(button)
+	local loadout = self:GetParent();
+	if (button == "RightButton" and loadout.petID) then
+		PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
+		return;
+	end
+	if ( IsModifiedClick("CHATLINK") ) then
+		local id = self:GetParent().petID;
+		if ( id and MacroFrame and MacroFrame:IsShown() ) then
+			-- Macros are not yet supported
+		elseif (id) then
+			local petLink = C_PetJournal.GetBattlePetLink(id);
+			ChatEdit_InsertLink(petLink);
+		end
+	else
+		PetJournalDragButtonMixin.OnDragStart(self);
+	end
+end
+
+function PetJournalLoadoutDragButtonMixin:OnEnter()
+	local petID = self:GetParent().petID;
+	if (not petID) then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetCompanionPet(petID);
+	GameTooltip:Show();
+end
+
+function PetJournalLoadoutDragButtonMixin:OnLeave()
+	GameTooltip_Hide();
 end
 
 function PetJournal_ShowPetDropdown(index, anchorTo, offsetX, offsetY, petID)
@@ -1105,7 +1148,7 @@ function PetJournalPetCard_OnClick(self, button)
 			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0, PetJournalPetCard.petID);
 		end
 	else
-		PetJournalDragButton_OnDragStart(self);
+		PetJournalDragButtonMixin.OnDragStart(self);
 	end
 end
 

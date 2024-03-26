@@ -968,8 +968,10 @@ function PTR_IssueReporter.CreateMainView()
         PTR_IssueReporter:ClearAllPoints()
         if (Blizzard_PTRIssueReporter_Saved.x and Blizzard_PTRIssueReporter_Saved.y) then
             PTR_IssueReporter:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", Blizzard_PTRIssueReporter_Saved.x, Blizzard_PTRIssueReporter_Saved.y)
-        else
-            PTR_IssueReporter:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, UIParent:GetHeight()*0.25)
+		elseif Kiosk.IsEnabled() then
+            PTR_IssueReporter:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 30, 350);
+		else
+           PTR_IssueReporter:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, UIParent:GetHeight()*0.25)
         end
     end    
     PTR_IssueReporter:SetScript("OnShow", SetFrameLocation)

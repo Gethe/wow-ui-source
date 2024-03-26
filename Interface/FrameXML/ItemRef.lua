@@ -129,8 +129,10 @@ function SetItemRef(link, text, button, chatFrame)
 		GMChatStatusFrame_OnClick();
 		return;
 	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		local _, level, levelUpType, arg1 = strsplit(":", link);
-		EventToastManagerSideDisplay:DisplayToastsByLevel(level);
+		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ChatLinkLevelToasts) then
+			local _, level, levelUpType, arg1 = strsplit(":", link);
+			EventToastManagerSideDisplay:DisplayToastsByLevel(level);
+		end
 		return;
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
 		TogglePVPUI();
@@ -296,7 +298,7 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			local name, link = GetItemInfo(text);
+			local name, link = C_Item.GetItemInfo(text);
 			if ChatEdit_InsertLink(link) then
 				return;
 			end
@@ -519,19 +521,6 @@ function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 
 	local linkDisplayText = ("[%s]"):format(name);
 	return ("|cff4e96f7%s|r"):format(LinkUtil.FormatLink("battlePetAbil", linkDisplayText, abilityID, maxHealth or 100, power or 0, speed or 0));
-end
-
-function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, chatTarget)
-	-- Use simplified link if possible
-	if lineID or chatType or chatTarget then
-		return LinkUtil.FormatLink("player", linkDisplayText, characterName, lineID or 0, chatType or 0, chatTarget or "");
-	else
-		return LinkUtil.FormatLink("player", linkDisplayText, characterName);
-	end
-end
-
-function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
-	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
 end
 
 function GetGMLink(gmName, linkDisplayText, lineID)

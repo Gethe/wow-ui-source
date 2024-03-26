@@ -11,15 +11,11 @@ function CollectionsJournal_GetTab(self)
 end
 
 local function ShouldShowHeirloomTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or Kiosk.IsEnabled() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) then
 		return false;
 	end
 
 	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 		return false;
 	end
 
@@ -27,15 +23,11 @@ local function ShouldShowHeirloomTabHelpTip()
 end
 
 local function ShouldShowWardrobeTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) or Kiosk.IsEnabled() then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) then
 		return false;
 	end
 
 	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 		return false;
 	end
 

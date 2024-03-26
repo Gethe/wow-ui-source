@@ -86,6 +86,16 @@ local LootHistory =
 			},
 		},
 		{
+			Name = "LootHistoryOneHundredRoll",
+			Type = "Event",
+			LiteralName = "LOOT_HISTORY_ONE_HUNDRED_ROLL",
+			Payload =
+			{
+				{ Name = "encounterID", Type = "number", Nilable = false },
+				{ Name = "lootListID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "LootHistoryUpdateDrop",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_UPDATE_DROP",

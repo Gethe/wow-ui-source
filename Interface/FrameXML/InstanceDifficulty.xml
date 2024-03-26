@@ -22,6 +22,15 @@ UI_shared.xsd">
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="NormalTexture" atlas="ui-hud-minimap-guildbanner-normal-large" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="0" type="number"/>
+								<KeyValue key="rightPadding" value="1" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="7"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="HeroicTexture" atlas="ui-hud-minimap-guildbanner-heroic-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="1" type="number"/>
@@ -99,6 +108,14 @@ UI_shared.xsd">
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
+								<Texture parentKey="NormalTexture" atlas="ui-hud-minimap-guildbanner-normal-mini" useAtlasSize="true">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="0" type="number"/>
+									</KeyValues>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="8" y="7"/>
+									</Anchors>
+								</Texture>
 								<Texture parentKey="HeroicTexture" atlas="ui-hud-minimap-guildbanner-heroic-mini" useAtlasSize="true">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="1" type="number"/>
@@ -170,6 +187,8 @@ UI_shared.xsd">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

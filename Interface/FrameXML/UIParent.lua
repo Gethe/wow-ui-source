@@ -1,10 +1,6 @@
 TOOLTIP_UPDATE_TIME = 0.2;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
--- Alpha animation stuff
-FADEFRAMES = {};
-FLASHFRAMES = {};
-
 -- Pulsing stuff
 PULSEBUTTONS = {};
 
@@ -30,6 +26,41 @@ local FRAME_POSITION_KEYS = {
 	doublewide = 4,
 	fullscreen = 5,
 };
+
+--[[ 
+UIPanelWindow attributes
+======================================================
+area: [string]  --  Desired area of UIParent the frame should show in. Depending on chosen area and other settings, where a frame actually shows can vary when multiple frames are open.
+	full: Take up the full screen. Other non-full frames can't show with or replace a fullscreen frame.
+	center: Take up center area. Can't be shown with any other frames in the left/center/right areas, but may be replaced by other frames if allowOtherPanels is 1.
+	left: Take leftmost area of the screen. If pushable, may be shifted to center or right if other pushable frames are shown.
+	doublewide: Take up left and center areas. Can be shown with another single-area frame if it's pushable.
+centerFrameSkipAnchoring: [bool]  --  If true on a frame using area "center," skips updating the frame's anchors when positioned
+neverAllowOtherPanels: [0,1]  --  If 1 on a frame using area "center" or "full", prevents trying to show any other panel while that frame is shown
+allowOtherPanels: [0,1]   -- (default 0 for "center" frames, otherwise 1)
+						  -- If 1 on non center or full area frames, allows other panels to be shown in other areas at the same time.
+						  -- If 1 on center frames, allows other frames to replace this one when opened. Also allows bags to be opened while this frame is open.
+pushable: [0,1,..n]  --  (attribute used by frames using areas left/doublewide)
+					 --  If 0, frame is not pushable to other areas; exact behavior is complicated. (Needs to be investigated to figure out what's actually intentional behavior vs legacy bugs)
+					 --  If > 0, frame can be pushed to other areas than area attribute when other frames are also open.
+					 --  Pushable frames are sorted by their pushable values, lower to higher, left to right.
+					 --  Equal pushable value frames are sorted by how recently they were shown, oldest to newest, left to right.
+whileDead: [0,1]  --  If 0, frame cannot be opened while the player is dead. 
+ignoreControlLost: [bool]  --  If true, do not close the frame when player loses control of character (ie when feared).
+showFailedFunc: [func]  --  Function to call when attempting to show the frame via ShowUIPanel fails.
+width: [number]  --  Override width to use instead of the frame's actual width for layout/position calculations.
+height: [number]  --  Override height to use instead of the frame's actual height for layout/position calculations.
+extraWidth: [number]  --  Extra buffer width to add when checking frame's width for layout/position calculations. Is added to 'width' if also set, otherwise is added to frame's actual width.
+extraHeight: [number]  --  Extra buffer height to add when checking frame's height for layout/position calculations. Is added to 'height' if also set, otherwise is added to frame's actual height.
+xoffset: [number]  --  X offset to add when positioning the frame within the UI parent.
+yoffset: [number]  --  Y offset to add when positioning the frame within the UI parent. Actual y position is also clamped based on minYOffset & bottomClampOverride.
+minYOffset: [number]  --  (default -10) Custom minimum amount of y offset the frame should have. Since Y offsets from the top are negative, this is numerically a "max" (ex: -20 is "more" offset than -10).
+bottomClampOverride: [number]  --  (default 140) Custom bottom-most edge that a frame can be positioned to reach. Frame's y offset is calculated by taking this + minYOffset into account.
+maximizePoint: [string]  --  [WARNING: Don't use this; this maximize/restore flow is very one-off specific to the World Map] Point that's passed to SetPoint if the frame is maximized via MaximizeUIPanel.
+checkFit: [0,1]  --  If 1, frame is scaled down if needed to fit within the current size of the UIParent. This can help large frames stay visible on varying screen sizes/UI scales.
+checkFitExtraWidth: [number]  --  (default 20) Extra buffer width added when checking the frame's current size when rescaling for checkFit.
+checkFitExtraHeight: [number]  --  (default 20) Extra buffer height added when checking the frame's current size when rescaling for checkFit. 
+]]--
 
 
 -- Per panel settings
@@ -210,7 +241,7 @@ UIMenus = {
 
 ITEM_QUALITY_COLORS = { };
 for i = 0, Enum.ItemQualityMeta.NumValues - 1 do
-	local r, g, b = GetItemQualityColor(i);
+	local r, g, b = C_Item.GetItemQualityColor(i);
 	local color = CreateColor(r, g, b, 1);
 	ITEM_QUALITY_COLORS[i] = { r = r, g = g, b = b, hex = color:GenerateHexColorMarkup(), color = color };
 end
@@ -361,7 +392,6 @@ function UIParent_OnLoad(self)
 
 	-- Events for PerksProgram Handling
 	self:RegisterEvent("PERKS_PROGRAM_OPEN");
-	self:RegisterEvent("PERKS_PROGRAM_CLOSE");
 	self:RegisterEvent("PERKS_PROGRAM_DISABLED");
 
 	--Events for GMChatUI
@@ -899,6 +929,10 @@ function ShowMacroFrame()
 		return;
 	end
 
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.Macros) then
+		return;
+	end
+
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
 		MacroFrame_Show();
@@ -1166,7 +1200,7 @@ COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
 
 function ToggleCollectionsJournal(tabIndex)
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -1180,7 +1214,7 @@ function ToggleCollectionsJournal(tabIndex)
 end
 
 function SetCollectionsJournalShown(shown, tabIndex)
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -1200,7 +1234,7 @@ function SetCollectionsJournalShown(shown, tabIndex)
 end
 
 function ToggleToyCollection(autoPageToCollectedToyID)
-	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+	if DISALLOW_FRAME_TOGGLING then
 		return;
 	end
 
@@ -1285,24 +1319,33 @@ function ToggleCovenantRenown()
 	ToggleFrame(CovenantRenownFrame);
 end
 
-function ToggleMajorFactionRenown()
+function ToggleMajorFactionRenown(majorFactionID)
 	if (not MajorFactionRenownFrame) then
 		MajorFactions_LoadUI();
 	end
-	ToggleFrame(MajorFactionRenownFrame);
+
+	if not majorFactionID then
+		ToggleFrame(MajorFactionRenownFrame);
+		return;
+	end
+
+	if MajorFactionRenownFrame:IsShown() then
+		if MajorFactionRenownFrame:GetCurrentFactionID() == majorFactionID then
+			HideUIPanel(MajorFactionRenownFrame);
+			return;
+		end
+
+		HideUIPanel(MajorFactionRenownFrame);
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+		ShowUIPanel(MajorFactionRenownFrame);
+	else
+		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
+		ToggleMajorFactionRenown();
+	end
 end
 
 function ToggleExpansionLandingPage()
-	if(TRAIT_SYSTEM_OVERRIDE_MAP) then
-		GenericTraitUI_LoadUI();
-
-		local currentMapID = select(8, GetInstanceInfo());
-		GenericTraitFrame:SetSystemID(TRAIT_SYSTEM_OVERRIDE_MAP[currentMapID]);
-
-		ToggleFrame(GenericTraitFrame);
-	else
-		ToggleFrame(ExpansionLandingPage);
-	end
+	ToggleFrame(ExpansionLandingPage);
 end
 
 
@@ -1531,11 +1574,11 @@ function UIParent_OnEvent(self, event, ...)
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
 		end
-                if (not IGNORE_DEATH_REQUIREMENTS) then
-		if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
-			StaticPopup_Show("DEATH");
+		if (C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost)) then
+			if ( (GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1) and (not ResurrectGetOfferer()) ) then
+				StaticPopup_Show("DEATH");
+			end
 		end
-                end
 	elseif ( event == "SELF_RES_SPELL_CHANGED" ) then
 		if ( StaticPopup_Visible("DEATH") ) then
 			StaticPopup_Show("DEATH"); --If we're already showing a death prompt, we should refresh it.
@@ -1545,7 +1588,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("RESURRECT");
-		if ( UnitIsGhost("player") ) then
+		if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) and UnitIsGhost("player") ) then
 			GhostFrame:Show();
 		else
 			GhostFrame:Hide();
@@ -1741,15 +1784,15 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 
-	    if (not IGNORE_DEATH_REQUIREMENTS) then
-		if ( UnitIsGhost("player") ) then
-			GhostFrame:Show();
-		else
-			GhostFrame:Hide();
-		end
-		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
-			StaticPopup_Show("DEATH");
-		end
+	    if ( C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.ReleaseSpiritGhost) ) then
+			if ( UnitIsGhost("player") ) then
+				GhostFrame:Show();
+			else
+				GhostFrame:Hide();
+			end
+			if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
+				StaticPopup_Show("DEATH");
+			end
         end
 
 		local alreadyShowingSummonPopup = StaticPopup_Visible("CONFIRM_SUMMON_STARTING_AREA") or StaticPopup_Visible("CONFIRM_SUMMON_SCENARIO") or StaticPopup_Visible("CONFIRM_SUMMON")
@@ -2150,10 +2193,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		ShowUIPanel(PerksProgramFrame);
-	elseif ( event == "PERKS_PROGRAM_CLOSE" ) then
-		if ( PerksProgramFrame and PerksProgramFrame:IsVisible() ) then
-			HideUIPanel(PerksProgramFrame);
-		end
 	elseif ( event == "PERKS_PROGRAM_DISABLED" ) then
 		StaticPopup_Show("PERKS_PROGRAM_DISABLED");
 
@@ -2339,7 +2378,7 @@ function UIParent_OnEvent(self, event, ...)
 		TopBannerManager_LoadingScreenDisabled()
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
 		local info = ChatTypeInfo["SYSTEM"];
-		local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+		local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 		if (itemName) then
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 		else
@@ -2349,7 +2388,7 @@ function UIParent_OnEvent(self, event, ...)
 		local itemID = ...;
 		if (itemID == WOW_TOKEN_ITEM_ID) then
 			local info = ChatTypeInfo["SYSTEM"];
-			local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+			local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);
 			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
 			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
 		end
@@ -2708,11 +2747,11 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 	local centerFrame = self:GetUIPanel("center");
 	local centerArea, centerPushable;
 	if ( centerFrame ) then
-		if ( GetUIPanelAttribute(centerFrame, "allowOtherPanels") ) then
+		centerArea = GetUIPanelAttribute(centerFrame, "area");
+		if ( centerArea == "center" and GetUIPanelAttribute(centerFrame, "allowOtherPanels") ) then
 			HideUIPanel(centerFrame);
 			centerFrame = nil;
 		else
-			centerArea = GetUIPanelAttribute(centerFrame, "area");
 			if ( centerArea and (centerArea == "center") and (frameArea ~= "center") and (frameArea ~= "full") ) then
 				if ( force ) then
 					self:SetUIPanel("center", nil, 1);
@@ -3112,7 +3151,7 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local yPos = ClampUIPanelY(frame, yOff + topOffset, minYOffset, bottomClampOverride);
 			xOff = xOff + xSpacing; -- add separating space
 			frame:ClearAllPoints();
-			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
+			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset + xOff, yPos);
 		else
 			if ( frame == currentFrame ) then
 				frame = GetUIPanel("center") or GetUIPanel("left") or GetUIPanel("doublewide");
@@ -3169,7 +3208,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		MainMenuBar:SetScale(barScale);
 	end
 
-	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight();
+	local customOverlayHeight = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.CustomActionBarOverlayHeightOffset);
+	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
 	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;
 	UIParentBottomManagedFrameContainer:ClearAllPoints();
@@ -3314,8 +3354,10 @@ function ClampUIPanelY(frame, yOffset, minYOffset, bottomClampOverride)
 	if (bottomPos < bottomClamp) then
 		yOffset = yOffset + (bottomClamp - bottomPos);
 	end
-	if (yOffset > -10) then
-		yOffset = minYOffset or -10;
+	-- The minimum amount the y can be offset (mathematically speaking it's a max since y offsets from the top are negative)
+	local minimumOffset = minYOffset or -10;
+	if (yOffset > minimumOffset) then
+		yOffset = minimumOffset;
 	end
 	return yOffset;
 end
@@ -3592,270 +3634,6 @@ function RecentTimeDate(year, month, day, hour)
 		lastOnline = format(LASTONLINE_YEARS, year);
 	end
 	return lastOnline;
-end
-
-
--- Frame fading and flashing --
-
-local frameFadeManager = CreateFrame("FRAME");
-
--- Generic fade function
-function UIFrameFade(frame, fadeInfo)
-	if (not frame) then
-		return;
-	end
-	if ( not fadeInfo.mode ) then
-		fadeInfo.mode = "IN";
-	end
-	local alpha;
-	if ( fadeInfo.mode == "IN" ) then
-		if ( not fadeInfo.startAlpha ) then
-			fadeInfo.startAlpha = 0;
-		end
-		if ( not fadeInfo.endAlpha ) then
-			fadeInfo.endAlpha = 1.0;
-		end
-		alpha = 0;
-	elseif ( fadeInfo.mode == "OUT" ) then
-		if ( not fadeInfo.startAlpha ) then
-			fadeInfo.startAlpha = 1.0;
-		end
-		if ( not fadeInfo.endAlpha ) then
-			fadeInfo.endAlpha = 0;
-		end
-		alpha = 1.0;
-	end
-	frame:SetAlpha(fadeInfo.startAlpha);
-
-	frame.fadeInfo = fadeInfo;
-	frame:Show();
-
-	local index = 1;
-	while FADEFRAMES[index] do
-		-- If frame is already set to fade then return
-		if ( FADEFRAMES[index] == frame ) then
-			return;
-		end
-		index = index + 1;
-	end
-	tinsert(FADEFRAMES, frame);
-	frameFadeManager:SetScript("OnUpdate", UIFrameFade_OnUpdate);
-end
-
--- Convenience function to do a simple fade in
-function UIFrameFadeIn(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {};
-	fadeInfo.mode = "IN";
-	fadeInfo.timeToFade = timeToFade;
-	fadeInfo.startAlpha = startAlpha;
-	fadeInfo.endAlpha = endAlpha;
-	UIFrameFade(frame, fadeInfo);
-end
-
--- Convenience function to do a simple fade out
-function UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {};
-	fadeInfo.mode = "OUT";
-	fadeInfo.timeToFade = timeToFade;
-	fadeInfo.startAlpha = startAlpha;
-	fadeInfo.endAlpha = endAlpha;
-	UIFrameFade(frame, fadeInfo);
-end
-
-function UIFrameFadeRemoveFrame(frame)
-	tDeleteItem(FADEFRAMES, frame);
-end
-
--- Function that actually performs the alpha change
---[[
-Fading frame attribute listing
-============================================================
-frame.timeToFade  [Num]		Time it takes to fade the frame in or out
-frame.mode  ["IN", "OUT"]	Fade mode
-frame.finishedFunc [func()]	Function that is called when fading is finished
-frame.finishedArg1 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg2 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg3 [ANYTHING]	Argument to the finishedFunc
-frame.finishedArg4 [ANYTHING]	Argument to the finishedFunc
-frame.fadeHoldTime [Num]	Time to hold the faded state
- ]]
-
-function UIFrameFade_OnUpdate(self, elapsed)
-	local index = 1;
-	local frame, fadeInfo;
-	while FADEFRAMES[index] do
-		frame = FADEFRAMES[index];
-		fadeInfo = FADEFRAMES[index].fadeInfo;
-		-- Reset the timer if there isn't one, this is just an internal counter
-		if ( not fadeInfo.fadeTimer ) then
-			fadeInfo.fadeTimer = 0;
-		end
-		fadeInfo.fadeTimer = fadeInfo.fadeTimer + elapsed;
-
-		-- If the fadeTimer is less then the desired fade time then set the alpha otherwise hold the fade state, call the finished function, or just finish the fade
-		if ( fadeInfo.fadeTimer < fadeInfo.timeToFade ) then
-			if ( fadeInfo.mode == "IN" ) then
-				frame:SetAlpha((fadeInfo.fadeTimer / fadeInfo.timeToFade) * (fadeInfo.endAlpha - fadeInfo.startAlpha) + fadeInfo.startAlpha);
-			elseif ( fadeInfo.mode == "OUT" ) then
-				frame:SetAlpha(((fadeInfo.timeToFade - fadeInfo.fadeTimer) / fadeInfo.timeToFade) * (fadeInfo.startAlpha - fadeInfo.endAlpha)  + fadeInfo.endAlpha);
-			end
-		else
-			frame:SetAlpha(fadeInfo.endAlpha);
-			-- If there is a fadeHoldTime then wait until its passed to continue on
-			if ( fadeInfo.fadeHoldTime and fadeInfo.fadeHoldTime > 0  ) then
-				fadeInfo.fadeHoldTime = fadeInfo.fadeHoldTime - elapsed;
-			else
-				-- Complete the fade and call the finished function if there is one
-				UIFrameFadeRemoveFrame(frame);
-				if ( fadeInfo.finishedFunc ) then
-					fadeInfo.finishedFunc(fadeInfo.finishedArg1, fadeInfo.finishedArg2, fadeInfo.finishedArg3, fadeInfo.finishedArg4);
-					fadeInfo.finishedFunc = nil;
-				end
-			end
-		end
-
-		index = index + 1;
-	end
-
-	if ( #FADEFRAMES == 0 ) then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
-function UIFrameIsFading(frame)
-	for index, value in pairs(FADEFRAMES) do
-		if ( value == frame ) then
-			return 1;
-		end
-	end
-	return nil;
-end
-
-local frameFlashManager = CreateFrame("FRAME");
-
-local UIFrameFlashTimers = {};
-local UIFrameFlashTimerRefCount = {};
-
--- Function to start a frame flashing
-function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDone, flashInHoldTime, flashOutHoldTime, syncId)
-	if ( frame ) then
-		local index = 1;
-		-- If frame is already set to flash then return
-		while FLASHFRAMES[index] do
-			if ( FLASHFRAMES[index] == frame ) then
-				return;
-			end
-			index = index + 1;
-		end
-
-		if (syncId) then
-			frame.syncId = syncId;
-			if (UIFrameFlashTimers[syncId] == nil) then
-				UIFrameFlashTimers[syncId] = 0;
-				UIFrameFlashTimerRefCount[syncId] = 0;
-			end
-			UIFrameFlashTimerRefCount[syncId] = UIFrameFlashTimerRefCount[syncId]+1;
-		else
-			frame.syncId = nil;
-		end
-
-		-- Time it takes to fade in a flashing frame
-		frame.fadeInTime = fadeInTime;
-		-- Time it takes to fade out a flashing frame
-		frame.fadeOutTime = fadeOutTime;
-		-- How long to keep the frame flashing, -1 means forever
-		frame.flashDuration = flashDuration;
-		-- Show the flashing frame when the fadeOutTime has passed
-		frame.showWhenDone = showWhenDone;
-		-- Internal timer
-		frame.flashTimer = 0;
-		-- How long to hold the faded in state
-		frame.flashInHoldTime = flashInHoldTime;
-		-- How long to hold the faded out state
-		frame.flashOutHoldTime = flashOutHoldTime;
-
-		tinsert(FLASHFRAMES, frame);
-
-		frameFlashManager:SetScript("OnUpdate", UIFrameFlash_OnUpdate);
-	end
-end
-
--- Called every frame to update flashing frames
-function UIFrameFlash_OnUpdate(self, elapsed)
-	local frame;
-	local index = #FLASHFRAMES;
-
-	-- Update timers for all synced frames
-	for syncId, timer in pairs(UIFrameFlashTimers) do
-		UIFrameFlashTimers[syncId] = timer + elapsed;
-	end
-
-	while FLASHFRAMES[index] do
-		frame = FLASHFRAMES[index];
-		frame.flashTimer = frame.flashTimer + elapsed;
-
-		if ( (frame.flashTimer > frame.flashDuration) and frame.flashDuration ~= -1 ) then
-			UIFrameFlashStop(frame);
-		else
-			local flashTime = frame.flashTimer;
-			local alpha;
-
-			if (frame.syncId) then
-				flashTime = UIFrameFlashTimers[frame.syncId];
-			end
-
-			flashTime = flashTime%(frame.fadeInTime+frame.fadeOutTime+(frame.flashInHoldTime or 0)+(frame.flashOutHoldTime or 0));
-			if (flashTime < frame.fadeInTime) then
-				alpha = flashTime/frame.fadeInTime;
-			elseif (flashTime < frame.fadeInTime+(frame.flashInHoldTime or 0)) then
-				alpha = 1;
-			elseif (flashTime < frame.fadeInTime+(frame.flashInHoldTime or 0)+frame.fadeOutTime) then
-				alpha = 1 - ((flashTime - frame.fadeInTime - (frame.flashInHoldTime or 0))/frame.fadeOutTime);
-			else
-				alpha = 0;
-			end
-
-			frame:SetAlpha(alpha);
-			frame:Show();
-		end
-
-		-- Loop in reverse so that removing frames is safe
-		index = index - 1;
-	end
-
-	if ( #FLASHFRAMES == 0 ) then
-		self:SetScript("OnUpdate", nil);
-	end
-end
-
--- Function to see if a frame is already flashing
-function UIFrameIsFlashing(frame)
-	for index, value in pairs(FLASHFRAMES) do
-		if ( value == frame ) then
-			return 1;
-		end
-	end
-	return nil;
-end
-
--- Function to stop flashing
-function UIFrameFlashStop(frame)
-	tDeleteItem(FLASHFRAMES, frame);
-	frame:SetAlpha(1.0);
-	frame.flashTimer = nil;
-	if (frame.syncId) then
-		UIFrameFlashTimerRefCount[frame.syncId] = UIFrameFlashTimerRefCount[frame.syncId]-1;
-		if (UIFrameFlashTimerRefCount[frame.syncId] == 0) then
-			UIFrameFlashTimers[frame.syncId] = nil;
-			UIFrameFlashTimerRefCount[frame.syncId] = nil;
-		end
-		frame.syncId = nil;
-	end
-	if ( frame.showWhenDone ) then
-		frame:Show();
-	else
-		frame:Hide();
-	end
 end
 
 -- Functions to handle button pulsing (Highlight, Unhighlight)
@@ -5197,14 +4975,6 @@ function InGlue()
 	return false;
 end
 
-function RGBToColorCode(r, g, b)
-	return format("|cff%02x%02x%02x", r*255, g*255, b*255);
-end
-
-function RGBTableToColorCode(rgbTable)
-	return RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b);
-end
-
 function WillAcceptInviteRemoveQueues()
 	--Dungeon/Raid Finder
 	for i=1, NUM_LE_LFG_CATEGORYS do
@@ -5311,17 +5081,6 @@ function OpenAchievementFrameToAchievement(achievementID)
 	AchievementFrame_SelectAchievement(achievementID);
 end
 
-function ChatClassColorOverrideShown()
-	local value = GetCVar("chatClassColorOverride");
-	if value == "0" then
-		return true;
-	elseif value == "1" then
-		return false;
-	else
-		return nil;
-	end
-end
-
 function IsLevelAtEffectiveMaxLevel(level)
 	return level >= GetMaxLevelForPlayerExpansion();
 end
@@ -5342,4 +5101,9 @@ function DisplayInterfaceActionBlockedMessage()
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 	end
+end
+
+function AllowChatFramesToShow(chatFrame)
+	-- this is InGame - and we always show while InGame.  chatFrame is not referenced, only Glues
+	return true;
 end

@@ -37,6 +37,9 @@ end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:OnShow()
 	self:RegisterEvent("COMMODITY_PURCHASE_SUCCEEDED");
+	self:RegisterEvent("COMMODITY_SEARCH_RESULTS_RECEIVED");
+
+	self.resultsLoaded = false;
 
 	self:Layout();
 
@@ -82,15 +85,18 @@ function AuctionHouseCommoditiesBuyDisplayMixin:GetItemID()
 end
 
 function AuctionHouseCommoditiesBuyDisplayMixin:OnHide()
-	self:RegisterEvent("COMMODITY_PURCHASE_SUCCEEDED");
+	self:UnregisterEvent("COMMODITY_PURCHASE_SUCCEEDED");
+	self:UnregisterEvent("COMMODITY_SEARCH_RESULTS_RECEIVED");
 
 	self:GetAuctionHouseFrame():UnregisterCallback(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self);
 end
 
-function AuctionHouseCommoditiesBuyDisplayMixin:OnEvent(event)
+function AuctionHouseCommoditiesBuyDisplayMixin:OnEvent(event, ...)
 	if event == "COMMODITY_PURCHASE_SUCCEEDED" then
 		self.QuantityInput:SetQuantity(1);
 		self:GetAuctionHouseFrame():TriggerEvent(AuctionHouseFrameMixin.Event.CommoditiesQuantitySelectionChanged, self.QuantityInput:GetQuantity());
+	elseif event == "COMMODITY_SEARCH_RESULTS_RECEIVED" then
+		self.resultsLoaded = true;
 	end
 end
 
@@ -98,7 +104,7 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetQuantitySelected(quantity)
 	local totalQuantity = 1;
 	local totalPrice = 0;
 	local commodityItemKey = C_AuctionHouse.MakeItemKey(self:GetItemID());
-	if C_AuctionHouse.HasSearchResults(commodityItemKey) then
+	if C_AuctionHouse.HasSearchResults(commodityItemKey) and self.resultsLoaded then
 		-- Total quantity will be restricted to at most the entire amount available on the auction house.
 		-- This means the user is prevented from entering an amount to buy greater than the available supply.
 		totalQuantity, totalPrice = AuctionHouseUtil.AggregateSearchResultsByQuantity(self:GetItemID(), quantity);
@@ -109,8 +115,11 @@ function AuctionHouseCommoditiesBuyDisplayMixin:SetQuantitySelected(quantity)
 		end
 	end
 
-	self.QuantityInput:SetQuantity(totalQuantity);
-
+	if self.oldQuantitySelected ~= quantity then
+		self.QuantityInput:SetQuantity(self.resultsLoaded and totalQuantity or quantity);
+		self.oldQuantitySelected = quantity;
+	end
+	
 	local unitPrice = AuctionHouseUtil.SanitizeAuctionHousePrice(totalPrice / totalQuantity);
 	self:SetPrice(unitPrice, totalPrice);
 end

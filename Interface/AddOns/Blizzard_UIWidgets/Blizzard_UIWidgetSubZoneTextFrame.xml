@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Frame name="UIWidgetSubZoneTextContainerFrame" toplevel="true" parent="UIParent" inherits="UIWidgetContainerTemplate" mixin="UIWidgetSubZoneTextContainerMixin">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="SubZoneTextFrame" relativePoint="TOP"/>
+		</Anchors>
+	</Frame>
+</Ui>

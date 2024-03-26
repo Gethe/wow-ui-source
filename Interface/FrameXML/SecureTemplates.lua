@@ -436,8 +436,8 @@ SECURE_ACTIONS.item =
         end
         if ( item ) then
             local name, bag, slot = SecureCmdItemParse(item);
-            if ( IsEquippableItem(name) and not IsEquippedItem(name) ) then
-                EquipItemByName(name);
+            if ( C_Item.IsEquippableItem(name) and not C_Item.IsEquippedItem(name) ) then
+                C_Item.EquipItemByName(name);
             else
                 SecureCmdUseItem(name, bag, slot, unit);
             end
@@ -518,7 +518,7 @@ SECURE_ACTIONS.target =
             elseif ( SpellIsTargeting() ) then
                 SpellTargetUnit(unit);
             elseif ( CursorHasItem() ) then
-                DropItemOnUnit(unit);
+                C_Item.DropItemOnUnit(unit);
             else
                 TargetUnit(unit);
             end

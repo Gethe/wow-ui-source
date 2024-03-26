@@ -44,12 +44,12 @@ function WorldMap_GetWorldQuestRewardType(questID)
 	for i = 1, numQuestRewards do
 		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 		if ( itemID ) then
-			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID = GetItemInfo(itemID);
+			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID = C_Item.GetItemInfo(itemID);
 			if ( classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or (classID == Enum.ItemClass.Gem and subclassID == Enum.ItemGemSubclass.Artifactrelic) ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_EQUIPMENT);
 			end
 
-			if ( IsArtifactPowerItem(itemID) ) then
+			if ( C_Item.IsArtifactPowerItem(itemID) ) then
 				worldQuestRewardType = bit.bor(worldQuestRewardType, WORLD_QUEST_REWARD_TYPE_FLAG_ARTIFACT_POWER);
 			end
 
@@ -145,7 +145,7 @@ function CallingPOI_OnEnter(self)
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
 
-	local widgetSetID = C_TaskQuest.GetUIWidgetSetIDFromQuestID(self.questID);
+	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(self.questID);
 	if (widgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end

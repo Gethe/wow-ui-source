@@ -136,7 +136,10 @@ end
 --Internally used functions
 function CompactRaidFrameContainerMixin:TryUpdate()
 	CompactPartyFrame:RefreshMembers();
-	CompactArenaFrame:RefreshMembers();
+
+	if CompactArenaFrame and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm then
+		CompactArenaFrame:RefreshMembers();
+	end
 
 	if self:ReadyToUpdate() then
 		self:LayoutFrames();
@@ -225,6 +228,10 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 			tinsert(self.frameUpdateList.mini, groupFrame);
 		end
 	elseif id =="ARENA" then
+		if not CompactArenaFrame_Generate and (C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm) then
+			return;
+		end
+
 		groupFrame, didCreation = CompactArenaFrame_Generate();
 
 		if didCreation then
@@ -243,7 +250,9 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 	if id == "PARTY" then
 		CompactPartyFrame:UpdateVisibility();
 	elseif id == "ARENA" then
-		CompactArenaFrame:UpdateVisibility();
+		if CompactArenaFrame and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm then
+			CompactArenaFrame:UpdateVisibility();
+		end
 	else
 		if didCreation then
 			groupFrame:SetParent(self);

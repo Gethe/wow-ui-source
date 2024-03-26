@@ -181,6 +181,10 @@ end
 
 function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
 	AchievementFrameComparison:Hide();
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AchievementsPanel) then
+		return;
+	end
+
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	if ( not toggleStatFrame ) then
 		if ( AchievementFrame:IsShown() and AchievementFrame.selectedTab == 1 ) then

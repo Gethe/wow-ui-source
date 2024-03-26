@@ -8,6 +8,26 @@ UI_shared.xsd">
 		</KeyValues>
 	</CheckButton>
 
+	<!-- Divides buttons on a horizontally oriented action bar -->
+	<Frame name="HorizontalDividerTemplate" inherits="NineSliceCodeTemplate" virtual="true">
+		<Size x="12"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+			<KeyValue key="layoutType" value="ThreeSliceVerticalLayout" type="string"/>
+			<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<!-- Divides buttons on a vertically oriented action bar -->
+	<Frame name="VerticalDividerTemplate" inherits="NineSliceCodeTemplate" virtual="true">
+		<Size y="12"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+			<KeyValue key="layoutType" value="ThreeSliceHorizontalLayout" type="string"/>
+			<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="MainMenuBar" inherits="EditModeActionBarTemplate" enableMouse="true" parent="UIParent" frameLevel="50" mixin="MainMenuBarMixin">
 		<Size x="454" y="35"/>
 		<Anchors>
@@ -23,13 +43,23 @@ UI_shared.xsd">
 			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
 			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
 			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
-			<KeyValue key="noSpacers" value="true" type="boolean"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
 			<KeyValue key="hideEndCaps" value="MAIN_MENU_BAR_HIDE_END_CAPS" type="global"/>
 			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
 		</KeyValues>
 
 		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="BorderArt" atlas="UI-HUD-ActionBar-Frame">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="8" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture parentKey="QuickKeybindBottomShadow" atlas="_QuickKeybind_Bottom_Shadow" useAtlasSize="true" horizTile="true" hidden="true">
 					<Anchors>
@@ -59,27 +89,6 @@ UI_shared.xsd">
 		</Layers>
 
 		<Frames>
-			<Frame parentKey="BorderArt" inherits="NineSliceCodeTemplate" frameLevel="52">
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame" type="string"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="7" y="-7"/>
-				</Anchors>
-			</Frame>
-
-			<Frame parentKey="Background" inherits="NineSliceCodeTemplate" frameLevel="1" setAllPoints="true">
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-background" type="string"/>
-					<KeyValue key="layoutTextureLayer" value="BACKGROUND" type="string"/>
-				</KeyValues>
-			</Frame>
-
 			<Frame parentKey="EndCaps" setAllPoints="true" frameLevel="100">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>

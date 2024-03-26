@@ -38,7 +38,14 @@ function LFDFrame_OnLoad(self)
 	view:SetElementInitializer("LFDFrameDungeonChoiceTemplate", function(button, elementData)
 		LFDQueueFrameSpecificList_InitButton(button, elementData);
 	end);
+
+	local viewFollower = CreateScrollBoxListLinearView();
+	viewFollower:SetElementInitializer("LFDFrameDungeonChoiceTemplate", function(button, elementData)
+		LFDQueueFrameFollowerList_InitButton(button, elementData);
+	end);
+
 	ScrollUtil.InitScrollBoxListWithScrollBar(LFDQueueFrame.Specific.ScrollBox, LFDQueueFrame.Specific.ScrollBar, view);
+	ScrollUtil.InitScrollBoxListWithScrollBar(LFDQueueFrame.Follower.ScrollBox, LFDQueueFrame.Follower.ScrollBar, viewFollower);
 end
 
 function LFDFrame_OnEvent(self, event, ...)
@@ -48,10 +55,10 @@ function LFDFrame_OnEvent(self, event, ...)
 		LFDRoleCheckPopup_Update();
 
 		StaticPopupSpecial_Show(LFDRoleCheckPopup);
-		LFDQueueFrameSpecificList_Update();
+		LFDQueueFrameList_Update();
 	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
-		LFDQueueFrameSpecificList_Update();
+		LFDQueueFrameList_Update();
 	elseif ( event == "LFG_READY_CHECK_SHOW" ) then
 		local _, readyCheckBgQueue = GetLFGReadyCheckUpdate();
 		local displayName;
@@ -102,6 +109,9 @@ function LFDFrame_OnEvent(self, event, ...)
 		local dungeonID = ...;
 		LFDFrame_DisplayDungeonByID(dungeonID);
 		PVEFrame_ShowFrame("GroupFinderFrame", LFDParentFrame);
+
+		-- Force close gossip frame
+		C_GossipInfo.CloseGossip();
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		EXPANSION_LEVEL = GetExpansionLevel();
 	elseif ( event == "AJ_DUNGEON_ACTION" ) then
@@ -305,7 +315,7 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 end
 
 --List functions
-function LFDQueueFrameSpecificList_Update()
+function LFDQueueFrameList_Update()
 	if ( LFGDungeonList_Setup() ) then
 		return;	--Setup will update the list.
 	end
@@ -313,17 +323,34 @@ function LFDQueueFrameSpecificList_Update()
 	if C_PlayerInfo.IsPlayerNPERestricted() then
 		if #LFDDungeonList == 0 then
 			-- no eligible dungeons
-			EventRegistry:TriggerEvent("LFDQueueFrameSpecificList_Update.EmptyDungeonList");
+			EventRegistry:TriggerEvent("LFDQueueFrameList_Update.EmptyDungeonList");
 		else
-			EventRegistry:TriggerEvent("LFDQueueFrameSpecificList_Update.DungeonListReady");
+			EventRegistry:TriggerEvent("LFDQueueFrameList_Update.DungeonListReady");
 		end
 	end
 
 	local dataProvider = CreateDataProviderWithAssignedKey(LFDDungeonList, "dungeonID");
 	LFDQueueFrame.Specific.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	LFDQueueFrame.Follower.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
 function LFDQueueFrameSpecificList_InitButton(button, elementData)
+	local dungeonID = elementData.dungeonID;
+	local enabled, queued = LFGDungeonList_EvaluateListState(LE_LFG_CATEGORY_LFD);
+
+	local checkedList;
+	if ( queued ) then
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFD];
+	else
+		checkedList = LFGEnabledList;
+	end
+
+	button:SetWidth(295);
+
+	LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList);
+end
+
+function LFDQueueFrameFollowerList_InitButton(button, elementData)
 	local dungeonID = elementData.dungeonID;
 	local enabled, queued = LFGDungeonList_EvaluateListState(LE_LFG_CATEGORY_LFD);
 
@@ -345,7 +372,7 @@ end
 
 function LFDQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
 	LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_LFD, LFDDungeonList, LFDHiddenByCollapseList);
-	LFDQueueFrameSpecificList_Update();
+	LFDQueueFrameList_Update();
 	LFDQueueFrame_UpdateRoleButtons();
 end
 
@@ -365,6 +392,11 @@ function LFDQueueFrameTypeDropDown_SetUp(self)
 end
 
 function LFDQueueFrameTypeDropDown_Initialize()
+	LFDQueueFrameTypeDropDown_SetupFollowerDungeons();
+	LFDQueueFrameTypeDropDown_SetupSpecificDungeons();
+end
+
+function LFDQueueFrameTypeDropDown_SetupSpecificDungeons()
 	local info = UIDropDownMenu_CreateInfo();
 
 	info.text = SPECIFIC_DUNGEONS;
@@ -406,8 +438,24 @@ function LFDQueueFrameTypeDropDown_Initialize()
 	end
 end
 
+function LFDQueueFrameTypeDropDown_SetupFollowerDungeons()
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = LFG_TYPE_FOLLOWER_DUNGEON;
+	info.value = "follower";
+	info.func = LFDQueueFrameTypeDropDownButton_OnClick;
+	info.checked = LFDQueueFrame.type == info.value;
+	info.showNewLabel = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN);
+	info.funcOnEnter = LFDQueueFrameTypeDropDownButton_OnMouseEnterFollowerDungeons;
+	UIDropDownMenu_AddButton(info);
+end
+
 function LFDQueueFrameTypeDropDownButton_OnClick(self)
 	LFDQueueFrame_SetType(self.value);
+end
+
+function LFDQueueFrameTypeDropDownButton_OnMouseEnterFollowerDungeons(self)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN, true);
 end
 
 function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
@@ -416,6 +464,8 @@ function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id
 
 	if ( value == "specific" ) then
 		LFDQueueFrame_SetTypeSpecificDungeon();
+	elseif ( value == "follower" ) then
+		LFDQueueFrame_SetTypeFollowerDungeon();
 	else
 		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimeWalker = GetLFGDungeonInfo(value);
 		LFDQueueFrame_SetTypeRandomDungeon(isHoliday and not isTimeWalker);
@@ -427,6 +477,7 @@ end
 function LFDQueueFrame_SetTypeRandomDungeon(hideCooldown)
 	LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER")
 	LFDQueueFrameSpecific:Hide();
+	LFDQueueFrameFollower:Hide();
 	LFDQueueFrameRandom:Show();
 	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, not hideCooldown);
 end
@@ -434,7 +485,16 @@ end
 function LFDQueueFrame_SetTypeSpecificDungeon()
 	LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-DUNGEONWALL");
 	LFDQueueFrameRandom:Hide();
+	LFDQueueFrameFollower:Hide();
 	LFDQueueFrameSpecific:Show();
+	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, false);
+end
+
+function LFDQueueFrame_SetTypeFollowerDungeon()
+	LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-DUNGEONWALL");
+	LFDQueueFrameRandom:Hide();
+	LFDQueueFrameSpecific:Hide();
+	LFDQueueFrameFollower:Show();
 	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, false);
 end
 
@@ -637,8 +697,14 @@ local function UpdateLFDDungeonList()
 	-- Get the list of dungeons, then pull out dungeons that are hidden (due to current Timewalking Campaign, etc) and add the rest to LFDDungeonList
 	local dungeonList = GetLFDChoiceOrder();
 	for _, dungeonID in ipairs(dungeonList) do
+		local isFollowerFrameSelected = LFDQueueFrame.type == "follower";
+		local isDungeonHeader = dungeonID < 0;
+
 		if not LFGLockList[dungeonID] or not LFGLockList[dungeonID].hideEntry then
-			table.insert(LFDDungeonList, dungeonID);
+			local isLFGFollowerDungeon = dungeonID >= 0 and C_LFGInfo.IsLFGFollowerDungeon(dungeonID);
+			if (isFollowerFrameSelected and (isLFGFollowerDungeon or isDungeonHeader)) or (not isFollowerFrameSelected and not isLFGFollowerDungeon) then
+				table.insert(LFDDungeonList, dungeonID);
+			end
 		end
 	end
 end
@@ -657,7 +723,7 @@ function LFDQueueFrame_Update()
 	
 	LFGQueueFrame_UpdateLFGDungeonList(LFDDungeonList, LFDHiddenByCollapseList, checkedList, LFD_CURRENT_FILTER);
 
-	LFDQueueFrameSpecificList_Update();
+	LFDQueueFrameList_Update();
 end
 
 LFD_CURRENT_FILTER = LFGList_DefaultFilterFunction;

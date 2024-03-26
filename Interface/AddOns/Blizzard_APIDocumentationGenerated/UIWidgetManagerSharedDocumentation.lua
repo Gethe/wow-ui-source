@@ -3,6 +3,18 @@ local UIWidgetManagerShared =
 	Tables =
 	{
 		{
+			Name = "MapIconUIWidgetSetType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Tooltip", Type = "MapIconUIWidgetSetType", EnumValue = 0 },
+				{ Name = "BehindIcon", Type = "MapIconUIWidgetSetType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "UIWidgetLayoutDirection",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -20,9 +32,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetScale",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "OneHundred", Type = "UIWidgetScale", EnumValue = 0 },
@@ -31,18 +43,29 @@ local UIWidgetManagerShared =
 				{ Name = "Seventy", Type = "UIWidgetScale", EnumValue = 3 },
 				{ Name = "Sixty", Type = "UIWidgetScale", EnumValue = 4 },
 				{ Name = "Fifty", Type = "UIWidgetScale", EnumValue = 5 },
+				{ Name = "OneHundredTen", Type = "UIWidgetScale", EnumValue = 6 },
+				{ Name = "OneHundredTwenty", Type = "UIWidgetScale", EnumValue = 7 },
+				{ Name = "OneHundredThirty", Type = "UIWidgetScale", EnumValue = 8 },
+				{ Name = "OneHundredForty", Type = "UIWidgetScale", EnumValue = 9 },
+				{ Name = "OneHundredFifty", Type = "UIWidgetScale", EnumValue = 10 },
+				{ Name = "OneHundredSixty", Type = "UIWidgetScale", EnumValue = 11 },
+				{ Name = "OneHundredSeventy", Type = "UIWidgetScale", EnumValue = 12 },
+				{ Name = "OneHundredEighty", Type = "UIWidgetScale", EnumValue = 13 },
+				{ Name = "OneHundredNinety", Type = "UIWidgetScale", EnumValue = 14 },
+				{ Name = "TwoHundred", Type = "UIWidgetScale", EnumValue = 15 },
 			},
 		},
 		{
 			Name = "UIWidgetSetLayoutDirection",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Vertical", Type = "UIWidgetSetLayoutDirection", EnumValue = 0 },
 				{ Name = "Horizontal", Type = "UIWidgetSetLayoutDirection", EnumValue = 1 },
+				{ Name = "Overlap", Type = "UIWidgetSetLayoutDirection", EnumValue = 2 },
 			},
 		},
 		{
@@ -79,7 +102,7 @@ local UIWidgetManagerShared =
 				{ Name = "UnitPowerBar", Type = "UIWidgetVisualizationType", EnumValue = 23 },
 				{ Name = "FillUpFrames", Type = "UIWidgetVisualizationType", EnumValue = 24 },
 				{ Name = "TextWithSubtext", Type = "UIWidgetVisualizationType", EnumValue = 25 },
-				{ Name = "WorldLootObject", Type = "UIWidgetVisualizationType", EnumValue = 26 },
+				{ Name = "MapPinAnimation", Type = "UIWidgetVisualizationType", EnumValue = 26 },
 				{ Name = "ItemDisplay", Type = "UIWidgetVisualizationType", EnumValue = 27 },
 				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
 			},

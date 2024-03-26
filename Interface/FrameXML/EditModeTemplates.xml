@@ -247,9 +247,13 @@ UI_shared.xsd">
 		</Layers>
 	</Frame>
 	
-	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true" />
+	<Line name="EditModeGridLineTemplate" mixin="EditModeGridLineMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="isGridLine" value="true" type="boolean"/>
+		</KeyValues>
+	</Line>
 
-	<Line name="MagnetismPreviewLineTemplate" parentArray="lines" hidden="true" mixin="MagnetismPreviewLineMixin" virtual="true">
+	<Line name="MagnetismPreviewLineTemplate" mixin="MagnetismPreviewLineMixin" virtual="true">
 		<Color r="1" g="0" b="0"/>
 	</Line>
 </Ui>

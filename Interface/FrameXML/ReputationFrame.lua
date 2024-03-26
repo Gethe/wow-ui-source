@@ -474,22 +474,6 @@ function ReputationBarMixin:ShowFriendshipReputationTooltip(friendshipID, anchor
 end
 
 function ReputationBarMixin:ShowMajorFactionRenownTooltip()
-	local function AddRenownRewardsToTooltip(renownRewards)
-		GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_NEXT_REWARDS);
-	
-		for i, rewardInfo in ipairs(renownRewards) do
-			local renownRewardString;
-			local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, GenerateClosure(self.ShowMajorFactionRenownTooltip, self));
-			if icon then
-				local file, width, height = icon, 16, 16;
-				local rewardTexture = CreateSimpleTextureMarkup(file, width, height);
-				renownRewardString = rewardTexture .. " " .. name;
-			end
-			local wrapText = false;
-			GameTooltip_AddNormalLine(GameTooltip, renownRewardString, wrapText);
-		end
-	end
-
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(self.factionID);
@@ -506,7 +490,7 @@ function ReputationBarMixin:ShowMajorFactionRenownTooltip()
 
 	local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(self.factionID, C_MajorFactions.GetCurrentRenownLevel(self.factionID) + 1);
 	if #nextRenownRewards > 0 then
-		AddRenownRewardsToTooltip(nextRenownRewards);
+		RenownRewardUtil.AddRenownRewardsToTooltip(GameTooltip, nextRenownRewards, GenerateClosure(self.ShowMajorFactionRenownTooltip, self));
 	end
 
 	GameTooltip:Show();

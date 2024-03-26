@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI_shared.xsd">
+	<Script file="UIMenu.lua"/>
+	<Button name="UIMenuButtonTemplate" virtual="true">
+		<Size x="128" y="16"/>
+		<Scripts>
+			<OnLoad>
+				UIMenuButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				UIMenuButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				UIMenuButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				UIMenuButton_OnLeave(self, motion);
+			</OnLeave>
+			<OnHide>
+				UIMenuButton_OnHide(self);
+			</OnHide>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NestedArrow" file="Interface\ChatFrame\ChatFrameExpandArrow">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentShortcutText" inherits="GameFontHighlight" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.NestedArrow" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontDisableLeft"/>
+	</Button>
+	<Frame name="UIMenuTemplate" frameStrata="DIALOG" toplevel="true" virtual="true" inherits="TooltipBackdropTemplate">
+		<Frames>
+			<Button name="$parentButton1" inherits="UIMenuButtonTemplate" id="1"/>
+			<Button name="$parentButton2" inherits="UIMenuButtonTemplate" id="2"/>
+			<Button name="$parentButton3" inherits="UIMenuButtonTemplate" id="3"/>
+			<Button name="$parentButton4" inherits="UIMenuButtonTemplate" id="4"/>
+			<Button name="$parentButton5" inherits="UIMenuButtonTemplate" id="5"/>
+			<Button name="$parentButton6" inherits="UIMenuButtonTemplate" id="6"/>
+			<Button name="$parentButton7" inherits="UIMenuButtonTemplate" id="7"/>
+			<Button name="$parentButton8" inherits="UIMenuButtonTemplate" id="8"/>
+			<Button name="$parentButton9" inherits="UIMenuButtonTemplate" id="9"/>
+			<Button name="$parentButton10" inherits="UIMenuButtonTemplate" id="10"/>
+			<Button name="$parentButton11" inherits="UIMenuButtonTemplate" id="11"/>
+			<Button name="$parentButton12" inherits="UIMenuButtonTemplate" id="12"/>
+			<Button name="$parentButton13" inherits="UIMenuButtonTemplate" id="13"/>
+			<Button name="$parentButton14" inherits="UIMenuButtonTemplate" id="14"/>
+			<Button name="$parentButton15" inherits="UIMenuButtonTemplate" id="15"/>
+			<Button name="$parentButton16" inherits="UIMenuButtonTemplate" id="16"/>
+			<Button name="$parentButton17" inherits="UIMenuButtonTemplate" id="17"/>
+			<Button name="$parentButton18" inherits="UIMenuButtonTemplate" id="18"/>
+			<Button name="$parentButton19" inherits="UIMenuButtonTemplate" id="19"/>
+			<Button name="$parentButton20" inherits="UIMenuButtonTemplate" id="20"/>
+			<Button name="$parentButton21" inherits="UIMenuButtonTemplate" id="21"/>
+			<Button name="$parentButton22" inherits="UIMenuButtonTemplate" id="22"/>
+			<Button name="$parentButton23" inherits="UIMenuButtonTemplate" id="23"/>
+			<Button name="$parentButton24" inherits="UIMenuButtonTemplate" id="24"/>
+			<Button name="$parentButton25" inherits="UIMenuButtonTemplate" id="25"/>
+			<Button name="$parentButton26" inherits="UIMenuButtonTemplate" id="26"/>
+			<Button name="$parentButton27" inherits="UIMenuButtonTemplate" id="27"/>
+			<Button name="$parentButton28" inherits="UIMenuButtonTemplate" id="28"/>
+			<Button name="$parentButton29" inherits="UIMenuButtonTemplate" id="29"/>
+			<Button name="$parentButton30" inherits="UIMenuButtonTemplate" id="30"/>
+			<Button name="$parentButton31" inherits="UIMenuButtonTemplate" id="31"/>
+			<Button name="$parentButton32" inherits="UIMenuButtonTemplate" id="32"/>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				UIMenu_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				UIMenu_OnShow(self);
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

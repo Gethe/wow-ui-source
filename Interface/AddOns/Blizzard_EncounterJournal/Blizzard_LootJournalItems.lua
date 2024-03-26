@@ -315,7 +315,7 @@ function LootJournalItemSetsMixin:OnEvent(event, ...)
 end
 
 function LootJournalItemSetsMixin:ConfigureItemButton(button)
-	local _, itemLink, itemQuality = GetItemInfo(button.itemID);
+	local _, itemLink, itemQuality = C_Item.GetItemInfo(button.itemID);
 	button.itemLink = itemLink;
 	itemQuality = itemQuality or Enum.ItemQuality.Epic;	-- sets are most likely rare
 	if ( itemQuality == Enum.ItemQuality.Uncommon ) then
@@ -325,7 +325,7 @@ function LootJournalItemSetsMixin:ConfigureItemButton(button)
 	elseif ( itemQuality == Enum.ItemQuality.Epic ) then
 		button.Border:SetAtlas("loottab-set-itemborder-purple", true);
 	end
-	local r, g, b = GetItemQualityColor(itemQuality);
+	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 	button:GetParent().SetName:SetTextColor(r, g, b);
 	self:CheckItemButtonTooltip(button);
 end

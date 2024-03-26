@@ -58,12 +58,6 @@ UI_shared.xsd">
 					<Anchor point="TOPLEFT" relativeTo="UIParent" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Line inherits="MagnetismPreviewLineTemplate"/>
-						<Line inherits="MagnetismPreviewLineTemplate"/>
-					</Layer>
-				</Layers>
 			</Frame>
 			<Frame parentKey="Grid" frameStrata="BACKGROUND" mixin="EditModeGridMixin" hidden="true">
 				<KeyValues>

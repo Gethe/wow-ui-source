@@ -81,6 +81,13 @@ function ClearClampedTextureRotation(texture)
 	end
 end
 
+local LFGRoleEnumToString = {
+	[Enum.LFGRole.Tank] = "TANK",
+	[Enum.LFGRole.Healer] = "HEALER",
+	[Enum.LFGRole.Damage] = "DAMAGER",
+	[Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE] = "GUIDE",
+};
+
 local LFGRoleIcons = {
 	["GUIDE"] = "UI-LFG-RoleIcon-Leader",
 	["TANK"] = "UI-LFG-RoleIcon-Tank",
@@ -104,6 +111,15 @@ function GetIconForRole(role, showDisabled)
 	return showDisabled and DisabledLFGRoleIcons[role] or LFGRoleIcons[role];
 end
 
+function GetIconForRoleEnum(role, showDisabled)
+	if not LFGRoleEnumToString[role] then
+		assertsafe(false, "Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return GetIconForRole(LFGRoleEnumToString[role], showDisabled);
+end
+
 local MicroLFGRoleIcons = {
 	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Micro",
 	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro",
@@ -120,6 +136,15 @@ function GetMicroIconForRole(role)
 	return MicroLFGRoleIcons[role];
 end
 
+function GetMicroIconForRoleEnum(role)
+	if not LFGRoleEnumToString[role] then
+		assertsafe(false, "Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return GetMicroIconForRole(LFGRoleEnumToString[role]);
+end
+
 local LFGRoleBackgrounds = {
 	["TANK"] = "UI-LFG-RoleIcon-Tank-Background",
 	["HEALER"] = "UI-LFG-RoleIcon-Healer-Background",
@@ -134,6 +159,15 @@ function GetBackgroundForRole(role)
 	return LFGRoleBackgrounds[role];
 end
 
+function GetBackgroundForRoleEnum(role)
+	if not LFGRoleEnumToString[role] then
+		assertsafe(false, "Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return GetBackgroundForRole(LFGRoleEnumToString[role]);
+end
+
 -- Temporarily reverting the 10.1.5 Raid Frame Role Icons
 function GetTexCoordsForOldRoleSmallCircle(role)
 	if ( role == "TANK" ) then
@@ -145,6 +179,15 @@ function GetTexCoordsForOldRoleSmallCircle(role)
 	else
 		error("Unknown role: "..tostring(role));
 	end
+end;
+
+function GetTexCoordsForOldRoleSmallCircleEnum(role)
+	if not LFGRoleEnumToString[role] then
+		assertsafe(false, "Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return GetTexCoordsForOldRoleSmallCircle(LFGRoleEnumToString[role]);
 end;
 
 function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)

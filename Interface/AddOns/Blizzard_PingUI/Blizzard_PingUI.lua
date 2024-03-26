@@ -97,6 +97,7 @@ Import("tonumber");
 Import("Vector2D_CalculateAngleBetween");
 Import("Vector2D_Cross");
 Import("Vector2D_Dot");
+Import("C_GameEnvironmentManager");
 
 ----------------
 
@@ -225,7 +226,7 @@ function PingListenerFrameMixin:OnDragStop()
 end
 
 function PingListenerFrameMixin:OnEnter()
-    self.cooldownInfo = C_PingSecure.GetCooldownInfo();
+    self.cooldownInfo = C_Ping.GetCooldownInfo();
 
     -- If on cooldown, make sure correct mouse cursor is shown.
     if self.cooldownInfo then

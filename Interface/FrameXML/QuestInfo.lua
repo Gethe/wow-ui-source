@@ -228,7 +228,11 @@ function QuestInfo_ShowObjectives()
 				text = type;
 			end
 			if ( finished ) then
-				objective:SetTextColor(0.2, 0.2, 0.2);
+				if QuestUtil.QuestTextContrastUseLightText() then
+					objective:SetTextColor(QUEST_OBJECTIVE_COMPLETED_FONT_COLOR_DARK_BACKGROUND:GetRGB());
+				else
+					objective:SetTextColor(QUEST_OBJECTIVE_COMPLETED_FONT_COLOR:GetRGB());
+				end
 				text = text.." ("..COMPLETE..")";
 			else
 				if QuestUtil.QuestTextContrastUseLightText() then
@@ -1078,7 +1082,7 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 
 QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth = 244,
 	elements = {
-		QuestInfo_ShowRewards, 8, -42,
+		QuestInfo_ShowRewards, 8, 0,
 	}
 }
 

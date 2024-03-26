@@ -16,6 +16,7 @@ COMBAT_TEXT_LOCATIONS = {};
 COMBAT_TEXT_X_ADJUSTMENT = 80;
 COMBAT_TEXT_Y_SCALE = 1;
 COMBAT_TEXT_X_SCALE = 1;
+local PLUNDERSTORM_CURRENCY = 3011;
 
 CVarCallbackRegistry:SetCVarCachable("floatingCombatTextLowManaHealth");
 CVarCallbackRegistry:SetCVarCachable("floatingCombatTextAuras");
@@ -95,6 +96,7 @@ COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show =
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["PLUNDER_UPDATE"] = {r = 1, g = 1, b = 0, isStaggered = 1, show = 1};
 
 local FrameEvents =
 {
@@ -106,6 +108,7 @@ local FrameEvents =
 	"RUNE_POWER_UPDATE",
 	"UNIT_ENTERED_VEHICLE",
 	"UNIT_EXITING_VEHICLE",
+	"CURRENCY_DISPLAY_UPDATE",
 };
 
 local function UpdateEventRegistration(register)
@@ -137,7 +140,7 @@ function CombatText_OnEvent(self, event, ...)
 		CombatText_ClearAnimationList();
 		return;
 	end
-
+	
 	local arg1, data, arg3, arg4 = ...;
 
 	-- Set up the messageType
@@ -206,6 +209,10 @@ function CombatText_OnEvent(self, event, ...)
 		messageType = arg1;
 	elseif ( event == "RUNE_POWER_UPDATE" ) then
 		messageType = "RUNE";
+	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
+		if arg1 == PLUNDERSTORM_CURRENCY then
+			messageType = "PLUNDER_UPDATE";
+		end
 	else
 		messageType = event;
 	end
@@ -374,6 +381,8 @@ function CombatText_OnEvent(self, event, ...)
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")";
 		end
+	elseif (messageType == "PLUNDER_UPDATE") then
+		message = string.format(WOWLABS_CURRENCY_PICKUP, arg3);
 	else
 		message = _G["COMBAT_TEXT_"..messageType];
 		if ( not message ) then

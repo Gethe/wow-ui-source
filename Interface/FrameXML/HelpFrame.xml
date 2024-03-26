@@ -20,7 +20,8 @@ UI_shared.xsd">
 		</Frames>
 		<Scripts>
 			<OnExternalLink>
-				StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
+				local baseURL, _ = strsplit("?", url,  2);
+				StaticPopup_Show("EXTERNAL_LINK", baseURL, nil, {url=url, browser=self});
 			</OnExternalLink>
 			<OnEscapePressed>
 				self:ClearFocus();
@@ -62,31 +63,11 @@ UI_shared.xsd">
 					</OnHide>
 				</Scripts>
 			</Browser>
-			<Frame parentKey="SpinnerOverlay" frameLevel="3" frameStrata="HIGH">
+			<Frame parentKey="SpinnerOverlay" inherits="SpinnerTemplate" frameLevel="3" frameStrata="HIGH">
+				<Size x="120" y="120"/>
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT"/>
+					<Anchor point="CENTER"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="LoadingSpinner" atlas="auctionhouse-ui-loadingspinner" hidden="false">
-							<Size x="146" y="146"/>
-							<Anchors>
-								<Anchor point="CENTER" x="-12" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="SpinnerAnim" looping="REPEAT">
-						<Rotation childKey="LoadingSpinner" order="1" duration="1" degrees="-360"/>
-					</AnimationGroup>
-				</Animations>
-				<Scripts>
-					<OnLoad>
-						self.SpinnerAnim:Play();
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

@@ -1760,7 +1760,7 @@ function LFG_JoinDungeon(category, joinType, dungeonList, hiddenByCollapseList)
 		return;
 	end
 
-	if ( joinType == "specific" ) then	--Random queue
+	if ( joinType == "specific" or joinType == "follower" ) then
 		ClearAllLFGDungeons(category);
 		for _, queueID in pairs(dungeonList) do
 			LFG_QueueForInstanceIfEnabled(category, queueID);
@@ -1783,7 +1783,7 @@ function LFG_HasRequiredGroupSize(category, joinType, dungeonList, hiddenByColla
 	else
 		numGroupMembers = 1;
 	end
-	if ( joinType == "specific" ) then	--Random queue
+	if ( joinType == "specific" or joinType == "follower" ) then
 		for _, queueID in pairs(dungeonList) do
 			if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
 				numRequiredPlayers = select(LFG_RETURN_VALUES.minPlayers, GetLFGDungeonInfo(queueID));

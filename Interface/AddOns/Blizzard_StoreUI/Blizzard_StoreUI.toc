@@ -41,6 +41,7 @@
 ..\..\SharedXML\NineSlice.lua
 ..\..\SharedXML\PortraitFrame.lua
 ..\..\SharedXML\SecureUIPanelTemplates.lua
+..\..\SharedXML\Spinner.lua
 ..\..\SharedXML\VASErrorLookup.lua
 
 Blizzard_Shared_StoreButtonMixin.lua

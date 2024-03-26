@@ -296,6 +296,10 @@ function PanelTabButtonMixin:OnShow()
 end
 
 function PanelTabButtonMixin:OnEnter()
+	if not IsOnGlueScreen() then
+		GameTooltip_Hide();
+	end
+
 	if self.Text:IsTruncated() then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.Text:GetText());
@@ -303,7 +307,9 @@ function PanelTabButtonMixin:OnEnter()
 end
 
 function PanelTabButtonMixin:OnLeave()
-	GameTooltip_Hide();
+	if not IsOnGlueScreen() then
+		GameTooltip_Hide();
+	end
 end
 
 PanelTopTabButtonMixin = {};
@@ -859,10 +865,12 @@ end
 local alternateTopLevelParent;
 function SetAlternateTopLevelParent(parent)
 	alternateTopLevelParent = parent;
+	EventRegistry:TriggerEvent("UI.AlternateTopLevelParentChanged", parent);
 end
 
 function ClearAlternateTopLevelParent()
 	alternateTopLevelParent = nil;
+	EventRegistry:TriggerEvent("UI.AlternateTopLevelParentChanged");
 end
 
 function GetAppropriateTopLevelParent()
@@ -1656,6 +1664,8 @@ SelectionPopoutButtonMixin = CreateFromMixins(CallbackRegistryMixin, EventButton
 SelectionPopoutButtonMixin:GenerateCallbackEvents(
 	{
 		"OnValueChanged",
+		"OnPopoutShow",
+		"OnPopoutHide",
 	}
 );
 
@@ -1723,6 +1733,7 @@ end
 
 function SelectionPopoutButtonMixin:HidePopout()
 	self.Popout:Hide();
+	self:TriggerEvent(SelectionPopoutButtonMixin.Event.OnPopoutHide);
 
 	if GetMouseFocus() == self then
 		self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox-hover");
@@ -1740,6 +1751,7 @@ function SelectionPopoutButtonMixin:ShowPopout()
 	SelectionPopouts:CloseAll();
 
 	self.Popout:Show();
+	self:TriggerEvent(SelectionPopoutButtonMixin.Event.OnPopoutShow);
 	self.NormalTexture:SetAtlas("charactercreate-customize-dropdownbox-open");
 	self.HighlightTexture:SetAlpha(0.2);
 end
@@ -2842,7 +2854,7 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 		if ( cursorType == validType ) then
 			local icon;
 			if ( cursorType == "item" ) then
-				icon = select(10, GetItemInfo(ID));
+				icon = select(10, C_Item.GetItemInfo(ID));
 			elseif ( cursorType == "spell" ) then
 				-- 'ID' field for spells would actually be the slot number, not the actual spellID, so we get this separately.
 				local spellID = select(4, GetCursorInfo());

@@ -19,5 +19,5 @@ function PingableType_UnitFrameMixin:GetContextualPingType()
 end
 
 function PingableType_UnitFrameMixin:GetTargetPingGUID()
-    return UnitGUID(self.unit);
+    return UnitGUID(self.unit or self:GetAttribute("unit"));
 end

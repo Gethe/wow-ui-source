@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+UI.xsd">
 	<!-- This Fonts.xml is loaded before FontStyles.xml Set up Font objects to be localized in Fonts.xml not FontStyles.xml -->
 	<Include file="..\SharedXML\SharedFontStyles.xml"/>
 
@@ -10,7 +10,6 @@
 		UNIT_NAME_FONT_ROMAN = "Fonts\\FRIZQT__.TTF";
 	</Script>
 
-	<Font name="GameFontNormalLeft" inherits="GameFontNormal" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontNormalLeftBottom" inherits="GameFontNormalLeft" justifyV="BOTTOM" virtual="true"/>
 	<Font name="GameFontNormalLeftGreen" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.0" g="1.0" b="0.0"/>
@@ -31,7 +30,6 @@
 		<Color r="0.9" g="0.0" b="0.0"/>
 	</Font>
 	<Font name="GameFontNormalRight" inherits="GameFontNormal" justifyH="RIGHT" virtual="true"/>
-	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>

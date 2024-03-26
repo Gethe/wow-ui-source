@@ -13,6 +13,8 @@ local textureKitInfo =
 {
 	["jailerstower-scenario"] = {currencyContainerOffsets = {xOffset = 32, yOffset = -46}},
 	["jailerstower-scenario-nodeaths"] = {currencyContainerOffsets = {xOffset = 34, yOffset = -46}},
+	["plunderstorm-scenariotracker-active"] = {currencyFontObject = GameFontHighlight, hideCurrencyIcon = true, currencyContainerOffsets = {xOffset = 40, yOffset = -46}, currencyFontColor = WHITE_FONT_COLOR},
+	["plunderstorm-scenariotracker-waiting"] = {currencyFontObject = GameFontHighlight, hideCurrencyIcon = true, currencyContainerOffsets = {xOffset = 40, yOffset = -46}, currencyFontColor = WHITE_FONT_COLOR},
 }
 
 local DEFAULT_CURRENCY_FRAME_WIDTH = 95;
@@ -41,8 +43,14 @@ function UIWidgetTemplateScenarioHeaderCurrenciesAndBackgroundMixin:Setup(widget
 		currencyFrame:Show();
 
 		local enabledState = currencyInfo.isCurrencyMaxed and Enum.WidgetEnabledState.Red or Enum.WidgetEnabledState.Yellow;
-		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState);
-		currencyFrame.Text:SetPoint("LEFT", currencyFrame.Icon, "RIGHT", 8, 0);
+		local hideCurrencyIcon = textureKitInfo and textureKitInfo.hideCurrencyIcon;
+		local customFontObj = textureKitInfo and textureKitInfo.currencyFontObject;
+		local customFontColor = textureKitInfo and textureKitInfo.currencyFontColor;
+		currencyFrame:Setup(widgetContainer, currencyInfo, enabledState, nil, hideCurrencyIcon, customFontObj, customFontColor);
+
+		if not hideCurrencyIcon then
+			currencyFrame.Text:SetPoint("LEFT", currencyFrame.Icon, "RIGHT", 8, 0);
+		end
 
 		if previousCurrencyFrame then
 			currencyFrame:SetPoint("TOPLEFT", previousCurrencyFrame, "TOPRIGHT", 10, 0);

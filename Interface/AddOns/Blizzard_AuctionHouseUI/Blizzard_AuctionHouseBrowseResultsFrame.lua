@@ -158,7 +158,7 @@ function AuctionHouseBrowseResultsFrameMixin:OnBrowseResultSelected(browseResult
 			if itemKeyInfo and itemKeyInfo.battlePetLink then
 				DressUpBattlePetLink(itemKeyInfo.battlePetLink);
 			else
-				local _, itemLink = GetItemInfo(browseResult.itemKey.itemID);
+				local _, itemLink = C_Item.GetItemInfo(browseResult.itemKey.itemID);
 				DressUpLink(itemLink);
 			end
 		end

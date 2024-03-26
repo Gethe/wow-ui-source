@@ -4,6 +4,10 @@ function AddPerksProgramTutorials()
 		TutorialManager:AddWatcher(Class_PerksProgramFreezeItemWatcher:new(), true);
 	end
 
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_OVERWRITE_FROZEN_ITEM) then
+		TutorialManager:AddWatcher(Class_PerksProgramOverwriteFrozenItemWatcher:new(), true);
+	end
+
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PERKS_PROGRAM_HIDE_ARMOR) then
 		TutorialManager:AddWatcher(Class_PerksProgramProductSelectedWatcher:new(), true);
 	end
@@ -33,30 +37,46 @@ function Class_PerksProgramFreezeItemWatcher:OnInitialize()
 		cvarBitfield = "closedInfoFrames",
 		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_FREEZE_ITEM,
 		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.BOTTOM,
+		targetPoint = HelpTip.Point.BottomEdgeLeft,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
 		alignment = HelpTip.Alignment.Left,
 		acknowledgeOnHide = false,
+		offsetX = 60,
+		offsetY	= 15,
 	};
 end
 
 function Class_PerksProgramFreezeItemWatcher:ShowHelpTip()
-	self.target = PerksProgramFrame.ProductsFrame.ProductsScrollBoxContainer.PerksProgramHoldFrame.FrozenProductContainer.ProductButton.FrozenArtContainer;
+	self.target = PerksProgramFrame.ProductsFrame.ProductsScrollBoxContainer.PerksProgramHoldFrame;
 	HelpTip:Show(self.target, self.helpTipInfo);
 end
 
 function Class_PerksProgramFreezeItemWatcher:StartWatching()
 	EventRegistry:RegisterCallback("PerksProgramFrame.OnShow", self.OnPerkProgramFrameShow, self);
+
+	EventRegistry:RegisterFrameEventAndCallback("PERKS_PROGRAM_SET_FROZEN_ITEM", self.OnProductFrozen, self);
 end
 
 function Class_PerksProgramFreezeItemWatcher:StopWatching()
 	EventRegistry:UnregisterCallback("PerksProgramFrame.OnShow", self);
+
+	EventRegistry:UnregisterFrameEventAndCallback("PERKS_PROGRAM_SET_FROZEN_ITEM", self);
 end
 
 function Class_PerksProgramFreezeItemWatcher:OnPerkProgramFrameShow()
-	C_Timer.After(0.1, function()
-		self:ShowHelpTip();
-	end);
+	if PerksProgramFrame:HasFrozenItem() then
+		self:FinishTutorial();
+		return;
+	end
+
+	self:ShowHelpTip();
+end
+
+function Class_PerksProgramFreezeItemWatcher:OnProductFrozen()
+	if PerksProgramFrame:HasFrozenItem() then
+		self:FinishTutorial();
+		return;
+	end
 end
 
 function Class_PerksProgramFreezeItemWatcher:OnInterrupt(interruptedBy)
@@ -66,6 +86,70 @@ end
 function Class_PerksProgramFreezeItemWatcher:FinishTutorial()
 	TutorialManager:StopWatcher(self:Name(), true);
 	HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_FREEZE_ITEM);
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+Class_PerksProgramOverwriteFrozenItemWatcher = class("PerksProgramOverwriteFrozenItemWatcher", Class_TutorialBase);
+function Class_PerksProgramOverwriteFrozenItemWatcher:OnInitialize()
+	self.helpTipInfo = {
+		text = TUTORIAL_PERKS_PROGRAM_OVERWRITE_FROZEN_ITEM,
+		cvarBitfield = "closedInfoFrames",
+		bitfieldFlag = LE_FRAME_TUTORIAL_PERKS_PROGRAM_OVERWRITE_FROZEN_ITEM,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		targetPoint = HelpTip.Point.BottomEdgeLeft,
+		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
+		alignment = HelpTip.Alignment.Left,
+		acknowledgeOnHide = false,
+		offsetX = 60,
+		offsetY	= 15,
+	};
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:ShowHelpTip()
+	self.target = PerksProgramFrame.ProductsFrame.ProductsScrollBoxContainer.PerksProgramHoldFrame;
+	HelpTip:Show(self.target, self.helpTipInfo);
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:StartWatching()
+	EventRegistry:RegisterCallback("PerksProgramFrame.OnShow", self.OnPerkProgramFrameShow, self);
+
+	EventRegistry:RegisterFrameEventAndCallback("PERKS_PROGRAM_SET_FROZEN_ITEM", self.OnProductFrozen, self);
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:StopWatching()
+	EventRegistry:UnregisterCallback("PerksProgramFrame.OnShow", self);
+
+	EventRegistry:UnregisterFrameEventAndCallback("PERKS_PROGRAM_SET_FROZEN_ITEM", self);
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:OnPerkProgramFrameShow()
+	self.hasFrozenItem = PerksProgramFrame:HasFrozenItem();
+	self:TryShowHelptip();
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:OnProductFrozen()
+	if self.hasFrozenItem then
+		self:FinishTutorial();
+		return;
+	end
+
+	self.hasFrozenItem = PerksProgramFrame:HasFrozenItem();
+	self:TryShowHelptip();
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:TryShowHelptip()
+	if self.hasFrozenItem then
+		self:ShowHelpTip();
+	end
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:OnInterrupt(interruptedBy)
+	self:Complete();
+end
+
+function Class_PerksProgramOverwriteFrozenItemWatcher:FinishTutorial()
+	TutorialManager:StopWatcher(self:Name(), true);
+	HelpTip:Hide(self.target, TUTORIAL_PERKS_PROGRAM_OVERWRITE_FROZEN_ITEM);
 end
 
 -- ------------------------------------------------------------------------------------------------------------

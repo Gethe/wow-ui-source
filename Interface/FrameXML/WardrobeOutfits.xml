@@ -259,9 +259,17 @@ UI_shared.xsd">
 		</Scripts>
 	</Frame>
 
-	<Frame name="WardrobeOutfitCheckAppearancesFrame" inherits="LoadingSpinnerTemplate" hidden="true" mixin="WardrobeOutfitCheckAppearancesMixin">
+	<Frame name="WardrobeOutfitCheckAppearancesFrame" hidden="true" mixin="WardrobeOutfitCheckAppearancesMixin">
+		<Size x="40" y="40"/>
+		<Frames>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="CENTER" y="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnUpdate method="OnUpdate"/>
 			<OnHide method="OnHide"/>

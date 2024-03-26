@@ -143,8 +143,12 @@ end
 
 function GameTimeFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
-	self:RegisterEvent("CALENDAR_EVENT_ALARM");
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.InGameCalendar) then
+		self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES");
+		self:RegisterEvent("CALENDAR_EVENT_ALARM");
+	else
+		self:Disable();
+	end
 	self:RegisterForClicks("AnyUp");
 	CVarCallbackRegistry:RegisterCallback("restrictCalendarInvites", GameTimeFrame_Refresh, self);
 

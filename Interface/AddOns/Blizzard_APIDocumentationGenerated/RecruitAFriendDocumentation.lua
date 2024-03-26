@@ -7,6 +7,20 @@ local RecruitAFriend =
 	Functions =
 	{
 		{
+			Name = "CanSummonFriend",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClaimActivityReward",
 			Type = "Function",
 
@@ -88,12 +102,37 @@ local RecruitAFriend =
 			},
 		},
 		{
+			Name = "GetSummonFriendCooldown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "startTimeSeconds", Type = "number", Nilable = false },
+				{ Name = "durationSeconds", Type = "number", Nilable = false },
+				{ Name = "enableCooldownTimer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRecruitAFriendLinked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -126,6 +165,16 @@ local RecruitAFriend =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SummonFriend",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "target", Type = "WOWGUID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 	},

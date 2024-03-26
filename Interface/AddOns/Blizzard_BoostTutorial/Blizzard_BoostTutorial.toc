@@ -1,9 +1,9 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard BoostTutorial
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_Dispatcher
 
 Blizzard_TutorialPointerFrame.xml
-Blizzard_TutorialDispatcher.lua
 Blizzard_TutorialQuestManager.lua
 Blizzard_TutorialRangeManager.lua
 

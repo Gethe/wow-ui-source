@@ -96,12 +96,12 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 	self.RoleIcon3:Hide(); 
 
 	for _, specID in ipairs(info.specIds) do 
-		local role = GetSpecializationRoleByID(specID);
-		if(role == "DAMAGER") then
+		local role = GetSpecializationRoleEnumByID(specID);
+		if(role == Enum.LFGRole.Damage) then
 			isDps = true; 
-		elseif (role == "HEALER") then 
+		elseif (role == Enum.LFGRole.Healer) then 
 			isHealer = true; 
-		elseif (role == "TANK") then 
+		elseif (role == Enum.LFGRole.Tank) then 
 			isTank = true; 
 		end
 	end 
@@ -112,9 +112,9 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 		self.AllSpec:SetText(NONE);
 		self.AllSpec:Show();
 	elseif (isHealer and isTank and isDps) then 
-		self.RoleIcon1:SetAtlas(GetMicroIconForRole("TANK"), TextureKitConstants.IgnoreAtlasSize);
-		self.RoleIcon2:SetAtlas(GetMicroIconForRole("HEALER"), TextureKitConstants.IgnoreAtlasSize);
-		self.RoleIcon3:SetAtlas(GetMicroIconForRole("DAMAGER"), TextureKitConstants.IgnoreAtlasSize);
+		self.RoleIcon1:SetAtlas(GetMicroIconForRoleEnum(Enum.LFGRole.Tank), TextureKitConstants.IgnoreAtlasSize);
+		self.RoleIcon2:SetAtlas(GetMicroIconForRoleEnum(Enum.LFGRole.Healer), TextureKitConstants.IgnoreAtlasSize);
+		self.RoleIcon3:SetAtlas(GetMicroIconForRoleEnum(Enum.LFGRole.Damage), TextureKitConstants.IgnoreAtlasSize);
 
 		self.RoleIcon2:Show();
 		self.RoleIcon1:Show();
@@ -126,27 +126,27 @@ function ClubFinderApplicantEntryMixin:UpdateMemberInfo(info)
 
 		local icon1Role;
 		if isTank then
-		  icon1Role = "TANK";
+		  icon1Role = Enum.LFGRole.Tank;
 		elseif isHealer then
-		  icon1Role = "HEALER";
+		  icon1Role = Enum.LFGRole.Healer;
 		elseif isDps then  
-		  icon1Role = "DAMAGER";
+		  icon1Role = Enum.LFGRole.Damage;
 		end
 
 		local icon2Role;
 		if isHealer and isTank then
-		  icon2Role= "HEALER";
+		  icon2Role= Enum.LFGRole.Healer;
 		elseif isDps and (isTank or isHealer) then
-		  icon2Role= "DAMAGER";
+		  icon2Role= Enum.LFGRole.Damage;
 		end
 
 		if (icon1Role) then
-			self.RoleIcon1:SetAtlas(GetMicroIconForRole(icon1Role), TextureKitConstants.IgnoreAtlasSize);
+			self.RoleIcon1:SetAtlas(GetMicroIconForRoleEnum(icon1Role), TextureKitConstants.IgnoreAtlasSize);
 			self.RoleIcon1:Show();
 		end
 
 		if (icon2Role) then
-			self.RoleIcon2:SetAtlas(GetMicroIconForRole(icon2Role), TextureKitConstants.IgnoreAtlasSize);
+			self.RoleIcon2:SetAtlas(GetMicroIconForRoleEnum(icon2Role), TextureKitConstants.IgnoreAtlasSize);
 			self.RoleIcon2:Show();
 		end
 	end
@@ -316,12 +316,12 @@ function ClubFinderApplicantSpecSortReturnSpecValue(specIds)
 	local isDps, isHealer, isTank = false; 
 	local specReturnValue = 0; 
 	for _, specID in ipairs(specIds) do 
-		local role = GetSpecializationRoleByID(specID);
-		if(role == "DAMAGER") then
+		local role = GetSpecializationRoleEnumByID(specID);
+		if(role == Enum.LFGRole.Damage) then
 			isDps = true; 
-		elseif (role == "HEALER") then 
+		elseif (role == Enum.LFGRole.Healer) then 
 			isHealer = true; 
-		elseif (role == "TANK") then 
+		elseif (role == Enum.LFGRole.Tank) then 
 			isTank = true; 
 		end
 	end 

@@ -26,6 +26,9 @@ function BarberShopMixin:OnEvent(event, ...)
 	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
+		if (CollectionsJournal and C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
+			MountJournal_SetPendingDragonMountChanges(true);
+		end
 		self:Cancel();
 	elseif event == "BARBER_SHOP_CAMERA_VALUES_UPDATED" then
 		self:ResetCharacterRotation();

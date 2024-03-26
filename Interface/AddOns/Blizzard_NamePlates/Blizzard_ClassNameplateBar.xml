@@ -27,7 +27,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
+				<Texture parentKey="ManaCostPredictionBar" file="Interface\TargetingFrame\UI-StatusBar">
+					<Color r="0.0" g="0.447" b="1.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

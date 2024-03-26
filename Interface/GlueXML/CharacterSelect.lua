@@ -45,7 +45,7 @@ local function UpdateMaxCharactersDisplayed()
 	end
 end
 
-function GenerateBuildString(buildNumber)
+local function GenerateBuildString(buildNumber)
 	if buildNumber == 0 then
 		return "No Login";
 	end
@@ -129,7 +129,8 @@ function CharacterSelectLockedButtonMixin:OnClick()
 	end
 end
 
-function CharacterSelect_OnLoad(self)
+CharacterSelectFrameMixin = { };
+function CharacterSelectFrameMixin:OnLoad()
     CharacterSelectModel:SetSequence(0);
     CharacterSelectModel:SetCamera(0);
 
@@ -140,6 +141,7 @@ function CharacterSelect_OnLoad(self)
     self.selectedIndex = 0;
 	self.selectLast = false;
 	self.backFromCharCreate = false;
+	self.connectingToPlunderstorm = false;
     self.characterPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedButtonTemplate");
 	self.waitingforCharacterList = true;
 	self.showSocialContract = false;
@@ -175,6 +177,10 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("ACCOUNT_SAVE_ENABLED_UPDATE");
 	self:RegisterEvent("ACCOUNT_LOCKED_POST_SAVE_UPDATE");
 	self:RegisterEvent("REALM_HIDDEN_INFO_UPDATE");
+
+	self:AddDynamicEventMethod(EventRegistry, "GameEnvironment.Selected", self.OnGameEnvironmentSelected);
+	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);	
+	CharacterSelectUI_ResetEnvironmentButton();
 
     SetCharSelectModelFrame("CharacterSelectModel");
 
@@ -255,8 +261,20 @@ function CharacterSelect_OnLoad(self)
 	CharacterSelectCharacterFrame.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 
-function CharacterSelect_OnShow(self)
-    DebugLog("Select_OnShow");
+function CharacterSelectFrameMixin:OnGameEnvironmentSelected(requestedEnvironment)
+	assert(requestedEnvironment);
+	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= requestedEnvironment then
+		self.CharacterSelectUI.GameEnvironmentToggleFrame:ChangeGameEnvironment(requestedEnvironment);
+	end
+end
+
+function CharacterSelectFrameMixin:OnRealmListCancel()
+	self.CharacterSelectUI.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoW);
+end
+
+function CharacterSelectFrameMixin:OnShow()
+	CallbackRegistrantMixin.OnShow(self);
+
     InitializeCharacterScreenData();
     SetInCharacterSelect(true);
     CharacterSelect_ResetVeteranStatus();
@@ -383,9 +401,16 @@ function CharacterSelect_OnShow(self)
 	if not self.showSocialContract then
 		C_SocialContractGlue.GetShouldShowSocialContract();
 	end
+
+	self.CharacterSelectUI.GameEnvironmentToggleFrame:SelectRadioButtonForEnvironment(Enum.GameEnvironment.WoW);
+
+	GeneralDockManager:Hide();
+	ChatFrame1:Hide();
 end
 
-function CharacterSelect_OnHide(self)
+function CharacterSelectFrameMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
+
     CharacterSelect_SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
     CharacterRenameDialog:Hide();
@@ -497,7 +522,7 @@ function CharacterSelect_IsRetrievingCharacterList()
     return CharacterSelect.retrievingCharacters;
 end
 
-function CharacterSelect_OnUpdate(self, elapsed)
+function CharacterSelectFrameMixin:OnUpdate(elapsed)
     if ( self.undeleteFailed ) then
         if (not GlueDialog:IsShown()) then
 			if (self.undeleteFailed == "name") then
@@ -530,7 +555,7 @@ function CharacterSelect_OnUpdate(self, elapsed)
 	GlueDialog_CheckQueuedDialogs();
 end
 
-function CharacterSelect_OnKeyDown(self,key)
+function CharacterSelectFrameMixin:OnKeyDown(key)
     if key == "ESCAPE" then
         if GlueParent_IsSecondaryScreenOpen("options") then
             GlueParent_CloseSecondaryScreen();
@@ -573,8 +598,14 @@ function CharacterSelect_OnKeyDown(self,key)
 end
 
 VAS_QUEUE_TIMES = {};
-function CharacterSelect_OnEvent(self, event, ...)
+function CharacterSelectFrameMixin:OnEvent(event, ...)
     if ( event == "CHARACTER_LIST_UPDATE" ) then
+
+		if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs then
+			self.waitingforCharacterList = false;
+			return;
+		end
+
         PromotionFrame_AwaitingPromotion();
 
         local listSize = ...;
@@ -586,7 +617,7 @@ function CharacterSelect_OnEvent(self, event, ...)
             CharacterSelect_EndCharacterUndelete();
             self.undeleteNoCharacters = true;
             return;
-        elseif (not self.backFromCharCreate and numChars == 0) then
+        elseif (not self.connectingToPlunderstorm and not self.backFromCharCreate and numChars == 0) then
             if (IsKioskGlueEnabled()) then
                 GlueParent_SetScreen("kioskmodesplash");
             else
@@ -607,7 +638,6 @@ function CharacterSelect_OnEvent(self, event, ...)
             GlueDialog_Show("UNDELETE_NO_CHARACTERS");
             self.undeleteNoCharacters = false;
         end
-
 		self.waitingforCharacterList = false;
         UpdateCharacterList();
         UpdateAddonButton();
@@ -733,6 +763,9 @@ function CharacterSelect_OnEvent(self, event, ...)
         local guid, minutes = ...;
 		CharacterSelect_OnVASCharacterQueueStatusUpdate(guid, minutes);
     elseif ( event == "LOGIN_STATE_CHANGED" ) then
+		if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs then
+			return;
+		end
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
@@ -1580,6 +1613,12 @@ function CharacterSelectFrame_OnUpdate()
     end
 end
 
+function CharacterSelectUI_ResetEnvironmentButton()
+	-- because of the CharacterSelect animations, we need to set the initial alpha of the WoW Toggle to 1
+	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame.SelectWoWToggle:SetAlpha(1);
+	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame.SelectWoWLabsToggle:SetAlpha(0.5);
+end
+
 function CharacterSelectRotateRight_OnUpdate(self)
     if ( self:GetButtonState() == "PUSHED" ) then
         SetCharacterSelectFacing(GetCharacterSelectFacing() + CHARACTER_FACING_INCREMENT);
@@ -1608,7 +1647,6 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
         -- Somehow our character order got borked, scroll to top and get an updated character list.
 		CharacterSelectCharacterFrame.ScrollBox:ScrollToBegin();
 		CharacterCreateFrame:ClearPaidServiceInfo();
-
 		CharacterSelect_GetCharacterListUpdate();
         return;
     end
@@ -1890,11 +1928,30 @@ function AccountUpgradePanel_GetBannerInfo()
 	end
 end
 
+function CharacterSelect_UpdateLogo()
+	local showEnvironmentToggle = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None;
+	CharacterSelectLogo:SetShown(not showEnvironmentToggle);
+	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:SetShown(showEnvironmentToggle);
+	CharacterSelect.CharacterSelectUI.LimitedTimeEventFrame:SetShown(showEnvironmentToggle);
+	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
+	if ( showEnvironmentToggle ) then
+		SetExpansionLogo(CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame.SelectWoWToggle.NormalTexture, currentExpansionLevel);
+	else
+		SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
+	end
+end
+
 function AccountUpgradePanel_Update(isExpanded)
+	CharacterSelect_UpdateLogo();
+	
 	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-	SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
     if ( shouldShowBanner ) then
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
+		
+		local gameEnvironmentToggleShown = CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:IsShown();
+		CharSelectAccountUpgradeButton.TopChain1:SetShown(not gameEnvironmentToggleShown);
+		CharSelectAccountUpgradeButton.TopChain2:SetShown(not gameEnvironmentToggleShown);
+
         CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -35);
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
@@ -3600,4 +3657,11 @@ end
 
 function FlowErrorContainerMixin:OnLeave()
 	GetAppropriateTooltip():Hide();
+end
+
+LimitedTimeEventFrameMixin = {};
+
+function LimitedTimeEventFrameMixin:OnLoad()
+	self.Text.BGLabel:SetMaxLines(3);
+	self.Text.Label:SetMaxLines(3);
 end

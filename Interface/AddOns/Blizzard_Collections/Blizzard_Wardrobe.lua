@@ -1209,13 +1209,6 @@ function WardrobeCollectionFrameMixin:OnShow()
 		self:SetTab(self.selectedCollectionTab);
 	end
 	self:UpdateTabButtons();
-
-	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK) and WardrobeCollectionFrame.fromSuggestedContent) then
-		--skip showing info tutorial if we came from suggested content and haven't seen the tracking tutorial
-	elseif (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
-		HelpTip:Show(WardrobeCollectionFrame.InfoButton, WardrobeCollectionFrame.InfoButton.helpTipInfo);
-		TrackingInterfaceShortcutsFrame.NewAlert:ValidateIsShown();
-	end
 end
 
 function WardrobeCollectionFrameMixin:OnHide()
@@ -1311,7 +1304,7 @@ local function IsAnySourceCollected(sources)
 	return false;
 end
 
-function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID, warningString)
+function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources, primarySourceID, warningString, slot)
 	self.tooltipContentFrame = contentFrame;
 	local selectedIndex = self.tooltipSourceIndex;
 	local showUseError = true;
@@ -1321,7 +1314,7 @@ function WardrobeCollectionFrameMixin:SetAppearanceTooltip(contentFrame, sources
 	if WardrobeCollectionFrame.activeFrame == WardrobeCollectionFrame.SetsCollectionFrame then
 		showTrackingInfo = false;
 	end
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, primarySourceID, selectedIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo, slot);
 end
 
 function WardrobeCollectionFrameMixin:HideAppearanceTooltip()
@@ -1579,10 +1572,6 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			return;
 		end
 
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
-			return;
-		end
-
 		local sets = C_TransmogSets.GetAllSets();
 		local hasCollected = false;
 		if (sets) then
@@ -1607,10 +1596,6 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	else
 		if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB)) then
-			return;
-		end
-
-		if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE)) then
 			return;
 		end
 
@@ -2596,6 +2581,10 @@ function WardrobeItemsModelMixin:GetSourceInfoForTracking()
 end
 
 function WardrobeItemsModelMixin:OnMouseDown(button)
+	if ( not self.visualInfo ) then
+		return;
+	end
+
 	local itemsCollectionFrame = self:GetParent();
 	local isChatLinkClick = IsModifiedClick("CHATLINK");
 	if ( isChatLinkClick ) then
@@ -2864,11 +2853,11 @@ function WardrobeCollectionFrameRightClickDropDown_Init(self)
 	local info = UIDropDownMenu_CreateInfo();
 	-- Set Favorite
 	if ( C_TransmogCollection.GetIsAppearanceFavorite(appearanceID) ) then
-		info.text = BATTLE_PET_UNFAVORITE;
+		info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
 		info.arg1 = appearanceID;
 		info.arg2 = 0;
 	else
-		info.text = BATTLE_PET_FAVORITE;
+		info.text = TRANSMOG_ITEM_SET_FAVORITE;
 		info.arg1 = appearanceID;
 		info.arg2 = 1;
 	end
@@ -2947,7 +2936,7 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 end
 
 -- ***** TUTORIAL
-WardrobeCollectionTutorialMixin = { }
+WardrobeCollectionTutorialMixin = { };
 
 function WardrobeCollectionTutorialMixin:OnLoad()
 
@@ -2959,31 +2948,16 @@ function WardrobeCollectionTutorialMixin:OnLoad()
 		offsetX = 32,
 		offsetY = 16,
 		appendFrame = TrackingInterfaceShortcutsFrame,
-		appendFrameYOffset = 15,
 	};
 
 end
 
 function WardrobeCollectionTutorialMixin:OnEnter()
 	HelpTip:Show(self, self.helpTipInfo);
-	TrackingInterfaceShortcutsFrame.NewAlert:ValidateIsShown();
 end
 
 function WardrobeCollectionTutorialMixin:OnLeave()
 	HelpTip:Hide(self, WARDROBE_SHORTCUTS_TUTORIAL_1);
-	TrackingInterfaceShortcutsFrame.NewAlert:ClearAlert();
-end
-
-AlertTrackingFeatureMixin = CreateFromMixins(NewFeatureLabelMixin);
-
-function AlertTrackingFeatureMixin:ClearAlert()
-	NewFeatureLabelMixin.ClearAlert(self);
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE, true);
-	CollectionsMicroButton_SetAlertShown(false);
-end
-
-function AlertTrackingFeatureMixin:ValidateIsShown()
-	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WARDROBE_TRACKING_INTERFACE));
 end
 
 -- ***** WEAPON DROPDOWN
@@ -3566,7 +3540,7 @@ function WardrobeSetsDataProviderMixin:GetIconForSet(setID)
 	if ( not sourceData.icon ) then
 		local sortedSources = self:GetSortedSetSources(setID);
 		if ( sortedSources[1] ) then
-			local _, _, _, _, icon = GetItemInfoInstant(sortedSources[1].itemID);
+			local _, _, _, _, icon = C_Item.GetItemInfoInstant(sortedSources[1].itemID);
 			sourceData.icon = icon;
 		else
 			sourceData.icon = QUESTION_MARK_ICON;
@@ -3928,6 +3902,7 @@ function WardrobeSetsCollectionMixin:SetAppearanceTooltip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 	self.tooltipTransmogSlot = C_Transmog.GetSlotForInventoryType(frame.invType);
 	self.tooltipPrimarySourceID = frame.sourceID;
+	self.tooltipSlot = _G[TransmogUtil.GetSlotName(frame.transmogSlot)];
 	self:RefreshAppearanceTooltip();
 end
 
@@ -3944,7 +3919,7 @@ function WardrobeSetsCollectionMixin:RefreshAppearanceTooltip()
 	end
 	CollectionWardrobeUtil.SortSources(sources, sources[1].visualID, self.tooltipPrimarySourceID); 
 	local warningString = CollectionWardrobeUtil.GetVisibilityWarning(self.Model, self.transmogLocation);	
-	self:GetParent():SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID, warningString);
+	self:GetParent():SetAppearanceTooltip(self, sources, self.tooltipPrimarySourceID, warningString, self.tooltipSlot);
 end
 
 function WardrobeSetsCollectionMixin:ClearAppearanceTooltip()
@@ -4019,7 +3994,7 @@ local function WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit(self)
 			local setInfo = C_TransmogSets.GetSetInfo(baseSet.favoriteSetID);
 			info.text = format(TRANSMOG_SETS_UNFAVORITE_WITH_DESCRIPTION, setInfo.description);
 		else
-			info.text = BATTLE_PET_UNFAVORITE;
+			info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
 		end
 		info.func = function()
 			C_TransmogSets.SetIsFavorite(baseSet.favoriteSetID, false);
@@ -4030,7 +4005,7 @@ local function WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit(self)
 			local setInfo = C_TransmogSets.GetSetInfo(targetSetID);
 			info.text = format(TRANSMOG_SETS_FAVORITE_WITH_DESCRIPTION, setInfo.description);
 		else
-			info.text = BATTLE_PET_FAVORITE;
+			info.text = TRANSMOG_ITEM_SET_FAVORITE;
 		end
 		info.func = function()
 			C_TransmogSets.SetIsFavorite(targetSetID, true);
@@ -4276,7 +4251,32 @@ end
 
 WardrobeSetsDetailsItemMixin = { };
 
+function WardrobeSetsDetailsItemMixin:OnLoad()
+	UIDropDownMenu_Initialize(self.RightClickDropDown, nil, "MENU");
+	self.RightClickDropDown.initialize = WardrobeSetsDetailsItemFrameRightClickDropDown_Init;
+end
+
+function WardrobeSetsDetailsItemMixin:OnShow()
+	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE");
+
+	if ( not self.sourceID ) then
+		return;
+	end
+
+	local sourceInfo = C_TransmogCollection.GetSourceInfo(self.sourceID);
+	self.visualID = sourceInfo.visualID;
+
+	self.Favorite.Icon:SetShown(C_TransmogCollection.GetIsAppearanceFavorite(self.visualID));
+end
+
+function WardrobeSetsDetailsItemMixin:OnHide()
+	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE");
+end
+
+
 function WardrobeSetsDetailsItemMixin:OnEnter()
+	self.transmogSlot = C_Transmog.GetSlotForInventoryType(self.invType);
+
 	self:GetParent():GetParent():SetAppearanceTooltip(self)
 
 	self:SetScript("OnUpdate",
@@ -4292,9 +4292,8 @@ function WardrobeSetsDetailsItemMixin:OnEnter()
 	if ( self.New:IsShown() ) then
 		self.New:Hide();
 
-		local transmogSlot = C_Transmog.GetSlotForInventoryType(self.invType);
 		local setID = WardrobeCollectionFrame.SetsCollectionFrame:GetSelectedSetID();
-		C_TransmogSets.ClearSetNewSourcesForSlot(setID, transmogSlot);
+		C_TransmogSets.ClearSetNewSourcesForSlot(setID, self.transmogSlot);
 		local baseSetID = C_TransmogSets.GetBaseSetID(setID);
 		SetsDataProvider:ResetBaseSetNewStatus(baseSetID);
 
@@ -4302,13 +4301,24 @@ function WardrobeSetsDetailsItemMixin:OnEnter()
 	end
 end
 
+function WardrobeSetsDetailsItemMixin:OnEvent(event, ...)
+	if ( event == "TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE" ) then
+		local itemAppearanceID, isFavorite = ...;
+
+		if ( self.visualID == itemAppearanceID ) then
+			self.Favorite.Icon:SetShown(isFavorite);
+		end
+	end
+end
+
+
 function WardrobeSetsDetailsItemMixin:OnLeave()
 	self:SetScript("OnUpdate", nil);
 	ResetCursor();
 	WardrobeCollectionFrame:HideAppearanceTooltip();
 end
 
-function WardrobeSetsDetailsItemMixin:OnMouseDown()
+function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local sourceInfo = C_TransmogCollection.GetSourceInfo(self.sourceID);
 		local slot = C_Transmog.GetSlotForInventoryType(sourceInfo.invType);
@@ -4328,6 +4338,44 @@ function WardrobeSetsDetailsItemMixin:OnMouseDown()
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		DressUpVisual(self.sourceID);
 	end
+
+	if ( button == "LeftButton" ) then
+		CloseDropDownMenus();
+	elseif ( button == "RightButton" ) then
+		local dropDown = self.RightClickDropDown;
+		if ( dropDown.activeFrame ~= self ) then
+			CloseDropDownMenus();
+		end
+		if ( not self.collected ) then
+			return;
+		end
+		dropDown.activeFrame = self;
+		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
+end
+
+function WardrobeSetsDetailsItemFrameRightClickDropDown_Init(self)
+	local appearanceID = self:GetParent().visualID;
+	local info = UIDropDownMenu_CreateInfo();
+	-- Set Favorite
+	if ( C_TransmogCollection.GetIsAppearanceFavorite(appearanceID) ) then
+		info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
+		info.arg1 = appearanceID;
+		info.arg2 = 0;
+	else
+		info.text = TRANSMOG_ITEM_SET_FAVORITE;
+		info.arg1 = appearanceID;
+		info.arg2 = 1;
+	end
+	info.notCheckable = true;
+	info.func = function(_, visualID, value) C_TransmogCollection.SetIsAppearanceFavorite(visualID, (value == 1)); end;
+	UIDropDownMenu_AddButton(info);
+	-- Cancel
+	info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	info.text = CANCEL;
+	UIDropDownMenu_AddButton(info);
 end
 
 WardrobeSetsTransmogMixin = { };
@@ -4668,10 +4716,10 @@ function WardrobeSetsTransmogMixin:OpenRightClickDropDown()
 	local setID = self.RightClickDropDown.activeFrame.setID;
 	local info = UIDropDownMenu_CreateInfo();
 	if ( C_TransmogSets.GetIsFavorite(setID) ) then
-		info.text = BATTLE_PET_UNFAVORITE;
+		info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
 		info.func = function() self:SetFavorite(setID, false); end
 	else
-		info.text = BATTLE_PET_FAVORITE;
+		info.text = TRANSMOG_ITEM_SET_FAVORITE;
 		info.func = function() self:SetFavorite(setID, true); end
 	end
 	info.notCheckable = true;

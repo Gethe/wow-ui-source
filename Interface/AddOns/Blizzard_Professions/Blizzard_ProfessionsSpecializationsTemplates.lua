@@ -343,7 +343,7 @@ function ProfessionsSpecPathMixin:OnEnter() -- Override
 		self.IconMouseoverHighlight:Show();
 	end
 
-	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.nodeInfo.ID);
+	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.nodeInfo.ID, self:GetName());
 end
 
 function ProfessionsSpecPathMixin:OnLeave() -- Override

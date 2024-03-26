@@ -3,6 +3,10 @@ CHARACTERFRAME_EXPANDED_WIDTH = 540;
 
 local NUM_CHARACTERFRAME_TABS = 3;
 function ToggleCharacter (tab, onlyShow)
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterPanel) then
+		return;
+	end
+
 	local subFrame = _G[tab];
 	if ( subFrame ) then
 		if (not subFrame.hidden) then

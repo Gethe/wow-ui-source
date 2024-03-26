@@ -198,8 +198,10 @@ UI_shared.xsd">
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	
+	<Frame name="ContainerFrameContainer" parent="UIParent" setAllPoints="true" toplevel="true" inherits="PingTopLevelPassThroughAttributeTemplate"/>
 
-	<Frame name="ContainerFrameTemplate" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameMixin" parent="UIParent" parentArray="ContainerFrames" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="ContainerFrameTemplate" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameMixin" parent="ContainerFrameContainer" parentArray="ContainerFrames" frameStrata="MEDIUM" movable="true" enableMouse="true" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="HeldBagLayout" type="string"/>
 			<KeyValue key="onCloseCallback" value="ContainerFrame_OnCloseButtonClicked" type="global"/>

@@ -343,14 +343,14 @@ end
 function UnitPopupRafSummonButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
 	local guid = UnitPopupSharedUtil.GetGUID();
-	if not guid or dropdownMenu.isMobile or not IsRecruitAFriendLinked(guid) then
+	if not guid or dropdownMenu.isMobile or not C_RecruitAFriend.IsRecruitAFriendLinked(guid) then
 		return false;
 	end
 	return true;
 end	
 
 function UnitPopupRafSummonButtonMixin:OnClick()
-	SummonFriend(UnitPopupSharedUtil.GetGUID(), UnitPopupSharedUtil.GetFullPlayerName());
+	C_RecruitAFriend.SummonFriend(UnitPopupSharedUtil.GetGUID(), UnitPopupSharedUtil.GetFullPlayerName());
 end
 
 function UnitPopupBnetTargetButtonMixin:IsEnabled()

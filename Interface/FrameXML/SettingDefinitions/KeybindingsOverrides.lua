@@ -1,6 +1,12 @@
 KeybindingsOverrides = {}
 
 function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
+	if Settings.IsPlunderstorm() then
+		local requiredSettingName = nil;
+		local expandedByDefault = true;
+		AddBindingCategory(WOWLABS_BINDING_HEADER, requiredSettingName, expandedByDefault);
+	end
+
 	AddBindingCategory(BINDING_HEADER_MOVEMENT);
 	AddBindingCategory(BINDING_HEADER_INTERFACE);
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR);
@@ -24,7 +30,8 @@ end
 
 function KeybindingsOverrides.CreateBindingButtonSettings(layout)
 	-- Click Cast Bindings
-	do
+	-- Plunderstorm doesn't have targeted spells.
+	if not Settings.IsPlunderstorm() then
 		local function OnButtonClick(button, buttonName, down)
 			local skipTransitionBackToOpeningPanel = true;
 			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
@@ -37,7 +44,8 @@ function KeybindingsOverrides.CreateBindingButtonSettings(layout)
 	end
 
 	-- Quick keybind
-	do
+	-- Plunderstorm doesn't support quick keybind right now
+	if not Settings.IsPlunderstorm() then
 		local function OnButtonClick(button, buttonName, down)
 			local skipTransitionBackToOpeningPanel = true;
 			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
