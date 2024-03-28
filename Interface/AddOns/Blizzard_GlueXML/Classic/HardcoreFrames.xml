@@ -148,6 +148,8 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								self:Disable();
+								ReincarnateInProgressSpinner:Show()
 								C_CharacterCreation.FinalizeReincarnation();
 							</OnClick>
 						</Scripts>
@@ -163,6 +165,19 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Frame name="ReincarnateInProgressSpinner" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="CharacterReincarnatePopUpText2" relativePoint="TOP" x="0" y="25" />
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								self.Anim:Play();
+							</OnShow>
+							<OnHide>
+								self.Anim:Stop();
+							</OnHide>
+						</Scripts>
+					</Frame>
 				</Frames>
 			</Frame>
 			<EditBox name="CharacterReincarnatePopUpEditBox" letters="32" historyLines="1">
@@ -198,6 +213,8 @@
 					</OnTextChanged>
 					<OnEnterPressed>
 						if ( CharacterReincarnatePopUpButton1:IsEnabled() ) then
+							ReincarnateInProgressSpinner:Show()
+							CharacterReincarnatePopUpButton1:Disable();
 							C_CharacterCreation.FinalizeReincarnation();
 						end
 					</OnEnterPressed>
@@ -209,8 +226,11 @@
 			</EditBox>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<OnShow>
 				self:Raise();
+				ReincarnateInProgressSpinner:Hide()
 			</OnShow>
 			<OnHide>
 				CharacterReincarnatePopUpEditBox:SetText("");

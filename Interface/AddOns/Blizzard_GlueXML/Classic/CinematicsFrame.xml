@@ -181,10 +181,18 @@
 			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
 				<Size x="176" y="78"/>
 				<Anchors>
-					<Anchor point="CENTER" x="0" y="-48"/>
+					<Anchor point="LEFT" x="40" y="-48"/>
 				</Anchors>
 				<NormalTexture atlas="StreamCinematic-LK-Up" />
 				<PushedTexture atlas="StreamCinematic-LK-Down" />
+			</Button>
+			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-40" y="-48"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-CC-Up" />
+				<PushedTexture atlas="StreamCinematic-CC-Down" />
 			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>

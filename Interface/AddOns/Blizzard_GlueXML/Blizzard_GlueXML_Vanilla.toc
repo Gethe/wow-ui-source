@@ -45,8 +45,8 @@ PromotionFrame.xml
 StarterEditionPopUp.xml
 MovieFrame.lua
 MovieFrame.xml
-Vanilla\CinematicsFrame.lua
-Vanilla\CinematicsFrame.xml
+Classic\CinematicsFrame.lua
+Classic\CinematicsFrame.xml
 Vanilla\CreditsFrame.lua
 Vanilla\CreditsFrame.xml
 Classic\GlueMenuFrame.lua

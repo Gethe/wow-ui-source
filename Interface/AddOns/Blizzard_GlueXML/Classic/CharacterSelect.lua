@@ -1035,7 +1035,7 @@ function UpdateCharacterList(skipSelect)
                     end
 
                     if(selfFoundButton) then
-                        selfFoundButton:SetShown((C_GameRules.IsSelfFoundAllowed() and IsCharacterSelfFound(i+CHARACTER_LIST_OFFSET)));
+                        selfFoundButton:SetShown((C_GameRules.IsSelfFoundAllowed() and IsCharacterSelfFound(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET))));
                     end
 
                     locationText:SetText(zone);
@@ -3644,7 +3644,7 @@ function Reincarnation_StartReincarnation()
     local name, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(charIndex));
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     C_CharacterCreation.ClearCharacterTemplate();
-    C_CharacterCreation.StartReincarnation(guid, name);
+    C_Reincarnation.StartReincarnation(guid, name);
     CharacterCreateNameEdit:SetText(name);
     GlueParent_SetScreen("charcreate");
 end

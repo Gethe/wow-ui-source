@@ -2415,7 +2415,9 @@ function BlizzardGroups_UpdateShowTab()
 end
 
 function BlizzardGroups_ShouldShowTab()
-	return COMMUNITY_FRAME_HAS_BEEN_SHOWN or CommunitiesUtil.IsInCommunity() or CommunitiesUtil.HasCommunityInvite() or GetCVarBool("alwaysShowBlizzardGroupsTab");
+	-- Temporarily disabling this tab for Cata Beta
+	return false;
+	--return COMMUNITY_FRAME_HAS_BEEN_SHOWN or CommunitiesUtil.IsInCommunity() or CommunitiesUtil.HasCommunityInvite() or GetCVarBool("alwaysShowBlizzardGroupsTab");
 end
 
 function FriendsFrame_ToggleToCommunities(selectedTab)

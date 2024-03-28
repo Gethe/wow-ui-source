@@ -872,7 +872,24 @@
 			</Frame>
 		</Frames>
 	</Frame>
-<!--
+
+	<!--
+*******************************************************************************
+    ButtonFrameTemplateMinimizable
+	This is a Button Frame that is minimizable
+
+	Show/hide the Button bar using:
+	ButtonFrameTemplate_HideButtonBar(self)
+	ButtonFrameTemplate_ShowButtonBar(self)
+*******************************************************************************
+-->
+	<Frame name="ButtonFrameTemplateMinimizable" inherits="ButtonFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="PortraitFrameTemplateMinimizable" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<!--
 *******************************************************************************
     MagicButtonTemplate
 	This is a template for buttons that can be used with ButtonFrameTemplate.

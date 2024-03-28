@@ -663,11 +663,8 @@ function MoneyFrame_UpdateTrialErrorButton(self)
 	return money;
 end
 
-function SetMoneyFrameColor(frameName, color)
-	local moneyFrame = _G[frameName];
-	if ( not moneyFrame ) then
-		return;
-	end
+
+function SetMoneyFrameColorByFrame(moneyFrame, color)
 	local fontObject;
 	if ( moneyFrame.small ) then
 		if ( color == "yellow" ) then
@@ -691,13 +688,22 @@ function SetMoneyFrameColor(frameName, color)
 		end
 	end
 
-	local goldButton = _G[frameName.."GoldButton"];
-	local silverButton = _G[frameName.."SilverButton"];
-	local copperButton = _G[frameName.."CopperButton"];
+	local goldButton = _G[moneyFrame:GetName().."GoldButton"];
+	local silverButton = _G[moneyFrame:GetName().."SilverButton"];
+	local copperButton = _G[moneyFrame:GetName().."CopperButton"];
 
 	goldButton:SetNormalFontObject(fontObject);
 	silverButton:SetNormalFontObject(fontObject);
 	copperButton:SetNormalFontObject(fontObject);
+end
+
+function SetMoneyFrameColor(frameName, color)
+	local moneyFrame = _G[frameName];
+	if ( not moneyFrame ) then
+		return;
+	end
+	
+	SetMoneyFrameColorByFrame(moneyFrame, color);
 end
 
 function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)

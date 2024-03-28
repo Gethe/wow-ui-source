@@ -121,12 +121,20 @@ end
 function CinematicsFrame_OnShow(self)
 	self:Raise();
 	local numMovies = GetClientDisplayExpansionLevel() + 1;
+
+	-- if we are on an odd expansion number, center the last button
+	if (math.fmod(numMovies,2) ~= 0) then
+		local button = _G["CinematicsButton"..numMovies];
+		local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint();
+		button:SetPoint(point, relativeTo, relativePoint, offsetX + 95, offsetY);
+	end
+
 	for i = 1, numMovies do
 		local button = _G["CinematicsButton"..i];
 		if ( not button ) then
 			break;
 		end
-		button:Show();
+		button:Show();		
 		CinematicsButton_Update(button);
 	end
 	GlueParent_AddModalFrame(self);

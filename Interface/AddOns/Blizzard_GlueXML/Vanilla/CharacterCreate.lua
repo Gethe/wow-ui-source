@@ -245,5 +245,6 @@ end
 function CharacterCreate_CancelReincarnation()
 	CharacterCreateNameEdit:Enable();
     CharacterCreateRandomName:Enable();
-	C_CharacterCreation.StopReincarnation();
+	CharacterReincarnatePopUpDialog:Hide();
+	C_Reincarnation.StopReincarnation();
 end

@@ -383,6 +383,10 @@ function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
 	return alert:IsShown();
 end
 
+function MainMenuMicroButton_HideAlert(microButton)
+	-- no-op for Classic
+end
+
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
@@ -538,4 +542,22 @@ function LFGMicroButton_OnLoad(self)
 	self.tooltipText = MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFGPARENT");
 	self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 	self.minLevel = SHOW_LFD_LEVEL;
+end
+
+GuildMicroButtonMixin = {};
+
+function GuildMicroButtonMixin:OnLoad()
+end
+
+function GuildMicroButtonMixin:MarkCommunitiesInvitiationDisplayed(clubId)
+end
+
+function GuildMicroButtonMixin:OnEvent(event, ...)
+end
+
+function GuildMicroButtonMixin:OnClick(button, down)
+end
+
+function GuildMicroButtonMixin:GetNewClubId()
+	return self.newClubId;
 end

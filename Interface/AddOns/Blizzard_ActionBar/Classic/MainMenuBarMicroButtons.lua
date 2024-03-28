@@ -331,6 +331,10 @@ function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
 	return alert:IsShown();
 end
 
+function MainMenuMicroButton_HideAlert(microButton)
+	-- no-op for Classic
+end
+
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then

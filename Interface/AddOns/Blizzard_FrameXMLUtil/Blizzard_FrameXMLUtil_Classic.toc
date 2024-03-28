@@ -10,7 +10,7 @@ Classic\QuestUtils.lua
 Classic\MapUtil.lua
 Classic\AuraUtil.lua
 CalendarUtil.lua
-Classic\CommunitiesUtil.lua
+CommunitiesUtil.lua
 AnimationSystem.lua
 CurrencyContainer.lua
 Classic\ArenaUtil.lua

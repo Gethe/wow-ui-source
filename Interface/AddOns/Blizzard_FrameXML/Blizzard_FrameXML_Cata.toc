@@ -37,6 +37,7 @@ Classic\ZoneText.lua
 Classic\ZoneText.xml
 Shared\Cooldown.lua
 Classic\Cooldown.xml
+GuildUtil.lua
 Classic\TutorialFrame.lua
 Classic\TutorialFrame.xml
 Shared\LowHealthFrame.lua

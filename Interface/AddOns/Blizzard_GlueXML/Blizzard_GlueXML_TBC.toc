@@ -45,8 +45,8 @@ PromotionFrame.xml
 StarterEditionPopUp.xml
 MovieFrame.lua
 MovieFrame.xml
-TBC\CinematicsFrame.lua
-TBC\CinematicsFrame.xml
+Classic\CinematicsFrame.lua
+Classic\CinematicsFrame.xml
 TBC\CreditsFrame.lua
 TBC\CreditsFrame.xml
 Classic\GlueMenuFrame.lua

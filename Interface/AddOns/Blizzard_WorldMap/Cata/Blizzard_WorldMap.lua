@@ -126,6 +126,7 @@ function WorldMapMixin:OnEvent(event, ...)
 			WorldMapQuestShowObjectives:Show();
 			WorldMapQuestShowObjectives:SetChecked(GetCVarBool("questPOI"));
 		end
+		WorldMapShowDigsites:SetChecked(GetCVarBool("digSites"));
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		self:SynchronizeDisplayState();
 	end
@@ -729,11 +730,8 @@ function WorldMapArchaeologyShowDigsites_Toggle()
 
 	if ( isChecked ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		WatchFrame.showObjectives = true;
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-		WatchFrame.showObjectives = nil;
 	end
-
 	SetCVar("digSites", isChecked);
 end

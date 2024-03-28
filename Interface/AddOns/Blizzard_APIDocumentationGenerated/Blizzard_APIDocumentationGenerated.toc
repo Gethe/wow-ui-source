@@ -35,6 +35,8 @@ CinematicDocumentation.lua
 ClassTrialDocumentation.lua
 ClientDocumentation.lua
 ClientSceneDocumentation.lua
+ClubDocumentation.lua
+ClubFinderDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
@@ -235,7 +237,6 @@ WowTokenUIDocumentation.lua
 XMLUtilDocumentation.lua
 ZoneScriptDocumentation.lua
 CVarDocumentation.lua
-ClubDocumentation.lua
 CommentatorFrameDocumentation.lua
 CraftInfoDocumentation.lua
 DateAndTimeDocumentation.lua

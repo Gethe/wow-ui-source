@@ -170,6 +170,14 @@ function ButtonFrameTemplate_ShowPortrait(self)
 	self.LeftBorder:SetPoint("TOPLEFT", self.PortraitFrame, "BOTTOMLEFT",  8, 0);
 end
 
+function ButtonFrameTemplateMinimizable_HidePortrait(self)
+	ButtonFrameTemplate_HidePortrait(self);
+end
+
+function ButtonFrameTemplateMinimizable_ShowPortrait(self)
+	ButtonFrameTemplate_ShowPortrait(self);
+end
+
 -- A bit ugly, we want the talent frame to display a dialog box in certain conditions.
 function UIPanelCloseButton_OnClick(self)
 	local parent = self:GetParent();

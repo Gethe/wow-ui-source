@@ -2893,7 +2893,7 @@ if (C_GameRules.IsHardcoreActive()) then
 			-- Set some state, then start logout process as normal
 			local guid = UnitGUID("player");
 			local _, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
-			C_CharacterCreation.StartReincarnation(guid, characterName);
+			C_Reincarnation.StartReincarnation(guid, characterName);
 			Logout();
 		end,
 		OnUpdate = function(self, elapsed)

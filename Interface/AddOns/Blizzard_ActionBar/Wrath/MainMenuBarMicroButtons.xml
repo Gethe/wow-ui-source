@@ -263,6 +263,52 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!--Texture parentKey="FlashContent" atlas="UI-HUD-MicroMenu-GuildCommunities-Mouseover" useAtlasSize="true" alphaMode="BLEND" hidden="true"/-->
+			</Layer>
+			<Layer level ="OVERLAY">
+				<Texture parentKey="Emblem" file="Interface\GuildFrame\GuildEmblems_01">
+					<Size x="12" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT" textureSubLevel="5">
+				<Texture parentKey="HighlightEmblem" file="Interface\GuildFrame\GuildEmblems_01">
+					<Size x="12" y="14"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<!--Texture parentKey="UnreadNotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification"-->
+						<!--Size x="10" y="10"/-->
+							<!--Anchors-->
+								<!--Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="-1" y="1"/-->
+							<!--/Anchors-->
+						<!--/Texture-->
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
 	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
