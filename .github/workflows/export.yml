@@ -17,7 +17,7 @@ jobs:
         rm -r !(*.git*|*.sublime-*|*.md)
 
     - name: Install Packages
-      run: sudo apt-get install libcurl4-openssl-dev
+      run: sudo apt-get update && sudo apt-get install libcurl4-openssl-dev
 
     - name: Install Lua
       uses: leafo/gh-actions-lua@v10.0.0
