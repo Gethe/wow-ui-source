@@ -151,8 +151,13 @@ function EventToastManagerFrameMixin:OnMouseDown(button)
 	end
 end
 
-function EventToastManagerFrameMixin:UpdateAnchor(customOffsetY)
+function EventToastManagerFrameMixin:UpdateAnchor(customOffsetX, customOffsetY)
 	self:ClearAllPoints();
+
+	if customOffsetX then
+		self:SetPoint("LEFT", UIParent, "LEFT", customOffsetX, 0);
+	end
+
 	self:SetPoint("TOP", 0, customOffsetY or EVENT_TOAST_MANAGER_OFFSET_Y_OVERRIDE or -190);
 end
 
@@ -727,7 +732,9 @@ local NormalTitleAndSubtitleTextureKitInfo = {
 		customBackgroundIgnoreInLayout = true,
 		anchorWidgetToTitle = true,
 		widgetOffsetY = -26,
+		customTopOffsetX = 180,
 		customTopOffsetY = -240,
+		customScale = 0.7,
 	},
 
 	["plunderstorm-toast-finish-lose"] = {
@@ -848,8 +855,8 @@ function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo)
 		self.specialActionContainer:Hide();
 	end
 
-	if textureKitInfo and textureKitInfo.customTopOffsetY then
-		self:GetParent():UpdateAnchor(textureKitInfo.customTopOffsetY);
+	if textureKitInfo and (textureKitInfo.customTopOffsetX or textureKitInfo.customTopOffsetY) then
+		self:GetParent():UpdateAnchor(textureKitInfo.customTopOffsetX, textureKitInfo.customTopOffsetY);
 	end
 
 	self.Title:SetText(toastInfo.title);
