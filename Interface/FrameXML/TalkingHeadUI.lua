@@ -9,8 +9,17 @@ function TalkingHeadFrameMixin:OnLoad()
 
 	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -19);
 
-	local alertSystem = AlertFrame:AddExternallyAnchoredSubSystem(self);
-	AlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
+	if STATIC_TALKING_HEAD_ANCHOR then
+		-- Remove managed frame registration.
+		-- Note: we also skip adding this to the alert frame anchoring system.
+		self.isManagedFrame = false;
+		self.isBottomManagedFrame = false;
+		self:SetScript("OnShow", nil);
+		self:SetScript("OnHide", nil);
+	else
+		local alertSystem = AlertFrame:AddExternallyAnchoredSubSystem(self);
+		AlertFrame:SetSubSystemAnchorPriority(alertSystem, 0);
+	end
 end
 
 function TalkingHeadFrameMixin:OnEvent(event, ...)

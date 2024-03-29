@@ -603,6 +603,10 @@ function FriendsList_CanWhisperFriend(friendType, friendIndex)
 	return false;
 end
 
+local function InWoWLabs()
+	return C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs;
+end
+
 function FriendsList_Update(forceUpdate)
 	local numBNetTotal, numBNetOnline, numBNetFavorite, numBNetFavoriteOnline = BNGetNumFriends();
 	local numBNetOffline = numBNetTotal - numBNetOnline;
@@ -611,10 +615,10 @@ function FriendsList_Update(forceUpdate)
 
 
 	local numWoWTotal = 0;
-	local numWoWOnline = 0
+	local numWoWOnline = 0;
 	local numWoWOffline = 0;
 
-	if not C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs then
+	if not IsOnGlueScreen() and not InWoWLabs() then
 		numWoWTotal = C_FriendList.GetNumFriends();
 		numWoWOnline = C_FriendList.GetNumOnlineFriends();
 		numWoWOffline = numWoWTotal - numWoWOnline;

@@ -437,10 +437,10 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		},
 		anchorInfo = {
 			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
+			relativeTo = "ChatFrame1Tab",
 			relativePoint = "TOPLEFT",
-			offsetX = 0,
-			offsetY = 5,
+			offsetX = 20,
+			offsetY = 150,
 		},
 	},
 
@@ -969,10 +969,10 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 		},
 		anchorInfo = {
 			point = "BOTTOMLEFT",
-			relativeTo = "MainMenuBar",
+			relativeTo = "ChatFrame1Tab",
 			relativePoint = "TOPLEFT",
-			offsetX = 0,
-			offsetY = 5,
+			offsetX = 20,
+			offsetY = 150,
 		},
 	},
 
