@@ -62,6 +62,14 @@ function PetPaperDollFrame_Update()
 	if ( UnitCreatureFamily("pet") ) then
 		PetLevelText:SetText(format(UNIT_LEVEL_TEMPLATE,UnitLevel("pet")).." "..UnitCreatureFamily("pet"));
 	end
+
+	-- Felgaurd needs custom positioning due to its size
+	if (UnitCreatureFamily("pet") == "Felguard") then
+		PetModelFrame:SetPosition(-4.5, 0.75,-0.75);
+	else
+		PetModelFrame:SetPosition(0,0,0);
+	end
+
 	PetLoyaltyText:SetText(GetPetLoyalty());
 	PetExpBar_Update();
 	PetPaperDollFrame_SetResistances();

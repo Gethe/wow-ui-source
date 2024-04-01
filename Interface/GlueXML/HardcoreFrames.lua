@@ -85,9 +85,8 @@ function CharacterReincarnatePopUpDialogMixin:OnLoad()
 end
 
 function CharacterReincarnatePopUpDialogMixin:ShowWarning()
-    local guid, name = C_Reincarnation.GetReincarnatingCharacter();
-    local _, _, _, class, _, _, level = GetCharacterInfoByGUID(guid);
-    CharacterReincarnatePopUpText1:SetFormattedText(REINCARNATE_CHARACTER_CONFIRMATION, name, level, class);
+    local guid, name, className, level = C_Reincarnation.GetReincarnatingCharacter();
+    CharacterReincarnatePopUpText1:SetFormattedText(REINCARNATE_CHARACTER_CONFIRMATION, name, level, className);
     CharacterReincarnatePopUpText1:SetHeight(16 + CharacterDeleteText1:GetHeight() + CharacterDeleteText2:GetHeight() + 23 + CharacterDeleteEditBox:GetHeight() + 8 + CharacterDeleteButton1:GetHeight() + 16);
     CharacterReincarnatePopUpButton1:Disable();
     self:Show()

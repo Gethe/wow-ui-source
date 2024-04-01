@@ -3641,10 +3641,10 @@ end
 
 function Reincarnation_StartReincarnation()
     local charIndex = CharacterSelect.selectedIndex;
-    local name, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(charIndex));
+    local name, _, _, className, _, level, _, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(charIndex));
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     C_CharacterCreation.ClearCharacterTemplate();
-    C_Reincarnation.StartReincarnation(guid, name);
+    C_Reincarnation.StartReincarnation(guid, name, className, level);
     CharacterCreateNameEdit:SetText(name);
     GlueParent_SetScreen("charcreate");
 end

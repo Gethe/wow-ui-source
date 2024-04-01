@@ -2901,8 +2901,9 @@ if (C_GameRules.IsHardcoreActive()) then
 		OnButton3 = function(self)
 			-- Set some state, then start logout process as normal
 			local guid = UnitGUID("player");
-			local _, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
-			C_Reincarnation.StartReincarnation(guid, characterName);
+			local className, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
+			local level = UnitLevel("player");
+			C_Reincarnation.StartReincarnation(guid, characterName, className, level);
 			Logout();
 		end,
 		OnUpdate = function(self, elapsed)
