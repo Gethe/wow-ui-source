@@ -95,7 +95,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+						local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 						Minimap_SetTooltip( pvpType, factionName );
 						GameTooltip:Show();
 					</OnEnter>

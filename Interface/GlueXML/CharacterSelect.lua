@@ -373,7 +373,7 @@ function CharacterSelect_UpdateIfUpdateIsNotPending()
 end
 
 function CharacterSelect_OnShow(self)
-    DebugLog("Select_OnShow");
+    CharacterCreate_CancelReincarnation(); -- If we're back at this screen, we're not reincarnating
     InitializeCharacterScreenData();
     SetInCharacterSelect(true);
     CHARACTER_LIST_OFFSET = 0;
@@ -1035,7 +1035,7 @@ function UpdateCharacterList(skipSelect)
                     end
 
                     if(selfFoundButton) then
-                        selfFoundButton:SetShown((C_GameRules.IsSelfFoundAllowed() and IsCharacterSelfFound(i+CHARACTER_LIST_OFFSET)));
+                        selfFoundButton:SetShown((C_GameRules.IsSelfFoundAllowed() and IsCharacterSelfFound(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET))));
                     end
 
                     locationText:SetText(zone);
@@ -1178,7 +1178,6 @@ function UpdateCharacterList(skipSelect)
         end
     end
 
-    DebugLog(debugText);
     CharacterSelect_UpdateButtonState();
 
     CharacterSelect_UpdateStoreButton();
@@ -2143,6 +2142,11 @@ function CharacterSelect_UpdateButtonState()
         else
             CharSelectCreateCharacterButton:SetDisabledTooltip(nil);
         end
+    end
+    if (CharSelectReincarnateCharacterButton) then
+        local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting;
+        CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
+        CharSelectReincarnateCharacterButton:Enable(); -- Disabled when we are restoring a deleted character
     end
 end
 
@@ -3135,6 +3139,10 @@ function CharacterSelect_StartCharacterUndelete()
     CharSelectChangeRealmButton:Hide();
     CharSelectUndeleteLabel:Show();
 
+    if (CharSelectReincarnateCharacterButton) then
+        CharSelectReincarnateCharacterButton:SetShown(false);
+    end
+
     AccountReactivate_CloseDialogs();
 
     CharacterServicesMaster_UpdateServiceButton();
@@ -3150,6 +3158,11 @@ function CharacterSelect_EndCharacterUndelete()
     CharSelectUndeleteCharacterButton:Show();
     CharSelectChangeRealmButton:Show();
     CharSelectUndeleteLabel:Hide();
+
+    if (CharSelectReincarnateCharacterButton) then
+        local shouldShowReincarnate = C_GameRules.IsHardcoreActive();
+        CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
+    end
 
     CharacterServicesMaster_UpdateServiceButton();
     EndCharacterUndelete();
@@ -3622,4 +3635,16 @@ end
 
 function isInBoostFlow()
 	return CharSelectServicesFlowFrame:IsShown();
+end
+
+-- Reincarnation
+
+function Reincarnation_StartReincarnation()
+    local charIndex = CharacterSelect.selectedIndex;
+    local name, _, _, className, _, level, _, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(charIndex));
+    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+    C_CharacterCreation.ClearCharacterTemplate();
+    C_Reincarnation.StartReincarnation(guid, name, className, level);
+    CharacterCreateNameEdit:SetText(name);
+    GlueParent_SetScreen("charcreate");
 end

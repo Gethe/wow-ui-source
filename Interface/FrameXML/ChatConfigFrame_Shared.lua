@@ -274,18 +274,6 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 	},
 }
 
-do
-	if C_GameRules.IsHardcoreActive() then
-		local guildDeathConfig =
-		{
-			type = "GUILD_DEATHS",
-			checked = function () return IsListeningForMessageType("GUILD_DEATHS"); end;
-			func = function (self, checked) ToggleChatMessageGroup(checked, "GUILD_DEATHS"); end;
-		}
-		table.insert(CHAT_CONFIG_OTHER_SYSTEM, guildDeathConfig);
-	end
-end
-
 CHAT_CONFIG_CHANNEL_LIST = {};
 CHAT_CONFIG_AVAILABLE_CHANNEL_LIST = {};
 CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST = {};

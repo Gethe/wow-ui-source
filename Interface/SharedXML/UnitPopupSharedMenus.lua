@@ -252,7 +252,6 @@ function UnitPopupMenuGlueFriend:GetMenuButtons()
 		UnitPopupGlueInviteButtonMixin,
 		UnitPopupRemoveBnetFriendButtonMixin,
 		UnitPopupBnetBlockButtonMixin,
-		UnitPopupGlueReportButtonMixin,
 		UnitPopupCancelButtonMixin,
 	}
 end 
@@ -263,7 +262,6 @@ function UnitPopupMenuGlueFriendOffline:GetMenuButtons()
 	return {
 		UnitPopupRemoveBnetFriendButtonMixin,
 		UnitPopupBnetBlockButtonMixin,
-		UnitPopupGlueReportButtonMixin,
 		UnitPopupCancelButtonMixin,
 	}
 end

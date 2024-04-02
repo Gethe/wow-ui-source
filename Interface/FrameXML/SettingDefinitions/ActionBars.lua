@@ -9,14 +9,13 @@ local function Register()
 	-- Order set in GameplaySettingsGroup.lua
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[ACTIONBARS_LABEL]);
 
-	-- Action Bars 1-4
-	do
+	-- Action Bars 1-4. Plunderstorm doesn't have usual action bars.
+	if not Settings.IsPlunderstorm() then
 		ActionBarsOverrides.CreateActionBarVisibilitySettings(category, ActionBarSettingsTogglesCache, ActionBarSettingsLastCacheTime, ActionBarSettingsCacheTimeout);
 	end
 
 	-- Lock Action Bars
 	do
-
 		local cbSetting = Settings.RegisterCVarSetting(category, "lockActionBars", Settings.VarType.Boolean, LOCK_ACTIONBAR_TEXT);
 
 		local tooltips = {
@@ -36,7 +35,23 @@ local function Register()
 	end
 
 	-- Show Numbers for Cooldowns
-	Settings.SetupCVarCheckBox(category, "countdownForCooldowns", COUNTDOWN_FOR_COOLDOWNS_TEXT, OPTION_TOOLTIP_COUNTDOWN_FOR_COOLDOWNS);
+	if not Settings.IsPlunderstorm() then
+		Settings.SetupCVarCheckBox(category, "countdownForCooldowns", COUNTDOWN_FOR_COOLDOWNS_TEXT, OPTION_TOOLTIP_COUNTDOWN_FOR_COOLDOWNS);
+	end
+
+	-- Add mirrors of these keybindings for easy access
+	if Settings.IsPlunderstorm() then
+		local actions = { "WOWLABS_ACTIONBUTTON1", "WOWLABS_ACTIONBUTTON2", "WOWLABS_MULTIACTIONBAR1BUTTON1", "WOWLABS_MULTIACTIONBAR1BUTTON2", 
+						"WOWLABS_MULTIACTIONBAR2BUTTON1", "WOWLABS_MULTIACTIONBAR2BUTTON2", "WOWLABS_ITEM1" };
+		for _, action in pairs(actions) do
+			local bindingIndex = C_KeyBindings.GetBindingIndex(action);
+			if bindingIndex then
+				local initializer = CreateKeybindingEntryInitializer(bindingIndex, true);
+				initializer:AddSearchTags(GetBindingName(action));
+				layout:AddInitializer(initializer);
+			end
+		end
+	end
 
 	ActionBarsOverrides.AdjustActionBarSettings(category);
 

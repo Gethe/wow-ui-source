@@ -105,6 +105,17 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetZonePVPInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "pvpType", Type = "cstring", Nilable = false },
+				{ Name = "isSubZonePvP", Type = "bool", Nilable = false },
+				{ Name = "factionName", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "IsInBrawl",
 			Type = "Function",
 
@@ -132,6 +143,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsSubZonePVPPOI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestCrowdControlSpell",
 			Type = "Function",
 
@@ -139,6 +159,19 @@ local PvpInfo =
 			{
 				{ Name = "playerToken", Type = "UnitToken", Nilable = false },
 			},
+		},
+		{
+			Name = "SetPVP",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enablePVP", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "TogglePVP",
+			Type = "Function",
 		},
 	},
 

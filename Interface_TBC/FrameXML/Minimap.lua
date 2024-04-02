@@ -37,7 +37,7 @@ end
 function Minimap_Update()
 	MinimapZoneText:SetText(GetMinimapZoneText());
 
-	local pvpType, isSubZonePvP, factionName = GetZonePVPInfo();
+	local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 	if ( pvpType == "sanctuary" ) then
 		MinimapZoneText:SetTextColor(0.41, 0.8, 0.94);
 	elseif ( pvpType == "arena" ) then

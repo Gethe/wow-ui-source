@@ -483,7 +483,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		end
 		itemHyperLink = itemLink;
 	else
-		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	end
 
 	local isAzeriteEmpowered = false;
@@ -631,7 +631,7 @@ LootAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("LootWonAlertFrameTemp
 
 -- [[ LootUpgradeFrame ]] --
 function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
-	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	local baseQualityColor = ITEM_QUALITY_COLORS[baseQuality];
 	local upgradeQualityColor = ITEM_QUALITY_COLORS[itemRarity];
 
@@ -1017,7 +1017,7 @@ end
 
 -- [[LegendaryItemAlertFrame ]] --
 function LegendaryItemAlertFrame_SetUp(frame, itemLink)
-	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	frame.Icon:SetTexture(itemTexture);
 	frame.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];

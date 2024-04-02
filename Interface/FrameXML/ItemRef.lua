@@ -326,7 +326,7 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			local name, link = GetItemInfo(text);
+			local name, link = C_Item.GetItemInfo(text);
 			if ChatEdit_InsertLink(link) then
 				return;
 			end

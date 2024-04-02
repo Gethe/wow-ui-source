@@ -5,6 +5,15 @@ local URL =
 
 	Functions =
 	{
+		{
+			Name = "LaunchURL",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "url", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =

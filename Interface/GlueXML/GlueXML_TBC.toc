@@ -1,3 +1,4 @@
+..\SharedXML\ProjectConstants.lua
 ..\SharedXML\SharedConstants.lua
 ##DebugHook.lua
 

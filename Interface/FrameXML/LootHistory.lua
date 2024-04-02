@@ -198,7 +198,7 @@ function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 		itemFrame.ItemName:SetText(currencyName);
 		itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
 	else
-		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
+		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = C_Item.GetItemInfo(itemLink);
 		itemFrame.Icon:SetTexture(itemTexture);
 		local colorInfo = ITEM_QUALITY_COLORS[itemRarity];
 		itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
@@ -426,7 +426,7 @@ end
 function LootHistoryDropDown_OnClick()
 	local _, itemLink = C_LootHistory.GetItem(LootHistoryDropDown.itemIdx);
 	if ( itemLink ) then
-		local itemName, itemLink, itemRarity = GetItemInfo(itemLink);
+		local itemName, itemLink, itemRarity = C_Item.GetItemInfo(itemLink);
 		if ( itemRarity >= MASTER_LOOT_THREHOLD ) then
 			local playerName = C_LootHistory.GetPlayerInfo(LootHistoryDropDown.itemIdx, LootHistoryDropDown.playerIdx);
 			StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE, playerName, "LootHistory");

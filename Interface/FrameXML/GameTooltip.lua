@@ -817,7 +817,7 @@ end
 
 function EmbeddedItemTooltip_OnTooltipSetItem(self)
 	if (self.itemID and not self.itemTextureSet) then
-		local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(self.itemID);
+		local _, _, _, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(self.itemID);
 		if (itemTexture) then
 			self.Icon:SetTexture(itemTexture);
 		end
@@ -852,7 +852,7 @@ end
 function EmbeddedItemTooltip_SetItemByID(self, id)
 	self.itemID = id;
 	self.spellID = nil;
-	local itemName, _, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(id);
+	local itemName, _, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(id);
 	self:Show();
 	EmbeddedItemTooltip_PrepareForItem(self);
 	self.Tooltip:SetOwner(self, "ANCHOR_NONE");

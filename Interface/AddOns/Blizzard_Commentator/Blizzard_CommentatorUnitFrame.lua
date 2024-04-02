@@ -399,7 +399,7 @@ function CommentatorUnitFrameMixin:SetCCRemoverItemIcon(itemID)
 	self.CCRemover:SetShown(itemValid);
 
 	if itemValid then
-		local textureID = GetItemIcon(itemID);
+		local textureID = C_Item.GetItemIconByID(itemID);
 		self:SetCCRemoverIcon(textureID);
 	end
 end

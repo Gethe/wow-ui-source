@@ -133,7 +133,7 @@ end
 
 function MerchantFrameItem_UpdateQuality(self, link)
 	-- No quality borders for Classic.
-	--[[local quality = link and select(3, GetItemInfo(link)) or nil;
+	--[[local quality = link and select(3, C_Item.GetItemInfo(link)) or nil;
 	if ( quality ) then
 		self.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
 	else
@@ -597,7 +597,7 @@ function MerchantItemButton_OnModifiedClick(self, button)
 				for i = 1, MAX_ITEM_COST do
 					local itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(self:GetID(), i);
 					if (itemLink and not currencyName) then
-						local myCount = GetItemCount(itemLink, false, false, true);
+						local myCount = C_Item.GetItemCount(itemLink, false, false, true);
 						canAfford = min(canAfford, floor(myCount / (itemValue / stackCount)));
 					end
 				end
@@ -663,7 +663,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
 		elseif ( itemLink ) then
-			local _, _, itemQuality = GetItemInfo(itemLink);
+			local _, _, itemQuality = C_Item.GetItemInfo(itemLink);
 			maxQuality = math.max(itemQuality, maxQuality);
 			if ( itemsString ) then
 				itemsString = itemsString .. LIST_DELIMITER .. format(ITEM_QUANTITY_TEMPLATE, costItemCount, itemLink);
@@ -691,9 +691,9 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local _;
 	local specs = {};
 	if(itemButton.link) then
-		itemName, _, itemQuality = GetItemInfo(itemButton.link);
+		itemName, _, itemQuality = C_Item.GetItemInfo(itemButton.link);
 	end
-	local r, g, b = GetItemQualityColor(itemQuality);
+	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 	local specText = "";
 	
 	if (itemButton.showNonrefundablePrompt) then

@@ -85,7 +85,7 @@ function EngravingFrame_UpdateRuneList (self)
 					currentHeader = currentHeader + 1;
 					
 					header.filter = category;
-					header.name:SetText(GetItemInventorySlotInfo(category));
+					header.name:SetText(C_Item.GetItemInventorySlotInfo(category));
 					
 					if C_Engraving.HasCategoryFilter(category) then
 						header.expandedIcon:Hide();
@@ -141,7 +141,7 @@ function EngravingFrame_UpdateRuneList (self)
 
 	local exclusiveFilter = C_Engraving.GetExclusiveCategoryFilter();
 	if exclusiveFilter then
-		UIDropDownMenu_SetText(EngravingFrameFilterDropDown, GetItemInventorySlotInfo(exclusiveFilter));
+		UIDropDownMenu_SetText(EngravingFrameFilterDropDown, C_Item.GetItemInventorySlotInfo(exclusiveFilter));
 	else
 		if C_Engraving.IsEquippedFilterEnabled() then
 			UIDropDownMenu_SetText(EngravingFrameFilterDropDown, EQUIPPED_RUNES);			
@@ -161,7 +161,7 @@ function EngravingFrame_UpdateCollectedLabel(self)
 		local known, max = C_Engraving.GetNumRunesKnown(exclusiveFilter);
 
 		if exclusiveFilter then
-			label:SetFormattedText(RUNES_COLLECTED_SLOT, known, max, GetItemInventorySlotInfo(exclusiveFilter));
+			label:SetFormattedText(RUNES_COLLECTED_SLOT, known, max, C_Item.GetItemInventorySlotInfo(exclusiveFilter));
 		else
 			label:SetFormattedText(RUNES_COLLECTED, known, max);
 		end
@@ -262,7 +262,7 @@ function RuneFrameFilter_Initialize()
 
 	local categories = C_Engraving.GetRuneCategories(false, true);
 	for _, category in ipairs(categories) do
-		info.text = GetItemInventorySlotInfo(category);
+		info.text = C_Item.GetItemInventorySlotInfo(category);
 
 		local exclusiveFilter = C_Engraving.GetExclusiveCategoryFilter();
 		local checked = false;

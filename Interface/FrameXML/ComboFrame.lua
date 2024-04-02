@@ -32,11 +32,21 @@ function ComboFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_MAXPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
 		ComboFrame_UpdateMax(self);
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
-		self.unit = "vehicle";
+		ComboFrame_SetUnit(self, "vehicle");
 		ComboFrame_UpdateMax(self);
 	elseif ( event == "UNIT_EXITED_VEHICLE" ) then
-		self.unit = "player";
+		ComboFrame_SetUnit(self, "player");
 		ComboFrame_UpdateMax(self);
+	end
+end
+
+function ComboFrame_SetUnit(self, unit)
+	if ( unit == "vehicle" ) then
+		if ( not UnitIgnoresVehicleComboPoints(self.unit) ) then
+			self.unit = "vehicle";
+		end
+	else
+		self.unit = unit;
 	end
 end
 

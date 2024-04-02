@@ -238,12 +238,12 @@ end
 
 function UnitPopupRafGrantLevelButtonMixin:CanShow()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return IsReferAFriendLinked(dropdownMenu.unit)
+	return C_RecruitAFriend.IsReferAFriendLinked(dropdownMenu.unit)
 end
 
 function UnitPopupRafGrantLevelButtonMixin:IsEnabled()
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	return CanGrantLevel(dropdownMenu.unit)
+	return C_RecruitAFriend.CanGrantLevel(dropdownMenu.unit)
 end
 
 function UnitPopupRafGrantLevelButtonMixin:OnClick()
@@ -381,16 +381,15 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow()
 end	
 
 function UnitPopupRafSummonButtonMixin:CanShow()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
-	if( not IsReferAFriendLinked(dropdownMenu.unit) ) then
-		return false; 
+	local guid = UnitPopupSharedUtil.GetGUID();
+	if not guid or not C_RecruitAFriend.IsReferAFriendLinked(guid) then
+		return false;
 	end
 	return true;
 end	
 
 function UnitPopupRafSummonButtonMixin:OnClick()
-	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu()
-	SummonFriend(dropdownMenu.unit); 
+	C_RecruitAFriend.SummonFriend(UnitPopupSharedUtil.GetGUID(), UnitPopupSharedUtil.GetFullPlayerName());
 end
 
 function UnitPopupBnetTargetButtonMixin:IsEnabled()

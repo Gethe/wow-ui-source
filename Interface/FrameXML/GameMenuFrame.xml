@@ -102,7 +102,7 @@
 						end
 					</OnLoad>
 					<OnShow>
-						self:SetEnabled(not Kiosk.IsEnabled() and not ScriptsDisallowedForBeta());
+						self:SetEnabled(not Kiosk.IsEnabled() and not C_AddOns.GetScriptsDisallowedForBeta());
 					</OnShow>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);

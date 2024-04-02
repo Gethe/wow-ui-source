@@ -241,3 +241,10 @@ function CheckSelfFoundButton()
 		CharacterCreateSelfFound:Hide();
 	end
 end
+
+function CharacterCreate_CancelReincarnation()
+	CharacterCreateNameEdit:Enable();
+    CharacterCreateRandomName:Enable();
+	CharacterReincarnatePopUpDialog:Hide();
+	C_Reincarnation.StopReincarnation();
+end

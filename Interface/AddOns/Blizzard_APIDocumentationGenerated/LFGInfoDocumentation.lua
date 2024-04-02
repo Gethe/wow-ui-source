@@ -47,6 +47,20 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetDungeonInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dungeonInfo", Type = "LFGDungeonInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetLFDLockStates",
 			Type = "Function",
 
