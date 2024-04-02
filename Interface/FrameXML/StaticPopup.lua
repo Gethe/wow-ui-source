@@ -2884,7 +2884,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		text = HARDCORE_DEATH,
 		button1 = HARDCORE_GO_AGAIN,
 		button2 = DEATH_RELEASE,
-		button3 = DEATH_REINCARNATE_CHARACTER,
+		--button3 = DEATH_REINCARNATE_CHARACTER,
 		selectCallbackByIndex = true,
 		OnShow = function(self)
 			self.button1:Enable();
