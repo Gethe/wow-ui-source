@@ -2144,7 +2144,9 @@ function CharacterSelect_UpdateButtonState()
         end
     end
     if (CharSelectReincarnateCharacterButton) then
-        local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting;
+		-- TEMP disable reincarnation during 1.15.2 release for CLASS-29127
+		local disableReincarnation = true;
+        local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting and not disableReincarnation;
         CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
         CharSelectReincarnateCharacterButton:Enable(); -- Disabled when we are restoring a deleted character
     end
