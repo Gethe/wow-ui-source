@@ -758,8 +758,10 @@ function PlayerGlyphTab_OnClick(self)
 end
 
 function PlayerGlyphTab_OnEvent(self, event, ...)
-	if ( UnitLevel("player") == (SHOW_INSCRIPTION_LEVEL - 1) and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID() ) then
-		SetButtonPulse(self, 60, 0.75);
+	if INSCRIPTION_AVAILABLE then
+		if ( UnitLevel("player") == (SHOW_INSCRIPTION_LEVEL - 1) and PanelTemplates_GetSelectedTab(PlayerTalentFrame) ~= self:GetID() ) then
+			SetButtonPulse(self, 60, 0.75);
+		end
 	end
 end
 

@@ -104,7 +104,7 @@ local Item =
 			Arguments =
 			{
 				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
-				{ Name = "dstSlot", Type = "number", Nilable = true },
+				{ Name = "dstSlot", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
