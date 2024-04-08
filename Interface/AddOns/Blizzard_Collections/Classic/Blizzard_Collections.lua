@@ -60,14 +60,8 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	end
 
 	MountJournal:SetShown(selected == 1);
-
-	
 	PetJournal:SetShown(selected == 2);
-
-	
 	ToyBox:SetShown(selected == 3);
-
-	
 	HeirloomsJournal:SetShown(selected == 4);
 	self:SetTitle(GetTitleText(selected));
 

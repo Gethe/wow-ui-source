@@ -1110,7 +1110,7 @@
 		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
 	<Binding name="TOGGLEGUILDTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(FRIEND_TAB_GUILD);
+		ToggleGuildFrame();
 	</Binding>
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();

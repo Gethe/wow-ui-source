@@ -6,8 +6,8 @@
 ## LoadFirst: 1
 ## AllowLoadGameType: cata
 ## AllowLoad: Game
-Wrath\MainMenuBarMicroButtons.lua
-Wrath\MainMenuBarMicroButtons.xml
+Cata\MainMenuBarMicroButtons.lua
+Cata\MainMenuBarMicroButtons.xml
 Classic\MainMenuBar.lua
 Classic\MainMenuBar.xml
 Classic\ActionButtonTemplate.xml

@@ -1,0 +1,9 @@
+## Title: Blizzard Dungeon Journal
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: cata
+Cata\Blizzard_EncounterJournal.lua
+Cata\Blizzard_EncounterJournal.xml
+Localization.lua

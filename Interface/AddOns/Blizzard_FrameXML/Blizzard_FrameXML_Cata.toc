@@ -20,6 +20,7 @@ SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
+FilterDropDown.lua
 Cata\CharacterFrameTemplates.xml
 Classic\Sound.lua
 Classic\AlertFrames.lua
@@ -63,7 +64,10 @@ Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml
 IconIntroAnimation.lua
 IconIntroAnimation.xml
+Timer.lua
+Timer.xml
 Classic\LootHistory.lua
 Classic\LootHistory.xml
 Classic\ClassTrainerFrameTemplates.xml
 Wrath\EquipmentManager.lua
+EquipmentFlyout.xml

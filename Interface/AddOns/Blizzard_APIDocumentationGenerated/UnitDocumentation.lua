@@ -20,6 +20,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "IsUnitModelReadyForUI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
 
@@ -101,6 +115,20 @@ local Unit =
 			{
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGroupRolesAssignedEnum",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -206,6 +234,20 @@ local Unit =
 				{ Name = "sex", Type = "number", Nilable = true },
 			},
 		},
+		{
+			Name = "UnitSpellHaste",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -291,6 +333,15 @@ local Unit =
 			Name = "IncomingResurrectChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "KnownTitlesUpdate",
+			Type = "Event",
+			LiteralName = "KNOWN_TITLES_UPDATE",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },

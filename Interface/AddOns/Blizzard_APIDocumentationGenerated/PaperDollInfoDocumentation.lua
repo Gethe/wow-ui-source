@@ -124,6 +124,11 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "MasteryUpdate",
+			Type = "Event",
+			LiteralName = "MASTERY_UPDATE",
+		},
+		{
 			Name = "PetSpellPowerUpdate",
 			Type = "Event",
 			LiteralName = "PET_SPELL_POWER_UPDATE",

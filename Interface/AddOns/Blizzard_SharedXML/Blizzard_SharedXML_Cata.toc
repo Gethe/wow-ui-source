@@ -30,6 +30,7 @@ TBC\ClassColors.lua
 
 LinkUtil.lua
 InterfaceUtil.lua
+UnitUtil.lua
 FormattingUtil.lua
 AccountUtil.lua
 TabGroup.lua
@@ -179,6 +180,7 @@ Classic\ModelFrames.lua
 Classic\ModelFrames.xml
 ModelPreviewFrame.lua
 ModelPreviewFrame.xml
+CharacterModelFrameMixin.lua
 
 DialogUtil.lua
 

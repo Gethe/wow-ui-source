@@ -2356,6 +2356,5 @@ end
 -- [[ Features Panel ]] --
 
 FeaturesPanelOptions = {
-	equipmentManager = { text = "USE_EQUIPMENT_MANAGER" },
 	previewTalents = { text = "PREVIEW_TALENT_CHANGES" },
 }

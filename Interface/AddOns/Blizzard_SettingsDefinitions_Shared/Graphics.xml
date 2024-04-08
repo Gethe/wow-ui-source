@@ -113,41 +113,6 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsAdvancedCustomCheckBox" mixin="SettingsAdvancedCustomCheckBoxMixin" virtual="true">
-		<Size y="26"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT"/>
-		</Anchors>
-		<Layers>
-			<Layer>
-				<FontString parentKey="Text" inherits="OptionsFontSmall" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" x="90"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="SettingsCheckBoxTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativePoint="CENTER" x="-80" y="0"/>
-				</Anchors>
-			</CheckButton>
-		</Frames>
-		<Layers>
-			<Layer>
-				<FontString parentKey="ClientRestartText" inherits="OptionsFontHighlight" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CheckBox" relativePoint="RIGHT" x="10"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="SettingsAdvancedQualityControlsTemplate" mixin="SettingsAdvancedQualityControlsMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="ShadowQuality" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
@@ -196,18 +161,11 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.OutlineMode" relativePoint="BOTTOMLEFT" y="-10"/>
 				</Anchors>
-			</Frame>
-
-			<Frame parentKey="UprezGraphics" parentArray="Controls" inherits="SettingsAdvancedCustomCheckBox">
-				<Size y="26"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TextureResolution" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-				</Anchors>
-			</Frame>		
+			</Frame>	
 			
 			<Frame parentKey="SpellDensity" parentArray="Controls" inherits="SettingsAdvancedDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.UprezGraphics" relativePoint="BOTTOMLEFT" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TextureResolution" relativePoint="BOTTOMLEFT" y="-10"/>
 				</Anchors>
 			</Frame>
 

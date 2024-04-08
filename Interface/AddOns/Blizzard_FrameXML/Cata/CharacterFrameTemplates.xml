@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="CharacterFrameTabButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="CharacterFrameTabButtonTemplate" motionScriptsWhileDisabled="true" mixin="CharacterFrameTabButtonMixin" virtual="true">
 		<Size>
 			<AbsDimension x="10" y="32"/>
 		</Size>
@@ -73,22 +73,22 @@
 			</OnLoad>
 			<OnEvent>
 				if (self:IsVisible()) then
-				PanelTemplates_TabResize(self, 0, nil, 36, self:GetParent().maxTabWidth or 88);
+					PanelTemplates_TabResize(self, 0, nil, 36, self:GetParent().maxTabWidth or 88);
 				end
 			</OnEvent>
 			<OnClick>
 				PanelTemplates_Tab_OnClick(self, CharacterFrame);
-				CharacterFrameTab_OnClick(self, button);
+				self:OnClick(button);
 			</OnClick>
 			<OnShow>
 				PanelTemplates_TabResize(self, 0, nil, 36, self:GetParent().maxTabWidth or 88);
-				CharacterFrame_TabBoundsCheck(self);
+				CharacterFrame:UpdateTabBounds();
 			</OnShow>
 			<OnEnter>
 				local buttonText = _G[self:GetName().."Text"];
 				if (buttonText and buttonText:IsTruncated()) then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(buttonText:GetText());
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(buttonText:GetText());
 				end
 			</OnEnter>
 			<OnLeave>

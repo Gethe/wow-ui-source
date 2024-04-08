@@ -1,6 +1,7 @@
 ## Title: Blizzard_Communities
 ## RequiredDep: Blizzard_GuildControlUI
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
+## AllowLoadGameType: mainline
 ## LoadOnDemand: 1
 
 ..\Blizzard_SharedXML\Mixin.lua
@@ -43,6 +44,7 @@ CommunitiesHyperlink.lua
 CommunitiesCalendar.xml
 GuildRewards.xml
 GuildPerks.xml
+Mainline\GuildInfo.lua
 GuildInfo.xml
 GuildNews.xml
 GuildRoster.xml

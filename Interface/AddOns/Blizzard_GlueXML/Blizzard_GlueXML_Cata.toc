@@ -7,7 +7,7 @@
 ## AllowLoad: Glue
 ## AllowLoadGameType: cata
 Classic\Localization.lua
-Wrath\Localization.lua
+Cata\Localization.lua
 Classic\GlueTooltip.lua
 Classic\GlueTooltip.xml
 ServerAlert.lua

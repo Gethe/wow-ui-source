@@ -8,8 +8,8 @@
 ## AllowLoadGameType: cata
 Classic\DressUpFrames.lua
 Classic\DressUpFrames.xml
-Wrath\CharacterFrame.lua
-Wrath\CharacterFrame.xml
+Cata\CharacterFrame.lua
+Cata\CharacterFrame.xml
 Cata\PaperDollFrame.lua
 Cata\PaperDollFrame.xml
 Cata\PetPaperDollFrame.lua

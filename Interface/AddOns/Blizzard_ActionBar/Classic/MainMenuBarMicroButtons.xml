@@ -200,7 +200,10 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="GuildMicroButton" inherits="MainMenuBarMicroButton" mixin="GuildMicroButtonMixin">
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEGUILDTAB" type="string"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -208,20 +211,24 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<!--<Frames>
-			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="UnreadNotificationIcon" atlas="hud-microbutton-communities-icon-notification">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOP" x="0" y="-23"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>-->
+		<Frames>
+			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
+	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+									<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+									</Anchors>
 		<Scripts>
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Socials");

@@ -8,19 +8,19 @@ local InteractionManagerFrameInfo = {
 	[Enum.PlayerInteractionType.Merchant] = 
 	{ 
 		frame = "MerchantFrame",
-		showFunc = MerchantFrame_MerchantShow,
-		hideFunc = MerchantFrame_MerchantClosed
+		showFunc = "MerchantFrame_MerchantShow",
+		hideFunc = "MerchantFrame_MerchantClosed"
 	}, 
 	[Enum.PlayerInteractionType.Banker] = 
 	{ 
 		frame = "BankFrame",
-		showFunc = BankFrame_Open,
+		showFunc = "BankFrame_Open"
 	}, 
 	[Enum.PlayerInteractionType.Trainer] = 
 	{ 
 		frame = "ClassTrainerFrame",
-		showFunc = ClassTrainerFrame_Show,
-		hideFunc = ClassTrainerFrame_Hide,
+		showFunc = "ClassTrainerFrame_Show",
+		hideFunc = "ClassTrainerFrame_Hide",
 		loadFunc = ClassTrainerFrame_LoadUI
 	},
 	[Enum.PlayerInteractionType.AlliedRaceDetailsGiver] = 
@@ -41,18 +41,18 @@ local InteractionManagerFrameInfo = {
 	[Enum.PlayerInteractionType.GuildTabardVendor] = 
 	{ 
 		frame = "TabardFrame", 
-		showFunc = TabardFrame_Open 
+		showFunc = "TabardFrame_Open"
 	},
 	[Enum.PlayerInteractionType.PersonalTabardVendor] = 
 	{ 
 		frame = "TabardFrame", 
-		showFunc = TabardFrame_Open 
+		showFunc = "TabardFrame_Open"
 	},
 	[Enum.PlayerInteractionType.MailInfo] = 
 	{
 		frame = "MailFrame", 
-		showFunc = MailFrame_Show,
-		hideFunc = MailFrame_Hide
+		showFunc = "MailFrame_Show",
+		hideFunc = "MailFrame_Hide"
 	},
 	[Enum.PlayerInteractionType.Auctioneer] = 
 	{
@@ -77,8 +77,8 @@ local InteractionManagerFrameInfo = {
 	},
 	[Enum.PlayerInteractionType.BlackMarketAuctioneer] = {
 		frame = "BlackMarketFrame",
-		showFunc = BlackMarketFrame_Show, 
-		hideFunc = BlackMarketFrame_Hide, 
+		showFunc = "BlackMarketFrame_Show",
+		hideFunc = "BlackMarketFrame_Hide",
 		loadFunc = BlackMarket_LoadUI, 
 	},
 	[Enum.PlayerInteractionType.WorldMap] = {
@@ -91,7 +91,7 @@ local InteractionManagerFrameInfo = {
 	},
 	[Enum.PlayerInteractionType.Trophy] = {
 		frame = "GarrisonMonumentFrame",
-		showFunc = C_Trophy and C_Trophy.MonumentLoadList or nil;
+		showFunc = function() if C_Trophy and C_Trophy.MonumentLoadList then C_Trophy.MonumentLoadList() end end,
 		loadFunc = Garrison_LoadUI
 	},
 	[Enum.PlayerInteractionType.ObliterumForge] = {
@@ -144,8 +144,8 @@ local InteractionManagerFrameInfo = {
 	[Enum.PlayerInteractionType.ItemUpgrade] = {
 		frame = "ItemUpgradeFrame", 
 		loadFunc = ItemUpgrade_LoadUI,
-		showFunc = ItemUpgradeFrame_Show, 
-		hideFunc = ItemUpgradeFrame_Hide
+		showFunc = "ItemUpgradeFrame_Show", 
+		hideFunc = "ItemUpgradeFrame_Hide"
 	},
 	[Enum.PlayerInteractionType.AzeriteForge] = {
 		frame = "AzeriteEssenceUI",
@@ -174,36 +174,46 @@ local InteractionManagerFrameInfo = {
 
 PlayerInteractionFrameManagerMixin = { };
 
-function PlayerInteractionFrameManagerMixin:ShowFrame(type)
-	local frameInfo = InteractionManagerFrameInfo[type]; 
-	if(not frameInfo) then 
+function PlayerInteractionFrameManagerMixin:ShowFrame(interactionType)
+	local frameInfo = InteractionManagerFrameInfo[interactionType]; 
+	if not frameInfo then 
 		return; 
 	end 
 
-	if(frameInfo.loadFunc and not _G[frameInfo.frame]) then 
+	if frameInfo.loadFunc and not _G[frameInfo.frame] then 
 		frameInfo.loadFunc(); 
 	end			
 
-	if(frameInfo.showFunc) then 
-		frameInfo.showFunc(); 
+	if frameInfo.showFunc then
+		if type(frameInfo.showFunc) == "string" then
+			frameInfo.showFunc = _G[frameInfo.showFunc];
+		end
+		if frameInfo.showFunc then
+			frameInfo.showFunc();
+		end
 	else 
 		ShowUIPanel(_G[frameInfo.frame], frameInfo.forceShow);
 	end		
 end		
 
-function PlayerInteractionFrameManagerMixin:HideFrame(type)
-	local frameInfo = InteractionManagerFrameInfo[type]; 
-	if(not frameInfo) then 
+function PlayerInteractionFrameManagerMixin:HideFrame(interactionType)
+	local frameInfo = InteractionManagerFrameInfo[interactionType]; 
+	if not frameInfo then 
 		return; 
 	end 
 
 	-- The frame isn't loaded, so nothing to hide. 
-	if(not _G[frameInfo.frame]) then 
+	if not _G[frameInfo.frame] then 
 		return;
 	end
 
-	if(frameInfo.hideFunc) then 
-		frameInfo.hideFunc();
+	if frameInfo.hideFunc then
+		if type(frameInfo.hideFunc) == "string" then
+			frameInfo.hideFunc = _G[frameInfo.hideFunc];
+		end
+		if frameInfo.hideFunc then
+			frameInfo.hideFunc();
+		end
 	else 
 		HideUIPanel(_G[frameInfo.frame]); 
 	end				
@@ -215,11 +225,11 @@ function PlayerInteractionFrameManagerMixin:OnLoad()
 end	
 
 function PlayerInteractionFrameManagerMixin:OnEvent(event, ...) 
-	if(event == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW") then 
-		local type = ...; 
-		self:ShowFrame(type);
-	elseif (event == "PLAYER_INTERACTION_MANAGER_FRAME_HIDE") then 
-		local type = ...; 
-		self:HideFrame(type);
+	if event == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW" then 
+		local interactionType = ...; 
+		self:ShowFrame(interactionType);
+	elseif event == "PLAYER_INTERACTION_MANAGER_FRAME_HIDE" then 
+		local interactionType = ...; 
+		self:HideFrame(interactionType);
 	end		
 end		

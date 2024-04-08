@@ -12,3 +12,4 @@ ScriptedAnimations\ScriptAnimatedEffectController.lua
 ScriptedAnimations\ScriptAnimatedModelScene.lua
 ScriptedAnimations\ScriptAnimatedModelScene.xml
 Shared\Localization.lua
+Tooltip\TooltipDataHandler.lua

@@ -2144,7 +2144,9 @@ function CharacterSelect_UpdateButtonState()
         end
     end
     if (CharSelectReincarnateCharacterButton) then
-        local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting;
+		-- TEMP disable reincarnation during 1.15.2 release for CLASS-29127
+		local disableReincarnation = true;
+        local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting and not disableReincarnation;
         CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
         CharSelectReincarnateCharacterButton:Enable(); -- Disabled when we are restoring a deleted character
     end
@@ -3641,10 +3643,10 @@ end
 
 function Reincarnation_StartReincarnation()
     local charIndex = CharacterSelect.selectedIndex;
-    local name, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(charIndex));
+    local name, _, _, className, _, level, _, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(charIndex));
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
     C_CharacterCreation.ClearCharacterTemplate();
-    C_Reincarnation.StartReincarnation(guid, name);
+    C_Reincarnation.StartReincarnation(guid, name, className, level);
     CharacterCreateNameEdit:SetText(name);
     GlueParent_SetScreen("charcreate");
 end

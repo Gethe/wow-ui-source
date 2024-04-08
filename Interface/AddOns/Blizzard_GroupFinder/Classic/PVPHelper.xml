@@ -103,7 +103,7 @@
 			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
 		</KeyValues>
 		<Size>
-			<AbsDimension x="320" y="84"/>
+			<AbsDimension x="320" y="110"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">

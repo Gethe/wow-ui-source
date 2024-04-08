@@ -55,6 +55,7 @@ DebugToggleDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
+EncounterJournalDocumentation.lua
 EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
@@ -213,6 +214,7 @@ ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
+TransmogDocumentation.lua
 TutorialDocumentation.lua
 UIColorDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
@@ -255,6 +257,7 @@ SeasonsDocumentation.lua
 SocialRestrictionsDocumentation.lua
 SystemDocumentation.lua
 TradeSkillUIDocumentation.lua
+TransmogItemsDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 AppearanceSourceDocumentation.lua
@@ -350,4 +353,5 @@ ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
 SeasonsConstantsDocumentation.lua
 TalentAndGlyphConstantsDocumentation.lua
+TransmogConstantsDocumentation.lua
 # End documentation files here

@@ -132,7 +132,13 @@ StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
 	OnCancel = function (self)
 	end,
 	OnShow = function(self)
-		self.text:SetFormattedText(CONFIRM_GLYPH_REMOVAL, self.data.name);
+		local name, count, _, _, cost = GetGlyphClearInfo();
+		if count >= cost then
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, GREEN_FONT_COLOR_CODE, cost, name);
+		else
+			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, RED_FONT_COLOR_CODE, cost, name);
+			self.button1:Disable();
+		end
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -146,7 +152,13 @@ StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	OnAccept = function (self) PlaceGlyphInSocket(self.data.id); end,
 	OnCancel = function (self) end,
 	OnShow = function(self)
-		self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name, self.data.currentName);
+		local name, count, _, _, cost = GetGlyphClearInfo();
+		if count >= cost then
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, GREEN_FONT_COLOR_CODE, cost, name);
+		else
+			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, RED_FONT_COLOR_CODE, cost, name);
+			self.button1:Disable();
+		end
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -2875,7 +2887,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		text = HARDCORE_DEATH,
 		button1 = HARDCORE_GO_AGAIN,
 		button2 = DEATH_RELEASE,
-		button3 = DEATH_REINCARNATE_CHARACTER,
+		--button3 = DEATH_REINCARNATE_CHARACTER,
 		selectCallbackByIndex = true,
 		OnShow = function(self)
 			self.button1:Enable();
@@ -2892,8 +2904,9 @@ if (C_GameRules.IsHardcoreActive()) then
 		OnButton3 = function(self)
 			-- Set some state, then start logout process as normal
 			local guid = UnitGUID("player");
-			local _, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
-			C_Reincarnation.StartReincarnation(guid, characterName);
+			local className, _, _, _, _, characterName, _ = GetPlayerInfoByGUID(guid);
+			local level = UnitLevel("player");
+			C_Reincarnation.StartReincarnation(guid, characterName, className, level);
 			Logout();
 		end,
 		OnUpdate = function(self, elapsed)

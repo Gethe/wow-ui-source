@@ -7,6 +7,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1;
 CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
+MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
 
 CHAT_SHOW_IME = false;
 
@@ -2654,6 +2655,14 @@ SlashCmdList["TEXTTOSPEECH"] = function(msg)
 	else
 		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
 		TextToSpeechCommands:ShowHelp(msg)
+	end
+end
+
+SlashCmdList["COUNTDOWN"] = function(msg)
+	local num1 = gsub(msg, "(%s*)(%d+)", "%2");
+	local number = tonumber(num1);
+	if(number and number <= MAX_COUNTDOWN_SECONDS) then
+		C_PartyInfo.DoCountdown(number);
 	end
 end
 

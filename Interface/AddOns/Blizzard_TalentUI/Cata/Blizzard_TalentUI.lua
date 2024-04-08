@@ -405,7 +405,6 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_TALENT_UPDATE");
-	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
 	self.inspect = false;
 	self.pet = false;
@@ -548,10 +547,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 				PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel3);
 			end
 		end
-	end
-	
-	if ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
-		MainMenuBar_ToPlayerArt(MainMenuBarArtFrame);
 	end
 end
 

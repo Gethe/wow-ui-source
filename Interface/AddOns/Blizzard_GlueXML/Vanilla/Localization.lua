@@ -57,7 +57,7 @@ local l10nTable = {
 	zhCN = {
 		localize = function()
 			GetCNLogoReleaseType = function()
-				-- Due to licensing restrictions in China, we always want to use the original expansion's logo rather than the Classic logo. See CLASS-22057 for more info.
+				-- Due to licensing restrictions in China, we want to use the original expansion's logo rather than the Classic logo. See CLASS-22057 for more info.
 				return LE_RELEASE_TYPE_ORIGINAL;
 			end
 		end,

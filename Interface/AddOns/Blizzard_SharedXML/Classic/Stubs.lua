@@ -18,6 +18,19 @@ end
 function HelpTip:Hide( p1, p2 )
 end
 
+
+function HelpTip:HideAll(parent)
+end
+
+HelpTip.Alignment = {
+	Left = 1,
+	Center = 2,
+	Right = 3,
+	-- Intentional re-use of indices, really just need 3 settings but 5 makes it easier to visualize
+	Top = 1,
+	Bottom = 3,
+};
+
 HelpTip.ButtonStyle = {
 	None = 1,
 	Close = 2,
@@ -44,4 +57,7 @@ HelpTip.Point = {
 ActionButtonBindingHighlightCallbackRegistry = {}
 
 function ActionButtonBindingHighlightCallbackRegistry:RegisterCallbackWithHandle(p1, p2, p3)
+end
+
+function HelpTip:Acknowledge(parent, text)
 end

@@ -56,19 +56,10 @@ local function ExtractSizeFromFormattedSize(formattedSize)
 	return tonumber(x), tonumber(y);
 end
 
-local function GetAdvancedQualitySettingVarType(cvar)
-	if (cvar == "useHighResTextures") then
-		return Settings.VarType.Boolean;
-	else
-		return Settings.VarType.Number;
-	end
-end
-
 local function CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue)
-	local varType = GetAdvancedQualitySettingVarType(cvar);
-	local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, varType);
+	local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures(cvar, Settings.VarType.Number);
 	local commitValue = setValue;
-	local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation, varType, name, getDefaultValue(), getValue, nil, commitValue);
+	local setting = Settings.RegisterProxySetting(category, proxyName, Settings.DefaultVarLocation, Settings.VarType.Number, name, getDefaultValue(), getValue, nil, commitValue);
 	setting:SetCommitFlags(Settings.CommitFlag.Apply);
 	setting.minQualityValue = minQualityValue or -1;
 	return setting;
@@ -122,7 +113,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local settingComputeEffects = settings["graphicsComputeEffects"] or settings["raidGraphicsComputeEffects"];
 	local settingOutlineMode = settings["graphicsOutlineMode"] or settings["raidGraphicsOutlineMode"];
 	local settingTextureResolution = settings["graphicsTextureResolution"] or settings["raidGraphicsTextureResolution"];
-	local settingUprezGraphics = settings["useHighResTextures"];
 	local settingSpellDensity = settings["graphicsSpellDensity"] or settings["raidGraphicsSpellDensity"];
 	local settingProjectedTextures = settings["graphicsProjectedTextures"] or settings["raidGraphicsProjectedTextures"];
 	local settingViewDistance = settings["graphicsViewDistance"] or settings["raidGraphicsViewDistance"];
@@ -315,44 +305,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		control:SetCustomTooltipAnchoring(self.CheckBox, "ANCHOR_TOP", 0, 0);
 		self.cbrHandles:RegisterCallback(control.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, OnCheckBoxValueChanged);
 	end
-	
-	local function InitControlCheckBox(control, cbSetting, cbName, cbTooltip, clientRestartRequired)
-		if not cbSetting then
-			control:Hide();
-			return
-		end
-		
-		if not clientRestartRequired then
-			control.ClientRestartText:Hide();
-		end
-
-		control.Text:SetText(cbName);
-
-		function OnCheckBoxValueChanged(o, value)
-			cbSetting:SetValue(value);			
-
-			if value then
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-
-				if clientRestartRequired then
-					control.ClientRestartText:SetText(VIDEO_OPTIONS_NEED_CLIENTRESTART);
-					control.ClientRestartText:SetTextColor(RED_FONT_COLOR:GetRGB());
-					control.ClientRestartText:Show();
-				end
-			else
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-
-				if clientRestartRequired then
-					control.ClientRestartText:Hide();
-				end
-			end
-		end
-
-		local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbName, cbTooltip);
-		control.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
-		control:SetTooltipFunc(cbInitTooltip);
-		self.cbrHandles:RegisterCallback(control.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, OnCheckBoxValueChanged);
-	end
 
 	do
 		local function SetControlsEnabled(enabled)
@@ -398,7 +350,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	InitControlDropDown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
 	InitControlDropDown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
 	InitControlDropDown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GenerateClosure(GraphicsOverrides.GetTextureResolutionOptions, settingTextureResolution, AddValidatedSettingOption, AddRecommended));
-	InitControlCheckBox(self.UprezGraphics, settingUprezGraphics, UPREZ_GRAPHICS, OPTION_TOOLTIP_UPREZ_GRAPHICS, true);
 	InitControlDropDown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
 	InitControlDropDown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
 	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
@@ -474,13 +425,6 @@ function SettingsAdvancedCheckBoxSliderMixin:OnLoad()
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
 end
 
-SettingsAdvancedCustomCheckBoxMixin = CreateFromMixins(DefaultTooltipMixin);
-
-function SettingsAdvancedCustomCheckBoxMixin:OnLoad()
-	DefaultTooltipMixin.OnLoad(self);
-	self:SetCustomTooltipAnchoring(self.CheckBox, "ANCHOR_TOPLEFT", 13, 0);
-end
-
 SettingsAdvancedDropdownMixin = CreateFromMixins(DefaultTooltipMixin);
 
 function SettingsAdvancedDropdownMixin:OnLoad()
@@ -508,7 +452,7 @@ function CreateAdvancedQualitySectionInitializer(name, settings, raidSettings)
 	initializer:Init("SettingsAdvancedQualitySectionTemplate");
 	initializer.data = {name=name, settings=settings, raidSettings=raidSettings};
 	initializer:AddSearchTags(BASE_GRAPHICS_QUALITY, SETTINGS_RAID_GRAPHICS_QUALITY, SHADOW_QUALITY, LIQUID_DETAIL, PARTICLE_DENSITY, SSAO_LABEL, DEPTH_EFFECTS, COMPUTE_EFFECTS,
-		OUTLINE_MODE, TEXTURE_DETAIL, UPREZ_GRAPHICS, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
+		OUTLINE_MODE, TEXTURE_DETAIL, SPELL_DENSITY, PROJECTED_TEXTURES, FARCLIP, ENVIRONMENT_DETAIL, GROUND_CLUTTER);
 	return initializer;
 end
 
@@ -983,7 +927,7 @@ local function Register()
 	local function OnGCChanged(settings, value, raid)
 		for cvar, setting in pairs(settings) do
 			local variable = setting:GetVariable();
-			if cvar ~= "graphicsQuality" and cvar ~= "raidGraphicsQuality" and cvar ~= "useHighResTextures" then
+			if cvar ~= "graphicsQuality" and cvar ~= "raidGraphicsQuality" then
 				local newIndex = GetGraphicsCVarValueForQualityLevel(cvar, value, raid);
 				newIndex = setting.minQualityValue > newIndex and setting.minQualityValue or newIndex;
 				setting:SetValue(newIndex);

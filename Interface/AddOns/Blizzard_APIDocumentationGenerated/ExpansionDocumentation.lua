@@ -57,6 +57,20 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetExpansionForLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetExpansionLevel",
 			Type = "Function",
 

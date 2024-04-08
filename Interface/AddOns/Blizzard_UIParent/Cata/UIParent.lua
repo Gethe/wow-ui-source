@@ -168,6 +168,10 @@ function UIParent_OnLoad(self)
 
 	-- Events for talent wipes
 	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
+
+	-- Events for reforging
+	self:RegisterEvent("FORGE_MASTER_OPENED");
+	self:RegisterEvent("FORGE_MASTER_CLOSED");
 	
 	-- Events for Archaeology
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
@@ -278,6 +282,10 @@ function BarberShopFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_BarberShopUI");
 end
 
+function EncounterJournal_LoadUI()
+	UIParentLoadAddOn("Blizzard_EncounterJournal");
+end
+
 function GuildBankFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_GuildBankUI");
 end
@@ -328,6 +336,10 @@ end
 
 function Calendar_LoadUI()
 	UIParentLoadAddOn("Blizzard_Calendar");
+end
+
+function Reforging_LoadUI()
+	UIParentLoadAddOn("Blizzard_ReforgingUI");
 end
 
 function TimeManager_LoadUI()
@@ -545,7 +557,18 @@ function ToggleRaidFrame()
 	ToggleFriendsFrame(FRIEND_TAB_RAID);
 end
 
-function CanShowEncounterJournal()
+function ToggleEncounterJournal()
+	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
+		return;
+	end
+
+	if ( not EncounterJournal ) then
+		EncounterJournal_LoadUI();
+	end
+	if ( EncounterJournal ) then
+		ToggleFrame(EncounterJournal);
+		return true;
+	end
 	return false;
 end
 
@@ -1305,6 +1328,17 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("CLIENT_INVENTORY_FULL_OVERFLOW");
 	elseif ( event == "AUCTION_HOUSE_SCRIPT_DEPRECATED") then
 		StaticPopup_Show("AUCTION_HOUSE_DEPRECATED");
+
+	-- Events for Reforging UI handling
+	elseif ( event == "FORGE_MASTER_OPENED" ) then
+		Reforging_LoadUI();
+		if ( ReforgingFrame_Show ) then
+			ReforgingFrame_Show();
+		end
+	elseif ( event == "FORGE_MASTER_CLOSED" ) then
+		if ( ReforgingFrame_Hide ) then
+			ReforgingFrame_Hide();
+		end
 
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then

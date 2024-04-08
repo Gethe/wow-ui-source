@@ -13,5 +13,6 @@ Classic\FrameLocks.lua
 PlayerMovementFrameFader.lua
 Classic\Constants.lua
 Shared\Constants.lua
+Wrath\Constants.lua
 Cata\Constants.lua
 TBC\Localization.lua

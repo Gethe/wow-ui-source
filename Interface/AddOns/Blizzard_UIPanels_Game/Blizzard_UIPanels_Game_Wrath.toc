@@ -10,9 +10,11 @@ Classic\SpellBookFrame.lua
 Classic\SpellBookFrame.xml
 Classic\SkillFrame.lua
 Classic\SkillFrame.xml
+Classic\ReputationFrame.lua
 Wrath\ReputationFrame.lua
 Wrath\ReputationFrame.xml
 Vanilla\HonorFrame.lua
+Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Vanilla\HonorFrame.xml
 Wrath\QuestFrameTemplates.xml

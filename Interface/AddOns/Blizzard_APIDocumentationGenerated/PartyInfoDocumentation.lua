@@ -17,6 +17,20 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "DoCountdown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "seconds", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveCategories",
 			Type = "Function",
 

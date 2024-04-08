@@ -3595,9 +3595,24 @@ TRAVEL PASS
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="GUILD" motionScriptsWhileDisabled="false">
+			<Button name="FriendsFrameTab3" inherits="FriendsFrameTabTemplate" id="3" text="RAID" motionScriptsWhileDisabled="false">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="FriendsFrameTab2" relativePoint="RIGHT" x="-14" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(0);
+						PanelTemplates_TabResize(self, 0, nil);
+					</OnShow>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="GUILD" motionScriptsWhileDisabled="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT" x="-14" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -3610,21 +3625,6 @@ TRAVEL PASS
 					</OnShow>
 					<OnEnter>
 						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(GUILD, "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILDTAB, 1);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
-			<Button name="FriendsFrameTab4" inherits="FriendsFrameTabTemplate" id="4" text="RAID" motionScriptsWhileDisabled="false">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="FriendsFrameTab3" relativePoint="RIGHT" x="-14" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						self:SetWidth(0);
-						PanelTemplates_TabResize(self, 0, nil);
-					</OnShow>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, MicroButtonTooltipText(RAID, "TOGGLERAIDTAB"), 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_RAIDTAB, 1);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

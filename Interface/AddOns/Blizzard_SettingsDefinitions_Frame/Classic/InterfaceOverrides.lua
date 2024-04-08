@@ -174,17 +174,24 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 			-- Use Equipment Manager
 			local function CVarChangedCB()
 				local equipmentManager = C_CVar.GetCVarBool("equipmentManager");
+				
+				local toggleButton;
+				if GetClassicExpansionLevel() == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+					toggleButton = GearManagerToggleButton;
+				else
+					toggleButton = PaperDollSidebarTab3;
+				end
+				
 				if ( equipmentManager ) then 
-					GearManagerToggleButton:Show() 
+					toggleButton:Show() 
 				else 
-					GearManagerToggleButton:Hide() 
+					toggleButton:Hide() 
 				end 
 			end
 			
-			Settings.SetupCVarCheckBox(category, "equipmentManager", USE_EQUIPMENT_MANAGER, OPTION_USE_EQUIPMENT_MANAGER_DESCRIPTION);
 			CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
 		end
-
+	
 		-- Preview Talent Changes
 		Settings.SetupCVarCheckBox(category, "previewTalentsOption", PREVIEW_TALENT_CHANGES, OPTION_PREVIEW_TALENT_CHANGES_DESCRIPTION);
 	end

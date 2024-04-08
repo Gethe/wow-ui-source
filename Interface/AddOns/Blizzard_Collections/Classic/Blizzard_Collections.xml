@@ -35,19 +35,13 @@
 					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
-			<!--Button name="$parentTab5" inherits="CollectionsJournalTab" text="WARDROBE" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-16" y="0"/>
-				</Anchors>
-			</Button-->
 		</Frames>
 
 		<Scripts>
 			<OnLoad>
 				self:SetTitle(COLLECTIONS);
-				<!--self:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");-->
-
 				PanelTemplates_SetNumTabs(self, 4);
+
 				SetPortraitToTexture(self.portrait, "Interface\\CHARACTERFRAME\\TempPortrait");
 				PanelTemplates_SetTab(self, tonumber(GetCVar("petJournalTab")) or 1);
 			</OnLoad>

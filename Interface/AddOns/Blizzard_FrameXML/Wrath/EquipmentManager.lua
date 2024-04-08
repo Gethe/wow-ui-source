@@ -274,10 +274,10 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, _;
+	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, _;
 	if ( not bags ) then -- and (player or bank) 
-		id = GetInventoryItemID("player", slot);
-		name, _, _, _, _, _, _, _, invType, textureName = C_Item.GetItemInfo(id);
+		itemID = GetInventoryItemID("player", slot);
+		name, _, _, _, _, _, _, _, invType, textureName = C_Item.GetItemInfo(itemID);
 		if ( textureName ) then
 			count = GetInventoryItemCount("player", slot);
 			durability, maxDurability = GetInventoryItemDurability(slot);
@@ -287,8 +287,8 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
 		gem1, gem2, gem3 = GetInventoryItemGems(slot);
 	else -- bags
-		id = C_Container.GetContainerItemID(bag, slot);
-		name, _, _, _, _, _, _, _, invType = C_Item.GetItemInfo(id);
+		itemID = C_Container.GetContainerItemID(bag, slot);
+		name, _, _, _, _, _, _, _, invType = C_Item.GetItemInfo(itemID);
 		local info = C_Container.GetContainerItemInfo(bag, slot);
 		textureName = info and info.iconFileID;
 		count = info and info.stackCount;
@@ -301,16 +301,16 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		gem1, gem2, gem3 = C_Container.GetContainerItemGems(bag, slot);
 	end
 	
-	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3;
+	return itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3;
 end
 
-function EquipmentManager_EquipSet (name)
-	if ( C_EquipmentSet.EquipmentSetContainsLockedItems(name) or UnitCastingInfo("player") ) then
+function EquipmentManager_EquipSet (setID)
+	if ( C_EquipmentSet.EquipmentSetContainsLockedItems(setID) or UnitCastingInfo("player") ) then
 		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 	
-	C_EquipmentSet.UseEquipmentSet(name);
+	C_EquipmentSet.UseEquipmentSet(setID);
 end
 
 function EquipmentManager_RunAction (action)

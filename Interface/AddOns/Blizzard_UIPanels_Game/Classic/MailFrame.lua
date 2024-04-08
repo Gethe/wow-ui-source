@@ -424,7 +424,7 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 	if ( money == 0 ) then
 		SetItemButtonTexture(OpenMailMoneyButton, "");
 	else
-		SetItemButtonTexture(OpenMailMoneyButton, GetCoinIcon(money));
+		SetItemButtonTexture(OpenMailMoneyButton, C_CurrencyInfo.GetCoinIcon(money));
 		tinsert(OpenMailFrame.activeAttachmentButtons, OpenMailMoneyButton);
 		rowAttachmentCount = rowAttachmentCount + 1;
 	end

@@ -50,12 +50,12 @@ ADDFRIENDFRAME_BNETHEIGHT = 296;
 
 FRIEND_TABS_MAX_WIDTH = 280;
 
-FRIEND_TAB_COUNT = 4;
-FRIEND_TAB_COUNT_WITH_GROUPS = FRIEND_TAB_COUNT+1;
+FRIEND_TAB_COUNT = 3;
+FRIEND_OPTIONAL_TAB_COUNT = 0;
 FRIEND_TAB_FRIENDS = 1;
 FRIEND_TAB_WHO = 2;
-FRIEND_TAB_GUILD = 3;
-FRIEND_TAB_RAID = 4;
+FRIEND_TAB_RAID = 3;
+FRIEND_TAB_GUILD = 4;
 FRIEND_TAB_BLIZZARDGROUPS = 5;
 FRIEND_HEADER_TAB_FRIENDS = 1;
 FRIEND_HEADER_TAB_IGNORE = 2;
@@ -277,7 +277,7 @@ function FriendsFrame_OnShow()
 	C_GuildInfo.GuildRoster();
 	InGuildCheck();
 	BlizzardGroups_UpdateNotifications();
-	BlizzardGroups_UpdateShowTab();
+	FriendsFrame_UpdateVisibleTabs();
 	FriendsFrame_CheckDethroneStatus();
 end
 
@@ -2405,19 +2405,44 @@ function BlizzardGroups_UpdateNotifications()
 	_G["FriendsFrameTab"..FRIEND_TAB_BLIZZARDGROUPS].NotificationOverlay:SetShown(true);
 end
 
+function FriendsFrame_UpdateVisibleTabs()
+	FRIEND_OPTIONAL_TAB_COUNT = 0;
+	BlizzardGroups_UpdateShowTab();
+	FriendsFrame_UpdateGuildTabVisibility();
+end
+
 function BlizzardGroups_UpdateShowTab()
 	local blizzardGroupsTab = _G["FriendsFrameTab"..FRIEND_TAB_BLIZZARDGROUPS];
 	if (not blizzardGroupsTab:IsShown() and BlizzardGroups_ShouldShowTab()) then
-		PanelTemplates_SetNumTabs(FriendsFrame, FRIEND_TAB_COUNT_WITH_GROUPS);
+		FRIEND_OPTIONAL_TAB_COUNT = FRIEND_OPTIONAL_TAB_COUNT + 1;
+		PanelTemplates_SetNumTabs(FriendsFrame, FRIEND_TAB_COUNT + FRIEND_OPTIONAL_TAB_COUNT);
 		PanelTemplates_UpdateTabs(FriendsFrame);
 		_G["FriendsFrameTab"..FRIEND_TAB_BLIZZARDGROUPS]:Show();
+	else
+		_G["FriendsFrameTab"..FRIEND_TAB_BLIZZARDGROUPS]:Hide();
+	end
+end
+
+function FriendsFrame_UpdateGuildTabVisibility()
+	local blizzardGroupsTab = _G["FriendsFrameTab"..FRIEND_TAB_GUILD];
+	if (not blizzardGroupsTab:IsShown() and FriendsFrame_ShouldShowGuildTab()) then
+	FRIEND_OPTIONAL_TAB_COUNT = FRIEND_OPTIONAL_TAB_COUNT + 1;
+		PanelTemplates_SetNumTabs(FriendsFrame, FRIEND_TAB_COUNT + FRIEND_OPTIONAL_TAB_COUNT);
+		PanelTemplates_UpdateTabs(FriendsFrame);
+		_G["FriendsFrameTab"..FRIEND_TAB_GUILD]:Show();
+	else
+		_G["FriendsFrameTab"..FRIEND_TAB_GUILD]:Hide();
 	end
 end
 
 function BlizzardGroups_ShouldShowTab()
-	-- Temporarily disabling this tab for Cata Beta
+	-- This is now in the separate Communities UI
 	return false;
-	--return COMMUNITY_FRAME_HAS_BEEN_SHOWN or CommunitiesUtil.IsInCommunity() or CommunitiesUtil.HasCommunityInvite() or GetCVarBool("alwaysShowBlizzardGroupsTab");
+end
+
+function FriendsFrame_ShouldShowGuildTab()
+	-- This is now in the separate Communities UI
+	return false;
 end
 
 function FriendsFrame_ToggleToCommunities(selectedTab)

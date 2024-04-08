@@ -2731,53 +2731,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentEquipmentManager"  inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-2" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentDescription" inherits="GameFontHighlight" text="OPTION_USE_EQUIPMENT_MANAGER_DESCRIPTION" justifyH="LEFT" justifyV="TOP">
-							<Size>
-								<AbsDimension x="350" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="35" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetFontObject(GameFontNormal);
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "equipmentManager";
-						self.setFunc =
-							function(value)
-								if ( value == "1" ) then
-									GearManagerToggleButton:Show()
-								else
-									GearManagerToggleButton:Hide()
-								end
-							end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnHide>
-						C_EquipmentSet.CanUseEquipmentSets();
-					</OnHide>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentPreviewTalentChanges" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEquipmentManagerDescription" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="-35" y="-25"/>
 						</Offset>

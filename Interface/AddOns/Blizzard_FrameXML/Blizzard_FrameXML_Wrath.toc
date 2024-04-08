@@ -62,6 +62,8 @@ Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml
 IconIntroAnimation.lua
 IconIntroAnimation.xml
+Timer.lua
+Timer.xml
 Classic\LootHistory.lua
 Classic\LootHistory.xml
 Classic\ClassTrainerFrameTemplates.xml

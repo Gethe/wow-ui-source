@@ -1059,7 +1059,9 @@
 	<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	</Binding>
-
+	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
+		ToggleEncounterJournal();
+	</Binding>
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
@@ -1114,7 +1116,7 @@
 		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
 	<Binding name="TOGGLEGUILDTAB" category="BINDING_HEADER_INTERFACE">
-		ToggleFriendsFrame(FRIEND_TAB_GUILD);
+		ToggleGuildFrame();
 	</Binding>
 	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();

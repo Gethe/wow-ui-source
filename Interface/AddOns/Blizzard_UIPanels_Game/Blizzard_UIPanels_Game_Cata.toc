@@ -10,11 +10,13 @@ Cata\SpellBookFrame.lua
 Cata\SpellBookFrame.xml
 Classic\SkillFrame.lua
 Classic\SkillFrame.xml
-Wrath\ReputationFrame.lua
-Wrath\ReputationFrame.xml
-Vanilla\HonorFrame.lua
+Classic\ReputationFrame.lua
+Cata\ReputationFrame.lua
+Cata\ReputationFrame.xml
+Cata\HonorFrame.lua
+Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
-Vanilla\HonorFrame.xml
+Cata\HonorFrame.xml
 Wrath\QuestFrameTemplates.xml
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
