@@ -358,7 +358,7 @@ local function IsRAFHelpTipShowing()
 end
 
 function FriendsFrame_OnShow(self)
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	if not IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
 		playerRealmID = GetRealmID();
 		playerRealmName = GetRealmName();
 		playerFactionGroup = UnitFactionGroup("player");
@@ -450,7 +450,7 @@ function FriendsFrame_UpdateQuickJoinTab(numGroups)
 end
 
 function FriendsFrame_OnHide(self)
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	if not IsOnGlueScreen() and (C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs) then
 		UpdateMicroButtons();
 		RaidInfoFrame:Hide();
 		RecruitAFriendFrame:UpdateRAFTutorialTips();
@@ -568,26 +568,27 @@ function FriendsList_InitializePendingInviteDropDown(self, level)
 		end;
 		UIDropDownMenu_AddButton(info, level)
 
+		-- We don't have static popups at Glues and in that case we don't want to show the option at all.
+		if StaticPopup_Show then
 		info.text = BLOCK_INVITES;
 		info.hasArrow = false;
 		info.func = function()
 						local inviteID, accountName = BNGetFriendInviteInfo(self.inviteIndex);
-						local dialog;
-						if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
-							dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
-						end
+							local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
 						if ( dialog ) then
 							dialog.data = inviteID;
 						end
 					end
-		UIDropDownMenu_AddButton(info, level)
+
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
 end
 
 function FriendsList_ClosePendingInviteDialogs()
 	CloseDropDownMenus();
 
-	if C_GameEnvironmentManager.GetCurrentGameEnvironment() ~= Enum.GameEnvironment.WoWLabs then
+	if StaticPopup_Hide then
 		StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
 	end
 end

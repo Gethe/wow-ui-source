@@ -85,21 +85,6 @@ if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
 		self:SetAttribute("pressAndHoldAction", self.pressAndHoldAction);
 	end
 
-	function ActionBarActionButtonDerivedMixin:UpdateAction(force)
-		local action = self:CalculateAction();
-		if ( action ~= self.action or force ) then
-			self.action = action;
-			SetActionUIButton(self, action, self.cooldown);
-			self:Update();
-
-			-- If on an action bar and layout fields are set, ask  it to update visibility of its buttons
-			if (self.index and self.bar and self.bar.UpdateShownButtons) then
-				self.bar:UpdateShownButtons();
-				self.bar:UpdateGridLayout();
-			end
-		end
-	end
-
 	function ActionBarActionButtonDerivedMixin:Update()
 		local action = self.action;
 		local icon = self.icon;

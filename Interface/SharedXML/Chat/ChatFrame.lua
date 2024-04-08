@@ -3094,6 +3094,10 @@ function ChatFrame_CanAddChannel()
 end
 
 function ChatFrame_AddChannel(chatFrame, channel)
+	if ( not AddChatWindowChannel ) then
+		return nil;
+	end
+
 	local channelIndex = nil;
 	local zoneChannel = AddChatWindowChannel(chatFrame:GetID(), channel);
 	if ( zoneChannel ) then
