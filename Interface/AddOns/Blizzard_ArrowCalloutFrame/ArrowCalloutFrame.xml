@@ -1,0 +1,193 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<!-- This file describes a frame that fades out over time -->
+	<Frame name="ArrowCalloutPointerUp" alpha="0" virtual="true">
+		<Size x="64" y="64" />
+		<Anchors>
+			<Anchor point="BOTTOM" y="-23" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="NPE_ArrowUp" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="NPE_ArrowUpGlow" alpha="0.75" alphaMode="ADD" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Translation offsetY="30" duration="1" order="1" smoothing="OUT"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+				<Scripts>
+					<OnFinished>
+						self:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<!-- DOWN -->
+	<Frame name="ArrowCalloutPointerDown" alpha="0" virtual="true">
+		<Size x="64" y="64" />
+		<Anchors>
+			<Anchor point="TOP" y="23" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="NPE_ArrowDown" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="NPE_ArrowDownGlow" alpha="0.75" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Translation offsetY="-30" duration="1" order="1" smoothing="OUT"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+				<Scripts>
+					<OnFinished>
+						self:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<!-- LEFT -->
+	<Frame name="ArrowCalloutPointerLeft" alpha="0" virtual="true">
+		<Size x="64" y="64" />
+		<Anchors>
+			<Anchor point="RIGHT" x="23" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="NPE_ArrowLeft" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="NPE_ArrowLeftGlow" alpha="0.75" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Translation offsetX="-30" duration="1" order="1" smoothing="OUT"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+				<Scripts>
+					<OnFinished>
+						self:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<!-- RIGHT -->
+	<Frame name="ArrowCalloutPointerRight" alpha="0" virtual="true">
+		<Size x="64" y="64" />
+		<Anchors>
+			<Anchor point="LEFT" x="-23" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="NPE_ArrowRight" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="NPE_ArrowRightGlow" alpha="0.75" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Translation offsetX="30" duration="1" order="1" smoothing="OUT"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+				<Scripts>
+					<OnFinished>
+						self:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="ArrowCalloutContainerTemplate" inherits="ResizeLayoutFrame" mixin="ArrowCalloutContainerMixin" virtual="true">
+		<Size x="75" y="75" />
+		<KeyValues>
+			<KeyValue key="widthPadding" value="20" type="number"/>
+			<KeyValue key="heightPadding" value="20" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Content" clampedToScreen="true" inherits="GlowBoxTemplate" >
+				<Size x="0" y="0" />
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" setAllPoints="true" inherits="GameFontNormalLarge" justifyH="CENTER">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Glow" frameLevel="1000" inherits="BackdropTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Content" x="-12" y="12"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Content" x="12" y="-12"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup looping="BOUNCE">
+						<Alpha fromAlpha="0.25" toAlpha="1" duration="0.5" />
+						<Scripts>
+							<OnLoad>
+								self:Play();
+							</OnLoad>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_CALLOUT_GLOW_0_20" type="global"/>
+					<KeyValue key="backdropBorderBlendMode" value="ADD" type="string"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ArrowCalloutContainerTemplateWithCloseButtonTemplate" inherits="ArrowCalloutContainerTemplate" virtual="true">
+		<Size x="75" y="75" />
+		<KeyValues>
+			<KeyValue key="widthPadding" value="40" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="1100" mixin="ArrowCalloutCloseButtonMixin">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Content" relativePoint="TOPRIGHT" x="3" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="WidgetContainerCalloutTemplate" hidden="true" inherits="UIWidgetContainerTemplate" mixin="WidgetContainerCalloutTemplateMixin" virtual="true"/>
+
+	<!-- Main Frame-->
+	<Frame name="ArrowCalloutFrameManager" mixin="ArrowCalloutMixin" parent="UIParent" setAllPoints="true" frameStrata="HIGH">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnGamePadButtonDown"/>
+		</Scripts>
+	</Frame>
+</Ui>

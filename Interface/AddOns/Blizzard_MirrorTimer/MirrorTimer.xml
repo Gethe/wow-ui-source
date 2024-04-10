@@ -1,0 +1,85 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MirrorTimerTemplate" toplevel="true" hidden="true" parentArray="mirrorTimers" mixin="MirrorTimerMixin" virtual="true">
+		<Size x="206" y="32"/>
+		<Frames>
+			<StatusBar parentKey="StatusBar">
+				<Size x="195" y="13"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						LowerFrameLevel(self);
+					</OnLoad>
+				</Scripts>
+				<BarTexture atlas="ui-castingbar-filling-standard" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</StatusBar>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="TextBorder" atlas="ui-castingbar-textbox">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StatusBar" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.StatusBar" relativePoint="BOTTOMRIGHT" x="0" y="-14"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture atlas="ui-castingbar-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StatusBar" relativePoint="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.StatusBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyV="MIDDLE" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StatusBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextBorder" relativePoint="BOTTOMRIGHT" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Border" atlas="ui-castingbar-frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StatusBar" relativePoint="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.StatusBar" relativePoint="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MirrorTimerContainer" parent="UIParent" inherits="EditModeTimerBarsSystemTemplate, VerticalLayoutFrame" mixin="MirrorTimerContainerMixin">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-100"/>
+		</Anchors>
+		<Frames>
+			<Frame inherits="MirrorTimerTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame inherits="MirrorTimerTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame inherits="MirrorTimerTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

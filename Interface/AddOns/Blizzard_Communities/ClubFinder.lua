@@ -1765,21 +1765,17 @@ function ClubFinderCommunitiesCardsBaseMixin:RefreshLayout()
 		return;
 	end
 
-	local listSize = #self.CardList;
-	local dataProvider = self.ScrollBox:GetDataProvider();
-	if (not dataProvider or self.newRequest) then
-		self.newRequest = nil;
-		dataProvider = CreateDataProvider(self.CardList);
-		self.ScrollBox:SetDataProvider(dataProvider);
-	else
-		dataProvider:InsertTableRange(self.CardList, self.ScrollBox:GetDataProviderSize() + 1, listSize);
-	end
+	-- On a new request the display range is reset to the beginning.
+	local retainScroll = not self.newRequest;
+	self.newRequest = nil;
 
-	self.showingCards = listSize > 0;
+	local dataProvider = CreateDataProvider(self.CardList);
+	self.ScrollBox:SetDataProvider(dataProvider, retainScroll);
 
+	self.showingCards = not dataProvider:IsEmpty();
 	self:GetParent().InsetFrame.GuildDescription:SetShown(not self.showingCards);
 
-	if (self.pagingEnabled and WithinRangeExclusive(listSize, 0, self.totalListSize)) then
+	if self.pagingEnabled and (dataProvider:GetSize() < self.totalListSize) then
 		self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnScroll, self.OnScrollBoxScroll, self);
 	end
 end
@@ -1843,9 +1839,9 @@ end
 function ClubFinderGuildCardsBaseMixin:OnMouseWheel(delta)
 	local nextPageValue = self.pageNumber + 1;
 	local previousPageValue = self.pageNumber - 1;
-	if ( delta < 0 and previousPageValue > 0) then
+	if ( delta > 0 and previousPageValue > 0) then
 		self:PagePrevious();
-	elseif(delta > 0 and nextPageValue <= self.numPages) then
+	elseif(delta < 0 and nextPageValue <= self.numPages) then
 		self:PageNext();
 	end
 end

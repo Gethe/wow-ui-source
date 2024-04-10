@@ -1,0 +1,89 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UIWidgetTemplateTugOfWar" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateTugOfWarMixin">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BarBackgroundMiddle">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BarBackgroundLeft">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BarBackgroundRight">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NeutralFill">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="NeutralFillGlow" ignoreParentAlpha="true" alpha="0.75">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeutralFill" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NeutralFill" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Marker">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BarBackgroundMiddle"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BarBackgroundMiddle"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftArrow" ignoreParentAlpha="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Marker" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightArrow" ignoreParentAlpha="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Marker" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LeftIcon" inherits="UIWidgetBaseIconTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightIcon" inherits="UIWidgetBaseIconTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BarBackgroundMiddle" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="LeftArrowAnim" setToFinalAlpha="true">
+				<Alpha childKey="LeftArrow" fromAlpha="0" toAlpha="1" duration=".1" order="0"/>
+				<Alpha childKey="LeftArrow" fromAlpha="1" toAlpha="0" duration=".1" order="1" startDelay="0.9" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RightArrowAnim" setToFinalAlpha="true">
+				<Alpha childKey="RightArrow" fromAlpha="0" toAlpha="1" duration=".1" order="0"/>
+				<Alpha childKey="RightArrow" fromAlpha="1" toAlpha="0" duration=".1" order="1" startDelay="0.9" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="NeutralFillGlowPulseAnim" setToFinalAlpha="true" looping="BOUNCE">
+				<Alpha childKey="NeutralFillGlow" fromAlpha="0.25" toAlpha="0.75" duration=".75"/>
+			</AnimationGroup>
+		</Animations>
+
+	</Frame>
+</Ui>

@@ -1,0 +1,585 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MonthlyActivitiesButtonTextContainerTemplate" inherits="VerticalLayoutFrame" mixin="MonthlyActivitiesButtonTextContainerMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="2" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="NameText" inherits="GameFontHighlightMedium" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="370" y="0"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="ConditionsText" inherits="GameFontNormal" justifyV="MIDDLE" justifyH="LEFT">
+					<Size x="370" y="0"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="MonthlyActivitiesButtonTemplate" mixin="MonthlyActivitiesButtonMixin" hidden="true" virtual="true">
+		<Size x="521" y="78"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Coin" alpha="1" alphaMode="ADD" atlas="activities-coindecal" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="-40" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Mask" alpha="1" alphaMode="BLEND" atlas="activities-coindrawing-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Coin"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Coin"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ribbon" atlas="activities-ribbon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-22" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RibbonStacked" hidden="true" atlas="activities-ribbon-stacked" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HeaderCollapseIndicator" hidden="true" atlas="campaign_headericon_closed" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RibbonStacked" relativePoint="LEFT" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" atlas="activities-icon-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Ribbon" x="0" y="7"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Points" inherits="GameFontHighlightMed2" justifyV="MIDDLE" justifyH="CENTER" text="100">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Ribbon" x="0" y="7"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
+					<Size x="98" y="98"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Checkmark" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="CheckmarkAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="2" fromAlpha="1" toAlpha="1"/>
+				<FlipBook childKey="CheckmarkFlipbook" duration="0.25" order="2" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0" smoothing="OUT"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CoinAnim" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate" looping="NONE" setToFinalAlpha="true">
+				<Alpha smoothing="NONE" childKey="Coin" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha startDelay="0.2" smoothing="NONE" childKey="Coin" duration="1" order="1" fromAlpha="1" toAlpha="1"/>
+				<Alpha startDelay="1.2" smoothing="NONE" childKey="Coin" duration="0.8" order="1" fromAlpha="1" toAlpha="0"/>
+				<Rotation smoothing="IN_OUT" childKey="Mask" duration="2" order="1" degrees="180">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Scale childKey="Mask" duration="0.25" order="1" fromScaleX="0.0" fromScaleY="0.0" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="TextContainer" inherits="MonthlyActivitiesButtonTextContainerTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="370" type="number"/>
+					<KeyValue key="maximumHeight" value="55" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" x="36" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<NormalTexture parentKey="NormalTexture" atlas="activities-incomplete"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="MonthlySupersedeActivitiesButtonTemplate" mixin="MonthlySupersedeActivitiesButtonMixin" hidden="true" virtual="true">
+		<Size x="521" y="48"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" atlas="activities-icon-checkmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="7"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Points" inherits="GameFontHighlightMed2" justifyV="MIDDLE" justifyH="CENTER" text="100">
+					<Anchors>
+						<Anchor point="RIGHT" x="-40" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TextContainer" inherits="MonthlyActivitiesButtonTextContainerTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="350" type="number"/>
+					<KeyValue key="maximumHeight" value="30" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" x="40" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<NormalTexture parentKey="NormalTexture" atlas="activities-incomplete"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="activities-incomplete" alpha=".3" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="MonthlyActivitiesThresholdTemplate" mixin="MonthlyActivitiesThresholdMixin" useParentLevel="true" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="LineComplete" atlas="activities-complete-line" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LineIncomplete" atlas="activities-incomplete-line" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ItemButton parentKey="RewardItem" mixin="MonthlyActivitiesRewardButtonMixin" hidden="true">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="CENTER" x="12" y="16"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon">
+							<Size x="44" y="44"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" atlas="activities-reward-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</ItemButton>
+			<Frame parentKey="RewardCurrency" mixin="MonthlyActivitiesRewardCurrencyMixin" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
+				<HitRectInsets bottom="4" left="4" top="4" right="4"/>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="PendingGlow" atlas="activities-complete-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Glow" alpha="0" alphaMode="ADD" atlas="activities-complete-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="DiamondComplete" atlas="activities-complete-diamond" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="1" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DiamondIncomplete" atlas="activities-incomplete-diamond" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Sparkles" alpha="0" alphaMode="ADD" atlas="activities-complete-diamond-sparkles">
+							<Size x="70" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<FontString parentKey="Points" inherits="NumberFontSmallWhiteLeft" justifyV="MIDDLE" justifyH="CENTER" text="100">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-small">
+							<Size x="59" y="59"/>
+							<Anchors>
+								<Anchor point="CENTER" x="7" y="-9"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="EarnedCheckmark" atlas="activities-icon-checkmark-small" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="EarnedAnim" looping="NONE" setToFinalAlpha="true">
+						<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="EarnedCheckmark" duration="0.0" order="2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Points" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Glow" smoothing="OUT" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Glow" startDelay="0.1" smoothing="IN_OUT" duration="0.3" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" startDelay="0.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Sparkles" duration="0.5" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+						<FlipBook smoothing="OUT" childKey="Sparkles" duration="0.5" order="1" flipBookRows="2" flipBookColumns="7" flipBookFrames="14" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+						<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Button name="MonthlyActivitiesFilterListButtonTemplate" mixin="MonthlyActivitiesFilterListButtonMixin" virtual="true">
+		<Size x="175" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="1"/>
+						<Anchor point="BOTTOMRIGHT" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="LockIcon" atlas="activities-icon-lock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="MonthlyActivitiesFrameTemplate" mixin="MonthlyActivitiesFrameMixin" virtual="true">
+		<Frames>
+			<Button parentKey="HelpButton" inherits="MainHelpPlateButton" frameLevel="520">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" x="39" y="80" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MonthlyActivities_ToggleTutorial();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Use frameBuffer to make fade out look clean with reward item layers -->
+			<StatusBar parentKey="ThresholdBar" frameBuffer="true" frameLevel="510">
+				<BarTexture parentKey="BarFill" atlas="activities-bar-fill"/>
+				<Size x="663" y="33"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="46" y="-74"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BarBackgroundGlow" atlas="activities-bar-background-glow" useAtlasSize="true" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="BarBackground" atlas="activities-bar-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BarBorder" atlas="activities-bar-border" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="BarBorderGlow" atlas="activities-bar-border-glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BarFillGlow" atlas="activities-bar-fill-glow" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="BarEnd" useParentLevel="true">
+						<Size x="16" y="48"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="line" atlas="activities-bar-end" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="TextContainer" frameStrata="HIGH" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Points" inherits="GameFontHighlight" text="MONTHLY_ACTIVITIES_POINTS" justifyV="MIDDLE">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" x="15" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="ProgressText" inherits="GameFontHighlight" text="650 / 1,000" justifyV="MIDDLE">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="-30" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="FadeOutAnim" inherits="TargetsHiddenOnFinishedAnimGroupTemplate" setToFinalAlpha="true">
+						<Alpha duration="2.0" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+						<Alpha childKey="BarBorderGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarBackgroundGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarFillGlow" duration="0.25" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</StatusBar>
+			<Frame parentKey="BarComplete" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="AllRewardsCollectedText" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE" text="MONTHLY_ACTIVITIES_ALL_REWARDS_COLLECTED">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="125"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="PendingRewardsText" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="MIDDLE" text="MONTHLY_ACTIVITIES_PENDING_REWARDS">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" x="42" y="125"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="PendingRewardsChestGlow" useAtlasSize="true" atlas="activities-chest-sw-glow">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.PendingRewardsText" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PendingRewardsChest" useAtlasSize="true" atlas="activities-chest-sw">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.PendingRewardsChestGlow" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FadeInAnim" setToFinalAlpha="true">
+						<Alpha duration="2.5" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha duration="0.5" order="2" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="PendingRewardsChestGlowPulse" looping="REPEAT">
+						<Alpha childKey="PendingRewardsChestGlow" fromAlpha="0.25" toAlpha="0.5" duration="1.5" order="1"/>
+						<Alpha childKey="PendingRewardsChestGlow" fromAlpha="0.5" toAlpha="0.25" duration="1.5" order="2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="FilterList" mixin="MonthlyActivitiesFilterListMixin" frameLevel="510">
+				<Size x="220" y="290"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-137"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Bg" atlas="activities-container"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true"/>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="2" y="-7"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="2" y="4"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Size x="521" y="291"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-30" y="-138"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-6"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="6"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="HeaderContainer" setAllPoints="true" frameLevel="510">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="LEFT" text="MONTHLY_ACTIVITIES_TAB">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="-16"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Month" inherits="GameFontHighlightMed2" justifyH="LEFT">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Title" x="16" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TimeLeft" inherits="GameFontWhite">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-20" y="-18"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ThemeContainer" setAllPoints="true" frameLevel="505" mixin="MonthlyActivitiesThemeContainerMixin">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Top"/>
+						<Texture parentKey="Bottom"/>
+						<Texture parentKey="Left"/>
+						<Texture parentKey="Right"/>
+						<Texture parentKey="FilterList"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bg" atlas="activities-background"/>
+				<Texture parentKey="DividerVertical" atlas="activities-divider-vertical" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.FilterList" x="2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ShadowLeft" atlas="activities-container-shadow-left">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FilterList" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FilterList" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShadowRight" atlas="activities-container-shadow-right">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" x="-12" y="3"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBox" x="27" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider" atlas="activities-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-133"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RestrictedText" inherits="GameFontRedLarge" justifyH="CENTER" justifyV="MIDDLE" text="MONTHLY_ACTIVITIES_RESTRICTED">
+					<Size x="500" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="42" y="125"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

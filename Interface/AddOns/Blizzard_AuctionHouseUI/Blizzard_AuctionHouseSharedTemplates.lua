@@ -322,7 +322,7 @@ function AuctionHouseItemDisplayMixin:GetItemInfo()
 		local itemIcon = C_Item.GetItemIcon(itemLocation);
 		return itemName, itemLink, itemQuality, itemLevel, itemIcon;
 	else
-		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(self:GetItem());
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(self:GetItem());
 		return itemName, itemLink, itemQuality, itemLevel, itemIcon;
 	end
 end
@@ -334,7 +334,7 @@ function AuctionHouseItemDisplayMixin:GetItemID()
 	end
 
 	-- Storing in a local for clarity, and to avoid additional returns.
-	local itemID = GetItemInfoInstant(itemLink);
+	local itemID = C_Item.GetItemInfoInstant(itemLink);
 	return itemID;
 end
 

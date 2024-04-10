@@ -291,16 +291,20 @@ end
 
 function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	local name = message.author.name or " ";
+	local displayName = name;
+	if message.author.timerunningSeasonID then
+		displayName = TimerunningUtil.AddSmallIcon(name);
+	end
 	local link;
 	if message.author.clubType == Enum.ClubType.BattleNet then
-		link = GetBNPlayerCommunityLink(name, name, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
+		link = GetBNPlayerCommunityLink(name, displayName, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
 	elseif message.author.clubType == Enum.ClubType.Character or message.author.clubType == Enum.ClubType.Guild then
 		local classInfo = message.author.classID and C_CreatureInfo.GetClassInfo(message.author.classID);
 		if classInfo then
 			local classColorInfo = RAID_CLASS_COLORS[classInfo.classFile];
-			link = GetPlayerCommunityLink(name, WrapTextInColorCode(name, classColorInfo.colorStr), clubId, streamId, message.messageId.epoch, message.messageId.position);
+			link = GetPlayerCommunityLink(name, WrapTextInColorCode(displayName, classColorInfo.colorStr), clubId, streamId, message.messageId.epoch, message.messageId.position);
 		else
-			link = GetPlayerCommunityLink(name, name, clubId, streamId, message.messageId.epoch, message.messageId.position);
+			link = GetPlayerCommunityLink(name, displayName, clubId, streamId, message.messageId.epoch, message.messageId.position);
 		end
 	end
 	

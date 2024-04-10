@@ -232,7 +232,7 @@ end
 function BlackMarketFrame_ConfirmBid(auctionID)
 	local bid = MoneyInputFrame_GetCopper(BlackMarketBidPrice);
 	local name, texture, quantity, _, _, _, _, _, _, _, _, _, _, _, link, _, quality = C_BlackMarket.GetItemInfoByID(auctionID);
-	local r, g, b = GetItemQualityColor(quality);
+	local r, g, b = C_Item.GetItemQualityColor(quality);
 	local data = {	["texture"] = texture, ["name"] = name, ["color"] = {r, g, b, 1}, 
 					["link"] = link, ["count"] = quantity,
 					["bid"] = bid, ["auctionID"] = auctionID,

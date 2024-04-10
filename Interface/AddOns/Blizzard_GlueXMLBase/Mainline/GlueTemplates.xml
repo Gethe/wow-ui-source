@@ -1,0 +1,145 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="GlueCheckButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="Text" inherits="GlueFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				if ( self:GetChecked() ) then
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				else
+					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+				end
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<Button name="GameEnvironmentButtonTemplate" mixin="SelectableButtonMixin, GameEnvironmentButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="244" y="122"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="plunderstorm-glues-logoarrow" useAtlasSize="true" hidden="true" >
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level ="BACKGROUND">
+				<Texture parentKey="BackgroundGlowTexture" atlas="plunderstorm-glues-logo-backglow" hidden="true">
+					<Size x="256" y="237"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NormalTexture"/>
+			</Layer>
+		</Layers>
+		<KeyValues>
+			<!--
+			set the gameEnvironment key to be the value of the game environment you want to switch to, for example:
+			   Enum.GameEnvironment.WoW
+			   Enum.GameEnvironment.WoWLabs
+			<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoW" type="global" />
+			-->
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="GameEnvironmentButtonPulsingTemplate" mixin="SelectableButtonMixin, GameEnvironmentButtonPulsingMixin" motionScriptsWhileDisabled="true" virtual="true" inherits="GameEnvironmentButtonTemplate">
+		<Size x="244" y="122"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PulseTexture" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0" relativeKey="$parent.NormalTexture" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PulseTextureTwo" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0" relativeKey="$parent.NormalTexture" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="REPEAT">
+				<Alpha childKey="PulseTexture" duration="0.8" order="1" smoothing="IN_OUT" fromAlpha="0.0" toAlpha="1.0"/>
+				<Alpha childKey="PulseTexture" duration="0.8" order="2" smoothing="IN_OUT" fromAlpha="1.0" toAlpha="0.0"/>
+				<Alpha childKey="PulseTextureTwo" duration="0.8" order="1" smoothing="IN_OUT" fromAlpha="0.0" toAlpha="1.0"/>
+				<Alpha childKey="PulseTextureTwo" duration="0.8" order="2" smoothing="IN_OUT" fromAlpha="1.0" toAlpha="0.0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="GameEnvironmentFrameTemplate" mixin="GameEnvironmentFrameMixin" setAllPoints="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BackgroundShadow" atlas="plunderstorm-glues-logo-shadow" setAllPoints="true" />
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SelectWoWToggle" inherits ="GameEnvironmentButtonTemplate">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="NormalTexture" name="CurrentExpansionLogo" useAtlasSize="true" />
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="40" y="-40"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoW" type="global" />
+				</KeyValues>
+			</Button>
+			<Button parentKey="SelectWoWLabsToggle" inherits ="GameEnvironmentButtonPulsingTemplate">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="NormalTexture" file="Interface\Glues\Common\Glues-WoW-PlunderstormLogo">
+							<Size x="244" y="244"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SelectWoWToggle" relativePoint="RIGHT" x="9" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="gameEnvironment" value="Enum.GameEnvironment.WoWLabs" type="global" />
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

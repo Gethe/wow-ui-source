@@ -39,7 +39,7 @@ NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
 	RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 });
 
-GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
+StaticPopupDialogs["CHARACTER_CREATE_FAILURE"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = nil,
@@ -186,11 +186,15 @@ function CharacterCreateMixin:OnShow()
 		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
-		NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
+		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
+		end
 	else
 		self.currentPaidServiceName = nil;
 		C_CharacterCreation.ResetCharCustomize();
-		NameChoiceFrame.EditBox:SetText("");
+		if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+			NameChoiceFrame.EditBox:SetText("");
+		end
 	end
 
 	local instantRotate = true;
@@ -229,6 +233,11 @@ function CharacterCreateMixin:UpdateRecruitInfo()
 		local anchorFrame = recruiterIsHorde and RaceAndClassFrame.HordeRaces or RaceAndClassFrame.AllianceRaces;
 		HelpTip:Show(anchorFrame, rafHelpTipInfo);
 	end
+end
+
+function CharacterCreateMixin:UpdateTimerunningChoice()
+	-- Currently timerunning choice only affects the Class Trial button which is updated as part of this call.
+	RaceAndClassFrame:UpdateState();
 end
 
 function CharacterCreateMixin:OnHide()
@@ -355,8 +364,9 @@ function CharacterCreateMixin:OnUpdateMouseRotate()
 	end
 end
 
+local PLUNDERSTORM_BACKGROUND_MODEL_ID = 2575493;
 function CharacterCreateMixin:UpdateBackgroundModel()
-	local bgModelID = C_CharacterCreation.GetCreateBackgroundModel();
+	local bgModelID = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateUseFixedBackgroundModel) and PLUNDERSTORM_BACKGROUND_MODEL_ID or C_CharacterCreation.GetCreateBackgroundModel();
 	if bgModelID ~= self.bgModelID then
 		C_CharacterCreation.SetCharCustomizeBackground(bgModelID);
 		ResetModel(self);
@@ -538,7 +548,9 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	RaceAndClassFrame:SetShown(mode == CHAR_CREATE_MODE_CLASS_RACE);
 	CharCustomizeFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
-	NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
+	end
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
 	NewPlayerTutorial:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and C_CharacterCreation.UseBeginnerMode());
 
@@ -580,7 +592,11 @@ function CharacterCreateMixin:Exit()
 	self.RaceAndClassFrame.ClassTrialCheckButton:ResetDesiredState();
 
 	CharacterSelect.backFromCharCreate = true;
-	GlueParent_SetScreen("charselect");
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		GlueParent_SetScreen("charselect");
+	else
+		GlueParent_SetScreen("plunderstorm");
+	end
 end
 
 local function SortBlockers(a, b)
@@ -656,6 +672,9 @@ function CharacterCreateMixin:SetMissingOptionsNavBlockersEnabled(enabled)
 end
 
 function CharacterCreateMixin:GetSelectedName()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		return "";
+	end
 	return NameChoiceFrame.EditBox:GetText();
 end
 
@@ -677,6 +696,9 @@ function CharacterCreateMixin:CreateCharacter()
 		self:UpdateForwardButton();
 
 		C_CharacterCreation.CreateCharacter(self:GetSelectedName(), ZoneChoiceFrame.useNPE, RaceAndClassFrame:GetCreateCharacterFaction());
+		if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+			GlueParent_SetScreen("plunderstorm");
+		end
 	end
 end
 
@@ -800,6 +822,9 @@ function CharacterCreateMixin:NavForward()
 			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 			self:CreateCharacter();
 			self.ForwardButton:SetEnabled(false);
+			if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+				CharacterCreateFrame:Exit();
+			end
 		end
 	end
 end
@@ -1034,14 +1059,19 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 
 	self:SetIconAtlas(raceData.createScreenIconAtlas);
 
-	local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
-	self.allowSelectionOnDisable = not CharacterCreateFrame:HasService() and (raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveAchievement);
-	self:SetEnabledState(isValidRace);
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		local isValidRace = RaceAndClassFrame:IsRaceValid(raceData, self.faction);
+		self.allowSelectionOnDisable = not CharacterCreateFrame:HasService() and (raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveAchievement);
+		self:SetEnabledState(isValidRace);
 
-	if isValidRace and RaceAndClassFrame.classValidRaces then
-		self:StartFlash();
+		if isValidRace and RaceAndClassFrame.classValidRaces then
+			self:StartFlash();
+		else
+			self:StopFlash();
+		end
 	else
-		self:StopFlash();
+		self.allowSelectionOnDisable = true;
+		self:SetEnabledState(true);
 	end
 
 	self.RaceName.Text:SetText(raceData.name);
@@ -1060,27 +1090,29 @@ function CharacterCreateRaceButtonMixin:SetRace(raceData, selectedRaceID, select
 	self:AddBlankTooltipLine();
 	self:AddTooltipLine(raceData.loreDescription);
 
-	self:AddExpandedTooltipFrame(RaceAndClassFrame.RacialAbilityList);
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		self:AddExpandedTooltipFrame(RaceAndClassFrame.RacialAbilityList);
 
-	if not raceData.enabled then
-		if raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveExpansion then
-			local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
-			self:AddPostTooltipLine(CHAR_CREATE_NEED_EXPANSION:format(currentExpansionName), RED_FONT_COLOR);
-		elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitServer then
-			self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_DUPLICATE, RED_FONT_COLOR);
-		elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitLevel then
-			self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_LEVEL_REQUIREMENT, RED_FONT_COLOR);
-		else
-			local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
-			if requirements then
-				self:AddPostTooltipLine(ALLIED_RACE_UNLOCK_TEXT, RED_FONT_COLOR);
+		if not raceData.enabled then
+			if raceData.disabledReason == Enum.CreationRaceDisabledReason.DoesNotHaveExpansion then
+				local currentExpansionName = _G["EXPANSION_NAME"..LE_EXPANSION_LEVEL_CURRENT];
+				self:AddPostTooltipLine(CHAR_CREATE_NEED_EXPANSION:format(currentExpansionName), RED_FONT_COLOR);
+			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitServer then
+				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_DUPLICATE, RED_FONT_COLOR);
+			elseif raceData.disabledReason == Enum.CreationRaceDisabledReason.RaceLimitLevel then
+				self:AddPostTooltipLine(CHAR_CREATE_DRACTHYR_LEVEL_REQUIREMENT, RED_FONT_COLOR);
+			else
+				local requirements = C_CharacterCreation.GetAlliedRaceAchievementRequirements(raceData.raceID);
+				if requirements then
+					self:AddPostTooltipLine(ALLIED_RACE_UNLOCK_TEXT, RED_FONT_COLOR);
 
-				for _, requirement in ipairs(requirements) do
-					self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
+					for _, requirement in ipairs(requirements) do
+						self:AddPostTooltipLine(DASH_WITH_TEXT:format(requirement), RED_FONT_COLOR);
+					end
+
+					local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
+					self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
 				end
-
-				local embassy = (self.faction == "Horde") and CHAR_CREATE_HORDE_EMBASSY or CHAR_CREATE_ALLIANCE_EMBASSY;
-				self:AddPostTooltipLine(DASH_WITH_TEXT:format(embassy), RED_FONT_COLOR);
 			end
 		end
 	end
@@ -1287,8 +1319,8 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() then
-			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.GetTimerunningSeasonID() then
+			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction (or timerunning which also skips the faction choice)
 			return self.selectedFaction;
 		else
 			-- Otherwise they start as neutral so pass back nil
@@ -1310,11 +1342,12 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
 		(self.selectedClassID ~= EVOKER_CLASS_ID) and
-		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost);
+		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
+		not C_CharacterCreation.GetTimerunningSeasonID();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
-	local showTrialBoost = self:CanTrialBoostCharacter();
+	local showTrialBoost = self:CanTrialBoostCharacter() and C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled);
 	local isVisibilityChanging = showTrialBoost ~= self.ClassTrialCheckButton:IsVisible();
 
 	self.ClassTrialCheckButton:SetShown(showTrialBoost);
@@ -1323,9 +1356,10 @@ end
 
 function CharacterCreateRaceAndClassMixin:OnShow()
 	local useNewPlayerMode = C_CharacterCreation.UseBeginnerMode();
+	local alwaysAllowAlliedRaces = C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.AlwaysAllowAlliedRaces);
 
-	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode);
-	self.HordeAlliedRaces:SetShown(not useNewPlayerMode);
+	self.AllianceAlliedRaces:SetShown(not useNewPlayerMode or alwaysAllowAlliedRaces);
+	self.HordeAlliedRaces:SetShown(not useNewPlayerMode or alwaysAllowAlliedRaces);
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
@@ -1509,6 +1543,10 @@ end
 function CharacterCreateRaceAndClassMixin:UpdateState(selectedFaction)
 	self.selectedRaceID = C_CharacterCreation.GetSelectedRace();
 	self.selectedRaceData = C_CharacterCreation.GetRaceDataByID(self.selectedRaceID);
+
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		self.selectedRaceData.enabled = true;
+	end
 
 	if selectedFaction then
 		self.selectedFaction = selectedFaction;
@@ -1739,7 +1777,9 @@ function CharacterCreateRaceAndClassMixin:UpdateButtons()
 
 	self:UpdateSexButtons();
 	self:UpdateRaceButtons();
-	self:UpdateClassButtons();
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		self:UpdateClassButtons();
+	end
 
 	self:LayoutButtons();
 end
@@ -1881,7 +1921,7 @@ end
 
 function CharacterCreateEditBoxMixin:OnTextChanged()
 	local selectedName = self:GetText();
-	if selectedName == "" or selectedName == PENDING_RANDOM_NAME then
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) and (selectedName == "" or selectedName == PENDING_RANDOM_NAME) then
 		CharacterCreateFrame:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_PICK_NAME, MEDIUM_PRIORITY);
 		self.NameAvailabilityState:Hide();
 	else
@@ -1964,7 +2004,7 @@ function CharacterCreateNameAvailabilityStateMixin:UpdateNavBlocker(navBlocker)
 		CharacterCreateFrame:RemoveNavBlocker(self.navBlocker);
 	end
 
-	if NameChoiceFrame:IsShown() and navBlocker then
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) and NameChoiceFrame:IsShown() and navBlocker then
 		CharacterCreateFrame:AddNavBlocker(navBlocker);
 		self.navBlocker = navBlocker;
 	else
@@ -2069,8 +2109,18 @@ function CharacterCreateZoneChoiceMixin:OnHide()
 end
 
 function CharacterCreateZoneChoiceMixin:Setup()
-	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices();
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		return;
+	end
 
+	-- No zone choice / NPE for Timerunning characters.
+	if (C_CharacterCreation.GetTimerunningSeasonID()) then
+		self:SetUseNPE(false);
+		self.shouldShow = false;
+		return;
+	end
+
+	local firstZoneChoiceInfo, secondZoneChoiceInfo = C_CharacterCreation.GetStartingZoneChoices();
 	if not secondZoneChoiceInfo or CharacterCreateFrame:HasService() or (C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Normal) then
 		self:SetUseNPE(firstZoneChoiceInfo.isNPE);
 		self.shouldShow = false;
@@ -2084,6 +2134,9 @@ function CharacterCreateZoneChoiceMixin:Setup()
 end
 
 function CharacterCreateZoneChoiceMixin:ShouldShow()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		return false;
+	end
 	return self.shouldShow;
 end
 

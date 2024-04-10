@@ -97,6 +97,7 @@ Import("tonumber");
 Import("Vector2D_CalculateAngleBetween");
 Import("Vector2D_Cross");
 Import("Vector2D_Dot");
+Import("C_GameEnvironmentManager");
 
 ----------------
 

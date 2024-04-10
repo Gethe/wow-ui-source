@@ -12,6 +12,7 @@ AddOnsDocumentation.lua
 AdventureJournalDocumentation.lua
 AdventureMapDocumentation.lua
 AreaPoiInfoDocumentation.lua
+ArenaTeamDocumentation.lua
 AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
@@ -34,6 +35,8 @@ CinematicDocumentation.lua
 ClassTrialDocumentation.lua
 ClientDocumentation.lua
 ClientSceneDocumentation.lua
+ClubDocumentation.lua
+ClubFinderDocumentation.lua
 CombatLogDocumentation.lua
 CompactUnitFramesDocumentation.lua
 ConfigurationWarningsDocumentation.lua
@@ -46,14 +49,17 @@ CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
 CursorUtilDocumentation.lua
+DeathAlertDocumentation.lua
 DeathInfoDocumentation.lua
 DebugToggleDocumentation.lua
 DuelInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncounterInfoDocumentation.lua
+EncounterJournalDocumentation.lua
 EquipmentManagerDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
+ExpansionInfoDocumentation.lua
 FogOfWarDocumentation.lua
 FontDocumentation.lua
 FrameAPIBlobDocumentation.lua
@@ -68,8 +74,11 @@ FrameAPITabardModelBaseDocumentation.lua
 FrameAPIUnitPositionFrameDocumentation.lua
 FrameScriptDocumentation.lua
 GMTicketInfoDocumentation.lua
+GameCursorDocumentation.lua
+GameErrorDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
+GameUIDocumentation.lua
 GlueDocumentation.lua
 GlyphInfoDocumentation.lua
 GossipInfoDocumentation.lua
@@ -77,6 +86,7 @@ GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
 InputDocumentation.lua
+InstanceDocumentation.lua
 InstanceEncounterDocumentation.lua
 InterfaceFileManifestDocumentation.lua
 ItemDocumentation.lua
@@ -96,6 +106,7 @@ MapExplorationDocumentation.lua
 MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
 MinimapFrameAPIDocumentation.lua
+MirrorTimerDocumentation.lua
 MountJournalDocumentation.lua
 MovieDocumentation.lua
 NamePlateManagerDocumentation.lua
@@ -105,6 +116,7 @@ PaperDollInfoDocumentation.lua
 ParentalControlsDocumentation.lua
 PartyInfoDocumentation.lua
 PartyPoseUIDocumentation.lua
+PerformanceDocumentation.lua
 PetInfoDocumentation.lua
 PetJournalInfoDocumentation.lua
 PingManagerDocumentation.lua
@@ -125,8 +137,10 @@ QuestOfferDocumentation.lua
 QuestSessionDocumentation.lua
 QuestTaskInfoDocumentation.lua
 RaidLocksDocumentation.lua
+RecruitAFriendDocumentation.lua
 ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
+ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
 ScreenDocumentation.lua
 ScriptWarningsDocumentation.lua
@@ -173,6 +187,7 @@ SimpleStatusBarAPIDocumentation.lua
 SimpleTextureAPIDocumentation.lua
 SimpleTextureBaseAPIDocumentation.lua
 SkillInfoDocumentation.lua
+SlashCommandDocumentation.lua
 SocialQueueDocumentation.lua
 SoundDocumentation.lua
 SpecializationInfoDocumentation.lua
@@ -182,6 +197,7 @@ SpellActivationOverlayDocumentation.lua
 SpellBookDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
+StreamingDocumentation.lua
 StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 SystemTimeDocumentation.lua
@@ -189,12 +205,16 @@ TTSSettingsDocumentation.lua
 TargetScriptDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
+ThreatDocumentation.lua
+TitleDocumentation.lua
 TooltipComparisonDocumentation.lua
 TooltipInfoDocumentation.lua
+TotemDocumentation.lua
 ToyBoxInfoDocumentation.lua
 TradeInfoDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
+TransmogDocumentation.lua
 TutorialDocumentation.lua
 UIColorDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
@@ -217,6 +237,7 @@ WorldStateInfoDocumentation.lua
 WowEntitlementInfoDocumentation.lua
 WowTokenUIDocumentation.lua
 XMLUtilDocumentation.lua
+ZoneScriptDocumentation.lua
 AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
@@ -227,8 +248,6 @@ ChromieTimeUIDocumentation.lua
 ClassColorDocumentation.lua
 ClassTalentsDocumentation.lua
 ClickBindingsDocumentation.lua
-ClubDocumentation.lua
-ClubFinderDocumentation.lua
 CommentatorFrameDocumentation.lua
 ContentTrackingDocumentation.lua
 CovenantCallingsDocumentation.lua
@@ -237,7 +256,6 @@ CovenantSanctumDocumentation.lua
 CovenantsDocumentation.lua
 CraftingOrderUIDocumentation.lua
 DateAndTimeDocumentation.lua
-EncounterJournalDocumentation.lua
 ExpansionTrialDocumentation.lua
 FrameAPIArchaeologyDigsiteDocumentation.lua
 FrameAPICharacterModelBaseDocumentation.lua
@@ -246,6 +264,7 @@ FrameAPIModelSceneFrameActorDocumentation.lua
 FrameAPIScenarioPOIDocumentation.lua
 FrameAPITabardModelDocumentation.lua
 FriendListDocumentation.lua
+GameModeManagerDocumentation.lua
 GarrisonInfoDocumentation.lua
 InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
@@ -269,12 +288,11 @@ PlayerChoiceDocumentation.lua
 PlayerMentorshipDocumentation.lua
 ProfessionSpecUIDocumentation.lua
 QuestItemUseDocumentation.lua
-RecruitAFriendDocumentation.lua
-ResearchInfoDocumentation.lua
 ReturningPlayerUIDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScriptedAnimationsDocumentation.lua
+SeasonInfoDocumentation.lua
 SocialRestrictionsDocumentation.lua
 SoulbindsDocumentation.lua
 SplashScreenDocumentation.lua
@@ -282,7 +300,6 @@ SuperTrackManagerDocumentation.lua
 SystemDocumentation.lua
 TalkingHeadDocumentation.lua
 TradeSkillUIDocumentation.lua
-TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
 UIEventToastManagerDocumentation.lua
@@ -330,6 +347,7 @@ LFGConstantsDocumentation.lua
 LevelConstantsDocumentation.lua
 LootConstantsDocumentation.lua
 MapConstantsDocumentation.lua
+MatrixSharedDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelAnimationSharedDocumentation.lua
 NamePlateDocumentation.lua
@@ -337,6 +355,7 @@ PVPMgrConstantsDocumentation.lua
 PartyConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
+PetConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
 PlayerDocumentation.lua
@@ -361,6 +380,7 @@ SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
@@ -380,7 +400,6 @@ ValidateNameConstantsDocumentation.lua
 VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
-WowLabsConstantsDocumentation.lua
 AuctionHouseConstants_MainlineDocumentation.lua
 ClickBindingsConstantsDocumentation.lua
 CovenantCallingsConstantsDocumentation.lua

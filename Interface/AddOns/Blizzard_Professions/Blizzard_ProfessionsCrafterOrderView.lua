@@ -23,7 +23,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 
 		local providedReagents = false;
 		for slotIndex, allocations in self.OrderDetails.SchematicForm.transaction:EnumerateAllAllocations() do
-			if allocations:HasAllocations() and not self.reagentSlotProvidedByCustomer[slotIndex] then
+			if allocations:HasAnyAllocations() and not self.reagentSlotProvidedByCustomer[slotIndex] then
 				providedReagents = true;
 				break;
 			end

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_WorldMapTemplates.lua"/>
 
 	<Frame name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="UIDropDownMenuTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true">
@@ -112,7 +112,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="ActiveTexture" file="Interface\Minimap\UI-Minimap-ZoomButton-Toggle" alphaMode="ADD" hidden="true" setAllPoints="true"/>
+				<Texture parentKey="ActiveTexture" file="Interface\Minimap\UI-Minimap-ZoomButton-Toggle" alphaMode="ADD" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="-2" y="1"/>
+					</Anchors>					
+				</Texture>
 			</Layer>			
 		</Layers>
 		<Frames>

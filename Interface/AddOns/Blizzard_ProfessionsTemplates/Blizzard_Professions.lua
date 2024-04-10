@@ -160,7 +160,7 @@ function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
 	return items;
 end
 
-function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID, transaction)
+function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID, transaction, reagentSlotSchematic)
 	local item = elementData.item;
 		
 	local colorData = item:GetItemQualityColor();
@@ -171,6 +171,12 @@ function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, re
 	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 	if count <= 0 then
 		GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_NONE_AVAILABLE);
+	else
+		local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
+		local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		if quantityOwned < reagentSlotSchematic.quantityRequired then
+			GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_INSUFFICIENT_AVAILABLE);
+		end
 	end
 end
 
@@ -944,10 +950,14 @@ end
 
 function Professions.SetAllSourcesFiltered(filtered)
 	local numSources = C_PetJournal.GetNumPetSources();
-	for i = 1, numSources do
-		if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
-			C_TradeSkillUI.SetRecipeSourceTypeFilter(i, filtered);
+	if filtered then
+		for i = 1, numSources do
+			if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
+				C_TradeSkillUI.SetRecipeSourceTypeFilter(i, filtered);
+			end
 		end
+	else
+		C_TradeSkillUI.ClearRecipeSourceTypeFilter();
 	end
 end
 

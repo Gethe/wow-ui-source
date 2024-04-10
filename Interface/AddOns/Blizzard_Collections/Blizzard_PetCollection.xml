@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_PetCollection.lua"/>
 
 	<Texture name="ExpBar-Divider" atlas="PetJournal-ExpBar-Divider" useAtlasSize="true" virtual="true"/>
@@ -1752,25 +1752,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick>
-						ToggleAchievementFrame();
-						local i = 1;
-						local button = _G["AchievementFrameCategoriesContainerButton"..i];
-						while button do
-							if button.element.id == PET_ACHIEVEMENT_CATEGORY then
-								button:Click();
-								return;
-							end
-
-							i = i + 1;
-							button = _G["AchievementFrameCategoriesContainerButton"..i];
-						end
-					</OnClick>
+					<OnClick function="PetJournalAchievementStatus_OnClick"/>
 					<OnEnter function="PetJournalAchievementStatus_OnEnter"/>
-					<OnLeave>
-						PetJournal.AchievementStatus.highlight:Hide();
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnLeave function="PetJournalAchievementStatus_OnLeave"/>
 				</Scripts>
 			</Button>
 			<Frame name="$parentSpellSelect" parentKey="SpellSelect" hidden="true">

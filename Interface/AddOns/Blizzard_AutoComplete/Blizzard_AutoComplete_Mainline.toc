@@ -1,0 +1,9 @@
+## Title: Blizzard_AutoComplete
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## OptionalDeps: Blizzard_UIParent, Blizzard_GlueParent
+## SuppressLocalTableRef: 1
+## AllowLoad: both
+## AllowLoadGameType: mainline
+Mainline\AutoComplete.lua
+Mainline\AutoComplete.xml

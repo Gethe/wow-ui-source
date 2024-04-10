@@ -44,6 +44,15 @@ local Sound =
 				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
+		{
+			Name = "PlayVocalErrorSound",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "vocalErrorSoundID", Type = "Vocalerrorsounds", Nilable = false },
+			},
+		},
 	},
 
 	Events =

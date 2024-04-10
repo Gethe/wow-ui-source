@@ -1,5 +1,0 @@
-## Title: Blizzard CombatLog
-## LoadOnDemand: 1
-## SavedVariables: Blizzard_CombatLog_Filters, Blizzard_CombatLog_Filter_Version
-Blizzard_CombatLog.xml
-Localization.lua

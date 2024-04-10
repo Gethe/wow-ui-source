@@ -13,8 +13,15 @@ function HybridMinimapMixin:OnLoad()
 
 	mapCanvas:AddDataProvider(CreateFromMixins(MapExplorationDataProviderMixin));
 
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MapPlunderstormCircle) then
+		local circleDataProvider = CreateFromMixins(PlunderstormCircleDataProviderMixin);
+		circleDataProvider:SetLightningShown(false);
+		mapCanvas:AddDataProvider(circleDataProvider);
+	end
+
 	local pinFrameLevelsManager = mapCanvas:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PLUNDERSTORM_CIRCLE");
 end
 
 function HybridMinimapMixin:Enable()

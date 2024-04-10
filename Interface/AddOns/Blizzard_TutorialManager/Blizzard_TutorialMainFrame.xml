@@ -1,5 +1,5 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_TutorialMainFrame.lua" />
 
 	<Frame name="TutorialMainFrame_Frame" mixin="TutorialMainFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="UIParent" alpha="0">
@@ -53,25 +53,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad" />
 		</Scripts>
-	</Frame>
-
-	<Frame name="KeyBindingTemplate" virtual="true">
-		<Size x="40" y="35" />
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="KeyIcon" atlas="newplayertutorial-icon-key" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-				</Texture>
-				<FontString parentKey="KeyBind" inherits="Number16Font">
-					<Color color="BLACK_FONT_COLOR"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.KeyIcon" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 	</Frame>
 
 	<Frame name="TutorialSingleKey_Frame" mixin="TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0">

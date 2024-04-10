@@ -82,7 +82,7 @@ function ObliterumForgeItemSlotMixin:RefreshIcon()
 	local itemLink = C_TradeSkillUI.GetPendingObliterateItemLink();
 	local itemName, itemHyperLink, itemRarity, itemTexture, _;
 	if itemLink then
-		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	else
 		self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	end

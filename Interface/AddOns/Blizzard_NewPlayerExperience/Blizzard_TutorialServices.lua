@@ -102,7 +102,7 @@ function Class_AddSpellToActionBarService:RemindAbility()
 
 	-- find an empty button
 	self.actionButton = TutorialHelper:FindEmptyButton(self.optionalPreferredActionBar);
-	if not self.requested and not actionButton and not MultiBarBottomLeft:IsVisible() then
+	if not self.requested and not self.actionButton and not MultiBarBottomLeft:IsVisible() then
 		-- no button was found, request the bottom left action bar be shown
 		Dispatcher:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
 		self.requested = RequestBottomLeftActionBar();
@@ -202,7 +202,7 @@ function Class_ItemUpgradeCheckingService:OnBegin()
 	local upgrades = self:GetBestItemUpgrades();
 	local slot, item = next(upgrades);
 
-	if item and slot ~= INVSLOT_TABARD then		
+	if item and slot ~= INVSLOT_TABARD then
 		TutorialManager:Queue(Class_ChangeEquipment.name, item);
 	end
 	TutorialManager:Finished(self:Name());
@@ -230,8 +230,8 @@ function Class_ItemUpgradeCheckingService:GetBestItemUpgrades()
 
 		for i = 1, #items do
 			itemLink = items[i].ItemLink;
-			local itemQuality = select(3, GetItemInfo(itemLink));
-			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
+			local itemQuality = select(3, C_Item.GetItemInfo(itemLink));
+			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
 			if (itemQuality == Enum.ItemQuality.Heirloom) then
 				-- always recommend heirlooms, regardless of iLevel
 				highest = items[i];
@@ -251,7 +251,7 @@ function Class_ItemUpgradeCheckingService:GetBestItemUpgrades()
 end
 
 function Class_ItemUpgradeCheckingService:GetWeaponType(itemID)
-	local loc = select(9, GetItemInfo(itemID));
+	local loc = select(9, C_Item.GetItemInfo(itemID));
 
 	if ((loc == "INVTYPE_RANGED") or (loc == "INVTYPE_RANGEDRIGHT")) then
 		return self.WeaponType.Ranged;
@@ -282,8 +282,8 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 		local existingItemLink = GetInventoryItemLink("player", i);
 		local existingItemQuality;
 		if (existingItemLink ~= nil) then
-			existingItemIlvl = GetDetailedItemLevelInfo(existingItemLink) or 0;
-			existingItemQuality = select(3, GetItemInfo(existingItemLink));
+			existingItemIlvl = C_Item.GetDetailedItemLevelInfo(existingItemLink) or 0;
+			existingItemQuality = select(3, C_Item.GetItemInfo(existingItemLink));
 
 			if (i == INVSLOT_MAINHAND) then
 				local existingItemID = GetInventoryItemID("player", i);
@@ -295,8 +295,8 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 		GetInventoryItemsForSlot(i, availableItems);
 
 		for packedLocation, itemLink in pairs(availableItems) do
-			local itemInfo = {GetItemInfo(itemLink)};
-			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
+			local itemInfo = {C_Item.GetItemInfo(itemLink)};
+			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
 
 			if (ilvl ~= nil) and (existingItemQuality ~= Enum.ItemQuality.Heirloom) then
 				if (ilvl > existingItemIlvl) then

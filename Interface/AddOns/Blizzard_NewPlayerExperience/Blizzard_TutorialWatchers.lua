@@ -860,10 +860,16 @@ function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent
 end
 
 function Class_LootCorpseWatcher:UnitLootable(unitGUID)
+	local name = Class_LootCorpse.name;
+	local tutorial = TutorialManager:GetTutorial(name);
+	if not tutorial then
+		return;
+	end
+
 	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if (unitID == hasKilled) then			
-			TutorialManager:GetTutorial(Class_LootCorpse.name):ForceBegin(unitID);
+			tutorial:ForceBegin(unitID);
 			return;
 		end
 	end
@@ -875,7 +881,7 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 	self.PendingLoot = true;
 
 	if ((self.LootCount < 3) or (self.RePromptLootCount >= 2)) then
-		TutorialManager:GetTutorial(Class_LootCorpse.name):Begin(unitID);
+		tutorial:Begin(unitID);
 	else
 		-- These are so we can silently watch for people missing looting without a prompt.
 		-- If they are prompted, the prompt tutorial (LootCorpse) manages this.

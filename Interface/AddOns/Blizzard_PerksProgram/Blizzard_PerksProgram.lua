@@ -37,6 +37,13 @@ function PerksProgramMixin:OnLoad()
 	self.FooterFrame:Init();
 end
 
+function PerksProgramMixin:SetDefaultSort()
+	self:SetSortAscending(false);
+	self.sortField = "price";
+
+	EventRegistry:TriggerEvent("PerksProgram.SortFieldSet");
+end
+
 function PerksProgramMixin:GetLabelFont()
 	return self.labelFont or GameFontNormalMed3;
 end
@@ -280,7 +287,7 @@ end
 
 function PerksProgramMixin:ConfirmPurchase()
 	local product = self:GetSelectedProduct();
-	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(product.itemID);
+	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(product.itemID);
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 	local markup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1);
 
@@ -313,7 +320,7 @@ end
 function PerksProgramMixin:ConfirmRefund()
 	local product = self:GetSelectedProduct();
 
-	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(product.itemID);
+	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(product.itemID);
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CURRENCY_ID_PERKS_PROGRAM_DISPLAY_INFO);
 	local markup = CreateTextureMarkup(currencyInfo.iconFileID, 64, 64, 16, 16, 0, 1, 0, 1);
 	

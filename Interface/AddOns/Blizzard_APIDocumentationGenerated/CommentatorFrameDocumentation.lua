@@ -1443,8 +1443,26 @@ local CommentatorFrame =
 			Type = "Function",
 		},
 		{
+			Name = "ZoomIn_Position",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoomAmount", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "ZoomOut",
 			Type = "Function",
+		},
+		{
+			Name = "ZoomOut_Position",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoomAmount", Type = "number", Nilable = true },
+			},
 		},
 	},
 

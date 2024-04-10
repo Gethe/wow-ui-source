@@ -169,9 +169,11 @@ function ProfessionsCrafterTableHeaderStringMixin:UpdateArrow()
 	if sortOrder == self.sortOrder then
 		self.Arrow:Show();
 		if ascending then
-			self.Arrow:SetTexCoord(0, 1, 0, 1);
-		else
+			-- Tex Coords of the up arrow
 			self.Arrow:SetTexCoord(0, 1, 1, 0);
+		else
+			-- Tex Coords of the down arrow
+			self.Arrow:SetTexCoord(0, 1, 0, 1);
 		end
 	else
 		self.Arrow:Hide();

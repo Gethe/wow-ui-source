@@ -326,6 +326,20 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "IsTimerunningPlayer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTimerunning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidChatLine",
 			Type = "Function",
 

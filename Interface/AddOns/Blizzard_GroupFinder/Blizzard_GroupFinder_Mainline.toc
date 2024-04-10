@@ -1,0 +1,23 @@
+## Title: Blizzard_GroupFinder
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Mainline\QueueUpdater.lua
+Mainline\PVEFrame.lua
+Mainline\PVEFrame.xml
+Mainline\LFGFrame.lua
+Mainline\LFGFrame.xml
+Mainline\LFDFrame.lua
+Mainline\LFDFrame.xml
+Mainline\RaidFinder.lua
+Mainline\RaidFinder.xml
+Mainline\LFGList.lua
+Mainline\LFGList.xml
+Mainline\PvpPopup.lua
+Mainline\PvpPopup.xml
+Mainline\PVPHelper.lua
+Mainline\PVPHelper.xml
+Mainline\ScenarioFinder.lua
+Mainline\ScenarioFinder.xml

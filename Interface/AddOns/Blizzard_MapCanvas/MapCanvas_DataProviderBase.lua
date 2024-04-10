@@ -145,7 +145,32 @@ function MapCanvasPinMixin:OnAcquired(...) -- the arguments here are anything th
 end
 
 function MapCanvasPinMixin:OnReleased()
-	-- Override in your mixin, called when this pin is being released by a data provider and is no longer on the map
+	-- Make sure to call the base if you override in your mixin
+	-- Called when this pin is being released by a data provider and is no longer on the map
+	if self.widgetContainer then
+		self.widgetContainer:UnregisterForWidgetSet();
+	end
+end
+
+function MapCanvasPinMixin:AddIconWidgets()
+	if not self.iconWidgetSet then
+		if self.widgetContainer then
+			self.widgetContainer:UnregisterForWidgetSet();
+		end
+		return;
+	end
+
+	if not self.widgetContainer then
+		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+		self.widgetContainer.forceWidgetSetLayoutDirection = Enum.UIWidgetSetLayoutDirection.Overlap;
+		self.widgetContainer:SetPoint("CENTER", self, "CENTER", 0, 0);
+
+		if not self.widgetAnimationTexture then
+			self.widgetAnimationTexture = self.Texture;
+		end
+	end
+
+	self.widgetContainer:RegisterForWidgetSet(self.iconWidgetSet);
 end
 
 function MapCanvasPinMixin:OnClick(...)
@@ -445,6 +470,10 @@ end
 function MapCanvasPinMixin:ApplyFrameLevel()
 	local frameLevel = self:GetMap():GetPinFrameLevelsManager():GetValidFrameLevel(self.pinFrameLevelType, self.pinFrameLevelIndex);
 	self:SetFrameLevel(frameLevel);
+
+	if self.widgetContainer then
+		self.widgetContainer:SetFrameLevel(frameLevel - 10);
+	end
 end
 
 function MapCanvasPinMixin:GetHighlightType()

@@ -76,8 +76,12 @@ function AllocationsMixin:Accumulate()
 	end);
 end
 
-function AllocationsMixin:HasAllocations()
+function AllocationsMixin:HasAnyAllocations()
 	return self:Accumulate() > 0;
+end
+
+function AllocationsMixin:HasAllAllocations(quantityRequired)
+	return self:Accumulate() >= quantityRequired;
 end
 
 function AllocationsMixin:Allocate(reagent, quantity)
@@ -392,9 +396,15 @@ function ProfessionsRecipeTransactionMixin:ClearAllocations(slotIndex)
 	allocations:Clear();
 end
 
-function ProfessionsRecipeTransactionMixin:HasAllocations(slotIndex)
+function ProfessionsRecipeTransactionMixin:HasAnyAllocations(slotIndex)
 	local allocations = self:GetAllocations(slotIndex);
-	return allocations and allocations:HasAllocations();
+	return allocations and allocations:HasAnyAllocations();
+end
+
+function ProfessionsRecipeTransactionMixin:HasAllAllocations(slotIndex, quantityRequired)
+	local allocations = self:GetAllocations(slotIndex);
+	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
+	return allocations and allocations:HasAllAllocations(reagentSlotSchematic.quantityRequired);
 end
 
 function ProfessionsRecipeTransactionMixin:HasAllocatedReagent(reagent)

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_Collections.lua"/>
 
 	<Button name="CollectionsJournalTab" inherits="PanelTabButtonTemplate" virtual="true">
@@ -17,29 +17,29 @@
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
-			<Button name="$parentTab1" inherits="CollectionsJournalTab" text="MOUNTS" id="1">
+			<Button name="$parentTab1" parentKey="MountsTab" inherits="CollectionsJournalTab" text="MOUNTS" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="11" y="2"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" inherits="CollectionsJournalTab" text="PET_JOURNAL" id="2">
+			<Button name="$parentTab2" parentKey="PetsTab" inherits="CollectionsJournalTab" text="PET_JOURNAL" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.MountsTab" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab3" inherits="CollectionsJournalTab" text="TOY_BOX" id="3">
+			<Button name="$parentTab3" parentKey="ToysTab" inherits="CollectionsJournalTab" text="TOY_BOX" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT" x="-16" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.PetsTab" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" inherits="CollectionsJournalTab" text="HEIRLOOMS" id="4">
+			<Button name="$parentTab4" parentKey="HeirloomsTab" inherits="CollectionsJournalTab" text="HEIRLOOMS" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="-16" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.ToysTab" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab5" inherits="CollectionsJournalTab" text="WARDROBE" id="5">
+			<Button name="$parentTab5" parentKey="WardrobeTab" inherits="CollectionsJournalTab" text="WARDROBE" id="5">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT" x="-16" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.HeirloomsTab" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>

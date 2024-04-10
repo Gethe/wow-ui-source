@@ -40,11 +40,15 @@ end
 
 function MajorFactionCelebrationBannerMixin:AddSwirlEffects(textureKit)
 	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit);
+	if not swirlEffects then
+		return;
+	end
+
 	for i, effect in ipairs(swirlEffects) do
 		self.IconSwirlModelScene:AddEffect(effect, self);
 	end
 end
 
 function MajorFactionCelebrationBannerMixin:GetFactionColorByTextureKit(textureKit)
-	return _G[majorFactionColorFormat:format(strupper(textureKit))];
+	return _G[majorFactionColorFormat:format(strupper(textureKit))] or HIGHLIGHT_FONT_COLOR;
 end

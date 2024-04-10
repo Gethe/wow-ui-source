@@ -47,9 +47,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 32,
+			MaxValue = 64,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -58,20 +58,22 @@ local CurrencyConstants =
 				{ Name = "CurrencyBBattlenetVirtualCurrency", Type = "CurrencyFlagsB", EnumValue = 8 },
 				{ Name = "FutureCurrencyFlag", Type = "CurrencyFlagsB", EnumValue = 16 },
 				{ Name = "CurrencyBDontDisplayIfZero", Type = "CurrencyFlagsB", EnumValue = 32 },
+				{ Name = "CurrencyBScaleMaxQuantityBySeasonWeeks", Type = "CurrencyFlagsB", EnumValue = 64 },
 			},
 		},
 		{
 			Name = "CurrencyGainFlags",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "None", Type = "CurrencyGainFlags", EnumValue = 0 },
 				{ Name = "BonusAward", Type = "CurrencyGainFlags", EnumValue = 1 },
 				{ Name = "DroppedFromDeath", Type = "CurrencyGainFlags", EnumValue = 2 },
 				{ Name = "FromAccountServer", Type = "CurrencyGainFlags", EnumValue = 4 },
+				{ Name = "Autotracking", Type = "CurrencyGainFlags", EnumValue = 8 },
 			},
 		},
 		{
@@ -143,6 +145,9 @@ local CurrencyConstants =
 				{ Name = "ACCOUNT_WIDE_HONOR_CURRENCY_ID", Type = "number", Value = 1585 },
 				{ Name = "ACCOUNT_WIDE_HONOR_LEVEL_CURRENCY_ID", Type = "number", Value = 1586 },
 				{ Name = "CONQUEST_CURRENCY_ID", Type = "number", Value = 1602 },
+				{ Name = "CONQUEST_POINTS_CURRENCY_ID", Type = "number", Value = 390 },
+				{ Name = "CONQUEST_ARENA_META_CURRENCY_ID", Type = "number", Value = 483 },
+				{ Name = "CONQUEST_BG_META_CURRENCY_ID", Type = "number", Value = 484 },
 				{ Name = "HONOR_CURRENCY_ID", Type = "number", Value = 1792 },
 				{ Name = "ARTIFACT_KNOWLEDGE_CURRENCY_ID", Type = "number", Value = 1171 },
 				{ Name = "WAR_RESOURCES_CURRENCY_ID", Type = "number", Value = 1560 },

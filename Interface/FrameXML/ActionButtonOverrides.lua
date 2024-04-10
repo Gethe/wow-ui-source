@@ -1,3 +1,0 @@
-ActionBarButtonEventsDerivedFrameMixin = CreateFromMixins(ActionBarButtonEventsFrameMixin);
-ActionBarActionButtonDerivedMixin = CreateFromMixins(ActionBarActionButtonMixin);
-function ActionBarActionButtonDerivedMixin:OnDragStop() end 

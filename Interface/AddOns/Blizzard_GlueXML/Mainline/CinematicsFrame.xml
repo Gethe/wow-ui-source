@@ -1,0 +1,145 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="CinematicsFrame.lua"/>
+
+	<Button name="CinematicsButtonTemplate" virtual="true">
+		<Size x="176" y="78"/>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentPlayButton" atlas="StreamCinematic-PlayButton" parentKey="PlayButton">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentDownloadIcon" atlas="StreamCinematic-DownloadIcon" parentKey="DownloadIcon">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame name="$parentStreamingIcon" inherits="SpinnerTemplate" hidden="true" parentKey="StreamingIcon">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-11" y="1"/>
+				</Anchors>
+			</Frame>
+			<StatusBar name="$parentStatusBar" hidden="true" parentKey="StatusBar">
+				<Size x="168" y="2"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="17"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBg" atlas="StreamCinematic-ProgressBarBG">
+							<Size x="8" y="4"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" y="1"/>
+								<Anchor point="TOPRIGHT" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" parentKey="Bar">
+					<Color r="1" g="1" b="1"/>
+				</BarTexture>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnClick function="CinematicsButton_OnClick"/>
+			<OnMouseDown>
+				self.PlayButton:SetPoint("RIGHT", -8, -2);
+				self.DownloadIcon:SetPoint("RIGHT", -8, -2);
+				self.StreamingIcon:SetPoint("RIGHT", -5, 2);
+				self.StatusBar:SetPoint("BOTTOMLEFT", 4, 14);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.PlayButton:SetPoint("RIGHT", -5, 1);
+				self.DownloadIcon:SetPoint("RIGHT", -5, 1);
+				self.StreamingIcon:SetPoint("RIGHT", -2, 5);
+				self.StatusBar:SetPoint("BOTTOMLEFT", 4, 17);
+			</OnMouseUp>
+			<OnEnter function="CinematicsButton_OnEnter"/>
+			<OnLeave>
+				GlueTooltip:Hide();
+				self.mouseIsOverMe = false;
+			</OnLeave>
+		</Scripts>
+		<NormalFont style="GlueFontNormalExtraSmall"/>
+		<HighlightFont style="GlueFontHighlightExtraSmall"/>
+		<DisabledFont style="GlueFontDisableExtraSmall"/>
+		<HighlightTexture atlas="StreamCinematic-Highlight" alphaMode="ADD">
+			<TexCoords>
+				<Rect ULx="1" ULy="0" URx="1" URy="1" LLx="0" LLy="0" LRx="0" LRy="1" />
+			</TexCoords>
+		</HighlightTexture>
+		<ButtonText>
+			<Size x="176" y="0"/>
+			<Anchors>
+				<Anchor point="BOTTOM" y="5"/>
+			</Anchors>
+		</ButtonText>
+		<PushedTextOffset x="-3" y="-3"/>
+	</Button>
+
+	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" propagateKeyboardInput="false">
+		<Size x="450" y="430"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-50"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="QuestFontNormalLarge" text="CINEMATICS">
+					<Size x="450" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString name="CinematicSubtitlesLabel" inherits="GlueFontNormalExtraSmall" text="CINEMATICS_SHOW_SUBTITLES">
+					<Anchors>
+						<Anchor point="BOTTOM" x="12" y="18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Button name="CinematicsFrameCloseButton" inherits="BigRedExitButtonTemplate">
+				<KeyValues>
+					<KeyValue key="onClickHandler" value="GlueParent_CloseSecondaryScreen" type="global"/>
+					<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF" type="global"/>
+				</KeyValues>
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+			</Button>
+			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CinematicSubtitlesLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetChecked(GetCVarBool("movieSubtitle"));
+					</OnShow>
+					<OnClick inherit="prepend">
+						SetCVar("movieSubtitle", self:GetChecked());
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CinematicsFrame_OnLoad"/>
+			<OnShow function="CinematicsFrame_OnShow"/>
+			<OnHide function="CinematicsFrame_OnHide"/>
+			<OnKeyDown function="CinematicsFrame_OnKeyDown"/>
+			<OnChar function="nop"/>
+		</Scripts>
+	</Frame>
+</Ui>

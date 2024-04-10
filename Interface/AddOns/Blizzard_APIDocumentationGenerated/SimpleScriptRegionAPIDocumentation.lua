@@ -19,6 +19,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "CollapsesLayout",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "collapsesLayout", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableMouse",
 			Type = "Function",
 
@@ -261,6 +274,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "IsCollapsed",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isCollapsed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDragging",
 			Type = "Function",
 
@@ -406,6 +432,15 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "isVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCollapsesLayout",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "collapsesLayout", Type = "bool", Nilable = false },
 			},
 		},
 		{

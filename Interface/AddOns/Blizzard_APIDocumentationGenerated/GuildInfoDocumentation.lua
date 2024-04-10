@@ -34,6 +34,19 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "Demote",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "Disband",
+			Type = "Function",
+		},
+		{
 			Name = "GetGuildNewsInfo",
 			Type = "Function",
 
@@ -94,6 +107,15 @@ local GuildInfo =
 			Type = "Function",
 		},
 		{
+			Name = "Invite",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildOfficer",
 			Type = "Function",
 
@@ -118,6 +140,10 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "Leave",
+			Type = "Function",
+		},
+		{
 			Name = "MemberExistsByName",
 			Type = "Function",
 
@@ -129,6 +155,15 @@ local GuildInfo =
 			Returns =
 			{
 				{ Name = "exists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "Promote",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -177,6 +212,24 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "SetLeader",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMOTD",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "motd", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "SetNote",
 			Type = "Function",
 
@@ -185,6 +238,15 @@ local GuildInfo =
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "note", Type = "cstring", Nilable = false },
 				{ Name = "isPublic", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "Uninvite",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 	},

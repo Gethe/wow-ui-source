@@ -131,6 +131,8 @@ function WorldMapTrackingOptionsButtonMixin:OnSelection(value, checked)
 		SetCVar(value, checked and "1" or "0");
 	elseif (value == "contentTrackingFilter") then
 		SetCVar(value, checked and "1" or "0");
+	elseif (value == "dragonRidingRacesFilter") then
+		SetCVar(value, checked and "1" or "0");
 	elseif (value == "worldQuestFilterResources" or value == "worldQuestFilterArtifactPower" or
 			value == "worldQuestFilterProfessionMaterials" or value == "worldQuestFilterGold" or
 			value == "worldQuestFilterEquipment" or value == "worldQuestFilterReputation" or
@@ -195,6 +197,11 @@ function WorldMapTrackingOptionsButtonMixin:InitializeDropDown()
 	info.text = CONTENT_TRACKING_MAP_TOGGLE;
 	info.value = "contentTrackingFilter";
 	info.checked = GetCVarBool("contentTrackingFilter");
+	UIDropDownMenu_AddButton(info);
+
+	info.text = DRAGONRIDING_RACES_MAP_TOGGLE;
+	info.value = "dragonRidingRacesFilter";
+	info.checked = GetCVarBool("dragonRidingRacesFilter");
 	UIDropDownMenu_AddButton(info);
 
 	-- If we aren't on a map which has emissaries don't show the world quest reward filter options.

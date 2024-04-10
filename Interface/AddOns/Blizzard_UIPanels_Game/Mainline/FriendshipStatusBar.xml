@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<StatusBar name="NPCFriendshipStatusBarTemplate" mixin="NPCFriendshipStatusBarMixin" hidden="true" virtual="true">
+		<Size x="230" y="14"/>
+		<HitRectInsets>
+			<AbsInset left="-25" right="0" top="-15" bottom="0"/>
+		</HitRectInsets>
+		<BarTexture parentKey="Bar"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-2">
+				<Texture parentKey="BarBorder" atlas="friendship-parts-bar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-26" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="BarRingBackground" atlas="friendship-parts-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-24" y="13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture file="Interface\Common\friendship-heart" parentKey="icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="16"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="FriendshipIconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-1" y="1"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="BarCircle" atlas="friendship-parts-circle" useAtlasSize="true">
+					<!-- the bar's ring -->
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-32" y="19"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Notch1" atlas="friendship-parts-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="43" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Notch2" atlas="friendship-parts-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Notch1" x="47" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Notch3" atlas="friendship-parts-divider" useAtlasSize="true">
+					<Size x="4" y="17"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Notch2" x="47" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Notch4" atlas="friendship-parts-divider" useAtlasSize="true">
+					<Size x="4" y="17"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Notch3" x="47" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<!-- bar fill background -->
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function ="GameTooltip_Hide"/>
+		</Scripts>
+	</StatusBar>
+</Ui>

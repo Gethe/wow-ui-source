@@ -2050,9 +2050,9 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "x", Type = "number", Nilable = true },
-				{ Name = "y", Type = "number", Nilable = true },
-				{ Name = "z", Type = "number", Nilable = true },
+				{ Name = "positionX", Type = "number", Nilable = false },
+				{ Name = "positionY", Type = "number", Nilable = false },
+				{ Name = "positionZ", Type = "number", Nilable = false },
 				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
@@ -2649,7 +2649,7 @@ local Unit =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
 			},
 
 			Returns =
@@ -2721,6 +2721,15 @@ local Unit =
 			{
 				{ Name = "summonReason", Type = "number", Nilable = false },
 				{ Name = "skippingStartExperience", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "EclipseDirectionChange",
+			Type = "Event",
+			LiteralName = "ECLIPSE_DIRECTION_CHANGE",
+			Payload =
+			{
+				{ Name = "direction", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -3802,9 +3811,9 @@ local Unit =
 		{
 			Name = "PowerType",
 			Type = "Enumeration",
-			NumValues = 29,
+			NumValues = 30,
 			MinValue = -2,
-			MaxValue = 26,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "HealthCost", Type = "PowerType", EnumValue = -2 },
@@ -3835,7 +3844,8 @@ local Unit =
 				{ Name = "AlternateQuest", Type = "PowerType", EnumValue = 23 },
 				{ Name = "AlternateEncounter", Type = "PowerType", EnumValue = 24 },
 				{ Name = "AlternateMount", Type = "PowerType", EnumValue = 25 },
-				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 26 },
+				{ Name = "Balance", Type = "PowerType", EnumValue = 26 },
+				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 27 },
 			},
 		},
 		{

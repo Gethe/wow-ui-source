@@ -1,0 +1,263 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CreditsSpeedButtonTemplate" inherits="IconButtonTemplate" virtual="true">
+		<!--
+		iconAtlas: atlas for the icon and highlight of the button.
+		speed: how fast the credits roll when this button is selected.
+		<KeyValues>
+			<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Rewind" type="string"/>
+			<KeyValue key="speed" value="CREDITS_SCROLL_RATE_REWIND" type="global"/>
+		</KeyValues>
+		-->
+		<Size x="43" y="43"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Icon:SetAtlas(self.iconAtlas, TextureKitConstants.UseAtlasSize);
+				self.HightlightTexture:SetAtlas(self.iconAtlas, TextureKitConstants.UseAtlasSize);
+			</OnLoad>
+			<OnClick>
+				CreditsFrame:SetSpeed(self.speed);
+			</OnClick>
+		</Scripts>
+		<NormalTexture atlas="common-button-square-gray-up" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="common-button-square-gray-down" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture parentKey="HightlightTexture" alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<FontString name="CreditsNormal" inherits="GlueFontHighlightSmall" spacing="2" virtual="true"/>
+	<FontString name="CreditsHeader1" inherits="GlueFontNormalLarge" spacing="4" virtual="true"/>
+	<FontString name="CreditsHeader2" inherits="GlueFontHighlight" spacing="4" virtual="true"/>
+
+	<Button name="CreditsFrameSwitchButtonTemplate" inherits="GlueButtonSmallTemplate" virtual="true">
+		<Size x="260" y="28"/>
+		<Scripts>
+			<OnClick>
+				CreditsFrame:Switch(self:GetID());
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="CreditsFrameExpansionsButtonTemplate" virtual="true">
+		<Size x="260" y="28"/>
+		<Scripts>
+			<OnClick>
+				self:GetParent():SetSelectedExpansion(self:GetID());
+				self.Highlight:Hide();
+			</OnClick>
+			<OnEnter>
+				if not self.Selection:IsShown() then
+					self.Highlight:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				self.Highlight:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalFont style="GlueFontHighlightSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Selection" setAllPoints="true" hidden="true" atlas="CreditsScreen-Selected">
+					<Color a="0.8" r="1.0" g="1.0" b="1.0"/>
+				</Texture>
+				<Texture parentKey="Highlight" setAllPoints="true" hidden="true" atlas="CreditsScreen-Highlight"/>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="CreditsExpansionListTemplate" frameStrata="DIALOG" enableMouse="true" hidden="false" mixin="CreditsExpansionListMixin" virtual="true">
+		<Size x="200" y="500"/>
+		<Frames>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="EXPANSION" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+			<Button parentKey="OKButton" text="OKAY" inherits="GlueButtonSmallTemplate">
+				<Size x="100" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-2" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnOKClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" text="CANCEL" inherits="GlueButtonSmallTemplate">
+				<Size x="100" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.OKButton" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnCancelClicked();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="CreditsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" mixin="CreditsFrameMixin">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="CreditsScreen-Background-8" setAllPoints="true" vertTile="true" horizTile="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="KeyArt" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="UpperGradient" setAllPoints="true" atlas="_CreditsScreen-Gradient-Tile" horizTile="true">
+					<Size x="0" y="64"/>
+				</Texture>
+				<Texture parentKey="LowerGradient" setAllPoints="true" atlas="_CreditsScreen-Gradient-Tile" horizTile="true">
+					<Size x="0" y="64"/>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0" />
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Logo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
+					<Size x="340" y="170"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="35" y="-25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame">
+				<Size x="250" y="740"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-50" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<ScrollChild>
+					<SimpleHTML parentKey="Text">
+						<Size x="250" y="740"/>
+						<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
+						<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
+						<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true"/>
+			<Slider parentKey="Slider" orientation="VERTICAL" minValue="0" maxValue="1000" valueStep="10" defaultValue="0" inherits="BackdropTemplate" hidden="true">
+				<Size x="16" y="0"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_SLIDER_8_8" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnValueChanged>
+						if self:IsDraggingThumb() then
+							CreditsFrame.scrollIdx = value;
+						end
+					</OnValueChanged>
+				</Scripts>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size x="32" y="32"/>
+				</ThumbTexture>
+			</Slider>
+			<Button parentKey="BackButton" text="BACK" inherits="GlueButtonSmallTemplate">
+				<Size x="150" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="GlueParent" relativePoint="BOTTOMLEFT" x="50" y="50"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GlueParent_CloseSecondaryScreen"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ExpansionsButton" text="EXPANSION" inherits="GlueButtonSmallTemplate">
+				<Size x="150" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.BackButton" relativePoint="TOP" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ToggleExpansionList();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentRewindButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Rewind" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_REWIND" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-50" y="20"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPauseButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Pause" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_PAUSE" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRewindButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-Play" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_PLAY" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPauseButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentFastForwardButton" inherits="CreditsSpeedButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="CreditsScreen-Assets-Buttons-FastForward" type="string"/>
+					<KeyValue key="speed" value="CREDITS_SCROLL_RATE_FASTFORWARD" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPlayButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ExpansionList" inherits="CreditsExpansionListTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</Frame>
+</Ui>

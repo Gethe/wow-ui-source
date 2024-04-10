@@ -8,7 +8,7 @@ local RED_TEXT_MINUTES_THRESHOLD = 60;
 local TIME_LEFT_ATLAS_MARKUP = CreateAtlasMarkup("auctionhouse-icon-clock", 16, 16, 2, -2);
 
 local function GetQualityFilterString(itemQuality)
-	local hex = select(4, GetItemQualityColor(itemQuality));
+	local hex = select(4, C_Item.GetItemQualityColor(itemQuality));
 	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
 	return "|c"..hex..text.."|r";
 end
@@ -16,6 +16,7 @@ end
 AUCTION_HOUSE_FILTER_STRINGS = {
 	[Enum.AuctionHouseFilter.UncollectedOnly] = AUCTION_HOUSE_FILTER_UNCOLLECTED_ONLY,
 	[Enum.AuctionHouseFilter.UsableOnly] = AUCTION_HOUSE_FILTER_USABLE_ONLY,
+	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = AUCTION_HOUSE_FILTER_CURRENTEXPANSION_ONLY,
 	[Enum.AuctionHouseFilter.UpgradesOnly] = AUCTION_HOUSE_FILTER_UPGRADES_ONLY,
 	[Enum.AuctionHouseFilter.PoorQuality] = GetQualityFilterString(Enum.ItemQuality.Poor),
 	[Enum.AuctionHouseFilter.CommonQuality] = GetQualityFilterString(Enum.ItemQuality.Common),
@@ -365,7 +366,7 @@ function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionDa
 		if LinkUtil.IsLinkType(itemLink, "battlepet") then
 			itemQuality = select(3, BattlePetToolTip_UnpackBattlePetLink(itemLink)) or itemQuality;
 		else
-			itemQuality = select(3, GetItemInfo(itemLink)) or itemQuality;
+			itemQuality = select(3, C_Item.GetItemInfo(itemLink)) or itemQuality;
 		end
 	end
 
@@ -611,7 +612,7 @@ function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
 	else
 		local itemID = rowData.itemID or rowData.itemKey.itemID;
 		if itemID ~= nil then
-			local itemLink = select(2, GetItemInfo(itemID));
+			local itemLink = select(2, C_Item.GetItemInfo(itemID));
 			return itemLink;
 		end
 	end

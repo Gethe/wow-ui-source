@@ -118,10 +118,14 @@ function AreaLabelFrameMixin:OnUpdate()
 						color = QuestDifficultyColors["header"];
 					end
 					color = ConvertRGBtoColorString(color);
-					if petMinLevel ~= petMaxLevel then
-						description = WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMinLevel.."-"..petMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
-					else
-						description = WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
+
+
+					if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.PetBattles) then
+						if petMinLevel ~= petMaxLevel then
+							description = WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMinLevel.."-"..petMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
+						else
+							description = WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
+						end
 					end
 				end
 			end

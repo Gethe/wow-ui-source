@@ -1,8 +1,0 @@
-## Title: Blizzard_AchievementUI
-## Secure: 1
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-Blizzard_AchievementUI.lua
-Blizzard_AchievementUI.xml
-Localization.lua

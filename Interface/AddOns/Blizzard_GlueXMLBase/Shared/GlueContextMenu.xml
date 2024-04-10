@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GlueContextMenuButtonTemplate" virtual="true">
+		<Size x="0" y="17"/>
+		<ButtonText parentKey="Text" justifyH="LEFT"/>
+		<NormalFont style="GameFontHighlightSmallLeft"/>
+		<HighlightFont style="GameFontHighlightSmallLeft"/>
+		<DisabledFont style="GameFontDisableSmallLeft"/>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true"/>
+	</Button>
+	<Frame name="GlueContextMenuTemplate" toplevel="true" frameStrata="FULLSCREEN_DIALOG" mixin="GlueContextMenuMixin" inherits="TooltipBackdropTemplate" virtual="true">
+		<Size x="180" y="50"/>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="GlueContextMenu" inherits="GlueContextMenuTemplate" hidden="true"/>
+</Ui>

@@ -146,6 +146,15 @@ local AddOns =
 			},
 		},
 		{
+			Name = "GetScriptsDisallowedForBeta",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "disallowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAddOnLoadOnDemand",
 			Type = "Function",
 

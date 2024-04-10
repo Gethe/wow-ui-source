@@ -317,6 +317,7 @@ function CovenantMissionListMixin:Update()
 	-- If data provider exists with same number of missions, check if all existing mission ids match the current mission id list
 	if dataProvider and #self.combinedMissions == dataProvider:GetSize()  then
 		missionDataMatches = TableUtil.CompareValuesAsKeys(self.combinedMissions, dataProvider:GetCollection(), function(mission)
+			assertsafe(mission.missionID, "A valid missionID is required to generate a key.");
 			return mission.missionID;
 		end);
 	end
@@ -481,7 +482,7 @@ function CovenantMissionInfoTooltip_OnEnter(self)
 		if (reward.quality) then
 			GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
 		elseif (reward.itemID) then
-			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(reward.itemID);
 			if itemName then
 				GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
 			end

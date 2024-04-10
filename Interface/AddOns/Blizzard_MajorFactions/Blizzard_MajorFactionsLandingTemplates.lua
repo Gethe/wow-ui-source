@@ -319,39 +319,7 @@ function MajorFactionButtonUnlockedStateMixin:RefreshTooltip()
 end
 
 function MajorFactionButtonUnlockedStateMixin:SetUpRenownRewardsTooltip()
-	local majorFactionData = C_MajorFactions.GetMajorFactionData(self:GetParent().factionID);
-	local tooltipTitle = majorFactionData.name;
-	GameTooltip_SetTitle(GameTooltip, tooltipTitle, NORMAL_FONT_COLOR);
-
-	local factionID = self:GetParent().factionID;
-	if not C_MajorFactions.HasMaximumRenown(factionID) then
-		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(majorFactionData.renownReputationEarned, majorFactionData.renownLevelThreshold));
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(factionID, C_MajorFactions.GetCurrentRenownLevel(factionID) + 1);
-		if #nextRenownRewards > 0 then
-			self:AddRenownRewardsToTooltip(nextRenownRewards);
-		end
-	end
-
-	GameTooltip_AddColoredLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
-end
-
-function MajorFactionButtonUnlockedStateMixin:AddRenownRewardsToTooltip(renownRewards)
-	GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_NEXT_REWARDS);
-
-	for i, rewardInfo in ipairs(renownRewards) do
-		local renownRewardString;
-		local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, GenerateClosure(self.RefreshTooltip, self));
-		if icon then
-			local file, width, height = icon, 16, 16;
-			local rewardTexture = CreateSimpleTextureMarkup(file, width, height);
-			renownRewardString = rewardTexture .. " " .. name;
-		end
-		local wrapText = false;
-		GameTooltip_AddNormalLine(GameTooltip, renownRewardString, wrapText);
-	end
-
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	RenownRewardUtil.AddMajorFactionToTooltip(GameTooltip, self:GetParent().factionID, GenerateClosure(self.RefreshTooltip, self));
 end
 
 function MajorFactionButtonUnlockedStateMixin:SetUpParagonRewardsTooltip()

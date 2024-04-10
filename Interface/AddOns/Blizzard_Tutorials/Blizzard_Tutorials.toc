@@ -1,6 +1,7 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard Tutorials
 ## RequiredDep: Blizzard_TutorialManager
+## AllowLoadByGameMode: standard
 
 Blizzard_Tutorials_Classes.lua
 Blizzard_Tutorials_Dracthyr.lua

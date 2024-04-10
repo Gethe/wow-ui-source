@@ -206,17 +206,26 @@ function ProfessionsRecipeSchematicFormMixin:OnHide()
 	FrameUtil.UnregisterUpdateFunction(self);
 end
 
+function ProfessionsRecipeSchematicFormMixin:IsCurrentRecipe(recipeID)
+	local currentRecipeInfo = self:GetRecipeInfo();
+	local isCurrent = currentRecipeInfo and currentRecipeInfo.recipeID == recipeID;
+	return isCurrent, currentRecipeInfo;
+end
+
 function ProfessionsRecipeSchematicFormMixin:OnEvent(event, ...)
 	if event == "NEW_RECIPE_LEARNED" then
 		local recipeID, recipeLevel, baseRecipeID = ...;
-		local currentRecipeInfo = self:GetRecipeInfo();
-		if currentRecipeInfo and currentRecipeInfo.recipeID == baseRecipeID then
+		local isCurrent, currentRecipeInfo = self:IsCurrentRecipe(baseRecipeID);
+		if isCurrent then
 			self:SetSelectedRecipeLevel(baseRecipeID, recipeLevel);
 			self:Init(currentRecipeInfo);
 		end
 	elseif event == "TRACKED_RECIPE_UPDATE" then
 		local recipeID, tracked = ...
-		self.TrackRecipeCheckBox:SetChecked(tracked);
+		local isCurrent = self:IsCurrentRecipe(recipeID);
+		if isCurrent then
+			self.TrackRecipeCheckBox:SetChecked(tracked);
+		end
 	elseif event == "TRADE_SKILL_ITEM_UPDATE" then
 		if self.transaction and self.transaction:IsRecraft() then
 			local itemGUID = ...;
@@ -229,8 +238,9 @@ function ProfessionsRecipeSchematicFormMixin:OnEvent(event, ...)
 	elseif event == "CRAFTING_DETAILS_UPDATE" then
 		self:UpdateDetailsStats();
 	elseif event == "TRADE_SKILL_FAVORITES_CHANGED" then
-		local isFavorite = ...;
-		if self.FavoriteButton:IsShown() then
+		local isFavorite, recipeID  = ...;
+		local isCurrent = self:IsCurrentRecipe(recipeID);
+		if isCurrent and self.FavoriteButton:IsShown() then
 			self.FavoriteButton:SetChecked(isFavorite);
 			self.FavoriteButton:SetIsFavorite(isFavorite);
 		end
@@ -453,6 +463,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		-- would first need to be guaranteed that no state is accessed
 		-- off the details frame that would not have been set as expected.
 		self.transaction:SetAllocationsChangedHandler(nil);
+		
+		if self.transaction:IsRecraft() == nil then
+			self.transaction:SetRecraft(isRecraft);
+		end	
 	end
 
 	local function AllocateModification(slotIndex, reagentSlotSchematic)
@@ -1032,7 +1046,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							end
 							
 							flyout.OnElementEnterImplementation = function(elementData, tooltip)
-								Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetAllocationItemGUID(), self.transaction);
+								Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, self.transaction:GetAllocationItemGUID(), self.transaction, reagentSlotSchematic);
 							end
 							
 							flyout.OnElementEnabledImplementation = function(button, elementData)
@@ -1075,7 +1089,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 							flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.UndoClicked, OnUndoClicked, slot);
 						end
 					elseif buttonName == "RightButton" then
-						if self.transaction:HasAllocations(slotIndex) then
+						if self.transaction:HasAnyAllocations(slotIndex) then
 							local function Deallocate()
 								self.transaction:ClearAllocations(slotIndex);
 
@@ -1458,6 +1472,15 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecipeDescription()
 		local spell = Spell:CreateFromSpellID(self.currentRecipeInfo.recipeID);
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 		local description = C_TradeSkillUI.GetRecipeDescription(spell:GetSpellID(), reagents, self.transaction:GetAllocationItemGUID());
+
+		-- If an embedded icon is present, substitute a small vertical offset so the icon is centered with the adjacent text.
+		local textureID, height = string.match(description, "|T(%d+):(%d+)|t");
+		if textureID then
+			local size = height or 24;
+			local xOffset, yOffset = 0, 3;
+			description = string.gsub(description, "|T.*|t", CreateSimpleTextureMarkup(textureID, size, size, xOffset, yOffset));
+		end
+
 		if description and description ~= "" then
 			self.Description:SetText(description);
 			self.Description:SetHeight(600);

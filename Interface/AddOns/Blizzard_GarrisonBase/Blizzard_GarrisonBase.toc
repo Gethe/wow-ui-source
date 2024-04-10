@@ -1,0 +1,10 @@
+## Title: Blizzard_GarrisonBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## SuppressLocalTableRef: 1
+## AllowLoadGameType: mainline
+GarrisonBaseUtils.xml
+AdventuresFollowerTooltip.xml
+FloatingGarrisonFollowerTooltip.xml
+GarrisonFollowerTooltip.xml

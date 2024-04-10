@@ -49,6 +49,15 @@ local Input =
 			},
 		},
 		{
+			Name = "GetMouseFocus",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAltKeyDown",
 			Type = "Function",
 

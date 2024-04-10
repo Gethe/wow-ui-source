@@ -547,3 +547,24 @@ function BlizzardConsoleMessageFrame_OnHyperlinkClick(self, link, text, button)
 		end
 	end
 end
+
+function DeveloperConsole_GetLastCommand()
+	local commandHistory = Blizzard_Console_SavedVars and Blizzard_Console_SavedVars.commandHistory;
+	if not commandHistory then
+		return nil;
+	end
+
+	local historyCount = #commandHistory;
+	if historyCount < 1 then
+		return nil;
+	end
+			
+	return commandHistory[historyCount];
+end
+
+function DeveloperConsole_RepeatLastCommand()
+	local lastCommand = DeveloperConsole_GetLastCommand();
+	if lastCommand and type(lastCommand) == "string" then
+		ConsoleExec(lastCommand);
+	end
+end

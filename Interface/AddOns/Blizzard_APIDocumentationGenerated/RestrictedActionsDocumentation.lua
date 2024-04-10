@@ -2,10 +2,18 @@ local RestrictedActions =
 {
 	Name = "RestrictedActions",
 	Type = "System",
-	Namespace = "C_RestrictedActions",
 
 	Functions =
 	{
+		{
+			Name = "InCombatLockdown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inCombatLockdown", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

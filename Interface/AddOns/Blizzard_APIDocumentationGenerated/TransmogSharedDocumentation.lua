@@ -70,9 +70,9 @@ local TransmogShared =
 		{
 			Name = "TransmogSource",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "None", Type = "TransmogSource", EnumValue = 0 },
@@ -85,6 +85,7 @@ local TransmogShared =
 				{ Name = "Achievement", Type = "TransmogSource", EnumValue = 7 },
 				{ Name = "Profession", Type = "TransmogSource", EnumValue = 8 },
 				{ Name = "NotValidForTransmog", Type = "TransmogSource", EnumValue = 9 },
+				{ Name = "TradingPost", Type = "TransmogSource", EnumValue = 10 },
 			},
 		},
 		{

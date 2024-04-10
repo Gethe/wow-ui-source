@@ -15,7 +15,7 @@ local ClassTalents =
 			{
 				{ Name = "canChange", Type = "bool", Nilable = false },
 				{ Name = "canAdd", Type = "bool", Nilable = false },
-				{ Name = "changeError", Type = "cstring", Nilable = false },
+				{ Name = "changeError", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -211,7 +211,7 @@ local ClassTalents =
 			Returns =
 			{
 				{ Name = "result", Type = "LoadConfigResult", Nilable = false },
-				{ Name = "changeError", Type = "cstring", Nilable = false },
+				{ Name = "changeError", Type = "string", Nilable = true },
 				{ Name = "newLearnedNodeIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},

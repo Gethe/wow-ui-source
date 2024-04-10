@@ -722,7 +722,7 @@ function ChallengesKeystoneSlotMixin:OnEvent(event, ...)
 	if (event == "CHALLENGE_MODE_KEYSTONE_SLOTTED") then
 		local itemID= ...;
 
-		local texture = select(10, GetItemInfo(itemID));
+		local texture = select(10, C_Item.GetItemInfo(itemID));
 
 		SetPortraitToTexture(self.Texture, texture);
 

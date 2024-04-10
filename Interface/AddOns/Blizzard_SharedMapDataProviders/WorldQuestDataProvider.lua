@@ -238,6 +238,7 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 							pin:RefreshVisuals();
 							pin.numObjectives = info.numObjectives;	-- Fix for quests with sequenced objectives
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
+							pin:AddIconWidgets();
 
 							if self.pingPin and self.pingPin:GetID() == info.questId then
 								self.pingPin:SetPosition(info.x, info.y);
@@ -377,6 +378,9 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 
 	pin:SetPosition(info.x, info.y);
 
+	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(pin.questID);
+	pin:AddIconWidgets();
+
 	if not HaveQuestRewardData(info.questId) then
 		C_TaskQuest.RequestPreloadRewardData(info.questId);
 	end
@@ -407,6 +411,7 @@ WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function WorldQuestPinMixin:OnLoad()
 	self.UpdateTooltip = self.OnMouseEnter;
+	self.widgetAnimationTexture = self.Background;
 end
 
 function WorldQuestPinMixin:RefreshVisuals()

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_HybridMinimap.lua"/>
 
 	<Frame name="HybridMinimap" parent="Minimap" mixin="HybridMinimapMixin" hidden="true" clipChildren="true" setAllPoints="true" frameStrata="BACKGROUND" frameLevel="100" fixedFrameStrata="true" fixedFrameLevel="true">
@@ -10,10 +10,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<MaskedTextures>
 						<MaskedTexture childKey="Background"/>
 					</MaskedTextures>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
 				</MaskTexture>
 			</Layer>
 		</Layers>

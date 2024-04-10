@@ -25,6 +25,15 @@ local InGameNavigation =
 			},
 		},
 		{
+			Name = "GetNearestPartyMemberToken",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTargetState",
 			Type = "Function",
 

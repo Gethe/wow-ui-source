@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="MotionSickness.lua"/>
+
+	<Frame name="MotionSicknessFrame" mixin="MotionSicknessMixin" parent="UIParent" setAllPoints="true" frameStrata="BACKGROUND" frameLevel="1">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LandscapeDarkeningCenter" parentArray="LandscapeDarkeningTextures" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LandscapeDarkeningLeft" parentArray="LandscapeDarkeningTextures" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.LandscapeDarkeningCenter" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LandscapeDarkeningCenter" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+				<Texture parentKey="LandscapeDarkeningRight" parentArray="LandscapeDarkeningTextures" hidden="true">
+					<Anchors>
+						<Anchor point="RIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LandscapeDarkeningCenter" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.LandscapeDarkeningCenter" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+				<Texture parentKey="LandscapeDarkeningTop" parentArray="LandscapeDarkeningTextures" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.LandscapeDarkeningCenter" relativePoint="TOP"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+				<Texture parentKey="LandscapeDarkeningBottom" parentArray="LandscapeDarkeningTextures" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOP" relativeKey="$parent.LandscapeDarkeningCenter" relativePoint="BOTTOM"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="FocalCircle" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -695,6 +695,17 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetZonePVPInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "pvpType", Type = "cstring", Nilable = false },
+				{ Name = "isSubZonePvP", Type = "bool", Nilable = false },
+				{ Name = "factionName", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "HasArenaSkirmishWinToday",
 			Type = "Function",
 
@@ -885,6 +896,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsSubZonePVPPOI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsWarModeActive",
 			Type = "Function",
 
@@ -930,6 +950,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "SetPVP",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enablePVP", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "SetWarModeDesired",
 			Type = "Function",
 
@@ -937,6 +966,10 @@ local PvpInfo =
 			{
 				{ Name = "warModeDesired", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "TogglePVP",
+			Type = "Function",
 		},
 		{
 			Name = "ToggleWarMode",

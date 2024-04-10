@@ -1,0 +1,199 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="MainBarActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="showButtonArt" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<!-- Divides buttons on a horizontally oriented action bar -->
+	<Frame name="HorizontalDividerTemplate" inherits="NineSliceCodeTemplate" virtual="true">
+		<Size x="12"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+			<KeyValue key="layoutType" value="ThreeSliceVerticalLayout" type="string"/>
+			<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<!-- Divides buttons on a vertically oriented action bar -->
+	<Frame name="VerticalDividerTemplate" inherits="NineSliceCodeTemplate" virtual="true">
+		<Size y="12"/>
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+			<KeyValue key="layoutType" value="ThreeSliceHorizontalLayout" type="string"/>
+			<KeyValue key="layoutTextureKit" value="ui-hud-actionbar-frame-divider" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="MainMenuBar" inherits="EditModeActionBarTemplate" enableMouse="true" parent="UIParent" frameLevel="50" mixin="MainMenuBarMixin">
+		<Size x="454" y="35"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MainBarActionBarButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="ACTION" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="MAIN_MENU_BAR_NUM_BUTTONS" type="global"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
+			<KeyValue key="hideEndCaps" value="MAIN_MENU_BAR_HIDE_END_CAPS" type="global"/>
+			<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="BorderArt" atlas="UI-HUD-ActionBar-Frame">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-4" y="4"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="8" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="QuickKeybindBottomShadow" atlas="_QuickKeybind_Bottom_Shadow" useAtlasSize="true" horizTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuickKeybindRightShadow" atlas="!QuickKeybind_Side_Shadow" useAtlasSize="true" vertTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="QuickKeybindGlowLarge" atlas="QuickKeybind_BottomBarExtended_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuickKeybindGlowSmall" atlas="QuickKeybind_BottomBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame parentKey="EndCaps" setAllPoints="true" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture parentKey="LeftEndCap" atlas="ui-hud-actionbar-gryphon-left">
+							<Size x="104.5" y="98"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="9" y="-22"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightEndCap" atlas="ui-hud-actionbar-gryphon-right">
+							<Size x="104.5" y="98"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-8" y="-22"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="ActionBarPageNumber" inherits="ResizeLayoutFrame" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-4" y="9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="Text" inherits="GameFontNormalCenter">
+							<Size x="17" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="UpButton" inherits="QuickKeybindButtonTemplate" mixin="MainActionBarUpButtonMixin">
+						<KeyValues>
+							<KeyValue key="commandName" value="NEXTACTIONPAGE" type="string"/>
+						</KeyValues>
+						<Size x="17" y="14"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick" inherit="append"/>
+							<OnLeave method="OnLeave" inherit="append"/>
+						</Scripts>
+						<NormalTexture atlas="ui-hud-actionbar-pageuparrow-up"/>
+						<PushedTexture atlas="ui-hud-actionbar-pageuparrow-down"/>
+						<DisabledTexture atlas="ui-hud-actionbar-pageuparrow-disabled"/>
+						<HighlightTexture atlas="ui-hud-actionbar-pageuparrow-mouseover"/>
+					</Button>
+					<Button parentKey="DownButton" inherits="QuickKeybindButtonTemplate" mixin="MainActionBarDownButtonMixin">
+						<KeyValues>
+							<KeyValue key="commandName" value="PREVIOUSACTIONPAGE" type="string"/>
+						</KeyValues>
+						<Size x="17" y="14"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick" inherit="append"/>
+							<OnLeave method="OnLeave" inherit="append"/>
+						</Scripts>
+						<NormalTexture atlas="ui-hud-actionbar-pagedownarrow-up"/>
+						<PushedTexture atlas="ui-hud-actionbar-pagedownarrow-down"/>
+						<DisabledTexture atlas="ui-hud-actionbar-pagedownarrow-disabled"/>
+						<HighlightTexture atlas="ui-hud-actionbar-pagedownarrow-mouseover"/>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="EditModeVehicleLeaveButtonSystemTemplate" mixin="MainMenuBarVehicleLeaveButtonMixin" hidden="true" motionScriptsWhileDisabled="true"  frameLevel="70" fixedFrameLevel="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="useDefaultAnchors" value="ACTION_BARS_USE_DEFAULT_ANCHORS" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad method="OnLoad" inherit="prepend"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClicked"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</PushedTexture>
+				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

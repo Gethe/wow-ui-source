@@ -1,5 +1,6 @@
-## Title: Blizzard Chat Channels UI
-## LoadOnDemand: 0
+## Title: Blizzard_Channels
+## Dependencies: Blizzard_SocialToast
+## AllowLoadGameType: mainline
 VoiceUtils.lua
 ChannelButton.xml
 RosterButton.xml

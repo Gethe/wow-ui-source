@@ -48,8 +48,8 @@ end
 
 function TutorialManager:OnSettingsLoaded(cvar, value)
 	EventRegistry:TriggerEvent("TutorialManager.TutorialsInit");
-	local tutorialsEnabled = Settings.GetSetting("showTutorials");
-	self.IsActive = tutorialsEnabled:GetValue();
+	local tutorialsSetting = Settings.GetSetting("showTutorials");
+	self.IsActive = tutorialsSetting and tutorialsSetting:GetValue() or false;
 	if self.IsActive then
 		EventRegistry:TriggerEvent("TutorialManager.TutorialsEnabled");
 	else

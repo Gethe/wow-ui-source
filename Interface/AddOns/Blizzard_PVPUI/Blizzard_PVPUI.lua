@@ -182,12 +182,12 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 end
 
 function PVPUIFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST) and UnitLevel("player") >= 90 then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_LFG_LIST,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 		};
 		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
@@ -1843,8 +1843,8 @@ end
 
 function PVPAchievementRewardMixin:OnMouseDown(mouseButton)
 	if self.rewardItemID and IsModifiedClick("DRESSUP") then
-		local itemID, _, _, _, texture = GetItemInfoInstant(self.rewardItemID);
-		local _, itemLink = GetItemInfo(itemID);
+		local itemID, _, _, _, texture = C_Item.GetItemInfoInstant(self.rewardItemID);
+		local _, itemLink = C_Item.GetItemInfo(itemID);
 		HandleModifiedItemClick(itemLink);
 	end
 end
@@ -1854,7 +1854,7 @@ function PVPAchievementRewardMixin:Update()
 	local hasAchievementID = achievementID ~= nil;
 	if hasAchievementID then
 		self.rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
-		local texture = self.rewardItemID and select(5, GetItemInfoInstant(self.rewardItemID)) or nil;
+		local texture = self.rewardItemID and select(5, C_Item.GetItemInfoInstant(self.rewardItemID)) or nil;
 		self.Icon:SetTexture(texture);
 		self.Icon:Show();
 		local completed = false;

@@ -27,7 +27,7 @@ local function AutoQuestPopupTracker_ShouldDisplayQuest(questID, owningModule)
 end
 
 local function AutoQuestPopupTracker_UpdateExclamationIcon(itemID, popUpType, blockContents)
-	local texture = itemID and select(10, GetItemInfo(itemID));
+	local texture = itemID and select(10, C_Item.GetItemInfo(itemID));
 	if texture then
 		blockContents.Exclamation:SetTexCoord(0.078125, 0.921875, 0.078125, 0.921875);
 		blockContents.Exclamation:SetSize(35, 35);

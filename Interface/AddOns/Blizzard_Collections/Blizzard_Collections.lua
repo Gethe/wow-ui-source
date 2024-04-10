@@ -10,30 +10,6 @@ function CollectionsJournal_GetTab(self)
 	return PanelTemplates_GetSelectedTab(self);
 end
 
-local function ShouldShowHeirloomTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) then
-		return false;
-	end
-
-	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	return C_Heirloom.ShouldShowHeirloomHelp();
-end
-
-local function ShouldShowWardrobeTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB) then
-		return false;
-	end
-
-	if PetJournal_HelpPlate and HelpPlate_IsShowing(PetJournal_HelpPlate) then
-		return false;
-	end
-
-	return true;
-end
-
 function CollectionsJournal_ValidateTab(tabNum)
 	return true;
 end
@@ -76,33 +52,21 @@ function CollectionsJournal_UpdateSelectedTab(self)
 	self:SetTitle(GetTitleText(selected));
 
     EventRegistry:TriggerEvent("CollectionsJournal.TabSet", CollectionsJournal, selected);
-
-	HelpTip:HideAll(self);
-	if ShouldShowHeirloomTabHelpTip() then
-		local helpTipInfo = {
-			text = HEIRLOOMS_JOURNAL_TUTORIAL_TAB,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB,
-			targetPoint = HelpTip.Point.TopEdgeCenter,
-			offsetY = -7,
-		};
-		HelpTip:Show(self, helpTipInfo, CollectionsJournalTab4);
-	elseif ShouldShowWardrobeTabHelpTip() then
-		local helpTipInfo = {
-			text = TRANSMOG_JOURNAL_TAB_TUTORIAL,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB,
-			targetPoint = HelpTip.Point.TopEdgeCenter,
-			offsetY = -7,
-		};
-		HelpTip:Show(self, helpTipInfo, CollectionsJournalTab5);
-	end
 end
 
 function CollectionsJournal_HideTabHelpTips()
 	HelpTip:HideAll(CollectionsJournal);
+end
+
+function CollectionsJournal_CheckAndDisplayHeirloomsTab()
+	CollectionsJournal.WardrobeTab:ClearAllPoints();
+	if PlayerGetTimerunningSeasonID() then
+		PanelTemplates_HideTab(CollectionsJournal, CollectionsJournal.HeirloomsTab:GetID());
+		CollectionsJournal.WardrobeTab:SetPoint("LEFT", CollectionsJournal.ToysTab, "RIGHT");
+	else
+		PanelTemplates_ShowTab(CollectionsJournal, CollectionsJournal.HeirloomsTab:GetID());
+		CollectionsJournal.WardrobeTab:SetPoint("LEFT", CollectionsJournal.HeirloomsTab, "RIGHT", 3, 0);
+	end
 end
 
 function CollectionsJournal_OnShow(self)
@@ -113,6 +77,8 @@ function CollectionsJournal_OnShow(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	CollectionsJournal_UpdateSelectedTab(self);
 	UpdateMicroButtons();
+
+	CollectionsJournal_CheckAndDisplayHeirloomsTab();
 end
 
 function CollectionsJournal_OnHide(self)

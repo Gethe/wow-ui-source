@@ -57,6 +57,16 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "CanPlayerUseScenarioFinder",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUse", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmLfgExpandSearch",
 			Type = "Function",
 		},

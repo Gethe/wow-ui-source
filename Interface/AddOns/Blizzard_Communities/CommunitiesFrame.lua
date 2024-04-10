@@ -1022,8 +1022,7 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
-	if self.CommunitiesList:IsShown() and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE) then
-		self:ShowClubFinderTutorial();
+	if self.CommunitiesList:IsShown() then
 		return;
 	end
 
@@ -1097,22 +1096,6 @@ function CommunitiesFrameMixin:CheckForTutorials()
 			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
 		end
 	end
-end
-
-function CommunitiesFrameMixin:ShowClubFinderTutorial()
-	local tutorialText = self.CommunitiesList:IsFinderVisible() and CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_NO_SCROLL or CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_SCROLL;
-	local helpTipInfo = {
-		text = tutorialText,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE,
-		targetPoint = HelpTip.Point.BottomEdgeCenter,
-		alignment = HelpTip.Alignment.Left,
-		onHideCallback = function(acknowledged, closeFlag) self:CheckForTutorials(); end;
-		offsetX = -4,
-	};
-
-	HelpTip:Show(self, helpTipInfo, self.CommunitiesList);
 end
 
 function CommunitiesFrameMixin:ShowClubFinderApplicantListBreadcrumbForLeader()

@@ -89,6 +89,25 @@ local function IsPerksVendorCategoryTransmog(perksVendorCategoryID)
 	return perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset;
 end
 
+PerksRefundIconTooltipMixin = {};
+
+function PerksRefundIconTooltipMixin:OnEnter()
+	local productButtonFrameData = (self:GetParent():GetParent()).itemInfo;
+	
+	if not productButtonFrameData.refundable then
+		return;
+	end
+
+	local refundTimeLeft = PERKS_PROGRAM_REFUND_TIME_LEFT:format(PerksProgramFrame:FormatTimeLeft(C_PerksProgram.GetVendorItemInfoRefundTimeLeft(productButtonFrameData.perksVendorItemID), PerksProgramFrame.TimeLeftFooterFormatter));
+	PerksProgramFrame.PerksProgramTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	PerksProgramFrame.PerksProgramTooltip:SetText(refundTimeLeft);
+	PerksProgramFrame.PerksProgramTooltip:Show();
+end
+
+function PerksRefundIconTooltipMixin:OnLeave()
+	PerksProgramFrame.PerksProgramTooltip:Hide();
+end
+
 ----------------------------------------------------------------------------------
 -- PerksProgramProductButtonMixin
 ----------------------------------------------------------------------------------
@@ -223,9 +242,12 @@ function PerksProgramProductButtonMixin:UpdateTimeRemainingText()
 	local text;
 	if self.itemInfo.purchased or self.itemInfo.isPurchasePending then
 		text = PERKS_PROGRAM_PURCHASED_TIME_REMAINING;
+	elseif self.itemInfo.doesNotExpire or self.itemInfo.timeRemaining == 0 then
+		text = PERKS_PROGRAM_DOES_NOT_EXPIRE_TIME_REMAINING;
 	else
 		text = PerksProgramFrame:FormatTimeLeft(self.itemInfo.timeRemaining, PerksProgramFrame.TimeLeftListFormatter);
 	end
+
 	self.ContentsContainer.TimeRemaining:SetText(text);
 end
 
@@ -375,7 +397,7 @@ function PerksProgramFrozenProductButtonMixin:SetupFreezeDraggedItem()
 	end
 
 	local itemData = {};
-	local _, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frozenVendorItem.itemID);
+	local _, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(frozenVendorItem.itemID);
 	itemData.product = frozenVendorItem;
 	itemData.link = itemLink;
 	itemData.name = frozenVendorItem.name;
@@ -1135,20 +1157,27 @@ function PerksProgramProductDetailsFrameMixin:Refresh()
 	self.DescriptionText:SetText(descriptionText);
 
 	local categoryText = PerksProgramFrame:GetCategoryText(self.data.perksVendorCategoryID);
+	if self.data.perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
+		categoryText = MOUNT_ABILITY_TYPE_FORMAT:format(self.data.mountTypeName, categoryText);
+	end
 	self.CategoryText:SetText(categoryText);
 
-	local timeRemainingText;
-	if self.data.isFrozen then
-		timeRemainingText = format(WHITE_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), PERKS_PROGRAM_FROZEN);
-	elseif self.data.purchased then
-		timeRemainingText = CreateAtlasMarkup("perks-owned-small", 18, 18).." "..GRAY_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_PURCHASED_TEXT);
-	else
-		local timeToShow = PerksProgramFrame:FormatTimeLeft(self.data.timeRemaining, PerksProgramFrame.TimeLeftDetailsFormatter);
-		local timeTextColor = self.timeTextColor or WHITE_FONT_COLOR;
-		local timeValueColor = self.timeValueColor or WHITE_FONT_COLOR;	
-		timeRemainingText = format(timeTextColor:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), timeValueColor:WrapTextInColorCode(timeToShow));
+	local shouldShowTimeRemaining = not (self.data.doesNotExpire or self.data.timeRemaining == 0);
+	self.TimeRemaining:SetShown(shouldShowTimeRemaining);
+	if shouldShowTimeRemaining then
+		local timeRemainingText;
+		if self.data.isFrozen then
+			timeRemainingText = format(WHITE_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), PERKS_PROGRAM_FROZEN);
+		elseif self.data.purchased then
+			timeRemainingText = CreateAtlasMarkup("perks-owned-small", 18, 18).." "..GRAY_FONT_COLOR:WrapTextInColorCode(PERKS_PROGRAM_PURCHASED_TEXT);
+		else
+			local timeToShow = PerksProgramFrame:FormatTimeLeft(self.data.timeRemaining, PerksProgramFrame.TimeLeftDetailsFormatter);
+			local timeTextColor = self.timeTextColor or WHITE_FONT_COLOR;
+			local timeValueColor = self.timeValueColor or WHITE_FONT_COLOR;	
+			timeRemainingText = format(timeTextColor:WrapTextInColorCode(PERKS_PROGRAM_TIME_LEFT), timeValueColor:WrapTextInColorCode(timeToShow));
+		end
+		self.TimeRemaining:SetText(timeRemainingText);
 	end
-	self.TimeRemaining:SetText(timeRemainingText);
 
 	self:MarkDirty();
 end
@@ -1221,6 +1250,10 @@ function HeaderSortButtonMixin:UpdateColor(color)
 end
 
 function HeaderSortButtonMixin:OnEnter()
+	if not self:IsEnabled() then
+		return;
+	end
+
 	local color = self.highlightColor or WHITE_FONT_COLOR;
 	self:UpdateColor(color);
 end
