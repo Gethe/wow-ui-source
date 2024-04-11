@@ -10,6 +10,6 @@ UnitPopupCustomControls.lua
 UnitPopupCustomControls.xml
 Classic\UnitPopupUtils.lua
 Classic\UnitPopupButtons_Shared.lua
-Wrath\UnitPopupButtons.lua
-Wrath\UnitPopupMenus.lua
+Cataclysm\UnitPopupButtons.lua
+Cataclysm\UnitPopupMenus.lua
 TBC\UnitPopup.lua

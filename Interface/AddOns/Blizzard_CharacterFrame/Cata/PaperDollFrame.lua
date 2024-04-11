@@ -62,6 +62,7 @@ PLAYER_DISPLAYED_TITLES = 6;
 PLAYER_TITLE_HEIGHT = 22;
 
 EQUIPMENTSET_BUTTON_HEIGHT = 44;
+local VERTICAL_FLYOUTS = { [16] = true, [17] = true, [18] = true }
 
 local itemSlotButtons = {};
 

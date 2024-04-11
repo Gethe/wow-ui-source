@@ -3173,7 +3173,7 @@ function UnitPopupSetRoleNoneButton:IsCheckable()
 end
 
 function UnitPopupSetRoleNoneButton:GetRole()
-	return Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE;
+	return nill;
 end
 
 function UnitPopupSetRoleNoneButton:OnClick()

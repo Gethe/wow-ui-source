@@ -2391,14 +2391,8 @@ function BlizzardGroups_UpdateNotifications()
 		--OPENED_FROM_COMMUNITY_FRAME or
 		not CommunitiesFrame_IsEnabled() or
 		(not HasUnseenCommunityInvitations() and not CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages())) then
-		SocialsMicroButton:UnlockHighlight();
 		_G["FriendsFrameTab"..FRIEND_TAB_BLIZZARDGROUPS].NotificationOverlay:SetShown(false);
 		return;
-	end
-
-	if (FriendsFrame:IsShown()) then
-		-- Enabling this is done by SocialsMicroButton_UpdateNotificationIcon.
-		SocialsMicroButton:UnlockHighlight();
 	end
 
 	-- If we got this far, show the Community tab notification.

@@ -4737,6 +4737,16 @@ StaticPopupDialogs["RAID_PROFILE_DELETION"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
+    text = IsMacClient() and HD_TEXTURES_DLG_TEXT_MAC or HD_TEXTURES_DLG_TEXT,
+    button1 = IsMacClient() and HD_TEXTURES_DLG_ACCEPT_MAC or HD_TEXTURES_DLG_ACCEPT,
+    button2 = CANCEL,
+    escapeHides = true,
+	OnAccept = function()
+		C_BattleNet.InstallHighResTextures();
+	end,
+};
+
 StaticPopupDialogs["RAID_PROFILE_NEW"] = {
 	text = CREATE_NEW_COMPACT_UNIT_FRAME_PROFILE,
 	button1 = CREATE,

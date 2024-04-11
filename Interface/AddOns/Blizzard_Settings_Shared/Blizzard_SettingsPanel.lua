@@ -239,9 +239,10 @@ function SettingsPanelMixin:OnEvent(event, ...)
 end
 
 function SettingsPanelMixin:OnShow()
-	if not self:GetCurrentCategory() then
-		self:SelectFirstCategory();
-	end
+	-- Ensure that the current category is reinitialized because any
+	-- initializers with show or enable predicates need to be reevaluated.
+	local force = true;
+	self:SelectFirstCategory(force);
 
 	-- Checks for if there are any categories to show on the AddOnsTab 
 	local categories = self:GetCategoryList();
@@ -820,10 +821,10 @@ function SettingsPanelMixin:GetOrCreateGroup(group, order)
 	return self:GetCategoryList():GetOrCreateGroup(group, order);
 end
 
-function SettingsPanelMixin:SelectFirstCategory()
+function SettingsPanelMixin:SelectFirstCategory(force)
 	local categories = self:GetAllCategories();
 	if #categories > 0 then
-		self:SelectCategory(categories[1]);
+		self:SelectCategory(categories[1], force);
 	end
 end
 

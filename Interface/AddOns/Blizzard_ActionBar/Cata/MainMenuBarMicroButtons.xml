@@ -244,35 +244,9 @@
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="SocialsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
-									<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
-									</Anchors>
-		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "Socials");
-				self.tooltipText = MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL");
-				self.newbieText = NEWBIE_TOOLTIP_SOCIAL;
-				self:RegisterEvent("STREAM_VIEW_MARKER_UPDATED");
-				self:RegisterEvent("INITIAL_CLUBS_LOADED");
-				self:RegisterEvent("CLUB_INVITATION_ADDED_FOR_SELF");
-				self:RegisterEvent("CLUB_INVITATION_REMOVED_FOR_SELF");
-				self:RegisterEvent("BN_DISCONNECTED");
-				self:RegisterEvent("BN_CONNECTED");
-			</OnLoad>
-			<OnEvent function="SocialsMicroButton_OnEvent"/>
-			<OnClick>
-				ToggleFriendsFrame();
-			</OnClick>
-		</Scripts>
-	</Button>
 	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>
@@ -371,24 +345,6 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<KeyValues>
-			<KeyValue key="commandName" value="TOGGLEENCOUNTERJOURNAL" type="string"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-			<OnClick method="OnClick" inherit="append"/>
-		</Scripts>
-	</Button>
 	<Button name="LFGMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
@@ -440,9 +396,27 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
+	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="commandName" value="TOGGLEENCOUNTERJOURNAL" type="string"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick" inherit="append"/>
+		</Scripts>
+	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">

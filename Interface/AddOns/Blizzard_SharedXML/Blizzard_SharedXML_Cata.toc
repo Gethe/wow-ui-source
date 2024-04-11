@@ -60,6 +60,7 @@ FontableFrameMixin.lua
 StringUtil.lua
 SelectableButton.lua
 SelectableButton.xml
+NewFeatureLabel.xml
 Shared\Frame\EventFrame.lua
 Shared\Frame\EventFrame.xml
 Shared\Frame\EventButton.lua

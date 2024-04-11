@@ -141,6 +141,70 @@ function CharacterSelectLockedButtonMixin:OnClick()
 	end
 end
 
+local function ShouldShowHighResButton()
+	return not C_BattleNet.AreHighResTexturesInstalled();
+end
+
+function CharacterSelectStoreButton_OnLoad(self)
+	local fontString = self:GetFontString();
+	fontString:SetPoint("CENTER", 8, 2);
+	self.Logo:ClearAllPoints();
+	self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+
+	-- Store button is repositioned depending on if CharacterSelectHighResButton is going to be shown
+	if ShouldShowHighResButton() then
+		StoreButton:SetPoint("BOTTOM", CharacterSelectAddonsButton, "TOP", 1, 32);
+	else
+		StoreButton:SetPoint("BOTTOM", CharacterSelectAddonsButton, "TOP", 1, 2);
+	end
+end
+
+function CharacterSelectHighResButton_OnLoad(self)
+	self:SetShown(ShouldShowHighResButton());
+end
+
+function CharacterSelectHighResButton_OnShow(self)
+	local version = GetBuildInfo();
+	local showGlow = (version == "4.4.0") and GetCVar("hasDeclinedHighResTextures") == "0";
+	self.Glow:SetShown(showGlow);
+	self.New:SetShown(showGlow);
+end
+
+function CharacterSelectHighResButton_OnEnter(self)
+    GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, -20);
+    GlueTooltip:AddLine(HD_TEXTURES_BUTTON, 1.0, 1.0, 1.0);
+    GlueTooltip:AddLine(HD_TEXTURES_BUTTON_TOOLTIP, nil, nil, nil, 1, 1);
+    GlueTooltip:Show();
+end
+
+function CharacterSelectHighResButton_OnLeave(self)
+    GlueTooltip:Hide();
+end
+
+function CharacterSelectHighResButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	CharacterSelect_OpenDownloadHighResDialog();
+end
+
+function CharacterSelect_OpenDownloadHighResDialog()
+	GlueDialog_Show("CHARACTER_SELECT_DOWNLOAD_HIGH_RES_TEXTURES");
+end
+
+StaticPopupDialogs["CHARACTER_SELECT_DOWNLOAD_HIGH_RES_TEXTURES"] = {
+    text = IsMacClient() and HD_TEXTURES_DLG_TEXT_MAC or HD_TEXTURES_DLG_TEXT,
+    button1 = IsMacClient() and HD_TEXTURES_DLG_ACCEPT_MAC or HD_TEXTURES_DLG_ACCEPT,
+    button2 = CANCEL,
+    escapeHides = true,
+	OnAccept = function()
+		C_BattleNet.InstallHighResTextures();
+	end,
+	OnCancel = function()
+		SetCVar("hasDeclinedHighResTextures", "1");
+		CharacterSelectHighResButton.Glow:Hide();
+		CharacterSelectHighResButton.New:Hide();
+	end,
+};
+
 function CharacterSelect_OnLoad(self)
     CharacterSelectModel:SetSequence(0);
     CharacterSelectModel:SetCamera(0);
@@ -681,7 +745,7 @@ end
 
 function CharacterSelect_OnKeyDown(self,key)
     if ( key == "ESCAPE" ) then
-        if ( C_Login.IsLauncherLogin() ) then
+        if (C_Login.IsLauncherLogin() ) then
             GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
         elseif (CharSelectServicesFlowFrame:IsShown()) then
             CharSelectServicesFlowFrame:Hide();

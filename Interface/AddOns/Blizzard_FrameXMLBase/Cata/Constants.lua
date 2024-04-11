@@ -202,3 +202,28 @@ FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand;
 LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionTypeMeta.NumValues - 1;
 NO_TRANSMOG_VISUAL_ID = 0;
 REMOVE_TRANSMOG_ID = 0;
+
+-- Forms.
+DRUID_CAT_FORM = 1;
+DRUID_TREE_FORM = 2;
+DRUID_TRAVEL_FORM = 3;
+DRUID_ACQUATIC_FORM = 4;
+DRUID_BEAR_FORM = 5;
+SHAMAN_GHOST_WOLF_FORM = 16;
+DRUID_FLIGHT_FORM = 27;
+PRIEST_SHADOWFORM = 28;
+DRUID_MOONKIN_FORM_1 = 31;
+DRUID_MOONKIN_FORM_2 = 35;
+ROGUE_STEALTH = 30;
+
+ANIMAL_FORMS = {
+	[DRUID_CAT_FORM] = {actorTag = "druid-cat-form"};
+	[DRUID_TREE_FORM] = {actorTag = "animal-form"};
+	[DRUID_TRAVEL_FORM] = {actorTag = "druid-travel-form"};
+	[DRUID_ACQUATIC_FORM] = {actorTag = "druid-acquatic-form"};
+	[DRUID_BEAR_FORM] = {actorTag = "druid-bear-form"};
+	[SHAMAN_GHOST_WOLF_FORM] = {actorTag = "animal-form"};
+	[DRUID_FLIGHT_FORM] = {actorTag = "druid-flight-form"};
+	[DRUID_MOONKIN_FORM_1] = {actorTag = "druid-moonkin-form"};
+	[DRUID_MOONKIN_FORM_2] = {actorTag = "druid-moonkin-form"};
+};

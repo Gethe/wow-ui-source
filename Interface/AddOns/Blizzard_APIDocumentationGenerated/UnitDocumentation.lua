@@ -221,6 +221,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitSetRoleEnum",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "role", Type = "LFGRole", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitSex",
 			Type = "Function",
 

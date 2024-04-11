@@ -228,6 +228,10 @@ function SettingsListElementMixin:Init(initializer)
 	self.Text:SetPoint("LEFT", (self:GetIndent() + 37), 0);
 	self.Text:SetPoint("RIGHT", self, "CENTER", -85, 0);
 
+	if initializer.hideText then
+		self.Text:Hide();
+	end
+
 	self:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
 
 	self.NewFeature:SetShown(initializer:IsNewTagShown());
@@ -552,6 +556,13 @@ function SettingsButtonControlMixin:OnLoad()
 
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
 	self.Button:SetWidth(200, 26);
+	
+	Mixin(self.Button, DefaultTooltipMixin);
+	DefaultTooltipMixin.OnLoad(self.Button);
+
+	self.Button.New = CreateFrame("Frame", nil, self, "NewFeatureLabelTemplate");
+	self.Button.New:SetPoint("CENTER", self.Button, "TOPRIGHT", 0, -2);
+	self.Button.New:SetScale(.8);
 end
 
 function SettingsButtonControlMixin:Init(initializer)
@@ -559,7 +570,8 @@ function SettingsButtonControlMixin:Init(initializer)
 
 	self.Button:SetText(self.data.buttonText);
 	self.Button:SetScript("OnClick", self.data.buttonClick);
-
+	self.Button:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
+	
 	if self.data.name == "" then
 		self.Button:SetPoint("LEFT", self.Text, "LEFT", 0, 0);
 		self.Tooltip:Hide();
@@ -567,6 +579,8 @@ function SettingsButtonControlMixin:Init(initializer)
 		self.Button:SetPoint("LEFT", self, "CENTER", -40, 0);
 		self.Tooltip:Show();
 	end
+
+	self.Button.New:SetShown(initializer.showNew);
 end
 
 function SettingsButtonControlMixin:Release()
