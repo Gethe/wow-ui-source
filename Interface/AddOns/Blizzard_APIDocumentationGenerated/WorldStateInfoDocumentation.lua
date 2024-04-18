@@ -11,14 +11,34 @@ local WorldStateInfo =
 	Events =
 	{
 		{
+			Name = "CancelPlayerCountdown",
+			Type = "Event",
+			LiteralName = "CANCEL_PLAYER_COUNTDOWN",
+			Payload =
+			{
+				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "StartPlayerCountdown",
+			Type = "Event",
+			LiteralName = "START_PLAYER_COUNTDOWN",
+			Payload =
+			{
+				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
+				{ Name = "totalTime", Type = "time_t", Nilable = false },
+			},
+		},
+		{
 			Name = "StartTimer",
 			Type = "Event",
 			LiteralName = "START_TIMER",
 			Payload =
 			{
-				{ Name = "timerType", Type = "number", Nilable = false },
-				{ Name = "timeRemaining", Type = "number", Nilable = false },
-				{ Name = "totalTime", Type = "number", Nilable = false },
+				{ Name = "timerType", Type = "luaIndex", Nilable = false },
+				{ Name = "timeRemaining", Type = "time_t", Nilable = false },
+				{ Name = "totalTime", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -27,7 +47,7 @@ local WorldStateInfo =
 			LiteralName = "STOP_TIMER_OF_TYPE",
 			Payload =
 			{
-				{ Name = "timerType", Type = "number", Nilable = false },
+				{ Name = "timerType", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

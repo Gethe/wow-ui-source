@@ -15,7 +15,6 @@ MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 
 function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
-	self.container:SetParent(self);
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
@@ -62,6 +61,11 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 end
 
 function CompactRaidFrameManager_UpdateShown()
+	if ( not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CompactRaidFrameManager) ) then
+		CompactRaidFrameManager:Hide();
+		return;
+	end
+
 	local showManager = IsInGroup() or EditModeManagerFrame:AreRaidFramesForcedShown() or EditModeManagerFrame:ArePartyFramesForcedShown();
 	CompactRaidFrameManager:SetShown(showManager);
 
@@ -159,6 +163,16 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		CompactRaidFrameManager.displayFrame.everyoneIsAssistButton:Hide();
 	end
 
+	if CompactRaidFrameManager.displayFrame.RestrictPingsButton:ShouldShow() then
+		FlowContainer_AddLineBreak(container);
+		FlowContainer_AddSpacer(container, 20);
+		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.RestrictPingsButton);
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:UpdateLabel();
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Show();
+	else
+		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Hide();
+	end
+
 	FlowContainer_ResumeUpdates(container);
 
 	local usedX, usedY = FlowContainer_GetUsedBounds(container);
@@ -167,7 +181,7 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	--Then, we update which specific buttons are enabled.
 
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
-	if ( IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
+	if ( IsInGroup() and not HasLFGRestrictions() and not UnitInBattleground("player") and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
 		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Enable();
 		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
 	else
@@ -340,6 +354,8 @@ function CompactRaidFrameManager_GetSettingBeforeLoad(settingName)
 		return true;
 	elseif ( settingName == "DisplayPets" ) then
 		return false;
+	elseif ( settingName == "PvpDisplayPets" ) then
+		return false;
 	elseif ( settingName == "DisplayMainTankAndAssist" ) then
 		return true;
 	elseif ( settingName == "IsShown" ) then
@@ -364,6 +380,16 @@ do	--Enclosure to make sure people go through SetSetting
 		container:SetDisplayPets(displayPets);
 	end
 
+	local function CompactRaidFrameManager_SetPvpDisplayPets(value)
+		local container = CompactRaidFrameManager.container;
+		local displayPets;
+		if ( value and value ~= "0" ) then
+			displayPets = true;
+		end
+
+		container:SetPvpDisplayPets(displayPets);
+	end
+
 	local function CompactRaidFrameManager_SetDisplayMainTankAndAssist(value)
 		local container = CompactRaidFrameManager.container;
 		local displayFlaggedMembers;
@@ -375,7 +401,7 @@ do	--Enclosure to make sure people go through SetSetting
 	end
 
 	local function CompactRaidFrameManager_SetIsShown(value)
-		if value and value ~= "0" then
+		if EditModeManagerFrame:AreRaidFramesForcedShown() or (value and value ~= "0") then
 			CompactRaidFrameManager.container.enabled = true;
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(HIDE);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = false;
@@ -396,6 +422,8 @@ do	--Enclosure to make sure people go through SetSetting
 			CompactRaidFrameManager_SetManaged(value);
 		elseif ( settingName == "DisplayPets" ) then
 			CompactRaidFrameManager_SetDisplayPets(value);
+		elseif ( settingName == "pvpDisplayPets" ) then
+			CompactRaidFrameManager_SetPvpDisplayPets(value);
 		elseif ( settingName == "DisplayMainTankAndAssist" ) then
 			CompactRaidFrameManager_SetDisplayMainTankAndAssist(value);
 		elseif ( settingName == "IsShown" ) then
@@ -413,7 +441,12 @@ function CompactRaidFrameManager_UpdateContainerVisibility()
 		CompactRaidFrameManager.container:Hide();
 	end
 
-	CompactPartyFrame_UpdateVisibility();
+	CompactPartyFrame:UpdateVisibility();
+
+	-- TODO:: WoWLabs temp compatibility changes
+	if CompactArenaFrame then
+		CompactArenaFrame:UpdateVisibility();
+	end
 end
 
 function CompactRaidFrameManager_UpdateContainerBounds()
@@ -421,71 +454,6 @@ function CompactRaidFrameManager_UpdateContainerBounds()
 end
 
 -------------Utility functions-------------
---Functions used for sorting and such
-function CRFSort_Group(token1, token2)
-	if ( IsInRaid() ) then
-		local id1 = tonumber(string.sub(token1, 5));
-		local id2 = tonumber(string.sub(token2, 5));
-
-		if ( not id1 or not id2 ) then
-			return id1;
-		end
-
-		local _, _, subgroup1 = GetRaidRosterInfo(id1);
-		local _, _, subgroup2 = GetRaidRosterInfo(id2);
-
-		if ( subgroup1 and subgroup2 and subgroup1 ~= subgroup2 ) then
-			return subgroup1 < subgroup2;
-		end
-
-		--Fallthrough: Sort by order in Raid window.
-		return id1 < id2;
-	else
-		if ( token1 == "player" ) then
-			return true;
-		elseif ( token2 == "player" ) then
-			return false;
-		else
-			return token1 < token2;	--String compare is OK since we don't go above 1 digit for party.
-		end
-	end
-end
-
-local roleValues = { MAINTANK = 1, MAINASSIST = 2, TANK = 3, HEALER = 4, DAMAGER = 5, NONE = 6 };
-function CRFSort_Role(token1, token2)
-	local id1, id2 = UnitInRaid(token1), UnitInRaid(token2);
-	local role1, role2;
-	if ( id1 ) then
-		role1 = select(10, GetRaidRosterInfo(id1));
-	end
-	if ( id2 ) then
-		role2 = select(10, GetRaidRosterInfo(id2));
-	end
-
-	role1 = role1 or UnitGroupRolesAssigned(token1);
-	role2 = role2 or UnitGroupRolesAssigned(token2);
-
-	local value1, value2 = roleValues[role1], roleValues[role2];
-	if ( value1 ~= value2 ) then
-		return value1 < value2;
-	end
-
-	--Fallthrough: Sort alphabetically.
-	return CRFSort_Alphabetical(token1, token2);
-end
-
-function CRFSort_Alphabetical(token1, token2)
-	local name1, name2 = UnitName(token1), UnitName(token2);
-	if ( name1 and name2 ) then
-		return name1 < name2;
-	elseif ( name1 or name2 ) then
-		return name1;
-	end
-
-	--Fallthrough: Alphabetic order of tokens (just here to make comparisons well-ordered)
-	return token1 < token2;
-end
-
 --Functions used for filtering
 local filterOptions = {
 	[1] = true,
@@ -599,4 +567,47 @@ function CRF_AddToCount(isDead, assignedRole)
 		RaidInfoCounts.totalAlive = RaidInfoCounts.totalAlive + 1;
 		RaidInfoCounts["aliveRole"..assignedRole] = RaidInfoCounts["aliveRole"..assignedRole] + 1;
 	end
+end
+
+RaidFrameManagerRestrictPingsButtonMixin = {};
+
+local RestrictPingsButtonShownEvents =
+{
+	"GROUP_ROSTER_UPDATE",
+	"PARTY_LEADER_CHANGED",
+};
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, RestrictPingsButtonShownEvents);
+
+	self:UpdateCheckedState();
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, RestrictPingsButtonShownEvents);
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnEvent()
+	self:UpdateCheckedState();
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	C_PartyInfo.SetRestrictPings(self:GetChecked());
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:UpdateLabel()
+	if IsInRaid() then
+		self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS);
+	else
+		self.Text:SetText(RAID_MANAGER_RESTRICT_PINGS_PARTY);
+	end
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:UpdateCheckedState()
+	self:SetChecked(C_PartyInfo.GetRestrictPings());
+end
+
+function RaidFrameManagerRestrictPingsButtonMixin:ShouldShow()
+	return UnitIsGroupLeader("player") or UnitIsGroupAssistant("player");
 end

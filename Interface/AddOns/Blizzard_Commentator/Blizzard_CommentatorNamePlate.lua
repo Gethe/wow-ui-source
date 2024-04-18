@@ -212,7 +212,7 @@ function CommentatorNamePlateMixin:UpdateCrowdControlAuras()
 		self.CCCooldown:SetCooldown(expirationTime - duration, duration);
 
 		if spellID ~= nil then
-			local icon = select(3, GetSpellInfo(spellID));
+			local icon = C_Spell.GetSpellTexture(spellID);
 			if icon then
 				self.CCIcon:SetTexture(icon);
 			end

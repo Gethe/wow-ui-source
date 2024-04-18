@@ -142,7 +142,8 @@ function MountJournal_OnLoad(self)
 	self:RegisterEvent("MOUNT_JOURNAL_SEARCH_UPDATED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
-	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("MOUNT_EQUIPMENT_APPLY_RESULT");
 	self:RegisterEvent("CURSOR_CHANGED");
 	self:RegisterUnitEvent("UNIT_FORM_CHANGED", "player");
@@ -157,6 +158,9 @@ function MountJournal_OnLoad(self)
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, MountJournal_EvaluateListHelpTip, self);
 
+	MountJournal.MountDisplay.ModelScene:SetResetCallback(MountJournal_ModelScene_OnReset);
+	MountJournal.MountDisplay.ModelScene.ControlFrame:SetModelScene(MountJournal.MountDisplay.ModelScene);
+
 	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
 
 	local bottomLeftInset = self.BottomLeftInset;
@@ -170,6 +174,8 @@ function MountJournal_OnLoad(self)
 	self.SlotRequirementLabel:SetText(levelRequiredText);
 	self.SlotRequirementLabel:SetTextColor(LOCKED_EQUIPMENT_LABEL_COLOR:GetRGB());
 	
+	MountJournal_SetPendingDragonMountChanges(false);
+
 	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
 
 	MountJournal_UpdateEquipment(self);
@@ -280,7 +286,7 @@ function MountJournal_InitMountButton(button, elementData)
 end
 
 function MountJournal_OnEvent(self, event, ...)
-	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
+	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" or event == "PLAYER_REGEN_ENABLED" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
 			MountJournal_FullUpdate(self);
@@ -338,6 +344,19 @@ function MountJournal_ApplyEquipment(self, itemLocation)
 	end
 
 	return canContinue;
+end
+
+function MountJournal_ModelScene_OnEnter(button)
+	MountJournal.MountDisplay.ModelScene:OnEnter(button);
+end
+
+function MountJournal_ModelScene_OnLeave(button)
+	MountJournal.MountDisplay.ModelScene:OnLeave(button);
+end
+
+function MountJournal_ModelScene_OnReset()
+	local forceSceneChange = true;
+	MountJournal_UpdateMountDisplay(forceSceneChange);
 end
 
 function MountJournal_UpdateEquipmentPalette(self)
@@ -492,7 +511,7 @@ function MountJournal_FullUpdate(self)
 end
 
 function MountJournal_OnShow(self)
-	self.needsDragonridingHelpTip = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_COLLECTION_DRAGONRIDING);
+	self.needsDragonridingHelpTip = not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MOUNT_COLLECTION_DRAGONRIDING);
 	if self.needsDragonridingHelpTip then
 		-- Force this to clear right now. There could be one done at end of frame due to the MountJournal_ClearSearch that ran last time
 		-- the UI was closed, and if so that could change the number of entries after the automatic scroll to a dragonriding mount
@@ -584,12 +603,29 @@ function MountJournal_EvaluateListHelpTip(self)
 		local frame = self.ScrollBox:FindFrameByPredicate(function(entry, elementData)
 			return entry.index == self.dragonridingHelpTipMountIndex;
 		end);
-		if ((frame and frame:IsShown()) and frame:GetTop() <= self.ScrollBox:GetTop() + 4 and frame:GetBottom() >= self.ScrollBox:GetBottom() - 4) then
+
+		if not frame or not frame:IsShown() then
+			return;
+		end
+
+		local frameTop = frame:GetTop();
+		local frameBottom = frame:GetBottom();
+		if not frameTop or not frameBottom then
+			return;
+		end
+
+		local scrollTop = self.ScrollBox:GetTop();
+		local scrollBottom = self.ScrollBox:GetBottom();
+		if not scrollTop or not scrollBottom then
+			return;
+		end
+
+		if (frameTop <= scrollTop + 4) and (frameBottom >= scrollBottom - 4) then
 			local helpTipInfo = {
 				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = LE_FRAME_TUTORIAL_MOUNT_COLLECTION_DRAGONRIDING,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_MOUNT_COLLECTION_DRAGONRIDING,
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				offsetX = -4,
 				onAcknowledgeCallback = function() self.dragonridingHelpTipMountIndex = nil; end;
@@ -616,11 +652,24 @@ function MountJournalMountButton_ChooseFallbackMountToDisplay(mountID, random)
 	return 0;
 end
 
+function MountJournal_SetPendingDragonMountChanges(isPending)
+	MountJournal.PendingDragonMountChanges = isPending;
+end
+
+function MountJournal_GetPendingDragonMountChanges()
+	return MountJournal.PendingDragonMountChanges;
+end
+
+function MountJournal_OnModelLoaded(mountActor)
+	mountActor:Show();
+end
+
 function MountJournal_UpdateMountDisplay(forceSceneChange)
 	if ( MountJournal.selectedMountID ) then
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
-		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange ) then
+		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange or MountJournal_GetPendingDragonMountChanges()) then
+			MountJournal_SetPendingDragonMountChanges(false);
 			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
 			if not creatureDisplayID then
 				local randomSelection = false;
@@ -649,20 +698,22 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
 
-			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
 
 			MountJournal.MountDisplay.ModelScene:PrepareForFanfare(needsFanfare);
 
 			local mountActor = MountJournal.MountDisplay.ModelScene:GetActorByTag("unwrapped");
 			if mountActor then
+				mountActor:Hide();
+				mountActor:SetOnModelLoadedCallback(GenerateClosure(MountJournal_OnModelLoaded, mountActor));
 				mountActor:SetModelByCreatureDisplayID(creatureDisplayID, true);
 
 				-- mount self idle animation
 				if (isSelfMount) then
-					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+					mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 					mountActor:SetAnimation(618); -- MountSelfIdle
 				else
-					mountActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_ANIM);
+					mountActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
 					mountActor:SetAnimation(0);
 				end
 				local showPlayer = GetCVarBool("mountJournalShowPlayer");
@@ -805,7 +856,7 @@ function MountListDragButton_OnClick(self, button)
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = parent.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
-			local spellName = GetSpellInfo(id);
+			local spellName = C_Spell.GetSpellName(id);
 			ChatEdit_InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
@@ -825,7 +876,7 @@ function MountListItem_OnClick(self, button)
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = self.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
-			local spellName = GetSpellInfo(id);
+			local spellName = C_Spell.GetSpellName(id);
 			ChatEdit_InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
@@ -888,6 +939,21 @@ function MountJournal_SetAllSourceFilters(value)
 	UIDropDownMenu_Refresh(MountJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end 
 
+
+local mountSourceOrderPriorities = {
+	[Enum.BattlePetSources.Drop] = 5,
+	[Enum.BattlePetSources.Quest] = 5,
+	[Enum.BattlePetSources.Vendor] = 5,
+	[Enum.BattlePetSources.Profession] = 5,
+	[Enum.BattlePetSources.Achievement] = 5,
+	[Enum.BattlePetSources.WorldEvent] = 5,
+	[Enum.BattlePetSources.Discovery] = 5,
+	[Enum.BattlePetSources.TradingPost] = 4,
+	[Enum.BattlePetSources.Promotion] = 3,
+	[Enum.BattlePetSources.PetStore] = 2,
+	[Enum.BattlePetSources.Tcg] = 1,
+};
+
 function MountJournalFilterDropDown_Initialize(self, level)
 	local filterSystem = {
 		onUpdate = MountJournalResetFiltersButton_UpdateVisibility,
@@ -914,7 +980,8 @@ function MountJournalFilterDropDown_Initialize(self, level)
 						  isSet = C_MountJournal.IsSourceChecked,
 						  numFilters = C_PetJournal.GetNumPetSources,
 						  filterValidation = C_MountJournal.IsValidSourceFilter,
-						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						  globalPrepend = "BATTLE_PET_SOURCE_",
+						  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("MOUNTS", mountSourceOrderPriorities),
 						},
 					},
 				},
@@ -925,7 +992,7 @@ function MountJournalFilterDropDown_Initialize(self, level)
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
-function MountJournal_AddInMountTypes(level)
+function MountJournal_AddInMountTypes(filterSystem, level)
 	for i = 1, Enum.MountTypeMeta.NumValues do
 		if not C_MountJournal.IsValidTypeFilter(i) then
 			break;
@@ -936,31 +1003,64 @@ function MountJournal_AddInMountTypes(level)
 					MountJournalResetFiltersButton_UpdateVisibility()
 				  end
 		local isSet = function() return C_MountJournal.IsTypeChecked(i) end;
-		FilterDropDownSystem.AddCheckBoxButton(mountTypeStrings[i - 1], set, isSet, level);
+		FilterDropDownSystem.AddCheckBoxButtonToFilterSystem(filterSystem, mountTypeStrings[i - 1], set, isSet, level);
 	end
 end
 
-function MountJournalSummonRandomFavoriteButton_OnLoad(self)
+--------------------------------------------------
+-- Random Favorite Mount Button Mixin
+MountJournalSummonRandomFavoriteButtonMixin = {};
+
+function MountJournalSummonRandomFavoriteButtonMixin:OnLoad()
 	self.spellID = SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
-	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
+	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
 	self.texture:SetTexture(spellIcon);
 	-- Use the global string instead of the spellName from the db here so that we can have custom newlines in the string
 	self.spellname:SetText(MOUNT_JOURNAL_SUMMON_RANDOM_FAVORITE_MOUNT);
 	self:RegisterForDrag("LeftButton");
 end
 
-function MountJournalSummonRandomFavoriteButton_OnClick(self)
+function MountJournalSummonRandomFavoriteButtonMixin:OnClick()
 	C_MountJournal.SummonByID(0);
 end
 
-function MountJournalSummonRandomFavoriteButton_OnDragStart(self)
+function MountJournalSummonRandomFavoriteButtonMixin:OnDragStart()
 	C_MountJournal.Pickup(0);
 end
 
-function MountJournalSummonRandomFavoriteButton_OnEnter(self)
+function MountJournalSummonRandomFavoriteButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMountBySpellID(self.spellID);
 end
+
+--------------------------------------------------
+-- Flight Mode Button Mixin
+MountJournalDynamicFlightModeButtonMixin = {};
+
+function MountJournalDynamicFlightModeButtonMixin:OnLoad()
+	self.spellID = C_MountJournal.GetDynamicFlightModeSpellID();
+	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
+	self.texture:SetTexture(spellIcon);
+	self.spellname:SetText(C_Spell.GetSpellName(self.spellID));
+	self:RegisterForDrag("LeftButton");
+end
+
+function MountJournalDynamicFlightModeButtonMixin:OnClick()
+	C_MountJournal.SwapDynamicFlightMode();
+end
+
+function MountJournalDynamicFlightModeButtonMixin:OnDragStart()
+	C_MountJournal.PickupDynamicFlightMode();
+end
+
+function MountJournalDynamicFlightModeButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetSpellByID(self.spellID);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddColoredLine(GameTooltip, FLIGHT_MODE_TOGGLE_TOOLTIP_SUBTEXT, GREEN_FONT_COLOR);
+	GameTooltip:Show();
+end
+--------------------------------------------------------
 
 function MountOptionsMenu_Init(self, level)
 	if not MountJournal.menuMountIndex then

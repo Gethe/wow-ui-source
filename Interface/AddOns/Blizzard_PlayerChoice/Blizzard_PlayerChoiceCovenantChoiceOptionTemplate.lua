@@ -43,7 +43,7 @@ function PlayerChoiceCovenantChoiceOptionTemplateMixin:SetupButtons()
 end
 
 function PlayerChoiceCovenantChoiceOptionTemplateMixin:OnUpdate()
-	local mouseOver = RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self);
+	local mouseOver = RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self);
 	if not mouseOver then
 		self:OnLeave();
 	end

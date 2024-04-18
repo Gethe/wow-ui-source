@@ -61,7 +61,7 @@ function ClassNameplateBar:Setup()
 		if ( self:MatchesSpec() ) then
 			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
-			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit);
+			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			showBar = true;
 		else
@@ -126,7 +126,7 @@ end
 ClassNameplateManaBar = {};
 
 local NameplatePowerBarColor = {
-	["MANA"] = { r = 0.1, g = 0.25, b = 1.00 }
+	["MANA"] = { r = 0.1, g = 0.25, b = 1.00, predictionColor = POWERBAR_PREDICTION_COLOR_MANA }
 };
 
 function ClassNameplateManaBar:OnLoad()
@@ -194,8 +194,9 @@ end
 
 function ClassNameplateManaBar:SetupBar()
 	local powerType, powerToken, altR, altG, altB = UnitPowerType("player");
+	local info;
 	if (powerToken) then
-		local info = NameplatePowerBarColor[powerToken] or PowerBarColor[powerToken];
+		info = NameplatePowerBarColor[powerToken] or PowerBarColor[powerToken];
 		if not info then
 			if altR then
 				info = CreateColor(altR, altG, altB);
@@ -205,7 +206,10 @@ function ClassNameplateManaBar:SetupBar()
 		end
 		self:SetStatusBarColor(info.r, info.g, info.b);
 
-		self.FeedbackFrame:Initialize(info, "player", powerType);
+		-- Nameplate mana bar uses only solid color (no atlases), ensure its feedback frame does the same
+		local colorOnlyInfo = { r = info.r, g = info.g, b = info.b };
+		self.FeedbackFrame:Initialize(colorOnlyInfo, "player", powerType);
+
 		self:SetScript("OnUpdate", ClassNameplateManaBar_OnUpdate);
 
 		self.FullPowerFrame:SetSize(86, 6);
@@ -222,6 +226,18 @@ function ClassNameplateManaBar:SetupBar()
 		self.powerType = powerType;
 		self.FullPowerFrame:RemoveAnims();
 		self:UpdatePredictedPowerCost(true);
+
+		if (self.ManaCostPredictionBar) then
+			local predictionColor;
+			if (info and info.predictionColor) then
+				predictionColor = info.predictionColor;
+			else
+				-- No prediction color set, default to mana prediction color
+				predictionColor = POWERBAR_PREDICTION_COLOR_MANA;
+			end
+	
+			self.ManaCostPredictionBar:SetVertexColor(predictionColor:GetRGBA());
+		end
 	end
 
 	self.currValue = UnitPower("player", powerType) - self.predictedPowerCost;
@@ -270,14 +286,16 @@ end
 
 function ClassNameplateManaBar_OnUpdate(self)
 	local currValue = UnitPower("player", self.powerType) - self.predictedPowerCost;
+	local oldValue = self.currValue or 0;
+
 	if ( currValue ~= self.currValue or self.forceUpdate ) then
 		self.forceUpdate = nil;
 		-- Only show anim if change is more than 10%
-		if ( self.FeedbackFrame.maxValue ~= 0 and math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
-			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
+		if ( self.FeedbackFrame.maxValue ~= 0 and ( math.abs(currValue - oldValue) / self.FeedbackFrame.maxValue ) > 0.1 ) then
+			self.FeedbackFrame:StartFeedbackAnim(oldValue, currValue);
 		end
 		if ( self.FullPowerFrame.active ) then
-			self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
+			self.FullPowerFrame:StartAnimIfFull(currValue);
 		end
 		self.currValue = currValue;
 	end

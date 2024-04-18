@@ -15,6 +15,20 @@ local ZoneAbility =
 				{ Name = "zoneAbilities", Type = "table", InnerType = "ZoneAbilityInfo", Nilable = false },
 			},
 		},
+		{
+			Name = "GetZoneAbilityIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoneAbilitySpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "zoneAbilityIconID", Type = "number", Nilable = true },
+			},
+		},
 	},
 
 	Events =
@@ -31,8 +45,8 @@ local ZoneAbility =
 				{ Name = "zoneAbilityID", Type = "number", Nilable = false },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
-				{ Name = "tutorialText", Type = "string", Nilable = true },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "tutorialText", Type = "cstring", Nilable = true },
 			},
 		},
 	},

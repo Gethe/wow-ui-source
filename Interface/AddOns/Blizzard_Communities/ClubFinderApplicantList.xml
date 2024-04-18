@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="ClubFinderApplicantList.lua"/>
 
 	<Button name="ClubFinderApplicantEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="ClubFinderApplicantEntryMixin">
@@ -78,19 +78,19 @@
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RoleIcon1" hidden="true" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIcon1" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RoleIcon2" hidden="true" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIcon2" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="3" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="RoleIcon3" hidden="true" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
+				<Texture parentKey="RoleIcon3" hidden="true" atlas="UI-LFG-RoleIcon-Generic-Micro">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RoleIcon2" relativePoint="RIGHT" x="3" y="0"/>
@@ -139,10 +139,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-18" y="1"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-16" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-14" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-14" y="2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -154,7 +154,7 @@
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="3"/>
-					<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

@@ -1,0 +1,136 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+  <Script file="MageArcaneChargesBar.lua"/>
+	
+	<Frame name="ArcaneChargeTemplate" mixin="ArcaneChargeMixin" virtual="true">
+		<Size x="21" y="21"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ArcaneBGShadow" alphaMode="BLEND" atlas="UF-Arcane-BGShadow" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-2.5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArcaneBG" alphaMode="BLEND" atlas="UF-Arcane-BG" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ArcaneCircle" alphaMode="BLEND" atlas="UF-Arcane-MagicCirc" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArcaneTriangle" alphaMode="BLEND" atlas="UF-Arcane-MagicTriangle" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArcaneSquare" alphaMode="BLEND" atlas="UF-Arcane-MagicSquare" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArcaneDiamond" alphaMode="BLEND" atlas="UF-Arcane-MagicDiamond" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ArcaneIcon" alphaMode="BLEND" atlas="UF-Arcane-Icon" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Orb" alphaMode="BLEND" atlas="UF-Arcane-Orb" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ArcaneFlare" alphaMode="BLEND" atlas="UF-Arcane-Flare" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FBArcaneFX" alphaMode="BLEND" atlas="UF-Arcane-ShockFX" parentArray="fxTextures">
+					<Size x="50" y="45"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ArcaneOuterFX" alphaMode="BLEND" atlas="UF-Arcane-OuterFX" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FrameGlow" alphaMode="BLEND" atlas="UF-Arcane-FrameGlow" useAtlasSize="true" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="activateAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="FrameGlow" fromAlpha="0" toAlpha=".45" duration=".17" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha=".45" toAlpha=".7" startDelay=".17" duration=".6" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha=".7" toAlpha=".7" startDelay=".77" duration=".2" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha=".7" toAlpha="0" startDelay=".97" duration=".2" order="1"/>
+				<Alpha childKey="FBArcaneFX" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+				<FlipBook childKey="FBArcaneFX" duration="1" flipBookRows="5" flipBookColumns="6" flipBookFrames="28" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="ArcaneIcon" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="ArcaneIcon" fromAlpha=".5" toAlpha="1" startDelay=".47" duration=".13" order="1"/>
+				<Alpha childKey="ArcaneFlare" fromAlpha="0" toAlpha="0" duration=".23" order="1"/>
+				<Alpha childKey="ArcaneFlare" fromAlpha="0" toAlpha="1" startDelay=".23" duration=".23" order="1"/>
+				<Alpha childKey="ArcaneFlare" fromAlpha="1" toAlpha=".65" startDelay=".46" duration=".27" order="1"/>
+				<Alpha childKey="ArcaneFlare" fromAlpha=".65" toAlpha="0" startDelay=".73" duration=".27" order="1"/>
+				<Alpha childKey="ArcaneDiamond" fromAlpha="0" toAlpha="1" duration=".33" order="1"/>
+				<Alpha childKey="ArcaneDiamond" fromAlpha="1" toAlpha="0" startDelay=".33" duration=".57" order="1"/>
+				<Alpha childKey="ArcaneSquare" fromAlpha="0" toAlpha="1" duration=".27" order="1"/>
+				<Alpha childKey="ArcaneSquare" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".63" order="1"/>
+				<Alpha childKey="ArcaneCircle" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="ArcaneCircle" fromAlpha="1" toAlpha="1" startDelay=".17" duration=".33" order="1"/>
+				<Alpha childKey="ArcaneCircle" fromAlpha="1" toAlpha="0" startDelay=".5" duration=".5" order="1"/>
+				<Alpha childKey="ArcaneTriangle" fromAlpha="0" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="ArcaneTriangle" fromAlpha="0" toAlpha="1" startDelay=".17" duration=".1" order="1"/>
+				<Alpha childKey="ArcaneTriangle" fromAlpha="1" toAlpha="0" startDelay=".27" duration=".53" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="deactivateAnim" looping="NONE" setToFinalAlpha="true">
+				<Alpha childKey="FrameGlow" fromAlpha="0" toAlpha="1" duration=".08" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="1" startDelay=".08" duration=".035" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="0" startDelay=".12" duration=".235" order="1"/>
+				<Alpha childKey="ArcaneIcon" fromAlpha="1" toAlpha="0" duration=".15" order="1"/>
+				<Alpha childKey="ArcaneFlare" fromAlpha="1" toAlpha="0" duration=".25" order="1"/>
+				<Alpha childKey="ArcaneOuterFX" fromAlpha="1" toAlpha="1" duration=".15" order="1"/>
+				<Alpha childKey="ArcaneOuterFX" fromAlpha="1" toAlpha="0" startDelay=".15" duration=".235" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="MageArcaneChargesFrameTemplate" inherits="ClassResourceBarTemplate" virtual="true">
+		<Size x="125" y="21"/>
+		<KeyValues>
+			<KeyValue key="powerToken" value="ARCANE_CHARGES" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ArcaneCharges" type="global"/>
+			<KeyValue key="tooltip1" value="ARCANE_CHARGES" type="global"/>
+			<KeyValue key="tooltip2" value="ARCANE_CHARGES_TOOLTIP" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="ArcaneChargeTemplate" type="string"/>
+			<KeyValue key="resourcePointSetupFunc" value="ArcaneChargeMixin.Setup" type="global"/>
+			<KeyValue key="resourcePointReleaseFunc" value="ArcaneChargeMixin.OnRelease" type="global"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+			<KeyValue key="class" value="MAGE" type="string"/>
+			<KeyValue key="spec" value="SPEC_MAGE_ARCANE" type="global"/>
+		</KeyValues>
+	</Frame>
+	<Frame name="MageArcaneChargesFrame" inherits="MageArcaneChargesFrameTemplate" mixin="MagePowerBar">
+		<KeyValues>
+			<KeyValue key="showTooltip" value="true" type="boolean"/>
+			<KeyValue key="topPadding" value="7" type="number"/>
+		</KeyValues>
+	</Frame>
+</Ui>

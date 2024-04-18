@@ -1,6 +1,100 @@
-CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
+﻿CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
+CHAR_CUSTOMIZE_LOCK_WIDTH = 24;
+
+local POPOUT_CLEARANCE = 60;
 
 local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
+
+CharCustomizeOptionFrameBaseMixin = {};
+
+function CharCustomizeOptionFrameBaseMixin:SetupOption(optionData)
+	-- Override
+end
+
+function CharCustomizeOptionFrameBaseMixin:SetOptionData(optionData)
+	self.optionData = optionData;
+end
+
+function CharCustomizeOptionFrameBaseMixin:GetOptionData()
+	return self.optionData;
+end
+
+function CharCustomizeOptionFrameBaseMixin:RefreshOption()
+	self:SetupOption(self:GetOptionData());
+end
+
+function CharCustomizeOptionFrameBaseMixin:GetCurrentChoiceIndex()
+	return self:GetOptionData().currentChoiceIndex;
+end
+
+function CharCustomizeOptionFrameBaseMixin:HasChoice()
+	return self:GetCurrentChoice() ~= nil;
+end
+
+function CharCustomizeOptionFrameBaseMixin:GetChoice(index)
+	if index then
+		return self:GetOptionData().choices[index];
+	end
+end
+
+function CharCustomizeOptionFrameBaseMixin:GetCurrentChoice()
+	return self:GetChoice(self:GetCurrentChoiceIndex());
+end
+
+function CharCustomizeOptionFrameBaseMixin:HasSound()
+	return self:GetOptionData().isSound;
+end
+
+function CharCustomizeOptionFrameBaseMixin:GetSoundKit(entryOverride)
+	if self:HasSound() then
+		if entryOverride then
+			return entryOverride.selectionData.soundKit;
+		end
+
+		local choice = self:GetCurrentChoice();
+		if choice then
+			return choice.soundKit;
+		end
+	end
+end
+
+function CharCustomizeOptionFrameBaseMixin:SetupAudio(audioInterface)
+	assert(self:HasSound());
+	self:ShutdownAudio();
+
+	audioInterface:SetParent(self);
+	audioInterface:SetPoint("RIGHT", self.Label, "LEFT", -40, 0);
+	audioInterface:Show();
+	audioInterface:SetupAudio(self:GetSoundKit());
+	self.audioInterface = audioInterface;
+end
+
+function CharCustomizeOptionFrameBaseMixin:ShutdownAudio()
+	local interface = self.audioInterface;
+	self.audioInterface = nil;
+
+	if interface then
+		interface:StopAudio();
+	end
+end
+
+function CharCustomizeOptionFrameBaseMixin:GetAudioInterface()
+	return self.audioInterface;
+end
+
+local function GetAppropriateTooltip()
+	return CharCustomizeNoHeaderTooltip;
+end
+
+CharCustomizeFrameWithTooltipMixin = CreateFromMixins(RingedFrameWithTooltipMixin);
+function CharCustomizeFrameWithTooltipMixin:GetAppropriateTooltip()
+	return GetAppropriateTooltip();
+end
+
+CharCustomizeMaskedButtonMixin = CreateFromMixins(RingedMaskedButtonMixin)
+function CharCustomizeMaskedButtonMixin:GetAppropriateTooltip()
+	return GetAppropriateTooltip();
+end
 
 CharCustomizeParentFrameBaseMixin = {};
 
@@ -62,84 +156,6 @@ CharCustomizeBaseButtonMixin = {};
 
 function CharCustomizeBaseButtonMixin:OnBaseButtonClick()
 	CharCustomizeFrame:OnButtonClick();
-end
-
-CharCustomizeFrameWithTooltipMixin = {};
-
-function CharCustomizeFrameWithTooltipMixin:OnLoad()
-	if self.simpleTooltipLine then
-		self:AddTooltipLine(self.simpleTooltipLine, HIGHLIGHT_FONT_COLOR);
-	end
-end
-
-function CharCustomizeFrameWithTooltipMixin:ClearTooltipLines()
-	self.tooltipLines = nil;
-end
-
-function CharCustomizeFrameWithTooltipMixin:AddTooltipLine(lineText, lineColor)
-	if not self.tooltipLines then
-		self.tooltipLines = {};
-	end
-
-	table.insert(self.tooltipLines, {text = lineText, color = lineColor or NORMAL_FONT_COLOR});
-end
-
-function CharCustomizeFrameWithTooltipMixin:AddBlankTooltipLine()
-	self:AddTooltipLine(" ");
-end
-
-function CharCustomizeFrameWithTooltipMixin:GetAppropriateTooltip()
-	return CharCustomizeNoHeaderTooltip;
-end
-
-function CharCustomizeFrameWithTooltipMixin:SetupAnchors(tooltip)
-	if self.tooltipAnchor == "ANCHOR_TOPRIGHT" then
-		tooltip:SetOwner(self, "ANCHOR_NONE");
-		tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", self.tooltipXOffset, self.tooltipYOffset);
-	elseif self.tooltipAnchor == "ANCHOR_TOPLEFT" then
-		tooltip:SetOwner(self, "ANCHOR_NONE");
-		tooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -self.tooltipXOffset, self.tooltipYOffset);
-	elseif self.tooltipAnchor == "ANCHOR_BOTTOMRIGHT" then
-		tooltip:SetOwner(self, "ANCHOR_NONE");
-		tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", self.tooltipXOffset, self.tooltipYOffset);
-	elseif self.tooltipAnchor == "ANCHOR_BOTTOMLEFT" then
-		tooltip:SetOwner(self, "ANCHOR_NONE");
-		tooltip:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", -self.tooltipXOffset, self.tooltipYOffset);
-	else
-		tooltip:SetOwner(self, self.tooltipAnchor, self.tooltipXOffset, self.tooltipYOffset);
-	end
-end
-
-function CharCustomizeFrameWithTooltipMixin:AddExtraStuffToTooltip()
-end
-
-function CharCustomizeFrameWithTooltipMixin:OnEnter()
-	if self.tooltipLines then
-		local tooltip = self:GetAppropriateTooltip();
-
-		self:SetupAnchors(tooltip);
-
-		if self.tooltipMinWidth then
-			tooltip:SetMinimumWidth(self.tooltipMinWidth);
-		end
-
-		if self.tooltipPadding then
-			tooltip:SetPadding(self.tooltipPadding, self.tooltipPadding, self.tooltipPadding, self.tooltipPadding);
-		end
-
-		for _, lineInfo in ipairs(self.tooltipLines) do
-			GameTooltip_AddColoredLine(tooltip, lineInfo.text, lineInfo.color);
-		end
-
-		self:AddExtraStuffToTooltip();
-
-		tooltip:Show();
-	end
-end
-
-function CharCustomizeFrameWithTooltipMixin:OnLeave()
-	local tooltip = self:GetAppropriateTooltip();
-	tooltip:Hide();
 end
 
 CharCustomizeSmallButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
@@ -269,13 +285,11 @@ function CharCustomizeFrameWithExpandableTooltipMixin:AddPostTooltipLine(lineTex
 	table.insert(self.postTooltipLines, {text = lineText, color = lineColor or NORMAL_FONT_COLOR});
 end
 
-local tooltipsExpanded = false;
-
 function CharCustomizeFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
 	local tooltip = self:GetAppropriateTooltip();
 
 	if self.expandedTooltipFrame then
-		if tooltipsExpanded then
+		if self.tooltipsExpanded then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
 			GameTooltip_InsertFrame(tooltip, self.expandedTooltipFrame);
 			GameTooltip_AddBlankLineToTooltip(tooltip);
@@ -292,133 +306,6 @@ function CharCustomizeFrameWithExpandableTooltipMixin:AddExtraStuffToTooltip()
 		for _, lineInfo in ipairs(self.postTooltipLines) do
 			GameTooltip_AddColoredLine(tooltip, lineInfo.text, lineInfo.color);
 		end
-	end
-end
-
-CharCustomizeMaskedButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
-
-function CharCustomizeMaskedButtonMixin:OnLoad()
-	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
-
-	self.CircleMask:SetPoint("TOPLEFT", self, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
-	self.CircleMask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
-
-	self.New:SetPoint("CENTER", self, "BOTTOM", 0, self.newTagYOffset);
-
-	local hasRingSizes = self.ringWidth and self.ringHeight;
-	if hasRingSizes then
-		self.Ring:SetAtlas(self.ringAtlas);
-		self.Ring:SetSize(self.ringWidth, self.ringHeight);
-		self.Flash.Ring:SetAtlas(self.ringAtlas);
-		self.Flash.Ring:SetSize(self.ringWidth, self.ringHeight);
-		self.Flash.Ring2:SetAtlas(self.ringAtlas);
-		self.Flash.Ring2:SetSize(self.ringWidth, self.ringHeight);
-	else
-		self.Ring:SetAtlas(self.ringAtlas, true);
-		self.Flash.Ring:SetAtlas(self.ringAtlas, true);
-		self.Flash.Ring2:SetAtlas(self.ringAtlas, true);
-	end
-
-	self.NormalTexture:AddMaskTexture(self.CircleMask);
-	self.PushedTexture:AddMaskTexture(self.CircleMask);
-	self.DisabledOverlay:AddMaskTexture(self.CircleMask);
-	self.DisabledOverlay:SetAlpha(self.disabledOverlayAlpha);
-	self.CheckedTexture:SetSize(self.checkedTextureSize, self.checkedTextureSize);
-	self.Flash.Portrait:AddMaskTexture(self.CircleMask);
-
-	if self.flipTextures then
-		self.NormalTexture:SetTexCoord(1, 0, 0, 1);
-		self.PushedTexture:SetTexCoord(1, 0, 0, 1);
-		self.Flash.Portrait:SetTexCoord(1, 0, 0, 1);
-	end
-
-	if self.BlackBG then
-		self.BlackBG:AddMaskTexture(self.CircleMask);
-	end
-end
-
-function CharCustomizeMaskedButtonMixin:SetIconAtlas(atlas)
-	self:SetNormalAtlas(atlas);
-	self:SetPushedAtlas(atlas);
-	self.Flash.Portrait:SetAtlas(atlas);
-end
-
-function CharCustomizeMaskedButtonMixin:ClearFlashTimer()
-	if self.FlashTimer then
-		self.FlashTimer:Cancel();
-	end
-end
-
-function CharCustomizeMaskedButtonMixin:StartFlash()
-	self:ClearFlashTimer();
-
-	local function playFlash()
-		self.Flash:Show();
-		self.Flash.Anim:Play();
-	end
-
-	self.FlashTimer = C_Timer.NewTimer(0.8, playFlash);
-end
-
-function CharCustomizeMaskedButtonMixin:StopFlash()
-	self:ClearFlashTimer();
-	self.Flash.Anim:Stop();
-	self.Flash:Hide();
-end
-
-function CharCustomizeMaskedButtonMixin:SetEnabledState(enabled)
-	local buttonEnableState = enabled or self.allowSelectionOnDisable;
-	self:SetEnabled(buttonEnableState);
-
-	local normalTex = self:GetNormalTexture();
-	if normalTex then
-		normalTex:SetDesaturated(not enabled);
-	end
-
-	local pushedTex = self:GetPushedTexture();
-	if pushedTex then
-		pushedTex:SetDesaturated(not enabled);
-	end
-
-	self.Ring:SetAtlas(self.ringAtlas..(enabled and "" or "-disabled"));
-
-	self.DisabledOverlay:SetShown(not enabled);
-end
-
-function CharCustomizeMaskedButtonMixin:OnMouseDown(button)
-	if self:IsEnabled() then
-		self.CheckedTexture:SetPoint("CENTER", self, "CENTER", 1, -1);
-		self.CircleMask:SetPoint("TOPLEFT", self.PushedTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
-		self.CircleMask:SetPoint("BOTTOMRIGHT", self.PushedTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
-		self.Ring:SetPoint("CENTER", self, "CENTER", 1, -1);
-		self.Flash:SetPoint("CENTER", self, "CENTER", 1, -1);
-	end
-end
-
-function CharCustomizeMaskedButtonMixin:OnMouseUp(button)
-	if button == "RightButton" and self.expandedTooltipFrame then
-		tooltipsExpanded = not tooltipsExpanded;
-		if GetMouseFocus() == self then
-			self:OnEnter();
-		end
-	end
-
-	self.CheckedTexture:SetPoint("CENTER");
-	self.CircleMask:SetPoint("TOPLEFT", self.NormalTexture, "TOPLEFT", self.circleMaskSizeOffset, -self.circleMaskSizeOffset);
-	self.CircleMask:SetPoint("BOTTOMRIGHT", self.NormalTexture, "BOTTOMRIGHT", -self.circleMaskSizeOffset, self.circleMaskSizeOffset);
-	self.Ring:SetPoint("CENTER");
-	self.Flash:SetPoint("CENTER");
-end
-
-function CharCustomizeMaskedButtonMixin:UpdateHighlightTexture()
-	if self:GetChecked() then
-		self.HighlightTexture:SetAtlas("charactercreate-ring-select");
-		self.HighlightTexture:SetPoint("TOPLEFT", self.CheckedTexture);
-		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self.CheckedTexture);
-	else
-		self.HighlightTexture:SetAtlas(self.ringAtlas);
-		self.HighlightTexture:SetPoint("TOPLEFT", self.Ring);
-		self.HighlightTexture:SetPoint("BOTTOMRIGHT", self.Ring);
 	end
 end
 
@@ -462,16 +349,15 @@ function CharCustomizeCategoryButtonMixin:SetCategory(categoryData, selectedCate
 	end
 
 	self.New:SetShown(categoryData.hasNewChoices);
-	local selected = false;
-	if categoryData.chrModelID then
+	local selected = selectedCategoryID == categoryData.id;
+	if categoryData.chrModelID and not categoryData.subcategory and not CharCustomizeFrame.needsNativeFormCategory then
 		if CharCustomizeFrame.viewingChrModelID then
 			selected = categoryData.chrModelID == CharCustomizeFrame.viewingChrModelID;
 		else
 			selected = categoryData.chrModelID == CharCustomizeFrame.firstChrModelID;
 		end
-	else
-		selected = selectedCategoryID == categoryData.id;
 	end
+
 	if selected then
 		self:SetChecked(true);
 		self:SetIconAtlas(categoryData.selectedIcon);
@@ -485,7 +371,30 @@ end
 
 function CharCustomizeCategoryButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-	CharCustomizeFrame:SetSelectedCategory(self.categoryData);
+
+	local hadCategoryChange = false;
+
+	if self.categoryData.subcategory then
+		hadCategoryChange = not CharCustomizeFrame:IsSelectedSubcategory(self.categoryData);
+		if hadCategoryChange then 
+			CharCustomizeFrame:SetSelectedSubcategory(self.categoryData);
+		end
+	else
+		-- If selecting a new main Category, we need to clear the Subcategory and 
+		-- force it to pick a new best valid one in SetCategory().
+		hadCategoryChange = not CharCustomizeFrame:IsSelectedCategory(self.categoryData);
+		if hadCategoryChange then 
+			CharCustomizeFrame:SetSelectedCategory(self.categoryData);
+			CharCustomizeFrame:SetSelectedSubcategory(nil);
+		end
+	end
+
+	-- If we didn't change category with this click, then we won't run SetCustomizations(), 
+	-- which would have updated our button's state. So, update it here.
+	if not hadCategoryChange then
+		self:SetChecked(true);
+		self:SetIconAtlas(self.categoryData.selectedIcon);
+	end
 end
 
 CharCustomizeShapeshiftFormButtonMixin = CreateFromMixins(CharCustomizeCategoryButtonMixin);
@@ -553,7 +462,7 @@ function CharCustomizeBodyTypeButtonMixin:OnClick()
 	CharCustomizeFrame:SetCharacterSex(self.sexID);
 end
 
-CharCustomizeOptionSliderMixin = CreateFromMixins(SliderWithButtonsAndLabelMixin, CharCustomizeFrameWithTooltipMixin);
+CharCustomizeOptionSliderMixin = CreateFromMixins(CharCustomizeOptionFrameBaseMixin, SliderWithButtonsAndLabelMixin, CharCustomizeFrameWithTooltipMixin);
 
 function CharCustomizeOptionSliderMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
@@ -564,12 +473,8 @@ function CharCustomizeOptionSliderMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("BOTTOMLEFT", self.Slider.Thumb, "TOPRIGHT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
-function CharCustomizeOptionSliderMixin:RefreshOption()
-	self:SetupOption(self.optionData);
-end
-
 function CharCustomizeOptionSliderMixin:SetupOption(optionData)
-	self.optionData = optionData;
+	self:SetOptionData(optionData);
 	self.currentChoice = nil;
 
 	local minValue = 1;
@@ -602,9 +507,12 @@ function CharCustomizeOptionSliderMixin:OnSliderValueChanged(value, userInput)
 		self:AddTooltipLine("Choice ID: "..newChoiceData.id, HIGHLIGHT_FONT_COLOR);
 	end
 
-	local mouseFocus = GetMouseFocus();
-	if DoesAncestryInclude(self, mouseFocus) and (mouseFocus:GetObjectType() ~= "Button") then
-		self:OnEnter();
+	local mouseFoci = GetMouseFoci();
+	for _, mouseFocus in ipairs(mouseFoci) do
+		if DoesAncestryInclude(self, mouseFocus) and (mouseFocus:GetObjectType() ~= "Button") then
+			self:OnEnter();
+			break;
+		end
 	end
 
 	if needToUpdateModel then
@@ -612,14 +520,10 @@ function CharCustomizeOptionSliderMixin:OnSliderValueChanged(value, userInput)
 	end
 end
 
-CharCustomizeOptionCheckButtonMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
-
-function CharCustomizeOptionCheckButtonMixin:RefreshOption()
-	self:SetupOption(self.optionData);
-end
+CharCustomizeOptionCheckButtonMixin = CreateFromMixins(CharCustomizeOptionFrameBaseMixin, CharCustomizeFrameWithTooltipMixin);
 
 function CharCustomizeOptionCheckButtonMixin:SetupOption(optionData)
-	self.optionData = optionData;
+	self:SetOptionData(optionData);
 	self.checked = (optionData.currentChoiceIndex == 2);
 
 	self.New:SetShown(optionData.hasNewChoices);
@@ -663,40 +567,93 @@ function CharCustomizeAudioInterfacePlayButtonMixin:OnClick()
 	end
 end
 
+function CharCustomizeAudioInterfacePlayButtonMixin:OnEnter()
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), CHAR_CUSTOMIZATION_TOOLTIP_PLAY_VOICE_SAMPLE, nil, false, self, "ANCHOR_LEFT");
+end
+
+function CharCustomizeAudioInterfacePlayButtonMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
+end
+
+function CharCustomizeAudioInterfacePlayButtonMixin:GetStateTextures()
+	local parent = self:GetParent();
+	if parent:IsPlaying() then
+		return "charactercreate-customize-stopbutton", "charactercreate-customize-stopbutton-down";
+	else
+		return "charactercreate-customize-playbutton", "charactercreate-customize-playbutton-down";
+	end
+end
+
+function CharCustomizeAudioInterfacePlayButtonMixin:UpdateStateTextures()
+	local normalAtlas, pressedAtlas = self:GetStateTextures();
+	self.NormalTexture:SetAtlas(normalAtlas);
+	self.PushedTexture:SetAtlas(pressedAtlas);
+	self:UpdateHighlightForState();
+end
+
 CharCustomizeAudioInterfaceMuteButtonMixin = {};
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:CharCustomizeAudioInterfaceMuteButton_OnLoad()
+	self:UpdateStateTextures();
+end
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:GetStateTextures()
+	if IsSoundMuted() then
+		return "charactercreate-customize-speakeronbutton", "charactercreate-customize-speakeronbutton-down";
+	else
+		return "charactercreate-customize-speakeroffbutton", "charactercreate-customize-speakeroffbutton-down";
+	end
+end
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:UpdateStateTextures()
+	local normal, pressed = self:GetStateTextures();
+	self:SetNormalAtlas(normal);
+	self:SetPushedAtlas(pressed);
+	self:UpdateHighlightForState();
+end
 
 function CharCustomizeAudioInterfaceMuteButtonMixin:OnClick()
 	self.PulseAnim:Stop();
+
 	if (IsSoundMuted()) then
-		self:SetNormalAtlas("charactercreate-customize-speakeronbutton");
-		self:SetPushedAtlas("charactercreate-customize-speakeronbutton-down");
 		SetCVar("Sound_EnableSFX", 1);
 		SetCVar("Sound_EnableAllSound", 1);
 	else
-		self:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
-		self:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
 		SetCVar("Sound_EnableSFX", self:GetParent().previousSFXSetting or 0);
 		SetCVar("Sound_EnableAllSound", self:GetParent().previousAllSoundSetting or 0);
 		self:GetParent():StopAudio();
-	end	
+	end
+
+	self:UpdateStateTextures();
+	self:OnEnter();
+end
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:GetTooltipText()
+	return IsSoundMuted() and CHAR_CUSTOMIZATION_TOOLTIP_UNMUTE_SOUND or CHAR_CUSTOMIZATION_TOOLTIP_MUTE_SOUND;
+end
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:OnEnter()
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), self:GetTooltipText(), nil, false, self, "ANCHOR_LEFT");
+end
+
+function CharCustomizeAudioInterfaceMuteButtonMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
 end
 
 CharCustomizeAudioInterfaceMixin = {};
 
-function CharCustomizeAudioInterfaceMixin:OnLoad()
-	self:RegisterEvent("SOUNDKIT_FINISHED");
-end
-
 function CharCustomizeAudioInterfaceMixin:OnEvent(event, ...)
-	if ( event == "SOUNDKIT_FINISHED" ) then
+	if event == "SOUNDKIT_FINISHED" then
 		local soundHandle = ...;
-		if ( self.soundHandle == soundHandle ) then
-			self.audioInterface:StopAudio();
+		if self.soundHandle == soundHandle then
+			self:OnPlaybackFinished();
 		end
 	end
 end
 
 function CharCustomizeAudioInterfaceMixin:SetupAudio(soundKit)
+	self:StopAudio();
+
 	local isMuted = IsSoundMuted();
 	self.previousSFXSetting = GetCVar("Sound_EnableSFX");
 	self.previousAllSoundSetting = GetCVar("Sound_EnableAllSound");
@@ -704,30 +661,38 @@ function CharCustomizeAudioInterfaceMixin:SetupAudio(soundKit)
 	self.PlayWaveform.Waveform:SetValue(0);
 	self.PlayButton:Show();
 	self.MuteButton:SetShown(isMuted);
-	self.PlayButton:SetEnabled(soundKit);
+	self.PlayButton:SetEnabled(soundKit ~= nil);
 end
 
 function CharCustomizeAudioInterfaceMixin:IsPlaying()
-	return self.soundHandle and C_Sound.IsPlaying(self.soundHandle);
+	return self.isPlaying;
+end
+
+function CharCustomizeAudioInterfaceMixin:PlayAudioInternal()
+	local runFinishCallback = true;
+	local _, soundHandle = PlaySound(self.soundKit, nil, nil, runFinishCallback);
+	self.soundHandle = soundHandle;
+	return self.soundHandle ~= nil;
 end
 
 function CharCustomizeAudioInterfaceMixin:PlayAudio(soundKit)
 	if IsSoundMuted() then
 		self.MuteButton.PulseAnim:Play();
 	else
-		if self.soundHandle then
-			StopSound(self.soundHandle);
-			self.soundHandle = nil;
-		end
+		self:StopAudio();
+
 		if soundKit then
-			local runFinishCallback = true;
-			local _, soundHandle = PlaySound(soundKit, nil, nil, runFinishCallback);
-			self.soundHandle = soundHandle;
-			self.PlayButton:SetNormalAtlas("charactercreate-customize-speakeroffbutton");
-			self.PlayButton:SetPushedAtlas("charactercreate-customize-speakeroffbutton-down");
-			self.waveformTicker = C_Timer.NewTicker(.05, function()
-				self:OnAudioPlayingTick();
-			end);
+			self:RegisterEvent("SOUNDKIT_FINISHED");
+			self.remainingCount = GetSoundEntryCount(soundKit);
+			self.soundKit = soundKit;
+
+			if self:PlayAudioInternal() then
+				self.isPlaying = true;
+				self.PlayButton:UpdateStateTextures();
+				self.waveformTicker = C_Timer.NewTicker(.05, function()
+					self:OnAudioPlayingTick();
+				end);
+			end
 		end
 	end
 end
@@ -737,24 +702,50 @@ function CharCustomizeAudioInterfaceMixin:StopAudio()
 		self.waveformTicker:Cancel();
 		self.waveformTicker = nil;
 	end
+
 	self.PlayWaveform.Waveform:SetValue(0);
+
 	if self.soundHandle then
 		StopSound(self.soundHandle);
 		self.soundHandle = nil;
 	end
-	self.PlayButton:SetNormalAtlas("charactercreate-customize-playbutton");
-	self.PlayButton:SetPushedAtlas("charactercreate-customize-playbutton-down");
+
+	self.remainingCount = 0;
+	self.isPlaying = false;
+	self.PlayButton:UpdateStateTextures();
+
+	self:UnregisterEvent("SOUNDKIT_FINISHED");
+end
+
+function CharCustomizeAudioInterfaceMixin:OnPlaybackFinished()
+	self.remainingCount = self.remainingCount - 1;
+
+	if self.remainingCount > 0 then
+		C_Timer.After(.5, function() self:CheckResumePlayback() end);
+	else
+		self:StopAudio();
+	end
+end
+
+function CharCustomizeAudioInterfaceMixin:CheckResumePlayback()
+	if self.remainingCount > 0 then
+		if not self:PlayAudioInternal() then
+			self:StopAudio();
+		end
+	end
 end
 
 function CharCustomizeAudioInterfaceMixin:OnAudioPlayingTick()
 	self.PlayWaveform.Waveform:SetValue(math.random(65, 80)/100);
 end
 
-CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeFrameWithTooltipMixin);
+CharCustomizeOptionSelectionPopoutMixin = CreateFromMixins(CharCustomizeOptionFrameBaseMixin, CharCustomizeFrameWithTooltipMixin);
 
 function CharCustomizeOptionSelectionPopoutMixin:OnLoad()
 	CharCustomizeFrameWithTooltipMixin.OnLoad(self);
 	SelectionPopoutWithButtonsAndLabelMixin.OnLoad(self);
+
+	EventRegistry:RegisterCallback("CharCustomize.SetMissingOptionWarningEnabled", self.SetMissingOptionWarningEnabled, self);
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
@@ -762,20 +753,8 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupAnchors(tooltip)
 	tooltip:SetPoint("BOTTOMRIGHT", self.Button, "TOPLEFT", self.tooltipXOffset, self.tooltipYOffset);
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:SetupAudio()
-	if self.optionData.isSound then
-		local audioInterface = CharCustomizeFrame.pools:Acquire("CharCustomizeAudioInterface");
-		audioInterface:SetParent(self);
-		audioInterface:SetPoint("RIGHT", self.Label, "LEFT", -40, 0);
-		audioInterface:Show();
-		audioInterface:SetupAudio(self.optionData.currentChoiceIndex and SOUNDKIT.MENU_CREDITS07 or nil);
-		self.audioInterface = audioInterface;
-	end
-end
-
 function CharCustomizeOptionSelectionPopoutMixin:OnEntrySelected(entryData)
 	CharCustomizeFrame:OnOptionPopoutEntrySelected(self, entryData);
-	self:SetupAudio();
 end
 
 function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
@@ -807,8 +786,8 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseEnter(entry)
 		tooltip:Show();
 	end
 
-	if self.optionData.isSound and not entry.isSelected then
-		self.audioInterface:PlayAudio(SOUNDKIT.MENU_CREDITS07);
+	if self:HasSound() and not entry.isSelected then
+		self:GetAudioInterface():PlayAudio(self:GetSoundKit(entry));
 	end
 end
 
@@ -817,28 +796,20 @@ function CharCustomizeOptionSelectionPopoutMixin:OnEntryMouseLeave(entry)
 
 	local tooltip = self:GetAppropriateTooltip();
 	tooltip:Hide();
-	if self.audioInterface then
-		self.audioInterface:StopAudio();
+	if self:GetAudioInterface() then
+		self:GetAudioInterface():StopAudio();
 	end
 end
-
-local POPOUT_CLEARANCE = 100;
 
 function CharCustomizeOptionSelectionPopoutMixin:GetMaxPopoutHeight()
 	return self:GetBottom() - POPOUT_CLEARANCE;
 end
 
-function CharCustomizeOptionSelectionPopoutMixin:RefreshOption()
-	self:SetupOption(self.optionData);
-end
-
 function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
-	self.optionData = optionData;
+	self:SetOptionData(optionData);
 
 	self:SetupSelections(optionData.choices, optionData.currentChoiceIndex, optionData.name);
 	self.New:SetShown(optionData.hasNewChoices);
-
-	self:SetupAudio();
 
 	self:ClearTooltipLines();
 
@@ -853,6 +824,30 @@ function CharCustomizeOptionSelectionPopoutMixin:SetupOption(optionData)
 		end
 		self:AddTooltipLine("Option ID: "..self.optionData.id, HIGHLIGHT_FONT_COLOR);
 		self:AddTooltipLine("Choice ID: "..optionData.choices[optionData.currentChoiceIndex].id, HIGHLIGHT_FONT_COLOR);
+	end
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:GetOrCreateWarningTexture(enabled)
+	if not self.Button.WarningTexture then
+		self.Button.WarningTexture = self.Button:CreateTexture(nil, nil, "MissionOptionWarningTemplate");
+		self.Button.WarningTexture:ClearAllPoints();
+		self.Button.WarningTexture:SetPoint("BOTTOM", self.Button, "TOP", 0, -23);
+	end
+
+	return self:GetWarningTexture();
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:GetWarningTexture()
+	return self.Button.WarningTexture;
+end
+
+function CharCustomizeOptionSelectionPopoutMixin:SetMissingOptionWarningEnabled(externallyEnabled)
+	local showWarning = externallyEnabled and not self:HasChoice();
+	if showWarning then
+		self:GetOrCreateWarningTexture():Show();
+		self:GetWarningTexture().PulseAnim:Play();
+	elseif self:GetWarningTexture() then
+		self:GetWarningTexture():Hide();
 	end
 end
 
@@ -887,9 +882,8 @@ function CharCustomizeSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, d
 	end
 
 	if self:GetParent().popoutHasALockedChoice then
-		width = width + 24;
+		width = width + CHAR_CUSTOMIZE_LOCK_WIDTH;
 	end
-
 	self:SetWidth(Round(width));
 end
 
@@ -999,7 +993,6 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 		self:SetShowAsNew(false);
 		return;
 	end
-
 	self.name = selectionData.name;
 	self.index = index;
 	self.lockedText = selectionData.isLocked and selectionData.lockedText;
@@ -1047,6 +1040,13 @@ function CharCustomizeSelectionPopoutDetailsMixin:SetupDetails(selectionData, in
 	end
 
 	self.LockIcon:SetShown(selectionData.isLocked);
+	if self.selectable then
+		if selectionData.isLocked then
+			self.SelectionName:SetPoint("RIGHT", -CHAR_CUSTOMIZE_LOCK_WIDTH, 0);		
+		else
+			self.SelectionName:SetPoint("RIGHT", 0, 0);
+		end
+	end
 
 	self:UpdateText(selectionData, isSelected, hasAFailedReq, hideNumber, color1);
 end
@@ -1112,9 +1112,11 @@ function CharCustomizeMixin:OnLoad()
 	self.pools = CreateFramePoolCollection();
 	self.pools:CreatePool("CHECKBUTTON", self.Categories, "CharCustomizeCategoryButtonTemplate");
 	self.pools:CreatePool("FRAME", self.Options, "CharCustomizeOptionCheckButtonTemplate");
-	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeShapeshiftFormButtonTemplate");
-	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeRidingDrakeButtonTemplate");
-	self.pools:CreatePool("FRAME", self, "CharCustomizeAudioInterface");
+	self.pools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeConditionalModelButtonTemplate");
+	self.pools:CreatePool("FRAME", self, "CharCustomizeAudioInterface", function(pool, audioInterface)
+		FramePool_HideAndClearAnchors(pool, audioInterface);
+		audioInterface:StopAudio();
+	end);
 
 	-- Keep the selectionPopout and sliders in different pools because we need to be careful not to release the option the player is interacting with
 	self.selectionPopoutPool = CreateFramePool("BUTTON", self.Options, "CharCustomizeOptionSelectionPopoutTemplate");
@@ -1124,6 +1126,8 @@ function CharCustomizeMixin:OnLoad()
 	self.alteredFormsPools = CreateFramePoolCollection();
 	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormButtonTemplate");
 	self.alteredFormsPools:CreatePool("CHECKBUTTON", self.AlteredForms, "CharCustomizeAlteredFormSmallButtonTemplate");
+
+	self.Categories:SetFixedMaxSpace(400);
 end
 
 function CharCustomizeMixin:OnEvent(event, ...)
@@ -1138,15 +1142,26 @@ function CharCustomizeMixin:OnEvent(event, ...)
 	end
 end
 
+function CharCustomizeMixin:OnShow()
+	EventRegistry:TriggerEvent("CharCustomize.OnShow", self);
+end
+
 function CharCustomizeMixin:OnHide()
 	local clearSavedChoices = true;
 	self:ResetCustomizationPreview(clearSavedChoices);
 	self:SaveSeenChoices();
+    EventRegistry:TriggerEvent("CharCustomize.OnHide", self);
 end
 
 function CharCustomizeMixin:AttachToParentFrame(parentFrame)
 	self.parentFrame = parentFrame;
 	self:SetParent(parentFrame);
+end
+
+-- Used to set up spacing adjustments when resolution and UI scale don't leave enough room.
+function CharCustomizeMixin:SetOptionsSpacingConfiguration(topFrame, bottomFrame)
+	self.Options:SetTopFrame(topFrame);
+	self.Options:SetBottomFrame(bottomFrame, POPOUT_CLEARANCE);
 end
 
 function CharCustomizeMixin:OnButtonClick()
@@ -1179,15 +1194,30 @@ end
 
 function CharCustomizeMixin:Reset()
 	self.selectedCategoryData = nil;
+	self.selectedSubcategoryData = nil;
 end
 
 function CharCustomizeMixin:NeedsCategorySelected()
-	if not self.selectedCategoryData then
+	if not self:HasSelectedCategory() then
 		return true;
 	end
 
-	for _, categoryData in ipairs(self.categories) do
+	for _, categoryData in ipairs(self:GetCategories()) do
 		if self.selectedCategoryData.id == categoryData.id then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function CharCustomizeMixin:NeedsSubcategorySelected()
+	if not self:HasSelectedSubcategory() then
+		return true;
+	end
+
+	for _, categoryData in ipairs(self:GetCategories()) do
+		if self.selectedSubcategoryData.id == categoryData.id then
 			return false;
 		end
 	end
@@ -1209,17 +1239,18 @@ function CharCustomizeMixin:UpdateAlteredFormButtons()
 	local buttonPool = self:GetAlteredFormsButtonPool();
 	if self.selectedRaceData.alternateFormRaceData and self.selectedRaceData.alternateFormRaceData.createScreenIconAtlas then
 		local normalForm = buttonPool:Acquire();
-		local normalFormSelected = not self.viewingShapeshiftForm and not self.viewingAlteredForm;
+		local notChrModel = not self.viewingShapeshiftForm and not self.viewingChrModelID;
+		local normalFormSelected = notChrModel and not self.viewingAlteredForm;
 		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 
 		local alteredForm = buttonPool:Acquire();
-		local alteredFormSelected = not self.viewingShapeshiftForm and self.viewingAlteredForm;
+		local alteredFormSelected = notChrModel and self.viewingAlteredForm;
 		alteredForm:SetupAlteredFormButton(self.selectedRaceData.alternateFormRaceData, alteredFormSelected, true, 0);
 		alteredForm:Show();
-	elseif self.hasShapeshiftForms then
+	elseif self.needsNativeFormCategory then
 		local normalForm = buttonPool:Acquire();
-		local normalFormSelected = not self.viewingShapeshiftForm;
+		local normalFormSelected = not self.viewingChrModelID and not self.viewingShapeshiftForm;
 		normalForm:SetupAlteredFormButton(self.selectedRaceData, normalFormSelected, false, -1);
 		normalForm:Show();
 	end
@@ -1244,7 +1275,7 @@ function CharCustomizeMixin:SetViewingAlteredForm(viewingAlteredForm)
 
 	if self.viewingChrModelID then
 		self:ClearViewingChrModel();
-	end	
+	end
 
 	local resetCategory = true;
 	self.parentFrame:SetViewingAlteredForm(viewingAlteredForm, resetCategory);
@@ -1278,39 +1309,77 @@ function CharCustomizeMixin:SetCharacterSex(sexID)
 	self.parentFrame:SetCharacterSex(sexID);
 end
 
-local function SortCategories(a, b)
-	return a.orderIndex < b.orderIndex;
-end
-
 function CharCustomizeMixin:RefreshCustomizations()
-	if self.categories then
-		self:SetCustomizations(self.categories);
+	local categories = self:GetCategories();
+	if categories then
+		self:SetCustomizations(categories);
 	end
 end
 
-function CharCustomizeMixin:GetFirstValidCategory()
-	-- This filters out any categories with a charmodel id, since we don't want to auto select those
+function CharCustomizeMixin:GetFirstValidSubcategory()
+	local categories = self:GetCategories();
 
-	for i, category in ipairs(self.categories) do
+	for i, category in ipairs(categories) do
+		if category.subcategory then
+			return category;
+		end
+	end
+
+	return self:GetFirstValidCategory();
+end
+
+function CharCustomizeMixin:GetFirstValidCategory()
+	local categories = self:GetCategories();
+	local firstCategory = categories[1];
+
+	-- If the first category is a shapeshift, use it.
+	-- CGBarberShop::GetAvailableCustomizations() will put your current shapeshift form first, if it needs to.
+	if firstCategory.spellShapeshiftFormID then
+		return firstCategory;
+	end
+
+	-- Look for non-ChrModel categories.
+	for i, category in ipairs(categories) do
 		if not category.chrModelID then
 			return category;
 		end
 	end
 
-	return self.categories[1];
+	return firstCategory;
+end
+
+function CharCustomizeMixin:GetCategory(categoryIndex)
+	return self:GetCategories()[categoryIndex];
+end
+
+function CharCustomizeMixin:GetCategories()
+	return self.categories;
 end
 
 function CharCustomizeMixin:SetCustomizations(categories)
 	self.categories = categories;
 
-	local keepState = (self.selectedCategoryData ~= nil);
+	local keepState = self:HasSelectedCategory();
 
-	if self:NeedsCategorySelected() then
-		table.sort(self.categories, SortCategories);
+	-- Select required Category if needed.
+	local needsCategorySelected = self:NeedsCategorySelected();
+	if needsCategorySelected then
 		self:SetSelectedCategory(self:GetFirstValidCategory(), keepState);
 	else
 		self:SetSelectedCategory(self.selectedCategoryData, keepState);
 	end
+
+	-- Select required Subcategory if needed.
+	keepState = self:HasSelectedSubcategory();
+	if needsCategorySelected or self:NeedsSubcategorySelected() then
+		self:SetSelectedSubcategory(self:GetFirstValidSubcategory(), keepState);
+	else 
+		self:SetSelectedSubcategory(self.selectedSubcategoryData, keepState);
+	end
+
+	self:AddMissingOptions();
+
+	EventRegistry:TriggerEvent("CharCustomize.OnSetCustomizations");
 end
 
 function CharCustomizeMixin:GetOptionPool(optionType)
@@ -1325,9 +1394,7 @@ end
 
 function CharCustomizeMixin:GetCategoryPool(categoryData)
 	if categoryData.chrModelID then
-		return self.pools:GetPool("CharCustomizeRidingDrakeButtonTemplate");
-	elseif categoryData.spellShapeshiftFormID then
-		return self.pools:GetPool("CharCustomizeShapeshiftFormButtonTemplate");	
+		return self.pools:GetPool("CharCustomizeConditionalModelButtonTemplate");
 	else
 		return self.pools:GetPool("CharCustomizeCategoryButtonTemplate");
 	end
@@ -1391,72 +1458,108 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 
 	self.hasShapeshiftForms = false;
 	self.hasChrModels = false;	-- nothing using this right now, tracking it anyway
+	self.needsNativeFormCategory = false;
 	self.firstChrModelID = nil;
-	self.numNormalCategories = 0;
+	self.numSubcategories = 0;
 
 	local optionsToSetup = {};
 
-	for _, categoryData in ipairs(self.categories) do
-		local showCategory = not self.selectedCategoryData.spellShapeshiftFormID or categoryData.spellShapeshiftFormID;
+	for _, categoryData in ipairs(self:GetCategories()) do
+		local categoryPool = self:GetCategoryPool(categoryData);
+		local button = categoryPool:Acquire();
 
-		if showCategory then
-			local categoryPool = self:GetCategoryPool(categoryData);
-			local button = categoryPool:Acquire();
-
-			if categoryData.chrModelID then
-				self.hasChrModels = true;
-				if not self.firstChrModelID then
-					self.firstChrModelID = categoryData.chrModelID;
-				end
-			elseif categoryData.spellShapeshiftFormID then
-				self.hasShapeshiftForms = true;
-			else
-				self.numNormalCategories = self.numNormalCategories + 1;
+		if categoryData.chrModelID then
+			self.hasChrModels = true;
+			if not self.firstChrModelID then
+				self.firstChrModelID = categoryData.chrModelID;
 			end
+		end
+			
+		if categoryData.spellShapeshiftFormID then
+			self.hasShapeshiftForms = true;
+		end
 
+		if categoryData.needsNativeFormCategory then
+			self.needsNativeFormCategory = true;
+		end
+
+		local selectedSubcategoryDataID = 0;
+		if self.selectedSubcategoryData then
+			selectedSubcategoryDataID = self.selectedSubcategoryData.id;
+		end
+
+		if categoryData.subcategory then
+			self.numSubcategories = self.numSubcategories + 1;
+			button:SetCategory(categoryData, selectedSubcategoryDataID);
+		else
 			button:SetCategory(categoryData, self.selectedCategoryData.id);
-			button:Show();
+		end
 
-			if self.selectedCategoryData.id == categoryData.id then
-				for _, optionData in ipairs(categoryData.options) do
-					local optionPool = self:GetOptionPool(optionData.optionType);
-					if optionPool then
-						local optionFrame;
+		button:Show();
 
-						if interactingOption and interactingOption.optionData.id == optionData.id then
-							-- This option is being interacted with and so was not released.
-							optionFrame = interactingOption;
-						else
-							optionFrame = optionPool:Acquire();
-						end
-						-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
-						-- in a future version of LayoutFrame.
-						optionFrame:SetPoint("TOPLEFT");
+		local fallbackToCategory = not selectedSubcategoryDataID;
+		local categoryMatches = self.selectedCategoryData.id == categoryData.id;
+		local subcategoryMatches = selectedSubcategoryDataID == categoryData.id;
 
-						-- Just set layoutIndex on the option and add it to optionsToSetup for now.
-						-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
-						optionFrame.layoutIndex = optionData.orderIndex;
-						optionsToSetup[optionFrame] = optionData;
+		if (fallbackToCategory and categoryMatches) or subcategoryMatches then
+			for _, optionData in ipairs(categoryData.options) do
+				local optionPool = self:GetOptionPool(optionData.optionType);
+				if optionPool then
+					local optionFrame;
 
-						optionFrame:Show();
+					if interactingOption and interactingOption.optionData.id == optionData.id then
+						-- This option is being interacted with and so was not released.
+						optionFrame = interactingOption;
+					else
+						optionFrame = optionPool:Acquire();
 					end
+					-- This is only to guarantee that the frame has a resolvable rect prior to layout. Intended to disappear
+					-- in a future version of LayoutFrame.
+					optionFrame:SetPoint("TOPLEFT");
+
+					-- Just set layoutIndex on the option and add it to optionsToSetup for now.
+					-- Setup will be called on each one, but it needs to happen after self.Options:Layout() is called
+					optionFrame.layoutIndex = optionData.orderIndex;
+					optionsToSetup[optionFrame] = optionData;
+
+					optionFrame:Show();
 				end
 			end
 		end
 	end
 
 	self.Categories:Layout();
+
+	-- Push options up into categories a little bit if we don't have enough
+	-- vertical space for spacing at all.
+	self.Options:UpdateSpacing();
+	if self.Options:GetSpacing() < 0 then
+		self.Options:SetPoint("TOPRIGHT", -33, -267);
+	else
+		self.Options:SetPoint("TOPRIGHT", -33, -297);
+	end
+
+	-- This will update the spacing again based on the adjusted point above.
 	self.Options:Layout();
 
 	for optionFrame, optionData in pairs(optionsToSetup) do
 		optionFrame:SetupOption(optionData);
+
+		if optionFrame:HasSound() then
+			optionFrame:SetupAudio(self.pools:Acquire("CharCustomizeAudioInterface"));
+		end
 	end
 
-	self:UpdateAlteredFormButtons();
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.RaceAlteredFormsEnabled) then
+		self:UpdateAlteredFormButtons();
+	end
 
-	if self.numNormalCategories > 1 then
+	if self.numSubcategories > 1 then
 		self.Categories:Show();
-		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", -20, 0);
+
+		-- Push the randomize button together with categories too if we're collapsing category buttons.
+		local xOffset = self.Categories:IsSpacingAdjusted() and 15 or -20;
+		self.RandomizeAppearanceButton:SetPoint("RIGHT", self.Categories, "LEFT", xOffset, 0);
 	else
 		self.Categories:Hide();
 		self.Categories:SetSize(1, 105);
@@ -1464,12 +1567,23 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	end
 end
 
+function CharCustomizeMixin:GetBestCategoryData()
+	-- Prefer Subcategory if we have one.
+	if self.selectedSubcategoryData then
+		return self.selectedSubcategoryData;
+	else
+		return self.selectedCategoryData;
+	end
+end
+
 function CharCustomizeMixin:UpdateModelDressState()
-	self.parentFrame:SetModelDressState(not self.selectedCategoryData.undressModel);
+	local categoryData = self:GetBestCategoryData();
+	self.parentFrame:SetModelDressState(not categoryData.undressModel);
 end
 
 function CharCustomizeMixin:UpdateCameraDistanceOffset()
-	self.parentFrame:SetCameraDistanceOffset(self.selectedCategoryData.cameraDistanceOffset);
+	local categoryData = self:GetBestCategoryData();
+	self.parentFrame:SetCameraDistanceOffset(categoryData.cameraDistanceOffset);
 end
 
 function CharCustomizeMixin:UpdateZoomButtonStates()
@@ -1492,22 +1606,87 @@ function CharCustomizeMixin:UpdateZoomButtonStates()
 end
 
 function CharCustomizeMixin:UpdateCameraMode(keepCustomZoom)
-	self.parentFrame:SetCameraZoomLevel(self.selectedCategoryData.cameraZoomLevel, keepCustomZoom);
+	local categoryData = self:GetBestCategoryData();
+	self.parentFrame:SetCameraZoomLevel(categoryData.cameraZoomLevel, keepCustomZoom);
 	self:UpdateZoomButtonStates();
 end
 
 function CharCustomizeMixin:SetSelectedCategory(categoryData, keepState)
-	if categoryData.chrModelID then
-		self:SetViewingChrModel(categoryData.chrModelID);
-	elseif categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
+	local hadCategoryChange = not self:IsSelectedCategory(categoryData);
+
+	if categoryData.spellShapeshiftFormID or self.viewingShapeshiftForm then
 		self:SetViewingShapeshiftForm(categoryData.spellShapeshiftFormID);
+	elseif categoryData.chrModelID then
+		self:SetViewingChrModel(categoryData.chrModelID);
 	end
 
 	self.selectedCategoryData = categoryData;
+	if not self.selectedSubcategoryData then
+		self:UpdateOptionButtons(not keepState);
+		self:UpdateModelDressState();
+		self:UpdateCameraDistanceOffset();
+		self:UpdateCameraMode(keepState);
+	end
+
+	EventRegistry:TriggerEvent("CharCustomize.OnCategorySelected", self, hadCategoryChange);
+end
+
+function CharCustomizeMixin:SetSelectedSubcategory(categoryData, keepState)
+	if not categoryData then
+		self.selectedSubcategoryData = nil;
+		return;
+	end
+
+	local hadCategoryChange = not self:IsSelectedSubcategory(categoryData);
+
+	self.selectedSubcategoryData = categoryData;
 	self:UpdateOptionButtons(not keepState);
 	self:UpdateModelDressState();
 	self:UpdateCameraDistanceOffset();
 	self:UpdateCameraMode(keepState);
+
+	EventRegistry:TriggerEvent("CharCustomize.OnCategorySelected", self, hadCategoryChange);
+end
+
+function CharCustomizeMixin:HasSelectedSubcategory()
+	return self.selectedSubcategoryData ~= nil;
+end
+
+function CharCustomizeMixin:GetSelectedSubcategory()
+	return self.selectedSubcategoryData;
+end
+
+function CharCustomizeMixin:IsSelectedSubcategory(subcategoryData)
+	if self:HasSelectedSubcategory() then
+		return self:GetSelectedSubcategory().id == subcategoryData.id;
+	end
+
+	return false;
+end
+
+function CharCustomizeMixin:HasSelectedCategory()
+	return self.selectedCategoryData ~= nil;
+end
+
+function CharCustomizeMixin:GetSelectedCategory()
+	return self.selectedCategoryData;
+end
+
+function CharCustomizeMixin:IsSelectedCategory(categoryData)
+	if self:HasSelectedCategory() then
+		-- Dragon Mounts have the same category ID until completion of [WOW10-13892]: GP ENG - Dragon Customization code clean-up.
+		local selectedCategoryData = self:GetSelectedCategory();
+		if selectedCategoryData.id == categoryData.id then
+			-- Due to the same-category limitation of Dragons, we backup-check if the chrModelIDs are different.
+			if selectedCategoryData.chrModelID or categoryData.chrModelID then
+				return selectedCategoryData.chrModelID == categoryData.chrModelID;
+			end
+
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function CharCustomizeMixin:ResetCharacterRotation()
@@ -1571,4 +1750,64 @@ end
 
 function CharCustomizeMixin:OnUpdate()
 	self:ResetPreviewIfDirty();
+end
+
+function CharCustomizeMixin:AddMissingOptions()
+	self.missingOptions = nil;
+
+	for categoryIndex, category in ipairs(self:GetCategories()) do
+		for optionIndex, option in ipairs(category.options) do
+			if not option.currentChoiceIndex then
+				self:AddMissingOption(categoryIndex, optionIndex);
+			end
+		end
+	end
+end
+
+function CharCustomizeMixin:AddMissingOption(categoryIndex, optionIndex)
+	if not self.missingOptions then
+		self.missingOptions = {};
+	end
+
+	table.insert(self.missingOptions, { categoryIndex = categoryIndex, optionIndex = optionIndex });
+end
+
+function CharCustomizeMixin:GetMissingOptions()
+	return self.missingOptions;
+end
+
+function CharCustomizeMixin:HasMissingOptions()
+	return self:GetMissingOptions() ~= nil;
+end
+
+function CharCustomizeMixin:GetNextMissingOption()
+	local missingOptions = self:GetMissingOptions();
+	if missingOptions then
+		for index, missingOption in ipairs(missingOptions) do
+			return missingOption.categoryIndex, missingOption.optionIndex;
+		end
+	end
+end
+
+function CharCustomizeMixin:HighlightNextMissingOption()
+	local categoryIndex, optionIndex = self:GetNextMissingOption();
+	if categoryIndex then
+		local keepState = true;
+		local categoryData = self:GetCategory(categoryIndex);
+		if categoryData.subcategory then
+			self:SetSelectedSubcategory(categoryData, keepState);
+		else
+			self:SetSelectedCategory(categoryData, keepState);
+		end
+
+		self:SetMissingOptionWarningEnabled(true);
+	end
+end
+
+function CharCustomizeMixin:DisableMissingOptionWarnings()
+	self:SetMissingOptionWarningEnabled(false);
+end
+
+function CharCustomizeMixin:SetMissingOptionWarningEnabled(enabled)
+	EventRegistry:TriggerEvent("CharCustomize.SetMissingOptionWarningEnabled", enabled);
 end

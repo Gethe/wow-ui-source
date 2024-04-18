@@ -35,8 +35,7 @@ function TalentSelectionChoiceFrameMixin:OnEvent(event, ...)
 		local buttonName = ...;
 		FrameUtil.DialogStyleGlobalMouseDown(self, buttonName);
 	elseif event == "GLOBAL_MOUSE_UP" then
-		local mouseFocus = GetMouseFocus();
-		if not DoesAncestryInclude(self, mouseFocus) then
+		if not DoesAncestryIncludeAny(self, GetMouseFoci()) then
 			self:Hide();
 		end
 	end
@@ -112,8 +111,8 @@ function TalentSelectionChoiceFrameMixin:UpdateVisualState()
 	end
 end
 
-function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo)
-	self.baseButton:SetSelectedEntryID(selectedEntryID, selectedDefinitionInfo);
+function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID)
+	self.baseButton:SetSelectedEntryID(selectedEntryID);
 	self:Hide();
 end
 
@@ -161,8 +160,12 @@ function TalentSelectionChoiceFrameMixin:GetBaseButton()
 	return self.baseButton;
 end
 
+function TalentSelectionChoiceFrameMixin:SetTalentFrame(talentFrame)
+	self.talentFrame = talentFrame;
+end
+
 function TalentSelectionChoiceFrameMixin:GetTalentFrame()
-	return self:GetParent();
+	return self.talentFrame;
 end
 
 
@@ -195,28 +198,31 @@ function TalentSelectionChoiceMixin:OnClick(button)
 	local selectionChoiceFrame = self:GetParent();
 	if button == "LeftButton" then
 		if IsShiftKeyDown() and self:CanCascadeRepurchaseRanks() then
-			self:GetBaseButton():CascadeRepurchaseRanks();
-			self:UpdateMouseOverInfo();
+			local baseButton = self:GetBaseButton();
+			if baseButton then
+				baseButton:CascadeRepurchaseRanks();
+				self:UpdateMouseOverInfo();
+			end
 		elseif IsModifiedClick("CHATLINK") then
-			local spellLink = GetSpellLink(self:GetSpellID());
+			local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
 			ChatEdit_InsertLink(spellLink);
 		else
 			if not self:IsChoiceAvailable() then
 				return;
 			end
-	
+
 			if self.isCurrentSelection then
 				return;
 			end
-	
-			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID(), self:GetDefinitionInfo());
+
+			selectionChoiceFrame:SetSelectedEntryID(self:GetEntryID());
 		end
 	else
-		if self:IsGhosted() then
-			self:GetBaseButton():ClearCascadeRepurchaseHistory();
+		local baseButton = self:GetBaseButton();
+		if baseButton and self:IsGhosted() then
+			baseButton:ClearCascadeRepurchaseHistory();
 		end
 
-		local baseButton = self:GetBaseButton();
 		local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
 		if nodeInfo and nodeInfo.canRefundRank then
 			selectionChoiceFrame:SetSelectedEntryID(nil);
@@ -226,9 +232,8 @@ end
 
 function TalentSelectionChoiceMixin:OnDragStart()
 	local spellID = self:GetSpellID();
-	if spellID then
-		local checkForPassive = true;
-		PickupSpell(spellID, checkForPassive);
+	if spellID and not C_Spell.IsSpellPassive(spellID) then
+		C_Spell.PickupSpell(spellID);
 	end
 end
 
@@ -241,26 +246,31 @@ function TalentSelectionChoiceMixin:AddTooltipInfo(tooltip)
 end
 
 function TalentSelectionChoiceMixin:AddTooltipCost(tooltip)
-	local combinedCost = self:GetCombinedCost();
-	local selectionChoiceFrame = self:GetParent();
-	selectionChoiceFrame:GetTalentFrame():AddCostToTooltip(tooltip, combinedCost);
+	-- Only show cost if we can refund or increase the rank.
+	local baseButton = self:GetBaseButton();
+	local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
+	if (not baseButton or not baseButton:IsMaxed()) or (not nodeInfo or nodeInfo.canRefundRank) then
+		local combinedCost = self:GetCombinedCost();
+		local selectionChoiceFrame = self:GetParent();
+		selectionChoiceFrame:GetTalentFrame():AddCostToTooltip(tooltip, combinedCost);
+	end
 end
 
 function TalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentDisplayMixin.
 
-	if self:IsChoiceAvailable() then
-		if self.isCurrentSelection then
+	if self.isCurrentSelection then
+		if not self:GetTalentFrame():IsLocked() then
 			local baseButton = self:GetBaseButton();
 			local nodeInfo = baseButton and baseButton:GetNodeInfo() or nil;
 			if nodeInfo and nodeInfo.canRefundRank then
 				GameTooltip_AddBlankLineToTooltip(tooltip);
 				GameTooltip_AddDisabledLine(tooltip, TALENT_BUTTON_TOOLTIP_REFUND_INSTRUCTIONS);
 			end
-		else
-			GameTooltip_AddBlankLineToTooltip(tooltip);
-			GameTooltip_AddInstructionLine(tooltip, TALENT_BUTTON_TOOLTIP_PURCHASE_INSTRUCTIONS);
 		end
+	elseif self:IsChoiceAvailable() then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddInstructionLine(tooltip, TALENT_BUTTON_TOOLTIP_PURCHASE_INSTRUCTIONS);
 	end
 
 	if self:CanCascadeRepurchaseRanks() then
@@ -274,6 +284,14 @@ end
 function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 	-- Overrides TalentDisplayMixin.
 
+	local baseButton = self:GetBaseButton();
+	if self.isCurrentSelection and baseButton then
+		local isRefundInvalid, refundInvalidInstructions = baseButton:IsRefundInvalid();
+		if TalentButtonUtil.CheckAddRefundInvalidInfo(tooltip, isRefundInvalid, refundInvalidInstructions) then
+			return;
+		end
+	end
+
 	local talentFrame = self:GetTalentFrame();
 
 	local shouldAddSpacer = true;
@@ -281,7 +299,6 @@ function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 		return;
 	end
 
-	local baseButton = self:GetBaseButton();
 	if baseButton then
 		local nodeInfo = baseButton:GetNodeInfo();
 		if talentFrame:AddConditionsToTooltip(tooltip, nodeInfo.conditionIDs, shouldAddSpacer) then
@@ -321,21 +338,31 @@ end
 function TalentSelectionChoiceMixin:CalculateVisualState()
 	-- Overrides TalentDisplayMixin.
 
-	if self.isCurrentSelection then
-		return TalentButtonUtil.BaseVisualState.Maxed;
-	elseif self:IsInspecting() then
-		return TalentButtonUtil.BaseVisualState.Disabled;
-	end
-
 	local selectionChoiceFrame = self:GetParent();
 	local selectionBaseButton = selectionChoiceFrame:GetBaseButton();
 	local selectionVisualState = selectionBaseButton:GetVisualState();
-	if selectionVisualState == TalentButtonUtil.BaseVisualState.Gated then
-		return TalentButtonUtil.BaseVisualState.Gated;
-	end
+	if selectionVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid then
+		if self.isCurrentSelection then
+			return selectionVisualState;
+		end
 
-	if selectionVisualState == TalentButtonUtil.BaseVisualState.Locked then
-		return TalentButtonUtil.BaseVisualState.Locked;
+		if selectionBaseButton:IsGated() then
+			return TalentButtonUtil.BaseVisualState.Gated;
+		end
+
+		if selectionBaseButton:IsLocked() then
+			return TalentButtonUtil.BaseVisualState.Locked;
+		end
+
+		return TalentButtonUtil.BaseVisualState.Disabled;
+	elseif self.isCurrentSelection then
+		return TalentButtonUtil.BaseVisualState.Maxed;
+	elseif self:IsInspecting() then
+		return TalentButtonUtil.BaseVisualState.Disabled;
+	elseif selectionVisualState == TalentButtonUtil.BaseVisualState.Gated then
+		return selectionVisualState;
+	elseif selectionVisualState == TalentButtonUtil.BaseVisualState.Locked then
+		return selectionVisualState;
 	end
 
 	return self:IsChoiceAvailable() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Disabled;
@@ -420,6 +447,10 @@ function TalentSelectionChoiceMixin:UpdateSpendText()
 end
 
 function TalentSelectionChoiceMixin:IsCascadeRepurchasable()
+	if not TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled() then
+		return false;
+	end
+
 	local nodeInfo = self:GetNodeInfo();
 	return nodeInfo and nodeInfo.isCascadeRepurchasable and nodeInfo.cascadeRepurchaseEntryID == self:GetEntryID() and self:CanAffordChoice();
 end
@@ -434,6 +465,10 @@ function TalentSelectionChoiceMixin:CanCascadeRepurchaseRanks()
 end
 
 function TalentSelectionChoiceMixin:IsGhosted()
+	if not TalentButtonUtil.IsCascadeRepurchaseHistoryEnabled() then
+		return false;
+	end
+
 	return not self:GetNodeInfo() or self:IsCascadeRepurchasable();
 end
 

@@ -1,1 +1,31 @@
--- This file is executed at the end of addon load
+local l10nTable = {
+	deDE = {},
+	enGB = {},
+	enUS = {},
+	esES = {},
+	esMX = {},
+	frFR = {},
+	itIT = {},
+	koKR = {},
+	ptBR = {},
+	ptPT = {},
+	ruRU = {},
+	zhCN = {
+		localize = function()
+			GuildControlUIRankSettingsFrameBankLabel:SetPoint("TOPLEFT", GuildControlUIRankSettingsFrameBankBg, 7, -4);
+			GuildControlUIRankSettingsFrameRosterLabel:SetPoint("TOPLEFT", GuildControlUIRankSettingsFrameRosterBg, 7, -4);
+		end,
+	},
+	zhTW = {
+		localize = function()
+			GuildControlUI_LocalizeBankTab = function(frame)
+				_G[frame:GetName().."OwnedStackBoxLabelText"]:SetFontObject("AchievementDescriptionFont");
+			end
+
+			GuildControlUIRankSettingsFrameBankLabel:SetPoint("TOPLEFT", GuildControlUIRankSettingsFrameBankBg, 7, -4);
+			GuildControlUIRankSettingsFrameRosterLabel:SetPoint("TOPLEFT", GuildControlUIRankSettingsFrameRosterBg, 7, -4);
+		end,
+	},
+};
+
+SetupLocalization(l10nTable);

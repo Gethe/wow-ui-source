@@ -1,0 +1,120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<!-- Reward Button Template -->
+	<Button name="DelveRewardItemButtonTemplate" inherits="LargeItemButtonTemplate" hidden="true" mixin="DelveRewardsButtonMixin" virtual="true">
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnEnter method="OnEnter"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<!-- Delve Difficulty Picker -->
+	<Frame name="DelvesDifficultyPickerFrame" hidden="true" inherits="CustomGossipFrameBaseTemplate" mixin="DelvesDifficultyPickerFrameMixin">
+		<Size x="350" y="480"/>
+		<Anchors>
+			<Anchor point="CENTER" y="60"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- TODO: Replace this with a better default - this is currently used if a background widget is not set up for the gossip option. Since a lot of them aren't set up, it is now our "placeholder" background -->
+				<Texture parentKey="DefaultBackground" atlas="auctionhouse-background-index" useAtlasSize="false"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" justifyV="BOTTOM" justifyH="CENTER" inherits="GameFontNormalHuge2"> <!-- TODO mock has a circular shadow around this -->
+					<Size x="270" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" y="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PLACEHOLDER-TEXT" justifyH="CENTER" inherits="GameFontHighlight" text="UI: Work in Progress"> <!-- TODO remove me, eventually - or reuse for "continue" text -->
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" y="-8"/>
+					</Anchors>
+					<Color r="1"/> 
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<!-- TODO sound -->
+					<OnClick>
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Frame name="DelvesDifficultyPickerLevelDropdown" inherits="UIDropDownMenuTemplate" mixin="DelvesDifficultyPickerLevelDropdownMixin">
+				<Anchors>
+					<Anchor point="CENTER"/>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+
+			<!-- Delve Modifers -->
+			<Frame parentKey="DelveModifiersWidgetContainer" inherits="UIWidgetContainerTemplate">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="CENTER" y="-62"/>
+				</Anchors>
+			</Frame>
+
+			<!-- Delve Background -->
+			<Frame parentKey="DelveBackgroundWidgetContainer" inherits="UIWidgetContainerTemplate" frameStrata="BACKGROUND">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<!-- Rewards -->
+			<Frame parentKey="DelveRewardsContainerFrame" mixin="DelveRewardsContainerFrameMixin" hidden="true">
+				<Size x="320" y="105"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.DelveModifiersWidgetContainer" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="RewardText" inherits="GameFontHighlight" text="REWARD_ITEMS_ONLY">
+							<Color r="0.902" g="0.788" b="0.671"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Button parentKey="EnterDelveButton" inherits="UIPanelButtonTemplate" mixin="DelvesDifficultyPickerEnterDelveButtonMixin" motionScriptsWhileDisabled="true" frameLevel="510" text="DELVES_DIFFICULTY_PICKER_ENTER">
+				<Size x="110" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

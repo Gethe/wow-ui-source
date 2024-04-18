@@ -27,7 +27,7 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "expand", Type = "bool", Nilable = false },
 			},
 		},
@@ -46,7 +46,7 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -67,6 +67,50 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "info", Type = "CurrencyDisplayInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinIcon",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinText",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "separator", Type = "cstring", Nilable = false, Default = ", " },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCoinTextureString",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+				{ Name = "fontHeight", Type = "number", Nilable = false, Default = 14 },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -95,7 +139,7 @@ local CurrencyInfo =
 
 			Returns =
 			{
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -104,7 +148,7 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "currencyLink", Type = "string", Nilable = false },
+				{ Name = "currencyLink", Type = "cstring", Nilable = false },
 			},
 
 			Returns =
@@ -152,7 +196,7 @@ local CurrencyInfo =
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -161,7 +205,7 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -175,12 +219,12 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "link", Type = "string", Nilable = false },
+				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -190,6 +234,15 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "currencyListSize", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDragonIslesSuppliesCurrencyID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "dragonIslesSuppliesCurrencyID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -246,7 +299,7 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "backpack", Type = "bool", Nilable = false },
 			},
 		},
@@ -256,7 +309,7 @@ local CurrencyInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "unused", Type = "bool", Nilable = false },
 			},
 		},
@@ -264,6 +317,11 @@ local CurrencyInfo =
 
 	Events =
 	{
+		{
+			Name = "AccountMoney",
+			Type = "Event",
+			LiteralName = "ACCOUNT_MONEY",
+		},
 		{
 			Name = "CurrencyDisplayUpdate",
 			Type = "Event",
@@ -293,7 +351,7 @@ local CurrencyInfo =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "currencyTypesID", Type = "number", Nilable = false },
 			},
 		},
@@ -315,15 +373,16 @@ local CurrencyInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "isHeaderExpanded", Type = "bool", Nilable = false },
+				{ Name = "currencyListDepth", Type = "number", Nilable = false },
 				{ Name = "isTypeUnused", Type = "bool", Nilable = false },
 				{ Name = "isShowInBackpack", Type = "bool", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "trackedQuantity", Type = "number", Nilable = false },
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "maxQuantity", Type = "number", Nilable = false },
 				{ Name = "canEarnPerWeek", Type = "bool", Nilable = false },
 				{ Name = "quantityEarnedThisWeek", Type = "number", Nilable = false },

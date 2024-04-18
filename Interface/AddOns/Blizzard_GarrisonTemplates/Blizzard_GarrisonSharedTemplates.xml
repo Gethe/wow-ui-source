@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_GarrisonSharedTemplates.lua"/>
 
 	<Frame name="GarrisonUITemplate" inherits="BaseBasicFrameTemplate" virtual="true">
@@ -202,10 +202,10 @@
 					<Anchor point="BOTTOMRIGHT" x="-23" y="8"/>
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="WoWTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="3"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="5"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>
@@ -271,7 +271,7 @@
 					<Size x="140" y="0"/>
 					<Anchors>
 						<!-- This is re-anchored to PortraitFrame in the Lua code -->
-						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="66" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
@@ -522,13 +522,7 @@
 				self:RegisterForDrag("LeftButton");
 				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
 			</OnLoad>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					GarrisonFollowerListButton_OnModifiedClick(self, button);
-				else
-					GarrisonFollowerListButton_OnClick(self, button);
-				end
-			</OnClick>
+			<OnClick function="GarrisonFollowerListButton_OnUserClick"/>
 			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
 			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
 		</Scripts>
@@ -777,7 +771,7 @@
 		<Frames>
 			<Frame parentKey="Counter" inherits="GarrisonMissionLargeMechanicTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
 		</Frames>

@@ -212,9 +212,6 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 	local showAll = false;
 
 	local isPlayer = UnitIsUnit("player", unit);
-	local reaction = UnitReaction("player", unit);
-	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-	local hostileUnit = reaction and reaction <= 4;
 	local showDebuffsOnFriendly = self.showDebuffsOnFriendly;
 
 	local auraSettings =
@@ -232,11 +229,7 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 		auraSettings.includeNameplateOnly = true;
 		auraSettings.showPersonalCooldowns = self.showPersonalCooldowns;
 	else
-		if hostileUnit then
-			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-			auraSettings.harmful = true;
-			auraSettings.includeNameplateOnly = true;
-		else
+		if PlayerUtil.HasFriendlyReaction(unit) then
 			if (showDebuffsOnFriendly) then
 				-- dispellable debuffs
 				auraSettings.harmful = true;
@@ -245,6 +238,10 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit, unitAuraUpdateInfo)
 			else
 				auraSettings.hideAll = true;
 			end
+		else
+			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
+			auraSettings.harmful = true;
+			auraSettings.includeNameplateOnly = true;
 		end
 	end
 
@@ -317,6 +314,9 @@ function NamePlateDriverMixin:OnNamePlateResized(namePlateFrame)
 	if self.classNamePlatePowerBar and self.classNamePlatePowerBar:GetParent() == namePlateFrame then
 		self.classNamePlatePowerBar:OnSizeChanged();
 	end
+	if self.classNamePlateAlternatePowerBar and self.classNamePlateAlternatePowerBar:GetParent() == namePlateFrame then
+		self.classNamePlateAlternatePowerBar:OnSizeChanged();
+	end
 end
 
 function NamePlateDriverMixin:SetupClassNameplateBars()
@@ -327,9 +327,13 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		showMechanicOnTarget = GetCVarBool("nameplateResourceOnTarget");
 	end
 
-	local anchorMechanicToPowerBar = false;
+	local bottomMostBar = nil;
+	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
+	if namePlatePlayer then
+		bottomMostBar = namePlatePlayer.UnitFrame.healthBar;
+	end
+
 	if self.classNamePlatePowerBar then
-		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 		if namePlatePlayer then
 			self.classNamePlatePowerBar:SetParent(namePlatePlayer);
 			self.classNamePlatePowerBar:ClearAllPoints();
@@ -337,9 +341,25 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 0);
 			self.classNamePlatePowerBar:SetShown(not self.playerHideHealthandPowerBar);
 
-			anchorMechanicToPowerBar = true;
+			bottomMostBar = self.classNamePlatePowerBar;
 		else
 			self.classNamePlatePowerBar:Hide();
+		end
+	end
+
+	if self.classNamePlateAlternatePowerBar then
+		if namePlatePlayer then
+			local powerBar = self.classNamePlatePowerBar;
+			local attachTo = (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.healthBar;
+			self.classNamePlateAlternatePowerBar:SetParent(namePlatePlayer);
+			self.classNamePlateAlternatePowerBar:ClearAllPoints();
+			self.classNamePlateAlternatePowerBar:SetPoint("TOPLEFT", attachTo, "BOTTOMLEFT", 0, 0);
+			self.classNamePlateAlternatePowerBar:SetPoint("TOPRIGHT", attachTo, "BOTTOMRIGHT", 0, 0);
+			self.classNamePlateAlternatePowerBar:Show();
+
+			bottomMostBar = self.classNamePlateAlternatePowerBar;
+		else
+			self.classNamePlateAlternatePowerBar:Hide();
 		end
 	end
 
@@ -354,30 +374,24 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 			else
 				self.classNamePlateMechanicFrame:Hide();
 			end
-		elseif anchorMechanicToPowerBar then
-			local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
+		elseif bottomMostBar then
 			self.classNamePlateMechanicFrame:SetParent(namePlatePlayer);
 			self.classNamePlateMechanicFrame:ClearAllPoints();
-			self.classNamePlateMechanicFrame:SetPoint("TOP", self.classNamePlatePowerBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
+			self.classNamePlateMechanicFrame:SetPoint("TOP", bottomMostBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
 			self.classNamePlateMechanicFrame:Show();
 		else
-			local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
-			if namePlatePlayer then
-				self.classNamePlateMechanicFrame:SetParent(namePlatePlayer);
-				self.classNamePlateMechanicFrame:ClearAllPoints();
-				self.classNamePlateMechanicFrame:SetPoint("TOP", namePlatePlayer.UnitFrame.healthBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
-				self.classNamePlateMechanicFrame:Show();
-			else
-				self.classNamePlateMechanicFrame:Hide();
-			end
+			self.classNamePlateMechanicFrame:Hide();
 		end
 	end
 
-	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 	if self.personalFriendlyBuffFrame and namePlatePlayer then
 		local mechanicFrame = not showMechanicOnTarget and self.classNamePlateMechanicFrame;
 		local powerBar = self.classNamePlatePowerBar;
-		local attachTo = (mechanicFrame and mechanicFrame:IsShown() and mechanicFrame) or (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.BuffFrame;
+		local alternatePowerBar = self.classNamePlateAlternatePowerBar;
+		local attachTo = (mechanicFrame and mechanicFrame:IsShown() and mechanicFrame)
+					  or (alternatePowerBar and alternatePowerBar:IsShown() and alternatePowerBar)
+					  or (powerBar and powerBar:IsShown() and powerBar)
+					  or namePlatePlayer.UnitFrame.BuffFrame;
 		self.personalFriendlyBuffFrame:SetParent(namePlatePlayer);
 		self.personalFriendlyBuffFrame:ClearAllPoints();
 		self.personalFriendlyBuffFrame:SetPoint("TOP", attachTo, "BOTTOM", 0, 0);
@@ -385,7 +399,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		self.personalFriendlyBuffFrame:SetActive(not C_Commentator.IsSpectating());
 	end
 
-	if targetMode and self.classNamePlateMechanicFrame then
+	if showMechanicOnTarget and self.classNamePlateMechanicFrame then
 		local percentOffset = tonumber(GetCVar("nameplateClassResourceTopInset")) or 0;
 		if self:IsUsingLargerNamePlateStyle() then
 			percentOffset = percentOffset + .1;
@@ -412,6 +426,15 @@ end
 function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
 	self.classNamePlatePowerBar = frame;
 	self:SetupClassNameplateBars();
+end
+
+function NamePlateDriverMixin:SetClassNameplateAlternatePowerBar(frame)
+	self.classNamePlateAlternatePowerBar = frame;
+	self:SetupClassNameplateBars();
+end
+
+function NamePlateDriverMixin:GetClassNameplateAlternatePowerBar()
+	return self.classNamePlateAlternatePowerBar;
 end
 
 function NamePlateDriverMixin:SetPersonalFriendlyBuffFrame(frame)
@@ -457,7 +480,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 
 	DefaultCompactNamePlatePlayerFrameSetUpOptions.hideHealthbar = self.playerHideHealthandPowerBar;
 
-	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
+	local namePlateVerticalScale = GetCVarNumberOrDefault("NamePlateVerticalScale");
 	local zeroBasedScale = namePlateVerticalScale - 1.0;
 	local clampedZeroBasedScale = Saturate(zeroBasedScale);
 	DefaultCompactNamePlateFrameSetUpOptions.healthBarHeight = 4 * namePlateVerticalScale;
@@ -482,13 +505,13 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	local personalNamePlateClickThrough = GetCVarBool("NameplatePersonalClickThrough");
 	C_NamePlate.SetNamePlateSelfClickThrough(personalNamePlateClickThrough);
 
-	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
+	local horizontalScale = GetCVarNumberOrDefault("NamePlateHorizontalScale");
 	C_NamePlate.SetNamePlateFriendlySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateEnemySize(self.baseNamePlateWidth * horizontalScale, self.baseNamePlateHeight * Lerp(1.0, 1.25, zeroBasedScale));
 	C_NamePlate.SetNamePlateSelfSize(self.baseNamePlateWidth * horizontalScale * Lerp(1.1, 1.0, clampedZeroBasedScale), self.baseNamePlateHeight);
 
-	local classificationScale = tonumber(GetCVar("NamePlateClassificationScale"));
-	local maxClassificationScale = tonumber(GetCVar("NamePlateMaximumClassificationScale"));
+	local classificationScale = GetCVarNumberOrDefault("NamePlateClassificationScale");
+	local maxClassificationScale = GetCVarNumberOrDefault("NamePlateMaximumClassificationScale");
 	DefaultCompactNamePlateFrameSetUpOptions.classificationScale = classificationScale;
 	DefaultCompactNamePlateFrameSetUpOptions.maxClassificationScale = maxClassificationScale;
 
@@ -507,6 +530,10 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	if self.classNamePlatePowerBar then
 		self.classNamePlatePowerBar:OnOptionsUpdated();
 	end
+	if self.classNamePlateAlternatePowerBar then
+		self.classNamePlateAlternatePowerBar:OnOptionsUpdated();
+	end
+	
 	self:SetupClassNameplateBars();
 end
 
@@ -609,6 +636,18 @@ function NamePlateClassificationFrameMixin:OnSizeChanged()
 	local effectiveScale = self:GetEffectiveScale();
 	if self.maxScale and effectiveScale > self.maxScale then
 		self.classificationIndicator:SetScale(self.maxScale / effectiveScale);
+	end
+end
+
+NamePlateLevelDiffMixin = {};
+function NamePlateLevelDiffMixin:OnSizeChanged()
+	self.playerLevelDiffIcon:SetScale(1.0);
+	self.playerLevelDiffText:SetScale(1.0);
+
+	local effectiveScale = self:GetEffectiveScale();
+	if self.maxScale and effectiveScale > self.maxScale then
+		self.playerLevelDiffIcon:SetScale(self.maxScale / effectiveScale);
+		self.playerLevelDiffText:SetScale(self.maxScale / effectiveScale);
 	end
 end
 
@@ -795,10 +834,10 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 		local nameplateSpells = C_SpellBook.GetTrackedNameplateCooldownSpells(); 
 		for _, spellID in ipairs(nameplateSpells) do 
 			if (not self:HasActiveBuff(spellID) and buffIndex < BUFF_MAX_DISPLAY) then
-				local locStart, locDuration = GetSpellLossOfControlCooldown(spellID);
-				local start, duration, enable, modRate = GetSpellCooldown(spellID);
-				if (locDuration ~= 0 or duration ~= 0) then 
-					local spellInfo = C_SpellBook.GetSpellInfo(spellID);
+				local locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(spellID);
+				local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
+				if ((locDuration and locDuration ~= 0) or (cooldownInfo and cooldownInfo.duration ~= 0)) then
+					local spellInfo = C_Spell.GetSpellInfo(spellID);
 					if(spellInfo) then 
 						local buff = self.buffPool:Acquire();
 						buff.isBuff = true;
@@ -807,10 +846,14 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 						buff.auraInstanceID = nil;
 						buff.Icon:SetTexture(spellInfo.iconID); 
 
-						local charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetSpellCharges(spellID);
-						buff.Cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
+						local charges, maxCharges = GetSpellCharges(spellID);
 						buff.Cooldown:SetSwipeColor(0, 0, 0);
-						CooldownFrame_Set(buff.Cooldown, start, duration, enable, false, modRate);
+
+						if (cooldownInfo and cooldownInfo.duration ~= 0) then
+							CooldownFrame_Set(buff.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled, true, cooldownInfo.modRate);
+						else
+							CooldownFrame_Set(buff.Cooldown, locStart, locDuration, true, true);
+						end
 
 						if (maxCharges and maxCharges > 1) then
 							buff.CountFrame.Count:SetText(charges);
@@ -819,7 +862,7 @@ function NameplateBuffContainerMixin:UpdateBuffs(unit, unitAuraUpdateInfo, auraS
 							buff.CountFrame.Count:Hide();
 						end
 						buff:Show();
-						buffIndex = buffIndex + 1; 
+						buffIndex = buffIndex + 1;
 					end
 				end
 			end

@@ -21,6 +21,20 @@ local QuestLineInfo =
 			},
 		},
 		{
+			Name = "GetForceVisibleQuests",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestLineInfo",
 			Type = "Function",
 
@@ -64,6 +78,21 @@ local QuestLineInfo =
 			},
 		},
 		{
+			Name = "QuestLineIgnoresAccountCompletedFiltering",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "questLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "questLineIgnoresAccountCompletedFiltering", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestQuestLinesForMap",
 			Type = "Function",
 
@@ -98,8 +127,8 @@ local QuestLineInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "questLineName", Type = "string", Nilable = false },
-				{ Name = "questName", Type = "string", Nilable = false },
+				{ Name = "questLineName", Type = "cstring", Nilable = false },
+				{ Name = "questName", Type = "cstring", Nilable = false },
 				{ Name = "questLineID", Type = "number", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
@@ -108,6 +137,8 @@ local QuestLineInfo =
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
 				{ Name = "isDaily", Type = "bool", Nilable = false },
 				{ Name = "isCampaign", Type = "bool", Nilable = false },
+				{ Name = "isImportant", Type = "bool", Nilable = false },
+				{ Name = "isAccountCompleted", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
 			},
 		},

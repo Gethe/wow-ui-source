@@ -42,12 +42,22 @@ function Class_Intro_KeyboardMouse:OnBegin()
 		TutorialManager:Finished(self:Name());
 		return;
 	end
+	Dispatcher:RegisterEvent("CINEMATIC_START", self);
+	Dispatcher:RegisterEvent("CINEMATIC_STOP", self);
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 	self:HideScreenTutorial();
 	self.LaunchTimer = C_Timer.NewTimer(4,
 		function()
 			self:LaunchMouseKeyboardFrame();
 		end);
+end
+
+function Class_Intro_KeyboardMouse:CINEMATIC_START()
+	TutorialKeyboardMouseFrame_Frame:Hide();
+end
+
+function Class_Intro_KeyboardMouse:CINEMATIC_STOP()
+	TutorialKeyboardMouseFrame_Frame:Show();
 end
 
 function Class_Intro_KeyboardMouse:LaunchMouseKeyboardFrame()
@@ -82,6 +92,8 @@ function Class_Intro_KeyboardMouse:OnComplete()
 	if self.GlowTimer then
 		self.GlowTimer:Cancel();
 	end
+	Dispatcher:UnregisterEvent("CINEMATIC_START", self);
+	Dispatcher:UnregisterEvent("CINEMATIC_STOP", self);
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
 	EventRegistry:UnregisterCallback("TutorialKeyboardMouseFrame.Closed", self);
 	self:HideMouseKeyboardTutorial();
@@ -674,6 +686,8 @@ function Class_UseMinimap:ShowMinimapPrompt()
 end
 
 function Class_UseMinimap:OnInterrupt(interruptedBy)
+	Minimap:Show();
+	MinimapCluster:Show();
 	TutorialManager:Finished(self:Name());
 end
 
@@ -1981,7 +1995,7 @@ function Class_AddHunterTameSpells:OnBegin()
 		end
 	else
 		-- wait for the spells to show up in the spell book
-		Dispatcher:RegisterEvent("LEARNED_SPELL_IN_TAB", self);
+		Dispatcher:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE", self);
 	end
 end
 
@@ -2020,9 +2034,9 @@ function Class_AddHunterTameSpells:ACTIONBAR_SHOW_BOTTOMLEFT()
 	end
 end
 
-function Class_AddHunterTameSpells:LEARNED_SPELL_IN_TAB(spellID)
+function Class_AddHunterTameSpells:LEARNED_SPELL_IN_SKILL_LINE(spellID)
 	if self:KnowsRequiredSpells() then
-		Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
+		Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_SKILL_LINE", self);
 		if self:CheckForSpellsOnActionBar() then
 			TutorialManager:Finished(self:Name());
 		else
@@ -2066,7 +2080,7 @@ end
 function Class_AddHunterTameSpells:OnComplete()	
 	Dispatcher:UnregisterEvent("SPELLS_CHANGED", self);
 	Dispatcher:UnregisterEvent("UPDATE_EXTRA_ACTIONBAR", self);
-	Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_TAB", self);
+	Dispatcher:UnregisterEvent("LEARNED_SPELL_IN_SKILL_LINE", self);
 	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
 	if self.actionBarEventID then
 		Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self.actionBarEventID);
@@ -2193,7 +2207,7 @@ function Class_EatFood:OnBegin(args)
 			TutorialHelper:CloseAllBags();
 
 			self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
-			EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BackpackOpened, self);
+			EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 		end
 	else
 		TutorialManager:Finished(self:Name());
@@ -2211,19 +2225,28 @@ function Class_EatFood:UNIT_HEALTH(arg1)
 	end
 end
 
-function Class_EatFood:BackpackOpened(inCombat)
+function Class_EatFood:BagOpened(containerFrame)
+	local tutorialData = TutorialData:GetFactionData();
+	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
+	if not container or not slot then
+		EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+		TutorialManager:Finished(self:Name());
+		return;
+	end
+
+	if not containerFrame:MatchesBagID(container) then
+		return;
+	end
+	
 	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+
 	self:HideScreenTutorial();
 
 	Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
-	local tutorialData = TutorialData:GetFactionData();
 
-	local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
-	if container and slot then
-		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
+	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
+	if itemFrame then
 		self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_EAT_FOOD_P2_BEGIN), "RIGHT", itemFrame, 0, 0, nil, "RIGHT");
-	else
-		TutorialManager:Finished(self:Name());
 	end
 end
 
@@ -2542,8 +2565,8 @@ function Class_LookingForGroup:OnBegin()
 	Dispatcher:RegisterEvent("LFG_UPDATE", self);
 	Dispatcher:RegisterEvent("LFG_PROPOSAL_SHOW", self);
 
-	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self.EmptyDungeonList, self);
-	EventRegistry:RegisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self.ReadyDungeonList, self);
+	EventRegistry:RegisterCallback("LFDQueueFrameList_Update.EmptyDungeonList", self.EmptyDungeonList, self);
+	EventRegistry:RegisterCallback("LFDQueueFrameList_Update.DungeonListReady", self.ReadyDungeonList, self);
 	EventRegistry:RegisterCallback("LFGDungeonList.DungeonEnabled", self.DungeonEnabled, self);
 	EventRegistry:RegisterCallback("LFGDungeonList.DungeonDisabled", self.DungeonDisabled, self);
 
@@ -2671,8 +2694,8 @@ function Class_LookingForGroup:OnComplete()
 	Dispatcher:UnregisterEvent("LFG_UPDATE", self);
 	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
 
-	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.EmptyDungeonList", self);
-	EventRegistry:UnregisterCallback("LFDQueueFrameSpecificList_Update.DungeonListReady", self);
+	EventRegistry:UnregisterCallback("LFDQueueFrameList_Update.EmptyDungeonList", self);
+	EventRegistry:UnregisterCallback("LFDQueueFrameList_Update.DungeonListReady", self);
 	EventRegistry:UnregisterCallback("LFGDungeonList.DungeonEnabled", self);
 	EventRegistry:UnregisterCallback("LFGDungeonList.DungeonDisabled", self);
 
@@ -2751,7 +2774,7 @@ function Class_MountReceived:OnBegin()
 	if container and slot then
 		-- Dirty hack to make sure all bags are closed
 		TutorialHelper:CloseAllBags();
-		self.backpackCallbackID = Dispatcher:RegisterFunction("ToggleBackpack", function() self:BackpackOpened() end, true);
+		EventRegistry:RegisterCallback("ContainerFrame.OpenBag", self.BagOpened, self);
 		local key = TutorialHelper:GetBagBinding();
 		local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_MOUNT_TUTORIAL_INTRO, key))
 		self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 10, nil, "DOWN");
@@ -2768,25 +2791,33 @@ function Class_MountReceived:CheckHasMountItem()
 	return TutorialHelper:FindItemInContainer(mountItem);
 end
 
-function Class_MountReceived:BackpackOpened()
+function Class_MountReceived:BagOpened(containerFrame)
 	local container, slot = self:CheckHasMountItem();
-	if container and slot then
-		local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
-		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
-	else
+	if not container or not slot then
+		EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+
 		-- the player doesn't have the mount
 		self.proceed = false;
 		TutorialManager:Finished(self:Name());
+		return;
 	end
+
+	if not containerFrame:MatchesBagID(container) then
+		return;
+	end
+
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
+	local itemFrame = TutorialHelper:GetItemContainerFrame(container, slot)
+	self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P2_BEGIN, "DOWN", itemFrame, 0, 10, nil, "RIGHT");
 end
 
 function Class_MountReceived:NEW_MOUNT_ADDED(data)
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
+		self.proceed = false;
 		TutorialManager:Finished(self:Name());
 		TutorialManager:Queue(Class_UseMount.name);
-		self.proceed = false;
 		return;
 	end
 
@@ -2806,15 +2837,15 @@ function Class_MountReceived:NEW_MOUNT_ADDED(data)
 end
 
 function Class_MountReceived:OnInterrupt(interruptedBy)
+	self.proceed = false;
 	TutorialManager:Finished(self:Name());
 end
 
 function Class_MountReceived:OnComplete()
 	Dispatcher:UnregisterEvent("NEW_MOUNT_ADDED", self);
-	if self.backpackCallbackID then
-		Dispatcher:UnregisterFunction("ToggleBackpack", self.backpackCallbackID);
-		self.backpackCallbackID = nil;
-	end
+
+	-- This should be redundant.
+	EventRegistry:UnregisterCallback("ContainerFrame.OpenBag", self);
 
 	if self.collectionCallbackID then
 		Dispatcher:UnregisterFunction("ToggleCollectionsJournal", self.collectionCallbackID);
@@ -2847,12 +2878,18 @@ function Class_AddMountToActionBar:OnBegin(args)
 	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
-		self.success = true;
 		TutorialManager:Finished(self:Name());
 		return;
 	end
 
-	C_Timer.After(0.1, function()
+	if not MountJournal or not MountJournal:IsVisible() then
+		-- Mount journal was closed before this tutorial could start
+		-- Can happen if MountReceived tutorial is ignored, a different tutorial is queued to start, then MountReceived is completed
+		TutorialManager:Finished(self:Name());
+		return;
+	end
+
+	self.Timer = C_Timer.NewTimer(0.1, function()
 		self:MountJournalShow();
 	end);
 end
@@ -2879,12 +2916,13 @@ function Class_AddMountToActionBar:ACTIONBAR_SLOT_CHANGED(slot)
 		local nextEmptyButton = TutorialHelper:FindEmptyButton();
 		if not nextEmptyButton then
 			-- no more empty buttons
-			self.success = false;
-			TutorialManager:Finished(self:Name());			
+			TutorialManager:Finished(self:Name());
 		else
 			TutorialDragButton:Hide();
 			self.destButton = nextEmptyButton;
-			TutorialDragButton:Show(self.originButton, self.destButton);
+			if self.originButton then
+				TutorialDragButton:Show(self.originButton, self.destButton);
+			end
 		end
 	end
 end
@@ -2898,6 +2936,10 @@ function Class_AddMountToActionBar:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	TutorialDragButton:Hide();
 	self:HidePointerTutorials();
+
+	if self.Timer then
+		self.Timer:Cancel();
+	end
 
 	if TutorialHelper:GetActionButtonBySpellID(self.mountData.mountID) then
 		TutorialManager:Queue(Class_UseMount.name);
@@ -2940,8 +2982,7 @@ function Class_UseMount:TryUseMount()
 end
 
 function Class_UseMount:QUEST_REMOVED(questIDRemoved)
-	local factionData = TutorialData:GetFactionData();
-	if (questIDRemoved == self.factionData.AnUrgentMeeting) then
+	if (questIDRemoved == TutorialData:GetFactionData().AnUrgentMeeting) then
 		TutorialManager:Finished(self:Name());
 	end
 end
@@ -3151,7 +3192,10 @@ function Class_LootCorpse:OnComplete()
 		self.Timer:Cancel();
 	end
 
-	TutorialManager:GetTutorial(Class_LootPointer.name):Complete();
+	local lootPointerTutorial = TutorialManager:GetTutorial(Class_LootPointer.name);
+	if lootPointerTutorial then
+		lootPointerTutorial:Complete();
+	end
 
 	if (self.QuestMobID) then
 		self.QuestMobCount = self.QuestMobCount + 1;

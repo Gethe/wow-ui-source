@@ -95,7 +95,7 @@ function InspectFrame_OnHide(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 
 	-- Clear the player being inspected
-	if not ClassTalentFrame or not ClassTalentFrame:IsInspecting() then
+	if not PlayerSpellsFrame or not PlayerSpellsFrame:IsInspecting() then
 		ClearInspectPlayer();
 	end
 

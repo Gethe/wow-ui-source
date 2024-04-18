@@ -5,17 +5,22 @@ local helptipSystemName = "Profession Specializations";
 
 StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] = 
 {
-	text = PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE,
+	text = "",
 	button1 = YES,
 	button2 = CANCEL,
+	wide = true,
+	wideText = true,
 
 	OnAccept = function(self, info)
 		info.onAccept();
 	end,
 
 	OnShow = function(self, info)
-		self.SubText:SetText(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB:format(info.specName, info.profName));
-		self.SubText:Show();
+		local headerText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE:format(info.specName).."\n\n");
+		local bodyKey = info.hasAnyConfigChanges and PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_UNAPPLIED or PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB;
+		local bodyText = NORMAL_FONT_COLOR:WrapTextInColorCode(bodyKey:format(info.specName, info.profName));
+		self.text:SetText(headerText..bodyText);
+		self.text:Show();
 	end,
 
 	hideOnEscape = 1,
@@ -41,6 +46,22 @@ function ProfessionsSpecFrameMixin:ConfigureButtons()
 		self:CheckConfirmPurchaseTab();
 	end);
 	self.UnlockTabButton:SetScript("OnLeave", GameTooltip_Hide);
+
+	self.ViewTreeButton:SetScript("OnClick", function()
+		self.TreePreview:Hide();
+	end);
+
+	self.BackToPreviewButton:SetScript("OnClick", function()
+		self.TreePreview:Show();
+	end);
+
+	self.ViewPreviewButton:SetScript("OnClick", function()
+		self.TreePreview:Show();
+	end);
+
+	self.BackToFullTreeButton:SetScript("OnClick", function()
+		self.TreePreview:Hide();
+	end);
 
 	self.DetailedView.SpendPointsButton:SetScript("OnClick", function()
 		self:PurchaseRank(self:GetDetailedPanelNodeID());
@@ -76,6 +97,30 @@ function ProfessionsSpecFrameMixin:ConfigureButtons()
 	self.DetailedView.Path.LockInAnimation:SetScript("OnFinished", function() self:UpdateDetailedPanel(true); end);
 end
 
+function ProfessionsSpecFrameMixin:ConfigureRegions()
+	self.TreePreview:SetScript("OnShow", function()
+		self:UpdateSelectedTabState();
+	end);
+	self.TreePreview:SetScript("OnHide", function()
+		self:UpdateSelectedTabState();
+	end);
+end
+
+function ProfessionsSpecFrameMixin:UpdateTreePreviewButtonVisibility()
+	local isUnlocked = C_ProfSpecs.GetStateForTab(self:GetTalentTreeID(), self:GetConfigID()) == Enum.ProfessionsSpecTabState.Unlocked; 
+	if self.TreePreview:IsShown() then
+		self.ViewPreviewButton:Hide();
+		self.BackToFullTreeButton:SetShown(isUnlocked);
+		self.ViewTreeButton:SetShown(not isUnlocked);
+		self.BackToPreviewButton:Hide();
+	else
+		self.ViewPreviewButton:SetShown(isUnlocked);
+		self.BackToFullTreeButton:Hide();
+		self.ViewTreeButton:Hide();
+		self.BackToPreviewButton:SetShown(not isUnlocked);
+	end
+end
+
 function ProfessionsSpecFrameMixin:GetSpendCurrencyTypesID()
 	local detailedPath = self:GetDetailedPanelNodeID();
 	local spendCurrency = detailedPath and C_ProfSpecs.GetSpendCurrencyForPath(detailedPath);
@@ -97,6 +142,7 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 		local info = {};
 		info.onAccept = function()
 			self:SetSuppressedSounds(SuppressedSoundsOnPurchase);
+			self.TreePreview:Hide();
 
 			EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", self.tabInfo.rootNodeID);
 			self:PurchaseRank(self.tabInfo.rootNodeID);
@@ -109,8 +155,8 @@ function ProfessionsSpecFrameMixin:CheckConfirmPurchaseTab()
 
 		info.specName = self.tabInfo.name;
 		info.profName = self.professionInfo.professionName;
-
-		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB", self.tabInfo.name, self.professionInfo.professionName, info);
+		info.hasAnyConfigChanges = self:HasAnyConfigChanges();
+		StaticPopup_Show("PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB", nil, nil, info);
 	end
 end
 
@@ -137,6 +183,7 @@ function ProfessionsSpecFrameMixin:OnLoad() -- Override
 	self.perksPool = CreateFramePool("FRAME", self, "ProfessionsSpecPerkTemplate");
 
 	self:ConfigureButtons();
+	self:ConfigureRegions();
 	self:RegisterCallbacks();
 
 	self.DetailedView.Path:Init(self);
@@ -296,7 +343,8 @@ function ProfessionsSpecFrameMixin:InitializeTabs()
 			bitfieldFlag = LE_FRAME_TUTORIAL_PROFESSIONS_SPEC_CHOICE,
 			autoHorizontalSlide = true,
 		};
-		HelpTip:Show(self, unlockableSpecHelpTipInfo, lastTab);
+		-- NOTE: Helptips are shown on the next game frame to side-step a bug if the frame they are pointing at is instantiated in the same game frame the helptip is shown in.
+		RunNextFrame(function() HelpTip:Show(self, unlockableSpecHelpTipInfo, lastTab); end);
 	end
 
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.TabSelected", self:GetDefaultTab(tabTreeIDs));
@@ -366,6 +414,7 @@ function ProfessionsSpecFrameMixin:InstantiateTalentButton(nodeID, xPos, yPos) -
 	local entryInfo = (activeEntryID ~= nil) and self:GetAndCacheEntryInfo(activeEntryID) or nil;
 	local talentType = (entryInfo ~= nil) and entryInfo.type or nil;
 	local function InitTalentButton(newTalentButton)
+		newTalentButton:Reset();
 		newTalentButton:SetNodeID(nodeID);
 		newTalentButton:SetAndApplySize(newTalentButton.iconSize, newTalentButton.iconSize);
 		TalentButtonUtil.ApplyPosition(newTalentButton, self, xPos, yPos)
@@ -535,6 +584,7 @@ function ProfessionsSpecFrameMixin:UpdateSelectedTabState()
 	local isLocked = C_ProfSpecs.GetStateForTab(self:GetTalentTreeID(), self:GetConfigID()) ~= Enum.ProfessionsSpecTabState.Unlocked;
 
 	self.UnlockTabButton:SetShown(isLocked);
+	self.ApplyButton:SetShown(not isLocked and not self.TreePreview:IsShown());
 	if isLocked then
 		local canUnlock = C_Traits.CanPurchaseRank(self:GetConfigID(), self.tabInfo.rootNodeID, C_ProfSpecs.GetUnlockEntryForPath(self.tabInfo.rootNodeID)) and self:CanAfford(self:GetNodeCost(self.tabInfo.rootNodeID));
 		self.UnlockTabButton:SetEnabled(canUnlock);
@@ -549,6 +599,25 @@ function ProfessionsSpecFrameMixin:UpdateSelectedTabState()
 		else
 			GlowEmitterFactory:Show(self.UnlockTabButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 			self.UnlockTabButton:SetScript("OnEnter", nil);
+		end
+	end
+
+	self:UpdateTreePreviewButtonVisibility();
+	self:UpdateConfigButtonsState();
+end
+
+function ProfessionsSpecFrameMixin:ConfigurePreviewHighlights(highlights)
+	local numHighlights = #self.TreePreview.Highlights;
+	for i = 1, numHighlights do
+		local highlightFrame = self.TreePreview.Highlights[i];
+		local highlight = highlights[i];
+		if highlight then
+			highlightFrame:Show();
+			highlightFrame.Description:SetText(highlight.description);
+			local kitSpecifier = Professions.GetAtlasKitSpecifier(self.professionInfo);
+			highlightFrame.Pip:SetAtlas(string.format("Professions_Specialization_Pip_Preview_%s", kitSpecifier or "Blacksmithing"));
+		else
+			highlightFrame:Hide();
 		end
 	end
 end
@@ -572,9 +641,15 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 	end
 
 	self.tabInfo = C_ProfSpecs.GetTabInfo(traitTreeID);
+
 	self.TreeView.TreeName:SetText(self.tabInfo.name);
 	self.TreeView.TreeDescription:SetWidth(325);
 	self.TreeView.TreeDescription:SetText(self.tabInfo.description);
+
+	SetPortraitToTexture(self.TreePreview.PathIcon.Icon, self.tabInfo.rootIconID);
+	self.TreePreview.Title:SetText(self.tabInfo.name);
+	self.TreePreview.Description:SetText(self.tabInfo.description);
+	self:ConfigurePreviewHighlights(self.tabInfo.highlights);
 
 	local forceUpdate = true;
 	self:SetTalentTreeID(traitTreeID, forceUpdate);
@@ -589,6 +664,9 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 	EventRegistry:TriggerEvent("ProfessionsSpecializations.PathSelected", detailedViewNode, skipSound);
 	-- Need to update currency display after the path changes to get new icon
 	self:UpdateCurrencyDisplay();
+
+	local isLocked = C_ProfSpecs.GetStateForTab(traitTreeID, self:GetConfigID()) ~= Enum.ProfessionsSpecTabState.Unlocked;
+	self.TreePreview:SetShown(isLocked);
 
 	self:UpdateConfigButtonsState()
 	self:HideAllPopups();
@@ -615,7 +693,8 @@ function ProfessionsSpecFrameMixin:Refresh(professionInfo)
 	self.professionInfo = professionInfo;
 	self:SetConfigID(configID);
 	self:InitializeTabs();
-	self.TreeView.Background:SetAtlas(Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo), TextureKitConstants.UseAtlasSize);
+	self.TreePreview.Background:SetAtlas(Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo, true), TextureKitConstants.IgnoreAtlasSize);
+	self.TreeView.Background:SetAtlas(Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo, false), TextureKitConstants.UseAtlasSize);
 	self.DetailedView.Path:UpdateAssets();
 end
 
@@ -632,6 +711,7 @@ function ProfessionsSpecFrameMixin:GetRootNodeID()
 end
 
 function ProfessionsSpecFrameMixin:SetDetailedPanel(pathID)
+	self:GetDetailedPanelPath():Reset();
 	self:GetDetailedPanelPath():SetNodeID(pathID);
 
 	self:InitDetailedPanelPerks();
@@ -791,7 +871,7 @@ end
 function ProfessionsSpecFrameMixin:UpdateConfigButtonsState()
 	local hasAnyChanges = self:HasAnyConfigChanges();
 	self.ApplyButton:SetEnabled(hasAnyChanges);
-	self.UndoButton:SetShown(hasAnyChanges);
+	self.UndoButton:SetShown(hasAnyChanges and self.ApplyButton:IsShown());
 
 	if hasAnyChanges then
 		GlowEmitterFactory:Show(self.ApplyButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
@@ -831,11 +911,15 @@ function ProfessionsSpecFrameMixin:PlayDialLockInAnimation()
 	local delay = 1.15;
 	self:StartShake(delay);
 	PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_DIAL_LOCKIN);
+
+	EventRegistry:TriggerEvent("ProfessionsSpecializations.LockInPath", self:GetDetailedPanelNodeID());
 end
 
 function ProfessionsSpecFrameMixin:PlayCompleteDialAnimation()
 	self.DetailedView.Path.CompleteDialAnimation:Restart();
 	PlaySound(SOUNDKIT.UI_PROFESSION_SPEC_PATH_FINISHED);
+
+	EventRegistry:TriggerEvent("ProfessionsSpecializations.CompletePath", self:GetDetailedPanelNodeID());
 end
 
 function ProfessionsSpecFrameMixin:SetTitle()

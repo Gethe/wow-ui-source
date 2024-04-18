@@ -12,12 +12,12 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerID", Type = "number", Nilable = false },
+				{ Name = "containerID", Type = "BagIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "inventoryID", Type = "number", Nilable = false },
+				{ Name = "inventoryID", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -26,8 +26,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isEquipped", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -41,17 +41,26 @@ local Container =
 			},
 		},
 		{
+			Name = "GetBackpackSellJunkDisabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBagName",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "bagIndex", Type = "number", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -60,7 +69,7 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "bagIndex", Type = "number", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
 				{ Name = "flag", Type = "BagSlotFlags", Nilable = false },
 			},
 
@@ -84,12 +93,12 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "freeSlots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "freeSlots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -98,8 +107,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -115,8 +124,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -131,14 +140,14 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "inSet", Type = "bool", Nilable = false },
-				{ Name = "setList", Type = "string", Nilable = false },
+				{ Name = "setList", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -147,8 +156,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -162,8 +171,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -177,13 +186,13 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -192,9 +201,9 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "itemIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "itemIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isEquipped", Type = "bool", Nilable = false },
 			},
 
@@ -209,8 +218,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isEquipped", Type = "bool", Nilable = false },
 			},
 
@@ -225,9 +234,9 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "itemIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "itemIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isEquipped", Type = "bool", Nilable = false },
 			},
 
@@ -242,8 +251,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -257,7 +266,7 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "bagIndex", Type = "number", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
 			},
 
 			Returns =
@@ -272,7 +281,7 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
 			},
 
 			Returns =
@@ -329,8 +338,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -344,7 +353,7 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
 			},
 
 			Returns =
@@ -358,8 +367,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -381,13 +390,22 @@ local Container =
 			},
 		},
 		{
+			Name = "SetBackpackSellJunkDisabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "disable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBagPortraitTexture",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
-				{ Name = "bagIndex", Type = "number", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
 			},
 		},
 		{
@@ -396,7 +414,7 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "bagIndex", Type = "number", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
 				{ Name = "flag", Type = "BagSlotFlags", Nilable = false },
 				{ Name = "isSet", Type = "bool", Nilable = false },
 			},
@@ -425,7 +443,7 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "searchString", Type = "string", Nilable = false },
+				{ Name = "searchString", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -443,8 +461,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -453,14 +471,18 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SortAccountBankBags",
+			Type = "Function",
 		},
 		{
 			Name = "SortBags",
@@ -480,8 +502,8 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},
@@ -491,9 +513,10 @@ local Container =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "unitToken", Type = "string", Nilable = true },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = true },
+				{ Name = "bankType", Type = "BankType", Nilable = true },
 				{ Name = "reagentBankOpen", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -516,7 +539,7 @@ local Container =
 			LiteralName = "BAG_CLOSED",
 			Payload =
 			{
-				{ Name = "bagID", Type = "number", Nilable = false },
+				{ Name = "bagID", Type = "BagIndex", Nilable = false },
 			},
 		},
 		{
@@ -558,7 +581,7 @@ local Container =
 			LiteralName = "BAG_UPDATE",
 			Payload =
 			{
-				{ Name = "bagID", Type = "number", Nilable = false },
+				{ Name = "bagID", Type = "BagIndex", Nilable = false },
 			},
 		},
 		{
@@ -609,8 +632,8 @@ local Container =
 			LiteralName = "ITEM_LOCK_CHANGED",
 			Payload =
 			{
-				{ Name = "bagOrSlotIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = true },
+				{ Name = "bagOrSlotIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -619,8 +642,8 @@ local Container =
 			LiteralName = "ITEM_LOCKED",
 			Payload =
 			{
-				{ Name = "bagOrSlotIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = true },
+				{ Name = "bagOrSlotIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -629,8 +652,8 @@ local Container =
 			LiteralName = "ITEM_UNLOCKED",
 			Payload =
 			{
-				{ Name = "bagOrSlotIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = true },
+				{ Name = "bagOrSlotIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -651,7 +674,7 @@ local Container =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "iconFileID", Type = "number", Nilable = false },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "stackCount", Type = "number", Nilable = false },
 				{ Name = "isLocked", Type = "bool", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = true },
@@ -662,6 +685,7 @@ local Container =
 				{ Name = "hasNoValue", Type = "bool", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "isBound", Type = "bool", Nilable = false },
+				{ Name = "itemName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -671,7 +695,7 @@ local Container =
 			{
 				{ Name = "iconFileID", Type = "number", Nilable = true },
 				{ Name = "currencyCount", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -679,9 +703,9 @@ local Container =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "money", Type = "number", Nilable = false },
+				{ Name = "money", Type = "WOWMONEY", Nilable = false },
 				{ Name = "itemCount", Type = "number", Nilable = false },
-				{ Name = "refundSeconds", Type = "number", Nilable = false },
+				{ Name = "refundSeconds", Type = "time_t", Nilable = false },
 				{ Name = "currencyCount", Type = "number", Nilable = false },
 				{ Name = "hasEnchants", Type = "bool", Nilable = false },
 			},

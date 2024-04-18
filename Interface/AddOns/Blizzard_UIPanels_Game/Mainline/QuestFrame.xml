@@ -1,0 +1,491 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="QuestPortrait-MrBrownstone" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="197" y="230"/>
+		<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.45117188"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_UL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.00195313" bottom="0.07421875"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_UR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.07812500" bottom="0.15039063"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_BL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.15429688" bottom="0.22656250"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_BR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.23046875" bottom="0.30273438"/>
+	</Texture>
+	<Texture name="QuestPortrait-Nameplate" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="199" y="44"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.45507813" bottom="0.54101563"/>
+	</Texture>
+	<Texture name="QuestPortrait-Divider_noname" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="199" y="44"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.54492188" bottom="0.63085938"/>
+	</Texture>
+	<Texture name="QuestPortrait-StoneSwirls-Top" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="195" y="18"/>
+		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>
+	</Texture>
+
+	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="QuestFramePortrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="QuestNpcNameFrame">
+				<Size x="0" y="14"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="QuestFrame" relativePoint="TOP" x="0" y="-4"/>
+					<Anchor point="LEFT" relativeTo="QuestFramePortrait" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="RIGHT" x="-38" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevelByTwo"/>
+				</Scripts>
+			</Frame>
+ 			<Frame name="QuestFrameRewardPanel" inherits="QuestFramePanelTemplate" hidden="true">
+ 				<Frames>
+					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
+						<Size x="120" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestRewardCompleteButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestRewardScrollFrame" inherits="QuestScrollFrameTemplate">
+						<ScrollChild>
+							<Frame name="QuestRewardScrollChildFrame">
+								<Size x="300" y="334"/>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow function="QuestFrameRewardPanel_OnShow"/>
+				</Scripts>
+ 			</Frame>
+			<Frame name="QuestFrameProgressPanel" inherits="QuestFramePanelTemplate" hidden="true">
+ 				<Frames>
+ 					<Button name="QuestFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestGoodbyeButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
+						<Size x="120" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestProgressCompleteButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestProgressScrollFrame" inherits="QuestScrollFrameTemplate">
+						<ScrollChild>
+							<Frame name="QuestProgressScrollChildFrame">
+								<Size x="300" y="403"/>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="QuestProgressTitleText" inherits="QuestTitleFont" text="Quest Title" justifyH="LEFT">
+											<Size x="285" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-10"/>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestProgressText" inherits="QuestFont" justifyH="LEFT">
+											<Size x="275" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressTitleText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestProgressRequiredItemsText" inherits="QuestTitleFont" text="TURN_IN_ITEMS" justifyH="LEFT">
+											<Size x="295" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+											</Anchors>
+										</FontString>
+										<FontString name="QuestProgressRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame name="QuestProgressRequiredMoneyFrame" inherits="MoneyFrameTemplate">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressRequiredMoneyText" relativePoint="RIGHT" x="10" y="0"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												SmallMoneyFrame_OnLoad(self);
+												MoneyFrame_SetType(self, "STATIC");
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Button name="QuestProgressItem1" inherits="QuestItemTemplate" id="1">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="QuestProgressRequiredItemsText" relativePoint="BOTTOMLEFT" x="-3" y="-5"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem2" inherits="QuestItemTemplate" id="2">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem1" relativePoint="RIGHT" x="2" y="0"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem3" inherits="QuestItemTemplate" id="3">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="QuestProgressItem1" relativePoint="BOTTOM" x="0" y="-3"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem4" inherits="QuestItemTemplate" id="4">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem3" relativePoint="RIGHT" x="2" y="0"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem5" inherits="QuestItemTemplate" id="5">
+										<Anchors>
+											<Anchor point="TOP" relativeTo="QuestProgressItem3" relativePoint="BOTTOM" x="0" y="-3"/>
+										</Anchors>
+									</Button>
+									<Button name="QuestProgressItem6" inherits="QuestItemTemplate" id="6">
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="QuestProgressItem5" relativePoint="RIGHT" x="2" y="0"/>
+										</Anchors>
+									</Button>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+ 				</Frames>
+				<Scripts>
+					<OnShow function="QuestFrameProgressPanel_OnShow"/>
+				</Scripts>
+ 			</Frame>
+			<Frame name="QuestFrameDetailPanel" inherits="QuestFramePanelTemplate" hidden="true">
+				<Size x="338" y="496"/>
+ 				<Frames>
+					<Button name="QuestFrameDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestDetailDeclineButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+						<Size x="77" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestDetailAcceptButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestDetailScrollFrame" parentKey="ScrollFrame" inherits="QuestScrollFrameTemplate">
+						<ScrollChild>
+							<Frame name="QuestDetailScrollChildFrame">
+								<Size x="300" y="403"/>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow function="QuestFrameDetailPanel_OnShow"/>
+				</Scripts>
+ 			</Frame>
+			<Frame name="QuestFrameGreetingPanel" inherits="QuestFramePanelTemplate" hidden="true">
+				<Frames>
+					<Button name="QuestFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
+						<Size x="78" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(QuestFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="QuestGreetingScrollFrame" inherits="QuestScrollFrameTemplate">
+						<ScrollChild>
+							<Frame name="QuestGreetingScrollChildFrame">
+								<Size x="300" y="403"/>
+								<Layers>
+									<Layer>
+										<FontString name="GreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">
+											<Size x="270" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-10"/>
+											</Anchors>
+										</FontString>
+										<FontString name="CurrentQuestsText" inherits="QuestTitleFont" text="CURRENT_QUESTS" justifyH="LEFT">
+											<Size x="300" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GreetingText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+											</Anchors>
+										</FontString>
+										<Texture name="QuestGreetingFrameHorizontalBreak" file="Interface\QuestFrame\UI-HorizontalBreak">
+											<Size x="256" y="32"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="22" y="5"/>
+											</Anchors>
+										</Texture>
+										<FontString name="AvailableQuestsText" inherits="QuestTitleFont" text="AVAILABLE_QUESTS" justifyH="LEFT">
+											<Size x="300" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GreetingText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="QuestFrameGreetingPanel_OnLoad"/>
+					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
+				</Scripts>
+			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad function="QuestFrame_OnLoad"/>
+			<OnEvent function="QuestFrame_OnEvent"/>
+			<OnShow function="QuestFrame_OnShow"/>
+			<OnHide function="QuestFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate" hidden="true">
+		<Size x="198" y="230"/>
+		<KeyValues>
+			<KeyValue key="normalIntensity" value="0.75" type="number"/>
+			<KeyValue key="highlightIntensity" value="1.2" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="QuestNPCModelBg" inherits="QuestPortrait-MrBrownstone">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="QuestNPCModelShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
+					<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
+				</Texture>
+				<Texture name="QuestNPCModelTopBg" inherits="QuestPortrait-StoneSwirls-Top">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="QuestNPCModelBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelBotRightCorner" inherits="UI-Frame-BotCornerRight" parentKey="BorderBottomRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelTopBorder" inherits="_UI-Frame-TitleTile" parentKey="BorderTop">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="20"/>
+						<Anchor point="TOPRIGHT" x="1" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelBottomBorder" inherits="_UI-Frame-Bot" parentKey="BorderBottom">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="BorderLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelBotLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelRightBorder" inherits="!UI-Frame-RightTile" parentKey="BorderRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="QuestNPCModelNameplate" inherits="QuestPortrait-Nameplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-216"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCModelBlankNameplate" inherits="QuestPortrait-Divider_noname">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString name="QuestNPCModelNameText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" x="22" y="-12"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelNameplate" x="-22" y="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture name="QuestNPCCornerTopLeft" inherits="QuestPortrait-Corner_UL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="24"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCCornerTopRight" inherits="QuestPortrait-Corner_UR">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7" y="24"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCCornerBottomLeft" inherits="QuestPortrait-Corner_BL">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-26"/>
+					</Anchors>
+				</Texture>
+				<Texture name="QuestNPCCornerBottomRight" inherits="QuestPortrait-Corner_BR">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-26"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="QuestNPCModelNameTooltipFrame" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameText" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelNameText" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if ( QuestNPCModelNameText:IsTruncated() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOP");
+							GameTooltip:SetText(QuestNPCModelNameText:GetText());
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="QuestNPCModelTextFrame" useParentLevel="true">
+				<Size x="198" y="84"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="QuestNPCModelNameplate" relativePoint="BOTTOMLEFT" y="12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="QuestNPCModelTextFrameBg" inherits="QuestPortrait-MrBrownstone">
+							<Size x="197" y="64"/>
+							<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.126953125"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="QuestNPCModelTextBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="BorderBottomLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextBotRightCorner" inherits="UI-Frame-BotCornerRight" parentKey="BorderBottomRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextBottomBorder" inherits="_UI-Frame-Bot" parentKey="BorderBottom">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelTextBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="BorderLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="QuestNPCModelTextBotLeftCorner" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="QuestNPCModelTextRightBorder" inherits="!UI-Frame-RightTile" parentKey="BorderRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="3"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="QuestNPCModelTextBotRightCorner" relativePoint="TOPRIGHT" x="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="QuestNPCModelTextScrollFrame" inherits="ScrollFrameTemplate" useParentLevel="true">
+						<Size x="178" y="75"/>
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="-4" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-1" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-5" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-3"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="QuestNPCModelTextScrollChildFrame">
+								<Size x="178" y="1"/>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="QuestNPCModelText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+											<Size x="178"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+												<Anchor point="TOPRIGHT" x="-5"/>
+											</Anchors>
+											<Color r="0.96875" g="0.8984375" b="0.578125"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", self, -6, -6);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", self, 7, -6);
+					</OnShow>
+					<OnHide>
+						QuestNPCCornerBottomLeft:SetPoint("BOTTOMLEFT", QuestModelScene, -6, -29);
+						QuestNPCCornerBottomRight:SetPoint("BOTTOMRIGHT", QuestModelScene, 7, -29);
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</ModelScene>
+</Ui>

@@ -8,7 +8,7 @@ local RED_TEXT_MINUTES_THRESHOLD = 60;
 local TIME_LEFT_ATLAS_MARKUP = CreateAtlasMarkup("auctionhouse-icon-clock", 16, 16, 2, -2);
 
 local function GetQualityFilterString(itemQuality)
-	local hex = select(4, GetItemQualityColor(itemQuality));
+	local hex = select(4, C_Item.GetItemQualityColor(itemQuality));
 	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
 	return "|c"..hex..text.."|r";
 end
@@ -16,6 +16,7 @@ end
 AUCTION_HOUSE_FILTER_STRINGS = {
 	[Enum.AuctionHouseFilter.UncollectedOnly] = AUCTION_HOUSE_FILTER_UNCOLLECTED_ONLY,
 	[Enum.AuctionHouseFilter.UsableOnly] = AUCTION_HOUSE_FILTER_USABLE_ONLY,
+	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = AUCTION_HOUSE_FILTER_CURRENTEXPANSION_ONLY,
 	[Enum.AuctionHouseFilter.UpgradesOnly] = AUCTION_HOUSE_FILTER_UPGRADES_ONLY,
 	[Enum.AuctionHouseFilter.PoorQuality] = GetQualityFilterString(Enum.ItemQuality.Poor),
 	[Enum.AuctionHouseFilter.CommonQuality] = GetQualityFilterString(Enum.ItemQuality.Common),
@@ -326,23 +327,32 @@ function AuctionHouseUtil.AddAuctionHouseTooltipInfo(tooltip, rowData, bidStatus
 	end
 end
 
-function AuctionHouseUtil.GetItemDisplayText(itemName, itemLevel, craftingQuality)
+function AuctionHouseUtil.GetItemDisplayText(itemName, itemLevel)
 	if itemLevel then
 		return AUCTION_HOUSE_EQUIPMENT_RESULT_FORMAT:format(itemName, itemLevel);
-	elseif craftingQuality then
-		local icon = C_Texture.GetCraftingReagentQualityChatIcon(craftingQuality);
-		return AUCTION_HOUSE_CRAFTING_REAGANT_QUALITY_FORMAT:format(itemName, icon);
 	end
 
 	return itemName;
 end
 
-function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo)
-	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemKey.itemID);
-	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, itemKeyInfo.isEquipment and itemKey.itemLevel or nil, craftingQuality);
+function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, hideItemLevel)
+	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and itemKey.itemLevel and not hideItemLevel;
+	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and itemKey.itemLevel or nil);
 	local itemQuality = itemKeyInfo.quality;
 	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
+
 	return itemQualityColor.color:WrapTextInColorCode(itemDisplayText);
+end
+
+function AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey)
+	local itemDisplayCraftingQuality = nil;
+	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemKey.itemID);
+
+	if craftingQuality then
+		itemDisplayCraftingQuality = C_Texture.GetCraftingReagentQualityChatIcon(craftingQuality);
+	end
+
+	return itemDisplayCraftingQuality;
 end
 
 function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
@@ -356,7 +366,7 @@ function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionDa
 		if LinkUtil.IsLinkType(itemLink, "battlepet") then
 			itemQuality = select(3, BattlePetToolTip_UnpackBattlePetLink(itemLink)) or itemQuality;
 		else
-			itemQuality = select(3, GetItemInfo(itemLink)) or itemQuality;
+			itemQuality = select(3, C_Item.GetItemInfo(itemLink)) or itemQuality;
 		end
 	end
 
@@ -364,14 +374,20 @@ function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionDa
 	return itemQualityColor.color;
 end
 
-function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
-	local itemKey = ownedAuctionData.itemKey;
-	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemKey.itemID);
-	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, itemKeyInfo.isEquipment and itemKey.itemLevel or nil, craftingQuality);
+function AuctionHouseUtil.GetQuantityDisplayTextFromOwnedAuctionData(ownedAuctionData)
+	local quantityDisplayText = nil;
 
-	if ownedAuctionData.quantity > 1 then
-		itemDisplayText = AUCTION_HOUSE_ITEM_WITH_QUANTITY_FORMAT:format(itemDisplayText, BreakUpLargeNumbers(ownedAuctionData.quantity));
+	if ownedAuctionData.quantity and ownedAuctionData.quantity > 1 then
+		quantityDisplayText = AUCTION_HOUSE_ITEM_QUANTITY_FORMAT:format(BreakUpLargeNumbers(ownedAuctionData.quantity));
 	end
+	
+	return quantityDisplayText;
+end
+
+function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, itemKeyInfo, hideItemLevel)
+	local itemKey = ownedAuctionData.itemKey;
+	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and itemKey.itemLevel and not hideItemLevel;
+	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and itemKey.itemLevel or nil);
 
 	local itemQualityColor = AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo);
 	return itemQualityColor:WrapTextInColorCode(itemDisplayText);
@@ -596,7 +612,7 @@ function AuctionHouseUtil.GetItemLinkFromRowData(rowData)
 	else
 		local itemID = rowData.itemID or rowData.itemKey.itemID;
 		if itemID ~= nil then
-			local itemLink = select(2, GetItemInfo(itemID));
+			local itemLink = select(2, C_Item.GetItemInfo(itemID));
 			return itemLink;
 		end
 	end
@@ -713,24 +729,6 @@ local AuctionHouseErrorToErrorText = {
 
 function AuctionHouseUtil.GetErrorText(auctionHouseError)
 	return AuctionHouseErrorToErrorText[auctionHouseError] or "";
-end
-
-function AuctionHouseUtil.GetNotificationText(auctionHouseNotification, formatArg)
-	if auctionHouseNotification == Enum.AuctionHouseNotification.BidPlaced then
-		return ERR_AUCTION_BID_PLACED;
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionRemoved then
-		return ERR_AUCTION_REMOVED;
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionWon then
-		return ERR_AUCTION_WON_S:format(formatArg);
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionOutbid then
-		return ERR_AUCTION_OUTBID_S:format(formatArg);
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionSold then
-		return ERR_AUCTION_SOLD_S:format(formatArg);
-	elseif auctionHouseNotification == Enum.AuctionHouseNotification.AuctionExpired then
-		return ERR_AUCTION_EXPIRED_S:format(formatArg);
-	end
-
-	return "";
 end
 
 local UniqueShadowlandsCraftedLimitCategoryID = 481;

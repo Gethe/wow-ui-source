@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseTableBuilder.lua"/>
 
 	<Frame name="AuctionHouseTableEmptyTemplate" mixin="TableBuilderCellMixin" virtual="true"/>
@@ -148,11 +148,21 @@
 						<Anchor point="RIGHT" x="1"/>
 					</Anchors>
 				</FontString>
+
+				<!-- Will contain text that should be always displayed, if/when Text truncates -->
+				<FontString parentKey="ExtraInfo" inherits="Number14FontWhite" justifyH="LEFT" maxLines="1" hidden="true">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="1"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEvent method="OnEvent"/>
+			<OnShow method="HandleItemNameTruncation"/>
 			<OnHide method="OnHide"/>
+			<OnSizeChanged method="HandleItemNameTruncation"/>
 		</Scripts>
 	</Frame>
 

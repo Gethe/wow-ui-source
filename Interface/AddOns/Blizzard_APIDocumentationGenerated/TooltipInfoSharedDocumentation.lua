@@ -24,9 +24,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 41,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 40,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -50,6 +50,26 @@ local TooltipInfoShared =
 				{ Name = "QuestPlayer", Type = "TooltipDataLineType", EnumValue = 18 },
 				{ Name = "NestedBlock", Type = "TooltipDataLineType", EnumValue = 19 },
 				{ Name = "ItemBinding", Type = "TooltipDataLineType", EnumValue = 20 },
+				{ Name = "RestrictedRaceClass", Type = "TooltipDataLineType", EnumValue = 21 },
+				{ Name = "RestrictedFaction", Type = "TooltipDataLineType", EnumValue = 22 },
+				{ Name = "RestrictedSkill", Type = "TooltipDataLineType", EnumValue = 23 },
+				{ Name = "RestrictedPvPMedal", Type = "TooltipDataLineType", EnumValue = 24 },
+				{ Name = "RestrictedReputation", Type = "TooltipDataLineType", EnumValue = 25 },
+				{ Name = "RestrictedSpellKnown", Type = "TooltipDataLineType", EnumValue = 26 },
+				{ Name = "RestrictedLevel", Type = "TooltipDataLineType", EnumValue = 27 },
+				{ Name = "EquipSlot", Type = "TooltipDataLineType", EnumValue = 28 },
+				{ Name = "ItemName", Type = "TooltipDataLineType", EnumValue = 29 },
+				{ Name = "Separator", Type = "TooltipDataLineType", EnumValue = 30 },
+				{ Name = "ToyName", Type = "TooltipDataLineType", EnumValue = 31 },
+				{ Name = "ToyText", Type = "TooltipDataLineType", EnumValue = 32 },
+				{ Name = "ToyEffect", Type = "TooltipDataLineType", EnumValue = 33 },
+				{ Name = "ToyDuration", Type = "TooltipDataLineType", EnumValue = 34 },
+				{ Name = "RestrictedArena", Type = "TooltipDataLineType", EnumValue = 35 },
+				{ Name = "RestrictedBg", Type = "TooltipDataLineType", EnumValue = 36 },
+				{ Name = "ToyFlavorText", Type = "TooltipDataLineType", EnumValue = 37 },
+				{ Name = "ToyDescription", Type = "TooltipDataLineType", EnumValue = 38 },
+				{ Name = "ToySource", Type = "TooltipDataLineType", EnumValue = 39 },
+				{ Name = "GemSocketEnchantment", Type = "TooltipDataLineType", EnumValue = 40 },
 			},
 		},
 		{
@@ -95,16 +115,7 @@ local TooltipInfoShared =
 			Fields =
 			{
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
-			},
-		},
-		{
-			Name = "TooltipData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "lines", Type = "table", InnerType = "TooltipDataLine", Nilable = false },
-				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -117,16 +128,8 @@ local TooltipInfoShared =
 				{ Name = "intVal", Type = "number", Nilable = true },
 				{ Name = "floatVal", Type = "number", Nilable = true },
 				{ Name = "boolVal", Type = "bool", Nilable = true },
-				{ Name = "colorVal", Type = "table", Mixin = "ColorMixin", Nilable = true },
-				{ Name = "guidVal", Type = "string", Nilable = true },
-			},
-		},
-		{
-			Name = "TooltipDataLine",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "args", Type = "table", InnerType = "TooltipDataArg", Nilable = false },
+				{ Name = "colorVal", Type = "colorRGB", Mixin = "ColorMixin", Nilable = true },
+				{ Name = "guidVal", Type = "WOWGUID", Nilable = true },
 			},
 		},
 	},

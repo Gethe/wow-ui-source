@@ -1,0 +1,97 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="ObjectiveTrackerModuleMinimizeButtonTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<NormalTexture atlas="ui-questtrackerbutton-secondary-collapse" useAtlasSize="true"/>
+		<PushedTexture atlas="ui-questtrackerbutton-secondary-collapse-pressed" useAtlasSize="true"/>
+		<HighlightTexture atlas="ui-questtrackerbutton-yellow-highlight" alphaMode="ADD" useAtlasSize="true"/>
+	</Button>
+
+	<Frame name="ObjectiveTrackerModuleHeaderTemplate" mixin="ObjectiveTrackerModuleHeaderMixin" virtual="true">
+		<Size x="260" y="26"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="UI-QuestTracker-Secondary-Objective-Header" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="ObjectiveTrackerHeaderFont" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="12" type="number"/>
+					</KeyValues>
+					<Size x="200"/>
+					<Anchors>
+						<Anchor point="LEFT" x="7" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Shine" alpha="0" atlas="UI-QuestTracker-OBJFX-Shine" useAtlasSize="true" scale="0.95">
+					<Anchors>
+						<Anchor point="CENTER" x="-150" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Glow" alpha="0" atlas="UI-QuestTracker-OBJFX-BarGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-120" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="MinimizeButton" inherits="ObjectiveTrackerModuleMinimizeButtonTemplate">
+				<KeyValues>
+		  			<KeyValue key="buttonType" value="module" type="string"/>
+		  		</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" x="1"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="AddAnim" setToFinalAlpha="true">
+				<Alpha childKey="Background" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="MinimizeButton" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.6" order="1" startDelay="0.2" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Shine" duration="0.7" order="1" startDelay="0.2" smoothing="IN_OUT" offsetX="200" offsetY="0"/>
+				<Alpha childKey="Shine" duration="1" order="1" startDelay="0.2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Shine" duration="1.2" order="1" startDelay="0.2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ObjectiveTrackerModuleTemplate" mixin="ObjectiveTrackerModuleMixin" inherits="POIButtonOwnerTemplate" hidden="true" virtual="true">
+		<!-- this needs to have a valid rect or first layout will be off -->
+		<Size x="260" y="10"/>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Header" inherits="ObjectiveTrackerModuleHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ContentsFrame">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="BOTTOM"/>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

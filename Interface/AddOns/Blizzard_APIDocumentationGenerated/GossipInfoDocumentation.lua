@@ -102,6 +102,20 @@ local GossipInfo =
 			},
 		},
 		{
+			Name = "GetOptionUIWidgetSetsAndTypesByOptionID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gossipOptionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "gossipOptionUIWidgetSetsAndTypes", Type = "table", InnerType = "GossipOptionUIWidgetSetAndType", Nilable = true },
+			},
+		},
+		{
 			Name = "GetOptions",
 			Type = "Function",
 
@@ -145,7 +159,7 @@ local GossipInfo =
 
 			Returns =
 			{
-				{ Name = "gossipText", Type = "string", Nilable = false },
+				{ Name = "gossipText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -177,7 +191,18 @@ local GossipInfo =
 			Arguments =
 			{
 				{ Name = "optionID", Type = "number", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = true },
+				{ Name = "text", Type = "cstring", Nilable = true },
+				{ Name = "confirmed", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "SelectOptionByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "optionID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = true },
 				{ Name = "confirmed", Type = "bool", Nilable = true },
 			},
 		},
@@ -194,6 +219,10 @@ local GossipInfo =
 			Name = "GossipClosed",
 			Type = "Event",
 			LiteralName = "GOSSIP_CLOSED",
+			Payload =
+			{
+				{ Name = "interactionIsContinuing", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "GossipConfirm",
@@ -231,7 +260,7 @@ local GossipInfo =
 			LiteralName = "GOSSIP_SHOW",
 			Payload =
 			{
-				{ Name = "uiTextureKit", Type = "string", Nilable = true },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },
 			},
 		},
 	},
@@ -262,6 +291,18 @@ local GossipInfo =
 				{ Name = "Unavailable", Type = "GossipOptionStatus", EnumValue = 1 },
 				{ Name = "Locked", Type = "GossipOptionStatus", EnumValue = 2 },
 				{ Name = "AlreadyComplete", Type = "GossipOptionStatus", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "GossipOptionUIWidgetSetTypes",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Modifiers", Type = "GossipOptionUIWidgetSetTypes", EnumValue = 0 },
+				{ Name = "Background", Type = "GossipOptionUIWidgetSetTypes", EnumValue = 1 },
 			},
 		},
 		{
@@ -306,16 +347,26 @@ local GossipInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "gossipOptionID", Type = "number", Nilable = false },
+				{ Name = "gossipOptionID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "GossipOptionRewardInfo", Nilable = false },
 				{ Name = "status", Type = "GossipOptionStatus", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = true },
 				{ Name = "flags", Type = "number", Nilable = false },
-				{ Name = "overrideIconID", Type = "number", Nilable = true },
+				{ Name = "overrideIconID", Type = "fileID", Nilable = true },
 				{ Name = "selectOptionWhenOnlyOption", Type = "bool", Nilable = false },
 				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "failureDescription", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "GossipOptionUIWidgetSetAndType",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "widgetType", Type = "number", Nilable = false },
+				{ Name = "uiWidgetSetID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -325,7 +376,7 @@ local GossipInfo =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "inBattleMap", Type = "bool", Nilable = false },
 			},
 		},
@@ -343,6 +394,8 @@ local GossipInfo =
 				{ Name = "isLegendary", Type = "bool", Nilable = false },
 				{ Name = "isIgnored", Type = "bool", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "isImportant", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
 			},
 		},
 	},

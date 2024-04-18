@@ -12,7 +12,7 @@ local EventUtils =
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "string", Nilable = false },
+				{ Name = "eventName", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

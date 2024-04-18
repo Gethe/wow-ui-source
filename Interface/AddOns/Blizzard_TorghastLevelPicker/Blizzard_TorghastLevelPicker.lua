@@ -200,7 +200,7 @@ end
 
 function TorghastLevelPickerOptionButtonMixin:Setup(textureKit, optionInfo, index) 
 	self.optionInfo = optionInfo;
-	self:SetupBase(textureKit, optionInfo, index, gossipButtonTextureKitRegions)
+	self:SetupBase(textureKit, optionInfo, optionInfo.orderIndex, gossipButtonTextureKitRegions)
 	self:SetState(optionInfo.status); 
 	self:SetDifficultyTexture();
 	self.spell = nil; 
@@ -280,7 +280,7 @@ function TorghastLevelPickerOptionButtonMixin:OnClick()
 end 
 
 function TorghastLevelPickerOptionButtonMixin:RefreshTooltip()
-	if (not RegionUtil.IsDescendantOfOrSame(GetMouseFocus(), self) or not self.spell) then 
+	if (not RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self) or not self.spell) then 
 		return;
 	end 
 
@@ -370,7 +370,7 @@ function TorghastLevelPickerRewardCircleMixin:SetSortedRewards()
 		self.itemRewards = { };
 		for  _, reward in ipairs(self.rewards) do
 			if	(reward.rewardType == Enum.GossipOptionRewardType.Item) then 
-				local name, _, quality, _, _, _, _, _, _, itemIcon = GetItemInfo(reward.id);
+				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
 				table.insert(self.itemRewards, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name});
 			end
 		end
@@ -405,7 +405,7 @@ end
 
 function TorghastLevelPickerRewardCircleMixin:SetRewardIcon()
 	if (self.itemRewards and self.itemRewards[1]) then 
-		local texture = select(5, GetItemInfoInstant(self.itemRewards[1].id));
+		local texture = select(5, C_Item.GetItemInfoInstant(self.itemRewards[1].id));
 		self.Icon:SetTexture(texture);
 		return; 
 	end 
@@ -537,6 +537,6 @@ function TorghastLevelPickerOpenPortalButtonMixin:OnClick()
 	if(not selectedPortal) then 
 		return; 
 	end
-	C_GossipInfo.SelectOption(selectedPortal.optionInfo.gossipOptionID); 
+	C_GossipInfo.SelectOptionByIndex(selectedPortal.optionInfo.orderIndex);
 	PlaySound(SOUNDKIT.UI_TORGHAST_WAYFINDER_OPEN_PORTAL); 
 end 

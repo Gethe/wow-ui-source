@@ -24,6 +24,7 @@ function Class_AddSpellToActionBarService:OnBegin(args)
 		TutorialManager:Finished(self:Name());
 		return;
 	end
+
 	self.inProgress = true;
 	self.spellToAdd = spellID;
 	self.spellIDString = "{$"..self.spellToAdd.."}";
@@ -53,13 +54,13 @@ function Class_AddSpellToActionBarService:OnBegin(args)
 		self.PointerID = self:ShowScreenTutorial(content, nil, NPE_TutorialMainFrameMixin.FramePositions.Low);
 	end
 
-	if SpellBookFrame:IsShown() then
+	if PlayerSpellsFrame and PlayerSpellsFrame.SpellBookFrame:IsShown() then
 		self:SpellBookFrameShow()
 	else
 		if self.spellIDString then
-			self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", SpellbookMicroButton, 0, 0, nil, "DOWN");
+			self:ShowPointerTutorial(TutorialHelper:FormatString(self.spellMicroButtonString:format(self.spellIDString)), "DOWN", PlayerSpellsMicroButton, 0, 0, nil, "DOWN");
 		end
-		EventRegistry:RegisterCallback("SpellBookFrame.Show", self.SpellBookFrameShow, self);
+		EventRegistry:RegisterCallback("PlayerSpellsFrame.SpellBookFrame.Show", self.SpellBookFrameShow, self);
 	end
 end
 
@@ -71,55 +72,84 @@ function Class_AddSpellToActionBarService:UPDATE_SHAPESHIFT_FORM()
 end
 
 function Class_AddSpellToActionBarService:SpellBookFrameShow()
-	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
-	EventRegistry:RegisterCallback("SpellBookFrame.Hide", self.SpellBookFrameHide, self);
+	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpellBookFrame.Show", self);
+	EventRegistry:RegisterCallback("PlayerSpellsFrame.SpellBookFrame.Hide", self.SpellBookFrameHide, self);
+	EventRegistry:RegisterCallback("PlayerSpellsFrame.SpellBookFrame.DisplayedSpellsChanged", self.SpellBookFrameSpellsChanged, self);
 	self:HidePointerTutorials();
-	ActionButton_HideOverlayGlow(SpellbookMicroButton);
-	C_Timer.After(0.1, function()
-		self:RemindAbility();
-	end);
+	ActionButton_HideOverlayGlow(PlayerSpellsMicroButton);
+
+	self:StartRemindTimer();
 end
 
 function Class_AddSpellToActionBarService:SpellBookFrameHide()
 	TutorialManager:Finished(self:Name());
 end
 
+function Class_AddSpellToActionBarService:SpellBookFrameSpellsChanged()
+	-- Don't force SpellBook back to the spell using "Go to spell", just try to find it if it's being displayed
+	-- We'll fall back to a pointer visual if it isn't
+	local knownSpellsOnly, toggleFlyout, flyoutReason = true, false, nil;
+	self.spellButton, self.flyoutButton = PlayerSpellsFrame.SpellBookFrame:GetSpellFrame(self.spellToAdd, knownSpellsOnly, toggleFlyout, flyoutReason)
+	self:UpdateVisuals();
+end
+
 function Class_AddSpellToActionBarService:ACTIONBAR_SHOW_BOTTOMLEFT()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-	C_Timer.After(0.1, function()
-		self:RemindAbility();
-	end);
+	self:StartRemindTimer();
+end
+
+function Class_AddSpellToActionBarService:StartRemindTimer()
+	if not self.remindTimer then
+		self.remindTimer = C_Timer.NewTimer(0.1, function()
+			self:RemindAbility();
+			self.remindTimer = nil;
+		end);
+	end
 end
 
 function Class_AddSpellToActionBarService:RemindAbility()
 	self:HideScreenTutorial();
 
-	-- find an empty button
+	-- find an empty action button
 	self.actionButton = TutorialHelper:FindEmptyButton(self.optionalPreferredActionBar);
-	if not self.requested and not actionButton and not MultiBarBottomLeft:IsVisible() then
+	if not self.requested and not self.actionButton and not MultiBarBottomLeft:IsVisible() then
 		-- no button was found, request the bottom left action bar be shown
 		Dispatcher:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
 		self.requested = RequestBottomLeftActionBar();
 		return;
 	end
 
-	-- find the spell button
-	local toggleFlyout = false;
-	self.spellButton, self.flyoutButton = SpellBookFrame_OpenToSpell(self.spellToAdd, toggleFlyout);
+	-- have the spellbook navigate to the spell and give us the button for it
+	local knownSpellsOnly, toggleFlyout, flyoutReason = true, false, nil;
+	self.spellButton, self.flyoutButton = PlayerSpellsFrame.SpellBookFrame:GoToSpell(self.spellToAdd, knownSpellsOnly, toggleFlyout, flyoutReason)
 
 	if self.actionButton and (self.flyoutButton or self.spellButton) then
-		-- play the drag animation
 		Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	end
 
+	self:UpdateVisuals();
+end
+
+function Class_AddSpellToActionBarService:UpdateVisuals()
+	if self.actionButton and (self.flyoutButton or self.spellButton) then
+		-- play the drag animation
+		TutorialDragButton:Hide();
 		TutorialDragButton:Show(self.flyoutButton or self.spellButton, self.actionButton);
 
 		local tutorialString = NPEV2_SPELLBOOKREMINDER:format(self.spellIDString);
 		tutorialString = TutorialHelper:FormatString(tutorialString)
-		self:ShowPointerTutorial(tutorialString, "LEFT", self.flyoutButton or self.spellButton or SpellBookFrame, 50, 0, nil, "LEFT");
+		self:ShowPointerTutorial(tutorialString, "LEFT", self.flyoutButton or self.spellButton, -100, 0, nil, "LEFT");
 	else
+		-- no drag, only pointer 
+		TutorialDragButton:Hide();
 		local tutorialString = NPEV2_SPELLBOOKREMINDER_PART2:format(self.spellIDString);
 		tutorialString = TutorialHelper:FormatString(tutorialString)
-		self:ShowPointerTutorial(tutorialString, "LEFT", self.spellButton or SpellBookFrame, 50, 0, nil, "LEFT");
+
+		if self.flyoutButton or self.spellButton then
+			self:ShowPointerTutorial(tutorialString, "LEFT", self.flyoutButton or self.spellButton, -100, 0, nil, "LEFT");
+		else
+			self:ShowPointerTutorial(tutorialString, "DOWN", PlayerSpellsFrame.SpellBookFrame, 15, -20, nil, "RIGHT");
+		end
 	end
 end
 
@@ -144,9 +174,8 @@ function Class_AddSpellToActionBarService:ACTIONBAR_SLOT_CHANGED(slot)
 		if not nextEmptyButton then
 			TutorialManager:Finished(self:Name());-- no more empty buttons
 		elseif self.actionButton ~= nextEmptyButton then
-			TutorialDragButton:Hide();
 			self.actionButton = nextEmptyButton;
-			TutorialDragButton:Show(self.flyoutButton or self.spellButton, self.actionButton);
+			self:UpdateVisuals();
 		end
 	end
 end
@@ -159,11 +188,17 @@ function Class_AddSpellToActionBarService:OnComplete()
 	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
 	Dispatcher:UnregisterEvent("UPDATE_SHAPESHIFT_FORM", self);
 	Dispatcher:UnregisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.Hide", self);
+	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpellBookFrame.Show", self);
+	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpellBookFrame.Hide", self);
+	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpellBookFrame.DisplayedSpellsChanged", self);
 	self:HidePointerTutorials();
 	self:HideScreenTutorial();
 	TutorialDragButton:Hide();
+
+	if self.remindTimer then
+		self.remindTimer:Cancel();
+		self.remindTimer = nil;
+	end
 
 	self.spellToAdd = nil;
 	self.actionButton = nil;
@@ -191,7 +226,7 @@ function Class_ItemUpgradeCheckingService:OnBegin()
 	local upgrades = self:GetBestItemUpgrades();
 	local slot, item = next(upgrades);
 
-	if item and slot ~= INVSLOT_TABARD then		
+	if item and slot ~= INVSLOT_TABARD then
 		TutorialManager:Queue(Class_ChangeEquipment.name, item);
 	end
 	TutorialManager:Finished(self:Name());
@@ -219,8 +254,8 @@ function Class_ItemUpgradeCheckingService:GetBestItemUpgrades()
 
 		for i = 1, #items do
 			itemLink = items[i].ItemLink;
-			local itemQuality = select(3, GetItemInfo(itemLink));
-			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
+			local itemQuality = select(3, C_Item.GetItemInfo(itemLink));
+			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
 			if (itemQuality == Enum.ItemQuality.Heirloom) then
 				-- always recommend heirlooms, regardless of iLevel
 				highest = items[i];
@@ -240,7 +275,7 @@ function Class_ItemUpgradeCheckingService:GetBestItemUpgrades()
 end
 
 function Class_ItemUpgradeCheckingService:GetWeaponType(itemID)
-	local loc = select(9, GetItemInfo(itemID));
+	local loc = select(9, C_Item.GetItemInfo(itemID));
 
 	if ((loc == "INVTYPE_RANGED") or (loc == "INVTYPE_RANGEDRIGHT")) then
 		return self.WeaponType.Ranged;
@@ -271,8 +306,8 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 		local existingItemLink = GetInventoryItemLink("player", i);
 		local existingItemQuality;
 		if (existingItemLink ~= nil) then
-			existingItemIlvl = GetDetailedItemLevelInfo(existingItemLink) or 0;
-			existingItemQuality = select(3, GetItemInfo(existingItemLink));
+			existingItemIlvl = C_Item.GetDetailedItemLevelInfo(existingItemLink) or 0;
+			existingItemQuality = select(3, C_Item.GetItemInfo(existingItemLink));
 
 			if (i == INVSLOT_MAINHAND) then
 				local existingItemID = GetInventoryItemID("player", i);
@@ -284,8 +319,8 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 		GetInventoryItemsForSlot(i, availableItems);
 
 		for packedLocation, itemLink in pairs(availableItems) do
-			local itemInfo = {GetItemInfo(itemLink)};
-			local ilvl = GetDetailedItemLevelInfo(itemLink) or 0;
+			local itemInfo = {C_Item.GetItemInfo(itemLink)};
+			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
 
 			if (ilvl ~= nil) and (existingItemQuality ~= Enum.ItemQuality.Heirloom) then
 				if (ilvl > existingItemIlvl) then

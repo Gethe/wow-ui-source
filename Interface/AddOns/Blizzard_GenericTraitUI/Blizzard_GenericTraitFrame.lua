@@ -6,51 +6,52 @@ local TotalFrameLevelSpread = 500;
 local BaseYOffset = 1500;
 local BaseRowHeight = 600;
 
-local GenericTraitFrameLayoutOptions =
-{
+local GenericTraitFrameLayoutOptions = {
+	-- Note: It might be a good idea to have a more generic style in the future but for
+	-- now we're just going to use what we have.
 	Default = {
-		NineSliceTextureKit = nil, 
-		DetailTopAtlas = nil,
-		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
-		TitleDividerAtlas = nil,
-		BackgroundAtlas = "ui-frame-dragonflight-backgroundtile", 
-		HeaderSize = {
-			Width = 500,
-			Height = 50
-		},
-		ShowInset = true,
-		HeaderOffset = { x = 0, y=0 },
-		CurrencyOffset = { x=0, y=50 },
-		CurrencyBackgroundAtlas = nil,
-		PanOffset = {x=0, y=0},
-		ButtonPurchaseFXIDs = nil,
+		NineSliceTextureKit = "Dragonflight",
+		DetailTopAtlas = "dragonflight-golddetailtop",
+		Title = "",
+		TitleDividerAtlas = "dragonriding-talents-line",
+		BackgroundAtlas = "ui-frame-dragonflight-backgroundtile",
+		HeaderSize = { Width = 500, Height = 80	},
+		ShowInset = false,
+		HeaderOffset = { x = 0, y = 0 },
+		CurrencyOffset = { x = 0, y = 50 },
+		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
+		PanOffset = { x = 0, y = 0 },
+		ButtonPurchaseFXIDs = { 150, 142, 143 },
 	},
+
 	Dragonflight = {
-		NineSliceTextureKit = "Dragonflight", 
+		NineSliceTextureKit = "Dragonflight",
 		DetailTopAtlas = "dragonflight-golddetailtop",
 		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
 		TitleDividerAtlas = "dragonriding-talents-line",
 		BackgroundAtlas = "dragonriding-talents-background",
-		HeaderSize = {
-			Width = 500,
-			Height = 130
-		},
+		HeaderSize = { Width = 500, Height = 130 },
 		ShowInset = false,
-		HeaderOffset = { x = 0, y=-30 },
-		CurrencyOffset = { x=0, y=-20 },
+		HeaderOffset = { x = 0, y = -30 },
+		CurrencyOffset = { x = 0, y = -20 },
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
-		PanOffset = {x=-80, y=-35},
-		ButtonPurchaseFXIDs = {150, 142, 143},
-	}
+		PanOffset = { x = -80, y = -35 },
+		ButtonPurchaseFXIDs = { 150, 142, 143 },
+	},
 };
 
-local genericTraitFrameTutorials = 
-{ 
-	-- DragonRiding TreeID
-	[672] = 
-	{ 
-		tutorial = 
-		{
+local GenericTraitFrameLayouts = {
+	-- Dragonriding
+	[672] = GenericTraitFrameLayoutOptions.Dragonflight,
+
+	-- Hero Talents test tree
+	[898] = GenericTraitFrameLayoutOptions.Default,
+};
+
+local GenericTraitFrameTutorials = {
+	-- Dragonriding TreeID
+	[672] = {
+		tutorial = {
 			text = DRAGON_RIDING_SKILLS_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
@@ -59,15 +60,12 @@ local genericTraitFrameTutorials =
 			useParentStrata = false,
 		},
 	},
-}
+};
 
-local genericTraitCurrencyTutorials = 
-{ 
-	-- DragonRiding
-	[2563] = 
-	{ 
-		tutorial = 
-		{
+local GenericTraitCurrencyTutorials = {
+	-- Dragonriding
+	[2563] = {
+		tutorial = {
 			text = DRAGON_RIDING_CURRENCY_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
@@ -76,19 +74,18 @@ local genericTraitCurrencyTutorials =
 			useParentStrata = true,
 		},
 	},
-}
+};
+
 
 GenericTraitFrameMixin = {};
 
 local GenericTraitFrameEvents = {
 	"TRAIT_SYSTEM_NPC_CLOSED",
-	"TRAIT_TREE_CURRENCY_INFO_UPDATED"
+	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
 };
 
 function GenericTraitFrameMixin:OnLoad()
 	TalentFrameBaseMixin.OnLoad(self);
-
-	self:ApplyLayout(GenericTraitFrameLayoutOptions.Dragonflight)
 
 	-- Show costs by default.
 	local function GetDisplayTextFromTreeCurrency(treeCurrency)
@@ -128,9 +125,16 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 end
 
 function GenericTraitFrameMixin:OnShow()
+	-- 11.0 Placeholder
+	local treeID = self.traitTreeID;
+	local layout = GenericTraitFrameLayouts[treeID] or GenericTraitFrameLayoutOptions.Default;
+	self:ApplyLayout(layout);
+
 	TalentFrameBaseMixin.OnShow(self);
 
 	FrameUtil.RegisterFrameForEvents(self, GenericTraitFrameEvents);
+
+	EventRegistry:TriggerEvent("GenericTraitFrame.OnShow");
 
 	self:UpdateTreeCurrencyInfo();
 	self:ShowGenericTraitFrameTutorial();
@@ -144,6 +148,8 @@ function GenericTraitFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, GenericTraitFrameEvents);
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.TraitSystem);
+
+	EventRegistry:TriggerEvent("GenericTraitFrame.OnHide");
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 end
@@ -171,6 +177,8 @@ end
 function GenericTraitFrameMixin:SetSystemID(systemID)
 	local configID = C_Traits.GetConfigIDBySystemID(systemID);
 	self:SetConfigID(configID);
+
+	EventRegistry:TriggerEvent("GenericTraitFrame.SetSystemID", systemID, configID);
 end
 
 function GenericTraitFrameMixin:SetTreeID(traitTreeID)
@@ -178,6 +186,8 @@ function GenericTraitFrameMixin:SetTreeID(traitTreeID)
 
 	local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
 	self:SetConfigID(configID);
+
+	EventRegistry:TriggerEvent("GenericTraitFrame.SetTreeID", traitTreeID, configID);
 end
 
 function GenericTraitFrameMixin:SetConfigID(configID, forceUpdate)
@@ -202,17 +212,70 @@ function GenericTraitFrameMixin:GetConfigID()
 	return self.configurationInfo and self.configurationInfo.ID or nil;
 end
 
+function GenericTraitFrameMixin:CheckAndReportCommitOperation()
+	if not C_Traits.IsReadyForCommit() then
+		self:ReportConfigCommitError();
+		return false;
+	end
+
+	return TalentFrameBaseMixin.CheckAndReportCommitOperation(self);
+end
+
 function GenericTraitFrameMixin:AttemptConfigOperation(...)
 	if TalentFrameBaseMixin.AttemptConfigOperation(self, ...) then
 		if not self:CommitConfig() then
 			UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+			self:MarkTreeDirty();
+			return false;
 		end
+
+		return true;
+	else
+		self:MarkTreeDirty();
 	end
+
+	return false;
 end
 
 function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
-	TalentFrameBaseMixin.SetSelection(self, nodeID, entryID );
-	self:ShowPurchaseVisuals(nodeID);
+	if self:ShouldShowConfirmation() then
+		local baseButton = self:GetTalentButtonByNodeID(nodeID);
+		if baseButton and baseButton:IsMaxed() then
+			self:SetSelectionCallback(nodeID, entryID);
+			return;
+		end
+
+		local referenceKey = self;
+		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			StaticPopup_Hide("GENERIC_CONFIRMATION");
+		end
+
+		local cost = self:GetNodeCost(nodeID);
+		local costStrings = self:GetCostStrings(cost);
+		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+
+		local setSelectionCallback = GenerateClosure(self.SetSelectionCallback, self, nodeID, entryID);
+		local customData = {
+			text = costString,
+			callback = setSelectionCallback,
+			referenceKey = self,
+		};
+
+		StaticPopup_ShowCustomGenericConfirmation(customData);
+	else
+		self:SetSelectionCallback(nodeID, entryID);
+	end
+end
+
+function GenericTraitFrameMixin:SetSelectionCallback(nodeID, entryID)
+	if TalentFrameBaseMixin.SetSelection(self, nodeID, entryID) then
+		if entryID then
+			self:ShowPurchaseVisuals(nodeID);
+			self:PlaySelectSoundForNode(nodeID);
+		else
+			self:PlayDeselectSoundForNode(nodeID);
+		end
+	end
 end
 
 function GenericTraitFrameMixin:GetConfigCommitErrorString()
@@ -224,9 +287,13 @@ end
 function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
 	TalentFrameBaseMixin.UpdateTreeCurrencyInfo(self);
 
-	local currencyInfo = self.treeCurrencyInfo[1];
-	local displayText = currencyInfo and self.getDisplayTextFromTreeCurrency(currencyInfo) or nil;
-	self.Currency:Setup(currencyInfo, displayText); 
+	local currencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
+	local hasCurrencyInfo = currencyInfo ~= nil;
+	self.Currency:SetShown(hasCurrencyInfo);
+	if hasCurrencyInfo then
+		local displayText = self.getDisplayTextFromTreeCurrency(currencyInfo);
+		self.Currency:Setup(currencyInfo, displayText);
+	end
 end
 
 function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
@@ -238,79 +305,93 @@ function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
 end
 
 function GenericTraitFrameMixin:PurchaseRank(nodeID)
-	-- Overrides TalentFrameBaseMixin.
+	if self:ShouldShowConfirmation() then
+		local referenceKey = self;
+		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
+			StaticPopup_Hide("GENERIC_CONFIRMATION");
+		end
 
-	local referenceKey = self;
-	if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
-		StaticPopup_Hide("GENERIC_CONFIRMATION");
+		local cost = self:GetNodeCost(nodeID);
+		local costStrings = self:GetCostStrings(cost);
+		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+
+
+		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
+		local customData = {
+			text = costString,
+			callback = purchaseRankCallback,
+			referenceKey = self,
+		};
+
+		StaticPopup_ShowCustomGenericConfirmation(customData);
+	else
+		self:PurchaseRankCallback(nodeID);
 	end
-
-	local cost = self:GetNodeCost(nodeID);
-	local costStrings = self:GetCostStrings(cost);
-	local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
-
-
-	local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
-	local customData = {
-		text = costString,
-		callback = purchaseRankCallback,
-		referenceKey = self,
-	};
-
-	StaticPopup_ShowCustomGenericConfirmation(customData);
 end
 
-function GenericTraitFrameMixin:PurchaseRankCallback( nodeID )
-	TalentFrameBaseMixin.PurchaseRank(self, nodeID);
-	self:ShowPurchaseVisuals(nodeID);
+function GenericTraitFrameMixin:PurchaseRankCallback(nodeID)
+	if TalentFrameBaseMixin.PurchaseRank(self, nodeID) then
+		self:ShowPurchaseVisuals(nodeID);
+	end
 end
-
 
 function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
-	
 	local treeID = self:GetTalentTreeID();
-	local nodeIDs = C_Traits.GetTreeNodes(self.talentTreeID);
+	if not treeID then
+		return;
+	end
+
+	local nodeIDs = C_Traits.GetTreeNodes(treeID);
 
 	local firstButton = self:GetTalentButtonByNodeID(nodeIDs[1]);
-	local tutorialInfo = genericTraitFrameTutorials[self.talentTreeID];
+	local tutorialInfo = GenericTraitFrameTutorials[treeID];
 	if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
-			HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
+		HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
 	end
-	
 end
 
 function GenericTraitFrameMixin:ShowPurchaseVisuals(nodeID)
-	if (self.buttonPurchaseFXIDs == nil) then
+	if not self.buttonPurchaseFXIDs then
 		return;
 	end
 
 	local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
-	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseEffect then
-		buttonWithPurchase:PlayPurchaseEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
+	if buttonWithPurchase and buttonWithPurchase.PlayPurchaseCompleteEffect then
+		buttonWithPurchase:PlayPurchaseCompleteEffect(self.FxModelScene, self.buttonPurchaseFXIDs);
 	end
-
-	PlaySound(SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT);
 end
 
-GenericTraitFrameCurrencyFrameMixin = { }; 
+function GenericTraitFrameMixin:PlaySelectSoundForNode(nodeID)
+	self:InvokeTalentButtonMethodByNodeID("PlaySelectSound", nodeID);
+end
+
+function GenericTraitFrameMixin:PlayDeselectSoundForNode(nodeID)
+	self:InvokeTalentButtonMethodByNodeID("PlayDeselectSound", nodeID);
+end
+
+function GenericTraitFrameMixin:ShouldShowConfirmation()
+	local traitSystemFlags = C_Traits.GetTraitSystemFlags(self:GetConfigID());
+	return traitSystemFlags and FlagsUtil.IsSet(traitSystemFlags, Enum.TraitSystemFlag.ShowSpendConfirmation);
+end
+
+
+GenericTraitFrameCurrencyFrameMixin = {};
+
 function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()
 	local configID = self:GetParent():GetConfigID();
-	if configID then
-		self.uiWidgetSetID = C_Traits.GetTraitSystemWidgetSetID(configID); 
-	else
-		self.uiWidgetSetID = nil;
-	end
-end 
+	self.uiWidgetSetID = configID and C_Traits.GetTraitSystemWidgetSetID(configID) or nil;
+end
 
-function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText) 
+function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText)
+	displayText = displayText or "";
 	local currencyCostText = GENERIC_TRAIT_FRAME_CURRENCY_TEXT:format(currencyInfo and currencyInfo.quantity or 0, displayText);
 	local currencyText = WHITE_FONT_COLOR:WrapTextInColorCode(currencyCostText);
 
 	self.UnspentPointsCount:SetText(currencyText);
 	self:UpdateWidgetSet();
 
-	if (currencyInfo and currencyInfo.traitCurrencyID) then 
-		local tutorialInfo = genericTraitCurrencyTutorials[currencyInfo.traitCurrencyID];
+	if currencyInfo and currencyInfo.traitCurrencyID then
+		local tutorialInfo = GenericTraitCurrencyTutorials[currencyInfo.traitCurrencyID];
 		if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
 			HelpTip:Show(self, tutorialInfo.tutorial);
 		end
@@ -318,10 +399,11 @@ function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText)
 end
 
 function GenericTraitFrameCurrencyFrameMixin:OnEnter()
-	if(not self.uiWidgetSetID) then 
-		return; 
+	if not self.uiWidgetSetID then
+		return;
 	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddWidgetSet(GameTooltip, self.uiWidgetSetID);
 	GameTooltip:Show();
-end 
+end

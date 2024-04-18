@@ -1,11 +1,11 @@
 local MaxColumns = 3;
 local MaxRows = 6;
 local MaxUnscrolledCount = MaxColumns * MaxRows;
-local HideUnownedCvar = "professionsFlyoutHideUnowned";
+local HideUnavailableCvar = "professionsFlyoutHideUnowned";
 
 ProfessionsItemFlyoutButtonMixin = {};
 
-function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation)
+function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImplementation, onElementValidImplementation)
 	local item = elementData.item;
 	local itemLocation = elementData.itemLocation;
 	if not itemLocation then
@@ -21,21 +21,36 @@ function ProfessionsItemFlyoutButtonMixin:Init(elementData, onElementEnabledImpl
 	else
 		self:SetItem(item:GetItemID());
 	end
-
-	local count;
-	if itemLocation and elementData.onlyCountStack then
-		count = C_Item.GetStackCount(itemLocation);
-	else
-		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
-	end
-
-	local stackable = C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
-	self:SetItemButtonCount(stackable and count or 1);
 	
-	local enabled = count > 0;
-	if onElementEnabledImplementation then
-		enabled = onElementEnabledImplementation(self, elementData);
+	-- Stackable items would all normally be accumulated, however in the case of salvage targets, the stacks
+	-- cannot be combined because the craft API requires a specific item guid target, and that prevents us from
+	-- merging multiple item stacks together to fulfill the reagent count requirement.
+	local count = 0;
+	local forceAccumulateInventory = elementData.forceAccumulateInventory;
+	local accumulateInventory = forceAccumulateInventory or not itemLocation or (item:IsStackable() and not elementData.onlyCountStack);
+	if accumulateInventory then
+		count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
+	elseif itemLocation then
+		count = C_Item.GetStackCount(itemLocation);
 	end
+
+	local showCount = forceAccumulateInventory or C_Item.GetItemMaxStackSizeByID(item:GetItemID()) > 1;
+	self:SetItemButtonCount(showCount and count or 1);
+	
+	local valid = (onElementValidImplementation == nil) or onElementValidImplementation(self, elementData);
+	local enabled = valid and count > 0;
+	if onElementEnabledImplementation then
+		enabled = onElementEnabledImplementation(self, elementData, count);
+	end
+
+	if valid then
+		SetItemButtonTextureVertexColor(self, 1, 1, 1);
+		SetItemButtonNormalTextureVertexColor(self, 1, 1, 1);
+	else
+		SetItemButtonTextureVertexColor(self, 0.9, 0, 0);
+		SetItemButtonNormalTextureVertexColor(self, 0.9, 0, 0);
+	end
+
 	self.enabled = enabled;
 	self:DesaturateHierarchy(enabled and 0 or 1);
 end
@@ -44,7 +59,9 @@ ProfessionsItemFlyoutMixin = CreateFromMixins(CallbackRegistryMixin);
 
 ProfessionsItemFlyoutMixin:GenerateCallbackEvents(
 {
+    "UndoClicked",
     "ItemSelected",
+    "ShiftClicked",
 });
 
 local ProfessionsItemFlyoutEvents = {
@@ -58,7 +75,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	self.HideUnownedCheckBox.text:SetText(PROFESSIONS_HIDE_UNOWNED_REAGENTS);
 	self.HideUnownedCheckBox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
-		SetCVar(HideUnownedCvar, checked);
+		SetCVar(HideUnavailableCvar, checked);
 		self:InitializeContents();
 		PlaySound(SOUNDKIT.UI_PROFESSION_HIDE_UNOWNED_REAGENTS_CHECKBOX);
 	end);
@@ -68,7 +85,7 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 	local spacing = 3;
 	view:SetPadding(padding, padding, padding, padding, spacing, spacing);
 	view:SetElementInitializer("ProfessionsItemFlyoutButtonTemplate", function(button, elementData)
-		button:Init(elementData, self.OnElementEnabledImplementation);
+		button:Init(elementData, self.OnElementEnabledImplementation, self.GetElementValidImplementation);
 
 		button:SetScript("OnEnter", function(button)
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
@@ -79,11 +96,22 @@ function ProfessionsItemFlyoutMixin:OnLoad()
 		button:SetScript("OnLeave", GameTooltip_Hide);
 
 		button:SetScript("OnClick", function()
-			if button.enabled then
-				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
-				CloseProfessionsItemFlyout();
+			if IsShiftKeyDown() then
+				self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ShiftClicked, self, elementData);
+			else
+				if button.enabled then
+					self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.ItemSelected, self, elementData);
+					CloseProfessionsItemFlyout();
+				end
 			end
 		end);
+	end);
+
+	self.UndoItem:SetScript("OnClick", function(button, buttonName, down)
+		if not IsShiftKeyDown() then
+			self:TriggerEvent(ProfessionsItemFlyoutMixin.Event.UndoClicked, self);
+			CloseProfessionsItemFlyout();
+		end
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -97,10 +125,9 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, ProfessionsItemFlyoutEvents);
 	
 	self:UnregisterEvents();
+	self:ClearHandlers();
 
 	self.owner = nil;
-	self.OnElementEnterImplementation = nil;
-	self.OnElementEnabledImplementation = nil;
 	--[[
 		NOTE: OnHide triggers when the frame is no longer visible, not when it is no longer shown.
 		This frame may become non-visible because its parent gets hidden, but it may itself still be shown.
@@ -111,53 +138,74 @@ function ProfessionsItemFlyoutMixin:OnHide()
 	self:SetParent(nil);
 end
 
+function ProfessionsItemFlyoutMixin:ClearHandlers()
+	self.GetElementsImplementation = nil;
+	self.OnElementEnterImplementation = nil;
+	self.OnElementEnabledImplementation = nil;
+	self.GetElementValidImplementation = nil;
+	self.GetUndoElementImplementation = nil;
+end
+
 function ProfessionsItemFlyoutMixin:OnEvent(event, ...)
 	if event == "GLOBAL_MOUSE_DOWN" then
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 
-		local mouseFocus = GetMouseFocus();
-		if not isRightButton and DoesAncestryInclude(self.owner, mouseFocus) then
+		local mouseFoci = GetMouseFoci();
+		if not isRightButton and DoesAncestryIncludeAny(self.owner, mouseFoci) then
 			return;
 		end
 
-		if isRightButton or (not DoesAncestryInclude(self, mouseFocus) and mouseFocus ~= self) then
+		if isRightButton or (not DoesAncestryIncludeAny(self, mouseFoci) and not self:IsMouseMotionFocus()) then
 			CloseProfessionsItemFlyout();
 		end
 	end
 end
 
 function ProfessionsItemFlyoutMixin:InitializeContents()
-	local cannotModifyHideUnowned, alwaysShowUnowned = false, false;
+	local cannotModifyHideUnavailable, alwaysShowUnavailable = false, false;
 	if self.transaction then
 		local recipeID = self.transaction:GetRecipeID();
-		cannotModifyHideUnowned, alwaysShowUnowned = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
+		cannotModifyHideUnavailable, alwaysShowUnavailable = C_TradeSkillUI.GetHideUnownedFlags(recipeID);
 	end
 	
-	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnowned;
+	local canShowCheckBox = self.canModifyFilter and not cannotModifyHideUnavailable;
 	self.HideUnownedCheckBox:SetShown(canShowCheckBox);
 
-	local hideUnownedCvar = GetCVarBool(HideUnownedCvar);
+	local hideUnavailableCvar = GetCVarBool(HideUnavailableCvar);
 	if canShowCheckBox then
-		self.HideUnownedCheckBox:SetChecked(hideUnownedCvar);
+		self.HideUnownedCheckBox:SetChecked(hideUnavailableCvar);
 	end
 
-	local hideUnowned;
-	if cannotModifyHideUnowned then
+	local undoElement = nil;
+	if self.GetUndoElementImplementation then
+		undoElement = self.GetUndoElementImplementation();
+	end
+	local hasUndoElement = undoElement ~= nil;
+	self.UndoItem:SetShown(hasUndoElement);
+	self.UndoButton:SetShown(hasUndoElement);
+
+	local hideUnavailable;
+	if cannotModifyHideUnavailable then
 		-- Determined in data, supercedes player preference.
-		hideUnowned = not alwaysShowUnowned;
+		hideUnavailable = not alwaysShowUnavailable;
 	else
 		local alwaysHide = not self.canModifyFilter;
-		local preferHide = canShowCheckBox and hideUnownedCvar;
-		hideUnowned = alwaysHide or preferHide;
+		local preferHide = canShowCheckBox and hideUnavailableCvar;
+		hideUnavailable = alwaysHide or preferHide;
 	end
 
-	local elements = self:GetElementsImplementation(hideUnowned);
+	local elements = self:GetElementsImplementation(hideUnavailable);
 	local count = #elements.items;
 	if count > 0 then
 		self.Text:Hide();
 		
 		local continuableContainer = ContinuableContainer:Create();
+
+		if undoElement then
+			continuableContainer:AddContinuable(undoElement);
+		end
+
 		continuableContainer:AddContinuables(elements.items);
 		continuableContainer:ContinueOnLoad(function()
 			local rows = math.min(MaxRows, math.ceil(count / MaxColumns));
@@ -185,6 +233,11 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 				totalHeight = totalHeight + 25;
 			end
 
+			if hasUndoElement then
+				self.UndoItem:SetItem(undoElement:GetItemID());
+				totalHeight = totalHeight + 50;
+			end
+
 			self.ScrollBar:SetShown(canShowScrollBar);
 
 			local dataProvider = CreateDataProvider();
@@ -196,17 +249,21 @@ function ProfessionsItemFlyoutMixin:InitializeContents()
 					itemGUID = elements.itemGUIDs and elements.itemGUIDs[index] or nil,
 					itemLocation = elements.itemLocation and elements.itemLocation[index] or nil,
 					onlyCountStack = elements.onlyCountStack,
+					forceAccumulateInventory = elements.forceAccumulateInventory,
 				};
 				dataProvider:Insert(elementData);
 			end
 			self.ScrollBox:SetDataProvider(dataProvider);
+
+			self.ScrollBox:ClearAllPoints();
+			self.ScrollBox:SetPoint("TOPLEFT", 15, hasUndoElement and -65 or -15);
 
 			self:SetSize(totalWidth, totalHeight);
 		end);
 	else
 		self.Text:Show();
 
-		self.ScrollBox:ClearDataProvider();
+		self.ScrollBox:RemoveDataProvider();
 		self.ScrollBar:SetShown(false);
 
 		self:SetSize(250, 120);

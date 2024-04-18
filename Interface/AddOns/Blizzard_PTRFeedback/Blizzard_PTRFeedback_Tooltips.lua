@@ -11,14 +11,14 @@ PTR_IssueReporter.TooltipTypes = {
     azerite = "Azerite Essence",
     talent = "Talent",
     recipe = "Recipe",
+    aibot = "Follower",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
     local setAuraTooltipFunction = function(self, unit, slotNumber, auraType)
-        local name = select(1, UnitAura(unit, slotNumber, auraType))
-        local id = select(10, UnitAura(unit, slotNumber, auraType))
-        if (id) and (name) then
-            PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.spell, id, name)
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unit, slotNumber, auraType);
+        if auraData and auraData.spellId and auraData.name then
+            PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.spell, auraData.spellId, auraData.name)
         end
     end
 
@@ -28,8 +28,8 @@ function PTR_IssueReporter.SetupSpellTooltips()
 
     hooksecurefunc("SetItemRef", function(link, ...)
         local id = tonumber(link:match("spell:(%d+)"))
-        local name = GetSpellInfo(id)
         if (id) then
+            local name = C_Spell.GetSpellName(id)
             PTR_IssueReporter.HookIntoTooltip(ItemRefTooltip, PTR_IssueReporter.TooltipTypes.spell, id, name)
         end
     end)
@@ -47,9 +47,10 @@ function PTR_IssueReporter.SetupSpellTooltips()
     local bindingFunc = function(self, talentFrame, tooltip)
         if (talentFrame) and (tooltip) then
             local spellID = talentFrame:GetSpellID()
-            local name = GetSpellInfo(spellID)
-
-            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, spellID, name)
+            if (spellID) then
+                local name = C_Spell.GetSpellName(spellID)
+                PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.spell, spellID, name)
+            end
         end
     end
 
@@ -86,17 +87,28 @@ function PTR_IssueReporter.SetupItemTooltips()
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, onTooltipSetItemFunction)
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.IsUnitAIFollower(unit)
+    return UnitExists(unit) and not UnitPlayerControlled(unit) and UnitInParty(unit)
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupUnitTooltips()
     local function onTooltipSetUnitFunction(tooltip, tooltipData)
         if (C_PetBattles.IsInBattle()) then
             return
-        end
+        end        
+        
         local name, unit = tooltip:GetUnit()
+        local isBot = PTR_IssueReporter.IsUnitAIFollower(unit)
         if (name) and (unit) then
             local guid = UnitGUID(unit) or ""
             local id = tonumber(guid:match("-(%d+)-%x+$"), 10)
             if (id) and (guid:match("%a+") ~= "Player") then
-                PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.unit, id, name)
+                local tooltipType = PTR_IssueReporter.TooltipTypes.unit
+                if (isBot) then
+                    tooltipType = PTR_IssueReporter.TooltipTypes.aibot
+                end
+                
+                PTR_IssueReporter.HookIntoTooltip(GameTooltip, tooltipType, id, name)
             end
         end
     end
@@ -134,7 +146,7 @@ function PTR_IssueReporter.SetupQuestTooltips()
     end
 
     EventRegistry:RegisterCallback("TaskPOI.TooltipShown", HookIntoQuestTooltip, PTR_IssueReporter)
-    EventRegistry:RegisterCallback("QuestPin.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
+    EventRegistry:RegisterCallback("MapCanvas.QuestPin.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
     EventRegistry:RegisterCallback("QuestMapLogTitleButton.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
     EventRegistry:RegisterCallback("OnQuestBlockHeader.OnEnter", HookIntoQuestTooltip, PTR_IssueReporter)
     EventRegistry:RegisterCallback("TaskPOI.TooltipShown", HookIntoQuestTooltip, PTR_IssueReporter)

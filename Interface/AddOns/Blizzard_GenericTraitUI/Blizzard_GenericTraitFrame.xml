@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_GenericTraitFrame.lua"/>
 	
 	<Frame name="GenericTraitFrame" mixin="GenericTraitFrameMixin" inherits="TalentFrameBaseTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
@@ -12,6 +12,8 @@
 			<KeyValue key="basePanOffsetX" value="0" type="number"/>
 			<KeyValue key="basePanOffsetY" value="0" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value="0" type="number"/>
+			<KeyValue key="defaultSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT" type="global"/>
+			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
 		</KeyValues>
 		<Size x="650" y="750"/>
 

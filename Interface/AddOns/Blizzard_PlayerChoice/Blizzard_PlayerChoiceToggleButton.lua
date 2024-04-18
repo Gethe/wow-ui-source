@@ -60,7 +60,7 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	local normalAtlasInfo = C_Texture.GetAtlasInfo(normalAtlas);
 	if normalAtlasInfo then
 		self:SetNormalAtlas(normalAtlas);
-		self:SetSize(normalAtlasInfo.width, normalAtlasInfo.height);
+		self:SetSize(buttonInfo.overrideWidth or normalAtlasInfo.width, buttonInfo.overrideHeight or normalAtlasInfo.height);
 	end
 
 	if buttonInfo.highlightAtlas then
@@ -167,14 +167,26 @@ end
 
 GenericPlayerChoiceToggleButtonMixin = CreateFromMixins(PlayerChoiceToggleButtonMixin);
 
-function GenericPlayerChoiceToggleButtonMixin:UpdateButtonState()
-	if not self:ShouldShow() then
-		self:Hide();
-		return;
-	end
+function GenericPlayerChoiceToggleButtonMixin:OnLoad()
+	self.shownModeButtonInfo =
+	{
+		normalAtlas = "UI-Frame-%s-Button",
+		overrideWidth = 225,
+		overrideHeight = 50,
+		yOffset = 2,
+	};
 
-	local choiceFrameShown = PlayerChoiceFrame:IsShown();
-	self:SetText(choiceFrameShown and HIDE or SHOW);
+	self.hiddenModeButtonInfo =
+	{
+		normalAtlas = "UI-Frame-%s-Button",
+		overrideWidth = 225,
+		overrideHeight = 50,
+		yOffset = 2,
+	};
+end
+
+function GenericPlayerChoiceToggleButtonMixin:OnEnter()
+	self.HighlightAnimation:Restart();
 end
 
 PlayerChoiceRerollButtonMixin = {};

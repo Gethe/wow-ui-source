@@ -76,7 +76,11 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	self.areaPoiID = poiInfo.areaPoiID;
 	self.factionID = poiInfo.factionID;
 	self.shouldGlow = poiInfo.shouldGlow;
+	self.addPaddingAboveTooltipWidgets = poiInfo.addPaddingAboveTooltipWidgets;
+	self:SetupHoverInfo(poiInfo);
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
+
+	self:AddIconWidgets();
 
 	if self.textureKit == "OribosGreatVault" then
 		local function OribosGreatVaultPOIOnMouseUp(self, button, upInside)
@@ -92,6 +96,17 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 
 	if poiInfo.isAlwaysOnFlightmap then
 		self:SetAlphaLimits(1.0, 1.0, 1.0);
+	end
+end
+
+function AreaPOIPinMixin:SetupHoverInfo(poiInfo)
+	self.highlightWorldQuestsOnHover = poiInfo.highlightWorldQuestsOnHover;
+	self.highlightVignettesOnHover = poiInfo.highlightVignettesOnHover;
+
+	if poiInfo.atlasName == "dreamsurge_hub-icon" then
+		self.pinHoverHighlightType = MapPinHighlightType.DreamsurgeHighlight;
+	else
+		self.pinHoverHighlightType = MapPinHighlightType.SupertrackedHighlight;
 	end
 end
 
@@ -111,7 +126,7 @@ function AreaPOIPinMixin:GetHighlightType() -- override
 end
 
 function AreaPOIPinMixin:OnMouseEnter()
-	if not self.name or #self.name == 0 then
+	if not self.name  then
 		return;
 	end
 
@@ -123,39 +138,60 @@ function AreaPOIPinMixin:OnMouseEnter()
 	end
 
 	EventRegistry:TriggerEvent("AreaPOIPin.MouseOver", self, tooltipShown, self.areaPoiID, self.name);
+
+	if self.highlightWorldQuestsOnHover then
+		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", self.pinHoverHighlightType);
+	end
+
+	if self.highlightVignettesOnHover then
+		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", self.pinHoverHighlightType);
+	end
 end
 
 function AreaPOIPinMixin:TryShowTooltip()
-	local description = self.description;
-	local hasDescription = description and #description > 0;
-	local isTimed = C_AreaPoiInfo.IsAreaPOITimed(self.areaPoiID);
-	local hasWidgetSet = self.widgetSetID ~= nil;
+	local hasName = self.name ~= "";
+	local hasDescription = self.description and self.description ~= "";
+	local isTimed, hideTimer = C_AreaPoiInfo.IsAreaPOITimed(self.areaPoiID);
+	local showTimer = isTimed and not hideTimer;
+	local hasWidgetSet = self.tooltipWidgetSet ~= nil;
 
-	local hasTooltip = hasDescription or isTimed or hasWidgetSet;
+	local hasTooltip = hasDescription or showTimer or hasWidgetSet;
+	local addedTooltipLine = false;
 
 	if hasTooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
+		local verticalPadding = nil;
 
-		if hasDescription then
-			GameTooltip_AddNormalLine(GameTooltip, description);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		if hasName then
+			GameTooltip_SetTitle(GameTooltip, self.name, HIGHLIGHT_FONT_COLOR);
+			addedTooltipLine = true;
 		end
 
-		if isTimed then
+		if hasDescription then
+			GameTooltip_AddNormalLine(GameTooltip, self.description);
+			addedTooltipLine = true;
+		end
+
+		if showTimer then
 			local secondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft(self.areaPoiID);
 			if secondsLeft and secondsLeft > 0 then
 				local timeString = SecondsToTime(secondsLeft);
 				GameTooltip_AddNormalLine(GameTooltip, BONUS_OBJECTIVE_TIME_LEFT:format(timeString));
+				addedTooltipLine = true;
 			end
 		end
 
 		if self.textureKit == "OribosGreatVault" then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddInstructionLine(GameTooltip, ORIBOS_GREAT_VAULT_POI_TOOLTIP_INSTRUCTIONS);
+			addedTooltipLine = true;
 		end
 
 		if hasWidgetSet then
-			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID, 10);
+			local overflow = GameTooltip_AddWidgetSet(GameTooltip, self.tooltipWidgetSet, addedTooltipLine and self.addPaddingAboveTooltipWidgets and 10);
+			if overflow then
+				verticalPadding = -overflow;
+			end
 		end
 
 		if self.textureKit then
@@ -165,6 +201,10 @@ function AreaPOIPinMixin:TryShowTooltip()
 			end
 		end
 		GameTooltip:Show();
+		-- need to set padding after Show or else there will be a flicker
+		if verticalPadding then
+			GameTooltip:SetPadding(0, verticalPadding);
+		end
 		return true;
 	end
 
@@ -173,6 +213,14 @@ end
 
 function AreaPOIPinMixin:OnMouseLeave()
 	self:GetMap():TriggerEvent("ClearAreaLabel", MAP_AREA_LABEL_TYPE.POI);
+	
+	if self.highlightWorldQuestsOnHover then
+		self:GetMap():TriggerEvent("HighlightMapPins.WorldQuests", nil);
+	end
+
+	if self.highlightVignettesOnHover then
+		self:GetMap():TriggerEvent("HighlightMapPins.Vignettes", nil);
+	end
 
 	GameTooltip:Hide();
 end

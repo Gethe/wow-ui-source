@@ -175,6 +175,11 @@ end
 
 ProfessionsSpecPathMixin = CreateFromMixins(TalentButtonSpendMixin);
 
+function ProfessionsSpecPathMixin:Reset()
+	self.state = nil;
+	self:CancelEffects();
+end
+
 function ProfessionsSpecPathMixin:AdjustBaseArt()
 	self.SpendText:ClearAllPoints();
 	self.SpendText:SetPoint("BOTTOM", self, "BOTTOM", 1, -2);
@@ -196,6 +201,20 @@ function ProfessionsSpecPathMixin:OnLoad()
 		EventRegistry:RegisterCallback("ProfessionsSpecializations.PathSelected", PathSelectedCallback, self);
 	end
 
+	local function LockInPathCallback(_, nodeID)
+		if nodeID == self:GetNodeID() and self:IsShown() then
+			self:QueueUnlockPathEffects();
+		end
+	end
+	EventRegistry:RegisterCallback("ProfessionsSpecializations.LockInPath", LockInPathCallback, self);
+
+	local function CompletePathCallback(_, nodeID)
+		if nodeID == self:GetNodeID() and self:IsShown() then
+			self:QueueFinishPathEffects();
+		end
+	end
+	EventRegistry:RegisterCallback("ProfessionsSpecializations.CompletePath", CompletePathCallback, self);
+
 	self:SetScript("OnShow", self.OnShow);
 	self:SetScript("OnHide", self.OnHide);
 end
@@ -210,6 +229,7 @@ function ProfessionsSpecPathMixin:OnHide()
 	if not self.isDetailedView then
 		self.AvailableGlowAnim:Pause();
 	end
+	self:CancelEffects();
 end
 
 function ProfessionsSpecPathMixin:SetAndApplySize(width, height) -- Override
@@ -298,7 +318,7 @@ function ProfessionsSpecPathMixin:OnEvent(event, ...)
 end
 
 function ProfessionsSpecPathMixin:OnEnter() -- Override
-	if GetMouseFocus() ~= self then
+	if not self:IsMouseMotionFocus() then
 		return;
 	end
 
@@ -323,7 +343,7 @@ function ProfessionsSpecPathMixin:OnEnter() -- Override
 		self.IconMouseoverHighlight:Show();
 	end
 
-	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.nodeInfo.ID);
+	EventRegistry:TriggerEvent("ProfessionSpecs.SpecPathEntered", self.nodeInfo.ID, self:GetName());
 end
 
 function ProfessionsSpecPathMixin:OnLeave() -- Override
@@ -361,7 +381,7 @@ function ProfessionsSpecPathMixin:AddTooltipNextPerk(tooltip)
 	local descriptionText = self:GetNextPerkDescription();
 	if descriptionText ~= nil then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
-		descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
+		descriptionText = descriptionText:gsub("|cffffffff(.-)|r", "%1");
 		GameTooltip_AddNormalLine(tooltip, descriptionText);
 	end
 end
@@ -511,6 +531,32 @@ function ProfessionsSpecPathMixin:UpdateAssets()
 	self.ProgressBar:SetSwipeTexture(stylizedProgressBarInfo.file or stylizedProgressBarInfo.filename);
 end
 
+function ProfessionsSpecPathMixin:CancelEffects()
+	if self.FxEffectTimer then
+		self.FxEffectTimer:Cancel();
+	end
+end
+
+function ProfessionsSpecPathMixin:QueueUnlockPathEffects()
+	self:CancelEffects();
+
+	local delay = 1.15;
+	self.FxEffectTimer = C_Timer.NewTimer(delay, function()
+		local fxIDs = {150};
+		self:PlayPurchaseCompleteEffect(self:GetTalentFrame().FxModelScene, fxIDs)
+	end);
+end
+
+function ProfessionsSpecPathMixin:QueueFinishPathEffects()
+	self:CancelEffects();
+
+	local delay = 0.203;
+	self.FxEffectTimer = C_Timer.NewTimer(delay, function()
+		local fxIDs = {150, 142, 143};
+		self:PlayPurchaseCompleteEffect(self:GetTalentFrame().FxModelScene, fxIDs)
+	end);
+end
+
 -- Do not want to reinstantiate when the entry changes, so we use the base display mixin's version
 ProfessionsSpecPathMixin.UpdateEntryInfo = TalentDisplayMixin.UpdateEntryInfo;
 
@@ -613,7 +659,7 @@ function ProfessionsSpecPerkMixin:OnEnter() -- Override
 	local tooltip = self:AcquireTooltip();
 
 	local descriptionText = C_ProfSpecs.GetDescriptionForPerk(self.perkID);
-	descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
+	descriptionText = descriptionText:gsub("|cffffffff(.-)|r", "%1");
 	GameTooltip_AddNormalLine(tooltip, descriptionText);
 	if not self:IsEarned() then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
@@ -703,4 +749,8 @@ function ProfessionSpecEdgeArrowMixin:UpdateState() -- Override
 	end
 	self.Line:SetVertexColor(r, g, b);
 	self.ArrowHead:SetVertexColor(r, g, b);
+
+	if self:IsPositionDirty() then
+		self:UpdatePosition();
+	end
 end

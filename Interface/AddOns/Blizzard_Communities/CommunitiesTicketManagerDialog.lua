@@ -164,7 +164,7 @@ function CommunitiesTicketEntryMixin:OnEnter()
 end
 
 function CommunitiesTicketEntryMixin:OnLeave()
-	if GetMouseFocus() ~= self.CopyLinkButton then
+	if not self.CopyLinkButton:IsMouseMotionFocus() then
 		self.CopyLinkButton:Hide();
 	end
 	

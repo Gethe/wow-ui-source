@@ -13,7 +13,7 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = true },
 			},
 
@@ -66,7 +66,7 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "casterBoardIndex", Type = "number", Nilable = false },
 			},
 
@@ -161,7 +161,7 @@ local GarrisonInfo =
 
 			Arguments =
 			{
-				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "garrFollowerID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "followerLevel", Type = "number", Nilable = false },
 			},
 
@@ -177,7 +177,7 @@ local GarrisonInfo =
 
 			Arguments =
 			{
-				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "garrFollowerID", Type = "GarrisonFollower", Nilable = false },
 			},
 
 			Returns =
@@ -191,7 +191,7 @@ local GarrisonInfo =
 
 			Arguments =
 			{
-				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
 			},
 
 			Returns =
@@ -436,7 +436,7 @@ local GarrisonInfo =
 
 			Arguments =
 			{
-				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
 			},
 
 			Returns =
@@ -456,7 +456,7 @@ local GarrisonInfo =
 			Returns =
 			{
 				{ Name = "isMet", Type = "bool", Nilable = false },
-				{ Name = "failureString", Type = "string", Nilable = true },
+				{ Name = "failureString", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -480,7 +480,7 @@ local GarrisonInfo =
 			Arguments =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = true },
 			},
 		},
@@ -499,7 +499,7 @@ local GarrisonInfo =
 
 			Arguments =
 			{
-				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "garrFollowerID", Type = "GarrisonFollower", Nilable = false },
 			},
 		},
 		{
@@ -535,7 +535,7 @@ local GarrisonInfo =
 			LiteralName = "GARRISON_BUILDING_ACTIVATABLE",
 			Payload =
 			{
-				{ Name = "buildingName", Type = "string", Nilable = false },
+				{ Name = "buildingName", Type = "cstring", Nilable = false },
 				{ Name = "garrisonType", Type = "number", Nilable = false },
 			},
 		},
@@ -599,13 +599,13 @@ local GarrisonInfo =
 			LiteralName = "GARRISON_FOLLOWER_ADDED",
 			Payload =
 			{
-				{ Name = "followerDbID", Type = "string", Nilable = false },
-				{ Name = "followerName", Type = "string", Nilable = false },
-				{ Name = "followerClassName", Type = "string", Nilable = false },
+				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
+				{ Name = "followerName", Type = "cstring", Nilable = false },
+				{ Name = "followerClassName", Type = "cstring", Nilable = false },
 				{ Name = "followerLevel", Type = "number", Nilable = false },
 				{ Name = "followerQuality", Type = "number", Nilable = false },
 				{ Name = "isUpgraded", Type = "bool", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
 			},
 		},
@@ -621,7 +621,7 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "garrFollowerTypeID", Type = "number", Nilable = false },
-				{ Name = "followerDbID", Type = "string", Nilable = false },
+				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "followerDurability", Type = "number", Nilable = false },
 			},
 		},
@@ -631,7 +631,7 @@ local GarrisonInfo =
 			LiteralName = "GARRISON_FOLLOWER_HEALED",
 			Payload =
 			{
-				{ Name = "followerID", Type = "string", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
 			},
 		},
 		{
@@ -658,7 +658,7 @@ local GarrisonInfo =
 			LiteralName = "GARRISON_FOLLOWER_UPGRADED",
 			Payload =
 			{
-				{ Name = "followerDbID", Type = "string", Nilable = false },
+				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
 			},
 		},
 		{
@@ -668,7 +668,7 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "garrFollowerTypeID", Type = "number", Nilable = false },
-				{ Name = "followerDbID", Type = "string", Nilable = false },
+				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "xpChange", Type = "number", Nilable = false },
 				{ Name = "oldFollowerXp", Type = "number", Nilable = false },
 				{ Name = "oldFollowerLevel", Type = "number", Nilable = false },
@@ -768,7 +768,7 @@ local GarrisonInfo =
 			Payload =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
-				{ Name = "followerDbID", Type = "string", Nilable = false },
+				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
 			},
 		},
 		{
@@ -1055,7 +1055,7 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "damageClassValue", Type = "number", Nilable = false },
-				{ Name = "locString", Type = "string", Nilable = false },
+				{ Name = "locString", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1073,13 +1073,13 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "autoCombatSpellID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "cooldown", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "schoolMask", Type = "number", Nilable = false },
 				{ Name = "previewMask", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "spellTutorialFlag", Type = "number", Nilable = false },
 				{ Name = "hasThornsEffect", Type = "bool", Nilable = false },
 			},
@@ -1089,9 +1089,9 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "followerID", Type = "string", Nilable = false },
-				{ Name = "garrFollowerID", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
+				{ Name = "garrFollowerID", Type = "GarrisonFollower", Nilable = false },
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
 				{ Name = "displayIDs", Type = "table", InnerType = "FollowerDisplayID", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
@@ -1105,9 +1105,9 @@ local GarrisonInfo =
 				{ Name = "classSpec", Type = "number", Nilable = true },
 				{ Name = "className", Type = "string", Nilable = true },
 				{ Name = "flavorText", Type = "string", Nilable = true },
-				{ Name = "classAtlas", Type = "string", Nilable = false },
-				{ Name = "portraitIconID", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "classAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "portraitIconID", Type = "fileID", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "isTroop", Type = "bool", Nilable = false },
 				{ Name = "raceID", Type = "number", Nilable = false },
 				{ Name = "health", Type = "number", Nilable = false },
@@ -1181,7 +1181,7 @@ local GarrisonInfo =
 				{ Name = "currentHealth", Type = "number", Nilable = false },
 				{ Name = "maxHealth", Type = "number", Nilable = false },
 				{ Name = "attack", Type = "number", Nilable = false },
-				{ Name = "healingTimestamp", Type = "number", Nilable = false },
+				{ Name = "healingTimestamp", Type = "time_t", Nilable = false },
 				{ Name = "healCost", Type = "number", Nilable = false },
 				{ Name = "minutesHealingRemaining", Type = "number", Nilable = false },
 			},
@@ -1201,7 +1201,7 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "displayIDs", Type = "table", InnerType = "FollowerDisplayID", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "quality", Type = "number", Nilable = false },
@@ -1218,9 +1218,9 @@ local GarrisonInfo =
 				{ Name = "targetImpactID", Type = "number", Nilable = true },
 				{ Name = "targetImpactSoundID", Type = "number", Nilable = true },
 				{ Name = "className", Type = "string", Nilable = true },
-				{ Name = "classAtlas", Type = "string", Nilable = false },
-				{ Name = "portraitIconID", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "classAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "portraitIconID", Type = "fileID", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "isTroop", Type = "bool", Nilable = false },
 				{ Name = "boardIndex", Type = "number", Nilable = false },
 				{ Name = "health", Type = "number", Nilable = false },
@@ -1234,10 +1234,10 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "factor", Type = "number", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1246,9 +1246,9 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isTrait", Type = "bool", Nilable = false },
 				{ Name = "isSpecialization", Type = "bool", Nilable = false },
 				{ Name = "temporary", Type = "bool", Nilable = false },
@@ -1262,10 +1262,10 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "displayID", Type = "number", Nilable = false },
-				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "displayID", Type = "fileID", Nilable = false },
+				{ Name = "portraitFileDataID", Type = "fileID", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "scale", Type = "number", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "mechanics", Type = "table", InnerType = "GarrisonMechanicInfo", Nilable = false },
@@ -1284,8 +1284,8 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "followerID", Type = "string", Nilable = false },
-				{ Name = "state", Type = "number", Nilable = false },
+				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
+				{ Name = "state", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -1294,10 +1294,10 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "mechanicTypeID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "factor", Type = "number", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "ability", Type = "GarrisonAbilityInfo", Nilable = true },
 			},
 		},
@@ -1307,9 +1307,9 @@ local GarrisonInfo =
 			Fields =
 			{
 				{ Name = "buildingPlotInstanceID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "atlasName", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -1317,12 +1317,12 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "location", Type = "string", Nilable = false },
+				{ Name = "location", Type = "cstring", Nilable = false },
 				{ Name = "xp", Type = "number", Nilable = false },
 				{ Name = "environment", Type = "string", Nilable = true },
 				{ Name = "environmentDesc", Type = "string", Nilable = true },
-				{ Name = "environmentTexture", Type = "number", Nilable = false },
-				{ Name = "locTextureKit", Type = "string", Nilable = false },
+				{ Name = "environmentTexture", Type = "fileID", Nilable = false },
+				{ Name = "locTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "isExhausting", Type = "bool", Nilable = false },
 				{ Name = "enemies", Type = "table", InnerType = "GarrisonEnemyEncounterInfo", Nilable = false },
 			},
@@ -1332,7 +1332,7 @@ local GarrisonInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "portraitFileDataID", Type = "number", Nilable = false },
+				{ Name = "portraitFileDataID", Type = "fileID", Nilable = false },
 				{ Name = "missionScalar", Type = "number", Nilable = false },
 				{ Name = "isElite", Type = "bool", Nilable = false },
 				{ Name = "isRare", Type = "bool", Nilable = false },

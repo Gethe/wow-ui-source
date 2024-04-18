@@ -238,9 +238,9 @@ end
 
 function PetJournalHealPetButton_OnLoad(self)
 	self.spellID = HEAL_PET_SPELL;
-	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
-	self.texture:SetTexture(spellIcon);
-	self.spellname:SetText(spellName);
+	local spellInfo = C_Spell.GetSpellInfo(self.spellID);
+	self.texture:SetTexture(spellInfo.iconID);
+	self.spellname:SetText(spellInfo.name);
 end
 
 function PetJournalHealPetButton_OnShow(self)
@@ -262,7 +262,7 @@ function PetJournalHealPetButton_OnHide(self)
 end
 
 function PetJournalHealPetButton_OnDragStart(self)
-	PickupSpell(self.spellID);
+	C_Spell.PickupSpell(self.spellID);
 end
 
 function PetJournalHealPetButton_UpdateUsability(self)
@@ -303,8 +303,12 @@ end
 
 function PetJournalHealPetButton_UpdateCooldown(self)
 	local cooldown = self.cooldown;
-	local start, duration, enable = GetSpellCooldown(self.spellID);
-	CooldownFrame_Set(cooldown, start, duration, enable);
+	local cooldownInfo = C_Spell.GetSpellCooldown(self.spellID);
+	if ( cooldownInfo ) then
+		CooldownFrame_Set(cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+	else
+		CooldownFrame_Clear(cooldown);
+	end
 end
 
 function PetJournalHealPetButton_OnEnter(self)
@@ -328,7 +332,7 @@ end
 function PetJournalSummonRandomFavoritePetButton_OnLoad(self)
 	self.spellID = SUMMON_RANDOM_FAVORITE_PET_SPELL;
 	self.petID = C_PetJournal.GetSummonRandomFavoritePetGUID();
-	local spellName, _, spellIcon = GetSpellInfo(self.spellID);
+	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
 	self.texture:SetTexture(spellIcon);
 	self.spellname:SetText(PET_JOURNAL_SUMMON_RANDOM_FAVORITE_PET);
 end
@@ -548,6 +552,11 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
 		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
 
+		local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType;
+		if petID then
+			speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
+		end
+
 		if ( not C_PetJournal.IsJournalUnlocked() ) then
 			loadoutPlate.ReadOnlyFrame:Show();
 			loadoutPlate.ReadOnlyFrame.LockIcon.tooltip = PET_JOURNAL_READONLY_TEXT;
@@ -582,7 +591,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 				loadoutPlate.requirement.str:SetText(GetAchievementLink(UNLOCK_REQUIREMENTS[i].id));
 				loadoutPlate.requirement.achievementID = UNLOCK_REQUIREMENTS[i].id;
 			elseif (UNLOCK_REQUIREMENTS[i].requirement == "SPELL" and UNLOCK_REQUIREMENTS[i].id) then
-				local spellLink = GetSpellLink(UNLOCK_REQUIREMENTS[i].id);
+				local spellLink = C_Spell.GetSpellLink(UNLOCK_REQUIREMENTS[i].id);
 				loadoutPlate.requirement.str:SetText(spellLink);
 				loadoutPlate.requirement.spellID = UNLOCK_REQUIREMENTS[i].id;
 			end
@@ -590,7 +599,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 			loadoutPlate.helpFrame:Show();
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
-		elseif (petID == nil) then
+		elseif (petID == nil or speciesID == nil) then
 			loadoutPlate.name:Hide();
 			loadoutPlate.subName:Hide();
 			loadoutPlate.level:Hide();
@@ -614,7 +623,6 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
 		else -- not locked and petID is not nil
-			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
 			--Find out how many abilities are usable due to level
@@ -711,7 +719,7 @@ function PetJournal_UpdatePetLoadOut(forceSceneChange)
 				local battlePetActor = loadoutPlate.modelScene:GetActorByTag("pet");
 				if ( battlePetActor ) then
 					battlePetActor:SetModelByCreatureDisplayID(displayID);
-					battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+					battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 				end
 
 				modelChanged = true;
@@ -898,7 +906,9 @@ function PetJournal_OnSearchTextChanged(self)
 	C_PetJournal.SetSearchFilter(self:GetText());
 end
 
-function PetJournalListItem_OnClick(self, button)
+PetJournalListItemMixin = {}
+
+function PetJournalListItemMixin:OnClick(button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local id = self.petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
@@ -921,18 +931,42 @@ function PetJournalListItem_OnClick(self, button)
 	end
 end
 
-function PetJournalDragButton_OnEnter(self)
+function PetJournalListItemMixin:OnEnter()
+	if ( self.petID ) then
+		C_PetJournal.SetHoveredBattlePet(self.petID);
+	end
+end
+
+function PetJournalListItemMixin:OnLeave()
+	C_PetJournal.ClearHoveredBattlePet();
+end
+
+function PetJournalListItemMixin:OnDragStart()
+	PetJournalDragButtonMixin.OnDragStart(self.dragButton);
+end
+
+PetJournalDragButtonMixin = {}
+
+function PetJournalDragButtonMixin:OnEnter()
 	local petID = self:GetParent().petID;
 	if (not petID) then
 		return;
 	end
+
+	C_PetJournal.SetHoveredBattlePet(petID);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetCompanionPet(petID);
 	GameTooltip:Show();
 end
 
-function PetJournalDragButton_OnClick(self, button)
+function PetJournalDragButtonMixin:OnLeave()
+	C_PetJournal.ClearHoveredBattlePet();
+
+	GameTooltip_Hide();
+end
+
+function PetJournalDragButtonMixin:OnClick(button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local id = self:GetParent().petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
@@ -952,30 +986,11 @@ function PetJournalDragButton_OnClick(self, button)
 		PetJournal_UpdatePetLoadOut();
 		ClearCursor();
 	else
-		PetJournalDragButton_OnDragStart(self);
+		self:OnDragStart();
 	end
 end
 
-function PetJournalPetLoadoutDragButton_OnClick(self, button)
-	local loadout = self:GetParent();
-	if (button == "RightButton" and loadout.petID) then
-		PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
-		return;
-	end
-	if ( IsModifiedClick("CHATLINK") ) then
-		local id = self:GetParent().petID;
-		if ( id and MacroFrame and MacroFrame:IsShown() ) then
-			-- Macros are not yet supported
-		elseif (id) then
-			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
-		end
-	else
-		PetJournalDragButton_OnDragStart(self);
-	end
-end
-
-function PetJournalDragButton_OnDragStart(self)
+function PetJournalDragButtonMixin:OnDragStart()
 	if (not self:GetParent().petID) then
 		return;
 	end
@@ -994,13 +1009,49 @@ function PetJournalDragButton_OnDragStart(self)
 	end
 end
 
-function PetJournalDragButton_OnEvent(self, event, ...)
+function PetJournalDragButtonMixin:OnEvent(event, ...)
 	if ( event == "SPELL_UPDATE_COOLDOWN" and self:GetParent().petID) then
 		local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(self:GetParent().petID);
 		if (start) then
 			CooldownFrame_Set(self.Cooldown, start, duration, enable);
 		end
 	end
+end
+
+PetJournalLoadoutDragButtonMixin = CreateFromMixins(PetJournalDragButtonMixin);
+
+function PetJournalLoadoutDragButtonMixin:OnClick(button)
+	local loadout = self:GetParent();
+	if (button == "RightButton" and loadout.petID) then
+		PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
+		return;
+	end
+	if ( IsModifiedClick("CHATLINK") ) then
+		local id = self:GetParent().petID;
+		if ( id and MacroFrame and MacroFrame:IsShown() ) then
+			-- Macros are not yet supported
+		elseif (id) then
+			local petLink = C_PetJournal.GetBattlePetLink(id);
+			ChatEdit_InsertLink(petLink);
+		end
+	else
+		PetJournalDragButtonMixin.OnDragStart(self);
+	end
+end
+
+function PetJournalLoadoutDragButtonMixin:OnEnter()
+	local petID = self:GetParent().petID;
+	if (not petID) then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetCompanionPet(petID);
+	GameTooltip:Show();
+end
+
+function PetJournalLoadoutDragButtonMixin:OnLeave()
+	GameTooltip_Hide();
 end
 
 function PetJournal_ShowPetDropdown(index, anchorTo, offsetX, offsetY, petID)
@@ -1101,7 +1152,7 @@ function PetJournalPetCard_OnClick(self, button)
 			PetJournal_ShowPetDropdown(PetJournalPetCard.petIndex, self, 0, 0, PetJournalPetCard.petID);
 		end
 	else
-		PetJournalDragButton_OnDragStart(self);
+		PetJournalDragButtonMixin.OnDragStart(self);
 	end
 end
 
@@ -1276,7 +1327,7 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 		local battlePetActor = self.modelScene:GetActorByTag("unwrapped");
 		if ( battlePetActor ) then
 			battlePetActor:SetModelByCreatureDisplayID(displayID);
-			battlePetActor:SetAnimationBlendOperation(LE_MODEL_BLEND_OPERATION_NONE);
+			battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		end
 
 		modelChanged = true;
@@ -1407,6 +1458,21 @@ function PetJournalFilterDropDown_SetAllPetSources(value)
 	UIDropDownMenu_Refresh(PetJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
+local petSourceOrderPriorities = {
+	[Enum.BattlePetSources.Drop] = 5,
+	[Enum.BattlePetSources.Quest] = 5,
+	[Enum.BattlePetSources.Vendor] = 5,
+	[Enum.BattlePetSources.Profession] = 5,
+	[Enum.BattlePetSources.WildPet] = 5,
+	[Enum.BattlePetSources.Achievement] = 5,
+	[Enum.BattlePetSources.WorldEvent] = 5,
+	[Enum.BattlePetSources.Discovery] = 5,
+	[Enum.BattlePetSources.TradingPost] = 4,
+	[Enum.BattlePetSources.Promotion] = 3,
+	[Enum.BattlePetSources.PetStore] = 2,
+	[Enum.BattlePetSources.Tcg] = 1,
+};
+
 function PetJournalFilterDropDown_Initialize(self, level)
 	local filterSystem = {
 		onUpdate = PetJournalResetFiltersButton_UpdateVisibility,	
@@ -1449,6 +1515,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 						  isSet = C_PetJournal.IsPetSourceChecked,
 						  numFilters = C_PetJournal.GetNumPetSources,
 						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("BATTLEPETS", petSourceOrderPriorities),
 						},
 					},
 				},
@@ -1465,7 +1532,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
 end
 
-function PetJournalFilterDropDown_AddInSortParameters(level)
+function PetJournalFilterDropDown_AddInSortParameters(filterSystem, level)
 	local sortParameters = {
 		{ text = NAME, parameter = LE_SORT_BY_NAME, },
 		{ text = LEVEL, parameter = LE_SORT_BY_LEVEL, },
@@ -1479,7 +1546,7 @@ function PetJournalFilterDropDown_AddInSortParameters(level)
 					PetJournal_UpdatePetList(); 
 				end
 		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameters.parameter end;
-		FilterDropDownSystem.AddRadioButton(sortParameters.text, setSelected, isSelected, level);
+		FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, sortParameters.text, setSelected, isSelected, level);
 	end
 end
 
@@ -1752,12 +1819,22 @@ function PetJournalFindBattle_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function PetJournalAchievementStatus_OnClick()
+	ToggleAchievementFrame();
+	AchievementFrame_UpdateAndSelectCategory(PET_ACHIEVEMENT_CATEGORY);
+end
+
 function PetJournalAchievementStatus_OnEnter(self)
 	PetJournal.AchievementStatus.highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(BATTLE_PETS_ACHIEVEMENT, HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(BATTLE_PETS_ACHIEVEMENT_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
+end
+
+function PetJournalAchievementStatus_OnLeave()
+	PetJournal.AchievementStatus.highlight:Hide();
+	GameTooltip:Hide();
 end
 
 function PetJournalSummonButton_OnEnter(self)

@@ -5,9 +5,9 @@ local GossipConstants =
 		{
 			Name = "GossipNpcOption",
 			Type = "Enumeration",
-			NumValues = 54,
+			NumValues = 56,
 			MinValue = 0,
-			MaxValue = 53,
+			MaxValue = 55,
 			Fields =
 			{
 				{ Name = "None", Type = "GossipNpcOption", EnumValue = 0 },
@@ -18,7 +18,7 @@ local GossipConstants =
 				{ Name = "Binder", Type = "GossipNpcOption", EnumValue = 5 },
 				{ Name = "Banker", Type = "GossipNpcOption", EnumValue = 6 },
 				{ Name = "PetitionVendor", Type = "GossipNpcOption", EnumValue = 7 },
-				{ Name = "TabardVendor", Type = "GossipNpcOption", EnumValue = 8 },
+				{ Name = "GuildTabardVendor", Type = "GossipNpcOption", EnumValue = 8 },
 				{ Name = "Battlemaster", Type = "GossipNpcOption", EnumValue = 9 },
 				{ Name = "Auctioneer", Type = "GossipNpcOption", EnumValue = 10 },
 				{ Name = "TalentMaster", Type = "GossipNpcOption", EnumValue = 11 },
@@ -64,6 +64,8 @@ local GossipConstants =
 				{ Name = "TraitSystem", Type = "GossipNpcOption", EnumValue = 51 },
 				{ Name = "BarbersChoice", Type = "GossipNpcOption", EnumValue = 52 },
 				{ Name = "MajorFactionRenown", Type = "GossipNpcOption", EnumValue = 53 },
+				{ Name = "PersonalTabardVendor", Type = "GossipNpcOption", EnumValue = 54 },
+				{ Name = "ForgeMaster", Type = "GossipNpcOption", EnumValue = 55 },
 			},
 		},
 		{
@@ -80,12 +82,13 @@ local GossipConstants =
 		{
 			Name = "GossipOptionRecFlags",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "QuestLabelPrepend", Type = "GossipOptionRecFlags", EnumValue = 1 },
+				{ Name = "HideOptionIDFromClient", Type = "GossipOptionRecFlags", EnumValue = 2 },
 			},
 		},
 	},

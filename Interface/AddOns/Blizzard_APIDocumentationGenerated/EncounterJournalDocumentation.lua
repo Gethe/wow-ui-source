@@ -21,6 +21,23 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "GetEncounterJournalLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "linkType", Type = "JournalLinkTypes", Nilable = false },
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "displayText", Type = "string", Nilable = false },
+				{ Name = "difficultyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEncountersOnMap",
 			Type = "Function",
 
@@ -32,6 +49,21 @@ local EncounterJournal =
 			Returns =
 			{
 				{ Name = "encounters", Type = "table", InnerType = "EncounterJournalMapEncounterInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInstanceForGameMap",
+			Type = "Function",
+			Documentation = { "GameMap as opposed to UIMap since we use a mapID not a uiMapID." },
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "journalInstanceID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -54,8 +86,8 @@ local EncounterJournal =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "encounterIndex", Type = "number", Nilable = true },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "encounterIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
@@ -102,6 +134,10 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "InitalizeSelectedTier",
+			Type = "Function",
+		},
+		{
 			Name = "InstanceHasLoot",
 			Type = "Function",
 
@@ -128,6 +164,14 @@ local EncounterJournal =
 			{
 				{ Name = "isEncounterComplete", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "OnClose",
+			Type = "Function",
+		},
+		{
+			Name = "OnOpen",
+			Type = "Function",
 		},
 		{
 			Name = "ResetSlotFilter",
@@ -158,6 +202,15 @@ local EncounterJournal =
 			Arguments =
 			{
 				{ Name = "filterSlot", Type = "ItemSlotFilterType", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTab",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tabIdx", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -218,9 +271,9 @@ local EncounterJournal =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "journalInstanceID", Type = "number", Nilable = false },
 			},
@@ -235,7 +288,7 @@ local EncounterJournal =
 				{ Name = "name", Type = "string", Nilable = true },
 				{ Name = "itemQuality", Type = "string", Nilable = true },
 				{ Name = "filterType", Type = "ItemSlotFilterType", Nilable = true },
-				{ Name = "icon", Type = "number", Nilable = true },
+				{ Name = "icon", Type = "fileID", Nilable = true },
 				{ Name = "slot", Type = "string", Nilable = true },
 				{ Name = "armorType", Type = "string", Nilable = true },
 				{ Name = "link", Type = "string", Nilable = true },
@@ -244,6 +297,7 @@ local EncounterJournal =
 				{ Name = "displayAsPerPlayerLoot", Type = "bool", Nilable = true },
 				{ Name = "displayAsVeryRare", Type = "bool", Nilable = true },
 				{ Name = "displayAsExtremelyRare", Type = "bool", Nilable = true },
+				{ Name = "displaySeasonID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -262,10 +316,10 @@ local EncounterJournal =
 			Fields =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "title", Type = "string", Nilable = false },
+				{ Name = "title", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "headerType", Type = "number", Nilable = false },
-				{ Name = "abilityIcon", Type = "number", Nilable = false },
+				{ Name = "abilityIcon", Type = "fileID", Nilable = false },
 				{ Name = "creatureDisplayID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
 				{ Name = "siblingSectionID", Type = "number", Nilable = true },

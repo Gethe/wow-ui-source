@@ -11,13 +11,14 @@ function GameTutorials:OnTutorialsInit()
 end
 
 function GameTutorials:OnTutorialsEnabled()
-	if IsAddOnLoaded("Blizzard_NewPlayerExperience") then
+	if C_AddOns.IsAddOnLoaded("Blizzard_NewPlayerExperience") then
 		return;
 	end
 
 	AddSpecAndTalentTutorials();
 	AddFrameTutorials(); --Misc tutorials
 	AddDragonridingTutorials();
+	AddPerksProgramTutorials();
 
 	if CanShowProfessionEquipmentTutorial() then
 		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());

@@ -78,7 +78,7 @@ local ScriptedAnimations =
 			Fields =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "visual", Type = "number", Nilable = false },
+				{ Name = "visual", Type = "fileID", Nilable = false },
 				{ Name = "visualScale", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "trajectory", Type = "ScriptedAnimationTrajectory", Nilable = false },

@@ -43,7 +43,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "button", Type = "string", Nilable = false, Default = "LeftButton" },
+				{ Name = "button", Type = "cstring", Nilable = false, Default = "LeftButton" },
 				{ Name = "isDown", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -73,7 +73,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "buttonState", Type = "string", Nilable = false },
+				{ Name = "buttonState", Type = "SimpleButtonStateToken", Nilable = false },
 			},
 		},
 		{
@@ -86,7 +86,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -99,7 +99,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -112,7 +112,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "fontString", Type = "table", Nilable = false },
+				{ Name = "fontString", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{
@@ -125,7 +125,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -138,7 +138,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -164,7 +164,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -177,7 +177,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -190,8 +190,8 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -204,7 +204,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 			},
 		},
 		{
@@ -217,7 +217,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -230,7 +230,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "height", Type = "number", Nilable = false },
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -243,7 +243,7 @@ local SimpleButtonAPI =
 
 			Returns =
 			{
-				{ Name = "width", Type = "number", Nilable = false },
+				{ Name = "width", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -257,14 +257,6 @@ local SimpleButtonAPI =
 			Returns =
 			{
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "LockHighlight",
-			Type = "Function",
-
-			Arguments =
-			{
 			},
 		},
 		{
@@ -291,7 +283,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "buttonState", Type = "string", Nilable = false },
+				{ Name = "buttonState", Type = "SimpleButtonStateToken", Nilable = false },
 				{ Name = "lock", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -301,7 +293,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -310,7 +302,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -319,7 +311,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -337,7 +329,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "fontString", Type = "table", Nilable = false },
+				{ Name = "fontString", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{
@@ -346,7 +338,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -355,8 +347,8 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
-				{ Name = "blendMode", Type = "string", Nilable = true },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "blendMode", Type = "BlendMode", Nilable = true },
 			},
 		},
 		{
@@ -365,16 +357,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
-			},
-		},
-		{
-			Name = "SetHighlightLocked",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "locked", Type = "bool", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -383,8 +366,8 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
-				{ Name = "blendMode", Type = "string", Nilable = true },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
+				{ Name = "blendMode", Type = "BlendMode", Nilable = true },
 			},
 		},
 		{
@@ -402,7 +385,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -411,7 +394,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "font", Type = "table", Nilable = false },
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
 			},
 		},
 		{
@@ -420,7 +403,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -429,7 +412,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -438,8 +421,8 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -448,7 +431,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
@@ -457,15 +440,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "text", Type = "string", Nilable = false, Default = "" },
-			},
-		},
-		{
-			Name = "UnlockHighlight",
-			Type = "Function",
-
-			Arguments =
-			{
+				{ Name = "text", Type = "cstring", Nilable = false, Default = "" },
 			},
 		},
 	},

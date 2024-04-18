@@ -17,15 +17,16 @@ local ClickBindingsConstants =
 		{
 			Name = "ClickBindingType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "None", Type = "ClickBindingType", EnumValue = 0 },
 				{ Name = "Spell", Type = "ClickBindingType", EnumValue = 1 },
 				{ Name = "Macro", Type = "ClickBindingType", EnumValue = 2 },
 				{ Name = "Interaction", Type = "ClickBindingType", EnumValue = 3 },
+				{ Name = "PetAction", Type = "ClickBindingType", EnumValue = 4 },
 			},
 		},
 		{
@@ -35,7 +36,7 @@ local ClickBindingsConstants =
 			{
 				{ Name = "type", Type = "ClickBindingType", Nilable = false },
 				{ Name = "actionID", Type = "number", Nilable = false },
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 				{ Name = "modifiers", Type = "number", Nilable = false },
 			},
 		},

@@ -19,7 +19,7 @@ local function SetTabTitleWithCount(tabButton, type, count)
 	end
 end
 
-ProfessionsCrafterOrderListElementMixin = CreateFromMixins(ScrollListLineMixin, TableBuilderRowMixin);
+ProfessionsCrafterOrderListElementMixin = CreateFromMixins(TableBuilderRowMixin);
 
 function ProfessionsCrafterOrderListElementMixin:OnLineEnter()
 	self.HighlightTexture:Show();
@@ -63,7 +63,12 @@ function ProfessionsCrafterOrderListElementMixin:OnClick(button)
 			self.pageFrame:ViewOrder(self.option);
 		end
 	elseif button == "RightButton" then
-		ToggleDropDownMenu(1, self.option.spellID, self.contextMenu, "cursor");
+		local dropdownInfo =
+		{
+			recipeID = self.option.spellID,
+			orderID = self.option.orderID,
+		};
+		ToggleDropDownMenu(1, dropdownInfo, self.contextMenu, "cursor");
 	end
 end
 
@@ -75,7 +80,7 @@ function ProfessionsCrafterOrderListElementMixin:Init(elementData)
 end
 
 
-ProfessionsCraftingOrderPageMixin = {};
+ProfessionsCraftingOrderPageMixin = CreateFromMixins(ProfessionsRecipeListPanelMixin);
 
 function ProfessionsCraftingOrderPageMixin:InitButtons()
 	self.BrowseFrame.FavoritesSearchButton.Icon:SetAtlas("auctionhouse-icon-favorite");
@@ -104,8 +109,8 @@ function ProfessionsCraftingOrderPageMixin:InitButtons()
 		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 		local claimInfo = C_CraftingOrders.GetOrderClaimInfo(self.professionInfo.profession);
 		local tooltipText;
-		if claimInfo.hoursToRecharge then
-			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_REFRESH_TOOLTIP:format(claimInfo.claimsRemaining, claimInfo.hoursToRecharge);
+		if claimInfo.secondsToRecharge then
+			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_REFRESH_TOOLTIP:format(claimInfo.claimsRemaining, SecondsToTime(claimInfo.secondsToRecharge));
 		else
 			tooltipText = CRAFTING_ORDERS_CLAIMS_REMAINING_TOOLTIP:format(claimInfo.claimsRemaining);
 		end
@@ -280,7 +285,7 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 	self.tableBuilder:SetColumnHeaderOverlap(2);
 	self.tableBuilder:SetHeaderContainer(self.BrowseFrame.OrderList.HeaderContainer);
 	self.tableBuilder:SetTableMargins(-3, 5);
-	self.tableBuilder:SetTableWidth(747);
+	self.tableBuilder:SetTableWidth(777);
 
 	local PTC = ProfessionsTableConstants;
 	self.tableBuilder:AddFillColumn(self, PTC.NoPadding, 1.0,
@@ -291,10 +296,8 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 										  	  PTC.CustomerName.RightCellPadding, CRAFTING_ORDERS_BROWSE_HEADER_CUSTOMER_NAME, "ProfessionsCrafterTableCellCustomerNameTemplate");
 		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Tip.Width, PTC.Tip.LeftCellPadding,
 										  	  PTC.Tip.RightCellPadding, ProfessionsSortOrder.Tip, "ProfessionsCrafterTableCellActualCommissionTemplate");
-		if self.orderType ~= Enum.CraftingOrderType.Public then
-			self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Reagents.Width, PTC.Reagents.LeftCellPadding,
+		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Reagents.Width, PTC.Reagents.LeftCellPadding,
 										  		  PTC.Reagents.RightCellPadding, ProfessionsSortOrder.Reagents, "ProfessionsCrafterTableCellReagentsTemplate");
-			end
 		self.tableBuilder:AddFixedWidthColumn(self, PTC.NoPadding, PTC.Expiration.Width, PTC.Expiration.LeftCellPadding,
 										  	  PTC.Expiration.RightCellPadding, ProfessionsSortOrder.Expiration, "ProfessionsCrafterTableCellExpirationTemplate");
 	elseif browseType == OrderBrowseType.Bucketed then
@@ -310,15 +313,21 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 end
 
 function ProfessionsCraftingOrderPageMixin:InitContextMenu(dropDown, level)
-	local recipeID = UIDROPDOWNMENU_MENU_VALUE;
+	local dropdownInfo = UIDROPDOWNMENU_MENU_VALUE;
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
 	
-	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeID);
+	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(dropdownInfo.recipeID);
 	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, recipeID, not currentlyFavorite);
-
+	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, dropdownInfo.recipeID, not currentlyFavorite);
 	UIDropDownMenu_AddButton(info, level);
+
+	if self.orderType == Enum.CraftingOrderType.Personal then
+		info.text = PROFESSIONS_DECLINE_ORDER;
+		local emptyRejectionNote = "";
+		info.func = GenerateClosure(C_CraftingOrders.RejectOrder, dropdownInfo.orderID, emptyRejectionNote, self.professionInfo.profession);
+		UIDropDownMenu_AddButton(info, level);
+	end
 end
 
 function ProfessionsCraftingOrderPageMixin:InitOrderList()
@@ -346,6 +355,7 @@ local ProfessionsCraftingOrderPageEvents =
 	"CURRENCY_DISPLAY_UPDATE",
 	"CRAFTINGORDERS_CAN_REQUEST",
 	"TRADE_SKILL_LIST_UPDATE",
+	"CRAFTINGORDERS_REJECT_ORDER_RESPONSE",
 };
 function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 	if event == "TRADE_SKILL_FAVORITES_CHANGED" then
@@ -358,7 +368,6 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 		if self.orderType == Enum.CraftingOrderType.Guild and not IsInGuild() then
 			self:SetCraftingOrderType(Enum.CraftingOrderType.Public);
 		end
-	elseif event == "CRAFTINGORDERS_CAN_REQUEST" then
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
 		local professionInfo = C_TradeSkillUI.GetChildProfessionInfo();
 		self:Refresh(professionInfo);
@@ -372,6 +381,17 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 		end
 
 		SetTabTitleWithCount(tabButton, type, count);
+	elseif event == "CRAFTINGORDERS_REJECT_ORDER_RESPONSE" then
+		local result, orderID = ...;
+		local success = (result == Enum.CraftingOrderResult.Ok);
+        if success then
+			if self.lastRequest then
+				self.lastRequest.offset = 0; -- Get a fresh page of sorted results
+				self:SendOrderRequest(self.lastRequest);
+			end
+		else
+			UIErrorsFrame:AddExternalErrorMessage(PROFESSIONS_ORDER_REJECT_FAILED);
+        end
 	end
 end
 
@@ -384,6 +404,7 @@ function ProfessionsCraftingOrderPageMixin:OnLoad()
 	self:SetCraftingOrderType(Enum.CraftingOrderType.Public);
 
 	FrameUtil.RegisterFrameForEvents(self, ProfessionsCraftingOrderPageAlwaysListenEvents);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:ClearCachedRequests(); end, self);
 end
 
 function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()
@@ -401,7 +422,6 @@ function ProfessionsCraftingOrderPageMixin:StartDefaultSearch()
 		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
 	else
 		self.BrowseFrame.OrderList.LoadingSpinner:Hide();
-		self.BrowseFrame.OrderList.SpinnerAnim:Stop();
 		self.BrowseFrame.BackButton:Hide();
 
 		self.BrowseFrame.OrderList.ResultsText:SetText(CRAFTER_CRAFTING_ORDERS_BROWSE_FAVORITES_TIP);
@@ -420,7 +440,8 @@ function ProfessionsCraftingOrderPageMixin:OnShow()
 
 	self.BrowseFrame.RecipeList.SearchBox:SetText(C_TradeSkillUI.GetRecipeItemNameFilter());
 
-	if self.professionInfo and C_CraftingOrders.ShouldShowCraftingOrderTab() and C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession) then
+	local profession = self.professionInfo and self.professionInfo.profession;
+	if profession and C_CraftingOrders.ShouldShowCraftingOrderTab() and C_TradeSkillUI.IsNearProfessionSpellFocus(profession) then
 		C_CraftingOrders.OpenCrafterCraftingOrders();
 		-- Delay a frame so that the recipe list does not get thrashed because of the delayed event from flag changes
 		RunNextFrame(function() self:StartDefaultSearch(); end);
@@ -437,6 +458,8 @@ function ProfessionsCraftingOrderPageMixin:OnHide()
 	end
 
 	C_TradeSkillUI.SetOnlyShowAvailableForOrders(false);
+
+	self:StoreCollapses(self.BrowseFrame.RecipeList.ScrollBox);
 end
 
 function ProfessionsCraftingOrderPageMixin:UpdateOrdersRemaining()
@@ -537,7 +560,7 @@ function ProfessionsCraftingOrderPageMixin:Init(professionInfo)
 	end
 
 	local searching = self.BrowseFrame.RecipeList.SearchBox:HasText();
-	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching);
+	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, false, self:GetCollapses());
 	
 	if searching or changedProfessionID then
 		self.BrowseFrame.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
@@ -600,7 +623,6 @@ function ProfessionsCraftingOrderPageMixin:SendOrderRequest(request)
 
 		self.BrowseFrame.OrderList.ResultsText:Hide();
 		self.BrowseFrame.OrderList.LoadingSpinner:Show();
-		self.BrowseFrame.OrderList.SpinnerAnim:Restart();
 		self.BrowseFrame.OrderList.ScrollBox:Hide();
 
 		if not request.selectedSkillLineAbility then
@@ -647,7 +669,6 @@ end
 
 function ProfessionsCraftingOrderPageMixin:ShowGeneric(orders, browseType, offset, isSorted)
 	self.BrowseFrame.OrderList.LoadingSpinner:Hide();
-	self.BrowseFrame.OrderList.SpinnerAnim:Stop();
 	self.BrowseFrame.OrderList.ScrollBox:Show();
 
 	local dataProvider;

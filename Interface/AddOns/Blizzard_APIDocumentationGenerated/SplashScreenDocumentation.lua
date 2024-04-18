@@ -62,7 +62,7 @@ local SplashScreen =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "minDisplayCharLevel", Type = "number", Nilable = false },
 				{ Name = "minQuestDisplayLevel", Type = "number", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = false },
@@ -77,6 +77,7 @@ local SplashScreen =
 				{ Name = "rightFeatureDesc", Type = "string", Nilable = false },
 				{ Name = "shouldShowQuest", Type = "bool", Nilable = false },
 				{ Name = "screenType", Type = "SplashScreenType", Nilable = false },
+				{ Name = "gameMenuRequest", Type = "bool", Nilable = false },
 			},
 		},
 	},

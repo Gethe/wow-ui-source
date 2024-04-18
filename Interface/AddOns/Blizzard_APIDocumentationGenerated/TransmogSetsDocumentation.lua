@@ -26,7 +26,7 @@ local TransmogSets =
 			Arguments =
 			{
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -76,22 +76,12 @@ local TransmogSets =
 			},
 		},
 		{
-			Name = "GetBaseSetsCounts",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "numCollected", Type = "number", Nilable = false },
-				{ Name = "numTotal", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetBaseSetsFilter",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -107,6 +97,26 @@ local TransmogSets =
 			{
 				{ Name = "detailsCameraID", Type = "number", Nilable = true },
 				{ Name = "vendorCameraID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFilteredBaseSetsCounts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numCollected", Type = "number", Nilable = false },
+				{ Name = "numTotal", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFullBaseSetsCounts",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numCollected", Type = "number", Nilable = false },
+				{ Name = "numTotal", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -196,7 +206,7 @@ local TransmogSets =
 			Arguments =
 			{
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -211,12 +221,21 @@ local TransmogSets =
 			Arguments =
 			{
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "sources", Type = "table", InnerType = "AppearanceSourceInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTransmogSetsClassFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -226,6 +245,16 @@ local TransmogSets =
 			Returns =
 			{
 				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetValidBaseSetsCountsForCharacter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numCollected", Type = "number", Nilable = false },
+				{ Name = "numTotal", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -308,7 +337,7 @@ local TransmogSets =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
 		},
@@ -337,7 +366,7 @@ local TransmogSets =
 			Arguments =
 			{
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -353,6 +382,15 @@ local TransmogSets =
 			{
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTransmogSetsClassFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "classID", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -371,17 +409,18 @@ local TransmogSets =
 				{ Name = "setID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "baseSetID", Type = "number", Nilable = true },
-				{ Name = "description", Type = "string", Nilable = true },
-				{ Name = "label", Type = "string", Nilable = true },
+				{ Name = "description", Type = "cstring", Nilable = true },
+				{ Name = "label", Type = "cstring", Nilable = true },
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "patchID", Type = "number", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
 				{ Name = "classMask", Type = "number", Nilable = false },
 				{ Name = "hiddenUntilCollected", Type = "bool", Nilable = false },
-				{ Name = "requiredFaction", Type = "string", Nilable = true },
+				{ Name = "requiredFaction", Type = "cstring", Nilable = true },
 				{ Name = "collected", Type = "bool", Nilable = false },
 				{ Name = "favorite", Type = "bool", Nilable = false },
 				{ Name = "limitedTimeSet", Type = "bool", Nilable = false },
+				{ Name = "validForCharacter", Type = "bool", Nilable = false },
 			},
 		},
 		{

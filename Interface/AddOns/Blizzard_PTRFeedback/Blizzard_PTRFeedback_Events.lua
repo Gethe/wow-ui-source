@@ -29,8 +29,11 @@ PTR_IssueReporter.ReportEventTypes = {
     EditModeEntered = "EditModeEntered",
     EditModeExit = "EditModeExit",
     UIPanelButtonClicked = "UIPanelButtonClicked",
+    AIBotsJoinedParty = "AIBotsJoinedParty",
+    AIBotsLeftParty = "AIBotsLeftParty",
 }
 
+local groupHasAIBots = false
 local previousQuestProgress = {}
 local timeSinceLastProgress = 0
 local lastPlayerPosition = false
@@ -200,6 +203,10 @@ local function BarberShopClosedHandler()
     PTR_IssueReporter.InBarbershop = false
 end
 ----------------------------------------------------------------------------------------------------
+local function GroupRosterChanged()
+    PTR_IssueReporter.HandleGroupRosterChanged()
+end
+----------------------------------------------------------------------------------------------------
 C_Timer.NewTicker(1, QuestProgressHandler)
 ----------------------------------------------------------------------------------------------------
 function GetTimeSinceLastQuestProgress()
@@ -220,7 +227,8 @@ PTR_IssueReporter.Data.RegisteredEvents =
     PLAYER_REGEN_ENABLED = PTR_IssueReporter.CheckSurveyQueue,
     PLAYER_DEAD = CombatLogEventHandler,
     BARBER_SHOP_OPEN = BarberShopOpenedHandler,
-    BARBER_SHOP_CLOSE = BarberShopClosedHandler
+    BARBER_SHOP_CLOSE = BarberShopClosedHandler,
+    GROUP_ROSTER_UPDATE = GroupRosterChanged,
 }
 
 for event, func in pairs (PTR_IssueReporter.Data.RegisteredEvents) do

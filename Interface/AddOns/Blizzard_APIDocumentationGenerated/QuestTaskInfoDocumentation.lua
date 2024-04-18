@@ -21,6 +21,20 @@ local QuestTaskInfo =
 			},
 		},
 		{
+			Name = "GetQuestIconUIWidgetSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetSet", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestInfoByQuestID",
 			Type = "Function",
 
@@ -31,7 +45,7 @@ local QuestTaskInfo =
 
 			Returns =
 			{
-				{ Name = "questTitle", Type = "string", Nilable = false },
+				{ Name = "questTitle", Type = "cstring", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = true },
 				{ Name = "capped", Type = "bool", Nilable = true },
 				{ Name = "displayAsObjective", Type = "bool", Nilable = true },
@@ -96,6 +110,20 @@ local QuestTaskInfo =
 			},
 		},
 		{
+			Name = "GetQuestTooltipUIWidgetSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetSet", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestZoneID",
 			Type = "Function",
 
@@ -130,20 +158,6 @@ local QuestTaskInfo =
 			Returns =
 			{
 				{ Name = "quests", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetUIWidgetSetIDFromQuestID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "UiWidgetSetID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -191,6 +205,7 @@ local QuestTaskInfo =
 				{ Name = "isQuestStart", Type = "bool", Nilable = false },
 				{ Name = "isDaily", Type = "bool", Nilable = false },
 				{ Name = "isCombatAllyQuest", Type = "bool", Nilable = false },
+				{ Name = "isMeta", Type = "bool", Nilable = false },
 				{ Name = "childDepth", Type = "number", Nilable = true },
 			},
 		},

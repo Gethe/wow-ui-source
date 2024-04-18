@@ -127,13 +127,15 @@ end
 ProfessionsRecipeCrafterDetailsMixin = {};
 
 function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
-	--self.pendingOperationInfos = {};
-
 	self.statLinePool = CreateFramePool("FRAME", self.StatLines, "ProfessionsCrafterDetailsStatLineTemplate");
 
 	self.FinishingReagentSlotContainer.Label:SetText(PROFESSIONS_CRAFTING_FINISHING_HEADER);
 
 	self.QualityMeter.Center:SetScript("OnEnter", function(fill)
+		if not self.operationInfo then
+			return;
+		end
+
 		GameTooltip:SetOwner(fill, "ANCHOR_RIGHT");
 
 		local atlasSize = 25;
@@ -196,14 +198,18 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 
 	self.QualityMeter.Left:SetScript("OnLeave", GameTooltip_Hide);
 	self.QualityMeter.Right:SetScript("OnLeave", GameTooltip_Hide);
+end
 
-	--self.QualityMeter:SetOnAnimationsFinished(function()
-	--	local pendingStats = self.pendingStats;
-	--	self.pendingStats = nil;
-	--
-	--	self:SetStats(pendingStats.operationInfo, pendingStats.supportsQualities, pendingStats.isGatheringRecipe);
-	--	return pendingStats ~= nil;
-	--end);
+function ProfessionsRecipeCrafterDetailsMixin:SetMaximized()
+	if self.ApplyLayout then
+		self.ApplyLayout();
+	end
+end
+
+function ProfessionsRecipeCrafterDetailsMixin:SetMinimized()
+	if self.ApplyLayout then
+		self.ApplyLayout();
+	end
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetQualityMeterAnimSpeedMultiplier(animSpeedMultiplier)
@@ -225,12 +231,8 @@ function ProfessionsRecipeCrafterDetailsMixin:OnEvent(event, ...)
 
 		local resultData = ...;
 
-		if resultData.craftingQuality then
-			--local operationInfo = table.remove(self.pendingOperationInfos, 1);
-			--self.QualityMeter:PlayResultAnimation(resultData, operationInfo, self.animSpeedMultiplier or 1);
-			if self.recipeInfo.recipeID == self.expectedRecipeID then
-				self.QualityMeter:PlayResultAnimation(resultData, self.operationInfo, self.animSpeedMultiplier or 1);
-			end
+		if resultData.craftingQuality and self.recipeInfo.recipeID == self.expectedRecipeID then
+			self.QualityMeter:PlayResultAnimation(resultData, self.operationInfo, self.animSpeedMultiplier or 1);
 		end
 	elseif event == "TRADE_SKILL_CRAFT_BEGIN" then
 		if not self.recipeInfo then
@@ -238,12 +240,6 @@ function ProfessionsRecipeCrafterDetailsMixin:OnEvent(event, ...)
 		end
 
 		self.expectedRecipeID = self.recipeInfo.recipeID;
-		--if self.operationInfo then
-		--	table.insert(self.pendingOperationInfos, self.operationInfo);
-		--	if #self.pendingOperationInfos > 2 then
-		--		table.remove(self.pendingOperationInfos, 1);
-		--	end
-		--end
 	end
 end
 
@@ -275,6 +271,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, h
 
 	self:SetOutputItemName(recipeInfo.name);
 	self.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
+	self.FinishingReagentSlotContainer.shouldShow = hasFinishingSlots;
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:HasData()
@@ -298,45 +295,83 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		end
 	end
 	self.craftingQuality = nextCraftingQuality;
-
-	local professionType = isGatheringRecipe and Professions.ProfessionType.Gathering or Professions.ProfessionType.Crafting;
-	self.Label:SetText(detailsPanelTitles[professionType]);
 	self.operationInfo = operationInfo;
 
-	self.statLinePool:ReleaseAll();
+	self.ApplyLayout = function()
+		if self.recipeInfo == nil then
+			return;
+		end
 
-	self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
-	self.StatLines.DifficultyStatLine:SetProfessionType(professionType);
-	self.StatLines.SkillStatLine:SetShown(supportsQualities or isGatheringRecipe);
-	self.StatLines.SkillStatLine:SetProfessionType(professionType);
-	if supportsQualities or isGatheringRecipe then
-		self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
-		self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
-	end
-	
-	local nextStatLineIndex = 3;
-	for _, bonusStat in ipairs(operationInfo.bonusStats) do
-		local statLine = self.statLinePool:Acquire();
-		statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
-		statLine.layoutIndex = nextStatLineIndex;
-		statLine:Show();
+		self.statLinePool:ReleaseAll();
+		
+		if ProfessionsUtil.IsCraftingMinimized() then
+			self.BackgroundTop:Hide();
+			self.BackgroundBottom:Hide();
+			self.BackgroundMiddle:Hide();
+			self.BackgroundMinimized:Show();
 
-		nextStatLineIndex = nextStatLineIndex + 1;
-	end
+			self.Label:Hide();
+			self.Line:Hide();
+			self.StatLines.DifficultyStatLine:Hide();
+			self.StatLines.SkillStatLine:Hide();
+			self.FinishingReagentSlotContainer:Hide();
 
-	self.StatLines:Layout();
-	
-	--if self.QualityMeter.lockedForAnimations then
-	--	self.pendingStats = {operationInfo = operationInfo, supportsQualities = supportsQualities, isGatheringRecipe = isGatheringRecipe};
-	--else
+			self.QualityMeter.layoutIndex = 1;
+			self.QualityMeter.topPadding = 17;
+			self.minimumHeight = 125;
+			self.maximumHeight = 125;
+		else
+			self.BackgroundTop:Show();
+			self.BackgroundBottom:Show();
+			self.BackgroundMiddle:Show();
+			self.BackgroundMinimized:Hide();
+
+			local professionType = isGatheringRecipe and Professions.ProfessionType.Gathering or Professions.ProfessionType.Crafting;
+			self.Label:SetText(detailsPanelTitles[professionType]);
+			self.Label:Show();
+			self.Line:Show();
+
+			if self.FinishingReagentSlotContainer.shouldShow then
+				self.FinishingReagentSlotContainer:Show();
+			end
+
+			self.StatLines.DifficultyStatLine:SetShown(supportsQualities or isGatheringRecipe);
+			self.StatLines.DifficultyStatLine:SetProfessionType(professionType);
+			self.StatLines.SkillStatLine:SetShown(supportsQualities or isGatheringRecipe);
+			self.StatLines.SkillStatLine:SetProfessionType(professionType);
+			if supportsQualities or isGatheringRecipe then
+				self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
+				self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
+			end
+			
+			local nextStatLineIndex = 3;
+			for _, bonusStat in ipairs(operationInfo.bonusStats) do
+				local statLine = self.statLinePool:Acquire();
+				statLine:InitBonusStat(bonusStat.bonusStatName, bonusStat.ratingDescription, bonusStat.bonusStatValue, bonusStat.ratingPct, bonusStat.bonusRatingPct);
+				statLine.layoutIndex = nextStatLineIndex;
+				statLine:Show();
+
+				nextStatLineIndex = nextStatLineIndex + 1;
+			end
+
+			self.QualityMeter.layoutIndex = 4;
+			self.QualityMeter.topPadding = -4;
+			self.minimumHeight = 199;
+			self.maximumHeight = nil;
+		end
+
+		self.StatLines:Layout();
+
 		self.QualityMeter:SetShown(supportsQualities);
 		self.Spacer:SetShown(not supportsQualities);
 		if supportsQualities then
 			self.QualityMeter:SetQuality(operationInfo.quality, self.recipeInfo.maxQuality);
 		end
-	--end
 
-	self:Layout();
+		self:Layout();
+	end;
+
+	self.ApplyLayout();
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetOutputItemName(itemName)
@@ -420,6 +455,12 @@ function ProfessionsQualityMeterMixin:SetOnAnimationsFinished(func)
 end
 
 function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
+	if self.animating then
+		self.pendingQuality = quality;
+		self.pendingMaxQuality = maxQuality;
+		return;
+	end
+
 	local oldCraftingQuality = self.craftingQuality;
 	self.craftingQuality = math.floor(quality);
 
@@ -445,12 +486,10 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 		self.Right:SetPoint("LEFT", self.Center, "RIGHT", tierIconOffsets[self.craftingQuality + 1], 0);
 	end
 	
-	--if not self.lockedForAnimations then
-		if oldCraftingQuality ~= self.craftingQuality then
-			self.Left.AppearIcon.Anim:Restart();
-			self.Right.AppearIcon.Anim:Restart();
-		end
-	--end
+	if oldCraftingQuality ~= self.craftingQuality then
+		self.Left.AppearIcon.Anim:Restart();
+		self.Right.AppearIcon.Anim:Restart();
+	end
 
 	local backgroundAtlas;
 	if quality == maxQuality then
@@ -536,18 +575,12 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 		self.Center.Fill.BarHighlightMask:SetPoint("LEFT", self.Marker, "CENTER");
 	end
 
-	local function GetFillToPct(operationInfo)
-		if resultData.isCrit then
-			local additive = operationInfo.baseSkill + operationInfo.bonusSkill + resultData.critBonusSkill;
-			local skillRange = operationInfo.upperSkillTreshold - operationInfo.lowerSkillThreshold;
-			if skillRange == 0 then
-				return 0;
-			end
-
-			return math.min((additive - operationInfo.lowerSkillThreshold) / skillRange, 1.0);
-		else
-			return math.fmod(operationInfo.quality, 1);
+	local function GetFillToPct(resultData, operationInfo)
+		if resultData.craftingQuality > operationInfo.craftingQuality then
+			return 1.0;
 		end
+
+		return resultData.qualityProgress;
 	end
 
 	local promotedTier = resultData.craftingQuality > operationInfo.craftingQuality;
@@ -557,7 +590,7 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	-- the more complicated weaving of element animations.
 	self.sequencer = CreateSequencer();
 	do
-		local fillToPct = self.atMaxTier and 1 or GetFillToPct(operationInfo);
+		local fillToPct = self.atMaxTier and 1 or GetFillToPct(resultData, operationInfo);
 		local fillToWidth = fillToPct * (374.25/2);
 
 		local function InterpolateBar(value)
@@ -591,9 +624,6 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 	end
 
 	local function PlayBeginAnimation()
-		--assert(self.onAnimationsFinished);
-		--local statsChanged = self.onAnimationsFinished();
-
 		-- The stats may now have changed, so anything being animated in
 		-- should represent the new state, not the old state.
 		self.Marker.TransitionIn:Restart();
@@ -606,8 +636,18 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 			self.Left.AppearIcon.Anim:Restart();
 		end
 
-		--self.lockedForAnimations = false;
 		self.animating = false;
+
+		if self.pendingQuality then
+			local pendingQuality, pendingMaxQuality = self.pendingQuality, self.pendingMaxQuality;
+			self.pendingQuality = nil;
+			self.pendingMaxQuality = nil;
+			self:SetQuality(pendingQuality, pendingMaxQuality);
+		end
+
+		if self.onAnimationsFinished then
+			self.onAnimationsFinished();
+		end
 	end
 	
 	local function OnFxFinished()
@@ -624,10 +664,8 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 		if not self.atMaxTier then
 			self.Flare.FlareTransitionIn:Restart();
 			self.DividerGlow.TransitionOut:Restart();
-		end
 
-		if resultData.isCrit then
-			if not self.atMaxTier then
+			if resultData.isCrit then
 				local modifier = Clamp(tonumber(GetCVar("ShakeStrengthUI")) or 0, 0, 1);
 				local magnitude = 10 * modifier;
 				if magnitude > 0 then
@@ -678,8 +716,6 @@ function ProfessionsQualityMeterMixin:PlayResultAnimation(resultData, operationI
 
 	self.sequencer:Add(PlayEndAnimation);
 	self.sequencer:Play();
-
-	--self.lockedForAnimations = true;
 end
 
 function ProfessionsQualityMeterMixin:Reset()

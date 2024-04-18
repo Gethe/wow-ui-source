@@ -73,8 +73,8 @@ local CovenantPreview =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = false },
 			},
 		},
@@ -83,13 +83,13 @@ local CovenantPreview =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
 				{ Name = "covenantName", Type = "string", Nilable = false },
 				{ Name = "covenantZone", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "covenantCrest", Type = "string", Nilable = false },
+				{ Name = "covenantCrest", Type = "textureAtlas", Nilable = false },
 				{ Name = "covenantAbilities", Type = "table", InnerType = "CovenantAbilityInfo", Nilable = false },
 				{ Name = "fromPlayerChoice", Type = "bool", Nilable = false },
 				{ Name = "covenantSoulbinds", Type = "table", InnerType = "CovenantSoulbindInfo", Nilable = false },
@@ -102,9 +102,9 @@ local CovenantPreview =
 			Fields =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "uiTextureKit", Type = "string", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "sortOrder", Type = "number", Nilable = false },
 			},
 		},

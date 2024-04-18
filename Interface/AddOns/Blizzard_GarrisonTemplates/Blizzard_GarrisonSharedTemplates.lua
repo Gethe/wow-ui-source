@@ -90,7 +90,7 @@ function GarrisonFollowerList:Setup(mainFrame, followerType, followerTemplate, i
 	self.followerType = followerType;
 
 	if not followerTemplate then
-		if followerType == Enum.GarrisonFollowerType.FollowerType_9_0 then
+		if followerType == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 			followerTemplate = "CovenantMissionFollowerOrCategoryListButtonTemplate";
 		else
 			followerTemplate = "GarrisonMissionFollowerOrCategoryListButtonTemplate";
@@ -146,8 +146,8 @@ function GarrisonFollowerList:OnShow()
 	end
 	if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 		self:ShowThreatCountersFrame();
-	else 
-		self:HideThreatCountersFrame(); 
+	else
+		self:HideThreatCountersFrame();
 	end
 
 	self:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
@@ -165,7 +165,7 @@ end
 
 function GarrisonFollowerList:HideThreatCountersFrame()
 	GarrisonThreatCountersFrame:Hide();
-end		
+end
 
 function GarrisonFollowerList:StopAnimations()
 	if (self.followerTab) then
@@ -222,8 +222,8 @@ function GarrisonFollowerList:OnEvent(event, ...)
 			if (self.followerTab and self.followerTab.followerID and self.followerTab:IsVisible()) then
 				if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 					self:ShowThreatCountersFrame();
-				else 
-					self:HideThreatCountersFrame(); 
+				else
+					self:HideThreatCountersFrame();
 				end
 			end
 		end
@@ -676,7 +676,7 @@ function GarrisonFollowerButton_UpdateCounters(frame, button, follower, showCoun
 		--for followers you have, show counters if they are or could be on the mission
 		local counters = frame.followerCounters and frame.followerCounters[follower.followerID];
 		if ( counters ) then
-			if ( follower.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+			if ( follower.followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 				table.sort(counters, function(left, right) return left.factor > right.factor; end);
 			end
 		end
@@ -747,7 +747,7 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 	elseif (info.spellID) then
 		counter.tooltip = nil;
 		counter.info.showCounters = false;
-		counter.Icon:SetTexture(select(3, GetSpellInfo(info.spellID)));
+		counter.Icon:SetTexture(C_Spell.GetSpellTexture(info.spellID));
 		counter.AbilityFeedbackGlowAnim:Stop();
 		counter.Border:Hide();
 	else
@@ -761,7 +761,7 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 			counter.Icon:SetTexture(info.icon);
 			counter.Border:Show();
 
-			if ( counter.info.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+			if ( counter.info.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 				counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
 			else
 				counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
@@ -897,7 +897,7 @@ function GarrisonFollowerButton_CalculateExpandedButtonHeight(collapsedHeight, e
 			abilityHeight = abilityHeight + abilityExtent;
 		end
 	end
-	
+
 	if abilityHeight > 0 then
 		local backgroundPadding = 8;
 		abilityHeight = abilityHeight + backgroundPadding;
@@ -959,7 +959,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 	local followerFrame = followerList.ScrollBox.followerFrame;
 	if ( button == "LeftButton" ) then
 		if ( followerFrame.selectedFollower ~= self.id ) then
-			if followerFrame.followerType == Enum.GarrisonFollowerType.FollowerType_9_0 then
+			if followerFrame.followerType == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER_9_0);
 			else
 				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_SELECT_FOLLOWER);
@@ -986,7 +986,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 					followerList.buttonInitializer(button, button:GetElementData());
 				end);
 				followerList.ScrollBox:FullUpdate(ScrollBoxConstants.UpdateQueued);
-				
+
 			else
 				PlaySound(SOUNDKIT.UI_GARRISON_COMMAND_TABLE_FOLLOWER_ABILITY_CLOSE);
 			end
@@ -1054,6 +1054,14 @@ function GarrisonFollowerListButton_OnModifiedClick(self, button)
 		if ( followerLink ) then
 			ChatEdit_InsertLink(followerLink);
 		end
+	end
+end
+
+function GarrisonFollowerListButton_OnUserClick(self, button)
+	if IsModifiedClick() then
+		GarrisonFollowerListButton_OnModifiedClick(self, button);
+	else
+		GarrisonFollowerListButton_OnClick(self, button);
 	end
 end
 
@@ -1339,10 +1347,10 @@ function GarrisonFollowerPage_SetItem(itemFrame, itemID, itemLevel)
 	if ( itemID and itemID > 0 ) then
 		itemFrame.itemID = itemID;
 		itemFrame.itemLevel = itemLevel;
-		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID);
+		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemID);
 		if ( itemName ) then
 			itemFrame.Icon:SetTexture(itemTexture);
-			local r, g, b = GetItemQualityColor(itemQuality);
+			local r, g, b = C_Item.GetItemQualityColor(itemQuality);
 			itemFrame.Name:SetTextColor(r, g, b);
 			itemFrame.ItemLevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, itemLevel);
 			itemFrame:Show();
@@ -1699,7 +1707,7 @@ function GarrisonFollowerTabMixin:SetupXPBar(followerInfo)
 			self.XPBar:SetValue(followerInfo.xp);
 			local xpLeft = followerInfo.levelXP - followerInfo.xp;
 			self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
-			if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0 then
+			if followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower then
 				self.XPText:SetPoint("TOPRIGHT", self.Class, "TOPRIGHT", -2, -8);
 			else
 				self.XPText:SetPoint("TOPRIGHT", self.Class, "TOPLEFT", -2, -8);
@@ -2012,7 +2020,7 @@ function GarrisonFollowerTabMixin:ShowAbilities(followerInfo)
 	local hasCombatAllySpell = #followerInfo.combatAllySpellIDs ~= 0;
 
 	for i, combatAllySpell in ipairs(followerInfo.combatAllySpellIDs) do
-		local _, _, texture = GetSpellInfo(combatAllySpell);
+		local texture = C_Spell.GetSpellTexture(combatAllySpell);
 		if (i == 1) then
 			self.AbilitiesFrame.CombatAllySpell[i].layoutIndex = BASE_COMBAT_ALLY_LAYOUT_INDEX + 2;
 		else
@@ -2172,16 +2180,16 @@ function GarrisonFollowerTabMixin:UpdateCombatantStats(followerInfo)
 			newAnchorFrame = self:SetupNewStatText(newAnchorFrame, COVENANT_MISSIONS_XP_TO_LEVEL, followerInfo.levelXP - followerInfo.xp);
 		end
 
-		if(self.HealTimeRemainingIcon and self.HealTimeRemaining) then 
-			local shouldShowHealTimeRemaining = autoCombatantStats.minutesHealingRemaining > 0; 
+		if(self.HealTimeRemainingIcon and self.HealTimeRemaining) then
+			local shouldShowHealTimeRemaining = autoCombatantStats.minutesHealingRemaining > 0;
 
-			if(shouldShowHealTimeRemaining) then 
+			if(shouldShowHealTimeRemaining) then
 				self.HealTimeRemaining:SetText(ADVENTURES_FOLLOWER_HEAL_TIME:format(MinutesToTime(autoCombatantStats.minutesHealingRemaining)));
 			end
 
 			self.HealTimeRemainingIcon:SetShown(shouldShowHealTimeRemaining);
 			self.HealTimeRemaining:SetShown(shouldShowHealTimeRemaining);
-		end 
+		end
 		anchorFrame:Show();
 	else
 		anchorFrame:Hide();
@@ -2248,7 +2256,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	followerInfo.autoSpellAbilities = C_Garrison.GetFollowerAutoCombatSpells(followerID, followerInfo.level or 1);
 	followerInfo.autoCombatantStats = C_Garrison.GetFollowerAutoCombatStats(followerID);
 
-	local isAutoCombatant = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0;
+	local isAutoCombatant = followerInfo.followerTypeID == Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower;
 	local portraitFrame = isAutoCombatant and self.CovenantFollowerPortraitFrame or self.PortraitFrame;
 	if(portraitFrame) then
 		GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo);
@@ -2488,7 +2496,7 @@ function GarrisonEquipment_AddEquipment(self)
 		elseif ( ItemCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
 			popupData.source = "item";
 			local itemType, itemID = GetCursorInfo();
-			equipmentName = GetItemInfo(itemID);
+			equipmentName = C_Item.GetItemInfo(itemID);
 		else
 			return;
 		end
@@ -2535,6 +2543,10 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonMissionSorter(mission1, mission2)
+	if (mission1.isBuilding ~= mission2.isBuilding ) then
+		return mission1.isBuilding;
+	end
+
 	if ( mission1.followerTypeID ~= mission2.followerTypeID ) then
 		return mission1.followerTypeID > mission2.followerTypeID;
 	end
@@ -2612,7 +2624,7 @@ end
 
 function GarrisonThreatCountersFrame_OnLoad(self, followerType, tooltipString)
 	if (followerType == nil) then
-		followerType = Enum.GarrisonFollowerType.FollowerType_6_0;
+		followerType = Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower;
 	end
 	self.followerType = followerType;
 	if (tooltipString == nil) then
@@ -2621,7 +2633,7 @@ function GarrisonThreatCountersFrame_OnLoad(self, followerType, tooltipString)
 	self.tooltipString = tooltipString;
 	local mechanics = C_Garrison.GetAllEncounterThreats(followerType);
 	-- sort reverse alphabetical because we'll be anchoring buttons right to left
-	if ( followerType == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+	if ( followerType == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 		-- sort high threats to the left, weather based threats to the right, other wise sort alphabetic
 		table.sort(mechanics, function(m1, m2)
 			local m1Weather = IsWeatherThreat(m1.id);
@@ -2646,7 +2658,7 @@ function GarrisonThreatCountersFrame_OnLoad(self, followerType, tooltipString)
 		frame.Icon:SetTexture(mechanics[i].icon);
 		frame.name = mechanics[i].name;
 		frame.id = mechanics[i].id;
-		if ( mechanics[i].factor and  mechanics[i].factor <= GARRISON_HIGH_THREAT_VALUE and followerType == Enum.GarrisonFollowerType.FollowerType_6_2 ) then
+		if ( mechanics[i].factor and  mechanics[i].factor <= GARRISON_HIGH_THREAT_VALUE and followerType == Enum.GarrisonFollowerType.FollowerType_6_0_Boat ) then
 			frame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
 		else
 			frame.Border:SetAtlas("GarrMission_EncounterAbilityBorder");

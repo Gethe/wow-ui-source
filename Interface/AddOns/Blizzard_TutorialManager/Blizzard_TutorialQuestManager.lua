@@ -177,6 +177,3 @@ end
 function TutorialQuestManager:UnregisterForCallbacks(obj)
 	self.Callbacks[obj] = nil;
 end
-
--- ------------------------------------------------------------------------------------------------------------
-TutorialQuestManager:Initialize();

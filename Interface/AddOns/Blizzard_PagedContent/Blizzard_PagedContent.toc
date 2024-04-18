@@ -1,0 +1,7 @@
+## Title: Blizzard Paged Content
+## LoadOnDemand: 0
+
+Blizzard_PagingControls.xml
+Blizzard_PagedContentFrame.xml
+Blizzard_PagedGridContentFrame.xml
+Blizzard_PagedListContentFrame.xml

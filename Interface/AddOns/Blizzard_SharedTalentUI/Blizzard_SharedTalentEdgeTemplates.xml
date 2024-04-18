@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_SharedTalentEdgeTemplates.lua"/>
 	
 	<Frame name="TalentEdgeBaseTemplate" mixin="TalentEdgeBaseMixin" virtual="true">
@@ -37,14 +37,14 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="GhostArrowHead" atlas="talents-arrow-head-ghost" useAtlasSize="true" hidden="true">
+				<Texture parentKey="GhostArrowHead" atlas="talents-arrow-head-ghost" useAtlasSize="true" alpha="0.8" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Line parentKey="GhostLine" atlas="talents-arrow-line-ghost" thickness="6" hWrapMode="REPEAT" alphaMode="ADD" alpha="1" hidden="true"/>
+				<Line parentKey="GhostLine" atlas="talents-arrow-line-ghost" thickness="6" hWrapMode="REPEAT" alphaMode="ADD" alpha="0.8" hidden="true"/>
 			</Layer>
 		</Layers>
 	</Frame>

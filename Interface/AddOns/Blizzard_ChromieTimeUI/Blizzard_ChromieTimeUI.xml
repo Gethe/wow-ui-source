@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ChromieTimeUI.lua"/>
 
 	<Button name="ChromieTimeExpansionButtonTemplate" motionScriptsWhileDisabled="true" mixin="ChromieTimeExpansionButtonMixin" virtual="true">
@@ -33,6 +33,18 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
+		<Frames>
+			<Frame parentKey="RecommendLabel" inherits="NewFeatureLabelTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="animateGlow" value="true" type="boolean"/>
+					<KeyValue key="label" value="RECOMMENDED" type="global"/>
+					<KeyValue key="justifyH" value="LEFT" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="65" y="-20"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>

@@ -11,7 +11,7 @@ local SimpleOffScreenFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "texture", Type = "table", Nilable = false },
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 				{ Name = "snapshotID", Type = "number", Nilable = false },
 			},
 
@@ -85,7 +85,7 @@ local SimpleOffScreenFrameAPI =
 			Arguments =
 			{
 				{ Name = "snapshotID", Type = "number", Nilable = false },
-				{ Name = "filename", Type = "string", Nilable = false },
+				{ Name = "filename", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

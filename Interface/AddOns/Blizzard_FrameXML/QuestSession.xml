@@ -1,0 +1,310 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="QuestSession.lua"/>
+
+	<Frame name="QuestSessionMemberTemplate" mixin="QuestSessionMemberMixin" virtual="true">
+		<Size x="135" y="80"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PortraitRing" atlas="QuestSharing-Dialog-Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="StatusIcon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitRing"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="ShadowIcon" atlas="QuestSharing-DialogIconShadow" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.StatusIcon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitRing" x="5" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PortraitRing" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="QuestSessionDialogButtonTemplate" inherits="StaticPopupButtonTemplate" mixin="QuestSessionDialogButtonMixin" virtual="true">
+		<!--
+			Expects:
+			<KeyValue key="isConfirm" value="true" type="boolean"/> for buttons that will be confirm/advance/ok/accept...
+		-->
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuestSessionDialogMinimizeButtonTemplate" inherits="UIPanelHideButtonNoScripts" mixin="QuestSessionDialogMinimizeButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="QuestSessionDialogButtonContainerTemplate" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			 <KeyValue key="heightPadding" value="20" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="Confirm" inherits="QuestSessionDialogButtonTemplate">
+				<KeyValues>
+					 <KeyValue key="isConfirm" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Decline" inherits="QuestSessionDialogButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Confirm" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="QuestSessionDialogTitleTemplate" inherits="ResizeLayoutFrame" mixin="QuestSessionDialogTitleMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="QuestSessionDialogBodyTemplate" inherits="QuestSessionDialogTitleTemplate" mixin="QuestSessionDialogBodyMixin" virtual="true"/>
+
+	<Frame name="QuestSessionDialogTemplate" parentArray="SessionManagementDialogs" toplevel="true" enableMouse="true" inherits="ResizeLayoutFrame" mixin="QuestSessionDialogMixin" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="heightPadding" value="0" type="number"/>
+			<KeyValue key="minimumWidth" value="500" type="number"/>
+
+			<!--
+				Also Expects:
+				<KeyValue key="confirmText" value="variable" type="global"/> for the confirmation button text
+				<KeyValue key="cancelText" value="variable" type="global"/> for the cancel button text
+			-->
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="BG">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="InvisibleRule">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Title" inherits="QuestSessionDialogTitleTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.InvisibleRule" relativePoint="BOTTOM" x="0" y="-7"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PlayerContainer" inherits="ResizeLayoutFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Divider" atlas="_QuestSharing-Dialog-Line" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="LEFT" x="30"/>
+						<Anchor point="RIGHT" x="-30"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Body" inherits="QuestSessionDialogBodyTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ButtonContainer" inherits="QuestSessionDialogButtonContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Body" relativePoint="BOTTOM" y="-15"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="BaseOnEvent" inherit="append"/>
+			<OnShow method="BaseOnShow" inherit="append"/>
+			<OnHide method="BaseOnHide" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="QuestSessionDialogMinimizeTemplate" inherits="QuestSessionDialogTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="MinimizeButton" inherits="QuestSessionDialogMinimizeButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="QuestSessionManager" mixin="QuestSessionManagerMixin" parent="UIParent">
+		<Frames>
+			<Frame parentKey="CheckStartDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckStartDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_START_SESSION_BUTTON" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+					<KeyValue key="requiresValidateDialog" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="StartDialog" inherits="QuestSessionDialogMinimizeTemplate" mixin="QuestSessionStartDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_I_AM_READY" type="global"/>
+					<KeyValue key="cancelText" value="QUEST_SESSION_I_AM_NOT_READY" type="global"/>
+					<KeyValue key="showDivider" value="true" type="boolean"/>
+					<KeyValue key="requiresValidateDialog" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnEvent method="OnEvent" inherit="append"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="CheckStopDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckStopDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_STOP_DIALOG_CONFIRM" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="CheckLeavePartyDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckLeavePartyDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_LEAVE_PARTY_CONFIRM" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="CheckConvertToRaidDialog" inherits="QuestSessionDialogTemplate" mixin="QuestSessionCheckConvertToRaidDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_CONVERT_TO_RAID_CONFIRM" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The party leader sees this and needs to approve the request they just received -->
+			<Frame parentKey="ConfirmJoinGroupRequestDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmJoinGroupRequestDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The party leader sees this and needs to approve the invite they're about to send -->
+			<Frame parentKey="ConfirmInviteToGroupDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmInviteToGroupDialogMixin">
+				<KeyValues>
+					<KeyValue key="confirmText" value="QUEST_SESSION_CHECK_DIRECT_GROUP_INVITE_CONFIRM_BUTTON" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The invitee sees this and needs to acknowledge the fact that they're joining a party with an active quest session -->
+			<Frame parentKey="ConfirmInviteToGroupReceivedDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmInviteToGroupReceivedDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="DECLINE" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnUpdate method="OnUpdate" inherit="append"/>
+				</Scripts>
+			</Frame>
+
+			<!-- The invitee sees this and needs to acknowledge the fact that they're requesting to join a party with an active quest session -->
+			<Frame parentKey="ConfirmRequestToJoinGroupDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmRequestToJoinGroupDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="DECLINE" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The invitee sees this and needs to acknowledge the fact that they're joining a party with an active quest session -->
+			<Frame parentKey="ConfirmBNJoinGroupRequestDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmBNJoinGroupRequestDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<!-- The sender of the invite sees this and needs to confirm that they want to invite the person into an active quest session -->
+			<Frame parentKey="ConfirmInviteTravelPassConfirmationDialog" inherits="QuestSessionDialogTemplate" mixin="ConfirmInviteTravelPassConfirmationDialogMixin">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="0" type="number"/> <!-- override the base version -->
+					<KeyValue key="widthPadding" value="60" type="number"/> <!-- always ensure the edges have sufficient padding -->
+					<KeyValue key="confirmText" value="ACCEPT" type="global"/>
+					<KeyValue key="cancelText" value="CANCEL" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

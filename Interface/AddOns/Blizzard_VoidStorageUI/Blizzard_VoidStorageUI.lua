@@ -122,8 +122,8 @@ function VoidStorageFrame_OnEvent(self, event, ...)
 		VoidStorage_ItemsFilteredUpdate();
 	elseif ( event == "VOID_DEPOSIT_WARNING" ) then
 		local slot, itemLink = ...;
-		local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(itemLink);
-		local r, g, b = GetItemQualityColor(itemQuality or 1);
+		local itemName, _, itemQuality, _, _, _, _, _, _, texture = C_Item.GetItemInfo(itemLink);
+		local r, g, b = C_Item.GetItemQualityColor(itemQuality or 1);
 		self.dropWarningItem = true;
 		StaticPopup_Show("VOID_DEPOSIT_CONFIRM", nil, nil, {["texture"] = texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["slot"] = slot});
 		VoidStorageTransferButton:Disable();
@@ -391,7 +391,7 @@ function VoidStorageItemButton_OnClick(self, button)
 			itemID = GetVoidTransferWithdrawalInfo(self.slot);
 		end
 		if ( itemID ) then
-			local _, itemLink = GetItemInfo(itemID);
+			local _, itemLink = C_Item.GetItemInfo(itemID);
 			HandleModifiedItemClick(itemLink);
 		end
 	else

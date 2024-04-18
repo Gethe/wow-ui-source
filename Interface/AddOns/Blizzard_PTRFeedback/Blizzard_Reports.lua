@@ -139,6 +139,66 @@ function PTR_IssueReporter.CreateReports()
     creatureReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this creature?")
 
     creatureReport:RegisterPopEvent(event.Tooltip, tooltips.unit)
+
+     ----------------------------------- AI Bot Reporting ---------------------------------------------
+    local GetCreatureIDFromUnitGuid = function(guid)
+        if (guid == nil) then
+            return
+        end
+        
+		local lines = {}
+		for s in guid:gmatch("[^-]+") do
+			table.insert(lines, s)
+		end
+        
+        if (lines[6]) then
+            return lines[6]
+        end
+    end
+    
+    local GetFollowerCIDString = function()
+        if IsInRaid() then
+            return ""
+        end
+        
+        if not IsInGroup() then
+            return ""
+        end
+        
+        local returnValue = ""
+        for i = 1, GetNumGroupMembers(), 1 do
+            local unit = "party"..i
+            if (PTR_IssueReporter.IsUnitAIFollower(unit)) then
+                if returnValue == "" then
+                    returnValue = GetCreatureIDFromUnitGuid(UnitGUID(unit))
+                else
+                    returnValue = returnValue .. ":" .. GetCreatureIDFromUnitGuid(UnitGUID(unit))
+                end                
+            end
+        end
+        
+        return returnValue
+    end    
+    
+    local aiFollowerReport = PTR_IssueReporter.CreateSurvey(18, "Issue Report: %s")
+    aiFollowerReport:PopulateDynamicTitleToken(1, "Name")
+    aiFollowerReport:AttachModelViewer("ID")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(aiFollowerReport, true)
+    
+    aiFollowerReport:AddDataCollection(collector.FromDataPackage, "ID")
+    aiFollowerReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this follower?")
+    aiFollowerReport:AddDataCollection(collector.RunFunction, GetFollowerCIDString)
+    aiFollowerReport:RegisterPopEvent(event.Tooltip, tooltips.aibot)
+    
+    local aiGroupReport = PTR_IssueReporter.CreateSurvey(19, "AI Follower Issue Report")
+    PTR_IssueReporter.AttachDefaultCollectionToSurvey(aiGroupReport, true)
+    
+    aiGroupReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with your followers?")
+    aiGroupReport:AddDataCollection(collector.RunFunction, GetFollowerCIDString)
+    
+    aiGroupReport:SetButton("I have found an issue with an AI Follower.", PTR_IssueReporter.Assets.AIBotIcon)
+    aiGroupReport:RegisterButtonEvent(event.AIBotsJoinedParty)
+    aiGroupReport:RegisterButtonEventEnd(event.AIBotsLeftParty)
     
     --------------------------------------- Quest Reporting -------------------------------------------
     local IsQuestDisabledFromQuestSync = function(dataPackage)
@@ -155,6 +215,27 @@ function PTR_IssueReporter.CreateReports()
         else
             return 0
         end
+    end
+    
+    local GetActiveChromieTimeID = function()
+        local chromieTimeData = C_ChromieTime.GetChromieTimeExpansionOptions()
+        
+        for index, expansionOption in pairs (chromieTimeData) do
+            if (expansionOption) and (expansionOption.alreadyOn) then
+            
+                return expansionOption.id
+            end
+        end
+        
+        return 0
+    end
+    
+    local IsTimerunningActive = function()
+        if (C_UnitAuras.GetPlayerAuraBySpellID(424143)) then
+            return 1
+        end
+        
+        return 0
     end
 
 	local GetCurrentQuestStatus = function(dataPackage)
@@ -187,7 +268,9 @@ function PTR_IssueReporter.CreateReports()
     questReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this quest?")
     questReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     questReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
-	questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    questReport:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
+    questReport:AddDataCollection(collector.RunFunction, IsTimerunningActive)
     
     local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Issue Report: Quest")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(AutoQuestReport)
@@ -196,7 +279,9 @@ function PTR_IssueReporter.CreateReports()
     AutoQuestReport:AddDataCollection(collector.OpenEndedQuestion, "Did you experience any issues?")
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
-	AutoQuestReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    AutoQuestReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)    
+    AutoQuestReport:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
+    AutoQuestReport:AddDataCollection(collector.RunFunction, IsTimerunningActive)
     
     questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
     AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 
@@ -235,14 +320,10 @@ function PTR_IssueReporter.CreateReports()
     }
     warfrontsReport:RegisterPopEvent(event.MapIDExit, warfrontMapIDs)        
     
-    ------------------------------------- Spell Reporting ----------------------------------------------
-    local GetIconFromSpellID = function(value)
-        return select(3, GetSpellInfo(value))
-    end
-    
+    ------------------------------------- Spell Reporting ----------------------------------------------   
     local spellReport = PTR_IssueReporter.CreateSurvey(7, "Issue Report: %s")
     spellReport:PopulateDynamicTitleToken(1, "Name")
-    spellReport:AttachIconViewer("ID", GetIconFromSpellID)
+    spellReport:AttachIconViewer("ID", C_Spell.GetSpellTexture)
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(spellReport, true)
     
     spellReport:AddDataCollection(collector.FromDataPackage, "ID")
@@ -294,7 +375,7 @@ function PTR_IssueReporter.CreateReports()
     
     ------------------------------------- Item Reporting -----------------------------------------------
     local GetIconFromItemID = function(value)
-        return select(10, GetItemInfo(value))
+        return select(10, C_Item.GetItemInfo(value))
     end    
     
     local GetBonusListFromID = function(value)
@@ -465,6 +546,7 @@ function PTR_IssueReporter.CreateReports()
         AdventureGuide = 7,
         ClassTalent = 8,
         ProfessionTalents = 9,
+        WarbandsCharacterSelect = 10,
     }
     
     ----------------------------------------------- Edit Mode ------------------------------------------------
@@ -535,8 +617,8 @@ function PTR_IssueReporter.CreateReports()
     ------------------------------------------- Class Talents -------------------------------------------------
     local getSpecIDFunc = function()
         local ID = 0
-        if (ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetTalentTreeID) then
-            ID = ClassTalentFrame.TalentsTab:GetTalentTreeID()
+        if (PlayerSpellsFrame) and (PlayerSpellsFrame.TalentsFrame) and (PlayerSpellsFrame.TalentsFrame.GetTalentTreeID) then
+            ID = PlayerSpellsFrame.TalentsFrame:GetTalentTreeID()
         end
         
         return ID
@@ -545,8 +627,8 @@ function PTR_IssueReporter.CreateReports()
     local getTalentTreeString = function()
         local loadOutString = ""
         
-        if (ClassTalentFrame) and (ClassTalentFrame.TalentsTab) and (ClassTalentFrame.TalentsTab.GetLoadoutExportString) then
-            loadOutString = ClassTalentFrame.TalentsTab:GetLoadoutExportString()
+        if (PlayerSpellsFrame) and (PlayerSpellsFrame.TalentsFrame) and (PlayerSpellsFrame.TalentsFrame.GetLoadoutExportString) then
+            loadOutString = PlayerSpellsFrame.TalentsFrame:GetLoadoutExportString()
         end
         
         return loadOutString        
@@ -560,7 +642,7 @@ function PTR_IssueReporter.CreateReports()
     classTalentUIReport:AddDataCollection(collector.RunFunction, getSpecIDFunc)
     classTalentUIReport:AddDataCollection(collector.RunFunction, getTalentTreeString)
     
-    classTalentUIReport:RegisterUIPanelClick("ClassTalentFrame.TabSet", 2)
+    classTalentUIReport:RegisterUIPanelClick("PlayerSpellsFrame.TabSet", 2)
     
     ----------------------------------------- Profession Talents -----------------------------------------------
     local getProfSpecID = function()

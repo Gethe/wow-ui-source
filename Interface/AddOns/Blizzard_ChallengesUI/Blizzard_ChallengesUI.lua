@@ -289,48 +289,29 @@ function ChallengeModeWeeklyChestMixin:Update(bestMapID, dungeonScore)
 	if C_WeeklyRewards.HasAvailableRewards() then
 		chestState = CHEST_STATE_COLLECT;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-collect", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COLLECT_GREAT_VAULT);
 		self.AnimTexture:Show();
 		self.AnimTexture.Anim:Play();
-	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.MythicPlus) then
+	elseif self:HasUnlockedRewards(Enum.WeeklyRewardChestThresholdType.Activities) then
 		chestState = CHEST_STATE_COMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-complete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	elseif C_MythicPlus.GetOwnedKeystoneLevel() or (dungeonScore and dungeonScore > 0) then
 		chestState = CHEST_STATE_INCOMPLETE;
 
-		self.Icon:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
-		self.Highlight:SetAtlas("mythicplus-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		self.Icon:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
+		self.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", TextureKitConstants.UseAtlasSize);
 		self.RunStatus:SetText(MYTHIC_PLUS_COMPLETE_MYTHIC_DUNGEONS);
 		self.AnimTexture:Hide();
 	end
 
 	self.state = chestState;
 	return chestState;
-end
-
-local function GetLowestLevelInTopRuns(numRuns)
-	local runHistory = C_MythicPlus.GetRunHistory();
-	table.sort(runHistory, function(left, right) return left.level > right.level; end);
-	local lowestLevel;
-	local lowestCount = 0;
-	for i = math.min(numRuns, #runHistory), 1, -1 do
-		local run = runHistory[i];
-		if not lowestLevel then
-			lowestLevel = run.level;
-		end
-		if lowestLevel == run.level then
-			lowestCount = lowestCount + 1;
-		else
-			break;
-		end
-	end
-	return lowestLevel, lowestCount;
 end
 
 function ChallengeModeWeeklyChestMixin:OnEnter()
@@ -343,30 +324,24 @@ function ChallengeModeWeeklyChestMixin:OnEnter()
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	end
 
-	-- now determine progress for this week
-	local activities = C_WeeklyRewards.GetActivities(Enum.WeeklyRewardChestThresholdType.MythicPlus);
-	table.sort(activities, function(left, right) return left.index < right.index; end);
-	local lastCompletedIndex = 0;
-	for i, activityInfo in ipairs(activities) do
-		if activityInfo.progress >= activityInfo.threshold then
-			lastCompletedIndex = i;
-		end
-	end
-	if lastCompletedIndex == 0 then
+	local lastCompletedActivityInfo, nextActivityInfo = WeeklyRewardsUtil.GetActivitiesProgress();
+	if not lastCompletedActivityInfo then
 		GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_INCOMPLETE);
 	else
-		if lastCompletedIndex == #activities then
+		if nextActivityInfo then
+			local globalString = (lastCompletedActivityInfo.index == 1) and GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST or GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND;
+			GameTooltip_AddNormalLine(GameTooltip, globalString:format(nextActivityInfo.threshold - nextActivityInfo.progress));
+		else
 			GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_THIRD);
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			GameTooltip_AddColoredLine(GameTooltip, GREAT_VAULT_IMPROVE_REWARD, GREEN_FONT_COLOR);
-			local info = activities[lastCompletedIndex];
-			local level, count = GetLowestLevelInTopRuns(info.threshold);
-			GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_IMPROVE:format(count, level + 1));
-		else
-			local nextInfo = activities[lastCompletedIndex + 1];
-			local textString = (lastCompletedIndex == 1) and GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST or GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND;
-			local level, count = GetLowestLevelInTopRuns(nextInfo.threshold);
-			GameTooltip_AddNormalLine(GameTooltip, textString:format(nextInfo.threshold - nextInfo.progress, nextInfo.threshold, level));
+			local level, count = WeeklyRewardsUtil.GetLowestLevelInTopDungeonRuns(lastCompletedActivityInfo.threshold);
+			if level == WeeklyRewardsUtil.HeroicLevel then
+				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_HEROIC_IMPROVE:format(count));
+			else
+				local nextLevel = WeeklyRewardsUtil.GetNextMythicLevel(level);
+				GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_MYTHIC_IMPROVE:format(count, nextLevel));
+			end
 		end
 	end
 
@@ -527,7 +502,7 @@ function ChallengesDungeonIconMixin:OnEnter()
 
 	local seasonBestDurationSec, seasonBestLevel, members;
 
-	if(overAllScore and inTimeInfo or overtimeInfo) then
+	if(overAllScore and (inTimeInfo or overtimeInfo)) then
 		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(overAllScore);
 		if(not color) then
 			color = HIGHLIGHT_FONT_COLOR;
@@ -564,23 +539,29 @@ ChallengesFrameWeeklyInfoMixin = {};
 function ChallengesFrameWeeklyInfoMixin:SetUp(hasWeeklyRun, bestData)
 	local affixes = C_MythicPlus.GetCurrentAffixes();
 	if (affixes) then
+		local affixesContainer = self.Child.AffixesContainer;
 		for i, affix in ipairs(affixes) do
-			local frame = self.Child.Affixes[i];
-			if (not frame) then
-				frame = CreateFrame("Frame", nil, self.Child, "ChallengesKeystoneFrameAffixTemplate");
-				frame:SetPoint("LEFT", self.Child.Affixes[i-1], "RIGHT", 10, 0);
+			local affixFrame;
+			if affixesContainer.Affixes and i <= #affixesContainer.Affixes then
+				affixFrame = affixesContainer.Affixes[i];
+			else
+				affixFrame = CreateFrame("Frame", nil, affixesContainer, "ChallengesKeystoneFrameAffixTemplate");
+				affixFrame.layoutIndex = i;
+				affixFrame.align = "center";
 			end
-			frame:SetUp(affix.id);
+			affixFrame:SetUp(affix.id);
 		end
+
+		affixesContainer:Layout();
 		self:Show();
 	end
 end
 
 function ChallengesFrameWeeklyInfoMixin:HideAffixes()
-	if(self.Child.Affixes) then
-		for i = 1, #self.Child.Affixes do
-			local frame = self.Child.Affixes[i];
-			frame:Hide();
+	local affixesContainer = self.Child.AffixesContainer;
+	if (affixesContainer.Affixes) then
+		for _, affixFrame in ipairs(affixesContainer.Affixes) do
+			affixFrame:Hide();
 		end
 	end
 end
@@ -741,7 +722,7 @@ function ChallengesKeystoneSlotMixin:OnEvent(event, ...)
 	if (event == "CHALLENGE_MODE_KEYSTONE_SLOTTED") then
 		local itemID= ...;
 
-		local texture = select(10, GetItemInfo(itemID));
+		local texture = select(10, C_Item.GetItemInfo(itemID));
 
 		SetPortraitToTexture(self.Texture, texture);
 
@@ -860,6 +841,13 @@ function ChallengeModeCompleteBannerMixin:OnEvent(event, ...)
 			TopBannerManager_Show(self, { mapID = mapID, level = level, time = time, onTime = onTime, oldDungeonScore = oldDungeonScore, newDungeonScore = newDungeonScore, keystoneUpgradeLevels = keystoneUpgradeLevels, isMapRecord = isMapRecord, isAffixRecord = isAffixRecord, primaryAffix = primaryAffix, isEligibleForScore = isEligibleForScore, upgradeMembers = upgradeMembers });
 		end
     end
+end
+
+function ChallengeModeCompleteBannerMixin:OnMouseDown(button)
+	if (button == "RightButton") then
+		self:StopBanner();
+		TopBannerManager_BannerFinished(self);
+	end
 end
 
 local timeFormatter = CreateFromMixins(SecondsFormatterMixin);
@@ -985,10 +973,12 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
 
     local sortedUnitTokens = {};
 
+	local noRole = Constants.LFG_ROLEConstants.LFG_ROLE_NO_ROLE;
+
     for i = 1, #self.unitTokens do
         if (UnitExists(self.unitTokens[i])) then
-            local role = UnitGroupRolesAssigned(self.unitTokens[i]);
-            if (role == "DAMAGER" or role == "NONE") then
+            local role = UnitGroupRolesAssignedEnum(self.unitTokens[i]);
+            if (role == Enum.LFGRole.Damage or role == noRole) then
                 if (not unitRoleMap[role]) then
                     unitRoleMap[role] = {};
                 end
@@ -999,23 +989,23 @@ function ChallengeModeCompleteBannerMixin:GetSortedPartyMembers()
         end
     end
 
-    if (unitRoleMap["TANK"]) then
-        tinsert(sortedUnitTokens, unitRoleMap["TANK"]);
+    if (unitRoleMap[Enum.LFGRole.Tank]) then
+        tinsert(sortedUnitTokens, unitRoleMap[Enum.LFGRole.Tank]);
     end
 
-    if (unitRoleMap["HEALER"]) then
-        tinsert(sortedUnitTokens, unitRoleMap["HEALER"]);
+    if (unitRoleMap[Enum.LFGRole.Healer]) then
+        tinsert(sortedUnitTokens, unitRoleMap[Enum.LFGRole.Healer]);
     end
 
-    if (unitRoleMap["DAMAGER"]) then
-        for i = 1, #unitRoleMap["DAMAGER"] do
-            tinsert(sortedUnitTokens, unitRoleMap["DAMAGER"][i]);
+    if (unitRoleMap[Enum.LFGRole.Damage]) then
+        for i = 1, #unitRoleMap[Enum.LFGRole.Damage] do
+            tinsert(sortedUnitTokens, unitRoleMap[Enum.LFGRole.Damage][i]);
         end
     end
 
-    if (unitRoleMap["NONE"]) then
-        for i = 1, #unitRoleMap["NONE"] do
-            tinsert(sortedUnitTokens, unitRoleMap["NONE"][i]);
+    if (unitRoleMap[noRole]) then
+        for i = 1, #unitRoleMap[noRole] do
+            tinsert(sortedUnitTokens, unitRoleMap[noRole][i]);
         end
     end
 
@@ -1062,9 +1052,9 @@ function ChallengeModeBannerPartyMemberMixin:SetUp(unitToken)
     local classColorStr = RAID_CLASS_COLORS[classFileName].colorStr;
     self.Name:SetText(("|c%s%s|r"):format(classColorStr, name));
 
-    local role = UnitGroupRolesAssigned(unitToken);
-    if ( role == "TANK" or role == "HEALER" or role == "DAMAGER" ) then
-		self.RoleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
+    local role = UnitGroupRolesAssignedEnum(unitToken);
+    if ( role == Enum.LFGRole.Tank or role == Enum.LFGRole.Healer or role == Enum.LFGRole.Damage ) then
+		self.RoleIcon:SetAtlas(GetMicroIconForRoleEnum(role), TextureKitConstants.IgnoreAtlasSize);
 		self.RoleIcon:Show();
 	else
 		self.RoleIcon:Hide();

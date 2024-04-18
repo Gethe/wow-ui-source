@@ -1,0 +1,693 @@
+<Bindings>
+
+	<!-- PLUNDERSTORM SPECIFIC -->
+	<Binding name="WOWLABS_ACTIONBUTTON1" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "down" ) then
+		ActionButtonDown(1);
+		else
+		ActionButtonUp(1);
+		end
+	</Binding>
+	<Binding name="WOWLABS_ACTIONBUTTON2" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "down" ) then
+		ActionButtonDown(2);
+		else
+		ActionButtonUp(2);
+		end
+	</Binding>
+	<Binding name="WOWLABS_MULTIACTIONBAR1BUTTON1" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "down" ) then
+		MultiActionButtonDown("MultiBarBottomLeft", 1);
+		else
+		MultiActionButtonUp("MultiBarBottomLeft", 1);
+		end
+	</Binding>
+	<Binding name="WOWLABS_MULTIACTIONBAR1BUTTON2" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "down" ) then
+		MultiActionButtonDown("MultiBarBottomLeft", 2);
+		else
+		MultiActionButtonUp("MultiBarBottomLeft", 2);
+		end
+	</Binding>
+	<Binding name="WOWLABS_MULTIACTIONBAR2BUTTON1" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "down" ) then
+		MultiActionButtonDown("MultiBarBottomRight", 1);
+		else
+		MultiActionButtonUp("MultiBarBottomRight", 1);
+		end
+	</Binding>
+	<Binding name="WOWLABS_MULTIACTIONBAR2BUTTON2" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "down" ) then
+		MultiActionButtonDown("MultiBarBottomRight", 2);
+		else
+		MultiActionButtonUp("MultiBarBottomRight", 2);
+		end
+	</Binding>
+	<Binding name="WOWLABS_ITEM1" runOnUp="true" category="WOWLABS_BINDING_HEADER">
+		if ( keystate == "up" ) then
+		UseInventoryItem(36);
+		end
+	</Binding>	
+	
+	<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
+	<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
+		C_Ping.TogglePingListener(keystate == "down");
+	</Binding>
+	
+	<Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">
+		C_Ping.SendMacroPing(Enum.PingSubjectType.Attack);
+	</Binding>
+	
+	<Binding name="PINGWARNING" category="BINDING_HEADER_PING_SYSTEM">
+		C_Ping.SendMacroPing(Enum.PingSubjectType.Warning);
+	</Binding>
+
+	<Binding name="PINGONMYWAY" category="BINDING_HEADER_PING_SYSTEM">
+		C_Ping.SendMacroPing(Enum.PingSubjectType.OnMyWay);
+	</Binding>
+	
+	<Binding name="PINGASSIST" category="BINDING_HEADER_PING_SYSTEM">
+		C_Ping.SendMacroPing(Enum.PingSubjectType.Assist);
+	</Binding>
+
+	<!-- User interface key bindings header="MOVEMENT" -->
+	<Binding name="MOVEANDSTEER" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveAndSteerStart();
+		else
+			MoveAndSteerStop();
+		end
+	</Binding>
+	<Binding name="MOVEFORWARD" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			if ( keystate == "down" ) then
+				SpectateFrame:StartZoomingFOV();
+			end
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			MoveForwardStart();
+		else
+			MoveForwardStop();
+		end
+	</Binding>
+	<Binding name="MOVEBACKWARD" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			if ( keystate == "down" ) then
+				SpectateFrame:StartZoomingFOV();
+			end
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			MoveBackwardStart();
+		else
+			MoveBackwardStop();
+		end
+	</Binding>
+	<Binding name="TURNLEFT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			if ( keystate == "down" ) then
+				C_SpectatingUI.SpectateChange(false);
+			end
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			TurnLeftStart();
+		else
+			TurnLeftStop();
+		end
+	</Binding>
+	<Binding name="TURNRIGHT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			if ( keystate == "down" ) then
+				C_SpectatingUI.SpectateChange(true);
+			end
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			TurnRightStart();
+		else
+			TurnRightStop();
+		end
+	</Binding>
+	<Binding name="STRAFELEFT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			if ( keystate == "down" ) then
+				C_SpectatingUI.SpectateChange(false);
+			end
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			StrafeLeftStart();
+		else
+			StrafeLeftStop();
+		end
+	</Binding>
+	<Binding name="STRAFERIGHT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			if ( keystate == "down" ) then
+				C_SpectatingUI.SpectateChange(true);
+			end
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			StrafeRightStart();
+		else
+			StrafeRightStop();
+		end
+	</Binding>
+	<Binding name="JUMP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			JumpOrAscendStart();
+		else
+			AscendStop();
+		end
+	</Binding>
+	<Binding name="SITORSTAND" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			SitStandOrDescendStart();
+		else
+			DescendStop();
+		end
+	</Binding>
+	<Binding name="TOGGLESHEATH" category="BINDING_HEADER_MOVEMENT">
+		ToggleSheath();
+		if ( DressUpFrame:IsShown() ) then
+			local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
+		end
+		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.ModelScene:IsShown() ) then
+			local playerActor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
+		end
+	</Binding>
+	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		ToggleAutoRun();
+	</Binding>
+	<Binding name="STARTAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StartAutoRun();
+	</Binding>
+	<Binding name="STOPAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StopAutoRun();
+	</Binding>
+	<Binding name="PITCHUP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			PitchUpStart();
+		else
+			PitchUpStop();
+		end
+	</Binding>
+	<Binding name="PITCHDOWN" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			PitchDownStart();
+		else
+			PitchDownStop();
+		end
+	</Binding>
+	<Binding name="TOGGLERUN" category="BINDING_HEADER_MOVEMENT">
+		ToggleRun();
+	</Binding>
+	<Binding name="FOLLOWTARGET" category="BINDING_HEADER_MOVEMENT">
+		FollowUnit("target");
+	</Binding>
+	<!-- Chat frame bindings header="CHAT" -->
+	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
+		ChatFrame_OpenChat(nil);
+	</Binding>
+	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
+		ChatFrame_OpenChat("/");
+	</Binding>
+	<Binding name="CHATPAGEUP" category="BINDING_HEADER_CHAT">
+		ChatFrame_ChatPageUp();
+	</Binding>
+	<Binding name="CHATPAGEDOWN" category="BINDING_HEADER_CHAT">
+		ChatFrame_ChatPageDown();
+	</Binding>
+	<Binding name="CHATBOTTOM" category="BINDING_HEADER_CHAT">
+		ChatFrame_ScrollToBottom();
+	</Binding>
+	<Binding name="REPLY" category="BINDING_HEADER_CHAT">
+		ChatFrame_ReplyTell();
+	</Binding>
+	<Binding name="REPLY2" category="BINDING_HEADER_CHAT">
+		ChatFrame_ReplyTell2();
+	</Binding>
+	<Binding name="COMBATLOGPAGEUP" category="BINDING_HEADER_CHAT">
+		ChatFrame2:PageUp();
+	</Binding>
+	<Binding name="COMBATLOGPAGEDOWN" category="BINDING_HEADER_CHAT">
+		ChatFrame2:PageDown();
+	</Binding>
+	<Binding name="COMBATLOGBOTTOM" category="BINDING_HEADER_CHAT">
+		ChatFrame2:ScrollToBottom();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleMutedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleDeafenedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
+		nop(); -- Action handler is custom
+	</Binding>
+	<Binding name="TEXT_TO_SPEECH_STOP" category="BINDING_HEADER_CHAT">
+		C_VoiceChat.StopSpeakingText();
+	</Binding>
+
+	<Binding name="TOGGLEACTIONBARLOCK" category="BINDING_HEADER_ACTIONBAR">
+		local locked = Settings.GetValue("lockActionBars");
+		Settings.SetValue("lockActionBars", not locked);
+	</Binding>
+	<Binding name="TOGGLEAUTOSELFCAST" category="BINDING_HEADER_ACTIONBAR">
+		local selfCast = Settings.GetValue("autoSelfCast");
+		Settings.SetValue("lockActionBars", not selfCast);
+	</Binding>
+	
+	<!-- Target function key bindings header="TARGETING" -->
+	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetNearestEnemy();
+			TargetPriorityHighlightStart(true);
+		else
+			TargetPriorityHighlightEnd();
+		end
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemy(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETSCANENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetPriorityHighlightStart(false);
+		else
+			TargetPriorityHighlightEnd();
+		end
+	</Binding>
+	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriend();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIEND" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriend(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTENEMYPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemyPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMYPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemyPlayer(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTFRIENDPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriendPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIENDPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriendPlayer(true);	-- true means reverse!
+	</Binding>
+
+	<Binding name="TARGETSELF" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("player", "target") ) then
+			TargetUnit("pet", true);
+		else
+			TargetUnit("player");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party1", "target") or UnitTargetsVehicleInRaidUI("party1") ) then
+			TargetUnit("partypet1");
+		else
+			TargetUnit("party1");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party2", "target") or UnitTargetsVehicleInRaidUI("party2") ) then
+			TargetUnit("partypet2");
+		else
+			TargetUnit("party2");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party3", "target") or UnitTargetsVehicleInRaidUI("party3") ) then
+			TargetUnit("partypet3");
+		else
+			TargetUnit("party3");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party4", "target") or UnitTargetsVehicleInRaidUI("party4") ) then
+			TargetUnit("partypet4");
+		else
+			TargetUnit("party4");
+		end
+	</Binding>
+	<Binding name="TARGETPET" category="BINDING_HEADER_TARGETING">
+		TargetUnit("pet");
+	</Binding>
+	<Binding name="TARGETPARTYPET1" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet1");
+	</Binding>
+	<Binding name="TARGETPARTYPET2" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet2");
+	</Binding>
+	<Binding name="TARGETPARTYPET3" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet3");
+	</Binding>
+	<Binding name="TARGETPARTYPET4" category="BINDING_HEADER_TARGETING">
+		TargetUnit("partypet4");
+	</Binding>
+	<Binding name="TARGETLASTHOSTILE" category="BINDING_HEADER_TARGETING">
+		TargetLastEnemy();
+	</Binding>
+	<Binding name="TARGETLASTTARGET" category="BINDING_HEADER_TARGETING">
+		TargetLastTarget();
+	</Binding>
+
+	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
+		if ( not C_PlayerInteractionManager.InteractUnit("mouseover") ) then
+		C_PlayerInteractionManager.InteractUnit("anyinteract");
+		end
+	</Binding>
+	<Binding name="INTERACTTARGET" category="BINDING_HEADER_TARGETING">
+		C_PlayerInteractionManager.InteractUnit("anyinteract");
+	</Binding>
+	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
+		AssistUnit("target");
+	</Binding>
+	<Binding name="ATTACKTARGET" category="BINDING_HEADER_TARGETING">
+		AttackTarget();
+	</Binding>
+  <Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
+    StartAttack();
+  </Binding>
+	<Binding name="PETATTACK" category="BINDING_HEADER_TARGETING">
+		PetAttack();
+	</Binding>
+	<Binding name="FOCUSTARGET" category="BINDING_HEADER_TARGETING">
+		FocusUnit("target");
+	</Binding>
+	<Binding name="TARGETFOCUS" category="BINDING_HEADER_TARGETING">
+		TargetUnit("focus");
+	</Binding>
+	<Binding name="TARGETMOUSEOVER" category="BINDING_HEADER_TARGETING">
+		TargetUnit("mouseover");
+	</Binding>
+	<Binding name="TARGETTALKER" category="BINDING_HEADER_TARGETING">
+		nop();
+	</Binding>
+
+	<!-- UI Panels header="INTERFACE" -->
+	<Binding name="TOGGLEGAMEMENU" category="BINDING_HEADER_INTERFACE">
+		ToggleGameMenu();
+	</Binding>
+	<Binding name="TOGGLEWORLDMAP" category="BINDING_HEADER_INTERFACE">
+		ToggleWorldMap();
+	</Binding>
+	<Binding name="TOGGLEWORLDMAPSIZE" category="BINDING_HEADER_INTERFACE">
+		-- MAPREFACTORTODO: Reimplement bind
+	</Binding>
+	<Binding name="TOGGLEMINIMAP" category="BINDING_HEADER_INTERFACE">
+		ToggleMinimap();
+	</Binding>
+	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleChannelFrame();
+	</Binding>
+	<Binding name="TOGGLETEXTTOSPEECH" category="BINDING_HEADER_INTERFACE">
+		ToggleTextToSpeechFrame();
+	</Binding>
+
+  <!-- Misc header="MISC" -->
+	<Binding name="MINIMAPZOOMIN" category="BINDING_HEADER_MISC">
+		Minimap_ZoomIn();
+	</Binding>
+	<Binding name="MINIMAPZOOMOUT" category="BINDING_HEADER_MISC">
+		Minimap_ZoomOut();
+	</Binding>
+	<Binding name="TOGGLEMUSIC" category="BINDING_HEADER_MISC">
+		Sound_ToggleMusic();
+	</Binding>
+	<Binding name="TOGGLESOUND" category="BINDING_HEADER_MISC">
+		Sound_ToggleSound();
+	</Binding>
+	<Binding name="MASTERVOLUMEUP" category="BINDING_HEADER_MISC">
+		Sound_MasterVolumeUp();
+	</Binding>
+	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
+		Sound_MasterVolumeDown();
+	</Binding>
+	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
+		if ( UIParent:IsShown() ) then
+			securecall("CloseMenus");
+			securecall("CloseAllWindows");
+			SetUIVisibility(false);
+		else
+			SetUIVisibility(true);
+		end
+	</Binding>
+	<Binding name="TOGGLEFPS" category="BINDING_HEADER_MISC">
+		FramerateFrame:Toggle();
+	</Binding>
+	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
+		Screenshot();
+	</Binding>
+	<Binding name="TOGGLEGRAPHICSSETTINGS" category="BINDING_HEADER_MISC">
+		if ( GetCVarBool("RAIDsettingsEnabled") ) then
+			local setting = GetCurrentGraphicsSetting()
+			if (setting == 0) then
+				SetCurrentGraphicsSetting( 1 );
+				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_RAID_NOTICE, 1.0, 0.1, 0.1, 1.0);
+			else
+				SetCurrentGraphicsSetting( 0 );
+				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_NORMAL_NOTICE, 1.0, 0.1, 0.1, 1.0);
+			end
+		end
+	</Binding>
+	<Binding name="TOGGLESELFHIGHLIGHT" category="BINDING_HEADER_MISC">
+		local text;
+		if ( ToggleSelfHighlight() ) then
+			text = SELF_HIGHLIGHT_ON;
+		else
+			text = SELF_HIGHLIGHT_OFF;
+		end
+		UIErrorsFrame:AddMessage(text, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	</Binding>
+	<Binding name="TOGGLEWINDOWED" category="BINDING_HEADER_MISC">
+		ToggleWindowed();
+	</Binding>
+
+	<!-- Debug function key bindings -->
+  <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    ReloadUI();
+  </Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_AddOns.LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
+	<Binding name="TOGGLECUSTOMIZATIONDEBUGINFO" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCustomizationDebugInfo();
+	</Binding>
+  <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleStats();
+	</Binding>
+	<Binding name="TOGGLETRIS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleTris();
+	</Binding>
+	<Binding name="TOGGLEPORTALS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePortals();
+	</Binding>
+	<Binding name="TOGGLECOLLISION" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCollision();
+	</Binding>
+	<Binding name="TOGGLECOLLISIONDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCollisionDisplay();
+	</Binding>
+	<Binding name="TOGGLEPLAYERBOUNDS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePlayerBounds();
+	</Binding>
+  <Binding name="TOGGLEPERFORMANCEPAUSE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    TogglePerformancePause();
+  </Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePerformanceValues(1);
+	</Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    TogglePerformanceValues(0);
+  </Binding>
+  <Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ResetPerformanceValues();
+	</Binding>
+	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleAnimKitDisplay();
+	</Binding>
+	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleDebugAIDisplay();
+	</Binding>
+	<!-- Commentator Mode Bindings -->
+	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_Commentator.ToggleCheats();
+	</Binding>
+	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DumpMovementCapture();
+	</Binding>
+	<Binding name="COPYTOOLTIP" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TooltipUtil.DebugCopyGameTooltip();
+	</Binding>
+
+	<!-- Camera key bindings header="CAMERA" -->
+	<Binding name="NEXTVIEW" category="BINDING_HEADER_CAMERA">
+		NextView();
+	</Binding>
+	<Binding name="PREVVIEW" category="BINDING_HEADER_CAMERA">
+		PrevView();
+	</Binding>
+	<Binding name="CAMERAZOOMIN" runOnUp="true" category="BINDING_HEADER_CAMERA">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			local ZoomSpeed = 2.5;
+			C_Commentator.ZoomIn_Position(ZoomSpeed);
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			MoveViewInStart(1.0, 0, true);
+		else
+			CameraZoomIn(1.0);
+		end
+	</Binding>
+	<Binding name="CAMERAZOOMOUT" runOnUp="true" category="BINDING_HEADER_CAMERA">
+		if ( C_SpectatingUI.IsSpectating() ) then
+			local ZoomSpeed = 2.5;
+			C_Commentator.ZoomOut_Position(ZoomSpeed);
+			return;
+		end
+
+		if ( keystate == "down" ) then
+			MoveViewOutStart(1.0, 0, true);
+		else
+			CameraZoomOut(1.0);
+		end
+	</Binding>
+	<Binding name="SETVIEW1" category="BINDING_HEADER_CAMERA">
+		SetView(1);
+	</Binding>
+	<Binding name="SETVIEW2" category="BINDING_HEADER_CAMERA">
+		SetView(2);
+	</Binding>
+	<Binding name="SETVIEW3" category="BINDING_HEADER_CAMERA">
+		SetView(3);
+	</Binding>
+	<Binding name="SETVIEW4" category="BINDING_HEADER_CAMERA">
+		SetView(4);
+	</Binding>
+	<Binding name="SETVIEW5" category="BINDING_HEADER_CAMERA">
+		SetView(5);
+	</Binding>
+	<Binding name="SAVEVIEW1" category="BINDING_HEADER_CAMERA">
+		SaveView(1);
+	</Binding>
+	<Binding name="SAVEVIEW2" category="BINDING_HEADER_CAMERA">
+		SaveView(2);
+	</Binding>
+	<Binding name="SAVEVIEW3" category="BINDING_HEADER_CAMERA">
+		SaveView(3);
+	</Binding>
+	<Binding name="SAVEVIEW4" category="BINDING_HEADER_CAMERA">
+		SaveView(4);
+	</Binding>
+	<Binding name="SAVEVIEW5" category="BINDING_HEADER_CAMERA">
+		SaveView(5);
+	</Binding>
+	<Binding name="RESETVIEW1" category="BINDING_HEADER_CAMERA">
+		ResetView(1);
+	</Binding>
+	<Binding name="RESETVIEW2" category="BINDING_HEADER_CAMERA">
+		ResetView(2);
+	</Binding>
+	<Binding name="RESETVIEW3" category="BINDING_HEADER_CAMERA">
+		ResetView(3);
+	</Binding>
+	<Binding name="RESETVIEW4" category="BINDING_HEADER_CAMERA">
+		ResetView(4);
+	</Binding>
+	<Binding name="RESETVIEW5" category="BINDING_HEADER_CAMERA">
+		ResetView(5);
+	</Binding>
+	<Binding name="FLIPCAMERAYAW" category="BINDING_HEADER_CAMERA">
+		FlipCameraYaw(180);
+	</Binding>
+	<Binding name="CENTERCAMERA" category="BINDING_HEADER_CAMERA">
+		CenterCamera();
+	</Binding>
+
+	<!-- Vehicle bindings header="VEHICLE" -->
+	<Binding name="VEHICLEEXIT" category="BINDING_HEADER_VEHICLE">
+		VehicleExit();
+	</Binding>
+	<Binding name="VEHICLEPREVSEAT" category="BINDING_HEADER_VEHICLE">
+		VehiclePrevSeat();
+	</Binding>
+	<Binding name="VEHICLENEXTSEAT" category="BINDING_HEADER_VEHICLE">
+		VehicleNextSeat();
+	</Binding>
+	<Binding name="VEHICLEAIMUP" runOnUp="true" category="BINDING_HEADER_VEHICLE">
+		if ( keystate == "down" ) then
+		VehicleAimUpStart();
+		else
+		VehicleAimUpStop();
+		end
+	</Binding>
+	<Binding name="VEHICLEAIMDOWN" runOnUp="true" category="BINDING_HEADER_VEHICLE">
+		if ( keystate == "down" ) then
+		VehicleAimDownStart();
+		else
+		VehicleAimDownStop();
+		end
+	</Binding>
+	<Binding name="VEHICLEAIMINCREMENT" category="BINDING_HEADER_VEHICLE">
+		VehicleAimIncrement(0.1);
+	</Binding>
+	<Binding name="VEHICLEAIMDECREMENT" category="BINDING_HEADER_VEHICLE">
+		VehicleAimDecrement(0.1);
+	</Binding>
+
+<!-- Hidden bindings -->
+	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
+		if ( keystate == "down" ) then
+			TurnOrActionStart();
+		else
+			TurnOrActionStop();
+		end
+	</Binding>
+	<Binding name="CAMERAORSELECTORMOVE" runOnUp="true" hidden="true">
+		if ( keystate == "down" ) then
+			CameraOrSelectOrMoveStart();
+		else
+			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
+		end
+	</Binding>
+
+	<!-- Modified Click Actions -->
+	<ModifiedClick action="SELFCAST" default="ALT"/>
+	<ModifiedClick action="FOCUSCAST" default="NONE"/>
+	<ModifiedClick action="MOUSEOVERCAST" default="NONE"/>
+	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
+	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
+	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
+	<ModifiedClick action="EXPANDITEM" default="SHIFT-BUTTON2"/>
+	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
+	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
+	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>
+	<ModifiedClick action="COMPAREITEMS" default="SHIFT"/>
+	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
+	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="RECIPEWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
+	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
+</Bindings>

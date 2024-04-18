@@ -17,7 +17,7 @@ local EncounterInfo =
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
-				{ Name = "encounterName", Type = "string", Nilable = false },
+				{ Name = "encounterName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -37,7 +37,7 @@ local EncounterInfo =
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
-				{ Name = "encounterName", Type = "string", Nilable = false },
+				{ Name = "encounterName", Type = "cstring", Nilable = false },
 				{ Name = "difficultyID", Type = "number", Nilable = false },
 				{ Name = "groupSize", Type = "number", Nilable = false },
 				{ Name = "success", Type = "number", Nilable = false },
@@ -50,7 +50,7 @@ local EncounterInfo =
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
-				{ Name = "encounterName", Type = "string", Nilable = false },
+				{ Name = "encounterName", Type = "cstring", Nilable = false },
 				{ Name = "difficultyID", Type = "number", Nilable = false },
 				{ Name = "groupSize", Type = "number", Nilable = false },
 			},

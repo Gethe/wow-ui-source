@@ -50,8 +50,9 @@ function ProfessionsRecipeListMixin:OnLoad()
 						if IsModifiedClick() then
 							local link = C_TradeSkillUI.GetRecipeLink(elementData.recipeInfo.recipeID);
 							if not HandleModifiedItemClick(link) and IsModifiedClick("RECIPEWATCHTOGGLE") and Professions.CanTrackRecipe(elementData.recipeInfo) then
-								local tracked = C_TradeSkillUI.IsRecipeTracked(elementData.recipeInfo.recipeID);
-								C_TradeSkillUI.SetRecipeTracked(elementData.recipeInfo.recipeID, not tracked);
+								local recrafting = false;
+								local tracked = C_TradeSkillUI.IsRecipeTracked(elementData.recipeInfo.recipeID, recrafting);
+								C_TradeSkillUI.SetRecipeTracked(elementData.recipeInfo.recipeID, not tracked, recrafting);
 							end
 						else
 							self.selectionBehavior:Select(button);
@@ -124,10 +125,9 @@ function ProfessionsRecipeListMixin:OnLoad()
 				EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.OnRecipeSelected", data.recipeInfo, self);
 				
 				if newRecipeID then
-				self.previousRecipeID = newRecipeID;
+					self.previousRecipeID = newRecipeID;
+				end
 			end
-			end
-
 		end
 	end;
 
@@ -149,9 +149,9 @@ end
 function ProfessionsRecipeListMixin:InitContextMenu(dropDown, level)
 	local recipeInfo = UIDROPDOWNMENU_MENU_VALUE;
 	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	
 	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeInfo.recipeID);
+
+	info.notCheckable = true;
 	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
 	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, recipeInfo.recipeID, not currentlyFavorite);
 
@@ -365,8 +365,7 @@ function ProfessionsRecipeListRecipeMixin:OnEnter()
 		GameTooltip:Show();
 	end
 
-
-	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, recipeID, name, iconID);
+	EventRegistry:TriggerEvent("Professions.RecipeListOnEnter", self, elementData.data);
 end
 
 

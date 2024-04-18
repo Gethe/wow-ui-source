@@ -13,7 +13,7 @@ local UIModelInfo =
 
 			Arguments =
 			{
-				{ Name = "modelSceneFrame", Type = "table", Nilable = false },
+				{ Name = "modelSceneFrame", Type = "ModelSceneFrame", Nilable = false },
 				{ Name = "modelSceneID", Type = "number", Nilable = false },
 			},
 		},
@@ -24,7 +24,7 @@ local UIModelInfo =
 
 			Arguments =
 			{
-				{ Name = "modelSceneFrameActor", Type = "table", Nilable = false },
+				{ Name = "modelSceneFrameActor", Type = "ModelSceneFrameActor", Nilable = false },
 				{ Name = "modelSceneActorID", Type = "number", Nilable = false },
 			},
 		},
@@ -35,7 +35,7 @@ local UIModelInfo =
 
 			Arguments =
 			{
-				{ Name = "modelSceneFrame", Type = "table", Nilable = false },
+				{ Name = "modelSceneFrame", Type = "ModelSceneFrame", Nilable = false },
 			},
 		},
 		{
@@ -45,7 +45,7 @@ local UIModelInfo =
 
 			Arguments =
 			{
-				{ Name = "modelSceneFrameActor", Type = "table", Nilable = false },
+				{ Name = "modelSceneFrameActor", Type = "ModelSceneFrameActor", Nilable = false },
 			},
 		},
 		{
@@ -104,6 +104,7 @@ local UIModelInfo =
 				{ Name = "modelSceneType", Type = "ModelSceneType", Nilable = false },
 				{ Name = "modelCameraIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "modelActorsIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "flags", Type = "number", Nilable = false },
 			},
 		},
 	},
@@ -119,20 +120,6 @@ local UIModelInfo =
 
 	Tables =
 	{
-		{
-			Name = "ItemTryOnReason",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Success", Type = "ItemTryOnReason", EnumValue = 0 },
-				{ Name = "WrongRace", Type = "ItemTryOnReason", EnumValue = 1 },
-				{ Name = "NotEquippable", Type = "ItemTryOnReason", EnumValue = 2 },
-				{ Name = "DataPending", Type = "ItemTryOnReason", EnumValue = 3 },
-			},
-		},
 		{
 			Name = "ModelSceneSetting",
 			Type = "Enumeration",
@@ -175,6 +162,20 @@ local UIModelInfo =
 			},
 		},
 		{
+			Name = "UIModelSceneActorFlag",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "Deprecated1", Type = "UIModelSceneActorFlag", EnumValue = 1 },
+				{ Name = "UseCenterForOriginX", Type = "UIModelSceneActorFlag", EnumValue = 2 },
+				{ Name = "UseCenterForOriginY", Type = "UIModelSceneActorFlag", EnumValue = 4 },
+				{ Name = "UseCenterForOriginZ", Type = "UIModelSceneActorFlag", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "UIModelSceneActorDisplayInfo",
 			Type = "Structure",
 			Fields =
@@ -194,8 +195,8 @@ local UIModelInfo =
 			Fields =
 			{
 				{ Name = "modelActorID", Type = "number", Nilable = false },
-				{ Name = "scriptTag", Type = "string", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "scriptTag", Type = "cstring", Nilable = false },
+				{ Name = "position", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 				{ Name = "yaw", Type = "number", Nilable = false },
 				{ Name = "pitch", Type = "number", Nilable = false },
 				{ Name = "roll", Type = "number", Nilable = false },
@@ -212,16 +213,16 @@ local UIModelInfo =
 			Fields =
 			{
 				{ Name = "modelSceneCameraID", Type = "number", Nilable = false },
-				{ Name = "scriptTag", Type = "string", Nilable = false },
-				{ Name = "cameraType", Type = "string", Nilable = false },
-				{ Name = "target", Type = "table", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "scriptTag", Type = "cstring", Nilable = false },
+				{ Name = "cameraType", Type = "cstring", Nilable = false },
+				{ Name = "target", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 				{ Name = "yaw", Type = "number", Nilable = false },
 				{ Name = "pitch", Type = "number", Nilable = false },
 				{ Name = "roll", Type = "number", Nilable = false },
 				{ Name = "zoomDistance", Type = "number", Nilable = false },
 				{ Name = "minZoomDistance", Type = "number", Nilable = false },
 				{ Name = "maxZoomDistance", Type = "number", Nilable = false },
-				{ Name = "zoomedTargetOffset", Type = "table", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "zoomedTargetOffset", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 				{ Name = "zoomedYawOffset", Type = "number", Nilable = false },
 				{ Name = "zoomedPitchOffset", Type = "number", Nilable = false },
 				{ Name = "zoomedRollOffset", Type = "number", Nilable = false },

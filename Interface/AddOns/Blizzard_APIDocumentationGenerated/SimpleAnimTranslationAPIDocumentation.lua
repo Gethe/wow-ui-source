@@ -15,8 +15,8 @@ local SimpleAnimTranslationAPI =
 
 			Returns =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -25,8 +25,8 @@ local SimpleAnimTranslationAPI =
 
 			Arguments =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 	},

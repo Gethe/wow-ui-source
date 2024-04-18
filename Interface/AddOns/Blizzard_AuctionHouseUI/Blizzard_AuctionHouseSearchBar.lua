@@ -2,6 +2,7 @@
 local DEFAULT_FILTERS = {
 	[Enum.AuctionHouseFilter.UncollectedOnly] = false,
 	[Enum.AuctionHouseFilter.UsableOnly] = false,
+	[Enum.AuctionHouseFilter.CurrentExpansionOnly] = false,
 	[Enum.AuctionHouseFilter.UpgradesOnly] = false,
 	[Enum.AuctionHouseFilter.PoorQuality] = true,
 	[Enum.AuctionHouseFilter.CommonQuality] = true,
@@ -234,5 +235,6 @@ function AuctionHouseSearchBarMixin:StartSearch()
 end
 
 function AuctionHouseSearchBarMixin:StartFavoritesSearch()
+	self:GetParent():GetCategoriesList():SetSelectedCategory(nil);
 	self:GetAuctionHouseFrame():QueryAll(AuctionHouseSearchContext.AllFavorites);
 end

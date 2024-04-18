@@ -25,6 +25,7 @@ end
 
 function WorldMapMixin:Minimize()
 	self.isMaximized = false;
+	EventRegistry:TriggerEvent("WorldMapMinimized");
 
 	self:SetSize(self.minimizedWidth, self.minimizedHeight);
 
@@ -34,7 +35,7 @@ function WorldMapMixin:Minimize()
 	self.BorderFrame:SetBorder("PortraitFrameTemplateMinimizable");
 	self.BorderFrame:SetPortraitShown(true);
 
-	self.BorderFrame.Tutorial:Show();
+	self:SetTutorialButtonShown(true);
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
 
 	self:SynchronizeDisplayState();
@@ -44,17 +45,42 @@ end
 
 function WorldMapMixin:Maximize()
 	self.isMaximized = true;
+	EventRegistry:TriggerEvent("WorldMapMaximized");
 
 	self.BorderFrame:SetBorder("ButtonFrameTemplateNoPortraitMinimizable");
 	self.BorderFrame:SetPortraitShown(false);
 
-	self.BorderFrame.Tutorial:Hide();
+	self:SetTutorialButtonShown(false);
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 8, -25);
 
 	self:UpdateMaximizedSize();
 	self:SynchronizeDisplayState();
 
 	self:OnFrameSizeChanged();
+end
+
+function WorldMapMixin:SetTutorialButtonShown(shown)
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+		return;
+	end
+
+	self.BorderFrame.Tutorial:SetShown(shown);
+end
+
+function WorldMapMixin:CheckAndShowTutorialTooltip()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+		return;
+	end
+
+	self.BorderFrame.Tutorial:CheckAndShowTooltip();
+end
+
+function WorldMapMixin:CheckAndHideTutorialHelpInfo()
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+		return;
+	end
+
+	self.BorderFrame.Tutorial:CheckAndHideHelpInfo();
 end
 
 function WorldMapMixin:SetupMinimizeMaximizeButton()
@@ -73,6 +99,10 @@ function WorldMapMixin:SetupMinimizeMaximizeButton()
 	end
 
 	self.BorderFrame.MaximizeMinimizeFrame:SetOnMinimizedCallback(OnMinimize);
+
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MaximizeWorldMap) then
+		self.BorderFrame.MaximizeMinimizeFrame:Hide();
+	end
 end
 
 function WorldMapMixin:IsMaximized()
@@ -103,6 +133,10 @@ function WorldMapMixin:OnLoad()
 	self:AttachQuestLog();
 
 	self:UpdateSpacerFrameAnchoring();
+
+	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapHelpPlate) then
+		self.BorderFrame.Tutorial:Hide();
+	end
 end
 
 function WorldMapMixin:OnEvent(event, ...)
@@ -139,6 +173,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(ScenarioDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(VignetteDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(ContentTrackingDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(InvasionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(GossipDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(FlightPointDataProviderMixin));
@@ -154,6 +189,11 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WaypointLocationDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DragonridingRaceDataProviderMixin));
+
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MapPlunderstormCircle) then
+		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));
+	end
 
 	if IsGMClient() then
 		self:AddDataProvider(CreateFromMixins(WorldMap_DebugDataProviderMixin));
@@ -170,11 +210,11 @@ function WorldMapMixin:AddStandardDataProviders()
 	worldQuestDataProvider:SetMatchWorldMapFilters(true);
 	worldQuestDataProvider:SetUsesSpellEffect(true);
 	worldQuestDataProvider:SetCheckBounties(true);
-	worldQuestDataProvider:SetMarkActiveQuests(true);
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PLUNDERSTORM_CIRCLE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_EVENT_OVERLAY");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GARRISON_PLOT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FOG_OF_WAR");
@@ -188,6 +228,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DRAGONRIDING_RACE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
@@ -195,11 +236,13 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ENCOUNTER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_CONTRIBUTION_COLLECTOR");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_STORY_LINE", 6);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST_PING");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_PING");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_CONTENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
@@ -213,8 +256,15 @@ end
 
 function WorldMapMixin:AddOverlayFrames()
 	self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "FRAME", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", -15, 2);
-	self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNTOGGLEBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
-	self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -36, -2);
+
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapTrackingOptions) then
+		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNTOGGLEBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, -2);
+	end
+
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.WorldMapTrackingPin) then
+		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -36, -2);
+	end
+
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
@@ -225,7 +275,9 @@ function WorldMapMixin:AddOverlayFrames()
 	self.NavBar:SetPoint("TOPLEFT", self.TitleCanvasSpacerFrame, "TOPLEFT", 64, -25);
 	self.NavBar:SetPoint("BOTTOMRIGHT", self.TitleCanvasSpacerFrame, "BOTTOMRIGHT", -4, 9);
 
-	self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
+	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.QuestLogPanel) then
+		self.SidePanelToggle = self:AddOverlayFrame("WorldMapSidePanelToggleTemplate", "BUTTON", "BOTTOMRIGHT", self:GetCanvasContainer(), "BOTTOMRIGHT", -2, 1);
+	end
 end
 
 function WorldMapMixin:OnMapChanged()
@@ -248,7 +300,7 @@ function WorldMapMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	PlayerMovementFrameFader.AddDeferredFrame(self, .5, 1.0, .5, function() return GetCVarBool("mapFade") and not self:IsMouseOver() end);
-	self.BorderFrame.Tutorial:CheckAndShowTooltip();
+	self:CheckAndShowTutorialTooltip();
 
 	local miniWorldMap = GetCVarBool("miniWorldMap");
 	local maximized = self:IsMaximized();
@@ -260,7 +312,7 @@ function WorldMapMixin:OnShow()
 		end
 	end
 
-	self:TriggerEvent("WorldMapOnShow");
+	EventRegistry:TriggerEvent("WorldMapOnShow");
 end
 
 function WorldMapMixin:OnHide()
@@ -270,7 +322,7 @@ function WorldMapMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 
 	PlayerMovementFrameFader.RemoveFrame(self);
-	self.BorderFrame.Tutorial:CheckAndHideHelpInfo();
+	self:CheckAndHideTutorialHelpInfo();
 
 	self:OnUIClose();
 	self:TriggerEvent("WorldMapOnHide");

@@ -552,7 +552,7 @@ end
 
 function AzeriteEmpoweredItemPowerMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
-		local spellLink = GetSpellLink(self:GetSpellID());
+		local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
 		ChatEdit_InsertLink(spellLink);
 		return;
 	end
@@ -648,7 +648,7 @@ function AzeriteEmpoweredItemPowerMixin:OnSwirlAnimationFinished()
 	self.SwirlContainer:Hide();
 	self:PlayTransitionAnimation();
 
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		self:OnEnter();
 	end
 end

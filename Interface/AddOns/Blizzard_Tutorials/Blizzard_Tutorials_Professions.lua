@@ -108,7 +108,7 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 
 		for packedLocation, itemLink in pairs(potentialGear) do
 			local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(packedLocation);
-			local invType = select(9, GetItemInfo(itemLink));
+			local invType = select(9, C_Item.GetItemInfo(itemLink));
 			local isTool = (invType == "INVTYPE_PROFESSION_TOOL");
 			local hasBeenShown;
 			if isTool then
@@ -119,7 +119,8 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 			if player and bags and (not hasBeenShown) then
 				local itemLocation = ItemLocation:CreateEmpty();
 				itemLocation:SetBagAndSlot(bag, slot);
-				if not C_ArtifactUI.IsArtifactItem(itemLocation) then
+				local itemID = C_Item.GetItemInfoInstant(itemLink);
+				if not C_ArtifactUI.IsArtifactItem(itemLocation) and C_PlayerInfo.CanUseItem(itemID) then
 					table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
 				end
 			end
@@ -163,6 +164,7 @@ function Class_EquipProfessionGear:OnBegin(args)
 	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() self:UpdateState(); end, self);
 	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", function() self:UpdateState(); end, self);
 	EventRegistry:RegisterCallback("ProfessionsFrame.TabSet", function() self:UpdateState(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Minimized", function() self:UpdateState(); end, self);
 	EventRegistry:RegisterCallback("Professions.ProfessionSelected", function() self:UpdateState(); end, self);
 	
 	if not C_Container.GetContainerItemID(self.data.Container, self.data.ContainerSlot) then
@@ -284,7 +286,7 @@ function Class_EquipProfessionGear:BagOpened()
 end
 
 function Class_EquipProfessionGear:IsProfessionsFrameVisible()
-	return ProfessionsFrame:IsVisible();
+	return ProfessionsFrame and ProfessionsFrame:IsVisible();
 end
 
 function Class_EquipProfessionGear:IsCorrectProfessionSelected()
@@ -301,7 +303,7 @@ function Class_EquipProfessionGear:UpdateState()
 		return;
 	end
 
-	if not IsAnyBagOpen() then
+	if ProfessionsUtil.IsCraftingMinimized() or not IsAnyBagOpen() then
 		self:Reset();
 		return;
 	end
@@ -376,6 +378,8 @@ function Class_EquipProfessionGear:StartAnimation()
 		[26] = ProfessionsFrame.CraftingPage.CookingToolSlot,
 		[27] = ProfessionsFrame.CraftingPage.CookingGear0Slot,
 		[28] = ProfessionsFrame.CraftingPage.FishingToolSlot,
+		[29] = ProfessionsFrame.CraftingPage.FishingGear0Slot,
+		[30] = ProfessionsFrame.CraftingPage.FishingGear0Slot,
 	}
 
 	self.destFrame = Slot[self.data.CharacterSlot];
@@ -485,40 +489,80 @@ function Class_EquipProfessionGear:OnComplete()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Specialization points reminder
+-- New Specialization reminder
 -- ------------------------------------------------------------------------------------------------------------
-local SpecPointsChecker = {};
-local reminderShownThisSession = false;
+local NewSpecChecker = {};
+NewSpecChecker.reminderShownThisSession = false;
 
-function SpecPointsChecker:ShowReminder()
-	reminderShownThisSession = true;
+function NewSpecChecker:ShowReminder(profName)
+	NewSpecChecker.reminderShownThisSession = true;
 
 	if ProfessionsFrame and ProfessionsFrame:IsVisible() then
 		return;
 	end
 
-	MainMenuMicroButton_ShowAlert(SpellbookMicroButton, PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER);
-	MicroButtonPulse(SpellbookMicroButton);
-	SpellbookMicroButton.suggestedTabButton = SpellBookFrameTabButton2;
+	MainMenuMicroButton_ShowAlert(ProfessionMicroButton, PROFESSIONS_NEW_CHOICE_AVAILABLE_SPECIALIZATION:format(C_ProfSpecs.GetNewSpecReminderProfName()));
+	MicroButtonPulse(ProfessionMicroButton);
+	ProfessionMicroButton.showProfessionSpellHighlights = true;
 end
 
-function SpecPointsChecker:CheckShowReminder()
-	if reminderShownThisSession then
-		return;
+function NewSpecChecker:ShouldShowReminder()
+	if NewSpecChecker.reminderShownThisSession then
+		return false;
 	end
 
-	if C_ProfSpecs.ShouldShowPointsReminder() then
+	if C_ProfSpecs.GetNewSpecReminderProfName() then
+		return true;
+	end
+
+	return false;
+end
+
+function NewSpecChecker:CheckShowReminder()
+	if self:ShouldShowReminder() then
 		self:ShowReminder();
 	end
 end
 
-EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_UNLOCKED", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
-EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
+EventRegistry:RegisterFrameEventAndCallback("SKILL_LINES_CHANGED", NewSpecChecker.CheckShowReminder, NewSpecChecker);
+EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_RANKS_CHANGED", NewSpecChecker.CheckShowReminder, NewSpecChecker);
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function(checker, isLogin)
 	if isLogin then
-		SpecPointsChecker:CheckShowReminder();
+		NewSpecChecker:CheckShowReminder();
 	end
-end, SpecPointsChecker);
+end, NewSpecChecker);
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Specialization points reminder
+-- ------------------------------------------------------------------------------------------------------------
+local SpecPointsChecker = {};
+SpecPointsChecker.reminderShownThisSession = false;
+
+function SpecPointsChecker:ShowReminder()
+	SpecPointsChecker.reminderShownThisSession = true;
+
+	if ProfessionsFrame and ProfessionsFrame:IsVisible() then
+		return;
+	end
+
+	MainMenuMicroButton_ShowAlert(ProfessionMicroButton, PROFESSIONS_UNSPENT_SPEC_POINTS_REMINDER);
+	MicroButtonPulse(ProfessionMicroButton);
+	ProfessionMicroButton.showProfessionSpellHighlights = true;
+end
+
+function SpecPointsChecker:CheckShowReminder()
+	if SpecPointsChecker.reminderShownThisSession then
+		return;
+	end
+
+	if C_ProfSpecs.ShouldShowPointsReminder() and not NewSpecChecker:ShouldShowReminder() then
+		self:ShowReminder();
+	end
+end
+
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
+EventRegistry:RegisterFrameEventAndCallback("SKILL_LINE_SPECS_UNLOCKED", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
+EventRegistry:RegisterFrameEventAndCallback("CURRENCY_DISPLAY_UPDATE", SpecPointsChecker.CheckShowReminder, SpecPointsChecker);
 
 
 function PlayerHasPrimaryProfession()
@@ -585,9 +629,8 @@ function Class_FirstProfessionTutorial:OnBegin(args)
 		self.success = true;
 		TutorialManager:Finished(self:Name());
 	end);
-	EventRegistry:RegisterCallback("SpellBookFrame.Show", function() self:Update(); end, self);
-	EventRegistry:RegisterCallback("SpellBookFrame.Hide", function() self:Update(); end, self);
-	EventRegistry:RegisterCallback("SpellBookFrame.ChangeBookType", function() self:Update(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsBookFrame.Show", function() self:Update(); end, self);
+	EventRegistry:RegisterCallback("ProfessionsBookFrame.Hide", function() self:Update(); end, self);
 	Dispatcher:RegisterEvent("SKILL_LINES_CHANGED", self);
 
 	self:Update();
@@ -618,7 +661,7 @@ function Class_FirstProfessionTutorial:Update()
 
 	if self.success then
 		TutorialManager:Finished(self:Name());
-	elseif not SpellBookFrame or not SpellBookFrame:IsVisible() then
+	elseif not ProfessionsBookFrame or not ProfessionsBookFrame:IsVisible() then
 		local helpTipInfo = 
 		{
 			text = PROFESSIONS_NEW_TUTORIAL,
@@ -628,19 +671,8 @@ function Class_FirstProfessionTutorial:Update()
 			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
 			autoHorizontalSlide = true,
 		};
-		HelpTip:Show(UIParent, helpTipInfo, SpellbookMicroButton);
-		MicroButtonPulse(SpellbookMicroButton);
-	elseif not SpellBookProfessionFrame or not SpellBookProfessionFrame:IsShown() then
-		local helpTipInfo = 
-		{
-			text = PROFESSIONS_NEW_TUTORIAL_TAB,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-			system = self:GetHelptipSystem(),
-			onAcknowledgeCallback = function() self:AcknowledgeTutorial(); end,
-			autoHorizontalSlide = true,
-		};
-		HelpTip:Show(UIParent, helpTipInfo, SpellBookFrameTabButton2);
+		HelpTip:Show(UIParent, helpTipInfo, ProfessionMicroButton);
+		MicroButtonPulse(ProfessionMicroButton);
 	else
 		local helpTipInfo = 
 		{
@@ -666,8 +698,7 @@ function Class_FirstProfessionTutorial:OnComplete()
 	end
 
 	EventRegistry:UnregisterCallback("ProfessionsFrame.Show", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.Show", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.Hide", self);
-	EventRegistry:UnregisterCallback("SpellBookFrame.ChangeBookType", self);
+	EventRegistry:UnregisterCallback("ProfessionsBookFrame.Show", self);
+	EventRegistry:UnregisterCallback("ProfessionsBookFrame.Hide", self);
 	Dispatcher:UnregisterEvent("SKILL_LINES_CHANGED", self);
 end

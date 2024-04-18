@@ -28,7 +28,7 @@ local categoryStrings =
 };
 
 local function GetQualityFilterString(itemQuality)
-	local hex = select(4, GetItemQualityColor(itemQuality));
+	local hex = select(4, C_Item.GetItemQualityColor(itemQuality));
 	local text = _G["ITEM_QUALITY"..itemQuality.."_DESC"];
 	return "|c"..hex..text.."|r";
 end
@@ -126,7 +126,16 @@ function ProfessionsCustomerOrdersBrowsePageMixin:InitContextMenu(dropDown, leve
 	
 	local currentlyFavorite = C_CraftingOrders.IsCustomerOptionFavorited(recipeID);
 	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = GenerateClosure(C_CraftingOrders.SetCustomerOptionFavorited, recipeID, not currentlyFavorite);
+	if not currentlyFavorite and C_CraftingOrders.GetNumFavoriteCustomerOptions() >= Constants.CraftingOrderConsts.MAX_CRAFTING_ORDER_FAVORITE_RECIPES then
+		info.text = DISABLED_FONT_COLOR:WrapTextInColorCode(info.text);
+		info.disabled = true;
+		info.tooltipWhileDisabled = true;
+		info.tooltipOnButton = true;
+		info.tooltipTitle = "";
+		info.tooltipWarning = PROFESSIONS_CRAFTING_ORDERS_FAVORITES_FULL;
+	else
+		info.func = GenerateClosure(C_CraftingOrders.SetCustomerOptionFavorited, recipeID, not currentlyFavorite);
+	end
 
 	UIDropDownMenu_AddButton(info, level);
 end
@@ -288,13 +297,19 @@ end
 
 local function GetCompareFieldFromType(extraColumnType)
 	if extraColumnType == Enum.AuctionHouseExtraColumn.Ilvl then
-		return "iLvl";
+		return "iLvlMax";
 	elseif extraColumnType == Enum.AuctionHouseExtraColumn.Slots then
 		return "slots";
 	elseif extraColumnType == Enum.AuctionHouseExtraColumn.Level then
 		return "level";
 	elseif extraColumnType == Enum.AuctionHouseExtraColumn.Skill then
 		return "skill";
+	end
+end
+
+local function GetFallbackCompareFieldFromType(extraColumnType)
+	if extraColumnType == Enum.AuctionHouseExtraColumn.Ilvl then
+		return "iLvlMin";
 	end
 end
 
@@ -312,9 +327,10 @@ function ProfessionsCustomerOrdersBrowsePageMixin:SetupSortManager(extraColumnTy
 	end);
 
 	local extraColumnField = extraColumnType and GetCompareFieldFromType(extraColumnType);
+	local fallbackColumnFiled = extraColumnType and GetFallbackCompareFieldFromType(extraColumnType);
 	if extraColumnField ~= nil then
 		self.sortManager:InsertComparator(GetSortOrderFromType(extraColumnType), function(lhs, rhs)
-			return SortUtil.CompareNumeric(lhs.option[extraColumnField], rhs.option[extraColumnField]);
+			return SortUtil.CompareNumeric(lhs.option[extraColumnField] or lhs.option[fallbackColumnFiled], rhs.option[extraColumnField] or rhs.option[fallbackColumnFiled]);
 		end);
 	end
 

@@ -1,6 +1,12 @@
 UIPanelWindows["ItemInteractionFrame"] = {area = "left", pushable = 3, showFailedFunc = C_ItemInteraction.Reset, };
 
-StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION"] = {
+local staticPopupNames = {
+	Confirmation = "ITEM_INTERACTION_CONFIRMATION",
+	ConfirmationDelayed = "ITEM_INTERACTION_CONFIRMATION_DELAYED",
+	ConfirmationDelayedWithChargeInfo = "ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO",
+}
+
+StaticPopupDialogs[staticPopupNames.Confirmation] = {
 	text = "",
 	button1 = "",
 	button2 = CANCEL,
@@ -21,7 +27,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION"] = {
 	hasItemFrame = 1,
 };
 
-StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED"] = {
+StaticPopupDialogs[staticPopupNames.ConfirmationDelayed] = {
 	text = "",
 	button1 = "",
 	button2 = CANCEL,
@@ -47,7 +53,7 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED"] = {
 };
 
 
-StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
+StaticPopupDialogs[staticPopupNames.ConfirmationDelayedWithChargeInfo] = {
 	text = "",
 	subText = "",
 	button1 = "",
@@ -77,17 +83,20 @@ StaticPopupDialogs["ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO"] = {
 };
 
 local FrameSpecificDefaults = {
-	itemSlotOffsetY = 0,
+	itemSlotOffsetY = -20,
 	glowOverLayOffsetY = 0,
-	descriptionOffset = -65,
+	descriptionOffset = 38,
 	tutorialBitFlag = nil,
+	costDisplayOffsetY = -100;
 };
 
 local FrameSpecificOverrides = {
 	[Enum.UIItemInteractionType.CleanseCorruption] = {
 		tutorialBitFlag = LE_FRAME_TUTORIAL_CORRUPTION_CLEANSER,
 		glowOverLayOffsetY = 7,
-		descriptionOffset = -74,
+		itemSlotOffsetY = 0,
+		descriptionOffset = 75,
+		costDisplayOffsetY = -80;
 	},
 
 	[Enum.UIItemInteractionType.RunecarverScrapping] = {
@@ -97,8 +106,6 @@ local FrameSpecificOverrides = {
 	},
 
 	[Enum.UIItemInteractionType.ItemConversion] = {
-		itemSlotOffsetY = 17,
-		descriptionOffset = -74,
 	},
 };
 
@@ -135,7 +142,7 @@ end
 -- UiItemInteraction data only supports a single, flat currency cost.
 -- We need to add support for extended currency costs or move Item Conversion out of the Item Interaction UI.
 function ItemInteractionMixin:HasExtendedCurrencyCost()
-	return self.usesCharges;
+	return self.conversionMode;
 end
 
 function ItemInteractionMixin:HasCost()
@@ -168,8 +175,8 @@ function ItemInteractionMixin:OnEvent(event, ...)
 		end
 	elseif (event == "ITEM_INTERACTION_CHARGE_INFO_UPDATED" or event == "CURRENCY_DISPLAY_UPDATE") then
 		-- We need to display a recharge time right after we use our final charge.
-		if (self:UsesCharges()) then
-			self:UpdateCharges();
+		if (self:UsesCharges() or self:CostsCurrency()) then
+			self:UpdateCostFrame();
 		end
 	elseif (event == "UNIT_SPELLCAST_START") then
 		local unitTag, lineID, spellID = ...;
@@ -192,8 +199,7 @@ function ItemInteractionMixin:OnEvent(event, ...)
 			local buttonName = ...;
 			local isRightButton = buttonName == "RightButton";
 
-			local mouseFocus = GetMouseFocus();
-			local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+			local flyoutSelected = not isRightButton and DoesAncestryIncludeAny(EquipmentFlyout_GetFrame(), GetMouseFoci());
 			if not flyoutSelected then
 				EquipmentFlyout_Hide();
 			end
@@ -352,6 +358,9 @@ function ItemInteractionMixin:SetupFrameSpecificData()
 
 	self.Description:ClearAllPoints();
 	self.Description:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("descriptionOffset"));
+
+	self.CurrencyCost:ClearAllPoints();
+	self.CurrencyCost:SetPoint("CENTER", 0, GetItemInteractionFrameSpecificValueByKey("costDisplayOffsetY"));
 end
 
 -- The 9.2 "Item Conversion" interaction requires two currencies from the player: A flat cost of 1 "Charge" and an extended currency cost of X "Cosmic Flux" depending on the armor slot (gloves, legs, etc)
@@ -414,6 +423,7 @@ function ItemInteractionMixin:UpdateCostFrame()
 	elseif (costsMoney) then
 		self:UpdateMoney();
 	end
+	self.CurrencyCost:SetShown(costsCurrency);
 	buttonFrame.Currency:SetShown(costsCurrency);
 	buttonFrame.MoneyFrame:SetShown(costsMoney);
 	buttonFrame.BlackBorder:SetShown(hasPrice);
@@ -438,13 +448,18 @@ function ItemInteractionMixin:UpdateCurrency()
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
 	local amount = currencyInfo.quantity;
 	local currencyTexture = currencyInfo.iconFileID;
+
 	self.ButtonFrame.Currency.currencyID = self.currencyTypeId;
 	self.ButtonFrame.Currency.Icon:SetTexture(currencyTexture);
-	self.ButtonFrame.Currency.Count:SetText(self.cost);
+	self.ButtonFrame.Currency.Count:SetText(amount);
+
+	self.CurrencyCost.Currency.currencyID = self.currencyTypeId;
+	self.CurrencyCost.Currency.Icon:SetTexture(currencyTexture);
+	self.CurrencyCost.Currency.Count:SetText(self.cost);
 	if (self.cost > amount) then
-		self.ButtonFrame.Currency.Count:SetTextColor(RED_FONT_COLOR:GetRGB());
+		self.CurrencyCost.Currency.Count:SetTextColor(RED_FONT_COLOR:GetRGB());
 	else
-		self.ButtonFrame.Currency.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.CurrencyCost.Currency.Count:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
 	self:UpdateActionButtonState();
 end
@@ -471,7 +486,7 @@ function ItemInteractionMixin:GetButtonTooltip()
 end
 
 function ItemInteractionMixin:GetConfirmationDescription()
-	if self.interactionType == Enum.UIItemInteractionType.ItemConversion then
+	if self.interactionType == Enum.UIItemInteractionType.ItemConversion and self.currencyTypeId ~= nil then
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.currencyTypeId);
 		local file, fileWidth, fileHeight, width, height = currencyInfo.iconFileID, 64, 64, 16, 16;
 		local left, right, top, bottom = 0, 1, 0, 1;
@@ -542,12 +557,12 @@ function ItemInteractionMixin:InteractWithItem()
 		if (FlagsUtil.IsSet(self.flags, Enum.UIItemInteractionFlags.ConfirmationHasDelay)) then
 			if (self:UsesCharges()) then
 				data.subText = self:GetChargeConfirmationText();
-				StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED_WITH_CHARGE_INFO", textArg1, textArg2, data);
+				StaticPopup_Show(staticPopupNames.ConfirmationDelayedWithChargeInfo, textArg1, textArg2, data);
 			else
-				StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION_DELAYED", textArg1, textArg2, data);
+				StaticPopup_Show(staticPopupNames.ConfirmationDelayed, textArg1, textArg2, data);
 			end
 		else
-			StaticPopup_Show("ITEM_INTERACTION_CONFIRMATION", textArg1, textArg2, data);
+			StaticPopup_Show(staticPopupNames.Confirmation, textArg1, textArg2, data);
 		end
 	else
 		self:CompleteItemInteraction();
@@ -585,14 +600,21 @@ end
 
 function ItemInteractionMixin:SetItemConversionExtendedCurrencyCost(itemLocation)
 	local conversionCurrencyInfo = itemLocation and C_ItemInteraction.GetItemConversionCurrencyCost(itemLocation) or nil;
-	self.currencyTypeId = conversionCurrencyInfo and conversionCurrencyInfo.currencyID or nil;
-	self.cost = conversionCurrencyInfo and conversionCurrencyInfo.amount or nil;
+	if (conversionCurrencyInfo and conversionCurrencyInfo.currencyID and conversionCurrencyInfo.amount and conversionCurrencyInfo.currencyID ~= 0 and conversionCurrencyInfo.amount ~= 0) then
+		self.currencyTypeId = conversionCurrencyInfo.currencyID;
+		self.cost = conversionCurrencyInfo.amount;
+	else
+		self.currencyTypeId = nil;
+		self.cost = nil;
+	end
 
 	if (self.currencyTypeId and self.cost) then
 		self:UpdateCurrency();
-		self.ButtonFrame.Currency:SetShown(true);
+		self.ButtonFrame.Currency:Show();
+		self.CurrencyCost:Show();
 	else
-		self.ButtonFrame.Currency:SetShown(false);
+		self.ButtonFrame.Currency:Hide();
+		self.CurrencyCost:Hide();
 	end
 end
 
@@ -637,7 +659,9 @@ function ItemInteractionMixin:SetInteractionItem(itemLocation)
 	end
 	self:UpdateActionButtonState();
 
-	StaticPopup_Hide("ITEM_INTERACTION_CONFIRMATION");
+	for _, staticPopupName in pairs(staticPopupNames) do
+		StaticPopup_Hide(staticPopupName);
+	end
 end
 
 function ItemInteractionMixin:SetupEquipmentFlyout(setup)
@@ -749,7 +773,7 @@ function ItemInteractionItemSlotMixin:RefreshIcon()
 end
 
 function ItemInteractionItemSlotMixin:RefreshTooltip()
-	if (GetMouseFocus() == self) then
+	if (self:IsMouseMotionFocus()) then
 		self:OnEnter();
 	else
 		self:OnLeave();
@@ -922,7 +946,7 @@ function ItemInteractionItemConversionInputSlotMixin:RefreshIcon()
 end
 
 function ItemInteractionItemConversionInputSlotMixin:RefreshTooltip()
-	if (GetMouseFocus() == self) then
+	if (self:IsMouseMotionFocus()) then
 		self:OnEnter();
 	else
 		self:OnLeave();

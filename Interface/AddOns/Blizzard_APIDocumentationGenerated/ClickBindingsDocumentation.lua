@@ -26,8 +26,8 @@ local ClickBindings =
 
 			Arguments =
 			{
-				{ Name = "targetToken", Type = "string", Nilable = false },
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "targetToken", Type = "cstring", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 				{ Name = "modifiers", Type = "number", Nilable = false },
 			},
 		},
@@ -37,7 +37,7 @@ local ClickBindings =
 
 			Arguments =
 			{
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 				{ Name = "modifiers", Type = "number", Nilable = false },
 			},
 
@@ -52,13 +52,13 @@ local ClickBindings =
 
 			Arguments =
 			{
-				{ Name = "button", Type = "string", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
 				{ Name = "modifiers", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "effectiveButton", Type = "string", Nilable = false },
+				{ Name = "effectiveButton", Type = "cstring", Nilable = false },
 			},
 		},
 		{

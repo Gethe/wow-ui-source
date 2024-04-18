@@ -21,7 +21,16 @@ local InGameNavigation =
 
 			Returns =
 			{
-				{ Name = "frame", Type = "table", Nilable = true },
+				{ Name = "frame", Type = "ScriptRegion", Nilable = true },
+			},
+		},
+		{
+			Name = "GetNearestPartyMemberToken",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "unitToken", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -61,7 +70,7 @@ local InGameNavigation =
 			LiteralName = "NAVIGATION_FRAME_CREATED",
 			Payload =
 			{
-				{ Name = "region", Type = "table", Nilable = false },
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
 			},
 		},
 		{

@@ -1,0 +1,573 @@
+local SpellBookItemEvents = {
+	"UPDATE_SHAPESHIFT_FORM",
+	"SPELL_UPDATE_COOLDOWN",
+	"PET_BAR_UPDATE",
+	"ACTIONBAR_SLOT_CHANGED",
+	"CURSOR_CHANGED",
+}
+
+SpellBookItemMixin = {};
+
+function SpellBookItemMixin:Init(elementData)
+	self.elementData = elementData;
+	local forceUpdate = true;
+	self:UpdateSpellData(forceUpdate);
+end
+
+function SpellBookItemMixin.Reset(framePool, self)
+	FramePool_HideAndClearAnchors(framePool, self);
+	self:ClearSpellData();
+	self.elementData = nil;
+end
+
+function SpellBookItemMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, SpellBookItemEvents);
+end
+
+function SpellBookItemMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, SpellBookItemEvents);
+end
+
+function SpellBookItemMixin:OnEvent(event, ...)
+	if not self:HasValidData() then
+		return;
+	end
+
+	if event == "UPDATE_SHAPESHIFT_FORM" then
+		-- Attack icons change when shapeshift form changes
+		self:UpdateIcon();
+	elseif event == "SPELL_UPDATE_COOLDOWN" then
+		-- Update cooldown & tooltip, if active
+		self:UpdateCooldown();
+		if ( GameTooltip:GetOwner() == self ) then
+			self:OnEnter();
+		end
+	elseif event == "PET_BAR_UPDATE" then
+		-- Update pet autocast visuals if pet bar spell
+		if self.spellBank == Enum.SpellBookSpellBank.Pet then
+			self:UpdateAutoCast();
+			self:UpdateActionBarStatus();
+		end
+	elseif event == "ACTIONBAR_SLOT_CHANGED" then
+		self:UpdateActionBarStatus();
+	elseif event == "CURSOR_CHANGED" then
+		-- Spell was being dragged from spellbook, update action bar status since we may have hidden visual during drag
+		if self.spellGrabbed then
+			self.spellGrabbed = false;
+			self:UpdateActionBarStatus();
+		end
+	end
+end
+
+function SpellBookItemMixin:UpdateSpellData(forceUpdate)
+	if not self.elementData then
+		self:ClearSpellData();
+		return;
+	end
+
+	local spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(self.elementData.slotIndex, self.elementData.spellBank);
+	if not spellBookItemInfo then
+		self:ClearSpellData();
+		return;
+	end
+
+	-- Avoid updating all data and visuals if it's not necessary
+	if not forceUpdate and self.spellBookItemInfo and tCompare(spellBookItemInfo, self.spellBookItemInfo) then
+		-- Do still update dynamic states that aren't core spell book item data and don't have bespoke update events
+		if self.activeGlyphCast then
+			self:UpdateGlyphState();
+		end
+		return;
+	end
+
+	self:ClearSpellData();
+
+	self.spellBookItemInfo = spellBookItemInfo;
+	self.isOffSpec = self.elementData.spellGroup.isOffSpec;
+	self.slotIndex = self.elementData.slotIndex;
+	self.spellBank = self.elementData.spellBank;
+
+	self:UpdateVisuals();
+end
+
+function SpellBookItemMixin:ClearSpellData()
+	if self.cancelSpellLoadCallback then
+		self.cancelSpellLoadCallback();
+	end
+
+	self.spellBookItemInfo = nil;
+	self.isOffSpec = nil;
+	self.slotIndex = nil;
+	self.spellBank = nil;
+	self.isUnlearned = nil;
+	self.spellGrabbed = nil;
+	self.activeGlyphCast = nil;
+	self.inClickBindMode = nil;
+	self.canClickBind = nil;
+end
+
+function SpellBookItemMixin:HasValidData()
+	return self.elementData and self.spellBookItemInfo;
+end
+
+function SpellBookItemMixin:GetName()
+	return self:HasValidData() and self.spellBookItemInfo.name;
+end
+
+function SpellBookItemMixin:GetTexture()
+	return self:HasValidData() and self.Button.Icon:GetTexture();
+end
+
+function SpellBookItemMixin:IsFlyout()
+	return self:HasValidData() and self.spellBookItemInfo.itemType == Enum.SpellBookItemType.Flyout;
+end
+
+function SpellBookItemMixin:GetItemType()
+	return self:HasValidData() and self.spellBookItemInfo.itemType;
+end
+
+function SpellBookItemMixin:GetDragTarget()
+	return self.Button;
+end
+
+function SpellBookItemMixin:ToggleFlyout(reason)
+	if not self:IsFlyout() then
+		return;
+	end
+
+	local offSpecID = self.isOffSpec and self.elementData.spellGroup.specID or nil;
+	local distance, isActionBar, showFullTooltip = 1, false, true;
+	SpellFlyout:Toggle(self.spellBookItemInfo.actionID, self.Button, "RIGHT", distance, isActionBar, offSpecID, showFullTooltip, reason);
+	SpellFlyout:SetBorderSize(42);
+end
+
+function SpellBookItemMixin:UpdateVisuals()
+	self.Name:SetText(self.spellBookItemInfo.name);
+	self.Button.Icon:SetTexture(self.spellBookItemInfo.iconID);
+
+	if self.spellBookItemInfo.subName then
+		self:UpdateSubName(self.spellBookItemInfo.subName);
+	else
+		self.SubName:SetText("");
+		if self.spellBookItemInfo.spellID then
+			local spell = Spell:CreateFromSpellID(spellID);
+			self.cancelSpellLoadCallback = spell:ContinueWithCancelOnSpellLoad(function()
+				local spellSubName = spell:GetSpellSubtext();
+				self:UpdateSubName(spellSubName);
+				self.cancelSpellLoadCallback = nil;
+			end);
+		end
+	end
+
+	if (self.spellBookItemInfo.itemType == Enum.SpellBookItemType.Flyout) then
+		self.Button.FlyoutArrow:Show();
+	else
+		self.Button.FlyoutArrow:Hide();
+	end
+
+	self:UpdateArtSet();
+	if self.artSet.iconMask then
+		self.Button.IconMask:SetAtlas(self.artSet.iconMask, TextureKitConstants.IgnoreAtlasSize);
+		self.Button.IconMask:Show();
+	else
+		self.Button.IconMask:Hide();
+	end
+
+	self.Button.Border:SetAtlas(self.artSet.border, TextureKitConstants.IgnoreAtlasSize);
+
+	self.isUnlearned = self.isOffSpec or self.spellBookItemInfo.itemType == Enum.SpellBookItemType.FutureSpell;
+
+	self.Button.Icon:SetDesaturated(self.isUnlearned);
+	self.Button.FlyoutArrow:SetDesaturated(self.isUnlearned);
+
+	self.Button.TrainableBorder:Hide();
+
+	if self.isUnlearned then
+		self.Name:SetAlpha(self.unlearnedTextAlpha);
+		self.SubName:SetAlpha(self.unlearnedTextAlpha);
+		self.RequiredLevel:SetAlpha(self.unlearnedTextAlpha);
+
+		local levelLearned = C_SpellBook.GetSpellBookItemLevelLearned(self.slotIndex, self.spellBank);
+
+		local subtext = "";
+
+		-- Spell is locked due to a character boost temporarily limiting spells
+		if not self.isOffSpec and IsCharacterNewlyBoosted() then
+			subtext = BOOSTED_CHAR_SPELL_TEMPLOCK;
+		-- Spell level is too high
+		elseif levelLearned and levelLearned > UnitLevel("player") then
+			subtext = string.format(SPELLBOOK_AVAILABLE_AT, levelLearned)
+		-- Spell available but needs to be learned at a trainer
+		elseif not self.isOffSpec then
+			subtext = SPELLBOOK_TRAINABLE;
+			self.Button.TrainableBorder:Show();
+		end
+
+		self.RequiredLevel:SetShown(subtext ~= "");
+		self.RequiredLevel:SetText(subtext);
+	else
+		self.Name:SetAlpha(1);
+		self.SubName:SetAlpha(1);
+		self.RequiredLevel:SetAlpha(1);
+
+		self.RequiredLevel:Hide();
+		self.RequiredLevel:SetText("");
+	end
+
+	local isLevelLinkLocked = self.spellBookItemInfo.spellID and C_LevelLink.IsSpellLocked(self.spellBookItemInfo.spellID) or false;
+	self.Button.LevelLinkLock:SetShown(isLevelLinkLocked);
+	self.Button.LevelLinkIconCover:SetShown(isLevelLinkLocked);
+
+	self:UpdateActionBarStatus();
+	self:UpdateCooldown();
+	self:UpdateAutoCast();
+	self:UpdateGlyphState();
+	self:UpdateClickBindState();
+end
+
+function SpellBookItemMixin:UpdateSubName(subNameText)
+	if subNameText == "" and self.spellBookItemInfo.isPassive then
+		subNameText = SPELL_PASSIVE;
+	end
+	self.spellBookItemInfo.subName = subNameText;
+	self.SubName:SetText(subNameText);
+end
+
+function SpellBookItemMixin:UpdateIcon()
+	if not self:HasValidData() then
+		return;
+	end
+
+	-- Icons may dynamically change (ex: on shapeshifting) so update to correct texture
+	self.Button.Icon:SetTexture(C_SpellBook.GetSpellBookItemTexture(self.slotIndex, self.spellBank));
+end
+
+function SpellBookItemMixin:UpdateActionBarStatus()
+	if not self:HasValidData() then
+		return;
+	end
+
+	-- Avoid showing "missing from bar" visuals while in click bind mode, or spell is being dragged out of spellbook
+	if not self.spellGrabbed and not self.inClickBindMode and self.elementData.spellGroup.showActionBarstatuses then
+		self.actionBarStatus = SpellBookUtil.GetActionBarStatusForSpellBookItem(self.spellBookItemInfo);
+	else
+		self.actionBarStatus = ActionButtonUtil.ActionBarActionStatus.NotMissing;
+	end
+
+	self.Button.ActionBarHighlight:SetShown(self.actionBarStatus == ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars);
+end
+
+function SpellBookItemMixin:UpdateCooldown()
+	if not self:HasValidData() then
+		return;
+	end
+
+	local cooldownInfo = C_SpellBook.GetSpellBookItemCooldown(self.slotIndex, self.spellBank);
+	if cooldownInfo and cooldownInfo.isEnabled then
+		self.Button.Cooldown:SetCooldown(cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.modRate);
+	else
+		self.Button.Cooldown:Clear();
+	end
+end
+
+function SpellBookItemMixin:UpdateAutoCast()
+	if not self:HasValidData() then
+		return;
+	end
+
+	local autoCastAllowed, autoCastEnabled = false, false;
+
+	if not self.isOffSpec then
+		autoCastAllowed, autoCastEnabled = C_SpellBook.GetSpellBookItemAutoCast(self.slotIndex, self.spellBank);
+	end
+
+	self.Button.AutoCastOverlay:SetShown(autoCastAllowed);
+
+	if autoCastEnabled then
+		self.AutoCastAnim:Restart();
+	else
+		self.AutoCastAnim:Stop();
+	end
+end
+
+function SpellBookItemMixin:ShowGlyphActivation()
+	if not self:HasValidData() then
+		return;
+	end
+
+	-- Cache that a glyph is being applied/removed on this item
+	-- So that we can show the right glyph state while the cast is still ongoing
+	self.activeGlyphCast = { isRemoval = IsPendingGlyphRemoval() };
+
+	local isActivationStart = true;
+	self:UpdateGlyphState(isActivationStart);
+end
+
+function SpellBookItemMixin:UpdateGlyphState(isActivationStart)
+	if not self:HasValidData() then
+		return;
+	end
+
+	local hasGlyph = false;
+	local isValidForPendingGlyph = false;
+
+	-- On the frame that activeGlyphCast is set, IsCastingGlyph is not yet true,
+	-- so important to also check if we only just now set activeGlyphCast before clearing it out as stale
+	if self.activeGlyphCast and not (isActivationStart or IsCastingGlyph()) then
+		self.activeGlyphCast = nil;
+	end
+
+	-- Glyph application/removal is actively being cast on this item, so predict glyph state based on cached info
+	if self.activeGlyphCast then
+		hasGlyph = not self.activeGlyphCast.isRemoval;
+	-- Otherwise get current glyph state normally
+	elseif self.spellBookItemInfo.itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec then
+		hasGlyph = HasAttachedGlyph(self.spellBookItemInfo.spellID);
+		isValidForPendingGlyph = IsSpellValidForPendingGlyph(self.spellBookItemInfo.spellID);
+	end
+
+	self.Button.GlyphIcon:SetShown(hasGlyph);
+
+	if isValidForPendingGlyph and not self.GlyphHighlightAnim:IsPlaying() then
+		self.GlyphHighlightAnim:Restart();
+	elseif not isValidForPendingGlyph and self.GlyphHighlightAnim:IsPlaying() then
+		self.GlyphHighlightAnim:Stop();
+	end
+
+	if isActivationStart then
+		self.Button.GlyphActivateHighlight:Show();
+		self.Button.GlyphActiveIcon:Show();
+		self.GlyphActivateAnim:Restart();
+	else
+		self.GlyphActivateAnim:Stop();
+		self.Button.GlyphActivateHighlight:Hide();
+		self.Button.GlyphActiveIcon:Hide();
+	end
+end
+
+function SpellBookItemMixin:UpdateClickBindState()
+	if not self:HasValidData() then
+		return;
+	end
+
+	local wasInClickBindMode = self.inClickBindMode;
+	self.inClickBindMode = InClickBindingMode();
+	self.canClickBind = false;
+
+	if self.inClickBindMode and self.spellBookItemInfo.spellID and not self.isUnlearned then
+		self.canClickBind = C_ClickBindings.CanSpellBeClickBound(self.spellBookItemInfo.spellID);
+	end
+
+	self.Button.ClickBindingHighlight:SetShown(self.canClickBind and ClickBindingFrame:HasEmptySlot());
+	self.Button.ClickBindingIconCover:SetShown(self.inClickBindMode and not self.canClickBind);
+
+	-- Update saturation, except on unlearned items as they already have their own desaturated state
+	if not self.isUnlearned then
+		-- Desaturate if binding active and can't click bind, otherwise restore saturation
+		local saturation = (self.inClickBindMode and not self.canClickBind) and 0.75 or 0;
+		self.Button.Icon:SetDesaturation(saturation);
+	end
+
+	if self.inClickBindMode ~= wasInClickBindMode then
+		-- Update action bar status as its highlight is disabled while in clickbind mode
+		self:UpdateActionBarStatus();
+	end
+end
+
+function SpellBookItemMixin:OnIconEnter()
+	if not self:HasValidData() then
+		return;
+	end
+
+	local tooltip = GameTooltip;
+	tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
+	
+	if self.inClickBindMode and not self.canClickBind then
+		GameTooltip_AddErrorLine(tooltip, CLICK_BINDING_NOT_AVAILABLE);
+		tooltip:Show();
+		return;
+	end
+
+	tooltip:SetSpellBookItem(self.slotIndex, self.spellBank)
+
+	local actionBarStatusToolTip = self.actionBarStatus and SpellBookUtil.GetTooltipForActionBarStatus(self.actionBarStatus);
+	if actionBarStatusToolTip then
+		GameTooltip_AddColoredLine(tooltip, actionBarStatusToolTip, LIGHTBLUE_FONT_COLOR);
+	end
+
+	tooltip:Show();
+
+	ClearOnBarHighlightMarks();
+
+	local itemType = self.spellBookItemInfo.itemType;
+	local actionID = self.spellBookItemInfo.actionID;
+
+	if itemType == Enum.SpellBookItemType.Spell then
+		UpdateOnBarHighlightMarksBySpell(actionID);
+	elseif itemType == Enum.SpellBookItemType.Flyout then
+		UpdateOnBarHighlightMarksByFlyout(actionID);
+	elseif itemType == Enum.SpellBookItemType.PetAction then
+		UpdateOnBarHighlightMarksByPetAction(actionID);
+		PetActionBar:UpdatePetActionHighlightMarks(actionID);
+		PetActionBar:Update();
+	end
+
+	ActionBarController_UpdateAllSpellHighlights();
+end
+
+function SpellBookItemMixin:OnIconLeave()
+	if not self:HasValidData() then
+		return;
+	end
+
+	ClearOnBarHighlightMarks();
+	PetActionBar:ClearPetActionHighlightMarks();
+
+	-- Update action bar highlights
+	ActionBarController_UpdateAllSpellHighlights();
+	PetActionBar:Update();
+	GameTooltip:Hide();
+end
+
+function SpellBookItemMixin:OnIconClick(button)
+	if not self:HasValidData() then
+		return;
+	end
+
+	local itemType = self.spellBookItemInfo.itemType;
+	local spellID = self.spellBookItemInfo.spellID;
+
+	-- If in click bind mode, handle trying to set bind slot
+	if self.inClickBindMode then
+		if self.canClickBind and spellID and ClickBindingFrame:HasNewSlot() then
+			if self.spellBank == Enum.SpellBookSpellBank.Player then
+				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Spell, spellID);
+			elseif self.spellBank == Enum.SpellBookSpellBank.Pet then
+				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.PetAction, spellID);
+			end
+		end
+	-- If using a glyph or vanishing powder, handle trying to apply glyph
+	elseif HasPendingGlyphCast() and self.spellBank == Enum.SpellBookSpellBank.Player then
+		if itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec then
+			if HasAttachedGlyph(spellID) then
+				if IsPendingGlyphRemoval() then
+					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+				else
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+				end
+			else
+				AttachGlyphToSpell(spellID);
+			end
+		elseif itemType == Enum.SpellBookItemType.Flyout then
+			self:ToggleFlyout(nil);
+		end
+	-- If pet spell, toggle spell autocast
+	elseif button ~= "LeftButton" and self.spellBank == Enum.SpellBookSpellBank.Pet then
+		C_SpellBook.ToggleSpellBookItemAutoCast(self.slotIndex, self.spellBank);
+	-- If flyout, toggle flyout
+	elseif itemType == Enum.SpellBookItemType.Flyout then
+		self:ToggleFlyout(nil);
+	-- If castable, cast spell
+	elseif (itemType == Enum.SpellBookItemType.Spell and not self.isOffSpec) or
+			itemType == Enum.SpellBookItemType.PetAction then
+		C_SpellBook.CastSpellBookItem(self.slotIndex, self.spellBank);
+	end
+end
+
+function SpellBookItemMixin:OnModifiedIconClick(button)
+	if not self:HasValidData() then
+		return;
+	end
+
+	EventRegistry:TriggerEvent("SpellBookItemMixin.OnModifiedClick", self, button);
+
+	if IsModifiedClick("CHATLINK") then
+		if MacroFrameText and MacroFrameText:HasFocus() then
+			-- Macro frame is open, so chat link inserts spell name into macro text
+			if not self.spellBookItemInfo.isPassive then
+				local spellName = self.spellBookItemInfo.name;
+				local subName = self.spellBookItemInfo.subName
+				if subName and strlen(subName) > 0 then
+					ChatEdit_InsertLink(spellName.."("..subName..")");
+				else
+					ChatEdit_InsertLink(spellName);
+				end
+			end
+		else
+			-- First try to get spell as a trade skill link
+			local chatLink = C_SpellBook.GetSpellBookItemTradeSkillLink(self.slotIndex, self.spellBank);
+			if not chatLink then
+				-- If spell is not a trade skill, use regular spell link
+				chatLink = C_SpellBook.GetSpellBookItemLink(self.slotIndex, self.spellBank);
+			end
+			ChatEdit_InsertLink(chatLink);
+		end
+	elseif IsModifiedClick("PICKUPACTION") then
+		C_SpellBook.PickupSpellBookItem(self.slotIndex, self.spellBank);
+	elseif IsModifiedClick("SELFCAST") then
+		C_SpellBook.CastSpellBookItem(self.slotIndex, self.spellBank, true);
+	end
+end
+
+function SpellBookItemMixin:OnIconDragStart()
+	if not self:HasValidData() then
+		return;
+	end
+
+	C_SpellBook.PickupSpellBookItem(self.slotIndex, self.spellBank);
+	self.spellGrabbed = true;
+	self:UpdateActionBarStatus();
+end
+
+function SpellBookItemMixin:OnGlyphActivateAnimFinished()
+	self:UpdateGlyphState();
+end
+
+SpellBookItemMixin.ArtSet = {
+	Square = {
+		iconMask = nil,
+		border = "talents-node-square-gray",
+	},
+	Circle = {
+		iconMask = "talents-node-circle-mask",
+		border = "talents-node-circle-gray",
+	},
+}
+
+function SpellBookItemMixin:UpdateArtSet()
+	if not self:HasValidData() then
+		self.artSet = nil;
+	elseif self.spellBookItemInfo.isPassive then
+		self.artSet = SpellBookItemMixin.ArtSet.Circle;
+	else
+		self.artSet = SpellBookItemMixin.ArtSet.Square;
+	end
+end
+
+
+SpellBookItemButtonMixin = {};
+
+function SpellBookItemButtonMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
+function SpellBookItemButtonMixin:OnClick(button)
+	if IsModifiedClick() then
+		self:GetParent():OnModifiedIconClick(button);
+	else
+		self:GetParent():OnIconClick(button);
+	end
+end
+
+function SpellBookItemButtonMixin:OnEnter()
+	self:GetParent():OnIconEnter();
+end
+
+function SpellBookItemButtonMixin:OnLeave()
+	self:GetParent():OnIconLeave();
+end
+
+function SpellBookItemButtonMixin:OnDragStart()
+	self:GetParent():OnIconDragStart();
+end

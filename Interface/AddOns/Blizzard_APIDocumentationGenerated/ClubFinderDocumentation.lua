@@ -12,7 +12,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -21,7 +21,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -30,7 +30,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -55,7 +55,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -87,7 +87,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -133,7 +133,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -156,7 +156,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -170,7 +170,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -184,7 +184,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -198,7 +198,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "postingID", Type = "string", Nilable = false },
+				{ Name = "postingID", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -230,7 +230,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -244,12 +244,21 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "postingID", Type = "string", Nilable = false },
+				{ Name = "postingID", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "postingDelisted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCommunityFinderEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -281,7 +290,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "postingID", Type = "string", Nilable = false },
+				{ Name = "postingID", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -295,7 +304,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "isLinkedPosting", Type = "bool", Nilable = false },
 			},
 		},
@@ -341,7 +350,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 				{ Name = "itemLevelRequirement", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = false },
@@ -382,7 +391,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "comment", Type = "string", Nilable = false },
 				{ Name = "specIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
@@ -413,7 +422,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -435,8 +444,8 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
-				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "shouldAccept", Type = "bool", Nilable = false },
 				{ Name = "requestType", Type = "ClubFinderRequestType", Nilable = false },
 				{ Name = "playerName", Type = "string", Nilable = false },
@@ -450,7 +459,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -482,7 +491,7 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 
 			Returns =
@@ -496,8 +505,8 @@ local ClubFinder =
 
 			Arguments =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
-				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "applicantType", Type = "ClubFinderRequestType", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 			},
@@ -568,7 +577,7 @@ local ClubFinder =
 			LiteralName = "CLUB_FINDER_APPLICANT_INVITE_RECIEVED",
 			Payload =
 			{
-				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -578,7 +587,7 @@ local ClubFinder =
 			Payload =
 			{
 				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
-				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -587,7 +596,7 @@ local ClubFinder =
 			LiteralName = "CLUB_FINDER_CAN_WHISPER_APPLICANT",
 			Payload =
 			{
-				{ Name = "applicant", Type = "string", Nilable = false },
+				{ Name = "applicant", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -608,7 +617,7 @@ local ClubFinder =
 			Payload =
 			{
 				{ Name = "type", Type = "ClubFinderRequestType", Nilable = false },
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -618,7 +627,7 @@ local ClubFinder =
 			Documentation = { "Signals to the UI that you (the player) have joined a community offline." },
 			Payload =
 			{
-				{ Name = "clubId", Type = "string", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
 			},
 		},
 		{
@@ -657,7 +666,7 @@ local ClubFinder =
 			LiteralName = "CLUB_FINDER_POST_UPDATED",
 			Payload =
 			{
-				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "clubFinderGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -823,8 +832,8 @@ local ClubFinder =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
-				{ Name = "playerGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "closed", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "message", Type = "string", Nilable = false },
@@ -834,7 +843,7 @@ local ClubFinder =
 				{ Name = "specIds", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "requestStatus", Type = "PlayerClubRequestStatus", Nilable = false },
 				{ Name = "lookupSuccess", Type = "bool", Nilable = false },
-				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
+				{ Name = "lastUpdatedTime", Type = "BigInteger", Nilable = false },
 				{ Name = "faction", Type = "number", Nilable = false },
 			},
 		},
@@ -868,7 +877,7 @@ local ClubFinder =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "clubFinderGUID", Type = "string", Nilable = false },
+				{ Name = "clubFinderGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "numActiveMembers", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "comment", Type = "string", Nilable = false },
@@ -883,9 +892,9 @@ local ClubFinder =
 				{ Name = "minILvl", Type = "number", Nilable = false },
 				{ Name = "cached", Type = "number", Nilable = false },
 				{ Name = "cacheRequested", Type = "number", Nilable = false },
-				{ Name = "lastPosterGUID", Type = "string", Nilable = false },
-				{ Name = "clubId", Type = "string", Nilable = false },
-				{ Name = "lastUpdatedTime", Type = "number", Nilable = false },
+				{ Name = "lastPosterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "lastUpdatedTime", Type = "BigInteger", Nilable = false },
 				{ Name = "isCrossFaction", Type = "bool", Nilable = false },
 			},
 		},

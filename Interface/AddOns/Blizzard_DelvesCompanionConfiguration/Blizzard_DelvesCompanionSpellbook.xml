@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+    <!-- Ability Template -->
+    <Frame name="DelvesCompanionSpellbookAbilityTemplate" mixin="DelvesCompanionSpellbookAbilityTemplateMixin" virtual="true">
+        <Size x="165" y="55"/>
+        <KeyValues>
+			<KeyValue key="cellSize" value="1" type="number"/>
+		</KeyValues>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Texture">
+                    <Size x="40" y="40"/>
+                    <Anchors>
+                        <Anchor point="LEFT"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="Name" inherits="GameFontNormalMed1" wordwrap="true" justifyH="LEFT">
+                    <Size x="125" y="30"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.Texture" relativePoint="TOPRIGHT" x="5"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="UnlockCondition" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size x="125" y="10"/>
+                    <Color color="GRAY_FONT_COLOR"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+        </Scripts>
+    </Frame>
+
+    <!-- Spellbook Frame -->
+    <Frame name="DelvesCompanionSpellbookFrame" inherits="PortraitFrameTemplate" mixin="DelvesCompanionSpellbookFrameMixin" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+        <Size x="430" y="520"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="PLACEHOLDER-TEXT" justifyH="CENTER" inherits="GameFontHighlight" text="UI: Work in Progress"> <!-- TODO remove me, eventually -->
+                    <Size x="200" y="0"/>
+                    <Anchors>
+                        <Anchor point="TOP" y="15"/>
+                    </Anchors>
+                    <Color r="1"/> 
+                </FontString>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="CompanionSpellbookBackground" alpha="0.7">
+                    <Size x="420" y="457"/>
+                    <Color color="BLACK"/>
+                    <Anchors>
+                        <Anchor point="BOTTOM" y="7"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+
+            <!-- Role Dropdown -->
+            <Frame parentKey="DelvesCompanionSpellbookRoleDropdown" mixin="DelvesCompanionSpellbookRoleDropdownMixin" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CompanionSpellbookBackground" relativePoint="TOPRIGHT" y="-2"/>
+				</Anchors>
+                <Scripts>
+                    <OnShow method="OnShow"/>
+                </Scripts>
+			</Frame>
+
+            <!-- Paged Abilitiy List -->
+            <Frame parentKey="DelvesCompanionSpellbookPagedCellSizeGrid" inherits="PagedCellSizeGridContentFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.CompanionSpellbookBackground" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.CompanionSpellbookBackground" relativePoint="BOTTOMRIGHT"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="viewsPerPage" value="1" type="number"/>
+                    <KeyValue key="cellsPerRow" value="2" type="number"/>
+                    <KeyValue key="xPadding" value="10" type="number"/>
+                    <KeyValue key="yPadding" value="20" type="number"/>
+                    <KeyValue key="autoExpandElements" value="true" type="boolean"/>
+                </KeyValues>
+                <Frames>
+                    <Frame parentKey="SpellView" parentArray="ViewFrames">
+                        <Size x="400" y="398"/>
+                        <Anchors>
+                            <Anchor point="CENTER" x="10" y="15"/>
+                        </Anchors>
+                    </Frame>
+                    <Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
+                        <Anchors>
+                            <Anchor point="BOTTOM" y="15"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+            <OnEvent method="OnEvent"/>
+        </Scripts>
+    </Frame>
+</Ui>

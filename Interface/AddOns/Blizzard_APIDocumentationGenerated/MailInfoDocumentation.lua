@@ -22,7 +22,7 @@ local MailInfo =
 
 			Arguments =
 			{
-				{ Name = "inboxIndex", Type = "number", Nilable = false },
+				{ Name = "inboxIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -36,7 +36,7 @@ local MailInfo =
 
 			Arguments =
 			{
-				{ Name = "inboxIndex", Type = "number", Nilable = false },
+				{ Name = "inboxIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -53,6 +53,15 @@ local MailInfo =
 				{ Name = "isCommandPending", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetOpeningAll",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "openingAll", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -63,7 +72,7 @@ local MailInfo =
 			LiteralName = "CLOSE_INBOX_ITEM",
 			Payload =
 			{
-				{ Name = "mailIndex", Type = "number", Nilable = false },
+				{ Name = "mailIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -91,8 +100,8 @@ local MailInfo =
 			LiteralName = "MAIL_LOCK_SEND_ITEMS",
 			Payload =
 			{
-				{ Name = "attachSlot", Type = "number", Nilable = false },
-				{ Name = "itemLink", Type = "string", Nilable = false },
+				{ Name = "attachSlot", Type = "luaIndex", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
 			},
 		},
 		{

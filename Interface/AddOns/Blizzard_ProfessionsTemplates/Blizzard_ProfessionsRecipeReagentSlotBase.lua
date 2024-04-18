@@ -25,6 +25,12 @@ function ProfessionsReagentSlotButtonMixin:Reset()
 	ItemButtonMixin.Reset(self);
 	self.locked = nil;
 	self.currencyID = nil;
+	self.isModifyingRequired = false;
+	self.CropFrame:Hide();
+	self:Update();
+end
+
+function ProfessionsReagentSlotButtonMixin:Update()
 	self:UpdateOverlay();
 	self:UpdateCursor();
 end
@@ -34,18 +40,30 @@ function ProfessionsReagentSlotButtonMixin:SetLocked(locked)
 	self:UpdateOverlay();
 end
 
+function ProfessionsReagentSlotButtonMixin:SetCropOverlayShown(shown)
+	self.CropFrame:SetShown(shown);
+end
+
+function ProfessionsReagentSlotButtonMixin:SetModifyingRequired(isModifyingRequired)
+	self.isModifyingRequired = isModifyingRequired;
+end
+
+function ProfessionsReagentSlotButtonMixin:IsModifyingRequired()
+	return self.isModifyingRequired;
+end
+
 function ProfessionsReagentSlotButtonMixin:UpdateOverlay()
 	if self.locked then
 		self.InputOverlay.LockedIcon:Show();
 		self.InputOverlay.AddIcon:Hide();
 	else
 		self.InputOverlay.LockedIcon:Hide();
-		self.InputOverlay.AddIcon:SetShown(self:GetItem() == nil and not self.currencyID);
+		self.InputOverlay.AddIcon:SetShown((self:GetItem() == nil) and not (self.currencyID or self.isModifyingRequired));
 	end
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateCursor()
-	if GetMouseFocus() == self then
+	if self:IsMouseMotionFocus() then
 		local onEnterScript = self:GetScript("OnEnter");
 		if onEnterScript ~= nil then
 			onEnterScript(self);

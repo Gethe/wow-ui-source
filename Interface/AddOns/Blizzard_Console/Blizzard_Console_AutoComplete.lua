@@ -248,7 +248,7 @@ function DeveloperConsoleAutoCompleteMixin:DisplayResults()
 		entry.Help:SetText(commandInfo.help or "");
 
 		if commandInfo.commandType == Enum.ConsoleCommandType.Cvar then
-			local value, defaultValue, server, character = GetCVarInfo(commandInfo.command);
+			local value, defaultValue, server, character = C_CVar.GetCVarInfo(commandInfo.command);
 
 			entry.Value:SetText(value);
 			local color = value == defaultValue and GREEN_FONT_COLOR or RED_FONT_COLOR;
@@ -305,7 +305,7 @@ function DeveloperConsoleAutoCompleteMixin:OnEntryEnter(entry)
 	table.insert(textTable, '');
 
 	if entry.commandInfo.commandType == Enum.ConsoleCommandType.Cvar then
-		local value, defaultValue, server, character = GetCVarInfo(entry.commandInfo.command);
+		local value, defaultValue, server, character = C_CVar.GetCVarInfo(entry.commandInfo.command);
 
 		table.insert(textTable, ("Current: %q"):format(value or ""));
 		table.insert(textTable, ("Default: %q"):format(defaultValue or ""));
@@ -404,7 +404,7 @@ local function BinaryInsert(t, value)
 end
 
 function DeveloperConsoleAutoCompleteMixin:StepAutoCompleteSearchCoroutine(searchText)
-	local consoleCommands = C_Console.GetAllCommands();
+	local consoleCommands = ConsoleGetAllCommands();
 
 	local lowerSearchText = searchText:lower();
 	for i, commandInfo in ipairs(consoleCommands) do

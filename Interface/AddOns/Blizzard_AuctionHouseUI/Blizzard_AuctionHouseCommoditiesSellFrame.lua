@@ -165,6 +165,7 @@ function AuctionHouseCommoditiesSellFrameMixin:SetItem(itemLocation, fromItemDis
 
 	if itemLocation then
 		self.QuantityInput:SetQuantity(C_Item.GetStackCount(itemLocation));
+		self:UpdateTotalPrice();
 
 		-- Hack fix for a spacing problem: Without this line, the edit box would be scrolled to
 		-- the left and the text would not be visible. This seems to be a problem with setting

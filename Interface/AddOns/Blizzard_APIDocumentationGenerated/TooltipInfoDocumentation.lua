@@ -26,7 +26,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -95,7 +95,7 @@ local TooltipInfo =
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "itemLevel", Type = "number", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = false },
-				{ Name = "owningItemLink", Type = "string", Nilable = true },
+				{ Name = "owningItemLink", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -109,7 +109,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -123,8 +123,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "bagIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -138,9 +138,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "bagIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "equipSlotIndex", Type = "number", Nilable = false },
+				{ Name = "bagIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "equipSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -154,7 +154,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -168,7 +168,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "petGUID", Type = "string", Nilable = false },
+				{ Name = "petGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -212,7 +212,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "tokenIndex", Type = "number", Nilable = false },
+				{ Name = "tokenIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -255,7 +255,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "toDestroy", Type = "bool", Nilable = true },
 			},
 
@@ -270,8 +270,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "tab", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "tab", Type = "luaIndex", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -299,7 +299,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "hyperlink", Type = "string", Nilable = false },
+				{ Name = "hyperlink", Type = "cstring", Nilable = false },
 				{ Name = "optionalArg1", Type = "number", Nilable = true },
 				{ Name = "optionalArg2", Type = "number", Nilable = true },
 				{ Name = "hideVendorPrice", Type = "bool", Nilable = true },
@@ -316,8 +316,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "messageIndex", Type = "number", Nilable = false },
-				{ Name = "attachmentIndex", Type = "number", Nilable = true },
+				{ Name = "messageIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "attachmentIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
@@ -331,7 +331,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -345,8 +345,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 				{ Name = "hideUselessStats", Type = "bool", Nilable = true },
 			},
 
@@ -375,7 +375,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -431,7 +431,7 @@ local TooltipInfo =
 			Arguments =
 			{
 				{ Name = "dungeonID", Type = "number", Nilable = false },
-				{ Name = "lootIndex", Type = "number", Nilable = false },
+				{ Name = "lootIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -447,7 +447,7 @@ local TooltipInfo =
 			{
 				{ Name = "dungeonID", Type = "number", Nilable = false },
 				{ Name = "shortageSeverity", Type = "number", Nilable = false },
-				{ Name = "lootIndex", Type = "number", Nilable = false },
+				{ Name = "lootIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -461,7 +461,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -475,7 +475,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -503,8 +503,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "costIndex", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "costIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -518,7 +518,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -570,7 +570,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -584,7 +584,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -614,7 +614,7 @@ local TooltipInfo =
 			{
 				{ Name = "talentID", Type = "number", Nilable = false },
 				{ Name = "isInspect", Type = "bool", Nilable = true },
-				{ Name = "groupIndex", Type = "number", Nilable = true },
+				{ Name = "groupIndex", Type = "luaIndex", Nilable = true },
 				{ Name = "talentIndex", Type = "number", Nilable = true },
 			},
 
@@ -629,8 +629,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "currencyIndex", Type = "number", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "currencyIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -644,8 +644,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "itemIndex", Type = "number", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "itemIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "allowCollectionText", Type = "bool", Nilable = true },
 			},
 
@@ -660,8 +660,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "currencyIndex", Type = "number", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "currencyIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
 			},
 
@@ -676,25 +676,10 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "type", Type = "string", Nilable = false },
-				{ Name = "itemIndex", Type = "number", Nilable = false },
+				{ Name = "type", Type = "cstring", Nilable = false },
+				{ Name = "itemIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "allowCollectionText", Type = "bool", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
-			Name = "GetQuestLogRewardSpell",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellIndex", Type = "number", Nilable = false },
-				{ Name = "questID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -708,7 +693,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "questIndex", Type = "number", Nilable = false },
+				{ Name = "questIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -725,20 +710,6 @@ local TooltipInfo =
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "omitTitle", Type = "bool", Nilable = true },
 				{ Name = "ignoreActivePlayer", Type = "bool", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
-			Name = "GetQuestRewardSpell",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellIndex", Type = "number", Nilable = false },
 			},
 
 			Returns =
@@ -768,7 +739,7 @@ local TooltipInfo =
 			Arguments =
 			{
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
-				{ Name = "dataSlotIndex", Type = "number", Nilable = false },
+				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -784,8 +755,8 @@ local TooltipInfo =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
-				{ Name = "recraftItemGUID", Type = "string", Nilable = true },
-				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "recraftItemGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 				{ Name = "overrideQualityID", Type = "number", Nilable = true },
 			},
 
@@ -802,8 +773,8 @@ local TooltipInfo =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
-				{ Name = "orderID", Type = "number", Nilable = true },
-				{ Name = "recipeLevel", Type = "number", Nilable = true },
+				{ Name = "orderID", Type = "BigUInteger", Nilable = true },
+				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 				{ Name = "overrideQualityID", Type = "number", Nilable = true },
 			},
 
@@ -818,7 +789,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "itemGUID", Type = "string", Nilable = false },
+				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "itemLevel", Type = "number", Nilable = false },
 				{ Name = "powerID", Type = "number", Nilable = true },
 				{ Name = "modifiers", Type = "table", InnerType = "number", Nilable = true },
@@ -835,7 +806,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "attachmentIndex", Type = "number", Nilable = true },
+				{ Name = "attachmentIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
@@ -849,7 +820,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -872,7 +843,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -895,7 +866,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -909,8 +880,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
-				{ Name = "spellBookType", Type = "string", Nilable = false },
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 
 			Returns =
@@ -945,7 +916,7 @@ local TooltipInfo =
 			{
 				{ Name = "talentID", Type = "number", Nilable = false },
 				{ Name = "isInspect", Type = "bool", Nilable = true },
-				{ Name = "groupIndex", Type = "number", Nilable = true },
+				{ Name = "groupIndex", Type = "luaIndex", Nilable = true },
 			},
 
 			Returns =
@@ -959,7 +930,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -987,7 +958,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1001,7 +972,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1015,7 +986,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "serviceIndex", Type = "number", Nilable = false },
+				{ Name = "serviceIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1044,7 +1015,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "transmogLocation", Type = "table", Mixin = "TransmogLocationMixin", Nilable = false },
+				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -1058,7 +1029,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "hideStatus", Type = "bool", Nilable = true },
 			},
 
@@ -1073,9 +1044,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "string", Nilable = true },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -1089,9 +1060,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "string", Nilable = true },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -1105,9 +1076,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitTokenString", Type = "string", Nilable = false },
+				{ Name = "unitTokenString", Type = "cstring", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "string", Nilable = true },
+				{ Name = "filter", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -1121,9 +1092,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "string", Nilable = true },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "filter", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -1137,9 +1108,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitTokenString", Type = "string", Nilable = false },
+				{ Name = "unitTokenString", Type = "cstring", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "string", Nilable = true },
+				{ Name = "filter", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
@@ -1162,7 +1133,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1176,8 +1147,8 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "tab", Type = "number", Nilable = false },
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "tab", Type = "luaIndex", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1191,7 +1162,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -1205,7 +1176,7 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "itemDBID", Type = "string", Nilable = false },
+				{ Name = "itemDBID", Type = "WeeklyRewardItemDBID", Nilable = false },
 			},
 
 			Returns =
@@ -1216,6 +1187,20 @@ local TooltipInfo =
 		{
 			Name = "GetWorldCursor",
 			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
+			Name = "GetWorldLootObject",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitTokenString", Type = "cstring", Nilable = false },
+			},
 
 			Returns =
 			{
@@ -1245,6 +1230,10 @@ local TooltipInfo =
 			Type = "Event",
 			LiteralName = "TOOLTIP_DATA_UPDATE",
 			Documentation = { "Sends an update to the UI that a sparse or cache lookup has resolved" },
+			Payload =
+			{
+				{ Name = "dataInstanceID", Type = "number", Nilable = true },
+			},
 		},
 	},
 

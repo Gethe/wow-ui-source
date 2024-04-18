@@ -211,7 +211,7 @@ local SimpleModelAPI =
 
 			Returns =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 				{ Name = "sublayer", Type = "number", Nilable = false },
 			},
 		},
@@ -225,7 +225,7 @@ local SimpleModelAPI =
 
 			Returns =
 			{
-				{ Name = "modelFileID", Type = "number", Nilable = false },
+				{ Name = "modelFileID", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -318,10 +318,10 @@ local SimpleModelAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -334,8 +334,8 @@ local SimpleModelAPI =
 
 			Returns =
 			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -404,7 +404,7 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "FileAsset", Nilable = false },
 			},
 		},
 		{
@@ -501,7 +501,7 @@ local SimpleModelAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -547,7 +547,7 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "asset", Type = "string", Nilable = false },
+				{ Name = "asset", Type = "ModelAsset", Nilable = false },
 				{ Name = "noMip", Type = "bool", Nilable = false, Default = false },
 			},
 		},
@@ -566,7 +566,7 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "layer", Type = "string", Nilable = false },
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
 			},
 		},
 		{
@@ -659,8 +659,8 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "translation", Type = "table", Mixin = "Vector3DMixin", Nilable = true },
-				{ Name = "rotation", Type = "table", Mixin = "Vector3DMixin", Nilable = true },
+				{ Name = "translation", Type = "vector3", Mixin = "Vector3DMixin", Nilable = true },
+				{ Name = "rotation", Type = "vector3", Mixin = "Vector3DMixin", Nilable = true },
 				{ Name = "scale", Type = "number", Nilable = true },
 			},
 		},
@@ -670,10 +670,10 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "left", Type = "number", Nilable = false },
-				{ Name = "right", Type = "number", Nilable = false },
-				{ Name = "top", Type = "number", Nilable = false },
-				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -682,8 +682,8 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "x", Type = "number", Nilable = false },
-				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -692,12 +692,12 @@ local SimpleModelAPI =
 
 			Arguments =
 			{
-				{ Name = "cameraPosition", Type = "table", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "cameraPosition", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "modelPosition", Type = "table", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "modelPosition", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 		},
 		{

@@ -179,6 +179,10 @@ function AuctionHouseItemDisplayMixin:SetItemSource(itemKey, itemLocation)
 	self.itemLocation = itemLocation;
 end
 
+function AuctionHouseItemDisplayMixin:GetItemSource()
+	return self.itemKey, self.itemLocation;
+end
+
 function AuctionHouseItemDisplayMixin:SetItemKey(itemKey)
 	if itemKey == nil then
 		self:SetItemInternal(nil);
@@ -213,14 +217,27 @@ function AuctionHouseItemDisplayMixin:SetItemKey(itemKey)
 end
 
 function AuctionHouseItemDisplayMixin:SetItemLocation(itemLocation)
+	local originalItemKey, originalItemLocation = self:GetItemSource();
 	self:SetItemSource(nil, itemLocation);
 
 	if itemLocation == nil or not C_Item.DoesItemExist(itemLocation) then
 		self:SetItemInternal(nil);
-		return itemLocation == nil;
+
+		local successful = (itemLocation == nil);
+		if successful then
+			return true;
+		end
+
+		self:SetItemSource(originalItemKey, originalItemLocation);
+		return false;
 	end
 
-	return self:SetItemInternal(C_Item.GetItemLink(itemLocation));
+	if self:SetItemInternal(C_Item.GetItemLink(itemLocation)) then
+		return true;
+	end
+
+	self:SetItemSource(originalItemKey, originalItemLocation);
+	return false;
 end
 
 -- item must be an itemID, item link or an item name.
@@ -305,7 +322,7 @@ function AuctionHouseItemDisplayMixin:GetItemInfo()
 		local itemIcon = C_Item.GetItemIcon(itemLocation);
 		return itemName, itemLink, itemQuality, itemLevel, itemIcon;
 	else
-		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = GetItemInfo(self:GetItem());
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemIcon = C_Item.GetItemInfo(self:GetItem());
 		return itemName, itemLink, itemQuality, itemLevel, itemIcon;
 	end
 end
@@ -317,7 +334,7 @@ function AuctionHouseItemDisplayMixin:GetItemID()
 	end
 
 	-- Storing in a local for clarity, and to avoid additional returns.
-	local itemID = GetItemInfoInstant(itemLink);
+	local itemID = C_Item.GetItemInfoInstant(itemLink);
 	return itemID;
 end
 
@@ -493,6 +510,12 @@ end
 
 function AuctionHouseInteractableItemDisplayMixin:SetItemLocation(itemLocation, skipCallback)
 	local currentItemLocation = self:GetItemLocation();
+
+	local successful = AuctionHouseItemDisplayMixin.SetItemLocation(self, itemLocation);
+	if not successful then
+		return false;
+	end
+
 	if currentItemLocation and C_Item.DoesItemExist(currentItemLocation) then
 		C_Item.UnlockItem(currentItemLocation);
 	end
@@ -503,24 +526,20 @@ function AuctionHouseInteractableItemDisplayMixin:SetItemLocation(itemLocation, 
 		end
 	end
 
-	local successful = AuctionHouseItemDisplayMixin.SetItemLocation(self, itemLocation);
-
 	if not skipCallback and self.onItemChangedCallback then
 		self.onItemChangedCallback(itemLocation);
 	end
 
-	return successful;
+	return true;
 end
 
 function AuctionHouseInteractableItemDisplayMixin:SwitchItemWithCursor(skipCallback)
 	local cursorItem = C_Cursor.GetCursorItem();
 	local currentItemLocation = self:GetItemLocation();
-	if self:SetItemLocation(cursorItem, skipCallback) or cursorItem == nil then
+	if (cursorItem or currentItemLocation) and (self:SetItemLocation(cursorItem, skipCallback) or cursorItem == nil) then
 		ClearCursor();
 
-		if currentItemLocation ~= nil then
-			ItemUtil.PickupBagItem(currentItemLocation);
-		end
+		ItemUtil.PickupBagItem(currentItemLocation or cursorItem);
 	end
 end
 

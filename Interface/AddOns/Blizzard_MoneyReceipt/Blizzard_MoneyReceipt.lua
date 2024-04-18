@@ -3,6 +3,7 @@ local ReceiptMixin = {};
 function ReceiptMixin:OnLoad()
 	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW");
 	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE");
+	self:RegisterEvent("CRAFTINGORDERS_DISPLAY_CRAFTER_FULFILLED_MSG");
 	self:SetScript("OnEvent", self.OnEvent);
 end
 
@@ -31,6 +32,16 @@ do
 			self:BeginTracking();
 		elseif trackingType == "end" then
 			self:EndTracking();
+		elseif event == "CRAFTINGORDERS_DISPLAY_CRAFTER_FULFILLED_MSG" then
+			local orderTypeString, itemNameString, playerNameString, tipAmount, quantityCrafted = ...;
+			local moneyString = GetMoneyString(tipAmount, true);
+			local msg;
+			if quantityCrafted > 1 then
+				msg = CRAFTING_ORDERS_ORDER_FULFILLED_MULT_FMT:format(orderTypeString, itemNameString, quantityCrafted, playerNameString, moneyString);
+			else
+				msg = CRAFTING_ORDERS_ORDER_FULFILLED_SINGLE_FMT:format(orderTypeString, itemNameString, playerNameString, moneyString);
+			end
+			ChatFrame_DisplaySystemMessageInPrimary(msg);
 		end
 	end
 end

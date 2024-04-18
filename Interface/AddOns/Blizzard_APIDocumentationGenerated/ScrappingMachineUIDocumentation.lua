@@ -30,7 +30,7 @@ local ScrappingMachineUI =
 
 			Returns =
 			{
-				{ Name = "itemLoc", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 		},
 		{
@@ -90,9 +90,18 @@ local ScrappingMachineUI =
 	Events =
 	{
 		{
-			Name = "ScrappingMachineItemRemovedOrCancelled",
+			Name = "ScrappingMachineItemAdded",
 			Type = "Event",
-			LiteralName = "SCRAPPING_MACHINE_ITEM_REMOVED_OR_CANCELLED",
+			LiteralName = "SCRAPPING_MACHINE_ITEM_ADDED",
+			Payload =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ScrappingMachineItemRemoved",
+			Type = "Event",
+			LiteralName = "SCRAPPING_MACHINE_ITEM_REMOVED",
 			Payload =
 			{
 				{ Name = "index", Type = "number", Nilable = false },

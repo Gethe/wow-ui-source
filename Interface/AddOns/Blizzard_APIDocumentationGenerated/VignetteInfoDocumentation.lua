@@ -12,12 +12,12 @@ local VignetteInfo =
 
 			Arguments =
 			{
-				{ Name = "vignetteGUIDs", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "vignetteGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "bestUniqueVignetteIndex", Type = "number", Nilable = true },
+				{ Name = "bestUniqueVignetteIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -26,7 +26,7 @@ local VignetteInfo =
 
 			Arguments =
 			{
-				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -40,13 +40,14 @@ local VignetteInfo =
 
 			Arguments =
 			{
-				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "uiMapID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "vignettePosition", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "vignettePosition", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "vignetteFacing", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -55,7 +56,7 @@ local VignetteInfo =
 
 			Returns =
 			{
-				{ Name = "vignetteGUIDs", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "vignetteGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
 			},
 		},
 	},
@@ -68,7 +69,7 @@ local VignetteInfo =
 			LiteralName = "VIGNETTE_MINIMAP_UPDATED",
 			Payload =
 			{
-				{ Name = "vignetteGUID", Type = "string", Nilable = false },
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "onMinimap", Type = "bool", Nilable = false },
 			},
 		},
@@ -86,21 +87,23 @@ local VignetteInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "vignetteGUID", Type = "string", Nilable = false },
-				{ Name = "objectGUID", Type = "string", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "objectGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isDead", Type = "bool", Nilable = false },
 				{ Name = "onWorldMap", Type = "bool", Nilable = false },
 				{ Name = "zoneInfiniteAOI", Type = "bool", Nilable = false },
 				{ Name = "onMinimap", Type = "bool", Nilable = false },
 				{ Name = "isUnique", Type = "bool", Nilable = false },
 				{ Name = "inFogOfWar", Type = "bool", Nilable = false },
-				{ Name = "atlasName", Type = "string", Nilable = false },
+				{ Name = "atlasName", Type = "textureAtlas", Nilable = false },
 				{ Name = "hasTooltip", Type = "bool", Nilable = false },
 				{ Name = "vignetteID", Type = "number", Nilable = false },
 				{ Name = "type", Type = "VignetteType", Nilable = false },
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
-				{ Name = "widgetSetID", Type = "number", Nilable = true },
+				{ Name = "tooltipWidgetSet", Type = "number", Nilable = true },
+				{ Name = "iconWidgetSet", Type = "number", Nilable = true },
+				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
 			},
 		},
 	},

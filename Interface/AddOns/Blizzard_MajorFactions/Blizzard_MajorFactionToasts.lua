@@ -6,6 +6,8 @@ local majorFactionSwirlEffects =
 	Centaur = {152},
 	Tuskarr = {152},
 	Valdrakken = {152},
+	Niffen = {152},
+	Dream = {152},
 };
 
 local majorFactionColorFormat = "%s_MAJOR_FACTION_COLOR";
@@ -38,11 +40,15 @@ end
 
 function MajorFactionCelebrationBannerMixin:AddSwirlEffects(textureKit)
 	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByTextureKit(textureKit);
+	if not swirlEffects then
+		return;
+	end
+
 	for i, effect in ipairs(swirlEffects) do
 		self.IconSwirlModelScene:AddEffect(effect, self);
 	end
 end
 
 function MajorFactionCelebrationBannerMixin:GetFactionColorByTextureKit(textureKit)
-	return _G[majorFactionColorFormat:format(strupper(textureKit))];
+	return _G[majorFactionColorFormat:format(strupper(textureKit))] or HIGHLIGHT_FONT_COLOR;
 end

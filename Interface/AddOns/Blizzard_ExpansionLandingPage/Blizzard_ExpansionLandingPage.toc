@@ -1,7 +1,7 @@
 ## Title: Blizzard Expansion Landing Page
 ## Author: Blizzard Entertainment
 ## Version: 1.0
-## LoadOnDemand: 1
+## LoadOnDemand: 0
 
 Blizzard_DragonflightLandingPage.xml
 Blizzard_ExpansionLandingPage.xml

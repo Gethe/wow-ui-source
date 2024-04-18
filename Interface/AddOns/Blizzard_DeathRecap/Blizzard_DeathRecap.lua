@@ -198,7 +198,7 @@ function DeathRecapFrame_GetEventInfo(evtData)
 	end
 	
 	if ( spellId and not texture ) then
-		texture = select(3, GetSpellInfo(spellId));
+		texture = C_Spell.GetSpellTexture(spellId);
 	end
 	return spellId, spellString, texture;
 end

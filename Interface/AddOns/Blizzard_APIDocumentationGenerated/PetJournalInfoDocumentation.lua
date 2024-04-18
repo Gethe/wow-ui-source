@@ -7,13 +7,17 @@ local PetJournalInfo =
 	Functions =
 	{
 		{
+			Name = "ClearHoveredBattlePet",
+			Type = "Function",
+		},
+		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "speciesID", Type = "number", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -28,7 +32,7 @@ local PetJournalInfo =
 			Arguments =
 			{
 				{ Name = "speciesID", Type = "number", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -51,6 +55,21 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetNumPetsInJournal",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxAllowed", Type = "number", Nilable = false },
+				{ Name = "numPets", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetAbilityInfo",
 			Type = "Function",
 
@@ -62,7 +81,7 @@ local PetJournalInfo =
 			Returns =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "petType", Type = "number", Nilable = false },
 			},
 		},
@@ -86,7 +105,7 @@ local PetJournalInfo =
 
 			Arguments =
 			{
-				{ Name = "petID", Type = "string", Nilable = false },
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -100,12 +119,12 @@ local PetJournalInfo =
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "petID", Type = "string", Nilable = true },
+				{ Name = "petID", Type = "WOWGUID", Nilable = true },
 				{ Name = "ability1ID", Type = "number", Nilable = false },
 				{ Name = "ability2ID", Type = "number", Nilable = false },
 				{ Name = "ability3ID", Type = "number", Nilable = false },
@@ -118,14 +137,14 @@ local PetJournalInfo =
 
 			Arguments =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "isSummonable", Type = "bool", Nilable = false },
 				{ Name = "error", Type = "PetJournalError", Nilable = false },
-				{ Name = "errorText", Type = "string", Nilable = false },
+				{ Name = "errorText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -152,7 +171,7 @@ local PetJournalInfo =
 
 			Arguments =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -179,12 +198,21 @@ local PetJournalInfo =
 			Type = "Function",
 		},
 		{
+			Name = "SetHoveredBattlePet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellTargetBattlePet",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},
@@ -197,8 +225,8 @@ local PetJournalInfo =
 			LiteralName = "BATTLEPET_FORCE_NAME_DECLENSION",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -217,7 +245,7 @@ local PetJournalInfo =
 			LiteralName = "COMPANION_UPDATE",
 			Payload =
 			{
-				{ Name = "companionType", Type = "string", Nilable = true },
+				{ Name = "companionType", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -226,7 +254,7 @@ local PetJournalInfo =
 			LiteralName = "NEW_PET_ADDED",
 			Payload =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -236,7 +264,7 @@ local PetJournalInfo =
 			Payload =
 			{
 				{ Name = "slotIndex", Type = "number", Nilable = false },
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -260,7 +288,7 @@ local PetJournalInfo =
 			LiteralName = "PET_JOURNAL_PET_DELETED",
 			Payload =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -269,7 +297,7 @@ local PetJournalInfo =
 			LiteralName = "PET_JOURNAL_PET_RESTORED",
 			Payload =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -278,7 +306,7 @@ local PetJournalInfo =
 			LiteralName = "PET_JOURNAL_PET_REVOKED",
 			Payload =
 			{
-				{ Name = "battlePetGUID", Type = "string", Nilable = false },
+				{ Name = "battlePetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -342,7 +370,7 @@ local PetJournalInfo =
 				{ Name = "maxXP", Type = "number", Nilable = false },
 				{ Name = "displayID", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "petType", Type = "number", Nilable = false },
 				{ Name = "creatureID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = true },

@@ -182,12 +182,12 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 end
 
 function PVPUIFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST) and UnitLevel("player") >= 90 then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_LFG_LIST,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 		};
 		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
@@ -207,11 +207,26 @@ end
 
 function PVPUIFrame_UpdateRolesChangeable()
 	PVPUIFrame_UpdateAvailableRoles(HonorFrame.TankIcon, HonorFrame.HealerIcon, HonorFrame.DPSIcon);
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
+
 	PVPUIFrame_UpdateAvailableRoles(ConquestFrame.TankIcon, ConquestFrame.HealerIcon, ConquestFrame.DPSIcon);
+	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleIcons);
+
+	EventRegistry:TriggerEvent("PVPUI.AvailablePVPRolesUpdated");
 end
 
 function PVPUIFrame_UpdateAvailableRoles(tankButton, healButton, dpsButton)
 	return LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton);
+end
+
+function PVPUIFrame_UpdateRoleShortages(roleShortageBonus, roleButtons)
+	for index, roleButton in ipairs(roleButtons) do
+		local roleHasShortage = (roleShortageBonus ~= nil) and tContains(roleShortageBonus.validRoles, roleButton.role);
+		-- Always use the "rare" coin icon for PVP Call to Arms
+		local incentiveIndex = roleHasShortage and LFG_ROLE_SHORTAGE_RARE or nil;
+		LFG_SetRoleIconIncentive(roleButton, incentiveIndex);
+		roleButton:EnableRoleShortagePulseAnim(roleButton:IsEnabled() and roleHasShortage);
+	end
 end
 
 function PVPUIFrame_UpdateSelectedRoles()
@@ -224,7 +239,7 @@ function PVPUIFrame_UpdateSelectedRoles()
 	ConquestFrame.DPSIcon.checkButton:SetChecked(dps);
 end
 
-function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRewards, currencyRewards)
+function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRewards, currencyRewards, roleShortageBonus)
 	local itemID, currencyID;
 	local rewardTexture, rewardQuantity;
 	rewardFrame.conquestAmount = 0;
@@ -270,6 +285,9 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 			rewardTexture = "Interface\\Icons\\xp_icon"
 		end
 	end
+
+	rewardFrame.RoleShortageBonus:Init(roleShortageBonus);
+	rewardFrame:RefreshRoleShortageBonus();
 
 	if rewardTexture then
 		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
@@ -488,7 +506,7 @@ local function InitializeHonorXPBarDropDown(self, level)
 		else
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			SetWatchingHonorAsXP(true);
-			SetWatchedFactionIndex(0);
+			C_Reputation.SetWatchedFactionByIndex(0);
 		end
 
 		StatusTrackingBarManager:UpdateBarsShown();
@@ -616,6 +634,8 @@ function HonorFrame_SetType(value)
 		HonorFrame.SpecificScrollBar:Hide();
 		HonorFrame.BonusFrame:Show();
 	end
+
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
 end
 
 function HonorFrame_UpdateQueueButtons()
@@ -665,15 +685,41 @@ function HonorFrame_UpdateQueueButtons()
 		end
 	end
 
-	if isSpecialBrawl and canQueue then
+	if isBrawl or isSpecialBrawl and canQueue then
+		local brawlInfo = isSpecialBrawl and C_PvP.GetSpecialEventBrawlInfo() or C_PvP.GetAvailableBrawlInfo();
+		local brawlHasMinItemLevelRequirement = brawlInfo and brawlInfo.brawlType == Enum.BrawlType.SoloRbg;
 		if (IsInGroup(LE_PARTY_CATEGORY_HOME)) then
-			local brawlInfo = C_PvP.GetSpecialEventBrawlInfo();
 			if(brawlInfo and not brawlInfo.groupsAllowed) then
 				canQueue = false;
 				disabledReason = SOLO_BRAWL_CANT_QUEUE;
 			end
+			if (brawlHasMinItemLevelRequirement and brawlInfo.groupsAllowed) then
+				local brawlMinItemLevel = brawlInfo.minItemLevel;
+				local partyMinItemLevel, playerWithLowestItemLevel = C_PartyInfo.GetMinItemLevel(Enum.AvgItemLevelCategories.PvP);
+				if (UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) and partyMinItemLevel < brawlMinItemLevel) then
+					canQueue = false;
+					disabledReason = INSTANCE_UNAVAILABLE_OTHER_GEAR_TOO_LOW:format(playerWithLowestItemLevel, brawlMinItemLevel, partyMinItemLevel);
+				end
+			end
+		end 
+		local _, _, playerPvPItemLevel = GetAverageItemLevel();
+		if (brawlHasMinItemLevelRequirement and playerPvPItemLevel < brawlInfo.minItemLevel) then
+			canQueue = false;
+			disabledReason = INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW:format("", brawlInfo.minItemLevel, playerPvPItemLevel);
 		end
 	end
+
+	--Disable the button if the person is active in LFGList
+	if not disabledReason then
+		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+			disabledReason = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+			canQueue = false;
+		elseif ( C_LFGList.HasActiveEntryInfo() ) then
+			disabledReason = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+			canQueue = false;
+		end
+	end
+
 	local isInCrossFactionGroup = C_PartyInfo.IsCrossFactionParty();
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
@@ -683,8 +729,14 @@ function HonorFrame_UpdateQueueButtons()
 				HonorFrame.QueueButton:Disable();
                 disabledReason = ERR_NOT_LEADER; -- let this trump any other disabled reason
 			elseif(isInCrossFactionGroup) then
-				HonorFrame.QueueButton:Disable();
-				disabledReason = CROSS_FACTION_PVP_ERROR;
+				if isBrawl or isSpecialBrawl then 
+					local brawlInfo = isSpecialBrawl and C_PvP.GetSpecialEventBrawlInfo() or C_PvP.GetAvailableBrawlInfo();
+					local allowCrossFactionGroups = brawlInfo and brawlInfo.brawlType == Enum.BrawlType.SoloRbg;
+					if (not allowCrossFactionGroups) then
+						HonorFrame.QueueButton:Disable();
+						disabledReason = CROSS_FACTION_PVP_ERROR;
+					end
+				end
 			end
 		else
 			HonorFrame.QueueButton:SetText(BATTLEFIELD_JOIN);
@@ -698,16 +750,14 @@ function HonorFrame_UpdateQueueButtons()
 		end
 	end
 
-	--Disable the button if the person is active in LFGList
-	if not disabledReason then
-		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-			disabledReason = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-		elseif ( C_LFGList.HasActiveEntryInfo() ) then
-			disabledReason = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
-		end
-	end
-
 	HonorFrame.QueueButton.tooltip = disabledReason;
+end
+
+function HonorFrame_GetSelectedModeRoleShortageBonus()
+	local selectedButton = (HonorFrame.type == "bonus") and HonorFrame.BonusFrame.selectedButton;
+	if selectedButton then
+		return selectedButton.Reward.RoleShortageBonus.rewardInfo;
+	end
 end
 
 function HonorFrame_Queue()
@@ -1025,6 +1075,7 @@ function HonorFrameBonusFrame_SelectButton(button)
 	end
 	button.SelectedTexture:Show();
 	HonorFrame.BonusFrame.selectedButton = button;
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
 	HonorFrame_UpdateQueueButtons();
 end
 
@@ -1298,10 +1349,12 @@ function ConquestFrame_UpdateJoinButton()
 
 	--Disable the button if the person is active in LFGList
 	local lfgListDisabled;
-	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-	elseif ( C_LFGList.HasActiveEntryInfo() ) then
-		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	if ( not ConquestFrame.selectedButton ) or ( ConquestFrame.selectedButton.id ~= RATED_SOLO_SHUFFLE_BUTTON_ID ) then
+		if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+			lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+		elseif ( C_LFGList.HasActiveEntryInfo() ) then
+			lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+		end
 	end
 
 	if ( lfgListDisabled ) then
@@ -1312,20 +1365,18 @@ function ConquestFrame_UpdateJoinButton()
 
 	--Check whether they have a valid button selected
 	if ( ConquestFrame.selectedButton ) then
-		if ( groupSize == 0 ) then
-			if ( ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
-				local minItemLevel = C_PvP.GetRatedSoloShuffleMinItemLevel();
-				local _, _, playerPvPItemLevel = GetAverageItemLevel();
-				if (playerPvPItemLevel < minItemLevel) then
-					button.tooltip = format(_G["INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW"], "", minItemLevel, playerPvPItemLevel);
-				else
-					button.tooltip = nil;
-					button:Enable();
-					return;
-				end
+		if ( ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
+			local minItemLevel = C_PvP.GetRatedSoloShuffleMinItemLevel();
+			local _, _, playerPvPItemLevel = GetAverageItemLevel();
+			if (playerPvPItemLevel < minItemLevel) then
+				button.tooltip = format(_G["INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW"], "", minItemLevel, playerPvPItemLevel);
 			else
-				button.tooltip = PVP_NO_QUEUE_GROUP;
+				button.tooltip = nil;
+				button:Enable();
+				return;
 			end
+		elseif ( groupSize == 0 ) then
+			button.tooltip = PVP_NO_QUEUE_GROUP;
 		elseif ( not UnitIsGroupLeader("player") ) then
 			button.tooltip = PVP_NOT_LEADER;
 		else
@@ -1389,7 +1440,15 @@ function ConquestFrame_SelectButton(button)
 	end
 	button.SelectedTexture:Show();
 	ConquestFrame.selectedButton = button;
+	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleIcons);
 	ConquestFrame_UpdateJoinButton();
+end
+
+function ConquestFrame_GetSelectedModeRoleShortageBonus()
+	local selectedButton = ConquestFrame.selectedButton;
+	if selectedButton then
+		return selectedButton.Reward.RoleShortageBonus.rewardInfo;
+	end
 end
 
 function ConquestFrameButton_OnClick(self, button)
@@ -1506,7 +1565,14 @@ local function AddPVPRewardCurrency(tooltip, currencyID, amount)
 	end
 end
 
-function PVPStandardRewardTemplate_OnEnter(self)
+PVPStandardRewardMixin = CreateFromMixins(CallbackRegistryMixin);
+
+function PVPStandardRewardMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+	self:AddDynamicEventMethod(EventRegistry, "PVPUI.AvailablePVPRolesUpdated", self.OnAvailablePVPRolesUpdated);
+end
+
+function PVPStandardRewardMixin:OnEnter()
 	if (not self.Icon:IsShown()) then
 		return;
 	end
@@ -1533,14 +1599,45 @@ function PVPStandardRewardTemplate_OnEnter(self)
 	EmbeddedItemTooltip:Show();
 end
 
-function PVPRewardTemplate_OnLeave(self)
+function PVPStandardRewardMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
 	self.UpdateTooltip = nil;
 end
 
+function PVPStandardRewardMixin:OnAvailablePVPRolesUpdated()
+	self:RefreshRoleShortageBonus();
+end
+
+function PVPStandardRewardMixin:RefreshRoleShortageBonus()
+	if not self.RoleShortageBonus:HasRewardInfo() then
+		self.RoleShortageBonus:Hide();
+		return;
+	end
+
+	-- The Enlistment Bonus appears in the same location as the Role Shortage Bonus.
+	-- They should never be active at the same time, but let's prioritize displaying the Enlistment Bonus just in case.
+	local showingEnlistmentBonus = self.EnlistmentBonus:IsShown();
+	if showingEnlistmentBonus then
+		self.RoleShortageBonus:Hide();
+		return;
+	end
+
+	local playerCanQueueForBonus = false;	
+	local playerClassID = PlayerUtil.GetClassID();
+	for specIndex = 1, GetNumSpecializationsForClassID(playerClassID) do
+		local specID, specName, specDescription, specIcon, role, isRecommended, isAllowed = GetSpecializationInfoForClassID(playerClassID, specIndex);
+		if tContains(self.RoleShortageBonus.rewardInfo.validRoles, role) then
+			playerCanQueueForBonus = true;
+			break;
+		end
+	end
+
+	self.RoleShortageBonus:SetShown(playerCanQueueForBonus);
+end
+
 function PVPRewardEnlistmentBonus_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local spellName = GetSpellInfo(BATTLEGROUND_ENLISTMENT_BONUS);
+	local spellName = C_Spell.GetSpellName(BATTLEGROUND_ENLISTMENT_BONUS);
 	local spellDesc = GetSpellDescription(BATTLEGROUND_ENLISTMENT_BONUS);
 	GameTooltip:SetText(spellName);
 	GameTooltip:AddLine(spellDesc, 1, 1, 1, true);
@@ -1746,8 +1843,8 @@ end
 
 function PVPAchievementRewardMixin:OnMouseDown(mouseButton)
 	if self.rewardItemID and IsModifiedClick("DRESSUP") then
-		local itemID, _, _, _, texture = GetItemInfoInstant(self.rewardItemID);
-		local _, itemLink = GetItemInfo(itemID);
+		local itemID, _, _, _, texture = C_Item.GetItemInfoInstant(self.rewardItemID);
+		local _, itemLink = C_Item.GetItemInfo(itemID);
 		HandleModifiedItemClick(itemLink);
 	end
 end
@@ -1757,7 +1854,7 @@ function PVPAchievementRewardMixin:Update()
 	local hasAchievementID = achievementID ~= nil;
 	if hasAchievementID then
 		self.rewardItemID = C_AchievementInfo.GetRewardItemID(achievementID);
-		local texture = self.rewardItemID and select(5, GetItemInfoInstant(self.rewardItemID)) or nil;
+		local texture = self.rewardItemID and select(5, C_Item.GetItemInfoInstant(self.rewardItemID)) or nil;
 		self.Icon:SetTexture(texture);
 		self.Icon:Show();
 		local completed = false;
@@ -2010,7 +2107,7 @@ end
 
 function PVPWeeklyChestMixin:OnShow()
 	local state = self:GetState();
-	local atlas = "pvpqueue-chest-greatvault-"..state;
+	local atlas = "pvpqueue-chest-dragonflight-greatvault-"..state;
 	self.ChestTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 	self.Highlight:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 
@@ -2298,4 +2395,41 @@ PVPTalentPrestigeLevelDialogCloseButtonMixin = {};
 
 function PVPTalentPrestigeLevelDialogCloseButtonMixin:OnClick()
 	UserActionClosePVPTalentPrestigeLevelDialog(self:GetParent());
+end
+
+PVPRewardRoleShortageBonusMixin = {};
+
+function PVPRewardRoleShortageBonusMixin:Init(rewardInfo)
+	self.rewardInfo = rewardInfo;
+
+	if rewardInfo then
+		local iconTexture = C_Item.GetItemIconByID(rewardInfo.rewardItemID);
+		self.Icon:SetTexture(iconTexture or QUESTION_MARK_ICON);
+
+		self.rewardInfo.rewardSpell = Spell:CreateFromSpellID(rewardInfo.rewardSpellID);
+	end
+end
+
+function PVPRewardRoleShortageBonusMixin:HasRewardInfo()
+	return self.rewardInfo ~= nil;
+end
+
+function PVPRewardRoleShortageBonusMixin:OnEnter()
+	if self.rewardInfo then
+		self.rewardInfo.rewardSpell:ContinueOnSpellLoad(GenerateClosure(self.RefreshTooltip, self));
+	end
+end
+
+function PVPRewardRoleShortageBonusMixin:RefreshTooltip()
+	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(EmbeddedItemTooltip, BATTLEGROUND_HOLIDAY, NORMAL_FONT_COLOR);
+	GameTooltip_AddHighlightLine(EmbeddedItemTooltip, self.rewardInfo.rewardSpell:GetSpellDescription(), false);
+
+	GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
+	EmbeddedItemTooltip_SetItemByID(EmbeddedItemTooltip.ItemTooltip, self.rewardInfo.rewardItemID);		
+	EmbeddedItemTooltip:Show();
+end
+
+function PVPRewardRoleShortageBonusMixin:OnLeave()
+	EmbeddedItemTooltip:Hide();
 end

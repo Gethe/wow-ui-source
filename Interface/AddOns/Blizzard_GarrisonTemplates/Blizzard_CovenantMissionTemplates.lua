@@ -311,17 +311,24 @@ function CovenantMissionListMixin:Update()
 	-- making the buttons unclickable. This is attempting to only create a new data provider when necessary,
 	-- and update the existing table elements. This is not ideal, and this repopulation of missions should
 	-- really be event driven when the garrison data is updated.
+	local missionDataMatches = false;
 	local dataProvider = self.ScrollBox:GetDataProvider();
-	if not dataProvider or #self.combinedMissions ~= dataProvider:GetSize() then
-		dataProvider = CreateDataProvider(self.combinedMissions);
-		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-		dataProvider:SetSortComparator(SortMissions);
-	else
-		for index, mission in ipairs(self.combinedMissions) do
+
+	-- If data provider exists with same number of missions, check if all existing mission ids match the current mission id list
+	if dataProvider and #self.combinedMissions == dataProvider:GetSize()  then
+		missionDataMatches = TableUtil.CompareValuesAsKeys(self.combinedMissions, dataProvider:GetCollection(), function(mission)
+			assertsafe(mission.missionID, "A valid missionID is required to generate a key.");
+			return mission.missionID;
+		end);
+	end
+
+	if missionDataMatches then
+		-- New and existing mission ids match, update all the entries with current data to avoid rebuilding the data provider every frame
+		for _, mission in ipairs(self.combinedMissions) do
 			local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
 				return elementData.missionID == mission.missionID;
 			end);
-			-- Move the mission data into the elementData we want to keep.
+			
 			if elementData then
 				MergeTable(elementData, mission);
 			end
@@ -332,6 +339,11 @@ function CovenantMissionListMixin:Update()
 		self.ScrollBox:ForEachFrame(function(frame)
 			CovenantMissionButton_InitButton(frame, frame:GetElementData());
 		end);
+	else
+		-- Mission data doesn't match, recreate the provider with new data
+		dataProvider = CreateDataProvider(self.combinedMissions);
+		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+		dataProvider:SetSortComparator(SortMissions);
 	end
 
 	local haveMissions = dataProvider:GetSize() > 0;
@@ -470,7 +482,7 @@ function CovenantMissionInfoTooltip_OnEnter(self)
 		if (reward.quality) then
 			GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
 		elseif (reward.itemID) then
-			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(reward.itemID);
 			if itemName then
 				GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
 			end

@@ -43,7 +43,7 @@ function InspectPaperDollFrame_SetLevel()
 	elseif ( effectiveLevel ~= level ) then
 		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
 	end
-	
+
 	if (specName and specName ~= "") then
 		InspectLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
 	else
@@ -182,6 +182,10 @@ function InspectPaperDollItemSlotButton_Update(button)
 	if ( GameTooltip:IsOwned(button) ) then
 		GameTooltip:Hide();
 	end
+
+	if button.SocketDisplay then
+		button.SocketDisplay:SetItem(GetInventoryItemLink(unit, button:GetID()));
+	end
 end
 
 function InspectPaperDollViewButton_OnLoad(self)
@@ -197,11 +201,10 @@ InspectPaperDollFrameTalentsButtonMixin = {};
 
 function InspectPaperDollFrameTalentsButtonMixin:OnClick()
 	if C_Traits.HasValidInspectData() then
-		ClassTalentFrame_LoadUI();
+		PlayerSpellsFrame_LoadUI();
 
-		local suggestedTab = nil;
 		local inspectUnit = InspectFrame.unit;
-		ToggleTalentFrame(suggestedTab, inspectUnit);
+		PlayerSpellsUtil.OpenToClassTalentsTab(inspectUnit);
 	end
 end
 
@@ -217,4 +220,18 @@ end
 
 function InspectPaperDollFrameTalentsButtonMixin:OnLeave()
 	GameTooltip_Hide();
+end
+
+LevelTextMixin = {}
+
+function LevelTextMixin:OnEnter()
+	if ( InspectLevelText:IsTruncated() ) then
+		GameTooltip:SetOwner(InspectLevelText, "ANCHOR_RIGHT");
+		GameTooltip_AddNormalLine(GameTooltip, InspectLevelText:GetText(), false);
+		GameTooltip:Show();
+	end
+end
+
+function LevelTextMixin:OnLeave()
+	GameTooltip:Hide();	
 end

@@ -30,6 +30,16 @@ local MajorFactionsConstants =
 				{ Name = "ValdrakkenAccord", Type = "MajorFactionType", EnumValue = 4 },
 			},
 		},
+		{
+			Name = "MajorFactionsConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "WORLD_STATE_RENOWN_CAP_10_0", Type = "number", Value = 19735 },
+				{ Name = "WORLD_STATE_RAPID_RENOWN_CAP_10_0", Type = "number", Value = 20851 },
+				{ Name = "PLUNDERSTORM_MAJOR_FACTION_ID", Type = "number", Value = 2593 },
+			},
+		},
 	},
 };
 

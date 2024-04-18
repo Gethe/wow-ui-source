@@ -1,0 +1,39 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="VoiceChatHeadsetButtonTemplate" mixin="VoiceChatHeadsetButtonMixin" registerForClicks="LeftButtonUp" motionScriptsWhileDisabled="true" virtual="true">
+		<NormalTexture parentKey="NormalTexture"/>
+		<DisabledTexture parentKey="DisabledTexture" alpha="0.3"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.3"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="VoiceChatHeadsetTemplate" mixin="VoiceChatHeadsetMixin" virtual="true">
+		<Size x="54" y="27"/>
+		<Frames>
+			<Frame parentKey="PendingDots" inherits="VoiceChatDotsTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="Button" inherits="VoiceChatHeadsetButtonTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Transcription" inherits="VoiceChatTranscriptionTemplate">
+				<Size x="27" y="27"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

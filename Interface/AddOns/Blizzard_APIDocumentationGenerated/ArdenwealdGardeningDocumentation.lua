@@ -39,7 +39,7 @@ local ArdenwealdGardening =
 			{
 				{ Name = "active", Type = "number", Nilable = false },
 				{ Name = "ready", Type = "number", Nilable = false },
-				{ Name = "remainingSeconds", Type = "number", Nilable = false },
+				{ Name = "remainingSeconds", Type = "time_t", Nilable = false },
 			},
 		},
 	},

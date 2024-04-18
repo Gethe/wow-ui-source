@@ -234,14 +234,15 @@ local TraitConstants =
 		{
 			Name = "TraitNodeType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Single", Type = "TraitNodeType", EnumValue = 0 },
 				{ Name = "Tiered", Type = "TraitNodeType", EnumValue = 1 },
 				{ Name = "Selection", Type = "TraitNodeType", EnumValue = 2 },
+				{ Name = "SubTreeSelection", Type = "TraitNodeType", EnumValue = 3 },
 			},
 		},
 		{
@@ -260,12 +261,13 @@ local TraitConstants =
 		{
 			Name = "TraitSystemFlag",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "AllowMultipleLoadoutsPerTree", Type = "TraitSystemFlag", EnumValue = 1 },
+				{ Name = "ShowSpendConfirmation", Type = "TraitSystemFlag", EnumValue = 2 },
 			},
 		},
 		{
@@ -289,6 +291,7 @@ local TraitConstants =
 				{ Name = "COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID", Type = "number", Value = 384255 },
 				{ Name = "INSPECT_TRAIT_CONFIG_ID", Type = "number", Value = -1 },
 				{ Name = "STARTER_BUILD_TRAIT_CONFIG_ID", Type = "number", Value = -2 },
+				{ Name = "VIEW_TRAIT_CONFIG_ID", Type = "number", Value = -3 },
 			},
 		},
 	},

@@ -56,7 +56,7 @@ function Professions.ExtractItemIDsFromCraftingReagents(reagents)
 	return tbl;
 end
 
-function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID)
+function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction)
 	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
 	if difficultyText and difficultyText ~= "" then
@@ -77,31 +77,84 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
 		GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
 	end
+
+	-- The requirement items should already be loaded because the schematic form loaded every item associated with every slot.
+	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(item:GetItemID());
+	for index, requiredItemID in ipairs(requirements) do
+		local requiredItem = Item:CreateFromItemID(requiredItemID);
+		local itemName = requiredItem:GetItemName();
+		if transaction:HasAllocatedItemID(requiredItemID) then
+			GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+		else
+			GameTooltip_AddErrorLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+		end
+	end
+
+	local recraftAllocation = transaction:GetRecraftAllocation();
+	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+		GameTooltip_AddErrorLine(tooltip, PROFESSIONS_DISALLOW_DOWNGRADE);
+	end
 end
 
-function Professions.FindItemsMatchingItemID(itemID)
+local CraftingAccessibleBags = 
+{
+	Enum.BagIndex.Backpack,
+	Enum.BagIndex.Bag_1,
+	Enum.BagIndex.Bag_2,
+	Enum.BagIndex.Bag_3,
+	Enum.BagIndex.Bag_4,
+	Enum.BagIndex.ReagentBag,
+	Enum.BagIndex.Bank,
+	Enum.BagIndex.BankBag_1,
+	Enum.BagIndex.BankBag_2,
+	Enum.BagIndex.BankBag_3,
+	Enum.BagIndex.BankBag_4,
+	Enum.BagIndex.BankBag_5,
+	Enum.BagIndex.BankBag_6,
+	Enum.BagIndex.BankBag_7,
+	Enum.BagIndex.Reagentbank,
+	Enum.BagIndex.AccountBankTab_1,
+	Enum.BagIndex.AccountBankTab_2,
+	Enum.BagIndex.AccountBankTab_3,
+	Enum.BagIndex.AccountBankTab_4,
+	Enum.BagIndex.AccountBankTab_5,
+};
+
+function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	local items = {};
+	local max = maxFindCount or math.huge;
 	local function FindMatchingItemID(itemLocation)
 		if C_Item.GetItemID(itemLocation) == itemID then
 			local itemGUID = C_Item.GetItemGUID(itemLocation);
 			table.insert(items, Item:CreateFromItemGUID(itemGUID));
+
+			if #items >= max then
+				return true;
+			end
 		end
 	end
 
-	ItemUtil.IteratePlayerInventoryAndEquipment(FindMatchingItemID);
+	for index, bagIndex in ipairs(CraftingAccessibleBags) do
+		if ItemUtil.IterateBagSlots(bagIndex, FindMatchingItemID) then
+			return items;
+		end
+	end
+
+	ItemUtil.IterateInventorySlots(INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED, FindMatchingItemID);
 	return items;
 end
 
-function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
+function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
 	local items = {};
-	if filterOwned then
+	local maxFindCount = 1;
+	if filterAvailable then
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			tAppendAll(items, foundItems);
 		end
 	else
 		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID);
+			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
 			if #foundItems == 0 then
 				table.insert(items, Item:CreateFromItemID(itemID));
 			else
@@ -112,17 +165,23 @@ function Professions.GenerateFlyoutItemsTable(itemIDs, filterOwned)
 	return items;
 end
 
-function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID)
+function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID, transaction, reagentSlotSchematic)
 	local item = elementData.item;
 		
 	local colorData = item:GetItemQualityColor();
 	GameTooltip_SetTitle(tooltip, item:GetItemName(), colorData.color);
 	
-	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID);
+	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction);
 
 	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID());
 	if count <= 0 then
 		GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_NONE_AVAILABLE);
+	else
+		local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
+		local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+		if quantityOwned < reagentSlotSchematic.quantityRequired then
+			GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_INSUFFICIENT_AVAILABLE);
+		end
 	end
 end
 
@@ -142,43 +201,33 @@ function Professions.EraseRecraftingTransitionData()
 end
 
 function Professions.GetReagentSlotStatus(reagentSlotSchematic, recipeInfo)
+	local locked, lockedReason = false, nil;
 	local slotInfo = reagentSlotSchematic.slotInfo;
-	local locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
-	if not locked then
-		local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
-		while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
-			categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
-		end
+	if slotInfo then
+		locked, lockedReason = C_TradeSkillUI.GetReagentSlotStatus(slotInfo.mcrSlotID, recipeInfo.recipeID, recipeInfo.skillLineAbilityID);
+		if not locked then
+			local categoryInfo = C_TradeSkillUI.GetCategoryInfo(recipeInfo.categoryID);
+			while categoryInfo and not categoryInfo.skillLineCurrentLevel and categoryInfo.parentCategoryID do
+				categoryInfo = C_TradeSkillUI.GetCategoryInfo(categoryInfo.parentCategoryID);
+			end
 
-		if categoryInfo and categoryInfo.skillLineCurrentLevel then
-			local requiredSkillRank = slotInfo.requiredSkillRank;
-			locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
-			if locked then
-				lockedReason = OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank);
+			if categoryInfo and categoryInfo.skillLineCurrentLevel then
+				local requiredSkillRank = slotInfo.requiredSkillRank;
+				locked = categoryInfo.skillLineCurrentLevel < requiredSkillRank;
+				if locked then
+					lockedReason = OPTIONAL_REAGENT_TOOLTIP_SLOT_LOCKED_FORMAT:format(requiredSkillRank);
+				end
 			end
 		end
 	end
-
 	return locked, lockedReason;
 end
 
-function Professions.GetReagentQuantityInPossession(reagent)
-	if reagent.itemID then
-		return ItemUtil.GetCraftingReagentCount(reagent.itemID);
-	elseif reagent.currencyID then
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
-		return currencyInfo.quantity;
-	end
-	assert(false);
-end
-
-function Professions.AccumulateReagentsInPossession(reagents)
-	return AccumulateOp(reagents, function(reagent)
-		return Professions.GetReagentQuantityInPossession(reagent);
-	end);
-end
-
 local function CanShowBar(professionInfo)
+	if ProfessionsUtil.IsCraftingMinimized() then
+		return false;
+	end
+
 	if C_TradeSkillUI.IsRuneforging() or C_TradeSkillUI.IsTradeSkillGuild() or C_TradeSkillUI.IsTradeSkillGuildMember() then
 		return false;
 	end
@@ -300,7 +349,7 @@ function Professions.SetupOutputIcon(outputIcon, transaction, outputItemInfo)
 	local quantityMin, quantityMax = recipeSchematic.quantityMin, recipeSchematic.quantityMax;
 
 	-- Quantity min and max in the context of salvage recipes means the reagent cost, not the output quantity.
-	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) or transaction:IsRecipeType(Enum.TradeskillRecipeType.Gathering) then
 		quantityMin, quantityMax = 1, 1;
 	end
 
@@ -336,26 +385,27 @@ end
 
 function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	local quantities = {0, 0, 0};
-	for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+	local slotIndex = reagentSlotSchematic.slotIndex;
+	for allocationIndex, allocation in transaction:EnumerateAllocations(slotIndex) do
 		local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
 			return Professions.CraftingReagentMatches(reagent, allocation.reagent);
 		end);
 
 		if not index or quantities[index] == nil then
 			local reagent = allocation.reagent;
+			local recipeID = transaction:GetRecipeID();
 			local id = reagent.itemID or reagent.currencyID;
-			assert(false, ("recipeID = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
-				transaction:GetRecipeID(), allocationIndex, 
-				(reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0),
-				(index and index or -1), id)
-			);
+			local foundIndex = index and index or -1;
+			local reagentsSize = (reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0);
+			assert(false, ("Invalid allocation found: recipeID = %d, slotIndex = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
+				recipeID, slotIndex, allocationIndex, foundIndex, reagentsSize, id));
 		end
 		quantities[index] = allocation.quantity;
 	end
 	return quantities;
 end
 
-function Professions.SetupQualityReagentTooltip(slot, transaction)
+function Professions.SetupQualityReagentTooltip(slot, transaction, noInstruction)
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
@@ -380,7 +430,7 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
 		end
 
-		if not slot:IsUnallocatable() then
+		if not slot:IsUnallocatable() and not noInstruction then
 			if not blankLineAdded then
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			end
@@ -389,29 +439,55 @@ function Professions.SetupQualityReagentTooltip(slot, transaction)
 	end
 end
 
-function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentType, slotText, exchangeOnly, recraftItemGUID, suppressInstruction)
+function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, exchangeOnly, recraftItemGUID, suppressInstruction, transaction)
+	local reagentType = reagentSlotSchematic.reagentType;
 	local itemID = slot.Button:GetItemID();
 	if itemID then
 		local item = Item:CreateFromItemID(itemID);
 		local colorData = item:GetItemQualityColor();
 		GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color, false);
 	
-		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID);
+		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID, transaction);
 
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			if exchangeOnly then
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddInstructionLine(GameTooltip, OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_EXCHANGE);
 			else
-				local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
-				GameTooltip_AddInstructionLine(GameTooltip, instruction);
+				local instruction;
+				if reagentType == Enum.CraftingReagentType.Finishing then
+					instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				elseif not ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+					instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_REMOVE;
+				end
+
+				if instruction then
+					GameTooltip_AddBlankLineToTooltip(GameTooltip);
+					GameTooltip_AddInstructionLine(GameTooltip, instruction);
+				end
 			end
 		end
 	else
-		local title = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText) or EMPTY_OPTIONAL_REAGENT_TOOLTIP_TITLE;
+		local slotText = reagentSlotSchematic.slotInfo.slotText;
+		
+		local title;
+		if reagentType == Enum.CraftingReagentType.Finishing then
+			title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
+		else
+			title = slotText or OPTIONAL_REAGENT_POSTFIX;
+		end
+
 		GameTooltip_SetTitle(GameTooltip, title, nil, false);
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			local instruction = (reagentType == Enum.CraftingReagentType.Finishing) and FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD or OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			local instruction;
+			if reagentType == Enum.CraftingReagentType.Finishing then
+				instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+				instruction = REQUIRED_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			else
+				instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
+			end
+
 			GameTooltip_AddInstructionLine(GameTooltip, instruction);
 		end
 	end
@@ -423,7 +499,7 @@ local function AllocateReagents(allocations, reagentSlotSchematic, useBestQualit
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
 	local iterator = useBestQuality and ipairs_reverse or ipairs;
 	for reagentIndex, reagent in iterator(reagentSlotSchematic.reagents) do
-		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 		allocations:Allocate(reagent, math.min(quantity, quantityRequired));
 		quantityRequired = quantityRequired - quantity;
 
@@ -462,7 +538,7 @@ function Professions.CanAllocateReagents(transaction, slotIndex)
 	local reagentSlotSchematic = transaction:GetReagentSlotSchematic(slotIndex);
 	local quantityRequired = reagentSlotSchematic.quantityRequired;
 	for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
-		local quantity = Professions.GetReagentQuantityInPossession(reagent);
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
 		quantityRequired = quantityRequired - quantity;
 
 		if quantityRequired <= 0 then
@@ -473,7 +549,11 @@ function Professions.CanAllocateReagents(transaction, slotIndex)
 	return false;
 end
 
-local function HandleReagentLink(link)
+function Professions.InspectRecipe(recipeID)
+	InspectRecipeFrame:Open(recipeID);
+end
+
+function Professions.HandleReagentLink(link)
 	if not HandleModifiedItemClick(link) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		return false, link;
@@ -491,12 +571,12 @@ end
 
 function Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic)
 	local link = C_TradeSkillUI.GetRecipeFixedReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex);
-	return HandleReagentLink(link);
+	return Professions.HandleReagentLink(link);
 end
 
 function Professions.HandleQualityReagentItemLink(recipeID, reagentSlotSchematic, qualityIndex)
 	local link = C_TradeSkillUI.GetRecipeQualityReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex, qualityIndex);
-	return HandleReagentLink(link);
+	return Professions.HandleReagentLink(link);
 end
 
 function Professions.FindFirstQualityAllocated(transaction, reagentSlotSchematic)
@@ -524,72 +604,53 @@ function Professions.GetReagentInputMode(reagentSlotSchematic)
 	return Professions.ReagentInputMode.Any;
 end
 
-function Professions.CreateRecipeItemIDListByPredicate(recipeID, predicate)
-	local itemIDs = {};
-	local isRecraft = false;
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
-	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		if predicate(reagentSlotSchematic) then
-			for _, reagent in ipairs(reagentSlotSchematic.reagents) do
-				if reagent.itemID then
-					table.insert(itemIDs, reagent.itemID);
-				end
-			end
-		end
+local function SortRootData(lhs, rhs)
+	local lhsData = lhs:GetData();
+	local rhsData = rhs:GetData();
+	local lhsGroup = lhsData.group;
+	local rhsGroup = rhsData.group;
+
+	if lhsGroup ~= rhsGroup then
+		return lhsGroup < rhsGroup;
 	end
-	return itemIDs;
+
+	local lhsCategoryInfo = lhsData.categoryInfo;
+	local rhsCategoryInfo = rhsData.categoryInfo;
+	local lhsOrder = lhsCategoryInfo.uiOrder;
+	local rhsOrder = rhsCategoryInfo.uiOrder;
+	if lhsOrder ~= rhsOrder then
+		return lhsOrder < rhsOrder;
+	end
+
+	return strcmputf8i(lhsCategoryInfo.name, rhsCategoryInfo.name) < 0;
 end
 
-function Professions.CreateRecipeItemIDsForAllBasicReagents(recipeID, predicate)
-	local function IsBasicReagent(reagentSlotSchematic)
-		return reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Basic;
-	end
-	return Professions.CreateRecipeItemIDListByPredicate(recipeID, IsBasicReagent);
-end
-
-local function SortNodeData(lhs, rhs)
+local function SortCategoryData(lhs, rhs)
 	local lhsData = lhs:GetData();
 	local rhsData = rhs:GetData();
 	local lhsCategoryInfo = lhsData.categoryInfo;
 	local rhsCategoryInfo = rhsData.categoryInfo;
 
 	if lhsCategoryInfo or rhsCategoryInfo then
-		-- Special case for the "Unlearned" divider which only appears adjacent to categories.
-		do
-			local lhsGroup = (lhsCategoryInfo and lhsCategoryInfo.group) or lhsData.group or nil;
-			local rhsGroup = (rhsCategoryInfo and rhsCategoryInfo.group) or rhsData.group or nil;
-			if lhsGroup ~= nil and rhsGroup ~= nil then
-				if lhsGroup < rhsGroup then
-					return true;
-				elseif lhsGroup > rhsGroup then
-					return false;
-				end
-			end
-		end
-
-		if lhsData.categoryInfo and not rhsCategoryInfo then
+		if lhsCategoryInfo and not rhsCategoryInfo then
 			return true;
 		elseif not lhsCategoryInfo and rhsCategoryInfo then
 			return false;
 		elseif lhsCategoryInfo and rhsCategoryInfo then
-			local lhsGroup = lhsCategoryInfo.group;
-			local rhsGroup = rhsCategoryInfo.group;
-			if lhsGroup < rhsGroup then
-				return true;
-			elseif lhsGroup > rhsGroup then
-				return false;
+			local lhsOrder = lhsCategoryInfo.uiOrder;
+			local rhsOrder = rhsCategoryInfo.uiOrder;
+			if lhsOrder ~= rhsOrder then
+				return lhsOrder < rhsOrder;
 			end
 
-			return lhsCategoryInfo.uiOrder < rhsCategoryInfo.uiOrder;
+			return strcmputf8i(lhsCategoryInfo.name, rhsCategoryInfo.name) < 0;
 		end
 	end
 
-	if lhsData.topPadding or rhsData.topPadding then
-		return lhsData.topPadding;
-	end
-
-	if lhsData.bottomPadding or rhsData.bottomPadding then
-		return not lhsData.bottomPadding;
+	local lhsOrder = lhsData.order;
+	local rhsOrder = rhsData.order;
+	if lhsOrder ~= rhsOrder then
+		return lhsOrder < rhsOrder;
 	end
 
 	local lhsRecipeInfo = lhsData.recipeInfo;
@@ -598,36 +659,38 @@ local function SortNodeData(lhs, rhs)
 	local rhsDifficulty = rhsRecipeInfo.difficulty;
 	if lhsDifficulty ~= rhsDifficulty then
 		return lhsDifficulty < rhsDifficulty;
-	else
-		local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
-		local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
-		if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
-			return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
-		else
-			local lhsItemLevel = lhsRecipeInfo.itemLevel;
-			local rhsItemLevel = rhsRecipeInfo.itemLevel;
-			if lhsItemLevel ~= rhsItemLevel then
-				return lhsItemLevel > rhsItemLevel;
-			end
-		end
 	end
+
+	local lhsMaxTrivialLevel = lhsRecipeInfo.maxTrivialLevel;
+	local rhsMaxTrivialLevel = rhsRecipeInfo.maxTrivialLevel;
+	if lhsMaxTrivialLevel ~= rhsMaxTrivialLevel then
+		return lhsMaxTrivialLevel > rhsMaxTrivialLevel;
+	end
+
+	local lhsItemLevel = lhsRecipeInfo.itemLevel;
+	local rhsItemLevel = rhsRecipeInfo.itemLevel;
+	if lhsItemLevel ~= rhsItemLevel then
+		return lhsItemLevel > rhsItemLevel;
+	end
+
 	return strcmputf8i(lhsRecipeInfo.name, rhsRecipeInfo.name) < 0;
 end
 
 local Group = EnumUtil.MakeEnum("Favorite", "Learned", "UnlearnedDivider", "Unlearned");
+local favoritesCategoryID = -1; --used for remembering collapse state
 
-function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories)
+function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories, collapses)
 	local recipeInfos = {};
-	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, uiOrder = 0, group = Group.Favorite};
+	local favoritesCategoryInfo = {name = PROFESSIONS_CATEGORY_FAVORITE, uiOrder = 0, group = Group.Favorite, categoryID = favoritesCategoryID};
 	local showAllRecipes = searching or C_TradeSkillUI.IsNPCCrafting();
+	local favoriteRecipeIDs = {};
 	for index, recipeID in ipairs(C_TradeSkillUI.GetFilteredRecipeIDs()) do
 		local recipeInfo = Professions.GetFirstRecipe(C_TradeSkillUI.GetRecipeInfo(recipeID));
 		local showRecipe = showAllRecipes or C_TradeSkillUI.IsRecipeInSkillLine(recipeID, professionID);
 		if showRecipe then
 			recipeInfos[recipeInfo.recipeID] = recipeInfo;
 		end
-	
-		if not searching and recipeInfo.favorite then
+		if not searching and recipeInfo.favorite and not favoriteRecipeIDs[recipeInfo.recipeID] then
 			local favoritesRecipeInfo = CopyTable(recipeInfo);
 			favoritesRecipeInfo.favoritesInstance = true;
 
@@ -635,16 +698,16 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 				favoritesCategoryInfo.recipes = {};
 			end
 			table.insert(favoritesCategoryInfo.recipes, favoritesRecipeInfo);
+			favoriteRecipeIDs[recipeInfo.recipeID] = true;
 		end
 	end
-
 
 	local favoritesCategoryMap = {favoritesCategoryInfo};
 	local learnedCategoryMap = {};
 	local unlearnedCategoryMap = {};
 	local categoryMaps = { learnedCategoryMap, unlearnedCategoryMap };
 
-	local dataProvider = CreateLinearizedTreeListDataProvider();
+	local dataProvider = CreateTreeDataProvider();
 	-- Create a category hierarchy for each recipe. Learned and unlearned recipes are now separated into potentially
 	-- identical but cloned hierarchies for the sake of organization.
 	do
@@ -711,7 +774,7 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 			local function SetSortComparator(node)
 				local affectChildren = false;
 				local skipSort = false;
-				node:SetSortComparator(SortNodeData, affectChildren, skipSort);
+				node:SetSortComparator(SortCategoryData, affectChildren, skipSort);
 			end
 			
 			local categoryNodes = {};
@@ -730,39 +793,50 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 
 				local categoryNode = categoryNodes[categoryInfo];
 				if not categoryNode then
-					categoryNode = node:Insert({categoryInfo=categoryInfo});
+					assert(categoryInfo.group ~= nil, "Missing group for category '%s' ", categoryInfo.name);
+					categoryNode = node:Insert({categoryInfo = categoryInfo, group = categoryInfo.group});
 					categoryNodes[categoryInfo] = categoryNode;
 
 					-- The new category can have categories or recipes.
 					SetSortComparator(categoryNode);
+					if collapses and collapses[categoryInfo.categoryID] then
+						categoryNode:SetCollapsed(true);
+					end
 				end
 
 				if categoryInfo.recipes and #categoryInfo.recipes > 0 then
-					categoryNode:Insert({topPadding=true});
+					categoryNode:Insert({topPadding=true, order = -1});
 					for index, recipeInfo in ipairs(categoryInfo.recipes) do
-						categoryNode:Insert({recipeInfo=recipeInfo});
+						categoryNode:Insert({recipeInfo = recipeInfo, order = 0});
 						addedRecipe = true;
 						-- Recipes are leaf-most, so we don't need any sort comparator.
 					end
-					categoryNode:Insert({bottomPadding=true});
+					categoryNode:Insert({bottomPadding=true, order = 1});
 				end	
 
 				return categoryNode;
 			end
 
 			local addUnlearnedDivider = false;
+			local addedKnownRecipe = false;
 			local node = dataProvider:GetRootNode();
+
+			local affectChildren = false;
+			local skipSort = false;
+			node:SetSortComparator(SortRootData, affectChildren, skipSort);
+
 			for _, categoryMap in ipairs(maps) do
 				for _, categoryInfo in pairs(categoryMap) do
 					AttachTreeDataRecursive(categoryMap, categoryNodes, categoryInfo, node);
 				end
 				addUnlearnedDivider = addUnlearnedDivider or (addedRecipe and categoryMap == unlearnedCategoryMap);
+				addedKnownRecipe = addedKnownRecipe or (addedRecipe and categoryMap == learnedCategoryMap);
 				addedRecipe = false;
 			end
 
 			if addUnlearnedDivider and C_TradeSkillUI.GetShowUnlearned() then
 				-- Categories and dividers ordered by group, position this divider just before the unlearned group.
-				node:Insert({isDivider = true, dividerHeight = 30, group = Group.UnlearnedDivider});
+				node:Insert({isDivider = true, dividerHeight = addedKnownRecipe and 70 or 30, group = Group.UnlearnedDivider});
 			end
 		end
 	end
@@ -770,12 +844,16 @@ function Professions.GenerateCraftingDataProvider(professionID, searching, noStr
 	return dataProvider;
 end
 
-function Professions.ShouldAllocateBestQualityReagents()
-	return GetCVarBool("professionsAllocateBestQualityReagents");
+local function GetBestQualityCVar(forCustomer)
+	return forCustomer and "professionsAllocateBestQualityReagentsCustomer" or "professionsAllocateBestQualityReagents";
 end
 
-function Professions.SetShouldAllocateBestQualityReagents(shouldUse)
-	SetCVar("professionsAllocateBestQualityReagents", shouldUse and "1" or "0");
+function Professions.ShouldAllocateBestQualityReagents(forCustomer)
+	return GetCVarBool(GetBestQualityCVar(forCustomer));
+end
+
+function Professions.SetShouldAllocateBestQualityReagents(shouldUse, forCustomer)
+	SetCVar(GetBestQualityCVar(forCustomer), shouldUse);
 end
 
 function Professions.SetDefaultOrderDuration(index)
@@ -877,10 +955,14 @@ end
 
 function Professions.SetAllSourcesFiltered(filtered)
 	local numSources = C_PetJournal.GetNumPetSources();
-	for i = 1, numSources do
-		if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
-			C_TradeSkillUI.SetRecipeSourceTypeFilter(i, filtered);
+	if filtered then
+		for i = 1, numSources do
+			if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
+				C_TradeSkillUI.SetRecipeSourceTypeFilter(i, filtered);
+			end
 		end
+	else
+		C_TradeSkillUI.ClearRecipeSourceTypeFilter();
 	end
 end
 
@@ -1135,6 +1217,10 @@ function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
 end
 
 function Professions.OnRecipeListSearchTextChanged(text)
+	if strcmputf8i(C_TradeSkillUI.GetRecipeItemNameFilter(), text) == 0 then
+		return;
+	end
+
 	local range = 2;
 	local minLevel, maxLevel;
 	local approxLevel = text:match("^~(%d+)");
@@ -1163,35 +1249,28 @@ function Professions.OnRecipeListSearchTextChanged(text)
 	end
 end
 
-function Professions.LayoutReagentSlots(reagentSlots, reagentsContainer, optionalReagentsSlots, optionalReagentsContainer, divider)
-	local stride = 1;
-	local spacing = -5;
-	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing);
-	
-	local function Layout(slots, anchor, layout)
-		if slots then
-			AnchorUtil.GridLayout(slots, anchor, layout);
-		end
-	end
-	
-	do
-		local anchor = CreateAnchor("TOPLEFT", reagentsContainer, "TOPLEFT", 1, -23);
-		Layout(reagentSlots, anchor, layout);
-		reagentsContainer:Layout();
-	end
 
-	do
-		local optionalShown = optionalReagentsSlots and #optionalReagentsSlots > 0;
-		if optionalShown then
-			local anchor = CreateAnchor("TOPLEFT", optionalReagentsContainer, "TOPLEFT", 1, -23);
-			Layout(optionalReagentsSlots, anchor, layout);
-			optionalReagentsContainer:Layout();
-		end
-		optionalReagentsContainer:SetShown(optionalShown);
-		if divider then
-			divider:SetShown(optionalShown);
-		end
+function Professions.LayoutReagentSlots(slots, slotContainer, spacingX, spacingY, stride, direction)
+	if slots then
+		local spacingY = -5;
+		local layout = AnchorUtil.CreateGridLayout(direction, stride, spacingX, spacingY);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		AnchorUtil.GridLayout(slots, anchor, layout);
+		slotContainer:Layout();
 	end
+end
+
+function Professions.LayoutAndShowReagentSlotContainer(slots, slotContainer)
+	local slotsShown = slots and #slots > 0;
+	if slotsShown then
+		local stride = 4;
+		local spacing = 3;
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40, 40);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		AnchorUtil.GridLayout(slots, anchor, layout);
+		slotContainer:Layout();
+	end
+	slotContainer:SetShown(slotsShown);
 end
 
 function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer)
@@ -1227,15 +1306,12 @@ function Professions.GetProfessionBackgroundAtlas(professionInfo)
 	return GetProfessionBackground(professionInfo, "Professions-Recipe-Background-%s");
 end
 
-function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo)
-	return GetProfessionBackground(professionInfo, "Professions-Specializations-Background-%s");
+function Professions.GetProfessionSpecializationBackgroundAtlas(professionInfo, forPreview)
+	local atlasFmt = forPreview and "Professions-Specializations-Preview-Art-%s" or "Professions-Specializations-Background-%s";
+	return GetProfessionBackground(professionInfo, atlasFmt);
 end
 
 function Professions.CanTrackRecipe(recipeInfo)
-	if recipeInfo.isRecraft then
-		return false;
-	end
-
 	if Professions.IsViewingExternalCraftingList() then
 		return false;
 	end
@@ -1291,6 +1367,38 @@ function Professions.DoesSchematicIncludeReagentQualities(recipeSchematic)
 	return false;
 end
 
+function Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl)
+	local removedModifications = {};
+	local itemMods = transaction:GetRecraftItemMods();
+	if itemMods then
+		-- Remove allocations that exist on the original item from the allocations table,
+		-- and insert any items that no longer exist on the original item into the removed table.
+		for dataSlotIndex, modification in ipairs(itemMods) do
+			if modification.itemID > 0 then
+				local modRemoved = true;
+
+				for reagentInfoIndex, craftingReagentInfo in ipairs_reverse(craftingReagentTbl) do
+					local itemIDMatch = craftingReagentInfo.itemID == modification.itemID;
+					if itemIDMatch then
+						modRemoved = false;
+					end
+
+					if itemIDMatch and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
+						table.remove(craftingReagentTbl, reagentInfoIndex);
+						break;
+					end
+				end
+
+				if modRemoved then
+					table.insert(removedModifications, modification);
+				end
+			end
+		end
+	end
+
+	return removedModifications;
+end
+
 function Professions.GetProfessionType(professionInfo)
 	local profession = professionInfo.profession;
 
@@ -1318,7 +1426,7 @@ function Professions.IsRecipeOnCooldown(recipeID)
 	return true;
 end
 
-function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft)
+function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isRecraft, unusableBOP)
 	local newOrder =
 	{
 		itemID = itemID,
@@ -1329,6 +1437,7 @@ function Professions.CreateNewOrderInfo(itemID, spellID, skillLineAbilityID, isR
 		tipAmount = 0,
 		isRecraft = isRecraft,
 		minQuality = 1,
+		unusableBOP = unusableBOP,
 	};
 
 	return newOrder
@@ -1409,4 +1518,16 @@ function Professions.GetProfessionInfo()
 	professionInfo.displayName = professionInfo.parentProfessionName and professionInfo.parentProfessionName or professionInfo.professionName;
 
 	return professionInfo;
+end
+
+Professions.OrderTimeLeftFormatter = CreateFromMixins(SecondsFormatterMixin);
+Professions.OrderTimeLeftFormatter:Init(0, SecondsFormatter.Abbreviation.OneLetter, true);
+Professions.OrderTimeLeftFormatter:SetStripIntervalWhitespace(true);
+
+function Professions.OrderTimeLeftFormatter:GetDesiredUnitCount(seconds)
+	return 1;
+end
+
+function Professions.OrderTimeLeftFormatter:GetMinInterval(seconds)
+	return SecondsFormatter.Interval.Minutes;
 end

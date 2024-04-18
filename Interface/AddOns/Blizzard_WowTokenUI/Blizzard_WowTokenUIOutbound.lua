@@ -12,6 +12,10 @@ function Outbound.AuctionWowTokenUpdate()
 	securecall("AuctionWowToken_UpdateMarketPrice");
 end
 
-function Outbound.RecruitAFriendPlayClaimRewardFanfare()
-	securecall("RecruitAFriend_PlayClaimRewardFanfare");
+function Outbound.RecruitAFriendTryPlayClaimRewardFanfare()
+	securecall("RecruitAFriend_TryPlayClaimRewardFanfare");
+end
+
+function Outbound.RecruitAFriendTryCancelAutoClaim()
+	securecall("RecruitAFriend_TryCancelAutoClaim");
 end

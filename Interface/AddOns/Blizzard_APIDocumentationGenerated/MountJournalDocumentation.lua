@@ -12,7 +12,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -47,6 +47,20 @@ local MountJournal =
 			Type = "Function",
 		},
 		{
+			Name = "GetAllCreatureDisplayIDsForMountID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mountID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureDisplayIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAppliedMountEquipmentID",
 			Type = "Function",
 
@@ -70,7 +84,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -84,7 +98,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "mountIndex", Type = "number", Nilable = false },
+				{ Name = "mountIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -98,7 +112,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "displayIndex", Type = "number", Nilable = false },
+				{ Name = "displayIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -112,14 +126,14 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "displayIndex", Type = "number", Nilable = false },
+				{ Name = "displayIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "sourceType", Type = "number", Nilable = false },
@@ -138,14 +152,14 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "mountIndex", Type = "number", Nilable = false },
+				{ Name = "mountIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "source", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "source", Type = "cstring", Nilable = false },
 				{ Name = "isSelfMount", Type = "bool", Nilable = false },
 				{ Name = "mountTypeID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
@@ -155,12 +169,21 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "GetDynamicFlightModeSpellID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetIsFavorite",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "mountIndex", Type = "number", Nilable = false },
+				{ Name = "mountIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -240,9 +263,9 @@ local MountJournal =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "sourceType", Type = "number", Nilable = false },
@@ -267,8 +290,8 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "source", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "source", Type = "cstring", Nilable = false },
 				{ Name = "isSelfMount", Type = "bool", Nilable = false },
 				{ Name = "mountTypeID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },
@@ -304,7 +327,7 @@ local MountJournal =
 			Returns =
 			{
 				{ Name = "isUsable", Type = "bool", Nilable = false },
-				{ Name = "useError", Type = "string", Nilable = true },
+				{ Name = "useError", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -341,7 +364,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "itemLocation", Type = "table", Mixin = "ItemLocationMixin", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
 			},
 
 			Returns =
@@ -364,7 +387,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -378,7 +401,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -401,7 +424,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -415,7 +438,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -443,8 +466,12 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "displayIndex", Type = "number", Nilable = false },
+				{ Name = "displayIndex", Type = "luaIndex", Nilable = false },
 			},
+		},
+		{
+			Name = "PickupDynamicFlightMode",
+			Type = "Function",
 		},
 		{
 			Name = "SetAllSourceFilters",
@@ -470,7 +497,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
 		},
@@ -484,7 +511,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "mountIndex", Type = "number", Nilable = false },
+				{ Name = "mountIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 			},
 		},
@@ -494,7 +521,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "searchValue", Type = "string", Nilable = false },
+				{ Name = "searchValue", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -503,7 +530,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
 		},
@@ -513,7 +540,7 @@ local MountJournal =
 
 			Arguments =
 			{
-				{ Name = "filterIndex", Type = "number", Nilable = false },
+				{ Name = "filterIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
 		},
@@ -525,6 +552,10 @@ local MountJournal =
 			{
 				{ Name = "mountID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "SwapDynamicFlightMode",
+			Type = "Function",
 		},
 	},
 
@@ -603,9 +634,9 @@ local MountJournal =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "sourceType", Type = "number", Nilable = false },
@@ -624,8 +655,8 @@ local MountJournal =
 			Fields =
 			{
 				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = true },
-				{ Name = "description", Type = "string", Nilable = false },
-				{ Name = "source", Type = "string", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "source", Type = "cstring", Nilable = false },
 				{ Name = "isSelfMount", Type = "bool", Nilable = false },
 				{ Name = "mountTypeID", Type = "number", Nilable = false },
 				{ Name = "uiModelSceneID", Type = "number", Nilable = false },

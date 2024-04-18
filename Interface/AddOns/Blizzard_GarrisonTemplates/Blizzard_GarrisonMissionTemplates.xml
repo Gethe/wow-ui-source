@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_GarrisonMissionTemplates.lua"/>
 
 	<Button name="GarrisonMissionFrameTabTemplate" virtual="true">
@@ -749,13 +749,13 @@
 			</Frame>
 			<Button inherits="StartMissionButtonTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+					<Anchor point="RIGHT" relativeKey="$parent" x="-50" y="1"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostWithTooltipTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
-					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
+					<Anchor point="LEFT" relativeKey="$parent" x="50"/>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="CENTER" />
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -852,19 +852,20 @@
 					</Layer>
 				</Layers>
 			</CinematicModel>
-			<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
+			<Frame parentKey="LoadingFrame" inherits="SpinnerTemplate" hidden="true">
+				<Size x="30" y="30"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="9" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self:SetPoint("TOP", self:GetParent().ViewButton, "BOTTOM", -self.Label:GetWidth()/2, 0);
+						self:SetPoint("TOP", self:GetParent().ViewButton, "BOTTOM", -self.Label:GetWidth()/2, -10);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1344,19 +1345,20 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
+			<Frame parentKey="LoadingFrame" inherits="SpinnerTemplate" hidden="true">
+				<Size x="20" y="20"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="5"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						self:SetPoint("TOP", self:GetParent().NextMissionButton, "BOTTOM", -self.Label:GetWidth()/2, 4);
+						self:SetPoint("TOP", self:GetParent().NextMissionButton, "BOTTOM", -self.Label:GetWidth()/2, -9);
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -1575,7 +1577,7 @@
 				<Texture parentKey="Icon">
 					<Size x="20" y="20"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-43" relativeKey="$parent.Subtitle"/>
+						<Anchor point="TOPLEFT" x="15" y="-43" relativeKey="$parent"/>
 					</Anchors>
 				</Texture>
 			</Layer>

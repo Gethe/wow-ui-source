@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI_shared.xsd">
+..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_MovePad.lua"/>
 	
 	<CheckButton name="MovePadCheckboxTemplate" inherits="UIPanelSquareButton" virtual="true">
@@ -9,7 +9,7 @@
 		</CheckedTexture>
 	</CheckButton>
 
-	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" registerForDrag="LeftButton" clampedToScreen="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
 		<Size x="126" y="124" />
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-380" y="-280"/>

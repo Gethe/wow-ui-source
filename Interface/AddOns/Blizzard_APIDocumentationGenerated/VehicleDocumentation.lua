@@ -16,7 +16,7 @@ local Vehicle =
 			LiteralName = "PLAYER_GAINS_VEHICLE_DATA",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "vehicleUIIndicatorID", Type = "number", Nilable = false },
 			},
 		},
@@ -26,7 +26,7 @@ local Vehicle =
 			LiteralName = "PLAYER_LOSES_VEHICLE_DATA",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -35,11 +35,11 @@ local Vehicle =
 			LiteralName = "UNIT_ENTERED_VEHICLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "showVehicleFrame", Type = "bool", Nilable = false },
 				{ Name = "isControlSeat", Type = "bool", Nilable = false },
 				{ Name = "vehicleUIIndicatorID", Type = "number", Nilable = false },
-				{ Name = "vehicleGUID", Type = "string", Nilable = false },
+				{ Name = "vehicleGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "mayChooseExit", Type = "bool", Nilable = false },
 				{ Name = "hasPitch", Type = "bool", Nilable = false },
 			},
@@ -50,11 +50,11 @@ local Vehicle =
 			LiteralName = "UNIT_ENTERING_VEHICLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 				{ Name = "showVehicleFrame", Type = "bool", Nilable = false },
 				{ Name = "isControlSeat", Type = "bool", Nilable = false },
 				{ Name = "vehicleUIIndicatorID", Type = "number", Nilable = false },
-				{ Name = "vehicleGUID", Type = "string", Nilable = false },
+				{ Name = "vehicleGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "mayChooseExit", Type = "bool", Nilable = false },
 				{ Name = "hasPitch", Type = "bool", Nilable = false },
 			},
@@ -65,7 +65,7 @@ local Vehicle =
 			LiteralName = "UNIT_EXITED_VEHICLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -74,7 +74,7 @@ local Vehicle =
 			LiteralName = "UNIT_EXITING_VEHICLE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "string", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{

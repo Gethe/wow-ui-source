@@ -1,6 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRankBar.lua"/>
+	
+	<Button name="ProfessionsRankBarDropDownButtonTemplate" virtual="true">
+		<NormalTexture parentKey="NormalTexture" atlas="glues-characterselect-button-card-down" snapToPixelGrid="false" setAllPoints="true"/>
+		<PushedTexture parentKey="PushedTexture" atlas="glues-characterselect-button-card-down-pressed" setAllPoints="true"/>
+		<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterselect-button-card-down-disabled" setAllPoints="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="glues-characterselect-button-card-hover" alphaMode="ADD" setAllPoints="true"/>
+	</Button>
 
 	<Frame name="ProfessionsRankBarTemplate" frameStrata="BACKGROUND" mixin="ProfessionsRankBarMixin" virtual="true">
 		<Size x="453" y="18"/>
@@ -60,6 +67,18 @@
 						</FontString>
 					</Layer>
 				</Layers>
+			</Frame>
+			<Button parentKey="ExpansionDropDownButton" inherits="ProfessionsRankBarDropDownButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-6" y="-3"/>
+				</Anchors>
+				<Size x="19" y="19"/>
+			</Button>
+			<Frame parentKey="ExpansionDropDownFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ExpansionDropDownButton"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExpansionDropDownButton"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 		<Animations>

@@ -684,20 +684,42 @@ end
 
 function AuctionHouseTableCellItemDisplayMixin:ClearDisplay()
 	self.Text:SetText("");
+	self.ExtraInfo:SetText("");
+	self.ExtraInfo:Hide();
 	self.Icon:Hide();
 end
 
 function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
 	local rowData = self.rowData;
-	self.Text:SetText(AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel, rowData));
+	local itemName = AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel);
+	local craftingQualityIcon = AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey);
+
+	if craftingQualityIcon then
+		self.Text:SetText(itemName .. " " .. craftingQualityIcon);
+		self.ExtraInfo:SetText(craftingQualityIcon);
+	else
+		self.Text:SetText(itemName);
+		self.ExtraInfo:SetText("");
+	end
+
+	self.Text:SetPoint("RIGHT", self, nil, 1);
 
 	self.Icon:SetTexture(itemKeyInfo.iconFileID);
 	self.Icon:Show();
 
 	local noneAvailable = rowData.totalQuantity == 0;
 	self.Icon:SetAlpha(noneAvailable and 0.5 or 1.0);
+	self:HandleItemNameTruncation();
 end
 
+function AuctionHouseTableCellItemDisplayMixin:HandleItemNameTruncation()
+	if (self:GetWidth() ~= 0 and self.Text:IsTruncated()) then
+		self.Text:SetPoint("RIGHT", self.ExtraInfo, "LEFT");
+		self.ExtraInfo:Show();
+	else
+		self.ExtraInfo:Hide();
+	end
+end
 
 AuctionHouseTableCellAuctionsItemDisplayMixin = CreateFromMixins(AuctionHouseTableCellAuctionsMixin, AuctionHouseTableCellItemDisplayMixin);
 
@@ -710,8 +732,19 @@ end
 
 function AuctionHouseTableCellAuctionsItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
 	AuctionHouseTableCellItemDisplayMixin.UpdateDisplay(self, itemKey, itemKeyInfo);
+
+	local itemName = AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(self.rowData, itemKeyInfo, self.hideItemLevel);
+	local craftingQualityIcon = AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey);
+	local quantity = AuctionHouseUtil.GetQuantityDisplayTextFromOwnedAuctionData(self.rowData);
+	local extraInfo = quantity or "";
+
+	if craftingQualityIcon then
+		extraInfo = extraInfo .. " " .. craftingQualityIcon;
+	end
+
 	if not self:IsDisplayingBids() then
-		self.Text:SetText(AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(self.rowData, itemKeyInfo));
+		self.Text:SetText(itemName .. " " .. extraInfo);
+		self.ExtraInfo:SetText(extraInfo);
 	end
 
 	local sold = self.rowData.status == Enum.AuctionStatus.Sold;
@@ -1029,7 +1062,7 @@ function AuctionHouseTableBuilder.GetCommoditiesSellListLayout(owner, itemList)
 		local unitPriceColumn = tableBuilder:AddUnsortableFixedWidthColumn(owner, PRICE_DISPLAY_PADDING, PRICE_DISPLAY_WITH_CHECKMARK_WIDTH, STANDARD_PADDING, 0, AUCTION_HOUSE_HEADER_UNIT_PRICE, "AuctionHouseTableCellUnitPriceTemplate");
 		unitPriceColumn:GetHeaderFrame():SetArrowState(AuctionHouseSortOrderState.PrimarySorted);
 
-		local quantityColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 90, nil, "AuctionHouseTableCellCommoditiesQuantityTemplate");
+		local quantityColumn = tableBuilder:AddFillColumn(owner, 0, 1.0, 0, 80, nil, "AuctionHouseTableCellCommoditiesQuantityTemplate");
 		quantityColumn:SetDisplayUnderPreviousHeader(true);
 
 		tableBuilder:AddUnsortableFixedWidthColumn(owner, 0, 120, STANDARD_PADDING, 0, AUCTION_HOUSE_HEADER_SELLER, "AuctionHouseTableCellOwnersTemplate");

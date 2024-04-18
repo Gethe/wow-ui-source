@@ -171,7 +171,7 @@ function Class_UI_Watcher:StartWatching()
 	self:SetShown(TutorialData.UI_Elements.BACKPACK, showBackpack);
 	self:SetShown(TutorialData.UI_Elements.BAGS_BAR, showBagsBar);
 	self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, showBagsBar);	
-	self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, showSpellbookButton);
+	self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, showSpellbookButton);
 	self:SetShown(TutorialData.UI_Elements.OTHER_MICROBUTTONS, showOtherButtons);
 	self:SetShown(TutorialData.UI_Elements.STORE_MICROBUTTON, showStoreButton);
 	self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, showTargetFrame);
@@ -200,7 +200,7 @@ function Class_UI_Watcher:QUEST_ACCEPTED(questID)
 		self:SetShown(TutorialData.UI_Elements.BAGS_BAR, true);
 		self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, true);
 		self:SetShown(TutorialData.UI_Elements.OTHER_MICROBUTTONS, true);
-		self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, true);
+		self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, true);
 		self:SetShown(TutorialData.UI_Elements.STORE_MICROBUTTON, true);
 		self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, true);
 		self:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
@@ -222,7 +222,7 @@ function Class_UI_Watcher:PLAYER_LEVEL_CHANGED(originalLevel, newLevel)
 
 	self:SetShown(TutorialData.UI_Elements.BAGS_BAR, true);
 	self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, true);
-	self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, true);
+	self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, true);
 end
 
 function Class_UI_Watcher:OnInterrupt(interruptedBy)
@@ -230,7 +230,7 @@ function Class_UI_Watcher:OnInterrupt(interruptedBy)
 	self:SetShown(TutorialData.UI_Elements.BAGS_BAR, true);
 	self:SetShown(TutorialData.UI_Elements.MAIN_BAGS_BUTTON, true);
 	self:SetShown(TutorialData.UI_Elements.OTHER_MICROBUTTONS, true);
-	self:SetShown(TutorialData.UI_Elements.SPELLBOOK_MICROBUTTON, true);
+	self:SetShown(TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON, true);
 	self:SetShown(TutorialData.UI_Elements.STORE_MICROBUTTON, true);
 	self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, true);
 	self:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
@@ -848,19 +848,28 @@ function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent
 	local unitGUID = eventData[8];
 	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
 		-- Wait for mirror data
-		self.canLootTimer = C_Timer.After(1, function()
-			if CanLootUnit(unitGUID) then
-				self:UnitLootable(unitGUID);
-			end
-		end);
+		if not self.canLootTimer then
+			self.canLootTimer = C_Timer.NewTimer(1, function()
+				if CanLootUnit(unitGUID) then
+					self:UnitLootable(unitGUID);
+				end
+				self.canLootTimer = nil;
+			end);
+		end
 	end
 end
 
 function Class_LootCorpseWatcher:UnitLootable(unitGUID)
+	local name = Class_LootCorpse.name;
+	local tutorial = TutorialManager:GetTutorial(name);
+	if not tutorial then
+		return;
+	end
+
 	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if (unitID == hasKilled) then			
-			TutorialManager:GetTutorial(Class_LootCorpse.name):ForceBegin(unitID);
+			tutorial:ForceBegin(unitID);
 			return;
 		end
 	end
@@ -872,7 +881,7 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 	self.PendingLoot = true;
 
 	if ((self.LootCount < 3) or (self.RePromptLootCount >= 2)) then
-		TutorialManager:GetTutorial(Class_LootCorpse.name):Begin(unitID);
+		tutorial:Begin(unitID);
 	else
 		-- These are so we can silently watch for people missing looting without a prompt.
 		-- If they are prompted, the prompt tutorial (LootCorpse) manages this.

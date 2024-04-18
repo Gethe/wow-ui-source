@@ -15,7 +15,7 @@ local SimpleFrameScriptObjectAPI =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -28,7 +28,7 @@ local SimpleFrameScriptObjectAPI =
 
 			Returns =
 			{
-				{ Name = "objectType", Type = "string", Nilable = false },
+				{ Name = "objectType", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -50,7 +50,7 @@ local SimpleFrameScriptObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "objectType", Type = "string", Nilable = false },
+				{ Name = "objectType", Type = "cstring", Nilable = false },
 			},
 
 			Returns =

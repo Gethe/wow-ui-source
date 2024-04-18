@@ -24,9 +24,22 @@ local SimpleLineAPI =
 			Returns =
 			{
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHitRectThickness",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "thickness", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -40,9 +53,9 @@ local SimpleLineAPI =
 			Returns =
 			{
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -55,7 +68,7 @@ local SimpleLineAPI =
 
 			Returns =
 			{
-				{ Name = "thickness", Type = "number", Nilable = false },
+				{ Name = "thickness", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -65,9 +78,18 @@ local SimpleLineAPI =
 			Arguments =
 			{
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "offsetY", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false, Default = 0 },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false, Default = 0 },
+			},
+		},
+		{
+			Name = "SetHitRectThickness",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "thickness", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -77,9 +99,9 @@ local SimpleLineAPI =
 			Arguments =
 			{
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
-				{ Name = "relativeTo", Type = "table", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "offsetY", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "relativeTo", Type = "ScriptRegion", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false, Default = 0 },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false, Default = 0 },
 			},
 		},
 		{
@@ -88,7 +110,7 @@ local SimpleLineAPI =
 
 			Arguments =
 			{
-				{ Name = "thickness", Type = "number", Nilable = false },
+				{ Name = "thickness", Type = "uiUnit", Nilable = false },
 			},
 		},
 	},

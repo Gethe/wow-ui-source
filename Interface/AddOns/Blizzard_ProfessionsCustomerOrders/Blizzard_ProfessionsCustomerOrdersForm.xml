@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCustomerOrdersForm.lua"/>
 
 	<Button name="ProfessionsCustomerListingsElementTemplate" mixin="ProfessionsCustomerListingsElementMixin" virtual="true">
@@ -44,14 +44,11 @@
 					<Color color="LIGHTGRAY_FONT_COLOR"/>
 				</FontString>
 
-				<FontString parentKey="OrderCompleteText" inherits="GameFontNormal" text="PROFESSIONS_ORDER_COMPLETE" justifyH="RIGHT" parentArray="committedRegions">
+				<FontString parentKey="OrderStateText" inherits="GameFontNormal" text="PROFESSIONS_ORDER_COMPLETE" justifyH="RIGHT" parentArray="committedRegions">
 					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-10" y="-10"/>
 					</Anchors>					
-					<KeyValues>
-						<KeyValue key="hideWhenNotCompleted" value="true" type="boolean"/>
-					</KeyValues>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -222,6 +219,31 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<DropDownToggleButton parentKey="SocialDropdownButton" inherits="UIMenuButtonStretchTemplate">
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.CrafterValue" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="icon">
+									<Size x="12" y="12"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
+								<Size x="10" y="10"/>
+							</Frame>
+						</Frames>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</DropDownToggleButton>
+				</Frames>
 			</Frame>
 
 			<Frame parentKey="RecraftSlot" inherits="ProfessionsRecraftSlotTemplate" hidden="true">
@@ -254,7 +276,7 @@
 							<KeyValue key="labelText" value="PROFESSIONS_CUSTOMER_OPTIONAL_REAGENT_CONTAINER_LABEL" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="TOPRIGHT" x="85"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -266,14 +288,6 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RecraftSlot" relativePoint="BOTTOMLEFT" x="15" y="-15"/>
 							</Anchors>
 							<Color color="GRAY_FONT_COLOR"/>
-						</FontString>
-
-						<FontString parentKey="RecraftWarningText" inherits="GameFontHighlight" text="CRAFTING_ORDER_RECRAFT_WARNING1" justifyH="CENTER">
-							<Size x="480" y="0"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="20"/>
-							</Anchors>
-							<Color color="RED_FONT_COLOR"/>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -504,6 +518,13 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
+
+			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ReagentContainer" x="6" y="-3"/>
+				</Anchors>
+			</CheckButton>
 		
 			<Frame parentKey="QualityDialog" inherits="ProfessionsQualityDialogTemplate" frameStrata="DIALOG" hidden="true">
 				<Anchors>
@@ -555,22 +576,17 @@
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
 								</Anchors>
 							</Frame>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.NineSlice" relativePoint="TOPRIGHT" x="0" y="-2"/>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.NineSlice" relativePoint="TOPRIGHT" x="8" y="-7"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.NineSlice" relativePoint="BOTTOMRIGHT" x="8" y="3"/>
 								</Anchors>
 							</EventFrame>
-							<Frame parentKey="LoadingSpinner" hidden="true" frameLevel="2000">
-								<Size x="60" y="60"/>
+							<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true" frameLevel="2000">
+								<Size x="80" y="80"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="0"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Spinner" setAllPoints="true" atlas="auctionhouse-ui-loadingspinner"/>
-									</Layer>
-								</Layers>
 							</Frame>
 						</Frames>
 						<Layers>
@@ -590,11 +606,6 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Animations>
-							<AnimationGroup parentKey="SpinnerAnim" looping="REPEAT">
-								<Rotation childKey="LoadingSpinner.Spinner" order="1" duration="1" degrees="-360"/>
-							</AnimationGroup>
-						</Animations>
 					</Frame>
 
 					<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">

@@ -1,10 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\Blizzard_SharedXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar.lua"/>
 
 	<Frame name="ClassNameplateBarFrame" parentKey="NameplateBar" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="scale" value=".75"/>
+			<KeyValue key="showBarFunc" value="ClassNameplateBar.ShowNameplateBar" type="global"/>
+			<KeyValue key="hideBarFunc" value="ClassNameplateBar.HideNameplateBar" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -25,7 +27,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
+				<Texture parentKey="ManaCostPredictionBar" file="Interface\TargetingFrame\UI-StatusBar">
+					<Color r="0.0" g="0.447" b="1.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -43,8 +47,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</StatusBar>
 </Ui>
-
-

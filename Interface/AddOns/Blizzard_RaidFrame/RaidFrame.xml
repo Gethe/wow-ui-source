@@ -1,0 +1,350 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="RaidFrame.lua"/>
+	<Frame name="RaidInfoHeaderTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="24"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlightSmall" justifyH="CENTER" text="TEST" parentKey="text">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="RaidInfoInstanceTemplate" virtual="true">
+		<Size x="300" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="150" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDifficulty" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="difficulty">
+					<Size x="160" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="10" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.name" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentReset" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="reset">
+					<Size x="150" y="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentExtended" inherits="GameFontHighlightSmall" text="EXTENDED" justifyH="RIGHT" parentKey="extended">
+					<Size x="150" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.reset" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.reset" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				RaidInfoInstance_OnMouseDown(self);
+			</OnMouseDown>
+			<OnMouseUp>
+				RaidInfoInstance_OnMouseUp(self);
+			</OnMouseUp>
+			<OnClick>
+				RaidInfoInstance_OnClick(self);
+			</OnClick>
+			<OnEnter>
+				RaidInfoInstance_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-10" y="-2"/>
+				<Anchor point="BOTTOMRIGHT" x="10" y="-2"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Frame name="RaidParentFrame"  toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Frames>
+			<Button name="$parentTab1" inherits="PanelTabButtonTemplate" text="RAID" id="1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset x="19" y="-30"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						RaidParentFrame_SetView(1);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" inherits="PanelTabButtonTemplate" text="LOOKING_FOR_RAID" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+						RaidParentFrame_SetView(2);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="RaidParentFrame_OnLoad"/>
+			<OnShow>
+				UpdateMicroButtons();
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+				QueueUpdater:RequestInfo();
+				QueueUpdater:AddRef();
+				RaidFinderFrame_UpdateTab();
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+				QueueUpdater:RemoveRef();
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="RaidFrame"><!-- Parent set dynamically.   See ClaimRaidFrame()  -->
+		<Frames>
+			<Frame parentKey="RoleCount" inherits="RoleCountTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="12" y="-25"/>
+				</Anchors>
+			</Frame>
+			<CheckButton name="RaidFrameAllAssistCheckButton" parent="RaidFrame" motionScriptsWhileDisabled="true" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="58" y="-23"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-30" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL);
+						self:RegisterEvent("GROUP_ROSTER_UPDATE");
+						self:RegisterEvent("PARTY_LEADER_CHANGED");
+						RaidFrameAllAssistCheckButton_UpdateAvailable(self);
+					</OnLoad>
+					<OnEvent>
+						RaidFrameAllAssistCheckButton_UpdateAvailable(self);
+					</OnEvent>
+					<OnClick>
+						if (self.enabled) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+						end
+						SetEveryoneIsAssistant(self:GetChecked());
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(ALL_ASSIST_DESCRIPTION, nil, nil, nil, nil, true);
+						if ( not self:IsEnabled() ) then
+							GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+						end
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</CheckButton>
+			<Frame name="RaidFrameNotInRaid" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="RaidFrameRaidDescription" inherits="GameFontNormal" text="RAID_DESCRIPTION" justifyH="LEFT">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="15" y="-73"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="RaidFrameConvertToRaidButton" inherits="UIPanelButtonTemplate" text="CONVERT_TO_RAID">
+				<Size x="115" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RaidFrame_ConvertToRaid"/>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO" >
+				<Size x="90" y="21"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-7" y="-24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( RaidInfoFrame:IsShown() ) then
+							RaidInfoFrame:Hide();
+						else
+							RaidInfoFrame:Show();
+						end
+					</OnClick>
+				</Scripts>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+			</Button>
+			<Frame name="RaidInfoFrame" enableMouse="true" hidden="true">
+				<Size x="345" y="250"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-28"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="RaidInfoDetailHeader" file="Interface\RaidFrame\UI-RaidInfo-Header">
+							<Size x="325" y="47"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-9"/>
+							</Anchors>
+							<TexCoords left="0.18164" right="0.81640" top="0.578125" bottom="0.94531"/>
+						</Texture>
+						<Texture name="RaidInfoDetailFooter" file="Interface\RaidFrame\UI-RaidInfo-Header">
+							<Size x="326" y="29"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="9" y="9"/>
+							</Anchors>
+							<TexCoords left="0.18164" right="0.81640" top="0.08593" bottom="0.3125"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
+					<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+						<KeyValues>
+							<KeyValue key="textString" value="RAID_INFORMATION" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="RaidInfoInstanceLabel" inherits="RaidInfoHeaderTemplate">
+						<Size x="173" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="13" y="-31"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.text:SetText(INSTANCE);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="RaidInfoIDLabel" inherits="RaidInfoHeaderTemplate">
+						<Size x="150" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="RaidInfoInstanceLabel" relativePoint="RIGHT" x="-1" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.text:SetText(LOCK_EXPIRE);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="RaidInfoCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+						</Anchors>
+					</Button>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="290" y="157"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="16" y="-58"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								RaidInfoFrame_Update();
+							</OnShow>
+						</Scripts>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="10" y="-2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="10" y="4"/>
+						</Anchors>
+					</EventFrame>
+					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate" text="EXTEND_RAID_LOCK">
+						<Size x="200" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="14" y="13"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="RaidInfoExtendButton_OnClick"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+					<Button name="RaidInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size x="90" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								RaidInfoFrame:Hide();
+							</OnClick>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnShow>
+					<OnHide>
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="RaidFrame_OnLoad"/>
+			<OnShow>
+				RaidFrame_OnShow(self);
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+			</OnHide>
+			<OnEvent function="RaidFrame_OnEvent"/>
+		</Scripts>
+		<HitRectInsets>
+			<AbsInset left="0" right="100" top="0" bottom="100"/>
+		</HitRectInsets>
+	</Frame>
+</Ui>

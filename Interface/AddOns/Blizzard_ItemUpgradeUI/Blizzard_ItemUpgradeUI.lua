@@ -1,3 +1,6 @@
+local UpgradeDropdownMinWidth = 95;
+local UpgradeDropdownMaxWidth = 120;
+
 UIPanelWindows["ItemUpgradeFrame"] = { area = "left", pushable = 0};
 
 function ItemUpgradeFrame_Show()
@@ -10,6 +13,9 @@ end
 function ItemUpgradeFrame_Hide()
 	HideUIPanel(ItemUpgradeFrame);
 end
+
+
+------------------------- Item Upgrade Frame -------------------------
 
 ItemUpgradeMixin = {};
 
@@ -28,7 +34,7 @@ function ItemUpgradeMixin:OnLoad()
 
 	self.Dropdown = self.ItemInfo.Dropdown;
 	UIDropDownMenu_Initialize(self.Dropdown, GenerateClosure(self.InitDropdown, self));
-	UIDropDownMenu_SetWidth(self.Dropdown, 95);
+	UIDropDownMenu_SetWidth(self.Dropdown, UpgradeDropdownMinWidth);
 end
 
 function ItemUpgradeMixin:OnShow()
@@ -91,8 +97,7 @@ function ItemUpgradeMixin:OnEvent(event, ...)
 		local buttonName = ...;
 		local isRightButton = buttonName == "RightButton";
 
-		local mouseFocus = GetMouseFocus();
-		local flyoutSelected = not isRightButton and DoesAncestryInclude(EquipmentFlyout_GetFrame(), mouseFocus);
+		local flyoutSelected = not isRightButton and DoesAncestryIncludeAny(EquipmentFlyout_GetFrame(), GetMouseFoci());
 		if not flyoutSelected then
 			EquipmentFlyout_Hide();
 		end
@@ -127,6 +132,7 @@ function ItemUpgradeMixin:Update(fromDropDown)
 		self.Arrow:Hide();
 		self.upgradeAnimationsInProgress = false;
 		self.targetUpgradeLevel = nil;
+		self.insufficientCostInfo = nil;
 		return;
 	end
 
@@ -147,7 +153,14 @@ function ItemUpgradeMixin:Update(fromDropDown)
 
 	HideDropDownMenu(1);
 	UIDropDownMenu_SetSelectedValue(self.Dropdown, self.targetUpgradeLevel);
-	UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel));
+	
+	if self.upgradeInfo.customUpgradeString then
+		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(self.upgradeInfo.customUpgradeString, self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
+	else
+		UIDropDownMenu_SetText(self.Dropdown, ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(self.targetUpgradeLevel, self.upgradeInfo.maxUpgrade));
+	end
+
+	UIDropDownMenu_MatchTextWidth(self.Dropdown, UpgradeDropdownMinWidth, UpgradeDropdownMaxWidth);
 
 	self.upgradeInfo.itemQualityColor = ITEM_QUALITY_COLORS[self.upgradeInfo.displayQuality].color;
 	self.upgradeInfo.targetQualityColor = self.targetUpgradeLevelInfo and ITEM_QUALITY_COLORS[self.targetUpgradeLevelInfo.displayQuality].color;
@@ -190,6 +203,8 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 
 	local buttonDisabledState = true;
 
+	self.insufficientCostInfo = nil;
+
 	self.UpgradeButton:SetDisabledTooltip();
 
 	if canUpgradeItem  then
@@ -221,12 +236,22 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 		self.upgradeAnimationsInProgress = false;
 
 		local checkUpgrade = (self.upgradeInfo.currUpgrade > 1) and self.upgradeInfo.currUpgrade or (self.upgradeInfo.currUpgrade + 1);
-		local currentUpgradeCosts = self:GetUpgradeCostTable(checkUpgrade);
-		if currentUpgradeCosts then
+		local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(checkUpgrade);
+		if currencyCostTable or itemCostTable then
 			self.PlayerCurrencies:Clear();
-			for currencyID, currencyCost in pairs(currentUpgradeCosts) do
-				self.PlayerCurrencies:AddCurrency(currencyID);
+
+			if currencyCostTable then
+				for currencyID, _ in pairs(currencyCostTable) do
+					self.PlayerCurrencies:AddCurrency(currencyID);
+				end
 			end
+
+			if itemCostTable then
+				for itemID, _ in pairs(itemCostTable) do
+					self.PlayerCurrencies:AddItem(itemID);
+				end
+			end
+
 			self.PlayerCurrencies:Show();
 		else
 			self.PlayerCurrencies:Hide();
@@ -243,23 +268,118 @@ function ItemUpgradeMixin:PopulatePreviewFrames()
 	self.UpgradeCostFrame:Clear();
 	self.PlayerCurrencies:Clear();
 
-	local currentUpgradeCosts = self:GetUpgradeCostTable();
-	for currencyID, currencyCost in pairs(currentUpgradeCosts) do
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local insufficientCosts = {};
 
-		if currencyCost > currencyInfo.quantity then
+	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables();
+	for currencyID, currencyCostEntry in pairs(currencyCostTable) do
+		local ownedCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+
+		-- Passing a lazy retrieval function rather than direct name to match pattern needed by cost items (see below)
+		local function GetName() return ownedCurrencyInfo.name;	end
+
+		local color = nil;
+		if currencyCostEntry.cost > ownedCurrencyInfo.quantity then
 			buttonDisabledState = true;
-			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost, RED_FONT_COLOR);
-		else
-			self.UpgradeCostFrame:AddCurrency(currencyID, currencyCost);
+			color = RED_FONT_COLOR;
+			table.insert(insufficientCosts, { currencyID = currencyID, GetName = GetName });
+		elseif currencyCostEntry.discountInfo and currencyCostEntry.discountInfo.isDiscounted then
+			color = GREEN_FONT_COLOR;
 		end
+
+		local quantityStringInstance = self.UpgradeCostFrame:AddCurrency(currencyID, currencyCostEntry.cost, color);
+		quantityStringInstance.costInfo = { GetCostName = GetName, discountInfo = currencyCostEntry.discountInfo, highWatermarkSlot = self.upgradeInfo.highWatermarkSlot };
+
 		self.PlayerCurrencies:AddCurrency(currencyID);
+	end
+
+	for itemID, itemCostEntry in pairs(itemCostTable) do
+		local includeBank = true;
+		local ownedItemCount = C_Item.GetItemCount(itemID, includeBank);
+
+		-- Item name won't be available if data for item hasn't been loaded on the client, and first opening this frame is likely the first time this cost item has been asked for
+		-- So pass off a lazy retrieval function for tooltip use as it should be available by the time it does need to be displayed
+		local function GetName() return C_Item.GetItemNameByID(itemID);	end
+
+		local color = nil;
+		if itemCostEntry.cost > ownedItemCount then
+			buttonDisabledState = true;
+			color = RED_FONT_COLOR;
+			table.insert(insufficientCosts, { itemID = itemID, GetName = GetName });
+		elseif itemCostEntry.discountInfo and itemCostEntry.discountInfo.isDiscounted then
+			color = GREEN_FONT_COLOR;
+		end
+
+		local seasonSourceString = self:GetSeasonSourceStringForCostItem(itemID, self.upgradeInfo);
+
+		local quantityStringInstance, iconFrameInstance = self.UpgradeCostFrame:AddItem(itemID, itemCostEntry.cost, color);
+		quantityStringInstance.costInfo = { GetCostName = GetName, discountInfo = itemCostEntry.discountInfo, highWatermarkSlot = self.upgradeInfo.highWatermarkSlot };
+		iconFrameInstance.costSourceString = seasonSourceString;
+
+		local _, playerOwnedIconFrameInstance = self.PlayerCurrencies:AddItem(itemID);
+		playerOwnedIconFrameInstance.costSourceString = seasonSourceString;
+	end
+
+	if #insufficientCosts > 0 then
+		self.insufficientCostInfo = { insufficientCosts = insufficientCosts };
+		self.insufficientCostInfo.canAnyCostsBeDowngradedTo = self:CanAnyCostsBeDowngradedTo(insufficientCosts, self.upgradeInfo);
 	end
 
 	self:UpdateButtonAndArrowStates(buttonDisabledState, showRightPreview);
 
 	self.UpgradeCostFrame:Show();
 	self.PlayerCurrencies:Show();
+end
+
+function ItemUpgradeMixin:GetSeasonSourceStringForCostItem(itemID, upgradeInfo)
+	if not upgradeInfo.upgradeCostTypesForSeason or #upgradeInfo.upgradeCostTypesForSeason == 0 then
+		return nil;
+	end
+
+	for _, costType in ipairs(upgradeInfo.upgradeCostTypesForSeason) do
+		if costType.itemID and costType.itemID == itemID then
+			return costType.sourceString;
+		end
+	end
+
+	return nil;
+end
+
+function ItemUpgradeMixin:CanAnyCostsBeDowngradedTo(insufficientCosts, upgradeInfo)
+	if not upgradeInfo.upgradeCostTypesForSeason or #upgradeInfo.upgradeCostTypesForSeason == 0 then
+		return false;
+	end
+
+	-- Cost resources of a higher order index can be downgraded to lower order index resoures
+	-- So determine if any insufficient cost resoures could be gained via downgrading
+
+	-- Hopefully, we never mix and match costs being items AND currencies in one season, but if we do, they'll all share an order index range
+	-- Hopefully, in that situation, we also still make them downgradeable between each other, otherwise we'll need to refactor all this logic to match however that works
+	local highestOrderIndex = -1;
+	local itemIDToOrderIndex = {};
+	local currencyIDToOrderIndex = {};
+	for _, costType in ipairs(upgradeInfo.upgradeCostTypesForSeason) do
+		if costType.itemID or costType.currencyID then
+			if costType.orderIndex > highestOrderIndex then
+				highestOrderIndex = costType.orderIndex;
+			end
+
+			if costType.itemID then
+				itemIDToOrderIndex[costType.itemID] = costType.orderIndex;
+			elseif costType.currencyID then
+				currencyIDToOrderIndex[costType.currencyID] = costType.orderIndex;
+			end
+		end
+	end
+
+	for _, insufficientCost in ipairs(insufficientCosts) do
+		if insufficientCost.itemID and itemIDToOrderIndex[insufficientCost.itemID] and itemIDToOrderIndex[insufficientCost.itemID] < highestOrderIndex then
+			return true;
+		elseif insufficientCost.currencyID and currencyIDToOrderIndex[insufficientCost.currencyID] and currencyIDToOrderIndex[insufficientCost.currencyID] < highestOrderIndex then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 -- compare 2 strings finding numeric differences
@@ -300,52 +420,113 @@ function ItemUpgradeMixin:GetTrinketUpgradeText(string1, string2)
 	return output;
 end
 
+function ItemUpgradeMixin:GetTotalCostEntry(previousLevelCost, currentCostEntry)
+	local previousCost = previousLevelCost and previousLevelCost.cost or 0;
+	local previousDiscount = previousLevelCost and previousLevelCost.discountInfo or nil;
+	
+	local newDiscount = currentCostEntry.discountInfo;
+	-- If current cost level doesn't have a discount, carry forward the previous level's discount since it does contribute toward the total
+	if (not newDiscount or not newDiscount.isDiscounted) and (previousDiscount and previousDiscount.isDiscounted) then
+		newDiscount = previousDiscount;
+	end
+
+	return {
+		cost = previousCost + currentCostEntry.cost,
+		discountInfo = newDiscount
+	};
+end
+
 function ItemUpgradeMixin:CalculateTotalCostTable()
-	self.upgradeCosts = {};
+	self.upgradeCurrencyCosts = {};
+	self.upgradeItemCosts = {};
 
 	for _, upgradeLevelInfo in ipairs(self.upgradeInfo.upgradeLevelInfos) do
 		local previousRank = upgradeLevelInfo.upgradeLevel - 1;
 
-		local levelCostTable;
-		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeCosts[previousRank] then
-			levelCostTable = CopyTable(self.upgradeCosts[previousRank], true);
+		local levelCurrencyCostTable;
+		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeCurrencyCosts[previousRank] then
+			levelCurrencyCostTable = CopyTable(self.upgradeCurrencyCosts[previousRank], true);
 		else
-			levelCostTable = {};
+			levelCurrencyCostTable = {};
 		end
 
-		for _, levelCost in ipairs(upgradeLevelInfo.costsToUpgrade) do
-			local currentCost = levelCostTable[levelCost.currencyID] or 0;
-			levelCostTable[levelCost.currencyID] = currentCost + levelCost.cost;
+		for _, levelCost in ipairs(upgradeLevelInfo.currencyCostsToUpgrade) do
+			local previousCostEntry = levelCurrencyCostTable[levelCost.currencyID];
+			levelCurrencyCostTable[levelCost.currencyID] = self:GetTotalCostEntry(previousCostEntry, levelCost);
 		end
 
-		self.upgradeCosts[upgradeLevelInfo.upgradeLevel] = levelCostTable;
+		self.upgradeCurrencyCosts[upgradeLevelInfo.upgradeLevel] = levelCurrencyCostTable;
+
+		local levelItemCostTable;
+		if previousRank > self.upgradeInfo.currUpgrade and self.upgradeItemCosts[previousRank] then
+			levelItemCostTable = CopyTable(self.upgradeItemCosts[previousRank], true);
+		else
+			levelItemCostTable = {};
+		end
+
+		for _, levelCost in ipairs(upgradeLevelInfo.itemCostsToUpgrade) do
+			local previousCostEntry = levelItemCostTable[levelCost.itemID];
+			levelItemCostTable[levelCost.itemID] = self:GetTotalCostEntry(previousCostEntry, levelCost);
+		end
+
+		self.upgradeItemCosts[upgradeLevelInfo.upgradeLevel] = levelItemCostTable;
 	end
 end
 
-function ItemUpgradeMixin:GetUpgradeCostTable(upgradeLevel)
-	return self.upgradeCosts[upgradeLevel or self.targetUpgradeLevel];
+function ItemUpgradeMixin:GetUpgradeCostTables(upgradeLevel)
+	upgradeLevel = upgradeLevel or self.targetUpgradeLevel;
+
+	return self.upgradeCurrencyCosts[upgradeLevel], self.upgradeItemCosts[upgradeLevel];
 end
 
 function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
-	local currencyStringTable = {};
+	local costStringTable = {};
 	local checkQuantity = (upgradeLevel ~= nil);
 
-	local costTable = self:GetUpgradeCostTable(upgradeLevel);
-	for currencyID, currencyCost in pairs(costTable) do
+	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(upgradeLevel);
+	for currencyID, currencyCostEntry in pairs(currencyCostTable) do
 		local hasEnough = true;
 		if checkQuantity then
-			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
-			hasEnough = currencyCost <= currencyInfo.quantity
+			local ownedCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+			hasEnough = currencyCostEntry.cost <= ownedCurrencyInfo.quantity
 		end
 
+		local colorCode = nil;
 		if not hasEnough then
-			table.insert(currencyStringTable, GetCurrencyString(currencyID, currencyCost, RED_FONT_COLOR_CODE));
-		else
-			table.insert(currencyStringTable, GetCurrencyString(currencyID, currencyCost));
+			colorCode = RED_FONT_COLOR_CODE;
+		elseif currencyCostEntry.discountInfo and currencyCostEntry.discountInfo.isDiscounted then
+			colorCode = GREEN_FONT_COLOR_CODE;
 		end
+		table.insert(costStringTable, GetCurrencyString(currencyID, currencyCostEntry.cost, colorCode));
 	end
 
-	return table.concat(currencyStringTable, " ");
+	for itemID, itemCostEntry in pairs(itemCostTable) do
+		local hasEnough = true;
+		if checkQuantity then
+			local includeBank = true;
+			local ownedItemCount = C_Item.GetItemCount(itemID, includeBank);
+			hasEnough = itemCostEntry.cost <= ownedItemCount;
+		end
+
+		local colorCode = nil;
+		if not hasEnough then
+			colorCode = RED_FONT_COLOR_CODE;
+		elseif itemCostEntry.discountInfo and itemCostEntry.discountInfo.isDiscounted then
+			colorCode = GREEN_FONT_COLOR_CODE;
+		end
+
+		table.insert(costStringTable, FormattingUtil.GetItemCostString(itemID, itemCostEntry.cost, colorCode));
+	end
+
+	return table.concat(costStringTable, " ");
+end
+
+function ItemUpgradeMixin:GetUpgradeInfo()
+	return self.upgradeInfo;
+end
+
+function ItemUpgradeMixin:GetInsufficientCostInfo()
+	return self.insufficientCostInfo;
 end
 
 function ItemUpgradeMixin:InitDropdown()
@@ -358,7 +539,11 @@ function ItemUpgradeMixin:InitDropdown()
 
 	local info = UIDropDownMenu_CreateInfo();
 	for i = currUpgradeLevel + 1, maxUpgradeLevel do
-		info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i);
+		if self.upgradeInfo.customUpgradeString then
+			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT_STRING:format(self.upgradeInfo.customUpgradeString, i, maxUpgradeLevel);
+		else
+			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i, maxUpgradeLevel);
+		end
 		info.value = i;
 		info.notCheckable = true;
 		info.minWidth = 120;
@@ -414,11 +599,16 @@ function ItemUpgradeMixin:OnTooltipReappearComplete()
 	self.upgradeAnimationsInProgress = false;
 end
 
+
+------------------------- Item Upgrade Button -------------------------
+
 ItemUpgradeButtonMixin = {};
 
 function ItemUpgradeButtonMixin:OnClick()
 	self:SetEnabled(false);
-	local upgradeInfo = ItemUpgradeFrame.upgradeInfo;
+
+	local upgradeFrame = self:GetUpgradeFrame();
+	local upgradeInfo = upgradeFrame:GetUpgradeInfo();
 
 	local function StaticPopupItemOnEnter(itemFrame)
 		GameTooltip:SetOwner(itemFrame, "ANCHOR_RIGHT");
@@ -432,10 +622,44 @@ function ItemUpgradeButtonMixin:OnClick()
 		color = {upgradeInfo.itemQualityColor:GetRGBA()},
 		link = C_ItemUpgrade.GetItemHyperlink(),
 		itemFrameOnEnter = StaticPopupItemOnEnter,
+		isItemBound = C_ItemUpgrade.IsItemBound(),
+		costString = upgradeFrame:GetUpgradeCostString(),
 	};
 
-	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", ItemUpgradeFrame:GetUpgradeCostString(), "", data);
+	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", nil, nil, data);
 end
+
+function ItemUpgradeButtonMixin:GetDisabledTooltip()
+	local insufficientCostinfo = self:GetUpgradeFrame():GetInsufficientCostInfo();
+
+	if self.disabledTooltip or not insufficientCostinfo or not insufficientCostinfo.insufficientCosts or #insufficientCostinfo.insufficientCosts == 0 then
+		return DisabledTooltipButtonMixin.GetDisabledTooltip(self);
+	end
+
+	local insufficientCosts = insufficientCostinfo.insufficientCosts;
+	local numInsufficientCosts = #insufficientCosts;
+
+	local insufficientCostTooltip;
+	if numInsufficientCosts == 1 then
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY:format(insufficientCosts[1].GetName());
+	elseif numInsufficientCosts == 2 then
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_TWO:format(insufficientCosts[1].GetName(), insufficientCosts[2].GetName());
+	else
+		insufficientCostTooltip = ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_MULTIPLE;
+	end
+
+	if insufficientCostinfo.canAnyCostsBeDowngradedTo then
+		insufficientCostTooltip = ("%s|n%s"):format(insufficientCostTooltip, ITEM_UPGRADE_ERROR_NOT_ENOUGH_CURRENCY_DOWNGRADE);
+	end
+
+	return insufficientCostTooltip, self.disabledTooltipAnchor;
+end
+
+function ItemUpgradeButtonMixin:GetUpgradeFrame()
+	return self:GetParent();
+end
+
+------------------------- Item Upgrade Preview -------------------------
 
 ItemUpgradePreviewMixin = {};
 
@@ -497,10 +721,15 @@ function ItemUpgradePreviewMixin:GeneratePreviewTooltip(isUpgrade, parentFrame)
 		GameTooltip_AddNormalLine(self, itemLevelFormatString:format(currentItemLevel), false);
 	end
 
+	local upgradeLevel = upgradeInfo.currUpgrade;
 	if isUpgrade then
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade + numUpgradeLevels, upgradeInfo.maxUpgrade), false);
+		upgradeLevel = upgradeLevel + numUpgradeLevels;
+	end
+
+	if upgradeInfo.customUpgradeString then
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT_STRING:format(upgradeInfo.customUpgradeString, upgradeLevel, upgradeInfo.maxUpgrade), false);
 	else
-		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade), false);
+		GameTooltip_AddNormalLine(self, ITEM_UPGRADE_FRAME_CURRENT_UPGRADE_FORMAT:format(upgradeLevel, upgradeInfo.maxUpgrade), false);
 	end
 
 	-- Stats ----------------------------------------------------------------------------------------------
@@ -593,6 +822,9 @@ function ItemUpgradePreviewMixin:ApplyColorToGlowNiceSlice(color)
 	end
 end
 
+
+------------------------- Item Upgrade Slot -------------------------
+
 ItemUpgradeSlotMixin = {};
 
 function ItemUpgradeSlotMixin:OnLoad()
@@ -667,12 +899,16 @@ function ItemUpgradeSlotMixin:OnDrag()
 	end
 end
 
+
+------------------------- Item Upgrade Item Info -------------------------
+
 ItemUpgradeItemInfoMixin = {};
 
 function ItemUpgradeItemInfoMixin:Setup(upgradeInfo, canUpgrade)
 	if not upgradeInfo then
 		self.MissingItemText:Show();
 		self.ItemName:Hide();
+		self.UpgradeProgress:Hide();
 		self.UpgradeTo:Hide();
 		self.Dropdown:Hide();
 	else
@@ -681,9 +917,122 @@ function ItemUpgradeItemInfoMixin:Setup(upgradeInfo, canUpgrade)
 		self.ItemName:SetText(upgradeInfo.itemQualityColor:WrapTextInColorCode(upgradeInfo.name));
 		self.ItemName:Show();
 
+		local currentItemLevel = C_ItemUpgrade.GetItemUpgradeCurrentLevel();
+		if upgradeInfo.customUpgradeString then
+			self.UpgradeProgress:SetText(ITEM_UPGRADE_PROGRESS_LEVEL_FORMAT_STRING:format(
+				upgradeInfo.customUpgradeString, upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade, currentItemLevel, upgradeInfo.minItemLevel, upgradeInfo.maxItemLevel));
+		else
+			self.UpgradeProgress:SetText(ITEM_UPGRADE_PROGRESS_LEVEL_FORMAT:format(
+				upgradeInfo.currUpgrade, upgradeInfo.maxUpgrade, currentItemLevel, upgradeInfo.minItemLevel, upgradeInfo.maxItemLevel));
+		end
+		self.UpgradeProgress:Show();
+
 		self.UpgradeTo:SetShown(canUpgrade);
 		self.Dropdown:SetShown(canUpgrade);
 	end
 
 	self:Layout();
+end
+
+
+------------------------- Item Upgrade Cost Quantity -------------------------
+
+local DualSlotHighWatermarkSlots = {
+	[Enum.ItemRedundancySlot.Trinket] = ITEM_UPGRADE_DISCOUNT_ITEM_TYPE_TRINKET,
+	[Enum.ItemRedundancySlot.Finger] = ITEM_UPGRADE_DISCOUNT_ITEM_TYPE_FINGER,
+};
+
+local WeaponSetHighWatermarkSlots = {
+	Enum.ItemRedundancySlot.Twohand,
+	Enum.ItemRedundancySlot.OnehandWeapon,
+	Enum.ItemRedundancySlot.MainhandWeapon,
+	Enum.ItemRedundancySlot.Offhand,
+};
+
+ItemUpgradeCostQuantityMixin = {};
+
+function ItemUpgradeCostQuantityMixin:OnEnter()
+	if not self.costInfo or not self.costInfo.discountInfo or not self.costInfo.discountInfo.isDiscounted then
+		return;
+	end
+
+	local discountInfo = self.costInfo.discountInfo;
+	local costName = self.costInfo.GetCostName();
+
+	if not costName then
+		return;
+	end
+
+	local tooltip = GameTooltip;
+	tooltip:SetOwner(self, "ANCHOR_RIGHT");
+	-- Darker backing so this tooltip is readable over the embedded item tooltips
+	SharedTooltip_SetBackdropStyle(tooltip, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK);
+
+	GameTooltip_AddDisabledLine(tooltip, ITEM_UPGRADE_DISCOUNT_TOOLTIP_TITLE:format(costName));
+
+	if discountInfo.isAccountWideDiscount then
+		GameTooltip_AddColoredLine(tooltip, ITEM_UPGRADE_DISCOUNT_TOOLTIP_ACCOUNT_WIDE, LIGHTBLUE_FONT_COLOR);
+	end
+
+	if discountInfo.isPartialTwoHandDiscount or tContains(WeaponSetHighWatermarkSlots, self.costInfo.highWatermarkSlot) then
+		-- 2H weapons can receive a partial discount if player has upgraded 1H weapons, & all weapons benefit from the highest ilvl "set" of all weapon slots (set = one 2H, two 1H, or main + offhand)
+		-- Both are conveyed using the same "discount due to a weapon set" tooltip language for now for simplicity
+		local tooltipTemplate = discountInfo.doesCurrentCharacterMeetHighWatermark
+							and ITEM_UPGRADE_DISCOUNT_TOOLTIP_PARTIAL_TWO_HAND_CURRENT_CHARACTER
+							or ITEM_UPGRADE_DISCOUNT_TOOLTIP_PARTIAL_TWO_HAND_OTHER_CHARACTER;
+
+		GameTooltip_AddHighlightLine(tooltip, tooltipTemplate:format(costName, discountInfo.discountHighWatermark));
+	elseif DualSlotHighWatermarkSlots[self.costInfo.highWatermarkSlot] then
+		-- Slots you have two of require reaching an ilvl with two different items to define HWM
+		local tooltipTemplate = discountInfo.doesCurrentCharacterMeetHighWatermark
+							and ITEM_UPGRADE_DISCOUNT_TOOLTIP_TWO_SLOT_CURRENT_CHARACTER
+							or ITEM_UPGRADE_DISCOUNT_TOOLTIP_TWO_SLOT_OTHER_CHARACTER;
+
+		GameTooltip_AddHighlightLine(tooltip, tooltipTemplate:format(costName, DualSlotHighWatermarkSlots[self.costInfo.highWatermarkSlot], discountInfo.discountHighWatermark));
+
+	else
+		-- Regular discount specific to this HWM slot
+		local tooltipTemplate = discountInfo.doesCurrentCharacterMeetHighWatermark
+							and ITEM_UPGRADE_DISCOUNT_TOOLTIP_CURRENT_CHARACTER
+							or ITEM_UPGRADE_DISCOUNT_TOOLTIP_OTHER_CHARACTER;
+
+		GameTooltip_AddHighlightLine(tooltip, tooltipTemplate:format(costName, discountInfo.discountHighWatermark));
+	end
+
+	tooltip:Show();
+end
+
+function ItemUpgradeCostQuantityMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+
+------------------------- Item Upgrade Cost Icon -------------------------
+
+ItemUpgradeCostIconMixin = {};
+
+function ItemUpgradeCostIconMixin:OnEnter()
+	if self.currencyID or self.itemID then
+		local tooltip = GameTooltip;
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		SharedTooltip_SetBackdropStyle(tooltip, GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK);
+
+		if self.currencyID then
+			tooltip:SetCurrencyByID(self.currencyID);
+			tooltip:Show();
+		elseif self.itemID then
+			local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", self.itemID);
+			tooltipInfo.excludeLines = {
+					Enum.TooltipDataLineType.SellPrice,
+					Enum.TooltipDataLineType.ItemBinding,
+			};
+			tooltipInfo.tooltipPostCall = function(tooltipInstance)
+				if self.costSourceString and self.costSourceString ~= "" then
+					GameTooltip_AddBlankLineToTooltip(tooltipInstance);
+					GameTooltip_AddNormalLine(tooltipInstance, self.costSourceString);
+				end
+			end
+			tooltip:ProcessInfo(tooltipInfo);
+		end
+	end
 end

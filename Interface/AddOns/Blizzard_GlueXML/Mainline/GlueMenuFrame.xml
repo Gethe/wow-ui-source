@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="GlueMenuFrameButtonTemplate" inherits="MainMenuFrameButtonTemplate" virtual="true">
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+	</Button>
+
+	<Frame name="GlueMenuFrame" mixin="GlueMenuFrameMixin" inherits="MainMenuFrameTemplate" frameLevel="7" parent="GlueParent" hidden="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="GlueMenuFrameButtonTemplate" type="string"/>
+			<KeyValue key="dialogHeaderFont" value="GlueFontNormal" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

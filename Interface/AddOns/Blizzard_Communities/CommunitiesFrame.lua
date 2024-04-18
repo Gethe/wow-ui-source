@@ -155,8 +155,7 @@ function CommunitiesFrameMixin:OnShow()
 	self:UpdateCommunitiesTabs();
 
 	if self.CommunitiesList:IsShown() then
-		local noScrollInterpolation = true;
-		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId(), noScrollInterpolation);
+		self.CommunitiesList:ScrollToClub(self:GetSelectedClubId());
 	end
 
 	self:RegisterCallback(CommunitiesFrameMixin.Event.MemberListDropDownShown, self.OnMemberListDropDownShown, self);
@@ -1022,8 +1021,7 @@ function CommunitiesFrameMixin:CheckForTutorials()
 		return;
 	end
 
-	if self.CommunitiesList:IsShown() and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE) then
-		self:ShowClubFinderTutorial();
+	if self.CommunitiesList:IsShown() then
 		return;
 	end
 
@@ -1097,22 +1095,6 @@ function CommunitiesFrameMixin:CheckForTutorials()
 			HelpTip:Hide(self, CLUB_FINDER_TUTORIAL_GUILD_LINK);
 		end
 	end
-end
-
-function CommunitiesFrameMixin:ShowClubFinderTutorial()
-	local tutorialText = self.CommunitiesList:IsFinderVisible() and CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_NO_SCROLL or CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_SCROLL;
-	local helpTipInfo = {
-		text = tutorialText,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCCOUNT_CLUB_FINDER_NEW_FEATURE,
-		targetPoint = HelpTip.Point.BottomEdgeCenter,
-		alignment = HelpTip.Alignment.Left,
-		onHideCallback = function(acknowledged, closeFlag) self:CheckForTutorials(); end;
-		offsetX = -4,
-	};
-
-	HelpTip:Show(self, helpTipInfo, self.CommunitiesList);
 end
 
 function CommunitiesFrameMixin:ShowClubFinderApplicantListBreadcrumbForLeader()
@@ -1609,8 +1591,8 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame:SetSize(814, 426);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame.CommunitiesList, "TOPRIGHT", 31, -44);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame.MemberList, "BOTTOMLEFT", -32, 28);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 10, -11);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 10, -17);
+		communitiesFrame.Chat.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 15, 1);
+		communitiesFrame.Chat.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 10, -25);
 		communitiesFrame.Chat.InsetFrame:Show();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("TOPLEFT", communitiesFrame.Chat, "BOTTOMLEFT", -4, -4);
@@ -1633,8 +1615,8 @@ function CommunitiesFrameMaximizeMinimizeButton_OnLoad(self)
 		communitiesFrame:SetSize(322, 406);
 		communitiesFrame.Chat:SetPoint("TOPLEFT", communitiesFrame, "TOPLEFT", 13, -67);
 		communitiesFrame.Chat:SetPoint("BOTTOMRIGHT", communitiesFrame, "BOTTOMRIGHT", -35, 36);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 8, -10);
-		communitiesFrame.Chat.MessageFrame.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 8, 7);
+		communitiesFrame.Chat.ScrollBar:SetPoint("TOPLEFT", communitiesFrame.Chat.MessageFrame, "TOPRIGHT", 13, 0);
+		communitiesFrame.Chat.ScrollBar:SetPoint("BOTTOMLEFT", communitiesFrame.Chat.MessageFrame, "BOTTOMRIGHT", 13, -4);
 		communitiesFrame.Chat.InsetFrame:Hide();
 		communitiesFrame.ChatEditBox:ClearAllPoints();
 		communitiesFrame.ChatEditBox:SetPoint("BOTTOMLEFT", communitiesFrame, "BOTTOMLEFT", 10, 0);

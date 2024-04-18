@@ -1,11 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_AuctionHouseWoWTokenFrame.lua"/>
 
-	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="WowTrimScrollBar" virtual="true">
+	<EventFrame name="DummyAuctionHouseScrollBarTemplate" inherits="MinimalScrollBar" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
-			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-1" y="-1"/>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-2"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="5" y="7"/>
 		</Anchors>
 	</EventFrame>
 	
@@ -228,21 +228,6 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a=".2"/>
 				</HighlightTexture>
-				<Scripts>
-					<OnLoad>
-						self.Ring:Hide();
-					</OnLoad>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT",-22,-22);
-						GameTooltip:SetText(TUTORIAL_TOKEN_ABOUT_TOKENS);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnClick>
-						local gameTimeTutorial = self:GetParent().GameTimeTutorial;
-						gameTimeTutorial:SetShown(not gameTimeTutorial:IsShown());
-					</OnClick>
-				</Scripts>
 			</Button>
 			<Button parentKey="TokenDisplay" mixin="WoWTokenDisplayMixin" inherits="AuctionHouseItemDisplayTemplate">
 				<Anchors>

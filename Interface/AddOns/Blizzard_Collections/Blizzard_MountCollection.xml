@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_MountCollection.lua"/>
 
 	<Frame name="AlertMountEquipmentFeatureTemplate" inherits="NewFeatureLabelTemplate" mixin="AlertMountEquipmentFeatureMixin" virtual="true">
@@ -193,49 +193,101 @@
 
 	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
 		<Frames>
-			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate">
-				<Size x="33" y="33"/>
+			<Frame parentKey="MountSpellButtons" inherits="HorizontalLayoutFrame" useParentLevel="true">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="35" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-6" y="-25"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="288" y="-25"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
-							<Color r="0" g="0" b="0" a="0.6"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
-							<Size x="35" y="35"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="Summon Random Favorite Mount">
-							<Size x="170" y="0"/>
-							<Color r="1" g="1" b="1"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="MountJournalSummonRandomFavoriteButton_OnLoad"/>
-					<OnClick function="MountJournalSummonRandomFavoriteButton_OnClick"/>
-					<OnDragStart function="MountJournalSummonRandomFavoriteButton_OnDragStart"/>
-					<OnEnter function="MountJournalSummonRandomFavoriteButton_OnEnter"/>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-			</Button>
+				<Frames>
+					<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate" mixin="MountJournalSummonRandomFavoriteButtonMixin">
+						<Size x="33" y="33"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="leftPadding" value="170" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+									<Color r="0" g="0" b="0" a="0.6"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+									<Size x="35" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
+								<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" >
+									<Size x="170" y="0"/>
+									<Color r="1" g="1" b="1"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+							<OnDragStart method="OnDragStart"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentDynamicFlightModeButton" parentKey="DynamicFlightModeButton" inherits="SecureFrameTemplate" mixin="MountJournalDynamicFlightModeButtonMixin">
+						<Size x="33" y="33"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="leftPadding" value="170" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+									<Color r="0" g="0" b="0" a="0.6"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+									<Size x="35" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
+								<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname">
+									<Size x="170" y="0"/>
+									<Color r="1" g="1" b="1"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnClick method="OnClick"/>
+							<OnDragStart method="OnDragStart"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
 			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
 				<Size x="260" y="496"/>
 				<Anchors>
@@ -442,8 +494,11 @@
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Frames>
-							<Button parentKey="RotateLeftButton" inherits="RotateOrbitCameraLeftButtonTemplate" />
-							<Button parentKey="RotateRightButton" inherits="RotateOrbitCameraRightButtonTemplate" />
+							<Frame parentKey="ControlFrame" frameLevel="500" inherits="ModelSceneControlFrameTemplate" >
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="10"/>
+								</Anchors>
+							</Frame>
 							<CheckButton parentKey="TogglePlayer" mixin="PlayerPreviewToggle" inherits="UICheckButtonTemplate" >
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" >
@@ -454,7 +509,7 @@
 									<Layer level="ARTWORK">
 										<FontString parentKey="TogglePlayerText" inherits="GameFontNormalSmall" text="MOUNT_JOURNAL_PLAYER">
 											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.TogglePlayer" relativePoint="LEFT" x="0" y="0"/>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -471,6 +526,8 @@
 									MountJournalMountButton_UseMount(MountJournal.selectedMountID);
 								end
 							</OnMouseUp>
+							<OnEnter function="MountJournal_ModelScene_OnEnter" />
+							<OnLeave function="MountJournal_ModelScene_OnLeave" />
 						</Scripts>
 					</ModelScene>
 				</Frames>
@@ -483,10 +540,10 @@
 				</Anchors>
 			</Frame>
 			
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar" frameStrata="HIGH">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="3" y="36"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="31"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 				</Anchors>
 			</EventFrame>
 			

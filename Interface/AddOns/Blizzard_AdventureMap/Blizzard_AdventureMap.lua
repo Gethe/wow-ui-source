@@ -68,10 +68,14 @@ end
 function AdventureMapMixin:RefreshInsets()
 	MapCanvasMixin.RefreshInsets(self);
 
-	for insetIndex = 1, C_AdventureMap.GetNumMapInsets() do
-		local mapID, title, description, collapsedIcon, areaTableID, numDetailTiles, normalizedX, normalizedY = C_AdventureMap.GetMapInsetInfo(insetIndex);
-		if (self.areaTableIDsToDisplay[areaTableID]) then
-			self:AddInset(insetIndex, mapID, title, description, collapsedIcon, numDetailTiles, normalizedX, normalizedY);
+	local numInsets = C_AdventureMap.GetNumMapInsets();
+
+	if numInsets and numInsets > 0 then
+		for insetIndex = 1, numInsets do
+			local mapID, title, description, collapsedIcon, areaTableID, numDetailTiles, normalizedX, normalizedY = C_AdventureMap.GetMapInsetInfo(insetIndex);
+			if (self.areaTableIDsToDisplay[areaTableID]) then
+				self:AddInset(insetIndex, mapID, title, description, collapsedIcon, numDetailTiles, normalizedX, normalizedY);
+			end
 		end
 	end
 end

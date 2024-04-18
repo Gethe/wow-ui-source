@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_MawBuffs.lua"/>
 
 	<Button name="MawBuffTemplate" mixin="MawBuffMixin" virtual="true" motionScriptsWhileDisabled="true">
@@ -106,21 +106,4 @@
 		<DisabledTexture atlas="jailerstower-animapowerbutton-normal" parentKey="DisabledTexture" desaturated="true"/>
 		<PushedTextOffset x="1.25" y="-1"/>
 	</Button>
-	<Frame name="MawBuffsBelowMinimapFrame" inherits="UIFrameManager_ManagedFrame, UIParentRightManagedFrameTemplate" mixin="MawBuffsBelowMinimapFrameMixin" hidden="true" enableMouse="true" parent="UIParent" toplevel="true">
-		<Size x="243" y="50"/>
-		<KeyValues>
-			<KeyValue key="frameType" value="Enum.UIFrameType.JailersTowerBuffs" type="global"/>
-			<KeyValue key="layoutIndex" value="2" type="number"/>
-		</KeyValues>
-		<Frames>
-			<Button parentKey="Container" inherits="MawBuffsContainer">
-				<Anchors>
-					<Anchor point="TOPRIGHT"/>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnShow method="OnShow"/>
-		</Scripts>
-	</Frame>
 </Ui>

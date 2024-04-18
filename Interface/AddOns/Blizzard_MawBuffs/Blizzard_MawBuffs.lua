@@ -1,5 +1,11 @@
 local MAW_BUFF_MAX_DISPLAY = 44;
 
+function ShouldShowMawBuffs()
+	local auraData = C_UnitAuras.GetAuraDataByIndex("player", 1, "MAW");
+	local hasMawBuff = auraData and auraData.icon;
+	return IsInJailersTower() or hasMawBuff or false;
+end
+
 MawBuffsContainerMixin = {};
 
 function MawBuffsContainerMixin:OnLoad()
@@ -28,7 +34,7 @@ function MawBuffsContainerMixin:OnShow()
 end
 
 function MawBuffsContainerMixin:Update()
-	if not IsInJailersTower() and not self.fromFrameManager then
+	if not ShouldShowMawBuffs() then
 		self:Hide();
 		self.buffCount = 0;
 		return;
@@ -37,14 +43,14 @@ function MawBuffsContainerMixin:Update()
 	local mawBuffs = {};
 	local totalCount = 0;
 	for i=1, MAW_BUFF_MAX_DISPLAY do
-		local _, icon, count, _, _, _, _, _, _, spellID = UnitAura("player", i, "MAW");
-		if icon then
-			if count == 0 then
-				count = 1;
+		local auraData = C_UnitAuras.GetAuraDataByIndex("player", i, "MAW");
+		if auraData and auraData.icon then
+			if auraData.applications == 0 then
+				auraData.applications = 1;
 			end
 
-			totalCount = totalCount + count;
-			table.insert(mawBuffs, {icon = icon, count = count, slot = i, spellID = spellID});
+			totalCount = totalCount + auraData.applications;
+			table.insert(mawBuffs, {icon = auraData.icon, count = auraData.applications, slot = i, spellID = auraData.spellId});
 		end
 	end
 
@@ -64,10 +70,18 @@ function MawBuffsContainerMixin:Update()
 end
 
 function MawBuffsContainerMixin:UpdateAlignment()
+	local isOnLeftSide = ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen;
+	-- initially self.isOnLeftSide is nil so the first time this check will fail, resulting in an update
+	if isOnLeftSide == self.isOnLeftSide then
+		return;
+	end
+
+	self.isOnLeftSide = isOnLeftSide;
+
 	self:ClearAllPoints();
 	self.List:ClearAllPoints();
 
-	if ObjectiveTrackerFrame and ObjectiveTrackerFrame.isOnLeftSideOfScreen then
+	if isOnLeftSide then
 		-- If tracker is on left side of screen make stuff face right
 		self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", 0, 0);
 		self.List:SetPoint("TOPLEFT", self, "TOPRIGHT", -15, 1);
@@ -263,11 +277,4 @@ end
 function MawBuffMixin:OnLeave()
 	GameTooltip_Hide(); 
 	self.HighlightBorder:Hide(); 
-end
-
-MawBuffsBelowMinimapFrameMixin = { };
-function MawBuffsBelowMinimapFrameMixin:OnShow()
-	self.Container.fromFrameManager = true;
-	self.Container:Update();
-	UIParentManagedFrameMixin.OnShow(self);
 end

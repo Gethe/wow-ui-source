@@ -17,7 +17,7 @@ local ChatBubbles =
 
 			Returns =
 			{
-				{ Name = "chatBubbles", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "chatBubbles", Type = "table", InnerType = "ChatBubbleFrame", Nilable = false },
 			},
 		},
 	},

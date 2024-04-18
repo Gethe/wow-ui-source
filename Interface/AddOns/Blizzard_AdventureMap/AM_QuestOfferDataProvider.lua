@@ -54,7 +54,7 @@ function AdventureMap_QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 local function DetermineAtlas(isTrivial, frequency, isLegendary)
-	if frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly then
+	if QuestUtil.IsFrequencyRecurring(frequency) then
 		return "AdventureMapIcon-DailyQuest";
 	end
 

@@ -130,6 +130,15 @@ local ProfessionSpecUI =
 			},
 		},
 		{
+			Name = "GetNewSpecReminderProfName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "profName", Type = "cstring", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPerksForPath",
 			Type = "Function",
 
@@ -169,7 +178,7 @@ local ProfessionSpecUI =
 
 			Returns =
 			{
-				{ Name = "sourceText", Type = "string", Nilable = false },
+				{ Name = "sourceText", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -360,6 +369,11 @@ local ProfessionSpecUI =
 
 	Events =
 	{
+		{
+			Name = "SkillLineSpecsRanksChanged",
+			Type = "Event",
+			LiteralName = "SKILL_LINE_SPECS_RANKS_CHANGED",
+		},
 		{
 			Name = "SkillLineSpecsUnlocked",
 			Type = "Event",

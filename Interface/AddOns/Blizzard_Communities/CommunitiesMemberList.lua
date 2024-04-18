@@ -310,7 +310,7 @@ function CommunitiesMemberListMixin:RefreshListDisplay()
 		end
 	end
 
-	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	self.ScrollBox:ForEachFrame(function(button, elementData)
 		button:SetExpanded(self.expandedDisplay);
 	end);
@@ -358,12 +358,14 @@ function CommunitiesMemberListMixin:UpdateWatermark()
 			SetLargeGuildTabardTextures("player", self.WatermarkFrame.Watermark, nil, nil);
 			self.WatermarkFrame.Watermark:SetVertexColor(1.0, 1.0, 1.0);
 			self.WatermarkFrame.Watermark:SetAlpha(0.15);
-			self.WatermarkFrame.Watermark:SetSize(112, 128);
+			self.WatermarkFrame.Watermark:SetSize(160, 160);
+			self.WatermarkFrame.Watermark:SetPoint("BOTTOMLEFT", self.WatermarkFrame, "BOTTOMRIGHT", -95, -10);
 		else
 			C_Club.SetAvatarTexture(self.WatermarkFrame.Watermark, clubInfo.avatarId, clubInfo.clubType);
 			self.WatermarkFrame.Watermark:SetTexCoord(0, 1, 0, 1);
 			self.WatermarkFrame.Watermark:SetAlpha(0.1);
 			self.WatermarkFrame.Watermark:SetSize(128, 128);
+			self.WatermarkFrame.Watermark:SetPoint("BOTTOMLEFT", self.WatermarkFrame, "BOTTOMRIGHT", -84, 3);
 		end
 	end
 end
@@ -429,7 +431,7 @@ end
 function CommunitiesMemberListMixin:OnLoad()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CommunitiesMemberListEntryTemplate", function(button, elementData)
-		button:Init(elementData);
+		button:Init(elementData, self.expandedDisplay);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
@@ -817,9 +819,9 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 					return lhsMemberInfo.lastOnlineHour > rhsMemberInfo.lastOnlineHour;
 				end
 			elseif lhsMemberInfo.lastOnlineYear then
-				return false;
-			elseif rhsMemberInfo.lastOnlineYear then
 				return true;
+			elseif rhsMemberInfo.lastOnlineYear then
+				return false;
 			else
 				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
 			end
@@ -835,15 +837,15 @@ function CommunitiesMemberListMixin:SortByColumnIndex(columnIndex, keepSortDirec
 			return lhsSortScore < rhsSortScore;
 		end);
 		return;
+	else
+		CommunitiesUtil.SortMemberInfoWithOverride(self:GetSelectedClubId(), self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
+			if self.reverseActiveColumnSort then
+				return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
+			else
+				return CompareMembersByAttribute(rhsMemberInfo, lhsMemberInfo, sortAttribute);
+			end
+		end);
 	end
-
-	CommunitiesUtil.SortMemberInfoWithOverride(self:GetSelectedClubId(), self.sortedMemberList, function(lhsMemberInfo, rhsMemberInfo)
-		if self.reverseActiveColumnSort then
-			return CompareMembersByAttribute(lhsMemberInfo, rhsMemberInfo, sortAttribute);
-		else
-			return CompareMembersByAttribute(rhsMemberInfo, lhsMemberInfo, sortAttribute);
-		end
-	end);
 
 	if self:IsDisplayingProfessions() then
 		self:UpdateProfessionDisplay();
@@ -1016,7 +1018,11 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 	if memberInfo then
 		self.memberInfo = memberInfo;
 		self:SetMemberPlayerLocationFromGuid(memberInfo.guid);
-		self.NameFrame.Name:SetText(memberInfo.name or "");
+		local name = memberInfo.name;
+		if name and memberInfo.timerunningSeasonID then
+			name = TimerunningUtil.AddSmallIcon(name);
+		end
+		self.NameFrame.Name:SetText(name or "");
 	else
 		self.memberInfo = nil;
 		self:SetMemberPlayerLocationFromGuid(nil);
@@ -1033,7 +1039,8 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 	self:UpdateNameFrame();
 end
 
-function CommunitiesMemberListEntryMixin:Init(elementData)
+function CommunitiesMemberListEntryMixin:Init(elementData, expanded)
+	self:SetExpanded(expanded);
 	if elementData.invitationHeaderCount then
 		self:SetHeader(COMMUNITIES_MEMBER_LIST_PENDING_INVITE_HEADER:format(elementData.invitationHeaderCount));
 	elseif elementData.memberInfo then
@@ -1097,7 +1104,12 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 	local memberInfo = self:GetMemberInfo();
 	if memberInfo then
 		GameTooltip:SetOwner(self);
-		GameTooltip:AddLine(memberInfo.name);
+
+		local name = memberInfo.name;
+		if name and memberInfo.timerunningSeasonID then
+			name = TimerunningUtil.AddSmallIcon(name);
+		end
+		GameTooltip:AddLine(name);
 
 		local clubInfo = self:GetMemberList():GetSelectedClubInfo();
 		if not clubInfo or clubInfo.clubType == Enum.ClubType.Guild then
@@ -1113,11 +1125,7 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 			local raceInfo = C_CreatureInfo.GetRaceInfo(memberInfo.race);
 			local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
 			if raceInfo and classInfo then
-				if(clubInfo and clubInfo.clubType == Enum.ClubType.Character and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
-					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FACTION_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className, FACTION_LABELS[memberInfo.faction]), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
-				else 
-					GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
-				end
+				GameTooltip:AddLine(COMMUNITY_MEMBER_CHARACTER_INFO_FORMAT:format(memberInfo.level, raceInfo.raceName, classInfo.className), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 			end
 		end
 
@@ -1129,6 +1137,11 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 
 		if memberInfo.memberNote then
 			GameTooltip:AddLine(COMMUNITY_MEMBER_NOTE_FORMAT:format(memberInfo.memberNote), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		end
+
+		if(clubInfo and clubInfo.clubType ~= Enum.ClubType.BattleNet and memberInfo.faction and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction])) then 
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+			GameTooltip:AddLine(COMMUNITY_MEMBER_LIST_CROSS_FACTION:format(PLAYER_FACTION_BRIGHT_COLORS[memberInfo.faction]:GenerateHexColorMarkup() .. FACTION_LABELS[memberInfo.faction]), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		end
 
 		GameTooltip:Show();
@@ -1177,7 +1190,7 @@ function CommunitiesMemberListEntryMixin:RefreshExpandedColumns()
 		return;
 	end
 
-	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType == Enum.ClubType.Character and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
+	local shouldShowFactionIcon = hasMemberInfo and memberInfo.faction and clubInfo.clubType ~= Enum.ClubType.BattleNet and ((UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[memberInfo.faction]));
 	self.FactionButton:SetShown(shouldShowFactionIcon and not self.isInvitation);
 
 	if clubInfo.clubType == Enum.ClubType.BattleNet then

@@ -19,6 +19,10 @@ function TalentEdgeBaseMixin:GetEdgeInfo()
 	return self.edgeInfo;
 end
 
+function TalentEdgeBaseMixin:UpdateState()
+	-- Implement in derived mixins
+end
+
 
 -- TODO:: Replace the art for this to be a generic edge template.
 TalentEdgeStraightMixin = {};
@@ -39,16 +43,27 @@ function TalentEdgeStraightMixin:Init(startButton, endButton, edgeInfo)
 
 	self.ScrollAnim:Play();
 
-	local isActive = edgeInfo.isActive;
-	self:SetFrameLevel(isActive and ActiveEdgeFrameLevel or 1);
-
 	self:UpdateState();
 end
 
 function TalentEdgeStraightMixin:UpdateState()
 	local edgeInfo = self:GetEdgeInfo();
-	local isEndButtonGated = self:GetEndButton():GetVisualState() == TalentButtonUtil.BaseVisualState.Gated;
+	local endVisualState = self:GetEndButton():GetVisualState();
+	local startVisualState = self:GetStartButton():GetVisualState();
+	local isStartRefundInvalid = (startVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+	local isEndRefundInvalid = (endVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
 
+	local isActive = edgeInfo.isActive;
+	self:SetFrameLevel(isActive and ActiveEdgeFrameLevel or 1);
+
+	-- The edge only shows in red if the start is satisfied (or "Maxed") and the end button is RefundInvalid.
+	local isRefundInvalidFromEndButton = isEndRefundInvalid and (startVisualState == TalentButtonUtil.BaseVisualState.Maxed);
+	if isRefundInvalidFromEndButton or isStartRefundInvalid then
+		self:SetLineColor(RED_FONT_COLOR:GetRGBA());
+		return;
+	end
+
+	local isEndButtonGated = endVisualState == TalentButtonUtil.BaseVisualState.Gated;
 	if edgeInfo.type == Enum.TraitEdgeType.MutuallyExclusive then
 		self:SetLineColor(isEndButtonGated and DIM_RED_FONT_COLOR or RED_FONT_COLOR);
 	elseif edgeInfo.visualStyle == Enum.TraitEdgeVisualStyle.Straight then
@@ -75,9 +90,81 @@ TalentEdgeArrowMixin = {};
 
 function TalentEdgeArrowMixin:Init(startButton, endButton, edgeInfo)
 	TalentEdgeBaseMixin.Init(self, startButton, endButton, edgeInfo);
+	self:MarkPositionDirty();
+
+	self:UpdateState();
+end
+
+function TalentEdgeArrowMixin:MarkPositionDirty()
+	self.isPositionDirty = true;
+end
+
+function TalentEdgeArrowMixin:MarkPositionClean()
+	self.isPositionDirty = false;
+end
+
+function TalentEdgeArrowMixin:IsPositionDirty()
+	return self.isPositionDirty;
+end
+
+function TalentEdgeArrowMixin:UpdateState()
+	local edgeInfo = self:GetEdgeInfo();
+
+	local startButton = self:GetStartButton();
+	local isStartButtonGhosted = startButton:IsGhosted();
+	local isStartButtonCascadeRepurchaseable = startButton:IsCascadeRepurchasable();
+
+	local endButton = self:GetEndButton();
+	local isEndButtonGhosted = endButton:IsGhosted();
+
+	local startVisualState = startButton:GetVisualState();
+	local endButtonVisualState = endButton:GetVisualState();
+	local isEndRefundInvalid = (endButtonVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+	
+	-- The edge only shows in red if the start is satisfied (or "Maxed") and the end button is RefundInvalid.
+	local isRefundInvalidFromEndButton = isEndRefundInvalid and (startVisualState == TalentButtonUtil.BaseVisualState.Maxed);
+	local isStartRefundInvalid = (startVisualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+	local isRefundInvalidState = isStartRefundInvalid or isRefundInvalidFromEndButton;
+
+	local isLineGhosted = not isRefundInvalidState and ((isStartButtonGhosted or isStartButtonCascadeRepurchaseable) and isEndButtonGhosted);
+	self.GhostLine:SetShown(isLineGhosted);
+	self.GhostArrowHead:SetShown(isLineGhosted);
+
+	-- Other types and styles are not supported by this template.
+	if edgeInfo.visualStyle == Enum.TraitEdgeVisualStyle.Straight then
+		if isRefundInvalidState then
+			self.Line:SetAtlas("talents-arrow-line-red", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-red");
+		elseif edgeInfo.isActive then
+			self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-yellow");
+		elseif endButtonVisualState == TalentButtonUtil.BaseVisualState.Gated then
+			self.Line:SetAtlas("talents-arrow-line-locked", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-locked");
+		else
+			self.Line:SetAtlas("talents-arrow-line-gray", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-gray");
+		end
+	end
+
+	if self:IsPositionDirty() then
+		self:UpdatePosition();
+	end
+end
+
+function TalentEdgeArrowMixin:UpdatePosition()
+	local startButton = self:GetStartButton();
+	local endButton = self:GetEndButton();
+
+	-- If buttons were just now instantiated, it's possible their position/layout/size hasn't settled yet
+	if not startButton:IsRectValid() or not endButton:IsRectValid() then
+		self:MarkPositionDirty();
+		startButton:GetTalentFrame():MarkEdgesDirty(startButton);
+		return;
+	end
 
 	local angle = RegionUtil.CalculateAngleBetween(endButton, startButton);
-	local diameterOffset = endButton.GetEdgeDiameterOffset and endButton:GetEdgeDiameterOffset(angle) or TalentButtonUtil.CircleEdgeDiameterOffset;
+	local diameterOffset = self:GetDiameterOffsetForAngle(angle);
 	local xOffset = (endButton:GetWidth() / 2) * math.cos(angle) * diameterOffset;
 	local yOffset = (endButton:GetHeight() / 2) * math.sin(angle) * diameterOffset;
 
@@ -93,32 +180,13 @@ function TalentEdgeArrowMixin:Init(startButton, endButton, edgeInfo)
 	self.GhostArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
 	self.GhostArrowHead:SetRotation(angle - (math.pi / 2));
 
-	self:UpdateState();
+	startButton:GetTalentFrame():UpdateEdgeFrameLevel(self);
+
+	self:MarkPositionClean();
 end
 
-function TalentEdgeArrowMixin:UpdateState()
-	local edgeInfo = self:GetEdgeInfo();
+function TalentEdgeArrowMixin:GetDiameterOffsetForAngle(angle)
+	local endButton = self:GetEndButton();
 
-	local isStartButtonGhosted = self:GetStartButton():IsGhosted();
-	local isStartButtonCascadeRepurchaseable = self:GetStartButton():IsCascadeRepurchasable();
-	local isEndButtonGhosted = self:GetEndButton():IsGhosted();
-
-	local isLineGhosted = (isStartButtonGhosted or isStartButtonCascadeRepurchaseable) and isEndButtonGhosted;
-
-	self.GhostLine:SetShown(isLineGhosted);
-	self.GhostArrowHead:SetShown(isLineGhosted);
-
-	-- Other types and styles are not supported by this template.
-	if edgeInfo.visualStyle == Enum.TraitEdgeVisualStyle.Straight then
-		if edgeInfo.isActive then
-			self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-yellow");
-		elseif (self:GetEndButton():GetVisualState() == TalentButtonUtil.BaseVisualState.Gated) then
-			self.Line:SetAtlas("talents-arrow-line-locked", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-locked");
-		else
-			self.Line:SetAtlas("talents-arrow-line-gray", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-gray");
-		end
-	end
+	return endButton and endButton.GetEdgeDiameterOffset and endButton:GetEdgeDiameterOffset(angle) or TalentButtonUtil.CircleEdgeDiameterOffset;
 end

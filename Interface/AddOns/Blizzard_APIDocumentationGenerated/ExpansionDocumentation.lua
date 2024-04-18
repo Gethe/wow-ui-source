@@ -47,7 +47,7 @@ local Expansion =
 
 			Returns =
 			{
-				{ Name = "regionName", Type = "string", Nilable = false },
+				{ Name = "regionName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -94,7 +94,7 @@ local Expansion =
 			Returns =
 			{
 				{ Name = "isExpansionTrialAccount", Type = "bool", Nilable = false },
-				{ Name = "expansionTrialRemainingSeconds", Type = "number", Nilable = true },
+				{ Name = "expansionTrialRemainingSeconds", Type = "time_t", Nilable = true },
 			},
 		},
 		{
@@ -164,6 +164,15 @@ local Expansion =
 			Returns =
 			{
 				{ Name = "serverExpansionLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDemonHunterAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "available", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -260,11 +269,11 @@ local Expansion =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "logo", Type = "number", Nilable = false },
-				{ Name = "banner", Type = "string", Nilable = false },
+				{ Name = "logo", Type = "fileID", Nilable = false },
+				{ Name = "banner", Type = "textureAtlas", Nilable = false },
 				{ Name = "features", Type = "table", InnerType = "ExpansionDisplayInfoFeature", Nilable = false },
-				{ Name = "highResBackgroundID", Type = "number", Nilable = false },
-				{ Name = "lowResBackgroundID", Type = "number", Nilable = false },
+				{ Name = "highResBackgroundID", Type = "fileID", Nilable = false },
+				{ Name = "lowResBackgroundID", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -272,8 +281,8 @@ local Expansion =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "icon", Type = "number", Nilable = false },
-				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "text", Type = "cstring", Nilable = false },
 			},
 		},
 	},

@@ -5,6 +5,8 @@
 ## Dependencies: Blizzard_AuctionHouseShared
 ## SavedVariables: g_auctionHouseSortsBySearchContext
 ## SavedVariablesPerCharacter: g_activeBidAuctionIDs
+## AllowLoad: game
+## AllowLoadGameType: mainline
 Blizzard_AuctionHouseUtil.lua
 Blizzard_AuctionData.lua
 Blizzard_AuctionHouseSharedTemplates.xml
@@ -25,3 +27,4 @@ Blizzard_AuctionHouseWoWTokenFrame.xml
 Blizzard_AuctionHouseBuyDialog.xml
 Blizzard_AuctionHouseMultisell.xml
 Blizzard_AuctionHouseFrame.xml
+Localization.lua

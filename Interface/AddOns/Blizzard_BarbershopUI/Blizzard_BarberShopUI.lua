@@ -7,6 +7,7 @@ function BarberShopMixin:OnLoad()
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
+	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, self.AcceptButton);
 
 	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
 end
@@ -26,6 +27,9 @@ function BarberShopMixin:OnEvent(event, ...)
 	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
+		if (CollectionsJournal and C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
+			MountJournal_SetPendingDragonMountChanges(true);
+		end
 		self:Cancel();
 	elseif event == "BARBER_SHOP_CAMERA_VALUES_UPDATED" then
 		self:ResetCharacterRotation();
@@ -61,7 +65,7 @@ function BarberShopMixin:UpdateSex()
 
 	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
 	if currentCharacterData then
-		CharCustomizeFrame:SetSelectedData(currentCharacterData.raceData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
+		CharCustomizeFrame:SetSelectedData(currentCharacterData, currentCharacterData.sex, C_BarberShop.IsViewingAlteredForm());
 
 		local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 		for index, sexID in ipairs(sexes) do
@@ -105,7 +109,8 @@ function BarberShopMixin:Cancel()
 end
 
 function BarberShopMixin:Reset()
-	C_BarberShop.ResetCustomizationChoices();
+	local force = false;
+	C_BarberShop.ResetCustomizationChoices(force);
 	local currentCharacterData = C_BarberShop.GetCurrentCharacterData();
 	self:SetCharacterSex(currentCharacterData.sex)
 	self:UpdateCharCustomizationFrame();
@@ -201,7 +206,7 @@ end
 function BarberShopMixin:SetViewingChrModel(chrModelID)
 	self:RegisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	C_BarberShop.SetViewingChrModel(chrModelID);
-	self.BodyTypes:SetShown(false);
+	self.BodyTypes:SetShown(chrModelID == nil);
 end
 
 function BarberShopMixin:SetModelDressState(dressedState)

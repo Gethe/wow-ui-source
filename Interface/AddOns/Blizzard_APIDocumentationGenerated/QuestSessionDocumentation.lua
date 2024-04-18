@@ -167,7 +167,7 @@ local QuestSession =
 			LiteralName = "QUEST_SESSION_MEMBER_START_RESPONSE",
 			Payload =
 			{
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "response", Type = "bool", Nilable = false },
 			},
 		},
@@ -178,7 +178,7 @@ local QuestSession =
 			Payload =
 			{
 				{ Name = "result", Type = "QuestSessionResult", Nilable = false },
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},
@@ -191,7 +191,7 @@ local QuestSession =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "guid", Type = "string", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 	},

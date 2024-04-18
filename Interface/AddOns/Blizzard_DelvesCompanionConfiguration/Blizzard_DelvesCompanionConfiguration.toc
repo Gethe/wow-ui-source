@@ -1,0 +1,9 @@
+## Title: Blizzard_DelvesCompanionConfiguration
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+
+Blizzard_DelvesCompanionConfiguration.lua
+Blizzard_DelvesCompanionConfiguration.xml
+Blizzard_DelvesCompanionSpellbook.lua
+Blizzard_DelvesCompanionSpellbook.xml

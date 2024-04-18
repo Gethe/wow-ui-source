@@ -7,6 +7,16 @@ local ActionBarFrame =
 	Functions =
 	{
 		{
+			Name = "EnableActionRangeCheck",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "FindFlyoutActionButtons",
 			Type = "Function",
 
@@ -17,7 +27,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -31,7 +41,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -45,7 +55,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -54,12 +64,12 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "bonusBarIndex", Type = "number", Nilable = true },
+				{ Name = "bonusBarIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -68,7 +78,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -87,7 +97,7 @@ local ActionBarFrame =
 
 			Returns =
 			{
-				{ Name = "slots", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -96,7 +106,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -166,7 +176,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -180,7 +190,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -194,7 +204,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 				{ Name = "useNeutral", Type = "bool", Nilable = false },
 			},
 
@@ -209,7 +219,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 				{ Name = "useNeutral", Type = "bool", Nilable = false },
 			},
 
@@ -238,7 +248,7 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -265,13 +275,33 @@ local ActionBarFrame =
 
 			Arguments =
 			{
-				{ Name = "slotID", Type = "number", Nilable = false },
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
 			},
 		},
 	},
 
 	Events =
 	{
+		{
+			Name = "ActionRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "ACTION_RANGE_CHECK_UPDATE",
+			Payload =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false },
+				{ Name = "checksRange", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ActionUsableChanged",
+			Type = "Event",
+			LiteralName = "ACTION_USABLE_CHANGED",
+			Payload =
+			{
+				{ Name = "changes", Type = "table", InnerType = "ActionUsableState", Nilable = false },
+			},
+		},
 		{
 			Name = "ActionbarHidegrid",
 			Type = "Event",
@@ -345,6 +375,16 @@ local ActionBarFrame =
 
 	Tables =
 	{
+		{
+			Name = "ActionUsableState",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "usable", Type = "bool", Nilable = false },
+				{ Name = "noMana", Type = "bool", Nilable = false },
+			},
+		},
 	},
 };
 

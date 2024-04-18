@@ -141,7 +141,7 @@ function SoulbindTreeMixin:OnNodeClicked(button, buttonName)
 	if buttonName == "LeftButton" then
 		local linked = false;
 		if IsModifiedClick("CHATLINK") then
-			local link = GetSpellLink(button:GetSpellID());
+			local link = C_Spell.GetSpellLink(button:GetSpellID());
 			linked = HandleModifiedItemClick(link);
 		end
 

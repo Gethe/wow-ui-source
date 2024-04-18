@@ -18,7 +18,6 @@ end
 
 function HeirloomsJournal_OnShow(self)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true);
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true);
 
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
 	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
@@ -602,12 +601,12 @@ function HeirloomsMixin:UpdateButton(button)
 end
 
 function HeirloomsMixin:ConsiderShowingUpgradeTutorial(button)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_HEIRLOOM_JOURNAL_LEVEL) then
 		local helpTipInfo = {
 			text = HEIRLOOMS_JOURNAL_TUTORIAL_UPGRADE,
 			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_HEIRLOOM_JOURNAL_LEVEL,
 			targetPoint = HelpTip.Point.BottomEdgeRight,
 			alignment = HelpTip.Alignment.Left,
 			offsetX = -16,

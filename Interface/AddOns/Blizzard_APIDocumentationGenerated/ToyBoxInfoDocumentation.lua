@@ -21,7 +21,7 @@ local ToyBoxInfo =
 
 			Arguments =
 			{
-				{ Name = "source", Type = "number", Nilable = false },
+				{ Name = "source", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =

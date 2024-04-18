@@ -35,6 +35,20 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "CanUseItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUseable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAlternateFormInfo",
 			Type = "Function",
 
@@ -50,7 +64,7 @@ local PlayerInfo =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -73,6 +87,26 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetDisplayID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "displayID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGlidingInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isGliding", Type = "bool", Nilable = false },
+				{ Name = "canGlide", Type = "bool", Nilable = false },
+				{ Name = "forwardSpeed", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInstancesUnlockedAtLevel",
 			Type = "Function",
 
@@ -88,13 +122,45 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "GetNativeDisplayID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "nativeDisplayID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetStableCreatureDisplayInfoID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureDisplayInfoID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerCharacterData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "characterData", Type = "PlayerInfoCharacterData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPlayerMythicPlusRatingSummary",
 			Type = "Function",
 			Documentation = { "Returns the players mythic+ rating summary which includes the runs they've completed as well as their current season m+ rating" },
 
 			Arguments =
 			{
-				{ Name = "playerToken", Type = "string", Nilable = false },
+				{ Name = "playerToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -103,17 +169,35 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "HasAccountInventoryLock",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAccountInventoryLock", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasVisibleInvSlot",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "isVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDisplayRaceNative",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDisplayRaceNative", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -128,6 +212,15 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMirrorImage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isMirrorImage", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -166,6 +259,33 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSelfFoundActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTradingPostAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTravelersLogAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
 	},

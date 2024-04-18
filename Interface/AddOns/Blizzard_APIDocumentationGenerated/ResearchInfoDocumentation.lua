@@ -72,18 +72,13 @@ local ResearchInfo =
 			LiteralName = "RESEARCH_ARTIFACT_COMPLETE",
 			Payload =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
 			Name = "ResearchArtifactDigSiteUpdated",
 			Type = "Event",
 			LiteralName = "RESEARCH_ARTIFACT_DIG_SITE_UPDATED",
-		},
-		{
-			Name = "ResearchArtifactHistoryReady",
-			Type = "Event",
-			LiteralName = "RESEARCH_ARTIFACT_HISTORY_READY",
 		},
 		{
 			Name = "ResearchArtifactUpdate",
@@ -100,8 +95,9 @@ local ResearchInfo =
 			Fields =
 			{
 				{ Name = "researchSiteID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "poiBlobID", Type = "number", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
 			},
 		},

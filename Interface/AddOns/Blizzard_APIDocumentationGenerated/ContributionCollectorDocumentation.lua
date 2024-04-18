@@ -39,7 +39,7 @@ local ContributionCollector =
 
 			Returns =
 			{
-				{ Name = "atlasName", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "atlasName", Type = "table", InnerType = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -110,7 +110,7 @@ local ContributionCollector =
 
 			Returns =
 			{
-				{ Name = "description", Type = "string", Nilable = false, Default = "" },
+				{ Name = "description", Type = "cstring", Nilable = false, Default = "" },
 			},
 		},
 		{
@@ -138,7 +138,7 @@ local ContributionCollector =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = false, Default = "" },
+				{ Name = "name", Type = "cstring", Nilable = false, Default = "" },
 			},
 		},
 		{
@@ -212,8 +212,8 @@ local ContributionCollector =
 			{
 				{ Name = "contributionState", Type = "ContributionState", Nilable = false, Default = "None" },
 				{ Name = "contributionPercentageComplete", Type = "number", Nilable = false },
-				{ Name = "timeOfNextStateChange", Type = "number", Nilable = true },
-				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "timeOfNextStateChange", Type = "time_t", Nilable = true },
+				{ Name = "startTime", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -323,13 +323,13 @@ local ContributionCollector =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "stateName", Type = "string", Nilable = false },
-				{ Name = "stateColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "tooltipLine", Type = "string", Nilable = false },
+				{ Name = "stateName", Type = "cstring", Nilable = false },
+				{ Name = "stateColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "tooltipLine", Type = "cstring", Nilable = false },
 				{ Name = "tooltipUseTimeRemaining", Type = "bool", Nilable = false },
-				{ Name = "statusBarAtlas", Type = "string", Nilable = false },
-				{ Name = "borderAtlas", Type = "string", Nilable = false },
-				{ Name = "bannerAtlas", Type = "string", Nilable = false },
+				{ Name = "statusBarAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "borderAtlas", Type = "textureAtlas", Nilable = false },
+				{ Name = "bannerAtlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -338,8 +338,8 @@ local ContributionCollector =
 			Fields =
 			{
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
-				{ Name = "position", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "atlasName", Type = "string", Nilable = false },
 				{ Name = "collectorCreatureID", Type = "number", Nilable = false },
 			},

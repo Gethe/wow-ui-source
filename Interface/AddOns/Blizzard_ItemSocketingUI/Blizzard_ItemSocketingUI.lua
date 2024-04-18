@@ -17,6 +17,8 @@ local GEM_TYPE_INFO =	{	Yellow = {textureKit="yellow", r=0.97, g=0.82, b=0.29},
 							Domination = {textureKit="domination", r=1, g=1, b=1},
 							Cypher = {textureKit="meta", r=1, g=1, b=1},
 							Tinker = {textureKit="punchcard-red", r=1, g=0.47, b=0.47},
+							Primordial = {textureKit="meta", r=1, g=1, b=1},
+							Fragrance = {textureKit="hydraulic", r=1, g=1, b=1},
 						};
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;
@@ -29,13 +31,12 @@ function ItemSocketingFrame_OnLoad(self)
 	self:RegisterEvent("SOCKET_INFO_ACCEPT");
 	self:RegisterEvent("SOCKET_INFO_SUCCESS");
 	self:RegisterEvent("SOCKET_INFO_FAILURE");
-	ItemSocketingScrollFrameScrollBarScrollUpButton:SetPoint("BOTTOM", ItemSocketingScrollFrameScrollBar, "TOP", 0, 1);
-	ItemSocketingScrollFrameScrollBarScrollDownButton:SetPoint("TOP", ItemSocketingScrollFrameScrollBar, "BOTTOM", 0, -3);
-	ItemSocketingScrollFrameTop:SetPoint("TOP", ItemSocketingScrollFrameScrollBarScrollUpButton, "TOP", -2, 3);
-	ItemSocketingScrollFrameScrollBar:SetPoint("TOPLEFT", ItemSocketingScrollFrame, "TOPRIGHT", 7.9999995231628, -18);
-	ItemSocketingScrollFrameScrollBar:SetHeight(221);
 	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
 	ButtonFrameTemplate_HideButtonBar(self);
+
+	self.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(scrollFrame, xrange, yrange)
+		ItemSocketingSocketButton_OnScrollRangeChanged(scrollFrame);
+	end);
 end
 
 function ItemSocketingFrame_OnEvent(self, event, ...)
@@ -178,13 +179,7 @@ function ItemSocketingFrame_Update()
 	name, icon, quality = GetSocketItemInfo();
 	ItemSocketingFrame:SetPortraitToAsset(icon);
 
-	-- see if has a scrollbar and resize accordingly
-	local scrollBarOffset = 28;
-	if ( ItemSocketingScrollFrame:GetVerticalScrollRange() ~= 0 ) then
-		scrollBarOffset = 0;
-	end
-	ItemSocketingScrollFrame:SetWidth(269+scrollBarOffset);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, true);
+	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
 	-- Owner needs to be set everytime since it is cleared everytime the tooltip is hidden
 	ItemSocketingDescription:SetOwner(ItemSocketingScrollChild, "ANCHOR_PRESERVE");
 	ItemSocketingDescription:SetSocketedItem();
@@ -214,15 +209,6 @@ function ItemSocketingFrame_EnableSockets()
 end
 
 function ItemSocketingSocketButton_OnScrollRangeChanged()
-
-	-- see if has a scrollbar and resize accordingly
-	local scrollBarOffset = 28;
-	if ( ItemSocketingScrollFrame:GetVerticalScrollRange() ~= 0 ) then
-		scrollBarOffset = 0;
-	end
-	ItemSocketingScrollFrame:SetWidth(269+scrollBarOffset);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, true);
-
 	ItemSocketingDescription:SetSocketedItem();
 end
 

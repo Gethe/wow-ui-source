@@ -12,7 +12,7 @@ local MerchantFrame =
 
 			Arguments =
 			{
-				{ Name = "buybackSlotIndex", Type = "number", Nilable = false },
+				{ Name = "buybackSlotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -21,18 +21,40 @@ local MerchantFrame =
 			},
 		},
 		{
+			Name = "GetNumJunkItems",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numJunkItems", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMerchantItemRefundable",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "refundable", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "IsSellAllJunkEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SellAllJunkItems",
+			Type = "Function",
 		},
 	},
 

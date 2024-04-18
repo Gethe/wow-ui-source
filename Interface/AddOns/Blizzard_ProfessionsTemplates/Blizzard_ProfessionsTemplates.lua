@@ -14,7 +14,7 @@ ProfessionsTableConstants.Tip =
 	Width = 130,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
-	RightCellPadding = ProfessionsTableConstants.NoPadding,
+	RightCellPadding = 25,
 };
 ProfessionsTableConstants.NumAvailable = 
 {
@@ -32,7 +32,7 @@ ProfessionsTableConstants.Quality =
 };
 ProfessionsTableConstants.Reagents = 
 {
-	Width = 100,
+	Width = 90,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
@@ -88,7 +88,7 @@ ProfessionsTableConstants.Status =
 };
 ProfessionsTableConstants.CustomerName = 
 {
-	Width = 130,
+	Width = 160,
 	Padding = ProfessionsTableConstants.StandardPadding,
 	LeftCellPadding = ProfessionsTableConstants.NoPadding,
 	RightCellPadding = ProfessionsTableConstants.NoPadding,
@@ -169,9 +169,11 @@ function ProfessionsCrafterTableHeaderStringMixin:UpdateArrow()
 	if sortOrder == self.sortOrder then
 		self.Arrow:Show();
 		if ascending then
-			self.Arrow:SetTexCoord(0, 1, 0, 1);
-		else
+			-- Tex Coords of the up arrow
 			self.Arrow:SetTexCoord(0, 1, 1, 0);
+		else
+			-- Tex Coords of the down arrow
+			self.Arrow:SetTexCoord(0, 1, 0, 1);
 		end
 	else
 		self.Arrow:Hide();
@@ -292,18 +294,18 @@ function ProfessionsCrafterTableCellReagentsMixin:OnEnter()
 		for _, orderReagentInfo in ipairs(order.reagents) do
 			if orderReagentInfo.source == Enum.CraftingOrderReagentSource.Any and orderReagentInfo.isBasicReagent then
 				local itemID = orderReagentInfo.reagent.itemID;
-				local reagentSlot = orderReagentInfo.reagentSlot;
+				local slotIndex = orderReagentInfo.slotIndex;
 
-				local _, existingReagent = FindInTableIf(reagents, function(r) return r.reagentSlot == reagentSlot; end);
+				local _, existingReagent = FindInTableIf(reagents, function(r) return r.slotIndex == slotIndex; end);
 				if existingReagent == nil then
-					table.insert(reagents, {reagentSlot = reagentSlot, itemID = itemID, multipleQualities = false});
+					table.insert(reagents, {slotIndex = slotIndex, itemID = itemID, multipleQualities = false});
 				else
 					existingReagent.multipleQualities = true;
 				end
 			end
 		end
 
-		table.sort(reagents, function(l, r) return l.reagentSlot < r.reagentSlot; end);
+		table.sort(reagents, function(l, r) return l.slotIndex < r.slotIndex; end);
 
 		for idx, reagent in ipairs(reagents) do
 			local reagentIconFrame = reagentIconFramePool:Acquire();
@@ -374,11 +376,11 @@ function ProfessionsCrafterTableCellExpirationMixin:Populate(rowData, dataIndex)
 	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
 	self.remainingTime = seconds;
-	local fmt, time = SecondsToTimeAbbrev(seconds);
+	local timeText = Professions.OrderTimeLeftFormatter:Format(seconds);
 	if seconds <= Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
-		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
+		timeText = ERROR_COLOR:WrapTextInColorCode(timeText);
 	end
-	ProfessionsTableCellTextMixin.SetText(self, fmt:format(time));
+	ProfessionsTableCellTextMixin.SetText(self, timeText);
 end
 
 function ProfessionsCrafterTableCellExpirationMixin:OnEnter()
@@ -442,7 +444,8 @@ ProfessionsCustomerTableCellIlvlMixin = CreateFromMixins(TableBuilderCellMixin);
 
 function ProfessionsCustomerTableCellIlvlMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
-	local text = order.qualityIlvlBonuses and CRAFTING_ORDER_ILVL_DISPLAY:format(order.iLvl) or order.iLvl;
+
+	local text = order.iLvlMax and CRAFTING_ORDER_ILVL_DISPLAY_RANGE:format(order.iLvlMin, order.iLvlMax) or order.iLvlMin;
 	ProfessionsTableCellTextMixin.SetText(self, text);
 end
 
@@ -561,16 +564,14 @@ function ProfessionsCustomerTableCellExpirationMixin:Populate(rowData, dataIndex
 	local remainingTime = Professions.GetCraftingOrderRemainingTime(order.expirationTime);
 	local seconds = remainingTime >= 60 and remainingTime or 60; -- Never show < 1min
 	self.remainingTime = seconds;
-	local fmt, time = SecondsToTimeAbbrev(seconds);
-	local twoHrsSeconds = 60 * 60 * 2;
-	if seconds <= twoHrsSeconds then
-		fmt = ERROR_COLOR:WrapTextInColorCode(fmt);
+	local timeText = Professions.OrderTimeLeftFormatter:Format(seconds);
+	if seconds <= Constants.ProfessionConsts.PUBLIC_CRAFTING_ORDER_STALE_THRESHOLD then
+		timeText = ERROR_COLOR:WrapTextInColorCode(timeText);
 	end
-	local text = fmt:format(time);
 	if self.isClaimed then
-		text = text..CRAFTING_ORDER_PENDING;
+		timeText = timeText..CRAFTING_ORDER_PENDING;
 	end
-	ProfessionsTableCellTextMixin.SetText(self, text);
+	ProfessionsTableCellTextMixin.SetText(self, timeText);
 end
 
 function ProfessionsCustomerTableCellExpirationMixin:OnEnter()
@@ -590,4 +591,21 @@ function ProfessionsCustomerTableCellExpirationMixin:OnLeave()
 	self:GetParent().HighlightTexture:Hide();
 
 	GameTooltip:Hide();
+end
+
+ProfessionsRecipeListPanelMixin = {};
+
+function ProfessionsRecipeListPanelMixin:StoreCollapses(scrollbox)
+	self.collapses = {};
+	local dataProvider = scrollbox:GetDataProvider();
+	local childrenNodes = dataProvider:GetChildrenNodes();
+	for idx, child in ipairs(childrenNodes) do
+		if child.data and child:IsCollapsed() then
+			self.collapses[child.data.categoryInfo.categoryID] = true;
+		end
+	end
+end
+
+function ProfessionsRecipeListPanelMixin:GetCollapses()
+	return self.collapses;
 end

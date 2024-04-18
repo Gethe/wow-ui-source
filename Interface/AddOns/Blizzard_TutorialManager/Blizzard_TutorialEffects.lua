@@ -50,19 +50,19 @@ function TutorialDragButton:Show(originButton, destButton)
 	local texture;
 	if originButton.icon then
 		texture = originButton.icon:GetTexture();
-	else
-		local slot = SpellBook_GetSpellBookSlot(originButton);
-		if slot then
-			if originButton.spellID then -- the data is set if this is from a flyout spell button
-				texture = GetSpellTexture(originButton.spellID);
-			else
-				texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
-			end
-		end
+	elseif originButton.spellID then
+		texture = C_Spell.GetSpellTexture(originButton.spellID);
+	elseif originButton.GetTexture then
+		texture = originButton:GetTexture();
+	end
+
+	local dragButton = originButton.DragButton or originButton;
+	if originButton.GetDragTarget then
+		dragButton = originButton:GetDragTarget();
 	end
 
 	local originFrame = TutorialDragOriginFrame;
-	originFrame:SetParent(originButton.DragButton or originButton);
+	originFrame:SetParent(dragButton);
 	originFrame:SetPoint("CENTER");
 	originFrame:Show();
 
@@ -77,10 +77,10 @@ function TutorialDragButton:Show(originButton, destButton)
 	animFrame:SetParent(UIParent);
 	animFrame:SetFrameStrata("DIALOG");
 	animFrame:ClearAllPoints();
-	animFrame:SetPoint("CENTER", originButton.DragButton or originButton);
+	animFrame:SetPoint("CENTER", dragButton);
 	animFrame:Show();
 
-	self.originFrame = originButton.DragButton or originButton;
+	self.originFrame = dragButton;
 	self.destFrame = destButton;
 	self:Animate();
 end
@@ -89,16 +89,25 @@ function TutorialDragButton:Animate()
 	local animFrame = TutorialDragAnimationFrame;
 	animFrame.Anim:Stop();
 
-	self.ox, self.oy = self.originFrame:GetCenter();
-	self.tx, self.ty = self.destFrame:GetCenter();
+	-- originFrame, destFrame, and animFrame may all have different scales depending on what they're parented to
+	-- So for accurate visuals, get scaled center values
+	self.ox, self.oy = GetScaledCenter(self.originFrame);
+	self.tx, self.ty = GetScaledCenter(self.destFrame);
 
-	animFrame.Anim.Move:SetOffset(self.tx - self.ox, self.ty - self.oy);
+	local animFrameScale = animFrame:GetEffectiveScale();
+
+	-- Now calculate absolute offsets and account for animFrame's scale,
+	-- since that's what its Translate anim will operate relative to
+	local xOffset = (self.tx - self.ox)/animFrameScale;
+	local yOffset = (self.ty - self.oy)/animFrameScale;
+
+	animFrame.Anim.Move:SetOffset(xOffset, yOffset);
 	animFrame.Anim:Play();
 end
 
 function TutorialDragButton:OnUpdate()
-	local ox, oy = self.originFrame:GetCenter();
-	local tx, ty = self.destFrame:GetCenter();
+	local ox, oy = GetScaledCenter(self.originFrame);
+	local tx, ty = GetScaledCenter(self.destFrame);
 
 	if (ox ~= self.ox) or (oy ~= self.oy) or (tx ~= self.tx) or (ty ~= self.ty) then
 		self:Animate();

@@ -1,6 +1,8 @@
 ChannelListMixin = {};
 
 function ChannelListMixin:OnLoad()
+	ScrollFrame_OnLoad(self);
+
 	local ResetChannelButton = function(pool, channelButton)
 		channelButton:Reset();
 	end
@@ -10,8 +12,6 @@ function ChannelListMixin:OnLoad()
 	self.voiceChannelButtonPool = CreateFramePool("Button", self.Child, "ChannelButtonVoiceTemplate", ResetChannelButton);
 	self.communityChannelButtonPool = CreateFramePool("Button", self.Child, "ChannelButtonCommunityTemplate", ResetChannelButton);
 	self.collapsedStates = {};
-
-	self.ScrollBar.Background:Hide();
 end
 
 function ChannelListMixin:SetCollapsed(category, collapsed)

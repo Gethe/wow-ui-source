@@ -1,106 +1,252 @@
 UIPanelWindows["TokenFrame"] = { area = "left", pushable = 1, whileDead = 1 };
-BACKPACK_TOKENFRAME_HEIGHT = 22;
 
-function TokenFrame_OnLoad(self)
+TokenHeaderMixin = {};
+
+function TokenHeaderMixin:Initialize(elementData)
+	self.elementData = elementData;
+
+	self.Name:SetText(self.elementData.name or "");
+	self:RefreshCollapseIcon();
+end
+
+function TokenHeaderMixin:IsCollapsed()
+	return not self.elementData.isHeaderExpanded;
+end
+
+function TokenHeaderMixin:ToggleCollapsed()
+	C_CurrencyInfo.ExpandCurrencyList(self.elementData.currencyIndex, self:IsCollapsed());
+	TokenFrame:Update();
+	TokenFramePopup:CloseIfHidden();
+end
+
+function TokenHeaderMixin:RefreshCollapseIcon()
+	self.Right:SetAtlas(self:IsCollapsed() and "Options_ListExpand_Right" or "Options_ListExpand_Right_Expanded", TextureKitConstants.UseAtlasSize);
+	self.HighlightRight:SetAtlas(self:IsCollapsed() and "Options_ListExpand_Right" or "Options_ListExpand_Right_Expanded", TextureKitConstants.UseAtlasSize);
+end
+
+function TokenHeaderMixin:OnClick()
+	self:ToggleCollapsed();
+end
+
+TokenEntryMixin = {};
+
+function TokenEntryMixin:OnLoad()
+	self.BackgroundHighlight:SetFrameLevel(self:GetFrameLevel() - 1);
+end
+
+function TokenEntryMixin:Initialize(elementData)
+	self.elementData = elementData;
+	self.currencyIndex = elementData.currencyIndex;
+
+	self.Count:SetText(BreakUpLargeNumbers(elementData.quantity));
+	self.Name:SetText(elementData.name);
+	self:RefreshTextColor();
+
+	self.CurrencyIcon:SetTexture(elementData.iconFileID);
+	self.WatchedCurrencyCheck:SetShown(elementData.isShowInBackpack);
+	
+	self:RefreshHighlightVisuals();
+end
+
+function TokenEntryMixin:IsSelected()
+	return self.elementData.name == TokenFrame.selectedToken;
+end
+
+function TokenEntryMixin:RefreshBackgroundHighlight()
+	local entryNeedsHighlight = self:IsSelected() or self:IsMouseOver();
+	self.BackgroundHighlight:SetAlpha(entryNeedsHighlight and 0.10 or 0);
+end
+
+function TokenEntryMixin:RefreshTransferrableCurrencyIcon()
+	self.TransferrableCurrencyIcon:Hide();
+end
+
+function TokenEntryMixin:RefreshHighlightVisuals()
+	self:RefreshBackgroundHighlight();
+	self:RefreshTransferrableCurrencyIcon();
+end
+
+function TokenEntryMixin:RefreshTextColor()
+	local hasCurrency = self.elementData.quantity > 0;
+	local textColor = hasCurrency and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+	self.Count:SetTextColor(textColor:GetRGBA());
+	self.Name:SetTextColor(textColor:GetRGBA());
+end
+
+function TokenEntryMixin:OnClick()
+	TokenFrame.selectedToken = self.Name:GetText();
+	local linkedToChat = false;
+	if IsModifiedClick("CHATLINK") then
+		linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self.currencyIndex));
+	end
+	if not linkedToChat then
+		if IsModifiedClick("TOKENWATCHTOGGLE") then
+			TokenFrame.selectedID = self.currencyIndex;
+			local toggledState = not self.elementData.isShowInBackpack;
+			local success = TokenFrame:SetTokenWatched(TokenFrame.selectedID, toggledState);
+			if success then
+				self.elementData.isShowInBackpack = toggledState;
+			end
+			
+			if TokenFrame.selectedID == self.currencyIndex then
+				TokenFrame:UpdatePopup(self);
+			end
+		else
+			local showPopup = not TokenFramePopup:IsShown() or TokenFrame.selectedID ~= self.currencyIndex;
+			TokenFramePopup:SetShown(showPopup);
+
+			if showPopup then
+				TokenFrame.selectedID = self.currencyIndex;
+				TokenFrame:UpdatePopup(self);
+			end
+		end
+	end
+	TokenFrame:Update();
+	TokenFramePopup:CloseIfHidden();
+end
+
+function TokenEntryMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetCurrencyToken(self.elementData.currencyIndex);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddInstructionLine(GameTooltip, CURRENCY_BUTTON_TOOLTIP_CLICK_INSTRUCTION);
+
+	GameTooltip:Show();
+
+	self:RefreshHighlightVisuals();
+end
+
+function TokenEntryMixin:OnLeave()
+	GameTooltip_Hide();
+
+	self:RefreshHighlightVisuals();
+end
+
+TokenSubHeaderMixin = {};
+
+function TokenSubHeaderMixin:Initialize(elementData)
+	self.elementData = elementData;
+	self.Text:SetText(HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(elementData.name));
+
+	self.ToggleCollapseButton:RefreshIcon();
+end
+
+function TokenSubHeaderMixin:IsCollapsed()
+	return not self.elementData.isHeaderExpanded;
+end
+
+function TokenSubHeaderMixin:ToggleCollapsed()
+	C_CurrencyInfo.ExpandCurrencyList(self.elementData.currencyIndex, self:IsCollapsed());
+	TokenFrame:Update();
+	TokenFramePopup:CloseIfHidden();
+end
+
+TokenSubHeaderToggleCollapseButtonMixin = {};
+
+function TokenSubHeaderToggleCollapseButtonMixin:GetHeader()
+	return self:GetParent();
+end
+
+function TokenSubHeaderToggleCollapseButtonMixin:RefreshIcon()
+	local header = self:GetHeader();
+	self:GetNormalTexture():SetAtlas(header:IsCollapsed() and "campaign_headericon_closed" or "campaign_headericon_open", TextureKitConstants.UseAtlasSize);
+end
+
+function TokenSubHeaderToggleCollapseButtonMixin:OnClick()
+	self:GetHeader():ToggleCollapsed();
+end
+
+TokenFrameMixin = {};
+
+function TokenFrameMixin:OnLoad()
 	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("TokenButtonTemplate", function(button, elementData)
-		TokenFrame_InitTokenButton(self, button, elementData);
+
+	local function Initializer(button, elementData)
+		button:Initialize(elementData);
+	end
+
+	view:SetElementIndentCalculator(function(elementData)
+		local isTopLevelHeader = elementData.isHeader and elementData.currencyListDepth == 0;
+		if isTopLevelHeader then
+			return 0;
+		end
+
+		-- We only slightly indent elements that are immediately under top level headers
+		if elementData.currencyListDepth == 1 then
+			return 2;
+		end
+
+		return 50 * (elementData.currencyListDepth -1);
 	end);
-	view:SetPadding(2,2,2,3,3);
+
+	view:SetElementFactory(function(factory, elementData)
+		local isTopLevelHeader = elementData.isHeader and elementData.currencyListDepth == 0;
+		if isTopLevelHeader then
+			factory("TokenHeaderTemplate", Initializer);
+			return;
+		end
+
+		local isSubHeader = elementData.isHeader and elementData.currencyListDepth > 0;
+		if isSubHeader then
+			factory("TokenSubHeaderTemplate", Initializer);
+			return;
+		end
+		
+		factory("TokenEntryTemplate", Initializer);
+	end);
+
+	local topPadding, bottomPadding, leftPadding, rightPadding = 10, 10, 10, 10;
+	local elementSpacing = 2;
+	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
-function TokenFrame_InitTokenButton(self, button, elementData)
-	button.Check:Hide();
-
-	local index = elementData.index;
-	local currencyInfo = C_CurrencyInfo.GetCurrencyListInfo(index);
-	local name = currencyInfo.name;
-	local isHeader = currencyInfo.isHeader;
-	local isExpanded = currencyInfo.isHeaderExpanded;
-	local isUnused = currencyInfo.isTypeUnused;
-	local isWatched = currencyInfo.isShowInBackpack;
-	local count = currencyInfo.quantity;
-	local icon = currencyInfo.iconFileID;
-	if ( isHeader ) then
-		button.CategoryLeft:Show();
-		button.CategoryRight:Show();
-		button.CategoryMiddle:Show();
-		button.ExpandIcon:Show();
-		button.Count:SetText("");
-		button.Icon:SetTexture("");
-		if ( isExpanded ) then
-			button.ExpandIcon:SetTexCoord(0.5625, 1, 0, 0.4375);
-		else
-			button.ExpandIcon:SetTexCoord(0, 0.4375, 0, 0.4375);
-		end
-		button.Highlight:SetTexture("Interface\\TokenFrame\\UI-TokenFrame-CategoryButton");
-		button.Highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 3, -2);
-		button.Highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 2);
-		button.Name:SetText(name);
-		button.Name:SetFontObject("GameFontNormal");
-		button.Name:SetPoint("LEFT", 22, 0);
-		button.LinkButton:Hide();
-	else
-		button.CategoryLeft:Hide();
-		button.CategoryRight:Hide();
-		button.CategoryMiddle:Hide();
-		button.ExpandIcon:Hide();
-		button.Count:SetText(BreakUpLargeNumbers(count));
-		button.Icon:SetTexture(icon);
-		if ( isWatched ) then
-			button.Check:Show();
-		end
-		button.Highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight");
-		button.Highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
-		button.Highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0);
-		--Gray out the text if the count is 0
-		if ( count == 0 ) then
-			button.Count:SetFontObject("GameFontDisable");
-			button.Name:SetFontObject("GameFontDisable");
-		else
-			button.Count:SetFontObject("GameFontHighlight");
-			button.Name:SetFontObject("GameFontHighlight");
-		end
-		button.Name:SetText(name);
-		button.Name:SetPoint("LEFT", 11, 0);
-		button.LinkButton:Show();
-	end
-
-	--Manage highlight
-	if ( name == TokenFrame.selectedToken ) then
-		TokenFrame.selectedID = index;
-		button:LockHighlight();
-	else
-		button:UnlockHighlight();
-	end
-
-	button.index = index;
-	button.isHeader = isHeader;
-	button.isExpanded = isExpanded;
-	button.isUnused = isUnused;
-	button.isWatched = isWatched;
-	button.Stripe:SetShown(elementData.index % 2 == 1);
-end
-
-function TokenFrame_OnShow(self)
+function TokenFrameMixin:OnShow()
 	SetButtonPulse(CharacterFrameTab3, 0, 1); --Stop the button pulse
-	CharacterFrame:SetTitle(UnitPVPName("player"));
 
 	local resetScrollPosition = true;
-	TokenFrame_Update(resetScrollPosition);
+	self:Update(resetScrollPosition);
 end
 
-function TokenFrame_Update(resetScrollPosition)
+function TokenFrameMixin:OnHide()
+	TokenFramePopup:Hide();
+end
+
+function TokenFrameMixin:Update(resetScrollPosition)
 	local numTokenTypes = C_CurrencyInfo.GetCurrencyListSize();
 	CharacterFrameTab3:SetShown(numTokenTypes > 0);
 
-	local newDataProvider = CreateDataProviderByIndexCount(numTokenTypes);
-	CharacterFrame.TokenFrame.ScrollBox:SetDataProvider(newDataProvider, not resetScrollPosition and ScrollBoxConstants.RetainScrollPosition);
+	local currencyList = {};
+	for currencyIndex = 1, numTokenTypes do
+		local currencyData = C_CurrencyInfo.GetCurrencyListInfo(currencyIndex);
+		if currencyData then
+			currencyData.currencyIndex = currencyIndex;
+			tinsert(currencyList, currencyData);
+		end
+	end
+
+	self.ScrollBox:SetDataProvider(CreateDataProvider(currencyList), not resetScrollPosition and ScrollBoxConstants.RetainScrollPosition);
 end
 
-function TokenFramePopup_CloseIfHidden()
+function TokenFrameMixin:SetTokenWatched(id, watched)
+	if watched then
+		local maxWatched = BackpackTokenFrame:GetMaxTokensWatched();
+		if GetNumWatchedTokens() >= maxWatched then
+			UIErrorsFrame:AddMessage(TOO_MANY_WATCHED_TOKENS:format(maxWatched), 1.0, 0.1, 0.1, 1.0);
+			return false;
+		end
+	end
+
+	C_CurrencyInfo.SetCurrencyBackpack(id, watched);
+	self:Update();
+	BackpackTokenFrame:Update();
+	return true;
+end
+
+TokenFramePopupMixin = {};
+
+function TokenFramePopupMixin:CloseIfHidden()
 	-- This handles the case where you close a category with the selected token popup shown
 	local numTokenTypes = C_CurrencyInfo.GetCurrencyListSize();
 	local selectedFound;
@@ -114,49 +260,21 @@ function TokenFramePopup_CloseIfHidden()
 	end
 end
 
+function TokenFramePopupMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+end
+
+function TokenFramePopupMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+end
+
 function GetNumWatchedTokens()
 	return BackpackTokenFrame:GetNumWatchedTokens();
 end
 
-function TokenButton_OnClick(self)
-	if ( self.isHeader ) then
-		C_CurrencyInfo.ExpandCurrencyList(self.index, not self.isExpanded);
-	else
-		TokenFrame.selectedToken = self.Name:GetText();
-		local linkedToChat = false;
-		if ( IsModifiedClick("CHATLINK") ) then
-			linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self.index));
-		end
-		if ( not linkedToChat ) then
-			if ( IsModifiedClick("TOKENWATCHTOGGLE") ) then
-				TokenFrame.selectedID = self.index;
-				local watched = not self.isWatched;
-				local success = TokenFrame_SetTokenWatched(TokenFrame.selectedID, watched);
-				if success then
-					self.isWatched = watched;
-				end
-
-				if ( TokenFrame.selectedID == self.index ) then
-					TokenFrame_UpdatePopup(self);
-				end
-			else
-				local showPopup = not TokenFramePopup:IsShown() or TokenFrame.selectedID ~= self.index;
-				TokenFramePopup:SetShown(showPopup);
-
-				if showPopup then
-					TokenFrame.selectedID = self.index;
-					TokenFrame_UpdatePopup(self);
-				end
-			end
-		end
-	end
-	TokenFrame_Update();
-	TokenFramePopup_CloseIfHidden();
-end
-
-function TokenFrame_UpdatePopup(button)
-	TokenFramePopup.InactiveCheckBox:SetChecked(button.isUnused);
-	TokenFramePopup.BackpackCheckBox:SetChecked(button.isWatched);
+function TokenFrameMixin:UpdatePopup(button)
+	TokenFramePopup.InactiveCheckBox:SetChecked(button.elementData.isTypeUnused);
+	TokenFramePopup.BackpackCheckBox:SetChecked(button.elementData.isShowInBackpack);
 end
 
 InactiveCurrencyCheckBoxMixin = {};
@@ -183,8 +301,8 @@ function InactiveCurrencyCheckBoxMixin:OnClick()
 		end
 	end
 
-	TokenFrame_Update();
-	TokenFramePopup_CloseIfHidden();
+	TokenFrame:Update();
+	TokenFramePopup:CloseIfHidden();
 end
 
 function InactiveCurrencyCheckBoxMixin:OnEnter()
@@ -202,7 +320,12 @@ end
 
 function BackpackCurrencyCheckBoxMixin:OnClick()
 	local watched = self:GetChecked();
-	TokenFrame_SetTokenWatched(TokenFrame.selectedID, watched);
+	local success = TokenFrame:SetTokenWatched(TokenFrame.selectedID, watched);
+
+	if not success then
+		self:SetChecked(false);
+		return;
+	end
 
 	if watched then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -217,18 +340,26 @@ function BackpackCurrencyCheckBoxMixin:OnEnter()
 	GameTooltip:Show();
 end
 
-function TokenFrame_SetTokenWatched(id, watched)
-	C_CurrencyInfo.SetCurrencyBackpack(id, watched);
-	TokenFrame_Update();
-	BackpackTokenFrame:Update();
-end
-
 BackpackTokenFrameMixin = {};
 
 function BackpackTokenFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("ContainerFrame.OnShowTokenWatcher", self.MarkDirty, self);
 
 	self.tokenPool = CreateFramePool("BUTTON", self, "BackpackTokenTemplate");
+end
+
+function BackpackTokenFrameMixin:OnShow()
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+end
+
+function BackpackTokenFrameMixin:OnHide()
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+end
+
+function BackpackTokenFrameMixin:OnEvent(event, ...)
+	if event == "CURRENCY_DISPLAY_UPDATE" then
+		self:Update();
+	end
 end
 
 function BackpackTokenFrameMixin:UpdateIfVisible()
@@ -263,7 +394,6 @@ function BackpackTokenFrameMixin:Update()
 			watchButton.currencyID = currencyInfo.currencyTypesID;
 			watchButton:Show();
 
-			self.shouldShow = true;
 			self.numWatchedTokens = i;
 		end
 	end
@@ -325,7 +455,12 @@ function BackpackTokenFrameMixin:GetMaxTokensWatched()
 		self.tokenWidth = info and info.width or 50;
 	end
 
-	-- You can always track at least one token
+	-- If backpack has not been opened at least once since UI load, get approx width of container frame
+	if (self:GetWidth() or 0) <= 1 then
+		return math.max(math.floor(ContainerFrame_GetApproximateWidth() / self.tokenWidth), 1);
+	end
+
+	-- Otherwise, use own width to get max num tokens that can be watched (iow: max tokens that can fit in the frame)
 	return math.max(math.floor(self:GetWidth() / self.tokenWidth), 1);
 end
 
@@ -344,6 +479,6 @@ function BackpackTokenMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
 		HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyLink(self.currencyID));
 	else
-		CharacterFrame_ToggleTokenFrame();
+		CharacterFrame:ToggleTokenFrame();
 	end
 end

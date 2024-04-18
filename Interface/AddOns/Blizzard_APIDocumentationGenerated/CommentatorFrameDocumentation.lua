@@ -69,7 +69,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "teamName", Type = "string", Nilable = false },
 			},
 		},
@@ -96,7 +96,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "lookAtIndex", Type = "number", Nilable = true },
+				{ Name = "lookAtIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -113,13 +113,13 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "playerIndex", Type = "number", Nilable = false },
-				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isPet", Type = "bool", Nilable = false },
 			},
 		},
@@ -129,7 +129,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -161,8 +161,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "factionIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "factionIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "forceInstantTransition", Type = "bool", Nilable = true },
 			},
 		},
@@ -185,8 +185,8 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -195,7 +195,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -339,8 +339,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "mapIndex", Type = "number", Nilable = false },
-				{ Name = "instanceIndex", Type = "number", Nilable = false },
+				{ Name = "mapIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "instanceIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -367,7 +367,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "mapIndex", Type = "number", Nilable = false },
+				{ Name = "mapIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -384,7 +384,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "seconds", Type = "number", Nilable = false },
+				{ Name = "seconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -465,7 +465,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "factionIndex", Type = "number", Nilable = false },
+				{ Name = "factionIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -494,8 +494,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -512,7 +512,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "token", Type = "UnitToken", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -529,8 +529,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -547,7 +547,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -564,8 +564,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -581,7 +581,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "token", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -597,8 +597,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -612,8 +612,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -627,12 +627,47 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "hasFlag", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerItemCooldownInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPlayerItemCooldownInfoByUnit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -655,8 +690,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -674,7 +709,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -733,7 +768,7 @@ local CommentatorFrame =
 
 			Returns =
 			{
-				{ Name = "pos", Type = "table", Mixin = "Vector3DMixin", Nilable = false },
+				{ Name = "pos", Type = "vector3", Mixin = "Vector3DMixin", Nilable = false },
 			},
 		},
 		{
@@ -742,12 +777,12 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -756,12 +791,12 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "color", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "color", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -793,8 +828,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
 
@@ -809,7 +844,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
 
@@ -824,7 +859,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -855,7 +890,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "token", Type = "string", Nilable = false },
+				{ Name = "token", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -916,8 +951,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
@@ -933,7 +968,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
@@ -958,9 +993,9 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "factionIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
-				{ Name = "lookAtIndex", Type = "number", Nilable = true },
+				{ Name = "factionIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "lookAtIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
@@ -982,8 +1017,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -1014,8 +1049,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "teamIndex", Type = "number", Nilable = false },
-				{ Name = "playerIndex", Type = "number", Nilable = false },
+				{ Name = "teamIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "playerIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "weight", Type = "number", Nilable = false },
 			},
 		},
@@ -1025,7 +1060,7 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "string", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "weight", Type = "number", Nilable = false },
 			},
 		},
@@ -1046,6 +1081,15 @@ local CommentatorFrame =
 			{
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetBlocklistedItemCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -1172,8 +1216,8 @@ local CommentatorFrame =
 
 			Arguments =
 			{
-				{ Name = "mapIndex", Type = "number", Nilable = false },
-				{ Name = "instanceIndex", Type = "number", Nilable = false },
+				{ Name = "mapIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "instanceIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -1257,6 +1301,15 @@ local CommentatorFrame =
 			{
 				{ Name = "specID", Type = "number", Nilable = false },
 				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetRequestedItemCooldowns",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -1390,8 +1443,26 @@ local CommentatorFrame =
 			Type = "Function",
 		},
 		{
+			Name = "ZoomIn_Position",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoomAmount", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "ZoomOut",
 			Type = "Function",
+		},
+		{
+			Name = "ZoomOut_Position",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "zoomAmount", Type = "number", Nilable = true },
+			},
 		},
 	},
 
@@ -1427,8 +1498,8 @@ local CommentatorFrame =
 			LiteralName = "COMMENTATOR_PLAYER_NAME_OVERRIDE_UPDATE",
 			Payload =
 			{
-				{ Name = "nameToOverride", Type = "string", Nilable = false },
-				{ Name = "overrideName", Type = "string", Nilable = true },
+				{ Name = "nameToOverride", Type = "cstring", Nilable = false },
+				{ Name = "overrideName", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -1463,20 +1534,6 @@ local CommentatorFrame =
 
 	Tables =
 	{
-		{
-			Name = "TrackedSpellCategory",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "Offensive", Type = "TrackedSpellCategory", EnumValue = 0 },
-				{ Name = "Defensive", Type = "TrackedSpellCategory", EnumValue = 1 },
-				{ Name = "Debuff", Type = "TrackedSpellCategory", EnumValue = 2 },
-				{ Name = "Count", Type = "TrackedSpellCategory", EnumValue = 3 },
-			},
-		},
 		{
 			Name = "CommentatorHistory",
 			Type = "Structure",
@@ -1539,6 +1596,15 @@ local CommentatorFrame =
 			{
 				{ Name = "playerName", Type = "string", Nilable = false },
 				{ Name = "teamName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "CommentatorTrackedItemCooldown",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "category", Type = "TrackedSpellCategory", Nilable = false },
 			},
 		},
 		{

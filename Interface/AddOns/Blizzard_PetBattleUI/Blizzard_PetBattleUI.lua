@@ -61,6 +61,8 @@ function PetBattlesOverrides.GetPositionOverride(petSpeciesID)
 		return -0.8, 0.6, -0.4;
 	elseif petSpeciesID == 504 then
 		return -3.0, -0.0, -0.5;
+	elseif petSpeciesID == 4257 then
+		return -1, -1.75, 0;
 	end
 end
 
@@ -1060,16 +1062,16 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 	if (self.Border) then
 		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
 		if (CVarCallbackRegistry:GetCVarValueBool("colorblindMode")) then 
-			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity]..")");
+			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity+1]..")");
 		else
-			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		
-			self.Name:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);
+			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);		
+			self.Name:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);
 		end
 	end
 	
 	if (self.BorderAlive and self.BorderAlive:IsShown()) then
 		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
-		self.BorderAlive:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		
+		self.BorderAlive:SetVertexColor(ITEM_QUALITY_COLORS[rarity].r, ITEM_QUALITY_COLORS[rarity].g, ITEM_QUALITY_COLORS[rarity].b);		
 	end
 	
 	--Update the display of the level

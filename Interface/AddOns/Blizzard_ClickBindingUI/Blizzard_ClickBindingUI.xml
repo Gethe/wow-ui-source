@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ClickBindingUI.lua"/>
 
 	<Button name="ClickBindingLineTemplate" mixin="ClickBindingLineMixin" virtual="true">
@@ -166,10 +166,10 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBoxBackground" relativePoint="BOTTOMRIGHT" x="-5" y ="5"/>
 				</Anchors>
 			</Button>
-			<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="TOPRIGHT" x="0" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="TOPRIGHT" x="5" y="-5"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBoxBackground" relativePoint="BOTTOMRIGHT" x="5" y="5"/>
 				</Anchors>
 			</EventFrame>
 			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
@@ -237,25 +237,29 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
+			<Button parentKey="PlayerSpellsPortrait" inherits="ClickBindingFramePortraitTemplate">
+				<KeyValues>
+					<KeyValue key="FrameName" value="PlayerSpellsFrame" type="string"/>
+					<KeyValue key="PortraitAtlas" value="UI-HUD-MicroMenu-SpecTalents-Up" type="string"/>
+					<KeyValue key="FrameLoadFunc" value="PlayerSpellsFrame_LoadUI" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-40" y="-40"/>
+				</Anchors>
+			</Button>
 			<Button parentKey="MacrosPortrait" inherits="ClickBindingFramePortraitTemplate">
 				<KeyValues>
 					<KeyValue key="FrameName" value="MacroFrame" type="string"/>
 					<KeyValue key="PortraitTexture" value="Interface\MacroFrame\MacroFrame-Icon" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-40" y="-40"/>
+					<Anchor point="RIGHT" relativeKey="$parent.PlayerSpellsPortrait" relativePoint="LEFT" x="-5" y="0"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="SpellbookPortrait" inherits="ClickBindingFramePortraitTemplate">
+			<Frame parentKey="TutorialFrame" inherits="PortraitFrameTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
 				<KeyValues>
-					<KeyValue key="FrameName" value="SpellBookFrame" type="string"/>
-					<KeyValue key="PortraitTexture" value="Interface\Spellbook\Spellbook-Icon" type="string"/>
+					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.MacrosPortrait" relativePoint="LEFT" x="-5" y="0"/>
-				</Anchors>
-			</Button>
-			<Frame parentKey="TutorialFrame" inherits="PortraitFrameBaseTemplate" enableMouse="true" frameStrata="DIALOG" mixin="ClickBindingTutorialMixin" hidden="true">
 				<Size x="496" y="253"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPLEFT" x="300" y="0"/>

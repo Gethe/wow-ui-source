@@ -16,8 +16,8 @@ local NewItems =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
@@ -31,8 +31,8 @@ local NewItems =
 
 			Arguments =
 			{
-				{ Name = "containerIndex", Type = "number", Nilable = false },
-				{ Name = "slotIndex", Type = "number", Nilable = false },
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 	},

@@ -35,15 +35,6 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "GetFeatureAbilities",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "featureAbilities", Type = "table", InnerType = "MajorFactionFeatureAbilityInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMajorFactionData",
 			Type = "Function",
 
@@ -124,15 +115,6 @@ local MajorFactions =
 			},
 		},
 		{
-			Name = "IsPlayerInRenownCatchUpMode",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isInCatchUpMode", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsWeeklyRenownCapped",
 			Type = "Function",
 
@@ -145,10 +127,6 @@ local MajorFactions =
 			{
 				{ Name = "isWeeklyCapped", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "RequestCatchUpState",
-			Type = "Function",
 		},
 	},
 
@@ -163,11 +141,6 @@ local MajorFactions =
 			Name = "MajorFactionInteractionStarted",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_INTERACTION_STARTED",
-		},
-		{
-			Name = "MajorFactionRenownCatchUpStateUpdate",
-			Type = "Event",
-			LiteralName = "MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE",
 		},
 		{
 			Name = "MajorFactionRenownLevelChanged",
@@ -198,28 +171,19 @@ local MajorFactions =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = false },
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
-				{ Name = "unlockDescription", Type = "string", Nilable = true },
-				{ Name = "unlockOrder", Type = "number", Nilable = false },
+				{ Name = "unlockDescription", Type = "cstring", Nilable = true },
+				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },
 				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
 				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
-				{ Name = "textureKit", Type = "string", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "celebrationSoundKit", Type = "number", Nilable = false },
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "MajorFactionFeatureAbilityInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "featureAbilityType", Type = "number", Nilable = false },
-				{ Name = "uiOrder", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -241,6 +205,7 @@ local MajorFactions =
 			{
 				{ Name = "renownRewardID", Type = "number", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
+				{ Name = "isAccountUnlock", Type = "bool", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },
 				{ Name = "mountID", Type = "number", Nilable = true },
@@ -248,10 +213,10 @@ local MajorFactions =
 				{ Name = "transmogSetID", Type = "number", Nilable = true },
 				{ Name = "titleMaskID", Type = "number", Nilable = true },
 				{ Name = "transmogIllusionSourceID", Type = "number", Nilable = true },
-				{ Name = "icon", Type = "number", Nilable = true },
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "description", Type = "string", Nilable = true },
-				{ Name = "toastDescription", Type = "string", Nilable = true },
+				{ Name = "icon", Type = "fileID", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "description", Type = "cstring", Nilable = true },
+				{ Name = "toastDescription", Type = "cstring", Nilable = true },
 			},
 		},
 	},

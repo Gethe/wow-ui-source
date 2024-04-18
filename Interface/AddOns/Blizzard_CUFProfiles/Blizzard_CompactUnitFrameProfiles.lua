@@ -1,8 +1,10 @@
 local CompactUnitFrameProfiles = { };
 
 CompactUnitFrameProfiles.CVarOptions = {
+	-- Default
 	raidFramesDisplayIncomingHeals				= "displayHealPrediction",
 	raidFramesDisplayPowerBars					= "displayPowerBar",
+	raidFramesDisplayOnlyHealerPowerBars		= "displayOnlyHealerPowerBars",
 	raidFramesDisplayAggroHighlight				= "displayAggroHighlight",
 	raidFramesDisplayClassColor					= "useClassColors",
 	raidOptionDisplayPets						= "displayPets",
@@ -11,6 +13,13 @@ CompactUnitFrameProfiles.CVarOptions = {
 	raidFramesDisplayOnlyDispellableDebuffs		= "displayOnlyDispellableDebuffs",
 	raidFramesHealthText						= "healthText",
 	raidOptionIsShown							= "shown",
+
+	-- Pvp
+	pvpFramesDisplayPowerBars					= "pvpDisplayPowerBar",
+	pvpFramesDisplayOnlyHealerPowerBars			= "pvpDisplayOnlyHealerPowerBars",
+	pvpFramesDisplayClassColor					= "pvpUseClassColors",
+	pvpOptionDisplayPets						= "pvpDisplayPets",
+	pvpFramesHealthText							= "pvpHealthText",
 };
 
 function CompactUnitFrameProfiles:OnCVarChanged(name)
@@ -75,6 +84,12 @@ function CompactUnitFrameProfiles:ApplyOptions(options)
 	
 	--Update the container in case sizes and such changed.
 	CompactRaidFrameContainer:TryUpdate();
+
+	-- Update settings raid frame preview if it exists.
+	if RaidFrameSettingsPreviewFrame then
+		DefaultCompactUnitFrameSetup(RaidFrameSettingsPreviewFrame);
+		CompactUnitFrame_UpdateAll(RaidFrameSettingsPreviewFrame);
+	end
 end
 
 function CompactUnitFrameProfiles:GenerateRaidManagerSetting(optionName)
@@ -111,12 +126,20 @@ CompactUnitFrameProfiles.CUFProfileActionTable = {
 	displayMainTankAndAssist = CompactUnitFrameProfiles:GenerateRaidManagerSetting("DisplayMainTankAndAssist"),
 	displayHealPrediction = CompactUnitFrameProfiles:GenerateOptionSetter("displayHealPrediction", "all"),
 	displayPowerBar = CompactUnitFrameProfiles:GenerateSetUpOptionSetter("displayPowerBar", "normal"),
+	displayOnlyHealerPowerBars = CompactUnitFrameProfiles:GenerateSetUpOptionSetter("displayOnlyHealerPowerBars", "normal"),
 	displayAggroHighlight = CompactUnitFrameProfiles:GenerateOptionSetter("displayAggroHighlight", "all"),
 	displayDebuffs = CompactUnitFrameProfiles:GenerateOptionSetter("displayDebuffs", "normal"),
 	displayOnlyDispellableDebuffs = CompactUnitFrameProfiles:GenerateOptionSetter("displayOnlyDispellableDebuffs", "normal"),
 	useClassColors = CompactUnitFrameProfiles:GenerateOptionSetter("useClassColors", "normal"),
 	healthText = CompactUnitFrameProfiles:GenerateOptionSetter("healthText", "normal"),
-							
+
+	-- Pvp Settings
+	pvpDisplayPowerBar = CompactUnitFrameProfiles:GenerateSetUpOptionSetter("pvpDisplayPowerBar", "normal"),
+	pvpDisplayOnlyHealerPowerBars = CompactUnitFrameProfiles:GenerateSetUpOptionSetter("pvpDisplayOnlyHealerPowerBars", "normal"),
+	pvpUseClassColors = CompactUnitFrameProfiles:GenerateOptionSetter("pvpUseClassColors", "normal"),
+	pvpDisplayPets = CompactUnitFrameProfiles:GenerateRaidManagerSetting("pvpDisplayPets"),
+	pvpHealthText = CompactUnitFrameProfiles:GenerateOptionSetter("pvpHealthText", "normal"),
+
 	--State
 	shown = CompactUnitFrameProfiles:GenerateRaidManagerSetting("IsShown"),
 }

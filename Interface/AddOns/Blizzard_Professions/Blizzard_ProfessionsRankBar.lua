@@ -4,11 +4,57 @@ local ProfessionsRankBarEvents =
 	"TRIAL_STATUS_UPDATE",
 }
 
+local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)
+	local rankText;
+	if skillModifier > 0  then
+		rankText = TRADESKILL_NAME_RANK_WITH_MODIFIER:format(professionName, skillLevel, skillModifier, maxSkillLevel);
+	else
+		rankText = TRADESKILL_NAME_RANK:format(professionName, skillLevel, maxSkillLevel);
+	end
+
+	if GameLimitedMode_IsActive() then
+		local professionCap = select(3, GetRestrictedAccountData());
+		if skillLevel >= professionCap and professionCap > 0 then
+			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
+		end
+	end
+	return rankText;
+end
+
+local function ExpansionDropDownButton_Init(self)
+	-- Add profession header ie Engineering
+	local baseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	info.isTitle = true;
+	info.text = baseProfessionInfo.professionName;
+	info.justifyH = "CENTER";
+	UIDropDownMenu_AddButton(info, level)
+
+	-- Add each expansion and skill display - Dragon Isles 50/100
+	local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
+	for index, professionInfo in ipairs(childProfessionInfos) do
+		local info = UIDropDownMenu_CreateInfo();
+		info.text = GenerateRankText(professionInfo.expansionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
+		info.func = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo) end;
+		info.checked = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end;
+		UIDropDownMenu_AddButton(info, level)
+	end
+end
+
 ProfessionsRankBarMixin = {};
 
 function ProfessionsRankBarMixin:OnLoad()
 	self.Flare:ClearAllPoints();
 	self.Flare:SetPoint("RIGHT", self.Mask, "RIGHT", 0, 0);
+
+	UIDropDownMenu_SetInitializeFunction(self.ExpansionDropDownFrame, ExpansionDropDownButton_Init);
+	UIDropDownMenu_SetAnchor(self.ExpansionDropDownFrame, 0, 0, "TOPRIGHT", self.ExpansionDropDownButton, "BOTTOMRIGHT");
+
+	self.ExpansionDropDownButton:SetScript("OnClick", function(_, button) 
+		ToggleDropDownMenu(nil, nil, self.ExpansionDropDownFrame, nil, nil, nil, nil, nil, nil, "MENU");
+	end);
 end
 
 function ProfessionsRankBarMixin:OnShow()
@@ -26,23 +72,6 @@ function ProfessionsRankBarMixin:OnEvent(event, ...)
 	if event == "SKILL_LINES_CHANGED" or event == "TRIAL_STATUS_UPDATE" then
 		self:Update(Professions.GetProfessionInfo());
 	end
-end
-
-local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)
-	local rankText;
-	if skillModifier > 0  then
-		rankText = TRADESKILL_NAME_RANK_WITH_MODIFIER:format(professionName, skillLevel, skillModifier, maxSkillLevel);
-	else
-		rankText = TRADESKILL_NAME_RANK:format(professionName, skillLevel, maxSkillLevel);
-	end
-
-	if GameLimitedMode_IsActive() then
-		local professionCap = select(3, GetRestrictedAccountData());
-		if skillLevel >= professionCap and professionCap > 0 then
-			return ("%s %s%s|r"):format(rankText, RED_FONT_COLOR_CODE, CAP_REACHED_TRIAL);
-		end
-	end
-	return rankText;
 end
 
 function ProfessionsRankBarMixin:Update(professionInfo)
@@ -87,6 +116,10 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 		self.BarAnimation:Restart();
 	end
 
+	if sameRatio then
+		return;
+	end
+
 	local isBarFull = (professionInfo.maxSkillLevel > 0 and professionInfo.skillLevel == professionInfo.maxSkillLevel);
 	if isBarFull and not professionChanged and not sameRatio then
 		self.FlareFadeOut:Restart();
@@ -98,10 +131,6 @@ function ProfessionsRankBarMixin:Update(professionInfo)
 	if self.interpolator then
 		self.interpolator:Cancel();
 		self.interpolator = nil;
-	end
-
-	if sameRatio then
-		return;
 	end
 
 	local width = self.Fill:GetWidth();

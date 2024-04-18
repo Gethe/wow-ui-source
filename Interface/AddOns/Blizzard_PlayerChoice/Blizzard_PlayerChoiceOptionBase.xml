@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<Frame name="PlayerChoiceBaseCenteredFrame" virtual="true">
 		<KeyValues>
@@ -196,7 +196,7 @@
 					<KeyValue key="spacing" value="8" type="number"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="WidgetContainer" inherits="PlayerChoiceBaseCenteredFrame, UIWidgetContainerNoResizeTemplate">
+			<Frame parentKey="WidgetContainer" inherits="PlayerChoiceBaseCenteredFrame, UIWidgetContainerTemplate" mixin="PlayerChoiceWidgetContainerMixin">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="20" type="number"/>
 					<KeyValue key="topPadding" value="5" type="number"/>

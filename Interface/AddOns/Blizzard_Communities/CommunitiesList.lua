@@ -180,6 +180,7 @@ end
 
 function CommunitiesListMixin:Update()
 	local clubs = self:GetCommunitiesList();
+	local playerIsInGuild = IsInGuild();
 	self:ValidateTickets();
 	
 	-- TODO:: Determine if this player is at the maximum number of allowed clubs or not.
@@ -214,19 +215,26 @@ function CommunitiesListMixin:Update()
 	end
 
 	local clubFinderEnabled = C_ClubFinder.IsEnabled();
+	local communitiesFinderEnabled = C_ClubFinder.IsCommunityFinderEnabled();
+	local guildFinderFrame = self:GetCommunitiesFrame().GuildFinderFrame;
 	if clubFinderEnabled then
-		dataProvider:Insert({setFindCommunity = true});
+		guildFinderFrame.isGuildType = true;
+		guildFinderFrame:UpdateType();
+		
+		if not playerIsInGuild then
+			dataProvider:Insert({setGuildFinder = true});
+		end
+
+		if communitiesFinderEnabled then
+			dataProvider:Insert({setFindCommunity = true});
+		end
 	end
 	
 	if C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet) then
 		dataProvider:Insert({setJoinCommunity = true});
 	end
 
-	if clubFinderEnabled then
-		local guildFinderFrame = self:GetCommunitiesFrame().GuildFinderFrame;
-		guildFinderFrame.isGuildType = true;
-		guildFinderFrame:UpdateType()
-
+	if clubFinderEnabled and playerIsInGuild then
 		dataProvider:Insert({setGuildFinder = true});
 	end 
 
@@ -307,10 +315,10 @@ function CommunitiesListMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_LIST_EVENTS);
 end
 
-function CommunitiesListMixin:ScrollToClub(clubId, noScrollInterpolation)
+function CommunitiesListMixin:ScrollToClub(clubId)
 	self.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 		return elementData.clubInfo and elementData.clubInfo.clubId == clubId;
-	end, ScrollBoxConstants.AlignCenter, noScrollInterpolation);
+	end, ScrollBoxConstants.AlignCenter);
 end
 
 function CommunitiesListMixin:OnClubSelected(clubId)
@@ -652,7 +660,7 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 end
 
 function CommunitiesListEntryMixin:SetGuildFinder()
-	local disabled = self:CheckForDisabledReason(Enum.ClubType.Character);
+	local disabled = self:CheckForDisabledReason(Enum.ClubType.Guild);
 
 	self.overrideOnClick = function ()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

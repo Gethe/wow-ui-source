@@ -39,8 +39,7 @@ end
 function TutorialHelper:FormatString(str)
 	-- Spell Names and Icons e.g. {$1234}
 	str = string.gsub(str, "{%$(%d+)}", function(spellID)
-			local name, _, icon = GetSpellInfo(spellID);
-			--return string.format("|cFF00FFFF%s|r |T%s:16|t", name, icon);
+			local name = C_Spell.GetSpellName(spellID);
 			return string.format("|cFF00FFFF%s|r", name);
 		end);
 
@@ -265,17 +264,17 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetMapBinding()
-	return GetBindingKey("TOGGLEWORLDMAP") or "";
+	return GetBindingKey("TOGGLEWORLDMAP") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetCharacterBinding()
-	return GetBindingKey("TOGGLECHARACTER0") or "";
+	return GetBindingKey("TOGGLECHARACTER0") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetBagBinding()
-	return GetBindingKey("OPENALLBAGS") or "";
+	return GetBindingKey("OPENALLBAGS") or NPE_UNBOUND_KEYBIND;
 end
 
 function TutorialHelper:GetCreatureIDFromGUID(guid)

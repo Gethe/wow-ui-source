@@ -15,8 +15,8 @@ local SimpleControlPointAPI =
 
 			Returns =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -38,8 +38,8 @@ local SimpleControlPointAPI =
 
 			Arguments =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -57,7 +57,7 @@ local SimpleControlPointAPI =
 
 			Arguments =
 			{
-				{ Name = "parent", Type = "table", Nilable = false },
+				{ Name = "parent", Type = "SimplePathAnim", Nilable = false },
 				{ Name = "order", Type = "number", Nilable = true },
 			},
 		},

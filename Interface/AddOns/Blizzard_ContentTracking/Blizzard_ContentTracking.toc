@@ -1,0 +1,9 @@
+## Title: Blizzard_ContentTracking
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXMLBase
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+
+ContentTrackingManager.lua
+ContentTrackingElement.xml

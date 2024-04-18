@@ -145,7 +145,32 @@ function MapCanvasPinMixin:OnAcquired(...) -- the arguments here are anything th
 end
 
 function MapCanvasPinMixin:OnReleased()
-	-- Override in your mixin, called when this pin is being released by a data provider and is no longer on the map
+	-- Make sure to call the base if you override in your mixin
+	-- Called when this pin is being released by a data provider and is no longer on the map
+	if self.widgetContainer then
+		self.widgetContainer:UnregisterForWidgetSet();
+	end
+end
+
+function MapCanvasPinMixin:AddIconWidgets()
+	if not self.iconWidgetSet then
+		if self.widgetContainer then
+			self.widgetContainer:UnregisterForWidgetSet();
+		end
+		return;
+	end
+
+	if not self.widgetContainer then
+		self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+		self.widgetContainer.forceWidgetSetLayoutDirection = Enum.UIWidgetSetLayoutDirection.Overlap;
+		self.widgetContainer:SetPoint("CENTER", self, "CENTER", 0, 0);
+
+		if not self.widgetAnimationTexture then
+			self.widgetAnimationTexture = self.Texture;
+		end
+	end
+
+	self.widgetContainer:RegisterForWidgetSet(self.iconWidgetSet);
 end
 
 function MapCanvasPinMixin:OnClick(...)
@@ -155,6 +180,13 @@ function MapCanvasPinMixin:OnClick(...)
 	if self.OnMouseClickAction then
 		self:OnMouseClickAction(...);
 	end	
+end
+
+function MapCanvasPinMixin:DisableInheritedMotionScriptsWarning()
+	-- Override in your mixin to disable warnings (for use if you're inheriting from a template that has OnEnter/OnLeave defined).
+	-- Make sure you call the appropriate OnEnter/OnLeave inside OnMouseEnter/OnMouseLeave.
+
+	return false;
 end
 
 function MapCanvasPinMixin:OnMouseEnter()
@@ -424,6 +456,13 @@ function MapCanvasPinMixin:UseFrameLevelType(pinFrameLevelType, index)
 	self.pinFrameLevelIndex = index;
 end
 
+function MapCanvasPinMixin:UseFrameLevelTypeFromRangeTop(pinFrameLevelType, index)
+	self.pinFrameLevelType = pinFrameLevelType;
+	local range = self:GetMap():GetPinFrameLevelsManager():GetFrameLevelRange(pinFrameLevelType);
+	index = range - (index or 1) + 1;
+	self.pinFrameLevelIndex = index;
+end
+
 function MapCanvasPinMixin:GetFrameLevelType(pinFrameLevelType)
 	return self.pinFrameLevelType or "PIN_FRAME_LEVEL_DEFAULT";
 end
@@ -431,9 +470,17 @@ end
 function MapCanvasPinMixin:ApplyFrameLevel()
 	local frameLevel = self:GetMap():GetPinFrameLevelsManager():GetValidFrameLevel(self.pinFrameLevelType, self.pinFrameLevelIndex);
 	self:SetFrameLevel(frameLevel);
+
+	if self.widgetContainer then
+		self.widgetContainer:SetFrameLevel(frameLevel - 10);
+	end
 end
 
 function MapCanvasPinMixin:GetHighlightType()
 	-- Override this in your mixin if your pin needs highlight functionality, determines what kind of highlight to apply to the pin (See MapPinHighlightType)
 	return MapPinHighlightType.None;
+end
+
+function MapCanvasPinMixin:GetDebugInspectionSystem()
+	return "MapCanvasPin";
 end

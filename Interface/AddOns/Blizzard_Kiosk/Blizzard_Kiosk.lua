@@ -6,7 +6,8 @@ KioskFrameMixin = {}
 function KioskFrameMixin:OnLoad()
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_WARNING");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
-	self.whitelistedMapIDs = { 1533 };
+	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
+	self.whitelistedMapIDs = { };
 end
 
 function KioskFrameMixin:HasWhitelistedMaps()
@@ -31,7 +32,15 @@ function KioskFrameMixin:OnEvent(event, ...)
 		PlaySound(expirationWarningSoundKit);
 	elseif event == "KIOSK_SESSION_EXPIRATION_CHANGED" then
 		UIErrorsFrame:AddExternalWarningMessage(KIOSK_SESSION_TIMER_CHANGED);
+	elseif event == "KIOSK_SESSION_SHUTDOWN" then
+		SettingsPanel:SetAllSettingsToDefaults();
 	end
+end
+
+KioskSessionStartedDialogButtonMixin = {}
+
+function KioskSessionStartedDialogButtonMixin:OnClick()
+	KioskSessionStartedDialog:Hide();
 end
 
 KioskSessionFinishedDialogMixin = CreateFromMixins(BaseExpandableDialogMixin);
@@ -39,10 +48,6 @@ KioskSessionFinishedDialogMixin = CreateFromMixins(BaseExpandableDialogMixin);
 function KioskSessionFinishedDialogMixin:OnLoad()
 	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
-
-	self.Dialog.Title:SetText(KIOSK_SESSION_EXPIRED_TITLE);
-	self.Dialog.SubTitle:SetText("Shadowlands");
-	self.Dialog.Body:SetText(KIOSK_SESSION_EXPIRED_BODY);
 end
 
 function KioskSessionFinishedDialogMixin:OnEvent(event, ...)
@@ -52,6 +57,8 @@ function KioskSessionFinishedDialogMixin:OnEvent(event, ...)
 			self:Hide();
 		end
 	elseif event == "KIOSK_SESSION_EXPIRED" then
+		-- Clear starting dialog if still showing.
+		KioskSessionStartedDialog:Hide();
 		self:Show();
 	end
 end

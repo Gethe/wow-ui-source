@@ -1,0 +1,131 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_SpellBookCategory.lua"/>
+	<Script file="Blizzard_SpellBookFrameTutorials.lua"/>
+	<Script file="Blizzard_SpellBookFrame.lua"/>
+
+	<Frame name="SpellBookFrameTemplate" mixin="SpellBookFrameMixin" inherits="TabSystemOwnerTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="view1YOffset" value="-65" type="number" />
+			<KeyValue key="view1MaximizedXOffset" value="85" type="number" />
+			<KeyValue key="view1MinimizedXOffset" value="75" type="number" />
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="TopBar" atlas="spellbook-background-evergreen-header">
+					<Size y="51"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BookBGHalved" atlas="spellbook-background-evergreen-right" useAtlasSize="false" hidden="true" parentArray="minimizedArt">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-51"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BookBGLeft" atlas="spellbook-background-evergreen-left" useAtlasSize="false" parentArray="maximizedArt">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-51"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BookBGRight" atlas="spellbook-background-evergreen-right" useAtlasSize="false" parentArray="maximizedArt">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOP" y="-51"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Bookmark" atlas="spellbook-background-evergreen-ribbon" useAtlasSize="true" parentArray="maximizedArt">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BookBGLeft" x="62" y="55"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="HelpPlateButton" inherits="MainHelpPlateButton" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="38" y="42" />
+				</Anchors>
+			</Button>
+			<Frame parentKey="CategoryTabSystem" inherits="TabSystemTemplate">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="100" type="number"/>
+					<KeyValue key="maxTabWidth" value="150" type="number"/>
+					<KeyValue key="tabTemplate" value="SpellBookCategoryTabTemplate" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-20"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PagedSpellsFrame" inherits="PagedCellSizeGridContentFrameTemplate">
+				<KeyValues>
+					<KeyValue key="viewsPerPage" value="2" type="number"/>
+					<KeyValue key="autoExpandHeaders" value="true" type="boolean"/>
+					<KeyValue key="spacerSize" value="20" type="number"/>
+					<KeyValue key="xPadding" value="15" type="number"/>
+					<KeyValue key="yPadding" value="10" type="number"/>
+					<KeyValue key="cellsPerRow" value="3" type="number"/>
+					<KeyValue key="autoExpandElements" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-50"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="View1" parentArray="ViewFrames">
+						<Size x="680" y="650"/>
+						<Anchors>
+							<!-- These offsets update dynamically when switching in/out of minimized mode, see KeyValuePairs at top level frame -->
+							<Anchor point="TOPLEFT" x="85" y="-65" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="View2" parentArray="ViewFrames">
+						<Size x="680" y="650"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-50" y="-65" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-50" y="40"/>
+
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="fontName" value="SystemFont_Med3" type="string" />
+							<KeyValue key="fontColor" value="SPELLBOOK_FONT_COLOR" type="global" />
+							<KeyValue key="spacing" value="8" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<!-- SpellBookRevampTODO: Remove in-progress dev text -->
+			<Frame parentKey="InProgressDisclaimer" useParentLevel="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<FontString inherits="GameFontNormalLarge" text="New Spellbook is a Work in Progress, art and visuals are not finalized">
+							<Size y="0"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Size x="10" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryTabSystem" relativePoint="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

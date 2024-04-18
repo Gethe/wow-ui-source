@@ -40,7 +40,8 @@ function ZoneLabelDataProviderMixin:RefreshAllData(fromOnShow)
 		self:AddZone(childMapInfo.mapID, childMapInfo.name, left, right, top, bottom);
 	end
 
-	self:AddContinent();
+	local mapInfo = C_Map.GetMapInfo(mapID);
+	self:AddTopLevelAreaTrigger(mapInfo.mapType == Enum.UIMapType.Continent);
 
 	self.ZoneLabel:Show();
 end
@@ -83,14 +84,14 @@ function ZoneLabelDataProviderMixin:EvaluateBestAreaTrigger()
 		self.bestAreaTrigger = newBestAreaTrigger;
 		self.ZoneLabel.Text:SetText(newBestAreaTrigger.name);
 		self.ZoneLabel.FadeInAnim:Play();
-		self:GetMap():TriggerEvent("ZoneLabelFadeInStart", self.bestAreaTrigger.isContinent);
+		self:GetMap():TriggerEvent("ZoneLabelFadeInStart", self.bestAreaTrigger.isTopLevel);
 
 		self.ZoneLabel:ClearAllPoints();
 		self.ZoneLabel:SetPoint(self:CalculateAnchorsForAreaTrigger(newBestAreaTrigger));
 
 	elseif self.bestAreaTrigger and self.bestAreaTrigger ~= newBestAreaTrigger then
 		self.ZoneLabel.FadeOutAnim:Play();
-		self:GetMap():TriggerEvent("ZoneLabelFadeOutStart", self.bestAreaTrigger.isContinent);
+		self:GetMap():TriggerEvent("ZoneLabelFadeOutStart", self.bestAreaTrigger.isTopLevel);
 		self.bestAreaTrigger = nil;
 	end
 end
@@ -111,7 +112,7 @@ function ZoneLabelDataProviderMixin:CalculateAnchorsForAreaTrigger(areaTrigger)
 	local TOP_Y_OFFSET = -30;
 	local BOTTOM_Y_OFFSET = 30;
 
-	if areaTrigger.isContinent then
+	if areaTrigger.isTopLevel then
 		return "TOPRIGHT", 0, TOP_Y_OFFSET;
 	end
 
@@ -202,7 +203,7 @@ function ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, left, right, to
 	local areaTrigger = self:GetMap():AcquireAreaTrigger("ZoneLabelDataProvider_ZoneLabel");
 	areaTrigger.owner = self;
 	areaTrigger.name = zoneName;
-	areaTrigger.isContinent = false;
+	areaTrigger.isTopLevel = false;
 
 	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);
 	self:GetMap():SetAreaTriggerPredicate(areaTrigger, ZoneAreaTriggerPredicate);
@@ -218,8 +219,8 @@ function ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, left, right, to
 	areaTrigger:Stretch(halfWidth, halfHeight);
 end
 
-function ZoneLabelDataProviderMixin:AddContinent()
-	local mapInfo = MapUtil.GetMapParentInfo(self:GetMap():GetMapID(), Enum.UIMapType.Continent);
+function ZoneLabelDataProviderMixin:AddTopLevelAreaTrigger(isContinent)
+	local mapInfo = isContinent and MapUtil.GetMapParentInfo(self:GetMap():GetMapID(), Enum.UIMapType.Continent) or C_Map.GetMapInfo(self:GetMap():GetMapID());
 	if not mapInfo then
 		return;
 	end
@@ -227,10 +228,13 @@ function ZoneLabelDataProviderMixin:AddContinent()
 	local areaTrigger = self:GetMap():AcquireAreaTrigger("ZoneLabelDataProvider_ZoneLabel");
 	areaTrigger.owner = self;
 	areaTrigger.name = mapInfo.name;
-	areaTrigger.isContinent = true;
+	areaTrigger.isTopLevel = true;
 
 	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);
-	self:GetMap():SetAreaTriggerPredicate(areaTrigger, ContinentAreaTriggerPredicate);
+
+	if isContinent then
+		self:GetMap():SetAreaTriggerPredicate(areaTrigger, ContinentAreaTriggerPredicate);
+	end
 
 	areaTrigger:SetCenter(.5, .5);
 	areaTrigger:Stretch(.01, .01);

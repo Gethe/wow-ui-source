@@ -37,6 +37,21 @@ local DateAndTime =
 			},
 		},
 		{
+			Name = "AdjustTimeByMonths",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "date", Type = "CalendarTime", Nilable = false },
+				{ Name = "months", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "newDate", Type = "CalendarTime", Nilable = false },
+			},
+		},
+		{
 			Name = "CompareCalendarTime",
 			Type = "Function",
 
@@ -57,7 +72,7 @@ local DateAndTime =
 
 			Arguments =
 			{
-				{ Name = "epoch", Type = "number", Nilable = false },
+				{ Name = "epoch", Type = "BigUInteger", Nilable = false },
 			},
 
 			Returns =
@@ -80,7 +95,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "seconds", Type = "number", Nilable = false },
+				{ Name = "seconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -89,7 +104,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "seconds", Type = "number", Nilable = false },
+				{ Name = "seconds", Type = "time_t", Nilable = false },
 			},
 		},
 		{
@@ -98,7 +113,7 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "serverTimeLocal", Type = "number", Nilable = false },
+				{ Name = "serverTimeLocal", Type = "time_t", Nilable = false },
 			},
 		},
 	},
@@ -109,6 +124,19 @@ local DateAndTime =
 
 	Tables =
 	{
+		{
+			Name = "TimeEventFlag",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "GlueScreenShortcut", Type = "TimeEventFlag", EnumValue = 1 },
+				{ Name = "WeeklyReset", Type = "TimeEventFlag", EnumValue = 2 },
+				{ Name = "GlobalLaunch", Type = "TimeEventFlag", EnumValue = 4 },
+			},
+		},
 	},
 };
 

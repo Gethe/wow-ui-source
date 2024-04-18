@@ -12,7 +12,7 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "size", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "size", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -26,7 +26,7 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "size", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "size", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -41,7 +41,7 @@ local Video =
 
 			Returns =
 			{
-				{ Name = "sizes", Type = "table", InnerType = "table", Nilable = false },
+				{ Name = "sizes", Type = "table", InnerType = "vector2", Nilable = false },
 			},
 		},
 		{
@@ -81,6 +81,16 @@ local Video =
 			Name = "GlueScreenshotFailed",
 			Type = "Event",
 			LiteralName = "GLUE_SCREENSHOT_FAILED",
+		},
+		{
+			Name = "GlueScreenshotStarted",
+			Type = "Event",
+			LiteralName = "GLUE_SCREENSHOT_STARTED",
+		},
+		{
+			Name = "GlueScreenshotSucceeded",
+			Type = "Event",
+			LiteralName = "GLUE_SCREENSHOT_SUCCEEDED",
 		},
 		{
 			Name = "GxRestarted",

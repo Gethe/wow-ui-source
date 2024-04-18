@@ -6,6 +6,15 @@ local SimpleTextureBaseAPI =
 	Functions =
 	{
 		{
+			Name = "ClearTextureSlice",
+			Type = "Function",
+			Documentation = { "Disable shader based nineslice texture rendering. Since SetAtlas will automatically load slice data for the atlas from the DB, can be useful if you want to disable nineslice after setting an atlas." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "GetAtlas",
 			Type = "Function",
 
@@ -15,7 +24,7 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 			},
 		},
 		{
@@ -28,7 +37,7 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "blendMode", Type = "string", Nilable = false },
+				{ Name = "blendMode", Type = "BlendMode", Nilable = false },
 			},
 		},
 		{
@@ -41,7 +50,7 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "desaturation", Type = "number", Nilable = false },
+				{ Name = "desaturation", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -68,7 +77,7 @@ local SimpleTextureBaseAPI =
 			Returns =
 			{
 				{ Name = "radians", Type = "number", Nilable = false },
-				{ Name = "normalizedRotationPoint", Type = "table", Mixin = "Vector2DMixin", Nilable = false },
+				{ Name = "normalizedRotationPoint", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{
@@ -95,7 +104,7 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "bias", Type = "number", Nilable = false },
+				{ Name = "bias", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -108,7 +117,7 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "textureFile", Type = "string", Nilable = true },
+				{ Name = "textureFile", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -121,7 +130,7 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "textureFile", Type = "number", Nilable = false },
+				{ Name = "textureFile", Type = "fileID", Nilable = false },
 			},
 		},
 		{
@@ -134,7 +143,36 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "textureFile", Type = "string", Nilable = true },
+				{ Name = "textureFile", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTextureSliceMargins",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "top", Type = "number", Nilable = false },
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTextureSliceMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "sliceMode", Type = "UITextureSliceMode", Nilable = false },
 			},
 		},
 		{
@@ -156,13 +194,13 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "vertexIndex", Type = "number", Nilable = false },
+				{ Name = "vertexIndex", Type = "luaIndex", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -210,9 +248,9 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "atlas", Type = "string", Nilable = false },
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
 				{ Name = "useAtlasSize", Type = "bool", Nilable = false, Default = false },
-				{ Name = "filterMode", Type = "string", Nilable = true },
+				{ Name = "filterMode", Type = "FilterMode", Nilable = true },
 				{ Name = "resetTexCoords", Type = "bool", Nilable = true },
 			},
 		},
@@ -222,7 +260,7 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "blendMode", Type = "string", Nilable = false },
+				{ Name = "blendMode", Type = "BlendMode", Nilable = false },
 			},
 		},
 		{
@@ -243,7 +281,7 @@ local SimpleTextureBaseAPI =
 				{ Name = "colorR", Type = "number", Nilable = false },
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
-				{ Name = "a", Type = "number", Nilable = true },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
 			},
 		},
 		{
@@ -261,7 +299,7 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "desaturation", Type = "number", Nilable = false },
+				{ Name = "desaturation", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -270,9 +308,9 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "orientation", Type = "string", Nilable = false },
-				{ Name = "minColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
-				{ Name = "maxColor", Type = "table", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "orientation", Type = "Orientation", Nilable = false },
+				{ Name = "minColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "maxColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 		{
@@ -290,7 +328,7 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "file", Type = "string", Nilable = false },
+				{ Name = "file", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -300,7 +338,7 @@ local SimpleTextureBaseAPI =
 			Arguments =
 			{
 				{ Name = "radians", Type = "number", Nilable = false },
-				{ Name = "normalizedRotationPoint", Type = "table", Mixin = "Vector2DMixin", Nilable = true },
+				{ Name = "normalizedRotationPoint", Type = "vector2", Mixin = "Vector2DMixin", Nilable = true },
 			},
 		},
 		{
@@ -330,7 +368,7 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "bias", Type = "number", Nilable = false },
+				{ Name = "bias", Type = "normalizedValue", Nilable = false },
 			},
 		},
 		{
@@ -339,15 +377,38 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "textureAsset", Type = "string", Nilable = true },
-				{ Name = "wrapModeHorizontal", Type = "string", Nilable = true },
-				{ Name = "wrapModeVertical", Type = "string", Nilable = true },
-				{ Name = "filterMode", Type = "string", Nilable = true },
+				{ Name = "textureAsset", Type = "cstring", Nilable = true },
+				{ Name = "wrapModeHorizontal", Type = "cstring", Nilable = true },
+				{ Name = "wrapModeVertical", Type = "cstring", Nilable = true },
+				{ Name = "filterMode", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTextureSliceMargins",
+			Type = "Function",
+			Documentation = { "Enables nineslice texture rendering using the specified pixel margins. Preferred over legacy nineslice approach that uses 9 separate textures." },
+
+			Arguments =
+			{
+				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "top", Type = "number", Nilable = false },
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTextureSliceMode",
+			Type = "Function",
+			Documentation = { "Controls whether the center and sides are Stretched or Tiled when using nineslice texture rendering. Defaults to Stretched." },
+
+			Arguments =
+			{
+				{ Name = "sliceMode", Type = "UITextureSliceMode", Nilable = false },
 			},
 		},
 		{
@@ -365,9 +426,9 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "vertexIndex", Type = "number", Nilable = false },
-				{ Name = "offsetX", Type = "number", Nilable = false },
-				{ Name = "offsetY", Type = "number", Nilable = false },
+				{ Name = "vertexIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
+				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
 			},
 		},
 	},

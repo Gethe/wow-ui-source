@@ -26,6 +26,10 @@ local function GetDisplayEvent(elementData)
 	return elementData.displayEvent or elementData.event;
 end
 
+local function ApplyAlternateState(frame, alternate)
+	frame:SetAlternateOverlayShown(alternate);
+end
+
 EventTraceSavedVars =
 {
 	LogEventsWhenHidden = false,
@@ -63,7 +67,7 @@ function EventTraceScrollBoxButtonMixin:Flash()
 	self.FlashOverlay.Anim:Play();
 end
 
-EventTracePanelMixin = {};
+EventTracePanelMixin = CreateFromMixins(ToolWindowOwnerMixin);
 
 function EventTracePanelMixin:OnSetDebugToolVisible(addonName, showTool)
 	if addonName == "Blizzard_EventTrace" then
@@ -116,11 +120,19 @@ function EventTracePanelMixin:OnLoad()
 end
 
 function EventTracePanelMixin:OnShow()
-	self.Log.Events.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
+	self:MoveToNewWindow(EVENTTRACE_HEADER, 1000, 600, 930, 300);
+
+	self.Log.Events.ScrollBox:ScrollToEnd();
 
 	if not self:IsLoggingEventsWhenHidden() then
 		self:LogMessage(EVENTTRACE_LOG_START);
 	end
+end
+
+function EventTracePanelMixin:OnCloseClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	self:Hide();
+	self.window:Close();
 end
 
 function EventTracePanelMixin:OnHide()
@@ -259,7 +271,7 @@ function EventTracePanelMixin:InitializeLog()
 
 				local found = self.Log.Search.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 					return elementData.id == pendingSearch.id;
-				end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+				end, ScrollBoxConstants.AlignCenter);
 
 				if found then
 					local button = self.Log.Search.ScrollBox:FindFrame(found);
@@ -268,20 +280,13 @@ function EventTracePanelMixin:InitializeLog()
 					end
 				end
 			elseif self.Log.Search.ScrollBox:HasScrollableExtent() then
-				self.Log.Search.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
+				self.Log.Search.ScrollBox:ScrollToEnd();
 			end
 		end
 	end);
 
-	local function SetOnDataRangeChanged(scrollBox)
-		local function OnDataRangeChanged(sortPending)
-			SetScrollBoxButtonAlternateState(scrollBox);
-		end;
-		scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
-	end
-
-	SetOnDataRangeChanged(self.Log.Events.ScrollBox);
-	SetOnDataRangeChanged(self.Log.Search.ScrollBox);
+	ScrollUtil.RegisterAlternateRowBehavior(self.Log.Events.ScrollBox, ApplyAlternateState);
+	ScrollUtil.RegisterAlternateRowBehavior(self.Log.Search.ScrollBox, ApplyAlternateState);
 
 	local function AddEventToFilter(scrollBox, elementData)
 		local found = self.filterDataProvider:FindElementDataByPredicate(function(filterData)
@@ -357,7 +362,7 @@ function EventTracePanelMixin:InitializeLog()
 
 			local found = self.Log.Events.ScrollBox:ScrollToElementDataByPredicate(function(data)
 				return data.id == elementData.id;
-			end, ScrollBoxConstants.AlignCenter, ScrollBoxConstants.NoScrollInterpolation);
+			end, ScrollBoxConstants.AlignCenter);
 
 			local button = found and self.Log.Events.ScrollBox:FindFrame(found);
 			if button then
@@ -436,10 +441,7 @@ function EventTracePanelMixin:InitializeFilter()
 		self.filterDataProvider:Flush();
 	end);
 
-	local function OnDataRangeChanged(sortPending)
-		SetScrollBoxButtonAlternateState(self.Filter.ScrollBox);
-	end
-	self.Filter.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
+	ScrollUtil.RegisterAlternateRowBehavior(self.Filter.ScrollBox, ApplyAlternateState);
 
 	local function RemoveEventFromFilter(elementData)
 		self.filterDataProvider:Remove(elementData);
@@ -602,7 +604,7 @@ end
 function EventTracePanelMixin:SetLoggingPaused(paused)
 	self.isLoggingPaused = paused;
 
-	self:LogMessage(paused and EVENTTRACE_LOG_START or EVENTTRACE_LOG_PAUSE);
+	self:LogMessage(paused and EVENTTRACE_LOG_PAUSE or EVENTTRACE_LOG_START);
 	self:UpdatePlaybackButton();
 end
 
@@ -657,11 +659,15 @@ function EventTracePanelMixin:LogLine(elementData)
 	self:TrimDataProvider(self.searchDataProvider);
 
 	if not IsAltKeyDown() and (preInsertAtScrollEnd or (not preInsertScrollable and self.Log.Events.ScrollBox:HasScrollableExtent())) then
-		self.Log.Events.ScrollBox:ScrollToEnd(ScrollBoxConstants.NoScrollInterpolation);
+		self.Log.Events.ScrollBox:ScrollToEnd();
 	end
 end
 
 function EventTracePanelMixin:OnEvent(event, ...)
+	if event == "IMGUI_RENDER_ENABLED" then
+		return;
+	end
+
 	if event == "ADDONS_UNLOADING" then
 		self:SaveVariables();
 		return;

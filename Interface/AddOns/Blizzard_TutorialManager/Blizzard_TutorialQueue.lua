@@ -49,12 +49,9 @@ end
 -- DEBUG
 -- ============================================================================================================
 function TutorialQueue:Status()
-	print("--------------START--------------")
+	TutorialManager:DebugLog("--------------START--------------")
 	for index, value in self.queue:EnumerateNodes() do
-	   print(index..": "..value.tutorial:Status());
+	   TutorialManager:DebugLog(index..": "..value.tutorial:Status());
 	end
-	print("---------------END---------------")
+	TutorialManager:DebugLog("---------------END---------------")
 end
-
--- ------------------------------------------------------------------------------------------------------------
-TutorialQueue:Initialize();

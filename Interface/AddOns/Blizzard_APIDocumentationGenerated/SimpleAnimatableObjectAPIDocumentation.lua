@@ -11,13 +11,13 @@ local SimpleAnimatableObjectAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "group", Type = "table", Nilable = false },
+				{ Name = "group", Type = "SimpleAnimGroup", Nilable = false },
 			},
 		},
 		{

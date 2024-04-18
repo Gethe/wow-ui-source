@@ -7,12 +7,43 @@ local SpellBook =
 	Functions =
 	{
 		{
+			Name = "CastSpellBookItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+				{ Name = "targetSelf", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "ContainsAnyDisenchantSpell",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "contains", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "FindSpellBookSlotForSpell",
+			Type = "Function",
+			Documentation = { "If found, returns the first slot position of a SpellBookItem matching the specified spell and criteria" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "includeHidden", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, search includes SpellBookItems that are hidden from the SpellBook UI (ex: spells that have been replaced, are also in a Flyout, etc)" } },
+				{ Name = "includeFlyouts", Type = "bool", Nilable = false, Default = true, Documentation = { "If true, search includes Flyout SpellBookItems containing the specified spell" } },
+				{ Name = "includeFutureSpells", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, search includes SpellBookItems for spells that have not yet been learned" } },
+				{ Name = "includeOffSpec", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, search includes SpellBookItems belonging to non-active specializations; If spell is in active and inactive spec, the active spec slot will always be returned" } },
+			},
+
+			Returns =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 		},
 		{
@@ -30,34 +61,12 @@ local SpellBook =
 			},
 		},
 		{
-			Name = "GetDeadlyDebuffInfo",
+			Name = "GetNumSpellBookSkillLines",
 			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-			},
 
 			Returns =
 			{
-				{ Name = "deadlyDebuffInfo", Type = "DeadlyDebuffInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetOverrideSpell",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "spec", Type = "number", Nilable = false, Default = 0 },
-				{ Name = "onlyKnown", Type = "bool", Nilable = false, Default = true },
-				{ Name = "ignoreOverrideSpellID", Type = "number", Nilable = false, Default = 0 },
-			},
-
-			Returns =
-			{
-				{ Name = "overrideSpellID", Type = "number", Nilable = false, Documentation = { "Returns the spellID passed in if there is no override" } },
+				{ Name = "numSpellBookSkillLines", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -71,35 +80,181 @@ local SpellBook =
 
 			Returns =
 			{
-				{ Name = "skillIndex", Type = "number", Nilable = true },
+				{ Name = "skillIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
-			Name = "GetSpellInfo",
+			Name = "GetSpellBookItemAutoCast",
 			Type = "Function",
+			Documentation = { "Returns nothing if item doesn't exist or isn't a spell" },
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "spellInfo", Type = "SpellInfo", Nilable = false },
+				{ Name = "autoCastAllowed", Type = "bool", Nilable = false, Documentation = { "True if this spell is allowed to be auto-cast" } },
+				{ Name = "autoCastEnabled", Type = "bool", Nilable = false, Documentation = { "True if auto-casting this spell is currently enabled (usually by the player)" } },
 			},
 		},
 		{
-			Name = "GetSpellLinkFromSpellID",
+			Name = "GetSpellBookItemCooldown",
+			Type = "Function",
+			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemInfo",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellBookItemInfo", Type = "SpellBookItemInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemLevelLearned",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelLearned", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemLink",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+				{ Name = "glyphID", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
 				{ Name = "spellLink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemLossOfControlCooldown",
+			Type = "Function",
+			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "subName", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellBookItemTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "iconID", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemTradeSkillLink",
+			Type = "Function",
+			Documentation = { "Returns nil if SpellBookItem is not associated with a trade skill" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellLink", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemType", Type = "SpellBookItemType", Nilable = false },
+				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Represents a spellID for spells, flyoutID for flyouts, or petActionID for pet actions" } },
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "May be nil if item is not a spell; may be different from actionID if item is an overriden spell" } },
+			},
+		},
+		{
+			Name = "GetSpellBookSkillLineInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "skillLineInfo", Type = "SpellBookSkillLineInfo", Nilable = false },
 			},
 		},
 		{
@@ -112,17 +267,60 @@ local SpellBook =
 			},
 		},
 		{
-			Name = "IsSpellDisabled",
+			Name = "HasPetSpells",
+			Type = "Function",
+			Documentation = { "Returns nothing if player has no pet spells" },
+
+			Returns =
+			{
+				{ Name = "numPetSpells", Type = "number", Nilable = false },
+				{ Name = "petNameToken", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellBookItemPassive",
 			Type = "Function",
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "disabled", Type = "bool", Nilable = false },
+				{ Name = "isPassive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PickupSpellBookItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSpellBookItemAutoCastEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ToggleSpellBookItemAutoCast",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
 			},
 		},
 	},
@@ -139,13 +337,13 @@ local SpellBook =
 			},
 		},
 		{
-			Name = "LearnedSpellInTab",
+			Name = "LearnedSpellInSkillLine",
 			Type = "Event",
-			LiteralName = "LEARNED_SPELL_IN_TAB",
+			LiteralName = "LEARNED_SPELL_IN_SKILL_LINE",
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "skillInfoIndex", Type = "number", Nilable = false },
+				{ Name = "skillLineIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isGuildPerkSpell", Type = "bool", Nilable = false },
 			},
 		},
@@ -164,7 +362,7 @@ local SpellBook =
 			LiteralName = "PLAYER_TOTEM_UPDATE",
 			Payload =
 			{
-				{ Name = "totemSlot", Type = "number", Nilable = false },
+				{ Name = "totemSlot", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -239,9 +437,9 @@ local SpellBook =
 			LiteralName = "UNIT_SPELLCAST_SENT",
 			Payload =
 			{
-				{ Name = "unit", Type = "string", Nilable = false },
-				{ Name = "target", Type = "string", Nilable = false },
-				{ Name = "castGUID", Type = "string", Nilable = false },
+				{ Name = "unit", Type = "cstring", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -270,27 +468,32 @@ local SpellBook =
 	Tables =
 	{
 		{
-			Name = "DeadlyDebuffInfo",
+			Name = "SpellBookItemInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "overrideCriticalTimeRemaining", Type = "number", Nilable = false },
-				{ Name = "priority", Type = "number", Nilable = false },
-				{ Name = "warningText", Type = "string", Nilable = false },
-				{ Name = "soundKitID", Type = "number", Nilable = true },
+				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Represents a spellID for spells, flyoutID for flyouts, or petActionID for pet actions" } },
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "May be nil if item is not a spell; may be different from actionID if spell is overriden" } },
+				{ Name = "itemType", Type = "SpellBookItemType", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "subName", Type = "string", Nilable = false, Documentation = { "May be empty if flyout, or if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
+				{ Name = "isPassive", Type = "bool", Nilable = false },
 			},
 		},
 		{
-			Name = "SpellInfo",
+			Name = "SpellBookSkillLineInfo",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "iconID", Type = "number", Nilable = false },
-				{ Name = "castTime", Type = "number", Nilable = false },
-				{ Name = "minRange", Type = "number", Nilable = false },
-				{ Name = "maxRange", Type = "number", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false },
+				{ Name = "itemIndexOffset", Type = "number", Nilable = false, Documentation = { "This value + 1 is the first Spell Book Item slotIndex within this skill line" } },
+				{ Name = "numSpellBookItems", Type = "number", Nilable = false },
+				{ Name = "isGuild", Type = "bool", Nilable = false },
+				{ Name = "shouldHide", Type = "bool", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = true, Documentation = { "Will be nil if this skill line is not associated with a specialization" } },
+				{ Name = "offSpecID", Type = "number", Nilable = true, Documentation = { "Will be nil if this skill line is not associated with a non-active specialization" } },
 			},
 		},
 	},

@@ -10,14 +10,11 @@ local headerTextureKitRegions = {
 local trackTextureKitRegions = {
 	["Glow"] = "UI-%s-Highlight-Middle",
 };
-local rewardTextureKitRegions = {
-	["Toast"] = "UI-%s-Reward-Slate",
-	["IconBorder"] = "UI-%s-RewardFrame",
-};
 
 -- "Burst" effect on the renown reward as you unlock it
 local levelEffects = {
 	[LE_EXPANSION_DRAGONFLIGHT] = 144,
+	[LE_EXPANSION_11_0] = 144,
 }
 -- Animated Effects behind the renown reward;
 local finalToastSwirlEffects = {
@@ -31,6 +28,41 @@ local ExpansionLayoutInfo =
 			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
 			["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
 			["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
+		},
+		renownFrameDecorationAnchors = {
+			["TopLeftBorderDecoration"] = { x = -40, y = 8, },
+			["TopRightBorderDecoration"] = { x = 40, y = 8, },
+			["BottomBorderDecoration"] = { x = 0, y = 10, },
+		},
+	},
+	[LE_EXPANSION_11_0] = {
+		textureKit = "Dragonflight",
+		renownFrameDecorations = {
+			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",
+			["TopRightBorderDecoration"] = "Dragonflight-DragonHeadRight",
+			["BottomBorderDecoration"] = "dragonflight-golddetailbottom",
+		},
+		renownFrameDecorationAnchors = {
+			["TopLeftBorderDecoration"] = { x = -40, y = 8, },
+			["TopRightBorderDecoration"] = { x = 40, y = 8, },
+			["BottomBorderDecoration"] = { x = 0, y = 10, },
+		},
+	},
+};
+
+local TextureKitOverrideLayoutInfo =
+{
+	["plunderstorm"] = {
+		textureKit = "plunderstorm",
+		renownFrameDecorations = {
+			["TopLeftBorderDecoration"] = "plunderstorm-wavesleft",
+			["TopRightBorderDecoration"] = "plunderstorm-wavesright",
+			["BottomBorderDecoration"] = "plunderstorm-decalbottom",
+		},
+		renownFrameDecorationAnchors = {
+			["TopLeftBorderDecoration"] = { x = 9, y = 19, },
+			["TopRightBorderDecoration"] = { x = -9, y = 19, },
+			["BottomBorderDecoration"] = { x = 0, y = 4, },
 		},
 	},
 };
@@ -57,8 +89,8 @@ local function SetupTextureKit(frame, regions)
 	SetupTextureKitOnRegions(currentFactionData.textureKit, frame, regions, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
 end
 
-local function SetupRenownFrameNineSlice(textureKit, renownFrameDecorations)
-	local frame = MajorFactionRenownFrame;
+local function SetupRenownFrameNineSlice(frame, layoutInfo)
+	local textureKit = layoutInfo.textureKit;
 
 	NineSliceUtil.ApplyLayout(frame.NineSlice, MajorFactionsLayout, textureKit);
 	NineSliceUtil.DisableSharpening(frame.NineSlice);
@@ -72,8 +104,15 @@ local function SetupRenownFrameNineSlice(textureKit, renownFrameDecorations)
 	frame.NineSlice.TopRightBorder:ClearAllPoints();
 	frame.NineSlice.TopRightBorder:SetPoint("TOPRIGHT", frame.NineSlice.TopRightCorner, "TOPLEFT");
 
+	local renownFrameDecorations = layoutInfo.renownFrameDecorations;
 	if renownFrameDecorations then
 		SetupAtlasesOnRegions(frame.NineSlice, renownFrameDecorations, TextureKitConstants.UseAtlasSize);
+
+		for regionKey, offsets in pairs(layoutInfo.renownFrameDecorationAnchors) do
+			local region = frame.NineSlice[regionKey];
+			region:ClearPointsOffset();
+			region:AdjustPointsOffset(offsets.x, offsets.y);
+		end
 	end
 end
 
@@ -82,7 +121,6 @@ MajorFactionRenownMixin = {};
 local MajorFactionRenownEvents = {
 	"MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
 	"MAJOR_FACTION_UNLOCKED",
-	"MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE",
 	"UPDATE_FACTION",
 };
 
@@ -94,7 +132,8 @@ function MajorFactionRenownMixin:OnLoad()
 		allowOtherPanels = 1,
 		width = 820,
 		height = 578,
-		yoffset = 7,
+		yoffset = -2,
+		whileDead = 1,
 	};
 	RegisterUIPanel(MajorFactionRenownFrame, attributes);
 	
@@ -118,7 +157,6 @@ function MajorFactionRenownMixin:OnShow()
 	local fromOnShow = true;
 	self:Refresh(fromOnShow);
 	self:CheckTutorials();
-	C_MajorFactions.RequestCatchUpState();
 	FrameUtil.RegisterFrameForEvents(self, MajorFactionRenownEvents);
 
 	PlaySound(SOUNDKIT.UI_MAJOR_FACTION_RENOWN_OPEN_WINDOW);
@@ -145,10 +183,6 @@ function MajorFactionRenownMixin:OnEvent(event, ...)
 		self:Refresh();
 	elseif event == "MAJOR_FACTION_UNLOCKED" then
 		HideUIPanel(self);
-	elseif event == "MAJOR_FACTION_RENOWN_CATCH_UP_STATE_UPDATE" then 
-		if self.HeaderFrame:IsMouseOver() then 
-			MajorFactionRenownHeaderFrameMixin.OnEnter(self.HeaderFrame);
-		end 
 	elseif event == "UPDATE_FACTION" then
 		self:RefreshCurrentFactionData();
 		self.HeaderFrame.RenownProgressBar:RefreshBar();
@@ -178,8 +212,8 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 		currentFactionID = majorFactionID;
 		currentFactionData = majorFactionData;
 
-		local layoutInfo = ExpansionLayoutInfo[currentFactionData.expansionID];
-		SetupRenownFrameNineSlice(layoutInfo.textureKit, layoutInfo.renownFrameDecorations);
+		local layoutInfo = TextureKitOverrideLayoutInfo[currentFactionData.textureKit] or ExpansionLayoutInfo[currentFactionData.expansionID];
+		SetupRenownFrameNineSlice(self, layoutInfo);
 
 		local factionTextureKit = currentFactionData.textureKit;
 		local renownFrameTextureKitRegions = mainTextureKitRegions;
@@ -197,7 +231,12 @@ function MajorFactionRenownMixin:SetUpMajorFactionData()
 			levelInfo.rewardInfo = C_MajorFactions.GetRenownRewardsForLevel(majorFactionID, i);
 		end
 		self.TrackFrame:Init(renownLevelsInfo);
+
 		self.TrackFrame.Title:SetText(majorFactionData.name or "");
+		local isAccountWideReputation = C_Reputation.IsAccountWideReputation(majorFactionID);
+		self.TrackFrame.Title:SetPoint("BOTTOM", self.TrackFrame, "TOP", 0, isAccountWideReputation and 20 or 15);
+		self.TrackFrame.AccountWideLabel:SetShown(isAccountWideReputation);
+
 		SetupTextureKit(self.TrackFrame, trackTextureKitRegions);
 
 		self.maxLevel = renownLevelsInfo[#renownLevelsInfo].level;
@@ -357,7 +396,7 @@ function MajorFactionRenownMixin:SetRewards(level)
 				rewardFrame:SetPoint("TOP", 229, -508);
 			end
 		end
-		rewardFrame:SetReward(rewardInfo, rewardUnlocked);
+		rewardFrame:SetReward(rewardInfo, rewardUnlocked, currentFactionData.textureKit);
 	end
 
 	if level <= renownLevel then
@@ -387,43 +426,22 @@ function MajorFactionRenownMixin:CheckTutorials()
 	end
 end
 
-MajorFactionRenownRewardMixin = {};
-
-function MajorFactionRenownRewardMixin:SetReward(rewardInfo, unlocked)
-	self.Check:SetShown(unlocked);
-	self.rewardInfo = rewardInfo;
-	self:RefreshReward();
-	self:Show();
-end
-
-function MajorFactionRenownRewardMixin:RefreshReward()
-	SetupTextureKit(self, rewardTextureKitRegions);
-	local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(self.rewardInfo, GenerateClosure(self.RefreshReward, self));
-	self.Icon:SetTexture(icon);
-	self.Name:SetText(name);
-	self.description = description;
-end
-
-function MajorFactionRenownRewardMixin:OnEnter()
-	local name = self.Name:GetText();
-	if name and self.description then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -14, -14);
-		GameTooltip_SetTitle(GameTooltip, name);
-		GameTooltip_AddNormalLine(GameTooltip, self.description);
-		GameTooltip:Show();
-	end
-end
-
 MajorFactionRenownHeaderFrameMixin = {}; 
 
 function MajorFactionRenownHeaderFrameMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -40, 130);
 
-	local majorFactionName = currentFactionData.name;
-	GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_LEVEL_TOOLTIP:format(majorFactionName));
+	if self:GetParent():GetCurrentFactionID() == Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID then
+		GameTooltip_AddNormalLine(GameTooltip, PLUNDERSTORM_RENOWN_LEVEL_TOOLTIP);
+	else
+		local majorFactionName = currentFactionData.name;
+		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_LEVEL_TOOLTIP:format(majorFactionName));
+	end
+
 	if not C_MajorFactions.HasMaximumRenown(currentFactionID) then
 		GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_CURRENT_PROGRESS:format(currentFactionData.renownReputationEarned, currentFactionData.renownLevelThreshold));
 	end
+
 	GameTooltip:Show(); 
 end 
 

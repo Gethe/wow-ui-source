@@ -31,6 +31,7 @@ Import("type");
 Import("PlaySound");
 Import("GetCVar");
 Import("LoadURLIndex");
+Import("securecallfunction")
 Import("LOCALE_enGB");
 Import("TOKEN_REDEEM_LABEL");
 Import("TOKEN_REDEEM_GAME_TIME_TITLE");
@@ -67,27 +68,6 @@ Import("TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT")
 Import("TOKEN_REDEEM_BALANCE_FORMAT")
 Import("TOKEN_REDEEM_BALANCE_TITLE")
 Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_TPT");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_GBP");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_EURO");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_RUB");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_MXN");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_JPY");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_CAD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_NZD");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_GEL");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_TRY");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_KZT");
-Import("BLIZZARD_STORE_CURRENCY_FORMAT_UAH");
-Import("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
-Import("BLIZZARD_STORE_CURRENCY_BETA");
 
 Import("GOLD_AMOUNT_SYMBOL");
 Import("GOLD_AMOUNT_TEXTURE");
@@ -125,32 +105,19 @@ Import("LE_TOKEN_REDEEM_TYPE_GAME_TIME");
 Import("LE_TOKEN_REDEEM_TYPE_BALANCE");
 Import("SOUNDKIT");
 
-BalanceEnabled = nil;
-BalanceAmount = 0;
-
-local CURRENCY_UNKNOWN = 0;
-local CURRENCY_USD = 1;
-local CURRENCY_GBP = 2;
-local CURRENCY_KRW = 3;
-local CURRENCY_EUR = 4;
-local CURRENCY_RUB = 5;
-local CURRENCY_ARS = 8;
-local CURRENCY_CLP = 9;
-local CURRENCY_MXN = 10;
-local CURRENCY_BRL = 11;
-local CURRENCY_AUD = 12;
-local CURRENCY_CPT = 14;
-local CURRENCY_TPT = 15;
-local CURRENCY_BETA = 16;
-local CURRENCY_JPY = 28;
-local CURRENCY_CAD = 29;
-local CURRENCY_NZD = 30;
-local CURRENCY_GEL = 31;
-local CURRENCY_TRY = 32;
-local CURRENCY_KZT = 33;
-local CURRENCY_UAH = 34;
+local BalanceEnabled = nil;
+local BalanceAmount = 0;
 
 local currencyMult = 100;
+
+local FormatCurrencyStringShort = nil;
+local FormatCurrencyStringLong = nil;
+local REGION_US = 1;
+local REGION_KR = 2;
+local REGION_EU = 3;
+local REGION_TW = 4;
+local REGION_CN = 5;
+local REGION_BETA = 98;
 
 local function formatLargeNumber(amount)
 	amount = tostring(amount);
@@ -177,157 +144,52 @@ local function formatCurrency(dollars, cents, alwaysShowCents)
 	end
 end
 
-local function currencyFormatUSD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_USD, formatCurrency(dollars, cents, false));
+local function currencyFormatShort(dollars, cents)
+	return string.format(FormatCurrencyStringShort, formatCurrency(dollars, cents, false));
 end
 
-local function currencyFormatGBP(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GBP, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatKRWLong(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatEuro(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_EURO, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatRUB(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_RUB, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatARS(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_ARS, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCLP(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CLP, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatMXN(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_MXN, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatBRL(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_BRL, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatAUD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_AUD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCPTLong(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatTPT(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TPT, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatRawStar(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_RAW_ASTERISK, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatBeta(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_BETA, formatCurrency(dollars, cents, true));
-end
-
-local function currencyFormatJPY(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_JPY, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatCAD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_CAD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatNZD(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_NZD, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatGEL(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_GEL, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatTRY(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_TRY, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatKZT(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_KZT, formatCurrency(dollars, cents, false));
-end
-
-local function currencyFormatUAH(dollars, cents)
-	return string.format(BLIZZARD_STORE_CURRENCY_FORMAT_UAH, formatCurrency(dollars, cents, false));
+local function currencyFormatLong(dollars, cents)
+	return string.format(FormatCurrencyStringLong, formatCurrency(dollars, cents, false));
 end
 
 local currencySpecific = {
-	[CURRENCY_USD] = {
-		["currencyFormat"] = currencyFormatUSD,
+	[REGION_US] = {
+		["currencyFormat"] = currencyFormatShort,
 	},
-	[CURRENCY_GBP] = {
-		["currencyFormat"] = currencyFormatGBP,
+	[REGION_EU] = {
+		["currencyFormat"] = currencyFormatShort,
 	},
-	[CURRENCY_KRW] = {
-		["currencyFormat"] = currencyFormatKRWLong,
+	[REGION_KR] = {
+		["currencyFormat"] = currencyFormatLong,
 	},
-	[CURRENCY_EUR] = {
-		["currencyFormat"] = currencyFormatEuro,
+	[REGION_TW] = {
+		["currencyFormat"] = currencyFormatShort,
 	},
-	[CURRENCY_RUB] = {
-		["currencyFormat"] = currencyFormatRUB,
+	[REGION_CN] = {
+		["currencyFormat"] = currencyFormatLong,
 	},
-	[CURRENCY_ARS] = {
-		["currencyFormat"] = currencyFormatARS,
-	},
-	[CURRENCY_CLP] = {
-		["currencyFormat"] = currencyFormatCLP,
-	},
-	[CURRENCY_MXN] = {
-		["currencyFormat"] = currencyFormatMXN,
-	},
-	[CURRENCY_BRL] = {
-		["currencyFormat"] = currencyFormatBRL,
-	},
-	[CURRENCY_AUD] = {
-		["currencyFormat"] = currencyFormatAUD,
-	},
-	[CURRENCY_CPT] = {
-		["currencyFormat"] = currencyFormatCPTLong,
-	},
-	[CURRENCY_TPT] = {
-		["currencyFormat"] = currencyFormatTPT,
-	},
-	[CURRENCY_BETA] ={
-		["currencyFormat"] = currencyFormatBeta,
-	},
-	[CURRENCY_JPY] = {
-		["currencyFormat"] = currencyFormatJPY,
-	},
-	[CURRENCY_CAD] = {
-		["currencyFormat"] = currencyFormatCAD,
-	},
-	[CURRENCY_NZD] = {
-		["currencyFormat"] = currencyFormatNZD,
-	},
-	[CURRENCY_GEL] = {
-		["currencyFormat"] = currencyFormatGEL,
-	},
-	[CURRENCY_TRY] = {
-		["currencyFormat"] = currencyFormatTRY,
-	},
-	[CURRENCY_KZT] = {
-		["currencyFormat"] = currencyFormatKZT,
-	},
-	[CURRENCY_UAH] = {
-		["currencyFormat"] = currencyFormatUAH,
-	},
+	[REGION_BETA] = {
+		["currencyFormat"] = currencyFormatShort,
+	}
 };
 
 local function currencyInfo()
 	local currency = C_StoreSecure.GetCurrencyID();
-	local info = currencySpecific[currency];
-	assert(info ~= nil, ("Missing currency info for currency ID '%d'"):format(currency));
+	if currency == 0 or C_StoreSecure.GetLastProductListResponseError() ~= 0 then
+		-- If currency hasn't been updated yet, this is fine, it will be updated eventually.
+		-- If there was an error updating currency, this is also fine, it will either remain broken for
+		-- the remainder of the session or will eventually update.
+		return nil;
+	end
+
+	local currencyInfo = C_StoreSecure.GetCurrencyInfo();
+	currencyRegion = currencyInfo.sharedData.regionID;
+	FormatCurrencyStringShort = currencyInfo.sharedData.formatShort;
+	FormatCurrencyStringLong = currencyInfo.sharedData.formatLong;
+	
+	-- If the currency has been set to a non-zero value and there was no error, then this assert still needs to check that the formatting data exists.
+	local info = currencySpecific[currencyRegion];
+	assert(info ~= nil, ("Missing currency info for currency ID '%d', bpay product list status '%d'"):format(currency, C_StoreSecure.GetLastProductListResponseError()));
 	return info;
 end
 
@@ -350,21 +212,63 @@ function WowTokenRedemptionFrame_OnLoad(self)
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 end
 
-
-function GetBalanceString()
+function GetBalanceString(amount)
 	local info = currencyInfo();
-	return info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0);
+	if info then
+		amount = amount or C_WowTokenSecure.GetBalanceRedeemAmount();
+		return info.currencyFormat(amount, 0);
+	end
+
+	return "";
+end
+
+local function CheckAwaitCurrencyIDBeforeUpdate(self)
+	local currencyID = C_StoreSecure.GetCurrencyID();
+	if currencyID == 0 and C_StoreSecure.GetLastProductListResponseError() == 0 then
+		-- If the error status is ok, but there's no currency, the currency id may not have been updated yet.
+		self:RegisterEvent("STORE_PRODUCTS_UPDATED");
+
+		-- Just in case this hasn't actually been requested yet or there was an error in an earlier response
+		-- make another attempt to force the currency update:
+		C_StoreSecure.GetProductList();
+		return true;
+	end
+
+	return false;
 end
 
 function WowTokenRedemptionFrame_Update(self)
 	BalanceEnabled = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
-	if (BalanceEnabled) then
+	if BalanceEnabled and not CheckAwaitCurrencyIDBeforeUpdate(self) then
 		C_WowTokenSecure.SetBalanceAmountString(GetBalanceString());
 		WowTokenRedemptionFrame_EnableBalance(self);
+		WowTokenRedemptionFrame_UpdateRedeemBalance(self);
 	else
 		self:SetWidth(325);
 		self.RightInset:Hide();
 		self.RightDisplay:Hide();
+	end
+end
+
+function WowTokenRedemptionFrame_UpdateRedeemBalance(self)
+	local currentBalance, _, canRedeem, cannotRedeemReason = C_WowTokenSecure.GetBalanceRedemptionInfo();
+	if (canRedeem) then
+		WowTokenRedemptionFrame_EnableBalance(self);
+		self.RightDisplay.Format:SetText(HTML_START_CENTERED..GetBalanceRedemptionString()..HTML_END);
+		self.RightDisplay.Spinner:Hide();
+		self.RightDisplay.Format:Show();
+		self.RightDisplay.RedeemButton:Enable();
+	else
+		WowTokenRedemptionFrame_DisableBalance(self);
+		-- Right now, near cap is the only reason the server will send us cannot accept here.
+		-- Have a good (but not perfect) default in case reasons are added before we patch the UI with a better message.
+		if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
+			self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT:format(GetBalanceString(currentBalance))..HTML_END);
+		else
+			self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEMPTION_UNAVAILABLE..HTML_END);
+		end
+		self.RightDisplay.Spinner:Hide();
+		self.RightDisplay.Format:Show();
 	end
 end
 
@@ -376,7 +280,7 @@ function WowTokenRedemptionFrame_EnableBalance(self)
 	self.RightDisplay.Image:SetDesaturated(false);
 	self.RightDisplay.Image:SetAlpha(1);
 	self.RightDisplay.Description:SetFontObject("GameFontHighlight");
-	self.RightDisplay.Description:SetText(string.format(TOKEN_REDEEM_BALANCE_DESCRIPTION, GetBalanceString()));
+	self.RightDisplay.Description:SetText(TOKEN_REDEEM_BALANCE_DESCRIPTION:format(GetBalanceString()));
 	self.RightDisplay.RedeemButton:Enable();
 end
 
@@ -443,15 +347,15 @@ end
 function GetBalanceRedemptionString()
 	local currentBalance, addedBalance, canRedeem = C_WowTokenSecure.GetBalanceRedemptionInfo();
 
-	local info = currencyInfo();
-	local balanceStr = info.currencyFormat(currentBalance, 0);
-	local addedStr = info.currencyFormat(currentBalance + addedBalance, 0);
+	local balanceStr = GetBalanceString(currentBalance);
+	local addedStr = GetBalanceString(currentBalance + addedBalance);
 
-	return string.format(TOKEN_REDEEM_BALANCE_FORMAT, balanceStr, addedStr);
+	return TOKEN_REDEEM_BALANCE_FORMAT:format(balanceStr, addedStr);
 end
 
 function WowTokenRedemptionFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	CheckAwaitCurrencyIDBeforeUpdate(self);
 end
 
 function WowTokenRedemptionFrame_OnHide(self)
@@ -478,8 +382,7 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 				C_WowTokenSecure.CanRedeemForBalance();
 				self.RightDisplay.Format:Hide();
 				self.RightDisplay.Spinner:Show();
-				local info = currencyInfo();
-				self.RightDisplay.RedeemButton:SetText(string.format(TOKEN_REDEEM_BALANCE_BUTTON_LABEL, info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0)));
+				self.RightDisplay.RedeemButton:SetText(TOKEN_REDEEM_BALANCE_BUTTON_LABEL:format(GetBalanceString()));
 			end
 		end
 		self:Show();
@@ -489,28 +392,11 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 		self.LeftDisplay.Format:Show();
 		self.LeftDisplay.RedeemButton:Enable();
 	elseif (event == "TOKEN_REDEEM_BALANCE_UPDATED") then
-		local currentBalance, _, canRedeem, cannotRedeemReason = C_WowTokenSecure.GetBalanceRedemptionInfo();
-		if (canRedeem) then
-			WowTokenRedemptionFrame_EnableBalance(self);
-			self.RightDisplay.Format:SetText(HTML_START_CENTERED..GetBalanceRedemptionString()..HTML_END);
-			self.RightDisplay.Spinner:Hide();
-			self.RightDisplay.Format:Show();
-			self.RightDisplay.RedeemButton:Enable();
-		else
-			WowTokenRedemptionFrame_DisableBalance(self);
-			-- Right now, near cap is the only reason the server will send us cannot accept here.
-			-- Have a good (but not perfect) default in case reasons are added before we patch the UI with a better message.
-			if (cannotRedeemReason == LE_TOKEN_RESULT_ERROR_BALANCE_NEAR_CAP) then
-				local info = currencyInfo();
-				local amountStr = info.currencyFormat(currentBalance, 0);
-				self.RightDisplay.Format:SetText(HTML_START_CENTERED..string.format(TOKEN_REDEEM_BALANCE_ERROR_CAP_FORMAT, amountStr)..HTML_END);
-			else
-				self.RightDisplay.Format:SetText(HTML_START_CENTERED..TOKEN_REDEMPTION_UNAVAILABLE..HTML_END);
-			end
-			self.RightDisplay.Spinner:Hide();
-			self.RightDisplay.Format:Show();
-		end
+		WowTokenRedemptionFrame_UpdateRedeemBalance(self);
 	elseif (event == "TOKEN_STATUS_CHANGED") then
+		WowTokenRedemptionFrame_Update(self);
+	elseif event == "STORE_PRODUCTS_UPDATED" then
+		self:UnregisterEvent("STORE_PRODUCTS_UPDATED");
 		WowTokenRedemptionFrame_Update(self);
 	end
 end
@@ -530,7 +416,8 @@ function WowTokenRedemptionFrame_OnAttributeChanged(self, name, value)
 	elseif ( name == "getbalancestring" ) then
 		self:SetAttribute("balancestring", GetBalanceString());
 	elseif ( name == "showdialog" ) then
-		WowTokenDialog_SetDialog(WowTokenDialog, value);
+		local dialogName, dialogData = securecallfunction(unpack, value);
+		WowTokenDialog_SetDialog(WowTokenDialog, dialogName, dialogData);
 	end
 end
 
@@ -693,7 +580,7 @@ dialogs = {
 		title = TOKEN_CONFIRMATION_TITLE,
 		description = TOKEN_REDEEM_BALANCE_CONFIRMATION_DESCRIPTION,
 		formatDesc = true,
-		descFormatArgs = function() local info = currencyInfo(); return { info.currencyFormat(C_WowTokenSecure.GetBalanceRedeemAmount(), 0) }; end,
+		descFormatArgs = function() return { GetBalanceString(); }; end,
 		confirmationDesc = nil, -- Now set in reaction to an event
 		confDescIsFunction = true,
 		button1 = ACCEPT,
@@ -723,9 +610,7 @@ dialogs = {
 		title = TOKEN_COMPLETE_TITLE,
 		description = TOKEN_COMPLETE_BALANCE_DESCRIPTION,
 		formatDesc = true,
-		descFormatArgs = function()
-			return { GetBalanceString() };
-		end,
+		descFormatArgs = function() return { GetBalanceString() }; end,
 		button1 = OKAY,
 		button1OnClick = function(self) self:Hide(); PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE); end,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
@@ -801,13 +686,17 @@ dialogs = {
 		button1 = ACCEPT,
 		button1OnClick = function(self)
 			self:Hide();
-			if C_RecruitAFriend.ClaimNextReward() then
-				Outbound.RecruitAFriendPlayClaimRewardFanfare();
+			local rafVersion = self.dialogData;
+			if rafVersion and C_RecruitAFriend.ClaimNextReward(rafVersion) then
+				Outbound.RecruitAFriendTryPlayClaimRewardFanfare(rafVersion);
+			else
+				Outbound.RecruitAFriendTryCancelAutoClaim();
 			end
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
 		button2 = CANCEL,
 		button2OnClick = function(self)
+			Outbound.RecruitAFriendTryCancelAutoClaim();
 			self:Hide();
 			PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 		end,
@@ -817,7 +706,7 @@ dialogs = {
 	};
 };
 
-function WowTokenDialog_SetDialog(self, dialogName)
+function WowTokenDialog_SetDialog(self, dialogName, dialogData)
 	local dialog = dialogs[dialogName];
 	if (not dialog) then
 		return;
@@ -844,6 +733,8 @@ function WowTokenDialog_SetDialog(self, dialogName)
 
 	local descArgs = nil;
 	local confDescArgs = nil;
+
+	self.dialogData = dialogData;
 
 	if (dialog.descFormatArgs) then
 		descArgs = dialog.descFormatArgs();
@@ -973,9 +864,9 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		self.Spinner:Show();
 		self.Spinner:ClearAllPoints();
 		if (dialog.noButtons) then
-			self.Spinner:SetPoint("BOTTOM", 0, 16);
+			self.Spinner:SetPoint("BOTTOM", 0, 20);
 		else
-			self.Spinner:SetPoint("BOTTOM", 0, 32);
+			self.Spinner:SetPoint("BOTTOM", 0, 45);
 			height = height + 16;
 		end
 		self.Button1:Disable();

@@ -31,8 +31,8 @@ end
 function TutorialHelper:FormatString(str)
 	-- Spell Names and Icons e.g. {$1234}
 	str = string.gsub(str, "{%$(%d+)}", function(spellID)
-			local name, _, icon = GetSpellInfo(spellID);
-			return string.format("|cFF00FFFF%s|r |T%s:16|t", name, icon);
+			local spellInfo = C_Spell.GetSpellInfo(spellID);
+			return string.format("|cFF00FFFF%s|r |T%s:16|t", spellInfo.name, spellInfo.iconID);
 		end);
 
 	-- Spell Keybindings e.g. {KB|1234}
@@ -75,7 +75,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetItemContainerFrame(container, slot)
-	return ContainerFrame_GetItemButton(container, slot);
+	return ContainerFrameUtil_GetItemButtonAndContainer(container, slot);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -211,17 +211,17 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetMapBinding()
-	return GetBindingKey("TOGGLEWORLDMAP") or "";
+	return GetBindingKey("TOGGLEWORLDMAP") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetCharacterBinding()
-	return GetBindingKey("TOGGLECHARACTER0") or "";
+	return GetBindingKey("TOGGLECHARACTER0") or NPE_UNBOUND_KEYBIND;
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetBagBinding()
-	return GetBindingKey("OPENALLBAGS") or "";
+	return GetBindingKey("OPENALLBAGS") or NPE_UNBOUND_KEYBIND;
 end
 
 
@@ -962,10 +962,10 @@ function Class_ActionBarCallout:HighlightPointer(spellID, textID)
 		self.SpellID = spellID;
 
 		-- Prompt the user to use the spell
-		local name, _, icon = GetSpellInfo(spellID);
+		local spellInfo = C_Spell.GetSpellInfo(spellID);
 		local prompt = formatStr(TutorialHelper:GetClassString(textID or "NPE_ABILITYINITIAL"));
-		local binding = GetBindingKey("ACTIONBUTTON" .. btn.action) or "?";
-		local finalString = string.format(prompt, binding, name, icon);
+		local binding = GetBindingKey("ACTIONBUTTON" .. btn.action) or NPE_UNBOUND_KEYBIND;
+		local finalString = string.format(prompt, binding, spellInfo.name, spellInfo.iconID);
 
 		self:ShowPointerTutorial(finalString, "DOWN", btn);
 		ActionButton_ShowOverlayGlow(btn);
@@ -1107,7 +1107,7 @@ function Class_EquipFirstItemWatcher:GetBestItemUpgrades()
 		local highestIlvl = 0;
 
 		for i = 1, #items do
-			local ilvl = select(4, GetItemInfo(items[i].ItemID));
+			local ilvl = select(4, C_Item.GetItemInfo(items[i].ItemID));
 			if (ilvl > highestIlvl) then
 				highest = items[i];
 				highestIlvl = ilvl;
@@ -1123,7 +1123,7 @@ function Class_EquipFirstItemWatcher:GetBestItemUpgrades()
 end
 
 function Class_EquipFirstItemWatcher:GetWeaponType(itemID)
-	local loc = select(9, GetItemInfo(itemID));
+	local loc = select(9, C_Item.GetItemInfo(itemID));
 
 	if ((loc == "INVTYPE_RANGED") or (loc == "INVTYPE_RANGEDRIGHT")) then
 		return self.WeaponType.Ranged;
@@ -1148,7 +1148,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 
 		local existingItemID = GetInventoryItemID("player", i);
 		if (existingItemID ~= nil) then
-			existingItemIlvl = select(4, GetItemInfo(existingItemID)) or 0;
+			existingItemIlvl = select(4, C_Item.GetItemInfo(existingItemID)) or 0;
 
 			if (i == INVSLOT_MAINHAND) then
 				existingItemWeaponType = self:GetWeaponType(existingItemID);
@@ -1159,7 +1159,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		GetInventoryItemsForSlot(i, availableItems);
 
 		for packedLocation, itemID in pairs(availableItems) do
-			local itemInfo = {GetItemInfo(itemID)};
+			local itemInfo = {C_Item.GetItemInfo(itemID)};
 			local ilvl = itemInfo[4];
 
 			if (ilvl ~= nil) then
@@ -2208,9 +2208,9 @@ function Class_AbilityUse_AbilityReminder:OnBegin()
 	self.SpellID = TutorialHelper:FilterByClass(TutorialData.StartingAbility);
 	local btn = TutorialHelper:GetActionButtonBySpellID(self.SpellID);
 	if (btn) then
-		local name, _, icon = GetSpellInfo(self.SpellID);
+		local spellInfo = C_Spell.GetSpellInfo(self.SpellID);
 		local prompt = formatStr(TutorialHelper:GetClassString("NPE_ABILITYREMINDER"));
-		self:ShowPointerTutorial(string.format(prompt, name, icon), "DOWN", btn);
+		self:ShowPointerTutorial(string.format(prompt, spellInfo.name, spellInfo.iconID), "DOWN", btn);
 
 		Dispatcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self);
 

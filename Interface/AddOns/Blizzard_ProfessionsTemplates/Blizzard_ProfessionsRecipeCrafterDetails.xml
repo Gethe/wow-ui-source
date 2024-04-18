@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRecipeCrafterDetails.lua"/>
 
 	<Frame name="ProfessionsCrafterDetailsStatLineTemplate" mixin="ProfessionsCrafterDetailsStatLineMixin" virtual="true">
@@ -46,7 +46,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="NONE">
-							<FlipBook smoothing="NONE" childKey="AppearIcon" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+							<FlipBook smoothing="NONE" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						</AnimationGroup>
 						
 						<AnimationGroup parentKey="ScaleUp" looping="NONE">
@@ -67,7 +67,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="NONE">
-							<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="DissolveIcon" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+							<FlipBook parentKey="Flipbook" smoothing="NONE" duration=".5" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -98,7 +98,7 @@
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="BOTTOM" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BackgroundMiddle" atlas="Professions-QualityPane-bg-middle" useAtlasSize="false">
@@ -112,6 +112,16 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundBottom" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="BackgroundMinimized" atlas="Professions-MinimizedView-QualityPane-Bg" useAtlasSize="false" hidden="true">
+					<Size x="315" y="105"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			
 				<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER">
 					<Size x="350" y="20"/>
 					<KeyValues>
@@ -178,7 +188,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Fill" frameLevel="6">
+							<Frame parentKey="Fill" frameStrata="HIGH" frameLevel="6">
 								<Size x="1" y="1"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
@@ -191,7 +201,7 @@
 											</Anchors>
 											<Animations>
 												<AnimationGroup parentKey="Flipbook" looping="REPEAT" setToFinalAlpha="true">
-													<FlipBook parentKey="Flipbook" smoothing="NONE" childKey="BarFill" duration="1" order="1" flipBookRows="15" flipBookColumns="4" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+													<FlipBook parentKey="Flipbook" smoothing="NONE" duration="1" order="1" flipBookRows="15" flipBookColumns="4" flipBookFrames="60" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
 												</AnimationGroup>
 											</Animations>
 										</Texture>
@@ -233,7 +243,7 @@
 						</Frames>
 					</Frame>
 					
-					<Frame parentKey="DividerGlow" frameLevel="7">
+					<Frame parentKey="DividerGlow" frameStrata="HIGH" frameLevel="7">
 						<Size x="1" y="28"/>
 						<Layers>
 							<Layer level="ARTWORK" textureSubLevel="1">

@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GlueButtonTemplate" inherits="SharedButtonTemplate" virtual="true">
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+	</Button>
+	<Button name="GlueButtonBigTemplate" inherits="SharedButtonTemplate" virtual="true">
+		<Size x="250" y="66"/>
+		<NormalFont style="GameFontNormalOutline22"/>
+		<HighlightFont style="GameFontHighlightOutline22"/>
+		<DisabledFont style="GameFontDisableOutline22"/>
+	</Button>
+	<Button name="GlueButtonSmallTemplate" inherits="SharedButtonSmallTemplate" virtual="true">
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+	</Button>
+	<Button name="GlueGoldRedButtonTemplate" inherits="SharedGoldRedButtonTemplate" virtual="true">
+		<NormalFont style="GlueFontNormal"/>
+		<HighlightFont style="GlueFontHighlight"/>
+		<DisabledFont style="GlueFontDisable"/>
+	</Button>
+	<Button name="GlueGoldRedButtonSmallTemplate" inherits="SharedGoldRedButtonSmallTemplate" virtual="true">
+		<NormalFont style="GlueFontNormalSmall"/>
+		<HighlightFont style="GlueFontHighlightSmall"/>
+		<DisabledFont style="GlueFontDisableSmall"/>
+	</Button>
+</Ui>

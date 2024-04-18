@@ -4,6 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## RequiredDep: Blizzard_UIWidgets
+## AllowLoadByGameMode: standard
 
 Blizzard_IslandsQueueUI.lua
 Blizzard_IslandsQueueUI.xml

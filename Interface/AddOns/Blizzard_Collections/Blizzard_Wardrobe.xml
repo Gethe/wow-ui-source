@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 
-	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true">
+	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" inherits="ContentTrackingElementTemplate" virtual="true">
 		<Size x="78" y="104"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -18,7 +18,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="DisabledOverlay" atlas="transmog-wardrobe-border-selected" hidden="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Color a="0.8"/>
+					<Size x="96" y="124"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture parentKey="TransmogStateTexture" atlas="transmog-wardrobe-border-selected" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SlotInvalidTexture" atlas="transmog-icon-unsupported" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -203,17 +217,40 @@
 
 	<Button name="WardrobeSetsScrollFrameButtonTemplate" mixin="WardrobeSetsScrollFrameButtonMixin" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
 		<Size x="208" y="46"/>
+		<Frames>
+			<Frame parentKey="IconFrame" mixin="WardrobeSetsScrollFrameButtonIconFrameMixin">
+				<Size x="38" y="38"/>
+				<Anchors>
+					<Anchor point="LEFT" x="-42" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="-1">
+						<Texture parentKey="Cover" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.7"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-8" y="8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="PetList-ButtonBackground" parentKey="Background"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Size x="38" y="38"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-42" y="0"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="2">
 					<Size x="190" y="0"/>
 					<Anchors>
@@ -235,26 +272,12 @@
 					<Color r="0.0118" g="0.247" b="0.00392" a="1"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture parentKey="IconCover">
-					<Size x="38" y="38"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-42" y="0"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.7"/>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="PetList-ButtonSelect" hidden="true"/>
-				<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="8"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="New" atlas="GarrMission-AbilityHighlight" alphaMode="ADD" hidden="true">
 					<Size x="56" y="56"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+						<Anchor point="CENTER" relativeKey="$parent.IconFrame"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -298,15 +321,64 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Favorite" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="collections-icon-favorites" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="-5" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
 	</Frame>
 
+	<Frame name="TrackingInterfaceShortcutsFrame" hidden="true">
+		<Size x="226" y="40"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="HeaderText" inherits="GameFontHighlightLeft" text="WARDROBE_SHORTCUTS_TUTORIAL_2" justifyH="LEFT" justifyV="TOP">
+					<Size x="196" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" text="WARDROBE_SHORTCUTS_TUTORIAL_3" justifyH="LEFT" justifyV="TOP">
+					<Size x="196" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HeaderText" relativePoint="BOTTOM" y="-1"/>
+						<Anchor point="LEFT" relativeKey="$parent.HeaderText" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" mixin="WardrobeCollectionFrameMixin" setAllPoints="true" hidden="true">
 		<Frames>
+			<Button parentKey="InfoButton" inherits="MainHelpPlateButton" mixin="WardrobeCollectionTutorialMixin" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="43" y="19"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
 			<Button name="$parentTab1" parentKey="ItemsTab" inherits="PanelTopTabButtonTemplate" text="WARDROBE_ITEMS" id="1" frameLevel="4">
 				<KeyValues>
 					<KeyValue key="minWidth" value="57" type="number"/>
@@ -330,8 +402,8 @@
 				<Frames>
 					<Frame parentKey="FlashFrame" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SetsTab" relativePoint="TOPLEFT" x="0" y="-10"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SetsTab" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" x="0" y="-10"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -441,10 +513,10 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="false">
-										<Size x="38" y="38"/>
+									<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="false">
+										<Size x="20" y="20"/>
 										<Anchors>
-											<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="4"/>
+											<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-5"/>
 										</Anchors>
 									</Frame>
 								</Frames>
@@ -546,6 +618,18 @@
 				</Scripts>
 			</Frame>
 
+			<Frame parentKey="ClassDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" mixin="WardrobeCollectionClassDropDownMixin">
+				<Size x="87" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
+
 			<Frame parentKey="ItemsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
 				<KeyValues>
 					<KeyValue key="searchType" value="Enum.TransmogSearchType.Items" type="global"/>
@@ -563,28 +647,29 @@
 				<Frames>
 					<Frame parentKey="PagingFrame" inherits="CollectionsPagingFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOM" x="22" y="38"/>
+							<Anchor point="BOTTOM" x="22" y="29"/>
 						</Anchors>
 					</Frame>
 					<Frame name="WardrobeModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 					<Frame parentKey="WeaponDropDown" name="$parentWeaponDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="true">
 						<Size x="87" y="22"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-6" y="-22"/>
+							<Anchor point="TOPRIGHT" x="-6" y="-56"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="WardrobeCollectionFrameWeaponDropDown_OnLoad"/>
+							<OnShow function="WardrobeCollectionFrameWeaponDropDown_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame parentKey="SlotsFrame">
 						<Size x="10" y="10"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="18" y="-20"/>
+							<Anchor point="TOPLEFT" x="180" y="-20"/>
 						</Anchors>
 					</Frame>
 					<DressUpModel parentArray="Models" parentKey="ModelR1C1" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
-							<Anchor point="TOP" x="-238" y="-85"/>
+							<Anchor point="TOP" x="-238" y="-92"/>
 						</Anchors>
 					</DressUpModel>
 					<DressUpModel parentArray="Models" parentKey="ModelR1C2" inherits="WardrobeItemsModelTemplate">
@@ -858,6 +943,7 @@
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
 					<OnMouseWheel method="OnMouseWheel"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="SetsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeSetsCollectionMixin" hidden="true">
@@ -889,10 +975,10 @@
 						</Anchors>
 						<Frames>
 							<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBoxList"/>
-							<EventFrame parentKey="ScrollBar" inherits="WowTrimScrollBar">
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="3" y="36"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="3" y="-8"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="31"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="-1"/>
 								</Anchors>
 							</EventFrame>
 							<Frame parentKey="FavoriteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
@@ -1013,7 +1099,7 @@
 									<Layer level="ARTWORK">
 										<Texture parentKey="Icon" atlas="friendslist-categorybutton-arrow-down" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5" y="-2"/>
+												<Anchor point="RIGHT" x="-5" y="-2"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -1295,6 +1381,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnKeyDown method="OnKeyDown"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 
@@ -1742,9 +1829,10 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="Icon" atlas="transmog-icon-revert-small" useAtlasSize="true">
+										<Texture parentKey="Icon" atlas="common-icon-undo" >
+											<Size x="18" y="18"/>
 											<Anchors>
-												<Anchor point="LEFT" x="1"/>
+												<Anchor point="CENTER" />
 											</Anchors>
 										</Texture>
 									</Layer>

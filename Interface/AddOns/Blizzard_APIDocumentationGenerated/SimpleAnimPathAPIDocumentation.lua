@@ -11,14 +11,14 @@ local SimpleAnimPathAPI =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
-				{ Name = "templateName", Type = "string", Nilable = true },
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
 				{ Name = "order", Type = "number", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "point", Type = "table", Nilable = false },
+				{ Name = "point", Type = "SimpleControlPoint", Nilable = false },
 			},
 		},
 		{
@@ -44,7 +44,7 @@ local SimpleAnimPathAPI =
 
 			Returns =
 			{
-				{ Name = "curveType", Type = "string", Nilable = false },
+				{ Name = "curveType", Type = "CurveType", Nilable = false },
 			},
 		},
 		{
@@ -66,7 +66,7 @@ local SimpleAnimPathAPI =
 
 			Arguments =
 			{
-				{ Name = "curveType", Type = "string", Nilable = false },
+				{ Name = "curveType", Type = "CurveType", Nilable = false },
 			},
 		},
 	},
