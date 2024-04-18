@@ -235,7 +235,7 @@ function UIParent_OnUpdate(self, elapsed)
 	UnitPopup_OnUpdate(elapsed);
 	AnimatedShine_OnUpdate(elapsed);
 	AutoCastShine_OnUpdate(nil, elapsed);
-	BattlefieldTimerFrame_OnUpdate(nil, elapsed);
+	PVPTimerFrame_OnUpdate(nil, elapsed);
 	HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 end
 
@@ -732,12 +732,18 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ALIVE" or event == "RAISED_AS_GHOUL" ) then
 		StaticPopup_Hide("DEATH");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		if ( UnitIsGhost("player") ) then
+			GhostFrame:Show();
+		else
+			GhostFrame:Hide();
+		end
 	elseif ( event == "PLAYER_UNGHOST" ) then
 		StaticPopup_Hide("RESURRECT");
 		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
 		StaticPopup_Hide("RESURRECT_NO_TIMER");
 		StaticPopup_Hide("SKINNED");
 		StaticPopup_Hide("SKINNED_REPOP");
+		GhostFrame:Hide();
 	elseif ( event == "RESURRECT_REQUEST" ) then
 		ShowResurrectRequest(arg1);
 	elseif ( event == "PLAYER_SKINNED" ) then
@@ -941,6 +947,11 @@ function UIParent_OnEvent(self, event, ...)
 
 		if Kiosk.IsEnabled() then
 			C_AddOns.LoadAddOn("Blizzard_Kiosk");
+		end
+		if ( UnitIsGhost("player") ) then
+			GhostFrame:Show();
+		else
+			GhostFrame:Hide();
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);

@@ -453,15 +453,18 @@
 				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
 				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
 			</Button>
-			<!--<Frame name="$parentButtonFrame" inherits="FloatingBorderedFrame" parentKey="buttonFrame" alpha="0.2">-->
-			<Frame name="$parentButtonFrame" parentKey="buttonFrame" alpha="0.2">
+			<Frame name="$parentButtonFrame" parentKey="buttonFrame" alpha="0.2" mixin="FloatingChatFrameButtonFrameMixin" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="29" type="number"/>
+				</KeyValues>
 				<Size x="29" y="0"/>
 				<Frames>
 					<Button name="$parentBottomButton" parentKey="bottomButton">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
 						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="-7"/>
-						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="$parentFlash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
@@ -479,10 +482,12 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentDownButton" parentKey="downButton">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="bottomPadding" value="-2" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
 						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parentBottomButton" relativePoint="TOP" x="0" y="-2"/>
-						</Anchors>
 						<Scripts>
 							<OnLoad>
 								MessageFrameScrollButton_OnLoad(self);
@@ -505,10 +510,12 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="$parentUpButton" parentKey="upButton">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="bottomPadding" value="-2" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
 						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parentDownButton" relativePoint="TOP" x="0" y="-2"/>
-						</Anchors>
 						<Scripts>
 							<OnLoad>
 								MessageFrameScrollButton_OnLoad(self);
@@ -530,23 +537,24 @@
 						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
-					<Button name="$parentMinimizeButton" parentKey="minimizeButton">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="TOP" x="0" y="4"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								local chatFrame = self:GetParent():GetParent();
-								FCF_MinimizeFrame(chatFrame, strupper(chatFrame.buttonSide));
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Up"/>
-						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Down"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+				</Scripts>
 			</Frame>
+			<Button name="$parentMinimizeButton" parentKey="minimizeButton" mixin="FloatingChatFrameMinimizeButtonMixin">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP" x="0" y="-4"/>
+					<Anchor point="LEFT" relativeTo="$parentButtonFrame" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
 			<Button parentKey="ScrollToBottomButton" alpha="0">
 				<Size x="24" y="24"/>
 				<Anchors>
@@ -770,12 +778,13 @@
 		</Scripts>
 	</ScrollingMessageFrame>
 	<!-- ChatFrame1 Specific buttons -->
-	<Button name="ChatFrameMenuButton" frameStrata="LOW" parent="UIParent">
+	<Button name="ChatFrameMenuButton" frameStrata="LOW" parent="ChatFrame1ButtonFrame">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="-2" type="number"/>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
 		<Size x="32" y="32"/>
-		<Anchors>
-			<!--<Anchor point="BOTTOM" relativeTo="ChatFrame1ButtonFrame" relativePoint="BOTTOM" x="0" y="0"/>-->
-			<Anchor point="BOTTOM" relativeTo="ChatFrame1ButtonFrameUpButton" relativePoint="TOP" x="0" y="-2"/>
-		</Anchors>
 		<Scripts>
 			<OnClick>
 				PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
@@ -791,11 +800,13 @@
 		<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled"/>
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-	<Button name="ChatFrameChannelButton" frameStrata="LOW" parent="UIParent" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
-		<Anchors>
-			<!--<Anchor point="TOP" relativeTo="ChatFrame1ButtonFrame" relativePoint="TOP" x="0" y="0"/>-->
-			<Anchor point="BOTTOM" relativeTo="ChatFrameMenuButton" relativePoint="TOP" x="0" y="1"/>
-		</Anchors>
+	<Button name="ChatFrameChannelButton" frameStrata="LOW" parent="ChatFrame1ButtonFrame" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="-1" type="number"/>
+			<KeyValue key="bottomPadding" value="1" type="number"/>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Flash" atlas="chatframe-button-highlightalert" useAtlasSize="true" alphaMode="ADD" hidden="true">
@@ -812,16 +823,32 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<!--<Button name="ChatFrameToggleVoiceDeafenButton" frameStrata="LOW" parent="UIParent" inherits="ToggleVoiceDeafenButtonTemplate">
-		<Anchors>
-			<Anchor point="TOP" relativeTo="ChatFrameChannelButton" relativePoint="BOTTOM" x="0" y="-2" />
-		</Anchors>
+	<Button name="FriendsMicroButton" frameStrata="LOW" parent="ChatFrame1ButtonFrame" mixin="FriendFrameButtonMixin">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="-2" type="number"/>
+			<KeyValue key="bottomPadding" value="4" type="number"/>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall" text="0">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Up"/>
+		<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-BattleBro-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
-	<Button name="ChatFrameToggleVoiceMuteButton" frameStrata="LOW" parent="UIParent" inherits="ToggleVoiceMuteButtonTemplate">
-		<Anchors>
-			<Anchor point="TOP" relativeTo="ChatFrameToggleVoiceDeafenButton" relativePoint="BOTTOM" x="0" y="-2" />
-		</Anchors>
-	</Button>-->
 	<Frame name="ChatMenu" inherits="UIMenuTemplate" hidden="true" clampedToScreen="true" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="ChatFrameMenuButton" relativePoint="TOPRIGHT"/>

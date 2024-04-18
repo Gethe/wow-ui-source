@@ -6,6 +6,114 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "CanShowSetRoleButton",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "UnitPowerBarInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "UnitPowerBarInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarStrings",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "tooltip", Type = "cstring", Nilable = true },
+				{ Name = "cost", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarStringsByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "tooltip", Type = "cstring", Nilable = true },
+				{ Name = "cost", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarTextureInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "textureIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "timerIndex", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "fileID", Nilable = false },
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerBarTextureInfoByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+				{ Name = "textureIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "fileID", Nilable = false },
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerInGuildFromGUID",
 			Type = "Function",
 
@@ -175,6 +283,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitNumPowerBarTimers",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitPower",
 			Type = "Function",
 
@@ -188,6 +310,38 @@ local Unit =
 			Returns =
 			{
 				{ Name = "power", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerBarID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "barID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerBarTimerInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "expiration", Type = "number", Nilable = false },
+				{ Name = "barID", Type = "number", Nilable = false },
+				{ Name = "auraID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1342,6 +1496,29 @@ local Unit =
 				{ Name = "AlternateMount", Type = "PowerType", EnumValue = 25 },
 				{ Name = "Balance", Type = "PowerType", EnumValue = 26 },
 				{ Name = "NumPowerTypes", Type = "PowerType", EnumValue = 27 },
+			},
+		},
+		{
+			Name = "UnitPowerBarInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "ID", Type = "number", Nilable = false },
+				{ Name = "barType", Type = "number", Nilable = false },
+				{ Name = "minPower", Type = "number", Nilable = false },
+				{ Name = "startInset", Type = "number", Nilable = false },
+				{ Name = "endInset", Type = "number", Nilable = false },
+				{ Name = "smooth", Type = "bool", Nilable = false },
+				{ Name = "hideFromOthers", Type = "bool", Nilable = false },
+				{ Name = "showOnRaid", Type = "bool", Nilable = false },
+				{ Name = "opaqueSpark", Type = "bool", Nilable = false },
+				{ Name = "opaqueFlash", Type = "bool", Nilable = false },
+				{ Name = "anchorTop", Type = "bool", Nilable = false },
+				{ Name = "forcePercentage", Type = "bool", Nilable = false },
+				{ Name = "sparkUnderFrame", Type = "bool", Nilable = false },
+				{ Name = "flashAtMinPower", Type = "bool", Nilable = false },
+				{ Name = "fractionalCounter", Type = "bool", Nilable = false },
+				{ Name = "animateNumbers", Type = "bool", Nilable = false },
 			},
 		},
 	},

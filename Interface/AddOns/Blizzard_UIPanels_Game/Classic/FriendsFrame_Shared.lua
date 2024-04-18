@@ -75,7 +75,8 @@ local INVITE_RESTRICTION_WOW_PROJECT_MAINLINE = 7;
 local INVITE_RESTRICTION_WOW_PROJECT_CLASSIC = 8;
 local INVITE_RESTRICTION_WOW_PROJECT_BCC = 9;
 local INVITE_RESTRICTION_WOW_PROJECT_WRATH = 10;
-local INVITE_RESTRICTION_NONE = 11;
+local INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM = 11;
+local INVITE_RESTRICTION_NONE = 12;
 
 local FriendListEntries = { };
 local playerRealmID;
@@ -2125,6 +2126,8 @@ function FriendsFrame_GetInviteRestriction(index)
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_BCC, restriction);
 				elseif(wowProjectID == WOW_PROJECT_WRATH_CLASSIC) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_WRATH, restriction);
+				elseif(wowProjectID == WOW_PROJECT_CATACLYSM_CLASSIC) then
+					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM, restriction);
 				elseif(wowProjectID == WOW_PROJECT_MAINLINE) then
 					restriction = max(INVITE_RESTRICTION_WOW_PROJECT_MAINLINE, restriction);
 				else
@@ -2169,6 +2172,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_BCC_OVERRIDE
 	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_WRATH ) then
 		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_WRATH_OVERRIDE
+	elseif ( restriction == INVITE_RESTRICTION_WOW_PROJECT_CATACLYSM ) then
+		return ERR_TRAVEL_PASS_WRONG_PROJECT; -- ERR_TRAVEL_PASS_WRONG_PROJECT_CATACLYSM_OVERRIDE
 	else
 		return "";
 	end
@@ -2314,12 +2319,12 @@ function InGuildCheck(frame)
 		frame = FriendsFrame;
 	end
 	if ( not IsInGuild() ) then
-		PanelTemplates_DisableTab( frame, 3 );
-		if ( frame.selectedTab == 3 ) then
+		PanelTemplates_DisableTab( frame, FRIEND_TAB_GUILD );
+		if ( frame.selectedTab == FRIEND_TAB_GUILD ) then
 			frame.selectedTab = 1;
 		end
 	else
-		PanelTemplates_EnableTab( frame, 3 );
+		PanelTemplates_EnableTab( frame, FRIEND_TAB_GUILD );
 	end
 end
 

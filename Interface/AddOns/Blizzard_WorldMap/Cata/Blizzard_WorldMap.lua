@@ -106,6 +106,7 @@ function WorldMapMixin:OnLoad()
 	self:SetShouldZoomInstantly(true);
 
 	self:AddStandardDataProviders();
+	self:AddOverlayFrames();
 
 	self:SetMapID(C_Map.GetFallbackWorldMapID());
 
@@ -220,8 +221,13 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI_BANNER");
 end
 
+function WorldMapMixin:AddOverlayFrames()
+	self:AddOverlayFrame("WorldMapZoneTimerTemplate", "FRAME", "BOTTOM", self:GetCanvasContainer(), "BOTTOM", 0, 20);
+end
+
 function WorldMapMixin:OnMapChanged()
 	MapCanvasMixin.OnMapChanged(self);
+	self:RefreshOverlayFrames();
 	self:RefreshQuestLog();
 
 	if C_MapInternal then
@@ -270,6 +276,28 @@ function WorldMapMixin:OnHide()
 	self:RefreshQuestLog();
 
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
+end
+
+function WorldMapMixin:RefreshOverlayFrames()
+	if self.overlayFrames then
+		for i, frame in ipairs(self.overlayFrames) do
+			frame:Refresh();
+		end
+	end
+end
+
+function WorldMapMixin:AddOverlayFrame(templateName, templateType, anchorPoint, relativeFrame, relativePoint, offsetX, offsetY)
+	local frame = CreateFrame(templateType, nil, self, templateName);
+	if anchorPoint then
+		frame:SetPoint(anchorPoint, relativeFrame, relativePoint, offsetX, offsetY);
+	end
+	frame.relativeFrame = relativeFrame or self;
+	if not self.overlayFrames then
+		self.overlayFrames = { };
+	end
+	tinsert(self.overlayFrames, frame);
+
+	return frame;
 end
 
 function WorldMapMixin:GetCurrentMapContinent()

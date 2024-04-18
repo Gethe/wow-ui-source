@@ -13,8 +13,3 @@ end
 function GlueMenuFrame_OnHide(self)
 	GlueParent_RemoveModalFrame(self);
 end
-
-function GlueMenuFrameOptionsButton_OnShow(self)
-	local version = GetBuildInfo();
-	self.New:SetShown(version == "4.4.0" and not C_BattleNet.AreHighResTexturesInstalled());
-end

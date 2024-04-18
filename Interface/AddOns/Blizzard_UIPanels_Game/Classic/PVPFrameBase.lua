@@ -2,8 +2,6 @@ MAX_ARENA_TEAMS = 3;
 MAX_ARENA_TEAM_MEMBERS = 10;
 
 function PVPFrame_OnLoad(self)
-	PVPFrameLine1:SetAlpha(0.3);
-	PVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
@@ -50,21 +48,6 @@ function PVPFrame_OnEvent(self, event, ...)
 
 			PVPHonor_Update();
 		end
-	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
-		if ( arg1 ) then
-			if ( PVPTeamDetails:IsShown() ) then
-				ArenaTeamRoster(PVPTeamDetails.team);
-			end
-		elseif ( PVPTeamDetails.team ) then
-			PVPTeamDetails_Update(self, PVPTeamDetails.team);
-			PVPFrame_Update();
-		end
-		if ( PVPTeamDetails:IsShown() ) then
-			local team = GetArenaTeam(PVPTeamDetails.team);
-			if ( not team ) then
-				PVPTeamDetails:Hide();
-			end
-		end
 	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
 		PVPFrame_Update();
 	elseif ( event == "BATTLEFIELD_AUTO_QUEUE" ) then
@@ -94,14 +77,6 @@ function PVPFrame_Update(self)
 	end
 	PVPHonor_Update();
 	PVPTeam_Update();
-end
-
-function PVPTeam_Update()
-	if ( GetCurrentArenaSeasonUsesTeams() ) then
-		PVPTeam_TeamsUpdate();
-	else
-		PVPTeam_SoloUpdate();
-	end
 end
 
 function PVPTeam_SoloUpdate()
@@ -654,29 +629,6 @@ function PVPTeam_OnMouseUp(self)
 		local point, relativeTo, relativePoint, offsetX, offsetY = self:GetPoint();
 		button:SetPoint(point, relativeTo, relativePoint, offsetX+2, offsetY+2);
 	end
-end
-
--- PVP Honor Data
-function PVPHonor_Update()
-	local hk, cp, dk, contribution, rank, highestRank, rankName, rankNumber;
-	
-	-- Yesterday's values
-	hk = GetPVPYesterdayStats();
-	PVPHonorYesterdayKills:SetText(hk);
-
-	-- Lifetime values
-	hk =  GetPVPLifetimeStats();
-	PVPHonorLifetimeKills:SetText(hk);
-
-	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
-	PVPFrameHonorPoints:SetText(honorCurrencyInfo.quantity);
-
-	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID);
-	PVPFrameArenaPoints:SetText(arenaCurrencyInfo.quantity)	
-	
-	-- Today's values
-	hk = GetPVPSessionStats();
-	PVPHonorTodayKills:SetText(hk);
 end
 
 function PVPTeamDetailsAddTeamMember_OnClick(self)

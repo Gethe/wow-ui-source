@@ -23,7 +23,7 @@
 ..\Blizzard_SharedXML\Shared\Scroll\TrimScrollBar.lua
 
 ..\Blizzard_SharedXML\SecureUIPanelTemplates.lua
-..\Blizzard_SharedXML\Mainline\NineSliceLayouts.lua
+..\Blizzard_SharedXML\Classic\NineSliceLayouts.lua
 ..\Blizzard_SharedXML\NineSlice.lua
 CommunitiesList.xml
 CommunitiesMemberList.xml

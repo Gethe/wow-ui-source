@@ -84,6 +84,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
+		TokenFrame_Update();
 		BackpackTokenFrame_Update();
 	elseif (event == "ENGRAVING_MODE_CHANGED") then
 		ContainerFrame_RefreshRuneIcons(self, arg1);

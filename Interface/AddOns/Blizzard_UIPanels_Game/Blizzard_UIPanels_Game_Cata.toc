@@ -79,13 +79,9 @@ Wrath\VehicleSeatIndicator.lua
 Wrath\VehicleSeatIndicator.xml
 Classic\RatingMenuFrame.xml
 Classic\PVPFrameBase.lua
-Wrath\PVPFrame.lua
+Cata\PVPFrame.lua
 Classic\PVPFrameTemplates.xml
-Wrath\PVPFrame.xml
-Wrath\BattlefieldFrame.lua
-Wrath\BattlefieldFrame.xml
-Classic\ArenaFrame.lua
-Classic\ArenaFrame.xml
+Cata\PVPFrame.xml
 Classic\ArenaRegistrarFrame.lua
 Classic\ArenaRegistrarFrame.xml
 Shared\PlayerInteractionFrameManager.lua

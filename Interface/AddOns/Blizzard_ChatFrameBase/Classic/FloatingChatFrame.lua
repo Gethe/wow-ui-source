@@ -1437,11 +1437,9 @@ function FCF_SetButtonSide(chatFrame, buttonSide, forceUpdate)
 	chatFrame.buttonFrame:ClearAllPoints();
 
 	if ( buttonSide == "left" ) then
-		chatFrame.buttonFrame:SetPoint("TOPRIGHT", chatFrame.Background, "TOPLEFT", -3, -3);
-		chatFrame.buttonFrame:SetPoint("BOTTOMRIGHT", chatFrame.Background, "BOTTOMLEFT", -3, 6);
+		chatFrame.buttonFrame:SetPoint("BOTTOMRIGHT", chatFrame.Background, "BOTTOMLEFT", -3, 0);
 	elseif ( buttonSide == "right" ) then
-		chatFrame.buttonFrame:SetPoint("TOPLEFT", chatFrame.Background, "TOPRIGHT", 3, -3);
-		chatFrame.buttonFrame:SetPoint("BOTTOMLEFT", chatFrame.Background, "BOTTOMRIGHT", 3, 6);
+		chatFrame.buttonFrame:SetPoint("BOTTOMLEFT", chatFrame.Background, "BOTTOMRIGHT", 3, 0);
 	end
 	chatFrame.buttonSide = buttonSide;
 
@@ -2048,7 +2046,7 @@ function FCFDock_AddChatFrame(dock, chatFrame, position)
 		end
 	end
 
-	chatFrame.buttonFrame.minimizeButton:Hide();
+	chatFrame.minimizeButton:Hide();
 	chatFrame.buttonFrame:SetAlpha(1.0);
 
 	dock.overflowButton.list:Hide();
@@ -2071,7 +2069,7 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 		FCFDock_SelectWindow(dock, dock.DOCKED_CHAT_FRAMES[1]);
 	end
 
-	chatFrame.buttonFrame.minimizeButton:Show();
+	chatFrame.minimizeButton:Show();
 	dock.overflowButton.list:Hide();
 	chatFrame:Show();
 	FCFDock_UpdateTabs(dock);
@@ -2597,4 +2595,18 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 			end
 		end
 	end
+end
+
+FloatingChatFrameButtonFrameMixin = {};
+
+function FloatingChatFrameButtonFrameMixin:OnShow()
+	-- Mark dirty so ChatFrame1-specific buttons display correctly after they are added.
+	self:MarkDirty();
+end
+
+FloatingChatFrameMinimizeButtonMixin = {};
+
+function FloatingChatFrameMinimizeButtonMixin:OnClick()
+	local chatFrame = self:GetParent();
+	FCF_MinimizeFrame(chatFrame, strupper(chatFrame.buttonSide));
 end

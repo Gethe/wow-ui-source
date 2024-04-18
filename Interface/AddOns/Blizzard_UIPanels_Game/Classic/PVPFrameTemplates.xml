@@ -565,4 +565,255 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+	<Button name="PVPBattlegroundButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="295" y="16"/>
+		</Size>
+		<Frames>
+			<Frame parentKey="status">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="texture">
+							<Size x="21" y="21"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" parentKey="highlight">
+			<Color r="1.0" g="0.82" b="0" />
+		</HighlightTexture>
+		<ButtonText name="$parentText" parentKey="title">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+	</Button>
+	<Button name="PVPArenaTeamFlagTemplate" virtual="true">
+		<Size x="112" y="114"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBanner" file="Interface\PVPFrame\PVP-Banner-2">
+					<Size>
+						<AbsDimension x="49" y="98"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" x="2" y="-29"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentGlowBG" parentKey="Glow" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true" alphaMode="ADD">
+					<Size x="112" y="114"/>
+					<TexCoords left="0.63867188" right="0.74804688" top="0.37695313" bottom="0.59960938"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" parentKey="NormalHeader" file="Interface\PVPFrame\PVP-Conquest-Misc">
+					<Size x="85" y="32"/>
+					<Anchors>
+						<Anchor point="TOP" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.00097656" right="0.08398438" top="0.93359375" bottom="0.99609375"/>
+				</Texture>
+				<Texture name="$parentHeaderSelected" parentKey="GlowHeader" file="Interface\PVPFrame\PVP-Conquest-Misc" hidden="true">
+					<Size x="85" y="32"/>
+					<Anchors>
+						<Anchor point="TOP" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.08593750" right="0.16894531" top="0.93359375" bottom="0.99609375"/>
+				</Texture>
+				<Texture name="$parentBorder">
+					<Size>
+						<AbsDimension x="49" y="98"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBanner" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentEmblem">
+					<Size>
+						<AbsDimension x="26" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBorder" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="-5" y="17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentTitle" parentKey="title"  inherits="GameFontHighlight" justifyH="CENTER" text="ARENA_2V2">
+					<Size>
+						<AbsDimension x="0" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentHeader" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="30" right="40" top="29" bottom="6"/>
+		</HitRectInsets>
+		<HighlightTexture file="Interface\PVPFrame\PVP-Banner-2" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="47" y="96"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentBanner">
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Color r="1.0" g="1.0" b="0.0" a="0.3"/>
+		</HighlightTexture>
+		<PushedTexture file="Interface\PVPFrame\PVP-Banner-2" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="47" y="96"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentBanner">
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Color r="0.2" g="0.2" b="1.0" a="0.8"/>
+		</PushedTexture>
+	</Button>
+	<Button name="WarGameHeaderTemplate" virtual="true">
+		<Size x="309" y="16"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-MinusButton-UP">
+			<Size x="16" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT" x="3" y="0"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+			<Size x="16" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT" x="3" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+		<ButtonText parentKey="NameText">
+			<Size x="0" y="10"/>
+			<Anchors>
+				<Anchor point="LEFT" x="20" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontHighlightLeft"/>
+		<Scripts>
+			<OnClick function="WarGameButtonHeader_OnClick"/>
+		</Scripts>
+	</Button>
+	<Button name="WarGameButtonTemplate" virtual="true">
+		<Size x="309" y="40"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Bg" file="Interface\PVPFrame\PvPMegaQueue" alpha="0.6">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.63867188" top="0.83203125" bottom="0.87109375"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.63867188" top="0.76953125" bottom="0.83007813"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="SizeText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-8" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InfoText" inherits="GameFontDisableSmall">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.SizeText" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="160" y="40"/>
+					<Anchors>
+						<Anchor point="LEFT" x="44" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Border" file="Interface\PVPFrame\SilverIconBorder">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="2" y="0"/>
+				<Anchor point="BOTTOMRIGHT" x="-2" y="1"/>
+			</Anchors>
+			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter function="WarGameButton_OnEnter" inherit="prepend">
+				if (self.name) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR:GetRGB());
+				if (self.longDescription) then
+				GameTooltip:AddLine(self.longDescription);
+				end
+				GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave function="WarGameButton_OnLeave" inherit="prepend">
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick function="WarGameButton_OnClick"/>
+		</Scripts>
+	</Button>
 </Ui>

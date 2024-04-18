@@ -355,16 +355,6 @@ StaticPopupDialogs["SUBSCRIPTION_CHANGED_KICK_WARNING"] = {
 	anchorOffsetY = 150,
 }
 
-StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
-    text = IsMacClient() and HD_TEXTURES_DLG_TEXT_MAC or HD_TEXTURES_DLG_TEXT,
-    button1 = IsMacClient() and HD_TEXTURES_DLG_ACCEPT_MAC or HD_TEXTURES_DLG_ACCEPT,
-    button2 = CANCEL,
-    escapeHides = true,
-	OnAccept = function()
-		C_BattleNet.InstallHighResTextures();
-	end,
-};
-
 StaticPopupDialogs["REALM_IS_LOCKED"] = {
 	text = CHAR_CREATE_ONLY_EXISTING,
 	button1 = CONTINUE,

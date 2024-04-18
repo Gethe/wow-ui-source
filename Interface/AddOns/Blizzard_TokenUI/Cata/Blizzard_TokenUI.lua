@@ -239,7 +239,7 @@ function TokenButton_OnClick(self)
 		TokenFrame.selectedToken = self.name:GetText();
 		local linkedToChat = false;
 		if ( IsModifiedClick("CHATLINK") ) then
-			linkedToChat = HandleModifiedItemClick(GetCurrencyListLink(self.index));
+			linkedToChat = HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self.index));
 		end
 		if ( not linkedToChat ) then
 			if ( IsModifiedClick("TOKENWATCHTOGGLE") ) then

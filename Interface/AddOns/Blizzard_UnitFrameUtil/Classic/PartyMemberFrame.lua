@@ -68,6 +68,8 @@ end
 
 function PartyMemberFrame_OnLoad (self)
 	local id = self:GetID();
+	self.unitToken = "party"..id;
+	self.petUnitToken = "partypet"..id;
 	self.debuffCountdown = 0;
 	self.numDebuffs = 0;
 	self.noTextPrefix = true;
@@ -77,7 +79,7 @@ function PartyMemberFrame_OnLoad (self)
 	_G[prefix.."ManaBar"].LeftText = _G[prefix.."ManaBarTextLeft"];
 	_G[prefix.."ManaBar"].RightText = _G[prefix.."ManaBarTextRight"];
 
-	UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
+	UnitFrame_Initialize(self, self.unitToken,  _G[prefix.."Name"], _G[prefix.."Portrait"],
 		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
 		   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
 		   _G[prefix.."Flash"], nil, nil, nil, nil, 
@@ -110,14 +112,19 @@ function PartyMemberFrame_OnLoad (self)
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	local id = self:GetID();
-	self:RegisterUnitEvent("UNIT_AURA", "party"..id, "partypet"..id);
-	self:RegisterUnitEvent("UNIT_PET",  "party"..id, "partypet"..id);
+	self:RegisterUnitEvent("UNIT_AURA", self.unitToken, self.petUnitToken);
+	self:RegisterUnitEvent("UNIT_PET",  self.unitToken, self.petUnitToken);
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self:GetID().."DropDown"], self:GetName(), 47, 15);
 	end
-	SecureUnitButton_OnLoad(self, "party"..id, showmenu);
+	SecureUnitButton_OnLoad(self, self.unitToken, showmenu);
 
 	PartyMemberFrame_UpdateArt(self);
+
+	local altPowerBar = _G["PartyMemberFrame"..self:GetID().."PowerBarAlt"];
+	if altPowerBar then
+		UnitPowerBarAlt_Initialize(altPowerBar, self.unitToken, 0.5, "GROUP_ROSTER_UPDATE");
+	end
 end
 
 function PartyMemberFrame_UpdateVoiceActivityNotification(self)

@@ -4250,7 +4250,7 @@ end
 
 function StripWoWAccountLicenseInfo(gameAccount)
 	if (string.find(gameAccount, '#')) then
-		return string.gsub(gameAccount,'%d+\#(%d)','WoW%1');
+		return string.gsub(gameAccount,'%d+#(%d)','WoW%1');
 	end
 	return gameAccount;
 end
@@ -4288,7 +4288,7 @@ function VASCharacterSelectionTransferCheckEditBoxes()
 	local checkAccount = frame.TransferAccountCheckbox:GetChecked() and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET;
 	if (checkAccount) then
 		local text = frame.TransferBattlenetAccountEditbox:GetText();
-		valid = text and text ~= "" and string.find(text, ".+@.+\...+");
+		valid = text and text ~= "" and string.find(text, ".+@.+%...+");
 	end
 	if (not frame.TransferRealmCheckbox:GetChecked() and not checkAccount) then
 		valid = true;

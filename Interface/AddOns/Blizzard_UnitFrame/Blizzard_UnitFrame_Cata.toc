@@ -5,21 +5,22 @@
 ## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: cata
+Cata\UnitPowerBarAlt.xml
 Classic\UnitFrame.lua
 Classic\UnitFrame.xml
 Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
 Wrath\AlternatePowerBar.lua
 Wrath\AlternatePowerBar.xml
-Classic\PartyFrameTemplates.xml
+Cata\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
 Wrath\TargetFrame.lua
-Wrath\TargetFrame.xml
+Cata\TargetFrame.xml
 Classic\TotemFrame.lua
 Classic\TotemFrame.xml
 Cata\PetFrame.lua
 Classic\PetFrame_Shared.lua
-Wrath\PetFrame.xml
+Cata\PetFrame.xml
 Classic\ComboFrame.lua
 Classic\ComboFrame.xml
 Wrath\CompactUnitFrame.lua

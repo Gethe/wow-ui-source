@@ -7,15 +7,6 @@ local BattleNet =
 	Functions =
 	{
 		{
-			Name = "AreHighResTexturesInstalled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "installed", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
 
@@ -115,10 +106,6 @@ local BattleNet =
 			{
 				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = true },
 			},
-		},
-		{
-			Name = "InstallHighResTextures",
-			Type = "Function",
 		},
 	},
 

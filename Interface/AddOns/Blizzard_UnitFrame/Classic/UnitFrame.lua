@@ -149,6 +149,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	if ( self.myHealPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
+		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
 	end
 	if ( self.myManaCostPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
@@ -163,6 +164,7 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	if ( self.unit ~= unit ) then
 		if ( self.myHealPredictionBar ) then
 			self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
+			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
 		end
 		if ( not healthbar.frequentUpdates ) then
 			healthbar:RegisterUnitEvent("UNIT_HEALTH", unit);
@@ -225,12 +227,147 @@ function UnitFrame_OnEvent(self, event, ...)
 			if ( self.manabar ) then
 				UnitFrameManaBar_UpdateType(self.manabar);
 			end
+		elseif ( event == "UNIT_MAXHEALTH" ) then
+			UnitFrameHealPredictionBars_UpdateMax(self);
+		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
+			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED" ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit);
 			UnitFrameManaCostPredictionBars_Update(self, event == "UNIT_SPELLCAST_START", startTime, endTime, spellID);
 		end
 	elseif ( event == "PORTRAITS_UPDATED" ) then
 		UnitFramePortrait_Update(self);
+	end
+end
+
+function UnitFrameHealPredictionBars_UpdateMax(self)
+	UnitFrameHealPredictionBars_Update(self);
+end
+
+function UnitFrameHealPredictionBars_UpdateSize(self)
+	UnitFrameHealPredictionBars_Update(self);
+end
+
+--WARNING: This function is very similar to the function CompactUnitFrame_UpdateHealPrediction in CompactUnitFrame.lua and ArenaEnemyFrame_UpdatePredictionBars in Blizzard_ArenaUI.lua.
+--If you are making changes here, it is possible you may want to make changes there as well.
+local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
+function UnitFrameHealPredictionBars_Update(frame)
+	if ( not frame.myHealPredictionBar and not frame.otherHealPredictionBar and not frame.healAbsorbBar and not frame.totalAbsorbBar ) then
+		return;
+	end
+
+	local _, maxHealth = frame.healthbar:GetMinMaxValues();
+	local health = frame.healthbar:GetValue();
+	if ( maxHealth <= 0 ) then
+		return;
+	end
+
+	local myIncomingHeal = UnitGetIncomingHeals(frame.unit, "player") or 0;
+	local allIncomingHeal = UnitGetIncomingHeals(frame.unit) or 0;
+	local totalAbsorb = 0;
+
+	local myCurrentHealAbsorb = 0;
+	if ( frame.healAbsorbBar ) then
+		totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;
+		myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.unit) or 0;
+
+		--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
+		if ( health < myCurrentHealAbsorb ) then
+			frame.overHealAbsorbGlow:Show();
+			myCurrentHealAbsorb = health;
+		else
+			frame.overHealAbsorbGlow:Hide();
+		end
+	end
+
+	--See how far we're going over the health bar and make sure we don't go too far out of the frame.
+	if ( health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
+		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health + myCurrentHealAbsorb;
+	end
+
+	local otherIncomingHeal = 0;
+
+	--Split up incoming heals.
+	if ( allIncomingHeal >= myIncomingHeal ) then
+		otherIncomingHeal = allIncomingHeal - myIncomingHeal;
+	else
+		myIncomingHeal = allIncomingHeal;
+	end
+
+	--We don't fill outside the the health bar with absorbs.  Instead, an overAbsorbGlow is shown.
+	local overAbsorb = false;
+	if ( health - myCurrentHealAbsorb + allIncomingHeal + totalAbsorb >= maxHealth or health + totalAbsorb >= maxHealth ) then
+		if ( totalAbsorb > 0 ) then
+			overAbsorb = true;
+		end
+
+		if ( allIncomingHeal > myCurrentHealAbsorb ) then
+			totalAbsorb = max(0,maxHealth - (health - myCurrentHealAbsorb + allIncomingHeal));
+		else
+			totalAbsorb = max(0,maxHealth - health);
+		end
+	end
+
+	if (frame.overAbsorbGlow) then
+		if (overAbsorb) then
+			frame.overAbsorbGlow:Show();
+		else
+			frame.overAbsorbGlow:Hide();
+		end
+	end
+
+	local healthTexture = frame.healthbar:GetStatusBarTexture();
+	local myCurrentHealAbsorbPercent = 0;
+	local healAbsorbTexture = nil;
+
+	if ( frame.healAbsorbBar ) then
+		myCurrentHealAbsorbPercent = myCurrentHealAbsorb / maxHealth;
+
+		--If allIncomingHeal is greater than myCurrentHealAbsorb, then the current
+		--heal absorb will be completely overlayed by the incoming heals so we don't show it.
+		if ( myCurrentHealAbsorb > allIncomingHeal ) then
+			local shownHealAbsorb = myCurrentHealAbsorb - allIncomingHeal;
+			local shownHealAbsorbPercent = shownHealAbsorb / maxHealth;
+
+			healAbsorbTexture = frame.healAbsorbBar:UpdateFillPosition(healthTexture, shownHealAbsorb, -shownHealAbsorbPercent);
+
+			--If there are incoming heals the left shadow would be overlayed by the incoming heals
+			--so it isn't shown.
+			frame.healAbsorbBar.LeftShadow:SetShown(allIncomingHeal <= 0);
+
+			-- The right shadow is only shown if there are absorbs on the health bar.
+			frame.healAbsorbBar.RightShadow:SetShown(totalAbsorb > 0)
+		else
+			frame.healAbsorbBar:Hide();
+		end
+	end
+
+	--Show myIncomingHeal on the health bar.
+	local incomingHealTexture;
+	if (frame.myHealPredictionBar and (frame.myHealPredictionBar.UpdateFillPosition ~= nil)) then
+		incomingHealTexture = frame.myHealPredictionBar:UpdateFillPosition(healthTexture, myIncomingHeal, -myCurrentHealAbsorbPercent);
+	end
+
+	local otherHealLeftTexture = (myIncomingHeal > 0) and incomingHealTexture or healthTexture;
+	local xOffset = (myIncomingHeal > 0) and 0 or -myCurrentHealAbsorbPercent;
+
+	--Append otherIncomingHeal on the health bar
+	if (frame.otherHealPredictionBar and (frame.otherHealPredictionBar.UpdateFillPosition ~= nil)) then
+		incomingHealTexture = frame.otherHealPredictionBar:UpdateFillPosition(otherHealLeftTexture, otherIncomingHeal, xOffset);
+	end
+
+	--Append absorbs to the correct section of the health bar.
+	local appendTexture = nil;
+	if ( healAbsorbTexture ) then
+		--If there is a healAbsorb part shown, append the absorb to the end of that.
+		appendTexture = healAbsorbTexture;
+	else
+		--Otherwise, append the absorb to the end of the the incomingHeals or health part;
+		appendTexture = incomingHealTexture or healthTexture;
+	end
+
+	if ( frame.totalAbsorbBar ) then
+		frame.totalAbsorbBar:UpdateFillPosition(appendTexture, totalAbsorb);
 	end
 end
 

@@ -6,5 +6,6 @@
 ## SuppressLocalTableRef: 1
 ## AllowLoad: game
 ## AllowLoadGameType: vanilla
+Classic\UIParentPanelManager_Shared.lua
 Vanilla\UIParentPanelManager.lua
 Shared\UpdateUIPanelPositions.lua

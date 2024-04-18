@@ -71,3 +71,4 @@ Classic\LootHistory.xml
 Classic\ClassTrainerFrameTemplates.xml
 Wrath\EquipmentManager.lua
 EquipmentFlyout.xml
+GhostFrame.xml

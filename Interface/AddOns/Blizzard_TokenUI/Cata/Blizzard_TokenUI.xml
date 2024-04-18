@@ -106,7 +106,7 @@
 						GameTooltip:SetCurrencyToken(self:GetParent().index);
 					</OnEnter>
 					<OnClick>
-						HandleModifiedItemClick(GetCurrencyListLink(self:GetParent().index));
+						HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self:GetParent().index));
 					</OnClick>
 					<OnLeave>
 						GameTooltip:Hide();

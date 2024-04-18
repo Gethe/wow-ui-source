@@ -636,7 +636,7 @@ local function EncounterJournal_UpdateSpellText(self, spellID)
 	for headerIndex, header in ipairs(self.encounter.usedHeaders) do
 		if header.spellID == spellID then
 			local sectionInfo = C_EncounterJournal.GetSectionInfo(header.myID);
-			local description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
+			local description = sectionInfo.description:gsub("|cffffffff(.-)|r", "%1");
 			header.description:SetText(description);
 			if EJ_section_openTable[header.myID] then
 				EncounterJournal_ToggleHeaders(header);
@@ -1209,7 +1209,7 @@ end
 function EncounterJournal_SetBullets(object, description, hideBullets)
 	local parent = object:GetParent();
 
-	if (not string.find(description, "\$bullet;")) then
+	if (not string.find(description, "$bullet;")) then
 		object.Text:SetText(description);
 		object.textString = description;
 		object:SetHeight(object.Text:GetContentHeight());
@@ -1217,7 +1217,7 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 		return;
 	end
 
-	local desc = strtrim(string.match(description, "(.-)\$bullet;"));
+	local desc = strtrim(string.match(description, "(.-)$bullet;"));
 
 	if (desc) then
 		object.Text:SetText(desc);
@@ -1226,7 +1226,7 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 	end
 
 	local bullets = {}
-	for v in string.gmatch(description,"\$bullet;([^$]+)") do
+	for v in string.gmatch(description,"$bullet;([^$]+)") do
 		tinsert(bullets, v);
 	end
 
@@ -1526,7 +1526,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					-- Spell names can show up in white, which clashes with the parchment, strip out white color codes.
 					local description;
 					if sectionInfo.description then
-						description = sectionInfo.description:gsub("\|cffffffff(.-)\|r", "%1");
+						description = sectionInfo.description:gsub("|cffffffff(.-)|r", "%1");
 					else
 						description = RETRIEVING_DATA;
 					end

@@ -880,36 +880,6 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Button name="CharacterSelectHighResButton" inherits="GlueButtonSmallTemplate" text="HD_TEXTURES_BUTTON">
-						<Size x="150" y="35"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="30" y="52"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentGlow" parentKey="Glow" file="Interface\Glues\Common\Glue-Panel-Button-Glow" hidden="true" alphaMode="ADD">
-									<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="New" inherits="NewFeatureLabelTemplate">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="-14" y="-4"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad function="CharacterSelectHighResButton_OnLoad"/>
-							<OnShow function="CharacterSelectHighResButton_OnShow"/>
-							<OnClick function="CharacterSelectHighResButton_OnClick"/>
-							<OnEnter function="CharacterSelectHighResButton_OnEnter"/>
-							<OnLeave function="CharacterSelectHighResButton_OnLeave"/>
-							<OnUpdate>
-								GlueButtonMaster_OnUpdate(self, elapsed);
-							</OnUpdate>
-						</Scripts>
-					</Button>
 					<Button name="CharacterSelectMenuButton" inherits="GlueButtonSmallTemplate" text="MAINMENU">
 						<Size x="150" y="35"/>
 						<Anchors>
@@ -953,7 +923,12 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad function="CharacterSelectStoreButton_OnLoad"/>
+							<OnLoad>
+								local fontString = self:GetFontString();
+								fontString:SetPoint("CENTER", 8, 2);
+								self.Logo:ClearAllPoints();
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+							</OnLoad>
 							<OnClick function="ToggleStoreUI"/>
 							<OnMouseDown>
 								local fontString = self:GetFontString();
