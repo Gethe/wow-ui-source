@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\Blizzard_SharedXML\UI.xsd">
+..\..\Blizzard_SharedXML\UI.xsd">
 	<Script file="UnitPowerBarAlt.lua"/>
 	<Frame name="UnitPowerBarAltTexturableTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="background" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+				<Texture parentKey="background" setAllPoints="true"/>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentFill" parentKey="fill" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+				<Texture name="$parentFill" parentKey="fill" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="frame" setAllPoints="true"/>
@@ -20,11 +20,13 @@
 	</Frame>
 	<Frame name="UnitPowerBarAltPillTemplate" inherits="UnitPowerBarAltTexturableTemplate" hidden="true" virtual="true">
 		<Animations>
-			<AnimationGroup parentKey="flashAnim">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
+			<AnimationGroup parentKey="flashAnim">
+				<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1" target="$parentFlash"/>
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2" target="$parentFlash"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="flashAway">	<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
+			<AnimationGroup parentKey="flashAway">
+				<!--Don't give me a name or $parentFlash below won't resolve correctly. (We should really fix that.)-->
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.3" order="1" target="$parentFlash"/>
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2" target="$parentFlash"/>
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="2" target="$parentFill"/>
@@ -152,8 +154,10 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
-			<StatusBar name="$parentStatusFrame" parentKey="statusFrame" mixin="TextStatusBarMixin">
-				<Size x="10" y="10"/>
+			<StatusBar name="$parentStatusFrame" parentKey="statusFrame">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
@@ -173,13 +177,6 @@
 						self.alwaysShow = 1;
 						self.cvar = "alternateResourceText";
 						self.cvarLabel = "ALTERNATE_RESOURCE_TEXT";
-
-						local function OnStatusTextSettingChanged()
-							UnitPowerBarAltStatus_UpdateText(self);
-						end
-
-						Settings.SetOnValueChangedCallback("PROXY_STATUS_TEXT", OnStatusTextSettingChanged);
-
 						self:RegisterEvent("CVAR_UPDATE");
 					</OnLoad>
 					<OnEvent function="UnitPowerBarAltStatus_OnEvent"/>
@@ -201,33 +198,24 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-
-	<Frame name="EncounterBar" parent="UIParent" inherits="VerticalLayoutFrame, UIParentBottomManagedFrameTemplate, EditModeEncounterBarSystemTemplate" mixin="EncounterBarMixin" frameStrata="MEDIUM" fixedFrameStrata="true" frameLevel="70" fixedFrameLevel="true">
-		<Size x="250" y="30"/>
+	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<KeyValues>
-			<KeyValue key="layoutIndex" value="6" type="number"/>
-			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="PlayerPowerBarAlt" parent="EncounterBar" inherits="UnitPowerBarAltTemplate" mixin="PlayerPowerBarAltMixin">
-		<Size x="10" y="10"/>
-		<Anchors>
-			<Anchor point="TOP" relativePoint="TOP" x="0" y="-30"/>
-		</Anchors>
-		<KeyValues>
-			<KeyValue key="layoutIndex" value="6" type="number"/>
-			<KeyValue key="align" value="center" type="string"/>
-		</KeyValues>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
+			<OnLoad>
+				self.isPlayerBar = true;
+				UnitPowerBarAlt_Initialize(self, "player", 1);
+			</OnLoad>
+			<OnShow>
+				UIParent_ManageFramePositions();
+			</OnShow>
+			<OnHide>
+				UIParent_ManageFramePositions();
+			</OnHide>
 		</Scripts>
 	</Frame>
+	
 	
 	<!-- Timer manager -->
 	<Frame name="PlayerBuffTimerManager" parent="UIParent" frameStrata="LOW" hidden="true">

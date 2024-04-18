@@ -382,7 +382,7 @@ function TargetFrameMixin:CheckClassification()
 	-- Base frame/health/mana pieces
 	manaBar.pauseUpdates = false;
 	manaBar:Show();
-	TextStatusBar_UpdateTextString(manaBar);
+	manaBar:UpdateTextString();
 
 	if (classification == "minus") then
 		self.TargetFrameContainer.FrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn", TextureKitConstants.UseAtlasSize);
@@ -1016,7 +1016,8 @@ function TargetFrameMixin:CreateTargetofTarget(unit)
 	self.totFrame = frame;
 	UnitFrame_Initialize(frame, unit, frame.Name, frame.frameType, frame.Portrait,
 						 frame.HealthBar, nil, frame.ManaBar, nil);
-	SetTextStatusBarTextZeroText(frame.HealthBar, DEAD);
+
+	frame.HealthBar:SetBarTextZeroText(DEAD);
 
 	frame.HealthBar:GetStatusBarTexture():AddMaskTexture(frame.HealthBar.HealthBarMask);
 
@@ -1047,7 +1048,7 @@ end
 TargetFrameStatusBarMixin = {};
 
 function TargetFrameStatusBarMixin:OnLoad()
-	TextStatusBar_Initialize(self);
+	self:InitializeTextStatusBar();
 	self.textLockable = 1;
 	self.lockColor = true;
 	self.cvar = "statusText";

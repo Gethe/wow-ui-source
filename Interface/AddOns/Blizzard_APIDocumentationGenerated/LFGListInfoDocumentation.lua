@@ -621,6 +621,8 @@ local LFGListInfo =
 				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
 				{ Name = "isMythicActivity", Type = "bool", Nilable = false },
 				{ Name = "allowCrossFaction", Type = "bool", Nilable = false },
+				{ Name = "isHeroicActivity", Type = "bool", Nilable = false },
+				{ Name = "isNormalActivity", Type = "bool", Nilable = false },
 				{ Name = "useDungeonRoleExpectations", Type = "bool", Nilable = false },
 			},
 		},

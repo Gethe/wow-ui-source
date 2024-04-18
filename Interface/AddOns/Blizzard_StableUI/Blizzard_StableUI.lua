@@ -302,8 +302,6 @@ function StableTogglePetButtonMixin:OnPetSelected(pet)
 		return;
 	end
 
-	self:SetEnabled(pet.slotID ~= GetSummonedPetStableSlot());
-
 	local isActivePet = pet and IsActivePetSlot(pet.slotID);
 	self.mode = isActivePet and StableTogglePetButton.Stable or StableTogglePetButton.MakeActive;
 	self:SetText(isActivePet and STABLE_PET_BUTTON_LABEL or MAKE_ACTIVE_PET_BUTTON_LABEL);

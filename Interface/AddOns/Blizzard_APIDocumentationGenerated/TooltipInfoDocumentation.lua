@@ -399,6 +399,20 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetItemByItemModifiedAppearanceID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInteractionItem",
 			Type = "Function",
 

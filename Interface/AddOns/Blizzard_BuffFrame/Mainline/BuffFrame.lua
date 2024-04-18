@@ -21,6 +21,19 @@ DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
 
 CVarCallbackRegistry:SetCVarCachable("buffDurations");
 
+local s_spellIDToHelpTipInfo = {
+	-- Pandaria remix Timerunner's Advantage
+	[440393] = {
+		text = TIMERUNNING_TIMERUNNERS_ADVANTAGE_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_TIMERUNNERS_ADVANTAGE,
+		targetPoint = HelpTip.Point.BottomEdge,
+		alignment = HelpTip.Alignment.Center,
+	},
+};
+
+
 --AubrieTODO: These texture mappings are sort of bad so for temp enchantments we are only showing temp enchants for weapon.. 
 --Which just seems wrong, so I still have to talk to designers and see if we want to invest in a system to show temp enchants other than weapon
 local textureMapping = {
@@ -411,7 +424,7 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 	self.numHideableBuffs = 0;
 
 	AuraUtil.ForEachAura(PlayerFrame.unit, "HELPFUL", self.maxAuras, function(...)
-		local _, texture, count, debuffType, duration, expirationTime, _, _, _, _, _, _, _, _, timeMod = ...;
+		local _, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = ...;
 		local timeLeft = (expirationTime - GetTime());
 		local hideUnlessExpanded = (duration == 0) or (expirationTime == 0) or ((timeLeft) > BUFF_DURATION_WARNING_TIME); --Aubrie TODO filter with a flag on the aura.
 
@@ -419,8 +432,9 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 			self.numHideableBuffs = self.numHideableBuffs + 1;
 		end
 
+		local helpTipInfo = s_spellIDToHelpTipInfo[spellId];
 		local index = #self.auraInfo + 1;
-		self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded, auraType = "Buff"};
+		self.auraInfo[index] = {index = index, texture = texture, count = count, debuffType = debuffType, duration = duration,  expirationTime = expirationTime, timeMod = timeMod, hideUnlessExpanded = hideUnlessExpanded, auraType = "Buff", helpTipInfo = helpTipInfo, };
 
 		return #self.auraInfo > self.maxAuras;
 	end);
@@ -839,6 +853,11 @@ function AuraButtonMixin:Update(buttonInfo)
 		self.Count:Show();
 	else
 		self.Count:Hide();
+	end
+
+	local helpTipInfo = buttonInfo.helpTipInfo;
+	if helpTipInfo and not GetCVarBitfield(helpTipInfo.cvarBitfield, helpTipInfo.bitfieldFlag) then
+		HelpTip:Show(self, buttonInfo.helpTipInfo, self);
 	end
 
 	if GameTooltip:IsOwned(self) then

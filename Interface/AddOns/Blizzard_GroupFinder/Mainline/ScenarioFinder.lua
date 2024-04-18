@@ -186,6 +186,23 @@ function ScenarioQueueFrame_Join()
 	LFG_JoinDungeon(LE_LFG_CATEGORY_SCENARIO, ScenarioQueueFrame.type, ScenariosList, ScenariosHiddenByCollapseList);
 end
 
+function ScenarioQueueFrameFindGroupButton_OnClick()
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO);
+	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
+		LeaveLFG(LE_LFG_CATEGORY_SCENARIO);
+	else
+		ScenarioQueueFrame_Join();
+	end
+end
+
+function ScenarioQueueFrameFindGroupButton_OnEnter(self)
+	if ( self.tooltip ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+		GameTooltip:Show();
+	end
+end
+
 function ScenarioQueueFrameFindGroupButton_Update()
 	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO);
 	--Update the button text
@@ -226,6 +243,13 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	local lfgListDisabled;
 	if ( C_LFGList.HasActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	elseif(C_PartyInfo.IsCrossFactionParty()) then
+		lfgListDisabled = CROSS_FACTION_RAID_DUNGEON_FINDER_ERROR;
+	end
+
+	if ( lfgListDisabled ) then
+		LFDQueueFrameFindGroupButton:Disable();
+		LFDQueueFrameFindGroupButton.tooltip = lfgListDisabled;
 	end
 
 	if ( lfgListDisabled ) then
@@ -314,7 +338,6 @@ end
 function ScenarioQueueFrame_SetType(value)	--"specific" for the list or the record id for a single dungeon
 	ScenarioQueueFrame.type = value;
 	UIDropDownMenu_SetSelectedValue(ScenarioQueueFrame.Dropdown, value);
-	
 	if ( value == "specific" ) then
 		ScenarioQueueFrame_SetTypeSpecific();
 	else
@@ -326,7 +349,9 @@ end
 
 function ScenarioQueueFrame_SetTypeRandom()
 	local queueFrame = ScenarioQueueFrame;
-	queueFrame.Bg:SetHeight(512);
+	queueFrame.Bg:ClearAllPoints();
+	queueFrame.Bg:SetPoint("TOPLEFT", 6, -71);
+	queueFrame.Bg:SetPoint("BOTTOMRIGHT", 138, -155);
 	queueFrame.Specific:Hide();
 	queueFrame.Random:Show();
 	LFGCooldownCover_ChangeSettings(ScenarioQueueFrame.CooldownFrame, true, true);
@@ -335,7 +360,9 @@ end
 function ScenarioQueueFrame_SetTypeSpecific()
 	local queueFrame = ScenarioQueueFrame;
 	queueFrame.Bg:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-DUNGEONWALL");
-	queueFrame.Bg:SetHeight(326);
+	queueFrame.Bg:ClearAllPoints();
+	queueFrame.Bg:SetPoint("TOPLEFT", 6, -71);
+	queueFrame.Bg:SetPoint("BOTTOMRIGHT", 138, 26);
 	queueFrame.Random:Hide();
 	queueFrame.Specific:Show();
 	LFGCooldownCover_ChangeSettings(ScenarioQueueFrame.CooldownFrame, true, false);

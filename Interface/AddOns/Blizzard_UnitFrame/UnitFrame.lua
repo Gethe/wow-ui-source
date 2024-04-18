@@ -456,7 +456,7 @@ function UnitFrameManaBar_UpdateTypeOld(manaBar)
 	end
 
 	-- Update the manabar text
-	TextStatusBar_UpdateTextString(manaBar);
+	manaBar:UpdateTextString();
 
 	-- Setup newbie tooltip
 	if ( manaBar.unit ~= "pet") then
@@ -575,7 +575,7 @@ function UnitFrameManaBar_UpdateType(manaBar)
 	end
 
 	-- Update the manabar text
-	TextStatusBar_UpdateTextString(manaBar);
+	manaBar:UpdateTextString();
 end
 
 function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpdates)
@@ -584,7 +584,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	end
 
 	statusbar.unit = unit;
-	SetTextStatusBarText(statusbar, statustext);
+	statusbar:SetBarText(statustext);
 
 	statusbar.frequentUpdates = frequentUpdates;
 	if ( frequentUpdates ) then
@@ -623,7 +623,7 @@ end
 
 function UnitFrameHealthBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
-		TextStatusBar_OnEvent(self, event, ...);
+		self:TextStatusBarOnEvent(event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		UnitFrameHealthBar_RefreshUpdateEvent(self);
@@ -761,7 +761,7 @@ function UnitFrameHealthBar_OnUpdate(self)
 
 				self:SetValue(currValue);
 				self.currValue = currValue;
-				TextStatusBar_UpdateTextString(self);
+				self:UpdateTextString();
 				UnitFrameHealPredictionBars_Update(self.unitFrame);
 			end
 		end
@@ -809,12 +809,12 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 			statusbar.currValue = currValue;
 		end
 	end
-	TextStatusBar_UpdateTextString(statusbar);
+	statusbar:UpdateTextString();
 	UnitFrameHealPredictionBars_Update(statusbar.unitFrame);
 end
 
 function UnitFrameHealthBar_OnValueChanged(self, value)
-	TextStatusBar_OnValueChanged(self, value);
+	self:OnStatusBarValueChanged(value);
 	HealthBar_OnValueChanged(self, value);
 end
 
@@ -832,7 +832,7 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	end
 	statusbar.unit = unit;
 	statusbar.texture = statusbar:GetStatusBarTexture();
-	SetTextStatusBarText(statusbar, statustext);
+	statusbar:SetBarText(statustext);
 
 	statusbar.frequentUpdates = frequentUpdates;
 	if ( frequentUpdates ) then
@@ -857,7 +857,7 @@ end
 
 function UnitFrameManaBar_OnEvent(self, event, ...)
 	if ( event == "CVAR_UPDATE" ) then
-		TextStatusBar_OnEvent(self, event, ...);
+		self:TextStatusBarOnEvent(event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		if ( self.frequentUpdates ) then
@@ -900,7 +900,7 @@ function UnitFrameManaBar_OnUpdate(self)
 				end
 				self:SetValue(currValue);
 				self.currValue = currValue;
-				TextStatusBar_UpdateTextString(self);
+				self:UpdateTextString();
 			end
 		end
 	end
@@ -940,7 +940,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 			statusbar.forceUpdate = true;
 		end
 	end
-	TextStatusBar_UpdateTextString(statusbar);
+	statusbar:UpdateTextString();
 end
 
 function UnitFrameThreatIndicator_Initialize(unit, unitFrame, feedbackUnit)

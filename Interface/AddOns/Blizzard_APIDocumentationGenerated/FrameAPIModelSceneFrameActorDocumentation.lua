@@ -44,6 +44,15 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "DressPlayerSlot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "invSlot", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAutoDress",
 			Type = "Function",
 

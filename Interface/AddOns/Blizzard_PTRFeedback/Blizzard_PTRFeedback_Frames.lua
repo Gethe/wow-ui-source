@@ -103,7 +103,7 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
         --questionFrame.text:SetHeight(questionFrame:GetHeight())
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0)        
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -201,7 +201,7 @@ function PTR_IssueReporter.AttachMultipleChoiceNoQuestion(frame, answers, canSel
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -285,7 +285,7 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -376,7 +376,7 @@ function PTR_IssueReporter.AttachTextBlock(frame, question)
         questionFrame.text = questionFrame:CreateFontString("CheckListText", "OVERLAY", PTR_IssueReporter.Assets.FontString)
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0) 
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -441,10 +441,10 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
         numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     else
         newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
-        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")    
-        newCheckBox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)        
-        newCheckBox.text:SetJustifyH("CENTER")        
-        newCheckBox.text:SetJustifyV("CENTER")
+        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+        newCheckBox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+        newCheckBox.text:SetJustifyH("CENTER")
+        newCheckBox.text:SetJustifyV("MIDDLE")
         newCheckBox.text:SetTextColor(1, 1, 1)
         
         newCheckBox:SetScript("OnClick", function(self)

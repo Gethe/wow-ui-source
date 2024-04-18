@@ -353,38 +353,38 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								SetTextStatusBarText(self:GetParent(), self.text);
+								self:GetParent():SetBarText(self.text);
 							</OnLoad>
 						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 						self:RegisterEvent("PLAYER_XP_UPDATE");
 						self.textLockable = 1;
 						self.cvar = "xpBarText";
 						self.cvarLabel = "XP_BAR_TEXT";
 						self.alwaysPrefix = true;
-						SetTextStatusBarTextPrefix(self, XP);
+						self:SetBarTextPrefix(XP);
 					</OnLoad>
 					<OnEvent>
 						if ( event == "CVAR_UPDATE" ) then
-							TextStatusBar_OnEvent(self, event, ...);
+							self:TextStatusBarOnEvent(event, ...);
 						else
 							StatusTrackingBarManager:UpdateBarsShown();
 						end
 					</OnEvent>
 					<OnShow>
 						if ( GetCVar("xpBarText") == "1" ) then
-							TextStatusBar_UpdateTextString(self);
+							self:UpdateTextString();
 						end
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
 					</OnShow>					
 					<OnEnter>
-						TextStatusBar_UpdateTextString(self);
-						ShowTextStatusBarText(self);
+						self:UpdateTextString();
+						self:ShowStatusBarText();
 						--ExhaustionTick.timer = 1;
 						local label = XPBAR_LABEL;
 						if ( GameLimitedMode_IsActive() ) then
@@ -395,7 +395,7 @@
 						end
 					</OnEnter>
 					<OnLeave>
-						HideTextStatusBarText(self);
+						self:HideStatusBarText();
 						GameTooltip:Hide();
 						---ExhaustionTick.timer = nil;
 					</OnLeave>
@@ -406,7 +406,7 @@
 						if (not self:IsShown()) then
 							return;
 						end
-						TextStatusBar_OnValueChanged(self);
+						self:OnStatusBarValueChanged();
 					</OnValueChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -449,7 +449,7 @@
 						parent.HealthBarBG = self.HealthBarBG;
 						parent.HealthBarOverlay = self.HealthBarOverlay;
 						
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
@@ -507,7 +507,7 @@
 						parent.PowerBarBG = self.PowerBarBG;
 						parent.PowerBarOverlay = self.PowerBarOverlay;
 					
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.textLockable = 1;
 						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";

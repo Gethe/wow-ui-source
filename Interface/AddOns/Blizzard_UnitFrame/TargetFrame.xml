@@ -539,7 +539,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.lockColor = true;
 					</OnLoad>
 					<OnValueChanged>
@@ -571,7 +571,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						TextStatusBar_Initialize(self);
+						self:InitializeTextStatusBar();
 						self.lockColor = true;
 					</OnLoad>
 				</Scripts>

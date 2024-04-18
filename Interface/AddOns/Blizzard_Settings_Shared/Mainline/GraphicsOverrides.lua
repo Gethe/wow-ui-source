@@ -54,6 +54,3 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 		addRecommendedFunc(container, variable);
 		return container:GetData();
 end
-
-function GraphicsOverrides.CreateHiResOptions(category, layout)
-end

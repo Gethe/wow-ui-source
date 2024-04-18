@@ -162,6 +162,10 @@ function LFGListFrame_OnLoad(self)
 	};
 end
 
+local function IsDeclined(appStatus)
+	return appStatus == "declined" or appStatus == "declined_delisted" or appStatus =="declined_full";
+end
+
 function LFGListFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" or event == "TRIAL_STATUS_UPDATE") then
 		LFGListFrame_FixPanelValid(self);
@@ -230,6 +234,12 @@ function LFGListFrame_OnEvent(self, event, ...)
 		if ( chatMessage ) then
 			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
+
+		if IsDeclined(newStatus) then
+			self.declines = self.declines or {};
+			self.declines[searchResultID] = newStatus;
+		end
+
 		LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
@@ -2235,7 +2245,8 @@ end
 local function UpdateFilterRedX()
 	local redx = LFGListFrame.SearchPanel.FilterButton.ResetToDefaults;
 	local enabled = C_LFGList.GetAdvancedFilter();
-	if LFGListAdvancedFiltersIsDefault(enabled) then
+	if LFGListFrame.CategorySelection.selectedCategory ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS 
+		or LFGListAdvancedFiltersIsDefault(enabled) then
 		redx:Hide();
 	else
 		redx:Show();
@@ -2292,6 +2303,10 @@ function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
 	local languages = C_LFGList.GetLanguageSearchFilter();
 	local advancedFilters = C_LFGList.GetAdvancedFilter();
+	if LFGListFrame.CategorySelection.selectedCategory ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+		advancedFilters = nil;
+	end
+	 
 
 	local filters = ResolveCategoryFilters(self.categoryID, self.filters);
 	C_LFGList.Search(self.categoryID, filters, self.preferredFilters, languages, nil, advancedFilters);
@@ -2318,7 +2333,7 @@ end
 function LFGListSearchPanel_UpdateResultList(self)
 	self.totalResults, self.results = C_LFGList.GetFilteredSearchResults();
 	self.applications = C_LFGList.GetApplications();
-	LFGListUtil_SortSearchResults(self.results);
+	LFGListUtil_SortSearchResults(self);
 	LFGListSearchPanel_UpdateResults(self);
 end
 
@@ -2330,6 +2345,9 @@ end
 
 function LFGListSearchPanelUtil_CanSelectResult(resultID)
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
+	if LFGListFrame.declines and LFGListFrame.declines[resultID] then
+		appStatus = LFGListFrame.declines[resultID];
+	end
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	if ( appStatus ~= "none" or pendingStatus or searchResultInfo.isDelisted ) then
 		return false;
@@ -2638,8 +2656,46 @@ function LFGListSearchEntry_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
-local function IsDeclined(appStatus)
-	return appStatus == "declined" or appStatus == "declined_delisted" or appStatus =="declined_full";
+local function EntryStillSatisfiesFilters(enabled, displayData, searchResultInfo)
+	local _, classFilename = UnitClass("player");
+	local infoTable = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID);
+
+	if enabled.needsTank and displayData["TANK"] ~= 0 then
+		return false;
+	elseif enabled.needsHealer and displayData["HEALER"] ~= 0 then
+		return false;
+	elseif enabled.needsDamage and displayData["DAMAGER"] ~= 0 then
+		return false;
+	elseif enabled.needsMyClass and displayData[classFilename] > 0 then
+		return false;
+	elseif enabled.hasTank and displayData["TANK"] == 0 then
+		return false;
+	elseif enabled.hasHealer and displayData["HEALER"] == 0 then
+		return false;
+	elseif enabled.minimumRating > searchResultInfo.leaderOverallDungeonScore then
+		return false;
+	elseif #enabled.activities > 0 then
+		local foundActivity = false;
+		for _, activityID in ipairs(enabled.activities) do
+			if activityID == infoTable.groupFinderActivityGroupID then
+				foundActivity = true;
+				break;
+			end
+		end
+		if not foundActivity then
+			return false;
+		end
+	end
+	if not LFGListAdvancedFiltersDifficultyNoneChecked(enabled) then
+		if (infoTable.isNormalActivity and not enabled.difficultyNormal)
+			or (infoTable.isHeroicActivity and not enabled.difficultyHeroic) 
+			or (infoTable.isMythicActivity and not enabled.difficultyMythic)
+			or (infoTable.isMythicPlusActivity and not enabled.difficultyMythicPlus) then
+			return false;
+		end
+	end
+
+	return true;
 end
 
 function LFGListSearchEntry_Update(self)
@@ -2651,13 +2707,18 @@ function LFGListSearchEntry_Update(self)
 
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
 
+	local isDeclined = IsDeclined(appStatus);
+	if LFGListFrame.declines then
+		if not isDeclined and LFGListFrame.declines[resultID] then
+			isDeclined = true;
+			appStatus = LFGListFrame.declines[resultID];
+		end
+	end
 	local isApplication = (appStatus ~= "none" or pendingStatus);
 	local isAppFinished = LFGListUtil_IsStatusInactive(appStatus) or LFGListUtil_IsStatusInactive(pendingStatus);
-	local isDeclined = IsDeclined(appStatus);
 
 	--Update visibility based on whether we're an application or not
 	self.isApplication = isApplication;
-	self.ApplicationBG:SetShown(isApplication and not isAppFinished);
 	self.ResultBG:SetShown(not isApplication or isAppFinished);
 	self.DataDisplay:SetShown(not isApplication);
 	self.CancelButton:SetShown(isApplication and pendingStatus ~= "applied");
@@ -2665,7 +2726,7 @@ function LFGListSearchEntry_Update(self)
 	self.CancelButton.Icon:SetDesaturated(not LFGListUtil_IsAppEmpowered());
 	self.CancelButton.tooltip = (not LFGListUtil_IsAppEmpowered()) and LFG_LIST_APP_UNEMPOWERED;
 	self.Spinner:SetShown(pendingStatus == "applied");
-
+	
 	if ( pendingStatus == "applied" and C_LFGList.GetRoleCheckInfo() ) then
 		self.PendingLabel:SetText(LFG_LIST_ROLE_CHECK);
 		self.PendingLabel:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
@@ -2741,10 +2802,25 @@ function LFGListSearchEntry_Update(self)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityFullName(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 
-	self.resultID = resultID;
-	local selected = panel.selectedResult == resultID and not isApplication and not searchResultInfo.isDelisted;
-	LFGListSearchEntry_SetSelected(self, selected);
+	local enabled = C_LFGList.GetAdvancedFilter();
+	local displayData = C_LFGList.GetSearchResultMemberCounts(resultID);
 
+	self.isNowFilteredOut = LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS and not EntryStillSatisfiesFilters(enabled, displayData, searchResultInfo);
+	self.isApplication = isApplication and not isAppFinished;
+	self.isSelected = panel.selectedResult == resultID and not isApplication and not searchResultInfo.isDelisted;
+
+	self.BackgroundTexture:Show();
+	if self.isNowFilteredOut then
+		self.BackgroundTexture:SetAtlas("groupfinder-highlightbar-red");
+	elseif self.isApplication then
+		self.BackgroundTexture:SetAtlas("groupfinder-highlightbar-green");
+	elseif self.isSelected then
+		self.BackgroundTexture:SetAtlas("groupfinder-highlightbar-yellow");
+	else
+		self.BackgroundTexture:Hide();
+	end
+
+	self.resultID = resultID;
 	local nameColor = NORMAL_FONT_COLOR;
 	local activityColor = GRAY_FONT_COLOR;
 	if isDeclined then
@@ -2764,7 +2840,6 @@ function LFGListSearchEntry_Update(self)
 	self.VoiceChat:SetShown(searchResultInfo.voiceChat ~= "");
 	self.VoiceChat.tooltip = searchResultInfo.voiceChat;
 
-	local displayData = C_LFGList.GetSearchResultMemberCounts(resultID);
 	local showClassesByRole = true;
 	LFGListGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityID, displayData, searchResultInfo.isDelisted, showClassesByRole);
 
@@ -2791,10 +2866,6 @@ function LFGListSearchEntry_Update(self)
 	else
 		self:SetScript("OnUpdate", nil);
 	end
-end
-
-function LFGListSearchEntry_SetSelected(self, selected)
-	self.Selected:SetShown(selected);
 end
 
 function LFGListSearchEntry_UpdateExpiration(self)
@@ -2830,7 +2901,7 @@ function LFGListSearchEntry_OnEnter(self)
 		LFGListSearchPanel_EvaluateTutorial(LFGListFrame.SearchPanel, self);
 	end
 
-	if not self.Selected:IsShown() then
+	if self.isNowFilteredOut or self.isApplication or not self.isSelected then
 		self.Highlight:Show();
 	end
 end
@@ -3444,51 +3515,54 @@ local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
 	return false;
 end
 
-function LFGListUtil_SortSearchResultsCB(searchResultID1, searchResultID2)
-	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
-	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
+function LFGListUtil_SortSearchResultsCBFunction(self)
+	return function(searchResultID1, searchResultID2)
+		local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
+		local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
 
-	local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
-	local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
+		local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
+		local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
 
-	local _, appStatus1 = C_LFGList.GetApplicationInfo(searchResultID1);
-	local _, appStatus2 = C_LFGList.GetApplicationInfo(searchResultID2);
+		local _, appStatus1 = C_LFGList.GetApplicationInfo(searchResultID1);
+		local _, appStatus2 = C_LFGList.GetApplicationInfo(searchResultID2);
 
-	local isDeclined1, isDeclined2 = IsDeclined(appStatus1), IsDeclined(appStatus2);
+		local isDeclined1 = IsDeclined(appStatus1) or (self.declines[searchResultID1] and true or false);
+		local isDeclined2 = IsDeclined(appStatus2) or (self.declines[searchResultID2] and true or false);
 
-	--sort declined to the bottom
-	if isDeclined1 ~= isDeclined2 then
-		return isDeclined2;
+		--sort declined to the bottom
+		if isDeclined1 ~= isDeclined2 then
+			return isDeclined2;
+		end
+
+		-- Groups with your current role available are preferred
+		if (hasRemainingRole1 ~= hasRemainingRole2) then
+			return hasRemainingRole1;
+		end
+
+		--If one has more friends, do that one first
+		if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
+			return searchResultInfo1.numBNetFriends > searchResultInfo2.numBNetFriends;
+		end
+
+		if ( searchResultInfo1.numCharFriends ~= searchResultInfo2.numCharFriends ) then
+			return searchResultInfo1.numCharFriends > searchResultInfo2.numCharFriends;
+		end
+
+		if ( searchResultInfo1.numGuildMates ~= searchResultInfo2.numGuildMates ) then
+			return searchResultInfo1.numGuildMates > searchResultInfo2.numGuildMates;
+		end
+
+		if ( searchResultInfo1.isWarMode ~= searchResultInfo2.isWarMode ) then
+			return searchResultInfo1.isWarMode == C_PvP.IsWarModeDesired();
+		end
+
+		--If we aren't sorting by anything else, just go by ID
+		return searchResultID1 < searchResultID2;
 	end
-
-	-- Groups with your current role available are preferred
-	if (hasRemainingRole1 ~= hasRemainingRole2) then
-		return hasRemainingRole1;
-	end
-
-	--If one has more friends, do that one first
-	if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
-		return searchResultInfo1.numBNetFriends > searchResultInfo2.numBNetFriends;
-	end
-
-	if ( searchResultInfo1.numCharFriends ~= searchResultInfo2.numCharFriends ) then
-		return searchResultInfo1.numCharFriends > searchResultInfo2.numCharFriends;
-	end
-
-	if ( searchResultInfo1.numGuildMates ~= searchResultInfo2.numGuildMates ) then
-		return searchResultInfo1.numGuildMates > searchResultInfo2.numGuildMates;
-	end
-
-	if ( searchResultInfo1.isWarMode ~= searchResultInfo2.isWarMode ) then
-		return searchResultInfo1.isWarMode == C_PvP.IsWarModeDesired();
-	end
-
-	--If we aren't sorting by anything else, just go by ID
-	return searchResultID1 < searchResultID2;
 end
 
-function LFGListUtil_SortSearchResults(results)
-	table.sort(results, LFGListUtil_SortSearchResultsCB);
+function LFGListUtil_SortSearchResults(self)
+	table.sort(self.results, LFGListUtil_SortSearchResultsCBFunction(self));
 end
 
 function LFGListUtil_SortApplicantsCB(applicantID1, applicantID2)
@@ -3759,6 +3833,7 @@ function LFGListUTil_InitializeAdvancedFilter(dropdown)
 			entry.func = function(self,_,_,checked) 
 				enabled[key] = checked; 
 				C_LFGList.SaveAdvancedFilter(enabled); 
+				LFGListFrame.SearchPanel.ScrollBox:ForEachFrame(LFGListSearchEntry_Update);
 				UpdateFilterRedX();
 			end
 			UIDropDownMenu_AddButton(entry);
@@ -3805,6 +3880,7 @@ function LFGListUTil_InitializeAdvancedFilter(dropdown)
 							activitySet[activityId] = checked; 
 							ActivitiesSetToList();
 							C_LFGList.SaveAdvancedFilter(enabled); 
+							LFGListFrame.SearchPanel.ScrollBox:ForEachFrame(LFGListSearchEntry_Update);
 							UpdateFilterRedX();
 						end
 						UIDropDownMenu_AddButton(entry);
@@ -3828,6 +3904,7 @@ function LFGListUTil_InitializeAdvancedFilter(dropdown)
 		info.customFrame:SetMinRatingChangedCallback(function(self) 
 			enabled.minimumRating = self.MinRating:GetNumber();
 			C_LFGList.SaveAdvancedFilter(enabled); 
+			LFGListFrame.SearchPanel.ScrollBox:ForEachFrame(LFGListSearchEntry_Update);
 			UpdateFilterRedX();
 		end);
 		UIDropDownMenu_AddButton(info);

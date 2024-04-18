@@ -550,6 +550,20 @@ local Item =
 			},
 		},
 		{
+			Name = "GetItemInventorySlotKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlot", Type = "InventoryType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemInventoryType",
 			Type = "Function",
 
@@ -575,6 +589,20 @@ local Item =
 			Returns =
 			{
 				{ Name = "inventoryType", Type = "InventoryType", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemLearnTransmogSet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "setID", Type = "number", Nilable = true },
 			},
 		},
 		{

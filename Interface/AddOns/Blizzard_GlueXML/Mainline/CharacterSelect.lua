@@ -846,7 +846,7 @@ function CharacterSelect_UpdateTimerunning()
 	local season = GetActiveTimerunningSeasonID();
 	if season then
 		C_AddOns.LoadAddOn("Blizzard_TimerunningCharacterCreate");
-		TimerunningFirstTimeDialog:DetermineVisibility();
+		TimerunningFirstTimeDialog:UpdateState();
 	end
 end
 
@@ -1662,10 +1662,21 @@ function CharacterSelect_AllowedToEnterWorld()
 		return false;
     end
 
-    local boostInProgress, _, _, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(19, GetCharacterInfo(GetCharacterSelection()));
+	local characterIndex = GetCharacterSelection();
+    local boostInProgress, _, _, isTrialBoost, isTrialBoostLocked, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter = select(19, GetCharacterInfo(characterIndex));
 	local trialBoostUnavailable = (isExpansionTrialCharacter and (isTrialBoostLocked or not IsExpansionTrial())) or (isTrialBoost and (isTrialBoostLocked or not C_CharacterServices.IsTrialBoostEnabled()));
     if (boostInProgress or revokedCharacterUpgrade or trialBoostUnavailable) then
         return false;
+    end
+
+	local characterGUID = GetCharacterGUID(characterIndex);
+	if (not characterGUID) then
+		return false;
+	end
+
+    local timerunningSeasonID = GetCharacterTimerunningSeasonID(characterGUID);
+    if (timerunningSeasonID and not IsTimerunningEnabled()) then
+        return false, TIMERUNNING_DISABLED_TOOLTIP;
     end
 
     return true;
@@ -2282,7 +2293,8 @@ function CharacterSelect_UpdateButtonState()
     local boostInProgress = select(19,GetCharacterInfo(GetCharacterSelection()));
     local isAccountLocked = CharacterSelect_IsAccountLocked();
 
-    CharSelectEnterWorldButton:SetEnabled(CharacterSelect_AllowedToEnterWorld());
+	local allowedToEnterWorld, enterWorldError = CharacterSelect_AllowedToEnterWorld();
+    CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld);
     CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
     CharacterSelectDeleteButton:SetEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList() and not isAccountLocked);
     CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
@@ -2309,7 +2321,7 @@ function CharacterSelect_UpdateButtonState()
         CharSelectCreateCharacterButton:SetDisabledTooltip(CHARACTER_SELECT_ACCOUNT_LOCKED);
         CharacterSelectDeleteButton:SetDisabledTooltip(CHARACTER_SELECT_ACCOUNT_LOCKED);
     else
-        CharSelectEnterWorldButton:SetDisabledTooltip(nil);
+        CharSelectEnterWorldButton:SetDisabledTooltip(enterWorldError);
         CharSelectCreateCharacterButton:SetDisabledTooltip(nil);
         CharacterSelectDeleteButton:SetDisabledTooltip(nil);
     end

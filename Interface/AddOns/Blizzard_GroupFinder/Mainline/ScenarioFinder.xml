@@ -432,21 +432,8 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO);
-								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
-									LeaveLFG(LE_LFG_CATEGORY_SCENARIO);
-								else
-									ScenarioQueueFrame_Join();
-								end
-							</OnClick>
-							<OnEnter>
-								if ( self.tooltip ) then
-									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-									GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-									GameTooltip:Show();
-								end
-							</OnEnter>
+							<OnClick function="ScenarioQueueFrameFindGroupButton_OnClick"/>
+							<OnEnter function="ScenarioQueueFrameFindGroupButton_OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>

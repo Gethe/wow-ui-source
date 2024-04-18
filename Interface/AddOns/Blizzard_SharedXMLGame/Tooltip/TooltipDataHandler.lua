@@ -550,6 +550,7 @@ do
 		SetMerchantItem = "GetMerchantItem",
 		SetCurrencyToken = "GetCurrencyToken",
 		SetItemByID = "GetItemByID",
+		SetItemByItemModifiedAppearanceID = "GetItemByItemModifiedAppearanceID",
 		SetInventoryItem = "GetInventoryItem",
 		SetRecipeReagentItem = "GetRecipeReagentItem",
 		SetWeeklyReward = "GetWeeklyReward",

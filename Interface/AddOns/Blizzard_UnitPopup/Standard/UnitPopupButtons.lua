@@ -482,6 +482,11 @@ function UnitPopupEnterEditModeMixin:OnClick()
 end
 
 function UnitPopupSelectRoleButtonMixin:CanShow()
+	local isEnabled = CanShowSetRoleButton();
+	if ( not isEnabled ) then
+		return false;
+	end
+
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
 	local isLeader = UnitIsGroupLeader("player"); 
 	local isAssistant = UnitIsGroupAssistant("player"); 

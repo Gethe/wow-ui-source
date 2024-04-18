@@ -317,7 +317,8 @@ function PartyMemberFrameMixin:Setup()
 		   self.HealthBar.OverAbsorbGlow,
 		   self.HealthBar.OverHealAbsorbGlow,
 		   self.HealthBar.HealAbsorbBar);
-	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
+
+	self.HealthBar:SetBarTextZeroText(DEAD);
 
 	if PARTY_FRAME_SHOW_BUFFS then
 		self.showBuffs = true;
@@ -785,7 +786,7 @@ end
 function PartyMemberPetFrameMixin:Setup()
 	self.unitToken = "partypet"..self:GetParent().layoutIndex;
 	UnitFrame_Initialize(self, self.unitToken, self.Name, nil, self.Portrait, self.HealthBar, nil, nil, nil, self.Flash);
-	SetTextStatusBarTextZeroText(self.HealthBar, DEAD);
+	self.HealthBar:SetBarTextZeroText(DEAD);
 	self.Name:Hide();
 	SecureUnitButton_OnLoad(self, self.unitToken);
 end

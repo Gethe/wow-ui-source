@@ -5,7 +5,7 @@
 	forceShow [boolean] - Force show text despite current <cvar> or lock settings
 	cvar [string] - Name of the cvar that controls whether this bar's text should display, only used if <textLockable> is also true
 	textLockable [boolean] - Determines whether text can be kept visible based on current value of <cvar>
-	forceHideText [boolean] - Prevents text from being shown by calling ShowTextStatusBarText; Does not prevent showing via <forceShow> or <cvar + textLockable>
+	forceHideText [boolean] - Prevents text from being shown by calling ShowStatusBarText; Does not prevent showing via <forceShow> or <cvar + textLockable>
 
 	powerToken [string] - If not set or value is "MANA", the "BOTH" status text setting shows both numeric and % values, otherwise BOTH shows only numeric
 	showNumeric [boolean] - If true, forces text to "NUMERIC" mode despite current status text setting; Supercedes <showPercentage>; Often externally set as a temporary override
@@ -26,12 +26,14 @@ STATUS_TEXT_DISPLAY_MODE = {
 	NONE = "NONE",
 };
 
-function TextStatusBar_Initialize(self)
+TextStatusBarMixin = {};
+
+function TextStatusBarMixin:InitializeTextStatusBar()
 	self:RegisterEvent("CVAR_UPDATE");
 	self.lockShow = 0;
 
 	local function OnStatusTextSettingChanged()
-		TextStatusBar_UpdateTextString(self);
+		self:UpdateTextString();
 	end
 
 	Settings.SetOnValueChangedCallback("PROXY_STATUS_TEXT", OnStatusTextSettingChanged);
@@ -41,14 +43,14 @@ function TextStatusBar_Initialize(self)
 	end
 end
 
-function SetTextStatusBarText(bar, text)
-	if ( not bar or not text ) then
+function TextStatusBarMixin:SetBarText(text)
+	if ( not text ) then
 		return
 	end
-	bar.TextString = text;
+	self.TextString = text;
 end
 
-function TextStatusBar_OnEvent(self, event, ...)
+function TextStatusBarMixin:TextStatusBarOnEvent(event, ...)
 	if ( event == "CVAR_UPDATE" ) then
 		local cvar, value = ...;
 		if ( self.cvar and cvar == self.cvar ) then
@@ -59,35 +61,35 @@ function TextStatusBar_OnEvent(self, event, ...)
 					self.TextString:Hide();
 				end
 			end
-			TextStatusBar_UpdateTextString(self);
+			self:UpdateTextString();
 		end
 	end
 end
 
-function TextStatusBar_UpdateTextString(textStatusBar)
-	local textString = textStatusBar.TextString;
+function TextStatusBarMixin:UpdateTextString()
+	local textString = self.TextString;
 	if(textString) then
-		local value = textStatusBar:GetValue();
-		local valueMin, valueMax = textStatusBar:GetMinMaxValues();
-		TextStatusBar_UpdateTextStringWithValues(textStatusBar, textString, value, valueMin, valueMax);
+		local value = self:GetValue();
+		local valueMin, valueMax = self:GetMinMaxValues();
+		self:UpdateTextStringWithValues(textString, value, valueMin, valueMax);
 	end
 end
 
-function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value, valueMin, valueMax)
-	if( statusFrame.LeftText and statusFrame.RightText ) then
-		statusFrame.LeftText:SetText("");
-		statusFrame.RightText:SetText("");
-		statusFrame.LeftText:Hide();
-		statusFrame.RightText:Hide();
+function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueMin, valueMax)
+	if( self.LeftText and self.RightText ) then
+		self.LeftText:SetText("");
+		self.RightText:SetText("");
+		self.LeftText:Hide();
+		self.RightText:Hide();
 	end
 	
 	-- Max value is valid and updates aren't paused
-	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( statusFrame.pauseUpdates ) ) then
-		statusFrame:Show();
+	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( self.pauseUpdates ) ) then
+		self:Show();
 		
-		if ( (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) or statusFrame.forceShow ) then
+		if ( (self.cvar and GetCVar(self.cvar) == "1" and self.textLockable) or self.forceShow ) then
 			textString:Show();
-		elseif ( statusFrame.lockShow > 0 and (not statusFrame.forceHideText) ) then
+		elseif ( self.lockShow > 0 and (not self.forceHideText) ) then
 			textString:Show();
 		else
 			textString:SetText("");
@@ -96,24 +98,24 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 		end
 
 		-- Display zero text
-		if ( value == 0 and statusFrame.zeroText ) then
-			textString:SetText(statusFrame.zeroText);
-			statusFrame.isZero = 1;
+		if ( value == 0 and self.zeroText ) then
+			textString:SetText(self.zeroText);
+			self.isZero = 1;
 			textString:Show();
 			return;
 		end
 
-		statusFrame.isZero = nil;
+		self.isZero = nil;
 
 		local valueDisplay = value;
 		local valueMaxDisplay = valueMax;
 
 		-- If custom text transform func provided, use that
-		if ( statusFrame.numericDisplayTransformFunc ) then
-			valueDisplay, valueMaxDisplay = statusFrame.numericDisplayTransformFunc(value, valueMax);
+		if ( self.numericDisplayTransformFunc ) then
+			valueDisplay, valueMaxDisplay = self.numericDisplayTransformFunc(value, valueMax);
 		-- Otherwise just the usual large number handling
 		else
-			if ( statusFrame.capNumericDisplay ) then
+			if ( self.capNumericDisplay ) then
 				valueDisplay = AbbreviateLargeNumbers(value);
 				valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
 			else
@@ -122,42 +124,42 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 			end
 		end
 
-		local shouldUsePrefix = statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) );
+		local shouldUsePrefix = self.prefix and (self.alwaysPrefix or not (self.cvar and GetCVar(self.cvar) == "1" and self.textLockable) );
 
 		local displayMode = GetCVar("statusTextDisplay");
 		-- Evaluate display mode overrides in priority order
-		if ( statusFrame.showNumeric ) then
+		if ( self.showNumeric ) then
 			displayMode = STATUS_TEXT_DISPLAY_MODE.NUMERIC;
-		elseif ( statusFrame.showPercentage ) then
+		elseif ( self.showPercentage ) then
 			displayMode = STATUS_TEXT_DISPLAY_MODE.PERCENT;
 		end
 
 		-- If percent-only mode and percentages disabled, fall back on numeric-only
-		if ( statusFrame.disablePercentages and displayMode == STATUS_TEXT_DISPLAY_MODE.PERCENT ) then
+		if ( self.disablePercentages and displayMode == STATUS_TEXT_DISPLAY_MODE.PERCENT ) then
 			displayMode = STATUS_TEXT_DISPLAY_MODE.NUMERIC;
 		end
 
 		-- Numeric only
 		if ( valueMax <= 0 or displayMode == STATUS_TEXT_DISPLAY_MODE.NUMERIC or displayMode == STATUS_TEXT_DISPLAY_MODE.NONE) then
 			if ( shouldUsePrefix ) then
-				textString:SetText(statusFrame.prefix.." "..valueDisplay.." / "..valueMaxDisplay);
+				textString:SetText(self.prefix.." "..valueDisplay.." / "..valueMaxDisplay);
 			else
 				textString:SetText(valueDisplay.." / "..valueMaxDisplay);
 			end
 		-- Numeric + Percentage
 		elseif ( displayMode == STATUS_TEXT_DISPLAY_MODE.BOTH ) then
-			if ( statusFrame.LeftText and statusFrame.RightText ) then
+			if ( self.LeftText and self.RightText ) then
 				-- Unless explicitly disabled, only display percentage on left if displaying mana or a non-power value (legacy behavior that should eventually be revisited)
-				if ( not statusFrame.disablePercentages and (not statusFrame.powerToken or statusFrame.powerToken == "MANA") ) then
-					statusFrame.LeftText:SetText(math.ceil((value / valueMax) * 100) .. "%");
-					statusFrame.LeftText:Show();
+				if ( not self.disablePercentages and (not self.powerToken or self.powerToken == "MANA") ) then
+					self.LeftText:SetText(math.ceil((value / valueMax) * 100) .. "%");
+					self.LeftText:Show();
 				end
-				statusFrame.RightText:SetText(valueDisplay);
-				statusFrame.RightText:Show();
+				self.RightText:SetText(valueDisplay);
+				self.RightText:Show();
 				textString:Hide();
 			else
 				valueDisplay = valueDisplay .. " / " .. valueMaxDisplay;
-				if ( not statusFrame.disablePercentages ) then
+				if ( not self.disablePercentages ) then
 					valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay;
 				end
 			end
@@ -166,7 +168,7 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 		elseif ( displayMode == STATUS_TEXT_DISPLAY_MODE.PERCENT ) then
 			valueDisplay = math.ceil((value / valueMax) * 100) .. "%";
 			if ( shouldUsePrefix ) then
-				textString:SetText(statusFrame.prefix .. " " .. valueDisplay);
+				textString:SetText(self.prefix .. " " .. valueDisplay);
 			else
 				textString:SetText(valueDisplay);
 			end
@@ -175,68 +177,78 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 	else
 		textString:Hide();
 		textString:SetText("");
-		if ( not statusFrame.alwaysShow ) then
-			statusFrame:Hide();
+		if ( not self.alwaysShow ) then
+			self:Hide();
 		else
-			statusFrame:SetValue(0);
+			self:SetValue(0);
 		end
 	end
 end
 
-function TextStatusBar_OnValueChanged(self)
-	TextStatusBar_UpdateTextString(self);
+function TextStatusBarMixin:OnStatusBarEnter()
+	self:ShowStatusBarText();
+	self:UpdateTextString();
+end
+
+function TextStatusBarMixin:OnStatusBarLeave()
+	self:HideStatusBarText();
+	GameTooltip:Hide();
+end
+
+function TextStatusBarMixin:OnStatusBarValueChanged()
+	self:UpdateTextString();
 	if ( self.Spark ) then
 		self.Spark:OnBarValuesUpdated(self);
 	end
 end
 
-function TextStatusBar_OnMinMaxChanged(self, min, max)
+function TextStatusBarMixin:OnStatusBarMinMaxChanged(min, max)
 	if ( self.Spark ) then
 		self.Spark:OnBarValuesUpdated(self);
 	end
 end
 
-function SetTextStatusBarTextPrefix(bar, prefix)
-	if ( bar and bar.TextString ) then
-		bar.prefix = prefix;
+function TextStatusBarMixin:SetBarTextPrefix(prefix)
+	if ( self.TextString ) then
+		self.prefix = prefix;
 	end
 end
 
-function SetTextStatusBarTextZeroText(bar, zeroText)
-	if ( bar and bar.TextString ) then
-		bar.zeroText = zeroText;
+function TextStatusBarMixin:SetBarTextZeroText(zeroText)
+	if ( self.TextString ) then
+		self.zeroText = zeroText;
 	end
 end
 
-function ShowTextStatusBarText(bar)
-	if ( bar and bar.TextString ) then
-		if ( not bar.lockShow ) then
-			bar.lockShow = 0;
+function TextStatusBarMixin:ShowStatusBarText()
+	if ( self and self.TextString ) then
+		if ( not self.lockShow ) then
+			self.lockShow = 0;
 		end
-		if ( not bar.forceHideText ) then
-			bar.TextString:Show();
+		if ( not self.forceHideText ) then
+			self.TextString:Show();
 		end
-		bar.lockShow = bar.lockShow + 1;
-		TextStatusBar_UpdateTextString(bar);
+		self.lockShow = self.lockShow + 1;
+		self:UpdateTextString();
 	end
 end
 
-function HideTextStatusBarText(bar)
-	if ( bar and bar.TextString ) then
-		if ( not bar.lockShow ) then
-			bar.lockShow = 0;
+function TextStatusBarMixin:HideStatusBarText()
+	if ( self and self.TextString ) then
+		if ( not self.lockShow ) then
+			self.lockShow = 0;
 		end
-		if ( bar.lockShow > 0 ) then
-			bar.lockShow = bar.lockShow - 1;
+		if ( self.lockShow > 0 ) then
+			self.lockShow = self.lockShow - 1;
 		end
-		if ( bar.lockShow > 0 or bar.isZero == 1) then
-			bar.TextString:Show();
-		elseif ( (bar.cvar and GetCVar(bar.cvar) == "1" and bar.textLockable) or bar.forceShow ) then
-			bar.TextString:Show();
+		if ( self.lockShow > 0 or self.isZero == 1) then
+			self.TextString:Show();
+		elseif ( (self.cvar and GetCVar(self.cvar) == "1" and self.textLockable) or self.forceShow ) then
+			self.TextString:Show();
 		else
-			bar.TextString:Hide();
+			self.TextString:Hide();
 		end
-		TextStatusBar_UpdateTextString(bar);
+		self:UpdateTextString();
 	end
 end
 

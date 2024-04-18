@@ -7,9 +7,14 @@ ALT_POWER_TYPE_PILL				= 3;
 --Counter bar uses a different frame
 ALT_POWER_TYPE_COUNTER			= 4;
 
-DOUBLE_SIZE_FIST_BAR = 199;
+local altPowerBarTextures = {
+	frame = 0,
+	background = 1,
+	fill = 2,
+	spark = 3,
+	flash = 4,
+}
 
-local altPowerBarTextures = { "frame", "background", "fill", "spark", "flash" };
 local TEXTURE_FRAME_INDEX = 1;
 local TEXTURE_NUMBERS_INDEX = 6;
 
@@ -24,8 +29,7 @@ ALT_POWER_BAR_PLAYER_SIZES = {	--Everything else is scaled off of this
 	[ALT_POWER_TYPE_VERTICAL]		= {x = 64, y = 128},
 	[ALT_POWER_TYPE_CIRCULAR]		= {x = 128, y = 128},
 	[ALT_POWER_TYPE_PILL]			= {x = 32, y = 64},	--This is the size of a single pill.
-	[ALT_POWER_TYPE_COUNTER]		= {x = 32, y = 32},
-	doubleCircular					= {x = 256, y = 256}, --Override for task 55676
+	[ALT_POWER_TYPE_COUNTER]			= {x = 32, y = 32},
 }
 
 function UnitPowerBarAlt_Initialize(self, unit, scale, updateAllEvent)
@@ -78,7 +82,7 @@ function UnitPowerBarAlt_OnEvent(self, event, ...)
 			local barInfo = GetUnitPowerBarInfo(self.unit);
 			local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
 			
-			if ( not barInfo or barInfo.barType == ALT_POWER_TYPE_COUNTER ) then
+			if ( not barInfo.barType or barInfo.barType == ALT_POWER_TYPE_COUNTER ) then
 				CounterBar_UpdateCount(self.counterBar, currentPower);
 			else
 				UnitPowerBarAlt_SetPower(self, currentPower);
@@ -87,7 +91,7 @@ function UnitPowerBarAlt_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_MAXPOWER" ) then
 		if ( arg1 == self.unit and arg2 == "ALTERNATE" ) then
 			local barInfo = GetUnitPowerBarInfo(self.unit);
-			if ( not barInfo or barInfo.barType == ALT_POWER_TYPE_COUNTER ) then
+			if ( not barInfo or not barInfo.barType or barInfo.barType == ALT_POWER_TYPE_COUNTER ) then
 				CounterBar_SetUp(self.counterBar);
 				return;
 			end
@@ -106,14 +110,25 @@ function UnitPowerBarAlt_SetUpdateAllEvent(self, event)
 	self:RegisterEvent(event);
 end
 
+local maxPerSecond = 0.7;
+local minPerSecond = 0.3;
 function UnitPowerBarAlt_OnUpdate(self, elapsed)
-	if ( self.barInfo.smooth and  self.value and self.displayedValue and self.value ~= self.displayedValue ) then
-		UnitPowerBarAlt_SetDisplayedPower(self, GetSmoothProgressChange(self.value, self.displayedValue, self.range, elapsed));
+	if ( self.smooth and  self.value and self.displayedValue and self.value ~= self.displayedValue ) then
+		local minPerSecond = max(minPerSecond, 1/self.range);	--Make sure we're moving at least 1 unit/second (will only matter if our maximum power is 3 or less);
+		
+		local diff = self.displayedValue - self.value;
+		local diffRatio = diff / self.range;
+		local change = self.range * ((minPerSecond/abs(diffRatio) + maxPerSecond - minPerSecond) * diffRatio) * elapsed;
+		if ( abs(change) > abs(diff) or abs(diffRatio) < 0.01 ) then
+			UnitPowerBarAlt_SetDisplayedPower(self, self.value);
+		else
+			UnitPowerBarAlt_SetDisplayedPower(self, self.displayedValue - change);
+		end
 	end
 end
 
 function UnitPowerBarAlt_ApplyTextures(frame, unit)
-	for textureIndex, textureName in ipairs(altPowerBarTextures) do
+	for textureName, textureIndex in pairs(altPowerBarTextures) do
 		local texture = frame[textureName];
 		local texturePath, r, g, b = GetUnitPowerBarTextureInfo(unit, textureIndex, frame.timerIndex);
 		texture:SetTexture(texturePath);
@@ -124,7 +139,7 @@ end
 function UnitPowerBarAlt_HideTextures(frame)
 	frame.flashAnim:Stop();
 	frame.flashOutAnim:Stop();
-	for textureIndex, textureName in ipairs(altPowerBarTextures) do
+	for textureName, textureIndex in pairs(altPowerBarTextures) do
 		local texture = frame[textureName];
 		texture:SetTexture(nil);
 		texture:Hide();
@@ -142,29 +157,30 @@ end
 function UnitPowerBarAlt_SetUp(self, barID)
 	barID = barID or UnitPowerBarID(self.unit);
 	self.barInfo = GetUnitPowerBarInfoByID(barID) or { };
-
-	self.statusFrame.showPercentage = self.barInfo.forcePercentage;
-
-	if self.barInfo.sparkUnderFrame then
-		self.spark:SetDrawLayer("ARTWORK", -1);
-	else
-		self.spark:SetDrawLayer("OVERLAY");
-	end
-
+	
+	self.startInset = self.barInfo.startInset;
+	self.endInset = self.barInfo.endInset;
+	self.smooth = self.barInfo.smooth;
+	
 	local barType = self.barInfo.barType;
 	local sizeInfo = ALT_POWER_BAR_PLAYER_SIZES[barType];
-	if ( barID == DOUBLE_SIZE_FIST_BAR and self.scale == 1 ) then --Double the player's own power bar for task 55676
-		sizeInfo = ALT_POWER_BAR_PLAYER_SIZES.doubleCircular;
-	end
-	if ( self.barInfo.anchorTop ) then
-		self.scale = 0.5;
-	end
 	self:SetSize(sizeInfo.x * self.scale, sizeInfo.y * self.scale);
 	
 	UnitPowerBarAlt_HideTextures(self);	--It's up to the SetUp functions to show textures they need.
 	UnitPowerBarAlt_HidePills(self);
 
-	if ( barType == ALT_POWER_TYPE_PILL or barType == ALT_POWER_TYPE_COUNTER ) then
+	if(self.isPlayerBar) then
+		self:SetParent(UIParent);
+		if(barInfo and barInfo.anchorTop) then
+			self:ClearAllPoints();
+			self:SetPoint("TOP", 0, -30);
+		else
+			self:ClearAllPoints();
+			self:SetPoint("CENTER", 0, -180);
+		end
+	end
+
+	if ( barType == ALT_POWER_TYPE_PILL ) then
 		self.statusFrame:Hide();
 		self.statusFrame.enabled = false;
 	else
@@ -199,8 +215,8 @@ function UnitPowerBarAlt_SetUp(self, barID)
 		self.flash:SetBlendMode("ADD");
 	end
 	
-	self:RegisterUnitEvent("UNIT_POWER_UPDATE", self.unit);
-	self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit);
+	self:RegisterEvent("UNIT_POWER_UPDATE");
+	self:RegisterEvent("UNIT_MAXPOWER");
 end
 
 
@@ -214,12 +230,11 @@ function UnitPowerBarAlt_TearDown(self)
 end
 
 function UnitPowerBarAlt_UpdateAll(self)
-	local wasShown = self:IsShown();
 	local barInfo = GetUnitPowerBarInfo(self.unit);
-	if ( barInfo and (not barInfo.hideFromOthers or self.isPlayerBar) ) then
+	if ( barInfo and barInfo.barType and (not barInfo.hideFromOthers or self.isPlayerBar) ) then
 		UnitPowerBarAlt_TearDown(self);
 		UnitPowerBarAlt_SetUp(self);
-
+		
 		local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
 		if ( barInfo.barType ~= ALT_POWER_TYPE_COUNTER ) then
 			local maxPower = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
@@ -235,14 +250,6 @@ function UnitPowerBarAlt_UpdateAll(self)
 		UnitPowerBarAlt_TearDown(self);
 		self:Hide();
 		self.counterBar:Hide();
-	end
-
-	if wasShown ~= self:IsShown() then
-		-- Update spacing of things like cast bars if needed.
-		local spellbar = self:GetParent().spellbar;
-		if spellbar then
-			spellbar:AdjustPosition();
-		end
 	end
 end
 
@@ -260,12 +267,11 @@ end
 
 function UnitPowerBarAlt_SetPower(self, value, instantUpdate)
 	self.value = value;
-	if ( not self.barInfo.smooth or instantUpdate or not self.displayedValue ) then
+	if ( not self.smooth or instantUpdate or not self.displayedValue ) then
 		UnitPowerBarAlt_SetDisplayedPower(self, value);
 	end
 	
-	local flashValue = self.barInfo.flashAtMinPower and self.barInfo.minPower or self.maxPower;
-	if ( value == flashValue ) then
+	if ( value == self.maxPower ) then
 		if ( instantUpdate ) then
 			self.flash:Show();
 			self.flash:SetAlpha(1);
@@ -326,7 +332,7 @@ function UnitPowerBarAlt_Horizontal_UpdateFill(self)
 		return;
 	end
 	local ratio = self.displayedValue / self.range;
-	local fillAmount = self.barInfo.startInset + ratio * ((1 - self.barInfo.endInset) - self.barInfo.startInset);
+	local fillAmount = self.startInset + ratio * ((1 - self.endInset) - self.startInset);
 	self.fill:SetWidth(max(self:GetWidth() * fillAmount, 1));
 	self.fill:SetTexCoord(0, fillAmount, 0, 1);
 end
@@ -358,7 +364,7 @@ function UnitPowerBarAlt_Vertical_UpdateFill(self)
 		return;
 	end
 	local ratio = self.displayedValue / self.range;
-	local fillAmount = self.barInfo.startInset + ratio * ((1 - self.barInfo.endInset) - self.barInfo.startInset);
+	local fillAmount = self.startInset + ratio * ((1 - self.endInset) - self.startInset);
 	self.fill:SetHeight(max(self:GetHeight() * fillAmount, 1));
 	self.fill:SetTexCoord(0, 1, 1 - fillAmount, 1);
 end
@@ -481,7 +487,7 @@ end
 function UnitPowerBarAltStatus_UpdateText(self)
 	local powerBar = self:GetParent();
 	if ( powerBar.displayedValue and self:IsShown() ) then
-		self:UpdateTextStringWithValues(self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
+		TextStatusBar_UpdateTextStringWithValues(self, self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
 	end
 end
 
@@ -491,6 +497,8 @@ function UnitPowerBarAltStatus_OnEvent(self, event, ...)
 	local doUpdate = false;
 	if ( self.cvar and cvar == self.cvarLabel ) then
 		UnitPowerBarAltStatus_ToggleFrame(self);
+	elseif ( cvar == "STATUS_TEXT_PERCENT" ) then
+		UnitPowerBarAltStatus_UpdateText(self);
 	end
 end
 
@@ -504,42 +512,6 @@ function UnitPowerBarAltStatus_ToggleFrame(self)
 	end
 end
 
-EncounterBarMixin = {};
-
-function EncounterBarMixin:HasContentShowing()
-	return PlayerPowerBarAlt:IsShown() or UIWidgetPowerBarContainerFrame:HasAnyWidgetsShowing();
-end
-
-PlayerPowerBarAltMixin = {};
-
-function PlayerPowerBarAltMixin:OnLoad()
-	self.isPlayerBar = true;
-	UnitPowerBarAlt_Initialize(self, "player", 1);
-end
-
-function PlayerPowerBarAltMixin:SetupPlayerPowerBarPosition()
-	local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
-	if(barInfo and barInfo.anchorTop) then
-		self:SetParent(UIParent);
-		self:ClearAllPoints();
-		self:SetPoint("TOP", 0, -30);
-		return;
-	end
-
-	self:SetParent(EncounterBar);
-	EncounterBar:Layout();
-	if EncounterBar:IsInDefaultPosition() then
-		UIParent_ManageFramePositions();
-	end
-end
-
-function PlayerPowerBarAltMixin:OnShow()
-	self:SetupPlayerPowerBarPosition();
-end
-
-function PlayerPowerBarAltMixin:OnHide()
-	self:SetupPlayerPowerBarPosition();
-end
 
 ---------------------------------
 ------- Counter Bar Code --------
@@ -556,17 +528,17 @@ local COUNTERBAR_SLASH_INDEX = 10;
 
 
 function CounterBar_SetUp(self)
+	local barInfo = GetUnitPowerBarInfo(self.unit);
+	local useFractional = barInfo and barInfo.fractionalCounter;
+	local animNumbers = barInfo and barInfo.animateNumbers;
+
 	local maxValue = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
-	CounterBar_SetStyleForUnit(self, unit, maxValue);
+	CounterBar_SetStyle(self, useFractional, animNumbers, maxValue);
 	self:RegisterEvent("UNIT_POWER_UPDATE");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:Show();
 end
 
-function CounterBar_SetStyleForUnit(self, unit, maxValue)
-	local barInfo = GetUnitPowerBarInfo(self.unit);
-	CounterBar_SetStyle(self, barInfo and barInfo.fractionalCounter, barInfo and barInfo.animateNumbers, maxValue);
-end
 
 function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 	
@@ -584,7 +556,7 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 	
 	
 	texturePath, r, g, b = GetUnitPowerBarTextureInfo(self.unit, TEXTURE_FRAME_INDEX, self.timerIndex);
-	self.BG:SetTexture(texturePath, true, true);
+	self.BG:SetTexture(texturePath, true, false);
 	self.BG:SetVertexColor(r, g, b);
 	self.BGL:SetTexture(texturePath);
 	self.BGL:SetVertexColor(r, g, b);
@@ -607,7 +579,7 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 			if digit == COUNTERBAR_LEADING_ZERO_INDEX then
 				digit = COUNTERBAR_SLASH_INDEX;
 			end
-			local l,r,t,b = CounterBar_GetNumberCoord(digit);
+			l,r,t,b = CounterBar_GetNumberCoord(digit);
 			digitFrame.number:SetTexCoord(l,r,t,b);
 			digitFrame.numberMask:Hide();
 		end
@@ -623,9 +595,6 @@ function CounterBar_SetStyle(self, useFractional, animNumbers, maxValue)
 	self.maxValue = maxValue;
 	self.fractional = useFractional;
 	self.startIndex = startIndex;
-
-	UIParent_ManageFramePositions();
-
 	CounterBar_SetNumbers(self);
 end
 
@@ -641,7 +610,6 @@ end
 
 
 function CounterBar_GetDigit(count, isFirstDigit)
-	local digit;
 	if count > 0 or isFirstDigit then
 		digit = mod(count, 10);
 	else
@@ -828,10 +796,13 @@ function PlayerBuffTimerManager_UpdateTimers(self)
 	while ( barID ) do
 		if ( not PlayerBuffTimers[auraID] ) then -- this timer is new. add it
 			local barInfo = GetUnitPowerBarInfo(barID);
+			local useFractional = barInfo and barInfo.fractionalCounter;
+			local animNumbers = barInfo and barInfo.animateNumbers;
+
 			local timer = PlayerBuffTimerManager_GetTimer(barInfo and barInfo.barType);
 			timer.timerIndex = index;
 			if ( timer.isCounter ) then
-				CounterBar_SetStyleForUnit(timer, "player", duration);
+				CounterBar_SetStyle(timer, useFractional, animNumbers, duration);
 			else
 				UnitPowerBarAlt_TearDown(timer);
 				UnitPowerBarAlt_SetUp(timer, barID);

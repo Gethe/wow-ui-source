@@ -646,9 +646,21 @@
 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
-							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
+							<Anchor point="CENTER" relativeKey="$parent.RotateButtonContainer" relativePoint="CENTER" x="18"/>
 						</Anchors>
 					</CheckButton>
+					<CheckButton parentKey="ToggleMountSpecial" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+						<KeyValues>
+							<KeyValue key="textString" value="PERKS_PROGRAM_MOUNT_SPECIAL_ANIM" type="global"/>
+							<KeyValue key="perksProgramOnClickMethod" value="SetMountSpecialPreviewOnClick" type="string"/>
+							<KeyValue key="perksProgramOnShowMethod" value="GetMountSpecialPreviewSetting" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
+							<Anchor point="LEFT" relativeKey="$parent.TogglePlayerPreview.Text" relativePoint="RIGHT" x="18"/>
+						</Anchors>
+					</CheckButton>
+					
 					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_HIDE_ARMOR" type="global"/>
@@ -658,6 +670,17 @@
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
 							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="ToggleAttackAnimation" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+						<KeyValues>
+								<KeyValue key="textString" value="PERKS_PROGRAM_PLAY_ATTACK_ANIM" type="global"/>
+								<KeyValue key="perksProgramOnClickMethod" value="PlayerSetAttackAnimationOnClick" type="string"/>
+								<KeyValue key="perksProgramOnShowMethod" value="GetAttackAnimationSetting" type="string"/>
+						</KeyValues>
+						<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.RotateButtonContainer" relativePoint="TOP" y="10"/>
+								<Anchor point="LEFT" relativeKey="$parent.ToggleHideArmor.Text" relativePoint="RIGHT" x="18"/>
 						</Anchors>
 					</CheckButton>
 					<Frame parentKey="PurchasedHistoryFrame" hidden="true" >

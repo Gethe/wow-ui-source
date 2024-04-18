@@ -807,7 +807,7 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.04"/>
 				</Texture>
-				<Texture parentKey="ApplicationBG" atlas="groupfinder-highlightbar-green" alphaMode="ADD">
+				<Texture parentKey="BackgroundTexture" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>
 						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
@@ -840,14 +840,6 @@
 						<Anchor point="RIGHT" relativeKey="$parent.ExpirationTime" relativePoint="LEFT" x="-3" y="-1"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Selected" atlas="groupfinder-highlightbar-yellow" alphaMode="ADD" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" atlas="groupfinder-highlightbar-blue" alphaMode="ADD">
