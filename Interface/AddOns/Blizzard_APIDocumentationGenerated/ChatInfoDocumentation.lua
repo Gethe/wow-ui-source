@@ -146,6 +146,15 @@ local ChatInfo =
 			},
 		},
 		{
+			Name = "GetNumReservedChatWindows",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numReserved", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRegisteredAddonMessagePrefixes",
 			Type = "Function",
 
@@ -2175,8 +2184,8 @@ local ChatInfo =
 			Fields =
 			{
 				{ Name = "Success", Type = "RegisterAddonMessagePrefixResult", EnumValue = 0 },
-				{ Name = "InvalidPrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 1 },
-				{ Name = "DuplicatePrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 2 },
+				{ Name = "DuplicatePrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 1 },
+				{ Name = "InvalidPrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 2 },
 				{ Name = "MaxPrefixes", Type = "RegisterAddonMessagePrefixResult", EnumValue = 3 },
 			},
 		},

@@ -14,7 +14,7 @@ CommunitiesUtil.lua
 AnimationSystem.lua
 CurrencyContainer.lua
 Classic\ArenaUtil.lua
-TransmogUtil.lua
+Classic\TransmogUtil.lua
 DifficultyUtil.lua
 AdventureGuideUtil.lua
 ItemUtil.lua

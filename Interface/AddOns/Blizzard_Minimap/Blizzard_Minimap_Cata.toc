@@ -4,7 +4,7 @@
 ## Dependencies: Blizzard_UIParent, Blizzard_GameTooltip
 ## AllowLoad: game
 ## AllowLoadGameType: cata
-Wrath\Minimap.lua
+Cata\Minimap.lua
 Wrath\Minimap.xml
 Wrath\GameTime.lua
 Classic\GameTime_Shared.lua

@@ -322,6 +322,11 @@ local PvpInfo =
 			LiteralName = "PVP_REWARDS_UPDATE",
 		},
 		{
+			Name = "PvpRoleUpdate",
+			Type = "Event",
+			LiteralName = "PVP_ROLE_UPDATE",
+		},
+		{
 			Name = "PvpTypesEnabled",
 			Type = "Event",
 			LiteralName = "PVP_TYPES_ENABLED",

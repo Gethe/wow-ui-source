@@ -38,6 +38,20 @@ local ItemConstants_Classic =
 			},
 		},
 		{
+			Name = "ScalingArmorType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Cloth", Type = "ScalingArmorType", EnumValue = 0 },
+				{ Name = "Leather", Type = "ScalingArmorType", EnumValue = 1 },
+				{ Name = "Mail", Type = "ScalingArmorType", EnumValue = 2 },
+				{ Name = "Plate", Type = "ScalingArmorType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "InventoryConstants",
 			Type = "Constants",
 			Values =

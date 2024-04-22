@@ -4,7 +4,7 @@
 		<Scripts>
 			<OnClick>
 				CollectionsJournal_SetTab(self:GetParent(), self:GetID());
-				PlaySound(SOUNDKIT.UI_TOYBOX_TABS);
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 			</OnClick>
 		</Scripts>
 	</Button>

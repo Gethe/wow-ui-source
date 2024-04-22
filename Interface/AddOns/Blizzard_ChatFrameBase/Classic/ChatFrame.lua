@@ -2392,6 +2392,22 @@ SlashCmdList["EQUIP_SET"] = function(msg)
 	end
 end
 
+SlashCmdList["WORLD_MARKER"] = function(msg)
+	local marker, target = SecureCmdOptionParse(msg);
+	if ( tonumber(marker) ) then
+		PlaceRaidMarker(tonumber(marker), target);
+	end
+end
+
+SlashCmdList["CLEAR_WORLD_MARKER"] = function(msg)
+	local marker = SecureCmdOptionParse(msg);
+	if ( tonumber(marker) ) then
+		ClearRaidMarker(tonumber(marker));
+	elseif ( type(marker) == "string" and strtrim(strlower(marker)) == strlower(ALL) ) then
+		ClearRaidMarker(nil);	--Clear all world markers.
+	end
+end
+
 -- easier method to turn on/off errors for macros
 SlashCmdList["UI_ERRORS_OFF"] = function(msg)
 	UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE");
@@ -4076,7 +4092,12 @@ function ChatFrame_DisplayLevelUp(self, level, ...)
 	-- Blank arg is numNewPvpTalentSlots (always 0 in Classic).
 	local arg2, arg3, arg4, _, arg5, arg6, arg7, arg8, arg9 = ...;
 
-	local string = LEVEL_UP:format(level);
+	local string
+	if (LevelUpDisplay) then
+		string = LEVEL_UP:format(level, level);
+	else
+		string = LEVEL_UP:format(level);
+	end
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 
 	if ( arg3 > 0 ) then

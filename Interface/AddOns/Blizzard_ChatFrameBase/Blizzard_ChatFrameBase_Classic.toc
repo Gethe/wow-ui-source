@@ -12,5 +12,6 @@ Classic\ChatFrame.xml
 Shared\ChatAlertFrameMixin.lua
 Classic\ChannelFrameButtonMixin.lua
 Classic\FriendFrameButtonMixin.lua
+Shared\FloatingChatFrame.lua
 Classic\FloatingChatFrame.lua
 Classic\FloatingChatFrame.xml

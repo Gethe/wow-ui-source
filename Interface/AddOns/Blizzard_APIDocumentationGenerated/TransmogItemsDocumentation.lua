@@ -221,6 +221,7 @@ local TransmogItems =
 				{ Name = "canHaveIllusions", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canMainHand", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canOffHand", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canRanged", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -726,6 +727,7 @@ local TransmogItems =
 				{ Name = "canHaveIllusions", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canMainHand", Type = "bool", Nilable = false, Default = false },
 				{ Name = "canOffHand", Type = "bool", Nilable = false, Default = false },
+				{ Name = "canRanged", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
