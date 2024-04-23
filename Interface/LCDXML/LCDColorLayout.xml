@@ -1,0 +1,1115 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+<!-- ENGLISH -->
+	<Screen name="WoWTitleScreen" BGColor="0,44,8">
+		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\LegionLogo.BLP" miplevel="0" alpha="1">
+			<Origin x="0" y="40"/>
+			<Size x="320" y="750" />
+		</LCDBitmap>
+		<!--<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\PaperDoll\UI-PaperDoll-SlotBackground.blp" miplevel="0">
+			<Origin x="-155" y="-65"/>
+			<Size x="595" y="512" />
+		</LCDBitmap>-->
+	</Screen>
+	<Screen name="PlayerInfoScreen" BGColor="0,0,0">
+		<!--Interface\BattlefieldFrame\UI-BattlefieldMinimap-Border.blp-->
+	<!--Interface\FullScreenTextures\OutOfControl.blp-->
+		<LCDBitmap name="playerInfoBG" id="0" type="texture" data="Interface\BattlefieldFrame\UI-BattlefieldMinimap-Border.blp" miplevel="0">
+			<Origin x="-10" y="-10"/>
+			<Size x="355" y="385" />
+		</LCDBitmap>
+		<!-- DO NOT MODIFY ID!!! -->
+		<LCDText name="STRENGTH" text="STRENGTH_COLON" id="2">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
+			<Origin x="10" y="10" />
+		</LCDText>
+		<LCDText name="STRENGTH_FLD" id="3">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="STRENGTH" x="95" y="0" />
+		</LCDText>
+		<LCDText name="AGILITY" text="AGILITY_COLON" id="4">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
+			<RelOrigin RelTo="STRENGTH" x="0" y="16" />
+		</LCDText>
+		<LCDText name="AGILITY_FLD" id="5">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="STRENGTH_FLD" x="0" y="16" />
+		</LCDText>
+		<LCDText name="STAMINA" text="STAMINA_COLON" id="6">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
+			<RelOrigin RelTo="AGILITY" x="0" y="16" />
+		</LCDText>
+		<LCDText name="STAMINA_FLD" id="7">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="AGILITY_FLD" x="0" y="16" />
+		</LCDText>
+		<LCDText name="INTELLECT" text="INTELLECT_COLON" id="8">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
+			<RelOrigin RelTo="STAMINA" x="0" y="16" />
+		</LCDText>
+		<LCDText name="INTELLECT_FLD" id="9">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="STAMINA_FLD" x="0" y="16" />
+		</LCDText>
+		<LCDText name="MASTERY" text="STAT_MASTERY" id="12">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
+			<RelOrigin RelTo="INTELLECT" x="0" y="16" />
+		</LCDText>
+		<LCDText name="MASTERY_FLD" id="13">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="INTELLECT_FLD" x="0" y="16" />
+		</LCDText>
+		<LCDSubscreen name="Melee" id="0">
+			<LCDText name="DAMAGE" text="DAMAGE" id="14">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="STRENGTH" x="150" y="0" />
+			</LCDText>
+			<LCDText name="DAMAGE_FLD" id="15">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
+				<RelOrigin RelTo="DAMAGE" x="67" y="0" />
+			</LCDText>
+      <LCDText name="POWER" text="ATTACK_POWER" id="56">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+        <RelOrigin RelTo="DAMAGE" x="0" y="16" />
+      </LCDText>
+      <LCDText name="POWER_FLD" id="11">
+        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
+        <RelOrigin RelTo="DAMAGE_FLD" x="0" y="16" />
+      </LCDText>
+			<LCDText name="HASTE" text="STAT_HASTE" id="55">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="POWER" x="0" y="16" />
+			</LCDText>
+			<LCDText name="HASTE_FLD" id="11">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
+				<RelOrigin RelTo="POWER_FLD" x="0" y="16" />
+			</LCDText>
+			<LCDText name="CRIT" text="MELEE_CRIT_CHANCE" id="58">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="HASTE" x="0" y="16" />
+			</LCDText>
+			<LCDText name="CRIT_FLD" id="11">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="85" Wrap="false"/>
+				<RelOrigin RelTo="HASTE_FLD" x="0" y="16" />
+			</LCDText>
+		</LCDSubscreen>
+		<LCDSubscreen name="Defense" id="1">
+			<LCDText name="ARMOR2" text="ARMOR" id="12">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="STRENGTH" x="150" y="0" />
+			</LCDText>
+			<LCDText name="ARMOR2_FLD" id="13">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+				<RelOrigin RelTo="ARMOR2" x="90" y="0" />
+			</LCDText>
+			<LCDText name="DODGE" text="STAT_DODGE" id="45">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="ARMOR2" x="0" y="16" />
+			</LCDText>
+			<LCDText name="DODGE_FLD" id="11">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+				<RelOrigin RelTo="ARMOR2_FLD" x="0" y="16" />
+			</LCDText>
+			<LCDText name="PARRY" text="STAT_PARRY" id="46">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="DODGE" x="0" y="16" />
+			</LCDText>
+			<LCDText name="PARRY_FLD" id="11">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+				<RelOrigin RelTo="DODGE_FLD" x="0" y="16" />
+			</LCDText>
+			<LCDText name="BLOCK" text="STAT_BLOCK" id="47">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="PARRY" x="0" y="16" />
+			</LCDText>
+			<LCDText name="BLOCK_FLD" id="11">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+				<RelOrigin RelTo="PARRY_FLD" x="0" y="16" />
+			</LCDText>
+		</LCDSubscreen>
+		<LCDSubscreen name="Spell" id="2">
+			<LCDText name="SPELL_POWER" text="STAT_SPELLPOWER">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
+				<RelOrigin RelTo="STRENGTH" x="150" y="0" />
+			</LCDText>
+			<LCDText name="SPELL_POWER_FLD">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+				<RelOrigin RelTo="SPELL_POWER" x="90" y="0" />
+			</LCDText>
+      <LCDText name="SPELL_HASTE" text="STAT_HASTE">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
+        <RelOrigin RelTo="SPELL_POWER" x="0" y="16" />
+      </LCDText>
+      <LCDText name="SPELL_HASTE_FLD">
+        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+        <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="16" />
+      </LCDText>
+      <LCDText name="MANA_REGEN" text="MANA_REGEN" id="54">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
+        <RelOrigin RelTo="SPELL_HASTE" x="0" y="16" />
+      </LCDText>
+      <LCDText name="MANA_REGEN_FLD" text="HIT_LCD">
+        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+        <RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="16" />
+      </LCDText>
+			<LCDText name="SPELL_CRIT" text="MELEE_CRIT_CHANCE">
+				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
+				<RelOrigin RelTo="MANA_REGEN" x="0" y="16" />
+			</LCDText>
+			<LCDText name="SPELL_CRIT_FLD">
+				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+				<RelOrigin RelTo="MANA_REGEN_FLD" x="0" y="16" />
+			</LCDText>
+			
+		</LCDSubscreen>
+		<LCDText name="BAG" text="BAGSLOTTEXT">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
+			<Origin x="10" y="130" />
+		</LCDText>
+		<LCDText name="BAG_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="30" Wrap="false"/>
+			<RelOrigin RelTo="BAG" x="110" y="0" />
+		</LCDText>
+		<LCDText name="DURABILITY" text="DURABILITY" id="41">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="85" Wrap="false"/>
+			<RelOrigin RelTo="BAG" x="0" y="16" />
+		</LCDText>
+		<LCDText name="DURABILITY_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="30" Wrap="false"/>
+			<RelOrigin RelTo="BAG_FLD" x="0" y="16" />
+		</LCDText>
+	</Screen>
+	<Screen name="BattlefieldAlertScreen">
+		<LCDBitmap name="ALLIANCELOGO2" id="0" type="texture" data="Interface\PvPRankBadges\PvPRankAlliance.blp" miplevel="0">
+			<Origin x="0" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="SWORDLOGO2" id="0" type="texture" data="Interface\WorldStateFrame\CombatSwords.blp" miplevel="0">
+			<Origin x="128" y="32"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="HORDELOGO2" id="0" type="texture" data="Interface\PvPRankBadges\PvPRankHorde.blp" miplevel="0">
+			<Origin x="192" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT_LCD" id="22">
+			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="320" Wrap="true"/>
+			<Origin x="0" y="140" />
+			<Size x="320" y="230"/>
+		</LCDText>
+	</Screen>
+	<Screen name="BattlefieldStatusScreen">
+		<LCDBitmap name="PVPBG" id="0" type="texture" data="Interface\PetPaperDollFrame\UI-PetFrame-Frame.blp" miplevel="0">
+			<Origin x="0" y="0"/>
+			<Size x="512" y="256" />
+		</LCDBitmap>
+		<LCDText name="BF_KILLBLOWS" text="KILLING_BLOWS">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110"/>
+			<Origin x="18" y="18"/>
+		</LCDText>
+		<LCDText name="BF_KILLBLOWS_FLD" text="0">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="30"/>
+			<RelOrigin RelTo="BF_KILLBLOWS" x="135" y="0"/>
+		</LCDText>
+		<LCDText name="BF_DEATHS" text="DEATHS">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110"/>
+			<RelOrigin RelTo="BF_KILLBLOWS" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_DEATHS_FLD" text="0">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="30"/>
+			<RelOrigin RelTo="BF_KILLBLOWS_FLD" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_HONOR_KILLS" text="HONORABLE_KILLS">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="130"/>
+			<RelOrigin RelTo="BF_DEATHS" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_HONOR_KILLS_FLD" text="0">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="30"/>
+			<RelOrigin RelTo="BF_DEATHS_FLD" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_TIME" text="MINS_ABBR">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="85"/>
+			<RelOrigin RelTo="BF_KILLBLOWS_FLD" x="30" y="0"/>
+		</LCDText>
+		<LCDText name="BF_TIME_FLD" text="0">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40"/>
+			<RelOrigin RelTo="BF_TIME" x="70" y="0"/>
+		</LCDText>
+		<LCDText name="BF_ALLIANCE" text="FACTION_ALLIANCE">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="70"/>
+			<RelOrigin RelTo="BF_TIME" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_ALLIANCE_FLD" text="">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40"/>
+			<RelOrigin RelTo="BF_TIME_FLD" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_HORDE" text="FACTION_HORDE">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="70"/>
+			<RelOrigin RelTo="BF_ALLIANCE" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_HORDE_FLD" text="">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40"/>
+			<RelOrigin RelTo="BF_ALLIANCE_FLD" x="0" y="16"/>
+		</LCDText>
+		<!--<LCDText name="BF_BALANCE" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="40"/>
+			<RelOrigin RelTo="BF_TIME" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_BALANCE_FLD" text="0 / 0">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40"/>
+			<RelOrigin RelTo="BF_TIME_FLD" x="0" y="16"/>
+		</LCDText>-->
+		<LCDText name="BF_DAMAGE" text="SCORE_DAMAGE_DONE">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="150"/>
+			<RelOrigin RelTo="BF_HONOR_KILLS" x="0" y="23"/>
+		</LCDText>
+		<LCDText name="BF_DAMAGE_FLD" text="2987453">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="70"/>
+			<RelOrigin RelTo="BF_DAMAGE" x="0" y="16"/>
+		</LCDText>
+		<LCDText name="BF_HEALING" text="SCORE_HEALING_DONE">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="130"/>
+			<RelOrigin RelTo="BF_DAMAGE" x="160" y="0"/>
+		</LCDText>
+		<LCDText name="BF_HEALING_FLD" text="2987453">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="70"/>
+			<RelOrigin RelTo="BF_HEALING" x="0" y="16"/>
+		</LCDText>
+	</Screen>
+	<Screen name="NotInBattlefieldScreen" BGColor="0,0,0">
+		<LCDBitmap name="ALLIANCELOGO" id="0" type="texture" data="Interface\PvPRankBadges\PvPRankAlliance.blp" miplevel="0">
+			<Origin x="0" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="SWORDLOGO" id="0" type="texture" data="Interface\WorldStateFrame\CombatSwords.blp" miplevel="0">
+			<Origin x="128" y="32"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="HORDELOGO" id="0" type="texture" data="Interface\PvPRankBadges\PvPRankHorde.blp" miplevel="0">
+			<Origin x="192" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		
+		<LCDText name="BF_NOT_IN" text="BF_NOT_IN">
+			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="320" Wrap="true"/>
+			<Origin x="0" y="140" />
+			<Size x="320" y="230" />
+		</LCDText>
+	</Screen>
+	<Screen name="WaitQueueScreen" BGColor="24,64,88">
+		<LCDBitmap name="WOWTITLEBG2" id="0" type="texture" data="Interface\GLUES\COMMON\Glues-WOW-WoltkLogo.blp" miplevel="1">
+			<Origin x="0" y="0"/>
+			<Size x="320" y="160" />
+		</LCDBitmap>
+		<LCDText name="WAIT_QUEUE" text="QUEUE_TIME_LEFT_UNKNOWN" id="35">
+			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="320" Wrap="true"/>
+			<Origin x="0" y="160" />
+			<Size x="320" y="150" />
+		</LCDText>
+	</Screen>
+	<Screen name="ChatAlertScreen" BGColor="50,50,50">
+		   <LCDBitmap name="ChatFrameBorder" id="0" type="texture" data="Interface\BattlefieldFrame\UI-BattlefieldMinimap-Border.blp" miplevel="0">
+			<Origin x="-10" y="15"/>
+			<Size x="355" y="355" />
+		</LCDBitmap>
+		<LCDBitmap name="ChatFrameTab" id="0" type="texture" data="Interface\CHATFRAME\ChatFrameTab.blp" miplevel="0">
+			<Origin x="10" y="-10"/>
+			<Size x="80" y="40" />
+		</LCDBitmap>
+		<LCDText name="CHAT_LABEL" text="Chat">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="40"/>
+			<RelOrigin RelTo="ChatFrameTab" x="10" y="20" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_1" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<Origin x="10" y="210" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_2" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_1" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_3" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_2" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_4" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_3" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_5" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_4" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_6" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_5" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_7" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_6" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_8" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_7" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_9" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_8" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_10" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_9" x="0" y="-17" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_11" text="">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="300"/>
+			<RelOrigin RelTo="CHAT_ALERT_10" x="0" y="-17" />
+		</LCDText>
+	</Screen>
+	<Screen name="ArathiBasinMapScreen">
+		<LCDMap>
+			<Size x="501" y="334"/>
+			<Offset x="-78" y="-15"/>
+		</LCDMap>
+		<LCDBitmap name="ArathiBasin1" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin1.blp" miplevel="1">
+			<Origin x="-78" y="-15"/>
+			<!--<Origin x="0" y="0"/>-->
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin2" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin2.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin1" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin3" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin3.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin2" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin4" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin4.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin3" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin5" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin5.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin1" x="0" y="128"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin6" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin6.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin5" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin7" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin7.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin6" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="ArathiBasin8" type="texture" data="Interface\WORLDMAP\ArathiBasin\ArathiBasin8.blp" miplevel="1">
+			<RelOrigin RelTo="ArathiBasin7" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<!--<LCDBitmap name="StablesNeutral" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0">
+			<TexCoord x="64" y="32" width="16" height="16"/>
+			<POIData ID=""
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="StablesAllianceCapturing" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0">
+			<TexCoord x="80" y="32" width="16" height="16"/>
+			<Origin x="16" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="StablesAllianceCaptured" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0">
+			<TexCoord x="96" y="32" width="16" height="16"/>
+			<Origin x="32" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="StablesHordeCapturing" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0">
+			<TexCoord x="112" y="32" width="16" height="16"/>
+			<Origin x="48" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="StablesHordeCaptured" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0">
+			<TexCoord x="128" y="32" width="16" height="16"/>
+			<Origin x="64" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>-->
+	</Screen>
+	<Screen name="WarsongMapScreen">
+		<LCDMap>
+			<Size x="501" y="250"/>
+			<Offset x="-78" y="-5"/>
+		</LCDMap>
+		<LCDBitmap name="Warsong1" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch1.blp" miplevel="1">
+			<Origin x="-78" y="-5"/>
+			<!--<Origin x="0" y="0"/>-->
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong2" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch2.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong1" x="128" y="0"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong3" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch3.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong2" x="128" y="0"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong4" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch4.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong3" x="128" y="0"/>
+			<Size x="117" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong5" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch5.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong1" x="0" y="96"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong6" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch6.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong5" x="128" y="0"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong7" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch7.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong6" x="128" y="0"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong8" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch8.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong7" x="128" y="0"/>
+			<Size x="117" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong9" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch9.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong5" x="0" y="96"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong10" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch10.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong9" x="128" y="0"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong11" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch11.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong10" x="128" y="0"/>
+			<Size x="128" y="96" />
+		</LCDBitmap>
+		<LCDBitmap name="Warsong12" type="texture" data="Interface\WORLDMAP\WarsongGulch\WarsongGulch12.blp" miplevel="1">
+			<RelOrigin RelTo="Warsong11" x="128" y="0"/>
+			<Size x="117" y="96" />
+		</LCDBitmap>
+		
+	</Screen>
+	<Screen name="EyeOfTheStormMapScreen">
+		<LCDMap>
+			<Size x="501" y="334"/>
+			<Offset x="-78" y="-45"/>
+		</LCDMap>
+		<LCDBitmap name="EyeOfTheStorm1" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena1.blp" miplevel="1">
+			<Origin x="-78" y="-45"/>
+			<!--<Origin x="0" y="0"/>-->
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm2" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena2.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm1" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm3" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena3.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm2" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm4" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena4.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm3" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm5" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena5.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm1" x="0" y="128"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm6" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena6.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm5" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm7" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena7.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm6" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm8" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena8.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm7" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm9" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena9.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm5" x="0" y="128"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm10" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena10.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm9" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm11" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena11.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm10" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+		<LCDBitmap name="EyeOfTheStorm12" type="texture" data="Interface\WORLDMAP\NetherstormArena\NetherstormArena12.blp" miplevel="1">
+			<RelOrigin RelTo="EyeOfTheStorm11" x="128" y="0"/>
+			<Size x="128" y="128" />
+		</LCDBitmap>
+	</Screen>
+	<Screen name="StrandOfTheAncientsMapScreen">
+		<LCDMap>
+			<Size x="501" y="301"/>
+			<Offset x="-78" y="-60"/>
+		</LCDMap>
+		<LCDBitmap name="StrandoftheAncients1" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients1.blp" miplevel="1">
+			<Origin x="-78" y="-60"/>
+			<!--<Origin x="0" y="0"/>-->
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients2" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients2.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients1" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients3" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients3.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients2" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients4" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients4.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients3" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients5" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients5.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients1" x="0" y="115"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients6" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients6.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients5" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients7" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients7.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients6" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients8" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients8.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients7" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients9" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients9.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients5" x="0" y="115"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients10" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients10.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients9" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients11" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients11.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients10" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+		<LCDBitmap name="StrandoftheAncients12" type="texture" data="Interface\WORLDMAP\StrandoftheAncients\StrandoftheAncients12.blp" miplevel="1">
+			<RelOrigin RelTo="StrandoftheAncients11" x="128" y="0"/>
+			<Size x="128" y="115" />
+		</LCDBitmap>
+	</Screen>
+	<Screen name="AlteracValleyMapScreen">
+		<LCDMap>
+			<Size x="501" y="267"/>
+			<Offset x="-78" y="-10"/>
+		</LCDMap>
+		<LCDBitmap name="AlteracValley1" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley1.blp" miplevel="1">
+			<Origin x="-78" y="-10"/>
+			<!--<Origin x="0" y="0"/>-->
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley2" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley2.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley1" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley3" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley3.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley2" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley4" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley4.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley3" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley5" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley5.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley1" x="0" y="102"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley6" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley6.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley5" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley7" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley7.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley6" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley8" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley8.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley7" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley9" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley9.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley5" x="0" y="102"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley10" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley10.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley9" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley11" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley11.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley10" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+		<LCDBitmap name="AlteracValley12" type="texture" data="Interface\WORLDMAP\AlteracValley\AlteracValley12.blp" miplevel="1">
+			<RelOrigin RelTo="AlteracValley11" x="128" y="0"/>
+			<Size x="128" y="102" />
+		</LCDBitmap>
+	</Screen>
+  <Screen name="IsleOfConquestMapScreen">
+		<LCDMap>
+			<Size x="561" y="311"/>
+			<Offset x="-115" y="-45"/>
+		</LCDMap>
+		<LCDBitmap name="IsleofConquest1" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest1.blp" miplevel="1">
+			<Origin x="-115" y="-45"/>
+			<!--<Origin x="0" y="0"/>-->
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest2" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest2.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest1" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest3" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest3.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest2" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest4" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest4.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest3" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest5" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest5.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest1" x="0" y="120"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest6" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest6.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest5" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest7" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest7.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest6" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest8" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest8.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest7" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest9" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest9.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest5" x="0" y="120"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest10" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest10.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest9" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest11" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest11.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest10" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+		<LCDBitmap name="IsleofConquest12" type="texture" data="Interface\WORLDMAP\Isleofconquest\IsleofConquest12.blp" miplevel="1">
+			<RelOrigin RelTo="IsleofConquest11" x="144" y="0"/>
+			<Size x="144" y="120" />
+		</LCDBitmap>
+	</Screen>
+  <Screen name="TwinPeaksMapScreen">
+    <LCDMap>
+      <Size x="571" y="296"/>
+      <Offset x="-125" y="-30"/>
+    </LCDMap>
+    <LCDBitmap name="TwinPeaks1" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks1.blp" miplevel="1">
+      <Origin x="-125" y="-30"/>
+      <!--<Origin x="0" y="0"/>-->
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks2" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks2.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks1" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks3" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks3.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks2" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks4" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks4.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks3" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks5" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks5.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks1" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks6" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks6.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks5" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks7" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks7.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks6" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks8" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks8.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks7" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks9" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks9.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks5" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks10" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks10.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks9" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks11" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks11.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks10" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TwinPeaks12" type="texture" data="Interface\WORLDMAP\TwinPeaks\TwinPeaks12.blp" miplevel="1">
+      <RelOrigin RelTo="TwinPeaks11" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+  </Screen>
+  <Screen name="BattleForGilneasMapScreen">
+    <LCDMap>
+      <Size x="571" y="296"/>
+      <Offset x="-125" y="-30"/>
+    </LCDMap>
+    <LCDBitmap name="BattleForGilneas1" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground21.blp" miplevel="1">
+      <Origin x="-125" y="-30"/>
+      <!--<Origin x="0" y="0"/>-->
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas2" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground22.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas1" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas3" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground23.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas2" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas4" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground24.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas3" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas5" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground25.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas1" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas6" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground26.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas5" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas7" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground27.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas6" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas8" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground28.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas7" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas9" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground29.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas5" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas10" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground210.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas9" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas11" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground211.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas10" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="BattleForGilneas12" type="texture" data="Interface\WORLDMAP\GilneasBattleground2\GilneasBattleground212.blp" miplevel="1">
+      <RelOrigin RelTo="BattleForGilneas11" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+  </Screen>
+  <Screen name="SilverShardMinesMapScreen">
+    <LCDMap>
+      <Size x="571" y="296"/>
+      <Offset x="-125" y="-30"/>
+    </LCDMap>
+    <LCDBitmap name="SilverShardMinesMapScreen1" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_1.blp" miplevel="1">
+      <Origin x="-125" y="-30"/>
+      <!--<Origin x="0" y="0"/>-->
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen2" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_2.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen1" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen3" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_3.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen2" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen4" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_4.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen3" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen5" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_5.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen1" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen6" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_6.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen5" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen7" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_7.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen6" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen8" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_8.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen7" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen9" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_9.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen5" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen10" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_10.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen9" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen11" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_11.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen10" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen12" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_12.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen11" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+  </Screen>
+  <Screen name="TempleOfKotmoguMapScreen">
+    <LCDMap>
+      <Size x="571" y="296"/>
+      <Offset x="-115" y="-40"/>
+    </LCDMap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen1" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu1.blp" miplevel="1">
+      <Origin x="-115" y="-40"/>
+      <!--<Origin x="0" y="0"/>-->
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen2" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu2.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen1" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen3" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu3.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen2" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen4" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu4.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen3" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen5" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu5.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen1" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen6" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu6.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen5" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen7" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu7.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen6" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen8" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu8.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen7" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen9" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu9.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen5" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen10" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu10.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen9" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen11" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu11.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen10" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen12" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu12.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen11" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+  </Screen>
+	<Globals>
+		<LCDBitmap name="PartyIcon1" type="texture" data="Interface\WORLDMAP\WorldMapPartyIcon.blp" miplevel="0">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon2" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon3" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon4" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon5" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon6" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon7" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon8" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon9" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon10" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon11" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon12" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon13" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon14" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon15" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon16" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon17" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon18" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon19" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon20" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon21" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon22" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon23" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon24" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon25" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon26" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon27" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon28" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon29" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon30" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon31" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon32" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon33" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon34" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon35" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon36" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon37" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon38" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon39" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PartyIcon40" type="prevTexture" data="">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="PlayerIcon" type="texture" data="Interface\WORLDMAP\WorldMapPlayerIcon.blp" miplevel="0">
+			<Origin x="0" y="0"/>
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="AllianceFlag" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0" icon="43">
+			<Origin x="32" y="0" />
+			<Size x="16" y="16" />
+		</LCDBitmap>
+		<LCDBitmap name="HordeFlag" type="texture" data="Interface\MINIMAP\POIICONS.BLP" miplevel="0" icon="44">
+			<Origin x="48" y="0" />
+			<Size x="16" y="16" />
+		</LCDBitmap>
+	</Globals>
+	<POI>
+		<!-- yay for procedurally generated data!-->
+		<Map id="529" Screen="ArathiBasinMapScreen"/>
+		<Map id="489" Screen="WarsongMapScreen"/>
+		<Map id="566" Screen="EyeOfTheStormMapScreen"/>
+		<Map id="607" Screen="StrandOfTheAncientsMapScreen"/>
+		<Map id="30" Screen="AlteracValleyMapScreen"/>
+    <Map id="628" Screen="IsleOfConquestMapScreen"/>
+    <Map id="726" Screen="TwinPeaksMapScreen"/>
+    <Map id="761" Screen="BattleForGilneasMapScreen"/>
+    <Map id="727" Screen="SilverShardMinesMapScreen"/>
+    <Map id="998" Screen="TempleOfKotmoguMapScreen"/>
+ 	</POI>
+</Ui>

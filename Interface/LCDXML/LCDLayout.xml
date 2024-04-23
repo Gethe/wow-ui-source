@@ -1,0 +1,270 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+<!-- ENGLISH -->
+	<Screen name="WoWTitleScreen">
+		<!-- DO NOT MODIFY ID!!! -->
+		<LCDText name="WOWTITLE" text="WORLD_OF_WARCRAFT" id="1">
+			<Font Size="LG_BIG" Alignment="LG_CENTER" MaxWidth="160" Wrap="false"/>
+			<Origin x="0" y="13" />
+			<Size x="160" y="43" />
+		</LCDText>
+	</Screen>
+	<Screen name="PlayerInfoScreen">
+		<!-- DO NOT MODIFY ID!!! -->
+		<LCDText name="STRENGTH" text="STR_LCD" id="2">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
+			<Origin x="0" y="0" />
+		</LCDText>
+		<LCDText name="STRENGTH_FLD" id="3">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
+			<Origin x="15" y="0" />
+		</LCDText>
+		<LCDText name="AGILITY" text="AGI_LCD" id="4">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
+			<Origin x="0" y="8" />
+		</LCDText>
+		<LCDText name="AGILITY_FLD" id="5">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
+			<Origin x="15" y="8" />
+		</LCDText>
+		<LCDText name="STAMINA" text="STA_LCD" id="6">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
+			<Origin x="0" y="16" />
+		</LCDText>
+		<LCDText name="STAMINA_FLD" id="7">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
+			<Origin x="15" y="16" />
+		</LCDText>
+		<LCDText name="INTELLECT" text="INT_LCD" id="8">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
+			<Origin x="0" y="24" />
+		</LCDText>
+		<LCDText name="INTELLECT_FLD" id="9">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
+			<Origin x="15" y="24" />
+		</LCDText>
+    <LCDSubscreen name="Melee" id="0">
+      <!--<LCDText name="WEAPON_SKILL" text="WEAPON_SKILL" id="43">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="53" Wrap="false"/>
+        <Origin x="40" y="0" />
+      </LCDText>-->
+      <LCDText name="DAMAGE" text="DMG_LCD" id="14">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="23" Wrap="false"/>
+			<Origin x="43" y="0" />
+		</LCDText>
+		<LCDText name="DAMAGE_FLD" id="15">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="45" Wrap="false"/>
+			<RelOrigin RelTo="DAMAGE" x="23" y="0" />
+		</LCDText>
+		<LCDText name="HASTE" text="STAT_HASTE" id="55">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="30" Wrap="false"/>
+			<RelOrigin RelTo="DAMAGE" x="0" y="8" />
+		</LCDText>
+		<LCDText name="HASTE_FLD" id="11">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="DAMAGE_FLD" x="5" y="8" />
+		</LCDText>
+		<LCDText name="POWER" text="ATTACK_POWER" id="56">
+		  <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="HASTE" x="0" y="8" />
+		</LCDText>
+		<LCDText name="POWER_FLD" id="11">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="HASTE_FLD" x="0" y="8" />
+		</LCDText>
+		<LCDText name="CRIT" text="CRIT_ABBR" id="58">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="POWER" x="0" y="8" />
+		</LCDText>
+		<LCDText name="CRIT_FLD" id="11">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="POWER_FLD" x="0" y="8" />
+		</LCDText>
+    </LCDSubscreen>
+    <LCDSubscreen name="Defense" id="1">
+		<LCDText name="ARMOR2" text="ARMOR" id="12">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<Origin x="43" y="0" />
+		</LCDText>
+		<LCDText name="ARMOR2_FLD" id="13">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="ARMOR2" x="28" y="0" />
+		</LCDText>
+		<LCDText name="DODGE" text="DODGE_LCD" id="45">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="ARMOR2" x="0" y="8" />
+		</LCDText>
+		<LCDText name="DODGE_FLD" id="11">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="ARMOR2_FLD" x="0" y="8" />
+		</LCDText>
+		<LCDText name="PARRY" text="PARRY_LCD" id="46">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="DODGE" x="0" y="8" />
+		</LCDText>
+		<LCDText name="PARRY_FLD" id="11">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="DODGE_FLD" x="0" y="8" />
+		</LCDText>
+		<LCDText name="BLOCK" text="BLOCK_LCD" id="47">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="PARRY" x="0" y="8" />
+		</LCDText>
+		<LCDText name="BLOCK_FLD" id="11">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<RelOrigin RelTo="PARRY_FLD" x="0" y="8" />
+		</LCDText>
+    </LCDSubscreen>
+    <LCDSubscreen name="Spell" id="2">
+		<LCDText name="SPELL_POWER" text="ATTACK_POWER" id="49">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="33" Wrap="false"/>
+			<Origin x="43" y="0" />
+		</LCDText>
+		<LCDText name="SPELL_POWER_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_POWER" x="33" y="0" />
+		</LCDText>
+      <LCDText name="SPELL_HASTE" text="SPELL_HASTE_ABBR" id="53">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+        <RelOrigin RelTo="SPELL_POWER" x="0" y="8" />
+    </LCDText>
+    <LCDText name="SPELL_HASTE_FLD">
+      <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+      <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="8" />
+    </LCDText>
+		<LCDText name="SPELL_HIT" text="HIT_LCD" id="51">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_HASTE" x="0" y="8" />
+		</LCDText>
+		<LCDText name="SPELL_HIT_FLD" text="HIT_LCD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="8" />
+		</LCDText>
+		<LCDText name="SPELL_CRIT" text="CRIT_ABBR" id="52">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="28" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_HIT" x="0" y="8" />
+		</LCDText>
+		<LCDText name="SPELL_CRIT_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="8" />
+		</LCDText>
+
+		<LCDText name="MANA_REGEN" text="MANA_REGEN_ABBR" id="54">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="27" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_CRIT" x="0" y="8" />
+		</LCDText>
+		<LCDText name="MANA_REGEN_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
+			<RelOrigin RelTo="SPELL_CRIT_FLD" x="0" y="8" />
+		</LCDText>
+    </LCDSubscreen>
+		<LCDText name="BAG" text="BAGSLOT" id="40">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="23" Wrap="false"/>
+			<RelOrigin RelTo="ARMOR2_FLD" x="44" y="0" />
+		</LCDText>
+		<LCDText name="BAG_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>
+			<RelOrigin RelTo="BAG" x="24" y="0" />
+		</LCDText>
+		<LCDText name="DURABILITY" text="DURABILITY_ABBR" id="41">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="23" Wrap="false"/>
+			<RelOrigin RelTo="BAG" x="0" y="8" />
+		</LCDText>
+		<LCDText name="DURABILITY_FLD">
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="20" Wrap="false"/>
+			<RelOrigin RelTo="BAG_FLD" x="0" y="8" />
+		</LCDText>
+	</Screen>
+	<Screen name="BattlefieldAlertScreen">
+		<LCDBitmap name="BATTLEFIELD_SWORD" data="IDB_LCD_SWORD" id="21">
+			<Origin x="0" y="0"/>
+			<Size x="30" y="43"/>
+		</LCDBitmap>
+		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT_LCD" id="22">
+			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="160" Wrap="true"/>
+			<Origin x="20" y="0" />
+			<Size x="140" y="43"/>
+		</LCDText>
+	</Screen>
+	<Screen name="BattlefieldStatusScreen">
+		<LCDText name="BF_KILLBLOWS" text="KILLING_BLOWS" id="23">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="66"/>
+			<Origin x="0" y="0"/>
+		</LCDText>
+		<LCDText name="BF_KILLBLOWS_FLD" text="0" id="24">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="30"/>
+			<Origin x="63" y="0"/>
+		</LCDText>
+		<LCDText name="BF_DEATHS" text="DEATHS" id="25">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="40"/>
+			<Origin x="0" y="15"/>
+		</LCDText>
+		<LCDText name="BF_DEATHS_FLD" text="0" id="26">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="30"/>
+			<Origin x="42" y="15"/>
+		</LCDText>
+		<LCDText name="BF_HONOR_KILLS" text="HK" id="27">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="40"/>
+			<Origin x="0" y="30"/>
+		</LCDText>
+		<LCDText name="BF_HONOR_KILLS_FLD" text="0" id="28">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="30"/>
+			<Origin x="42" y="30"/>
+		</LCDText>
+		<LCDText name="BF_TIME" text="MINS_ABBR" id="31">
+			<Font Size="LG_MEDIUM" Alignment="LG_RIGHT" MaxWidth="30"/>
+			<Origin x="130" y="0"/>
+		</LCDText>
+		<LCDText name="BF_TIME_FLD" text="0" id="32">
+			<Font Size="LG_MEDIUM" Alignment="LG_RIGHT" MaxWidth="20"/>
+			<Origin x="110" y="0"/>
+		</LCDText>
+    <LCDText name="BF_ALLIANCE" text="FACTION_ALLIANCE">
+      <Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="40"/>
+      <Origin x="90" y="16"/>
+    </LCDText>
+    <LCDText name="BF_ALLIANCE_FLD" text="">
+      <Font Size="LG_MEDIUM" Alignment="LG_RIGHT" MaxWidth="30"/>
+      <RelOrigin RelTo="BF_ALLIANCE" x="40" y="0"/>
+    </LCDText>
+    <LCDText name="BF_HORDE" text="FACTION_HORDE">
+      <Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="40"/>
+      <RelOrigin RelTo="BF_ALLIANCE" x="0" y="16"/>
+    </LCDText>
+    <LCDText name="BF_HORDE_FLD" text="">
+      <Font Size="LG_MEDIUM" Alignment="LG_RIGHT" MaxWidth="30"/>
+      <RelOrigin RelTo="BF_ALLIANCE_FLD" x="0" y="16"/>
+    </LCDText>
+	</Screen>
+	<Screen name="NotInBattlefieldScreen">
+		<LCDText name="BF_NOT_IN" text="BF_NOT_IN" id="34">
+			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="160" Wrap="true"/>
+			<Origin x="0" y="10" />
+			<Size x="160" y="43" />
+		</LCDText>
+	</Screen>
+	<Screen name="WaitQueueScreen">
+		<LCDText name="WAIT_QUEUE" text="QUEUE_TIME_LEFT_UNKNOWN" id="35">
+			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="160" Wrap="true"/>
+			<Origin x="0" y="2" />
+			<Size x="160" y="43" />
+		</LCDText>
+	</Screen>
+	<Screen name="ChatAlertScreen">
+		<LCDText name="CHAT_ALERT_1" text="" id="36">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="160"/>
+			<Origin x="0" y="33" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_2" text="" id="37">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="160"/>
+			<Origin x="0" y="22" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_3" text="" id="38">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="160"/>
+			<Origin x="0" y="11" />
+		</LCDText>
+		<LCDText name="CHAT_ALERT_4" text="" id="39">
+			<Font Size="LG_MEDIUM" Alignment="LG_LEFT" MaxWidth="160"/>
+			<Origin x="0" y="0" />
+		</LCDText>
+	</Screen>
+</Ui>
