@@ -1,4 +1,6 @@
 ## Title: Blizzard NamePlates
-## LoadOnDemand: 0
-
-..\..\..\Interface_Vanilla\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.xml
+## Dependencies: Blizzard_UnitFrame
+## AllowLoad: game
+## AllowLoadGameType: vanilla
+Vanilla\Blizzard_NamePlates.lua
+Vanilla\Blizzard_NamePlates.xml

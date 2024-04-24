@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="CommunitiesAddDialog.lua"/>
-	
+
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
-			<Size x="514" y="326"/>
+			<Size x="514" y="426"/>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
@@ -16,10 +16,22 @@
 							<Anchor point="TOP" x="0" y="-18"/>
 						</Anchors>
 					</FontString>
-					<FontString parentKey="CreateBattleNetGroupLabel" text="COMMUNITIES_ADD_DIALOG_CREATE_BNET_LABEL" justifyH="LEFT" inherits="GameFontHighlightMedium">
+					<FontString parentKey="CreateWoWCommunityLabel" text="COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL" justifyH="LEFT" inherits="GameFontHighlightMedium">
 						<Size x="280" y="0"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="36" y="-80"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="CreateWoWCommunityDescription" text="COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION" justifyH="LEFT" inherits="GameFontNormal">
+						<Size x="280" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CreateWoWCommunityLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="CreateBattleNetGroupLabel" text="COMMUNITIES_ADD_DIALOG_CREATE_BNET_LABEL" justifyH="LEFT" inherits="GameFontHighlightMedium">
+						<Size x="280" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CreateWoWCommunityDescription" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="CreateBattleNetGroupDescription" text="COMMUNITIES_ADD_DIALOG_CREATE_BNET_DESCRIPTION" justifyH="LEFT" inherits="GameFontNormal">
@@ -32,7 +44,7 @@
 						<Size x="438" y="1"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.CreateBattleNetGroupDescription" relativePoint="LEFT" x="0" y="0"/>
-							<Anchor point="TOP" x="0" y="-190"/>
+							<Anchor point="TOP" x="0" y="-290"/>
 						</Anchors>
 						<Color r="1" g="1" b="1" a="0.2"/>
 					</Texture>
@@ -52,7 +64,7 @@
 			</Layers>
 			<Frames>
 				<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
-				<EditBox parentKey="InviteLinkBox" autoFocus="false" inherits="InputBoxTemplate">
+				<EditBox parentKey="InviteLinkBox" autoFocus="false" inherits="InputBoxTemplate" letters="120">
 					<Size x="288" y="22"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.InviteLinkDescription" relativePoint="BOTTOMLEFT" x="6" y="-13"/>
@@ -72,7 +84,7 @@
 								</Anchors>
 							</Texture>
 						</Layer>
-						<Layer level="BACKGROUND">
+						<Layer level="BORDER" textureSubLevel="-1">
 							<Texture parentKey="Mid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
 								<Size x="0" y="32"/>
 								<Anchors>
@@ -86,6 +98,12 @@
 						<OnEscapePressed function="EditBox_ClearFocus"/>
 						<OnEditFocusLost function="EditBox_ClearHighlight"/>
 						<OnEditFocusGained function="EditBox_HighlightText"/>
+						<OnEnterPressed>
+							local joinButton = self:GetParent().JoinButton;
+							if joinButton:IsEnabled() then
+								joinButton:GetScript("OnClick")(joinButton);
+							end
+						</OnEnterPressed>
 					</Scripts>
 					<FontString inherits="ChatFontNormal"/>
 				</EditBox>
@@ -97,6 +115,30 @@
 					<Scripts>
 						<OnClick function="CommunitiesAddDialogJoinButton_OnClick"/>
 					</Scripts>
+				</Button>
+				<Button parentKey="CreateWoWCommunityButton" motionScriptsWhileDisabled="true">
+					<Size x="132" y="70"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CreateWoWCommunityLabel" relativePoint="TOPRIGHT" x="20" y="0"/>
+					</Anchors>
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture parentKey="FactionIcon" atlas="communities-create-button-wow-horde" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="RIGHT" x="-30" y="0"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnEnter function="CommunitiesAddDialogWoWButton_OnEnter"/>
+						<OnLeave function="CommunitiesAddDialogWoWButton_OnLeave"/>
+						<OnClick function="CommunitiesAddDialogWoWButton_OnClick"/>
+					</Scripts>
+					<NormalTexture atlas="communities-create-button-wow-up"/>
+					<PushedTexture atlas="communities-create-button-wow-down"/>
+					<HighlightTexture atlas="communities-create-button-highlight"/>
+					<DisabledTexture atlas="communities-create-button-wow-up" desaturated="true"/>
 				</Button>
 				<Button parentKey="CreateBattleNetGroupButton" motionScriptsWhileDisabled="true">
 					<Size x="116" y="67"/>
@@ -112,10 +154,9 @@
 					<HighlightTexture atlas="communities-create-button-bnet-highlight"/>
 					<DisabledTexture atlas="communities-create-button-bnet-up" desaturated="true"/>
 				</Button>
-				<Button parentKey="CloseButton">
-					<Size x="32" y="32"/>
+				<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 					</Anchors>
 					<Scripts>
 						<OnClick>
@@ -123,10 +164,6 @@
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
-					<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-					<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-					<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-					<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 				</Button>
 			</Frames>
 			<Scripts>
@@ -136,7 +173,7 @@
 			</Scripts>
 		</Frame>
 		<Frame name="CommunitiesCreateDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesCreateDialogMixin" hidden="true">
-			<Size x="412" y="375"/>
+			<Size x="412" y="395"/>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
@@ -220,6 +257,12 @@
 						<OnTabPressed>
 							self:GetParent().ShortNameBox:SetFocus();
 						</OnTabPressed>
+						<OnEnterPressed>
+							local createButton = self:GetParent().CreateButton;
+							if createButton:IsEnabled() then
+								createButton:GetScript("OnClick")(createButton);
+							end
+						</OnEnterPressed>
 						<OnTextChanged>
 							self.Instructions:SetShown(self:GetText() == "");
 							self:GetParent():UpdateCreateButton();
@@ -247,6 +290,12 @@
 						<OnTabPressed>
 							self:GetParent().DescriptionFrame.EditBox:SetFocus();
 						</OnTabPressed>
+						<OnEnterPressed>
+							local createButton = self:GetParent().CreateButton;
+							if createButton:IsEnabled() then
+								createButton:GetScript("OnClick")(createButton);
+							end
+						</OnEnterPressed>
 						<OnEnter>
 							Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP, self:GetRight(), self:GetTop(), true);
 						</OnEnter>
@@ -259,8 +308,8 @@
 						</OnTextChanged>
 					</Scripts>
 				</EditBox>
-				<ScrollFrame parentKey="DescriptionFrame" inherits="UIPanelInputScrollFrameTemplate">
-					<Size x="0" y="50"/>
+				<ScrollFrame parentKey="DescriptionFrame" inherits="InputScrollFrameTemplate">
+					<Size x="0" y="70"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-8"/>
@@ -276,7 +325,7 @@
 								self:GetParent():GetParent().NameBox:SetFocus();
 							end);
 							self.EditBox:SetMaxLetters(500);
-							UIPanelInputScrollFrame_OnLoad(self);
+							InputScrollFrame_OnLoad(self);
 						</OnLoad>
 					</Scripts>
 				</ScrollFrame>

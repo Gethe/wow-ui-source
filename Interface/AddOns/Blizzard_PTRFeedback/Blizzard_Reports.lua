@@ -97,7 +97,7 @@ function PTR_IssueReporter.CreateReports()
     
     ------------------------------------- Item Reporting -----------------------------------------------
     local GetIconFromItemID = function(value)
-        return select(10, GetItemInfo(value))
+        return select(10, C_Item.GetItemInfo(value))
     end    
     
     local itemReport = PTR_IssueReporter.CreateSurvey(classicReportOffset + 6, "Bug Report: %s")
@@ -158,7 +158,7 @@ function PTR_IssueReporter.CreateReports()
             table.insert(IDString, s)
         end
         
-        local name, icon, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTabID, tonumber(IDString[2]))
+        local name, icon, _, _, _, _, _, _, _, _, _, tID = GetTalentInfo(talentTabID, tonumber(IDString[2]))
         talentID = tID
 
         if icon then

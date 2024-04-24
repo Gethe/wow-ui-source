@@ -1,0 +1,11 @@
+## Title: Blizzard_AddOnList
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Both
+## SuppressLocalTableRef: 1
+## Dependencies: Blizzard_SharedXML
+## AllowLoad: both
+## AllowLoadGameType: classic
+Classic\AddonList.lua
+Classic\AddonList.xml
+Shared\Localization.lua

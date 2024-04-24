@@ -60,7 +60,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 	local description = self.description;
 	local hasDescription = description and #description > 0;
 	local isTimed = C_AreaPoiInfo.IsAreaPOITimed(self.areaPoiID);
-	local hasWidgetSet = self.widgetSetID ~= nil;
+	local hasWidgetSet = self.tooltipWidgetSet ~= nil;
 
 	local hasTooltip = hasDescription or isTimed or hasWidgetSet;
 
@@ -81,7 +81,7 @@ function AreaPOIPinMixin:TryShowTooltip()
 		end
 
 		if hasWidgetSet then
-			GameTooltip_AddWidgetSet(GameTooltip, self.widgetSetID);
+			GameTooltip_AddWidgetSet(GameTooltip, self.tooltipWidgetSet);
 		end
 
 		GameTooltip:Show();

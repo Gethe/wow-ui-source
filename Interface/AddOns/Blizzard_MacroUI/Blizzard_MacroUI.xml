@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI_shared.xsd">
+..\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_MacroUI.lua"/>
 	
 	<Button name="MacroButtonTemplate" mixin="MacroButtonMixin" inherits="SelectorButtonTemplate" virtual="true">
@@ -28,7 +28,7 @@
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="MacroFramePortrait" file="Interface\MacroFrame\MacroFrame-Icon">
-					<Size x="60" y="60"/>
+					<Size x="58" y="58"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-5" y="5"/>
 					</Anchors>

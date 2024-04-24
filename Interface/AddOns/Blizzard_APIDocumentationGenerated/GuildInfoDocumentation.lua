@@ -34,6 +34,33 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "Demote",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "Disband",
+			Type = "Function",
+		},
+		{
+			Name = "GetGuildNewsInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "newsInfo", Type = "GuildNewsInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetGuildRankOrder",
 			Type = "Function",
 
@@ -80,6 +107,15 @@ local GuildInfo =
 			Type = "Function",
 		},
 		{
+			Name = "Invite",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGuildOfficer",
 			Type = "Function",
 
@@ -104,6 +140,10 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "Leave",
+			Type = "Function",
+		},
+		{
 			Name = "MemberExistsByName",
 			Type = "Function",
 
@@ -115,6 +155,15 @@ local GuildInfo =
 			Returns =
 			{
 				{ Name = "exists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "Promote",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -153,6 +202,24 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "SetLeader",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMOTD",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "motd", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "SetNote",
 			Type = "Function",
 
@@ -161,6 +228,15 @@ local GuildInfo =
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 				{ Name = "note", Type = "cstring", Nilable = false },
 				{ Name = "isPublic", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "Uninvite",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 	},
@@ -183,6 +259,23 @@ local GuildInfo =
 			LiteralName = "ENABLE_DECLINE_GUILD_INVITE",
 		},
 		{
+			Name = "GuildChallengeCompleted",
+			Type = "Event",
+			LiteralName = "GUILD_CHALLENGE_COMPLETED",
+			Payload =
+			{
+				{ Name = "challengeType", Type = "number", Nilable = false },
+				{ Name = "currentCount", Type = "number", Nilable = false },
+				{ Name = "maxCount", Type = "number", Nilable = false },
+				{ Name = "goldAwarded", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GuildChallengeUpdated",
+			Type = "Event",
+			LiteralName = "GUILD_CHALLENGE_UPDATED",
+		},
+		{
 			Name = "GuildEventLogUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_EVENT_LOG_UPDATE",
@@ -203,25 +296,7 @@ local GuildInfo =
 				{ Name = "guildAchievementPoints", Type = "number", Nilable = false },
 				{ Name = "oldGuildName", Type = "cstring", Nilable = false },
 				{ Name = "isNewGuild", Type = "bool", Nilable = true },
-				{ Name = "bkgColorR", Type = "number", Nilable = true },
-				{ Name = "bkgColorG", Type = "number", Nilable = true },
-				{ Name = "bkgColorB", Type = "number", Nilable = true },
-				{ Name = "borderColorR", Type = "number", Nilable = true },
-				{ Name = "borderColorG", Type = "number", Nilable = true },
-				{ Name = "borderColorB", Type = "number", Nilable = true },
-				{ Name = "emblemColorR", Type = "number", Nilable = true },
-				{ Name = "emblemColorG", Type = "number", Nilable = true },
-				{ Name = "emblemColorB", Type = "number", Nilable = true },
-				{ Name = "emblemFilename", Type = "cstring", Nilable = true },
-			},
-		},
-		{
-			Name = "GuildMemberDied",
-			Type = "Event",
-			LiteralName = "GUILD_MEMBER_DIED",
-			Payload =
-			{
-				{ Name = "memberName", Type = "cstring", Nilable = false },
+				{ Name = "tabardInfo", Type = "GuildTabardInfo", Nilable = true },
 			},
 		},
 		{
@@ -232,6 +307,11 @@ local GuildInfo =
 			{
 				{ Name = "motdText", Type = "cstring", Nilable = false },
 			},
+		},
+		{
+			Name = "GuildNewsUpdate",
+			Type = "Event",
+			LiteralName = "GUILD_NEWS_UPDATE",
 		},
 		{
 			Name = "GuildPartyStateUpdated",
@@ -246,6 +326,11 @@ local GuildInfo =
 			Name = "GuildRanksUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_RANKS_UPDATE",
+		},
+		{
+			Name = "GuildRecipeKnownByMembers",
+			Type = "Event",
+			LiteralName = "GUILD_RECIPE_KNOWN_BY_MEMBERS",
 		},
 		{
 			Name = "GuildRegistrarClosed",
@@ -267,6 +352,11 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "GuildRewardsList",
+			Type = "Event",
+			LiteralName = "GUILD_REWARDS_LIST",
+		},
+		{
 			Name = "GuildRosterUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_ROSTER_UPDATE",
@@ -274,6 +364,11 @@ local GuildInfo =
 			{
 				{ Name = "canRequestRosterUpdate", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "GuildTradeskillUpdate",
+			Type = "Event",
+			LiteralName = "GUILD_TRADESKILL_UPDATE",
 		},
 		{
 			Name = "GuildtabardUpdate",
@@ -317,6 +412,25 @@ local GuildInfo =
 
 	Tables =
 	{
+		{
+			Name = "GuildNewsInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isSticky", Type = "bool", Nilable = false },
+				{ Name = "isHeader", Type = "bool", Nilable = false },
+				{ Name = "newsType", Type = "number", Nilable = false },
+				{ Name = "whoText", Type = "string", Nilable = true },
+				{ Name = "whatText", Type = "string", Nilable = true },
+				{ Name = "newsDataID", Type = "number", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "weekday", Type = "number", Nilable = false },
+				{ Name = "day", Type = "number", Nilable = false },
+				{ Name = "month", Type = "number", Nilable = false },
+				{ Name = "year", Type = "number", Nilable = false },
+				{ Name = "guildMembersPresent", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

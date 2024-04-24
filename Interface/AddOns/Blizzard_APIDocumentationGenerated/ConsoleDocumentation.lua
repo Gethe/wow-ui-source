@@ -2,12 +2,11 @@ local Console =
 {
 	Name = "Console",
 	Type = "System",
-	Namespace = "C_Console",
 
 	Functions =
 	{
 		{
-			Name = "GetAllCommands",
+			Name = "ConsoleGetAllCommands",
 			Type = "Function",
 
 			Returns =
@@ -16,7 +15,7 @@ local Console =
 			},
 		},
 		{
-			Name = "GetColorFromType",
+			Name = "ConsoleGetColorFromType",
 			Type = "Function",
 
 			Arguments =
@@ -30,7 +29,7 @@ local Console =
 			},
 		},
 		{
-			Name = "GetFontHeight",
+			Name = "ConsoleGetFontHeight",
 			Type = "Function",
 
 			Returns =
@@ -39,7 +38,7 @@ local Console =
 			},
 		},
 		{
-			Name = "PrintAllMatchingCommands",
+			Name = "ConsolePrintAllMatchingCommands",
 			Type = "Function",
 
 			Arguments =
@@ -48,12 +47,21 @@ local Console =
 			},
 		},
 		{
-			Name = "SetFontHeight",
+			Name = "ConsoleSetFontHeight",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "fontHeightInPixels", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetConsoleKey",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "keystring", Type = "cstring", Nilable = false },
 			},
 		},
 	},

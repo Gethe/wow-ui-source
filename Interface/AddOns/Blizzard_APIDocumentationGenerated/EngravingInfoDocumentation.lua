@@ -331,6 +331,8 @@ local EngravingInfo =
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "iconTexture", Type = "number", Nilable = false },
 				{ Name = "equipmentSlot", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
+				{ Name = "learnedAbilitySpellIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 	},

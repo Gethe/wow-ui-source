@@ -1,0 +1,6 @@
+## Title: Blizzard Dispatcher
+## Author: Blizzard Entertainment
+## AllowLoad: both
+## LoadOnDemand: 1
+
+Blizzard_Dispatcher.lua

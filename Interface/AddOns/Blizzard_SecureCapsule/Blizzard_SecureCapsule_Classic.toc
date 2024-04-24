@@ -1,0 +1,9 @@
+## Title: Blizzard_SecureCapsule
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_FrameXML, Blizzard_ActionBar, Blizzard_UIPanels_Game
+## LoadFirst: 1
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: classic
+Classic\SecureCapsule.lua

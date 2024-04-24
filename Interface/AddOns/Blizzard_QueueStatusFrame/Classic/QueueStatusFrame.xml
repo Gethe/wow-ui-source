@@ -1,0 +1,132 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="QueueStatusRoleCountTemplate" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RoleIcon" atlas="UI-LFG-RoleIcon-Generic"/>
+				<FontString name="$parentCount" inherits="GameFontHighlight" parentKey="Count">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="QueueStatusEntryTemplate" virtual="true">
+		<Size x="275" y="150"/> <!--Height changed dynamically-->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="RoleIcon1" atlas="UI-LFG-RoleIcon-Generic">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-7" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RoleIcon2" atlas="UI-LFG-RoleIcon-Generic">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RoleIcon1" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RoleIcon3" atlas="UI-LFG-RoleIcon-Generic">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.RoleIcon2" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TimeInQueue" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AverageWait" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExtraText" inherits="GameFontNormalGraySmall" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<Texture parentKey="EntrySeparator"> <!--Hidden on the first entry-->
+					<Size x="275" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4"/>
+						<Anchor point="TOPRIGHT" x="-4"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="HealersFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/> <!--Anchored in Lua-->
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TanksFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HealersFound" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DamagersFound" inherits="QueueStatusRoleCountTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HealersFound" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AssignedSpec" hidden="true">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-7" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="38" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="QueueStatusFrame" mixin="QueueStatusFrameMixin" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true" parent="UIParent" inherits="TooltipBackdropTemplate">
+		<Size x="275" y="150"/>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append" />
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

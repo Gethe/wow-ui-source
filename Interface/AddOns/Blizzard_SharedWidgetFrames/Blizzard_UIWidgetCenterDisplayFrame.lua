@@ -7,7 +7,8 @@ local widgetContainerYOffsetsByTextureKit = {
 WidgetCenterDisplayFrameMixin = { };
 function WidgetCenterDisplayFrameMixin:OnLoad()
 	self:RegisterEvent("GENERIC_WIDGET_DISPLAY_SHOW");
-end
+end
+
 
 function WidgetCenterDisplayFrameMixin:OnEvent(event, ...)
 	if(event == "GENERIC_WIDGET_DISPLAY_SHOW") then 

@@ -26,7 +26,7 @@ function PTR_IssueReporter.AttachStandaloneQuestion(frame, question, characterLi
         questionFrame.text:SetHeight(questionFrame:GetHeight())
         questionFrame.text:SetPoint("TOP", questionFrame, "TOP", 0, 0)        
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -127,7 +127,7 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
         questionFrame.text:SetWidth(questionFrame:GetWidth())
         questionFrame.text:SetHeight(questionFrame:GetHeight())                
         questionFrame.text:SetSize(questionFrame:GetWidth(), questionFrame:GetHeight())
-        questionFrame.text:SetJustifyV("CENTER")
+        questionFrame.text:SetJustifyV("MIDDLE")
         questionFrame.text:SetJustifyH("CENTER")
 
         PTR_IssueReporter.AddBorder(questionFrame)
@@ -217,7 +217,7 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
         newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
         newCheckBox.Text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")        
         newCheckBox.Text:SetJustifyH("CENTER")
-        newCheckBox.Text:SetJustifyV("CENTER")
+        newCheckBox.Text:SetJustifyV("MIDDLE")
         newCheckBox.Text:SetTextColor(1, 1, 1)
     end
     

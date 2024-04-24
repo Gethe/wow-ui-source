@@ -24,17 +24,26 @@ function CommunitiesChatMixin:OnLoad()
 	self.MessageFrame:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 	self.pendingMemberInfo = {};
 	self.broadcastSent = {};
+	self.eventsSent = {};
+
+	self.MessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
+		if not (messageFrame:GetNumMessages() < MAX_NUM_CHAT_LINES) then
+			return;
+		end
+
+		local offsetToFront = messageFrame:GetNumMessages() - offset;
+		if offsetToFront <= REQUEST_MORE_MESSAGES_THRESHOLD then
+			self:RequestMoreHistory();
+		end
+	end);
+
+	ScrollUtil.InitScrollingMessageFrameWithScrollBar(self.MessageFrame, self.ScrollBar);
 end
 
 function CommunitiesChatMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_CHAT_FRAME_EVENTS);
 
-	local function StreamSelectedCallback(event, streamId)
-		self:DisplayChat();
-	end
-
-	self.streamSelectedCallback = StreamSelectedCallback;
-	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.streamSelectedCallback, self);
+	self:GetCommunitiesFrame():RegisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self.OnStreamSelected, self);
 	
 	self:UpdateChatColor();
 	self:DisplayChat();
@@ -46,7 +55,6 @@ function CommunitiesChatMixin:OnEvent(event, ...)
 		if clubId == self:GetCommunitiesFrame():GetSelectedClubId() and streamId == self:GetCommunitiesFrame():GetSelectedStreamId() then
 			local message = C_Club.GetMessageInfo(clubId, streamId, messageId);
 			self:AddMessage(clubId, streamId, message);
-			self:UpdateScrollbar();
 		end
 	elseif event == "CLUB_MESSAGE_HISTORY_RECEIVED" then
 		local clubId, streamId, downloadedRange, contiguousRange = ...;
@@ -100,10 +108,11 @@ end
 
 function CommunitiesChatMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, COMMUNITIES_CHAT_FRAME_EVENTS);
-	if self.streamSelectedCallback then
-		self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self);
-		self.streamSelectedCallback = nil;
-	end
+	self:GetCommunitiesFrame():UnregisterCallback(CommunitiesFrameMixin.Event.StreamSelected, self);
+end
+
+function CommunitiesChatMixin:OnStreamSelected(streamID)
+	self:DisplayChat();
 end
 
 function CommunitiesChatMixin:SendMessage(text)
@@ -112,6 +121,12 @@ function CommunitiesChatMixin:SendMessage(text)
 	if (clubId ~= nil and streamId ~= nil and C_Club.IsSubscribedToStream(clubId, streamId)) then
 		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 		if not streamInfo then
+			return;
+		end
+		
+		if streamInfo.streamType == Enum.ClubStreamType.Guild and not C_GuildInfo.CanSpeakInGuildChat() then
+			self.MessageFrame:AddMessage(ERR_GUILD_PERMISSIONS, YELLOW_FONT_COLOR:GetRGB());
+			ChatFrame_DisplaySystemMessageInPrimary(ERR_GUILD_PERMISSIONS);
 			return;
 		end
 		
@@ -188,7 +203,7 @@ end
 function CommunitiesChatMixin:BackfillMessages(maxCount)
 	local clubId = self:GetCommunitiesFrame():GetSelectedClubId();
 	local streamId = self:GetCommunitiesFrame():GetSelectedStreamId();
-	if not clubId or not streamId then
+	if not clubId or not streamId or not self.messageRangeOldest then
 		return;
 	end
 	
@@ -204,8 +219,6 @@ function CommunitiesChatMixin:BackfillMessages(maxCount)
 	end
 	
 	self.messageRangeOldest = messages[1].messageId;
-	
-	self:UpdateScrollbar();
 end
 
 function CommunitiesChatMixin:DisplayChat()
@@ -239,16 +252,10 @@ function CommunitiesChatMixin:DisplayChat()
 	self.messageRangeOldest = messages[1].messageId;
 	
 	self:AddBroadcastMessage(clubId);
+	self:AddUpcomingEventMessages(clubId);
+	self:AddOngoingEventMessages(clubId);
 	
 	C_Club.AdvanceStreamViewMarker(clubId, streamId);
-	self:UpdateScrollbar();
-end
-
-function CommunitiesChatMixin:UpdateScrollbar()
-	local numMessages = self.MessageFrame:GetNumMessages();
-	local maxValue = math.max(numMessages, 1);
-	self.MessageFrame.ScrollBar:SetMinMaxValues(1, maxValue);
-	self.MessageFrame.ScrollBar:SetValue(maxValue - self.MessageFrame:GetScrollOffset());
 end
 
 function CommunitiesChatMixin:UpdateChatColor()
@@ -284,7 +291,18 @@ end
 
 function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 	local name = message.author.name or " ";
-	local link = GetBNPlayerCommunityLink(name, name, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
+	local link;
+	if message.author.clubType == Enum.ClubType.BattleNet then
+		link = GetBNPlayerCommunityLink(name, name, message.author.bnetAccountId, clubId, streamId, message.messageId.epoch, message.messageId.position);
+	elseif message.author.clubType == Enum.ClubType.Character or message.author.clubType == Enum.ClubType.Guild then
+		local classInfo = message.author.classID and C_CreatureInfo.GetClassInfo(message.author.classID);
+		if classInfo then
+			local classColorInfo = RAID_CLASS_COLORS[classInfo.classFile];
+			link = GetPlayerCommunityLink(name, WrapTextInColorCode(name, classColorInfo.colorStr), clubId, streamId, message.messageId.epoch, message.messageId.position);
+		else
+			link = GetPlayerCommunityLink(name, name, clubId, streamId, message.messageId.epoch, message.messageId.position);
+		end
+	end
 	
 	local content;
 	if message.destroyed then
@@ -299,12 +317,9 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		content = message.content;
 	end
 	
-	local noIconReplacement = false; -- We are replacing icon tags. For example: {skull}
-	local noGroupReplacement = true; -- We don't want to replace group tags. For example: {g1}
-	content = ChatFrame_ReplaceIconAndGroupExpressions(content, noIconReplacement, noGroupReplacement);
-
-	if CHAT_TIMESTAMP_FORMAT then
-		return BetterDate(CHAT_TIMESTAMP_FORMAT, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
+	local format = GetChatTimestampFormat();
+	if format then
+		return BetterDate(format, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 	else
 		return COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 	end
@@ -331,7 +346,7 @@ function CommunitiesChatMixin:AddUnreadNotification(backfill)
 end
 
 local NOTIFICATION_LINE_TEXTURE_SIZE_Y = 8;
-local NOTIFICATION_LINE_TEXTURE_SIZE_X = 200;
+local NOTIFICATION_LINE_TEXTURE_SIZE_X = 165;
 function CommunitiesChatMixin:AddNotification(notification, atlas, r, g, b, backfill)
 	local textureMarkup = CreateAtlasMarkup(atlas, NOTIFICATION_LINE_TEXTURE_SIZE_X, NOTIFICATION_LINE_TEXTURE_SIZE_Y, 0, 3);
 	if backfill then
@@ -357,6 +372,44 @@ function CommunitiesChatMixin:AddBroadcastMessage(clubId)
 		self.MessageFrame:AddMessage(" ");
 		self.MessageFrame:AddMessage(COMMUNITIES_MESSAGE_OF_THE_DAY_FORMAT:format(clubInfo.broadcast), YELLOW_FONT_COLOR:GetRGB());
 		self.broadcastSent[clubId] = clubInfo.broadcast;
+	end
+end
+
+local DEFAULT_NUM_DAYS_TO_PREVIEW_IN_CHAT = 4;
+function CommunitiesChatMixin:AddUpcomingEventMessages(clubId)
+	if not self.eventsSent[clubId] then
+		self.eventsSent[clubId] = {};
+	end
+
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	
+	-- Only include events that are happening in the future. Ongoing events will be broadcast separately.
+	currentCalendarTime.minute = currentCalendarTime.minute + 1;
+	
+	local events = C_Calendar.GetClubCalendarEvents(clubId, currentCalendarTime, C_DateAndTime.AdjustTimeByDays(currentCalendarTime, DEFAULT_NUM_DAYS_TO_PREVIEW_IN_CHAT));
+	for i, event in ipairs(events) do
+		local eventBroadcast = CalendarUtil.GetEventBroadcastText(event);
+		if self.eventsSent[clubId][event.eventID] ~= eventBroadcast then
+			self.MessageFrame:AddMessage(eventBroadcast);
+			self.eventsSent[clubId][event.eventID] = eventBroadcast;
+		end
+	end
+end
+
+local NUM_MINUTES_TO_DISPLAY_ONGOING = 30;
+function CommunitiesChatMixin:AddOngoingEventMessages(clubId)
+	if not self.eventsSent[clubId] then
+		self.eventsSent[clubId] = {};
+	end
+
+	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
+	local events = C_Calendar.GetClubCalendarEvents(clubId, C_DateAndTime.AdjustTimeByMinutes(currentCalendarTime, -NUM_MINUTES_TO_DISPLAY_ONGOING), currentCalendarTime);
+	for i, event in ipairs(events) do
+		local eventBroadcast = CalendarUtil.GetOngoingEventBroadcastText(event);
+		if self.eventsSent[clubId][event.eventID] ~= eventBroadcast then
+			self.MessageFrame:AddMessage(eventBroadcast);
+			self.eventsSent[clubId][event.eventID] = eventBroadcast;
+		end
 	end
 end
 
@@ -428,34 +481,6 @@ end
 function CommunitiesChatEditBox_OnHide(self)
 	if ChatFrame_GetChatFocusOverride() == self then
 		ChatFrame_ClearChatFocusOverride();
-	end
-end
-
-function CommunitiesChatFrameScrollBar_OnValueChanged(self, value, userInput)
-	self.ScrollUp:Enable();
-	self.ScrollDown:Enable();
-
-	local minVal, maxVal = self:GetMinMaxValues();
-	if value >= maxVal then
-		self.thumbTexture:Show();
-		self.ScrollDown:Disable()
-	end
-	if value <= minVal then
-		self.thumbTexture:Show();
-		self.ScrollUp:Disable();
-	end
-	
-	if userInput then
-		local min, max = self:GetMinMaxValues();
-		self:GetParent():SetScrollOffset(max - value);
-	end
-	
-	local communitiesChatFrame = self:GetParent():GetParent();
-	-- If we don't have many messages left, request more from the server.
-	-- TODO:: We should support for viewing more messages beyond what we can display at one time.
-	-- This will require support for requesting more messages as we scroll back down to the most recent messages.
-	if value <= REQUEST_MORE_MESSAGES_THRESHOLD and communitiesChatFrame.MessageFrame:GetNumMessages() < MAX_NUM_CHAT_LINES then
-		communitiesChatFrame:RequestMoreHistory();
 	end
 end
 

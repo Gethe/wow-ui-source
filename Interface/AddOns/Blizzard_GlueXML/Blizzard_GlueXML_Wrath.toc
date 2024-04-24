@@ -1,0 +1,57 @@
+## Title: Blizzard_GlueXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueDialogs
+## LoadFirst: 1
+## SuppressLocalTableRef: 1
+## AllowLoad: Glue
+## AllowLoadGameType: wrath
+Classic\Localization.lua
+Wrath\Localization.lua
+Classic\GlueTooltip.lua
+Classic\GlueTooltip.xml
+ServerAlert.lua
+ServerAlert.xml
+Classic\AccountLogin.lua
+Classic\AccountLogin.xml
+TBC\RealmList.lua
+TBC\RealmList.xml
+Classic\CharacterServicesPatchwerk.xml
+Classic\CharacterSelect.lua
+TBC\CharacterSelect.xml
+Classic\AccountReactivate.lua
+Classic\AccountReactivate.xml
+Classic\KioskModeSplash.lua
+Classic\KioskModeSplash.xml
+Classic\CharacterServicesShared.lua
+CharacterServicesTemplates.lua
+CharacterServicesTemplates.xml
+Classic\CharacterServicesFlowMixin.lua
+Classic\CharacterServices.lua
+Classic\CharacterServices.xml
+Shared\CharacterServicesPaidNameChange.lua
+Shared\CharacterServicesPaidNameChange.xml
+Classic\CharacterServicesPaidCharacterTransfer.lua
+Classic\CharacterServicesPaidCharacterTransfer.xml
+Classic\CharacterServicesPaidFactionChange.lua
+CharacterServicesPaidFactionChange.xml
+Classic\CharacterServicesPaidRaceChange.lua
+Classic\CharacterServicesPaidRaceChange.xml
+Classic\CharacterServicesCharacterSelector.lua
+Classic\CharacterServicesCharacterSelector.xml
+Wrath\CharacterCreate.lua
+Classic\CharacterCreate_Shared.lua
+Wrath\CharacterCreate.xml
+PromotionFrame.lua
+PromotionFrame.xml
+StarterEditionPopUp.xml
+MovieFrame.lua
+MovieFrame.xml
+Classic\CinematicsFrame.lua
+Classic\CinematicsFrame.xml
+TBC\CreditsFrame.lua
+TBC\CreditsFrame.xml
+Classic\GlueMenuFrame.lua
+Classic\GlueMenuFrame.xml
+SocialContract.lua
+SocialContract.xml

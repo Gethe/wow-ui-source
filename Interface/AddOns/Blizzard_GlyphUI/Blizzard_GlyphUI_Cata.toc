@@ -1,0 +1,4 @@
+## Title: Blizzard_TalentUI
+## LoadOnDemand: 1
+Cata\Blizzard_GlyphUI.xml
+Localization.lua

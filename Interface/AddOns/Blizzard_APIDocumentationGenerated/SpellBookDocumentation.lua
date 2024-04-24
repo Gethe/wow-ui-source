@@ -64,6 +64,28 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "SpellFlyoutUpdate",
+			Type = "Event",
+			LiteralName = "SPELL_FLYOUT_UPDATE",
+			Payload =
+			{
+				{ Name = "flyoutID", Type = "number", Nilable = true },
+				{ Name = "spellID", Type = "number", Nilable = true },
+				{ Name = "isLearned", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "SpellPushedToActionbar",
+			Type = "Event",
+			LiteralName = "SPELL_PUSHED_TO_ACTIONBAR",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "slot", Type = "number", Nilable = false },
+				{ Name = "page", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellTextUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_TEXT_UPDATE",

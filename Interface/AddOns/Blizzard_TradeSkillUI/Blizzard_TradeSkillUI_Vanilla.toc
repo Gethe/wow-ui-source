@@ -1,4 +1,5 @@
 ## Title: Blizzard Trade Skill UI
 ## LoadOnDemand: 1
-..\..\..\Interface_Vanilla\AddOns\Blizzard_TradeSkillUI\Blizzard_TradeSkillUI.xml
+Vanilla\Blizzard_TradeSkillUI.lua
+Vanilla\Blizzard_TradeSkillUI.xml
 Localization.lua

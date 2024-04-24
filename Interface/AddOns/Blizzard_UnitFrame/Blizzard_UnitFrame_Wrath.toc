@@ -1,0 +1,34 @@
+## Title: Blizzard_UnitFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UnitFrameUtil, Blizzard_CastingBar
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: wrath
+Classic\UnitFrame.lua
+Classic\UnitFrame.xml
+Classic\PlayerFrame.lua
+Classic\PlayerFrame.xml
+Wrath\AlternatePowerBar.lua
+Wrath\AlternatePowerBar.xml
+Classic\PartyFrameTemplates.xml
+Classic\PartyFrame.xml
+Wrath\TargetFrame.lua
+Wrath\TargetFrame.xml
+Classic\TotemFrame.lua
+Classic\TotemFrame.xml
+Wrath\PetFrame.lua
+Classic\PetFrame_Shared.lua
+Wrath\PetFrame.xml
+Classic\ComboFrame.lua
+Classic\ComboFrame.xml
+Wrath\CompactUnitFrame.lua
+Wrath\CompactUnitFrame.xml
+Classic\CompactRaidGroup.lua
+Classic\CompactRaidGroup.xml
+Classic\CompactPartyFrame.lua
+Classic\CompactPartyFrame.xml
+Classic\RuneFrame_Shared.lua
+Wrath\RuneFrame.lua
+Wrath\RuneFrame.xml
+Classic\Localization.lua

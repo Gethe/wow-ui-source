@@ -1,0 +1,9 @@
+## Title: Blizzard_CompactRaidFrames
+## AllowLoad: game
+## AllowLoadGameType: cata
+Blizzard_CompactRaidFrameReservationManager.lua
+Blizzard_CompactRaidFrameContainer.xml
+Wrath\Blizzard_CompactRaidFrameManager.lua
+Blizzard_CompactRaidFrameManager_Shared.lua
+Wrath\Blizzard_CompactRaidFrameManager.xml
+Localization.lua

@@ -1,0 +1,913 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Templates for atlased textures -->
+	<Texture name="Spellbook-TrainSlot" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="77" y="110" />
+		<TexCoords left="0.00390625" right="0.30468750" top="0.00390625" bottom="0.43359375" />
+	</Texture>
+	<Texture name="Spellbook-SlotFrame" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="70" y="65" />
+		<TexCoords left="0.00390625" right="0.27734375" top="0.44140625" bottom="0.69531250" />
+	</Texture>
+	<Texture name="Spellbook-UnlearnedSlot" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="70" y="59" />
+		<TexCoords left="0.00390625" right="0.27734375" top="0.70312500" bottom="0.93359375" />
+	</Texture>
+	<Texture name="Spellbook-TrainTextBackground" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="121" y="92" />
+		<TexCoords left="0.31250000" right="0.78515625" top="0.00390625" bottom="0.36328125" />
+	</Texture>
+	<Texture name="Spellbook-EmptySlot" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="43" y="43" />
+		<TexCoords left="0.79296875" right="0.96093750" top="0.00390625" bottom="0.17187500" />
+	</Texture>
+	<Texture name="Spellbook-TrainBook" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="39" y="37" />
+		<TexCoords left="0.79296875" right="0.94531250" top="0.17968750" bottom="0.32421875" />
+	</Texture>
+	<Texture name="Spellbook-TextBackground" file="Interface\Spellbook\Spellbook-Parts" virtual="true">
+		<Size x="167" y="39" />
+		<TexCoords left="0.31250000" right="0.96484375" top="0.37109375" bottom="0.52343750" />
+	</Texture>
+	
+	<Frame name="SpellBookShineTemplate" inherits="AutoCastShineTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+	</Frame>
+	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				SpellBookSkillLineTab_OnClick(self);
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	<Button name="SpellBookFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" hidden="true">
+		<Scripts>
+			<OnClick>
+				SpellBookFrameTabButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(MicroButtonTooltipText(self:GetText(), self.binding), 1.0,1.0,1.0 );
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnEnable>
+				self:GetFontString():SetPoint("CENTER", 0, 3);
+			</OnEnable>
+			<OnDisable>
+				self:GetFontString():SetPoint("CENTER", 0, 5);
+			</OnDisable>
+		</Scripts>
+    </Button>
+	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" mixin="SpellButtonMixin" virtual="true">
+		<Size x="37" y="37" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" inherits="Spellbook-EmptySlot" parentKey="EmptySlot">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextBackground" inherits="Spellbook-TextBackground" parentKey="TextBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-4" y="-5" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextBackground2" inherits="Spellbook-TextBackground" parentKey="TextBackground2">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackground" relativePoint="TOPRIGHT" x="-4" y="-5" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTextureBg" setAllPoints="true" hidden="true" parentKey="IconTextureBg">
+					<Color r="0.40" g="0.20" b="0" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIconTexture" parentKey="IconTexture" setAllPoints="true" hidden="true" />
+				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT" parentKey="SpellName">
+					<Size x="145" y="0" />
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubSpellName" inherits="SubSpellFont" hidden="true" justifyH="LEFT" parentKey="SpellSubName">
+					<Size x="145" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRequiredLevelString" inherits="GameFontBlackSmall" hidden="true" justifyH="LEFT" parentKey="RequiredLevelString">
+					<Size x="145" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1" />
+					</Anchors>
+					<Color r="0.25" g="0.12" b="0" />
+				</FontString>
+				<FontString name="$parentSeeTrainerString" inherits="GameFontHighlightSmall" hidden="true" justifyH="LEFT" parentKey="SeeTrainerString" text="SPELLBOOK_TRAINABLE">
+					<Size x="145" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSubSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="$parentSlotFrame" inherits="Spellbook-SlotFrame">
+					<Anchors>
+						<Anchor point="CENTER" x="1.5" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentUnlearnedSlotFrame" inherits="Spellbook-UnlearnedSlot" hidden="true" parentKey="UnlearnedFrame">
+					<Anchors>
+						<Anchor point="CENTER" x="1.5" y="-3" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTrainSlotFrame" inherits="Spellbook-TrainSlot" hidden="true" parentKey="TrainFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-35" y="35" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow" hidden="true">
+					<Size x="23" y="11" />
+					<Anchors>
+						<Anchor point="RIGHT" x="2" y="0" />
+					</Anchors>
+					<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500" />
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentTrainTextBackground" inherits="Spellbook-TrainTextBackground" parentKey="TrainTextBackground" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTrainSlotFrame" relativePoint="TOPRIGHT" x="0" y="-12" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+			<Frame name="$textureTrainBook" hidden="true" parentKey="TrainBook" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTrainBook" inherits="Spellbook-TrainBook" parentKey="Icon">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="3" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<PreClick>
+				self:SetChecked(false);
+			</PreClick>
+			<OnClick method="OnClick" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnDragStart method="OnDragStart" />
+			<OnDragStop method="OnDragStop" />
+			<OnReceiveDrag method="OnReceiveDrag" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+		<Size>
+				<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+				<Anchor point="CENTER">
+							<Offset>
+						<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" mixin="SpellButtonMixin" virtual="true">
+		<Size x="40" y="40" />
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" setAllPoints="true" parentKey="IconTexture" />
+
+				<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="LEFT" parentKey="spellString">
+					<Size x="100" y="0" />
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="7" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubSpellName" inherits="NewSubSpellFont" justifyH="LEFT" justifyV="TOP" parentKey="subSpellString">
+					<Size x="95" y="28" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT" x="0" y="-1" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNameFrame" file="Interface\Spellbook\ProfessionsBook">
+					<Size x="108" y="41" />
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT" x="1" y="0" />
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.8" />
+					<TexCoords left="0.00390625" right="0.42578125" top="0.14843750" bottom="0.46875000" />
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+					<Size x="71" y="71" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown" />
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+			<PreClick>
+				self:SetChecked(false);
+			</PreClick>
+			<OnClick method="OnClick" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnDragStart method="OnDragStart" />
+			<OnDragStop method="OnDragStop" />
+			<OnReceiveDrag method="OnReceiveDrag" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress" />
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture" />
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD" />
+	</CheckButton>
+	<Frame name="ProfessionTrialCapTemplate" hidden="true" enableMouse="true" virtual="true">
+		<Size x="18" y="21" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentLockedIndicator" file="Interface/LFGFrame/UI-LFG-ICON-LOCK" parentKey="lockedIndicator" setAllPoints="true">
+					<TexCoords left="0" right="0.71875" top="0" bottom="0.875" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(CAP_REACHED_TRIAL, RED_FONT_COLOR.r, RED_FONT_COLOR.b, RED_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<StatusBar name="ProfessionStatusBarTemplate" virtual="true">
+		<Size x="95" y="16" />
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentRank" inherits="TextStatusBarText" parentKey="rankText" text="0/0">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="2" />
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\Spellbook\ProfessionsBook">
+					<Size x="12" y="12" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="0" y="2" />
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.05078125" top="0.87500000" bottom="0.96875000" />
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Spellbook\ProfessionsBook" hidden="true" parentKey="capRight">
+					<Size x="12" y="12" />
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="0" y="2" />
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.05078125" top="0.76562500" bottom="0.85937500" />
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBGLeft" file="Interface\Spellbook\ProfessionsBook">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" y="2" />
+					</Anchors>
+					<Size x="16" y="16" />
+					<TexCoords left="0.00390625" right="0.06640625" top="0.48437500" bottom="0.60937500" />
+				</Texture>
+				<Texture name="$parentBGRight" file="Interface\Spellbook\ProfessionsBook">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" y="2" />
+					</Anchors>
+					<Size x="16" y="16" />
+					<TexCoords left="0.00390625" right="0.06640625" top="0.62500000" bottom="0.75000000" />
+				</Texture>
+				<Texture name="$parentBGMiddle" file="Interface\Spellbook\ProfessionsBook">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBGLeft" relativePoint="TOPRIGHT" />
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBGRight" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+					<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.13281250" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<BarTexture name="$parentBar" file="Interface\Spellbook\Professions-Progress-Fill" />
+		<!--BarColor r="1" g="1" b="1"/-->
+		<Frames>
+			<Frame name="$parentCapped" parentKey="capped" inherits="ProfessionTrialCapTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="14" y="2" />
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				if ( self.tooltip ) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</StatusBar>
+	<Frame name="PrimaryProfessionTemplate" virtual="true">
+		<Size x="437" y="81" />
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentProfessionName" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="100" y="-2" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSpecialization" inherits="GameFontNormal" justifyH="LEFT" parentKey="specialization" text="">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentProfessionName" relativePoint="BOTTOMLEFT" x="0" y="-1" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMissing" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="missingHeader" text="PROFESSIONS_FIRST_PROFESSION">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="120" y="-13" />
+					</Anchors>
+					<Color r="0.85" g="0.7" b="0.6" />
+				</FontString>
+				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="PROFESSIONS_MISSING_PROFESSION">
+					<Size x="305" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentMissing" relativePoint="BOTTOMLEFT" x="0" y="-1" />
+					</Anchors>
+					<Color r="0.1" g="0.05" b="0.05" />
+				</FontString>
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
+					<Size x="182" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.professionName" x="0" y="-43" />
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIconBorder" file="Interface\Spellbook\ProfessionsBook">
+					<Size x="72" y="72" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-7" />
+					</Anchors>
+					<TexCoords left="0.43359375" right="0.72265625" top="0.14843750" bottom="0.72656250" />
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIcon" parentKey="icon" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIconBorder" x="1" y="-1" />
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconBorder" x="-1" y="1" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentSpellButtonTop" inherits="ProfessionButtonTemplate" parentKey="SpellButton2" id="2">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentSpellButtonBottom" inherits="ProfessionButtonTemplate" parentKey="SpellButton1" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSpellButtonTop" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</CheckButton>
+			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRank" relativePoint="BOTTOMLEFT" x="14" y="-5" />
+				</Anchors>
+			</StatusBar>
+			<Button parentKey="UnlearnButton" inherits="ResizeLayoutFrame" mixin="ProfessionsUnlearnButtonMixin" scale=".7">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentStatusBar" relativePoint="LEFT" x="-30" y="1" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75">
+							<Size x="26" y="26" />
+							<Anchors>
+								<Anchor point="LEFT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
+					<OnMouseDown method="OnMouseDown" />
+					<OnMouseUp method="OnMouseUp" />
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.icon:SetAlpha(0.6)
+				SetDesaturation(self.icon, true);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="SecondaryProfessionTemplate" virtual="true">
+		<Size x="437" y="46" />
+		<Frames>
+			<CheckButton name="$parentSpellButtonRight" inherits="ProfessionButtonTemplate" parentKey="SpellButton1" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-109" y="-3" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentSpellButtonLeft" inherits="ProfessionButtonTemplate" parentKey="SpellButton2" id="2">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentSpellButtonRight" relativePoint="TOPLEFT" x="-109" />
+				</Anchors>
+			</CheckButton>
+			<StatusBar name="$parentStatusBar" inherits="ProfessionStatusBarTemplate" parentKey="statusBar">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="-1" />
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentRank" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="rank" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.statusBar" relativePoint="TOPLEFT" x="-14" y="4" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.statusBar" relativePoint="TOPRIGHT" x="25" y="4" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentProfessionName" inherits="QuestFont_Shadow_Small" justifyH="LEFT" parentKey="professionName" text="TRADE_SKILLS">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.rank" relativePoint="TOPLEFT" x="0" y="2" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.rank" relativePoint="TOPRIGHT" x="0" y="2" />
+					</Anchors>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1" />
+						</Offset>
+						<Color r="0" g="0" b="0" />
+					</Shadow>
+					<Color r="1" g=".82" b="0" />
+				</FontString>
+				<FontString name="$parentMissing" inherits="QuestFont_Large" justifyH="LEFT" parentKey="missingHeader" text="">
+					<Size x="0" y="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-15" />
+					</Anchors>
+					<Color r="0.15" g="0.1" b="0.1" />
+				</FontString>
+				<FontString inherits="SubSpellFont" justifyH="LEFT" parentKey="missingText" text="">
+					<Size x="250" y="0" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT" x="-5" y="0" />
+					</Anchors>
+					<Color r="0.1" g="0.05" b="0.05" />
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="SpellBookFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
+		<Size x="550" y="525" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="SpellBookPage1" file="Interface\Spellbook\Spellbook-Page-1">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-25" />
+					</Anchors>
+				</Texture>
+				<Texture name="SpellBookPage2" file="Interface\Spellbook\Spellbook-Page-2">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SpellBookPage1" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="SpellBookFrameTabButton1" inherits="SpellBookFrameTabButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="12" y="1" />
+				</Anchors>
+			</Button>
+			<Button name="SpellBookFrameTabButton2" inherits="SpellBookFrameTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SpellBookFrameTabButton1" relativePoint="RIGHT" x="-15" y="0" />
+				</Anchors>
+			</Button>
+			<Button name="SpellBookFrameTabButton3" inherits="SpellBookFrameTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SpellBookFrameTabButton2" relativePoint="RIGHT" x="-15" y="0" />
+				</Anchors>
+      </Button>
+			<Button name="SpellBookFrameTabButton4" inherits="SpellBookFrameTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SpellBookFrameTabButton3" relativePoint="RIGHT" x="-15" y="0" />
+				</Anchors>
+			</Button>
+			<Button name="SpellBookFrameTabButton5" inherits="SpellBookFrameTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SpellBookFrameTabButton4" relativePoint="RIGHT" x="-15" y="0" />
+				</Anchors>
+			</Button>
+
+
+			<!--  Tab Types -->
+			<Frame name="SpellBookPageNavigationFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="SpellBookPageText" inherits="GameFontBlack" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="102" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-110" y="38"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0.25" g="0.12" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="SpellBookPrevPageButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" x="-66" y="26" />
+						</Anchors>
+						<Scripts>
+							<OnClick function="SpellBookPrevPageButton_OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="SpellBookNextPageButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-31" y="26" />
+						</Anchors>
+						<Scripts>
+							<OnClick function="SpellBookNextPageButton_OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="SpellBookSpellIconsFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<CheckButton name="SpellButton1" inherits="SpellButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="100" y="-72" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton2" inherits="SpellButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton1" x="225" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton3" inherits="SpellButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton1" relativePoint="BOTTOMLEFT" x="0" y="-29" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton4" inherits="SpellButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton3" x="225" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton5" inherits="SpellButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton3" relativePoint="BOTTOMLEFT" x="0" y="-29" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton6" inherits="SpellButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton5" x="225" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton7" inherits="SpellButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton5" relativePoint="BOTTOMLEFT" x="0" y="-29" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton8" inherits="SpellButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton7" x="225" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton9" inherits="SpellButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton7" relativePoint="BOTTOMLEFT" x="0" y="-29" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton10" inherits="SpellButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton9" x="225" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton11" inherits="SpellButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton9" relativePoint="BOTTOMLEFT" x="0" y="-29" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellButton12" inherits="SpellButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellButton11" x="225" y="0" />
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="SpellBookSideTabsFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<CheckButton name="SpellBookSkillLineTab1" inherits="SpellBookSkillLineTabTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab2" inherits="SpellBookSkillLineTabTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab3" inherits="SpellBookSkillLineTabTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab2" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab4" inherits="SpellBookSkillLineTabTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab3" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab5" inherits="SpellBookSkillLineTabTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab4" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab6" inherits="SpellBookSkillLineTabTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab5" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab7" inherits="SpellBookSkillLineTabTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab6" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="SpellBookSkillLineTab8" inherits="SpellBookSkillLineTabTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab7" relativePoint="BOTTOMLEFT" x="0" y="-17" />
+						</Anchors>
+					</CheckButton>
+					<Frame name="SpellBookTabFlashFrame" hidden="true">
+						<Size>
+							<AbsDimension x="10" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="SpellBookSkillLineTab1Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab1"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab2Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab2"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab3Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab3"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab4Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab4"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab5Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab5"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab6Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab6"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab7Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab7"/>
+									</Anchors>
+								</Texture>
+								<Texture name="SpellBookSkillLineTab8Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
+									<Size>
+										<AbsDimension x="64" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab8"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="SpellBookProfessionFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" relativePoint="BOTTOMRIGHT" />
+				</Anchors>
+				<Frames>
+					<Frame name="PrimaryProfession1" inherits="PrimaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="80" y="-67" />
+						</Anchors>
+					</Frame>
+					<Frame name="PrimaryProfession2" inherits="PrimaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="-12" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_SECOND_PROFESSION);
+								self.icon:SetAlpha(0.6)
+								SetDesaturation(self.icon, true);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="SecondaryProfession1" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PrimaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-22" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_ARCHAEOLOGY);
+								self.missingText:SetText(PROFESSIONS_ARCHAEOLOGY_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="SecondaryProfession2" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession1" relativePoint="BOTTOMLEFT" x="0" y="-11" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_FISHING);
+								self.missingText:SetText(PROFESSIONS_FISHING_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="SecondaryProfession3" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession2" relativePoint="BOTTOMLEFT" x="0" y="-11" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_COOKING);
+								self.missingText:SetText(PROFESSIONS_COOKING_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="SecondaryProfession4" inherits="SecondaryProfessionTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SecondaryProfession3" relativePoint="BOTTOMLEFT" x="0" y="-11" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.missingHeader:SetText(PROFESSIONS_FIRST_AID);
+								self.missingText:SetText(PROFESSIONS_FIRST_AID_MISSING);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="SpellBookFrame_OnLoad"/>
+			<OnEvent function="SpellBookFrame_OnEvent"/>
+			<OnShow function="SpellBookFrame_OnShow"/>
+			<OnHide function="SpellBookFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

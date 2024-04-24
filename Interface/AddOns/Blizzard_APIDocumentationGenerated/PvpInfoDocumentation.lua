@@ -79,6 +79,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetOutdoorPvPWaitTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pvpWaitTime", Type = "time_t", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRandomBGLossRewards",
 			Type = "Function",
 
@@ -102,6 +116,17 @@ local PvpInfo =
 				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
 				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
 				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetZonePVPInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "pvpType", Type = "cstring", Nilable = false },
+				{ Name = "isSubZonePvP", Type = "bool", Nilable = false },
+				{ Name = "factionName", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -132,6 +157,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsSubZonePVPPOI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestCrowdControlSpell",
 			Type = "Function",
 
@@ -139,6 +173,19 @@ local PvpInfo =
 			{
 				{ Name = "playerToken", Type = "UnitToken", Nilable = false },
 			},
+		},
+		{
+			Name = "SetPVP",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enablePVP", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "TogglePVP",
+			Type = "Function",
 		},
 	},
 
@@ -270,6 +317,28 @@ local PvpInfo =
 			LiteralName = "PVP_RATED_STATS_UPDATE",
 		},
 		{
+			Name = "PvpRewardsUpdate",
+			Type = "Event",
+			LiteralName = "PVP_REWARDS_UPDATE",
+		},
+		{
+			Name = "PvpRoleUpdate",
+			Type = "Event",
+			LiteralName = "PVP_ROLE_UPDATE",
+		},
+		{
+			Name = "PvpTypesEnabled",
+			Type = "Event",
+			LiteralName = "PVP_TYPES_ENABLED",
+			Payload =
+			{
+				{ Name = "wargameBattlegrounds", Type = "bool", Nilable = false },
+				{ Name = "ratedBattlegrounds", Type = "bool", Nilable = false },
+				{ Name = "ratedArenas", Type = "bool", Nilable = false },
+				{ Name = "ratedSoloShuffle", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PvpVehicleInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_VEHICLE_INFO_UPDATED",
@@ -278,6 +347,16 @@ local PvpInfo =
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",
+		},
+		{
+			Name = "PvpqueueAnywhereShow",
+			Type = "Event",
+			LiteralName = "PVPQUEUE_ANYWHERE_SHOW",
+		},
+		{
+			Name = "PvpqueueAnywhereUpdateAvailable",
+			Type = "Event",
+			LiteralName = "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
 		},
 		{
 			Name = "UpdateActiveBattlefield",
@@ -338,9 +417,9 @@ local PvpInfo =
 		{
 			Name = "BrawlType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "None", Type = "BrawlType", EnumValue = 0 },
@@ -348,6 +427,7 @@ local PvpInfo =
 				{ Name = "Arena", Type = "BrawlType", EnumValue = 2 },
 				{ Name = "LFG", Type = "BrawlType", EnumValue = 3 },
 				{ Name = "SoloShuffle", Type = "BrawlType", EnumValue = 4 },
+				{ Name = "SoloRbg", Type = "BrawlType", EnumValue = 5 },
 			},
 		},
 		{
@@ -442,6 +522,7 @@ local PvpInfo =
 				{ Name = "brawlType", Type = "BrawlType", Nilable = false },
 				{ Name = "mapNames", Type = "table", InnerType = "string", Nilable = false },
 				{ Name = "includesAllArenas", Type = "bool", Nilable = false, Default = false },
+				{ Name = "minItemLevel", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{

@@ -125,6 +125,7 @@ local Club =
 				{ Name = "allowedRedeemCount", Type = "number", Nilable = true, Documentation = { "Number of uses. nil means unlimited" } },
 				{ Name = "duration", Type = "number", Nilable = true, Documentation = { "Duration in seconds. nil never expires" } },
 				{ Name = "defaultStreamId", Type = "ClubStreamId", Nilable = true },
+				{ Name = "isCrossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -186,6 +187,20 @@ local Club =
 			Returns =
 			{
 				{ Name = "hasUnreadMessages", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesCommunityHaveMembersOfTheOppositeFaction",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasMembersOfOppositeFaction", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -284,6 +299,15 @@ local Club =
 			},
 		},
 		{
+			Name = "GetClubCapacity",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "capacity", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetClubInfo",
 			Type = "Function",
 
@@ -295,6 +319,20 @@ local Club =
 			Returns =
 			{
 				{ Name = "info", Type = "ClubInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetClubLimits",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubType", Type = "ClubType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "clubLimits", Type = "ClubLimits", Nilable = false },
 			},
 		},
 		{
@@ -353,6 +391,15 @@ local Club =
 			Returns =
 			{
 				{ Name = "errorCode", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetGuildClubId",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "guildClubId", Type = "ClubId", Nilable = true },
 			},
 		},
 		{
@@ -752,6 +799,16 @@ local Club =
 			{
 				{ Name = "guildClubId", Type = "ClubId", Nilable = false },
 				{ Name = "memberId", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SendCharacterInvitation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "clubId", Type = "ClubId", Nilable = false },
+				{ Name = "character", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1158,9 +1215,7 @@ local Club =
 			LiteralName = "CLUB_TICKET_RECEIVED",
 			Payload =
 			{
-				{ Name = "error", Type = "ClubErrorType", Nilable = false },
 				{ Name = "ticket", Type = "string", Nilable = false },
-				{ Name = "info", Type = "ClubInfo", Nilable = true },
 			},
 		},
 		{
@@ -1419,6 +1474,7 @@ local Club =
 				{ Name = "favoriteTimeStamp", Type = "BigUInteger", Nilable = true },
 				{ Name = "joinTime", Type = "BigUInteger", Nilable = true },
 				{ Name = "socialQueueingEnabled", Type = "bool", Nilable = true },
+				{ Name = "crossFaction", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -1483,6 +1539,8 @@ local Club =
 				{ Name = "guildRank", Type = "string", Nilable = true },
 				{ Name = "guildRankOrder", Type = "luaIndex", Nilable = true },
 				{ Name = "isRemoteChat", Type = "bool", Nilable = true },
+				{ Name = "overallDungeonScore", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 			},
 		},
 		{

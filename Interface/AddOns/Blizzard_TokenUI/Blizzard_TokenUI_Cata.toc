@@ -1,0 +1,10 @@
+## Interface: 30001
+## Title: Blizzard Token UI
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## AllowLoad: game
+## AllowLoadGameType: cata
+Cata\Blizzard_TokenUI.lua
+Cata\Blizzard_TokenUI.xml
+Localization.lua

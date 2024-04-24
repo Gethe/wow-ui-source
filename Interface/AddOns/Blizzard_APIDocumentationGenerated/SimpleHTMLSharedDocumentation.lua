@@ -9,7 +9,7 @@ local SimpleHTMLShared =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false },
 				{ Name = "type", Type = "HTMLTextType", Nilable = false },
-				{ Name = "align", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "align", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 	},

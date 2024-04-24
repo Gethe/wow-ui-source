@@ -1,0 +1,65 @@
+## Title: Blizzard_FrameXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup
+## LoadFirst: 1
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: vanilla
+Shared\Localization.lua
+CustomBindingManager.lua
+CustomBindingHandler.lua
+Classic\SecureTemplatesBase.xml
+Classic\SecureTemplates.lua
+SecureStateDriver.lua
+SecureHoverDriver.lua
+Classic\SecureTemplates.xml
+SecureHandlerTemplates.xml
+SecureGroupHeaders.xml
+Classic\NavigationBar.lua
+Classic\NavigationBar.xml
+Classic\CharacterFrameTemplates.xml
+Classic\Sound.lua
+Classic\AlertFrames.lua
+Classic\AlertFrames.xml
+Classic\AlertFrameSystems.lua
+Classic\AlertFrameSystems.xml
+Classic\MirrorTimer.lua
+Classic\MirrorTimer.xml
+Classic\CoinPickupFrame.lua
+Classic\CoinPickupFrame.xml
+Classic\StackSplitFrame.lua
+Classic\StackSplitFrame.xml
+FadingFrame.lua
+Classic\ZoneText.lua
+Classic\ZoneText.xml
+Shared\Cooldown.lua
+Classic\Cooldown.xml
+Classic\TutorialFrame.lua
+Classic\TutorialFrame.xml
+Shared\LowHealthFrame.lua
+Classic\LowHealthFrame.xml
+Classic\CombatFeedback.lua
+Classic\RaidWarning.lua
+Classic\RaidWarning.xml
+Shared\CinematicFrame.lua
+Shared\CinematicFrame.xml
+Classic\ColorPickerFrame.lua
+Classic\ColorPickerFrame.xml
+Vanilla\WorldStateFrame.lua
+Vanilla\WorldStateFrame.xml
+Classic\TalentFrameBase_Shared.lua
+Vanilla\TalentFrameBase.lua
+Classic\Blizzard_TalentUITemplates.xml
+EasyMenu.lua
+Classic\MovieFrame.lua
+Classic\MovieFrame.xml
+Classic\StreamingFrame.lua
+Classic\StreamingFrame.xml
+IconIntroAnimation.lua
+IconIntroAnimation.xml
+Timer.lua
+Timer.xml
+Classic\LootHistory.lua
+Classic\LootHistory.xml
+Classic\ClassTrainerFrameTemplates.xml

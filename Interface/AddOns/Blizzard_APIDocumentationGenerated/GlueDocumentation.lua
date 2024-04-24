@@ -5,6 +5,15 @@ local Glue =
 
 	Functions =
 	{
+		{
+			Name = "IsOnGlueScreen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isOnGlueScreen", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

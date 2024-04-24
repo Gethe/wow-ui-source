@@ -5,6 +5,15 @@ local Build =
 
 	Functions =
 	{
+		{
+			Name = "IsDebugBuild",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDebugBuild", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

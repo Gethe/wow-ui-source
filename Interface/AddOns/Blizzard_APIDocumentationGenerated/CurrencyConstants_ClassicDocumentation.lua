@@ -5,9 +5,9 @@ local CurrencyConstants_Classic =
 		{
 			Name = "CurrencyDestroyReason",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "Cheat", Type = "CurrencyDestroyReason", EnumValue = 0 },
@@ -20,7 +20,8 @@ local CurrencyConstants_Classic =
 				{ Name = "Garrison", Type = "CurrencyDestroyReason", EnumValue = 7 },
 				{ Name = "DroppedToCorpse", Type = "CurrencyDestroyReason", EnumValue = 8 },
 				{ Name = "BonusRoll", Type = "CurrencyDestroyReason", EnumValue = 9 },
-				{ Name = "Last", Type = "CurrencyDestroyReason", EnumValue = 10 },
+				{ Name = "LegacyConversion", Type = "CurrencyDestroyReason", EnumValue = 10 },
+				{ Name = "Last", Type = "CurrencyDestroyReason", EnumValue = 11 },
 			},
 		},
 		{

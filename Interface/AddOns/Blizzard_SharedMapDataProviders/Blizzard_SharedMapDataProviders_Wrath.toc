@@ -1,7 +1,8 @@
-## Title: Blizzard Shared Map Data Providers
+## Title: Blizzard_SharedMapDataProviders
 ## Author: Blizzard Entertainment
-## Version: 1.0
 ## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: wrath
 
 SharedMapPoiTemplates.xml
 QuestDataProvider.xml
@@ -16,12 +17,13 @@ MapHighlightDataProvider.xml
 AreaLabelDataProvider.xml
 BattlefieldFlagDataProvider.xml
 BonusObjectiveDataProvider.xml
-BonusObjectiveDataProvider_Wrath.lua
+Wrath\BonusObjectiveDataProvider.lua
 VehicleDataProvider.xml
 StorylineQuestDataProvider.xml
 EncounterJournalDataProvider.xml
 FogOfWarDataProvider.xml
-..\..\..\Interface_Wrath\AddOns\Blizzard_SharedMapDataProviders\DeathMapDataProvider.xml
+DeathMapDataProvider.lua
+Wrath\DeathMapDataProvider.xml
 QuestBlobDataProvider.xml
 VignetteDataProvider.xml
 InvasionDataProvider.xml
