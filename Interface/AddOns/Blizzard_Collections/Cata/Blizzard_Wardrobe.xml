@@ -1144,7 +1144,7 @@
 							<TexCoords left="0.9375" right="1" top="0" bottom="0.3125"/>
 						</Texture>
 						<Texture parentKey="MoneyMiddle" file="Interface\Common\MoneyFrame.png">
-							<Size x="154" y="20"/>
+							<Size x="176" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.MoneyLeft" relativePoint="RIGHT"/>
 							</Anchors>
@@ -1365,7 +1365,7 @@
 							<KeyValue key="slot" value="SECONDARYHANDSLOT" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="BOTTOM" x="27" y="45"/>
+							<Anchor point="BOTTOM" x="0" y="45"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="MainHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
@@ -1373,7 +1373,15 @@
 							<KeyValue key="slot" value="MAINHANDSLOT" type="string"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="BOTTOM" x="-26" y="45"/>
+							<Anchor point="BOTTOM" x="-53" y="45"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="RangedButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
+						<KeyValues>
+							<KeyValue key="slot" value="RANGEDSLOT" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOM" x="53" y="45"/>
 						</Anchors>
 					</Button>
 					<!--Button parentKey="MainHandEnchantButton" parentArray="SlotButtons" inherits="WardrobeTransmogEnchantButtonTemplate">
@@ -1414,42 +1422,6 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentSpecDropDown" parentKey="SpecDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad function="WardrobeTransmogFrameSpecDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
-					<DropDownToggleButton parentKey="SpecButton" inherits="UIMenuButtonStretchTemplate">
-						<Size x="22" y="22"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.ApplyButton" relativePoint="LEFT" x="1" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<Texture file="Interface\Buttons\SquareButtonTextures" parentKey="Icon">
-									<Size x="12" y="12"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.45312500" right="0.64062500" top="0.20312500" bottom="0.01562500"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-						<Scripts>
-							<OnMouseDown>
-								UIMenuButtonStretchMixin.OnMouseDown(self, button);
-								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-								ToggleDropDownMenu(1, nil, self:GetParent().SpecDropDown, self, 0, 0);
-								HelpTip:Hide(self:GetParent(), TRANSMOG_SPECS_BUTTON_TUTORIAL);
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true);
-								self.Icon:SetPoint("CENTER", -1, -1);
-							</OnMouseDown>
-							<OnMouseUp>
-								self.Icon:SetPoint("CENTER", 0, 0);
-							</OnMouseUp>
-						</Scripts>
-					</DropDownToggleButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

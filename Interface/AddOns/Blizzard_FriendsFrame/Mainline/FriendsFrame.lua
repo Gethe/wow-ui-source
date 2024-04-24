@@ -826,7 +826,12 @@ function WhoList_InitButton(button, elementData)
 		classTextColor = HIGHLIGHT_FONT_COLOR;
 	end
 
-	button.Name:SetText(info.fullName);
+	local name = info.fullName;
+	if info.timerunningSeasonID then
+		name = TimerunningUtil.AddTinyIcon(name);
+	end
+
+	button.Name:SetText(name);
 	button.Level:SetText(info.level);
 	button.Class:SetText(info.classStr);
 	button.Class:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);

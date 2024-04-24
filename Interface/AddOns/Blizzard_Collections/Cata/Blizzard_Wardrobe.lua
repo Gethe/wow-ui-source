@@ -599,7 +599,6 @@ function TransmogSlotButtonMixin:Update()
 	if not self:IsShown() then
 		return;
 	end
-
 	local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo, isHideVisual, texture = C_Transmog.GetSlotInfo(self.transmogLocation);
 	local baseTexture = GetInventoryItemTexture("player", self.transmogLocation.slotID);
 
@@ -1453,7 +1452,7 @@ end
 function WardrobeItemsCollectionMixin:DressUpVisual(visualInfo)
 	if self.transmogLocation:IsAppearance() then
 		local sourceID = self:GetAnAppearanceSourceFromVisual(visualInfo.visualID, nil);
-		DressUpCollectionAppearance(sourceID, self.transmogLocation, self:GetActiveCategory());
+		DressUpVisual(sourceID);
 	end
 end
 
@@ -1576,10 +1575,15 @@ function WardrobeItemsCollectionMixin:GetActiveCategory()
 end
 
 function WardrobeItemsCollectionMixin:IsValidWeaponCategoryForSlot(categoryID)
-	local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+	local name, isWeapon, canEnchant, canMainHand, canOffHand, canRanged = C_TransmogCollection.GetCategoryInfo(categoryID);
 	if ( name and isWeapon ) then
-		if ( (self.transmogLocation:IsMainHand() and canMainHand) or (self.transmogLocation:IsOffHand() and canOffHand) ) then
-			if ( C_Transmog.IsAtTransmogNPC() ) then
+		local isAtTransmog = C_Transmog.IsAtTransmogNPC();
+		local isForMainHand = self.transmogLocation:IsMainHand();
+		local isForOffHand = self.transmogLocation:IsOffHand();
+		-- Ranged weapons appear in the mainhand dropdown for Appearances, but have their own slot at the transmogrifier
+		local isForRanged = (isAtTransmog and self.transmogLocation:IsRanged()) or (not isAtTransmog and isForMainHand);
+		if ( (isForMainHand and canMainHand) or (isForOffHand and canOffHand) or (isForRanged and canRanged) ) then
+			if (isAtTransmog) then
 				local equippedItemID = GetInventoryItemID("player", self.transmogLocation:GetSlotID());
 				return C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID);
 			else
@@ -2445,13 +2449,15 @@ function WardrobeCollectionFrameWeaponDropDown_Init(self)
 		end
 	end
 	local buttonsAdded = 0;
-
+	local isAtTransmog = C_Transmog.IsAtTransmogNPC();
 	local isForMainHand = transmogLocation:IsMainHand();
 	local isForOffHand = transmogLocation:IsOffHand();
+	-- Ranged weapons appear in the mainhand dropdown for Appearances, but have their own slot at the transmogrifier
+	local isForRanged = (isAtTransmog and transmogLocation:IsRanged()) or (not isAtTransmog and isForMainHand);
 	for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
-		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+		local name, isWeapon, canEnchant, canMainHand, canOffHand, canRanged = C_TransmogCollection.GetCategoryInfo(categoryID);
 		if ( name and isWeapon ) then
-			if ( (isForMainHand and canMainHand) or (isForOffHand and canOffHand) ) then
+			if ( (isForMainHand and canMainHand) or (isForOffHand and canOffHand) or (isForRanged and canRanged) ) then
 				if ( not checkCategory or C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID) ) then
 					info.text = name;
 					info.arg1 = categoryID;
@@ -2700,33 +2706,4 @@ function WardrobeFilterDropDown_InitializeBaseSets(self, level)
 	};
 
 	FilterDropDownSystem.Initialize(self, filterSystem, level);
-end
-
--- ***** SPEC DROPDOWN
-
-function WardrobeTransmogFrameSpecDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WardrobeTransmogFrameSpecDropDown_Initialize, "MENU");
-end
-
-function WardrobeTransmogFrameSpecDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = TRANSMOG_APPLY_TO;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-
-	local currentSpecOnly = GetCVarBool("transmogCurrentSpecOnly");
-
-	info.text = TRANSMOG_ALL_SPECIALIZATIONS;
-	info.func = WardrobeTransmogFrameSpecDropDown_OnClick;
-	info.checked = not currentSpecOnly;
-	info.value = 0;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-function WardrobeTransmogFrameSpecDropDown_OnClick(self)
-	SetCVar("transmogCurrentSpecOnly", self.value == 1);
 end

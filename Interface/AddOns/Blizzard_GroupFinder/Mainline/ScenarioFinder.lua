@@ -350,7 +350,7 @@ end
 function ScenarioQueueFrame_SetTypeRandom()
 	local queueFrame = ScenarioQueueFrame;
 	queueFrame.Bg:ClearAllPoints();
-	queueFrame.Bg:SetPoint("TOPLEFT", 6, -71);
+	queueFrame.Bg:SetPoint("TOPLEFT", 5, -77);
 	queueFrame.Bg:SetPoint("BOTTOMRIGHT", 138, -155);
 	queueFrame.Specific:Hide();
 	queueFrame.Random:Show();
@@ -361,8 +361,8 @@ function ScenarioQueueFrame_SetTypeSpecific()
 	local queueFrame = ScenarioQueueFrame;
 	queueFrame.Bg:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-DUNGEONWALL");
 	queueFrame.Bg:ClearAllPoints();
-	queueFrame.Bg:SetPoint("TOPLEFT", 6, -71);
-	queueFrame.Bg:SetPoint("BOTTOMRIGHT", 138, 26);
+	queueFrame.Bg:SetPoint("TOPLEFT", 5, -75);
+	queueFrame.Bg:SetPoint("BOTTOMRIGHT", 175, 29);
 	queueFrame.Random:Hide();
 	queueFrame.Specific:Show();
 	LFGCooldownCover_ChangeSettings(ScenarioQueueFrame.CooldownFrame, true, false);

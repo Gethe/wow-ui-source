@@ -385,8 +385,12 @@
 						<Frames>
 							<GameTooltip name="ItemSocketingDescription" clampedToScreen="false" inherits="GameTooltipTemplate" setAllPoints="true" hidden="false">
 								<KeyValues>
+									<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
 									<KeyValue key="IsEmbedded" value="true" type="boolean"/>
 								</KeyValues>
+								<Scripts>
+									<OnUpdate function="GameTooltip_OnUpdate"/>
+								</Scripts>
 							</GameTooltip>
 						</Frames>
 					</Frame>

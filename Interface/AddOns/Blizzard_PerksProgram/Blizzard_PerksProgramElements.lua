@@ -1013,34 +1013,6 @@ function PerksProgramSetDetailsItemMixin:OnLeave()
 end
 
 ----------------------------------------------------------------------------------
--- PerksDetailsScrollBarMixin
-----------------------------------------------------------------------------------
-
-PerksDetailsScrollBarMixin = {}
-
-function PerksDetailsScrollBarMixin:OnShow()
-	EventRegistry:TriggerEvent("PerksProgram.SetDetailsScrollShownUpdated", true);
-end
-
-function PerksDetailsScrollBarMixin:OnHide()
-	EventRegistry:TriggerEvent("PerksProgram.SetDetailsScrollShownUpdated", false);
-end
-
-----------------------------------------------------------------------------------
--- PerksDetailsScrollBoxFadeMixin
-----------------------------------------------------------------------------------
-
-PerksDetailsScrollBoxFadeMixin = {}
-
-function PerksDetailsScrollBoxFadeMixin:OnLoad()
-	EventRegistry:RegisterCallback("PerksProgram.SetDetailsScrollShownUpdated", self.UpdateShown, self);
-end
-
-function PerksDetailsScrollBoxFadeMixin:UpdateShown(shown)
-	self:SetShown(shown);
-end
-
-----------------------------------------------------------------------------------
 -- PerksProgramCheckBoxMixin
 ----------------------------------------------------------------------------------
 PerksProgramCheckBoxMixin = {};
@@ -1064,8 +1036,6 @@ function PerksProgramCheckBoxMixin:OnClick()
 		PerksProgramFrame[self.perksProgramOnClickMethod](PerksProgramFrame, isChecked);
 	end
 end
-
-
 
 ----------------------------------------------------------------------------------
 -- PerksProgramToyDetailsFrameMixin

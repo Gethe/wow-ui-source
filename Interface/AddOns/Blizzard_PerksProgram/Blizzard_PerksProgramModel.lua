@@ -792,7 +792,8 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForTransmogs(d
 
 	if displayData then
 		local camera = self.PlayerModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-		UpdateModelSceneWithDisplayData(self.playerActor, camera, displayData, data.perksVendorCategoryID, self.attackAnimationPlaying);
+		local tryOverrideAttackAnimations = C_PerksProgram.IsAttackAnimToggleEnabled() and self.attackAnimationPlaying or true;
+		UpdateModelSceneWithDisplayData(self.playerActor, camera, displayData, data.perksVendorCategoryID, tryOverrideAttackAnimations);
 	end
 	UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["TRANSMOG_PLAYER"]);
 	self.ToyOverlayFrame:Hide();

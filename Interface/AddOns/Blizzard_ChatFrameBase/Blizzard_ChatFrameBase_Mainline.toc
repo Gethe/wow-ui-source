@@ -11,5 +11,6 @@ Mainline\ChatFrame.lua
 Mainline\ChatFrame.xml
 Shared\ChatAlertFrameMixin.lua
 Mainline\ChannelFrameButtonMixin.lua
+Shared\FloatingChatFrame.lua
 Mainline\FloatingChatFrame.lua
 Mainline\FloatingChatFrame.xml

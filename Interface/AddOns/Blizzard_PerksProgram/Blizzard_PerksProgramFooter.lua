@@ -47,18 +47,31 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 	local categoryID = self.selectedProductInfo.perksVendorCategoryID;
 	local showMountCheckboxToggles = categoryID == Enum.PerksVendorCategoryType.Mount;
 	self.TogglePlayerPreview:SetShown(showMountCheckboxToggles);
-	self.TogglePlayerPreview:SetPoint("CENTER", self.RotateButtonContainer, "CENTER", GetCheckBoxCenteringOffset({self.TogglePlayerPreview, self.ToggleMountSpecial}), 0);
-	
-	self.ToggleMountSpecial:SetShown(showMountCheckboxToggles);
-	PerksProgramFrame:SetMountSpecialPreviewOnClick(showMountCheckboxToggles);
-	self.ToggleMountSpecial:SetChecked(showMountCheckboxToggles);
+
+	local mountSpecialCheckboxEnabled = C_PerksProgram.IsMountSpecialAnimToggleEnabled();
+	local showMountSpecialCheckbox = showMountCheckboxToggles and mountSpecialCheckboxEnabled;
+	self.ToggleMountSpecial:SetShown(showMountSpecialCheckbox);
+	if showMountSpecialCheckbox then
+		self.TogglePlayerPreview:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", GetCheckBoxCenteringOffset({self.TogglePlayerPreview, self.ToggleMountSpecial}), 0);
+	else
+		self.TogglePlayerPreview:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", -18, 0);
+	end
+
+	if mountSpecialCheckboxEnabled then
+		PerksProgramFrame:SetMountSpecialPreviewOnClick(showMountSpecialCheckbox);
+		self.ToggleMountSpecial:SetChecked(showMountSpecialCheckbox);
+	else
+		PerksProgramFrame:SetMountSpecialPreviewOnClick(false);
+		self.ToggleMountSpecial:SetChecked(false);
+	end
 
 	local showTransmogCheckBoxes = categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset;
 	self.ToggleHideArmor:SetShown(showTransmogCheckBoxes);
 
 	local displayData = data.displayData;
 	local showAttackAnimation = showTransmogCheckBoxes and (displayData.animationKitID or (displayData.animation and displayData.animation > 0));
-	
+	local attackCheckboxEnabled = C_PerksProgram.IsAttackAnimToggleEnabled();
+	showAttackAnimation = showAttackAnimation and attackCheckboxEnabled;
 	if showAttackAnimation then
 		self.ToggleHideArmor:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", GetCheckBoxCenteringOffset({self.ToggleHideArmor, self.ToggleAttackAnimation}), 0);
 	else
@@ -74,8 +87,10 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 		end
 		self.ToggleHideArmor:SetChecked(hideArmor);
 
-		PerksProgramFrame:PlayerSetAttackAnimationOnClick(showAttackAnimation);
-		self.ToggleAttackAnimation:SetChecked(showAttackAnimation);
+		if attackCheckboxEnabled then
+			PerksProgramFrame:PlayerSetAttackAnimationOnClick(showAttackAnimation);
+			self.ToggleAttackAnimation:SetChecked(showAttackAnimation);
+		end
 	end
 end
 

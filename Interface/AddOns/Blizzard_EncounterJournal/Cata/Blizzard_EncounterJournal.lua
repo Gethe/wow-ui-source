@@ -2429,15 +2429,16 @@ function EncounterJournal_InitLootFilter(self, level)
 
 		local numClasses = GetNumClasses();
 		for i = 1, numClasses do
-			if (i ~= 10) then -- We have an annoying gap between warlock and druid
-				classDisplayName, classTag, classID = GetClassInfo(i);
-				info.text = classDisplayName;
-				info.checked = (filterClassID == classID);
-				info.arg1 = classID;
-				info.arg2 = 0;
-				info.func = EncounterJournal_SetClassAndSpecFilter;
-				UIDropDownMenu_AddButton(info, level);
+			if (i == 10 and GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM) then -- We have an annoying gap between warlock and druid.
+				i = 11;
 			end
+			classDisplayName, classTag, classID = GetClassInfo(i);
+			info.text = classDisplayName;
+			info.checked = (filterClassID == classID);
+			info.arg1 = classID;
+			info.arg2 = 0;
+			info.func = EncounterJournal_SetClassAndSpecFilter;
+			UIDropDownMenu_AddButton(info, level);
 		end
 	end
 

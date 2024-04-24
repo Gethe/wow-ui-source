@@ -7,13 +7,7 @@ ALT_POWER_TYPE_PILL				= 3;
 --Counter bar uses a different frame
 ALT_POWER_TYPE_COUNTER			= 4;
 
-local altPowerBarTextures = {
-	frame = 0,
-	background = 1,
-	fill = 2,
-	spark = 3,
-	flash = 4,
-}
+local altPowerBarTextures = { "frame", "background", "fill", "spark", "flash" };
 
 local TEXTURE_FRAME_INDEX = 1;
 local TEXTURE_NUMBERS_INDEX = 6;
@@ -128,7 +122,7 @@ function UnitPowerBarAlt_OnUpdate(self, elapsed)
 end
 
 function UnitPowerBarAlt_ApplyTextures(frame, unit)
-	for textureName, textureIndex in pairs(altPowerBarTextures) do
+	for textureIndex, textureName in ipairs(altPowerBarTextures) do
 		local texture = frame[textureName];
 		local texturePath, r, g, b = GetUnitPowerBarTextureInfo(unit, textureIndex, frame.timerIndex);
 		texture:SetTexture(texturePath);
@@ -139,7 +133,7 @@ end
 function UnitPowerBarAlt_HideTextures(frame)
 	frame.flashAnim:Stop();
 	frame.flashOutAnim:Stop();
-	for textureName, textureIndex in pairs(altPowerBarTextures) do
+	for textureIndex, textureName in ipairs(altPowerBarTextures) do
 		local texture = frame[textureName];
 		texture:SetTexture(nil);
 		texture:Hide();

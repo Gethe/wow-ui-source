@@ -531,7 +531,8 @@ function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
 end
 
 function ItemUpgradeMixin:CanUpgradeToLevel(upgradeLevel)
-	return self:CheckUpgradeLevel(upgradeLevel) and not self.upgradeInfo.upgradeLevelInfos[upgradeLevel].failureMessage;
+	local upgradeLevelIndex = 1 + (upgradeLevel - self.upgradeInfo.currUpgrade);
+	return self:CheckUpgradeLevel(upgradeLevel) and not self.upgradeInfo.upgradeLevelInfos[upgradeLevelIndex].failureMessage;
 end
 
 function ItemUpgradeMixin:GetUpgradeInfo()
@@ -571,9 +572,13 @@ function ItemUpgradeMixin:InitDropdown()
 		info.tooltipWhileDisabled = 1;
 		info.tooltipTitle = ItemUpgradeFrame:GetUpgradeCostString(i);
 		
-		local failureMessage = self.upgradeInfo.upgradeLevelInfos[i].failureMessage;
+		local upgradeLevelIndex = 1 + (i - self.upgradeInfo.currUpgrade);
+		local upgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[upgradeLevelIndex];
+		local failureMessage = upgradeLevelInfo and upgradeLevelInfo.failureMessage or nil;
 		if failureMessage then
 			info.tooltipText = RED_FONT_COLOR:WrapTextInColorCode(failureMessage);
+		else
+			info.tooltipText = nil;
 		end
 
 		UIDropDownMenu_AddButton(info);

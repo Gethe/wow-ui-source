@@ -21,9 +21,12 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 
 	self.InfoPanel.CreateButton:SetScript("OnClick", function()
 		-- Don't show the popup with the create character choice since the player just selected timerunner.
+		local timerunningSeasonID  = GetActiveTimerunningSeasonID();
 		local suppressPopup = true;
 		self:Dismiss(suppressPopup);
-		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, GetActiveTimerunningSeasonID());
+		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
+
+		C_LiveEvent.OnLiveEventPopupClicked(timerunningSeasonID);
 	end);
 	AddCreateButtonDisabledState(self.InfoPanel.CreateButton);
 
@@ -116,6 +119,10 @@ function TimerunningChoiceDialogMixin:OnLoad()
 	self.Description:SetText(self.descriptionText);
 
 	self.SelectButton:SetScript("OnClick", function()
+		if self.isTimerunning then
+			C_LiveEvent.OnLiveEventPopupClicked(GetActiveTimerunningSeasonID());
+		end
+
 		if self.isTimerunning and GlueParent_GetCurrentScreen() == "charcreate" then
 			GlueDialog_Show("TIMERUNNING_CHOICE_WARNING");
 		else
@@ -198,4 +205,6 @@ end
 
 function TimerunningEventBannerMixin:OnClick()
 	TimerunningFirstTimeDialog:ShowFromClick();
+
+	C_LiveEvent.OnLiveEventBannerClicked(GetActiveTimerunningSeasonID());
 end

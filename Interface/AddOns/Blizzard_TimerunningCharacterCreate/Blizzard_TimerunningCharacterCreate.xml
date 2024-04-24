@@ -337,8 +337,8 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-dialog-frameglow" snapToPixelGrid="false" texelSnappingBias="0">
-							<Size x="450" y="450"/>
+						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-redbutton-glow" snapToPixelGrid="false" texelSnappingBias="0">
+							<Size x="340" y="340"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>			
