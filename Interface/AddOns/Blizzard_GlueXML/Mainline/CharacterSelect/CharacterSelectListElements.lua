@@ -150,16 +150,20 @@ end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
 function CharacterSelectListCharacterMixin:OnClick()
-	if not self:IsSelected() then
+	if self:CanSelect() and not self:IsSelected() then
 		CharacterSelectUtil.SelectAtIndex(self:GetCharacterIndex());
 	end
 end
 
 function CharacterSelectListCharacterMixin:OnDoubleClick()
-	CharacterSelect_SelectCharacter(self:GetCharacterIndex());
+	if self:CanSelect() then
+		if not self:IsSelected() then
+			CharacterSelectUtil.SelectAtIndex(self:GetCharacterIndex());
+		end
 
-	if CharacterSelect_AllowedToEnterWorld() then
-		CharacterSelect_EnterWorld();
+		if CharacterSelect_AllowedToEnterWorld() then
+			CharacterSelect_EnterWorld();
+		end
 	end
 end
 
@@ -189,7 +193,7 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 	self:UpdateVASState();
 
 	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
-	local arrowShown = self.InnerContent.isEnabled and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self.characterID);
+	local arrowShown = self:CanSelect() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self.characterID);
 	self:SetArrowButtonShown(arrowShown);
 
 	self:UpdateSelectedState();
@@ -365,6 +369,10 @@ function CharacterSelectListCharacterMixin:SetSelectedState(isSelected)
 		self.InnerContent.FactionEmblemSelected:SetShown(isSelected);
 		self.InnerContent.FactionEmblem:SetShown(not isSelected);
 	end
+end
+
+function CharacterSelectListCharacterMixin:CanSelect()
+	return self.InnerContent.isEnabled;
 end
 
 function CharacterSelectListCharacterMixin:MoveCharacter(offset)

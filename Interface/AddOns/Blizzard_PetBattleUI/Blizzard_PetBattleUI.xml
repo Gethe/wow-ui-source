@@ -1326,7 +1326,7 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<StatusBar name="$parentXPBar" parentKey="xpBar">
+					<StatusBar name="$parentXPBar" parentKey="xpBar" inherits="TextStatusBar">
 						<Size x="504" y="11"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="6"/>
@@ -1373,17 +1373,17 @@
 						<BarColor r="0.45" g="0.45" b="1.0" />
 						<Scripts>
 							<OnLoad>
-								SetTextStatusBarTextPrefix(self, XP);
+								self:SetBarTextPrefix(XP);
 							</OnLoad>
 							<OnEnter>
-								ShowTextStatusBarText(self);
+								self:ShowStatusBarText();
 								if ( self.tooltip ) then
 									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 									GameTooltip:SetText(self.tooltip);
 								end
 							</OnEnter>
 							<OnLeave>
-								HideTextStatusBarText(self);
+								self:HideStatusBarText();
 								GameTooltip:Hide();
 							</OnLeave>
 						</Scripts>

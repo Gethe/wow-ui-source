@@ -1254,7 +1254,7 @@ function Professions.LayoutReagentSlots(slots, slotContainer, spacingX, spacingY
 	if slots then
 		local spacingY = -5;
 		local layout = AnchorUtil.CreateGridLayout(direction, stride, spacingX, spacingY);
-		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -20);
 		AnchorUtil.GridLayout(slots, anchor, layout);
 		slotContainer:Layout();
 	end
@@ -1266,7 +1266,7 @@ function Professions.LayoutAndShowReagentSlotContainer(slots, slotContainer)
 		local stride = 4;
 		local spacing = 3;
 		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, spacing, spacing, 40, 40);
-		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -23);
+		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -20);
 		AnchorUtil.GridLayout(slots, anchor, layout);
 		slotContainer:Layout();
 	end
@@ -1283,7 +1283,7 @@ function Professions.LayoutFinishingSlots(finishingSlots, finishingSlotContainer
 		if #finishingSlots == 1 then
 			anchor = CreateAnchor("TOP", finishingSlotContainer, "TOP", 69, -40)
 		else
-			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 86, -40)
+			anchor = CreateAnchor("TOPLEFT", finishingSlotContainer, "TOPLEFT", 22, -40)
 		end
 
 		AnchorUtil.GridLayout(finishingSlots, anchor, layout);

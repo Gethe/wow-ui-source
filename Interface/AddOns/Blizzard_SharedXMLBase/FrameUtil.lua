@@ -195,6 +195,12 @@ end
 function GetScaledCenter(frame)
 	local x, y = frame:GetCenter();
 	local effectiveScale = frame:GetEffectiveScale();
+	if x == nil or y == nil or effectiveScale == nil then
+		-- Defaulted returned for diagnosing invalid rects in layout frames.
+		local defaulted = true;
+		return 0, 0, defaulted;
+	end
+
 	return x * effectiveScale, y * effectiveScale;
 end
 

@@ -397,7 +397,7 @@ end
 function PVPHelper_QueueAllowsLeaveQueueWithMatchReady(queueType)
 	if queueType == "ARENA" or queueType == "ARENASKIRMISH"
 	or queueType == "BRAWLSHUFFLE" or queueType == "RATEDSHUFFLE"
-	or queueType == "BRAWLSOLORBG"
+	or queueType == "BRAWLSOLORBG" or queueType == "RATEDSOLORBG"
 	or (queueType == "BATTLEGROUND" and registeredMatch) then
 		return false;
 	end

@@ -515,3 +515,111 @@ end
 function GridLayoutFrameMixin:IgnoreLayoutIndex()
 	return false;
 end
+
+--------------------------------------------------------------------------------
+-- StaticGridLayoutFrameMixin
+--------------------------------------------------------------------------------
+
+-- Unlike GridLayoutFrame, which dynamically places child frames into grid columns and rows based on flow direction sand other settings,
+-- StaticGridLayoutFrame expects all child frames to have their assigned grid column and row pre-calculated and simply positions them there,
+-- calculating column and row sizes based on the sizes of the child frames.
+StaticGridLayoutFrameMixin = CreateFromMixins(BaseLayoutMixin);
+
+function StaticGridLayoutFrameMixin:Layout()
+	local layoutChildren = self:GetLayoutChildren();
+
+	local maxWidthByColumn, maxHeightByRow = {}, {};
+	local maxColumn, maxRow = 0, 0;
+
+	local childXPadding = self.childXPadding or 0;
+	local childYPadding = self.childYPadding or 0;
+
+	-- Iterate through frames and determine overall widths and heights to use for each column and row 
+	-- based on the widest/tallest frame in each respective column and row
+	for childIndex, childFrame in ipairs(layoutChildren) do
+		if IsLayoutFrame(childFrame) then
+			childFrame:Layout();
+		end
+
+		local column, row = childFrame.gridColumn, childFrame.gridRow;
+		if column and row then
+			local columnSize = childFrame.gridColumnSize or 1;
+			local rowSize = childFrame.gridRowSize or 1;
+
+			local endColumn = column + (columnSize - 1);
+			local endRow = row + (rowSize - 1);
+
+			maxColumn = math.max(maxColumn, endColumn);
+			maxRow = math.max(maxRow, endRow);
+
+			local widthPerColumn, heightPerRow = childFrame:GetSize();
+
+			-- If a frame spans more than one column/row, consider its size as spread evenly across those cells
+			if columnSize > 1 then
+				-- Since columns/rows will already be separated by padding, ensure those are removed from the calculation so they aren't factored in twice
+				-- Ex: If a frame spans 2 columns, then it also spans over the 1 set of x padding between them, which shouldn't also get factored into column A's or B's widths
+				local encompassedXPadding = childXPadding * (columnSize - 1);
+				widthPerColumn = (widthPerColumn / columnSize) - encompassedXPadding;
+			end
+			if rowSize > 1 then
+				local encompassedYPadding = (childYPadding * (rowSize - 1));
+				heightPerRow = (heightPerRow / rowSize) - encompassedYPadding;
+			end
+
+			-- For each column this frame spans, conditionally set that column's width to use the frame's calculated per-column width
+			for i = column, endColumn do
+				if not maxWidthByColumn[i] or widthPerColumn > maxWidthByColumn[i] then
+					maxWidthByColumn[i] = widthPerColumn;
+				end
+			end
+
+			-- For each row this frame spans, conditionally set that column's height to use the frame's calculated per-row height
+			for i = row, endRow do
+				if not maxHeightByRow[i] or heightPerRow > maxHeightByRow[i] then
+					maxHeightByRow[i] = heightPerRow;
+				end
+			end
+		end
+	end
+
+	-- Calculate what each column's anchor offset will need to be based on widths of columns before them
+	local xOffsetByColumn = {};
+	local totalXOffset = 0;
+	for i = 1, maxColumn do
+		local previousColumnWidth = maxWidthByColumn[i-1] or 0;
+		totalXOffset = totalXOffset + previousColumnWidth;
+		xOffsetByColumn[i] = totalXOffset;
+	end
+
+	-- Calculate what each row's anchor offset will need to be based on heights of columns above them
+	local yOffsetByRow = {};
+	local totalYOffset = 0;
+	for i = 1, maxRow do
+		local previousRowHeight = maxHeightByRow[i-1] or 0;
+		totalYOffset = totalYOffset + previousRowHeight;
+		yOffsetByRow[i] = totalYOffset;
+	end
+
+	-- Finally position all frames based on their assigned positions and calculated column/row offsets
+	for childIndex, childFrame in ipairs(layoutChildren) do
+		if childFrame.gridColumn and childFrame.gridRow then
+			childFrame:ClearAllPoints();
+
+			local x = xOffsetByColumn[childFrame.gridColumn];
+			local y = -yOffsetByRow[childFrame.gridRow];
+			if childFrame.gridColumn > 1 then
+				x = x + (childXPadding * (childFrame.gridColumn - 1));
+			end
+			if childFrame.gridRow > 1 then
+				y = y - (childYPadding * (childFrame.gridRow - 1));
+			end
+			childFrame:SetPoint("TOPLEFT", self, "TOPLEFT", x, y);
+		end
+	end
+
+	self:MarkClean();
+end
+
+function StaticGridLayoutFrameMixin:IgnoreLayoutIndex()
+	return true;
+end

@@ -169,7 +169,8 @@ function ArenaEnemyMatchFrameMixin:OnLoad()
 			_G[prefix.."OverAbsorbGlow"],
 			_G[prefix.."OverHealAbsorbGlow"],
 			healAbsorbBar);
-	SetTextStatusBarTextZeroText(healthBar, DEAD);
+
+	healthBar:SetBarTextZeroText(DEAD);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
@@ -380,7 +381,7 @@ function ArenaEnemyPetFrameMixin:OnLoad()
 	self.layoutIndex = self:GetParent().layoutIndex + 1;
 	UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], nil, _G[prefix.."Portrait"],
 		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
-	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+	_G[prefix.."HealthBar"]:SetBarTextZeroText(DEAD);
 	_G[prefix.."Name"]:Hide();
 	SecureUnitButton_OnLoad(self, unit);
 	self:SetID(id);

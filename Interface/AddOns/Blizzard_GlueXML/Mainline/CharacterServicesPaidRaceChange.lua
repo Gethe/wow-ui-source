@@ -20,30 +20,31 @@ function PRCCharacterSelectBlock:SetResultsShown(shown)
 
 	if shown then
 		local result = self:GetResult();
-		if result.selectedCharacterGUID then
-			local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
-			hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
-			isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
-			factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
+		if result.characterButtonID then
+			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(result.characterButtonID);
+
 			-- race
-			self.frame.ResultsFrame.CurrentRaceLabel:SetText(raceName);
+			self.frame.ResultsFrame.CurrentRaceLabel:SetText(characterInfo.raceName);
 		end
 	end
 end
 
 function DoesClientThinkTheCharacterIsEligibleForPRC(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
 	local sameFaction, _ = CharacterHasAlternativeRaceOptions(characterID);
 	local errors = {};
 
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
-	CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, sameFaction);
-	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidRaceChange));
+	if characterInfo then
+		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
+		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
+		CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, sameFaction);
+		CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(characterInfo.guid));
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.PaidRaceChange));
 
-	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
+		local canTransfer = #errors == 0;
+		return canTransfer, errors, characterInfo.guid, characterInfo.characterServiceRequiresLogin;
+	end
+	return false, errors, nil, false;
 end
 
 function PRCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)

@@ -38,7 +38,7 @@ function BasePagedGridContentFrameMixin:WillElementUseTrackedViewSpace(splitData
 		or (splitData.filledStrideInCurrentRow + elementStride) > self.viewLayout.stride;
 end
 
-function BasePagedGridContentFrameMixin:OnElementSpaceTakenFromView(splitData, elementData, elementTemplateInfo)
+function BasePagedGridContentFrameMixin:OnElementSpaceTakenFromView(splitData, elementData, elementTemplateInfo, spaceTaken, sizeOfNextElement)
 	-- If element space was removed from view space, it's the start of a new row so reset filled stride for it
 	-- The element's stride will then be added in OnElementAddedToView
 	splitData.filledStrideInCurrentRow = 0;
@@ -89,7 +89,7 @@ function PagedCellSizeGridContentFrameMixin:ProcessTemplateInfo(templateInfo)
 	end
 end
 
-function PagedCellSizeGridContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementIndex)
+function PagedCellSizeGridContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementData, elementIndex)
 	spacerFrame:SetHeight(self.spacerSize);
 	spacerFrame.cellSize = self.viewLayout.stride;
 end
@@ -130,7 +130,7 @@ function PagedNaturalSizeGridContentFrameMixin:GetElementStride(elementTemplateI
 	return stride;
 end
 
-function PagedNaturalSizeGridContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementIndex)
+function PagedNaturalSizeGridContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementData, elementIndex)
 	spacerFrame:SetHeight(self.spacerSize);
 	spacerFrame:SetWidth(self.ViewFrames[1]:GetWidth());
 end

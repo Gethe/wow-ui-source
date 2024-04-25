@@ -20,6 +20,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "CanShowSetRoleButton",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanSwitchVehicleSeat",
 			Type = "Function",
 

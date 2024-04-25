@@ -57,13 +57,28 @@ function TokenEntryMixin:RefreshBackgroundHighlight()
 	self.BackgroundHighlight:SetAlpha(entryNeedsHighlight and 0.10 or 0);
 end
 
-function TokenEntryMixin:RefreshTransferrableCurrencyIcon()
-	self.TransferrableCurrencyIcon:Hide();
+function TokenEntryMixin:RefreshAccountCurrencyIcon()
+	if not (self:IsSelected() or self:IsMouseOver()) then
+		self.AccountWideIcon:Hide();
+		return;
+	end
+
+	if self.elementData.isAccountWide then
+		self.AccountWideIcon:SetAtlas("warbands-icon", TextureKitConstants.UseAtlasSize);
+		self.AccountWideIcon:SetScale(0.9);
+	elseif self.elementData.isAccountTransferrable then
+		self.AccountWideIcon:SetAtlas("warbands-icon", TextureKitConstants.UseAtlasSize);
+		self.AccountWideIcon:SetScale(0.9);
+	else
+		self.AccountWideIcon:SetAtlas(nil);
+	end
+
+	self.AccountWideIcon:SetShown(self.AccountWideIcon:GetAtlas() ~= nil);
 end
 
 function TokenEntryMixin:RefreshHighlightVisuals()
 	self:RefreshBackgroundHighlight();
-	self:RefreshTransferrableCurrencyIcon();
+	self:RefreshAccountCurrencyIcon();
 end
 
 function TokenEntryMixin:RefreshTextColor()
@@ -108,6 +123,15 @@ end
 function TokenEntryMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetCurrencyToken(self.elementData.currencyIndex);
+
+	if self.elementData.isAccountTransferrable then
+		local transferPercentage = self.elementData.transferPercentage;
+		local percentageLost = transferPercentage and (100 - transferPercentage) or 0;
+		if percentageLost > 0 then
+			GameTooltip_AddNormalLine(GameTooltip, CURRENCY_TRANSFER_LOSS:format(percentageLost));
+		end
+	end
+
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddInstructionLine(GameTooltip, CURRENCY_BUTTON_TOOLTIP_CLICK_INSTRUCTION);
 

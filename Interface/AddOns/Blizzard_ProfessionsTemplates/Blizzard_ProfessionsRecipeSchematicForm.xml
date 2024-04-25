@@ -78,10 +78,16 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="FinishingReagents" inherits="ProfessionsReagentContainerTemplate">
+			<Frame parentKey="FinishingReagents" inherits="ProfessionsReagentContainerTemplate" collapsesLayout="true">
 				<KeyValues>
 					<KeyValue key="labelText" value="PROFESSIONS_CRAFTING_FINISHING_HEADER" type="global"/>
 				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="Concentrate" inherits="ProfessionsConcentrateContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.FinishingReagents" relativePoint="TOPLEFT" x="100" y="20"/>
+				</Anchors>
 			</Frame>
 			
 			<Frame parentKey="Stars">

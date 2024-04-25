@@ -5,9 +5,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencyDestroyReason",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 14,
 			Fields =
 			{
 				{ Name = "Cheat", Type = "CurrencyDestroyReason", EnumValue = 0 },
@@ -23,7 +23,8 @@ local CurrencyConstants_Mainline =
 				{ Name = "FactionConversion", Type = "CurrencyDestroyReason", EnumValue = 10 },
 				{ Name = "FulfillCraftingOrder", Type = "CurrencyDestroyReason", EnumValue = 11 },
 				{ Name = "Script", Type = "CurrencyDestroyReason", EnumValue = 12 },
-				{ Name = "Last", Type = "CurrencyDestroyReason", EnumValue = 13 },
+				{ Name = "ConcentrationCast", Type = "CurrencyDestroyReason", EnumValue = 13 },
+				{ Name = "Last", Type = "CurrencyDestroyReason", EnumValue = 14 },
 			},
 		},
 		{

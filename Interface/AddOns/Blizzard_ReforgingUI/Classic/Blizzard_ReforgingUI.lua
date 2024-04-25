@@ -34,17 +34,13 @@ end
 
 
 function ReforgingFrame_OnShow(self)
-	--TODO: Is this the correct sound to play?
-	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_OPEN);
-	--PlaySound("UI_EtherealWindow_Open");
+	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_OPEN);
 	ReforgingFrame_Update(self);
 end
 
 
 function ReforgingFrame_OnHide(self)
-	--TODO: Is this the correct sound to play?
-	PlaySound(SOUNDKIT.UI_80_AZERITEARMOR_REFORGE_ETHEREALWINDOW_CLOSE);
-	--PlaySound("UI_EtherealWindow_Close");
+	PlaySound(SOUNDKIT.UI_ETHEREAL_WINDOW_CLOSE);
 	C_Reforge.CloseReforge();
 end
 
@@ -63,12 +59,11 @@ function ReforgingFrame_OnEvent(self, event, ...)
 		local reforged = C_Reforge.GetReforgeItemInfo();
 		if ( reforged ==  ReforgingFrame.reforgeEvent ) then
 			ReforgingFrame.reforgeEvent = nil;
-			--TODO: Find the appropriate way to play these sounds
-			--if ( reforged == 0 ) then
-			--	PlaySoundKitID(23292);
-			--else
-			--	PlaySoundKitID(23291); // UI_REFORGING_REFORGE
-			--end
+			if ( reforged == 0 ) then
+				PlaySound(SOUNDKIT.UI_REFORGING_RESTORE);
+			else
+				PlaySound(SOUNDKIT.UI_REFORGING_REFORGE);
+			end
 			self.glow.reforgeAnim:Play();
 		end
 	end
@@ -98,11 +93,9 @@ function ReforgingFrame_Update(self)
 		local itemTexture = C_Item.GetItemIconByID(itemID);
 		ReforgingFrameItemButtonIconTexture:SetTexture(itemTexture);
 		ReforgingFrameItemButtonIconTexture:SetTexCoord( 0, 1, 0, 1);
-		--TODO: This is supposed to set the color of the text to the quality color of the item, but this
-		--doesn't work in modern code. Figure out how to get this working.
-		--local _, _, _, hex = GetQualityColor(quality);
-		--ReforgingFrameItemButton.name:SetText("|c"..hex..name.."|r");
+		local r, g, b = C_Item.GetItemQualityColor(quality);
 		ReforgingFrameItemButton.name:SetText(name);
+		ReforgingFrameItemButton.name:SetTextColor(r, g, b);
 		ReforgingFrameItemButton.boundStatus:SetText(bound);
 		ReforgingFrameItemButton.missingText:Hide();
 		ReforgingFrame.missingDescription:Hide();

@@ -1,4 +1,19 @@
 
+local function AddCreateButtonDisabledState(button)
+	button:SetScript("OnEnter", function()
+		if not button:IsEnabled() then
+			GlueTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);
+			GameTooltip_AddNormalLine(GlueTooltip, TIMERUNNING_DISABLED_TOOLTIP);
+			GlueTooltip:Show();
+		end
+	end);
+	button:SetScript("OnLeave", function()
+		GlueTooltip:Hide();
+	end);
+	button:SetMotionScriptsWhileDisabled(true);
+end
+
+
 TimerunningFirstTimeDialogMixin = {};
 
 function TimerunningFirstTimeDialogMixin:OnLoad()
@@ -6,10 +21,15 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 
 	self.InfoPanel.CreateButton:SetScript("OnClick", function()
 		-- Don't show the popup with the create character choice since the player just selected timerunner.
+		local timerunningSeasonID  = GetActiveTimerunningSeasonID();
 		local suppressPopup = true;
 		self:Dismiss(suppressPopup);
-		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, GetActiveTimerunningSeasonID());
+		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
+
+		C_LiveEvent.OnLiveEventPopupClicked(timerunningSeasonID);
 	end);
+	AddCreateButtonDisabledState(self.InfoPanel.CreateButton);
+
 	self.InfoPanel.CloseButton:SetScript("OnClick", function()
 		self:Dismiss();
 	end);
@@ -17,7 +37,7 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("TIMERUNNING_SEASON_UPDATE");
 
-	self:DetermineVisibility();
+	self:UpdateState();
 end
 
 function TimerunningFirstTimeDialogMixin:OnKeyDown(key)
@@ -26,29 +46,34 @@ function TimerunningFirstTimeDialogMixin:OnKeyDown(key)
 	end
 end
 
+function TimerunningFirstTimeDialogMixin:OnShow()
+	self:UpdateState();
+end
+
 function TimerunningFirstTimeDialogMixin:OnEvent(event, ...)
 	if (event == "LOGIN_STATE_CHANGED") then
 		if not IsConnectedToServer() then
 			self:Hide();
 		end
 	elseif (event == "TIMERUNNING_SEASON_UPDATE") then
-		self:DetermineVisibility();
+		self:UpdateState();
 	end
 end
 
-function TimerunningFirstTimeDialogMixin:DetermineVisibility()
+function TimerunningFirstTimeDialogMixin:UpdateState()
 	local activeTimerunningSeasonID = GetActiveTimerunningSeasonID();
 	local shouldShow = activeTimerunningSeasonID ~= nil and GetCVarNumberOrDefault("seenTimerunningFirstLoginPopup") ~= activeTimerunningSeasonID;
 	local canShow = IsConnectedToServer() and (CharacterSelect:IsShown() or CharacterCreateFrame:IsShown()) and (not TimerunningChoicePopup or not TimerunningChoicePopup:IsShown());
 	self:SetShown(canShow and shouldShow);
+	self.InfoPanel.CreateButton:SetEnabled(IsTimerunningEnabled());
 end
 
 function TimerunningFirstTimeDialogMixin:ShowFromClick(shownFromPopup)
-	-- Reset CVar when manually showing the dialog to ensure it stays visible even if an event triggers DetermineVisibility.
+	-- Reset CVar when manually showing the dialog to ensure it stays visible even if an event triggers UpdateState.
 	-- The CVar be set back to the the current season when the dialog is closed with escape or the close button.
 	SetCVar("seenTimerunningFirstLoginPopup", GetCVarDefault("seenTimerunningFirstLoginPopup"));
 	self.shownFromPopup = shownFromPopup;
-	self:DetermineVisibility();
+	self:UpdateState();
 end
 
 function TimerunningFirstTimeDialogMixin:Dismiss(suppressPopup)
@@ -85,6 +110,7 @@ function TimerunningChoiceDialogMixin:OnLoad()
 	if self.isTimerunning then
 		self.Header:SetText(TimerunningUtil.AddLargeIcon(self.headerText));
 		self.Header:SetPoint("TOP", -6, -20);
+		AddCreateButtonDisabledState(self.SelectButton);
 	else
 		self.Header:SetText(self.headerText);
 		self.Header:SetPoint("TOP", 0, -20);
@@ -93,6 +119,10 @@ function TimerunningChoiceDialogMixin:OnLoad()
 	self.Description:SetText(self.descriptionText);
 
 	self.SelectButton:SetScript("OnClick", function()
+		if self.isTimerunning then
+			C_LiveEvent.OnLiveEventPopupClicked(GetActiveTimerunningSeasonID());
+		end
+
 		if self.isTimerunning and GlueParent_GetCurrentScreen() == "charcreate" then
 			GlueDialog_Show("TIMERUNNING_CHOICE_WARNING");
 		else
@@ -100,6 +130,12 @@ function TimerunningChoiceDialogMixin:OnLoad()
 			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, self.isTimerunning and GetActiveTimerunningSeasonID() or nil);
 		end
 	end);
+end
+
+function TimerunningChoiceDialogMixin:OnShow()
+	if self.isTimerunning then
+		self.SelectButton:SetEnabled(IsTimerunningEnabled());
+	end
 end
 
 TimerunningChoicePopupMixin = {};
@@ -151,7 +187,6 @@ end
 function TimerunningEventBannerMixin:UpdateShown()
 	local showTimerunning = GetActiveTimerunningSeasonID() ~= nil;
 	self:SetShown(showTimerunning);
-	TimerunningCreateCharacterButtonGlow:SetShown(showTimerunning);
 end
 
 function TimerunningEventBannerMixin:UpdateTimeLeft()
@@ -169,4 +204,6 @@ end
 
 function TimerunningEventBannerMixin:OnClick()
 	TimerunningFirstTimeDialog:ShowFromClick();
+
+	C_LiveEvent.OnLiveEventBannerClicked(GetActiveTimerunningSeasonID());
 end

@@ -192,7 +192,13 @@ do
 
 		rosterEntry:SetMemberID(memberInfo.memberId);
 		rosterEntry:SetMemberPlayerLocationFromGuid(memberInfo.guid);
-		rosterEntry:SetMemberName(memberInfo.name);
+
+		local name = memberInfo.name;
+		if memberInfo.timerunningSeasonID then
+			name = TimerunningUtil.AddTinyIcon(name);
+		end
+
+		rosterEntry:SetMemberName(name);
 		rosterEntry:SetMemberIsOwner(memberInfo.role == Enum.ClubRoleIdentifier.Owner or memberInfo.role == Enum.ClubRoleIdentifier.Leader);
 		rosterEntry:SetMemberIsModerator(memberInfo.role == Enum.ClubRoleIdentifier.Moderator);
 		rosterEntry:ClearVoiceInfo();

@@ -204,7 +204,7 @@ end
 PetManaBarMixin = {};
 
 function PetManaBarMixin:OnLoad()
-	TextStatusBar_Initialize(self);
+	self:InitializeTextStatusBar();
 	self.textLockable = 1;
 	self.lockColor = true;
 	self.cvar = "statusText";
@@ -214,7 +214,7 @@ end
 PetHealthBarMixin = {};
 
 function PetHealthBarMixin:OnLoad()
-	TextStatusBar_Initialize(self);
+	self:InitializeTextStatusBar();
 	self.textLockable = 1;
 	self.lockColor = true;
 	self.cvar = "statusText";

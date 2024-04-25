@@ -66,6 +66,21 @@ local AreaPoiInfo =
 			},
 		},
 		{
+			Name = "GetQuestHubsForMap",
+			Type = "Function",
+			Documentation = { "Returns all area POIInfos flagged as quest hubs for the given map." },
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areaPoiIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAreaPOITimed",
 			Type = "Function",
 			Documentation = { "This statically determines if the POI is timed, GetAreaPOITimeLeft retrieves the value from the server and may return nothing for long intervals" },

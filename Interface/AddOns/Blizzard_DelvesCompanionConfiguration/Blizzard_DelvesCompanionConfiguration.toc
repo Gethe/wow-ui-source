@@ -5,5 +5,5 @@
 
 Blizzard_DelvesCompanionConfiguration.lua
 Blizzard_DelvesCompanionConfiguration.xml
-Blizzard_DelvesCompanionSpellbook.lua
-Blizzard_DelvesCompanionSpellbook.xml
+Blizzard_DelvesCompanionAbilityList.lua
+Blizzard_DelvesCompanionAbilityList.xml

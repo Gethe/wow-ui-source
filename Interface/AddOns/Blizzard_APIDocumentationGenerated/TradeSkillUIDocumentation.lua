@@ -34,6 +34,7 @@ local TradeSkillUI =
 				{ Name = "numCasts", Type = "number", Nilable = false, Default = 1 },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "itemTarget", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+				{ Name = "applyConcentration", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -47,6 +48,7 @@ local TradeSkillUI =
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 				{ Name = "orderID", Type = "BigUInteger", Nilable = true },
+				{ Name = "applyConcentration", Type = "bool", Nilable = true },
 			},
 		},
 		{
@@ -113,6 +115,20 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetConcentrationCurrencyID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currencyType", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCraftableCount",
 			Type = "Function",
 
@@ -136,6 +152,7 @@ local TradeSkillUI =
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = false },
 				{ Name = "allocationItemGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "applyConcentration", Type = "bool", Nilable = false },
 			},
 
 			Returns =
@@ -152,6 +169,7 @@ local TradeSkillUI =
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = false },
 				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
+				{ Name = "applyConcentration", Type = "bool", Nilable = false },
 			},
 
 			Returns =

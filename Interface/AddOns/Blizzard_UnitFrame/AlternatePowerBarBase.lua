@@ -172,8 +172,8 @@ function PlayerFrameAlternatePowerBarBaseMixin:Initialize()
 	self.cvarLabel = "STATUS_TEXT_PLAYER";
 	self.capNumericDisplay = true;
 
-	SetTextStatusBarText(self, _G[self:GetName().."Text"])
-	TextStatusBar_Initialize(self);
+	self:SetBarText(_G[self:GetName().."Text"]);
+	self:InitializeTextStatusBar();
 
 	AlternatePowerBarBaseMixin.Initialize(self);
 
@@ -185,7 +185,7 @@ end
 function PlayerFrameAlternatePowerBarBaseMixin:OnShow()
 	self.pauseUpdates = false;
 	self:UpdatePower();
-	TextStatusBar_UpdateTextString(self);
+	self:UpdateTextString();
 end
 
 function PlayerFrameAlternatePowerBarBaseMixin:OnHide()
@@ -194,7 +194,7 @@ end
 
 function PlayerFrameAlternatePowerBarBaseMixin:OnEvent(event, ...)
 	AlternatePowerBarBaseMixin.OnEvent(self, event, ...);
-	TextStatusBar_OnEvent(self, event, ...);
+	self:TextStatusBarOnEvent(event, ...);
 end
 
 function PlayerFrameAlternatePowerBarBaseMixin:AttachBarToUnitUI()

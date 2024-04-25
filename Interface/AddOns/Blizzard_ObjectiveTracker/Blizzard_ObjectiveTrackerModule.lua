@@ -444,6 +444,7 @@ end
 
 function ObjectiveTrackerModuleMixin:SetCollapsed(collapsed)
 	self.isCollapsed = collapsed;
+	self.ContentsFrame:SetShown(not collapsed);
 	-- update the header
 	self.Header:SetCollapsed(collapsed);
 	-- update contents

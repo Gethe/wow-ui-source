@@ -104,11 +104,11 @@
   </Button>
 
   <Frame name="PVPRatedTierTemplate" mixin="PVPRatedTierMixin" virtual="true">
-    <Size x="50" y="50"/>
+    <Size x="40" y="40"/>
     <Layers>
       <Layer level="BACKGROUND">
         <Texture parentKey="Icon">
-          <Size x="50" y="50"/>
+          <Size x="42" y="42"/>
           <Anchors>
             <Anchor point="CENTER"/>
           </Anchors>

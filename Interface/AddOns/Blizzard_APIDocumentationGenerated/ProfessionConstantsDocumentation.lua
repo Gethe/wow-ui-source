@@ -235,9 +235,9 @@ local ProfessionConstants =
 		{
 			Name = "ProfessionEffect",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "Skill", Type = "ProfessionEffect", EnumValue = 0 },
@@ -266,6 +266,8 @@ local ProfessionConstants =
 				{ Name = "IncreaseDifficulty", Type = "ProfessionEffect", EnumValue = 23 },
 				{ Name = "ModSkillGain", Type = "ProfessionEffect", EnumValue = 24 },
 				{ Name = "AccumulateRanksByLabel", Type = "ProfessionEffect", EnumValue = 25 },
+				{ Name = "StatIngenuity", Type = "ProfessionEffect", EnumValue = 26 },
+				{ Name = "ModIngenuity", Type = "ProfessionEffect", EnumValue = 27 },
 			},
 		},
 		{
@@ -283,7 +285,7 @@ local ProfessionConstants =
 				{ Name = "Perception", Type = "ProfessionRating", EnumValue = 4 },
 				{ Name = "CraftingSpeed", Type = "ProfessionRating", EnumValue = 5 },
 				{ Name = "Multicraft", Type = "ProfessionRating", EnumValue = 6 },
-				{ Name = "Unused_1", Type = "ProfessionRating", EnumValue = 7 },
+				{ Name = "Ingenuity", Type = "ProfessionRating", EnumValue = 7 },
 				{ Name = "Unused_2", Type = "ProfessionRating", EnumValue = 8 },
 			},
 		},

@@ -896,9 +896,11 @@ function ProfessionsCrafterOrderViewMixin:CraftOrder()
     local predicate = function(reagentTbl, slotIndex)
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent and not self.reagentSlotProvidedByCustomer[slotIndex];
 	end
-    local craftingReagentTbl = self.OrderDetails.SchematicForm.transaction:CreateCraftingReagentInfoTblIf(predicate);
+	local transaction = self.OrderDetails.SchematicForm.transaction;
+    local craftingReagentTbl = transaction:CreateCraftingReagentInfoTblIf(predicate);
     local recipeLevel = self.OrderDetails.SchematicForm:GetCurrentRecipeLevel();
-    C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel, self.order.orderID);
+	local applyConcentration = transaction:IsApplyingConcentration();
+    C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentTbl, recipeLevel, self.order.orderID, applyConcentration);
 end
 
 function ProfessionsCrafterOrderViewMixin:RecraftOrder()

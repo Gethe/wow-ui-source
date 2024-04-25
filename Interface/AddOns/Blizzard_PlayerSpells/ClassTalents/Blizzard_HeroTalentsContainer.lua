@@ -295,12 +295,6 @@ function HeroTalentsContainerMixin:UpdateHeroTalentCurrency(skipCheckingExpandSt
 end
 
 function HeroTalentsContainerMixin:UpdateHeroTalentsUnlockedAnim()
-	-- Remove this once we're happy with the way the animation looks.
-	local disableUntilArtIsPolished = true;
-	if disableUntilArtIsPolished then
-		return;
-	end
-
 	-- Once a session (or until the UI reloads), play the unlocked anim until the player chooses a spec.
 	if self:IsDisplayingHeroSpecChoices() and not self.playedUnlockedAnim then
 		self.playedUnlockedAnim = true;

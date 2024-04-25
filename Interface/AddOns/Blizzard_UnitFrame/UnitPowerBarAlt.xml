@@ -152,7 +152,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
-			<StatusBar name="$parentStatusFrame" parentKey="statusFrame">
+			<StatusBar name="$parentStatusFrame" parentKey="statusFrame" mixin="TextStatusBarMixin">
 				<Size x="10" y="10"/>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>

@@ -237,6 +237,20 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetCurrencyTransferPercentage",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currencyTransferPercentage", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetDragonIslesSuppliesCurrencyID",
 			Type = "Function",
 
@@ -267,6 +281,34 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "warResourceCurrencyID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAccountTransferrableCurrency",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAccountTransferrableCurrency", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAccountWideCurrency",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAccountWideCurrency", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -392,6 +434,11 @@ local CurrencyInfo =
 				{ Name = "totalEarned", Type = "number", Nilable = false },
 				{ Name = "discovered", Type = "bool", Nilable = false },
 				{ Name = "useTotalEarnedForMaxQty", Type = "bool", Nilable = false },
+				{ Name = "isAccountWide", Type = "bool", Nilable = false },
+				{ Name = "isAccountTransferrable", Type = "bool", Nilable = false },
+				{ Name = "transferPercentage", Type = "number", Nilable = true },
+				{ Name = "rechargingCycleDurationMS", Type = "number", Nilable = false },
+				{ Name = "rechargingAmountPerCycle", Type = "number", Nilable = false },
 			},
 		},
 	},

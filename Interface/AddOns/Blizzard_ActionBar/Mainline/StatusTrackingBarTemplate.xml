@@ -6,7 +6,7 @@
 			<!-- <KeyValue key="fadeOutEntireBarAtMaxLevel" value="true" type="boolean"/> -->
 		</KeyValues>
 		<Frames>
-			<StatusBar parentKey="StatusBar" drawLayer="BORDER" inherits="GradualAnimatedStatusBarTemplate">
+			<StatusBar parentKey="StatusBar" drawLayer="BORDER" inherits="GradualAnimatedStatusBarTemplate" mixin="TextStatusBarMixin">
 				<Size x="804" y="10"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="0" y="0"/>

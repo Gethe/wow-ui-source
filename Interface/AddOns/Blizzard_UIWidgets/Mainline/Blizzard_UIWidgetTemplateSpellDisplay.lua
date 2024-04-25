@@ -32,8 +32,6 @@ function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
 	self.Spell:Setup(widgetContainer, widgetInfo.spellInfo, widgetInfo.enabledState, widgetInfo.widgetSizeSetting, widgetInfo.textureKit);
 	self.Spell:SetTooltipLocation(widgetInfo.tooltipLoc);
 
-	self.Spell.Text:SetFontObject(GameFontNormal);
-
 	self:SetWidth(self.Spell:GetWidth());
 	self:SetHeight(self.Spell:GetHeight() + 2);
 

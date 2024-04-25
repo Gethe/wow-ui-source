@@ -25,40 +25,42 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 
 	if shown then
 		local result = self:GetResult();
-		if result.selectedCharacterGUID then
-			local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost, hasCustomize, hasRaceChange,
-			hasFactionChange, raceChangeDisabled, guid, profession0, profession1, genderID, boostInProgress, hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted,
-			isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild, specID, isExpansionTrialCharacter, faction, isLockedByExpansion, mailSenders, customizeDisabled,
-			factionChangeDisabled, characterServiceRequiresLogin, eraChoiceState, lastActiveDay, lastActiveMonth, lastActiveYear = GetCharacterInfoByGUID(result.selectedCharacterGUID);
-			-- factions
-			for factionTag, factionInfo in pairs(factionInfoTable) do
-				local fontString;
-				if factionTag == faction then
-					fontString = self.frame.ResultsFrame.CurrentFactionLabel;
-				else
-					fontString = self.frame.ResultsFrame.NewFactionLabel;
+		if result.characterButtonID then
+			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(result.characterButtonID);
+			if characterInfo then
+				-- factions
+				for factionTag, factionInfo in pairs(factionInfoTable) do
+					local fontString;
+					if factionTag == characterInfo.faction then
+						fontString = self.frame.ResultsFrame.CurrentFactionLabel;
+					else
+						fontString = self.frame.ResultsFrame.NewFactionLabel;
+					end
+					fontString:SetText(factionInfo.name);
+					fontString:SetTextColor(factionInfo.color:GetRGB());
 				end
-				fontString:SetText(factionInfo.name);
-				fontString:SetTextColor(factionInfo.color:GetRGB());
 			end
 		end
 	end
 end
 
 function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
-	local level, _, _, _, _, _, _, _, playerguid, _, _, _, _, _, _, _, _, _, _, _, _, _, faction, _, mailSenders, _, _, characterServiceRequiresLogin = select(7, GetCharacterInfo(characterID));
+	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
 	local _, otherFaction = CharacterHasAlternativeRaceOptions(characterID);
 	local errors = {};
 
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
-	CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
-	CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, otherFaction);
-	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
-	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidFactionChange));
+	if characterInfo then
+		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
+		CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
+		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
+		CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, otherFaction);
+		CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(characterInfo.guid));
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.PaidFactionChange));
 
-	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, characterServiceRequiresLogin;
+		local canTransfer = #errors == 0;
+		return canTransfer, errors, characterInfo.guid, characterInfo.characterServiceRequiresLogin;
+	end
+	return false, errors, nil, false;
 end
 
 function PFCCharacterSelectBlock:GetServiceInfoByCharacterID(characterID)

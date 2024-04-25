@@ -889,8 +889,6 @@ local function Register()
 		end
 	end
 
-	GraphicsOverrides.CreateHiResOptions(category, layout);
-
 	-- Camera FOV
 	if C_CVar.GetCVar("cameraFov") then
 		do

@@ -121,6 +121,12 @@
 	
 	<Frame name="ProfessionsCraftingPageTemplate" parent="ProfessionsFrame" setAllPoints="true" mixin="ProfessionsCraftingPageMixin" virtual="true">
 		<Frames>
+			<Frame parentKey="ConcentrationDisplay" inherits="ProfessionsCurrencyTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="120" y="-35"/>
+				</Anchors>
+			</Frame>
+
 			<Button parentKey="TutorialButton" inherits="MainHelpPlateButton">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="39" y="20" />

@@ -567,6 +567,7 @@ local OPTIONAL_FILTERS = {
 	[Enum.MinimapTrackingFilter.Barber] = true,
 	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
 	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
+	[Enum.MinimapTrackingFilter.AccountCompletedQuests] = true,
 	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
 	[Enum.MinimapTrackingFilter.Mailbox] = true,
 };

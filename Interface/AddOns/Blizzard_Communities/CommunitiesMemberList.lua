@@ -1020,7 +1020,7 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 		self:SetMemberPlayerLocationFromGuid(memberInfo.guid);
 		local name = memberInfo.name;
 		if name and memberInfo.timerunningSeasonID then
-			name = TimerunningUtil.AddSmallIcon(name);
+			name = TimerunningUtil.AddTinyIcon(name);
 		end
 		self.NameFrame.Name:SetText(name or "");
 	else

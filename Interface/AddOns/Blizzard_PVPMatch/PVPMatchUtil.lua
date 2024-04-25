@@ -28,7 +28,7 @@ function PVPMatchUtil.ModeUsesPvpRatingTiers()
 		return false;
 	end
 
-	return C_PvP.IsRatedMap();
+	return C_PvP.IsRatedMap() or C_PvP.IsRatedSoloRBG();
 end
 
 function PVPMatchUtil.IsActiveMatchComplete()

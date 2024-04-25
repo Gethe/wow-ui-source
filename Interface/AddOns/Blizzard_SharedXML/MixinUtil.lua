@@ -365,3 +365,11 @@ function MixinUtil.CallMethodOnAllSafe(instances, methodName, ...)
 		end
 	end
 end
+
+-- Check existence of an element, then invoke the provided method by name with its arguments if it exists.
+-- e.g. frame.Text:SetText("text") -> CallMethodSafe(frame.Text, "SetText", "text");
+function MixinUtil.CallMethodSafe(element, methodName, ...)
+	if element then
+		element[methodName](element, ...);
+	end
+end

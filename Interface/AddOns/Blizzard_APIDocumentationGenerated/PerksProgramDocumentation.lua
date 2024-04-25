@@ -139,6 +139,15 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "IsAttackAnimToggleEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAttackAnimToggleEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsFrozenPerksVendorItem",
 			Type = "Function",
 
@@ -150,6 +159,15 @@ local PerksProgram =
 			Returns =
 			{
 				{ Name = "isFrozen", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountSpecialAnimToggleEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isMountSpecialAnimToggleEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

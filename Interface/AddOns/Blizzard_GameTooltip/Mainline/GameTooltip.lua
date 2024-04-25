@@ -735,6 +735,14 @@ function GameTooltip_HideResetCursor()
 	ResetCursor();
 end
 
+local function AddFloorLocationLine(tooltip, floorLocation, aboveString, belowString)
+	if floorLocation == Enum.QuestLineFloorLocation.Below then
+		tooltip:AddLine(belowString, 0.5, 0.5, 0.5, true);
+	elseif floorLocation == Enum.QuestLineFloorLocation.Above then
+		tooltip:AddLine(aboveString, 0.5, 0.5, 0.5, true);
+	end
+end
+
 function GameTooltip_AddQuest(self, questID)
 	local questID = self.questID or questID;
 	if ( not HaveQuestData(questID) ) then
@@ -748,6 +756,7 @@ function GameTooltip_AddQuest(self, questID)
 	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
+	title = title or self.questName;
 	if ( self.worldQuest or C_QuestLog.IsWorldQuest(questID)) then
 		self.worldQuest = true;
 		local tagInfo = C_QuestLog.GetQuestTagInfo(self.questID);
@@ -779,6 +788,7 @@ function GameTooltip_AddQuest(self, questID)
 		GameTooltip_AddColoredLine(GameTooltip, GRANTS_FOLLOWER_XP, GREEN_FONT_COLOR, true);
 	elseif (self.isQuestStart) then
 		GameTooltip_AddColoredLine(GameTooltip, AVAILABLE_QUEST, HIGHLIGHT_FONT_COLOR, true);
+		AddFloorLocationLine(GameTooltip, self.floorLocation, QUESTLINE_LOCATED_ABOVE, QUESTLINE_LOCATED_BELOW);
 	else
 		local questDescription = "";
 		local questCompleted = C_QuestLog.IsComplete(questID);

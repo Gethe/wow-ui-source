@@ -195,7 +195,7 @@ function VASCharacterSelectBlockBase:OnAdvance()
 
 	if selectedFrame then
 		CharacterSelectListUtil.ForEachCharacterDo(function(frame)
-			frame.InnerContent:SetEnabledState(frame.characterID ~= characterID);
+			frame.InnerContent:SetEnabledState(frame.characterID == characterID);
 		end);
 	end
 end
@@ -205,7 +205,8 @@ function VASCharacterSelectBlockBase:IsFinished(wasFromRewind)
 end
 
 function VASCharacterSelectBlockBase:SaveResultInfo(characterButton, guid)
-	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton:GetID(), characterIndex = characterButton.index };
+	local index = CharacterSelectListUtil.GetIndexFromCharID(characterButton.characterID);
+	self.results = { selectedCharacterGUID = guid, characterButtonID = characterButton.characterID, characterIndex = index };
 end
 
 function VASCharacterSelectBlockBase:GetResult()
@@ -304,5 +305,4 @@ end
 
 -- Override
 function VASChoiceVerificationBlockBase:RequestAssignVASForResults(results, isValidationOnly)
-
 end

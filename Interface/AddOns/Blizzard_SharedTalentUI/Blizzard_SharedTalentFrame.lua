@@ -1041,10 +1041,10 @@ function TalentFrameBaseMixin:GetAndCacheEntryInfo(entryID)
 	return GetOrCreateTableEntryByCallback(self.entryInfoCache, entryID, GetEntryInfoCallback);
 end
 
-function TalentFrameBaseMixin:GetAndCacheCondInfo(condID)
+function TalentFrameBaseMixin:GetAndCacheCondInfo(condID, ignoreFontColor)
 	local function GetCondInfoCallback()
 		self.dirtyCondIDSet[condID] = nil;
-		return C_Traits.GetConditionInfo(self:GetConfigID(), condID);
+		return C_Traits.GetConditionInfo(self:GetConfigID(), condID, ignoreFontColor);
 	end
 
 	return GetOrCreateTableEntryByCallback(self.condInfoCache, condID, GetCondInfoCallback);
@@ -1440,12 +1440,14 @@ function TalentFrameBaseMixin:CommitConfigInternal()
 	return C_Traits.CommitConfig(self:GetConfigID());
 end
 
-function TalentFrameBaseMixin:RollbackConfig()
+function TalentFrameBaseMixin:RollbackConfig(ignoreSound)
 	if not self:CheckAndReportCommitOperation() then
 		return;
 	end
 
-	self:PlayRollbackConfigSound();
+	if not ignoreSound then 
+		self:PlayRollbackConfigSound(); 
+	end
 
 	return C_Traits.RollbackConfig(self:GetConfigID());
 end

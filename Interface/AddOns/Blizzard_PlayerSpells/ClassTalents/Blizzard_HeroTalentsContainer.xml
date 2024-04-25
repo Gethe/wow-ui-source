@@ -18,14 +18,20 @@
 		<Size x="108" y="108"/>
 		<Animations>
 			<AnimationGroup parentKey="ChoiceGlowAnim" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha order="1" childKey="ChoiceBackground" duration="1" fromAlpha="0" toAlpha="1"/>
-				<Alpha order="2" childKey="ChoiceBackground" duration="1" fromAlpha="1" toAlpha="0" />
+				<Alpha order="1" childKey="ChoiceBackground" duration="0.75" fromAlpha="0" toAlpha="0.7" smoothing="OUT"/>
+				<Alpha order="1" childKey="ChoiceBackground2" duration="0.75" fromAlpha="0" toAlpha="0.7" smoothing="OUT"/>
+				<Alpha order="2" childKey="ChoiceBackground" duration="0.75" fromAlpha="0.7" toAlpha="0" smoothing="IN" />
+				<Alpha order="2" childKey="ChoiceBackground2" duration="0.75" fromAlpha="0.7" toAlpha="0" smoothing="IN" />
 			</AnimationGroup>
 		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ChoiceBackground" atlas="talents-heroclass-ring-intro-glow" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
-					<Size x="252" y="251"/>
+				<Texture parentKey="ChoiceBackground" atlas="talents-heroclass-ring-intro-glow" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ChoiceBackground2" atlas="talents-heroclass-ring-intro-glow" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -48,7 +54,7 @@
 						<MaskedTexture childKey="Icon1"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<MaskTexture parentKey="Icon2SplitMask" atlas="common-mask-semicircle-right" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="IconSplitMasks"  setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<MaskTexture parentKey="Icon2SplitMask" atlas="common-mask-semicircle-right" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="IconSplitMasks" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon2"/>
 					</MaskedTextures>
@@ -241,7 +247,7 @@
 			<Frame name="HeroTalentsUnlockedAnimFrame" frameStrata="HIGH" frameLevel="10000" hidden="true" mixin="HeroTalentsUnlockedAnimFrameMixin">
 				<Size x="100" y="100"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.HeroSpecButton"/>
+					<Anchor point="CENTER" relativeKey="$parent.HeroSpecButton" y="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -271,8 +277,23 @@
 								<Anchor point="CENTER" relativeKey="$parent.Titans"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="HeroClassAnimBackgroundRunes" parentArray="Textures" atlas="talents-animations-heroclass-backgroundrunes" alphaMode="ADD" alpha="0" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent" y="107"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HeroClassAnimBackgroundRunes2" parentArray="Textures" atlas="talents-animations-heroclass-backgroundrunes" alphaMode="ADD" alpha="0" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.HeroClassAnimBackgroundRunes"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
+						<Texture parentKey="PadlockAnim" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-heroclass-ring-intro-locked" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="Rune" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-rune4" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="replaceWithClassVisual" type="boolean" value="true"/>
@@ -345,14 +366,14 @@
 								<Anchor point="CENTER" relativeKey="$parent.RingLarge"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="OrbActivated" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-orb-activated">
-							<Size x="430" y="430"/>
+						<Texture parentKey="OrbActivated" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-orb-activated">
+							<Size x="200" y="200"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="OrbActivated2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-orb-activated">
-							<Size x="430" y="430"/>
+						<Texture parentKey="OrbActivated2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-orb-activated">
+							<Size x="200" y="200"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
 							</Anchors>
@@ -374,18 +395,38 @@
 								<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="BackplateGlow" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-full-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" y="-201"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackplateGlow2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-full-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent" y="-201"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackplateIntroGlow" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-intro-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BackplateGlow" y="-6"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackplateIntroGlow2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-intro-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BackplateGlow" y="-6"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="LensflareLine" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
 							<Size x="5000" y="387"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+								<Anchor point="CENTER" relativeKey="$parent.OrbActivated" y="-24"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="LensflareLine3" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="heartofazeroth-animation-LensflareLine">
 							<Size x="5000" y="387"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
+								<Anchor point="CENTER" relativeKey="$parent.OrbActivated" y="-24"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -400,62 +441,70 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
-						<Alpha childKey="BlackCover" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
-						<Alpha childKey="BlackCover2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
-						<Alpha childKey="Titans" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
-						<Alpha childKey="Titans2" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="IN"/>
-						<Scale childKey="Titans" startDelay="0" duration="2" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
-						<Scale childKey="Titans2" startDelay="0" duration="2" order="1" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="RuneStatic" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
-						<Scale childKey="RingLargeFlip" smoothing="IN" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
-						<Scale childKey="RingLargeFlip2" smoothing="NONE" duration="0.802" order="1" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
-						<Alpha childKey="RuneFlipped" duration="0.802" order="1" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="RuneFlipped" smoothing="IN" duration="0.802" order="1" fromScaleX="5.5" fromScaleY="5.5" toScaleX="0.01" toScaleY="1.643"/>
-						<Alpha childKey="RuneFlipped2" duration="0.802" order="1" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="RuneFlipped2" duration="0.802" order="1" fromScaleX="5.5" fromScaleY="5.5" toScaleX="0.01" toScaleY="1.643"/>
-						<Scale childKey="RuneStatic" smoothing="IN" duration="0.802" order="1" fromScaleX="5.5" fromScaleY="5.5" toScaleX="1.25" toScaleY="1.25"/>
-						<Alpha childKey="RingLargeFlip" smoothing="NONE" duration="0.867" order="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="RingLargeFlip2" smoothing="NONE" duration="0.867" order="1" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="RingConstellation" smoothing="IN" duration="0.869" order="1" fromScaleX="6" fromScaleY="6" toScaleX="1.15" toScaleY="1.15"/>
-						<Scale childKey="RingLarge" smoothing="IN" duration="0.869" order="1" fromScaleX="5.68" fromScaleY="5.68" toScaleX="1.104" toScaleY="1.104"/>
-						<Scale childKey="RingSmall" duration="0.869" order="1" fromScaleX="4.729" fromScaleY="4.729" toScaleX="0.91" toScaleY="0.91"/>
-						<Alpha childKey="RingConstellation" duration="0.874" order="1" fromAlpha="0.75" toAlpha="0"/>
-						<Alpha childKey="RingLarge" duration="0.874" order="1" fromAlpha="0.75" toAlpha="0"/>
-						<Alpha childKey="Starfield" duration="0.9" order="1" fromAlpha="0.5" toAlpha="0"/>
-						<Alpha childKey="RingSmall" duration="0.974" order="1" fromAlpha="0.203" toAlpha="0"/>
-						<Scale childKey="Starfield" smoothing="IN" duration="1.1" order="1" fromScaleX="8" fromScaleY="8" toScaleX="0" toScaleY="0"/>
-						<Alpha childKey="Sunburst" startDelay="0.735" duration="0.134" order="1" fromAlpha="0" toAlpha="1"/>
-						<Scale childKey="Sunburst" startDelay="0.735" duration="0.134" order="1" fromScaleX="3.5" fromScaleY="3.5" toScaleX="1" toScaleY="1"/>
-						<Alpha childKey="LensflareLine" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
-						<Alpha childKey="LensflareLine3" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
-						<Alpha childKey="LensflareLine2" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.2"/>
-						<Alpha childKey="Rune" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-						<Alpha childKey="Rune2" startDelay="0.802" duration="0" order="1" fromAlpha="0" toAlpha="0.5"/>
-						<Scale childKey="RingLargeFlip" startDelay="0.802" duration="0.067" order="1" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
-						<Scale childKey="RingLargeFlip2" startDelay="0.802" duration="0.067" order="1" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
-						<Alpha childKey="Glowies" startDelay="0.802" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Glowies2" startDelay="0.802" duration="1.2" order="1" fromAlpha="1" toAlpha="0"/>
-						<Scale childKey="Rune" startDelay="0.802" duration="0.067" order="1" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
-						<Scale childKey="Rune2" startDelay="0.802" duration="0.067" order="1" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
-						<Scale childKey="RuneStatic" startDelay="0.802" duration="1.772" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
-						<Scale childKey="Glowies" startDelay="0.802" duration="2" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
-						<Scale childKey="Glowies2" startDelay="0.802" duration="2" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
-						<Scale childKey="RingSmall" startDelay="0.869" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.94" toScaleY="0.94"/>
-						<Scale childKey="RingLarge" startDelay="0.869" duration="0.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
-						<Alpha childKey="Sunburst" startDelay="0.869" duration="0.505" order="1" fromAlpha="1" toAlpha="0.6"/>
-						<Scale childKey="RingConstellation" startDelay="0.869" duration="1.005" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
-						<Scale childKey="Sunburst" startDelay="0.869" duration="1.505" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
-						<Scale childKey="Rune" startDelay="0.869" smoothing="NONE" duration="1.705" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
-						<Scale childKey="Rune2" startDelay="0.869" smoothing="NONE" duration="1.705" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
-						<Alpha childKey="OrbActivated" startDelay="0.869" smoothing="NONE" duration="2.1" order="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="OrbActivated2" startDelay="0.869" smoothing="NONE" duration="2.1" order="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="LensflareLine" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
-						<Alpha childKey="LensflareLine3" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
-						<Alpha childKey="LensflareLine2" startDelay="1.3" smoothing="IN" duration="0.6" order="1" fromAlpha="0.2" toAlpha="0"/>
-						<Alpha childKey="Rune" startDelay="1.374" duration="1.47" order="1" fromAlpha="1" toAlpha="0"/>
-						<Alpha childKey="Rune2" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.5" toAlpha="0"/>
-						<Alpha childKey="Sunburst" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.6" toAlpha="0"/>
-						<Alpha childKey="RuneStatic" startDelay="1.374" duration="1.47" order="1" fromAlpha="0.5" toAlpha="0"/>
+						<Alpha childKey="PadlockAnim" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="OUT"/>
+						<Scale childKey="PadlockAnim" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2" smoothing="OUT"/>
+						<Alpha childKey="BlackCover" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="BlackCover2" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="Titans" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="Titans2" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+						<Scale childKey="Titans" startDelay="0" duration="2" order="2" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
+						<Scale childKey="Titans2" startDelay="0" duration="2" order="2" fromScaleX="0.9" fromScaleY="0.9" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="RuneStatic" duration="0" order="2" fromAlpha="0" toAlpha="0.2"/>
+						<Scale childKey="RingLargeFlip" smoothing="IN" duration="0.802" order="2" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
+						<Scale childKey="RingLargeFlip2" smoothing="NONE" duration="0.802" order="2" fromScaleX="6.68" fromScaleY="6.68" toScaleX="0.01" toScaleY="1.104"/>
+						<Alpha childKey="RuneFlipped" duration="0.802" order="2" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="RuneFlipped" smoothing="IN" duration="0.802" order="2" fromScaleX="5.5" fromScaleY="5.5" toScaleX="1.643" toScaleY="1.643"/>
+						<Alpha childKey="RuneFlipped2" duration="0.802" order="2" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="RuneFlipped2" duration="0.802" order="2" fromScaleX="5.5" fromScaleY="5.5" toScaleX="1.643" toScaleY="1.643"/>
+						<Scale childKey="RuneStatic" smoothing="IN" duration="0.802" order="2" fromScaleX="5.5" fromScaleY="5.5" toScaleX="1.25" toScaleY="1.25"/>
+						<Alpha childKey="RingLargeFlip" smoothing="NONE" duration="0.867" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="RingLargeFlip2" smoothing="NONE" duration="0.867" order="2" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="RingConstellation" smoothing="IN" duration="0.869" order="2" fromScaleX="6" fromScaleY="6" toScaleX="1.15" toScaleY="1.15"/>
+						<Scale childKey="RingLarge" smoothing="IN" duration="0.869" order="2" fromScaleX="5.68" fromScaleY="5.68" toScaleX="1.104" toScaleY="1.104"/>
+						<Scale childKey="RingSmall" duration="0.869" order="2" fromScaleX="4.729" fromScaleY="4.729" toScaleX="0.91" toScaleY="0.91"/>
+						<Alpha childKey="RingConstellation" duration="0.874" order="2" fromAlpha="0.75" toAlpha="0"/>
+						<Alpha childKey="RingLarge" duration="0.874" order="2" fromAlpha="0.75" toAlpha="0"/>
+						<Alpha childKey="Starfield" duration="0.9" order="2" fromAlpha="0.5" toAlpha="0"/>
+						<Alpha childKey="RingSmall" duration="0.974" order="2" fromAlpha="0.203" toAlpha="0"/>
+						<Scale childKey="Starfield" smoothing="IN" duration="1.1" order="2" fromScaleX="8" fromScaleY="8" toScaleX="0" toScaleY="0"/>
+						<Alpha childKey="Sunburst" startDelay="0.735" duration="0.134" order="2" fromAlpha="0" toAlpha="1"/>
+						<Scale childKey="Sunburst" startDelay="0.735" duration="0.134" order="2" fromScaleX="3.5" fromScaleY="3.5" toScaleX="1" toScaleY="1"/>
+						<Alpha childKey="LensflareLine" startDelay="0.802" duration="0" order="2" fromAlpha="0" toAlpha="0.2"/>
+						<Alpha childKey="LensflareLine3" startDelay="0.802" duration="0" order="2" fromAlpha="0" toAlpha="0.2"/>
+						<Alpha childKey="LensflareLine2" startDelay="0.802" duration="0" order="2" fromAlpha="0" toAlpha="0.2"/>
+						<!--<Alpha childKey="Rune" startDelay="0.802" duration="0" order="2" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Rune2" startDelay="0.802" duration="0" order="2" fromAlpha="0" toAlpha="0.5"/>-->
+						<Scale childKey="RingLargeFlip" startDelay="0.802" duration="0.067" order="2" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
+						<Scale childKey="RingLargeFlip2" startDelay="0.802" duration="0.067" order="2" fromScaleX="1" fromScaleY="1" toScaleX="10" toScaleY="0.926"/>
+						<Alpha childKey="Glowies" startDelay="0.802" duration="1.2" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Glowies2" startDelay="0.802" duration="1.2" order="2" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="Rune" startDelay="0.802" duration="0.067" order="2" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
+						<Scale childKey="Rune2" startDelay="0.802" duration="0.067" order="2" fromScaleX="0.01" fromScaleY="1.64" toScaleX="1.25" toScaleY="1.25"/>
+						<Scale childKey="RuneStatic" startDelay="0.802" duration="1.772" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+						<Scale childKey="Glowies" startDelay="0.802" duration="2" order="2" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
+						<Scale childKey="Glowies2" startDelay="0.802" duration="2" order="2" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.45" toScaleY="0.45"/>
+						<Scale childKey="RingSmall" startDelay="0.869" duration="0.505" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.94" toScaleY="0.94"/>
+						<Scale childKey="RingLarge" startDelay="0.869" duration="0.505" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
+						<Alpha childKey="Sunburst" startDelay="0.869" duration="0.505" order="2" fromAlpha="1" toAlpha="0.6"/>
+						<Scale childKey="RingConstellation" startDelay="0.869" duration="1.005" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.926" toScaleY="0.926"/>
+						<Scale childKey="Sunburst" startDelay="0.869" duration="1.505" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+						<Scale childKey="Rune" startDelay="0.869" smoothing="NONE" duration="1.705" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+						<Scale childKey="Rune2" startDelay="0.869" smoothing="NONE" duration="1.705" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+						<Alpha childKey="OrbActivated" startDelay="0.869" smoothing="NONE" duration="1.133" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="OrbActivated2" startDelay="0.869" smoothing="NONE" duration="1.133" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="LensflareLine" startDelay="1.3" smoothing="IN" duration="0.6" order="2" fromAlpha="0.2" toAlpha="0"/>
+						<Alpha childKey="LensflareLine3" startDelay="1.3" smoothing="IN" duration="0.6" order="2" fromAlpha="0.2" toAlpha="0"/>
+						<Alpha childKey="LensflareLine2" startDelay="1.3" smoothing="IN" duration="0.6" order="2" fromAlpha="0.2" toAlpha="0"/>
+						<!--<Alpha childKey="Rune" startDelay="1.374" duration="1.47" order="2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Rune2" startDelay="1.374" duration="1.47" order="2" fromAlpha="0.5" toAlpha="0"/>-->
+						<Alpha childKey="Sunburst" startDelay="1.374" duration="1.47" order="2" fromAlpha="0.6" toAlpha="0"/>
+						<Alpha childKey="RuneStatic" startDelay="1.374" duration="0.5" order="2" fromAlpha="0.2" toAlpha="0"/>
+						<Alpha childKey="BackplateGlow" startDelay="0.869" duration="1.005" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="BackplateGlow2" startDelay="0.869" duration="1.005" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="BackplateIntroGlow" startDelay="0.869" duration="1.005" order="2" fromAlpha="0.6" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="BackplateIntroGlow2" startDelay="0.869" duration="1.005" order="2" fromAlpha="0.6" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="HeroClassAnimBackgroundRunes" startDelay="0.869" duration="1.005" order="2" fromAlpha="0.16" toAlpha="0" smoothing="IN"/>
+						<Alpha childKey="HeroClassAnimBackgroundRunes2" startDelay="0.869" duration="1.005" order="2" fromAlpha="0.16" toAlpha="0" smoothing="IN"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>

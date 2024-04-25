@@ -8,7 +8,7 @@ end
 
 local settings = {
 	headerText = PROFESSIONS_TRACKER_HEADER_PROFESSION,
-	events = { "CURRENCY_DISPLAY_UPDATE", "TRACKED_RECIPE_UPDATE", "BAG_UPDATE_DELAYED", "SKILL_LINES_CHANGED" },
+	events = { "CURRENCY_DISPLAY_UPDATE", "TRACKED_RECIPE_UPDATE", "BAG_UPDATE_DELAYED" },
 	blockTemplate = "ObjectiveTrackerAnimBlockTemplate",
 	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
 };
@@ -28,14 +28,6 @@ function ProfessionsRecipeTrackerMixin:OnEvent(event, ...)
 		self:MarkDirty();
 	elseif event == "BAG_UPDATE_DELAYED" then
 		self:MarkDirty();
-	elseif event == "SKILL_LINES_CHANGED" then
-		-- why is this code in the tracker?
-		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(not IsRecrafting)) do
-			if not C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
-				local track = false;
-				C_TradeSkillUI.SetRecipeTracked(recipeID, track, not IsRecrafting);
-			end
-		end
 	end
 end
 

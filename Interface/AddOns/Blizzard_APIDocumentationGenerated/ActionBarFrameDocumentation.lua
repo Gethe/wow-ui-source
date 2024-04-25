@@ -115,6 +115,20 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFlyoutActionButtons",
 			Type = "Function",
 

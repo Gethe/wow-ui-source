@@ -160,7 +160,7 @@
 				</KeyValues>
 				<Scripts>
 					<OnDressModel>
-						self:GetParent():OnDressModel();
+						self:GetParent():OnDressModel(itemModifiedAppearanceID,invSlot,removed);
 					</OnDressModel>
 				</Scripts>
 			</ModelScene>
@@ -171,9 +171,108 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="DressUpFrameTransmogSetTemplate" mixin="DressUpFrameTransmogSetMixin" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackBackground" alpha=".85">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="9" y="-22"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="7"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="dressingroom-sideframe">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="SetName" inherits="GameFontHighlightLarge" mixin="DressUpFrameSetSelectionLabelMixin" maxLines="2">
+					<Size x="350"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="-50"/>
+					</Anchors>
+					<Scripts>
+						<OnEnter method="OnEnter"/>
+						<OnLeave method="OnLeave"/>
+					</Scripts>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="13" y="-64"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border" x="-10" y="8"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-3"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="3"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="DressUpFrameTransmogSetButtonTemplate" mixin="DressUpFrameTransmogSetButtonMixin" virtual="true">
+		<Size x="350" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundTexture" atlas="petlist-buttonbackground" alphaMode="BLEND" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" atlas="petlist-buttonselect" hidden="true" alphaMode="ADD" setAllPoints="true"/>
+				<Texture parentKey="HighlightTexture" atlas="petlist-buttonhighlight" hidden="true" alphaMode="ADD" setAllPoints="true"/>
+
+				<Texture parentKey="IconBorder" atlas="loottoast-itemborder-green">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ItemSlot" inherits="GameFontNormal" justifyH="RIGHT">
+					<Size y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="8" y="12"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemSlot" relativePoint="LEFT" x="-4" y="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="DressUpFrame" mixin="DressUpModelFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
 		<KeyValues>
 			<KeyValue key="hasOutfitControls" value="true" type="boolean"/>
+			<KeyValue key="transmogSetDressUpEnabled" value="true" type="boolean"/>
 		</KeyValues>
 		<Size x="450" y="545"/>
 		<Anchors>
@@ -229,7 +328,7 @@
 				</Frames>
 				<Scripts>
 					<OnDressModel>
-						self:GetParent():OnDressModel();
+						self:GetParent():OnDressModel(itemModifiedAppearanceID,invSlot,removed);
 					</OnDressModel>
 				</Scripts>
 			</ModelScene>
@@ -259,6 +358,12 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+			<Frame parentKey="SetSelectionPanel" inherits="DressUpFrameTransmogSetTemplate" hidden="true">
+				<Size x="400" y="473"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-7" y="-30"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="OutfitDetailsPanel" mixin="DressUpOutfitDetailsPanelMixin" enableKeyboard="true">
 				<Size x="313" y="473"/>
 				<Anchors>

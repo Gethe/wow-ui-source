@@ -262,20 +262,6 @@ local SharedTraits =
 			},
 		},
 		{
-			Name = "GetOrderIndexByNodeEntryID",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "nodeEntryID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "orderIndex", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetStagedChanges",
 			Type = "Function",
 

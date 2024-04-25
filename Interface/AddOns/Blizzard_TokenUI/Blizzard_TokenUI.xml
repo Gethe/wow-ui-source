@@ -87,11 +87,9 @@
 		<Size y="22"/>
 		<Layers>
 			<Layer level="BORDER">
-				<!-- Warbands_Todo: Replace with the final Warbands Icon -->
-				<Texture parentKey="TransferrableCurrencyIcon" atlas="UI-CastingBar-Shield" hidden="true">
-					<Size x="15" y="18"/>
+				<Texture parentKey="AccountWideIcon" atlas="warbands-icon" useAtlasSize="true" scale="0.9" hidden="true">
 					<Anchors>
-						<Anchor point="LEFT" x="4"/>
+						<Anchor point="LEFT" x="2"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="CurrencyIcon">
@@ -108,7 +106,7 @@
 				<FontString parentKey="Name" inherits="GameFontHighlightLeft">
 					<Size y="11"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.TransferrableCurrencyIcon" relativePoint="RIGHT" x="4" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.AccountWideIcon" relativePoint="RIGHT" x="4" y="0"/>
 						<Anchor point="RIGHT" relativeKey="$parent.Count" relativePoint="LEFT" x="-10" y="0"/>
 					</Anchors>
 				</FontString>

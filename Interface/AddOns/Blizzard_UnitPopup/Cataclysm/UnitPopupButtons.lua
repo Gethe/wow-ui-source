@@ -247,9 +247,14 @@ function UnitPopupAchievementButtonMixin:OnClick()
 end
 
 function UnitPopupSelectRoleButtonMixin:CanShow()
+	local isEnabled = CanShowSetRoleButton();
+	if ( not isEnabled ) then
+		return false;
+	end
+
 	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu(); 
-	local isLeader = UnitIsGroupLeader("player"); 
-	local isAssistant = UnitIsGroupAssistant("player"); 
+	local isLeader = UnitIsGroupLeader("player");
+	local isAssistant = UnitIsGroupAssistant("player");
 	if ( not ( IsInGroup() and (isLeader or isAssistant or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
 		return false; 
 	end

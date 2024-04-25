@@ -962,6 +962,9 @@ function ActionBarActionButtonMixin:MatchesActiveButtonSpellID(spellID)
 	end 
 
 	local actionType, id, subType = GetActionInfo(self.action);
+	if actionType == "item" then
+		id = C_ActionBar.GetSpell(self.action);
+	end
 	return id == spellID; 
 end	
 

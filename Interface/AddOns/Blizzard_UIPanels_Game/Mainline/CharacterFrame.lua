@@ -227,13 +227,13 @@ function CharacterFrameMixin:OnShow()
 	end
 	PetFrameHealthBar.showNumeric = true;
 	PetFrameManaBar.showNumeric = true;
-	ShowTextStatusBarText(playerFrameHealthBar);
-	ShowTextStatusBarText(playerFrameManaBar);
+	playerFrameHealthBar:ShowStatusBarText();
+	playerFrameManaBar:ShowStatusBarText();
 	if playerFrameAlternatePowerBar then
-		ShowTextStatusBarText(playerFrameAlternatePowerBar);
+		playerFrameAlternatePowerBar:ShowStatusBarText();
 	end
-	ShowTextStatusBarText(PetFrameHealthBar);
-	ShowTextStatusBarText(PetFrameManaBar);
+	PetFrameHealthBar:ShowStatusBarText();
+	PetFrameManaBar:ShowStatusBarText();
 	StatusTrackingBarManager:SetTextLocked(true);
 
 	if ShouldShowExaltedPlusHelpTip() then
@@ -268,13 +268,13 @@ function CharacterFrameMixin:OnHide()
 	end
 	PetFrameHealthBar.showNumeric = nil;
 	PetFrameManaBar.showNumeric = nil;
-	HideTextStatusBarText(playerFrameHealthBar);
-	HideTextStatusBarText(playerFrameManaBar);
+	playerFrameHealthBar:HideStatusBarText();
+	playerFrameManaBar:HideStatusBarText();
 	if playerFrameAlternatePowerBar then
-		HideTextStatusBarText(playerFrameAlternatePowerBar);
+		playerFrameAlternatePowerBar:HideStatusBarText();
 	end
-	HideTextStatusBarText(PetFrameHealthBar);
-	HideTextStatusBarText(PetFrameManaBar);
+	PetFrameHealthBar:HideStatusBarText();
+	PetFrameManaBar:HideStatusBarText();
 	StatusTrackingBarManager:SetTextLocked(false);
 	PaperDollFrame.currentSideBar = nil;
 	EventRegistry:TriggerEvent("CharacterFrame.Hide");

@@ -105,6 +105,8 @@ UI.xsd">
 
 		<Frame name="GridLayoutFrame" inherits="ResizeLayoutFrame" virtual="true" mixin="GridLayoutFrameMixin">
 			<!-- 
+			Dynamically places child frames into a grid layout based on grid flow defined by KeyValue settings
+
 			<KeyValues>
 				- Space in between laid out frames
 				<KeyValue key="childXPadding" value="0" type="number"/>
@@ -121,6 +123,43 @@ UI.xsd">
 	
 				- This is the direction the layout grows as it adds frames vertically. If true, new frames will be added to the top. If false, new frames will be added to the bottom.
 				<KeyValue key="layoutFramesGoingUp" value="true" type="boolean"/>
+			</KeyValues>
+			-->
+		</Frame>
+
+		<Frame name="StaticGridLayoutFrame" inherits="BaseLayoutFrameTemplate" virtual="true" mixin="StaticGridLayoutFrameMixin">
+			<!-- 
+			Unlike GridLayoutFrame, StaticGridLayoutFrame expects child frames to have a pre-calculated grid column and row.
+			This is useful for complicated/bespoke grid mechanics that can't easily use a standard, generalized grid placement flow.
+
+			It calculates overall width/height for each column/row based on the widest/tallest frame that will be placed within them, 
+			then places each child into their assigned column & row, using those overall sizes for anchor offsets.
+
+			Layout Frame options
+			<KeyValues>
+				- Horizontal space between columns
+				<KeyValue key="childXPadding" value="0" type="number"/>
+				
+				- Vertical space between rows
+				<KeyValue key="childYPadding" value="0" type="number"/>
+			</KeyValues>
+
+			Child Frame Options
+			<KeyValues>
+				- Required: What Column index the frame should be placed in (leftmost column being 1)
+				<KeyValue key="gridColumn" value="0" type="number"/>
+
+				- Required: What Row index the frame should be placed in (topmost row being 1)
+				<KeyValue key="gridRow" value="0" type="number"/>
+
+				- Frames can optionally span more than one column or row.
+				- If they do, their size will be considered as spread evenly across them for overall column/row size calculations.
+				- Ex: Frame A {width: 90, gridColumn: 2, gridColumnSize: 3} will be considered as width of 30 when calculating the individual widths of column 2, 3, and 4.
+				- (Any childXPadding is also factored into this calculation to ensure multi-span frames don't cause padding to be added in twice)
+
+				- Optional: Both default to 1 if not set
+				<KeyValue key="gridColumnSize" value="1" type="number"/>
+				<KeyValue key="gridRowSize" value="1" type="number"/>
 			</KeyValues>
 			-->
 		</Frame>

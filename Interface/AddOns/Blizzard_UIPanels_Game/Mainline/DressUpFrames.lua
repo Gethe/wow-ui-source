@@ -301,9 +301,21 @@ function SetDressUpBackground(frame, raceFilename, classFilename)
 	end
 end
 
+local function RefreshTransmogSet(frame, fromLink)
+	if frame.transmogSetDressUpEnabled and fromLink then
+		local setID = C_Item.GetItemLearnTransmogSet(fromLink);
+		if setID then
+			frame:InitSetSelectionPanel(setID, fromLink);
+		end
+	end
+end
+
 local DRESS_UP_FRAME_MODEL_SCENE_ID = 596;
 function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink)
+	local shownThisFrame = false;
 	if ( forcePlayerRefresh or (not frame:IsShown() or frame:GetMode() ~= "player") ) then
+		shownThisFrame = true;
+
 		frame:SetLastLink(fromLink);
 		frame:SetMode("player");
 
@@ -324,6 +336,8 @@ function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh,
 		frame.ModelScene:ReleaseAllActors();
 		frame.ModelScene:TransitionToModelSceneID(DRESS_UP_FRAME_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 
+		RefreshTransmogSet(frame, fromLink);
+
 		local overrideActorName = nil;
 		local sheatheWeapons = false;
 		local autoDress = true;
@@ -331,6 +345,10 @@ function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh,
 		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		local useNativeForm = not inAlternateForm;
 		SetupPlayerForModelScene(frame.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm);
+	end
+
+	if not shownThisFrame and frame:IsShown() and frame:GetMode() == "player" then
+		RefreshTransmogSet(frame, fromLink);
 	end
 end
 
@@ -856,6 +874,10 @@ local s_qualityToAtlasColorName = {
 	[Enum.ItemQuality.Heirloom] = "account"
 };
 
+function DressUpOutfitDetailsSlot_GetQualityColorName(itemQuality)
+	return s_qualityToAtlasColorName[itemQuality];
+end
+
 function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
 	-- info for tooltip
 	self.transmogID = transmogID;
@@ -880,7 +902,7 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 		if self.item then
 			nameColor = self.item:GetItemQualityColor().color;
 			local quality = self.item:GetItemQuality();
-			local colorName = s_qualityToAtlasColorName[quality];
+			local colorName = DressUpOutfitDetailsSlot_GetQualityColorName(quality);
 			borderType = colorName;
 		else
 			borderType = "illusion";

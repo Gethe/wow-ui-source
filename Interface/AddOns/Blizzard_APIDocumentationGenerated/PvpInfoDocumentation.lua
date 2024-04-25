@@ -413,6 +413,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetPersonalRatedBGBlitzSpecStats",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "specStats", Type = "RatedBGBlitzSpecStats", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPersonalRatedSoloShuffleSpecStats",
 			Type = "Function",
 
@@ -523,6 +532,19 @@ local PvpInfo =
 		},
 		{
 			Name = "GetRatedBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRatedSoloRBGRewards",
 			Type = "Function",
 
 			Returns =
@@ -869,6 +891,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "IsRatedSoloRBG",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isRatedSoloRBG", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRatedSoloShuffle",
 			Type = "Function",
 
@@ -939,6 +970,10 @@ local PvpInfo =
 			{
 				{ Name = "isSpecialBrawl", Type = "bool", Nilable = false, Default = false },
 			},
+		},
+		{
+			Name = "JoinRatedBGBlitz",
+			Type = "Function",
 		},
 		{
 			Name = "RequestCrowdControlSpell",
@@ -1166,6 +1201,7 @@ local PvpInfo =
 				{ Name = "ratedBattlegrounds", Type = "bool", Nilable = false },
 				{ Name = "ratedArenas", Type = "bool", Nilable = false },
 				{ Name = "ratedSoloShuffle", Type = "bool", Nilable = false },
+				{ Name = "ratedBGBlitz", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1557,6 +1593,17 @@ local PvpInfo =
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RatedBGBlitzSpecStats",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "weeklyMostPlayedSpecID", Type = "number", Nilable = false },
+				{ Name = "weeklyMostPlayedSpecGames", Type = "number", Nilable = false },
+				{ Name = "seasonMostPlayedSpecID", Type = "number", Nilable = false },
+				{ Name = "seasonMostPlayedSpecGames", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -173,6 +173,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnKeyDown method="OnKeyDown"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
@@ -206,6 +207,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 	<Button name="TimerunningChoiceInfoButtonTemplate" mixin="TimerunningChoiceInfoButtonMixin" virtual="true">
@@ -335,8 +337,8 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-dialog-frameglow" snapToPixelGrid="false" texelSnappingBias="0">
-							<Size x="450" y="450"/>
+						<Texture parentKey="GlowCircle" alphaMode="ADD" atlas="timerunning-redbutton-glow" snapToPixelGrid="false" texelSnappingBias="0">
+							<Size x="340" y="340"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>			
@@ -416,13 +418,6 @@
 			<OnKeyDown method="OnKeyDown"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
-	</Frame>
-	
-	<Frame name="TimerunningCreateCharacterButtonGlow" parent="CharSelectCreateCharacterButton" inherits="TimerunningCreateCharacterButtonGlowTemplate" frameLevel="2">
-		<Anchors>
-			<Anchor point="LEFT" x="-3"/>
-			<Anchor point="RIGHT" x="3"/>
-		</Anchors>
 	</Frame>
 	
 	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" parent="CharacterSelectUI" frameStrata="HIGH" enableMouse="true">

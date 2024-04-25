@@ -28,12 +28,14 @@ function QuestObjectiveTrackerMixin:OnEvent(event, ...)
 		local questID = ...;
 		self:AddAutoQuestPopUp(questID, "COMPLETE");
 	elseif event == "QUEST_WATCH_LIST_CHANGED" then
-		local questID = ...;
-		local block = self:GetExistingBlock(questID);
-		if not block then
-			self:SetNeedsFanfare(questID);
-			self:MarkDirty();
+		local questID, added = ...;
+		if added then
+			local block = self:GetExistingBlock(questID);
+			if not block then
+				self:SetNeedsFanfare(questID);
+			end
 		end
+		self:MarkDirty();
 	elseif event == "QUEST_TURNED_IN" then
 		local questID = ...;
 		local block = self:GetExistingBlock(questID);

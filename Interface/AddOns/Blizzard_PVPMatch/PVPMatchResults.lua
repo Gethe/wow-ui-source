@@ -115,7 +115,8 @@ function PVPMatchResultsMixin:Init()
 	local factionIndex = GetBattlefieldArenaFaction();
 	local victoryStatID = C_PvP.GetCustomVictoryStatID();
 	local hasCustomVictoryStatID = victoryStatID > 0;
-	if hasCustomVictoryStatID then
+	local useGenericText = hasCustomVictoryStatID and not C_PvP.IsRatedSoloShuffle();
+	if useGenericText then
 		self.header:SetText(PVP_SCOREBOARD_MATCH_COMPLETE);
 	else
 		local function GetOutcomeText(winner, factionIndex)

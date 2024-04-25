@@ -278,7 +278,9 @@ function CharacterSelectFrameMixin:OnHide()
         CharacterSelect_EndCharacterUndelete();
     end
 
-    EndCharacterServicesFlow(true);
+	if not CharacterCreateFrame:HasService() then
+   		EndCharacterServicesFlow(true);
+	end
 
 	SocialContractFrame:Hide();
 
@@ -647,14 +649,11 @@ function CharacterSelect_SetSelectedCharacterName(name, timerunningSeasonID)
 	end
 end
 
--- Temporarily hide timerunning UI.
-GetActiveTimerunningSeasonID = nop;
-
 function CharacterSelect_UpdateTimerunning()
 	local season = GetActiveTimerunningSeasonID();
 	if season then
 		C_AddOns.LoadAddOn("Blizzard_TimerunningCharacterCreate");
-		TimerunningFirstTimeDialog:DetermineVisibility();
+		TimerunningFirstTimeDialog:UpdateState();
 	end
 end
 
@@ -799,11 +798,11 @@ function CharacterSelect_SelectCharacter(index, noCreate)
             GlueParent_SetScreen("charcreate");
         end
     else
-		local charID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-        SelectCharacter(charID);
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
+		SelectCharacter(selectedCharacterID);
 
-		-- Sets up the rendering of this character in the group scene or legacy BG style.
-		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(charID);
+		-- Sets up the character rendering in the group scene or legacy BG style.
+		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(selectedCharacterID);
 
         if (not C_WowTokenPublic.GetCurrentMarketPrice() or
             not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
@@ -828,7 +827,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         CharSelectEnterWorldButton:SetText(text);
 
 		if not serviceInfo.boostInProgress and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
-			if IsRPEBoostEligible(charID) then
+			if IsRPEBoostEligible(selectedCharacterID) then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
 					CharSelectServicesFlow_Minimize() --if they need to resubscribe, get the RPE flow out of the way.
@@ -962,6 +961,11 @@ function CharacterSelect_AllowedToEnterWorld()
 	local trialBoostUnavailable = (serviceInfo.isExpansionTrialCharacter and (serviceInfo.isTrialBoostCompleted or not IsExpansionTrial())) or (serviceInfo.isTrialBoost and (serviceInfo.isTrialBoostCompleted or not C_CharacterServices.IsTrialBoostEnabled()));
     if (serviceInfo.boostInProgress or serviceInfo.isRevokedCharacterUpgrade or trialBoostUnavailable) then
         return false;
+    end
+
+    local timerunningSeasonID = GetCharacterTimerunningSeasonID(guid);
+    if (timerunningSeasonID and not IsTimerunningEnabled()) then
+        return false, TIMERUNNING_DISABLED_TOOLTIP;
     end
 
     return true;
@@ -1160,10 +1164,7 @@ end
 
 function CharacterSelect_UpdateLogo()
 	-- For now, Timerunning overrides the event realms (plunderstorm) if both are active at once. Revisit if we have Plunderstorm and Timerunning at the same time.
-
-	-- Temporarily hide plunderstorm and timerunning UI.
-	--local showEnvironmentToggle = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and GetActiveTimerunningSeasonID() == nil;
-	local showEnvironmentToggle = false;
+	local showEnvironmentToggle = C_GameEnvironmentManager.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and GetActiveTimerunningSeasonID() == nil;
 	CharacterSelectLogo:SetShown(not showEnvironmentToggle);
 	CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:SetShown(showEnvironmentToggle);
 	CharacterSelect.CharacterSelectUI.LimitedTimeEventFrame:SetShown(showEnvironmentToggle);
@@ -1443,9 +1444,12 @@ function CharacterSelect_UpdateButtonState()
 	local guid = GetCharacterGUID(GetCharacterSelection());
 	local boostInProgress = guid and GetServiceCharacterInfo(guid).boostInProgress;
 	local isAccountLocked = CharacterSelectUtil.IsAccountLocked();
-	local disabledTooltip = isAccountLocked and CHARACTER_SELECT_ACCOUNT_LOCKED or nil;
 
-    CharSelectEnterWorldButton:SetEnabled(CharacterSelect_AllowedToEnterWorld());
+	-- Note: enterWorldError will be nil in most cases.
+	local allowedToEnterWorld, enterWorldError = CharacterSelect_AllowedToEnterWorld();
+	local disabledTooltip = isAccountLocked and CHARACTER_SELECT_ACCOUNT_LOCKED or enterWorldError;
+
+    CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld);
     CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectCharacterFrame:SetDeleteEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress and not CharacterSelect_IsRetrievingCharacterList() and not isAccountLocked, disabledTooltip);
     CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress and not isAccountLocked);
@@ -1465,7 +1469,6 @@ function CharacterSelect_UpdateButtonState()
 	end
 
     CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting and not inCompetitiveMode and not inKioskMode and not isAccountLocked);
-
 	CharSelectEnterWorldButton:SetDisabledTooltip(disabledTooltip);
 end
 

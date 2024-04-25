@@ -481,7 +481,7 @@ end
 function UnitPowerBarAltStatus_UpdateText(self)
 	local powerBar = self:GetParent();
 	if ( powerBar.displayedValue and self:IsShown() ) then
-		TextStatusBar_UpdateTextStringWithValues(self, self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
+		self:UpdateTextStringWithValues(self.text, floor(powerBar.displayedValue), powerBar.minPower, powerBar.maxPower);
 	end
 end
 

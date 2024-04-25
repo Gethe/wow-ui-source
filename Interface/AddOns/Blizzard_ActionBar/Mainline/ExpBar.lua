@@ -51,7 +51,7 @@ function ExpBarMixin:UpdateCurrentText()
 end
 
 function ExpBarMixin:OnLoad()
-	TextStatusBar_Initialize(self);
+	self.StatusBar:InitializeTextStatusBar();
 
 	self:Update();
 
@@ -76,7 +76,7 @@ function ExpBarMixin:OnShow()
 end
 
 function ExpBarMixin:OnEnter()
-	TextStatusBar_UpdateTextString(self);
+	self.StatusBar:UpdateTextString();
 	self:ShowText();
 	self:UpdateCurrentText();
 

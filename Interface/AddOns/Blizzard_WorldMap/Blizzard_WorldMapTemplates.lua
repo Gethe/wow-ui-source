@@ -169,7 +169,7 @@ function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
 	AddFilter(CONTENT_TRACKING_MAP_TOGGLE, "contentTrackingFilter");
 	AddFilter(ARCHAEOLOGY_SHOW_DIG_SITES, "digSites", Enum.MinimapTrackingFilter.Digsites);
 	AddFilter(MINIMAP_TRACKING_TRIVIAL_QUESTS, "trivialQuests", Enum.MinimapTrackingFilter.TrivialQuests, true);
-	AddFilter(SHOW_ACCOUNT_COMPLETED_QUESTS_BUTTON_LABEL, "showAccountCompletedQuests");
+	AddFilter(MINIMAP_TRACKING_ACCOUNT_COMPLETED_QUESTS, "showAccountCompletedQuests", Enum.MinimapTrackingFilter.AccountCompletedQuests, true);
 end
 
 function WorldMapTrackingOptionsButtonMixin:GetWorldMapFilters()

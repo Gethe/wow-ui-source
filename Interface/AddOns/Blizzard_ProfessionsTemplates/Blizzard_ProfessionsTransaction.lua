@@ -130,6 +130,8 @@ function ProfessionsRecipeTransactionMixin:Init(recipeSchematic)
 		table.insert(self.reagentSlotSchematicTbls, reagentSlotSchematic);
 		self.reagentTbls[slotIndex] = {reagentSlotSchematic = reagentSlotSchematic, allocations = allocations};
 	end
+
+	self.applyConcentration = false;
 end
 
 function ProfessionsRecipeTransactionMixin:HasReagentSlots()
@@ -698,6 +700,22 @@ function ProfessionsRecipeTransactionMixin:CreateRegularReagentInfoTbl()
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.Reagent;
 	end
 	return self:CreateCraftingReagentInfoTblIf(IsRegularCraftingReagent);
+end
+
+function ProfessionsRecipeTransactionMixin:IsApplyingConcentration()
+	return self.applyConcentration;
+end
+
+function ProfessionsRecipeTransactionMixin:SetApplyConcentration(applyConcentration)
+	if self.applyConcentration ~= applyConcentration then
+		self.applyConcentration = applyConcentration;
+
+		-- Update stat lines
+		self:CallOnChangedHandler();
+
+		-- Update toggle button state
+		self:OnChanged();
+	end
 end
 
 function CreateProfessionsRecipeTransaction(recipeSchematic)

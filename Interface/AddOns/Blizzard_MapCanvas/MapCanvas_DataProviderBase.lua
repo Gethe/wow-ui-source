@@ -481,6 +481,14 @@ function MapCanvasPinMixin:GetHighlightType()
 	return MapPinHighlightType.None;
 end
 
+function MapCanvasPinMixin:GetDataProvider()
+	return self.dataProvider;
+end
+
+function MapCanvasPinMixin:SetDataProvider(dataProvider)
+	self.dataProvider = dataProvider;
+end
+
 function MapCanvasPinMixin:GetDebugInspectionSystem()
 	return "MapCanvasPin";
 end

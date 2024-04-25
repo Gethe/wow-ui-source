@@ -78,7 +78,6 @@ function ObjectiveTrackerAnimLineMixin:OnFree(block)
 	if self.state then
 		self.state = nil;
 		self.noIcon = nil;
-		self.Icon:Hide();
 		self.Glow:SetAlpha(0);
 		self.CheckGlow:SetAlpha(0);
 		self.GlowAnim:Stop();
@@ -86,6 +85,7 @@ function ObjectiveTrackerAnimLineMixin:OnFree(block)
 		self.FadeOutAnim:Stop();
 		self.FadeInAnim:Stop();
 	end
+	self.Icon:Hide();
 end
 
 -- *****************************************************************************************************

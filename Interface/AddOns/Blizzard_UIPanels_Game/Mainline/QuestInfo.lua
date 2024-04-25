@@ -1141,8 +1141,8 @@ local function GetBestQuestRewardContextTooltipLine(questRewardContextFlags)
 end
 
 local QUEST_REWARD_CONTEXT_ICONS = {
-	[Enum.QuestRewardContextFlags.FirstCompletionBonus] = "UI-CastingBar-Shield",
-	[Enum.QuestRewardContextFlags.RepeatCompletionBonus] = "UI-CastingBar-Shield",
+	[Enum.QuestRewardContextFlags.FirstCompletionBonus] = "warbands-icon",
+	[Enum.QuestRewardContextFlags.RepeatCompletionBonus] = "warbands-icon",
 }
 
 local function GetBestQuestRewardContextIcon(questRewardContextFlags)
@@ -1250,6 +1250,7 @@ QuestInfoReputationRewardButtonMixin = { };
 function QuestInfoReputationRewardButtonMixin:SetUpMajorFactionReputationReward(reputationRewardInfo)
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(reputationRewardInfo.factionID);
 	self.factionName = majorFactionData.name;
+	self.factionID = majorFactionData.factionID;
 	self.rewardAmount = reputationRewardInfo.rewardAmount;
 
 	self.Name:SetText(QUEST_REPUTATION_REWARD_TITLE:format(self.factionName));
@@ -1263,6 +1264,9 @@ function QuestInfoReputationRewardButtonMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local wrapText = false;
 	GameTooltip_SetTitle(GameTooltip, QUEST_REPUTATION_REWARD_TITLE:format(self.factionName), HIGHLIGHT_FONT_COLOR, wrapText);
+	if C_Reputation.IsAccountWideReputation(self.factionID) then
+		GameTooltip_AddColoredLine(GameTooltip, REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL, ACCOUNT_WIDE_FONT_COLOR);
+	end
 	GameTooltip_AddNormalLine(GameTooltip, QUEST_REPUTATION_REWARD_TOOLTIP:format(self.rewardAmount, self.factionName));
 	GameTooltip:Show();
 end

@@ -1,6 +1,5 @@
 --! TODO sounds
 --! TODO art
---! TODO strings
 -- TODO / NOTE when implementing the dashboard, we might not want this frame to be available while player is running a delve.
 -- TODO / NOTE ^^^ we should check the "delve progress" world state (partyinfo.cpp / DELVE_COMPLETED_WORLD_STATE_ID) and disable the config button if delve is in progress
 
@@ -105,7 +104,7 @@ end
 function DelvesCompanionConfigurationFrameMixin:OnHide()
     -- TODO / NOTE : GameObject we're using to open this frame currently uses gossip, this may need to change in the near future
     C_PlayerInteractionManager.ClearInteraction();
-    HideUIPanel(DelvesCompanionSpellbookFrame);
+    HideUIPanel(DelvesCompanionAbilityListFrame);
     FrameUtil.UnregisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
 end
 
@@ -119,14 +118,14 @@ end
 -- TODO placeholder code, this is going to change
 function CompanionPortraitFrameMixin:OnEnter()
     local experienceInfo = GetCompanionExperienceInfo();
-    local temp_DescriptionString = "[PH] Complete delves with your companion to increase their level!"; --! todo string
-    local temp_progressFormatString = "[PH] Current Progress: %s"; --! todo string
-    local temp_progressNumbersFormatString = WHITE_FONT_COLOR:WrapTextInColorCode(string.format("%s / %s", experienceInfo.currentExperience, experienceInfo.nextLevelAt)); --! todo string
+    local temp_DescriptionString = "[PH] Complete delves with your companion to increase their level!"; --! todo remove -> going to be replaced with widget
+    local temp_progressFormatString = "[PH] Current Progress: %s"; --! todo remove -> going to be replaced with widget
+    local temp_progressNumbersFormatString = WHITE_FONT_COLOR:WrapTextInColorCode(string.format("%s / %s", experienceInfo.currentExperience, experienceInfo.nextLevelAt)); --! todo remove -> going to be replaced with widget
 
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -5, -50);
-    GameTooltip_AddNormalLine(GameTooltip, temp_DescriptionString); --! todo string
+    GameTooltip_AddNormalLine(GameTooltip, temp_DescriptionString); --! todo remove -> going to be replaced with widget
     GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1);
-    GameTooltip_AddNormalLine(GameTooltip, string.format(temp_progressFormatString, temp_progressNumbersFormatString)); --! todo string
+    GameTooltip_AddNormalLine(GameTooltip, string.format(temp_progressFormatString, temp_progressNumbersFormatString)); --! todo remove -> going to be replaced with widget
     GameTooltip:Show();
 end
 
@@ -262,7 +261,7 @@ function CompanionConfigSlotTemplateMixin:Refresh()
     if self.selectionNodeInfo then
         if not self.selectionNodeInfo.isVisible then
             self:SetEnabled(false);
-            self.Value:SetText("Locked"); --! todo string
+            self.Value:SetText(DELVES_CURIO_LOCKED);
             self.Value:SetTextColor(GRAY_FONT_COLOR:GetRGB());
             self.Label:SetTextColor(GRAY_FONT_COLOR:GetRGB());
             self.Border:SetAtlas("talents-node-pvp-locked"); -- todo art
@@ -291,7 +290,7 @@ function CompanionConfigSlotTemplateMixin:Refresh()
                 self.HighlightTexture:SetSize(50, 55);
             end
         else
-            self.Value:SetText(GREEN_FONT_COLOR:WrapTextInColorCode("Empty")); --! todo string
+            self.Value:SetText(GREEN_FONT_COLOR:WrapTextInColorCode(DELVES_CURIO_SLOT_EMPTY));
             self.Border:SetAtlas("talents-node-pvp-green");  -- todo art
             self.BorderHighlight:SetAtlas("talents-node-pvp-green"); -- todo art
             self.Texture:SetAtlas(nil);
@@ -328,11 +327,11 @@ end
 
 function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
     if ConfigSlotType[self.type] == ConfigSlotType.Role then
-        return "Combat Role"; --! todo string
+        return DELVES_CONFIG_SLOT_LABEL_COMBAT_ROLE;
     elseif ConfigSlotType[self.type] == ConfigSlotType.UtilityTrinket then
-        return "Utility Trinket"; --! todo string
+        return DELVES_CONFIG_SLOT_UTILITY_CURIO;
     elseif ConfigSlotType[self.type] == ConfigSlotType.CombatTrinket then
-        return "Combat Trinket" --! todo string
+        return DELVES_CONFIG_SLOT_COMBAT_CURIO;
     else
         return nil;
     end
@@ -386,6 +385,8 @@ CompanionConfigListButtonMixin = {};
 function CompanionConfigListButtonMixin:OnClick()
     if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
         EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
+    else
+        UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
     end
 end
 
@@ -401,9 +402,9 @@ end
 CompanionConfigShowAbilitiesButtonMixin = {};
 
 function CompanionConfigShowAbilitiesButtonMixin:OnClick()
-    if not DelvesCompanionSpellbookFrame:IsShown() then
-        ShowUIPanel(DelvesCompanionSpellbookFrame);
+    if not DelvesCompanionAbilityListFrame:IsShown() then
+        ShowUIPanel(DelvesCompanionAbilityListFrame);
     else
-        HideUIPanel(DelvesCompanionSpellbookFrame);
+        HideUIPanel(DelvesCompanionAbilityListFrame);
     end
 end

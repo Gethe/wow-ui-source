@@ -61,6 +61,15 @@ function BonusObjectiveDataProviderMixin:OnEvent(event, ...)
 	self:RefreshAllData();
 end
 
+local sortTypeToPinTemplate = {
+	[QuestSortType.Threat] = "ThreatObjectivePinTemplate",
+	[QuestSortType.BonusObjective] = "BonusObjectivePinTemplate",
+};
+
+function BonusObjectiveDataProviderMixin:GetPinTemplateFromTask(taskInfo)
+	return sortTypeToPinTemplate[QuestUtils_GetTaskSortType(taskInfo)];
+end
+
 function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
@@ -77,22 +86,15 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 
 		for i, info in ipairs(taskInfo) do
 			local callback = QuestEventListener:AddCancelableCallback(info.questId, function()
-				if MapUtil.ShouldShowTask(mapID, info) and not QuestUtils_IsQuestWorldQuest(info.questId) then
-					info.dataProvider = self;
-					if C_QuestLog.IsThreatQuest(info.questId) then
-						local completed, x, y = QuestPOIGetIconInfo(info.questId);
-						if x and y then
-							info.x = x;
-							info.y = y;
-						end
-						local pin = self:GetMap():AcquirePin("ThreatObjectivePinTemplate", info);
-						local iconAtlas = QuestUtil.GetThreatPOIIcon(info.questId);
-						pin.Icon:SetAtlas(iconAtlas);
-					else
-						self:GetMap():AcquirePin("BonusObjectivePinTemplate", info);
+				if MapUtil.ShouldShowTask(mapID, info) then
+					local pinTemplate = self:GetPinTemplateFromTask(info);
+					if pinTemplate then
+						info.dataProvider = self;
+						self:GetMap():AcquirePin(pinTemplate, info);
 					end
 				end
 			end);
+
 			tinsert(self.cancelCallbacks, callback);
 		end
 	end
@@ -169,6 +171,7 @@ function BonusObjectivePinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
 end
 
+--[[ Threat Objective Pin ]]--
 ThreatObjectivePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function ThreatObjectivePinMixin:OnLoad()
@@ -177,6 +180,12 @@ function ThreatObjectivePinMixin:OnLoad()
 end
 
 function ThreatObjectivePinMixin:OnAcquired(taskInfo)
+	local completed, x, y = QuestPOIGetIconInfo(taskInfo.questId);
+	if x and y then
+		taskInfo.x = x;
+		taskInfo.y = y;
+	end	
+
 	self:SetPosition(taskInfo.x, taskInfo.y);
 	self.questID = taskInfo.questId;
 	self.numObjectives = taskInfo.numObjectives;
@@ -194,6 +203,8 @@ function ThreatObjectivePinMixin:OnAcquired(taskInfo)
 	if not HaveQuestRewardData(self.questID) then
 		C_TaskQuest.RequestPreloadRewardData(self.questID);
 	end
+
+	self.Icon:SetAtlas(QuestUtil.GetThreatPOIIcon(self.questID));
 end
 
 function ThreatObjectivePinMixin:OnMouseEnter()

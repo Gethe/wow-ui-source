@@ -1,4 +1,7 @@
 
+local PersonalTabardItemID = 210469;
+
+
 function TabardFrame_OnLoad(self)
 	self:RegisterEvent("TABARD_CANSAVE_CHANGED");
 	self:RegisterEvent("TABARD_SAVE_PENDING");
@@ -80,7 +83,13 @@ function TabardFrame_UpdateButtons()
 		if (TabardModel:IsGuildTabard()) then
 			TabardFrameGreetingText:SetText(TABARDVENDORGREETING);
 		else
-			TabardFrameGreetingText:SetText(PERSONALTABARDVENDORGREETING);
+			local includeBank = true;
+			local ownedItemCount = C_Item.GetItemCount(PersonalTabardItemID, includeBank);
+			if ownedItemCount == 0 then
+				TabardFrameGreetingText:SetText(PERSONALTABARDVENDORUNOWNEDGREETING);
+			else
+				TabardFrameGreetingText:SetText(PERSONALTABARDVENDORGREETING);
+			end
 		end
 
 		if( TabardModel:CanSaveTabardNow() ) then

@@ -942,20 +942,20 @@ end
 function TalentButtonArtMixin:ApplyVisualState(visualState)
 	local color = TalentButtonUtil.GetColorForBaseVisualState(visualState);
 	local r, g, b = color:GetRGB();
-	self.SpendText:SetTextColor(r, g, b);
+	MixinUtil.CallMethodSafe(self.SpendText, "SetTextColor", r, g, b);
 
 	local isRefundInvalid = (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
 	local disabledColor = isRefundInvalid and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
 	self.Icon:SetVertexColor(disabledColor:GetRGBA());
 
 	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
-	self.DisabledOverlay:SetAlpha((isGated and 0.7) or (isRefundInvalid and RefundInvalidOverlayAlpha) or 0.25);
+	MixinUtil.CallMethodSafe(self.DisabledOverlay, "SetAlpha", (isGated and 0.7) or (isRefundInvalid and RefundInvalidOverlayAlpha) or 0.25)
 
 	local isLocked = (visualState == TalentButtonUtil.BaseVisualState.Locked);
 	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Disabled);
 	local isDimmed = isGated or isLocked or isDisabled;
 	self.Icon:SetDesaturated(not isRefundInvalid and isDimmed);
-	self.DisabledOverlay:SetShown(isRefundInvalid or isDimmed);
+	MixinUtil.CallMethodSafe(self.DisabledOverlay, "SetShown", isRefundInvalid or isDimmed);
 
 	if self.SelectableIcon then
 		local isSelectable = (visualState == TalentButtonUtil.BaseVisualState.Selectable);
@@ -1174,12 +1174,12 @@ function TalentButtonSplitIconMixin:ApplyVisualState(visualState)
 	TalentButtonArtMixin.ApplyVisualState(self, visualState);
 
 	local desaturation = self.Icon:GetDesaturation();
-	self.Icon2:SetDesaturation(desaturation);
+	MixinUtil.CallMethodSafe(self.Icon2, "SetDesaturation", desaturation);
 end
 
 function TalentButtonSplitIconMixin:SetSplitIconShown(isSplitShown)
-	self.IconSplitMask:SetShown(isSplitShown);
-	self.Icon2:SetShown(isSplitShown);
+	MixinUtil.CallMethodSafe(self.IconSplitMask, "SetShown", isSplitShown);
+	MixinUtil.CallMethodSafe(self.Icon2, "SetShown", isSplitShown);
 end
 
 

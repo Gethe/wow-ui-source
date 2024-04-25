@@ -1,4 +1,5 @@
 
+
 local helpTipSystem = "Professions Crafting Helptips";
 
 ProfessionsGearSlotTemplateMixin = CreateFromMixins(PaperDollItemSlotButtonMixin);
@@ -912,6 +913,14 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	else
 		self.SchematicForm:Init(nil);
 	end
+
+	local concentrationCurrency = C_TradeSkillUI.GetConcentrationCurrencyID(professionInfo.professionID);
+	local hasConcentration = concentrationCurrency ~= 0;
+	if hasConcentration then
+		self.ConcentrationDisplay:SetCurrencyType(concentrationCurrency);
+	end
+	self.ConcentrationDisplay:SetShown(hasConcentration);
+
 	self:ValidateControls();
 end
 
@@ -935,36 +944,42 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 		self.MinimizedSearchBox:Hide();
 		self.MinimizedSearchResults:Hide();
 
-	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
-		schematicWidth = useCondensedPanel and 500 or 655;
-	end
-	self.SchematicForm:SetWidth(schematicWidth);
+		local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
+			schematicWidth = useCondensedPanel and 500 or 655;
+		end
+		self.SchematicForm:SetWidth(schematicWidth);
 	
-	if minimized then
-		self.SchematicForm.MinimalBackground:SetAtlas("Professions-MinimizedView-Background", TextureKitConstants.UseAtlasSize);
-		self.SchematicForm.MinimalBackground:Show();
-		self.SchematicForm.Background:Hide();
+		if minimized then
+			self.SchematicForm.MinimalBackground:SetAtlas("Professions-MinimizedView-Background", TextureKitConstants.UseAtlasSize);
+			self.SchematicForm.MinimalBackground:Show();
+			self.SchematicForm.Background:Hide();
 
-		self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 13);
+			self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 13);
 
-		self.RecipeList:Hide();
-		self.LinkButton:Hide();
-		self.RankBar:Hide();
-		self:HideInventorySlots();
-	else
-		self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
-		self.SchematicForm.Background:Show();
-		self.SchematicForm.MinimalBackground:Hide();
+			self.RecipeList:Hide();
+			self.LinkButton:Hide();
+			self.RankBar:Hide();
+			self:HideInventorySlots();
+		else
+			self.SchematicForm.Background:SetAtlas(Professions.GetProfessionBackgroundAtlas(professionInfo), TextureKitConstants.IgnoreAtlasSize);
+			self.SchematicForm.Background:Show();
+			self.SchematicForm.MinimalBackground:Hide();
 
-		self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 7);
+			self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 7);
 
-	if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then
-		self.RankBar:Update(professionInfo);
+		if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then
+			self.RankBar:Update(professionInfo);
+		end
+
+		self:ConfigureInventorySlots(professionInfo);
+
+		self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
 	end
 
-	self:ConfigureInventorySlots(professionInfo);
-
-	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
+	if minimized then
+		self.ConcentrationDisplay:SetPoint("TOPLEFT", 74, -32);
+	else
+		self.ConcentrationDisplay:SetPoint("TOPLEFT", 120, -35);
 	end
 
 	self.TutorialButton:SetShown(not isRuneforging);
@@ -1008,15 +1023,16 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 			else
 				craftingReagentInfos = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
 			end
-
+			
+			local applyConcentration = transaction:IsApplyingConcentration();
 			local enchantItem = transaction:GetEnchantAllocation();
 			if enchantItem then
 				if count > 1 and C_TradeSkillUI.CanStoreEnchantInItem(enchantItem:GetItemGUID()) then
 					self.vellumItemID = enchantItem:GetItemID();
 				end
-				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation());
+				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation(), applyConcentration);
 			else
-				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel);
+				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel, nil, applyConcentration);
 			end
 		end
 	end

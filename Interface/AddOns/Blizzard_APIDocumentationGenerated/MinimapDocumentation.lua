@@ -169,6 +169,15 @@ local Minimap =
 			},
 		},
 		{
+			Name = "IsTrackingAccountCompletedQuests",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "IsTrackingAccountCompletedQuests", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTrackingBattlePets",
 			Type = "Function",
 

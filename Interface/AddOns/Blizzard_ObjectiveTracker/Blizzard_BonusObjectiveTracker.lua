@@ -504,13 +504,14 @@ end
 function BonusObjectiveTrackerProgressBarMixin:SetValue(percent)
 	self.Bar:SetValue(percent);
 	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
-	if self.oldPercent and self.oldPercent < 100 then
-		local delta = percent - self.oldPercent;
+	local oldPercent = self.oldPercent;
+	self.oldPercent = percent;
+	if oldPercent and oldPercent < 100 then
+		local delta = percent - oldPercent;
 		if delta > 0 then
 			self:PlayFlareAnim(delta);
 		end	
 	end
-	self.oldPercent = percent;
 end
 
 function BonusObjectiveTrackerProgressBarMixin:OnGet(isNew, questID, finished)
@@ -568,7 +569,7 @@ end
 
 function BonusObjectiveTrackerProgressBarMixin:PlayFlareAnim(delta)
 	local animOffset = animOffset or 12;
-	local offset = self.Bar:GetWidth() * (self.AnimValue / 100) - animOffset;
+	local offset = self.Bar:GetWidth() * (self.oldPercent / 100) - animOffset;
 
 	local prefix = "";
 	if delta < 10 then
@@ -765,8 +766,11 @@ function ObjectiveTrackerTopBannerMixin:OnAnimFinished()
 end
 
 function ObjectiveTrackerTopBannerMixin:OnFinish()
-	self.module:SetNeedsFanfare(self.questID);
-	self.module:MarkDirty();
-	self.module = nil;
-	self.questID = nil;
+	-- TODO: figure out why sometimes there is no .module
+	if self.module then
+		self.module:SetNeedsFanfare(self.questID);
+		self.module:MarkDirty();
+		self.module = nil;
+		self.questID = nil;
+	end
 end

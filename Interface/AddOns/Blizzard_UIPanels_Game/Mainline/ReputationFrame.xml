@@ -216,11 +216,9 @@
 				<Texture parentKey="AtWarBackground" setAllPoints="true" hidden="true">
 					<Color r="0.27" g="0.01" b="0"/>
 				</Texture>
-				<!-- Warbands_Todo: Replace with the final Warband icon -->
-				<Texture parentKey="AccountWideIcon" atlas="UI-CastingBar-Shield" hidden="true">
-					<Size x="15" y="18"/>
+				<Texture parentKey="AccountWideIcon" atlas="warbands-icon" useAtlasSize="true" scale="0.9" hidden="true">
 					<Anchors>
-						<Anchor point="LEFT" x="4"/>
+						<Anchor point="LEFT" x="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>

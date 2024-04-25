@@ -1,6 +1,5 @@
 --! TODO sounds
 --! TODO art
---! TODO strings
 
 --[[ LOCALS ]]
 -- TODO not sure all these events are needed, they were pulled from the torghast difficulty picker
@@ -35,7 +34,7 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 	CustomGossipFrameBaseMixin.OnLoad(self);
 end
 
--- TODO Will want to revisit this when building ready check
+-- TODO Will need to revisit this with continue screen
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 	if event == "PARTY_LEADER_CHANGED" or event == "GROUP_ROSTER_UPDATE" or event == "GROUP_FORMED" then 
 		C_GossipInfo.RefreshOptions(); 
@@ -52,7 +51,7 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
 end
 
--- TODO there's going to be other conditions for the enabled state (party member range check, ready check, etc.), and a continue/reset at some point
+-- TODO there may be other conditions for this in the future. We're no longer doing a ready check, but the continue screen might affect this
 function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
 	self.EnterDelveButton:SetEnabled(self.isPartyLeader and UnitLevel("player") >= REQUIRED_PLAYER_LEVEL);
 end
@@ -221,19 +220,18 @@ function DelvesDifficultyPickerLevelDropdownMixin:DropdownClickHandler()
 end
 
 --[[ Enter Button ]]
--- ! TODO Need ready check
 DelvesDifficultyPickerEnterDelveButtonMixin = {};
 
 -- ! TODO Need to do range check for party members - put tooltip in if party members out of range
 function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 	if not self:GetParent().isPartyLeader then
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
-		GameTooltip_AddNormalLine(GameTooltip, TORGHAST_LEVEL_PICKER_LEADER_ERROR); --! TODO string
+		GameTooltip_AddNormalLine(GameTooltip, DELVES_LEVEL_PICKER_LEADER_ERROR);
 		GameTooltip:Show(); 
 	elseif UnitLevel("player") < REQUIRED_PLAYER_LEVEL then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
-		GameTooltip_AddErrorLine(GameTooltip, "You must be at least level 70 to enter a Delve."); --! TODO string
+		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR);
 		GameTooltip:Show(); 
 	end
 end 

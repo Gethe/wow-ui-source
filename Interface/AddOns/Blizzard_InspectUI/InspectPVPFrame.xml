@@ -78,7 +78,7 @@
 		<Frames>
 			<Frame parentKey="RatedBG" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BG" x="0" y="-60"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BG" x="0" y="-45"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -88,7 +88,7 @@
 			</Frame>
 			<Frame parentKey="Arena2v2" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RatedBG" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RatedBG" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -98,7 +98,7 @@
 			</Frame>
 			<Frame parentKey="Arena3v3" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Arena2v2" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena2v2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -108,11 +108,21 @@
 			</Frame>
 			<Frame parentKey="RatedSoloShuffle" inherits="InspectPvpStatTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Arena3v3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Arena3v3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.BGType:SetText(PVP_RATED_SOLO_SHUFFLE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="RatedBGBlitz" inherits="InspectPvpStatTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RatedSoloShuffle" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.BGType:SetText(PVP_RATED_BG_BLITZ);
 					</OnLoad>
 				</Scripts>
 			</Frame>

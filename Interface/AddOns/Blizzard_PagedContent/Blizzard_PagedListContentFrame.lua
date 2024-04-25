@@ -18,7 +18,7 @@ function BasePagedListContentFrameMixin:WillElementUseTrackedViewSpace(splitData
 	return true;
 end
 
-function BasePagedListContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementIndex)
+function BasePagedListContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementData, elementIndex)
 	spacerFrame.expand = true;
 	spacerFrame.layoutIndex = elementIndex
 end
@@ -36,6 +36,12 @@ function BasePagedListContentFrameMixin:ApplyLayout(layoutFrames, viewFrame)
 	-- since we just populated it with elements based on its existing width/height
 	viewFrame.fixedWidth = viewFrame:GetWidth();
 	viewFrame.fixedHeight = viewFrame:GetHeight();
+
+	-- Need to ensure all the child frames are shown first, so that Vertical/Horizontal LayoutFrame actually knows what frames to work with
+	for index, elementFrame in ipairs(layoutFrames) do
+		elementFrame:Show();
+	end
+	
 	viewFrame:Layout();
 end
 
@@ -70,8 +76,8 @@ function PagedVerticalListContentFrameMixin:GetViewSpaceNeededForSpacer(splitDat
 	return self.spacerSize + spacerTemplateInfo.verticalPadding + splitData.elementSpacing;
 end
 
-function PagedVerticalListContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementIndex)
-	BasePagedListContentFrameMixin.ProcessSpacerFrame(self, spacerFrame, elementIndex);
+function PagedVerticalListContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementData, elementIndex)
+	BasePagedListContentFrameMixin.ProcessSpacerFrame(self, spacerFrame, elementData, elementIndex);
 	spacerFrame:SetHeight(self.spacerSize);
 end
 
@@ -105,7 +111,7 @@ function PagedHorizontalListContentFrameMixin:GetViewSpaceNeededForSpacer(splitD
 	return self.spacerSize + spacerTemplateInfo.horizontalPadding + splitData.elementSpacing;
 end
 
-function PagedHorizontalListContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementIndex)
-	BasePagedListContentFrameMixin.ProcessSpacerFrame(self, spacerFrame, elementIndex);
+function PagedHorizontalListContentFrameMixin:ProcessSpacerFrame(spacerFrame, elementData, elementIndex)
+	BasePagedListContentFrameMixin.ProcessSpacerFrame(self, spacerFrame, elementData, elementIndex);
 	spacerFrame:SetWidth(self.spacerSize);
 end

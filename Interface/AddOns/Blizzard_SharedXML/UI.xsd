@@ -151,6 +151,14 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="PROPAGATE_MOUSE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Motion"/>
+			<xs:enumeration value="Clicks"/>
+			<xs:enumeration value="Both"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 
 	<xs:element name="AbsValue">
 		<xs:complexType>
@@ -458,7 +466,7 @@
 		<xs:attribute name="protected" type="xs:boolean" default="false"/>
 		<xs:attribute name="secureReferenceKey" type="xs:string"/>
     <xs:attribute name="retainClickThroughOverride" type="xs:boolean" default="false"/>
-    <xs:attribute name="propagateMouseInput" type="xs:string"/>
+    <xs:attribute name="propagateMouseInput" type="PROPAGATE_MOUSE"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="LayoutFrameType">

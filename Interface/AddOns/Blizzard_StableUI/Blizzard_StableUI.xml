@@ -398,11 +398,8 @@
 				</Frames>
 			</ModelScene>
 
-			<Button parentKey="StableTogglePetButton" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" mixin="StableTogglePetButtonMixin" frameLevel="100" text="STABLE_PET_BUTTON_LABEL">
+			<Button parentKey="StableTogglePetButton" inherits="UIPanelButtonTemplate" mixin="StableTogglePetButtonMixin" frameLevel="100" text="STABLE_PET_BUTTON_LABEL">
 				<Size x="155" y="22"/>
-				<KeyValues>
-					<KeyValue key="disabledTooltip" value="STABLE_TOGGLE_PET_BUTTON_ERR_CURRENTLY_SUMMONED" type="global"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PetModelScene" relativePoint="BOTTOMRIGHT" x="-5" y="130"/>
 				</Anchors>

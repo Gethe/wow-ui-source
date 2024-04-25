@@ -804,7 +804,7 @@ function QuestUtils_IsQuestWatched(questID)
 	return questID and C_QuestLog.GetQuestWatchType(questID) ~= nil;
 end
 
-QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary" );
+QuestSortType = EnumUtil.MakeEnum( "Normal", "Campaign", "Calling", "Legendary", "Threat", "BonusObjective", "WorldQuest", "Important", "Daily", "Meta" );
 
 function QuestUtils_GetQuestSortType(questInfo)
 	if questInfo.isCalling then
@@ -818,6 +818,31 @@ function QuestUtils_GetQuestSortType(questInfo)
 	end
 
 	return QuestSortType.Normal;
+end
+
+-- This should be unified with QuestUtils_GetQuestSortType, or completely implemented in the C++ API 
+function QuestUtils_GetTaskSortType(taskInfo)
+	local questID = taskInfo.questID or taskInfo.questId;
+
+	if C_QuestLog.IsWorldQuest(questID) then
+		return QuestSortType.WorldQuest;
+	elseif C_QuestLog.IsThreatQuest(questID) then
+		return QuestSortType.Threat;
+	elseif C_QuestLog.IsQuestCalling(questID) then
+		return QuestSortType.Calling;
+	elseif C_QuestLog.IsImportantQuest(questID) then
+		return QuestSortType.Important;
+	elseif QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID) then
+		return QuestSortType.Campaign; -- NOTE: This is different than the logic above which is only used to display quests in the log, should be unified somehow.
+	elseif taskInfo.isDaily then
+		return QuestSortType.Daily;
+	elseif taskInfo.isMeta then
+		return QuestSortType.Meta;
+	elseif taskInfo.isQuestStart then
+		return QuestSortType.Normal;
+	end
+
+	return QuestSortType.BonusObjective;
 end
 
 function QuestUtil.IsFrequencyRecurring(frequency)

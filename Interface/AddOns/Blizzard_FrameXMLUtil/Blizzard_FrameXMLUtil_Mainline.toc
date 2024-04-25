@@ -18,7 +18,7 @@ CommunitiesUtil.lua
 RuneforgeUtil.xml
 ItemUtil.lua
 PVPUtil.lua
-TransmogUtil.lua
+Mainline\TransmogUtil.lua
 DifficultyUtil.lua
 RenownRewardUtil.lua
 TitleUtil.lua
@@ -28,6 +28,7 @@ AdventureGuideUtil.lua
 CampaignUtil.lua
 AnimationSystem.lua
 CurrencyContainer.lua
+CurrencyUtil.lua
 Mainline\RAFUtil.lua
 Mainline\PlayerSpellsUtil.lua
 Mainline\ExpansionUtil.lua

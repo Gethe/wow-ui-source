@@ -285,10 +285,11 @@ function ProfessionsRecipeSchematicFormMixin:GetRecipeOperationInfo()
 			return C_TradeSkillUI.GetGatheringOperationInfo(recipeInfo.recipeID);
 		elseif self.recipeSchematic.hasCraftingOperationInfo then
 			local recraftItemGUID, recraftOrderID = self.transaction:GetRecraftAllocation();
+			local applyConcentration = self.transaction:IsApplyingConcentration();
 			if recraftOrderID then
-				return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID);
+				return C_TradeSkillUI.GetCraftingOperationInfoForOrder(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), recraftOrderID, applyConcentration);
 			else
-				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID());
+				return C_TradeSkillUI.GetCraftingOperationInfo(recipeInfo.recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), applyConcentration);
 			end
 		end
 	end
@@ -363,6 +364,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.Reagents:Hide();
 	self.OptionalReagents:Hide();
 	self.FinishingReagents:Hide();
+	self.Concentrate:Hide();
 	self.Details:Hide();
 
 	self.currentRecipeInfo = recipeInfo;
@@ -765,7 +767,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	if minimized then
 		slotParents[Enum.CraftingReagentType.Finishing] = self.FinishingReagents;
 	else
-		slotParents[Enum.CraftingReagentType.Finishing] = self.Details.FinishingReagentSlotContainer;
+		slotParents[Enum.CraftingReagentType.Finishing] = self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer;
 	end
 
 	if isRecraft then
@@ -1362,8 +1364,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		self.Reagents:Hide();
 	end
 
+	local professionInfo = Professions.GetProfessionInfo();
 	local operationInfo;
-	local professionLearned = not self.isInspection and Professions.GetProfessionInfo().skillLevel > 0;
+	local professionLearned = not self.isInspection and professionInfo.skillLevel > 0;
 	if professionLearned then
 		operationInfo = self:GetRecipeOperationInfo();
 	end
@@ -1379,7 +1382,10 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	Professions.LayoutAndShowReagentSlotContainer(optionalSlots, self.OptionalReagents);
-	
+
+	local concentrationCurrency = professionInfo and C_TradeSkillUI.GetConcentrationCurrencyID(professionInfo.professionID);
+	local hasConcentration = concentrationCurrency ~= 0;
+
 	if minimized then
 		if self.OptionalReagents:IsShown() then
 			self.FinishingReagents:SetPoint("TOPLEFT", self.OptionalReagents, "TOPLEFT", 186, 0);
@@ -1387,15 +1393,20 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.FinishingReagents:SetPoint("TOPLEFT", self.Reagents, "BOTTOMLEFT", 0, -20);
 		end
 		Professions.LayoutAndShowReagentSlotContainer(finishingSlots, self.FinishingReagents);
+		self.Concentrate:SetShown(hasConcentration);
+		self.Concentrate.ConcentrateToggleButton:SetOperationInfo(operationInfo);
+		self.Concentrate.ConcentrateToggleButton:SetRecipeInfo(recipeInfo);
+		self.Concentrate.ConcentrateToggleButton:SetTransaction(self.transaction);
 	else
 		-- Finishing reagents are displayed in the details panel instead.
 		self.FinishingReagents:Hide();
+		self.Concentrate:Hide();
 	end
 
 	local hasFinishingSlots = finishingSlots ~= nil;
 	if professionLearned and Professions.InLocalCraftingMode() and recipeInfo.supportsCraftingStats and ((operationInfo ~= nil and #operationInfo.bonusStats > 0) or recipeInfo.supportsQualities or recipeInfo.isGatheringRecipe or hasFinishingSlots) then
 		if not minimized then
-			Professions.LayoutFinishingSlots(finishingSlots, self.Details.FinishingReagentSlotContainer);
+			Professions.LayoutFinishingSlots(finishingSlots, self.Details.CraftingChoicesContainer.FinishingReagentSlotContainer);
 		end
 		
 		if not (minimized and not recipeInfo.supportsQualities) then
@@ -1407,8 +1418,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			else
 				self.Details:SetPoint("TOPRIGHT", self, "TOPRIGHT", -20, -125);
 			end
-		
-			self.Details:SetData(self.transaction, recipeInfo, hasFinishingSlots);
+
+			self.Details:SetData(self.transaction, recipeInfo, hasFinishingSlots, hasConcentration);
 			self.Details:Show();
 			self:UpdateDetailsStats(operationInfo);
 		end

@@ -313,7 +313,10 @@ function PagedContentFrameBaseMixin:SplitElementsIntoViewData()
 	local groupSpacerInfo = self.spacerTemplate and self:InternalGetTemplateInfo(self.spacerTemplate) or nil;
 	splitData.totalSpacerSize = groupSpacerInfo and self:GetViewSpaceNeededForSpacer(splitData, groupSpacerInfo) or 0;
 
+	self:OnNewViewStarted(splitData);
 	for groupIndex, dataGroup in self.dataProvider:Enumerate() do
+		self:OnDataGroupStarted(splitData, dataGroup);
+
 		if dataGroup.header then
 			local isHeader = true;
 			self:ProcessElement(splitData, dataGroup.header, -1, isHeader, dataGroup);
@@ -341,36 +344,46 @@ function PagedContentFrameBaseMixin:ProcessElement(splitData, elementData, eleme
 	if self:WillElementUseTrackedViewSpace(splitData, elementData, elementTemplateInfo, needsGroupSpacer) then
 		local sizeForElement = self:GetViewSpaceNeededForElement(splitData, elementData, elementTemplateInfo);
 		local totalSizeNeededForElement = sizeForElement;
+		local sizeForNextElement = 0;
 
 		if needsGroupSpacer then
 			totalSizeNeededForElement = totalSizeNeededForElement + splitData.totalSpacerSize;
 		end
 
+		if dataGroup.elements and ((isHeader and #dataGroup.elements > 0) or (not isHeader and #dataGroup.elements > elementIndex)) then
+			-- Cache next element's size, either for Header checks or just approximate next element placement calculations
+			local nextElementIndex = isHeader and 1 or elementIndex + 1;
+			local nextElementData = dataGroup.elements[nextElementIndex];
+			local nextTemplateInfo = self:InternalGetTemplateInfo(nextElementData.templateKey);
+			sizeForNextElement = self:GetViewSpaceNeededForElement(splitData, nextElementData, nextTemplateInfo);
+		end
+
 		-- If elementData is a header, ensure there's room to include at least one of the group's elements after it
 		-- This avoids a header awkwardly displaying by itself at the end of a view
 		if isHeader and dataGroup.elements and #dataGroup.elements > 0 then
-			local firstNonHeaderElementData = dataGroup.elements[1];
-			local firstNonHeaderTemplateInfo = self:InternalGetTemplateInfo(firstNonHeaderElementData.templateKey);
-			totalSizeNeededForElement = totalSizeNeededForElement + self:GetViewSpaceNeededForElement(splitData, firstNonHeaderElementData, firstNonHeaderTemplateInfo);
+			totalSizeNeededForElement = totalSizeNeededForElement + sizeForNextElement;
 		end
 
 		-- Not enough space, Start a new view
-		if splitData.viewSpaceRemaining < totalSizeNeededForElement then
+		if self:ShouldStartNewView(splitData.viewSpaceRemaining, totalSizeNeededForElement, splitData) then
 			table.insert(splitData.viewDataList, splitData.currentViewData);
 			splitData.viewSpaceRemaining = splitData.totalViewSpace;
 			splitData.currentViewData = {};
 			needsGroupSpacer = false; -- No longer need a group spacer if we're moving to a new view
+			self:OnNewViewStarted(splitData);
 		end
 
 		-- Spacer definitely needed, add it
 		if needsGroupSpacer then
-			table.insert(splitData.currentViewData, { isSpacer = true })
+			local spacerData = { isSpacer = true };
+			table.insert(splitData.currentViewData, spacerData)
 			splitData.viewSpaceRemaining = splitData.viewSpaceRemaining - splitData.totalSpacerSize;
+			self:OnSpacerAddedToView(splitData, spacerData);
 		end
 
 		splitData.viewSpaceRemaining = splitData.viewSpaceRemaining - sizeForElement;
 		-- Let layout code know element space was removed from remaining view space so it can do any other state changes
-		self:OnElementSpaceTakenFromView(splitData, elementData, elementTemplateInfo);
+		self:OnElementSpaceTakenFromView(splitData, elementData, elementTemplateInfo, sizeForElement, sizeForNextElement);
 	end
 
 	table.insert(splitData.currentViewData, elementData);
@@ -404,7 +417,7 @@ function PagedContentFrameBaseMixin:DisplayViewsForCurrentPage()
 						local spacerPool = self.framePoolCollection:GetOrCreatePool(spacerTemplateInfo.type, nil, self.spacerTemplate);
 						local spacerFrame = spacerPool:Acquire();
 						spacerFrame.isSpacer = true;
-						self:ProcessSpacerFrame(spacerFrame, elementIndex);
+						self:ProcessSpacerFrame(spacerFrame, elementData, elementIndex);
 
 						spacerFrame:SetParent(viewFrame);
 						table.insert(layoutFrames, spacerFrame);
@@ -416,6 +429,7 @@ function PagedContentFrameBaseMixin:DisplayViewsForCurrentPage()
 					local elementPool = self.framePoolCollection:GetOrCreatePool(elementTemplateInfo.type, nil, elementTemplateInfo.template, elementTemplateInfo.resetFunc, nil, elementData.templateKey);
 					local elementFrame = elementPool:Acquire();
 					table.insert(self:GetFrames(), elementFrame);
+					
 					self:ProcessElementFrame(elementFrame, elementData, elementIndex);
 
 					elementFrame:SetParent(viewFrame);
@@ -466,6 +480,12 @@ function PagedContentFrameBaseMixin:GetTotalViewSpace(viewFrame)
 	assert(false);
 end
 
+function PagedContentFrameBaseMixin:OnDataGroupStarted(splitData, dataGroup)
+	-- Optional
+	-- Do any layout-specific data caching/clearing in preparation for the start of a new group of elements
+	-- This function should NOT process/position any of the elements or headers in this group
+end
+
 function PagedContentFrameBaseMixin:GetViewSpaceNeededForElement(splitData, elementData, elementTemplateInfo)
 	-- Required
 	-- Return total amount of space an element takes up within a view
@@ -489,7 +509,19 @@ function PagedContentFrameBaseMixin:WillElementUseTrackedViewSpace(splitData, el
 	assert(false);
 end
 
-function PagedContentFrameBaseMixin:OnElementSpaceTakenFromView(splitData, elementData, elementTemplateInfo)
+function PagedContentFrameBaseMixin:ShouldStartNewView(viewSpaceRemaining, totalSizeNeededForElement, splitData)
+	-- Optional Override
+	-- Override if layout-specific logic requires more complicated checks around space taken vs remaining available.
+	return viewSpaceRemaining < totalSizeNeededForElement;
+end
+
+function PagedContentFrameBaseMixin:OnNewViewStarted(splitData)
+	-- Optional
+	-- Called when a new View starts being filled, either because it's the first one or because the previous one was full
+	-- Do any layout-specific data caching/clearing in preparation for the start of the new View
+end
+
+function PagedContentFrameBaseMixin:OnElementSpaceTakenFromView(splitData, elementData, elementTemplateInfo, spaceTaken, sizeOfNextElement)
 	-- Optional
 	-- Called when an element has taken up some available view space
 	-- Separate from OnElementAddedToView as not all added elements take up tracked space (see WillElementUseTrackedViewSpace)
@@ -501,7 +533,12 @@ function PagedContentFrameBaseMixin:OnElementAddedToView(splitData, elementData,
 	-- Separate from OnElementSpaceTakenFromView as not all added elements take up tracked space (see WillElementUseTrackedViewSpace)
 end
 
-function PagedContentFrameBaseMixin:ProcessSpacerFrame(spacerFrame, elementIndex)
+function PagedContentFrameBaseMixin:OnSpacerAddedToView(splitData, elementData)
+	-- Optional
+	-- Called when a spacer has been added to view data
+end
+
+function PagedContentFrameBaseMixin:ProcessSpacerFrame(spacerFrame, elementData, elementIndex)
 	-- Optional
 	-- Do any layout-specific operations on instantiated spacerFrame
 end
@@ -513,6 +550,6 @@ end
 
 function PagedContentFrameBaseMixin:ApplyLayout(layoutFrames, viewFrame)
 	-- Required
-	--Apply layout settings/commands to populated View Frame
+	-- Apply layout settings/commands to populated View Frame
 	assert(false);
 end

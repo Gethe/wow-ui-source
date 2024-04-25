@@ -107,15 +107,22 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 			CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
 		end
 
+		if not frame:CanSelect() then
+			return;
+		end
+
 		frame:OnClick();
 		frame:SetSelectedState(true);
+
+		-- Fixes cases of selecting a character, backing out, then selecting them again causing visual issues.
+		CharacterSelect.selectedIndex = GetCharacterSelection();
 		CharacterServicesMaster_Update();
 	end
 
 	local function CharacterServicesOnEnter()
-		local innerContent = frame.InnerContent;
-		if innerContent.isEnabled then
+		if frame:CanSelect() then
 			local isSelected = frame:IsSelected();
+			local innerContent = frame.InnerContent;
 			if isSelected then
 				innerContent.SelectedHighlight:Show();
 			else
@@ -142,9 +149,9 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 	end
 
 	local function CharacterServicesOnLeave()
-		local innerContent = frame.InnerContent;
-		if innerContent.isEnabled then
+		if frame:CanSelect() then
 			local isSelected = frame:IsSelected();
+			local innerContent = frame.InnerContent;
 			if isSelected then
 				innerContent.SelectedHighlight:Hide();
 			else

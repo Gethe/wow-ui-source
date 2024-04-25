@@ -1123,11 +1123,12 @@ CONQUEST_FRAME_EVENTS = {
 
 CONQUEST_BUTTONS = {};
 local RATED_SOLO_SHUFFLE_BUTTON_ID = 1;
-local RATED_BG_BUTTON_ID = 4;
+local RATED_BG_BLITZ_BUTTON_ID = 2;
+local RATED_BG_BUTTON_ID = 5;
 
 function ConquestFrame_OnLoad(self)
 
-	CONQUEST_BUTTONS = {ConquestFrame.RatedSoloShuffle, ConquestFrame.Arena2v2, ConquestFrame.Arena3v3, ConquestFrame.RatedBG};
+	CONQUEST_BUTTONS = {ConquestFrame.RatedSoloShuffle, ConquestFrame.RatedBGBlitz, ConquestFrame.Arena2v2, ConquestFrame.Arena3v3, ConquestFrame.RatedBG};
 
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
@@ -1141,11 +1142,12 @@ function ConquestFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		ConquestFrame_UpdateJoinButton(self);
 	elseif (event == "PVP_TYPES_ENABLED") then
-		local _, ratedBgs, ratedArenas, ratedSoloShuffle = ...;
+		local _, ratedBgs, ratedArenas, ratedSoloShuffle, ratedBGBlitz = ...;
 		self.bgsEnabled = ratedBgs;
 		self.arenasEnabled = ratedArenas;
 		self.ratedSoloShuffleEnabled = ratedSoloShuffle;
-		self.disabled = not ratedBgs and not ratedArenas and not ratedSoloShuffle;
+		self.ratedBGBlitzEnabled = ratedBGBlitz;
+		self.disabled = not ratedBgs and not ratedArenas and not ratedSoloShuffle and not ratedBGBlitz;
 		ConquestFrame_EvaluateSeasonState(self);
 		ConquestFrame_UpdateSeasonFrames(self);
 	elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
@@ -1186,7 +1188,7 @@ function ConquestFrame_UpdateSeasonFrames(self)
 end
 
 function ConquestFrame_IsQueueingEnabled()
-	return ConquestFrame.bgsEnabled or ConquestFrame.arenasEnabled or ConquestFrame.ratedSoloShuffleEnabled;
+	return ConquestFrame.bgsEnabled or ConquestFrame.arenasEnabled or ConquestFrame.ratedSoloShuffleEnabled or ConquestFrame.ratedBGBlitzEnabled;
 end
 
 function ConquestFrame_OnShow(self)
@@ -1257,6 +1259,18 @@ function ConquestFrame_SetPanelTierInfo(tierFrame, tierInfo, ranking)
 	tierFrame.tierInfo = tierInfo;
 end
 
+local function GetFirstAvailableConquestButton()
+	if ConquestFrame.ratedSoloShuffleEnabled then
+		return ConquestFrame.RatedSoloShuffle;
+	elseif ConquestFrame.ratedBGBlitzEnabled then
+		return ConquestFrame.RatedBGBlitz;
+	elseif ConquestFrame.arenasEnabled then
+		return ConquestFrame.Arena2v2;
+	else
+		return ConquestFrame.RatedBG;
+	end
+end
+
 function ConquestFrame_Update(self)
 	local isOffseason = GetCurrentArenaSeason() == NO_ARENA_SEASON;
 	if self.seasonState == SEASON_STATE_PRESEASON then
@@ -1270,7 +1284,7 @@ function ConquestFrame_Update(self)
 		ConquestFrame.NoSeason:Hide();
 		ConquestFrame.Disabled:Hide();
 
-		local firstAvailableButton = self.ratedSoloShuffleEnabled and ConquestFrame.RatedSoloShuffle or self.arenasEnabled and ConquestFrame.Arena2v2 or ConquestFrame.RatedBG;
+		local firstAvailableButton = GetFirstAvailableConquestButton();
 
 		for i = 1, RATED_BG_BUTTON_ID do
 			local button = CONQUEST_BUTTONS[i];
@@ -1303,6 +1317,11 @@ function ConquestFrame_Update(self)
 				enabled = self.ratedSoloShuffleEnabled;
 				if enabled then
 					PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetRatedSoloShuffleRewards());
+				end
+			elseif (i == RATED_BG_BLITZ_BUTTON_ID) then
+				enabled = self.ratedBGBlitzEnabled;
+				if enabled then
+					PVPUIFrame_ConfigureRewardFrame(button.Reward, C_PvP.GetRatedSoloRBGRewards());
 				end
 			else
 				enabled = self.arenasEnabled;
@@ -1370,6 +1389,15 @@ function ConquestFrame_UpdateJoinButton()
 			local _, _, playerPvPItemLevel = GetAverageItemLevel();
 			if (playerPvPItemLevel < minItemLevel) then
 				button.tooltip = format(_G["INSTANCE_UNAVAILABLE_SELF_PVP_GEAR_TOO_LOW"], "", minItemLevel, playerPvPItemLevel);
+			else
+				button.tooltip = nil;
+				button:Enable();
+				return;
+			end
+		elseif ( ConquestFrame.selectedButton.id == RATED_BG_BLITZ_BUTTON_ID ) then
+			local inGroup = groupSize >= 1;
+			if inGroup and not UnitIsGroupLeader("player") then 
+				button.tooltip = PVP_NOT_LEADER;
 			else
 				button.tooltip = nil;
 				button:Enable();
@@ -1469,6 +1497,8 @@ end
 function ConquestFrameJoinButton_OnClick(self)
 	if (ConquestFrame.selectedButton.id == RATED_SOLO_SHUFFLE_BUTTON_ID) then
 		JoinRatedSoloShuffle();
+	elseif (ConquestFrame.selectedButton.id == RATED_BG_BLITZ_BUTTON_ID) then
+		C_PvP.JoinRatedBGBlitz();
 	elseif (ConquestFrame.selectedButton.id == RATED_BG_BUTTON_ID) then
 		JoinRatedBattlefield();
 	else
@@ -1497,9 +1527,10 @@ function ConquestFrameButton_OnEnter(self)
 	tooltip.Title:SetText(self.toolTipTitle);
 
 	local isSoloShuffle = self.id == RATED_SOLO_SHUFFLE_BUTTON_ID;
+	local isRatedBGBlitz = self.id == RATED_BG_BLITZ_BUTTON_ID;
 	local tierInfo = pvpTier and C_PvP.GetPvpTierInfo(pvpTier);
 	local tierName = tierInfo and tierInfo.pvpTierEnum and PVPUtil.GetTierName(tierInfo.pvpTierEnum);
-	local hasSpecRank = tierName and ranking and isSoloShuffle;
+	local hasSpecRank = tierName and ranking and (isSoloShuffle or isRatedBGBlitz);
 	if tierName then
 		if ranking and not hasSpecRank then
 			tooltip.Tier:SetFormattedText(PVP_TIER_WITH_RANK_AND_RATING, tierName, ranking, rating);
@@ -1522,10 +1553,12 @@ function ConquestFrameButton_OnEnter(self)
 	tooltip.SeasonWon:SetText(isSoloShuffle and (PVP_ROUNDS_WON .. roundsSeasonWon) or (PVP_GAMES_WON .. seasonWon));
 	tooltip.SeasonPlayed:SetText(isSoloShuffle and (PVP_ROUNDS_PLAYED .. roundsSeasonPlayed) or (PVP_GAMES_PLAYED .. seasonPlayed));
 
-	local specStats = isSoloShuffle and C_PvP.GetPersonalRatedSoloShuffleSpecStats();
+	local specStats = (isSoloShuffle and C_PvP.GetPersonalRatedSoloShuffleSpecStats()) or (isRatedBGBlitz and C_PvP.GetPersonalRatedBGBlitzSpecStats());
 	if specStats then
-		tooltip.WeeklyMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specStats.weeklyMostPlayedSpecID), specStats.weeklyMostPlayedSpecRounds));
-		tooltip.SeasonMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specStats.seasonMostPlayedSpecID), specStats.seasonMostPlayedSpecRounds));
+		local weeklyStat = isSoloShuffle and specStats.weeklyMostPlayedSpecRounds or specStats.weeklyMostPlayedSpecGames;
+		tooltip.WeeklyMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specStats.weeklyMostPlayedSpecID), weeklyStat));
+		local seasonStat = isSoloShuffle and specStats.seasonMostPlayedSpecRounds or specStats.seasonMostPlayedSpecGames;
+		tooltip.SeasonMostPlayedSpec:SetText(PVP_MOST_PLAYED_SPEC:format(PlayerUtil.GetSpecNameBySpecID(specStats.seasonMostPlayedSpecID), seasonStat));
 	end
 	tooltip.WeeklyMostPlayedSpec:SetShown(specStats);
 	tooltip.SeasonMostPlayedSpec:SetShown(specStats);

@@ -554,7 +554,7 @@
 	<ItemButton name="AccountBankItemButtonTemplate" inherits="BankItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="bank-frame-slot">
+				<Texture parentKey="Background" atlas="warband-bank-slot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="5"/>
 						<Anchor point="BOTTOMRIGHT" x="6" y="-7"/>

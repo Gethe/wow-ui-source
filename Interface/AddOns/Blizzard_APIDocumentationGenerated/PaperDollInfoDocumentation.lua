@@ -88,6 +88,15 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInspectRatedBGBlitzData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ratedBGBlitzData", Type = "InspectPVPData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInspectRatedSoloShuffleData",
 			Type = "Function",
 
