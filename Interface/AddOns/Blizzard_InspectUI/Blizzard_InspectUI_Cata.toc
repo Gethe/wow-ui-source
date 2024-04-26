@@ -2,11 +2,11 @@
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## AllowLoadGameType: tbc, wrath
+## AllowLoadGameType: cata
 Classic\InspectPaperDollFrame_Shared.lua
 TBC\Blizzard_InspectUI.lua
 TBC\Blizzard_InspectUI.xml
-Vanilla\InspectPaperDollFrame.lua
+Cata\InspectPaperDollFrame.lua
 TBC\InspectPaperDollFrame.xml
 Classic\InspectPVPFrame.lua
 Classic\InspectPVPFrame.xml

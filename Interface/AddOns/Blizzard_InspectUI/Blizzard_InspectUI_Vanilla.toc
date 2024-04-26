@@ -3,6 +3,7 @@
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: vanilla
+Classic\InspectPaperDollFrame_Shared.lua
 Vanilla\Blizzard_InspectUI.lua
 Vanilla\Blizzard_InspectUI.xml
 Vanilla\InspectPaperDollFrame.lua

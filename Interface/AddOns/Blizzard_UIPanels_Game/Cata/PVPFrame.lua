@@ -106,6 +106,7 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 	if  event == "PLAYER_ENTERING_WORLD" then
 		HonorFrameSpecificList_Update();
 		BattlefieldFrame_UpdateStatus(false, nil);
+		PVPFrame_UpdateSelectedRoles();
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
 		PVPFrame_UpdateCurrency(self);
 		PVPFrame_UpdateCurrency(self);
@@ -1429,6 +1430,6 @@ end
 function WarGameStartButton_OnClick(self)
 	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
 	if ( name ) then
-		StartWarGame(UnitName("target"), name);
+		StartWarGame("target", name);
 	end
 end
