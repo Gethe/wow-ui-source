@@ -18,7 +18,12 @@ function DeveloperConsoleMixin:OnLoad()
 	self:RegisterEvent("CONSOLE_CLEAR");
 	self:RegisterEvent("CONSOLE_COLORS_CHANGED");
 	self:RegisterEvent("CONSOLE_FONT_SIZE_CHANGED");
-	self:RegisterEvent("DEBUG_MENU_TOGGLED");
+	if C_EventUtils.IsEventValid("DEBUG_MENU_TOGGLED") then
+		self:RegisterEvent("DEBUG_MENU_TOGGLED");
+	end
+	if C_EventUtils.IsEventValid("REVEAL_CAPTURE_TOGGLED") then
+		self:RegisterEvent("REVEAL_CAPTURE_TOGGLED");
+	end
 	self:RegisterEvent("SPELL_SCRIPT_ERROR");
 
 	self.MessageFrame:SetMaxLines(MAX_NUM_MESSAGE_HISTORY);
@@ -54,7 +59,7 @@ function DeveloperConsoleMixin:RestoreMessageHistory()
 
 		for i = (#messageHistory - numElements) + 1, #messageHistory do
 			local message, colorType = unpack(messageHistory[i]);
-			local color = C_Console.GetColorFromType(colorType);
+			local color = ConsoleGetColorFromType(colorType);
 			local r, g, b = color:GetRGB();
 			self:AddMessageInternal(message, r, g, b, colorType);
 			table.insert(self.savedVars.messageHistory, messageHistory[i]);
@@ -126,10 +131,12 @@ function DeveloperConsoleMixin:OnEvent(event, ...)
 	elseif event == "CONSOLE_COLORS_CHANGED" then
 		self:RefreshMessageFrame();
 	elseif event == "CONSOLE_FONT_SIZE_CHANGED" then
-		local fontHeight = C_Console.GetFontHeight();
+		local fontHeight = ConsoleGetFontHeight();
 		self:SetFontHeight(fontHeight);
 	elseif event == "DEBUG_MENU_TOGGLED" then
 		self:UpdateAnchors();
+	elseif event == "REVEAL_CAPTURE_TOGGLED" then
+		self:UpdateAnchors();		
 	elseif event == "SPELL_SCRIPT_ERROR" then
 		local spellID, scriptID, lastEditUser, errorMessage, callStack = ...;
 		self:AddMessage(errorMessage, Enum.ConsoleColorType.ErrorColor);
@@ -140,7 +147,7 @@ function DeveloperConsoleMixin:AddMessage(message, colorType)
 	if not colorType then
 		colorType = Enum.ConsoleColorType.DefaultColor;
 	end
-	local color = C_Console.GetColorFromType(colorType);
+	local color = ConsoleGetColorFromType(colorType);
 	local r, g, b = color:GetRGB();
 
 	self:AddMessageInternal(message, r, g, b, colorType);
@@ -171,7 +178,7 @@ function DeveloperConsoleMixin:SetFontHeight(fontHeight)
 	end
 
 	self.savedVars.fontHeight = fontHeight;
-	C_Console.SetFontHeight(fontHeight);
+	ConsoleSetFontHeight(fontHeight);
 end
 
 function DeveloperConsoleMixin:RefreshMessageFrame()
@@ -180,7 +187,7 @@ function DeveloperConsoleMixin:RefreshMessageFrame()
 	local messageHistory = self.savedVars.messageHistory;
 	for i, messageInfo in ipairs(messageHistory) do
 		local message, colorType = unpack(messageInfo);
-		local color = C_Console.GetColorFromType(colorType);
+		local color = ConsoleGetColorFromType(colorType);
 		local r, g, b = color:GetRGB();
 
 		self:AddMessageInternal(message, r, g, b, colorType);
@@ -188,10 +195,11 @@ function DeveloperConsoleMixin:RefreshMessageFrame()
 end
 
 function DeveloperConsoleMixin:CalculateAnchorOffset()
-	if DebugMenu and DebugMenu.IsVisible() then
-		return DebugMenu.GetMenuHeight();
-	end
-	return 0;
+	-- .Filters.Background is anchored 2 pixels above the console
+	-- and the background's top white line of 1 pixel height is bottom-anchored to background's top
+	-- so need a total of 3 pixels to make that white line visible
+	local extraHeight = 3;
+	return DebugBarManager:GetScaledInternalBarsHeight() + extraHeight;
 end
 
 function DeveloperConsoleMixin:UpdateAnchors()
@@ -385,7 +393,7 @@ end
 
 function DeveloperConsoleMixin:OnEditBoxTabPressed()
 	if IsControlKeyDown() then
-		C_Console.PrintAllMatchingCommands((self:FindBestEditCommand()));
+		ConsolePrintAllMatchingCommands((self:FindBestEditCommand()));
 	else
 		self.AutoComplete:FinishWork();
 		if IsShiftKeyDown() then
@@ -435,7 +443,7 @@ do
 				local success, matched = pcall(Matches, text, messageInfo[1]);
 				if success and matched then
 					local message, colorType = unpack(messageInfo);
-					local color = C_Console.GetColorFromType(colorType);
+					local color = ConsoleGetColorFromType(colorType);
 					local r, g, b = color:GetRGB();
 					self.MessageFrame:BackFillMessage(message, r, g, b, colorType);
 				end

@@ -1,0 +1,35 @@
+## Title: Blizzard Store UI
+## AllowLoad: Both
+## AllowLoadGameType: cata
+Classic\StoreConstants.lua
+..\Blizzard_SharedXML\Mixin.lua
+..\Blizzard_SharedXML\Spline.lua
+..\Blizzard_SharedXML\PixelUtilSecure.lua
+..\Blizzard_SharedXML\Pools.lua
+..\Blizzard_SharedXML\LinkUtil.lua
+..\Blizzard_SharedXML\ModelSceneTemplates.lua
+..\Blizzard_SharedXML\ModelSceneControlFrame.lua
+..\Blizzard_SharedXML\Shared\ModelSceneCameras\CameraRegistry.lua
+..\Blizzard_SharedXML\Shared\ModelSceneCameras\CameraBaseMixin.lua
+..\Blizzard_SharedXML\Shared\ModelSceneCameras\OrbitCameraMixin.lua
+..\Blizzard_SharedXML\ModelSceneMixin.lua
+..\Blizzard_SharedXML\ModelSceneActorMixin.lua
+..\Blizzard_SharedXML\LayoutFrame.lua
+..\Blizzard_SharedXML\ManagedLayoutFrame.lua
+..\Blizzard_SharedXML\BulletPoint.lua
+..\Blizzard_SharedXML\Classic\SecureCurrencyUtil.lua
+..\Blizzard_SharedXML\Classic\NineSliceLayouts.lua
+..\Blizzard_SharedXML\NineSlice.lua
+..\Blizzard_SharedXML\SecureUtil.lua
+..\Blizzard_SharedXML\SecureUIPanelTemplates.lua
+..\Blizzard_SharedXML\Classic\VASErrorLookup.lua
+Classic\Blizzard_SimpleCheckout.lua
+Classic\Blizzard_SimpleCheckout.xml
+Classic\Blizzard_StoreUIPatchwerk.xml
+Classic\Blizzard_StoreUIInbound.lua
+Classic\Blizzard_StoreUIOutbound.lua
+TBC\Blizzard_StoreUISecure.lua
+TBC\Blizzard_StoreUI.xml
+Classic\Blizzard_StoreUIInsecure.lua
+Classic\Blizzard_StoreUIInsecure.xml
+Classic\Localization.lua

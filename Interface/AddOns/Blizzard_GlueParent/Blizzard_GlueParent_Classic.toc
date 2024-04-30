@@ -1,0 +1,11 @@
+## Title: Blizzard_GlueParent
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueXMLBase
+## LoadFirst: 1
+## SuppressLocalTableRef: 1
+## AllowLoad: Glue
+## AllowLoadGameType: classic
+Shared\GlueParentUtil.lua
+Classic\GlueParent.lua
+Classic\GlueParent.xml

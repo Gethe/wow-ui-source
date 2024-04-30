@@ -1,0 +1,15 @@
+## Title: Blizzard Inspect UI
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: cata
+Classic\InspectPaperDollFrame_Shared.lua
+TBC\Blizzard_InspectUI.lua
+TBC\Blizzard_InspectUI.xml
+Cata\InspectPaperDollFrame.lua
+TBC\InspectPaperDollFrame.xml
+Classic\InspectPVPFrame.lua
+Classic\InspectPVPFrame.xml
+Classic\InspectTalentFrame.lua
+Classic\InspectTalentFrame.xml
+Classic\Localization.lua

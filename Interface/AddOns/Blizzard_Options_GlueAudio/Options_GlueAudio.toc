@@ -1,0 +1,10 @@
+## Title: Options_GlueAudio
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: VideoOptions_Shared, Blizzard_Options_Glue
+## AllowLoad: Glue
+## AllowLoadGameType: classic
+## SuppressLocalTableRef: 1
+
+AudioOptionsFrame.xml
+AudioOptionsPanels.xml

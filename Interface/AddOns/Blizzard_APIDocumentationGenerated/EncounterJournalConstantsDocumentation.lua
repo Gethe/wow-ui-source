@@ -97,13 +97,14 @@ local EncounterJournalConstants =
 		{
 			Name = "JournalInstanceFlags",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Timewalker", Type = "JournalInstanceFlags", EnumValue = 1 },
 				{ Name = "HideUserSelectableDifficulty", Type = "JournalInstanceFlags", EnumValue = 2 },
+				{ Name = "DoNotDisplayInstance", Type = "JournalInstanceFlags", EnumValue = 4 },
 			},
 		},
 		{

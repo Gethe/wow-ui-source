@@ -1,0 +1,82 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Languages.lua"/>
+
+	<Frame name="SettingsLanguageDropDownTemplate" inherits="SettingsDropDownControlTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="dropDownType" value="Frame" type="string"/>
+			<KeyValue key="dropDownTemplate" value="SettingsLanguagePopoutWithButtonsTemplate" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="SettingsAudioLocaleDropDownTemplate" inherits="SettingsLanguageDropDownTemplate" mixin="SettingsAudioLocaleDropDownMixin" virtual="true"/>
+	
+	<Frame name="SettingsLanguagesPopoutDetailsTemplate" mixin="SettingsLanguagePopoutDetailsMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Texture">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="SettingsLanguagePopoutEntryTemplate" inherits="SelectionPopoutEntryTemplate" mixin="SettingsLanguagePopoutEntryMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="defaultWidth" value="225" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="SelectionDetails" inherits="SettingsLanguagesPopoutDetailsTemplate">
+				<Size x="250" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="14" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="SettingsLanguagePopoutWithButtonsTemplate" inherits="SelectionPopoutWithButtonsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="decrementOffsetX" value="4" type="number"/>
+			<KeyValue key="incrementOffsetX" value="-4" type="number"/>
+		</KeyValues>
+		<Frames>
+			<EventButton parentKey="Button" inherits="SelectionPopoutButtonTemplate" mixin="SettingsLanguagePopoutButtonMixin">
+				<Size x="250" y="38"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="selectionEntryTemplates" value="SettingsLanguagePopoutEntryTemplate" type="string"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="SelectionDetails" inherits="SettingsLanguagesPopoutDetailsTemplate, ResizeLayoutFrame">
+						<Size x="256" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" x="21"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</EventButton>
+		</Frames>
+	</Frame>
+
+	<Frame name="SettingsLanguageRestartNeededTemplate" inherits="SettingsListElementTemplate" mixin="LanguageRestartNeededMixin" virtual="true">
+		<Size x="512" y="22"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

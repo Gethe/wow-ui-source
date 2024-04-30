@@ -1,0 +1,8 @@
+## Title: Blizzard Engraving UI
+## Notes: Rune engraving for seasonal content
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_EngravingUI.xml
+Localization.lua

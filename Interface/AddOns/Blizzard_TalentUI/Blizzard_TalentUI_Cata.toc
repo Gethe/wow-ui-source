@@ -1,0 +1,5 @@
+## Title: Blizzard Talent UI
+## LoadOnDemand: 1
+Cata\Blizzard_TalentUI.lua
+Cata\Blizzard_TalentUI.xml
+Classic\Localization.lua

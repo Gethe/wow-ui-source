@@ -1,0 +1,392 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="BattlefieldButtonTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="293" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentStatus" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(self:GetName().."Highlight"):SetVertexColor(1.0, 0.82, 0);
+			</OnLoad>
+			<OnClick>
+				BattlefieldButton_OnClick(self:GetID());
+			</OnClick>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, self)
+				GameTooltip:SetText(self.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+		<ButtonText name="$parentText">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="5" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+	</Button>
+	<Frame name="BattlefieldFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+                <Texture name="BattlefieldFramePortrait" file="Interface\BattlefieldFrame\UI-Battlefield-Icon">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\BattlefieldFrame\UI-Battlefield-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\BattlefieldFrame\UI-Battlefield-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\BattlefieldFrame\UI-Battlefield-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\BattlefieldFrame\UI-Battlefield-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentFrameLabel" inherits="GameFontNormal" text="BATTLEFIELDS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="BattlefieldFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentNameHeader" inherits="GameFontHighlight" text="BATTLEFIELD_NAME">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="75" y="-55"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentZoneDescription" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="293" y="115"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-290"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="BattlefieldZone1" inherits="BattlefieldButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldFrame">
+						<Offset>
+							<AbsDimension x="23" y="-79"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone2" inherits="BattlefieldButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone3" inherits="BattlefieldButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone4" inherits="BattlefieldButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone5" inherits="BattlefieldButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone6" inherits="BattlefieldButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone7" inherits="BattlefieldButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone8" inherits="BattlefieldButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone9" inherits="BattlefieldButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone10" inherits="BattlefieldButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone11" inherits="BattlefieldButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="BattlefieldZone12" inherits="BattlefieldButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldZone11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="BattlefieldListScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="201"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="BattlefieldFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-67" y="-74"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="0.5"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, BATTLEFIELD_ZONES_HEIGHT, BattlefieldFrame_Update)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="BattlefieldFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="83" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BattlefieldFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-423"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="BattlefieldFrameJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN">
+				<Size>
+					<AbsDimension x="109" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="BattlefieldFrameCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BattlefieldFrameJoinButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="BattlefieldFrameGroupJoinButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_GROUP_JOIN">
+				<Size>
+					<AbsDimension x="136" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="BattlefieldFrameJoinButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BattlefieldFrameJoinButton_OnClick(1);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, self)
+						GameTooltip:SetText(BATTLEFIELD_GROUP_JOIN, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(NEWBIE_TOOLTIP_BATTLEFIELD_GROUP_JOIN, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnEvent>
+						BattlefieldFrame_OnEvent();
+					</OnEvent>
+				</Scripts>
+			</Button>
+			<Button name="BattlefieldFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="BattlefieldFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BattlefieldFrame_OnLoad"/>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+				BattlefieldFrame_Update();
+			</OnShow>
+			<OnHide>
+				UpdateMicroButtons();
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+			</OnHide>
+			<OnEvent function="BattlefieldFrame_OnEvent"/>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,6 +1,7 @@
 UIPanelWindows["ItemSocketingFrame"] =	{ area = "left",	pushable = 0,	xoffset = -16,	yoffset = 12,	bottomClampOverride = 140+12,	width = 338,	height = 424};
 
 local primaryGemTexture = "Interface\\ItemSocketingFrame\\UI-ItemSockets";
+local engineeringGemTexture = "Interface\\ItemSocketingFrame\\UI-ENGINEERINGSOCKETS";
 
 GEM_TYPE_INFO = {};
 GEM_TYPE_INFO["Yellow"] = {tex=primaryGemTexture, w=43, h=43, left=0, right=0.16796875, top=0.640625, bottom=0.80859375, r=0.97, g=0.82, b=0.29, CBx=53, CBy=53, CBLeft=0.5546875, CBRight=0.7578125, CBTop=0, CBBottom=0.20703125, OBx=61, OBy=57, OBLeft=0.7578125, OBRight=0.9921875, OBTop=0, OBBottom=0.22265625};
@@ -9,6 +10,7 @@ GEM_TYPE_INFO["Blue"] = {tex=primaryGemTexture, w=43, h=43, left=0.3515625, righ
 GEM_TYPE_INFO["Meta"] = {tex=primaryGemTexture, w=57, h=52, left=0.171875, right=0.3984375, top=0.40234375, bottom=0.609375, r=1, g=1, b=1, CBLeft=0.5546875, CBx=53, CBy=53, CBRight=0.7578125, CBTop=0, CBBottom=0.20703125, OBLeft=0.7578125, OBx=61, OBy=57, OBRight=0.9921875, OBTop=0, OBBottom=0.22265625};
 -- Note when comparing to Reference: Original classic UI code referred to "Prismatic" socket types as just "Socket" until 09/2010
 GEM_TYPE_INFO["Prismatic"] = {tex=primaryGemTexture, w=57, h=52, left=0.171875, right=0.3984375, top=0.40234375, bottom=0.609375, r=1, g=1, b=1, CBx=53, CBy=53, CBLeft=0.5546875, CBRight=0.7578125, CBTop=0, CBBottom=0.20703125, OBx=61, OBy=57, OBLeft=0.7578125, OBRight=0.9921875, OBTop=0, OBBottom=0.22265625};
+GEM_TYPE_INFO["Cogwheel"] = {tex=engineeringGemTexture, w=43, h=43, left=0.01562500, right=0.68750000, top=0.41210938, bottom=0.49609375, r=1, g=1, b=1, CBx=49, CBy=47, CBLeft=0.01562500, CBRight=0.78125000, CBTop=0.22070313, CBBottom=0.31250000, OBx=49, OBy=47, OBLeft=0.01562500, OBRight=0.78125000, OBTop=0.31640625, OBBottom=0.40820313};
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;
 

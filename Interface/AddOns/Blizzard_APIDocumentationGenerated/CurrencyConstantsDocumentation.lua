@@ -47,9 +47,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 1,
-			MaxValue = 32,
+			MaxValue = 64,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -58,16 +58,18 @@ local CurrencyConstants =
 				{ Name = "CurrencyBBattlenetVirtualCurrency", Type = "CurrencyFlagsB", EnumValue = 8 },
 				{ Name = "FutureCurrencyFlag", Type = "CurrencyFlagsB", EnumValue = 16 },
 				{ Name = "CurrencyBDontDisplayIfZero", Type = "CurrencyFlagsB", EnumValue = 32 },
+				{ Name = "CurrencyBScaleMaxQuantityBySeasonWeeks", Type = "CurrencyFlagsB", EnumValue = 64 },
 			},
 		},
 		{
 			Name = "CurrencyGainFlags",
 			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 1,
+			NumValues = 4,
+			MinValue = 0,
 			MaxValue = 4,
 			Fields =
 			{
+				{ Name = "None", Type = "CurrencyGainFlags", EnumValue = 0 },
 				{ Name = "BonusAward", Type = "CurrencyGainFlags", EnumValue = 1 },
 				{ Name = "DroppedFromDeath", Type = "CurrencyGainFlags", EnumValue = 2 },
 				{ Name = "FromAccountServer", Type = "CurrencyGainFlags", EnumValue = 4 },
@@ -91,14 +93,15 @@ local CurrencyConstants =
 		{
 			Name = "LinkedCurrencyFlags",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "IgnoreAdd", Type = "LinkedCurrencyFlags", EnumValue = 1 },
 				{ Name = "IgnoreSubtract", Type = "LinkedCurrencyFlags", EnumValue = 2 },
 				{ Name = "SuppressChatLog", Type = "LinkedCurrencyFlags", EnumValue = 4 },
+				{ Name = "AddIgnoresMax", Type = "LinkedCurrencyFlags", EnumValue = 8 },
 			},
 		},
 		{
@@ -141,6 +144,9 @@ local CurrencyConstants =
 				{ Name = "ACCOUNT_WIDE_HONOR_CURRENCY_ID", Type = "number", Value = 1585 },
 				{ Name = "ACCOUNT_WIDE_HONOR_LEVEL_CURRENCY_ID", Type = "number", Value = 1586 },
 				{ Name = "CONQUEST_CURRENCY_ID", Type = "number", Value = 1602 },
+				{ Name = "CONQUEST_POINTS_CURRENCY_ID", Type = "number", Value = 390 },
+				{ Name = "CONQUEST_ARENA_META_CURRENCY_ID", Type = "number", Value = 483 },
+				{ Name = "CONQUEST_BG_META_CURRENCY_ID", Type = "number", Value = 484 },
 				{ Name = "HONOR_CURRENCY_ID", Type = "number", Value = 1792 },
 				{ Name = "CLASSIC_ARENA_POINTS_CURRENCY_ID", Type = "number", Value = 1900 },
 				{ Name = "CLASSIC_HONOR_CURRENCY_ID", Type = "number", Value = 1901 },
@@ -148,6 +154,7 @@ local CurrencyConstants =
 				{ Name = "ARTIFACT_KNOWLEDGE_CURRENCY_ID", Type = "number", Value = 1171 },
 				{ Name = "WAR_RESOURCES_CURRENCY_ID", Type = "number", Value = 1560 },
 				{ Name = "ECHOES_OF_NYALOTHA_CURRENCY_ID", Type = "number", Value = 1803 },
+				{ Name = "DRAGON_ISLES_SUPPLIES_CURRENCY_ID", Type = "number", Value = 2003 },
 				{ Name = "QUESTIONMARK_INV_ICON", Type = "number", Value = 134400 },
 				{ Name = "CURRENCY_ID_RENOWN", Type = "number", Value = 1822 },
 				{ Name = "CURRENCY_ID_RENOWN_KYRIAN", Type = "number", Value = 1829 },

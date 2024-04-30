@@ -1,4 +1,5 @@
 ## Title: Blizzard Talent UI
 ## LoadOnDemand: 1
-..\..\..\Interface_Vanilla\AddOns\Blizzard_TalentUI\Blizzard_TalentUI.xml
+Classic\Blizzard_TalentUI.lua
+Classic\Blizzard_TalentUI.xml
 Localization.lua

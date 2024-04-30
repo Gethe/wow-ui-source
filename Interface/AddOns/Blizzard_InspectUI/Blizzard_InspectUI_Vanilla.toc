@@ -1,6 +1,13 @@
 ## Title: Blizzard Inspect UI
+## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-..\..\..\Interface_Vanilla\AddOns\Blizzard_InspectUI\Blizzard_InspectUI.xml
-..\..\..\Interface_Vanilla\AddOns\Blizzard_InspectUI\InspectPaperDollFrame.xml
-InspectHonorFrame.xml
-Localization.lua
+## AllowLoad: game
+## AllowLoadGameType: vanilla
+Classic\InspectPaperDollFrame_Shared.lua
+Vanilla\Blizzard_InspectUI.lua
+Vanilla\Blizzard_InspectUI.xml
+Vanilla\InspectPaperDollFrame.lua
+Vanilla\InspectPaperDollFrame.xml
+Vanilla\InspectHonorFrame.lua
+Vanilla\InspectHonorFrame.xml
+Classic\Localization.lua

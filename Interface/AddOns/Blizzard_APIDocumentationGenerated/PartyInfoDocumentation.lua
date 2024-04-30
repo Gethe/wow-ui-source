@@ -13,7 +13,21 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true },
+				{ Name = "category", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "DoCountdown",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "seconds", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -45,7 +59,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
 			},
 
 			Returns =
@@ -59,7 +73,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
 			},
 
 			Returns =

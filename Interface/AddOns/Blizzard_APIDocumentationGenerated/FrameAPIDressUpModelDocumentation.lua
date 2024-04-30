@@ -27,6 +27,33 @@ local FrameAPIDressUpModel =
 			},
 		},
 		{
+			Name = "GetItemModifiedAppearanceID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "invSlot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemModAppearanceID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetObeyHideInTransmogFlag",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSheathed",
 			Type = "Function",
 
@@ -40,7 +67,97 @@ local FrameAPIDressUpModel =
 			},
 		},
 		{
+			Name = "GetSpellItemEnchantmentID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "invSlot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellItemEnchantID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUseTransmogChoices",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUseTransmogSkin",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsGeoReady",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "ready", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSlotAllowed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "allowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSlotVisible",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "inventorySlots", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "visible", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAutoDress",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetObeyHideInTransmogFlag",
 			Type = "Function",
 
 			Arguments =
@@ -55,6 +172,24 @@ local FrameAPIDressUpModel =
 			Arguments =
 			{
 				{ Name = "sheathed", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetUseTransmogChoices",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetUseTransmogSkin",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

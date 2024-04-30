@@ -199,7 +199,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 		{
@@ -212,7 +212,7 @@ local SimpleEditBoxAPI =
 
 			Returns =
 			{
-				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
 			},
 		},
 		{
@@ -696,7 +696,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyH", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyH", Type = "JustifyHorizontal", Nilable = false },
 			},
 		},
 		{
@@ -705,7 +705,7 @@ local SimpleEditBoxAPI =
 
 			Arguments =
 			{
-				{ Name = "justifyV", Type = "TBFStyleFlags", Nilable = false },
+				{ Name = "justifyV", Type = "JustifyVertical", Nilable = false },
 			},
 		},
 		{

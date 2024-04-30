@@ -613,4 +613,4 @@ CUFProfileActionTable = {
 }
 
 -- This addon depends on some function from the following addon, so making sure it is enabled.
-EnableAddOn("Blizzard_CompactRaidFrames");
+C_AddOns.EnableAddOn("Blizzard_CompactRaidFrames");

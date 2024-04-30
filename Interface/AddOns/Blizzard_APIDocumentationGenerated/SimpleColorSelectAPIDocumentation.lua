@@ -14,6 +14,45 @@ local SimpleColorSelectAPI =
 			},
 		},
 		{
+			Name = "GetColorAlpha",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "alpha", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetColorAlphaTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "GetColorAlphaThumbTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
 			Name = "GetColorHSV",
 			Type = "Function",
 
@@ -93,6 +132,33 @@ local SimpleColorSelectAPI =
 			Returns =
 			{
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "SetColorAlpha",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "alpha", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetColorAlphaTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "SetColorAlphaThumbTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "TextureAsset", Nilable = false },
 			},
 		},
 		{
