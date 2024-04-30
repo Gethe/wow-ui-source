@@ -1,6 +1,7 @@
 UIPanelWindows["ItemSocketingFrame"] =	{ area = "left",	pushable = 0,	xoffset = -16,	yoffset = 12,	bottomClampOverride = 140+12,	width = 338,	height = 424};
 
 local primaryGemTexture = "Interface\\ItemSocketingFrame\\UI-ItemSockets";
+local engineeringGemTexture = "Interface\\ItemSocketingFrame\\UI-ENGINEERINGSOCKETS";
 
 GEM_TYPE_INFO = {};
 GEM_TYPE_INFO["Yellow"] = {tex=primaryGemTexture, w=43, h=43, left=0, right=0.16796875, top=0.640625, bottom=0.80859375, r=0.97, g=0.82, b=0.29, CBx=53, CBy=53, CBLeft=0.5546875, CBRight=0.7578125, CBTop=0, CBBottom=0.20703125, OBx=61, OBy=57, OBLeft=0.7578125, OBRight=0.9921875, OBTop=0, OBBottom=0.22265625};

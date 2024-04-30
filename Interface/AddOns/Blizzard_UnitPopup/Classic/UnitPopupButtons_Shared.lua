@@ -448,3 +448,74 @@ function UnitPopupRaidTargetButtonMixin:CanShow()
 	end
 	return false;
 end
+
+UnitPopupGuildSettingButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupGuildSettingButtonMixin:GetText()
+	return GUILD_CONTROL_BUTTON_TEXT;
+end 
+
+function UnitPopupGuildSettingButtonMixin:OnClick()
+	if ( not GuildControlUI ) then
+		UIParentLoadAddOn("Blizzard_GuildControlUI");
+	end
+
+	local wasShown = GuildControlUI:IsShown();
+	if not wasShown then
+		ShowUIPanel(GuildControlUI);
+	end
+end 
+
+function UnitPopupGuildSettingButtonMixin:CanShow()
+	return IsGuildLeader();
+end
+
+UnitPopupGuildRecruitmentSettingButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupGuildRecruitmentSettingButtonMixin:GetText()
+	return GUILD_RECRUITMENT;
+end 
+
+function UnitPopupGuildRecruitmentSettingButtonMixin:OnClick()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	local clubInfo = dropdownMenu.clubInfo; 
+	CommunitiesFrame.RecruitmentDialog.clubId = clubInfo.clubId;
+	CommunitiesFrame.RecruitmentDialog.clubName = clubInfo.name;
+	CommunitiesFrame.RecruitmentDialog.clubAvatarId = clubInfo.avatarId;
+	CommunitiesFrame.RecruitmentDialog:UpdatedPostingInformationInit();
+end 
+
+function UnitPopupGuildRecruitmentSettingButtonMixin:CanShow()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	if dropdownMenu.clubInfo then
+		local isPostingBanned = C_ClubFinder.IsPostingBanned(dropdownMenu.clubInfo.clubId);
+		if not C_ClubFinder.IsEnabled() or C_ClubFinder.GetClubFinderDisableReason() ~= nil or (not IsGuildLeader() and not C_GuildInfo.IsGuildOfficer()) or isPostingBanned then
+			return false;
+		end
+	else
+		return false;
+	end
+end
+
+UnitPopupGuildInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+function UnitPopupGuildInviteButtonMixin:GetText()
+	return COMMUNITIES_LIST_DROP_DOWN_INVITE;
+end 
+
+function UnitPopupGuildInviteButtonMixin:OnClick()
+	local dropdownMenu = UnitPopupSharedUtil.GetCurrentDropdownMenu();
+	local streams = C_Club.GetStreams(dropdownMenu.clubInfo.clubId);
+	local defaultStreamId = #streams > 0 and streams[1] or nil;
+	for i, stream in ipairs(streams) do
+		if stream.streamType == Enum.ClubStreamType.General or stream.streamType == Enum.ClubStreamType.Guild then
+			defaultStreamId = stream.streamId;
+			break;
+		end
+	end
+
+	if defaultStreamId then
+		CommunitiesUtil.OpenInviteDialog(dropdownMenu.clubInfo.clubId, defaultStreamId);
+	end
+end 
+
+function UnitPopupGuildInviteButtonMixin:CanShow()
+	return CanGuildInvite();
+end 

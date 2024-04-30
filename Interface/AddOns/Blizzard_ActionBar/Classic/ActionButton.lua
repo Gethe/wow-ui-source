@@ -234,6 +234,8 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterUnitEvent("LOSS_OF_CONTROL_ADDED", "player");
 	self:RegisterUnitEvent("LOSS_OF_CONTROL_UPDATE", "player");
 	self:RegisterEvent("SPELL_UPDATE_ICON");
+	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
+	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -626,7 +628,7 @@ function ActionButton_GetOverlayGlow()
 end
 
 function ActionButton_UpdateOverlayGlow(self)
-	--[[local spellType, id, subType  = GetActionInfo(self.action);
+	local spellType, id, subType  = GetActionInfo(self.action);
 	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
 		ActionButton_ShowOverlayGlow(self);
 	elseif ( spellType == "macro" ) then
@@ -638,7 +640,7 @@ function ActionButton_UpdateOverlayGlow(self)
 		end
 	else
 		ActionButton_HideOverlayGlow(self);
-	end]]
+	end
 end
 
 function ActionButton_ShowOverlayGlow(self)

@@ -366,7 +366,7 @@ function UnitFrameHealPredictionBars_Update(frame)
 		appendTexture = incomingHealTexture or healthTexture;
 	end
 
-	if ( frame.totalAbsorbBar ) then
+	if ( frame.totalAbsorbBar and (frame.totalAbsorbBar.UpdateFillPosition ~= nil) ) then
 		frame.totalAbsorbBar:UpdateFillPosition(appendTexture, totalAbsorb);
 	end
 end

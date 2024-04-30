@@ -53,6 +53,9 @@ function InspectTalentFrame_UpdateTabs()
 end
 
 function InspectTalentFrame_Update()
+	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
+	InspectTalentFrame.unit = InspectFrame.unit;
+
 	-- update spec info first
 	TalentFrame_UpdateSpecInfoCache(talentSpecInfoCache, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
 
@@ -71,12 +74,12 @@ function InspectTalentFrame_Update()
 
 	-- update parent tabs
 	PanelTemplates_UpdateTabs(InspectFrame);
-end
 
-function InspectTalentFrame_Refresh()
-	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
-	InspectTalentFrame.unit = InspectFrame.unit;
 	TalentFrame_Update(InspectTalentFrame);
+
+	-- Update unspent talent point text
+	local unspentTalentPoints = TalentFrame_GetUnspentTalentPoints(InspectTalentFrame);
+	InspectTalentFrameTalentPointsText:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentTalentPoints..FONT_COLOR_CODE_CLOSE);
 end
 
 function InspectTalentFrame_OnLoad(self)
@@ -104,7 +107,7 @@ end
 
 function  InspectTalentFrame_OnShow(self)
 	InspectTalentFrame:RegisterEvent("INSPECT_READY");
-	InspectTalentFrame_Refresh();
+	InspectTalentFrame_Update();
 end
 
 function  InspectTalentFrame_OnHide(self)
@@ -114,7 +117,7 @@ end
 
 function InspectTalentFrame_OnEvent(self, event, ...)
 	if ( event == "INSPECT_READY" ) then
-		InspectTalentFrame_Refresh();
+		InspectTalentFrame_Update();
 	end
 end
 

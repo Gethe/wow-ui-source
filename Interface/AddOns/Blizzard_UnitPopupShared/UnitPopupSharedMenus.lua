@@ -404,6 +404,19 @@ UnitPopupManager:RegisterMenu("COMMUNITIES_GUILD_MEMBER", UnitPopupMenuCommuniti
 function UnitPopupMenuCommunitiesGuildMember:GetMenuButtons()
 end
 
+UnitPopupGuildGuilds = CreateFromMixins(UnitPopupTopLevelMenuMixin);
+UnitPopupManager:RegisterMenu("GUILDS_GUILD", UnitPopupGuildGuilds);
+function UnitPopupGuildGuilds:GetMenuButtons()
+	return {
+		UnitPopupClearCommunityNotificationButtonMixin,
+		UnitPopupGuildInviteButtonMixin, 
+		UnitPopupGuildSettingButtonMixin, 
+		UnitPopupGuildRecruitmentSettingButtonMixin, 
+		UnitPopupCommunityNotificationButtonMixin,
+		UnitPopupGuildGuildsLeaveButtonMixin,
+	}
+end
+
 UnitPopupMenuCommunitiesMember = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("COMMUNITIES_MEMBER", UnitPopupMenuCommunitiesMember);
 function UnitPopupMenuCommunitiesMember:GetMenuButtons()

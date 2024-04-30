@@ -2,7 +2,7 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 ACHIEVEMENTUI_CRITERIACHECKWIDTH = 20;
 
 ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155};
-ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
+ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {5362, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
 local GUILD_FEAT_OF_STRENGTH_ID = 15093;
@@ -1521,7 +1521,7 @@ end
 
 function AchievementFrameSummary_Update(isCompare)
 	AchievementFrameSummaryCategoriesStatusBar_Update();
-	AchievementFrameSummary_UpdateAchievements(GetLatestCompletedAchievements(IN_GUILD_VIEW));
+		AchievementFrameSummary_UpdateAchievements(GetLatestCompletedAchievements(IN_GUILD_VIEW));
 end
 
 function AchievementFrameSummary_ToggleView()

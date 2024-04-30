@@ -772,7 +772,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			if ( UnitHasMana("player") ) then
 				local baseInt = min(20, effectiveStat);
 				local moreInt = effectiveStat - baseInt
-				if (GetOverrideSpellPowerByAP() ~= nil) then
+				if (GetOverrideSpellPowerByAP() > 0) then
 					statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, baseInt + moreInt*MANA_PER_INTELLECT, GetSpellCritChanceFromIntellect("player"));
 				else
 					statFrame.tooltip2 = format(statFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, max(0, effectiveStat-10), GetSpellCritChanceFromIntellect("player"));
@@ -1217,7 +1217,7 @@ function PaperDollFrame_SetAttackPower(statFrame, unit)
 	PaperDollFormatStat(MELEE_ATTACK_POWER, base, posBuff, negBuff, statFrame, text);
 	local damageBonus = max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER;
 	local effectiveAP = max(0,base + posBuff + negBuff);
-	if (GetOverrideSpellPowerByAP() ~= nil) then
+	if (GetOverrideSpellPowerByAP() > 0) then
 		statFrame.tooltip2 = format(MELEE_ATTACK_POWER_SPELL_POWER_TOOLTIP, damageBonus, effectiveAP * GetOverrideSpellPowerByAP() + 0.5);
 	else
 		statFrame.tooltip2 = format(MELEE_ATTACK_POWER_TOOLTIP, damageBonus);
@@ -3296,6 +3296,8 @@ end
 GearManagerPopupFrameMixin = {};
 
 function GearManagerPopupFrameMixin:OnShow()
+	GearManagerPopupFrame.IconSelector:SetSize(494, 362);
+
 	IconSelectorPopupFrameTemplateMixin.OnShow(self);
 	self.BorderBox.IconSelectorEditBox:SetFocus();
 

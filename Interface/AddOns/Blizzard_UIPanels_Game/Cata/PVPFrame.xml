@@ -509,7 +509,7 @@
 					</Anchors>
 					<Scripts>
 						<OnLoad>
-							CapProgressBar_SetNotches(self, 5);
+							CapProgressBar_SetNotches(self, 4);
 							self.cap1Marker:SetScript("OnEnter", PVPFrameConquestBarMarker_OnEnter);
 							self.progress:SetVertexColor(1, 0, 0);
 						</OnLoad>
@@ -529,7 +529,7 @@
 				<Button name="$parentLeftButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN"  motionScriptsWhileDisabled="true" >
 					<Size x="108" y="22"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" />
+						<Anchor point="BOTTOMLEFT" relativeTo="PVPFrame"/>
 					</Anchors>
 					<Scripts>
 						<OnClick>
@@ -1250,7 +1250,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("igCharacterInfoTab");
+							PlaySound(SoundKit.IG_CHARACTER_INFO_TAB);
 							StaticPopupSpecial_Hide(PVPFrameReadyPopup);
 						</OnClick>
 					</Scripts>
@@ -1271,7 +1271,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("igCharacterInfoTab");
+							PlaySound(SoundKit.IG_CHARACTER_INFO_TAB);
 							PVPFramePopup_OnResponse(true);
 						</OnClick>
 					</Scripts>
@@ -1289,7 +1289,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
-							PlaySound("igCharacterInfoTab");
+							PlaySound(SoundKit.IG_CHARACTER_INFO_TAB);
 							PVPFramePopup_OnResponse(false);
 						</OnClick>
 					</Scripts>

@@ -481,8 +481,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			copperWidth = copperWidth - spacing;
 		end
 		-- hide copper if not enough room
-		--if ( maxDisplayWidth and (width + copperWidth) > maxDisplayWidth ) then
-		if ( false ) then
+		if ( maxDisplayWidth and (width + copperWidth) > maxDisplayWidth ) then
 			hideCopper = true;
 			frame.showTooltip = true;
 		else
