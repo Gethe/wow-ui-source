@@ -354,10 +354,12 @@ function ArenaEnemyFrame_UpdatePredictionBars(frame)
 		end
 	end
 
-	if ( overAbsorb ) then
-		frame.overAbsorbGlow:Show();
-	else
-		frame.overAbsorbGlow:Hide();
+	if (frame.overAbsorbGlow) then
+		if ( overAbsorb ) then
+			frame.overAbsorbGlow:Show();
+		else
+			frame.overAbsorbGlow:Hide();
+		end
 	end
 
 	local healthTexture = frame.healthbar:GetStatusBarTexture();
@@ -388,7 +390,7 @@ function ArenaEnemyFrame_UpdatePredictionBars(frame)
 
 	--Show myIncomingHeal on the health bar.
 	local incomingHealTexture;
-	if ( frame.myHealPredictionBar ) then
+	if (frame.myHealPredictionBar and (frame.myHealPredictionBar.UpdateFillPosition ~= nil)) then
 		incomingHealTexture = frame.myHealPredictionBar:UpdateFillPosition(healthTexture, myIncomingHeal, -myCurrentHealAbsorbPercent);
 	end
 
@@ -396,7 +398,7 @@ function ArenaEnemyFrame_UpdatePredictionBars(frame)
 	local xOffset = (myIncomingHeal > 0) and 0 or -myCurrentHealAbsorbPercent;
 
 	--Append otherIncomingHeal on the health bar
-	if ( frame.otherHealPredictionBar ) then
+	if ( frame.otherHealPredictionBar and (frame.otherHealPredictionBar.UpdateFillPosition ~= nil) ) then
 		incomingHealTexture = frame.otherHealPredictionBar:UpdateFillPosition(otherHealLeftTexture, otherIncomingHeal, xOffset);
 	end
 
@@ -410,7 +412,7 @@ function ArenaEnemyFrame_UpdatePredictionBars(frame)
 		appendTexture = incomingHealTexture or healthTexture;
 	end
 
-	if ( frame.totalAbsorbBar ) then
+	if ( frame.totalAbsorbBar and (frame.totalAbsorbBar.UpdateFillPosition ~= nil) ) then
 		frame.totalAbsorbBar:UpdateFillPosition(appendTexture, totalAbsorb);
 	end
 end

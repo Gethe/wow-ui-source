@@ -1017,7 +1017,7 @@ function FormatProfession(frame, index)
 		if frame.UnlearnButton ~= nil then
 			frame.UnlearnButton:Show();
 			frame.UnlearnButton:SetScript("OnClick", function() 
-				StaticPopup_Show("UNLEARN_SKILL", name, nil, index);
+				StaticPopup_Show("UNLEARN_SKILL", name, nil, skillLine);
 			end);
 		end
 

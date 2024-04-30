@@ -319,9 +319,6 @@
 							<Layer level="BACKGROUND" textureSubLevel="-1">
 								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
-								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
-								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
-								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
 							</Layer>
 						</Layers>
 					</Frame>

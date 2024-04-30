@@ -62,12 +62,6 @@ function PVPFrame_ExpansionSpecificOnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 
-	--self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
-	--self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
-	--self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
-	--self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
-	--self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
-	--self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
 	self:RegisterEvent("WARGAME_REQUESTED");
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
@@ -90,10 +84,11 @@ function PVPFrame_OnShow()
 	SetPortraitTexture(PVPFramePortrait, "player");
 	PVPFrame_TabClicked(PVPFrameTab1);
 
-	--RequestRatedBattlegroundInfo();
 	RequestPVPRewards();
 	RequestPVPOptionsEnabled();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+
+	PVPFrameLeftButton_RightSeparator:Hide();
 end
 
 function PVPFrame_OnHide()
@@ -108,7 +103,6 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 		BattlefieldFrame_UpdateStatus(false, nil);
 		PVPFrame_UpdateSelectedRoles();
 	elseif event == "CURRENCY_DISPLAY_UPDATE" then
-		PVPFrame_UpdateCurrency(self);
 		PVPFrame_UpdateCurrency(self);
 		if ( self:IsShown() ) then
 			RequestPVPRewards();
@@ -302,12 +296,23 @@ function PVPFrame_UpdateCurrency(self)
 		currencyName, currencyAmount = GetCurrencyInfo(currencyID);
 	end
 
-	if ( currencyName ) then
+	if ( currencyName and (currencyAmount > 0)) then
 		-- show conquest bar?
-		if ( currencyID == CONQUEST_CURRENCY ) then
+		if ( currencyID == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID ) then
 			PVPFrameCurrency:Hide();
 			PVPFrameConquestBar:Show();
-			--[[local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+
+			local conquestCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
+			local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
+			local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID);
+
+			local tier1Limit = arenaCurrencyInfo.maxQuantity;
+			local tier2Limit = honorCurrencyInfo.maxQuantity;
+			local tier1Quantity = arenaCurrencyInfo.quantity;
+			local tier2Quantity = honorCurrencyInfo.quantity;
+			local pointsThisWeek = conquestCurrencyInfo.quantity;
+			local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity/100;
+
 			-- if BG limit is below arena, swap them
 			if ( tier2Limit < tier1Limit ) then
 				tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
@@ -318,8 +323,9 @@ function PVPFrame_UpdateCurrency(self)
 				tier2Quantity = nil;
 				tier2Limit = nil;
 			end
+
 			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek);
-			PVPFrameConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);]]
+			PVPFrameConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
 		else
 			PVPFrameCurrency:Show();
 			PVPFrameConquestBar:Hide();
@@ -332,14 +338,19 @@ function PVPFrame_UpdateCurrency(self)
 end
 
 function PVPFrameConquestBar_OnEnter(self)
-	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
+	local conquestCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(MAXIMUM_REWARD);
-	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
+	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, conquestCurrencyInfo.name), 1, 1, 1, true);
 	GameTooltip:AddLine(" ");
 
-	--[[local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+	
+	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
+	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
+
+	local pointsThisWeek = conquestCurrencyInfo.quantity;
+	local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity/100;
 	
 	local r, g, b = 1, 1, 1;
 	local capped;
@@ -347,47 +358,54 @@ function PVPFrameConquestBar_OnEnter(self)
 		r, g, b = 0.5, 0.5, 0.5;
 		capped = true;
 	end
-	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
-	
-	if ( capped or tier2Quantity >= tier2Limit ) then
-		r, g, b = 0.5, 0.5, 0.5;
-	else
-		r, g, b = 1, 1, 1;
-	end
-	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_WEEKLY_CAP_FRACTION, tier2Quantity, tier2Limit), r, g, b, r, g, b);	
-	
-	if ( capped or tier1Quantity >= tier1Limit ) then
-		r, g, b = 0.5, 0.5, 0.5;
-	else
-		r, g, b = 1, 1, 1;
-	end
-	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
 
-	GameTooltip:Show();]]
+	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_TOTAL_CAP, conquestCurrencyInfo.name, conquestCurrencyInfo.quantity, conquestCurrencyInfo.maxQuantity/100), r, g, b, r, g, b);
+	
+	if ( capped or honorCurrencyInfo.quantity >= honorCurrencyInfo.maxQuantity ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_TOTAL_CAP, "", honorCurrencyInfo.quantity, honorCurrencyInfo.maxQuantity/100 - arenaCurrencyInfo.quantity), r, g, b, r, g, b);	
+	
+	if ( capped or arenaCurrencyInfo.quantity >= arenaCurrencyInfo.maxQuantity ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_TOTAL_CAP, "", arenaCurrencyInfo.quantity, arenaCurrencyInfo.maxQuantity/100 - honorCurrencyInfo.quantity), r, g, b, r, g, b);
+
+	GameTooltip:Show();
 end
 
 function PVPFrameConquestBarMarker_OnEnter(self)
 	local isTier1 = self:GetID() == 1;
 
-	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit = GetPVPRewards();
+	local conquestCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
+	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
+	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
 	local tier2tooltip = PVP_CURRENCY_CAP_RATEDBG;
 	local tier1tooltip = PVP_CURRENCY_CAP_ARENA;
+	local tier1Limit = arenaCurrencyInfo.maxQuantity/100;
+	local tier2Limit = honorCurrencyInfo.maxQuantity/100;
+	local tier1Quantity = arenaCurrencyInfo.quantity;
+	local tier2Quantity = honorCurrencyInfo.quantity;
 	-- if BG limit is below arena, swap them
-	if ( tier2Limit < tier1Limit ) then
+	if ( honorCurrencyInfo.quantity < arenaCurrencyInfo.quantity ) then
 		tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
 		tier1Limit, tier2Limit = tier2Limit, tier1Limit;
 		tier1tooltip, tier2tooltip = tier2tooltip, tier1tooltip;
 	end
-	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
+	local currencyName = conquestCurrencyInfo.name;
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(MAXIMUM_REWARD);
 	if ( isTier1 ) then
 		GameTooltip:AddLine(format(tier1tooltip, currencyName), 1, 1, 1, true);
-		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier1Quantity, tier1Limit));
+		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier1Quantity, tier1Limit-tier2Quantity));
 	else
 		GameTooltip:AddLine(format(tier2tooltip, currencyName), 1, 1, 1, true);
-		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier2Quantity, tier2Limit));
+		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier2Quantity, tier2Limit-tier1Quantity));
 	end
 	GameTooltip:Show();
 end
@@ -399,7 +417,7 @@ function PVPFrame_JoinClicked(self, isParty, wargame)
 			StartWarGame();
 		else
 			if PVPHonorFrame.selectedIsWorldPvp then
-				BattlefieldMgrQueueRequest(PVPHonorFrame.selectedPvpID); 
+				JoinWorldPVPQueue(true, isParty, PVPHonorFrame.bgTypeScrollBox.selectionID);
 			else 
 				JoinBattlefield(0, isParty);
 			end
@@ -443,7 +461,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameLeftButton:Enable();
 		PVPFrameCurrencyLabel:SetText(HONOR);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
-		PVPFrameCurrency.currencyID = HONOR_CURRENCY;
+		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID;
 	elseif index == 3 then -- War games
 		PVPFrame.panel4:Show();
 		PVPFrame.TankIcon:Hide();
@@ -466,13 +484,13 @@ function PVPFrame_TabClicked(self)
 		PVPFrame.lowLevelFrame.description:SetText(ARENA_MASTER_NO_SEASON_TEXT);
 		PVPFrame.lowLevelFrame:Show();
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
-		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
+		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID;
 	elseif index == 2 then -- Conquest 
 		PVPFrame.panel2:Show();	
 		PVPFrameLeftButton:SetText(BATTLEFIELD_JOIN);
 		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
-		PVPFrameCurrency.currencyID = CONQUEST_CURRENCY;
+		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID;
 	end
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -483,38 +501,14 @@ end
 
 -- Honor Frame functions (the new BG page)
 
-function PVPHonor_UpdateWorldPVPTimer(self, elapsed)
-	self.timeStep = self.timeStep + elapsed;
-	if self.timeStep > WORLD_PVP_TIME_UPDATE_IINTERVAL then
-		self.timeStep = 0;
-		--[[local _, name, isActive, canQueue, startTime = GetWorldPVPAreaInfo(self.worldIndex);
-		if canQueue then
-			self:Enable();
-		else
-			self:Disable();
-			name = GRAY_FONT_COLOR_CODE..name;
-		end
-		if ( isActive ) then
-			name = name.." ("..WINTERGRASP_IN_PROGRESS..")";
-		elseif ( startTime > 0 ) then
-			name = name.." ("..SecondsToTime(startTime)..")";
-		end
-		self.title:SetText(name);]]
-	end
-end
-
-
 function PVPHonor_ButtonClicked(self)	
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	PVPHonorFrame.selectedButtonIndex = self.battleGroundID;
 	PVPHonorFrame.selectedIsWorldPvp = self.isWorldPVP;
 	PVPHonorFrame.selectedPvpID = self.pvpID;
 	HonorFrameSpecificList_FindAndSelectBattleground(self.battleGroundID);
 	PVPHonorFrame_ResetInfo();
 	PVPHonorFrame_UpdateGroupAvailable();
 end
-
-
 
 function PVPHonorFrame_ResetInfo()
 	if not PVPHonorFrame.selectedIsWorldPvp then
@@ -523,23 +517,8 @@ function PVPHonorFrame_ResetInfo()
 	PVPHonor_UpdateInfo();
 end
 
-
 function PVPHonor_UpdateInfo()
-	if PVPHonorFrame.selectedIsWorldPvp then
-		local pvpID = PVPHonorFrame.selectedPvpID;
-		local mapDescription = PVPWORLD_DESCRIPTIONS[pvpID]
-		if not mapDescription or mapDescription == "" then
-			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText("Missing Map Description");
-		else
-			PVPHonorFrameInfoScrollFrameChildFrameDescription:SetText(mapDescription);
-		end
-
-		if(PVPWORLD_TEXTURELIST[pvpID]) then
-			PVPHonorFrameBGTex:SetTexture(PVPWORLD_TEXTURELIST[pvpID]);
-		end
-		PVPHonorFrameInfoScrollFrameChildFrameRewardsInfo:Hide();
-		PVPHonorFrameInfoScrollFrameChildFrameDescription:Show();
-	elseif PVPHonorFrame.selectedPvpID then
+	if PVPHonorFrame.selectedPvpID then
 		local _, canEnter, isHoliday, isRandom, BattleGroundID, mapDescription = GetBattlegroundInfo(PVPHonorFrame.selectedPvpID);
 		
 		if(PVPHONOR_TEXTURELIST[BattleGroundID]) then
@@ -563,6 +542,10 @@ function PVPHonor_UpdateInfo()
 end
 
 function PVPHonor_GetRandomBattlegroundInfo()
+	if PVPHonorFrame.selectedPvpID == nil then
+		-- CLASS-30641: It looks like we are getting "PVP_RATED_STATS_UPDATE" events before GetBattlegroundInfo is available..for now just nil check
+		return nil;
+	end
 	return GetBattlegroundInfo(PVPHonorFrame.selectedPvpID);
 end
 
@@ -575,34 +558,38 @@ function PVPHonor_UpdateQueueStatus()
 
 	for i=1, GetNumBattlegroundTypes() do
 		local localizedName = GetBattlegroundInfo(i);
-		local found = PVPHonorFrame.bgTypeScrollBox:ScrollToElementDataByPredicate(function(elementData)
-			return elementData.localizedName == localizedName;
+		local found = PVPHonorFrame.bgTypeScrollBox:FindElementDataByPredicate(function(elementData)
+			return elementData and elementData.localizedName == localizedName;
 		end);
 		if found then 
 			button = PVPHonorFrame.bgTypeScrollBox:FindFrame(found);
-			button.status:Hide();
+			if button then
+				button.status:Hide();
+			end
 		end
 	end
 
 	local factionTexture = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player");
 	for i=1, GetMaxBattlefieldID() do
 		queueStatus, queueMapName, queueInstanceID = GetBattlefieldStatus(i);
-		local found = PVPHonorFrame.bgTypeScrollBox:ScrollToElementDataByPredicate(function(elementData)
-			return elementData.localizedName == queueMapName;
+		local found = PVPHonorFrame.bgTypeScrollBox:FindElementDataByPredicate(function(elementData)
+			return elementData and elementData.localizedName == queueMapName;
 		end);
 		if found then 
 			button = PVPHonorFrame.bgTypeScrollBox:FindFrame(found);
-			if ( queueStatus ~= "none" ) then
-				if ( queueStatus == "queued" ) then
-					button.status.texture:SetTexture(factionTexture);
-					button.status.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
-					button.status.tooltip = BATTLEFIELD_QUEUE_STATUS;
-					button.status:Show();
-				elseif ( queueStatus == "confirm" ) then
-					button.status.texture:SetTexture("Interface\\CharacterFrame\\UI-StateIcon");
-					button.status.texture:SetTexCoord(0.45, 0.95, 0.0, 0.5);
-					button.status.tooltip = BATTLEFIELD_CONFIRM_STATUS;
-					button.status:Show();
+			if button then
+				if ( queueStatus ~= "none" ) then
+					if ( queueStatus == "queued" ) then
+						button.status.texture:SetTexture(factionTexture);
+						button.status.texture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+						button.status.tooltip = BATTLEFIELD_QUEUE_STATUS;
+						button.status:Show();
+					elseif ( queueStatus == "confirm" ) then
+						button.status.texture:SetTexture("Interface\\CharacterFrame\\UI-StateIcon");
+						button.status.texture:SetTexCoord(0.45, 0.95, 0.0, 0.5);
+						button.status.tooltip = BATTLEFIELD_CONFIRM_STATUS;
+						button.status:Show();
+					end
 				end
 			end
 		end
@@ -630,14 +617,14 @@ function PVPHonorFrame_OnEvent(self, event, ...)
 	if ( event == "PVPQUEUE_ANYWHERE_SHOW" ) then
 		self.currentData = true;
 		HonorFrameSpecificList_Update();
-		if ( self.selectedButtonIndex ) then
+		if ( self.selectedPvpID ) then
 			PVPHonor_UpdateInfo();
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		HonorFrameSpecificList_Update();
 	elseif ( event == "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE") then
 		HonorFrameSpecificList_Update();
-		if ( self.selectedButtonIndex ) then
+		if ( self.selectedPvpID ) then
 			PVPHonorFrame_ResetInfo();
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "RAID_ROSTER_UPDATE" ) then
@@ -666,14 +653,11 @@ end
 -------- Honor Frame Battleground Buttons --------
 function HonorFrame_InitSpecificButton(button, elementData)
 	local localizedName = elementData.localizedName;
-	local isActive = elementData.isActive;
-	local isHoliday = elementData.isHoliday;
 	local isRandom = elementData.isRandom;
 	local battleGroundID = elementData.battleGroundID;
 	local mapDescription = elementData.mapDescription;
 	local BGMapID = elementData.BGMapID;
 	local maxPlayers = elementData.maxPlayers;
-	local gameType = elementData.gameType;
 	local iconTexture = elementData.iconTexture;
 	local shortDescription = elementData.shortDescription;
 	local longDescription = elementData.longDescription;
@@ -682,8 +666,22 @@ function HonorFrame_InitSpecificButton(button, elementData)
 	local pvpID = elementData.pvpID;
 	local isWorldPVP = elementData.isWorldPVP;
 
-	button.title:SetText(localizedName);
+	local name = localizedName;
+	button:Enable();
+	if(not canQueue) then
+		button:Disable();
+		if ( startTime and startTime > 0 ) then
+			name = GRAY_FONT_COLOR_CODE..name;
+			name = name.." ("..MinutesToTime(startTime)..")";
+		else
+			button:Enable();
+			name = name.." ("..WINTERGRASP_IN_PROGRESS..")";
+		end	
+	end
+
 	button.name = localizedName;
+	button.title:SetText(name);
+
 	if(not PVPHonorFrame.selectedPvpID) then
 		PVPHonorFrame.selectedPvpID = pvpID;
 		PVPHonorFrame.bgTypeScrollBox.selectionID = battleGroundID;
@@ -708,26 +706,42 @@ end
 function HonorFrameSpecificList_Update()
 	local dataProvider = CreateDataProvider();
 	for index = 1, GetNumBattlegroundTypes() do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo(index);
-		if localizedName and canEnter then
-			dataProvider:Insert({
-				localizedName=localizedName,
-				isActive=isActive,
-				isHoliday=isHoliday,
-				isRandom=isRandom,
-				battleGroundID=battleGroundID,
-				mapDescription=mapDescription,
-				BGMapID=BGMapID,
-				maxPlayers=maxPlayers,
-				gameType=gameType,
-				iconTexture=iconTexture,
-				shortDescription=shortDescription,
-				longDescription=longDescription,
-				canQueue=true,
-				startTime=null,
-				pvpID=index,
-				isWorldPVP=false,
-			});
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription, hasControllingHoliday = GetBattlegroundInfo(index);
+		if battleGroundID ~= nil then -- CLASS-30641: It looks like we are getting "PVP_RATED_STATS_UPDATE" events before GetBattlegroundInfo is available..for now just nil check
+			local startTime = C_PvP.GetWorldPvPWaitTime(battleGroundID);
+			if localizedName and canEnter then
+				dataProvider:Insert({
+					localizedName=localizedName,
+					isRandom=isRandom,
+					battleGroundID=battleGroundID,
+					mapDescription=mapDescription,
+					BGMapID=BGMapID,
+					maxPlayers=maxPlayers,
+					iconTexture=iconTexture,
+					shortDescription=shortDescription,
+					longDescription=longDescription,
+					canQueue=canEnter,
+					startTime=startTime,
+					pvpID=index,
+					isWorldPVP = false;
+				});
+			elseif localizedName and (hasControllingHoliday > 0) then
+				dataProvider:Insert({
+					localizedName=localizedName,
+					isRandom=isRandom,
+					battleGroundID=battleGroundID,
+					mapDescription=mapDescription,
+					BGMapID=BGMapID,
+					maxPlayers=maxPlayers,
+					iconTexture=iconTexture,
+					shortDescription=shortDescription,
+					longDescription=longDescription,
+					canQueue=canEnter,
+					startTime=startTime,
+					pvpID=index,
+					isWorldPVP = true,
+				});
+			end
 		end
 	end
 	PVPHonorFrame.bgTypeScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
@@ -1094,23 +1108,25 @@ function GetRandomBGHonorCurrencyBonuses()
 	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetRandomBGLossRewards();
 	local conquestWin, conquestLoss = 0, 0;
 
-	if(currencyRewardsWin) then
-		for i, reward in ipairs(currencyRewardsWin) do
-			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
-				conquestWin = reward.quantity;
+	if (not (GetCurrentArenaSeason() == NO_ARENA_SEASON)) then 
+		if(currencyRewardsWin) then
+			for i, reward in ipairs(currencyRewardsWin) do
+				if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then
+					conquestWin = reward.quantity;
+				end
+			end
+		end
+
+		if(currencyRewardsLoss) then
+			for i, reward in ipairs(currencyRewardsLoss) do
+				if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then
+					conquestLoss = reward.quantity;
+				end
 			end
 		end
 	end
 
-	if(currencyRewardsLoss) then
-		for i, reward in ipairs(currencyRewardsLoss) do
-			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
-				conquestLoss = reward.quantity;
-			end
-		end
-	end
-
-	return true, honorWin, conquestWin, honorLoss, conquestLoss;
+	return true, honorWin/100, conquestWin/100, honorLoss/100, conquestLoss/100;
 end
 
 function GetHolidayBGHonorCurrencyBonuses()
@@ -1118,26 +1134,33 @@ function GetHolidayBGHonorCurrencyBonuses()
 	local honorLoss,_,_, currencyRewardsLoss = C_PvP.GetHolidayBGLossRewards();
 	local conquestWin, conquestLoss = 0, 0;
 
-	if(currencyRewardsWin) then
-		for i, reward in ipairs(currencyRewardsWin) do
-			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
-				conquestWin = reward.quantity;
+	if (not (GetCurrentArenaSeason() == NO_ARENA_SEASON)) then
+		if(currencyRewardsWin) then
+			for i, reward in ipairs(currencyRewardsWin) do
+				if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then
+					conquestWin = reward.quantity;
+				end
+			end
+		end
+
+		if(currencyRewardsLoss) then
+			for i, reward in ipairs(currencyRewardsLoss) do
+				if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then
+					conquestLoss = reward.quantity;
+				end
 			end
 		end
 	end
 
-	if(currencyRewardsLoss) then
-		for i, reward in ipairs(currencyRewardsLoss) do
-			if reward.id == Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID then
-				conquestLoss = reward.quantity;
-			end
-		end
-	end
-
-	return true, honorWin, conquestWin, honorLoss, conquestLoss;
+	return true, honorWin/100, conquestWin/100, honorLoss/100, conquestLoss/100;
 end
 
 function PVPQueue_UpdateRandomInfo(base, infoFunc)
+	if infoFunc == nil then
+		-- CLASS-30641: It looks like we are getting "PVP_RATED_STATS_UPDATE" events before GetBattlegroundInfo is available..for now just nil check
+		return;
+	end
+
 	local BGname, canEnter, isHoliday, isRandom = infoFunc();
 	
 	local hasWin, lossHonor, winHonor, winArena, lossArena;

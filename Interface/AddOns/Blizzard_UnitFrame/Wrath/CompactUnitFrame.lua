@@ -131,7 +131,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdatePowerColor(self);
 			CompactUnitFrame_UpdateStatusText(self);
 		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
-				CompactUnitFrame_UpdateHealPrediction(self);
+			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" ) then
 			CompactUnitFrame_UpdateAll(self);
 		elseif ( event == "READY_CHECK_CONFIRM" ) then
@@ -802,7 +802,21 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 
 	local myIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit, "player") or 0;
 	local allIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit) or 0;
-	local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit) or 0;
+	local totalAbsorb = 0;
+
+	local myCurrentHealAbsorb = 0;
+	if ( frame.healAbsorbBar ) then
+		totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;
+		myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.unit) or 0;
+
+		--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
+		if ( health < myCurrentHealAbsorb ) then
+			frame.overHealAbsorbGlow:Show();
+			myCurrentHealAbsorb = health;
+		else
+			frame.overHealAbsorbGlow:Hide();
+		end
+	end
 
 	--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
 	local myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.displayedUnit) or 0;
@@ -842,10 +856,13 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 			totalAbsorb = max(0,maxHealth - health);
 		end
 	end
-	if ( overAbsorb ) then
-		frame.overAbsorbGlow:Show();
-	else
-		frame.overAbsorbGlow:Hide();
+
+	if (frame.overAbsorbGlow) then
+		if ( overAbsorb ) then
+			frame.overAbsorbGlow:Show();
+		else
+			frame.overAbsorbGlow:Hide();
+		end
 	end
 
 	local healthTexture = frame.healthBar:GetStatusBarTexture();

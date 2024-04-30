@@ -119,6 +119,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetWorldPvPWaitTime",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "pvpWaitTime", Type = "time_t", Nilable = false },
+			},
+		},
+		{
 			Name = "GetZonePVPInfo",
 			Type = "Function",
 
