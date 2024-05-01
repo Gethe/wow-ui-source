@@ -741,11 +741,11 @@
 			</OnShow>
 			<OnHide function="UIParent_ManageFramePositions"/>
 			<OnEnter>
-				ReputationWatchStatusBarText:Show();
+				self.OverlayFrame.Text:Show();
 			</OnEnter>
 			<OnLeave>
 				if(not ReputationWatchBar.textLocked) then
-					ReputationWatchStatusBarText:Hide();
+					self.OverlayFrame.Text:Hide();
 				end
 			</OnLeave>
 		</Scripts>
