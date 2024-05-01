@@ -738,7 +738,7 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 end
 
 function GetDenominationsFromCopper(money)
-	return GetCoinText(money, " ");
+	return C_CurrencyInfo.GetCoinText(money, " ");
 end
 
 
