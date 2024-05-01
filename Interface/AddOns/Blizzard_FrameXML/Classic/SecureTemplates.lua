@@ -340,7 +340,13 @@ SECURE_ACTIONS.action =
             local actionType, flyoutId = GetActionInfo(action);
             local cursorType = GetCursorInfo();
 
-			UseAction(action, unit, button);
+            if ( actionType == "flyout" and not cursorType ) then
+                local direction = SecureButton_GetModifiedAttribute(self, "flyoutDirection", button);
+                SpellFlyout:Toggle(flyoutId, self, direction, 0, true);
+            else
+                SpellFlyout:Hide();
+			    UseAction(action, unit, button);
+            end
         end
     end;
 
