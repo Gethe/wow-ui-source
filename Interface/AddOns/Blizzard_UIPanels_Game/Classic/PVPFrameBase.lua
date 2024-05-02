@@ -28,16 +28,6 @@ function PVPFrame_OnEvent(self, event, ...)
 		PVPHonor_Update();
 	elseif ( event == "PLAYER_PVP_KILLS_CHANGED" or event == "PLAYER_PVP_RANK_CHANGED") then
 		PVPHonor_Update();
-	elseif ( event == "ARENA_TEAM_UPDATE" ) then
-		PVPFrame_Update();
-		if ( PVPTeamDetails:IsShown() ) then
-			local team = GetArenaTeam(PVPTeamDetails.team);
-			if ( not team ) then
-				PVPTeamDetails:Hide();
-			else
-				PVPTeamDetails_Update(PVPTeamDetails.team); -- team games played/won are shown in the detail frame
-			end
-		end
 	--[[ elseif ( event == "ARENA_SEASON_WORLD_STATE" ) then
 		 PVPFrame.season = GetCurrentArenaSeason();
 		PVPFrame_Update(); ]]
@@ -525,8 +515,6 @@ function PVPTeamDetails_Update(self, id)
 		end
 		
 	end
-
-
 end
 
 function PVPTeamDetailsToggleButton_OnClick(self)
@@ -548,7 +536,6 @@ function PVPFrameToggleButton_OnClick()
 	PVPTeam_Update();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
-						
 
 function PVPTeamDetailsButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then

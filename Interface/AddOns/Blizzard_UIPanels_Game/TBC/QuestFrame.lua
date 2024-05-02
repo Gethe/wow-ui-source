@@ -428,6 +428,10 @@ function QuestFrameItems_Update(questState)
 		spacerFrame = QuestSpacerFrame;
 	end
 
+	if GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
+		honor = honor / 100;
+	end
+
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestSpellRewards;
 	local questItemName = questState.."Item";
 	local material = QuestFrame_GetMaterial();

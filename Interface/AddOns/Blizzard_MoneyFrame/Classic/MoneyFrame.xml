@@ -15,7 +15,7 @@
 			<AbsDimension x="192" y="28"/>
 		</Size>
 		<Frames>
-			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentCopperButton" parentKey="CopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
@@ -54,12 +54,12 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentSilverButton" parentKey="SilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCopperButton" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeKey="$parent.CopperButton" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-4" y="0"/>
 						</Offset>
@@ -93,12 +93,12 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentGoldButton" parentKey="GoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="47" y="19"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentSilverButton" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeKey="$parent.SilverButton" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-4" y="0"/>
 						</Offset>
@@ -182,7 +182,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Button name="$parentCopperButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentCopperButton" parentKey="CopperButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
@@ -222,12 +222,12 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentSilverButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentSilverButton" parentKey="SilverButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCopperButton" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeKey="$parent.CopperButton" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-4" y="0"/>
 						</Offset>
@@ -262,12 +262,12 @@
 					<AbsDimension x="0" y="0"/>
 				</PushedTextOffset>
 			</Button>
-			<Button name="$parentGoldButton" inherits="MoneyFrameButtonTemplate">
+			<Button name="$parentGoldButton" parentKey="GoldButton" inherits="MoneyFrameButtonTemplate">
 				<Size>
 					<AbsDimension x="32" y="13"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentSilverButton" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeKey="$parent.SilverButton" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-4" y="0"/>
 						</Offset>
