@@ -33,6 +33,16 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 				PVPTeamDetails:Hide();
 			end
 		end
+	elseif ( event == "ARENA_TEAM_UPDATE" ) then
+		PVPFrame_Update();
+		if ( PVPTeamDetails:IsShown() ) then
+			local team = GetArenaTeam(PVPTeamDetails.team);
+			if ( not team ) then
+				PVPTeamDetails:Hide();
+			else
+				PVPTeamDetails_Update(PVPTeamDetails.team); -- team games played/won are shown in the detail frame
+			end
+		end
 	end
 end
 

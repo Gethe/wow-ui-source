@@ -287,6 +287,10 @@ function WorldStateScoreFrame_Update()
 			scoreButton.index = index;
 			name, killingBlows, honorableKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone = GetBattlefieldScore(index);
 			rankName, rankNumber = GetPVPRankInfo(rank, faction);
+
+			if GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
+				honorGained = honorGained / 100;
+			end
 		
 			if ( classToken ) then
 				coords = CLASS_BUTTONS[classToken];

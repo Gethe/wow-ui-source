@@ -5,7 +5,7 @@
 ## AllowLoad: game
 ## AllowLoadGameType: cata
 Cata\Minimap.lua
-Wrath\Minimap.xml
+Cata\Minimap.xml
 Wrath\GameTime.lua
 Classic\GameTime_Shared.lua
 Wrath\GameTime.xml

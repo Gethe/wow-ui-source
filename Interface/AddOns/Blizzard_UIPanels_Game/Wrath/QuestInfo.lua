@@ -496,6 +496,10 @@ function QuestInfo_ShowRewards()
 		talents = GetRewardTalentPoints();
 	end
 
+	if GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM then
+		honor = honor / 100;
+	end
+
 	for index, spellID in ipairs(spellRewards) do
 		local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
 		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
