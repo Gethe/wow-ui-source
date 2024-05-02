@@ -2758,7 +2758,6 @@ SlashCmdList["COMMUNITY"] = function(msg)
 	local command, clubType = string.split(" ", string.lower(msg));
 	local loadCommunity = function()
 		if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
-			Communities_LoadUI();
 			ToggleCommunitiesFrame();
 		end
 	end

@@ -1,3 +1,4 @@
+local envTable = GetCurrentEnvironment();
 
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;
@@ -211,7 +212,7 @@ function EditBox_HandleTabbing(self, tabList)
 	end
 
 	local target = tabList[index];
-	_G[target]:SetFocus();
+	envTable[target]:SetFocus();
 end
 
 function EditBox_SetFocus (self)
@@ -353,7 +354,7 @@ function PanelTemplates_GetSelectedTab(frame)
 end
 
 local function GetTabByIndex(frame, index)
-	return frame.Tabs and frame.Tabs[index] or _G[frame:GetName().."Tab"..index];
+	return frame.Tabs and frame.Tabs[index] or envTable[frame:GetName().."Tab"..index];
 end
 
 function PanelTemplates_UpdateTabs(frame)
@@ -726,7 +727,7 @@ MaximizeMinimizeButtonFrameMixin = {};
 function MaximizeMinimizeButtonFrameMixin:OnShow()
 	if self.isAutomaticAction then
 		self.isAutomaticAction = false;
-	elseif self.cvar then
+	elseif self.cvar and not self.skipResetOnShow then
 		local minimized = GetCVarBool(self.cvar);
 		if minimized then
 			self:Minimize();
@@ -740,6 +741,10 @@ function MaximizeMinimizeButtonFrameMixin:IsMinimized()
 	return self.isMinimized;
 end
 
+function MaximizeMinimizeButtonFrameMixin:SkipResetOnShow(skipResetOnShow)
+	self.skipResetOnShow = skipResetOnShow;
+end
+
 function MaximizeMinimizeButtonFrameMixin:SetMinimizedCVar(cvar)
 	self.cvar = cvar;
 end
@@ -748,8 +753,8 @@ function MaximizeMinimizeButtonFrameMixin:SetOnMaximizedCallback(maximizedCallba
 	self.maximizedCallback = maximizedCallback;
 end
 
-function MaximizeMinimizeButtonFrameMixin:Maximize(isAutomaticAction)
-	if self.maximizedCallback then
+function MaximizeMinimizeButtonFrameMixin:Maximize(isAutomaticAction, skipCallback)
+	if self.maximizedCallback and not skipCallback then
 		self.maximizedCallback(self);
 	end
 
@@ -767,8 +772,8 @@ function MaximizeMinimizeButtonFrameMixin:SetOnMinimizedCallback(minimizedCallba
 	self.minimizedCallback = minimizedCallback;
 end
 
-function MaximizeMinimizeButtonFrameMixin:Minimize(isAutomaticAction)
-	if self.minimizedCallback then
+function MaximizeMinimizeButtonFrameMixin:Minimize(isAutomaticAction, skipCallback)
+	if self.minimizedCallback and not skipCallback then
 		self:minimizedCallback();
 	end
 
@@ -2847,7 +2852,7 @@ function IconSelectorPopupFrameTemplateMixin:OnLoad()
 	local function IconFilterTypeNameTranslation(enumValue)
 		for key, value in pairs(IconSelectorPopupFrameIconFilterTypes) do
 			if value == enumValue then
-				return _G["ICON_FILTER_" .. strupper(key)];
+				return envTable["ICON_FILTER_" .. strupper(key)];
 			end
 		end
 	end
@@ -3631,8 +3636,10 @@ function SquareExpandButtonMixin:SetToggleCallback(toggleCallback)
 end
 
 function SquareExpandButtonMixin:SetExpandedState(isExpanded)
-	self:SetNormalAtlas(isExpanded and "Campaign_HeaderIcon_Open" or "Campaign_HeaderIcon_Closed");
-	self:SetPushedAtlas(isExpanded and "Campaign_HeaderIcon_OpenPressed" or "Campaign_HeaderIcon_ClosedPressed");
+	self:SetHighlightAtlas(isExpanded and self.highlightExpandedAtlas or self.highlightCollapsedAtlas);
+	self:SetNormalAtlas(isExpanded and self.normalExpandedAtlas or self.normalCollapsedAtlas);
+	self:SetPushedAtlas(isExpanded and self.pushedExpandedAtlas or self.pushedCollapsedAtlas);
+	self:SetDisabledAtlas(isExpanded and self.disabledExpandedAtlas or self.disabledCollapsedAtlas);
 end
 
 ExpandBarMixin = {};

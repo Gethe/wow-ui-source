@@ -1,23 +1,6 @@
 BUFF_WARNING_TIME = 31;
-BUFF_DURATION_WARNING_TIME = 90;
 BUFF_MAX_DISPLAY = 32;
 DEBUFF_MAX_DISPLAY = 16;
-DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
-
---Aubrie TODO move these.. to something else
-DebuffTypeColor = { };
-DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
-DebuffTypeColor["Magic"]	= { r = 0.20, g = 0.60, b = 1.00 };
-DebuffTypeColor["Curse"]	= { r = 0.60, g = 0.00, b = 1.00 };
-DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
-DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
-DebuffTypeColor[""]	= DebuffTypeColor["none"];
-
-DebuffTypeSymbol = { };
-DebuffTypeSymbol["Magic"] = DEBUFF_SYMBOL_MAGIC;
-DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
-DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
-DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
 
 CVarCallbackRegistry:SetCVarCachable("buffDurations");
 

@@ -63,7 +63,7 @@ function CharacterSelectUIMixin:OnUpdate()
 				if childElementData.characterID == selectedCharacterID then
 					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select);
 				elseif not childElementData.isEmpty then
-					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Deselect);
+					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.StartingPose);
 				end
 			end
 		end
@@ -104,6 +104,7 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 				-- Set up character UI before any animations are applied (updates things if there were character swaps).
 				self:SetupCharacterOverlayFrames();
 
+				-- Note that just because we are attempting to play deselect, does not mean it necessarily will happen. See PlayRandomAnimation for details.
 				for _, childElementData in ipairs(selectedElementData.characterData) do
 					if childElementData.characterID == selectedCharacterID then
 						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select);

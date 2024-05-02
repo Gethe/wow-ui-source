@@ -33,15 +33,16 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderItemType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Reagent", Type = "CraftingOrderItemType", EnumValue = 0 },
 				{ Name = "Recraft", Type = "CraftingOrderItemType", EnumValue = 1 },
 				{ Name = "CraftedResult", Type = "CraftingOrderItemType", EnumValue = 2 },
 				{ Name = "RemoveReagent", Type = "CraftingOrderItemType", EnumValue = 3 },
+				{ Name = "NpcProvided", Type = "CraftingOrderItemType", EnumValue = 4 },
 			},
 		},
 		{
@@ -160,14 +161,15 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Public", Type = "CraftingOrderType", EnumValue = 0 },
 				{ Name = "Guild", Type = "CraftingOrderType", EnumValue = 1 },
 				{ Name = "Personal", Type = "CraftingOrderType", EnumValue = 2 },
+				{ Name = "Npc", Type = "CraftingOrderType", EnumValue = 3 },
 			},
 		},
 		{

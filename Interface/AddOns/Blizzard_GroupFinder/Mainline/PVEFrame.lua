@@ -10,6 +10,11 @@ local panels = {
 	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, },
 }
 
+function LFGListPVPStub_OnShow(self)
+	LFGListPVEStub_OnShow(self);
+	LFGListFrame_SetBaseFilters(LFGListFrame, Enum.LFGListFilter.PvP);
+end
+
 function LFGListPVEStub_OnShow(self)
 	LFGListFrame:SetParent(self);
 	LFGListFrame:ClearAllPoints();

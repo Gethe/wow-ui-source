@@ -1125,7 +1125,8 @@
 
 		<xs:attribute name="forbidden" type="xs:boolean" default="false"/>
 		<xs:attribute name="scriptsUseGivenEnv" type="xs:boolean" default="false"/>
-    <xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
+		<xs:attribute name="addToSecureEnv" type="xs:boolean" default="false"/>
+		<xs:attribute name="hideFromGlobalEnv" type="xs:boolean" default="false"/>
 		<xs:attribute name="fullLockdown" type="xs:boolean" default="false"/>
 	</xs:complexType>
 

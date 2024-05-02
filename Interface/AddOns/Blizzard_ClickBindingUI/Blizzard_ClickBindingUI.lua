@@ -568,6 +568,10 @@ function ClickBindingFrameMixin:OnShow()
 	-- Refresh() triggers ClickBindingFrame.UpdateFrames event through SetHasNewSlot()
 	self:Refresh();
 	self:SetFocusedFrame(self.FramePortraits[1]:GetFrame());
+	-- If showing tutorial, make sure to raise it to the front after opening the focused frame
+	if showTutorial then
+		self.TutorialFrame:Raise();
+	end
 	self:UpdateMouseoverCastUI();
 end
 

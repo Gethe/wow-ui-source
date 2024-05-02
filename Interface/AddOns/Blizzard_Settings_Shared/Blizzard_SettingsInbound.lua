@@ -1,3 +1,5 @@
+-- Inbound files need to load under the global environment
+SwapToGlobalEnvironment();
 
 SettingsInbound = {};
 

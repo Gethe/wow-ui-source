@@ -26,12 +26,12 @@
 		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ChoiceBackground" atlas="talents-heroclass-ring-intro-glow" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+				<Texture parentKey="ChoiceBackground" atlas="talents-heroclass-ring-intro-glow" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="ChoiceBackground2" atlas="talents-heroclass-ring-intro-glow" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+				<Texture parentKey="ChoiceBackground2" atlas="talents-heroclass-ring-intro-glow" useAtlasSize="true" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -441,8 +441,8 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
-						<Alpha childKey="PadlockAnim" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="OUT"/>
-						<Scale childKey="PadlockAnim" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2" smoothing="OUT"/>
+						<Alpha childKey="PadlockAnim" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0" smoothing="OUT"/>
+						<Scale childKey="PadlockAnim" startDelay="0.5" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2" smoothing="OUT"/>
 						<Alpha childKey="BlackCover" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
 						<Alpha childKey="BlackCover2" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
 						<Alpha childKey="Titans" duration="1" order="2" fromAlpha="1" toAlpha="0" smoothing="IN"/>
@@ -555,6 +555,7 @@
 		</Layers>
 		<Scripts>
 			<OnHide method="OnHide"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

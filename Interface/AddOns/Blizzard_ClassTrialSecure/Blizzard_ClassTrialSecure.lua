@@ -1,20 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Jacob
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-setfenv(1, tbl);
-----------------
-
-Import("C_CharacterServices");
-Import("C_SharedCharacterServices");
-Import("pairs");
-Import("Enum");
 
 local function ClassTrialDoCharacterUpgrade(guid, boostType, confirmed)
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
@@ -23,17 +6,17 @@ local function ClassTrialDoCharacterUpgrade(guid, boostType, confirmed)
 			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
 				C_CharacterServices.AssignUpgradeDistribution(guid, 0, 0, 0, boostType, 0);
 			else
-				Outbound.ShowUpgradeLogoutConfirmation(boostType);
+				ClassTrialOutbound.ShowUpgradeLogoutConfirmation(boostType);
 			end
 		else
 			if boostType == C_CharacterServices.GetActiveClassTrialBoostType() then
-				Outbound.ShowUpgradeConfirmation(guid, boostType);
+				ClassTrialOutbound.ShowUpgradeConfirmation(guid, boostType);
 			else
-				Outbound.ShowUpgradeLogoutConfirmation(boostType);
+				ClassTrialOutbound.ShowUpgradeLogoutConfirmation(boostType);
 			end
 		end
 	else
-		Outbound.ShowStoreServices(guid, boostType);
+		ClassTrialOutbound.ShowStoreServices(guid, boostType);
 	end
 end
 
@@ -45,7 +28,7 @@ end
 
 function ClassTrialSecureFrameMixin:OnEvent(event, ...)
 	if event == "PRODUCT_DISTRIBUTIONS_UPDATED" then
-		self:OutboundUpdateBoost();
+		self:ClassTrialOutboundUpdateBoost();
 	end
 end
 
@@ -57,10 +40,10 @@ function ClassTrialSecureFrameMixin:OnAttributeChanged(name, value)
 	elseif name == "upgradecharacter-confirm" then
 		ClassTrialDoCharacterUpgrade(data.guid, data.boostType, true);
 	elseif name == "updateboostpurchasebutton" then
-		self:OutboundUpdateBoost();
+		self:ClassTrialOutboundUpdateBoost();
 	end
 end
 
-function ClassTrialSecureFrameMixin:OutboundUpdateBoost()
-	Outbound.SetClassTrialHasAvailableBoost(C_CharacterServices.HasRequiredBoostForClassTrial());
+function ClassTrialSecureFrameMixin:ClassTrialOutboundUpdateBoost()
+	ClassTrialOutbound.SetClassTrialHasAvailableBoost(C_CharacterServices.HasRequiredBoostForClassTrial());
 end

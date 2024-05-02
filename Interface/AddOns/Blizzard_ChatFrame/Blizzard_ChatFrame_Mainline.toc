@@ -4,7 +4,6 @@
 ## Dependencies: Blizzard_EditMode, Blizzard_ChatFrameBase, Blizzard_VoiceToggleButton
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
 Shared\VoiceChatDots.lua
 Shared\VoiceChatDots.xml
 Shared\VoiceChatTranscriptionButton.lua

@@ -1,103 +1,3 @@
----------------
---NOTE - Please do not change this section
-local _, tbl, secureCapsuleGet = ...;
-if tbl then
-	tbl.SecureCapsuleGet = secureCapsuleGet or SecureCapsuleGet;
-	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
-	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
-	tbl.type = tbl.SecureCapsuleGet("type");
-	tbl.unpack = tbl.SecureCapsuleGet("unpack");
-	tbl.error = tbl.SecureCapsuleGet("error");
-	tbl.pcall = tbl.SecureCapsuleGet("pcall");
-	tbl.pairs = tbl.SecureCapsuleGet("pairs");
-	tbl.setmetatable = tbl.SecureCapsuleGet("setmetatable");
-	tbl.getmetatable = tbl.SecureCapsuleGet("getmetatable");
-	tbl.pcallwithenv = tbl.SecureCapsuleGet("pcallwithenv");
-
-	local function CleanFunction(f)
-		local f = function(...)
-			local function HandleCleanFunctionCallArgs(success, ...)
-				if success then
-					return ...;
-				else
-					tbl.error("Error in secure capsule function execution: "..(...));
-				end
-			end
-			return HandleCleanFunctionCallArgs(tbl.pcallwithenv(f, tbl, ...));
-		end
-		setfenv(f, tbl);
-		return f;
-	end
-
-	local function CleanTable(t, tableCopies)
-		if not tableCopies then
-			tableCopies = {};
-		end
-
-		local cleaned = {};
-		tableCopies[t] = cleaned;
-
-		for k, v in tbl.pairs(t) do
-			if tbl.type(v) == "table" then
-				if ( tableCopies[v] ) then
-					cleaned[k] = tableCopies[v];
-				else
-					cleaned[k] = CleanTable(v, tableCopies);
-				end
-			elseif tbl.type(v) == "function" then
-				cleaned[k] = CleanFunction(v);
-			else
-				cleaned[k] = v;
-			end
-		end
-		return cleaned;
-	end
-
-	local function Import(name)
-		local skipTableCopy = true;
-		local val = tbl.SecureCapsuleGet(name, skipTableCopy);
-		if tbl.type(val) == "function" then
-			tbl[name] = CleanFunction(val);
-		elseif tbl.type(val) == "table" then
-			tbl[name] = CleanTable(val);
-		else
-			tbl[name] = val;
-		end
-	end
-
-	Import("math");
-	Import("string");
-	Import("QUEST_REWARDS");
-	Import("NORMAL_FONT_COLOR");
-	Import("CONTRIBUTION_REWARD_TOOLTIP_TEXT");
-	Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("ISLAND_QUEUE_REWARD_FOR_WINNING");
-	Import("UnitPlayerControlled");
-	Import("UnitCanAttack");
-	Import("UnitIsPVP");
-	Import("UnitReaction");
-	Import("HIGHLIGHT_FONT_COLOR");
-	Import("TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT");
-	Import("TOOLTIP_UPDATE_TIME");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-	Import("PVP_BOUNTY_REWARD_TITLE");
-
-	if tbl.getmetatable(tbl) == nil then
-		local secureEnvMetatable =
-		{
-			__metatable = false,
-			__environment = false,
-		}
-		tbl.setmetatable(tbl, secureEnvMetatable);
-	end
-	setfenv(1, tbl);
-end
-----------------
-
-local envTbl = tbl or _G;
 
 TooltipConstants = {
 	WrapText = true,
@@ -416,7 +316,7 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 		frame.shownMoneyFrames = 0;
 	end
 	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
-	local moneyFrame = envTbl[name];
+	local moneyFrame = _G[name];
 	if ( not moneyFrame ) then
 		frame.numMoneyFrames = frame.numMoneyFrames+1;
 		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
@@ -457,7 +357,7 @@ function GameTooltip_ClearMoney(self)
 
 	local moneyFrame;
 	for i=1, self.shownMoneyFrames do
-		moneyFrame = envTbl[self:GetName().."MoneyFrame"..i];
+		moneyFrame = _G[self:GetName().."MoneyFrame"..i];
 		if(moneyFrame) then
 			moneyFrame:Hide();
 			MoneyFrame_SetType(moneyFrame, "STATIC");

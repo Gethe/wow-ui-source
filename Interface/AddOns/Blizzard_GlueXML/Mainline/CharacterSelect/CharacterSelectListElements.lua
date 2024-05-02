@@ -234,24 +234,23 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 		upgradeIcon.tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
 	elseif (vasServiceState == Enum.VasPurchaseProgress.ApplyingLicense) and (#vasServiceErrors > 0) then
-		upgradeIcon:Show();
-		local tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
-		local desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
-		if StoreFrame_GetVASErrorMessage then
-			local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
-			if info then
-				desc = info.desc;
-
-				if info.other then
-					tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
-				else
-					tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
-				end
-			end
-		end
-		upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
-		upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
-	elseif characterInfo.boostInProgress then
+        upgradeIcon:Show();
+        local tooltip, desc;
+        local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
+        if (info) then
+            if (info.other) then
+                tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+            else
+                tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
+            end
+            desc = info.desc;
+        else
+            tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+            desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+        end
+        upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
+        upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
+    elseif (boostInProgress) then
 		upgradeIcon:Show();
 		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 		upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
@@ -820,8 +819,7 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 		return;
 	end
 
-	local numCharacters = GetNumCharacters();
-	if numCharacters <= 1 then
+	if GetNumCharacters() <= 1 then
 		return;
 	end
 
@@ -839,7 +837,8 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 	local isFirstButton = index == 1;
 	upButton:SetEnabledState(not isFirstButton);
 
-	local isLastButton = index == numCharacters;
+	local last = true;
+	local isLastButton = index == CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
 	downButton:SetEnabledState(not isLastButton);
 end
 
@@ -987,7 +986,9 @@ function CharacterSelectListPaidServiceMixin:OnClick()
 	end
 
 	local characterID = self:GetParent():GetCharacterID();
-	if characterID <= 0 or (characterID > GetNumCharacters()) then
+	local includeEmptySlots = true;
+	local numCharacters = GetNumCharacters(includeEmptySlots);
+	if characterID <= 0 or (characterID > numCharacters) then
 		-- Somehow our character order got borked, scroll to top and get an updated character list.
 		CharacterSelectCharacterFrame.ScrollBox:ScrollToBegin();
 		CharacterCreateFrame:ClearPaidServiceInfo();

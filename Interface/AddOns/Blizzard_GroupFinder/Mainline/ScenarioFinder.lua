@@ -220,7 +220,7 @@ function ScenarioQueueFrameFindGroupButton_Update()
 			end
 		end
 		
-		if ( (IsInGroup() and GetNumGroupMembers() > 1) or isHeroic ) then
+		if (IsInGroup() and GetNumGroupMembers() > 1) then
 			ScenarioQueueFrameFindGroupButton:SetText(JOIN_AS_GROUP);
 		else
 			ScenarioQueueFrameFindGroupButton:SetText(FIND_A_GROUP);

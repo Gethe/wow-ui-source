@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GlueParent, Blizzard_AutoComplete
-## SuppressLocalTableRef: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline
 Mainline\GlueDialog.lua

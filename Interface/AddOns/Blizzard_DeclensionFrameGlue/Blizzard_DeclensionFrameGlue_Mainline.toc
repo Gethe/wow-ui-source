@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GlueXML
-## SuppressLocalTableRef: 1
 ## AllowLoad: glue
 ## AllowLoadGameType: mainline
 Mainline\DeclensionFrame.lua

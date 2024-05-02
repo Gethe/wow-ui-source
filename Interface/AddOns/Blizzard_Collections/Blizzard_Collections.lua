@@ -10,7 +10,11 @@ function CollectionsJournal_GetTab(self)
 	return PanelTemplates_GetSelectedTab(self);
 end
 
-function CollectionsJournal_ValidateTab(tabNum)
+function CollectionsJournal_ValidateTab(tabIndex)
+	if PlayerGetTimerunningSeasonID() and tabIndex == COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS then
+		-- Heirlooms are disabled during timerunning, so don't bother showing the tab
+		return false;
+	end
 	return true;
 end
 

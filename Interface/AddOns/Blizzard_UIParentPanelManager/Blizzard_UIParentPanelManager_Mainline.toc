@@ -3,7 +3,6 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_UIParent
 ## LoadWith: Blizzard_UIParent
-## SuppressLocalTableRef: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Mainline\UIParentPanelManager.lua

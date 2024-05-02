@@ -158,19 +158,6 @@ function UnitPopupMenuCommunitiesGuildMember:GetMenuButtons()
 	}
 end
 
-UnitPopupGuildGuilds = CreateFromMixins(UnitPopupTopLevelMenuMixin);
-UnitPopupManager:RegisterMenu("GUILDS_GUILD", UnitPopupGuildGuilds);
-function UnitPopupGuildGuilds:GetMenuButtons()
-	return {
-		UnitPopupClearCommunityNotificationButtonMixin,
-		UnitPopupGuildInviteButtonMixin, 
-		UnitPopupGuildSettingButtonMixin, 
-		UnitPopupGuildRecruitmentSettingButtonMixin, 
-		UnitPopupCommunityNotificationButtonMixin,
-		UnitPopupGuildGuildsLeaveButtonMixin,
-	}
-end
-
 UnitPopupRafRecruit = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("RAF_RECRUIT", UnitPopupRafRecruit);
 function UnitPopupRafRecruit:GetMenuButtons()

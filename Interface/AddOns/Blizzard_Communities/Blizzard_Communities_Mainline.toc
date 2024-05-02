@@ -1,29 +1,8 @@
 ## Title: Blizzard_Communities
-## RequiredDep: Blizzard_GuildControlUI, Blizzard_TimerunningUtil
+## RequiredDep: Blizzard_SharedXML, Blizzard_GuildControlUI, Blizzard_TimerunningUtil
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 ## AllowLoadGameType: mainline
-## LoadOnDemand: 1
 
-..\Blizzard_SharedXMLBase\Mixin.lua
-..\Blizzard_SharedXMLBase\MathUtil.lua
-..\Blizzard_SharedXMLBase\EnumUtil.lua
-..\Blizzard_SharedXMLBase\TableUtil.lua
-..\Blizzard_SharedXMLBase\Flags.lua
-..\Blizzard_SharedXMLBase\CallbackRegistry.lua
-..\Blizzard_SharedXML\Interpolator.lua
-..\Blizzard_SharedXMLBase\ButtonStateBehavior.lua
-..\Blizzard_SharedXML\Shared\Frame\EventButton.lua
-..\Blizzard_SharedXML\Shared\Frame\EventFrame.lua
-..\Blizzard_SharedXML\Shared\Frame\EventScrollFrame.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollUtil.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollController.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBox.lua
-..\Blizzard_SharedXML\Shared\Scroll\ScrollBar.lua
-..\Blizzard_SharedXML\Shared\Scroll\MinimalScrollBar.lua
-
-..\Blizzard_SharedXML\SecureUIPanelTemplates.lua
-..\Blizzard_SharedXML\Mainline\NineSliceLayouts.lua
-..\Blizzard_SharedXML\NineSlice.lua
 CommunitiesList.xml
 CommunitiesMemberList.xml
 CommunitiesChatFrame.xml
@@ -32,8 +11,6 @@ CommunitiesGuildFinderFrame.xml
 CommunitiesStreams.xml
 CommunitiesAvatarPickerDialog.xml
 CommunitiesAddDialogInsecure.xml
-CommunitiesAddDialog.xml
-CommunitiesAddDialogOutbound.lua
 CommunitiesTabs.xml
 ClubFinderApplicantList.xml
 ClubFinder.xml

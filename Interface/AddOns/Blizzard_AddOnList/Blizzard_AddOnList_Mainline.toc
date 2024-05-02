@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## AllowLoad: Both
-## SuppressLocalTableRef: 1
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: both
 ## AllowLoadGameType: mainline

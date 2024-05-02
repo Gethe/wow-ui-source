@@ -1166,10 +1166,11 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 	frame:SetBagID(id);
 	frame:SetBagSize(size);
 
+	-- We generate our item slots before showing the frame because helptips may try to hook onto specific items
+	frame:UpdateItemSlots();
 	frame:Show();
 	frame:Raise();
 
-	frame:UpdateItemSlots();
 	frame:UpdateName();
 	frame:UpdateBackground();
 	frame:UpdateMiscellaneousFrames();

@@ -3,7 +3,6 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil
 ## LoadFirst: 1
-## SuppressLocalTableRef: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline
 Mainline\Localization.lua

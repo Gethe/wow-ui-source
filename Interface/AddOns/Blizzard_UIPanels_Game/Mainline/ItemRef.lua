@@ -314,7 +314,6 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		local _, ticketId = strsplit(":", link);
 		if ( CommunitiesFrame_IsEnabled() ) then
-			Communities_LoadUI();
 			CommunitiesHyperlink.OnClickLink(ticketId);
 		end
 		return;
@@ -335,7 +334,6 @@ function SetItemRef(link, text, button, chatFrame)
 		if ( CommunitiesFrame_IsEnabled() ) then
 			local _, clubId = strsplit(":", link);
 			clubId = tonumber(clubId);
-			Communities_LoadUI();
 			CommunitiesHyperlink.OnClickReference(clubId);
 		end
 		return;
@@ -349,7 +347,6 @@ function SetItemRef(link, text, button, chatFrame)
 				return;
 			end
 		end
-		Communities_LoadUI();
 		local _, clubFinderId = strsplit(":", link);
 		CommunitiesFrame:ClubFinderHyperLinkClicked(clubFinderId);
 		return;

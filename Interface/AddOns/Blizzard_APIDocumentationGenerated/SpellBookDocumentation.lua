@@ -14,12 +14,13 @@ local SpellBook =
 			{
 				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
-				{ Name = "targetSelf", Type = "bool", Nilable = false, Default = false },
+				{ Name = "targetSelf", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, spell will target the current player; Otherwise, targets the player's current target" } },
 			},
 		},
 		{
 			Name = "ContainsAnyDisenchantSpell",
 			Type = "Function",
+			Documentation = { "Returns true player knows any Disenchant spells" },
 
 			Returns =
 			{
@@ -49,6 +50,7 @@ local SpellBook =
 		{
 			Name = "GetCurrentLevelSpells",
 			Type = "Function",
+			Documentation = { "Returns general, class, and active spec spells that are learned at the specified level" },
 
 			Arguments =
 			{
@@ -80,7 +82,7 @@ local SpellBook =
 
 			Returns =
 			{
-				{ Name = "skillIndex", Type = "luaIndex", Nilable = true },
+				{ Name = "skillIndex", Type = "luaIndex", Nilable = true, Documentation = { "Will be nil if the specified SkillLine could not be found, or if it is not one of the player's tracked skill lines" } },
 			},
 		},
 		{
@@ -134,6 +136,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemLevelLearned",
 			Type = "Function",
+			Documentation = { "Returns the level the spell is learned at; May return a different value if the player is currently Level Linked with another player; Returns 0 if item is not a Spell" },
 
 			Arguments =
 			{
@@ -280,6 +283,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemPassive",
 			Type = "Function",
+			Documentation = { "Returns true if the SpellBookItem is a passive spell; Will always return false if it is not a spell" },
 
 			Arguments =
 			{

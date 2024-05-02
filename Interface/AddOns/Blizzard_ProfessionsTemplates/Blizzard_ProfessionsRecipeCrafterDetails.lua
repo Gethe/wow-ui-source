@@ -286,7 +286,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, h
 	self:SetOutputItemName(recipeInfo.name);
 	self.CraftingChoicesContainer:SetShown(hasFinishingSlots or hasConcentration);
 	self.CraftingChoicesContainer.FinishingReagentSlotContainer:SetShown(hasFinishingSlots);
-	self.CraftingChoicesContainer.ConcentrateContainer:SetShown(hasConcentration);
+	self.CraftingChoicesContainer.ConcentrateContainer:SetShown(hasConcentration and recipeInfo.supportsQualities);
 	self.CraftingChoicesContainer.ConcentrateContainer.ConcentrateToggleButton:SetTransaction(transaction);
 	self.CraftingChoicesContainer.shouldShow = hasFinishingSlots or hasConcentration;
 end
@@ -365,7 +365,7 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 				self.StatLines.DifficultyStatLine:SetValue(isGatheringRecipe and operationInfo.maxDifficulty or operationInfo.baseDifficulty, operationInfo.bonusDifficulty);
 				self.StatLines.SkillStatLine:SetValue(operationInfo.baseSkill, operationInfo.bonusSkill);
 			end
-			self.StatLines.ConcentrationStatLine:SetShown(hasConcentration);
+			self.StatLines.ConcentrationStatLine:SetShown(hasConcentration and supportsQualities);
 			self.StatLines.ConcentrationStatLine:SetProfessionType(professionType);
 
 			local applyConcentration = hasConcentration and self.transaction:IsApplyingConcentration();

@@ -386,6 +386,8 @@ function QuestObjectiveLineMixin:OnGlowAnimFinished()
 			self.state = ObjectiveTrackerAnimLineState.Completed;
 			self:UpdateModule();
 		end
+	else
+		ObjectiveTrackerAnimLineMixin.OnGlowAnimFinished(self);
 	end
 end
 

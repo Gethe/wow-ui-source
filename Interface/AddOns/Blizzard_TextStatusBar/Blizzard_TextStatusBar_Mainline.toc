@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXML
-## SuppressLocalTableRef: 1
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
 Mainline\TextStatusBar.lua

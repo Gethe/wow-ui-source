@@ -5,6 +5,9 @@ function ObjectCache_Create(mixin)
 		Get = function(self, key)
 			local object = self.objects[key];
 			if object then
+				if object.CheckRefresh then
+					object:CheckRefresh();
+				end
 				return object;
 			end
 

@@ -436,14 +436,15 @@ function SpellBookItemMixin:OnIconClick(button)
 
 	local itemType = self.spellBookItemInfo.itemType;
 	local spellID = self.spellBookItemInfo.spellID;
+	local actionID = self.spellBookItemInfo.actionID;
 
 	-- If in click bind mode, handle trying to set bind slot
 	if self.inClickBindMode then
-		if self.canClickBind and spellID and ClickBindingFrame:HasNewSlot() then
+		if self.canClickBind and actionID and ClickBindingFrame:HasNewSlot() then
 			if self.spellBank == Enum.SpellBookSpellBank.Player then
-				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Spell, spellID);
+				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.Spell, actionID);
 			elseif self.spellBank == Enum.SpellBookSpellBank.Pet then
-				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.PetAction, spellID);
+				ClickBindingFrame:AddNewAction(Enum.ClickBindingType.PetAction, actionID);
 			end
 		end
 	-- If using a glyph or vanishing powder, handle trying to apply glyph

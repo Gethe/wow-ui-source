@@ -14,6 +14,21 @@ local function AddCreateButtonDisabledState(button)
 end
 
 
+TimerunningCreateCharacterButtonGlowMixin = {};
+
+function TimerunningCreateCharacterButtonGlowMixin:OnLoad()
+	self:UpdateHeight();
+end
+
+function TimerunningCreateCharacterButtonGlowMixin:OnSizeChanged()
+	self:UpdateHeight();
+end
+
+function TimerunningCreateCharacterButtonGlowMixin:UpdateHeight()
+	self.RotatingGlow.GlowCircle:SetHeight(self.RotatingGlow.GlowCircle:GetWidth());
+end
+
+
 TimerunningFirstTimeDialogMixin = {};
 
 function TimerunningFirstTimeDialogMixin:OnLoad()

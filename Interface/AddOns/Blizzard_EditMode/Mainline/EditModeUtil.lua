@@ -1,3 +1,8 @@
+if not IsInGlobalEnvironment() then
+	-- Don't want to load this file into the secure environment
+	return;
+end
+
 EditModeUtil = { };
 
 function EditModeUtil:IsRightAnchoredActionBar(systemFrame)

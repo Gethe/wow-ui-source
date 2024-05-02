@@ -110,14 +110,14 @@
 						<FontString inherits="GameFontNormalLarge" text="New Spellbook is a Work in Progress, art and visuals are not finalized">
 							<Size y="0"/>
 							<Anchors>
-								<Anchor point="LEFT"/>
+								<Anchor point="RIGHT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Size x="10" y="1"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CategoryTabSystem" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
 				</Anchors>
 			</Frame>
 		</Frames>

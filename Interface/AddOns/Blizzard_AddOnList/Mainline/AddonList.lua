@@ -551,16 +551,23 @@ function AddonListCharacterDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 
 	if ( InGlue() ) then
-		for i=1, GetNumCharacters() do
-			info.text = GetCharacterInfo(i);
-			info.value = GetCharacterInfo(i);
-			info.func = AddonListCharacterDropDown_OnClick;
-			if ( selectedValue == info.value ) then
-				info.checked = 1;
-			else
-				info.checked = nil;
+		local includeEmptySlots = true;
+		local numCharacters = GetNumCharacters(includeEmptySlots);
+		for i=1, numCharacters do
+			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
+
+			-- Check each entry if it's an empty character.
+			if characterInfo then
+				info.text = GetCharacterInfo(i);
+				info.value = GetCharacterInfo(i);
+				info.func = AddonListCharacterDropDown_OnClick;
+				if ( selectedValue == info.value ) then
+					info.checked = 1;
+				else
+					info.checked = nil;
+				end
+				UIDropDownMenu_AddButton(info);
 			end
-			UIDropDownMenu_AddButton(info);
 		end
 	else
 		info.text = UnitName("player")

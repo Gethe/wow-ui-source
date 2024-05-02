@@ -1,6 +1,10 @@
 -- Note: Currently, nothing about this thing supports panning, so if we ever enable panning in the Class Talents frame, work will be needed to move this accordingly
 HeroTalentsContainerMixin = {};
 
+function HeroTalentsContainerMixin:OnLoad()
+	HeroTalentsUnlockedAnimFrame.Anim:SetScript("OnFinished", GenerateClosure(self.OnHeroTalentsUnlockedAnimFinished, self));
+end
+
 function HeroTalentsContainerMixin:Init(talentFrame, specSelectionDialog)
 	self.talentFrame = talentFrame;
 	self.specSelectionDialog = specSelectionDialog;
@@ -191,6 +195,7 @@ function HeroTalentsContainerMixin:UpdateHeroTalentUI()
 	end
 
 	self:UpdateHeroTalentsUnlockedAnim();
+	self:UpdateChoiceGlowAnim();
 
 	self:MarkHeroTalentUIClean();
 
@@ -300,6 +305,20 @@ function HeroTalentsContainerMixin:UpdateHeroTalentsUnlockedAnim()
 		self.playedUnlockedAnim = true;
 		HeroTalentsUnlockedAnimFrame:PlayAnim(self:GetTalentFrame():GetClassID());
 	end
+end
+
+function HeroTalentsContainerMixin:UpdateChoiceGlowAnim()
+	-- Prevent the choice glow anim from playing at the same time as the unlocked anim.
+	if self:IsDisplayingHeroSpecChoices() and not HeroTalentsUnlockedAnimFrame.Anim:IsPlaying() then
+		self.HeroSpecButton.ChoiceGlowAnim:Play();
+	else
+		self.HeroSpecButton.ChoiceGlowAnim:Stop();
+	end
+end
+
+function HeroTalentsContainerMixin:OnHeroTalentsUnlockedAnimFinished()
+	-- Once the unlocked anim finishes start playing the choice glow anim.
+	self:UpdateChoiceGlowAnim();
 end
 
 function HeroTalentsContainerMixin:SetExpanded(isExpanded)
@@ -485,7 +504,6 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 		self.areChoicesActive = areChoicesActive;
 		self.ChoiceBorder:SetShown(self.areChoicesActive);
 		self.ChoiceBackground:SetShown(self.areChoicesActive);
-		self.ChoiceGlowAnim:Play();
 		self.Border:SetShown(not self.areChoicesActive)
 	end
 

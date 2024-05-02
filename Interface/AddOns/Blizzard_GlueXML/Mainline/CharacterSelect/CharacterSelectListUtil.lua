@@ -8,7 +8,6 @@ CharacterSelectListUtil = {
 
 -- for character reordering: key = button index, value = character ID
 local s_characterReorderTranslation = {};
-local s_characterOrderChanged = false;
 
 function CharacterSelectListUtil.CanReorder()
 	return (CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() == "") and
@@ -43,8 +42,7 @@ function CharacterSelectListUtil.GenerateCharactersDataProvider()
 
 			for index = 1, groupData.characterSlots do
 				local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-				local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
-				local isEmpty = characterInfo == nil;
+				local isEmpty = characterID == 0;
 
 				local characterData = {
 					characterID = characterID,
@@ -97,16 +95,20 @@ function CharacterSelectListUtil.GetIndexFromCharID(charID)
 end
 
 function CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize)
-	if listSize and s_characterReorderTranslation then
-		s_characterOrderChanged = (listSize > #s_characterReorderTranslation);
-	end
-
-	listSize = listSize or GetNumCharacters();
+	local includeEmptySlots = true;
+	listSize = listSize or GetNumCharacters(includeEmptySlots);
 	s_characterReorderTranslation = {};
 
 	if listSize > 0 then
 		for i = 1, listSize do
-			tinsert(s_characterReorderTranslation, i);
+			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
+
+			-- Check each entry if it's an empty character.
+			if characterInfo == nil then
+				tinsert(s_characterReorderTranslation, 0);
+			else
+				tinsert(s_characterReorderTranslation, i);
+			end
 		end
 	end
 end
@@ -117,15 +119,11 @@ function CharacterSelectListUtil.CheckBuildCharIndexToIDMapping()
 	end
 end
 
-function CharacterSelectListUtil.CheckSaveCharacterOrder()
-	if s_characterOrderChanged then
-		SaveCharacterOrder(s_characterReorderTranslation);
-		s_characterOrderChanged = false;
-	end
+function CharacterSelectListUtil.SaveCharacterOrder()
+	SaveCharacterOrder(s_characterReorderTranslation);
 end
 
 function CharacterSelectListUtil.UpdateCharacterOrderFromDataProvider(dataProvider)
-	s_characterOrderChanged = true;
 	s_characterReorderTranslation = {};
 	for _, elementData in dataProvider:EnumerateEntireRange() do
 		if elementData.isGroup then
@@ -136,10 +134,11 @@ function CharacterSelectListUtil.UpdateCharacterOrderFromDataProvider(dataProvid
 			tinsert(s_characterReorderTranslation, elementData.characterID);
 		end
 	end
+
+	CharacterSelect.createIndex = #s_characterReorderTranslation + 1;
 end
 
 function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
-	s_characterOrderChanged = true;
 	targetIndex = Wrap(targetIndex, #s_characterReorderTranslation);
 
 	-- TODO:: Fix up CharacterSelect.selectedIndex. For now, we're forced to use the existing global state.
@@ -192,6 +191,8 @@ function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
 		table.remove(s_characterReorderTranslation, originIndex);
 		table.insert(s_characterReorderTranslation, targetIndex, value);
 	end
+
+	CharacterSelect.createIndex = #s_characterReorderTranslation + 1;
 
 	-- Get the origin frame element data index, in case we need it later for post move animations.
 	local originElementDataIndex = nil;
@@ -402,6 +403,80 @@ function CharacterSelectListUtil.UpdateCharacter(frame, characterID)
 		frame:SetData(updatedCharacterData);
 	end
 end
+
+function CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last)
+	local index = 0;
+
+	local enumerateFunc = GenerateClosure(last and CharacterSelectCharacterFrame.ScrollBox.ReverseEnumerateDataProviderEntireRange or CharacterSelectCharacterFrame.ScrollBox.EnumerateDataProviderEntireRange, CharacterSelectCharacterFrame.ScrollBox);
+	local ipairsFunc = last and ipairs_reverse or ipairs;
+
+	for _, elementData in enumerateFunc() do
+		if elementData.isGroup then
+			local characterID;
+			for _, data in ipairsFunc(elementData.characterData) do
+				if not data.isEmpty then
+					characterID = data.characterID;
+					break;
+				end
+			end
+
+			if characterID then
+				index = CharacterSelectListUtil.GetIndexFromCharID(characterID);
+				break;
+			end
+		elseif elementData.characterID then
+			index = CharacterSelectListUtil.GetIndexFromCharID(elementData.characterID);
+			break;
+		end
+	end
+
+	return index;
+end
+
+function CharacterSelectListUtil.GetNextCharacterIndex(direction)
+	local targetIndex = CharacterSelect.selectedIndex + direction;
+
+	local function EvaluateElementData(elementData, iter)
+		if elementData.isGroup then
+			for _, data in iter(elementData.characterData) do
+				local characterIndex = CharacterSelectListUtil.GetIndexFromCharID(data.characterID);
+				if characterIndex == targetIndex then
+					if data.isEmpty then
+						targetIndex = targetIndex + direction;
+					else
+						return true;
+					end
+				end
+			end
+		elseif elementData.characterID then
+			local characterIndex = CharacterSelectListUtil.GetIndexFromCharID(elementData.characterID);
+			if characterIndex == targetIndex then
+				return true;
+			end
+		end
+
+		return false;
+	end;
+
+	if direction > 0 then
+		for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
+			if EvaluateElementData(elementData, ipairs) then
+				return targetIndex;
+			end
+		end
+		local last = false;
+		return CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
+	else
+		for _, elementData in CharacterSelectCharacterFrame.ScrollBox:ReverseEnumerateDataProviderEntireRange() do
+			if EvaluateElementData(elementData, ipairs_reverse) then
+				return targetIndex;
+			end
+		end
+		local last = true;
+		return CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
+	end
+end
+
 
 function CharacterSelectListUtil:GetVASInfoForGUID(guid)
 	if not guid then

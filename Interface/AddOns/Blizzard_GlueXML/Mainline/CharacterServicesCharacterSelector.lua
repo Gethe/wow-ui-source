@@ -21,7 +21,7 @@ end
 
 function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 	CharacterSelectCharacterFrame:SetScrollEnabled(true);
-	CharacterSelectListUtil.CheckSaveCharacterOrder();
+	CharacterSelectListUtil.SaveCharacterOrder();
 
 	self:SetBlock(block);
 

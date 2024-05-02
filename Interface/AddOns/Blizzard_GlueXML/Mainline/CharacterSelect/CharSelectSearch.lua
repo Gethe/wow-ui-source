@@ -124,7 +124,7 @@ function CharSelectSearchMixin:GenerateFilteredCharacters(dataProvider)
 		if elementData.isGroup then
 			for _, characterElementData in ipairs(elementData.characterData) do
 				local data = CharacterSelectUtil.GetCharacterInfoTable(characterElementData.characterID);
-				if CheckCharacterDataForMatch(data, words) then
+				if data and CheckCharacterDataForMatch(data, words) then
 					dataProvider:Insert(characterElementData);
 				end
 			end

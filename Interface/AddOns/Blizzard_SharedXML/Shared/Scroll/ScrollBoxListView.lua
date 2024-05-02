@@ -1,29 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-Import("C_XMLUtil");
-Import("tinsert");
-Import("ipairs");
-Import("math");
-Import("wipe");
-
-end
----------------
 
 local InvalidationReason = EnumUtil.MakeEnum("DataProviderReassigned", "DataProviderContentsChanged");
 
@@ -248,6 +222,14 @@ end
 
 function ScrollBoxListViewMixin:EnumerateDataProvider(indexBegin, indexEnd)
 	return self:GetDataProvider():Enumerate(indexBegin, indexEnd);
+end
+
+function ScrollBoxListViewMixin:ReverseEnumerateDataProviderEntireRange()
+	return self:GetDataProvider():ReverseEnumerateEntireRange();
+end
+
+function ScrollBoxListViewMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetDataProvider():ReverseEnumerate(indexBegin, indexEnd);
 end
 
 function ScrollBoxListViewMixin:GetDataProviderSize()

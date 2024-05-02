@@ -12,6 +12,11 @@
 			<Anchor point="TOP" x="0" y="-41"/>
 		</Anchors>
 		<Frames>
+			<Frame parentKey="MaximizeMinimizeButton" inherits="MaximizeMinimizeButtonFrameTemplate" frameLevel="5510">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
 				<KeyValues>
 					<KeyValue key="minTabWidth" value="100" type="number"/>

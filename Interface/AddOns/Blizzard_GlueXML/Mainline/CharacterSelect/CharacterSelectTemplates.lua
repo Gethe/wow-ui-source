@@ -4,9 +4,20 @@ CharacterSelectListExpandMixin = {};
 function CharacterSelectListExpandMixin:OnLoad()
 	ExpandBarMixin.OnLoad(self);
 
-	self.ExpandButton:ClearAllPoints();
-	self.ExpandButton:SetPoint("RIGHT", 0, 0);
-	self.ExpandButton:SetSize(46, 46);
+	local expandButton = self.ExpandButton;
+
+	expandButton:ClearAllPoints();
+	expandButton:SetPoint("RIGHT", 0, 0);
+	expandButton:SetSize(42, 42);
+
+	expandButton.highlightExpandedAtlas = "128-RedButton-ArrowDown-Highlight";
+	expandButton.highlightCollapsedAtlas = "128-RedButton-ArrowUpGlow-Highlight";
+	expandButton.normalExpandedAtlas = "128-RedButton-ArrowDown";
+	expandButton.normalCollapsedAtlas = "128-RedButton-ArrowUpGlow";
+	expandButton.pushedExpandedAtlas = "128-RedButton-ArrowDown-Pressed";
+	expandButton.pushedCollapsedAtlas = "128-RedButton-ArrowUpGlow-Pressed";
+	expandButton.disabledExpandedAtlas = "128-RedButton-ArrowDown-Disabled";
+	expandButton.disabledCollapsedAtlas = "128-RedButton-ArrowUpGlow-Disabled";
 end
 
 

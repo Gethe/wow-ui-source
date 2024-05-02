@@ -1,21 +1,22 @@
---If any of these functions call out of this file, they should be using securecall. Be very wary of using return values.
-local _, tbl = ...;
-local Outbound = {};
-tbl.Outbound = Outbound;
-tbl = nil;	--This file shouldn't be calling back into secure code.
+-- Outbound loads under the global environment but needs to put the outbound table into the secure environment
+local secureEnv = GetCurrentEnvironment();
+SwapToGlobalEnvironment();
+local WowTokenOutbound = {};
+secureEnv.WowTokenOutbound = WowTokenOutbound;
+secureEnv = nil;	--This file shouldn't be calling back into secure code.
 
-function Outbound.RedeemFailed(result)
+function WowTokenOutbound.RedeemFailed(result)
 	securecall("RedeemFailed", result);
 end
 
-function Outbound.AuctionWowTokenUpdate()
+function WowTokenOutbound.AuctionWowTokenUpdate()
 	securecall("AuctionWowToken_UpdateMarketPrice");
 end
 
-function Outbound.RecruitAFriendTryPlayClaimRewardFanfare()
+function WowTokenOutbound.RecruitAFriendTryPlayClaimRewardFanfare()
 	securecall("RecruitAFriend_TryPlayClaimRewardFanfare");
 end
 
-function Outbound.RecruitAFriendTryCancelAutoClaim()
+function WowTokenOutbound.RecruitAFriendTryCancelAutoClaim()
 	securecall("RecruitAFriend_TryCancelAutoClaim");
 end

@@ -23,8 +23,10 @@ function PRCCharacterSelectBlock:SetResultsShown(shown)
 		if result.characterButtonID then
 			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(result.characterButtonID);
 
-			-- race
-			self.frame.ResultsFrame.CurrentRaceLabel:SetText(characterInfo.raceName);
+			if characterInfo then
+				-- race
+				self.frame.ResultsFrame.CurrentRaceLabel:SetText(characterInfo.raceName);
+			end
 		end
 	end
 end

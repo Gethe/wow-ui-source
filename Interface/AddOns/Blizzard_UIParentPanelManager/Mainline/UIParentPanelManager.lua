@@ -46,8 +46,9 @@ bottomClampOverride: [number]  --  (default 140) Custom bottom-most edge that a 
 maximizePoint: [string]  --  [WARNING: Don't use this; this maximize/restore flow is very one-off specific to the World Map] Point that's passed to SetPoint if the frame is maximized via MaximizeUIPanel.
 checkFit: [0,1]  --  If 1, frame is scaled down if needed to fit within the current size of the UIParent. This can help large frames stay visible on varying screen sizes/UI scales.
 checkFitExtraWidth: [number]  --  (default 20) Extra buffer width added when checking the frame's current size when rescaling for checkFit.
-checkFitExtraHeight: [number]  --  (default 20) Extra buffer height added when checking the frame's current size when rescaling for checkFit. 
+checkFitExtraHeight: [number]  --  (default 20) Extra buffer height added when checking the frame's current size when rescaling for checkFit.
 autoMinimizeWithOtherPanels: [bool] -- If true, frame will be automatically minimized if being shown with other UI panels, maximized if alone; requires setMinimizedFunc to also be set.
+autoMinimizeOnCondition: [bool|func(frame)] -- Bool or Funcion that returns a bool to indicate whether frame should be minimized; Requires setMinimizedFunc to be set; If autoMinimizeWithOtherPanels is also true, frame will be minimized if this func returns true OR other frames are showing
 setMinimizedFunc: [func(frame, bool)] -- Called to minimize/maximize the frame as part of auto minimize logic
 ]]--
 
@@ -733,8 +734,9 @@ function FramePositionDelegate:UpdateScaleForFit(frame)
 end
 
 function FramePositionDelegate:EvaluteAutoMinimize(frame)
-	local isAutoMinimizable = GetUIPanelAttribute(frame, "autoMinimizeWithOtherPanels");
-	if (not isAutoMinimizable) then
+	local autoMinimizeWithPanels = GetUIPanelAttribute(frame, "autoMinimizeWithOtherPanels");
+	local autoMinimizeCondition = GetUIPanelAttribute(frame, "autoMinimizeOnCondition");
+	if (not autoMinimizeWithPanels and autoMinimizeCondition == nil) then
 		return;
 	end
 	local setMinimizedFunc = GetUIPanelAttribute(frame, "setMinimizedFunc");
@@ -742,8 +744,21 @@ function FramePositionDelegate:EvaluteAutoMinimize(frame)
 		return;
 	end
 
-	-- Currently only autoMinimize option is if any other panels are open; may expand to other condition as well in the future
-	local shouldBeMinimized = self:IsAnyOtherUIPanelOpen(frame);
+	-- Currently evaluating "Auto Minimize" options as "OR" conditions, so check for any of them being met
+
+	local shouldBeMinimized = false;
+	if autoMinimizeWithPanels and self:IsAnyOtherUIPanelOpen(frame) then
+		shouldBeMinimized = true;
+	end
+
+	if not shouldBeMinimized and autoMinimizeCondition ~= nil then
+		if type(autoMinimizeCondition) == "function" then
+			shouldBeMinimized = autoMinimizeCondition(frame);
+		else
+			shouldBeMinimized = autoMinimizeCondition;
+		end
+	end
+
 	setMinimizedFunc(frame, shouldBeMinimized);
 end
 

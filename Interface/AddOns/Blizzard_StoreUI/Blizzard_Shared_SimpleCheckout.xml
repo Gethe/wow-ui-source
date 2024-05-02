@@ -9,7 +9,7 @@
 	<Line name="SimpleCheckoutOutsideBorder" virtual="true" inherits="SimpleCheckoutBorder">
 		<Color r="0.0" g="0.0" b="0.0" a="1.0"/>
 	</Line>
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
 		<Checkout name="SimpleCheckout" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" IMEFont="ChatFontNormal" toplevel="true" hidden="true" mixin="SimpleCheckoutMixin">
 			<Anchors>
 				<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent"/>

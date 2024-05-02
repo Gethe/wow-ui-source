@@ -644,9 +644,10 @@
 						<NormalTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" />
 						<HighlightTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" alphaMode="ADD" />
 					</Button>
-					<Button name="CharacterSelectBackButton" inherits="GlueButtonBigTemplate" text="CHARACTER_SELECT_BACK">
+					<Button name="CharacterSelectBackButton" inherits="GlueButtonTemplate" text="CHARACTER_SELECT_BACK">
+						<Size x="188" y="42"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="46" y="28"/>
+							<Anchor point="BOTTOMLEFT" x="12" y="12"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -663,7 +664,7 @@
 					<Button parentKey="ListToggle" mixin="CharacterSelectListExpandMixin" inherits="ExpandBarTemplate">
 						<Size x="385" y="50"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-10" y="21"/>
+							<Anchor point="BOTTOMRIGHT" x="-10" y="8"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -676,7 +677,7 @@
 							<Layer level="BORDER">
 								<FontString parentKey="Text" inherits="GlueFontHighlightLarge" text="CHARACTER_SELECT_ALL_CHARACTERS">
 									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.ExpandButton" relativePoint="LEFT" x="-9" y="-1"/>
+										<Anchor point="RIGHT" relativeKey="$parent.ExpandButton" relativePoint="LEFT" x="-10" y="-1"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -689,15 +690,15 @@
 						<KeyValues>
 							<KeyValue key="spacing" value="0" type="number"/>
 							<KeyValue key="minimumWidth" value="1" type="number"/>
-							<KeyValue key="minimumHeight" value="60" type="number"/>
+							<KeyValue key="minimumHeight" value="68" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-4"/>
+							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="CharacterList" name="CharacterSelectCharacterFrame" inherits="CharacterSelectListTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.VASTokenContainer" relativePoint="BOTTOMRIGHT" x="0" y="-18"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.VASTokenContainer" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ListToggle" relativePoint="TOPRIGHT" x="0" y="5"/>
 						</Anchors>
 					</Frame>

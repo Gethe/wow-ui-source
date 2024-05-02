@@ -1,74 +1,4 @@
 
----------------
---NOTE - Please do not change this section without understanding the full implications of the secure environment
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-setfenv(1, tbl);
-----------------
-
---Imports
-Import("COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL");
-Import("COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL_NO_FACTION");
-Import("COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION");
-Import("COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION_NO_FACTION");
-Import("COMMUNITIES_ADD_DIALOG_CREATE_BNET_LABEL");
-Import("COMMUNITIES_ADD_DIALOG_CREATE_BNET_DESCRIPTION");
-Import("COMMUNITIES_ADD_DIALOG_INVITE_LINK_LABEL");
-Import("COMMUNITIES_ADD_DIALOG_INVITE_LINK_DESCRIPTION");
-Import("COMMUNITIES_ADD_DIALOG_INVITE_LINK_JOIN");
-Import("COMMUNITIES_ADD_DIALOG_BATTLE_NET_LABEL");
-Import("COMMUNITIES_ADD_DIALOG_WOW_LABEL");
-Import("COMMUNITIES_ADD_DIALOG_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_WOW_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_BATTLE_NET_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_ICON_SELECTION_BUTTON");
-Import("COMMUNITIES_CREATE_DIALOG_AVATAR_PICKER_INSTRUCTIONS");
-Import("COMMUNITIES_CREATE_DIALOG_NAME_INSTRUCTIONS");
-Import("COMMUNITIES_CREATE_DIALOG_NAME_INSTRUCTIONS_BATTLE_NET");
-Import("COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS");
-Import("COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS_BATTLE_NET");
-Import("COMMUNITIES_CREATE_COMMUNITY");
-Import("COMMUNITIES_CREATE_GROUP");
-Import("COMMUNITIES_CREATE_DIALOG_TYPE_LABEL");
-Import("COMMUNITIES_SETTINGS_NAME_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_NAME_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_NAME_LABEL_BATTLE_NET");
-Import("COMMUNITIES_CREATE_DIALOG_DESCRIPTION_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_DESCRIPTION_LABEL_BATTLE_NET");
-Import("COMMUNITIES_CREATE_DIALOG_ICON_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_LABEL");
-Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS");
-Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP");
-Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_CHARACTER");
-Import("COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR");
-Import("COMMUNITIES_CREATE_DIALOG_NAME_ERROR");
-Import("COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR");
-Import("COMMUNITY_TYPE_UNAVAILABLE");
-Import("CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL");
-Import("CANCEL");
-Import("FEATURE_NOT_AVAILBLE_PANDAREN");
-Import("OKAY");
-Import("RED_FONT_COLOR");
-
-Import("C_Club");
-Import("CreateFrame");
-Import("Enum");
-Import("FrameUtil");
-Import("math");
-Import("PlaySound");
-Import("SOUNDKIT");
-Import("strlenutf8");
-Import("tonumber");
-Import("UnitFactionGroup");
-Import("IsVeteranTrialAccount");
-Import("C_ClassTrial");
-
 CommunitiesAddDialogMixin = {};
 
 function CommunitiesAddDialogMixin:OnShow()
@@ -168,7 +98,7 @@ end
 
 function CommunitiesCreateDialogMixin:OnHide()
 	self:SetAttribute("shown", false);
-	Outbound.HideAvatarPicker();
+	CommunitiesOutbound.HideAvatarPicker();
 end
 
 function CommunitiesCreateDialogMixin:CreateCommunity()
@@ -192,17 +122,17 @@ end
 function CommunitiesAddDialogWoWButton_OnEnter(self)
 	if not self:IsEnabled() then
 		if not C_Club.ShouldAllowClubType(Enum.ClubType.Character) then
-			Outbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
+			CommunitiesOutbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
 		elseif IsVeteranTrialAccount() then 
-			Outbound.ShowGameTooltip(CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL, self:GetRight(), self:GetTop());
+			CommunitiesOutbound.ShowGameTooltip(CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL, self:GetRight(), self:GetTop());
 		else
-			Outbound.ShowGameTooltip(FEATURE_NOT_AVAILBLE_PANDAREN, self:GetRight(), self:GetTop());
+			CommunitiesOutbound.ShowGameTooltip(FEATURE_NOT_AVAILBLE_PANDAREN, self:GetRight(), self:GetTop());
 		end
 	end
 end
 
 function CommunitiesAddDialogWoWButton_OnLeave(self)
-	Outbound.HideGameTooltip();
+	CommunitiesOutbound.HideGameTooltip();
 end
 
 function CommunitiesAddDialogWoWButton_OnClick(self)
@@ -215,7 +145,7 @@ end
 
 function CommunitiesAddDialogBattleNetButton_OnEnter(self)
 	if not self:IsEnabled() then
-		Outbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
+		CommunitiesOutbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
 	end
 end
 
@@ -239,7 +169,7 @@ end
 function CommunitiesCreateDialogChangeAvatarButton_OnClick(self)
 	local communitiesCreateDialog = self:GetParent();
 	communitiesCreateDialog:Hide();
-	Outbound.ShowAvatarPicker(communitiesCreateDialog:GetClubType(), communitiesCreateDialog:GetAvatarId());
+	CommunitiesOutbound.ShowAvatarPicker(communitiesCreateDialog:GetClubType(), communitiesCreateDialog:GetAvatarId());
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
 
@@ -265,18 +195,18 @@ function CommunitiesCreateDialogCreateButton_OnEnter(self)
 	if nameErrorCode ~= nil and shortNameErrorCode ~= nil then
 		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
 		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
-		Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR:format(nameError, shortNameError), self:GetRight(), self:GetTop(), true);
+		CommunitiesOutbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_NAME_AND_SHORT_NAME_ERROR:format(nameError, shortNameError), self:GetRight(), self:GetTop(), true);
 	elseif nameErrorCode ~= nil then
 		local nameError = RED_FONT_COLOR:WrapTextInColorCode(nameErrorCode);
-		Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_NAME_ERROR:format(nameError), self:GetRight(), self:GetTop(), true);
+		CommunitiesOutbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_NAME_ERROR:format(nameError), self:GetRight(), self:GetTop(), true);
 	elseif shortNameErrorCode ~= nil then
 		local shortNameError = RED_FONT_COLOR:WrapTextInColorCode(shortNameErrorCode);
-		Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR:format(shortNameError), self:GetRight(), self:GetTop(), true);
+		CommunitiesOutbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_ERROR:format(shortNameError), self:GetRight(), self:GetTop(), true);
 	else
-		Outbound.HideGameTooltip();
+		CommunitiesOutbound.HideGameTooltip();
 	end
 end
 
 function CommunitiesCreateDialogCreateButton_OnLeave(self)
-	Outbound.HideGameTooltip();
+	CommunitiesOutbound.HideGameTooltip();
 end

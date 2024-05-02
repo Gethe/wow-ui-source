@@ -1422,7 +1422,7 @@
 							<Anchor point="TOPLEFT" x="224" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnShow function="LFGListPVEStub_OnShow"/>
+							<OnShow function="LFGListPVPStub_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame parentKey="HonorInset" inherits="InsetFrameTemplate" useParentLevel="true" mixin="PVPUIHonorInsetMixin">

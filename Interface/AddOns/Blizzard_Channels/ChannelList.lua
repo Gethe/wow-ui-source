@@ -98,7 +98,6 @@ function ChannelListMixin:Update()
 	-- Then add community streams
 	local clubs = C_Club.GetSubscribedClubs();
 
-	Communities_LoadUI();
 	CommunitiesFrame.CommunitiesList:PredictFavorites(clubs);
 	CommunitiesUtil.SortClubs(clubs);
 

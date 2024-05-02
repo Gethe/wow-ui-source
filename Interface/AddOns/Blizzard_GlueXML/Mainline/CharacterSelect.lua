@@ -1,8 +1,5 @@
 CHARACTER_FACING_INCREMENT = 2;
 
-MAX_CHARACTERS_DISPLAYED = 12;
-MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
-
 MOVING_TEXT_OFFSET = 12;
 DEFAULT_TEXT_OFFSET = 0;
 AUTO_DRAG_TIME = 0.5;				-- in seconds
@@ -14,7 +11,6 @@ PAID_CHARACTER_CUSTOMIZATION = 1;
 PAID_RACE_CHANGE = 2;
 PAID_FACTION_CHANGE = 3;
 
-local STORE_IS_LOADED = false;
 local ADDON_LIST_RECEIVED = false;
 local ACCOUNT_SAVE_IS_LOADED = false;
 CAN_BUY_RESULT_FOUND = false;
@@ -27,14 +23,6 @@ local characterCopyRegions = {
 	[4] = TAIWAN,
 	[5] = CHINA,
 };
-
-local function UpdateMaxCharactersDisplayed()
-	if ( (CanCreateCharacter() or CharacterSelect.undeleting) and GetNumCharacters() >= MAX_CHARACTERS_DISPLAYED_BASE ) then
-		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
-	else
-		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
-	end
-end
 
 CharacterSelectFrameMixin = { };
 function CharacterSelectFrameMixin:OnLoad()
@@ -220,11 +208,6 @@ function CharacterSelectFrameMixin:OnShow()
     C_StoreSecure.GetProductList();
     C_StoreGlue.UpdateVASPurchaseStates();
 
-    if (not STORE_IS_LOADED) then
-        STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
-        C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
-    end
-
     CharacterSelect_ConditionallyLoadAccountSaveUI();
 
 	CharacterSelectServerAlertFrame:UpdateEnabled();
@@ -254,7 +237,7 @@ end
 function CharacterSelectFrameMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 
-    CharacterSelectListUtil.CheckSaveCharacterOrder();
+    CharacterSelectListUtil.SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
     CharacterRenameDialog:Hide();
     AccountReactivate_CloseDialogs();
@@ -363,7 +346,7 @@ function CharacterSelectFrameMixin:OnUpdate(elapsed)
         CharacterServicesMaster_OnCharacterListUpdate();
     end
 
-    if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
+    if (StoreFrame_WaitingForCharacterListUpdate()) then
         StoreFrame_OnCharacterListUpdate();
     end
 
@@ -412,7 +395,6 @@ end
 
 function CharacterSelectFrameMixin:OnEvent(event, ...)
     if ( event == "CHARACTER_LIST_UPDATE" ) then
-
 		if C_GameEnvironmentManager.GetCurrentGameEnvironment() == Enum.GameEnvironment.WoWLabs then
 			self.waitingforCharacterList = false;
 			return;
@@ -424,20 +406,22 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
         if listSize then
 			CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize);
         end
-        local numChars = GetNumCharacters();
-        if (self.undeleting and numChars == 0) then
-            CharacterSelect_EndCharacterUndelete();
-            self.undeleteNoCharacters = true;
-            return;
-        elseif (not self.connectingToPlunderstorm and not self.backFromCharCreate and numChars == 0) then
-            if (IsKioskGlueEnabled()) then
-                GlueParent_SetScreen("kioskmodesplash");
-            else
-                GlueParent_SetScreen("charcreate");
-				CharacterSelect_ShowTimerunningChoiceWhenActive();
-            end
-            return;
-        end
+
+        if GetNumCharacters() == 0 then
+			if self.undeleting then
+				CharacterSelect_EndCharacterUndelete();
+				self.undeleteNoCharacters = true;
+				return;
+			elseif (not self.connectingToPlunderstorm and not self.backFromCharCreate) then
+				if (IsKioskGlueEnabled()) then
+					GlueParent_SetScreen("kioskmodesplash");
+				else
+					GlueParent_SetScreen("charcreate");
+					CharacterSelect_ShowTimerunningChoiceWhenActive();
+				end
+				return;
+			end
+		end
 
         self.backFromCharCreate = false;
 
@@ -483,7 +467,6 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
 		    CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
 		end
-		UpdateMaxCharactersDisplayed();
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 
 		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
@@ -563,8 +546,12 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
     elseif ( event == "CHARACTER_DELETION_RESULT" ) then
         local success, errorToken = ...;
         if ( success ) then
-			local noCreate = true;
-            CharacterSelect_SelectCharacter(1, noCreate);
+			local last = false;
+			local firstCharacterIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
+			if firstCharacterIndex then
+				local noCreate = true;
+				CharacterSelect_SelectCharacter(firstCharacterIndex, noCreate);
+			end
             GlueDialog_Hide();
         else
             GlueDialog_Show("OKAY", _G[errorToken]);
@@ -712,24 +699,25 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.showSocialContract = false;
 	end
 
-    local numChars = GetNumCharacters();
-
-    if ( CharacterSelect.undeleteChanged ) then
+    if CharacterSelect.undeleteChanged then
         CharacterSelect.undeleteChanged = false;
     end
 
-    UpdateMaxCharactersDisplayed();
-
+	local includeEmptySlots = true;
+	local numChars = GetNumCharacters(includeEmptySlots);
 	if CharacterSelect.selectLast then
-		CharacterSelect.selectedIndex = numChars;
+		local last = true;
+		CharacterSelect.selectedIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
 		CharacterSelect.selectLast = false;
 	elseif CharacterSelect.selectGuid or CharacterSelect.undeleteGuid then
 		for i = 1, numChars do
-			local guid = GetCharacterGUID(i);
-			if guid == CharacterSelect.selectGuid or guid == CharacterSelect.undeleteGuid then
+			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
+
+			-- Check each entry if it's an empty character.
+			if characterInfo and (characterInfo.guid == CharacterSelect.selectGuid or characterInfo.guid == CharacterSelect.undeleteGuid) then
 				CharacterSelect.selectedIndex = i;
-				if guid == CharacterSelect.undeleteGuid then
-					local serviceInfo = GetServiceCharacterInfo(guid); 
+				if characterInfo.guid == CharacterSelect.undeleteGuid then
+					local serviceInfo = GetServiceCharacterInfo(characterInfo.guid);
 					CharacterSelect.undeleteSucceeded = true;
 					CharacterSelect.undeletePendingRename = serviceInfo.hasNameChange;
 				end
@@ -890,7 +878,7 @@ function CharacterSelect_EnterWorld()
         return;
     end
 
-	CharacterSelectListUtil.CheckSaveCharacterOrder();
+	CharacterSelectListUtil.SaveCharacterOrder();
 	local serviceInfo = GetServiceCharacterInfo(GetCharacterGUID(GetCharacterSelection()));
 
     if ( serviceInfo.isLocked ) then
@@ -906,7 +894,7 @@ function CharacterSelect_EnterWorld()
 end
 
 function CharacterSelect_Exit()
-	CharacterSelectListUtil.CheckSaveCharacterOrder();
+	CharacterSelectListUtil.SaveCharacterOrder();
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
     C_Login.DisconnectFromServer();
 end
@@ -927,7 +915,7 @@ function CharacterSelect_Delete()
 
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
     if ( CharacterSelect.selectedIndex > 0 ) then
-		CharacterSelectListUtil.CheckSaveCharacterOrder();
+		CharacterSelectListUtil.SaveCharacterOrder();
         CharacterDeleteDialog:Show();
     end
 end
@@ -995,19 +983,12 @@ function CharacterSelect_ManageAccount()
 end
 
 function CharacterSelect_RotateSelection(direction)
-	local numCharacters = GetNumCharacters();
-	if numCharacters == 0 then
+	if GetNumCharacters() == 0 then
 		return;
 	end
 
 	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
-	local newIndex = CharacterSelect.selectedIndex + direction;
-	if newIndex > numCharacters then
-		newIndex = 1;
-	elseif newIndex <= 0 then
-		newIndex = numCharacters;
-	end
-
+	local newIndex = CharacterSelectListUtil.GetNextCharacterIndex(direction);
 	CharacterSelect_SelectCharacter(newIndex);
 
 	local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
@@ -1337,36 +1318,22 @@ function CharacterTemplatesFrameDropDown_Initialize()
 end
 
 function ToggleStoreUI(contextKey)
-	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
-		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
-	end
-
-    if (STORE_IS_LOADED) then
-        local wasShown = StoreFrame_IsShown();
-        if ( not wasShown ) then
-            --We weren't showing, now we are. We should hide all other panels.
-            -- not sure if anything is needed here at the gluescreen
-        end
-		StoreFrame_SetShown(not wasShown, contextKey);
+	local wasShown = StoreFrame_IsShown();
+    if ( not wasShown ) then
+        --We weren't showing, now we are. We should hide all other panels.
+        -- not sure if anything is needed here at the gluescreen
     end
+    StoreFrame_SetShown(not wasShown, contextKey);
 end
 
 function SetStoreUIShown(shown)
-	if (not STORE_IS_LOADED) then
-		STORE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_StoreUI")
-		C_AddOns.LoadAddOn("Blizzard_AuthChallengeUI");
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown and shown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		-- not sure if anything is needed here at the gluescreen
 	end
 
-	if (STORE_IS_LOADED) then
-		local wasShown = StoreFrame_IsShown();
-		if ( not wasShown and shown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			-- not sure if anything is needed here at the gluescreen
-		end
-
-		StoreFrame_SetShown(shown);
-	end
+	StoreFrame_SetShown(shown);
 end
 
 function CharacterTemplatesFrameDropDown_OnClick(button)
@@ -1673,7 +1640,10 @@ local function GetVASDistributions()
 		else
 			-- Are there any characters for which this token is valid?
 			local usable = false;
-			for i = 1, GetNumCharacters() do
+
+			local includeEmptySlots = true;
+			local numCharacters = GetNumCharacters(includeEmptySlots);
+			for i=1, numCharacters do
 				local charID = CharacterSelectListUtil.GetCharIDFromIndex(i);
 				-- Do not run on empty character slots.
 				if charID ~= 0 then

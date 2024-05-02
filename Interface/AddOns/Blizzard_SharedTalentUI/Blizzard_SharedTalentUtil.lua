@@ -316,7 +316,7 @@ function TalentButtonUtil.CalculateIconTexture(definitionInfo, overrideSpellID)
 end
 
 function TalentButtonUtil.SetSpendText(button, spendText)
-	MixinUtil.CallMethodSafe(button.spendText, "SetText", spendText);
+	MixinUtil.CallMethodSafe(button.SpendText, "SetText", spendText);
 
 	if button.spendTextShadows then
 		for i, shadow in ipairs(button.spendTextShadows) do

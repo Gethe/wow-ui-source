@@ -112,7 +112,7 @@ function ReforgingFrame_Update(self)
 		local rightStat, leftStat;
 		local restoreMode = false;
 		
-		if currentReforge > 0 then --has a current reforge 
+		if currentReforge > -1 then --has a current reforge 
 			restoreMode = true;
 			ReforgingFrame.srcName, ReforgingFrame.srcStat, ReforgingFrame.srcValue, ReforgingFrame.destName, 
 			ReforgingFrame.destStat, ReforgingFrame.destValue = C_Reforge.GetReforgeOptionInfo(currentReforge);

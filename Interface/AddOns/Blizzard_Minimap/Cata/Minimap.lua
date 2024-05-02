@@ -1,7 +1,6 @@
 MINIMAPPING_TIMER = 5.5;
 MINIMAPPING_FADE_TIMER = 0.5;
 MINIMAP_BOTTOM_EDGE_EXTENT = 192;	-- pixels from the top of the screen to the bottom edge of the minimap, needed for UIParentManageFramePositions
-DIFFICULTY_ID_5PLAYER_DUNGEON_NORMAL = 1;
 
 MINIMAP_RECORDING_INDICATOR_ON = false;
 
@@ -456,29 +455,114 @@ function MiniMapTrackingShineFadeOut()
 	UIFrameFadeOut(MiniMapTrackingShine, 0.5);
 end
 
--- ============================================ INSTANCE DIFFICULTY ===============================================================================
-function MiniMapInstanceDifficulty_OnEvent(self)
+--
+-- Dungeon Difficulty
+--
+						
+local IS_GUILD_GROUP;
+
+function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
+	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
+		local isGuildGroup = ...;
+		if ( isGuildGroup ~= IS_GUILD_GROUP ) then
+			IS_GUILD_GROUP = isGuildGroup;
+			MiniMapInstanceDifficulty_Update();
+		end
+	elseif ( event == "PLAYER_DIFFICULTY_CHANGED" ) then
+		MiniMapInstanceDifficulty_Update();
+	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
+		RequestGuildPartyState();
+		MiniMapInstanceDifficulty_Update();
+	elseif ( event == "PLAYER_GUILD_UPDATE" ) then
+		local tabard = GuildInstanceDifficulty;
+		SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background, tabard.border);
+		if ( IsInGuild() ) then
+			RequestGuildPartyState();
+		else
+			IS_GUILD_GROUP = nil;
+			MiniMapInstanceDifficulty_Update();
+		end
+	else
+		RequestGuildPartyState();
+	end
+end
+
+function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
 	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
 
-	if ( ( instanceType == "party" or instanceType == "raid" ) and not (difficulty == DIFFICULTY_ID_5PLAYER_DUNGEON_NORMAL) ) then --show the banner for all raids/dungeons except 5 person normal dungeon
-		MiniMapInstanceDifficultyText:SetText(maxPlayers);
-		-- the 1 looks a little off when text is centered
-		local xOffset = 0;
-		if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
-			xOffset = -1;
-		end
-		if ( isHeroic ) then
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
+	if ( IS_GUILD_GROUP or ((instanceType == "party" or instanceType == "raid") and not (difficulty == DifficultyUtil.ID.DungeonNormal and maxPlayers == 5)) ) then
+		if ( IS_GUILD_GROUP ) then
+			if ( maxPlayers == 0 ) then
+				GuildInstanceDifficultyText:SetText("");
+				GuildInstanceDifficultyDarkBackground:SetAlpha(0);
+				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -16);
+			else
+				GuildInstanceDifficultyText:SetText(maxPlayers);
+				GuildInstanceDifficultyDarkBackground:SetAlpha(0.7);
+				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
+			end
+			GuildInstanceDifficultyText:ClearAllPoints();
+			if ( isHeroic ) then
+				if ( maxPlayers > 10 ) then
+					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 8, 7);
+					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
+				else
+					GuildInstanceDifficultyHeroicTexture:SetPoint("BOTTOMLEFT", 11, 7);
+					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
+				end
+				GuildInstanceDifficultyHeroicTexture:Show();
+			else
+				GuildInstanceDifficultyHeroicTexture:Hide();
+				GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
+			end
+			MiniMapInstanceDifficulty:Hide();
+			SetSmallGuildTabardTextures("player", GuildInstanceDifficulty.emblem, GuildInstanceDifficulty.background, GuildInstanceDifficulty.border);
+			GuildInstanceDifficulty:Show();
 		else
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
-			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
+			MiniMapInstanceDifficultyText:SetText(maxPlayers);
+			-- the 1 looks a little off when text is centered
+			local xOffset = 0;
+			if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
+				xOffset = -1;
+			end
+			if ( isHeroic ) then
+				MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
+				MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
+			else
+				MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
+				MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
+			end
+			MiniMapInstanceDifficulty:Show();
+			GuildInstanceDifficulty:Hide();
 		end
-		self:Show();
 	else
-		self:Hide();
+		MiniMapInstanceDifficulty:Hide();
+		GuildInstanceDifficulty:Hide();
 	end
+end
+
+function GuildInstanceDifficulty_OnEnter(self)
+	local guildName = GetGuildInfo("player");
+	local _, instanceType, _, _, maxPlayers = GetInstanceInfo();
+	local _, numGuildPresent, numGuildRequired, xpMultiplier = InGuildParty();
+	-- hack alert
+	if ( instanceType == "arena" ) then
+		maxPlayers = numGuildRequired;
+	end
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
+	GameTooltip:SetText(GUILD_GROUP, 1, 1, 1);
+	if ( xpMultiplier < 1 ) then
+		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP, numGuildRequired, maxPlayers, guildName, xpMultiplier * 100), nil, nil, nil, 1);
+	elseif ( xpMultiplier > 1 ) then
+		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP, guildName, xpMultiplier * 100), nil, nil, nil, 1);
+	else
+		if ( instanceType == "party" and maxPlayers == 5 ) then
+			numGuildRequired = 4;
+		end
+		GameTooltip:AddLine(string.format(GUILD_ACHIEVEMENTS_ELIGIBLE, numGuildRequired, maxPlayers, guildName), nil, nil, nil, 1);
+	end
+	GameTooltip:Show();
 end
 
 -- ============================================ BATTLEFIELDS ===============================================================================

@@ -270,17 +270,15 @@ function CharacterSelectBlockBase:Initialize(results)
 	self:ClearResultInfo();
 	self.lastSelectedIndex = CharacterSelect.selectedIndex;
 
-	local numCharacters = GetNumCharacters();
-	local numDisplayedCharacters = math.min(numCharacters, MAX_CHARACTERS_DISPLAYED);
-
 	if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
 		CharacterSelect_UpdateButtonState();
 
-		if (self.createNum < numCharacters) then
+		if (self.createNum < GetNumCharacters()) then
 			local scrollBox = CharacterSelectCharacterFrame.ScrollBox;
 			scrollBox:ScrollToEnd();
 
-			CharacterSelect.selectedIndex = numCharacters;
+			local last = true;
+			CharacterSelect.selectedIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
 			CharacterSelectCharacterFrame:UpdateCharacterSelection();
 
 			self.index = CharacterSelect.selectedIndex;

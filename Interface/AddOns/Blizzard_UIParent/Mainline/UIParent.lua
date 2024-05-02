@@ -608,10 +608,6 @@ function PlayerChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_PlayerChoice");
 end
 
-function Store_LoadUI()
-	UIParentLoadAddOn("Blizzard_StoreUI");
-end
-
 function Garrison_LoadUI()
 	UIParentLoadAddOn("Blizzard_GarrisonUI");
 end
@@ -688,12 +684,6 @@ function BoostTutorial_AttemptLoad()
 	end
 end
 
-function ClassTrial_AttemptLoad()
-	if C_ClassTrial.IsClassTrialCharacter() and not C_AddOns.IsAddOnLoaded("Blizzard_ClassTrial") then
-		UIParentLoadAddOn("Blizzard_ClassTrial");
-	end
-end
-
 function ClassTrial_IsExpansionTrialUpgradeDialogShowing()
 	if ExpansionTrialThanksForPlayingDialog then
 		return ExpansionTrialThanksForPlayingDialog:IsShowingExpansionTrialUpgrade();
@@ -715,10 +705,6 @@ end
 
 function DeathRecap_LoadUI()
 	UIParentLoadAddOn("Blizzard_DeathRecap");
-end
-
-function Communities_LoadUI()
-	UIParentLoadAddOn("Blizzard_Communities");
 end
 
 function AzeriteRespecFrame_LoadUI()
@@ -1019,7 +1005,6 @@ function ToggleCommunitiesFrame()
 		return;
 	end
 
-	Communities_LoadUI();
 	ToggleFrame(CommunitiesFrame);
 end
 
@@ -1033,20 +1018,8 @@ COLLECTIONS_JOURNAL_TAB_INDEX_TOYS = COLLECTIONS_JOURNAL_TAB_INDEX_PETS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS = COLLECTIONS_JOURNAL_TAB_INDEX_TOYS + 1;
 COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS + 1;
 
-local function CollectionsFrame_IsTabAllowed(tabIndex)
-	if PlayerGetTimerunningSeasonID() and tabIndex == COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS then
-		-- Heirlooms are disabled during timerunning, so don't bother showing the tab
-		return false;
-	end
-	return true;
-end
-
 function ToggleCollectionsJournal(tabIndex)
 	if DISALLOW_FRAME_TOGGLING then
-		return;
-	end
-
-	if not CollectionsFrame_IsTabAllowed(tabIndex) then 
 		return;
 	end
 
@@ -1117,8 +1090,6 @@ function ToggleStoreUI(contextKey)
 		return;
 	end
 
-	Store_LoadUI();
-
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown ) then
 		--We weren't showing, now we are. We should hide all other panels.
@@ -1131,8 +1102,6 @@ function SetStoreUIShown(shown)
 	if ( Kiosk.IsEnabled() or DISALLOW_FRAME_TOGGLING ) then
 		return;
 	end
-
-	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown and shown ) then
@@ -1713,7 +1682,6 @@ function UIParent_OnEvent(self, event, ...)
 		self.battlefieldBannerShown = nil;
 
 		NPETutorial_AttemptToBegin(event);
-		ClassTrial_AttemptLoad();
 		BoostTutorial_AttemptLoad();
 
 		if Kiosk.IsEnabled() then

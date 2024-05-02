@@ -3,6 +3,18 @@ local CharacterSelectionConstants =
 	Tables =
 	{
 		{
+			Name = "WarbandGroupFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "WarbandGroupFlags", EnumValue = 0 },
+				{ Name = "Collapsed", Type = "WarbandGroupFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "WarbandSceneAnimationEvent",
 			Type = "Enumeration",
 			NumValues = 9,

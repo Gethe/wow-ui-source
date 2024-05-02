@@ -4,7 +4,6 @@
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
-## SuppressLocalTableRef: 1
 Tooltip\TooltipUtil.lua
 Tooltip\TooltipDataHandler.lua
 Tooltip\TooltipDataRules.lua

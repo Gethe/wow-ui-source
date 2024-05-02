@@ -3237,21 +3237,28 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="SquareExpandButtonTemplate" mixin="SquareExpandButtonMixin" inherits="UIButtonTemplate" virtual="true">
-		<Size x="20" y="20"/>
-		<Scripts>
-			<OnClick method="OnClick"/>
-		</Scripts>
-		<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
-	</Button>
-
 	<Button name="ExpandBarTemplate" mixin="ExpandBarMixin" virtual="true">
 		<Size x="280" y="44"/>
 		<Frames>
-			<Button parentKey="ExpandButton" inherits="SquareExpandButtonTemplate">
+			<Button parentKey="ExpandButton" mixin="SquareExpandButtonMixin" inherits="UIButtonTemplate">
+				<Size x="20" y="20"/>
+				<KeyValues>
+					<!--Default values, override as needed.-->
+					<KeyValue key="highlightExpandedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
+					<KeyValue key="highlightCollapsedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
+					<KeyValue key="normalExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
+					<KeyValue key="normalCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
+					<KeyValue key="pushedExpandedAtlas" value="Campaign_HeaderIcon_OpenPressed" type="string"/>
+					<KeyValue key="pushedCollapsedAtlas" value="Campaign_HeaderIcon_ClosedPressed" type="string"/>
+					<KeyValue key="disabledExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
+					<KeyValue key="disabledCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
 				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

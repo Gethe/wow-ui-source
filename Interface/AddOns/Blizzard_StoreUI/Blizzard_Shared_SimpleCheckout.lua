@@ -1,24 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to Dan
---We usually don't want to call out of this environment from this file. Calls should usually go through Outbound
-local _, tbl = ...;
-tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-local function Import(name)
-	tbl[name] = tbl.SecureCapsuleGet(name);
-end
-
-Import("IsOnGlueScreen");
-Import("GetPhysicalScreenSize");
-Import("GetScreenDPIScale");
-
-if ( tbl.IsOnGlueScreen() ) then
-	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-end
-
-setfenv(1, tbl);
-----------------
-
 
 SimpleCheckoutMixin = {};
 

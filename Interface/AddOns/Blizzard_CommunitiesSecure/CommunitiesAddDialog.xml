@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="CommunitiesAddDialog.lua"/>
 
-	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+	<ScopedModifier forbidden="true">
 		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
 			<Size x="514" y="426"/>
 			<Anchors>
@@ -297,10 +297,10 @@
 							end
 						</OnEnterPressed>
 						<OnEnter>
-							Outbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP, self:GetRight(), self:GetTop(), true);
+							CommunitiesOutbound.ShowGameTooltip(COMMUNITIES_CREATE_DIALOG_SHORT_NAME_INSTRUCTIONS_TOOLTIP, self:GetRight(), self:GetTop(), true);
 						</OnEnter>
 						<OnLeave>
-							Outbound.HideGameTooltip()
+							CommunitiesOutbound.HideGameTooltip()
 						</OnLeave>
 						<OnTextChanged>
 							self.Instructions:SetShown(self:GetText() == "");

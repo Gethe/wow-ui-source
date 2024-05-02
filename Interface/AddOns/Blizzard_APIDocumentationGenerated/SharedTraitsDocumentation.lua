@@ -264,6 +264,7 @@ local SharedTraits =
 		{
 			Name = "GetStagedChanges",
 			Type = "Function",
+			Documentation = { "Returns IDs of Trait Nodes with pending changes, grouped by the type of change; Returns nothing if there are no pending changes" },
 
 			Arguments =
 			{
@@ -274,7 +275,7 @@ local SharedTraits =
 			{
 				{ Name = "nodeIDsWithPurchases", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "nodeIDsWithRefunds", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "nodeIDsWithSelectionSwaps", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "nodeIDsWithSelectionSwaps", Type = "table", InnerType = "number", Nilable = false, Documentation = { "Selection nodes that had a previously committed selected entry, and now have a different selected entry pending" } },
 			},
 		},
 		{

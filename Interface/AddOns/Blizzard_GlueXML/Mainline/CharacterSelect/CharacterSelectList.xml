@@ -37,16 +37,16 @@
 					<Anchor point="RIGHT" x="-16" y="0"/>
 				</Anchors>
 			</EventFrame>
-			<Button parentKey="DeleteCharacterButton" inherits="GlueButtonSmallTemplate" text="DELETE_CHARACTER">
+			<Button parentKey="DeleteCharacterButton" inherits="GlueButtonTemplate" text="DELETE_CHARACTER">
 				<Size x="232" y="42"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="-30" y="22"/>
+					<Anchor point="BOTTOM" x="-37" y="23"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="BackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CANCEL">
+			<Button parentKey="BackToActiveButton" inherits="GlueButtonTemplate" hidden="true" text="CANCEL">
 				<Size x="232" y="42"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="22"/>
+					<Anchor point="BOTTOM" x="0" y="23"/>
 				</Anchors>
 			</Button>
 			<!-- Has a global name to support legacy behavior -->

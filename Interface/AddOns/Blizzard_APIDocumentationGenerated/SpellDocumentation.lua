@@ -9,6 +9,7 @@ local Spell =
 		{
 			Name = "DoesSpellExist",
 			Type = "Function",
+			Documentation = { "Returns true if the spell exists, regardless of whether the player has learned it" },
 
 			Arguments =
 			{
@@ -69,7 +70,7 @@ local Spell =
 			Arguments =
 			{
 				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-				{ Name = "spec", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "spec", Type = "number", Nilable = false, Default = 0, Documentation = { "Which Class Specialization to consider, as overrides may vary by Spec; Defaults to player's current Spec" } },
 				{ Name = "onlyKnown", Type = "bool", Nilable = false, Default = true },
 				{ Name = "ignoreOverrideSpellID", Type = "number", Nilable = false, Default = 0 },
 			},
@@ -96,7 +97,7 @@ local Spell =
 		{
 			Name = "GetSpellAutoCast",
 			Type = "Function",
-			Documentation = { "Returns nil if spell doesn't exist" },
+			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
 			{
@@ -112,7 +113,7 @@ local Spell =
 		{
 			Name = "GetSpellCooldown",
 			Type = "Function",
-			Documentation = { "Returns nil if spell doesn't exist" },
+			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
 			{
@@ -142,10 +143,11 @@ local Spell =
 		{
 			Name = "GetSpellInfo",
 			Type = "Function",
+			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
 			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false, Documentation = { "Spell ID, name, name(subtext), or link" } },
 			},
 
 			Returns =
@@ -156,6 +158,7 @@ local Spell =
 		{
 			Name = "GetSpellLevelLearned",
 			Type = "Function",
+			Documentation = { "Returns the level the spell is learned at; May return a different value if the player is currently Level Linked with another player" },
 
 			Arguments =
 			{
@@ -170,6 +173,7 @@ local Spell =
 		{
 			Name = "GetSpellLink",
 			Type = "Function",
+			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
 			{
@@ -185,7 +189,7 @@ local Spell =
 		{
 			Name = "GetSpellLossOfControlCooldown",
 			Type = "Function",
-			Documentation = { "Returns nil if spell doesn't exist" },
+			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
 			{
@@ -201,6 +205,7 @@ local Spell =
 		{
 			Name = "GetSpellName",
 			Type = "Function",
+			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
 			{
@@ -224,6 +229,7 @@ local Spell =
 		{
 			Name = "GetSpellTexture",
 			Type = "Function",
+			Documentation = { "Returns nothing if spell is not found" },
 
 			Arguments =
 			{
@@ -254,6 +260,7 @@ local Spell =
 		{
 			Name = "IsSpellDataCached",
 			Type = "Function",
+			Documentation = { "Returns true if data for the spell has already been loaded and cached this session" },
 
 			Arguments =
 			{
@@ -305,6 +312,7 @@ local Spell =
 		{
 			Name = "RequestLoadSpellData",
 			Type = "Function",
+			Documentation = { "Requests data for the spell be loaded; Listen for SPELL_DATA_LOAD_RESULT to be notified when load is finished" },
 
 			Arguments =
 			{
@@ -385,7 +393,7 @@ local Spell =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "iconID", Type = "fileID", Nilable = false },
+				{ Name = "iconID", Type = "fileID", Nilable = false, Documentation = { "Icon for this spell; If spell has been overriden, this may be the icon for the overriding spell; See originalIconID for spell's non-overriden icon" } },
 				{ Name = "originalIconID", Type = "fileID", Nilable = false },
 				{ Name = "castTime", Type = "number", Nilable = false },
 				{ Name = "minRange", Type = "number", Nilable = false },

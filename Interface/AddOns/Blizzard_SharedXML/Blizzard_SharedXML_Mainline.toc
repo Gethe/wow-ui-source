@@ -5,12 +5,11 @@
 ## AllowLoadGameType: mainline
 ## Dependencies: Blizzard_PrintHandler, Blizzard_SharedXMLBase
 ## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
-## SuppressLocalTableRef: 1
 Shared\LocalizationMachinery.lua
+EnvironmentUtil.lua
 ProjectConstants.lua
 WoWLabs\ProjectConstants.lua
 SharedConstants.lua
-EnvironmentUtil.lua
 middleclass.lua
 Color.lua
 ColorUtil.lua
@@ -50,6 +49,7 @@ SpaceToFitLayoutFrame.xml
 BulletPoint.lua
 BulletPoint.xml
 KeyCommand.lua
+PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua
 NewFeatureLabel.xml

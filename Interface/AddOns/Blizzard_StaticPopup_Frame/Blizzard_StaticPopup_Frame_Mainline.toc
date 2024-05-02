@@ -2,7 +2,6 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_StaticPopup, Blizzard_UIParent
-## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 Mainline\StaticPopup.lua

@@ -4,6 +4,5 @@
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 ## Dependencies: Blizzard_SharedXML
-## SuppressLocalTableRef: 1
 Mainline\UIMenu.lua
 Mainline\UIMenu.xml

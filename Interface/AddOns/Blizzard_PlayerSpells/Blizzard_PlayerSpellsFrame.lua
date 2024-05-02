@@ -22,7 +22,15 @@ function PlayerSpellsFrameMixin:OnLoad()
 
 	self.CloseButton:SetScript("OnClick", GenerateClosure(self.CheckConfirmClose, self));
 
-	self.autoMinimizeEnabled = true;
+	self.isMinimizingEnabled = true;
+	self.manualMinimizeEnabled = GetCVarBool("spellBookMinimize");
+
+	self.MaximizeMinimizeButton:SetOnMaximizedCallback(GenerateClosure(self.OnManualMaximizeClicked, self));
+	self.MaximizeMinimizeButton:SetOnMinimizedCallback(GenerateClosure(self.OnManualMinimizeClicked, self));
+	-- Allowing button to handle updating the cvar will ensure it only gets set when it's manually toggled, and not when toggled automatically to fit other frames
+	self.MaximizeMinimizeButton:SetMinimizedCVar("spellBookMinimize");
+	-- Since we handle our own automatic minimizing/maximizing on showing, prevent the min/max button from trying to do its own reset to the cvar value every time it shows
+	self.MaximizeMinimizeButton:SkipResetOnShow(true);
 
 	self:SetFrameLevelsFromBaseLevel(5000);
 
@@ -117,16 +125,22 @@ function PlayerSpellsFrameMixin:UpdateFrameTitle()
 end
 
 function PlayerSpellsFrameMixin:SetTab(tabID)
-	if self.isMinimized and not self:DoesTabSupportMinimizedMode(tabID) then
+	TabSystemOwnerMixin.SetTab(self, tabID);
+
+	local canNewTabBeMinimized = self:DoesTabSupportMinimizedMode(tabID);
+	if self.isMinimized and not canNewTabBeMinimized then
 		self:ForceMaximize();
+	elseif not self.isMinimized and self:ShouldManuallyMinimize(tabID) then
+		self:SetMinimized(true);
+	else
+		self:SetTabMinimized(tabID, self.isMinimized);
 	end
 
-	self:SetTabMinimized(tabID, self.isMinimized);
-
-	TabSystemOwnerMixin.SetTab(self, tabID);
+	self.MaximizeMinimizeButton:SetShown(canNewTabBeMinimized);
 
 	self:UpdateFrameTitle();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TabSet", PlayerSpellsFrame, tabID);
+	
 	return true; -- Don't show the tab as selected yet.
 end
 
@@ -215,7 +229,7 @@ function PlayerSpellsFrameMixin:SetInspecting(inspectUnit, inspectString, inspec
 		self.inspectStringClassID = nil;
 	end
 
-	self:SetAutoMinimizeEnabled(not self:IsInspecting());
+	self:SetMinimizingEnabled(not self:IsInspecting());
 
 	self:UpdateTabs();
 	self.TalentsFrame:UpdateInspecting();
@@ -337,8 +351,26 @@ function PlayerSpellsFrameMixin:IsMinimized()
 	return self.isMinimized;
 end
 
-function PlayerSpellsFrameMixin:IsMinimizeEnabled()
-	return self.autoMinimizeEnabled;
+function PlayerSpellsFrameMixin:IsMinimizingEnabled()
+	return self.isMinimizingEnabled;
+end
+
+function PlayerSpellsFrameMixin:ShouldManuallyMinimize(tabID)
+	return self:IsMinimizingEnabled() and self.manualMinimizeEnabled and self:DoesTabSupportMinimizedMode(tabID or self:GetTab());
+end
+
+function PlayerSpellsFrameMixin:OnManualMinimizeClicked()
+	self.manualMinimizeEnabled = true;
+	if not self.isMinimized and self:ShouldManuallyMinimize() then
+		self:SetMinimized(true);
+	end
+end
+
+function PlayerSpellsFrameMixin:OnManualMaximizeClicked()
+	self.manualMinimizeEnabled = false;
+	if self.isMinimized then
+		self:ForceMaximize();
+	end
 end
 
 function PlayerSpellsFrameMixin:DoesTabSupportMinimizedMode(tabID)
@@ -352,17 +384,32 @@ function PlayerSpellsFrameMixin:GetDefaultMinimizableTab()
 end
 
 function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
+	local currentTab = self:GetTab();
 	if not self.isMinimized and shouldBeMinimized then
 		-- Prevent non-UIParent code manually calling SetMinimized when auto behavior intentionally disabled
-		assert(self.autoMinimizeEnabled);
+		assert(self:IsMinimizingEnabled());
+		
 		self.isMinimized = true;
-		local minimizableTabID = self:GetDefaultMinimizableTab();
-		self:SetTab(minimizableTabID); -- SetTab will call SetTabMaximized
+		if not self:DoesTabSupportMinimizedMode(currentTab) then
+			local minimizableTabID = self:GetDefaultMinimizableTab();
+			self:SetTab(minimizableTabID); -- SetTab will call SetTabMaximized
+		else
+			self:SetTabMinimized(currentTab, true);
+		end
+
 		self:SetWidth(self.minimizedWidth);
+
+		-- Update minimize button to reflect current state, but ensure it doesn't circle back to the click callback
+		-- This ensures that auto-minimizes are reflected by the button state, and the click callback only occurs on manual minimizes
+		local isAutomaticAction, skipCallback = true, true;
+		self.MaximizeMinimizeButton:Minimize(isAutomaticAction, skipCallback);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
 		self:SetWidth(self.maximizedWidth);
-		self:SetTabMinimized(self:GetTab(), false);
+		self:SetTabMinimized(currentTab, false);
+
+		local isAutomaticAction, skipCallback = true, true;
+		self.MaximizeMinimizeButton:Maximize(isAutomaticAction, skipCallback);
 	end
 end
 
@@ -381,15 +428,16 @@ function PlayerSpellsFrameMixin:ForceMaximize()
 		-- Close and re-show with minimize attributes temporarily disabled to ensure this frame stays maximized and other frames get closed
 		-- Only calling UpdateUIPanelPositions isn't enough as we need to run through all the area evaluation logic within ShowUIPanel
 		HideUIPanel(self, true);
-		self:SetAutoMinimizeEnabled(false);
+		self:SetMinimizingEnabled(false);
 		ShowUIPanel(self);
 		-- Now re-enable minimizing so that, if another frame gets opened later, we can be re-minimized and pop back to a supporting tab as usual
-		self:SetAutoMinimizeEnabled(true);
+		self:SetMinimizingEnabled(true);
 	end
 end
 
-function PlayerSpellsFrameMixin:SetAutoMinimizeEnabled(enabled)
-	self.autoMinimizeEnabled = enabled;
+function PlayerSpellsFrameMixin:SetMinimizingEnabled(enabled)
+	-- Don't need an Attribute update for autoMinimizeOnCondition as that function also checks this enabled state
+	self.isMinimizingEnabled = enabled;
 	if enabled then
 		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", true);
 		SetUIPanelAttribute(self, "area", "centerOrLeft");

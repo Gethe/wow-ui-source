@@ -23,7 +23,9 @@ function AdventureObjectiveTrackerMixin:OnEvent(event, ...)
 	self.lastEvent = event;
 	if event == "TRANSMOG_COLLECTION_SOURCE_ADDED" then
 		local transmogSourceId = ...;
-		self:OnTrackableItemCollected(Enum.ContentTrackingType.Appearance, transmogSourceId);
+		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, transmogSourceId) then
+			self:OnTrackableItemCollected(Enum.ContentTrackingType.Appearance, transmogSourceId);
+		end
 	elseif event == "SUPER_TRACKING_CHANGED" then
 		-- Before, processing this would not call StopTrackingCollectedItems, which now always happens in the Refresh.
 		-- Not sure if this will cause problems.

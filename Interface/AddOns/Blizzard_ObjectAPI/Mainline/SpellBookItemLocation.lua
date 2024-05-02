@@ -7,7 +7,7 @@ SpellBookItemLocationMixin = {};
 end
 
 -- slotIndex: int
--- spellBank: Enum.SpellBookSpellBank
+-- spellBank: Enum.SpellBookSpellBank (see SpellBookConstantsDocumentation.lua)
 --[[static]] function SpellBookItemLocation:CreateFromIndexAndBank(slotIndex, spellBank)
 	local spellBookItemLocation = SpellBookItemLocation:CreateEmpty();
 	spellBookItemLocation:SetIndexAndBank(slotIndex, spellBank);

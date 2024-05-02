@@ -1,27 +1,3 @@
----------------
---NOTE - Please do not change this section without talking to the UI team
-local _, tbl = ...;
-if tbl then
-	tbl.SecureCapsuleGet = SecureCapsuleGet;
-
-	local function Import(name)
-		tbl[name] = tbl.SecureCapsuleGet(name);
-	end
-
-	Import("IsOnGlueScreen");
-
-	if ( tbl.IsOnGlueScreen() ) then
-		tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
-	end
-
-	setfenv(1, tbl);
-
-	Import("CopyValuesAsKeys");
-	Import("GenerateClosure");
-	Import("ApproximatelyEqual");
-	Import("WithinRangeExclusive");
-end
----------------
 
 -- Common event definitions as a work-around for derivation problems with CallbackRegistryMixin.
 BaseScrollBoxEvents =
@@ -566,6 +542,14 @@ end
 
 function ScrollBoxListMixin:EnumerateDataProvider(indexBegin, indexEnd)
 	return self:GetView():EnumerateDataProvider(indexBegin, indexEnd);
+end
+
+function ScrollBoxListMixin:ReverseEnumerateDataProviderEntireRange()
+	return self:GetView():ReverseEnumerateDataProviderEntireRange();
+end
+
+function ScrollBoxListMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)
+	return self:GetView():ReverseEnumerateDataProvider(indexBegin, indexEnd);
 end
 
 function ScrollBoxListMixin:FindElementData(index)

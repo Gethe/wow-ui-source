@@ -903,7 +903,3 @@ end
 function setglobal(var, val)
 	_G[var] = val;
 end
-
-function SecureCapsuleGet(name)
-	return _G[name];
-end
