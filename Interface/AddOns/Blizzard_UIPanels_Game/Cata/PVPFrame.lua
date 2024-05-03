@@ -845,7 +845,7 @@ function PVPConquestFrame_Update(self)
 		end
 	else -- Rated BG
 		--local personalBGRating, ratedBGreward, _, _, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
-		local personalBGRating, _, _, _, _, weeklyPlayed, weeklyWins = GetPersonalRatedInfo(3);
+		local personalBGRating, _, _, _, _, weeklyPlayed, weeklyWins = GetPersonalRatedInfo(4);
 		local ratedBGreward = 0;
 		reward = ratedBGreward;
 		self.topRatingText:SetText(RATING..": "..personalBGRating);

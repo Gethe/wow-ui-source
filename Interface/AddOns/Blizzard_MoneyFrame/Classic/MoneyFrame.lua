@@ -259,7 +259,8 @@ end
 
 function MoneyFrame_OnEnter(moneyFrame)
 	if ( moneyFrame.showTooltip ) then
-		GameTooltip:SetOwner(_G[moneyFrame:GetName().."CopperButton"], "ANCHOR_TOPRIGHT", 20, 2);
+		local copperButton = moneyFrame.CopperButton;
+		GameTooltip:SetOwner(copperButton, "ANCHOR_TOPRIGHT", 20, 2);		
 		SetTooltipMoney(GameTooltip, moneyFrame.staticMoney, "TOOLTIP", "");
 		GameTooltip:Show();
 	end
@@ -280,15 +281,18 @@ function MoneyFrame_SetType(self, type)
 	end
 	self.info = info;
 	self.moneyType = type;
-	local frameName = self:GetName();
+
+	local goldButton = self.GoldButton;
+	local silverButton = self.SilverButton;
+	local copperButton = self.CopperButton;
 	if ( info.canPickup ) then
-		_G[frameName.."GoldButton"]:EnableMouse(true);
-		_G[frameName.."SilverButton"]:EnableMouse(true);
-		_G[frameName.."CopperButton"]:EnableMouse(true);
+		goldButton:EnableMouse(true);
+		silverButton:EnableMouse(true);
+		copperButton:EnableMouse(true);
 	else
-		_G[frameName.."GoldButton"]:EnableMouse(false);
-		_G[frameName.."SilverButton"]:EnableMouse(false);
-		_G[frameName.."CopperButton"]:EnableMouse(false);
+		goldButton:EnableMouse(false);
+		silverButton:EnableMouse(false);
+		copperButton:EnableMouse(false);
 	end
 end
 
@@ -303,7 +307,7 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 	if ( moneyFrame.info ) then
 		local money = moneyFrame.info.UpdateFunc(moneyFrame);
 		if ( money ) then
-			MoneyFrame_Update(moneyFrame:GetName(), money);
+			MoneyFrame_Update(moneyFrame, money);
 		end
 	else
 		message("Error moneyType not set");
@@ -337,13 +341,13 @@ function MoneyFrame_Update(frameName, money, forceShow)
 
 	-- Breakdown the money into denominations
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local goldDisplay = gold;
+	local goldDisplay = BreakUpLargeNumbers(gold);
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = mod(money, COPPER_PER_SILVER);
 
-	local goldButton = _G[frameName.."GoldButton"];
-	local silverButton = _G[frameName.."SilverButton"];
-	local copperButton = _G[frameName.."CopperButton"];
+	local goldButton = frame.GoldButton;
+	local silverButton = frame.SilverButton;
+	local copperButton = frame.CopperButton;
 
 	local iconWidth = MONEY_ICON_WIDTH;
 	local spacing = MONEY_BUTTON_SPACING;
@@ -355,16 +359,16 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	local maxDisplayWidth = frame.maxDisplayWidth;
 
 	-- Set values for each denomination
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
 			frame.colorblind = true;
 			frame.vadjust = MONEY_TEXT_VADJUST;
 			goldButton:ClearNormalTexture();
 			silverButton:ClearNormalTexture();
 			copperButton:ClearNormalTexture();
-			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
-			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
-			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
+			goldButton.Text:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
+			silverButton.Text:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
+			copperButton.Text:SetPoint("RIGHT", 0, MONEY_TEXT_VADJUST);
 		end
 		goldButton:SetText(goldDisplay .. GOLD_AMOUNT_SYMBOL);
 		goldButton:SetWidth(goldButton:GetTextWidth());
@@ -385,9 +389,10 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			texture:SetTexCoord(0.25, 0.5, 0, 1);
 			texture = CreateMoneyButtonNormalTexture(copperButton, iconWidth);
 			texture:SetTexCoord(0.5, 0.75, 0, 1);
-			_G[frameName.."GoldButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
-			_G[frameName.."SilverButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
-			_G[frameName.."CopperButtonText"]:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
+
+			goldButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
+			silverButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
+			copperButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 		end
 		goldButton:SetText(goldDisplay);
 		goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);
@@ -445,7 +450,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		end
 
 		local silverWidth = silverButton:GetWidth();
-		goldButton:SetPoint("RIGHT", frameName.."SilverButton", "LEFT", spacing, 0);
+		goldButton:SetPoint("RIGHT", silverButton, "LEFT", spacing, 0);
 		if ( goldButton:IsShown() ) then
 			silverWidth = silverWidth - spacing;
 		end
@@ -462,7 +467,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 	if ( hideSilver ) then
 		silverButton:Hide();
-		goldButton:SetPoint("RIGHT", frameName.."SilverButton",	"RIGHT", 0, 0);
+		goldButton:SetPoint("RIGHT", silverButton,	"RIGHT", 0, 0);
 	end
 
 	-- Used if we're not showing lower denominations
@@ -476,7 +481,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		end
 
 		local copperWidth = copperButton:GetWidth();
-		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "LEFT", spacing, 0);
+		silverButton:SetPoint("RIGHT", copperButton, "LEFT", spacing, 0);
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
 			copperWidth = copperWidth - spacing;
 		end
@@ -490,12 +495,12 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 	if ( hideCopper ) then
 		copperButton:Hide();
-		silverButton:SetPoint("RIGHT", frameName.."CopperButton", "RIGHT", 0, 0);
+		silverButton:SetPoint("RIGHT", copperButton, "RIGHT", 0, 0);
 	end
 
 	-- make sure the copper button is in the right place
 	copperButton:ClearAllPoints();
-	copperButton:SetPoint("RIGHT", frameName, "RIGHT", -13, 0);
+	copperButton:SetPoint("RIGHT", frame, "RIGHT", -13, 0);
 
 	-- keep track of money width so it can be used to align multiple rows
 	frame.moneyWidth = width;
@@ -526,7 +531,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( suffixText:GetText() and money > 0 ) then
 			suffixText:Show();
 			suffixText:ClearAllPoints();
-			suffixText:SetPoint("LEFT", frameName.."CopperButton", "RIGHT", 0, 0);
+			suffixText:SetPoint("LEFT", copperButton, "RIGHT", 0, 0);
 			width = width + suffixText:GetWidth();
 		else
 			suffixText:Hide();
@@ -571,9 +576,9 @@ function MoneyFrame_AccumulateAlignmentWidths(frameName, widths)
 	end
 
 	local prefixFrame = _G[frameName.."PrefixText"];
-	local goldButton = _G[frameName.."GoldButton"];
-	local silverButton = _G[frameName.."SilverButton"];
-	local copperButton = _G[frameName.."CopperButton"];
+	local goldButton = self.GoldButton;
+	local silverButton = self.SilverButton;
+	local copperButton = self.CopperButton;
 
 	if (prefixFrame) then
 		widths.prefix = math.max(widths.prefix or 0, prefixFrame:GetWidth());
@@ -616,9 +621,9 @@ function MoneyFrame_UpdateAlignment(frameName, widths)
 	frame.alignMoneyWidth = widths.money;
 
 	local prefixFrame = _G[frameName.."PrefixText"];
-	local goldButton = _G[frameName.."GoldButton"];
-	local silverButton = _G[frameName.."SilverButton"];
-	local copperButton = _G[frameName.."CopperButton"];
+	local goldButton = self.GoldButton;
+	local silverButton = self.SilverButton;
+	local copperButton = self.CopperButton;
 
 	local update = false;
 
@@ -695,9 +700,9 @@ function SetMoneyFrameColorByFrame(moneyFrame, color)
 		end
 	end
 
-	local goldButton = _G[moneyFrame:GetName().."GoldButton"];
-	local silverButton = _G[moneyFrame:GetName().."SilverButton"];
-	local copperButton = _G[moneyFrame:GetName().."CopperButton"];
+	local goldButton = moneyFrame.GoldButton;
+	local silverButton = moneyFrame.SilverButton;
+	local copperButton = moneyFrame.CopperButton;
 
 	goldButton:SetNormalFontObject(fontObject);
 	silverButton:SetNormalFontObject(fontObject);
