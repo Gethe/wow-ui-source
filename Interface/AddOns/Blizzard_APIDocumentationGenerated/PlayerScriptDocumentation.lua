@@ -1429,7 +1429,7 @@ local PlayerScript =
 
 			Arguments =
 			{
-				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false, Default = "0" },
 				{ Name = "exactMatch", Type = "bool", Nilable = false, Default = false },
 			},
 		},

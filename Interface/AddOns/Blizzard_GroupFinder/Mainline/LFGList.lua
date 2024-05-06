@@ -2183,13 +2183,17 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 end
 
 function LFGListCanChangeLanguages()
+	if GetCurrentRegionName() == "US" then
+		return false;
+	end
+
 	local availableLanguages = C_LFGList.GetAvailableLanguageSearchFilter();
 	local defaultLanguages = C_LFGList.GetDefaultLanguageSearchFilter();
 
 	local canChangeLanguages = false;
 	for i=1, #availableLanguages do
 		if ( not defaultLanguages[availableLanguages[i]] ) then
-			canChangeLanguages = true;
+			canChangeLanguages = true; 
 			break;
 		end
 	end
@@ -2664,7 +2668,7 @@ local function EntryStillSatisfiesFilters(enabled, displayData, searchResultInfo
 		return false;
 	elseif enabled.needsHealer and displayData["HEALER"] ~= 0 then
 		return false;
-	elseif enabled.needsDamage and displayData["DAMAGER"] ~= 0 then
+	elseif enabled.needsDamage and displayData["DAMAGER"] >= 3 then
 		return false;
 	elseif enabled.needsMyClass and displayData[classFilename] > 0 then
 		return false;
@@ -3526,8 +3530,8 @@ function LFGListUtil_SortSearchResultsCBFunction(self)
 		local _, appStatus1 = C_LFGList.GetApplicationInfo(searchResultID1);
 		local _, appStatus2 = C_LFGList.GetApplicationInfo(searchResultID2);
 
-		local isDeclined1 = IsDeclined(appStatus1) or (self.declines[searchResultID1] and true or false);
-		local isDeclined2 = IsDeclined(appStatus2) or (self.declines[searchResultID2] and true or false);
+		local isDeclined1 = IsDeclined(appStatus1) or ((self.declines and self.declines[searchResultID1]) and true or false);
+		local isDeclined2 = IsDeclined(appStatus2) or ((self.declines and self.declines[searchResultID2]) and true or false);
 
 		--sort declined to the bottom
 		if isDeclined1 ~= isDeclined2 then

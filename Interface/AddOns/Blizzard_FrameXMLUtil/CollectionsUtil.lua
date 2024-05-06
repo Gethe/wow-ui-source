@@ -227,6 +227,81 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 	local sourceLocation, sourceDifficulties;
 
 	local appearanceCollected = sources[headerIndex].isCollected
+	if ( sources[headerIndex].sourceType == TRANSMOG_SOURCE_BOSS_DROP and not appearanceCollected ) then
+		local drops = C_TransmogCollection.GetAppearanceSourceDrops(headerSourceID);
+		if ( drops and #drops > 0 ) then
+			local showDifficulty = false;
+			if ( #drops == 1 ) then
+				sourceLocation = WARDROBE_TOOLTIP_ENCOUNTER_SOURCE:format(drops[1].encounter, drops[1].instance);
+				showDifficulty = true;
+			else
+				-- check if the drops are the same instance
+				local sameInstance = true;
+				local firstInstance = drops[1].instance;
+				for i = 2, #drops do
+					if ( drops[i].instance ~= firstInstance ) then
+						sameInstance = false;
+						break;
+					end
+				end
+				-- ok, if multiple instances check if it's the same tier if the drops have a single tier
+				local sameTier = true;
+				local firstTier = drops[1].tiers[1];
+				if ( not sameInstance and #drops[1].tiers == 1 ) then
+					for i = 2, #drops do
+						if ( #drops[i].tiers > 1 or drops[i].tiers[1] ~= firstTier ) then
+							sameTier = false;
+							break;
+						end
+					end
+				end
+				-- if same instance or tier, check if we have same difficulties and same instanceType
+				local sameDifficulty = false;
+				local sameInstanceType = false;
+				if ( sameInstance or sameTier ) then
+					sameDifficulty = true;
+					sameInstanceType = true;
+					for i = 2, #drops do
+						if ( drops[1].instanceType ~= drops[i].instanceType ) then
+							sameInstanceType = false;
+						end
+						if ( #drops[1].difficulties ~= #drops[i].difficulties ) then
+							sameDifficulty = false;
+						else
+							for j = 1, #drops[1].difficulties do
+								if ( drops[1].difficulties[j] ~= drops[i].difficulties[j] ) then
+									sameDifficulty = false;
+									break;
+								end
+							end
+						end
+					end
+				end
+				-- override sourceText if sameInstance or sameTier
+				if ( sameInstance ) then
+					sourceLocation = firstInstance;
+					showDifficulty = sameDifficulty;
+				elseif ( sameTier ) then
+					local location = firstTier;
+					if ( sameInstanceType ) then
+						if ( drops[1].instanceType == INSTANCE_TYPE_DUNGEON ) then
+							location = string.format(WARDROBE_TOOLTIP_DUNGEONS, location);
+						elseif ( drops[1].instanceType == INSTANCE_TYPE_RAID ) then
+							location = string.format(WARDROBE_TOOLTIP_RAIDS, location);
+						end
+					end
+					sourceLocation = location;
+				end
+			end
+
+			if ( showDifficulty ) then
+				local drop = drops[1];
+				if ( drop.difficulties[1] ) then
+					sourceDifficulties = table.concat(drop.difficulties, PLAYER_LIST_DELIMITER);
+				end
+			end
+		end
+	end
 
 	if warningString then
 		GameTooltip_AddNormalLine(tooltip, warningString);

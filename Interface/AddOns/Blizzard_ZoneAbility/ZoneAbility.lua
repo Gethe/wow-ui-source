@@ -67,6 +67,8 @@ function ZoneAbilityFrameMixin:OnLoad()
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 
 	EventRegistry:RegisterCallback("ActionBarShownSettingUpdated", self.MarkDirty, self);
 
@@ -102,7 +104,10 @@ local function SortByUIPriority(lhs, rhs)
 end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
-	local zoneAbilities = GetActiveZoneAbilities();
+	-- Leaving this as a surgical fix for timerunning for now.
+	local hideZoneAbilities = PlayerGetTimerunningSeasonID and HasVehicleActionBar();
+
+	local zoneAbilities = hideZoneAbilities and {} or GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
 
 	local displayedZoneAbilities = {};

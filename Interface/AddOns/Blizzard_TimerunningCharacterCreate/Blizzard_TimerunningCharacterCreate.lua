@@ -14,6 +14,21 @@ local function AddCreateButtonDisabledState(button)
 end
 
 
+TimerunningCreateCharacterButtonGlowMixin = {};
+
+function TimerunningCreateCharacterButtonGlowMixin:OnLoad()
+	self:UpdateHeight();
+end
+
+function TimerunningCreateCharacterButtonGlowMixin:OnSizeChanged()
+	self:UpdateHeight();
+end
+
+function TimerunningCreateCharacterButtonGlowMixin:UpdateHeight()
+	self.RotatingGlow.GlowCircle:SetHeight(self.RotatingGlow.GlowCircle:GetWidth());
+end
+
+
 TimerunningFirstTimeDialogMixin = {};
 
 function TimerunningFirstTimeDialogMixin:OnLoad()
@@ -22,8 +37,10 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 	self.InfoPanel.CreateButton:SetScript("OnClick", function()
 		-- Don't show the popup with the create character choice since the player just selected timerunner.
 		local timerunningSeasonID  = GetActiveTimerunningSeasonID();
+
 		local suppressPopup = true;
 		self:Dismiss(suppressPopup);
+
 		CharacterSelect_CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
 
 		C_LiveEvent.OnLiveEventPopupClicked(timerunningSeasonID);
@@ -191,16 +208,25 @@ function TimerunningEventBannerMixin:UpdateShown()
 end
 
 function TimerunningEventBannerMixin:UpdateTimeLeft()
-	local text = TIMERUNNING_BANNER_TIME_LEFT:format(TimerunningTimeRemainingFormatter:Format(GetRemainingTimerunningSeasonSeconds()));
-	self.TimeLeft:SetText(text);
+	self.updatedTimeLeftText = TIMERUNNING_BANNER_TIME_LEFT:format(TimerunningTimeRemainingFormatter:Format(GetRemainingTimerunningSeasonSeconds()));
+	self.TimeLeft:SetText(self.updatedTimeLeftText);
 end
 
 function TimerunningEventBannerMixin:OnEnter()
 	self.Border:SetAtlas("timerunning-glues-active-event-hover");
+
+	if self.Header:IsTruncated() and self.updatedTimeLeftText then
+		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -5, -10);
+		GameTooltip_SetTitle(GlueTooltip, self.tooltipTitle, nil, false);
+		GlueTooltip:AddLine(TIMERUNNING_BANNER_PANDARIA_HEADER, WHITE_FONT_COLOR.r, WHITE_FONT_COLOR.g, WHITE_FONT_COLOR.b, 1, true);
+		GlueTooltip:AddLine(self.updatedTimeLeftText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+		GlueTooltip:Show();
+	end
 end
 
 function TimerunningEventBannerMixin:OnLeave()
 	self.Border:SetAtlas("timerunning-glues-active-event");
+	GlueTooltip:Hide();
 end
 
 function TimerunningEventBannerMixin:OnClick()

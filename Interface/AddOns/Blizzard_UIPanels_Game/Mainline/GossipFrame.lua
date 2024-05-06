@@ -49,6 +49,11 @@ GossipFrameMixin = CreateFromMixins(GossipFrameSharedMixin);
 function GossipFrameMixin:OnLoad()
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:UpdateScrollBox();
+
+	local function OnQuestTextContrastSettingChanged()
+		self:UpdateScrollBox();
+	end
+	Settings.SetOnValueChangedCallback("PROXY_QUEST_TEXT_CONTRAST", OnQuestTextContrastSettingChanged);
 end
 
 function GossipFrameMixin:HandleShow(textureKit)
