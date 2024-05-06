@@ -524,10 +524,9 @@ function ToggleGuildFrame()
 	end
 		
 		ToggleCommunitiesFrame();
-	elseif ( IsInGuild() ) then
-		GuildFrame_LoadUI();
-		if ( GuildFrame_Toggle ) then
-			GuildFrame_Toggle();
+	else
+		if ( ToggleGuildFinder ) then
+			ToggleGuildFinder();
 		end
 	end
 end

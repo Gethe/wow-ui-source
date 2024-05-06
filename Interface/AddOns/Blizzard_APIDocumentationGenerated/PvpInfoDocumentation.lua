@@ -24,6 +24,24 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetArenaRewards",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "teamSize", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
 
@@ -107,6 +125,19 @@ local PvpInfo =
 		},
 		{
 			Name = "GetRandomBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRatedBGRewards",
 			Type = "Function",
 
 			Returns =

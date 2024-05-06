@@ -77,33 +77,33 @@ UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0,		xoff
 UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 
-function FramePositionDelegate_Override_HandleExtraBars(self)
+function FramePositionDelegate_Override_HandleExtraBars()
 end
 
-function FramePositionDelegate_Override_QuestTimerOffsets(self, anchorYStartValue)
+function FramePositionDelegate_Override_QuestTimerOffsets(anchorYStartValue)
 	local anchorY = anchorYStartValue;
 
-	self.QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-	if ( self.QuestTimerFrame:IsShown() ) then
-		anchorY = anchorY - self.QuestTimerFrame:GetHeight();
+	QuestTimerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	if ( QuestTimerFrame:IsShown() ) then
+		anchorY = anchorY - QuestTimerFrame:GetHeight();
 	end
 
 	return anchorY;
 end
 
-function FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(self, anchorYStartValue)
+function FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(anchorYStartValue)
 	return anchorYStartValue;
 end
 
-function FramePositionDelegate_Override_QuestWatchFrameOffsets(self, anchorYStartValue, rightActionBars, buffsAnchorY)
+function FramePositionDelegate_Override_QuestWatchFrameOffsets(anchorYStartValue, rightActionBars, buffsAnchorY)
 	local anchorY = anchorYStartValue;
 
 	if ( rightActionBars > 0 ) then
 		anchorY = min(anchorY, buffsAnchorY);
 	end
 
-	if ( self.QuestWatchFrame ) then
-		self.QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+	if ( QuestWatchFrame ) then
+		QuestWatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
 	return anchorY;

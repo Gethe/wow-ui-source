@@ -505,12 +505,11 @@
 						<AbsDimension x="180" y="20"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="58" y="-33"/>
+						<Anchor point="TOPLEFT" x="56" y="-39"/>
 					</Anchors>
 					<Scripts>
 						<OnLoad>
 							CapProgressBar_SetNotches(self, 4);
-							self.cap1Marker:SetScript("OnEnter", PVPFrameConquestBarMarker_OnEnter);
 							self.progress:SetVertexColor(1, 0, 0);
 						</OnLoad>
 						<OnEnter function="PVPFrameConquestBar_OnEnter"/>

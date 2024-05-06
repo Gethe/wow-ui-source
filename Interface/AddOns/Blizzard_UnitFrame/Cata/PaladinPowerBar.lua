@@ -14,6 +14,11 @@ function PaladinPowerBar_Update(self)
 
 	for i=1,MAX_HOLY_POWER do
 		local holyRune = self["rune"..i];
+		
+		if holyRune.deactivate:IsPlaying() and numHolyPower >= 1 then
+			holyRune.deactivate:Stop();
+		end
+
 		local isShown = holyRune:GetAlpha()> 0 or holyRune.activate:IsPlaying();
 		local shouldShow = i <= numHolyPower;
 		if isShown ~= shouldShow then 
@@ -40,6 +45,7 @@ function PaladinPowerBar_OnLoad (self)
 		self:SetAlpha(0);
 	end
 
+	self:RegisterEvent("UNIT_POWER_FREQUENT");
 	self:RegisterEvent("UNIT_POWER_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
@@ -51,7 +57,7 @@ function PaladinPowerBar_OnLoad (self)
 end
 
 function PaladinPowerBar_OnEvent (self, event, arg1, arg2)
-	if ( (event == "UNIT_POWER_UPDATE") and (arg1 == self:GetParent().unit) ) then
+	if ( ( (event == "UNIT_POWER_UPDATE") or (event == "UNIT_POWER_FREQUENT") ) and (arg1 == self:GetParent().unit) ) then
 		if ( arg2 == "HOLY_POWER" ) then
 			PaladinPowerBar_Update(self);
 		end
