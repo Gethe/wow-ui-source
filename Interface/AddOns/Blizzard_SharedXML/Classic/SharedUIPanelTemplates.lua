@@ -861,6 +861,10 @@ function PortraitFrameTemplateMixin:SetTitle(title)
 	self:GetTitleText():SetText(title);
 end
 
+function PortraitFrameTemplateMixin:SetTitleFormatted(fmt, ...)
+	self:GetTitleText():SetFormattedText(fmt, ...);
+end
+
 -- Truncated Button code
 
 function TruncatedButton_OnSizeChanged(self, width, height)

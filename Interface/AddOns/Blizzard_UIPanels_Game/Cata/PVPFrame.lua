@@ -38,14 +38,8 @@ PVPHONOR_TEXTURELIST[30] = "Interface\\PVPFrame\\PvpBg-IsleOfConquest";
 PVPHONOR_TEXTURELIST[32] = "Interface\\PVPFrame\\PvpRandomBg";
 PVPHONOR_TEXTURELIST[108] = "Interface\\PVPFrame\\PvpBg-TwinPeaks";
 PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpBg-Gilneas";
-
-local PVPWORLD_TEXTURELIST = {};
-PVPWORLD_TEXTURELIST[1] = "Interface\\PVPFrame\\PvpBg-Wintergrasp";
-PVPWORLD_TEXTURELIST[21] = "Interface\\PVPFrame\\PvpBg-TolBarad";
-
-local PVPWORLD_DESCRIPTIONS = {};
-PVPWORLD_DESCRIPTIONS[1] = WINTERGRASP_DESCRIPTION;
-PVPWORLD_DESCRIPTIONS[21] = TOL_BARAD_DESCRIPTION;
+PVPHONOR_TEXTURELIST[1089] = "Interface\\PVPFrame\\PvpBg-Wintergrasp";
+PVPHONOR_TEXTURELIST[1116] = "Interface\\PVPFrame\\PvpBg-TolBarad";
 
 ARENABANNER_SMALLFONT = "GameFontNormalSmall"
 
@@ -69,9 +63,6 @@ function PVPFrame_ExpansionSpecificOnLoad(self)
 	self:RegisterEvent("PVP_TYPES_ENABLED");
 	
 	PVPFrame.timerDelay = 0;
-	
-	PVPFrameTab2.info = ARENA_CONQUEST_INFO;
-	--PVPFrameTab3.info = ARENA_TEAM_INFO;
 end
 
 function PVPFrame_OnShow()
@@ -303,29 +294,24 @@ function PVPFrame_UpdateCurrency(self)
 			PVPFrameConquestBar:Show();
 
 			local conquestCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
-			local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
-			local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID);
+			local bgCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
+			local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
 
 			local tier1Limit = arenaCurrencyInfo.maxQuantity;
-			local tier2Limit = honorCurrencyInfo.maxQuantity;
+			local tier2Limit = bgCurrencyInfo.maxQuantity;
 			local tier1Quantity = arenaCurrencyInfo.quantity;
-			local tier2Quantity = honorCurrencyInfo.quantity;
+			local tier2Quantity = bgCurrencyInfo.quantity;
 			local pointsThisWeek = conquestCurrencyInfo.quantity;
-			local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity/100;
+			local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity;
 
 			-- if BG limit is below arena, swap them
 			if ( tier2Limit < tier1Limit ) then
 				tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
 				tier1Limit, tier2Limit = tier2Limit, tier1Limit;
 			end
-			-- if the higher limit is the max, drop one tier
-			if ( tier2Limit == maxPointsThisWeek ) then
-				tier2Quantity = nil;
-				tier2Limit = nil;
-			end
 
-			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek);
-			PVPFrameConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
+			CapProgressBar_Update(PVPFrameConquestBar, tier1Quantity, tier1Limit, tier2Quantity, tier2Limit, pointsThisWeek, maxPointsThisWeek, false);
+			PVPFrameConquestBar.label:SetText(currencyName);
 		else
 			PVPFrameCurrency:Show();
 			PVPFrameConquestBar:Hide();
@@ -342,15 +328,15 @@ function PVPFrameConquestBar_OnEnter(self)
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(MAXIMUM_REWARD);
-	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, conquestCurrencyInfo.name), 1, 1, 1, true);
+	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_SEASON, conquestCurrencyInfo.name), 1, 1, 1, true);
 	GameTooltip:AddLine(" ");
 
 	
-	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
+	local bgCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
 	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
 
 	local pointsThisWeek = conquestCurrencyInfo.quantity;
-	local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity/100;
+	local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity;
 	
 	local r, g, b = 1, 1, 1;
 	local capped;
@@ -359,54 +345,22 @@ function PVPFrameConquestBar_OnEnter(self)
 		capped = true;
 	end
 
-	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_TOTAL_CAP, conquestCurrencyInfo.name, conquestCurrencyInfo.quantity, conquestCurrencyInfo.maxQuantity/100), r, g, b, r, g, b);
+	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(GENERIC_FRACTION_STRING, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
 	
-	if ( capped or honorCurrencyInfo.quantity >= honorCurrencyInfo.maxQuantity ) then
+	if ( capped ) then
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		r, g, b = 1, 1, 1;
 	end
-	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_TOTAL_CAP, "", honorCurrencyInfo.quantity, honorCurrencyInfo.maxQuantity/100 - arenaCurrencyInfo.quantity), r, g, b, r, g, b);	
+	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, bgCurrencyInfo.quantity, r, g, b, r, g, b);	
 	
-	if ( capped or arenaCurrencyInfo.quantity >= arenaCurrencyInfo.maxQuantity ) then
+	if ( capped ) then
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		r, g, b = 1, 1, 1;
 	end
-	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_TOTAL_CAP, "", arenaCurrencyInfo.quantity, arenaCurrencyInfo.maxQuantity/100 - honorCurrencyInfo.quantity), r, g, b, r, g, b);
+	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, arenaCurrencyInfo.quantity, r, g, b, r, g, b);
 
-	GameTooltip:Show();
-end
-
-function PVPFrameConquestBarMarker_OnEnter(self)
-	local isTier1 = self:GetID() == 1;
-
-	local conquestCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
-	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
-	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
-	local tier2tooltip = PVP_CURRENCY_CAP_RATEDBG;
-	local tier1tooltip = PVP_CURRENCY_CAP_ARENA;
-	local tier1Limit = arenaCurrencyInfo.maxQuantity/100;
-	local tier2Limit = honorCurrencyInfo.maxQuantity/100;
-	local tier1Quantity = arenaCurrencyInfo.quantity;
-	local tier2Quantity = honorCurrencyInfo.quantity;
-	-- if BG limit is below arena, swap them
-	if ( honorCurrencyInfo.quantity < arenaCurrencyInfo.quantity ) then
-		tier1Quantity, tier2Quantity = tier2Quantity, tier1Quantity;
-		tier1Limit, tier2Limit = tier2Limit, tier1Limit;
-		tier1tooltip, tier2tooltip = tier2tooltip, tier1tooltip;
-	end
-	local currencyName = conquestCurrencyInfo.name;
-	
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(MAXIMUM_REWARD);
-	if ( isTier1 ) then
-		GameTooltip:AddLine(format(tier1tooltip, currencyName), 1, 1, 1, true);
-		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier1Quantity, tier1Limit-tier2Quantity));
-	else
-		GameTooltip:AddLine(format(tier2tooltip, currencyName), 1, 1, 1, true);
-		GameTooltip:AddLine(format(CURRENCY_THIS_WEEK_WITH_AMOUNT, currencyName, tier2Quantity, tier2Limit-tier1Quantity));
-	end
 	GameTooltip:Show();
 end
 
@@ -797,18 +751,21 @@ function PVPConquestFrame_Update(self)
 	local groupSize = max(GetNumGroupMembers(), 1);
 	local validGroup = false;
 	local reward = 0;
-	local _, size;
+	local name, size;
 
 	if self.mode == "Arena" then
 		self.winReward.winAmount:SetText(0);
 		self.noWeeklyFrame:Hide();
+		local prefixColorCode = "|cff808080";
 	
 		if(UnitIsGroupLeader("player") and (IsInGroup() or IsInRaid())) then
-			validGroup = true;
+			if(groupSize == 2 or groupSize == 3 or groupSize == 5) then
+				validGroup = true;
+			end
 		end
 
 		if not validGroup then
-			self.infoButton.title:SetText("|cff808080"..ARENA_BATTLES);
+			self.infoButton.title:SetText(prefixColorCode..ARENA_BATTLES);
 			self.infoButton.arenaError:Show();
 			self.infoButton.wins:Hide();
 			self.infoButton.winsValue:Hide();
@@ -818,21 +775,20 @@ function PVPConquestFrame_Update(self)
 			self.infoButton.bottomLeftText:Hide();
 			self.teamIndex = nil;
 		else
-			local ArenaSizesToIndex = {}
-			ArenaSizesToIndex[2] = 1;
-			ArenaSizesToIndex[3] = 2;
-			ArenaSizesToIndex[5] = 3;
-			--_, reward = GetPersonalRatedArenaInfo(ArenaSizesToIndex[teamSize]);
-			local personalBGRating, _, _, _, _, weeklyPlayed, weeklyWins = GetPersonalRatedInfo(3);
-			self.winReward.winAmount:SetText(reward)
-			if reward == 0 then
-				--RequestRatedArenaInfo(ArenaSizesToIndex[teamSize]);
-			end
-		
-			--[[self.infoButton.title:SetText(teamName);
-			self.infoButton.winsValue:SetText(teamWins);
-			self.infoButton.lossesValue:SetText(teamPlayed-teamWins);
-			self.infoButton.topLeftText:SetText(PVP_RATING.." "..teamRating);]]
+			prefixColorCode = "";
+			self.infoButton.title:SetText(prefixColorCode..ARENA_BATTLES);
+			reward = PVPConquestFrame_ConfigureConquestRewards(C_PvP.GetArenaRewards(groupSize));
+			local ArenaSizesToIndex = {};
+            ArenaSizesToIndex[2] = 1;
+            ArenaSizesToIndex[3] = 2;
+            ArenaSizesToIndex[5] = 3;
+			local personalBGRating, _, _, seasonPlayed, seasonWon, weeklyPlayed, weeklyWins = GetPersonalRatedInfo(ArenaSizesToIndex[groupSize]);
+			self.winReward.winAmount:SetText(reward);
+
+			--self.infoButton.title:SetText(teamName);
+			self.infoButton.winsValue:SetText(seasonWon);
+			self.infoButton.lossesValue:SetText(seasonPlayed-seasonWon);
+			self.infoButton.topLeftText:SetText(PVP_RATING.." "..personalBGRating);
 			self.infoButton.bottomLeftText:SetText(_G["ARENA_"..groupSize.."V"..groupSize]);
 			
 			self.infoButton.arenaError:Hide();
@@ -844,15 +800,11 @@ function PVPConquestFrame_Update(self)
 			self.infoButton.bottomLeftText:Show();
 		end
 	else -- Rated BG
-		--local personalBGRating, ratedBGreward, _, _, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
-		local personalBGRating, _, _, _, _, weeklyPlayed, weeklyWins = GetPersonalRatedInfo(4);
-		local ratedBGreward = 0;
-		reward = ratedBGreward;
+		reward = PVPConquestFrame_ConfigureConquestRewards(C_PvP.GetRatedBGRewards());
+		local personalBGRating, _, _, seasonPlayed, seasonWon, weeklyPlayed, weeklyWins = GetPersonalRatedInfo(4);
 		self.topRatingText:SetText(RATING..": "..personalBGRating);
-		self.winReward.winAmount:SetText(ratedBGreward);
-		
-		
-		local name;
+		self.winReward.winAmount:SetText(reward);
+
 		name, size = GetRatedBattleGroundInfo();
 		
 		validGroup = groupSize==size;
@@ -872,9 +824,9 @@ function PVPConquestFrame_Update(self)
 		end
 		
 		
-		self.infoButton.winsValue:SetText(prefixColorCode..weeklyWins);
-		self.infoButton.lossesValue:SetText(prefixColorCode..(weeklyPlayed-weeklyWins));
-		self.infoButton.topLeftText:SetText(prefixColorCode..ARENA_THIS_WEEK);
+		self.infoButton.winsValue:SetText(prefixColorCode..seasonWon);
+		self.infoButton.lossesValue:SetText(prefixColorCode..(seasonPlayed-seasonWon));
+		self.infoButton.topLeftText:SetText();
 		
 		self.infoButton.arenaError:Hide();
 		self.infoButton.bgOff:Hide();
@@ -926,7 +878,6 @@ function PVPConquestFrame_Update(self)
 		end
 	end
 
-	
 	if reward > 0 then
 		self.rewardDescription:SetText(PVP_REWARD_EXPLANATION);
 		self.winReward:Show();
@@ -936,6 +887,20 @@ function PVPConquestFrame_Update(self)
 	end
 	
 	self.validGroup = validGroup;
+end
+
+function PVPConquestFrame_ConfigureConquestRewards(honor, experience, itemRewards, currencyRewards, roleShortageBonus)
+	local conquestReward = 0;
+
+	if(currencyRewards) then
+		for i, reward in ipairs(currencyRewards) do
+			if reward.id == Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID then
+				conquestReward = reward.quantity;
+			end
+		end
+	end
+
+	return conquestReward/100;
 end
 
 
@@ -965,7 +930,6 @@ function PVPConquestFrame_ButtonClicked(button)
 		button:LockHighlight();
 		PVPConquestFrame.arenaButton:UnlockHighlight();
 		PVPConquestFrameInfoButton.title:SetText(PVP_RATED_BATTLEGROUND);
-		PVPConquestFrameInfoButton.topLeftText:SetText(ARENA_THIS_WEEK);
 		PVPConquestFrame.topRatingText:Show();
 	end
 	PVPConquestFrame_Update(PVPConquestFrame);

@@ -60,8 +60,8 @@ Wrath\QuestMapFrame.lua
 Wrath\QuestMapFrame.xml
 Classic\TabardFrame.lua
 Classic\TabardFrame.xml
-Wrath\PetStable.lua
-Wrath\PetStable.xml
+Cata\PetStable.lua
+Cata\PetStable.xml
 TBC\BankFrame.lua
 TBC\BankFrame.xml
 Shared\SocialQueue.lua

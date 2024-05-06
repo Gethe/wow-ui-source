@@ -47,7 +47,7 @@ UIPanelWindows["InspectFrame"] =				{ area = "left",			pushable = 2,		xoffset = 
 UIPanelWindows["ClassTrainerFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["TradeSkillFrame"] =				{ area = "left",			pushable = 3,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["CraftFrame"] =					{ area = "left",			pushable = 4,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
-UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
+UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0,		xoffset = 0,		yoffset = 12,	bottomClampOverride = 140+12,	width = 418,	height = 424,	whileDead = 1 };
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0,		xoffset = -16,		yoffset = 12,	bottomClampOverride = 140+12,	width = 353,	height = 424,	whileDead = 1 };
@@ -78,63 +78,63 @@ UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0,		xoff
 UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 UIPanelWindows["BFAMissionFrame"] =				{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 
-function FramePositionDelegate_Override_HandleExtraBars(self)
+function FramePositionDelegate_Override_HandleExtraBars()
 	-- HACK: we have too many bars in this game now...
 	-- if the Stance bar is shown then hide the multi-cast bar
 	-- we'll have to figure out what we should do in this case if it ever really becomes a problem
 	-- HACK 2: if the possession bar is shown then hide the multi-cast bar
 	-- yeah, way too many bars...
-	if ( ( self.StanceBarFrame and self.StanceBarFrame:IsShown() ) or
-		 ( self.PossessBarFrame and self.PossessBarFrame:IsShown() ) ) then
-		self:HideMultiCastActionBar();
-	elseif ( self.HasMultiCastActionBar and self:HasMultiCastActionBar() ) then
-		self:ShowMultiCastActionBar();
+	if ( ( StanceBarFrame and StanceBarFrame:IsShown() ) or
+		 ( PossessBarFrame and PossessBarFrame:IsShown() ) ) then
+		HideMultiCastActionBar();
+	elseif ( HasMultiCastActionBar and HasMultiCastActionBar() ) then
+		ShowMultiCastActionBar();
 	end
 end
 
-function FramePositionDelegate_Override_QuestTimerOffsets(self, anchorYStartValue)
+function FramePositionDelegate_Override_QuestTimerOffsets(anchorYStartValue)
 	return anchorYStartValue;
 end
 
-function FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(self, anchorYStartValue)
+function FramePositionDelegate_Override_VehicleSeatIndicatorOffsets(anchorYStartValue)
 	local anchorY = anchorYStartValue;
 
-	if ( self.VehicleSeatIndicator ) then
-		if ( self.VehicleSeatIndicator and self.VehicleSeatIndicator:IsShown() ) then
-			anchorY = anchorY - self.VehicleSeatIndicator:GetHeight() - 18;	--The -18 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
+	if ( VehicleSeatIndicator ) then
+		if ( VehicleSeatIndicator and VehicleSeatIndicator:IsShown() ) then
+			anchorY = anchorY - VehicleSeatIndicator:GetHeight() - 18;	--The -18 is there to give a small buffer for things like the QuestTimeFrame below the Seat Indicator
 		end
 
 		if ( SHOW_MULTI_ACTIONBAR_3 and SHOW_MULTI_ACTIONBAR_4 ) then
-			self.VehicleSeatIndicator:SetPoint("TOPRIGHT", self.MinimapCluster, "BOTTOMRIGHT", -100, 0);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -100, 0);
 		elseif ( SHOW_MULTI_ACTIONBAR_3 ) then
-			self.VehicleSeatIndicator:SetPoint("TOPRIGHT", self.MinimapCluster, "BOTTOMRIGHT", -62, 0);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -62, 0);
 		else
-			self.VehicleSeatIndicator:SetPoint("TOPRIGHT", self.MinimapCluster, "BOTTOMRIGHT", 0, 0);
+			VehicleSeatIndicator:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", 0, 0);
 		end
 	end
 
 	return anchorY;
 end
 
-function FramePositionDelegate_Override_QuestWatchFrameOffsets(self, anchorYStartValue, rightActionBars, buffsAnchorY)
+function FramePositionDelegate_Override_QuestWatchFrameOffsets(anchorYStartValue, rightActionBars, buffsAnchorY)
 	local anchorY = anchorYStartValue;
 
-	if (self.WatchFrame and (not (self.WatchFrame:IsUserPlaced()))) then
-		local numArenaOpponents = self:GetNumArenaOpponents();
-		if ( self.ArenaEnemyFrames and self.ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
-			self.WatchFrame:ClearAllPoints();
-			self.WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+	if (WatchFrame and (not (WatchFrame:IsUserPlaced()))) then
+		local numArenaOpponents = GetNumArenaOpponents();
+		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
+			WatchFrame:ClearAllPoints();
+			WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
 		else -- We're using Simple Quest Tracking, automagically size and position!
-			self.WatchFrame:ClearAllPoints();
+			WatchFrame:ClearAllPoints();
 			-- move up if only the minimap cluster is above, move down a little otherwise
 			if ( anchorY == 0 ) then
 				anchorY = 10;
 			end
-			self.WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+			WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 			-- OnSizeChanged for WatchFrame handles its redraw
 		end
 
-		self.WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
 
 	return anchorY;
