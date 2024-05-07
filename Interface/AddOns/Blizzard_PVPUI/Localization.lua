@@ -9,12 +9,7 @@ local l10nTable = {
 	koKR = {},
 	ptBR = {},
 	ptPT = {},
-	ruRU = {
-		localize = function()
-			--Adjust spec font so it doesn't overflow the window
-			SpecializationSpecName:SetFontObject(GameFontNormalHuge);
-		end,
-	},
+	ruRU = {},
 	zhCN = {
 		localize = function()
 			ConquestTooltip:SetHeight(242);

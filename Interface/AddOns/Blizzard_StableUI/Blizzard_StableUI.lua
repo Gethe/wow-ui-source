@@ -644,8 +644,8 @@ end
 
 function StableBeastMasterSecondaryPetButtonMixin:Refresh()
 	local configID = C_ClassTalents.GetActiveConfigID();
-	local animalCompanionTalentInfo = C_Traits.GetNodeInfo(configID, ANIMAL_COMPANION_NODE_ID);
-	local knowsAnimalCompanion = animalCompanionTalentInfo.ranksPurchased > 0;
+	local animalCompanionTalentInfo = configID and C_Traits.GetNodeInfo(configID, ANIMAL_COMPANION_NODE_ID);
+	local knowsAnimalCompanion = animalCompanionTalentInfo and animalCompanionTalentInfo.ranksPurchased > 0;
 	self:SetEnabled(knowsAnimalCompanion);
 	self:SetDesaturated(not knowsAnimalCompanion);
 	self:SetLocked(not knowsAnimalCompanion);
@@ -1121,7 +1121,7 @@ function StablePetAbilityMixin:Initialize(spellID)
 		return;
 	end
 
-	local spellName, spellRank, spellIcon, spellCastTime, spellMinRange, spellMaxRange, spellID, spellOriginalIcon = GetSpellInfo(spellID);
+	local spellName, spellRank, spellIcon, spellCastTime, spellMinRange, spellMaxRange, _, spellOriginalIcon = GetSpellInfo(spellID);
 	self.Icon:SetTexture(spellIcon);
 	self.Name:SetText(spellName);
 

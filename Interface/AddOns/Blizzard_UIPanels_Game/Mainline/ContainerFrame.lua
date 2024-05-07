@@ -1823,6 +1823,7 @@ function ContainerFramePortraitButtonMixin:OnShow()
 				offsetX = 0,
 				alignment = HelpTip.Alignment.Center,
 				acknowledgeOnHide = true,
+				checkCVars = true,
 			};
 			HelpTip:Show(UIParent, helpTipInfo, self);
 		end

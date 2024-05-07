@@ -295,6 +295,7 @@ function GroupFinderFrame_EvaluateHelpTips(self)
 			cvarBitfield = "closedInfoFramesAccountWide",
 			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
+			checkCVars = true,
 		};
 		if PVEFrame:TimerunningEnabled() then
 			HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton4);

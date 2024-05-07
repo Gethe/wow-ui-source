@@ -629,6 +629,7 @@ function MountJournal_EvaluateListHelpTip(self)
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				offsetX = -4,
 				onAcknowledgeCallback = function() self.dragonridingHelpTipMountIndex = nil; end;
+				checkCVars = true,
 			};
 			HelpTip:Show(self, helpTipInfo, frame);
 			return;

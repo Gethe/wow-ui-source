@@ -1605,6 +1605,7 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			cvarBitfield = "closedInfoFramesAccountWide",
 			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB,
 			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			checkCVars = true,
 		};
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	end

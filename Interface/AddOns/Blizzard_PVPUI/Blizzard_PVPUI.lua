@@ -189,6 +189,7 @@ function PVPUIFrame_EvaluateHelpTips(self)
 			cvarBitfield = "closedInfoFramesAccountWide",
 			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
+			checkCVars = true,
 		};
 		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
 	end
