@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="GuildInfo.lua"/>
 
 <!--
@@ -32,9 +32,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.label:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
-			</OnLoad>
 			<OnEnter>
 				local index, current, max, gold, maxGold = GetGuildChallengeInfo(self.orderIndex);
 				if ( index ) then
@@ -189,22 +186,22 @@
 				</ScrollChild>
 			</ScrollFrame>
 			<!-- id is what controls the challenge type. buttons not necessarily in order by id. -->
-			<Frame name="$parentChallenge1" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="1">
+			<Frame name="$parentChallenge1" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Header1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge2" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="5">
+			<Frame name="$parentChallenge2" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge3" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="2">
+			<Frame name="$parentChallenge3" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge4" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate" id="3">
+			<Frame name="$parentChallenge4" parentArray="Challenges" inherits="CommunitiesGuildChallengeTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge3" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>

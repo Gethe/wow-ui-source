@@ -771,7 +771,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 				slots = {};
 				reagentTypes[sectionType] = slots;
 			end
-			local hasAnyAllocation = transaction:HasAllocations(slotIndex);
+			local hasAnyAllocation = transaction:HasAnyAllocations(slotIndex);
 
 			local slot = self.reagentSlotPool:Acquire();
 			if isModifyingRequiredSlot then
@@ -926,11 +926,17 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 					optionalReagentHelptipShown = true;
 				end
 
-				local function AllocateModification(slotIndex, reagentSlotSchematic)
+				local function OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic)
+					local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+					local quantity = math.min(quantityOwned, reagentSlotSchematic.quantityRequired);
+					self.transaction:OverwriteAllocation(slotIndex, reagent, quantity);
+				end
+
+				local function AllocateModificationWithQuantityInPossession(slotIndex, reagentSlotSchematic)
 					local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
 					if modification and modification.itemID > 0 then
 						local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-						self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+						OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic);
 					end
 				end
 
@@ -951,7 +957,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 							local flyout = ToggleProfessionsItemFlyout(slot.Button, self);
 							if flyout then
 								local function OnUndoClicked(o, flyout)
-									AllocateModification(slotIndex, reagentSlotSchematic);
+									AllocateModificationWithQuantityInPossession(slotIndex, reagentSlotSchematic);
 									
 									slot:RestoreOriginalItem();
 									slot:SetHighlightShown(false);
@@ -964,7 +970,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								local function OnFlyoutItemSelected(o, flyout, elementData)
 									local item = elementData.item;
 									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
-									transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+									OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic);
 
 									slot:SetItem(item);
 									slot:SetHighlightShown(not slot:IsOriginalItemSet());
@@ -983,7 +989,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								end
 								
 								flyout.OnElementEnterImplementation = function(elementData, tooltip)
-									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction);
+									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction, reagentSlotSchematic);
 								end
 	
 								flyout.OnElementEnabledImplementation = function(button, elementData, displayCount)
@@ -998,6 +1004,11 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 									end
 
 									if not self.transaction:AreAllRequirementsAllocated(item) then
+										return false;
+									end
+
+									local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent);
+									if quantityOwned < reagentSlotSchematic.quantityRequired then
 										return false;
 									end
 
@@ -1449,7 +1460,7 @@ function ProfessionsCustomerOrderFormMixin:AreRequiredReagentsProvided()
 	local recipeSchematic = transaction:GetRecipeSchematic();
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		local mustProvide = reagentSlotSchematic.required and (reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Customer);
-		if mustProvide and not transaction:HasAllocations(slotIndex) then
+		if mustProvide and not transaction:HasAllAllocations(slotIndex) then
 			return false;
 		end
 	end

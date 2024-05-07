@@ -37,6 +37,13 @@ function PerksProgramMixin:OnLoad()
 	self.FooterFrame:Init();
 end
 
+function PerksProgramMixin:SetDefaultSort()
+	self:SetSortAscending(false);
+	self.sortField = "price";
+
+	EventRegistry:TriggerEvent("PerksProgram.SortFieldSet");
+end
+
 function PerksProgramMixin:GetLabelFont()
 	return self.labelFont or GameFontNormalMed3;
 end
@@ -89,6 +96,15 @@ function PerksProgramMixin:TogglePlayerPreviewOnClick(hidePlayerForPreview)
 	EventRegistry:TriggerEvent("PerksProgram.OnPlayerPreviewToggled");
 end
 
+function PerksProgramMixin:GetMountSpecialPreviewSetting()
+	return self.mountSpecialAnimPlaying;
+end
+
+function PerksProgramMixin:SetMountSpecialPreviewOnClick(playMountSpecialAnim)
+	self.mountSpecialAnimPlaying = playMountSpecialAnim;
+	EventRegistry:TriggerEvent("PerksProgram.OnMountSpecialPreviewSet", playMountSpecialAnim);
+end
+
 function PerksProgramMixin:SetHideArmorSetting(playerArmorSetting)
 	self.hidePlayerArmorSetting = playerArmorSetting;
 end
@@ -113,6 +129,17 @@ function PerksProgramMixin:ToggleHideArmorSetting(playerArmorSetting)
 	if self:GetHideArmorSetting() ~= playerArmorSetting then
 		self:SetHideArmorSetting(playerArmorSetting);
 		EventRegistry:TriggerEvent("PerksProgram.OnPlayerHideArmorToggled");
+	end
+end
+
+function PerksProgramMixin:GetAttackAnimationSetting()
+	return self.attackAnimationPlaying;
+end
+
+function PerksProgramMixin:PlayerSetAttackAnimationOnClick(playAttackAnimation)
+	if self:GetAttackAnimationSetting() ~= playAttackAnimation then
+		self.attackAnimationPlaying = playAttackAnimation;
+		EventRegistry:TriggerEvent("PerksProgram.OnPlayerAttackAnimationSet", playAttackAnimation);
 	end
 end
 

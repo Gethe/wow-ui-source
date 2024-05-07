@@ -511,7 +511,7 @@ function MountJournal_FullUpdate(self)
 end
 
 function MountJournal_OnShow(self)
-	self.needsDragonridingHelpTip = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_COLLECTION_DRAGONRIDING);
+	self.needsDragonridingHelpTip = not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_MOUNT_COLLECTION_DRAGONRIDING);
 	if self.needsDragonridingHelpTip then
 		-- Force this to clear right now. There could be one done at end of frame due to the MountJournal_ClearSearch that ran last time
 		-- the UI was closed, and if so that could change the number of entries after the automatic scroll to a dragonriding mount
@@ -624,11 +624,12 @@ function MountJournal_EvaluateListHelpTip(self)
 			local helpTipInfo = {
 				text = MOUNT_JOURNAL_DRAGONRIDING_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
-				cvarBitfield = "closedInfoFrames",
-				bitfieldFlag = LE_FRAME_TUTORIAL_MOUNT_COLLECTION_DRAGONRIDING,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_MOUNT_COLLECTION_DRAGONRIDING,
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				offsetX = -4,
 				onAcknowledgeCallback = function() self.dragonridingHelpTipMountIndex = nil; end;
+				checkCVars = true,
 			};
 			HelpTip:Show(self, helpTipInfo, frame);
 			return;
@@ -658,6 +659,10 @@ end
 
 function MountJournal_GetPendingDragonMountChanges()
 	return MountJournal.PendingDragonMountChanges;
+end
+
+function MountJournal_OnModelLoaded(mountActor)
+	mountActor:Show();
 end
 
 function MountJournal_UpdateMountDisplay(forceSceneChange)
@@ -700,6 +705,8 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 			local mountActor = MountJournal.MountDisplay.ModelScene:GetActorByTag("unwrapped");
 			if mountActor then
+				mountActor:Hide();
+				mountActor:SetOnModelLoadedCallback(GenerateClosure(MountJournal_OnModelLoaded, mountActor));
 				mountActor:SetModelByCreatureDisplayID(creatureDisplayID, true);
 
 				-- mount self idle animation
@@ -933,6 +940,21 @@ function MountJournal_SetAllSourceFilters(value)
 	UIDropDownMenu_Refresh(MountJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end 
 
+
+local mountSourceOrderPriorities = {
+	[Enum.BattlePetSources.Drop] = 5,
+	[Enum.BattlePetSources.Quest] = 5,
+	[Enum.BattlePetSources.Vendor] = 5,
+	[Enum.BattlePetSources.Profession] = 5,
+	[Enum.BattlePetSources.Achievement] = 5,
+	[Enum.BattlePetSources.WorldEvent] = 5,
+	[Enum.BattlePetSources.Discovery] = 5,
+	[Enum.BattlePetSources.TradingPost] = 4,
+	[Enum.BattlePetSources.Promotion] = 3,
+	[Enum.BattlePetSources.PetStore] = 2,
+	[Enum.BattlePetSources.Tcg] = 1,
+};
+
 function MountJournalFilterDropDown_Initialize(self, level)
 	local filterSystem = {
 		onUpdate = MountJournalResetFiltersButton_UpdateVisibility,
@@ -959,7 +981,8 @@ function MountJournalFilterDropDown_Initialize(self, level)
 						  isSet = C_MountJournal.IsSourceChecked,
 						  numFilters = C_PetJournal.GetNumPetSources,
 						  filterValidation = C_MountJournal.IsValidSourceFilter,
-						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						  globalPrepend = "BATTLE_PET_SOURCE_",
+						  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("MOUNTS", mountSourceOrderPriorities),
 						},
 					},
 				},

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_WeeklyRewards.lua"/>
 
 	<Button name="WeeklyRewardActivityItemFrameTemplate" mixin="WeeklyRewardActivityItemMixin" virtual="true">
@@ -539,7 +539,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WeeklyRewardExpirationWarningDialog" enableMouse="true" mixin="GreatVaultRetirementWarningFrameMixin" frameStrata="HIGH">
+	<Frame name="WeeklyRewardExpirationWarningDialog" enableMouse="true" mixin="GreatVaultRetirementWarningFrameMixin" frameStrata="HIGH" hidden="true">
 		<Size x="420" y="69"/>
 		<KeyValues>
 			<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>

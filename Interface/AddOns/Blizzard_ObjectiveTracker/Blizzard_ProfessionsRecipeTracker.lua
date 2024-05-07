@@ -210,15 +210,4 @@ function ProfessionsRecipeTracking_Initialize()
 	end
 	EventRegistry:RegisterFrameEvent("BAG_UPDATE_DELAYED");
 	EventRegistry:RegisterCallback("BAG_UPDATE_DELAYED", OnBagUpdateDelayed, PROFESSION_RECIPE_TRACKER_MODULE);
-
-	local function OnSkillLinesChanged(o)
-		for _, recipeID in ipairs(C_TradeSkillUI.GetRecipesTracked(not IsRecrafting)) do
-			if not C_TradeSkillUI.IsRecipeProfessionLearned(recipeID) then
-				local track = false;
-				C_TradeSkillUI.SetRecipeTracked(recipeID, track, not IsRecrafting);
-			end
-		end
-	end
-	EventRegistry:RegisterFrameEvent("SKILL_LINES_CHANGED");
-	EventRegistry:RegisterCallback("SKILL_LINES_CHANGED", OnSkillLinesChanged, PROFESSION_RECIPE_TRACKER_MODULE);
 end

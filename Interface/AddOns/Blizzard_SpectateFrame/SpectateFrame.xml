@@ -1,0 +1,132 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="SpectateFrame" mixin="SpectateFrameMixin" setAllPoints="true" parent="UIParent">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Shadow" atlas="plunderstorm-spectate-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="180"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Spectating" inherits="Game16Font" text="SPECTATING">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Shadow" relativePoint="TOP" x="0" y="-10"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="PlayerName" inherits="GameFontHighlightHuge">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Shadow" relativePoint="BOTTOM" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="SpectateFrameArrowLeft" mixin="SpectateCycleModeMixin" parentKey="ArrowLeft">
+				<Size x="21" y="33"/>
+				<KeyValues>
+					<KeyValue key="spectateNext" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Shadow" relativePoint="LEFT" x="70" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="Game16Font">
+							<Anchors>
+								<Anchor point="CENTER" x="18"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<FontString parentKey="HighlightText" inherits="Game16Font">
+							<Anchors>
+								<Anchor point="CENTER" x="18"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture atlas="plunderstorm-spectate-arrow" useAtlasSize="true"/>
+				<HighlightTexture atlas="plunderstorm-spectate-arrow" useAtlasSize="true" alphaMode="ADD"/>
+				<PushedTexture atlas="plunderstorm-spectate-arrow" useAtlasSize="true"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="SpectateFrameArrowRight" mixin="SpectateCycleModeMixin" parentKey="ArrowRight">
+				<Size x="21" y="33"/>
+				<KeyValues>
+					<KeyValue key="spectateNext" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Shadow" relativePoint="RIGHT" x="-70" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="Game16Font">
+							<Anchors>
+								<Anchor point="CENTER" x="-18"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<FontString parentKey="HighlightText" inherits="Game16Font">
+							<Anchors>
+								<Anchor point="CENTER" x="-18"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture atlas="plunderstorm-spectate-arrow" rotation="180" useAtlasSize="true"/>
+				<HighlightTexture atlas="plunderstorm-spectate-arrow" rotation="180" useAtlasSize="true" alphaMode="ADD"/>
+				<PushedTexture atlas="plunderstorm-spectate-arrow" rotation="180" useAtlasSize="true"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ViewRewardsButton" mixin="SpectateViewRewardsButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="WOW_LABS_VIEW_REWARDS">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="32" type="number"/>
+					<KeyValue key="widthPadding" value="80" type="number"/>
+				</KeyValues>
+				<Size x="150" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-50" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<NormalFont style="GameFontNormalLarge"/>
+				<HighlightFont style="GameFontHighlightLarge"/>
+			</Button>
+			<Button parentKey="LeaveMatchButton" mixin="SpectateLeaveMatchButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="WOW_LABS_REMATCH">
+				<KeyValues>
+					<KeyValue key="fixedHeight" value="32" type="number"/>
+					<KeyValue key="widthPadding" value="80" type="number"/>
+				</KeyValues>
+				<Size x="150" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ViewRewardsButton" relativePoint="LEFT" x="-12" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<NormalFont style="GameFontNormalLarge"/>
+				<HighlightFont style="GameFontHighlightLarge"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

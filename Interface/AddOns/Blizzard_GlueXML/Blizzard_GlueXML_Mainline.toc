@@ -1,0 +1,60 @@
+## Title: Blizzard_GlueXML
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil
+## LoadFirst: 1
+## SuppressLocalTableRef: 1
+## AllowLoad: Glue
+## AllowLoadGameType: mainline
+Mainline\Localization.lua
+WoWLabs\GluePartyPoseUI.lua
+WoWLabs\GluePartyPoseUI.xml
+WoWLabs\MatchmakingQueueFrame.lua
+WoWLabs\MatchmakingQueueFrame.xml
+WoWLabs\PlunderstormLobby.lua
+WoWLabs\PlunderstormLobby.xml
+Mainline\GlueTooltip.xml
+ServerAlert.lua
+ServerAlert.xml
+Mainline\AccountLogin.lua
+Mainline\AccountLogin.xml
+Mainline\RealmList.lua
+Mainline\RealmList.xml
+Mainline\CharacterServicesPatchwerk.xml
+Mainline\CharacterSelect.lua
+Mainline\CharacterSelect.xml
+Mainline\AccountReactivate.lua
+Mainline\AccountReactivate.xml
+Mainline\KioskModeSplash.lua
+Mainline\KioskModeSplash.xml
+Mainline\CharacterServicesShared.lua
+CharacterServicesTemplates.lua
+CharacterServicesTemplates.xml
+Mainline\CharacterServicesCharacterSelector.lua
+Mainline\CharacterServicesCharacterSelector.xml
+Mainline\CharacterServicesFlowMixin.lua
+Mainline\CharacterServices.lua
+Mainline\CharacterServices.xml
+Mainline\CharacterServicesAccountSelector.lua
+Mainline\CharacterServicesAccountSelector.xml
+Mainline\CharacterServicesPaidCharacterTransfer.lua
+Mainline\CharacterServicesPaidCharacterTransfer.xml
+Mainline\CharacterServicesPaidFactionChange.lua
+CharacterServicesPaidFactionChange.xml
+Mainline\CharacterServicesPaidRaceChange.lua
+Mainline\CharacterServicesPaidRaceChange.xml
+Shared\CharacterServicesPaidNameChange.lua
+Shared\CharacterServicesPaidNameChange.xml
+SocialContract.lua
+SocialContract.xml
+PromotionFrame.lua
+PromotionFrame.xml
+StarterEditionPopUp.xml
+Mainline\CinematicsFrame.lua
+Mainline\CinematicsFrame.xml
+MovieFrame.lua
+MovieFrame.xml
+Mainline\CreditsFrame.lua
+Mainline\CreditsFrame.xml
+Mainline\GlueMenuFrame.lua
+Mainline\GlueMenuFrame.xml

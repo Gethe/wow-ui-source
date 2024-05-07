@@ -134,6 +134,10 @@ local EncounterJournal =
 			},
 		},
 		{
+			Name = "InitalizeSelectedTier",
+			Type = "Function",
+		},
+		{
 			Name = "InstanceHasLoot",
 			Type = "Function",
 

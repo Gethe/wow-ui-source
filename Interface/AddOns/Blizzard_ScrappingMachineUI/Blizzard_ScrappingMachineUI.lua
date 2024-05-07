@@ -56,6 +56,8 @@ function ScrappingMachineMixin:OnShow()
 	self:UpdateScrapButtonState();
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("SCRAPPING_MACHINE_PENDING_ITEM_CHANGED");
+	self:RegisterEvent("SCRAPPING_MACHINE_ITEM_ADDED");
+	self:RegisterEvent("SCRAPPING_MACHINE_ITEM_REMOVED");
 	self:RegisterEvent("UPDATE_TRADESKILL_CAST_STOPPED");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
 	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player");
@@ -72,6 +74,12 @@ function ScrappingMachineMixin:OnEvent(event, ...)
 		C_ScrappingMachineUI.ValidateScrappingList();
 	elseif (event == "SCRAPPING_MACHINE_PENDING_ITEM_CHANGED") then
 		self:UpdateScrapButtonState();
+	elseif (event == "SCRAPPING_MACHINE_ITEM_ADDED") then
+		local itemAdded = true;
+		self:PlayItemChangeSounds(itemAdded);
+	elseif (event == "SCRAPPING_MACHINE_ITEM_REMOVED") then
+		local itemAddedNo = false;
+		self:PlayItemChangeSounds(itemAddedNo);
 	elseif (event == "UNIT_SPELLCAST_START") then
 		local unitTag, lineID, spellID = ...;
 		if spellID == C_ScrappingMachineUI.GetScrapSpellID() then
@@ -93,6 +101,17 @@ function ScrappingMachineMixin:OnEvent(event, ...)
 		if self.scrapCastLineID and self.scrapCastLineID == lineID then
 			C_ScrappingMachineUI.RemoveCurrentScrappingItem();
 		end
+	end
+end
+
+local itemChangeSoundsByTimerunningID = {
+	[1] = { onItemAdded = SOUNDKIT.UNRAVELING_SANDS_ITEM_ADDED, onItemRemoved = SOUNDKIT.UNRAVELING_SANDS_ITEM_REMOVED},
+};
+
+function ScrappingMachineMixin:PlayItemChangeSounds(itemAdded)
+	local soundKits = itemChangeSoundsByTimerunningID[PlayerGetTimerunningSeasonID()];
+	if soundKits then
+		PlaySound(itemAdded and soundKits.onItemAdded or soundKits.onItemRemoved);
 	end
 end
 

@@ -139,6 +139,15 @@ local PerksProgram =
 			},
 		},
 		{
+			Name = "IsAttackAnimToggleEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAttackAnimToggleEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsFrozenPerksVendorItem",
 			Type = "Function",
 
@@ -150,6 +159,15 @@ local PerksProgram =
 			Returns =
 			{
 				{ Name = "isFrozen", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsMountSpecialAnimToggleEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isMountSpecialAnimToggleEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -392,11 +410,13 @@ local PerksProgram =
 				{ Name = "refundable", Type = "bool", Nilable = false },
 				{ Name = "subItemsLoaded", Type = "bool", Nilable = false },
 				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
+				{ Name = "doesNotExpire", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "iconTexture", Type = "string", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
+				{ Name = "mountTypeName", Type = "string", Nilable = false },
 				{ Name = "speciesID", Type = "number", Nilable = false },
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },

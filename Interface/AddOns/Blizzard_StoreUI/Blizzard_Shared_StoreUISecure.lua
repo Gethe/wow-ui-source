@@ -4459,7 +4459,7 @@ end
 
 function StripWoWAccountLicenseInfo(gameAccount)
 	if (string.find(gameAccount, '#')) then
-		return string.gsub(gameAccount,'%d+\#(%d)','WoW%1');
+		return string.gsub(gameAccount,'%d+#(%d)','WoW%1');
 	end
 	return gameAccount;
 end

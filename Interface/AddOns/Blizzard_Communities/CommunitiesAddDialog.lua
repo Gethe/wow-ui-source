@@ -75,6 +75,7 @@ function CommunitiesAddDialogMixin:OnShow()
 	self:SetAttribute("shown", true);
 	local factionTag, localizedFactionName = UnitFactionGroup("player");
 	self.CreateWoWCommunityLabel:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL:format(localizedFactionName));
+	self.CreateWoWCommunityDescription:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION:format(localizedFactionName));
 	
 	self.CreateWoWCommunityButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.Character) and not IsVeteranTrialAccount() and not C_ClassTrial.IsClassTrialCharacter());
 	self.CreateWoWCommunityButton.FactionIcon:Show();

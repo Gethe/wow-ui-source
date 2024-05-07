@@ -1159,7 +1159,7 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 		GetInventoryItemsForSlot(i, availableItems);
 
 		for packedLocation, itemID in pairs(availableItems) do
-			local itemInfo = {GetItemInfo(itemID)};
+			local itemInfo = {C_Item.GetItemInfo(itemID)};
 			local ilvl = itemInfo[4];
 
 			if (ilvl ~= nil) then

@@ -428,6 +428,8 @@ function PerksProgramProductsFrameMixin:UpdateProducts(resetSelection)
 	local frozenItemInfo = PerksProgramFrame:GetFrozenPerksVendorItemInfo();
 	local groupInfos = {};
 	local numGroupInfos = 0;
+	
+	local hasExpirableItems = false;
 
 	local function addItemToDataProvider(perksVendorID)
 		local itemInfo = PerksProgramFrame:GetVendorItemInfo(perksVendorID);
@@ -450,6 +452,8 @@ function PerksProgramProductsFrameMixin:UpdateProducts(resetSelection)
 		if not itemInfo.uiGroupInfo then
 			return;
 		end
+
+		hasExpirableItems = hasExpirableItems or not (itemInfo.doesNotExpire or itemInfo.timeRemaining == 0);
 
 		dataProvider:Insert(itemInfo);
 
@@ -477,6 +481,11 @@ function PerksProgramProductsFrameMixin:UpdateProducts(resetSelection)
 		for _, groupInfo in pairs(groupInfos) do
 			addHeaderToDataProvider(groupInfo);
 		end
+	end
+
+	self.ProductsScrollBoxContainer.TimeSortButton:SetEnabled(hasExpirableItems);
+	if PerksProgramFrame:GetSortField() == "timeRemaining" then
+		PerksProgramFrame:SetDefaultSort();
 	end
 
 	dataProvider:SetSortComparator(ProductSortComparator);

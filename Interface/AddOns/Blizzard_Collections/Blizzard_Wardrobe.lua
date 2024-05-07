@@ -1595,16 +1595,17 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 		};
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	else
-		if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB)) then
+		if (GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB)) then
 			return;
 		end
 
 		local helpTipInfo = {
 			text = TRANSMOG_SETS_TAB_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB,
 			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			checkCVars = true,
 		};
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	end
@@ -2821,6 +2822,10 @@ function WardrobeSetsTransmogModelMixin:OnModelLoaded()
 	if ( self.cameraID ) then
 		Model_ApplyUICamera(self, self.cameraID);
 	end
+	if self.setID then
+		self.setID = nil;
+		self:GetParent():MarkDirty();
+	end
 end
 
 function WardrobeItemsCollectionMixin:GetChosenVisualSource(visualID)
@@ -3140,6 +3145,16 @@ function WardrobeFilterDropDown_SetAllSourceTypeFilters(value)
 	UIDropDownMenu_Refresh(WardrobeFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
+local transmogSourceOrderPriorities = {
+	[Enum.TransmogSource.JournalEncounter] = 5,
+	[Enum.TransmogSource.Quest] = 5,
+	[Enum.TransmogSource.Vendor] = 5,
+	[Enum.TransmogSource.WorldDrop] = 5,
+	[Enum.TransmogSource.Achievement] = 5,
+	[Enum.TransmogSource.Profession] = 5,
+	[Enum.TransmogSource.TradingPost] = 4,
+};
+
 function WardrobeFilterDropDown_InitializeItems(self, level)
 	-- Transmog NPC only uses source filters
 	local sourceFilters = {
@@ -3157,6 +3172,7 @@ function WardrobeFilterDropDown_InitializeItems(self, level)
 		  isSet = C_TransmogCollection.IsSourceTypeFilterChecked,
 		  numFilters = C_TransmogCollection.GetNumTransmogSources,
 		  globalPrepend = "TRANSMOG_SOURCE_",
+		  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("TRANSMOG", transmogSourceOrderPriorities);
 		},
 	};
 
@@ -3630,7 +3646,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 
 	if HelpTip:IsShowing(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL) then
 		HelpTip:Hide(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL);
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SETS_TAB, true);
+		SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB, true);
 	end
 end
 
@@ -4378,7 +4394,7 @@ function WardrobeSetsDetailsItemFrameRightClickDropDown_Init(self)
 	UIDropDownMenu_AddButton(info);
 end
 
-WardrobeSetsTransmogMixin = { };
+WardrobeSetsTransmogMixin = CreateFromMixins(DirtiableMixin);
 
 function WardrobeSetsTransmogMixin:OnLoad()
 	self.NUM_ROWS = 2;
@@ -4386,6 +4402,7 @@ function WardrobeSetsTransmogMixin:OnLoad()
 	self.PAGE_SIZE = self.NUM_ROWS * self.NUM_COLS;
 	self.APPLIED_SOURCE_INDEX = 1;
 	self.SELECTED_SOURCE_INDEX = 3;
+	self:SetDirtyMethod(self.UpdateSets);
 end
 
 function WardrobeSetsTransmogMixin:OnShow()

@@ -381,7 +381,7 @@ function ProfessionsSpecPathMixin:AddTooltipNextPerk(tooltip)
 	local descriptionText = self:GetNextPerkDescription();
 	if descriptionText ~= nil then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
-		descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
+		descriptionText = descriptionText:gsub("|cffffffff(.-)|r", "%1");
 		GameTooltip_AddNormalLine(tooltip, descriptionText);
 	end
 end
@@ -659,7 +659,7 @@ function ProfessionsSpecPerkMixin:OnEnter() -- Override
 	local tooltip = self:AcquireTooltip();
 
 	local descriptionText = C_ProfSpecs.GetDescriptionForPerk(self.perkID);
-	descriptionText = descriptionText:gsub("\|cffffffff(.-)\|r", "%1");
+	descriptionText = descriptionText:gsub("|cffffffff(.-)|r", "%1");
 	GameTooltip_AddNormalLine(tooltip, descriptionText);
 	if not self:IsEarned() then
 		GameTooltip_AddBlankLineToTooltip(tooltip);

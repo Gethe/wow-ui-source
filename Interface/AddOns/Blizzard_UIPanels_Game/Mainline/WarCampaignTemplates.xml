@@ -1,0 +1,269 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CampaignTooltipTemplate" mixin="CampaignTooltipMixin" inherits="VerticalLayoutFrame, TooltipBackdropTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" virtual="true" toplevel="true">
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="topPadding" value="10" type="number"/>
+			<KeyValue key="bottomPadding" value="4" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+			<KeyValue key="rightPadding" value="10" type="number"/>
+			<KeyValue key="spacing" value="0" type="number"/>
+		</KeyValues>
+		<Size x="10" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="250" y="0"/>
+				</FontString>
+				<FontString parentKey="ChapterTitle" inherits="GameFontNormal" justifyH="LEFT" text="STORY_PROGRESS">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="topPadding" value="12" type="number"/>
+					</KeyValues>
+					<Size x="250" y="0"/>
+				</FontString>
+				<FontString parentKey="Description" justifyH="LEFT" inherits="GameFontHighlight">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="bottomPadding" value="12" type="number"/>
+					</KeyValues>
+					<Size x="250" y="0"/>
+				</FontString>
+				<FontString parentKey="CompleteRewardText" inherits="GameFontNormal" justifyH="LEFT" text="WAR_CAMPAIGN_CHAPTER_REWARD_TEXT">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="4" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="topPadding" value="12" type="number"/>
+					</KeyValues>
+					<Size x="250" y="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="InternalEmbeddedItemTooltipTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="topPadding" value="14" type="number"/>
+					<KeyValue key="bottomPadding" value="6" type="number"/>
+				</KeyValues>
+				<Size x="100" y="100"/>
+				<Scripts>
+					<OnSizeChanged inherit="prepend">
+						self:GetParent():Layout();
+					</OnSizeChanged>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="LoreButtonTemplate" registerForClicks="LeftButtonUp" mixin="CampaignLoreButtonMixin" hidden="true" virtual="true">
+		<Size x="28" y="24"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="CampaignHeaderCollapseButtonTemplate" registerForClicks="LeftButtonUp" mixin="CampaignCollapseButtonMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="CampaignHeaderDisplayTemplate" inherits="ResizeLayoutFrame" mixin="CampaignHeaderDisplayMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Campaign_Horde" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TopFiligree" atlas="ZoneStory_Divider" useAtlasSize="true">
+					<KeyValues>
+ 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+ 					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" y="25"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Size x="175" y="15"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Background" relativePoint="LEFT" x="42" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Progress" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightTexture" atlas="Campaign_Horde" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+					<KeyValues>
+ 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+ 					</KeyValues>
+ 					<Anchors>
+ 						<Anchor point="TOP" relativeKey="$parent.Background"/>
+ 					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NextObjective" inherits="ResizeLayoutFrame" mixin="CampaignNextObjectiveMixin">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Background" relativePoint="BOTTOM" x="0" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="220" y="0"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CampaignHeaderTemplate" inherits="CampaignHeaderDisplayTemplate" mixin="CampaignHeaderMixin, CampaignHeaderCollapsibleMixin, CampaignHeaderTooltipableMixin" virtual="true">
+		<KeyValues>
+			<!-- NOTE: topPadding will be assigned programatically -->
+			<KeyValue key="fixedWidth" value="260" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="SelectedHighlight" atlas="CampaignHeader_SelectedGlow" useAtlasSize="true">
+					<KeyValues>
+ 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+ 					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CollapseButton" inherits="CampaignHeaderCollapseButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Background" x="18" y="6"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="LoreButton" inherits="LoreButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-10" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Burst" atlas="Campaign-QuestLog-LoreBook-Glow" useAtlasSize="true">
+							<KeyValues>
+		 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		 					</KeyValues>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Rotate" looping="REPEAT">
+									<Rotation smoothing="NONE" duration="12" degrees="360"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.Burst.Rotate:Play();
+					</OnLoad>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/> <!-- OnLeave logic handled by run-time OnUpdate handler -->
+			<OnHide method="OnLeave"/> <!-- Necessary because OnUpdate will stop when hidden -->
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CampaignHeaderMinimalTemplate" inherits="ResizeLayoutFrame" mixin="QuestLogHeaderCodeMixin, CampaignHeaderMinimalMixin, CampaignHeaderCollapsibleMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="leftPadding" value="4" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Frames>
+			<Button parentKey="CollapseButton" inherits="CampaignHeaderCollapseButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightMedium" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Size x="175" y="15"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CollapseButton" x="26" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NextObjective" inherits="ResizeLayoutFrame" mixin="CampaignNextObjectiveMixin">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="205" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+</Ui>

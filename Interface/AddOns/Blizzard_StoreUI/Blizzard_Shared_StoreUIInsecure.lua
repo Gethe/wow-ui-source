@@ -26,7 +26,7 @@ end
 
 if (InGlue()) then
 	VASCharacterGUID = nil;
-	GlueDialogTypes["VAS_PRODUCT_DELIVERED"] = {
+	StaticPopupDialogs["VAS_PRODUCT_DELIVERED"] = {
 		button1 = OKAY,
 		escapeHides = true,
 		OnAccept = function()

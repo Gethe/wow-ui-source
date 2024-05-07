@@ -421,6 +421,21 @@ function ToyBoxFilterDropDown_SetAllExpansionTypeFilters(value)
 	UIDropDownMenu_Refresh(ToyBoxFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
+local toySourceOrderPriorities = {
+	[Enum.BattlePetSources.Drop] = 5,
+	[Enum.BattlePetSources.Quest] = 5,
+	[Enum.BattlePetSources.Vendor] = 5,
+	[Enum.BattlePetSources.Profession] = 5,
+	[Enum.BattlePetSources.WildPet] = 5,
+	[Enum.BattlePetSources.Achievement] = 5,
+	[Enum.BattlePetSources.WorldEvent] = 5,
+	[Enum.BattlePetSources.Discovery] = 5,
+	[Enum.BattlePetSources.TradingPost] = 4,
+	[Enum.BattlePetSources.Promotion] = 3,
+	[Enum.BattlePetSources.PetStore] = 2,
+	[Enum.BattlePetSources.Tcg] = 1,
+};
+
 function ToyBoxFilterDropDown_Initialize(self, level)
 	local filterSystem = {
 		onUpdate = ToyBoxFilterDropDown_OnUpdate,		
@@ -445,6 +460,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 						  numFilters = C_PetJournal.GetNumPetSources,
 						  filterValidation = C_ToyBoxInfo.IsToySourceValid,
 						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("TOYS", toySourceOrderPriorities),
 						},
 					},
 				},

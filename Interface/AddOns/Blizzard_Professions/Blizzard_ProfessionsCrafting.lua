@@ -108,13 +108,9 @@ function ProfessionsCraftingPageMixin:OnLoad()
 		getItemsFunc = PaperDollFrameItemFlyout_GetItems,
 		postGetItemsFunc = PaperDollFrameItemFlyout_PostGetItems,
 		hasPopouts = true,
-		anchorX = 0,
+		parent = self:GetParent(),
+		anchorX = 6,
 		anchorY = -3,
-		verticalAnchorX = 0,
-		verticalAnchorY = 0,
-		highlightSizeX = 45,
-		highlightSizeY = 45,
-		highlightOfsY = 3,
 	};
 
 	self.CraftingOutputLog:SetScript("OnShow", function()
@@ -625,7 +621,7 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 	for _, slot in ipairs(optionalReagentSlots or {}) do
 		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
-		local hasAllocation = transaction:HasAllocations(reagentSlotSchematic.slotIndex);
+		local hasAllocation = transaction:HasAnyAllocations(reagentSlotSchematic.slotIndex);
 		if hasAllocation and slot.Button.locked then
 			return FailValidationReason.LockedReagentSlot;
 		end
@@ -1137,9 +1133,15 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		ProfessionsCraftingPage_HelpPlate[i] = nil;
 	end
 
-	if self.RecipeList:IsShown() then
-		table.insert(ProfessionsCraftingPage_HelpPlate, { ButtonPos = { x = 125,	y = -44 }, HighLightBox = { x = 0, y = -52, width = 271, height = 30 }, ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS });
+	local recipeSearchBar = { ToolTipDir = "DOWN", ToolTipText = ProfessionsFrame.professionType == Professions.ProfessionType.Gathering and PROFESSIONS_GATHERING_JOURNAL_LIST_HELP or PROFESSIONS_CRAFTING_HELP_FILTERS };
+	if ProfessionsUtil.IsCraftingMinimized() then
+		recipeSearchBar.ButtonPos = { x = 250, y = -3 };
+		recipeSearchBar.HighLightBox = { x = 169, y = -9, width = 224, height = 30 };
+	else
+		recipeSearchBar.ButtonPos = { x = 125, y = -44 };
+		recipeSearchBar.HighLightBox = { x = 0, y = -52, width = 271, height = 30 };
 	end
+	table.insert(ProfessionsCraftingPage_HelpPlate, recipeSearchBar);
 
 	if self.SchematicForm.Reagents:IsShown() then
 		local reagentsTopPoint = self.SchematicForm.Reagents:GetTop() - self:GetTop() + 24;
@@ -1328,7 +1330,7 @@ function ProfessionsCraftingPageMixin:SchematicPostInit()
 	local optionalReagentSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Modifying);
 	for _, slot in ipairs(optionalReagentSlots or {}) do
 		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
-		local hasAllocation = self.SchematicForm.transaction:HasAllocations(reagentSlotSchematic.slotIndex);
+		local hasAllocation = self.SchematicForm.transaction:HasAnyAllocations(reagentSlotSchematic.slotIndex);
 		if hasAllocation and slot.Button.locked then
 			slot:SetOverrideNameColor(ERROR_COLOR);
             slot:SetColorOverlay(ERROR_COLOR);

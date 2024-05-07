@@ -137,7 +137,7 @@ function ProfessionsReagentSlotMixin:GetNameColor()
 		return self.overrideNameColor;
 	end
 
-	if self:GetReagentSlotSchematic().reagentType == Enum.CraftingReagentType.Optional or transaction:HasAllocations(self:GetSlotIndex()) then
+	if self:GetReagentSlotSchematic().reagentType == Enum.CraftingReagentType.Optional or transaction:HasAnyAllocations(self:GetSlotIndex()) then
 		return HIGHLIGHT_FONT_COLOR;
 	end
 

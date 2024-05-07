@@ -194,6 +194,74 @@ function QuestObjectiveSetupBlockButton_FindGroup(block, questID)
 	return block.hasGroupFinderButton;
 end
 
+local g_scenarioFindGroupButtonPool = CreateFramePool("BUTTON", nil, "ScenarioObjectiveFindGroupButtonTemplate", OnRelease);
+function ScenarioObjectiveFindGroup_ReleaseButton(self)
+	self.scenarioID = nil;
+	g_scenarioFindGroupButtonPool:Release(self);
+end
+
+function ScenarioObjectiveFindGroup_OnMouseDown(self)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
+		self.Highlight:SetPoint("CENTER", self, "CENTER", -2, -1);
+	end
+end
+
+function ScenarioObjectiveFindGroup_OnMouseUp(self)
+	if self:IsEnabled() then
+		self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
+		self.Highlight:SetPoint("CENTER", self, "CENTER", -1, 0);
+	end
+end
+
+function ScenarioObjectiveFindGroup_OnEnter(self)
+	GameTooltip:SetOwner(self);
+	GameTooltip:AddLine(TOOLTIP_TRACKER_FIND_GROUP_BUTTON, HIGHLIGHT_FONT_COLOR:GetRGB());
+
+	GameTooltip:Show();
+end
+
+function ScenarioObjectiveFindGroup_OnLeave(self)
+	GameTooltip:Hide();
+end
+
+function ScenarioObjectiveFindGroup_OnClick(self)
+	local shouldShowCreateGroupButton = true;
+	LFGListUtil_FindScenarioGroup(self.scenarioID, shouldShowCreateGroupButton);
+end
+
+function ScenarioObjectiveReleaseBlockButton_FindGroup(block)
+	block.hasGroupFinderButton = nil;
+
+	if block.groupFinderButton then
+		ScenarioObjectiveFindGroup_ReleaseButton(block.groupFinderButton);
+		block.groupFinderButton = nil;
+	end
+end
+
+function ScenarioObjectiveSetupBlockButton_FindGroup(block, scenarioID)
+	if block.hasGroupFinderButton == nil then
+		block.hasGroupFinderButton = C_LFGList.CanCreateScenarioGroup(scenarioID);
+	end
+
+	if block.hasGroupFinderButton then
+		local groupFinderButton = block.groupFinderButton;
+		if not groupFinderButton then
+			groupFinderButton = g_scenarioFindGroupButtonPool:Acquire();
+			groupFinderButton:SetParent(block);
+			groupFinderButton.scenarioID = scenarioID;
+			block.groupFinderButton = groupFinderButton;
+		end
+
+		groupFinderButton:SetPoint("TOPRIGHT", block, 30, 5);
+		groupFinderButton:Show();
+	else
+		ScenarioObjectiveReleaseBlockButton_FindGroup(block);
+	end
+
+	return block.hasGroupFinderButton;
+end
+
 function QuestObjectiveReleaseBlockButton_FindGroup(block)
 	block.hasGroupFinderButton = nil;
 

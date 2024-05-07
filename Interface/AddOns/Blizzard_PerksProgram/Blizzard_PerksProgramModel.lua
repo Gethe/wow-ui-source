@@ -5,6 +5,7 @@ local DEFAULT_CAMERA_TAG = "primary";
 local DEFAULT_TOY_ACTOR_TAG = "actor";
 local DEFAULT_FANFARE_ACTOR_TAG = "fanfare";
 local MOUNT_SELF_IDLE_ANIM = 618;
+local MOUNT_SPECIAL_ANIM_KIT = 1371;
 local PET_DEFAULT_ANIM_ID = 23877;
 local DEFAULT_CELEBRATE_MODEL_SCENE_ID = 641;
 
@@ -203,7 +204,11 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceID, hasSu
 	return nil
 end
 
-local function SetAnimations(actor, displayData)
+local function SetAnimations(actor, displayData, overrideAnimations)
+	if overrideAnimations then
+		return;
+	end
+
 	if displayData.animationKitID then
 		local maintain = true;
 		actor:PlayAnimationKit(displayData.animationKitID, maintain);
@@ -218,7 +223,7 @@ local function SetSpellVisualKit(actor, displayData)
 	end
 end
 
-local function UpdateModelSceneWithDisplayData(actor, camera, displayData, perksVendorCategoryID)
+local function UpdateModelSceneWithDisplayData(actor, camera, displayData, perksVendorCategoryID, tryUseOverrideAnim)
 	if not displayData then
 		return;
 	end
@@ -259,7 +264,10 @@ local function UpdateModelSceneWithDisplayData(actor, camera, displayData, perks
 		actor:SetSpellVisualKit(nil);
 		actor:StopAnimationKit();
 		actor:SetAnimation(0, 0, 1.0);
-		SetAnimations(actor, displayData);
+		if tryUseOverrideAnim then
+			SetAnimations(actor, displayData);
+		end
+
 		SetSpellVisualKit(actor, displayData);
 	end
 end
@@ -329,7 +337,9 @@ function PerksProgramModelSceneContainerFrameMixin:Init()
 	EventRegistry:RegisterCallback("PerksProgram.OnDisplayDataChanged", self.OnDisplayDataChanged, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnFormChanged", self.OnFormChanged, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnPlayerPreviewToggled", self.OnPlayerPreviewToggled, self);
+	EventRegistry:RegisterCallback("PerksProgram.OnMountSpecialPreviewSet", self.OnMountSpecialPreviewSet, self);
 	EventRegistry:RegisterCallback("PerksProgram.OnPlayerHideArmorToggled", self.OnPlayerHideArmorToggled, self);
+	EventRegistry:RegisterCallback("PerksProgram.OnPlayerAttackAnimationSet", self.OnPlayerAttackAnimationSet, self);
 	EventRegistry:RegisterCallback("PerksProgram.CelebratePurchase", self.OnCelebratePurchase, self);
 
 	self.CelebrateModelScene:TransitionToModelSceneID(DEFAULT_CELEBRATE_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
@@ -418,10 +428,29 @@ function PerksProgramModelSceneContainerFrameMixin:OnPlayerPreviewToggled()
 	end
 end
 
+function PerksProgramModelSceneContainerFrameMixin:OnMountSpecialPreviewSet(value)
+	self.mountSpecialAnimPlaying = value;
+	self:UpdateMountSpecialAnimPlaying();
+end
+
 function PerksProgramModelSceneContainerFrameMixin:OnPlayerHideArmorToggled()
 	if self.currentData then
 		local forceSceneChange = true;
 		self:OnProductSelected(self.currentData, forceSceneChange);
+	end
+end
+
+function PerksProgramModelSceneContainerFrameMixin:OnPlayerAttackAnimationSet(value)
+	self.attackAnimationPlaying = value;
+	if not self.playerActor or not self.currentData then
+		return;
+	end
+
+	self.playerActor:SetSpellVisualKit(nil);
+	self.playerActor:StopAnimationKit();
+	self.playerActor:SetAnimation(0, 0, 1.0);
+	if self.attackAnimationPlaying then
+		SetAnimations(self.playerActor, self.currentData.displayData);
 	end
 end
 
@@ -493,7 +522,8 @@ function PerksProgramModelSceneContainerFrameMixin:OnDisplayDataChanged(data, da
 		actor = modelScene:GetActorByTag(DEFAULT_TOY_ACTOR_TAG);
 	end
 	local camera = modelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-	UpdateModelSceneWithDisplayData(actor, camera, data.displayData, categoryID);
+	local tryUseOverrideAnim = true;
+	UpdateModelSceneWithDisplayData(actor, camera, data.displayData, categoryID, tryUseOverrideAnim);
 end
 
 local function UpdateDropShadow(texture, dropShadowSettings)
@@ -558,7 +588,9 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 		self.MainModelScene:AttachPlayerToMount(actor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm);
 
 		local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-		UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID);
+		local tryUseOverrideAnim = true;
+		UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID, tryUseOverrideAnim);
+		self:UpdateMountSpecialAnimPlaying();
 	end
 	
 	UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["MOUNT_MAIN"]);
@@ -566,6 +598,34 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 	self.ToyOverlayFrame:Hide();
 	self.PlayerModelScene:Hide();
 	EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", self.MainModelScene);
+end
+
+function PerksProgramModelSceneContainerFrameMixin:UpdateMountSpecialAnimPlaying()
+	if self.MountSpecialTimer then
+		self.MountSpecialTimer:Cancel();
+		self.MountSpecialTimer = nil;
+	end
+
+	local actor = self.MainModelScene:GetActorByTag(DEFAULT_MOUNT_ACTOR_TAG);
+	if actor then
+		if not self.mountSpecialAnimPlaying then
+			if isSelfMount then
+				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+				actor:SetAnimation(MOUNT_SELF_IDLE_ANIM);
+			else
+				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
+				actor:SetAnimation(0);
+			end
+		else
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
+			actor:PlayAnimationKit(MOUNT_SPECIAL_ANIM_KIT, true);
+
+			local function MountSpecialCallback()
+				self:UpdateMountSpecialAnimPlaying();
+			end
+			self.MountSpecialTimer = C_Timer.NewTimer(10, MountSpecialCallback);
+		end
+	end
 end
 
 -- PETS
@@ -605,7 +665,8 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, 
 		actor:SetRequestedScale(desiredScale);
 						
 		local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-		UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID);
+		local tryUseOverrideAnim = true;
+		UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID, tryUseOverrideAnim);
 	end
 
 	UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["PET_MAIN"]);
@@ -656,7 +717,8 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 			tryOnHandItem(data.displayData.offHandItemModifiedAppearanceID, INVSLOT_OFFHAND);
 
 			local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-			UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID);
+			local tryUseOverrideAnim = true;
+			UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID, tryUseOverrideAnim);
 		end
 
 		UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["PET_MAIN"]);
@@ -730,7 +792,8 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForTransmogs(d
 
 	if displayData then
 		local camera = self.PlayerModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-		UpdateModelSceneWithDisplayData(self.playerActor, camera, displayData, data.perksVendorCategoryID);
+		local tryOverrideAttackAnimations = C_PerksProgram.IsAttackAnimToggleEnabled() and self.attackAnimationPlaying or true;
+		UpdateModelSceneWithDisplayData(self.playerActor, camera, displayData, data.perksVendorCategoryID, tryOverrideAttackAnimations);
 	end
 	UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["TRANSMOG_PLAYER"]);
 	self.ToyOverlayFrame:Hide();

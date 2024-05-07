@@ -480,21 +480,23 @@ function ItemUpgradeMixin:GetUpgradeCostTables(upgradeLevel)
 	return self.upgradeCurrencyCosts[upgradeLevel], self.upgradeItemCosts[upgradeLevel];
 end
 
-function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
+function ItemUpgradeMixin:CheckUpgradeLevel(upgradeLevel)
 	local costStringTable = {};
 	local checkQuantity = (upgradeLevel ~= nil);
+	local hasEnoughCurrency = true;
 
 	local currencyCostTable, itemCostTable = self:GetUpgradeCostTables(upgradeLevel);
 	for currencyID, currencyCostEntry in pairs(currencyCostTable) do
 		local hasEnough = true;
 		if checkQuantity then
 			local ownedCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
-			hasEnough = currencyCostEntry.cost <= ownedCurrencyInfo.quantity
+			hasEnough = currencyCostEntry.cost <= ownedCurrencyInfo.quantity;
 		end
 
 		local colorCode = nil;
 		if not hasEnough then
 			colorCode = RED_FONT_COLOR_CODE;
+			hasEnoughCurrency = false;
 		elseif currencyCostEntry.discountInfo and currencyCostEntry.discountInfo.isDiscounted then
 			colorCode = GREEN_FONT_COLOR_CODE;
 		end
@@ -512,6 +514,7 @@ function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
 		local colorCode = nil;
 		if not hasEnough then
 			colorCode = RED_FONT_COLOR_CODE;
+			hasEnoughCurrency = false;
 		elseif itemCostEntry.discountInfo and itemCostEntry.discountInfo.isDiscounted then
 			colorCode = GREEN_FONT_COLOR_CODE;
 		end
@@ -519,7 +522,17 @@ function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
 		table.insert(costStringTable, FormattingUtil.GetItemCostString(itemID, itemCostEntry.cost, colorCode));
 	end
 
-	return table.concat(costStringTable, " ");
+	return hasEnoughCurrency, table.concat(costStringTable, " ");
+end
+
+function ItemUpgradeMixin:GetUpgradeCostString(upgradeLevel)
+	local unused_hasEnoughCurrency, upgradeString = self:CheckUpgradeLevel(upgradeLevel);
+	return upgradeString;
+end
+
+function ItemUpgradeMixin:CanUpgradeToLevel(upgradeLevel)
+	local upgradeLevelIndex = 1 + (upgradeLevel - self.upgradeInfo.currUpgrade);
+	return self:CheckUpgradeLevel(upgradeLevel) and not self.upgradeInfo.upgradeLevelInfos[upgradeLevelIndex].failureMessage;
 end
 
 function ItemUpgradeMixin:GetUpgradeInfo()
@@ -545,6 +558,11 @@ function ItemUpgradeMixin:InitDropdown()
 		else
 			info.text = ITEM_UPGRADE_DROPDOWN_LEVEL_FORMAT:format(i, maxUpgradeLevel);
 		end
+
+		if not self:CanUpgradeToLevel(i) then
+			info.text = RED_FONT_COLOR:WrapTextInColorCode(info.text);
+		end
+
 		info.value = i;
 		info.notCheckable = true;
 		info.minWidth = 120;
@@ -553,6 +571,15 @@ function ItemUpgradeMixin:InitDropdown()
 		info.tooltipOnButton = 1;
 		info.tooltipWhileDisabled = 1;
 		info.tooltipTitle = ItemUpgradeFrame:GetUpgradeCostString(i);
+		
+		local upgradeLevelIndex = 1 + (i - self.upgradeInfo.currUpgrade);
+		local upgradeLevelInfo = self.upgradeInfo.upgradeLevelInfos[upgradeLevelIndex];
+		local failureMessage = upgradeLevelInfo and upgradeLevelInfo.failureMessage or nil;
+		if failureMessage then
+			info.tooltipText = RED_FONT_COLOR:WrapTextInColorCode(failureMessage);
+		else
+			info.tooltipText = nil;
+		end
 
 		UIDropDownMenu_AddButton(info);
 	end

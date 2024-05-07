@@ -215,6 +215,7 @@ function CommunitiesListMixin:Update()
 	end
 
 	local clubFinderEnabled = C_ClubFinder.IsEnabled();
+	local communitiesFinderEnabled = C_ClubFinder.IsCommunityFinderEnabled();
 	local guildFinderFrame = self:GetCommunitiesFrame().GuildFinderFrame;
 	if clubFinderEnabled then
 		guildFinderFrame.isGuildType = true;
@@ -224,7 +225,9 @@ function CommunitiesListMixin:Update()
 			dataProvider:Insert({setGuildFinder = true});
 		end
 
-		dataProvider:Insert({setFindCommunity = true});
+		if communitiesFinderEnabled then
+			dataProvider:Insert({setFindCommunity = true});
+		end
 	end
 	
 	if C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet) then
@@ -657,7 +660,7 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 end
 
 function CommunitiesListEntryMixin:SetGuildFinder()
-	local disabled = self:CheckForDisabledReason(Enum.ClubType.Character);
+	local disabled = self:CheckForDisabledReason(Enum.ClubType.Guild);
 
 	self.overrideOnClick = function ()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

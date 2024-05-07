@@ -103,6 +103,11 @@ local PartyInfo =
 			{
 				{ Name = "seconds", Type = "number", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "GetActiveCategories",

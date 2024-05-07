@@ -30,6 +30,20 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "CanCreateScenarioGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "scenarioID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canCreate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ClearApplicationTextFields",
 			Type = "Function",
 		},
@@ -44,6 +58,24 @@ local LFGListInfo =
 		{
 			Name = "CopyActiveEntryInfoToCreationFields",
 			Type = "Function",
+		},
+		{
+			Name = "CreateScenarioListing",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+				{ Name = "itemLevel", Type = "number", Nilable = false },
+				{ Name = "autoAccept", Type = "bool", Nilable = false },
+				{ Name = "privateGroup", Type = "bool", Nilable = false },
+				{ Name = "scenarioID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canCreate", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "DoesEntryTitleMatchPrebuiltTitle",
@@ -115,6 +147,30 @@ local LFGListInfo =
 			Returns =
 			{
 				{ Name = "activityInfo", Type = "GroupFinderActivityInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAdvancedFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "options", Type = "AdvancedFilterOptions", Nilable = false },
+			},
+		},
+		{
+			Name = "GetApplicantBestDungeonScore",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "localID", Type = "number", Nilable = false },
+				{ Name = "applicantIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bestDungeonScoreForListing", Type = "BestDungeonScoreMapInfo", Nilable = false },
 			},
 		},
 		{
@@ -294,6 +350,15 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "SaveAdvancedFilter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "options", Type = "AdvancedFilterOptions", Nilable = false },
+			},
+		},
+		{
 			Name = "Search",
 			Type = "Function",
 
@@ -304,6 +369,7 @@ local LFGListInfo =
 				{ Name = "preferredFilters", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "languageFilter", Type = "WowLocale", Nilable = true },
 				{ Name = "searchCrossFactionListings", Type = "bool", Nilable = true, Default = false },
+				{ Name = "advancedFilter", Type = "AdvancedFilterOptions", Nilable = true },
 			},
 		},
 		{
@@ -333,6 +399,15 @@ local LFGListInfo =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSearchToScenarioID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "scenarioID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -492,6 +567,25 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "AdvancedFilterOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "needsTank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "needsHealer", Type = "bool", Nilable = false, Default = false },
+				{ Name = "needsDamage", Type = "bool", Nilable = false, Default = false },
+				{ Name = "needsMyClass", Type = "bool", Nilable = false, Default = false },
+				{ Name = "hasTank", Type = "bool", Nilable = false, Default = false },
+				{ Name = "hasHealer", Type = "bool", Nilable = false, Default = false },
+				{ Name = "activities", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "minimumRating", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "difficultyNormal", Type = "bool", Nilable = false, Default = false },
+				{ Name = "difficultyHeroic", Type = "bool", Nilable = false, Default = false },
+				{ Name = "difficultyMythic", Type = "bool", Nilable = false, Default = false },
+				{ Name = "difficultyMythicPlus", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
 			Name = "BestDungeonScoreMapInfo",
 			Type = "Structure",
 			Fields =
@@ -500,6 +594,8 @@ local LFGListInfo =
 				{ Name = "mapName", Type = "string", Nilable = false },
 				{ Name = "bestRunLevel", Type = "number", Nilable = false },
 				{ Name = "finishedSuccess", Type = "bool", Nilable = false },
+				{ Name = "bestRunDurationMs", Type = "number", Nilable = false },
+				{ Name = "bestLevelIncrement", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -525,6 +621,8 @@ local LFGListInfo =
 				{ Name = "isPvpActivity", Type = "bool", Nilable = false },
 				{ Name = "isMythicActivity", Type = "bool", Nilable = false },
 				{ Name = "allowCrossFaction", Type = "bool", Nilable = false },
+				{ Name = "isHeroicActivity", Type = "bool", Nilable = false },
+				{ Name = "isNormalActivity", Type = "bool", Nilable = false },
 				{ Name = "useDungeonRoleExpectations", Type = "bool", Nilable = false },
 			},
 		},
@@ -602,6 +700,7 @@ local LFGListInfo =
 				{ Name = "questID", Type = "number", Nilable = true },
 				{ Name = "leaderOverallDungeonScore", Type = "number", Nilable = true },
 				{ Name = "leaderDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },
+				{ Name = "leaderBestDungeonScoreInfo", Type = "BestDungeonScoreMapInfo", Nilable = true },
 				{ Name = "leaderPvpRatingInfo", Type = "PvpRatingInfo", Nilable = true },
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = true },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = true },

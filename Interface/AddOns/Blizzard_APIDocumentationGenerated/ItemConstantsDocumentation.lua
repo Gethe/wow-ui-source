@@ -137,9 +137,9 @@ local ItemConstants =
 		{
 			Name = "ItemGemColor",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 1,
-			MaxValue = 33554432,
+			MaxValue = 67108864,
 			Fields =
 			{
 				{ Name = "Meta", Type = "ItemGemColor", EnumValue = 1 },
@@ -168,6 +168,7 @@ local ItemConstants =
 				{ Name = "Cypher", Type = "ItemGemColor", EnumValue = 8388608 },
 				{ Name = "Tinker", Type = "ItemGemColor", EnumValue = 16777216 },
 				{ Name = "Primordial", Type = "ItemGemColor", EnumValue = 33554432 },
+				{ Name = "FutureUse", Type = "ItemGemColor", EnumValue = 67108864 },
 			},
 		},
 		{
@@ -268,9 +269,9 @@ local ItemConstants =
 		{
 			Name = "ItemSocketType",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "None", Type = "ItemSocketType", EnumValue = 0 },
@@ -299,6 +300,7 @@ local ItemConstants =
 				{ Name = "Cypher", Type = "ItemSocketType", EnumValue = 23 },
 				{ Name = "Tinker", Type = "ItemSocketType", EnumValue = 24 },
 				{ Name = "Primordial", Type = "ItemSocketType", EnumValue = 25 },
+				{ Name = "FutureUse", Type = "ItemSocketType", EnumValue = 26 },
 			},
 		},
 		{

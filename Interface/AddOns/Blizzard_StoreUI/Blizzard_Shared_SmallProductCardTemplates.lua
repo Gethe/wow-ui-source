@@ -170,11 +170,6 @@ function MediumStoreCardMixin:ShowDiscount(discountText)
 	self.SalePrice:SetPoint("BOTTOMLEFT", self.NormalPrice, "BOTTOMRIGHT", 4, -1);	
 end
 
-function MediumStoreCardMixin:SetDiscountText(discountPercentage)
-	self.DiscountText:SetWidth(200);
-	self.DiscountText:SetText(BLIZZARD_STORE_BUNDLE_DISCOUNT_BANNER:format(discountPercentage));
-end
-
 function MediumStoreCardMixin:ShowIcon(displayData)
 	StoreCardMixin.ShowIcon(self, displayData)
 	

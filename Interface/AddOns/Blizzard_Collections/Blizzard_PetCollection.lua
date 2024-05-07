@@ -1454,6 +1454,21 @@ function PetJournalFilterDropDown_SetAllPetSources(value)
 	UIDropDownMenu_Refresh(PetJournalFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
+local petSourceOrderPriorities = {
+	[Enum.BattlePetSources.Drop] = 5,
+	[Enum.BattlePetSources.Quest] = 5,
+	[Enum.BattlePetSources.Vendor] = 5,
+	[Enum.BattlePetSources.Profession] = 5,
+	[Enum.BattlePetSources.WildPet] = 5,
+	[Enum.BattlePetSources.Achievement] = 5,
+	[Enum.BattlePetSources.WorldEvent] = 5,
+	[Enum.BattlePetSources.Discovery] = 5,
+	[Enum.BattlePetSources.TradingPost] = 4,
+	[Enum.BattlePetSources.Promotion] = 3,
+	[Enum.BattlePetSources.PetStore] = 2,
+	[Enum.BattlePetSources.Tcg] = 1,
+};
+
 function PetJournalFilterDropDown_Initialize(self, level)
 	local filterSystem = {
 		onUpdate = PetJournalResetFiltersButton_UpdateVisibility,	
@@ -1496,6 +1511,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 						  isSet = C_PetJournal.IsPetSourceChecked,
 						  numFilters = C_PetJournal.GetNumPetSources,
 						  globalPrepend = "BATTLE_PET_SOURCE_", 
+						  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("BATTLEPETS", petSourceOrderPriorities),
 						},
 					},
 				},
@@ -1799,12 +1815,22 @@ function PetJournalFindBattle_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function PetJournalAchievementStatus_OnClick()
+	ToggleAchievementFrame();
+	AchievementFrame_UpdateAndSelectCategory(PET_ACHIEVEMENT_CATEGORY);
+end
+
 function PetJournalAchievementStatus_OnEnter(self)
 	PetJournal.AchievementStatus.highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(BATTLE_PETS_ACHIEVEMENT, HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(BATTLE_PETS_ACHIEVEMENT_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
+end
+
+function PetJournalAchievementStatus_OnLeave()
+	PetJournal.AchievementStatus.highlight:Hide();
+	GameTooltip:Hide();
 end
 
 function PetJournalSummonButton_OnEnter(self)

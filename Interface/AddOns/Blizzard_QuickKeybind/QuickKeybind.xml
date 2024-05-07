@@ -1,0 +1,90 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+  <Script file="QuickKeybind.lua"/>
+	<Button name="QuickKeybindButtonTemplate" mixin="QuickKeybindButtonTemplateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="QuickKeybindHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="QuickKeybindButtonOnShow"/>
+			<OnHide method="QuickKeybindButtonOnHide"/>
+			<OnClick method="QuickKeybindButtonOnClick"/>
+			<OnEnter method="QuickKeybindButtonOnEnter"/>
+			<OnLeave method="QuickKeybindButtonOnLeave"/>
+		</Scripts>
+	</Button>
+	<GameTooltip name="QuickKeybindTooltip" parent="UIParent" toplevel="true" inherits="SharedTooltipTemplate"/>
+
+	<Button name="QuickKeybindFrameTemplate" mixin="QuickKeybindFrameMixin" enableKeyboard="true" enableMouse="true" movable="true" clampedToScreen="true" registerForDrag="LeftButton" dontSavePosition="true" virtual="true">
+		<Size x="450" y="250"/>
+		<Anchors>
+			<Anchor point="CENTER" y="150"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="InstructionText" inherits="GameFontWhite" text="QUICK_KEYBIND_DESCRIPTION" wordwrap="true">
+					<Size x="400" y="50"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CancelDescriptionText" inherits="GameFontWhite" text="QUICK_KEYBIND_CANCEL_DESCRIPTION" wordwrap="true">
+					<Size x="400" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.InstructionText" relativePoint="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OutputText" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CancelDescriptionText" relativePoint="CENTER" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="textString" value="QUICK_KEYBIND_MODE" type="global"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="UseCharacterBindingsButton" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" x="-82" y="-65"/>
+				</Anchors>
+			</CheckButton>
+			<Button parentKey="DefaultsButton" inherits="UIPanelButtonTemplate">
+				<Size x="128" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-95"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.DefaultsButton" relativePoint="BOTTOMRIGHT" x="25" y="0"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="OkayButton" inherits="UIPanelButtonTemplate">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.DefaultsButton" relativePoint="BOTTOMLEFT" x="-25" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnGamePadButtonDown method="OnKeyDown"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuickKeybindFrame" inherits="QuickKeybindFrameTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true"/>
+</Ui>

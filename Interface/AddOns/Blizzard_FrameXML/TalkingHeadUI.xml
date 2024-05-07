@@ -1,0 +1,221 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="TalkingHeadUI.lua"/>
+
+	<ContainedAlertFrame name="TalkingHeadFrame" toplevel="true" parent="UIParent" inherits="UIParentBottomManagedFrameTemplate, EditModeTalkingHeadFrameSystemTemplate" mixin="TalkingHeadFrameMixin" hidden="true" frameStrata="HIGH" fixedFrameStrata="true" frameLevel="1" fixedFrameLevel="true">
+		<Size x="570" y="155"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="8" type="number"/>
+			<KeyValue key="hideWhenActionBarIsOverriden" value="false" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="96"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="NameFrame" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Name" inherits="Fancy22Font" alpha="0.01" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-42" y="0"/>
+							</Anchors>
+							<Color r="1" g=".82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+						<Alpha childKey="Name" startDelay="0" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+						<Alpha childKey="Name" startDelay="0" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Close" setToFinalAlpha="true">
+						<Alpha childKey="Name" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="TextFrame" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlightLarge" alpha="0.01" justifyH="LEFT" justifyV="TOP" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.NameFrame.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" x="-42" y="12"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+						<Alpha childKey="Text" startDelay="0" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Fadeout" setToFinalAlpha="true">
+						<Alpha childKey="Text" startDelay="0" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Close" setToFinalAlpha="true">
+						<Alpha childKey="Text" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="BackgroundFrame" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="TextBackground" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="TalkingHeads-TextBackground" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+						<Alpha childKey="TextBackground" startDelay="0.4" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Close" setToFinalAlpha="true">
+						<Alpha childKey="TextBackground" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="PortraitFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Portrait" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="TalkingHeads-Alliance-PortraitFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+						<Alpha childKey="Portrait" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Close" setToFinalAlpha="true">
+						<Alpha childKey="Portrait" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="MainFrame" setAllPoints="true" useParentLevel="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Sheen" hidden="false" alpha="0.01" alphaMode="ADD" atlas="TalkingHeads-Glow-Sheen" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.NameFrame.Name" x="-48"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TextSheen" hidden="false" alpha="0.01" alphaMode="ADD" atlas="TalkingHeads-Glow-TextSheen" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.TextFrame.Text" x="-48" y="16"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<PlayerModel parentKey="Model" alpha="0.01" mixin="TalkingHeadFrameModelMixin">
+						<Size x="115" y="115"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="21" y="-21"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="PortraitBg" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="TalkingHeads-PortraitBg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEvent method="OnEvent"/>
+							<OnModelLoaded method="OnModelLoaded"/>
+						</Scripts>
+					</PlayerModel>
+					<Frame parentKey="Overlay">
+						<Size x="96" y="96"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="21" y="-17"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Glow_TopBar" hidden="false" alpha="0.01" alphaMode="ADD" atlas="TalkingHeads-Glow-TopBarGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.PortraitFrame.Portrait" relativePoint="TOP" x="0" y="-11"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Glow_LeftBar" hidden="false" alpha="0.01" alphaMode="ADD" atlas="TalkingHeads-Glow-SideBarGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.PortraitFrame.Portrait" relativePoint="LEFT" x="11" y="25"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Glow_RightBar" hidden="false" alpha="0.01" alphaMode="ADD" atlas="TalkingHeads-Glow-SideBarGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.$parent.$parent.PortraitFrame.Portrait" relativePoint="RIGHT" x="-11" y="25"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" alpha="0.01">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TalkingHeadFrame:CloseImmediately();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Animations>
+					<AnimationGroup parentKey="TalkingHeadsInAnim" setToFinalAlpha="true">
+						<Alpha childKey="Overlay.Glow_TopBar" startDelay="0.15" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
+						<Scale childKey="Overlay.Glow_TopBar" startDelay="0.15" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+						<Alpha childKey="Overlay.Glow_TopBar" startDelay="0.4" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
+						<Alpha childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
+						<Translation childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.8" order="1" offsetX="0" offsetY="-10"/>
+						<Scale childKey="Overlay.Glow_LeftBar" startDelay="0.35" duration="0.7" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.6">
+							<Origin point="TOP"/>
+						</Scale>
+						<Alpha childKey="Overlay.Glow_LeftBar" startDelay="0.85" duration="0.25" order="1" fromAlpha="0.7" toAlpha="0"/>
+						<Alpha childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.25" order="1" fromAlpha="0" toAlpha="0.7"/>
+						<Translation childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.8" order="1" offsetX="0" offsetY="-10"/>
+						<Scale childKey="Overlay.Glow_RightBar" startDelay="0.35" duration="0.7" order="1" fromScaleX="1" fromScaleY="0.5" toScaleX="1" toScaleY="1.6">
+							<Origin point="TOP"/>
+						</Scale>
+						<Alpha childKey="Overlay.Glow_RightBar" startDelay="0.95" duration="0.25" order="1" fromAlpha="0.7" toAlpha="0"/>
+						<Alpha childKey="Sheen" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="0.7"/>
+						<Scale childKey="Sheen" startDelay="0.5" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
+							<Origin point="LEFT"/>
+						</Scale>
+						<Alpha childKey="Sheen" startDelay="1" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
+						<Alpha childKey="TextSheen" startDelay="0.75" duration="0.5" order="1" fromAlpha="0" toAlpha="0.7"/>
+						<Scale childKey="TextSheen" startDelay="0.75" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
+							<Origin point="LEFT"/>
+						</Scale>
+						<Alpha childKey="TextSheen" startDelay="1.25" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0"/>
+						<Alpha childKey="Model" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Model.PortraitBg" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="CloseButton" startDelay="0.75" duration="0.75" order="1" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Close" setToFinalAlpha="true">
+						<Alpha childKey="Model" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Model.PortraitBg" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="CloseButton" startDelay="0" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						<Scripts>
+							<OnFinished>
+								TalkingHeadFrame:Close_OnFinished();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+</Ui>

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="PVPMatchScoreboard.lua"/>
 	
 	<Frame name="PVPMatchScoreboard" mixin="PVPMatchScoreboardMixin" frameStrata="DIALOG" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">

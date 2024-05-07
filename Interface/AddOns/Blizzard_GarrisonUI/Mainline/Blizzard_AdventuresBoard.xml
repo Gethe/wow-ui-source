@@ -1,0 +1,155 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="AdventuresBoardAuraIcon" mixin="AdventuresBoardAuraIconMixin" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconTexture" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Scale childKey="IconTexture" duration="0.15" order="1" fromScaleX="0" fromScaleY="0" toScaleX="1.5" toScaleY="1.5"/>
+				<Scale childKey="IconTexture" duration="0.05" order="2" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true">
+				<Scale childKey="IconTexture" duration="0.15" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0" toScaleY="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():OnFadeOutFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventuresBoardAuraContainerTemplate" mixin="AdventuresBoardAuraContainerMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="spacing" value="4" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="BuffIcon" inherits="AdventuresBoardAuraIcon" hidden="true">
+				<Size x="29" y="19"/>
+				<KeyValues>
+					<KeyValue key="textureAtlas" type="string" value="Adventure-buff-indicator"/>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="DebuffIcon" inherits="AdventuresBoardAuraIcon" hidden="true">
+				<Size x="29" y="19"/>
+				<KeyValues>
+					<KeyValue key="textureAtlas" type="string" value="Adventure-debuff-indicator"/>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="HealingIcon" inherits="AdventuresBoardAuraIcon" hidden="true">
+				<Size x="20" y="20"/>
+				<KeyValues>
+					<KeyValue key="textureAtlas" type="string" value="Adventure-heal-indicator"/>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventuresBoardEmptySocketTemplate" mixin="AdventuresSocketMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="SocketTexture" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TutorialRing" atlas="adventures-mission-follower-tutorial-ring" useAtlasSize="true" hidden="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="EnemyTargetingIndicatorFrame" inherits="AdventuresTargetingIndicatorTemplate" hidden="false">
+				<KeyValues>
+					<KeyValue key="targetingTextureAtlas" type="string" value="Adventures-Target-Indicator-desat"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="FriendlyTargetingIndicatorFrame" inherits="AdventuresFriendlyTargetingIndicatorTemplate" hidden="false"/>
+
+			<Frame parentKey="AuraContainer" inherits="AdventuresBoardAuraContainerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EnemyEmptySocketTemplate" inherits="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Size x="76" y="76"/>
+	</Frame>
+
+	<Frame name="FollowerEmptySocketTemplate" inherits="AdventuresBoardEmptySocketTemplate" virtual="true">
+		<Size x="108" y="108"/>
+	</Frame>
+
+	<Frame name="AdventuresBoardTemplate" mixin="AdventuresBoardMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="enemyTemplate" type="string" value="AdventuresEnemyPuckTemplate"/>
+			<KeyValue key="followerTemplate" type="string" value="AdventuresFollowerPuckTemplate"/>
+			<KeyValue key="enemySocketTemplate" type="string" value="EnemyEmptySocketTemplate"/>
+			<KeyValue key="followerSocketTemplate" type="string" value="FollowerEmptySocketTemplate"/>
+		</KeyValues>
+		<Size x="556" y="455"/>
+		<Frames>
+			<Frame parentKey="EnemyContainer" inherits="ResizeLayoutFrame">
+				<Anchors>
+					<Anchor point="TOP"/>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeOut">
+						<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="FollowerContainer" inherits="ResizeLayoutFrame" frameLevel="20">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AdventuresBoardCombatTemplate" mixin="AdventuresBoardCombatMixin" inherits="AdventuresBoardTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="TextContainer" frameLevel="1000" setAllPoints="true"/>
+		</Frames>
+	</Frame>
+</Ui>

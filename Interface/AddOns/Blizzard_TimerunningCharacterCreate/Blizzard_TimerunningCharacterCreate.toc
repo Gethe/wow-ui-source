@@ -1,0 +1,8 @@
+## Title: Blizzard Timerunning Character Create
+## Author: Blizzard Entertainment
+## AllowLoad: Glue
+## LoadOnDemand: 1
+## RequiredDep: Blizzard_CharacterCreate, Blizzard_GlueXML, Blizzard_TimerunningUtil
+Blizzard_TimerunningCharacterCreate.lua
+Blizzard_TimerunningCharacterCreate.xml
+Localization.lua

@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI_shared.xsd">
+..\Blizzard_SharedXML\UI.xsd">
 	<Include file="Blizzard_Shared_StoreUIPatchwerk.xml" />
 	<Script file="Blizzard_Shared_StoreUIInbound.lua" />
 	<Script file="Blizzard_Shared_StoreUIOutbound.lua" />

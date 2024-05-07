@@ -1,8 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
-  <Script file="Blizzard_PVPUI.lua"/>
-
-	<Frame name="SeasonRewardFrameTemplate" mixin="PVPAchievementRewardMixin" virtual="true">
+..\Blizzard_SharedXML\UI.xsd">
+  	<Frame name="SeasonRewardFrameTemplate" mixin="PVPAchievementRewardMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="useAchievementDescription" value="false" type="boolean"/>
 		</KeyValues>
@@ -1415,13 +1413,7 @@
 							<Anchor point="TOPLEFT" x="224" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnShow>
-								LFGListFrame:SetParent(self);
-								LFGListFrame:ClearAllPoints();
-								LFGListFrame:SetAllPoints(self);
-								LFGListFrame:SetFrameLevel(self:GetFrameLevel());
-								LFGListFrame_SetBaseFilters(LFGListFrame, Enum.LFGListFilter.PvP);
-							</OnShow>
+							<OnShow function="LFGListPVPStub_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Frame parentKey="HonorInset" inherits="InsetFrameTemplate" useParentLevel="true" mixin="PVPUIHonorInsetMixin">

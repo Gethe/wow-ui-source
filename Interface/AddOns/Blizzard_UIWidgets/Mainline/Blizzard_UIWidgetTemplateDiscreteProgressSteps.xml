@@ -1,0 +1,257 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UIWidgetTemplateDiscreteProgressSteps" inherits="UIWidgetBaseTemplate" virtual="true" mixin="UIWidgetTemplateDiscreteProgressStepsMixin">
+		<Size x="140" y="140"/>
+		<KeyValues>
+			<KeyValue key="defaultTooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+			<KeyValue key="tooltipYOffset" value="-20" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Bar" inherits="UIWidgetBaseCircularStatusBarTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Steps">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="TOP" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Step1Background" parentArray="BGArray" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step2Background" parentArray="BGArray" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step3Background" parentArray="BGArray" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step4Background" parentArray="BGArray" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step5Background" parentArray="BGArray" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Step1Disabled" parentArray="DisabledArray" useAtlasSize="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step2Disabled" parentArray="DisabledArray" useAtlasSize="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step3Disabled" parentArray="DisabledArray" useAtlasSize="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step4Disabled" parentArray="DisabledArray" useAtlasSize="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step5Disabled" parentArray="DisabledArray" useAtlasSize="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Step1Enabled" parentArray="EnabledArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step2Enabled" parentArray="EnabledArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step3Enabled" parentArray="EnabledArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step4Enabled" parentArray="EnabledArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step5Enabled" parentArray="EnabledArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" atlas="adventureguide-redx">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step1Activation" parentArray="ActivationArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step2Activation" parentArray="ActivationArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step3Activation" parentArray="ActivationArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step4Activation" parentArray="ActivationArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Step5Activation" parentArray="ActivationArray" useAtlasSize="true" ignoreParentAlpha="true" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Step1ActivationAnim" parentArray="ActivationAnimArray">
+						<Alpha childKey="Step1Activation" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step1DisableAnim:Stop();
+								self:GetParent().Step1Activation:Show();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step1Activation:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step2ActivationAnim" parentArray="ActivationAnimArray">
+						<Alpha childKey="Step2Activation" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step2DisableAnim:Stop();
+								self:GetParent().Step2Activation:Show();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step2Activation:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step3ActivationAnim" parentArray="ActivationAnimArray">
+						<Alpha childKey="Step3Activation" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step3DisableAnim:Stop();
+								self:GetParent().Step3Activation:Show();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step3Activation:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step4ActivationAnim" parentArray="ActivationAnimArray">
+						<Alpha childKey="Step4Activation" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step4DisableAnim:Stop();
+								self:GetParent().Step4Activation:Show();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step4Activation:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step5ActivationAnim" parentArray="ActivationAnimArray">
+						<Alpha childKey="Step5Activation" fromAlpha="1" toAlpha="0" order="1" duration="2"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step5DisableAnim:Stop();
+								self:GetParent().Step5Activation:Show();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step5Activation:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step1DisableAnim" parentArray="DisableAnimArray">
+						<Alpha childKey="Step1Enabled" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step1ActivationAnim:Stop();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step1Enabled:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step2DisableAnim" parentArray="DisableAnimArray">
+						<Alpha childKey="Step2Enabled" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step2ActivationAnim:Stop();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step2Enabled:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step3DisableAnim" parentArray="DisableAnimArray">
+						<Alpha childKey="Step3Enabled" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step3ActivationAnim:Stop();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step3Enabled:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step4DisableAnim" parentArray="DisableAnimArray">
+						<Alpha childKey="Step4Enabled" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step4ActivationAnim:Stop();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step4Enabled:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="Step5DisableAnim" parentArray="DisableAnimArray">
+						<Alpha childKey="Step5Enabled" fromAlpha="1" toAlpha="0" order="1" duration="1"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().Step5ActivationAnim:Stop();
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().Step5Enabled:Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

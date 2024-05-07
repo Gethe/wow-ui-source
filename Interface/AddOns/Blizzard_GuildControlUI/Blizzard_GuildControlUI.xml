@@ -1,8 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
-	<Script file="Blizzard_GuildControlUI.lua"/>
-	
-	
+..\Blizzard_SharedXML\UI.xsd">
 	<!-- Templates -->
 	<Frame name="RankChangeTemplate" virtual="true">
 		<Size  x="295" y="24"/>
@@ -303,10 +300,10 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
-	
-	
-	
+
+
+
+
 	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" toplevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="338" y="444"/>
 		<Layers>
@@ -519,13 +516,13 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					
+
 					<CheckButton parentKey="OfficerCheckbox" name="$parentOfficerCheckbox" inherits="GuildPermissionCheckBoxTemplate" id="21">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentOfficerBg" relativePoint="TOPLEFT" x="0" y="-3"/>
 						</Anchors>
 					</CheckButton>
-					
+
 					<CheckButton parentKey="InviteCheckbox" name="$parentCheckbox5" inherits="GuildPermissionCheckBoxTemplate" id="5">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRosterBg" x="7" y="-2"/>
@@ -551,7 +548,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox7" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-					
+
 					<CheckButton name="$parentCheckbox15" inherits="GuildPermissionCheckBoxTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentBankLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
@@ -624,7 +621,7 @@
 							<OnClick>
 								if ( not self:GetChecked() and GetNumMembersInRank(GuildControlUI.currentRank) > 0 ) then
 									self:SetChecked(true);
-									local dialog = StaticPopup_Show("CONFIRM_RANK_AUTHENTICATOR_REMOVE", 
+									local dialog = StaticPopup_Show("CONFIRM_RANK_AUTHENTICATOR_REMOVE",
 										string.format(REMOVE_AUTHENTICATOR_FROM_RANK, GuildControlGetRankName(GuildControlUI.currentRank)));
 									dialog.data = self;
 								else
@@ -664,7 +661,7 @@
 					<OnLoad function="GuildControlRankSettings_OnLoad"/>
 				</Scripts>
 			</Frame>
-		</Frames>  
+		</Frames>
 		<Scripts>
 			<OnEvent function="GuildControlUI_OnEvent"/>
 			<OnShow>
@@ -678,17 +675,17 @@
 			<OnLoad function="GuildControlUI_OnLoad"/>
 		</Scripts>
 	</Frame>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
 
 	<!--Button name="GuildBankTabPermissionsTabTemplate" virtual="true">
 		<Size x="26" y="32"/>
@@ -1026,7 +1023,7 @@
 											GuildControlPopupAcceptButton:Enable();
 											GuildControlPopupFrame.goldChanged = 1;
 										end
-									</OnTextChanged> 
+									</OnTextChanged>
 									<OnEditFocusGained>
 										GuildControlPopupAcceptButton:Enable();
 									</OnEditFocusGained>
@@ -1150,7 +1147,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					
+
 				</Frames>
 			</Frame>
 			<Button name="GuildControlPopupFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
@@ -1321,7 +1318,7 @@
 										if(amount and amount ~= "" and amount ~= UNLIMITED) then
 											SetPendingGuildBankTabWithdraw(GuildControlPopupFrameTabPermissions.selectedTab, amount);
 										end
-									</OnTextChanged> 
+									</OnTextChanged>
 									<OnEnterPressed>
 										self:ClearFocus();
 										GuildControlPopupAcceptButton:Enable();

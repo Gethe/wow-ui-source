@@ -1,8 +1,8 @@
-﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_TutorialKeyboardMouseFrame.lua" />
 
-	<Frame name="TutorialKeyboardMouseFrame_Frame" mixin="TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0" frameLevel="300">
+	<Frame name="TutorialKeyboardMouseFrame_Frame" mixin="TutorialKeyboardMouseFrameMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0" frameLevel="300" toplevel="true">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="288" type="number"/>
 			<KeyValue key="heightPadding" value="130" type="number"/>

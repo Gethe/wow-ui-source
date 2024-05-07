@@ -99,6 +99,20 @@ local Transmog =
 			},
 		},
 		{
+			Name = "GetAllSetAppearancesByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "setID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "setItems", Type = "table", InnerType = "TransmogSetItemInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetApplyCost",
 			Type = "Function",
 
@@ -448,6 +462,17 @@ local Transmog =
 			{
 				{ Name = "itemLink", Type = "string", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "TransmogSetItemInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
+				{ Name = "invSlot", Type = "number", Nilable = false },
+				{ Name = "invType", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2005 sp2 U (http://www.altova.com) by Sam Lantinga (Blizzard Entertainment) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/" xmlns:ui="http://www.blizzard.com/wow/ui/" targetNamespace="http://www.blizzard.com/wow/ui/" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="..\..\..\..\WoW\Data\Interface\FrameXML\UI_shared.xsd"/>
-</xs:schema>

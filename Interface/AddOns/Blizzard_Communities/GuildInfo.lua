@@ -17,7 +17,7 @@ function CommunitiesGuildInfoFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_RANKS_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("GUILD_CHALLENGE_UPDATED");
-	
+	 
 	RequestGuildChallengeInfo();
 end
 
@@ -62,15 +62,14 @@ function CommunitiesGuildInfoFrame_UpdateText(self, infoText)
 	self.DetailsFrame:SetVerticalScroll(0);
 end
 
-local CHALLENGE_ORDER = { 1, 4, 2, 3, };
 function CommunitiesGuildInfoFrame_UpdateChallenges(self)
-	local numChallenges = GetNumGuildChallenges();
-	for i = 1, numChallenges do
-		local orderIndex = CHALLENGE_ORDER[i];
-		local _, current, max = GetGuildChallengeInfo(orderIndex);
+	for i = 1, #self.Challenges do
 		local frame = self.Challenges[i];
-		if ( frame ) then
+		local orderIndex = GUILD_CHALLENGE_ORDER[i];
+		if orderIndex then
+			local id, current, max, desc = GetGuildChallengeInfo(orderIndex);
 			frame.orderIndex = orderIndex;
+			frame.label:SetText(_G["GUILD_CHALLENGE_TYPE"..id]);
 			if ( current == max ) then
 				frame.count:Hide();
 				frame.check:Show();
@@ -81,6 +80,8 @@ function CommunitiesGuildInfoFrame_UpdateChallenges(self)
 				frame.check:Hide();
 				frame.label:SetTextColor(1, 1, 1);
 			end
+		else
+			frame:Hide();
 		end
 	end
 end

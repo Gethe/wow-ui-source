@@ -73,6 +73,7 @@ function WeeklyRewardsMixin:OnLoad()
 		area = "center",
 		pushable = 0,
 		allowOtherPanels = 1,
+		checkFit = 1,		
 	};
 	RegisterUIPanel(WeeklyRewardsFrame, attributes);
 end

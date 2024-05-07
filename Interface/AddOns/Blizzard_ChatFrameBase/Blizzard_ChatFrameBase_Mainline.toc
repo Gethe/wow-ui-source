@@ -1,0 +1,16 @@
+## Title: Blizzard_ChatFrameBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIMenu, Blizzard_AutoComplete, Blizzard_Settings_Shared, Blizzard_TimerunningUtil
+## OptionalDeps: Blizzard_GlueStubs, Blizzard_EditMode
+## AllowLoad: both
+## AllowLoadGameType: mainline
+## SuppressLocalTableRef: 1
+Shared\HistoryKeeper.lua
+Mainline\ChatFrame.lua
+Mainline\ChatFrame.xml
+Shared\ChatAlertFrameMixin.lua
+Mainline\ChannelFrameButtonMixin.lua
+Shared\FloatingChatFrame.lua
+Mainline\FloatingChatFrame.lua
+Mainline\FloatingChatFrame.xml

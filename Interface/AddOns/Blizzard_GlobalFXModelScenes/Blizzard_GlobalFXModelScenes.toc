@@ -1,0 +1,6 @@
+## Title: Blizzard_GlobalFXModelScenes
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+GlobalFXModelScenes.xml

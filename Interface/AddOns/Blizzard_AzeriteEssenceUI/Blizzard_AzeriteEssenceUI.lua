@@ -826,18 +826,19 @@ function AzeriteEssenceListMixin:Refresh()
 
 	if parent:ShouldPlayReveal() and not parent:IsRevealInProgress() then
 		self.ScrollBar:DisableControls();
-		
-		local anyUnlocked = dataProvider:ContainsByPredicate(function(essenceInfo)
+
+		local unlockedEssenceButton = self.ScrollBox:FindFrameByPredicate(function(frame, essenceInfo)
 			return essenceInfo.unlocked;
 		end);
-		if anyUnlocked then
+
+		if unlockedEssenceButton then
 			local helpTipInfo = {
 				text = AZERITE_ESSENCE_TUTORIAL_FIRST_ESSENCE,
 				buttonStyle = HelpTip.ButtonStyle.Close,
 				targetPoint = HelpTip.Point.TopEdgeCenter,
 				offsetY = -12,
 			};
-			HelpTip:Show(self, helpTipInfo, self.buttons[1].Icon);
+			HelpTip:Show(self, helpTipInfo, unlockedEssenceButton.Icon);
 		else
 			HelpTip:Hide(self, AZERITE_ESSENCE_TUTORIAL_FIRST_ESSENCE);
 		end

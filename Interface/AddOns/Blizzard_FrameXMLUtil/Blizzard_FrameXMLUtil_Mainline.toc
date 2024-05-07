@@ -1,0 +1,32 @@
+## Title: Blizzard_FrameXMLUtil
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+Mainline\ArenaUtil.lua
+PartyUtil.lua
+Mainline\QuestUtils.lua
+AchievementUtil.lua
+Mainline\MapUtil.lua
+AzeriteUtil.lua
+AzeriteEssenceUtil.lua
+Mainline\AuraUtil.lua
+CalendarUtil.lua
+CommunitiesUtil.lua
+RuneforgeUtil.xml
+ItemUtil.lua
+PVPUtil.lua
+Mainline\TransmogUtil.lua
+DifficultyUtil.lua
+RenownRewardUtil.lua
+TitleUtil.lua
+CollectionsUtil.lua
+ProfessionsUtil.lua
+AdventureGuideUtil.lua
+CampaignUtil.lua
+AnimationSystem.lua
+CurrencyContainer.lua
+Mainline\RAFUtil.lua
+Mainline\ExpansionUtil.lua

@@ -182,13 +182,14 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 end
 
 function PVPUIFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST) and UnitLevel("player") >= 90 then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_LFG_LIST,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
+			checkCVars = true,
 		};
 		HelpTip:Show(self, helpTipInfo, PVPQueueFrameCategoryButton3);
 	end

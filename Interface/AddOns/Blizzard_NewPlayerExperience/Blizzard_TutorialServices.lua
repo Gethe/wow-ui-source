@@ -102,7 +102,7 @@ function Class_AddSpellToActionBarService:RemindAbility()
 
 	-- find an empty button
 	self.actionButton = TutorialHelper:FindEmptyButton(self.optionalPreferredActionBar);
-	if not self.requested and not actionButton and not MultiBarBottomLeft:IsVisible() then
+	if not self.requested and not self.actionButton and not MultiBarBottomLeft:IsVisible() then
 		-- no button was found, request the bottom left action bar be shown
 		Dispatcher:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT", self);
 		self.requested = RequestBottomLeftActionBar();
@@ -202,7 +202,7 @@ function Class_ItemUpgradeCheckingService:OnBegin()
 	local upgrades = self:GetBestItemUpgrades();
 	local slot, item = next(upgrades);
 
-	if item and slot ~= INVSLOT_TABARD then		
+	if item and slot ~= INVSLOT_TABARD then
 		TutorialManager:Queue(Class_ChangeEquipment.name, item);
 	end
 	TutorialManager:Finished(self:Name());
@@ -295,7 +295,7 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 		GetInventoryItemsForSlot(i, availableItems);
 
 		for packedLocation, itemLink in pairs(availableItems) do
-			local itemInfo = {GetItemInfo(itemLink)};
+			local itemInfo = {C_Item.GetItemInfo(itemLink)};
 			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
 
 			if (ilvl ~= nil) and (existingItemQuality ~= Enum.ItemQuality.Heirloom) then

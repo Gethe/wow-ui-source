@@ -3,6 +3,7 @@
 ## RequiredDep: Blizzard_MapCanvas, Blizzard_SharedMapDataProviders
 ## LoadOnDemand: 0
 
+QuestLogOwnerMixin.lua
 MapTexturePreloader.lua
 WM_WorldQuestDataProvider.xml
 WM_EventOverlayDataProvider.xml

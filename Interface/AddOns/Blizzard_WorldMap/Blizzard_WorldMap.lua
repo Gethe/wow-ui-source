@@ -189,6 +189,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WaypointLocationDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(DragonridingRaceDataProviderMixin));
 
 	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.MapPlunderstormCircle) then
 		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));
@@ -227,6 +228,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DRAGONRIDING_RACE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");

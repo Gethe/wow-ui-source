@@ -1,0 +1,210 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="PlunderstormLobby.lua"/>
+
+<Frame name="PlunderstormLobbyFrame" hidden="true" setAllPoints="true" parent="GlueParent" inherits="CallbackRegistrantTemplate, DefaultScaleFrame" mixin="PlunderstormLobbyMixin">
+	<Frames>
+		<Frame parentKey="GameEnvironmentToggleFrame" inherits="GameEnvironmentFrameTemplate" />
+
+		<Frame parentKey="GameModeDescriptionFrame">
+			<Size x="420" y="150"/>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="GameModeHeader" inherits="Game58Font_Shadow2" justifyH="LEFT" text="WOWLABS_GAMEMODE_HEADER">
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+							<Anchor point="TOPRIGHT" />
+						</Anchors>
+						<Color color="WHITE_FONT_COLOR" a="1"/>
+					</FontString>
+					<FontString parentKey="GameModeDescription" inherits="SystemFont_Large2" justifyH="LEFT" text="WOWLABS_GAMEMODE_DESC">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.GameModeHeader" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.GameModeHeader" relativePoint="BOTTOMRIGHT" x="0" y="-20"/>
+						</Anchors>
+						<Color color="NORMAL_FONT_COLOR" a="1"/>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Anchors>
+				<Anchor point="LEFT" x="82" y="20"/>
+			</Anchors>
+		</Frame>
+		
+		<Button parentKey="PlunderstormLobbyFriendsButton" mixin="PlunderstormLobbyFriendButtonMixin" >
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.GameModeDescriptionFrame" relativePoint="BOTTOMLEFT" x="-2" y="-49"/>
+			</Anchors>
+			<Size x="53" y="63"/>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="FriendsOnline" inherits="SystemFont_Large2" justifyH="CENTER">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="7"/>
+						</Anchors>
+						<Color color="WHITE_FONT_COLOR" a="1"/>
+					</FontString>
+					<FontString parentKey="FriendsOnlineLabel" inherits="SystemFont_Large2" justifyH="LEFT" text="WOWLABS_INVITE_FRIEND">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" x="6" y="0"/>
+						</Anchors>
+						<Color color="GREEN_FONT_COLOR" a="1"/>
+					</FontString>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Flash" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alpha="0" alphaMode="ADD">
+						<Animations>
+							<AnimationGroup parentKey="Anim" looping="REPEAT">
+								<Alpha fromAlpha="0" toAlpha="0.4" duration="1" order="1"/>
+								<Alpha fromAlpha="0.4" toAlpha="0" duration="1" order="2"/>
+							</AnimationGroup>
+						</Animations>
+					</Texture>
+				</Layer>				
+			</Layers>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnMouseDown method="OnMouseDown"/>
+				<OnMouseUp method="OnMouseUp"/>
+				<OnClick method="OnClick"/>
+			</Scripts>
+			<NormalTexture parentKey="NormalTexture" atlas="plunderstorm-glues-button-friendslist">
+				<Size x="53" y="63"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</NormalTexture>
+			<HighlightTexture parentKey="HighlightTexture" atlas="plunderstorm-glues-button-friendslist" alphaMode="ADD">
+				<Size x="53" y="63"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</HighlightTexture>
+		</Button>		
+
+		<Button parentKey="PlunderstormLobbyBackButton" mixin="PlunderstormLobbyBackButtonButtonMixin" inherits="GlueButtonTemplate" text="BACK">
+			<Size x="190" y="34"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" x="-20" y="30"/>
+			</Anchors>
+			<Scripts>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+
+		<Button parentKey="PlunderstormLobbyMenuButton" mixin="PlunderstormLobbyMenuButtonMixin" inherits="GlueButtonTemplate" text="MAINMENU">
+			<Size x="190" y="34"/>
+			<Anchors>
+				<Anchor point="BOTTOM" relativeKey="$parent.PlunderstormLobbyBackButton" relativePoint="TOP" x="0" y="18"/>
+			</Anchors>
+			<Scripts>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+
+		<Frame parentKey="GameModeSettingsFrame" inherits="GameModeSettingsFrameTemplate">
+			<Anchors>
+				<Anchor point="BOTTOM" x="0" y="40"/>
+			</Anchors>
+		</Frame>
+
+		<Button parentKey="PlunderstormLobbyCustomize" mixin="PlunderstormCustomizeCharacterButtonMixin" inherits="GlueButtonTemplate" text="WOWLABS_CUSTOMIZE_CHARACTER">
+			<Size x="255" y="38"/>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativeKey="$parent.GameModeSettingsFrame" relativePoint="BOTTOMRIGHT" x="30" y="7"/>
+			</Anchors>
+			<Scripts>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+
+		<ModelFFX parentKey="PlunderstormBackground" name="PlunderstormBackground" mixin="PlunderstormBackgroundMixin" setAllPoints="true">
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+			</Scripts>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture parentKey="BackgroundShadow" atlas="plunderstorm-glues-backgroundshadow" setAllPoints="true" />
+				</Layer>
+			</Layers>
+		</ModelFFX>
+
+		<Frame parentKey="MatchmakingQueueFrame" inherits="MatchmakingQueueFrameTemplate">
+			<Anchors>
+				<Anchor point="BOTTOM" x="0" y="40"/>
+			</Anchors>
+		</Frame>
+
+		<Frame parentKey="SubNoticeFrame" hidden="true">
+			<Size x="440" y="120"/>
+			<Anchors>
+				<Anchor point="BOTTOM" x="0" y="40"/>
+			</Anchors>
+			<Layers>
+				<Layer>
+					<FontString parentKey="SubRequiredText" inherits="GlueFontNormalLarge" justifyH="CENTER" justifyV="TOP" text="WOWLABS_SUB_REQUIRED">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="0" y="0"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="SuscribeButton" mixin="WoWLabsSubscribeButtonMixin" inherits="GlueButtonTemplate" text="WOWLABS_SUBSCRIBE_NOW">
+					<Size x="255" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<NormalFont style="GlueFontNormalHuge"/>
+					<HighlightFont style="GlueFontHighlightHuge"/>
+					<DisabledFont style="GlueFontDisableHuge"/>
+					<Scripts>
+						<OnClick method="OnClick"/>
+					</Scripts>
+				</Button>				
+			</Frames>
+		</Frame>
+
+
+		<Frame name="FriendsToastFrame" frameStrata="DIALOG" inherits="TooltipBackdropTemplate">
+			<Size x="235" y="80"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="50" y="0"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="ToastText" inherits="GlueFontNormal" text="" justifyV="MIDDLE" justifyH="LEFT">
+						<Size x="175" y="100"/>
+						<Color r="1" g="1" b="1"/>
+						<Anchors>
+							<Anchor point="CENTER" x="25" y="0"/>
+						</Anchors>
+					</FontString>
+					<Texture name="$parentIconTexture" parentKey="IconTexture" file="Interface\FriendsFrame\UI-Toast-ToastIcons">
+						<Size x="50" y="50"/>
+						<Anchors>
+							<Anchor point="LEFT" x="4" y="0"/>
+						</Anchors>
+						<TexCoords left="0.75" right="1.0" top="0" bottom="0.5"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ToastIn">
+					<Translation duration=".5" offsetX="0" offsetY="380" order="1" smoothing="IN" endDelay="4"/>
+					<Translation duration=".5" offsetX="0" offsetY="-380" order="2" smoothing="OUT"/>
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+
+	</Frames>
+	<Scripts>
+		<OnShow method="OnShow"/>
+		<OnHide method="OnHide"/>
+		<OnLoad method="OnLoad" inherit="prepend"/>
+		<OnEvent method="OnEvent" inherit="prepend"/>
+		<OnKeyDown method="OnKeyDown"/>
+	</Scripts>
+</Frame>
+</Ui>

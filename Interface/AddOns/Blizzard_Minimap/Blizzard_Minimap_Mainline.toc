@@ -1,0 +1,12 @@
+## Title: Blizzard_Minimap
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_ActionBar, Blizzard_EditMode, Blizzard_GameTooltip
+## AllowLoad: game
+## AllowLoadGameType: mainline
+Mainline\Minimap.lua
+Mainline\Minimap.xml
+Mainline\GameTime.lua
+Mainline\GameTime.xml
+Mainline\AddonCompartment.lua
+Mainline\AddonCompartment.xml

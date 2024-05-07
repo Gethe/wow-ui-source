@@ -1077,6 +1077,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		BlocksFrame:SetHeight(BlocksFrame.contentsHeight + 1);
 		ObjectiveTracker_AddBlock(BlocksFrame);
 		BlocksFrame:Show();
+		ScenarioObjectiveSetupBlockButton_FindGroup(ScenarioStageBlock, select(13, C_Scenario.GetInfo()));
 		if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE and not inChallengeMode ) then
 			if ( ObjectiveTrackerFrame:IsShown() ) then
 				if ( currentStage == 1 ) then

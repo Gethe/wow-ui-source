@@ -97,6 +97,7 @@ local ResearchInfo =
 				{ Name = "researchSiteID", Type = "number", Nilable = false },
 				{ Name = "position", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "poiBlobID", Type = "number", Nilable = false },
 				{ Name = "textureIndex", Type = "number", Nilable = false },
 			},
 		},

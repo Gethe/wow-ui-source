@@ -39,7 +39,7 @@ NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
 	RightEdge = { atlas = "!UI-Frame-DiamondMetal-EdgeRight", },
 });
 
-GlueDialogTypes["CHARACTER_CREATE_FAILURE"] = {
+StaticPopupDialogs["CHARACTER_CREATE_FAILURE"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = nil,
@@ -233,6 +233,11 @@ function CharacterCreateMixin:UpdateRecruitInfo()
 		local anchorFrame = recruiterIsHorde and RaceAndClassFrame.HordeRaces or RaceAndClassFrame.AllianceRaces;
 		HelpTip:Show(anchorFrame, rafHelpTipInfo);
 	end
+end
+
+function CharacterCreateMixin:UpdateTimerunningChoice()
+	-- Currently timerunning choice only affects the Class Trial button which is updated as part of this call.
+	RaceAndClassFrame:UpdateState();
 end
 
 function CharacterCreateMixin:OnHide()
@@ -1314,8 +1319,8 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() then
-			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.GetTimerunningSeasonID() then
+			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction (or timerunning which also skips the faction choice)
 			return self.selectedFaction;
 		else
 			-- Otherwise they start as neutral so pass back nil
@@ -1337,7 +1342,8 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
 		(self.selectedClassID ~= EVOKER_CLASS_ID) and
-		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost);
+		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
+		not C_CharacterCreation.GetTimerunningSeasonID();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
@@ -2104,6 +2110,13 @@ end
 
 function CharacterCreateZoneChoiceMixin:Setup()
 	if not C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.CharacterCreateFullEnabled) then
+		return;
+	end
+
+	-- No zone choice / NPE for Timerunning characters.
+	if (C_CharacterCreation.GetTimerunningSeasonID()) then
+		self:SetUseNPE(false);
+		self.shouldShow = false;
 		return;
 	end
 

@@ -182,6 +182,10 @@ function InspectPaperDollItemSlotButton_Update(button)
 	if ( GameTooltip:IsOwned(button) ) then
 		GameTooltip:Hide();
 	end
+
+	if button.SocketDisplay then
+		button.SocketDisplay:SetItem(GetInventoryItemLink(unit, button:GetID()));
+	end
 end
 
 function InspectPaperDollViewButton_OnLoad(self)

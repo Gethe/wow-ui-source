@@ -358,12 +358,14 @@ function CommunitiesMemberListMixin:UpdateWatermark()
 			SetLargeGuildTabardTextures("player", self.WatermarkFrame.Watermark, nil, nil);
 			self.WatermarkFrame.Watermark:SetVertexColor(1.0, 1.0, 1.0);
 			self.WatermarkFrame.Watermark:SetAlpha(0.15);
-			self.WatermarkFrame.Watermark:SetSize(112, 128);
+			self.WatermarkFrame.Watermark:SetSize(160, 160);
+			self.WatermarkFrame.Watermark:SetPoint("BOTTOMLEFT", self.WatermarkFrame, "BOTTOMRIGHT", -95, -10);
 		else
 			C_Club.SetAvatarTexture(self.WatermarkFrame.Watermark, clubInfo.avatarId, clubInfo.clubType);
 			self.WatermarkFrame.Watermark:SetTexCoord(0, 1, 0, 1);
 			self.WatermarkFrame.Watermark:SetAlpha(0.1);
 			self.WatermarkFrame.Watermark:SetSize(128, 128);
+			self.WatermarkFrame.Watermark:SetPoint("BOTTOMLEFT", self.WatermarkFrame, "BOTTOMRIGHT", -84, 3);
 		end
 	end
 end
@@ -1016,7 +1018,11 @@ function CommunitiesMemberListEntryMixin:SetMember(memberInfo, isInvitation, pro
 	if memberInfo then
 		self.memberInfo = memberInfo;
 		self:SetMemberPlayerLocationFromGuid(memberInfo.guid);
-		self.NameFrame.Name:SetText(memberInfo.name or "");
+		local name = memberInfo.name;
+		if name and memberInfo.timerunningSeasonID then
+			name = TimerunningUtil.AddTinyIcon(name);
+		end
+		self.NameFrame.Name:SetText(name or "");
 	else
 		self.memberInfo = nil;
 		self:SetMemberPlayerLocationFromGuid(nil);
@@ -1098,7 +1104,12 @@ function CommunitiesMemberListEntryMixin:OnEnter()
 	local memberInfo = self:GetMemberInfo();
 	if memberInfo then
 		GameTooltip:SetOwner(self);
-		GameTooltip:AddLine(memberInfo.name);
+
+		local name = memberInfo.name;
+		if name and memberInfo.timerunningSeasonID then
+			name = TimerunningUtil.AddSmallIcon(name);
+		end
+		GameTooltip:AddLine(name);
 
 		local clubInfo = self:GetMemberList():GetSelectedClubInfo();
 		if not clubInfo or clubInfo.clubType == Enum.ClubType.Guild then

@@ -1161,6 +1161,7 @@ local TradeSkillUI =
 			Payload =
 			{
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
+				{ Name = "recipeSpellID", Type = "number", Nilable = false },
 			},
 		},
 		{

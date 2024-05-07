@@ -1,0 +1,10 @@
+## Title: Blizzard_MailFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_FriendsFrame
+## SuppressLocalTableRef: 1
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+MailFrame.lua
+MailFrame.xml
+Localization.lua

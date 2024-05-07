@@ -216,6 +216,27 @@ function PTR_IssueReporter.CreateReports()
             return 0
         end
     end
+    
+    local GetActiveChromieTimeID = function()
+        local chromieTimeData = C_ChromieTime.GetChromieTimeExpansionOptions()
+        
+        for index, expansionOption in pairs (chromieTimeData) do
+            if (expansionOption) and (expansionOption.alreadyOn) then
+            
+                return expansionOption.id
+            end
+        end
+        
+        return 0
+    end
+    
+    local IsTimerunningActive = function()
+        if (C_UnitAuras.GetPlayerAuraBySpellID(424143)) then
+            return 1
+        end
+        
+        return 0
+    end
 
 	local GetCurrentQuestStatus = function(dataPackage)
 		local results = ""
@@ -247,7 +268,9 @@ function PTR_IssueReporter.CreateReports()
     questReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this quest?")
     questReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     questReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
-	questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    questReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    questReport:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
+    questReport:AddDataCollection(collector.RunFunction, IsTimerunningActive)
     
     local AutoQuestReport = PTR_IssueReporter.CreateSurvey(4, "Issue Report: Quest")
     PTR_IssueReporter.AttachDefaultCollectionToSurvey(AutoQuestReport)
@@ -256,7 +279,9 @@ function PTR_IssueReporter.CreateReports()
     AutoQuestReport:AddDataCollection(collector.OpenEndedQuestion, "Did you experience any issues?")
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestSyncEnabled)
     AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
-	AutoQuestReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)
+    AutoQuestReport:AddDataCollection(collector.RunFunction, GetCurrentQuestStatus)    
+    AutoQuestReport:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
+    AutoQuestReport:AddDataCollection(collector.RunFunction, IsTimerunningActive)
     
     questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
     AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 
