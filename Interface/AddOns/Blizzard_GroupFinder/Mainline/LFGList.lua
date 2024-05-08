@@ -2668,7 +2668,7 @@ local function EntryStillSatisfiesFilters(enabled, displayData, searchResultInfo
 		return false;
 	elseif enabled.hasHealer and displayData["HEALER"] == 0 then
 		return false;
-	elseif enabled.minimumRating > searchResultInfo.leaderOverallDungeonScore then
+	elseif enabled.minimumRating > (searchResultInfo.leaderOverallDungeonScore or 0) then
 		return false;
 	elseif #enabled.activities > 0 then
 		local foundActivity = false;
@@ -2697,7 +2697,7 @@ end
 function LFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
 
-	if not C_LFGList.HasSearchResultInfo(resultID) then
+	if not resultID or not C_LFGList.HasSearchResultInfo(resultID) then
 		return;
 	end
 
@@ -3654,15 +3654,15 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
 	LFG_LIST_SEARCH_ENTRY_MENU[1].text = searchResultInfo.name;
-	LFG_LIST_SEARCH_ENTRY_MENU[2].arg1 = searchResultInfo.leaderName;
+	LFG_LIST_SEARCH_ENTRY_MENU[2].arg1 = searchResultInfo.leaderName or "";
 	local applied = (appStatus == "applied" or appStatus == "invited");
 	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not searchResultInfo.leaderName;
 	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipTitle = (not applied) and WHISPER
 	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipText = (not applied) and LFG_LIST_MUST_SIGN_UP_TO_WHISPER;
 	LFG_LIST_SEARCH_ENTRY_MENU[3].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].arg2 = searchResultInfo.leaderName;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].arg2 = searchResultInfo.leaderName or "";
 	LFG_LIST_SEARCH_ENTRY_MENU[4].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[4].arg2 = searchResultInfo.leaderName;
+	LFG_LIST_SEARCH_ENTRY_MENU[4].arg2 = searchResultInfo.leaderName or "";
 	return LFG_LIST_SEARCH_ENTRY_MENU;
 end
 
@@ -4050,7 +4050,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityInfo.fullName);
 
-	if (searchResultInfo.playstyle > 0) then
+	if (searchResultInfo.playstyle and searchResultInfo.playstyle > 0) then
 		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
 		if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 			GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
@@ -4067,10 +4067,10 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, searchResultInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 	tooltip:AddLine(" ");
-	if ( searchResultInfo.requiredDungeonScore > 0 ) then
+	if ( searchResultInfo.requiredDungeonScore and searchResultInfo.requiredDungeonScore > 0 ) then
 		tooltip:AddLine(GROUP_FINDER_MYTHIC_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredDungeonScore));
 	end
-	if ( searchResultInfo.requiredPvpRating > 0 ) then
+	if ( searchResultInfo.requiredPvpRating and searchResultInfo.requiredPvpRating > 0 ) then
 		tooltip:AddLine(GROUP_FINDER_PVP_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredPvpRating));
 	end
 	if ( searchResultInfo.requiredItemLevel > 0 ) then
@@ -4086,7 +4086,12 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( searchResultInfo.voiceChat ~= "" ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
 	end
-	if ( searchResultInfo.requiredItemLevel > 0 or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" or  searchResultInfo.requiredDungeonScore > 0 or searchResultInfo.requiredPvpRating > 0 ) then
+	if ( searchResultInfo.requiredItemLevel > 0 
+		or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) 
+		or searchResultInfo.voiceChat ~= ""
+		or (searchResultInfo.requiredDungeonScore and searchResultInfo.requiredDungeonScore > 0) 
+		or (searchResultInfo.requiredPvpRating and searchResultInfo.requiredPvpRating > 0) )
+	then
 		tooltip:AddLine(" ");
 	end
 
@@ -4105,7 +4110,7 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 			return (C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(score) or HIGHLIGHT_FONT_COLOR):WrapTextInColorCode(text);
 		end
 
-		local overallColor = C_ChallengeMode.GetDungeonScoreRarityColor(searchResultInfo.leaderOverallDungeonScore) or HIGHLIGHT_FONT_COLOR;
+		local overallColor = C_ChallengeMode.GetDungeonScoreRarityColor(searchResultInfo.leaderOverallDungeonScore or 0) or HIGHLIGHT_FONT_COLOR;
 
 		if activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore then
 			tooltip:AddDoubleLine(leaderNameString, overallColor:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore))
