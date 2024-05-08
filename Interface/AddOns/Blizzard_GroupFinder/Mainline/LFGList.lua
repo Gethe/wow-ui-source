@@ -235,11 +235,6 @@ function LFGListFrame_OnEvent(self, event, ...)
 			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
 
-		if IsDeclined(newStatus) then
-			self.declines = self.declines or {};
-			self.declines[searchResultID] = newStatus;
-		end
-
 		LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
@@ -2349,9 +2344,6 @@ end
 
 function LFGListSearchPanelUtil_CanSelectResult(resultID)
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
-	if LFGListFrame.declines and LFGListFrame.declines[resultID] then
-		appStatus = LFGListFrame.declines[resultID];
-	end
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	if ( appStatus ~= "none" or pendingStatus or searchResultInfo.isDelisted ) then
 		return false;
@@ -2712,12 +2704,6 @@ function LFGListSearchEntry_Update(self)
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
 
 	local isDeclined = IsDeclined(appStatus);
-	if LFGListFrame.declines then
-		if not isDeclined and LFGListFrame.declines[resultID] then
-			isDeclined = true;
-			appStatus = LFGListFrame.declines[resultID];
-		end
-	end
 	local isApplication = (appStatus ~= "none" or pendingStatus);
 	local isAppFinished = LFGListUtil_IsStatusInactive(appStatus) or LFGListUtil_IsStatusInactive(pendingStatus);
 
@@ -3519,54 +3505,52 @@ local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
 	return false;
 end
 
-function LFGListUtil_SortSearchResultsCBFunction(self)
-	return function(searchResultID1, searchResultID2)
-		local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
-		local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
+function LFGListUtil_SortSearchResultsCB(searchResultID1, searchResultID2)
+	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
+	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
 
-		local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
-		local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
+	local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
+	local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
 
-		local _, appStatus1 = C_LFGList.GetApplicationInfo(searchResultID1);
-		local _, appStatus2 = C_LFGList.GetApplicationInfo(searchResultID2);
+	local _, appStatus1 = C_LFGList.GetApplicationInfo(searchResultID1);
+	local _, appStatus2 = C_LFGList.GetApplicationInfo(searchResultID2);
 
-		local isDeclined1 = IsDeclined(appStatus1) or ((self.declines and self.declines[searchResultID1]) and true or false);
-		local isDeclined2 = IsDeclined(appStatus2) or ((self.declines and self.declines[searchResultID2]) and true or false);
+	local isDeclined1 = IsDeclined(appStatus1);
+	local isDeclined2 = IsDeclined(appStatus2);
 
-		--sort declined to the bottom
-		if isDeclined1 ~= isDeclined2 then
-			return isDeclined2;
-		end
-
-		-- Groups with your current role available are preferred
-		if (hasRemainingRole1 ~= hasRemainingRole2) then
-			return hasRemainingRole1;
-		end
-
-		--If one has more friends, do that one first
-		if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
-			return searchResultInfo1.numBNetFriends > searchResultInfo2.numBNetFriends;
-		end
-
-		if ( searchResultInfo1.numCharFriends ~= searchResultInfo2.numCharFriends ) then
-			return searchResultInfo1.numCharFriends > searchResultInfo2.numCharFriends;
-		end
-
-		if ( searchResultInfo1.numGuildMates ~= searchResultInfo2.numGuildMates ) then
-			return searchResultInfo1.numGuildMates > searchResultInfo2.numGuildMates;
-		end
-
-		if ( searchResultInfo1.isWarMode ~= searchResultInfo2.isWarMode ) then
-			return searchResultInfo1.isWarMode == C_PvP.IsWarModeDesired();
-		end
-
-		--If we aren't sorting by anything else, just go by ID
-		return searchResultID1 < searchResultID2;
+	--sort declined to the bottom
+	if isDeclined1 ~= isDeclined2 then
+		return isDeclined2;
 	end
+
+	-- Groups with your current role available are preferred
+	if (hasRemainingRole1 ~= hasRemainingRole2) then
+		return hasRemainingRole1;
+	end
+
+	--If one has more friends, do that one first
+	if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
+		return searchResultInfo1.numBNetFriends > searchResultInfo2.numBNetFriends;
+	end
+
+	if ( searchResultInfo1.numCharFriends ~= searchResultInfo2.numCharFriends ) then
+		return searchResultInfo1.numCharFriends > searchResultInfo2.numCharFriends;
+	end
+
+	if ( searchResultInfo1.numGuildMates ~= searchResultInfo2.numGuildMates ) then
+		return searchResultInfo1.numGuildMates > searchResultInfo2.numGuildMates;
+	end
+
+	if ( searchResultInfo1.isWarMode ~= searchResultInfo2.isWarMode ) then
+		return searchResultInfo1.isWarMode == C_PvP.IsWarModeDesired();
+	end
+
+	--If we aren't sorting by anything else, just go by ID
+	return searchResultID1 < searchResultID2;
 end
 
 function LFGListUtil_SortSearchResults(self)
-	table.sort(self.results, LFGListUtil_SortSearchResultsCBFunction(self));
+	table.sort(self.results, LFGListUtil_SortSearchResultsCB);
 end
 
 function LFGListUtil_SortApplicantsCB(applicantID1, applicantID2)
