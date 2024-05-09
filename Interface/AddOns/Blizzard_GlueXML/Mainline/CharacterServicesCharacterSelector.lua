@@ -111,11 +111,12 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 			return;
 		end
 
+		-- Fixes cases of selecting a character, backing out, then selecting them again causing visual issues.
+		CharacterSelect.selectedIndex = GetCharacterSelection();
+
 		frame:OnClick();
 		frame:SetSelectedState(true);
 
-		-- Fixes cases of selecting a character, backing out, then selecting them again causing visual issues.
-		CharacterSelect.selectedIndex = GetCharacterSelection();
 		CharacterServicesMaster_Update();
 	end
 

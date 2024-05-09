@@ -630,7 +630,7 @@ function PTR_IssueReporter.CleanReportFrame(frame)
                     end
                 end
                 
-                if not (component.FrameType == "Empty") then
+                if component.FrameType ~= "Empty" then
                     component:SetParent(UIParent)
                     component:Hide()
                     table.insert(PTR_IssueReporter.Data.UnusedFrameComponents[component.FrameType], component)

@@ -90,6 +90,6 @@ local function print_inner(...)
     end
 end
 
-function print(...)
+function print(...) -- luacheck: ignore 121 (setting read-only global variable 'print')
     securecall(pcall, print_inner, ...);
 end

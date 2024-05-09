@@ -45,6 +45,7 @@ PTR_IssueReporter.Assets = {
     FontString = "GameFontNormal",
     BossReportIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
     PetReportIcon = "Interface\\Icons\\tracking_wildpet",
+    RadiantChordIcon = 135948,
     EditModeIcon = "Interface\\Icons\\ability_siege_engineer_pattern_recognition",
     AIBotIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
 }
@@ -413,7 +414,7 @@ function PTR_IssueReporter.HandleMapEvents()
     local mapID = select(4, UnitPosition(PTR_IssueReporter.Data.UnitTokens.Player)) or 0
     local difficultyID = select(3, GetInstanceInfo()) or 0
     
-    if not (PTR_IssueReporter.Data.CurrentMapID == mapID) then
+    if PTR_IssueReporter.Data.CurrentMapID ~= mapID then
         PTR_IssueReporter.Data.PreviousMapID = PTR_IssueReporter.Data.CurrentMapID
         PTR_IssueReporter.Data.PreviousMapDifficultyID = PTR_IssueReporter.Data.CurrentMapDifficultyID
         PTR_IssueReporter.Data.PreviousMapName = PTR_IssueReporter.Data.CurrentMapName

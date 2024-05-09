@@ -739,8 +739,6 @@ function ScenarioObjectiveTrackerChallengeModeMixin:SetUpAffixes(affixes)
 	local frameWidth, spacing, distance = 22, 4, -18;
 	local prevAffixFrame;
 	for i, affixID in ipairs(affixes) do
-		local affixID = affixes[i];
-
 		local affixFrame = self.affixPool:Acquire();
 		if prevAffixFrame then
 			affixFrame:SetPoint("LEFT", prevAffixFrame, "RIGHT", spacing, 0);

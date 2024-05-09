@@ -100,7 +100,7 @@ function DelvesCompanionAbilityListFrameMixin:UpdatePaginatedButtonDisplay()
 			
 			-- NOTE: Only supporting 2 columns of buttons, if that ever incrases this logic would need to change
 			-- to anchor buttons 3..MAX to the prevButton - not using a constant here so that this note is seen.
-			if not (col % 2 == 0) then
+			if (col % 2) ~= 0 then
 				button:SetPoint("TOPLEFT", self.ButtonsParent, "TOPLEFT", 25, -((self.buttonHeight * row) + (10 * row)));
 				col = col + 1;
 			else

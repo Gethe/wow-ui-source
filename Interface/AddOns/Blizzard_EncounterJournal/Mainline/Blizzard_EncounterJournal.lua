@@ -2123,7 +2123,7 @@ function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
 	
 	local classID, specID;
 	if useSpec then
-		local classID, specID = EJ_GetLootFilter();
+		classID, specID = EJ_GetLootFilter();
 		if specID == 0 then
 			local spec = GetSpecialization();
 			if spec and classID == select(3, UnitClass("player")) then

@@ -1398,6 +1398,35 @@ local function GetEarnedCheckSize(iconSizeType)
 	return earnedCheckSizes[iconSizeType];
 end
 
+local baseItemEmbeddedTooltipCount = 0;
+
+function UIWidgetBaseItemTemplateMixin:ShowEmbeddedTooltip(itemID)
+	if not self.Tooltip then
+		baseItemEmbeddedTooltipCount = baseItemEmbeddedTooltipCount + 1;
+		self.Tooltip = CreateFrame("GameTooltip", "UIWidgetBaseItemEmbeddedTooltip"..baseItemEmbeddedTooltipCount, self, "UIWidgetBaseItemEmbeddedTooltipTemplate");
+	else
+		self.Tooltip:SetScript("OnTooltipCleared", nil);
+	end
+
+	function setEmbeddedTooltip()
+		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+		self.Tooltip:SetPadding(-10, -10, -10, -10);
+		self.Tooltip:SetItemByID(itemID);
+		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
+	end
+
+	setEmbeddedTooltip();
+	self.Tooltip:SetScript("OnTooltipCleared", setEmbeddedTooltip);
+	self.Tooltip:Show();
+end
+
+function UIWidgetBaseItemTemplateMixin:HideEmbeddedTooltip()
+	if self.Tooltip then
+		self.Tooltip:SetScript("OnTooltipCleared", nil);
+		self.Tooltip:Hide();
+	end
+end
+
 function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSizeSetting)
 	UIWidgetTemplateTooltipFrameMixin.Setup(self, widgetContainer);
 
@@ -1430,16 +1459,12 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		self.InfoText:Hide();
 		self.NameFrame:Hide();
 
-		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
-		self.Tooltip:SetPadding(-10, -10, -10, -10);
-		self.Tooltip:SetItemByID(itemInfo.itemID);
-		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 10, 0);
-		self.Tooltip:Show();
+		self:ShowEmbeddedTooltip(itemInfo.itemID);
 
 		widgetWidth = iconSize + self.Tooltip:GetWidth() + 10;
 		widgetHeight = math.max(iconSize, self.Tooltip:GetHeight());
 	elseif itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.PlayerChoiceReward then
-		self.Tooltip:Hide();
+		self:HideEmbeddedTooltip();
 		self.InfoText:Hide();
 
 		local minNameFrameWidth = 100;
@@ -1459,7 +1484,7 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		widgetWidth = iconSize + nameFrameWidth + 2;
 		widgetHeight = iconSize;
 	elseif itemInfo.textDisplayStyle == Enum.ItemDisplayTextDisplayStyle.ItemNameOnlyCentered then
-		self.Tooltip:Hide();
+		self:HideEmbeddedTooltip();
 		self.NameFrame:Hide();
 		self.InfoText:Hide();
 
@@ -1475,7 +1500,7 @@ function UIWidgetBaseItemTemplateMixin:Setup(widgetContainer, itemInfo, widgetSi
 		widgetWidth = iconSize + self.ItemName:GetWidth() + 10;
 		widgetHeight = iconSize;
 	else
-		self.Tooltip:Hide();
+		self:HideEmbeddedTooltip();
 		self.NameFrame:Hide();
 
 		local desiredTextWidth = (widgetSizeSetting > 0) and (widgetSizeSetting - (iconSize + 10)) or 0;
@@ -1523,6 +1548,10 @@ function UIWidgetBaseItemTemplateMixin:SetMouse(disableMouse)
 	local useMouse = self.tooltipEnabled and not disableMouse;
 	self:EnableMouse(useMouse)
 	self:SetMouseClickEnabled(false);
+end
+
+function UIWidgetBaseItemTemplateMixin:OnReset()
+	self:HideEmbeddedTooltip();
 end
 
 UIWidgetBaseIconTemplateMixin = CreateFromMixins(UIWidgetTemplateTooltipFrameMixin);

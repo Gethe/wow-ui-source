@@ -10,7 +10,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CharacterHeaderFrameTemplate" mixin="CharacterSelectHeaderMixin" enableMouse="true" virtual="true">
+	<Button name="CharacterHeaderFrameTemplate" mixin="CharacterSelectHeaderMixin" enableMouse="true" virtual="true">
 		<Size x="1" y="65"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -36,8 +36,9 @@
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 	
 	<Frame name="CharacterFooterFrameTemplate" virtual="true">
 		<Size x="100" y="50"/>

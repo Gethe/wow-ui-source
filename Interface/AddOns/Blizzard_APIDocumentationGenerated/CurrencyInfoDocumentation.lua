@@ -7,6 +7,21 @@ local CurrencyInfo =
 	Functions =
 	{
 		{
+			Name = "CanTransferCurrency",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canTransferCurrency", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "CurrencyTransferFailReason", Nilable = true },
+			},
+		},
+		{
 			Name = "DoesWarModeBonusApply",
 			Type = "Function",
 
@@ -29,6 +44,29 @@ local CurrencyInfo =
 			{
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "expand", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "FetchCurrencyTransferTransactions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyTransferTransactions", Type = "table", InnerType = "CurrencyTransferTransaction", Nilable = false },
+			},
+		},
+		{
+			Name = "FetchRosterCurrencyData",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rosterCurrencyData", Type = "table", InnerType = "CharacterCurrencyData", Nilable = false },
 			},
 		},
 		{
@@ -284,7 +322,7 @@ local CurrencyInfo =
 			},
 		},
 		{
-			Name = "IsAccountTransferrableCurrency",
+			Name = "IsAccountTransferableCurrency",
 			Type = "Function",
 
 			Arguments =
@@ -294,7 +332,7 @@ local CurrencyInfo =
 
 			Returns =
 			{
-				{ Name = "isAccountTransferrableCurrency", Type = "bool", Nilable = false },
+				{ Name = "isAccountTransferableCurrency", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -333,6 +371,45 @@ local CurrencyInfo =
 			Arguments =
 			{
 				{ Name = "type", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerHasMaxQuantity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasMaxQuantity", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerHasMaxWeeklyQuantity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasMaxWeeklyQuantity", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestCurrencyFromRoster",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sourceCharacterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -378,6 +455,11 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "CurrencyTransferLogUpdate",
+			Type = "Event",
+			LiteralName = "CURRENCY_TRANSFER_LOG_UPDATE",
+		},
+		{
 			Name = "PlayerMoney",
 			Type = "Event",
 			LiteralName = "PLAYER_MONEY",
@@ -395,6 +477,17 @@ local CurrencyInfo =
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "iconFileID", Type = "fileID", Nilable = false },
 				{ Name = "currencyTypesID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CharacterCurrencyData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "characterName", Type = "cstring", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -417,6 +510,7 @@ local CurrencyInfo =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "isHeader", Type = "bool", Nilable = false },
 				{ Name = "isHeaderExpanded", Type = "bool", Nilable = false },
 				{ Name = "currencyListDepth", Type = "number", Nilable = false },
@@ -435,10 +529,22 @@ local CurrencyInfo =
 				{ Name = "discovered", Type = "bool", Nilable = false },
 				{ Name = "useTotalEarnedForMaxQty", Type = "bool", Nilable = false },
 				{ Name = "isAccountWide", Type = "bool", Nilable = false },
-				{ Name = "isAccountTransferrable", Type = "bool", Nilable = false },
+				{ Name = "isAccountTransferable", Type = "bool", Nilable = false },
 				{ Name = "transferPercentage", Type = "number", Nilable = true },
 				{ Name = "rechargingCycleDurationMS", Type = "number", Nilable = false },
 				{ Name = "rechargingAmountPerCycle", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CurrencyTransferTransaction",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "sourceCharacterName", Type = "cstring", Nilable = false },
+				{ Name = "destinationCharacterName", Type = "cstring", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "timestamp", Type = "time_t", Nilable = false },
 			},
 		},
 	},

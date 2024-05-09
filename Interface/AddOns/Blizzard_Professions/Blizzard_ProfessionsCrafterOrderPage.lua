@@ -6,6 +6,7 @@ local orderTypeTabTitles =
 	[Enum.CraftingOrderType.Public] = PROFESSIONS_CRAFTER_ORDER_TAB_PUBLIC,
 	[Enum.CraftingOrderType.Guild] = PROFESSIONS_CRAFTER_ORDER_TAB_GUILD,
 	[Enum.CraftingOrderType.Personal] = PROFESSIONS_CRAFTER_ORDER_TAB_PERSONAL,
+	[Enum.CraftingOrderType.Npc] = PROFESSIONS_CRAFTER_ORDER_TAB_NPC,
 };
 
 local function SetTabTitleWithCount(tabButton, type, count)
@@ -123,8 +124,8 @@ end
 function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 	local isInGuild = IsInGuild();
 	self.BrowseFrame.GuildOrdersButton:SetShown(isInGuild);
-	self.BrowseFrame.PersonalOrdersButton:ClearAllPoints();
-	self.BrowseFrame.PersonalOrdersButton:SetPoint("LEFT", isInGuild and self.BrowseFrame.GuildOrdersButton or self.BrowseFrame.PublicOrdersButton, "RIGHT", 0, 0);
+	self.BrowseFrame.NpcOrdersButton:ClearAllPoints();
+	self.BrowseFrame.NpcOrdersButton:SetPoint("LEFT", isInGuild and self.BrowseFrame.GuildOrdersButton or self.BrowseFrame.PublicOrdersButton, "RIGHT", 0, 0);
 
 	for _, typeTab in ipairs(self.BrowseFrame.orderTypeTabs) do
 		typeTab:SetScript("OnClick", function()
@@ -378,6 +379,8 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 			tabButton = self.BrowseFrame.GuildOrdersButton;
 		elseif type == Enum.CraftingOrderType.Personal then
 			tabButton = self.BrowseFrame.PersonalOrdersButton;
+		elseif type == Enum.CraftingOrderType.Npc then
+			tabButton = self.BrowseFrame.NpcOrdersButton;
 		end
 
 		SetTabTitleWithCount(tabButton, type, count);

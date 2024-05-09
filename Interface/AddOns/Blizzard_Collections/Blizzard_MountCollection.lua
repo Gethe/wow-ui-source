@@ -178,6 +178,10 @@ function MountJournal_OnLoad(self)
 
 	self.SuppressedMountEquipmentButton = bottomLeftInset.SuppressedMountEquipmentButton;
 
+	self.MountSpellButtons.ToggleDynamicFlightFlyoutButton:SetFlyout(self.DynamicFlightFlyout);
+	self.DynamicFlightFlyout.OpenDynamicFlightSkillTreeButton:SetFlyoutButton(self.MountSpellButtons.ToggleDynamicFlightFlyoutButton);
+	self.DynamicFlightFlyout.DynamicFlightModeButton:SetFlyoutButton(self.MountSpellButtons.ToggleDynamicFlightFlyoutButton);
+
 	MountJournal_UpdateEquipment(self);
 end
 
@@ -629,6 +633,7 @@ function MountJournal_EvaluateListHelpTip(self)
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				offsetX = -4,
 				onAcknowledgeCallback = function() self.dragonridingHelpTipMountIndex = nil; end;
+				checkCVars = true,
 			};
 			HelpTip:Show(self, helpTipInfo, frame);
 			return;
@@ -945,6 +950,7 @@ local mountSourceOrderPriorities = {
 	[Enum.BattlePetSources.Quest] = 5,
 	[Enum.BattlePetSources.Vendor] = 5,
 	[Enum.BattlePetSources.Profession] = 5,
+	[Enum.BattlePetSources.WildPet] = 5,
 	[Enum.BattlePetSources.Achievement] = 5,
 	[Enum.BattlePetSources.WorldEvent] = 5,
 	[Enum.BattlePetSources.Discovery] = 5,
@@ -1041,11 +1047,18 @@ function MountJournalDynamicFlightModeButtonMixin:OnLoad()
 	self.spellID = C_MountJournal.GetDynamicFlightModeSpellID();
 	local spellIcon = C_Spell.GetSpellTexture(self.spellID);
 	self.texture:SetTexture(spellIcon);
-	self.spellname:SetText(C_Spell.GetSpellName(self.spellID));
 	self:RegisterForDrag("LeftButton");
+	self.NormalTexture:SetDrawLayer("OVERLAY");
+	self.PushedTexture:SetDrawLayer("OVERLAY");
+end
+
+function MountJournalDynamicFlightModeButtonMixin:SetFlyoutButton(flyoutButton)
+	self.flyoutButton = flyoutButton;
 end
 
 function MountJournalDynamicFlightModeButtonMixin:OnClick()
+	self.flyoutButton:CloseFlyout();
+
 	C_MountJournal.SwapDynamicFlightMode();
 end
 
@@ -1060,6 +1073,96 @@ function MountJournalDynamicFlightModeButtonMixin:OnEnter()
 	GameTooltip_AddColoredLine(GameTooltip, FLIGHT_MODE_TOGGLE_TOOLTIP_SUBTEXT, GREEN_FONT_COLOR);
 	GameTooltip:Show();
 end
+
+--------------------------------------------------
+MountJournalOpenDynamicFlightSkillTreeButtonMixin = {};
+
+function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnLoad()
+	self.NormalTexture:SetDrawLayer("OVERLAY");
+	self.PushedTexture:SetDrawLayer("OVERLAY");
+end
+
+function MountJournalOpenDynamicFlightSkillTreeButtonMixin:SetFlyoutButton(flyoutButton)
+	self.flyoutButton = flyoutButton;
+end
+
+function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnClick()
+	self.flyoutButton:CloseFlyout();
+
+	GenericTraitUI_LoadUI();
+
+	GenericTraitFrame:SetSystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
+	GenericTraitFrame:SetTreeID(Constants.MountDynamicFlightConsts.TREE_ID);
+	ToggleFrame(GenericTraitFrame);
+end
+
+function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnEnter()
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), OPEN_DYNAMIC_FLIGHT_TREE_TOOLTIP, nil, false, self, "ANCHOR_RIGHT");
+end
+
+function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
+end
+
+--------------------------------------------------
+MountJournalToggleDynamicFlightFlyoutButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:SetFlyout(flyout)
+	self.flyout = flyout;
+
+	self:UpdateArrow();
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:CloseFlyout()
+	self.flyout:Hide();
+
+	self:UpdateArrow();
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnHide()
+	self:CloseFlyout();
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnClick()
+	self.flyout:SetShown(not self.flyout:IsShown());
+
+	self:UpdateArrow();
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:OnButtonStateChanged()
+	self:UpdateArrow();
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:SetArrowPosition(arrow, rotation, offset)
+	SetClampedTextureRotation(arrow, rotation);
+	arrow:ClearAllPoints();
+	arrow:SetPoint("BOTTOM", self, "BOTTOM", 0, offset);
+end
+
+function MountJournalToggleDynamicFlightFlyoutButtonMixin:UpdateArrow()
+	if self:IsDown() then
+		self.FlyoutArrowNormal:Hide();
+		self.FlyoutArrowHighlight:Hide();
+		self.FlyoutArrowPushed:Show();
+	else
+		self.FlyoutArrowNormal:Show();
+		self.FlyoutArrowHighlight:Show();
+		self.FlyoutArrowPushed:Hide();
+	end
+
+	if self.flyout:IsShown() then
+		local rotation = 180;
+		self:SetArrowPosition(self.FlyoutArrowNormal, rotation, self.openArrowOffset);
+		self:SetArrowPosition(self.FlyoutArrowHighlight, rotation, self.openArrowOffset);
+		self:SetArrowPosition(self.FlyoutArrowPushed, rotation, self.openArrowOffset);
+	else
+		local rotation = 0;
+		self:SetArrowPosition(self.FlyoutArrowNormal, rotation, self.closedArrowOffset);
+		self:SetArrowPosition(self.FlyoutArrowHighlight, rotation, self.closedArrowOffset);
+		self:SetArrowPosition(self.FlyoutArrowPushed, rotation, self.closedArrowOffset);
+	end
+end
+
 --------------------------------------------------------
 
 function MountOptionsMenu_Init(self, level)

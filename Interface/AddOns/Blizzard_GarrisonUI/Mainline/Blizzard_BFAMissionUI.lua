@@ -217,8 +217,8 @@ function BFAMission:OnEventMainFrame(event, ...)
 end
 
 function BFAMission:DefaultTab()
-	do return 3 end -- scouting map for beta end
-	return 1;	-- Missions
+	return 3; -- scouting map for beta end
+	--return 1;	-- Missions
 end
 
 function BFAMission:ShouldShowMissionsAndFollowersTabs()

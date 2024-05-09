@@ -334,6 +334,11 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="SearchOverlay" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a="0.8" />
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD">
 					<Size x="32" y="32"/>
@@ -351,6 +356,9 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -1079,6 +1087,7 @@
 					<OnShow method="OnShow"/>
 					<OnHide method="OnHide"/>
 					<OnEvent method="OnEvent"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
 			</Frame>
 		</Frames>

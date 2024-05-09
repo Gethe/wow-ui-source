@@ -62,11 +62,13 @@ local function RandomCurveTrajectory(source, target, elapsed, duration)
 end
 
 local function SourceStaticTrajectory(source, target, elapsed, duration)
-	return GetScaledCenter(source);
+	local sourceX, sourceY = GetScaledCenter(source);
+	return sourceX, sourceY;
 end
 
 local function TargetStaticTrajectory(source, target, elapsed, duration)
-	return GetScaledCenter(target);
+	local targetX, targetY = GetScaledCenter(target);
+	return targetX, targetY;
 end
 
 local function HalfwayStaticTrajectory(source, target, elapsed, duration)

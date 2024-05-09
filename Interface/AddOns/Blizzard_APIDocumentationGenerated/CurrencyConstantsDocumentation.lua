@@ -92,6 +92,19 @@ local CurrencyConstants =
 			},
 		},
 		{
+			Name = "CurrencyTransferFailReason",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "InvalidType", Type = "CurrencyTransferFailReason", EnumValue = 0 },
+				{ Name = "MaxQuantity", Type = "CurrencyTransferFailReason", EnumValue = 1 },
+				{ Name = "NoValidSourceCharacter", Type = "CurrencyTransferFailReason", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "LinkedCurrencyFlags",
 			Type = "Enumeration",
 			NumValues = 4,

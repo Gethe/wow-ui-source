@@ -278,7 +278,8 @@ function Class_PerksProgramActivitiesPromptWatcher:OnInitialize()
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		alignment = HelpTip.Alignment.Right,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
-		acknowledgeOnHide = false,
+		checkCVars = true,
+		acknowledgeOnHide = true,
 	};
 end
 
@@ -336,7 +337,8 @@ function Class_PerksProgramActivitiesOpenWatcher:OnInitialize()
 		targetPoint = HelpTip.Point.TopEdgeLeft,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),
 		alignment = HelpTip.Alignment.Left,
-		acknowledgeOnHide = false,
+		checkCVars = true,
+		acknowledgeOnHide = true,
 	};
 end
 

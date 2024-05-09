@@ -1398,7 +1398,7 @@ function RecruitAFriendRewardTabMixin:TrySetChecked()
 	self:SetChecked(self.rafVersion == self:GetRecruitAFriendFrame():GetSelectedRAFVersion());
 end
 
-function RecruitAFriendRewardTabMixin:TryPlayUnclaimedRewardsAnim(versionInfo)
+function RecruitAFriendRewardTabMixin:TryPlayUnclaimedRewardsAnim()
 	if self:GetChecked() then
 		self.UnclaimedRewardsAnim:Stop();
 		return;

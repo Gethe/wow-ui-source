@@ -643,8 +643,8 @@ local function AddFloorLocationLine(tooltip, floorLocation, aboveString, belowSt
 	end
 end
 
-function GameTooltip_AddQuest(self, questID)
-	local questID = self.questID or questID;
+function GameTooltip_AddQuest(self, questIDArg)
+	local questID = self.questID or questIDArg;
 	if ( not HaveQuestData(questID) ) then
 		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
 		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);

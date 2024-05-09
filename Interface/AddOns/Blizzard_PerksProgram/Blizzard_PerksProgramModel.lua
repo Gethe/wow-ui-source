@@ -374,15 +374,15 @@ function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, force
 		end
 
 		if categoryID == Enum.PerksVendorCategoryType.Mount then
-			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
 			self:SetupModelSceneForMounts(self.currentData, defaultModelSceneID, forceSceneChange);		
 			self.previousMainModelSceneID = defaultModelSceneID;
 		elseif categoryID == Enum.PerksVendorCategoryType.Pet then
-			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
 			self:SetupModelSceneForPets(self.currentData, defaultModelSceneID, forceSceneChange);	
 			self.previousMainModelSceneID = defaultModelSceneID;
 		elseif categoryID == Enum.PerksVendorCategoryType.Toy then
-			forceSceneChange = forceSceneChange or not(self.previousMainModelSceneID == defaultModelSceneID);
+			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
 			self:SetupModelSceneForToys(self.currentData, defaultModelSceneID, forceSceneChange);
 			self.previousMainModelSceneID = defaultModelSceneID;
 		elseif categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset then
@@ -733,7 +733,7 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 		self.ToyOverlayFrame:Show();
 		self.MainModelScene:Hide();
 		self.PlayerModelScene:Hide();
-		local noModelScene;
+		local noModelScene = nil;
 		EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", noModelScene);
 	end
 end

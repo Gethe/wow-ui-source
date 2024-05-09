@@ -218,6 +218,9 @@ function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
 	CharacterSelectCharacterFrame:UpdateCharacterSelection();
 	UpdateCharacterList();
 
+	-- Ensure we update character display, as no update event will happen as we are not actually changing the selected character.
+	CharacterSelect.CharacterSelectUI:SetCharacterDisplay(originCharacterID);
+
 	-- Do any visual updates needed once things have updated (scroll to a character, play animations, etc.)
 	local function AnimatePulseAnimForCharacter(frame)
 		frame:AnimatePulse();
@@ -477,7 +480,6 @@ function CharacterSelectListUtil.GetNextCharacterIndex(direction)
 	end
 end
 
-
 function CharacterSelectListUtil:GetVASInfoForGUID(guid)
 	if not guid then
 		return nil;
@@ -495,4 +497,69 @@ function CharacterSelectListUtil:GetSelectedCharacterFrame()
 	end);
 
 	return frame;
+end
+
+function CharacterSelectListUtil:UpdateCharacterHighlight(guid, isHighlight)
+	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
+		if frame.characterInfo.guid == guid then
+			frame:UpdateHighlightUI(isHighlight);
+		end
+	end);
+end
+
+-- Click the actual character button in the scroll list, in case it may be otherwise disabled.
+function CharacterSelectListUtil:ClickCharacterFrameByGUID(guid)
+	-- First scroll to the character to have the frame present.
+	local characterElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
+		return CharacterSelectListUtil.GetCharacterPositionData(guid, elementData) ~= nil;
+	end);
+
+	if characterElementData then
+		CharacterSelectListUtil.ScrollToElement(characterElementData, ScrollBoxConstants.AlignNearest);
+
+		-- Next, click the frame itself, as it could have behavior that gets overridden if in VAS flows.
+		local frame = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+			return elementData == characterElementData;
+		end);
+
+		if frame then
+			if characterElementData.isGroup then
+				for _, character in ipairs(frame.groupButtons) do
+					if character:GetCharacterGUID() == guid then
+						character:Click();
+						break;
+					end
+				end
+			else
+				frame:Click();
+			end
+		end
+	end
+end
+
+-- Force select a character, regardless of state.
+function CharacterSelectListUtil:SelectCharacterByGUID(guid)
+	local characterID;
+	local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
+		characterID = CharacterSelectListUtil.GetCharacterPositionData(guid, elementData);
+		return characterID ~= nil;
+	end);
+
+	if elementData then
+		local index = CharacterSelectListUtil.GetIndexFromCharID(characterID);
+		CharacterSelectUtil.SelectAtIndex(index);
+
+		CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignCenter);
+
+		CharacterSelectCharacterFrame:UpdateCharacterSelection();
+		CharacterSelectListUtil.GetCharacterListUpdate();
+		return true;
+	end
+
+	return false;
+end
+
+function CharacterSelectListUtil.GetCharacterListUpdate()
+	CharacterSelect.waitingforCharacterList = true;
+	GetCharacterListUpdate();
 end

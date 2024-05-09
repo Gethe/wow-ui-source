@@ -252,7 +252,7 @@ function WoWTokenSellFrameMixin:GetItem()
 	return self.ItemDisplay:GetItemLocation();
 end
 
-function WoWTokenSellFrameMixin:GetSellToken(itemLocation)
+function WoWTokenSellFrameMixin:GetSellToken()
 	local itemLocation = self.ItemDisplay:GetItemLocation();
 	local itemIsValid = itemLocation and C_Item.DoesItemExist(itemLocation);
 	return itemIsValid and C_Item.GetItemGUID(itemLocation) or nil;

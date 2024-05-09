@@ -60,7 +60,7 @@ end
 function GarrisonLandingPageMixin:UpdateUIToGarrisonType()
 	self:UpdateTabs();
 
-	local shouldShowFollowerTab = not (self.garrTypeID == Enum.GarrisonType.Type_9_0_Garrison) or C_Garrison.HasAdventures();
+	local shouldShowFollowerTab = (self.garrTypeID ~= Enum.GarrisonType.Type_9_0_Garrison) or C_Garrison.HasAdventures();
 	self.FollowerTabButton:SetShown(shouldShowFollowerTab);
 
 	if (self.garrTypeID == Enum.GarrisonType.Type_6_0_Garrison) then

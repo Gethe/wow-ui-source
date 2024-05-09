@@ -726,8 +726,8 @@ local function Register()
 	end
 
 	do
-		local function SplitMSAA(msaa)
-			local msaa, coverage = strsplit(",", msaa);
+		local function SplitMSAA(msaaStr)
+			local msaa, coverage = strsplit(",", msaaStr);
 			return tonumber(msaa), coverage or 0;
 		end
 

@@ -841,7 +841,7 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Reward" inherits="GameFontNormalSmall" hidden="true">
-					<Size x="400" y="20"/>
+					<Size x="355" y="20"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.RewardBackground" relativePoint="TOP" x="0" y="1"/>
 					</Anchors>

@@ -54,7 +54,8 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	end
 
 	local targetFrameContentMain = self.TargetFrameContent.TargetFrameContentMain;
-	local healthBar = targetFrameContentMain.HealthBar;
+	local healthBar = targetFrameContentMain.HealthBarsContainer.HealthBar;
+	local tempMaxHealthLossBar = targetFrameContentMain.HealthBarsContainer.TempMaxHealthLoss;
 	local manaBar = targetFrameContentMain.ManaBar;
 	UnitFrame_Initialize(self, unit, targetFrameContentMain.Name, self.frameType, portraitFrame,
 						 healthBar,
@@ -67,16 +68,27 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 						 healthBar.TotalAbsorbBar,
 						 healthBar.OverAbsorbGlow,
 						 healthBar.OverHealAbsorbGlow,
-						 healthBar.HealAbsorbBar);
+						 healthBar.HealAbsorbBar,
+						nil,
+						tempMaxHealthLossBar);
 
 	self.auraPools = CreateFramePoolCollection();
 	self.auraPools:CreatePool("FRAME", self, "TargetDebuffFrameTemplate");
 	self.auraPools:CreatePool("FRAME", self, "TargetBuffFrameTemplate");
 
+	healthBar:SetBarText(targetFrameContentMain.HealthBarsContainer.HealthBarText, targetFrameContentMain.HealthBarsContainer.LeftText, targetFrameContentMain.HealthBarsContainer.RightText);
+
+	tempMaxHealthLossBar:InitalizeMaxHealthLossBar(targetFrameContentMain.HealthBarsContainer, healthBar);
+
 	local healthBarTexture = healthBar:GetStatusBarTexture();
-	healthBarTexture:AddMaskTexture(healthBar.HealthBarMask);
+	healthBarTexture:AddMaskTexture(targetFrameContentMain.HealthBarsContainer.HealthBarMask);
 	healthBarTexture:SetTexelSnappingBias(0);
 	healthBarTexture:SetSnapToPixelGrid(false);
+
+	local tempMaxHealthLossBarTexture = tempMaxHealthLossBar:GetStatusBarTexture();
+	tempMaxHealthLossBarTexture:AddMaskTexture(targetFrameContentMain.HealthBarsContainer.HealthBarMask);
+	tempMaxHealthLossBarTexture:SetTexelSnappingBias(0);
+	tempMaxHealthLossBarTexture:SetSnapToPixelGrid(false);
 
 	local manaBarTexture = manaBar:GetStatusBarTexture();
 	manaBarTexture:AddMaskTexture(manaBar.ManaBarMask);
@@ -376,7 +388,8 @@ end
 
 function TargetFrameMixin:CheckClassification()
 	local classification = UnitClassification(self.unit);
-	local healthBar = self.TargetFrameContent.TargetFrameContentMain.HealthBar;
+	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
+	local healthBar = healthBarsContainer.HealthBar;
 	local manaBar = self.TargetFrameContent.TargetFrameContentMain.ManaBar;
 
 	-- Base frame/health/mana pieces
@@ -392,13 +405,14 @@ function TargetFrameMixin:CheckClassification()
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
 
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
 		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBar:SetHeight(12);
-		healthBar:SetWidth(125);
-		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
+		healthBarsContainer:SetHeight(12);
+		healthBarsContainer:SetWidth(125);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
 
-		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
 
 		manaBar.pauseUpdates = true;
 		manaBar:Hide();
@@ -417,13 +431,14 @@ function TargetFrameMixin:CheckClassification()
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
 
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
 		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBar:SetHeight(20);
-		healthBar:SetWidth(126);
-		healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
+		healthBarsContainer:SetHeight(20);
+		healthBarsContainer:SetWidth(126);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
 
-		healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
 
 	-- Boss frame pieces (dragon frame, icons)
@@ -463,19 +478,19 @@ function TargetFrameMixin:CheckClassification()
 end
 
 function TargetFrameMixin:CheckDead()
-	local healthBar = self.TargetFrameContent.TargetFrameContentMain.HealthBar;
+	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
 
 	if ((UnitHealth(self.unit) <= 0) and UnitIsConnected(self.unit)) then
 		if (UnitIsUnconscious(self.unit)) then
-			healthBar.UnconsciousText:Show();
-			healthBar.DeadText:Hide();
+			healthBarsContainer.UnconsciousText:Show();
+			healthBarsContainer.DeadText:Hide();
 		else
-			healthBar.UnconsciousText:Hide();
-			healthBar.DeadText:Show();
+			healthBarsContainer.UnconsciousText:Hide();
+			healthBarsContainer.DeadText:Show();
 		end
 	else
-		healthBar.DeadText:Hide();
-		healthBar.UnconsciousText:Hide();
+		healthBarsContainer.DeadText:Hide();
+		healthBarsContainer.UnconsciousText:Hide();
 	end
 end
 
@@ -1252,20 +1267,21 @@ function BossTargetFrameMixin:OnLoad()
 	targetFrameContentMain.Name:SetWidth(55);
 	targetFrameContentMain.Name:SetPoint("TOPLEFT", reputationBar, "TOPRIGHT", -56, -1);
 
-	local healthBar = targetFrameContentMain.HealthBar;
+	local healthBarsContainer = targetFrameContentMain.HealthBarsContainer;
+	local healthBar = healthBarsContainer.HealthBar;
 	healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-Boss-Small-PortraitOff-Bar-Health", TextureKitConstants.UseAtlasSize);
-	healthBar:SetWidth(84);
-	healthBar:SetHeight(10);
-	healthBar:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 145, -6);
+	healthBarsContainer:SetWidth(84);
+	healthBarsContainer:SetHeight(10);
+	healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 145, -6);
 
 	-- The boss frame mask is the same shape as the party frame, so we just use that.
-	healthBar.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	healthBar.HealthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
+	healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOff-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+	healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", targetFrameContentMain, "TOPLEFT", 40, -43);
 
 	local manaBar = targetFrameContentMain.ManaBar;
 	manaBar:SetWidth(84);
 	manaBar:SetHeight(7);
-	manaBar:SetPoint("TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -1);
+	manaBar:SetPoint("TOPRIGHT", healthBarsContainer, "BOTTOMRIGHT", 0, -1);
 	manaBar.ManaBarText:SetPoint("CENTER", 0, 0);
 	manaBar.RightText:SetPoint("RIGHT", -5, 0);
 
@@ -1415,7 +1431,7 @@ function FocusFrameMixin:SetSmallSize(smallSize)
 		self.spellbar:SetScale(SMALL_FOCUS_UPSCALE);
 
 		self.totFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 20, 8);
-		focusFrameContentMain.HealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
+		focusFrameContentMain.HealthBarsContainer.HealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
 		focusFrameContentContextual.NumericalThreat:SetPoint("BOTTOM", focusFrameContentMain.ReputationColor, "TOP", 0, -1);
 		focusFrameContentContextual.PvpIcon:Hide();
 		focusFrameContentContextual.PrestigePortrait:Hide();
@@ -1438,7 +1454,7 @@ function FocusFrameMixin:SetSmallSize(smallSize)
 		self.spellbar:SetScale(LARGE_FOCUS_SCALE);
 
 		self.totFrame:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 12, 10);
-		focusFrameContentMain.HealthBar.TextString:SetFontObject(TextStatusBarText);
+		focusFrameContentMain.HealthBarsContainer.HealthBar.TextString:SetFontObject(TextStatusBarText);
 		focusFrameContentContextual.NumericalThreat:SetPoint("BOTTOM", focusFrameContentMain.ReputationColor, "TOP", 0, 0);
 
 		self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");

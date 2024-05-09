@@ -271,11 +271,6 @@ function CharacterSelectFrameMixin:OnHide()
     SetInCharacterSelect(false);
 end
 
-function CharacterSelect_GetCharacterListUpdate()
-	CharacterSelect.waitingforCharacterList = true;
-	GetCharacterListUpdate();
-end
-
 function CharacterSelect_UpdateState(fromLoginState)
 	if not GetServerName() then
 		CharacterSelect_SetSelectedCharacterName("");
@@ -291,7 +286,7 @@ function CharacterSelect_UpdateState(fromLoginState)
                     CharacterSelectUI:Show();
                 end
             end
-			CharacterSelect_GetCharacterListUpdate();
+			CharacterSelectListUtil.GetCharacterListUpdate();
         else
             UpdateCharacterList();
         end
@@ -467,6 +462,9 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
 		    CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
 		end
+		-- Sets up the character rendering in the group scene or legacy BG style.
+		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(self.selectedIndex);
+
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 
 		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
@@ -789,9 +787,6 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
 		SelectCharacter(selectedCharacterID);
 
-		-- Sets up the character rendering in the group scene or legacy BG style.
-		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(selectedCharacterID);
-
         if (not C_WowTokenPublic.GetCurrentMarketPrice() or
             not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
             AccountReactivate_RecheckEligibility();
@@ -829,27 +824,6 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 			end);
 		end
     end
-end
-
-function CharacterSelect_SelectCharacterByGUID(characterGUID)
-	local characterID;
-	local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
-		characterID = CharacterSelectListUtil.GetCharacterPositionData(characterGUID, elementData);
-		return characterID ~= nil;
-	end);
-
-	if elementData then
-		local index = CharacterSelectListUtil.GetIndexFromCharID(characterID);
-		CharacterSelectUtil.SelectAtIndex(index);
-
-		CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignCenter);
-
-		CharacterSelectCharacterFrame:UpdateCharacterSelection();
-		CharacterSelect_GetCharacterListUpdate();
-		return true;
-	end
-
-	return false;
 end
 
 function CharacterDeleteDialog_OnShow()
@@ -1181,6 +1155,8 @@ function AccountUpgradePanel_SetLastUserExpandedFrame(frame)
 	s_lastUserExpandedFrame = frame;
 end
 
+local WAR_WITHIN_EXPANSION_NUMBER = 10;
+
 function AccountUpgradePanel_Update(isExpanded, isUserInput)
 	if isUserInput then
 		SetCVar("expandUpgradePanel", isExpanded and "1" or "0");
@@ -1193,8 +1169,10 @@ function AccountUpgradePanel_Update(isExpanded, isUserInput)
 		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
 		
 		local gameEnvironmentToggleShown = CharacterSelect.CharacterSelectUI.GameEnvironmentToggleFrame:IsShown();
-		CharSelectAccountUpgradeButton.TopChain1:SetShown(not gameEnvironmentToggleShown);
-		CharSelectAccountUpgradeButton.TopChain2:SetShown(not gameEnvironmentToggleShown);
+		local showChains = not gameEnvironmentToggleShown and currentExpansionLevel < WAR_WITHIN_EXPANSION_NUMBER;
+
+		CharSelectAccountUpgradeButton.TopChain1:SetShown(showChains);
+		CharSelectAccountUpgradeButton.TopChain2:SetShown(showChains);
 
         CharSelectAccountUpgradeButton:Show();
         if ( isExpanded ) then
@@ -1365,7 +1343,7 @@ end
 function CharacterSelect_ActivateFactionChange()
     if IsConnectedToServer() then
         EnableChangeFaction();
-		CharacterSelect_GetCharacterListUpdate();
+		CharacterSelectListUtil.GetCharacterListUpdate();
     end
 end
 
@@ -2047,7 +2025,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 			local automaticBoostCharacterGUID = C_CharacterServices.GetAutomaticBoostCharacter();
 			CharacterSelectCharacterFrame:ScrollToCharacter(automaticBoostCharacterGUID);
 			CharacterUpgradePopup_BeginCharacterUpgradeFlow(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), automaticBoostCharacterGUID);
-			CharacterSelect_SelectCharacterByGUID(automaticBoostCharacterGUID);
+			CharacterSelectListUtil.SelectCharacterByGUID(automaticBoostCharacterGUID);
         else
 			if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
 				CharacterUpgradeFlow:SetTarget(CHARACTER_UPGRADE_CREATE_CHARACTER_DATA);
@@ -2069,7 +2047,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
     elseif (C_CharacterServices.HasQueuedUpgrade()) then
         local guid = C_CharacterServices.GetQueuedUpgradeGUID();
 
-          CharacterServicesMaster.waitingForLevelUp = CharacterSelect_SelectCharacterByGUID(guid);
+        CharacterServicesMaster.waitingForLevelUp = CharacterSelectListUtil.SelectCharacterByGUID(guid);
 
         C_CharacterServices.ClearQueuedUpgrade();
     end

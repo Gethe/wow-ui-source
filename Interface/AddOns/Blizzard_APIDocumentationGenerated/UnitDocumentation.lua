@@ -318,6 +318,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "GetUnitTotalModifiedMaxHealthPercent",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetVehicleUIIndicator",
 			Type = "Function",
 
@@ -3360,6 +3374,16 @@ local Unit =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitMaxHealthModifiersChanged",
+			Type = "Event",
+			LiteralName = "UNIT_MAX_HEALTH_MODIFIERS_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "percentMaxHealthAdjusted", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -189,7 +189,7 @@ local PartyInfo =
 
 			Returns =
 			{
-				{ Name = "restrictToAssistants", Type = "bool", Nilable = false },
+				{ Name = "restrictTo", Type = "RestrictPingsTo", Nilable = false },
 			},
 		},
 		{
@@ -286,7 +286,7 @@ local PartyInfo =
 
 			Arguments =
 			{
-				{ Name = "restrictToAssistants", Type = "bool", Nilable = false },
+				{ Name = "restrictTo", Type = "RestrictPingsTo", Nilable = false },
 			},
 		},
 	},

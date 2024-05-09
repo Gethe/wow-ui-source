@@ -2364,13 +2364,13 @@ EditModeManagerTutorialMixin = {};
 
 local HelpTipInfos = {
 	[1] = { text = EDIT_MODE_HELPTIPS_LAYOUTS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
 	[2] = { text = EDIT_MODE_HELPTIPS_SHOW_HIDDEN_FRAMES, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
 	[3] = { text = EDIT_MODE_HELPTIPS_ADVANCED_OPTIONS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="EnableAdvancedOptionsCheckButton",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
 	[4] = { text = EDIT_MODE_HELPTIPS_SELECT_FRAMES, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true,
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EDIT_MODE_MANAGER, useParentStrata = true, checkCVars = true },
 };
 
 function EditModeManagerTutorialMixin:OnLoad()

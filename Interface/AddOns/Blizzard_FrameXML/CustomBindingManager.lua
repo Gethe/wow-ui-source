@@ -23,7 +23,6 @@ end
 		self.handlers = {};
 	end
 
-	local customBindingType = handler:GetCustomBindingType();
 	if not self.handlers[customBindingType] then
 		self.handlers[customBindingType] = {};
 	end

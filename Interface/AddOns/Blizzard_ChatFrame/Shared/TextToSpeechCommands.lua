@@ -11,7 +11,7 @@ function TextToSpeechCommandsMixin:Init()
 end
 
 function TextToSpeechCommandsMixin:AddCommand(cmdName, callback, option, helpText, rangeMin, rangeMax, rangeFn)
-	local cmdName = string.lower(cmdName);
+	cmdName = string.lower(cmdName);
 	self.commands[cmdName] = {
 		cmdName = cmdName,
 		callback = callback,

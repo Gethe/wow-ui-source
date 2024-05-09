@@ -14,6 +14,7 @@ ItemButtonUtil.ItemContextEnum = {
 	ItemConversion = 11,
 	ItemRecrafting = 12,
 	JumpUpgradeTrack = 13,
+	AccountBankDepositing = 14,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -66,6 +67,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.UpgradableItem;
 	elseif C_Spell.TargetSpellJumpsUpgradeTrack() then
 		return ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack;
+	elseif BankFrame and BankFrame:IsVisible() and BankFrame:GetActiveBankType() == Enum.BankType.Account then
+		return ItemButtonUtil.ItemContextEnum.AccountBankDepositing;
 	end
 	return nil;
 end
@@ -142,6 +145,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack then
 			return C_Item.DoesItemMatchTrackJump(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.AccountBankDepositing then
+			return C_Bank.IsItemAllowedInBankType(Enum.BankType.Account, itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end
@@ -307,7 +312,7 @@ function ItemUtil.TransformItemGUIDsToItems(itemGUIDs)
 	return items;
 end
 
-function ItemUtil.TransformItemLocationItemsToGUIDItems(items)
+function ItemUtil.TransformItemLocationItemsToGUIDItems(itemLocations)
 	local items = {};
 	for index, itemLocation in ipairs(itemLocations) do
 		table.insert(items, Item:CreateFromItemLocation(itemLocation));

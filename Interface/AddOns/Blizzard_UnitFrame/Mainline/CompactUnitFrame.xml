@@ -117,6 +117,13 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
+			<StatusBar name="$parentTempMaxHealthLoss" parentKey="TempMaxHealthLoss" hidden="true" drawLayer="ARTWORK" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+				<BarTexture atlas="Raid Frame"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+			</StatusBar>
 			<StatusBar name="$parentPowerBar" parentKey="powerBar" useParentLevel="true">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="2">

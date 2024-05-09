@@ -741,10 +741,30 @@ end
 
 BankPanelTabMixin = CreateFromMixins(BankPanelSystemMixin);
 
+local BANK_PANEL_TAB_EVENTS = {
+	"INVENTORY_SEARCH_UPDATE",
+};
+
 function BankPanelTabMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp","RightButtonUp");
 
 	self:AddDynamicEventMethod(self:GetBankFrame(), BankPanelMixin.Event.NewBankTabSelected, self.OnNewBankTabSelected);
+end
+
+function BankPanelTabMixin:OnShow()
+	CallbackRegistrantMixin.OnShow(self);
+	FrameUtil.RegisterFrameForEvents(self, BANK_PANEL_TAB_EVENTS);
+end
+
+function BankPanelTabMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
+	FrameUtil.UnregisterFrameForEvents(self, BANK_PANEL_TAB_EVENTS);
+end
+
+function BankPanelTabMixin:OnEvent(event, ...)
+	if event == "INVENTORY_SEARCH_UPDATE" then
+		self:RefreshSearchOverlay();
+	end
 end
 
 function BankPanelTabMixin:OnClick(button)
@@ -804,6 +824,11 @@ function BankPanelTabMixin:RefreshVisuals()
 	local enabled = self:IsEnabled();
 	self.Icon:SetDesaturated(not enabled);
 	self.SelectedTexture:SetShown(enabled and self:IsSelected());
+	self:RefreshSearchOverlay();
+end
+
+function BankPanelTabMixin:RefreshSearchOverlay()
+	self.SearchOverlay:SetShown(self.tabData.ID and C_Container.IsContainerFiltered(self.tabData.ID));
 end
 
 function BankPanelTabMixin:Init(tabData)
@@ -930,6 +955,7 @@ function BankPanelItemButtonMixin:Init(bankTabID, containerSlotID)
 	self:SetBankTabID(bankTabID);
 	self:SetContainerSlotID(containerSlotID);
 	self:InitItemLocation();
+	self.isInitialized = true;
 
 	self:Refresh();
 end
@@ -951,6 +977,10 @@ function BankPanelItemButtonMixin:GetItemLocation()
 end
 
 function BankPanelItemButtonMixin:GetItemContextMatchResult()
+	if not self.isInitialized then
+		return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
+	end
+
 	return ItemButtonUtil.GetItemContextMatchResultForItem(self:GetItemLocation());
 end
 
@@ -1041,7 +1071,11 @@ function BankPanelMixin:OnLoad()
 	self:SetBankType(Enum.BankType.Account);
 
 	self.bankTabPool = CreateFramePool("BUTTON", self, "BankPanelTabTemplate");
-	self.itemButtonPool = CreateFramePool("ItemButton", self, "AccountBankItemButtonTemplate");
+
+	local function BankItemButtonResetter(framePool, frame)
+		frame.isInitialized = false;
+	end
+	self.itemButtonPool = CreateFramePool("ItemButton", self, "AccountBankItemButtonTemplate", BankItemButtonResetter);
 
 	self.selectedTabID = nil;
 end
@@ -1051,6 +1085,7 @@ function BankPanelMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, BankPanelEvents);
 
 	self:Reset();
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
 function BankPanelMixin:OnHide()
@@ -1061,6 +1096,33 @@ function BankPanelMixin:OnHide()
 	self.selectedTabID = nil;
 
 	self:CloseAllBankPopups();
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
+end
+
+function BankPanelMixin:MarkDirty()
+	self.isDirty = true;
+	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function BankPanelMixin:Clean()
+	if not self.isDirty then
+		return;
+	end
+	
+	local hasItemSlots = self.itemButtonPool:GetNumActive() > 0;
+	if hasItemSlots then
+		self:RefreshAllItemsForSelectedTab();
+	else
+		-- Newly purchased bank tabs may need to have item slots generated
+		self:GenerateItemSlotsForSelectedTab();
+	end
+
+	self.isDirty = false;
+	self:SetScript("OnUpdate", nil);
+end
+
+function BankPanelMixin:OnUpdate()
+	self:Clean();
 end
 
 function BankPanelMixin:CloseAllBankPopups()
@@ -1105,7 +1167,7 @@ function BankPanelMixin:OnEvent(event, ...)
 	elseif event == "BAG_UPDATE" then
 		local containerID = ...;
 		if self.selectedTabID == containerID then
-			self:RefreshItemsForSelectedTab();
+			self:MarkDirty();
 		end
 	elseif event == "INVENTORY_SEARCH_UPDATE" then
 		self:UpdateSearchResults();
@@ -1199,7 +1261,7 @@ function BankPanelMixin:RefreshBankPanel()
 	self:SetHeaderEnabled(true);
 	self:SetItemDisplayEnabled(true);
 	self:SetMoneyFrameEnabled(true);
-	self:RefreshItemsForSelectedTab();
+	self:GenerateItemSlotsForSelectedTab();
 end
 
 function BankPanelMixin:SetHeaderEnabled(enabled)
@@ -1295,7 +1357,7 @@ function BankPanelMixin:RefreshBankTabs()
 	end
 end
 
-function BankPanelMixin:RefreshItemsForSelectedTab()
+function BankPanelMixin:GenerateItemSlotsForSelectedTab()
 	self.itemButtonPool:ReleaseAll();
 
 	if not self.selectedTabID or self.selectedTabID == PURCHASE_TAB_ID then
@@ -1336,6 +1398,12 @@ function BankPanelMixin:RefreshItemsForSelectedTab()
 		button:Show();
 
 		lastCreatedButton = button;
+	end
+end
+
+function BankPanelMixin:RefreshAllItemsForSelectedTab()
+	for itemButton in self:EnumerateValidItems() do
+		itemButton:Refresh();
 	end
 end
 

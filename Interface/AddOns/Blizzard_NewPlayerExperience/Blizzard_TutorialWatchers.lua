@@ -842,7 +842,7 @@ end
 
 -- Watch for units dying while in combat.  if that happened, check the unit to see if the
 -- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, logEvent)
+function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
 	local eventData = {CombatLogGetCurrentEventInfo()};
 	local logEvent = eventData[2];
 	local unitGUID = eventData[8];

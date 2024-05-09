@@ -878,7 +878,7 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 	elseif ( event == "BN_DISCONNECTED" or event == "BN_CONNECTED") then
 		UpdateMicroButtons();
 	elseif ( event == "INITIAL_CLUBS_LOADED" ) then
-		self:UpdateNotificationIcon(GuildMicroButton);
+		self:UpdateNotificationIcon();
 		local previouslyDisplayedInvitations = DISPLAYED_COMMUNITIES_INVITATIONS;
 		DISPLAYED_COMMUNITIES_INVITATIONS = {};
 		local invitations = C_Club.GetInvitationsForSelf();
@@ -888,14 +888,14 @@ function GuildMicroButtonMixin:OnEvent(event, ...)
 		end
 		UpdateMicroButtons();
 	elseif ( event == "STREAM_VIEW_MARKER_UPDATED" or event == "CLUB_INVITATION_ADDED_FOR_SELF" or event == "CLUB_INVITATION_REMOVED_FOR_SELF" ) then
-		self:UpdateNotificationIcon(GuildMicroButton);
+		self:UpdateNotificationIcon();
 	elseif ( event == "CLUB_FINDER_COMMUNITY_OFFLINE_JOIN" ) then
 		local newClubId = ...;
 		self:SetNewClubId(newClubId);
 		self.showOfflineJoinAlert = true;
 		self:EvaluateAlertVisibility();
 	elseif ( event == "CHAT_DISABLED_CHANGE_FAILED" or event == "CHAT_DISABLED_CHANGED" ) then
-		self:UpdateNotificationIcon(GuildMicroButton);
+		self:UpdateNotificationIcon();
 	end
 end
 
@@ -947,7 +947,7 @@ function GuildMicroButtonMixin:UpdateMicroButton()
 		end
 	end
 
-	self:UpdateNotificationIcon(self);
+	self:UpdateNotificationIcon();
 end
 
 function GuildMicroButtonMixin:EvaluateAlertVisibility()
@@ -965,7 +965,7 @@ function GuildMicroButtonMixin:EvaluateAlertVisibility()
 end
 function GuildMicroButtonMixin:MarkCommunitiesInvitiationDisplayed(clubId)
 	DISPLAYED_COMMUNITIES_INVITATIONS[clubId] = true;
-	self:UpdateNotificationIcon(GuildMicroButton);
+	self:UpdateNotificationIcon();
 end
 
 function GuildMicroButtonMixin:HasUnseenInvitations()
@@ -979,7 +979,7 @@ function GuildMicroButtonMixin:HasUnseenInvitations()
 	return false;
 end
 
-function GuildMicroButtonMixin:UpdateNotificationIcon(self)
+function GuildMicroButtonMixin:UpdateNotificationIcon()
 	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
 		self.NotificationOverlay:SetShown(not C_SocialRestrictions.IsChatDisabled() and (self:HasUnseenInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages()));
 	else

@@ -279,7 +279,7 @@ end
 
 function DeveloperConsoleMixin:ValidateHeight(newHeight)
 	local screenHeight = 768;
-	local newHeight = Clamp(newHeight or self:GetHeight(), screenHeight * .1 + self.EditBox:GetHeight(), screenHeight * .85 - self:CalculateAnchorOffset());
+	newHeight = Clamp(newHeight or self:GetHeight(), screenHeight * .1 + self.EditBox:GetHeight(), screenHeight * .85 - self:CalculateAnchorOffset());
 	self:SetHeight(newHeight);
 	if self.savedVars.height ~= newHeight then
 		self.savedVars.height = newHeight;

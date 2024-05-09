@@ -1280,7 +1280,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(idx)
 		info.arg2 = 1;
 		UIDropDownMenu_AddButton(info);
 
-		if ( teamSize == 0 and not queueType == "RATEDSHUFFLE") then
+		if ( teamSize == 0 and queueType ~= "RATEDSHUFFLE") then
 			info.text = LEAVE_QUEUE;
 			info.func = wrapFunc(LeaveQueueWithMatchReadyCheck);
 			info.arg1 = idx;

@@ -10,6 +10,19 @@ function CharacterSelectListMixin:OnLoad()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		CharacterSelect_EndCharacterUndelete();
 	end);
+
+	self:RegisterEvent("UPDATE_REALM_NAME_FOR_GUID");
+end
+
+function CharacterSelectListMixin:OnEvent(event, ...)
+	if (event == "UPDATE_REALM_NAME_FOR_GUID") then
+		local guid, realmName = ...;
+		CharacterSelectListUtil.ForEachCharacterDo(function(frame)
+			if frame:GetCharacterGUID() == guid then
+				frame.characterInfo.realmName = realmName;
+			end
+		end);
+	end
 end
 
 function CharacterSelectListMixin:Init()
@@ -237,6 +250,10 @@ function CharacterSelectListMixin:InitDragBehavior()
 		-- Visually refresh character rendering now that things have moved.
 		local noCreate = true;
 		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
+
+		-- Ensure we update character display, as no update event will happen as we are not actually changing the selected character.
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(selectedCharacterID);
 
 		local function AnimatePulseAnimForCharacter(frame)
 			frame:AnimatePulse();

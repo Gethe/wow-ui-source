@@ -12,6 +12,7 @@ PTR_IssueReporter.TooltipTypes = {
     talent = "Talent",
     recipe = "Recipe",
     aibot = "Follower",
+    scenario = "Scenario",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -232,6 +233,17 @@ function PTR_IssueReporter.SetupReagentListTooltips()
     EventRegistry:RegisterCallback("Professions.RecipeListOnEnter", bindingFunc, "PTR_IssueReporter")
 end
 ----------------------------------------------------------------------------------------------------
+function PTR_IssueReporter.SetupScenarioTooltips()
+    local bindingFunc = function(sender, tooltip)
+        if (tooltip) then
+            local scenarioObj = C_ScenarioInfo.GetScenarioInfo()
+            PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.scenario, scenarioObj.scenarioID, scenarioObj.name)
+        end
+    end
+    
+    EventRegistry:RegisterCallback("Scenario.ObjectTracker_OnEnter", bindingFunc, "JiraIntegration")
+end
+----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupSpellTooltips()
     PTR_IssueReporter.SetupItemTooltips()
@@ -243,5 +255,6 @@ function PTR_IssueReporter.InitializePTRTooltips()
     PTR_IssueReporter.SetupMapPinTooltips()
     PTR_IssueReporter.SetupGarrisonTalentTooltips()
     PTR_IssueReporter.SetupReagentListTooltips()
+    PTR_IssueReporter.SetupScenarioTooltips()
 end
 ----------------------------------------------------------------------------------------------------

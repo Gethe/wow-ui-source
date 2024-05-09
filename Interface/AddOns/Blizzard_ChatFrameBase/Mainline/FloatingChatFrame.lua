@@ -2537,7 +2537,7 @@ function FCFManager_GetChatTarget(chatGroup, playerTarget, channelTarget)
 	if ( chatGroup == "CHANNEL" ) then
 		chatTarget = tostring(channelTarget);
 	elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
-		if(not(strsub(playerTarget, 1, 2) == "|K")) then
+		if strsub(playerTarget, 1, 2) ~= "|K" then
 			chatTarget = strupper(playerTarget);
 		else
 			chatTarget = playerTarget;

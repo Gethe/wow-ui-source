@@ -284,6 +284,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetBrawlSoloRBGMinItemLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCustomVictoryStatID",
 			Type = "Function",
 
@@ -544,6 +553,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetRatedSoloRBGMinItemLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "minItemLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRatedSoloRBGRewards",
 			Type = "Function",
 
@@ -643,15 +661,6 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "battlemasterListInfo", Type = "BattlemasterListInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetSoloRBGMinItemLevel",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "minItemLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1000,6 +1009,37 @@ local PvpInfo =
 			Arguments =
 			{
 				{ Name = "warModeDesired", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "StartSoloRBGWarGameByName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "args", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "StartSpectatorSoloRBGWarGame",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "opaqueID1", Type = "number", Nilable = false },
+				{ Name = "opaqueID2", Type = "number", Nilable = false },
+				{ Name = "specifiedMap", Type = "cstring", Nilable = false },
+				{ Name = "tournamentRules", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -228,7 +228,6 @@ function BNToastMixin:ShowToast()
 	local toast = tremove(self.BNToasts, 1);
 	local toastType, toastData = toast.toastType, toast.toastData;
 
-	local self = BNToastFrame;
 	local topLine = self.TopLine;
 	local middleLine = self.MiddleLine;
 	local bottomLine = self.BottomLine;

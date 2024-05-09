@@ -1249,7 +1249,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		miniAchievement.points:SetText(points);
 		
 		miniAchievement.numCriteria = 0;
-		if ( not ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) == ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) ) then
+		if ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) ~= ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) then
 			for i = 1, GetAchievementNumCriteria(achievementID) do
 				local criteriaString, criteriaType, completed = GetAchievementCriteriaInfo(achievementID, i);
 				if ( completed == false ) then

@@ -139,13 +139,18 @@ end
 -- We echo the various input down to our child frame, to prevent it from eating the input and stopping drag behavior.
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
 function CharacterSelectListCharacterMixin:OnEnter()
-	self:SetTooltipAndShow();
 	self.InnerContent:OnEnter(self:IsSelected());
+	self:SetTooltipAndShow();
+	CharSelectAccountUpgradeButtonPointerFrame:Show();
+	CharSelectAccountUpgradeButtonGlow:Show();
 end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
 function CharacterSelectListCharacterMixin:OnLeave()
 	self.InnerContent:OnLeave(self:IsSelected());
+	CharSelectAccountUpgradeButtonPointerFrame:Hide();
+	CharSelectAccountUpgradeButtonGlow:Hide();
+	GlueTooltip:Hide();
 end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
@@ -203,6 +208,65 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 	self:SetScript("OnDoubleClick", CharacterSelectListCharacterMixin.OnDoubleClick);
 	self:SetScript("OnEnter", CharacterSelectListCharacterMixin.OnEnter);
 	self:SetScript("OnLeave", CharacterSelectListCharacterMixin.OnLeave);
+
+	-- Status text setup.
+	local function StatusTextOnMouseUp(button, upInside)
+		if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
+			return;
+		end
+
+		if button == "LeftButton" and upInside then
+			if not self.InnerContent.isEnabled then
+				return;
+			end
+
+			self:OnClick();
+		end
+	end
+
+	local function StatusTextOnEnter()
+		if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
+			return;
+		end
+
+		if not self.InnerContent.isEnabled then
+			return;
+		end
+
+		self.InnerContent:OnEnter(self:IsSelected());
+
+		if IsRPEBoostEligible(self:GetCharacterID()) then
+			local tooltip = GlueTooltip;
+			tooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
+			GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE1);
+			GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE2);
+			tooltip:Show();
+		else
+			self:SetTooltipAndShow();
+		end
+	end
+
+	local function StatusTextOnLeave()
+		if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
+			return;
+		end
+
+		GlueTooltip:Hide();
+
+		if not self.InnerContent.isEnabled then
+			return;
+		end
+
+		self.InnerContent:UnlockHighlight();
+		if not self.InnerContent:IsMouseMotionFocus() then
+			self.InnerContent:OnLeave(self:IsSelected());
+		end
+	end
+
+	-- Makes sure any overrides from VAS updates via CharacterServicesCharacterSelectorMixin are properly reset.
+	self.InnerContent.Text.Status:SetScript("OnMouseUp", StatusTextOnMouseUp);
+	self.InnerContent.Text.Status:SetScript("OnEnter", StatusTextOnEnter);
+	self.InnerContent.Text.Status:SetScript("OnLeave", StatusTextOnLeave);
 end
 
 function CharacterSelectListCharacterMixin:GetCharacterID()
@@ -351,7 +415,11 @@ end
 
 function CharacterSelectListCharacterMixin:SetTooltipAndShow()
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
-	CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo);
+	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradeButton:IsEnabled() then
+		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
+	else
+		CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo);
+	end
 	GlueTooltip:Show();
 end
 
@@ -393,6 +461,11 @@ end
 
 function CharacterSelectListCharacterMixin:GetCharacterIsVeteranLocked()
 	return self.isVeteranLocked;
+end
+
+-- Called when character models or other UI are being hovered, to mirror that state on this UI.
+function CharacterSelectListCharacterMixin:UpdateHighlightUI(isHighlight)
+	self.InnerContent:UpdateHighlightUI(isHighlight, self:IsSelected());
 end
 
 function CharacterSelectListCharacterMixin:AnimateGlow()
@@ -466,28 +539,20 @@ end
 CharacterSelectListCharacterInnerContentMixin = {};
 
 function CharacterSelectListCharacterInnerContentMixin:OnEnter(isSelected)
-	if isSelected then
-		self.SelectedHighlight:Show();
-		self.FactionEmblemSelected:Hide();
-	else
-		self.Highlight:Show();
-		self.FactionEmblemHighlight:Show();
-	end
+	local isHighlight = true;
+	self:UpdateHighlightUI(isHighlight, isSelected);
 
-	if self:GetParent():IsSelected() then
+	if isSelected then
+		self.FactionEmblemSelected:Hide();
 		self:ShowMoveButtons();
 	end
 
-	if self:GetParent():GetCharacterIsVeteranLocked() and CharSelectAccountUpgradeButton:IsEnabled() then
-		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
-		GlueTooltip:Show();
-		GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
-		CharSelectAccountUpgradeButtonPointerFrame:Show();
-		CharSelectAccountUpgradeButtonGlow:Show();
-	end
+	-- Update character model as needed.
+	MapSceneCharacterHighlightStart(self.characterInfo.guid);
 end
 
 function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
+	-- Not calling UpdateHighlightUI as this specific case is more complex, needing to take move button states into account.
 	local isMouseOverMoveButton = self.UpButton:IsMouseOver() or self.DownButton:IsMouseOver();
 	if isSelected then
 		if not isMouseOverMoveButton then
@@ -507,11 +572,10 @@ function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
 	if not isMouseOverMoveButton then
 		self.UpButton:Hide();
 		self.DownButton:Hide();
-	end
 
-	CharSelectAccountUpgradeButtonPointerFrame:Hide();
-	CharSelectAccountUpgradeButtonGlow:Hide();
-	GlueTooltip:Hide();
+		-- Update character model as needed.
+		MapSceneCharacterHighlightEnd(self.characterInfo.guid);
+	end
 end
 
 function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
@@ -543,11 +607,6 @@ function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
 	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
 	local enabledByFilter = not filteringByBoostable or CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self:GetParent():GetCharacterID());
 	self:SetEnabledState(enabledByFilter);
-
-	-- Makes sure any overrides from VAS updates via CharacterServicesCharacterSelectorMixin are properly reset.
-	self.Text.Status:SetScript("OnMouseUp", CharacterSelectListStatusTextMixin.OnMouseUp);
-	self.Text.Status:SetScript("OnEnter", CharacterSelectListStatusTextMixin.OnEnter);
-	self.Text.Status:SetScript("OnLeave", CharacterSelectListStatusTextMixin.OnLeave);
 end
 
 function CharacterSelectListCharacterInnerContentMixin:UpdateLastLogin(lastLoginBuild)
@@ -848,64 +907,11 @@ function CharacterSelectListCharacterInnerContentMixin:SetDragState(isDragging)
 	self.Highlight:Hide();
 end
 
-
-CharacterSelectListStatusTextMixin = {};
-
--- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
-function CharacterSelectListStatusTextMixin:OnEnter()
-	if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
-		return;
-	end
-
-	local characterButton = self:GetParent():GetParent();
-	if not characterButton.isEnabled then
-		return;
-	end
-
-	characterButton:OnEnter(characterButton:GetParent():IsSelected());
-
-	if IsRPEBoostEligible(characterButton:GetParent():GetCharacterID()) then
-		local tooltip = GlueTooltip;
-		tooltip:SetOwner(self, "ANCHOR_LEFT", -16, -22);
-		GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE1);
-		GameTooltip_AddNormalLine(tooltip, RPE_TOOLTIP_LINE2);
-		tooltip:Show();
-	end
-end
-
--- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
-function CharacterSelectListStatusTextMixin:OnLeave()
-	if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
-		return;
-	end
-
-	GlueTooltip:Hide();
-
-	local characterButton = self:GetParent():GetParent();
-	if not characterButton.isEnabled then
-		return;
-	end
-
-	characterButton:UnlockHighlight();
-	if not characterButton:IsMouseMotionFocus() then
-		characterButton:OnLeave(characterButton:GetParent():IsSelected());
-	end
-end
-
--- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
-function CharacterSelectListStatusTextMixin:OnMouseUp(button, upInside)
-	if CharacterSelectCharacterFrame.ScrollBox.dragBehavior:GetDragging() then
-		return;
-	end
-
-	if button == "LeftButton" and upInside then
-		local characterButton = self:GetParent():GetParent();
-		if not characterButton.isEnabled then
-			return;
-		end
-
-		characterButton:GetParent():OnClick();
-	end
+-- Called when character models or other UI are being hovered, to mirror that state on this UI.
+function CharacterSelectListCharacterInnerContentMixin:UpdateHighlightUI(isHighlight, isSelected)
+	self.SelectedHighlight:SetShown(isHighlight and isSelected);
+	self.Highlight:SetShown(isHighlight and not isSelected);
+	self.FactionEmblemHighlight:SetShown(isHighlight and not isSelected);
 end
 
 
@@ -993,7 +999,7 @@ function CharacterSelectListPaidServiceMixin:OnClick()
 		CharacterSelectCharacterFrame.ScrollBox:ScrollToBegin();
 		CharacterCreateFrame:ClearPaidServiceInfo();
 
-		CharacterSelect_GetCharacterListUpdate();
+		CharacterSelectListUtil.GetCharacterListUpdate();
 		return;
 	end
 

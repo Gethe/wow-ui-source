@@ -37,7 +37,7 @@ function CharacterSelectUtil.CreateNewCharacter(characterType, timerunningSeason
 
 	C_CharacterCreation.SetCharacterCreateType(characterType);
 	C_CharacterCreation.SetTimerunningSeasonID(timerunningSeasonID);
-	
+
 	if GlueParent_GetCurrentScreen() == "charcreate" then
 		CharacterCreateFrame:UpdateTimerunningChoice();
 	else
@@ -72,12 +72,11 @@ function CharacterSelectUtil.GetVASQueueTime(guid)
 end
 
 function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
-	-- There's more, just starting with this for now.
 	local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost,
 		hasCustomize, hasRaceChange, hasFactionChange, deprecated1, guid, profession0, profession1, genderID, boostInProgress,
 	 	hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted, isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild,
 	 	specID, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders, customizeDisabled, deprecated2,
-		characterServiceRequiresLogin, raceID = GetCharacterInfo(characterIndex);
+		characterServiceRequiresLogin, raceID, rpeResetAvailable, rpeResetQuestClearAvailable, hasWowToken, hasVasRevoked, realmName = GetCharacterInfo(characterIndex);
 
 	if not name then
 		return nil;
@@ -116,7 +115,12 @@ function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
 		mailSenders = mailSenders,
 		customizeDisabled = customizeDisabled,
 		characterServiceRequiresLogin = characterServiceRequiresLogin,
-		raceID = raceID
+		raceID = raceID,
+		rpeResetAvailable = rpeResetAvailable,
+		rpeResetQuestClearAvailable = rpeResetQuestClearAvailable,
+		hasWowToken = hasWowToken,
+		hasVasRevoked = hasVasRevoked,
+		realmName = realmName
 	};
 end
 
@@ -135,7 +139,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 
 	-- Block 1
 	local name = characterInfo.name;
-	-- Realm;
+	local realmName = characterInfo.realmName;
 
 	-- Block 2
 	local specID = characterInfo.specID;
@@ -157,7 +161,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	-- Gold
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
-	-- Realm
+	GameTooltip_AddColoredLine(GlueTooltip, realmName, GRAY_FONT_COLOR);
 
 	-- Add a blank line only if we have populated fields for the next section.
 	if className or areaName then

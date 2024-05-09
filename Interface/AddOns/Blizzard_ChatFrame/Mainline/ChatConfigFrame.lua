@@ -593,56 +593,56 @@ COMBAT_CONFIG_MESSAGETYPES_RIGHT = {
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_ENERGIZE"); end;
 				tooltip = SPELL_DRAIN_COMBATLOG_TOOLTIP,
 			},
-			[5] = {
+			[6] = {
 				text = INTERRUPTS,
 				type = {"SPELL_INTERRUPT"};
 				checked = function () return HasMessageType("SPELL_INTERRUPT"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_INTERRUPT"); end;
 				tooltip = SPELL_INTERRUPT_COMBATLOG_TOOLTIP,
 			},
-			[5] = {
+			[7] = {
 				text = SPECIAL,
 				type = {"SPELL_INSTAKILL"};
 				checked = function () return HasMessageType("SPELL_INSTAKILL"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_INSTAKILL"); end;
 				tooltip = SPELL_INSTAKILL_COMBATLOG_TOOLTIP,
 			},
-			[6] = {
+			[8] = {
 				text = EXTRA_ATTACKS,
 				type = {"SPELL_EXTRA_ATTACKS"};
 				checked = function () return HasMessageType("SPELL_EXTRA_ATTACKS"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_EXTRA_ATTACKS"); end;
 				tooltip = SPELL_EXTRA_ATTACKS_COMBATLOG_TOOLTIP,
 			},
-			[7] = {
+			[9] = {
 				text = SUMMONS,
 				type = {"SPELL_SUMMON"};
 				checked = function () return HasMessageType("SPELL_SUMMON"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_SUMMON"); end;
 				tooltip = SPELL_SUMMON_COMBATLOG_TOOLTIP,
 			},
-			[8] = {
+			[10] = {
 				text = RESURRECT,
 				type = {"SPELL_RESURRECT"};
 				checked = function () return HasMessageType("SPELL_RESURRECT"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_RESURRECT"); end;
 				tooltip = SPELL_RESURRECT_COMBATLOG_TOOLTIP,
 			},
-			[9] = {
+			[11] = {
 				text = BUILDING_DAMAGE,
 				type = {"SPELL_BUILDING_DAMAGE"};
 				checked = function () return HasMessageType("SPELL_BUILDING_DAMAGE"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_DAMAGE"); end;
 				tooltip = BUILDING_DAMAGE_COMBATLOG_TOOLTIP,
 			},
-			[10] = {
+			[12] = {
 				text = BUILDING_HEAL,
 				type = {"SPELL_BUILDING_HEAL"};
 				checked = function () return HasMessageType("SPELL_BUILDING_HEAL"); end;
 				func = function (self, checked) ToggleMessageType(checked, "SPELL_BUILDING_HEAL"); end;
 				tooltip = BUILDING_HEAL_COMBATLOG_TOOLTIP,
 			},
-			[11] = {
+			[13] = {
 				text = EMPOWERS,
 				type = {"SPELL_EMPOWER_START", "SPELL_EMPOWER_END", "SPELL_EMPOWER_INTERRUPT"};
 				checked = function () return HasMessageType("SPELL_EMPOWER_START"); end;

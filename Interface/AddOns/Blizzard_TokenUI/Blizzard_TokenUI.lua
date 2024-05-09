@@ -66,8 +66,8 @@ function TokenEntryMixin:RefreshAccountCurrencyIcon()
 	if self.elementData.isAccountWide then
 		self.AccountWideIcon:SetAtlas("warbands-icon", TextureKitConstants.UseAtlasSize);
 		self.AccountWideIcon:SetScale(0.9);
-	elseif self.elementData.isAccountTransferrable then
-		self.AccountWideIcon:SetAtlas("warbands-icon", TextureKitConstants.UseAtlasSize);
+	elseif self.elementData.isAccountTransferable then
+		self.AccountWideIcon:SetAtlas("warbands-transferable-icon", TextureKitConstants.UseAtlasSize);
 		self.AccountWideIcon:SetScale(0.9);
 	else
 		self.AccountWideIcon:SetAtlas(nil);
@@ -124,7 +124,7 @@ function TokenEntryMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetCurrencyToken(self.elementData.currencyIndex);
 
-	if self.elementData.isAccountTransferrable then
+	if self.elementData.isAccountTransferable then
 		local transferPercentage = self.elementData.transferPercentage;
 		local percentageLost = transferPercentage and (100 - transferPercentage) or 0;
 		if percentageLost > 0 then
@@ -235,6 +235,8 @@ end
 
 function TokenFrameMixin:OnHide()
 	TokenFramePopup:Hide();
+	HideUIPanel(CurrencyTransferMenu);
+	CurrencyTransferLog:Hide();
 end
 
 function TokenFrameMixin:Update(resetScrollPosition)
@@ -286,6 +288,8 @@ end
 
 function TokenFramePopupMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	-- The this popup occupies the same space as the transfer log
+	CurrencyTransferLog:Hide();
 end
 
 function TokenFramePopupMixin:OnHide()
@@ -299,6 +303,9 @@ end
 function TokenFrameMixin:UpdatePopup(button)
 	TokenFramePopup.InactiveCheckBox:SetChecked(button.elementData.isTypeUnused);
 	TokenFramePopup.BackpackCheckBox:SetChecked(button.elementData.isShowInBackpack);
+
+	TokenFramePopup.CurrencyTransferToggleButton:Refresh(button.elementData);
+	TokenFramePopup:SetHeight(TokenFramePopup.CurrencyTransferToggleButton:IsShown() and 135 or 100);
 end
 
 InactiveCurrencyCheckBoxMixin = {};

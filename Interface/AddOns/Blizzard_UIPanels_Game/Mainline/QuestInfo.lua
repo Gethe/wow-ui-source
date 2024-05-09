@@ -404,7 +404,12 @@ function QuestInfo_ShowObjectivesText()
 end
 
 function QuestInfo_ShowSpacer()
+	QuestInfo_AdjustSpacerHeight(5);
 	return QuestInfoSpacerFrame;
+end
+
+function QuestInfo_AdjustSpacerHeight(height)
+	QuestInfoSpacerFrame:SetHeight(height);
 end
 
 function QuestInfo_ShowAnchor()
@@ -659,6 +664,9 @@ function QuestInfo_ShowRewards()
 		end
 	end
 
+	rewardsFrame.numHeaders = 0;
+	rewardsFrame.numRows = 0;
+
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
 	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and #spellRewards == 0 and artifactXP == 0 and honor == 0 and not majorFactionRepRewards ) then
 		rewardsFrame:Hide();
@@ -705,11 +713,13 @@ function QuestInfo_ShowRewards()
 			rightSideElementPlaced = false;
 			-- inside a section now
 			startNewSection = false;
+			rewardsFrame.numRows = rewardsFrame.numRows + 1;
 		end
 		rewardElement:Show();
 	end
 
 	local function AddHeaderElement(rewardElement)
+		rewardsFrame.numHeaders = rewardsFrame.numHeaders + 1;
 		local largeElements = true;
 		BeginRewardsSection(largeElements);
 		AddRewardElement(rewardElement);
@@ -1027,6 +1037,11 @@ function QuestInfo_ShowRewards()
 	return rewardsFrame, lastAnchorElement;
 end
 
+function QuestInfo_GetNumRewardRows()
+	local rewardsFrame = QuestInfoFrame.rewardsFrame;
+	return rewardsFrame.numRows - rewardsFrame.numHeaders;
+end
+
 function QuestInfo_OnHyperlinkEnter(self, link, text, region, left, bottom, width, height)
 	local linkType, linkData = LinkUtil.SplitLinkData(link);
 	local title, body;
@@ -1095,7 +1110,7 @@ QUEST_TEMPLATE_REWARD = { questLog = nil, chooseItems = true, contentWidth = 285
 	}
 }
 
-QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth = 244,
+QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth = 289,
 	canHaveSealMaterial = true, sealXOffset = 156, sealYOffset = -6,
 	elements = {
 		QuestInfo_ShowTitle, 5, -5,
@@ -1113,9 +1128,9 @@ QUEST_TEMPLATE_MAP_DETAILS = { questLog = true, chooseItems = nil, contentWidth 
 	}
 }
 
-QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth = 244,
+QUEST_TEMPLATE_MAP_REWARDS = { questLog = true, chooseItems = nil, contentWidth = 289,
 	elements = {
-		QuestInfo_ShowRewards, 8, 0,
+		QuestInfo_ShowRewards, 8, -52,
 	}
 }
 

@@ -77,6 +77,7 @@ end
 function QuestLogHeaderCodeMixin:OnLoad()
 	local isMouseOver = false;
 	self:CheckHighlightTitle(isMouseOver);
+	self:SetPushedTextOffset(1, -1);
 end
 
 function QuestLogHeaderCodeMixin:OnClick(button)
@@ -97,12 +98,18 @@ function QuestLogHeaderCodeMixin:OnEnter()
 	local isMouseOver = true;
 	self:CheckHighlightTitle(isMouseOver);
 	self:CheckUpdateTooltip(isMouseOver);
+	if self.CollapseButton then
+		self.CollapseButton:LockHighlight();
+	end
 end
 
 function QuestLogHeaderCodeMixin:OnLeave()
 	local isMouseOver = false;
 	self:CheckHighlightTitle(isMouseOver);
 	self:CheckUpdateTooltip(isMouseOver);
+	if self.CollapseButton then
+		self.CollapseButton:UnlockHighlight();
+	end	
 end
 
 function QuestLogHeaderCodeMixin:GetTitleRegion()
@@ -133,6 +140,38 @@ function QuestLogHeaderCodeMixin:CheckUpdateTooltip(isMouseOver)
 	else
 		tooltip:Hide();
 	end
+end
+
+function QuestLogHeaderCodeMixin:OnMouseDown()
+	local pressed = true;
+	if self.Text then
+		self.Text:AdjustPointsOffset(1, -1);
+	end
+	self.CollapseButton:UpdatePressedState(pressed);
+end
+
+function QuestLogHeaderCodeMixin:OnMouseUp()
+	local pressed = false;
+	if self.Text then
+		self.Text:AdjustPointsOffset(-1, 1);
+	end
+	self.CollapseButton:UpdatePressedState(pressed);
+end
+
+QuestLogHeaderCollapseButtonMixin = { };
+
+function QuestLogHeaderCollapseButtonMixin:UpdatePressedState(pressed)
+	if pressed then
+		self.Icon:AdjustPointsOffset(1, -1);
+	else
+		self.Icon:AdjustPointsOffset(-1, 1);
+	end
+end
+
+function QuestLogHeaderCollapseButtonMixin:UpdateCollapsedState(collapsed)
+	local atlas = collapsed and "questlog-icon-expand" or "questlog-icon-shrink";
+	self.Icon:SetAtlas(atlas, true);
+	self:SetHighlightAtlas(atlas);
 end
 
 function QuestMapFrame_OnLoad(self)
@@ -477,11 +516,9 @@ function QuestMapFrame_UpdateQuestSessionState(self)
 	self.QuestSessionManagement:UpdateVisibility();
 	self.QuestSessionManagement:UpdateTooltip();
 	if self.QuestSessionManagement:IsShown() then
-		self.QuestsFrame.DetailFrame.BottomDetail:SetAtlas("QuestSharing-QuestLog-BottomDetail");
-		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -27, 0);
+		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self.QuestSessionManagement, "TOPRIGHT", -22, 0);
 	else
-		self.QuestsFrame.DetailFrame.BottomDetail:SetAtlas("QuestLog_BottomDetail");
-		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -27, 0);
+		self.QuestsFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -22, 9);
 	end
 end
 
@@ -588,23 +625,91 @@ end
 
 function QuestMapFrame_AdjustPathButtons()
 	if QuestMapDetailsScrollFrame:GetVerticalScrollRange() > 0 then
-		QuestMapFrame.DetailsFrame.DestinationMapButton:SetPoint("TOPRIGHT", -2, -4);
-		QuestMapFrame.DetailsFrame.WaypointMapButton:SetPoint("TOPRIGHT", -2, -4);
 		QuestInfo_AdjustTitleWidth(-19);
 	else
-		QuestMapFrame.DetailsFrame.DestinationMapButton:SetPoint("TOPRIGHT", 14, -4);
-		QuestMapFrame.DetailsFrame.WaypointMapButton:SetPoint("TOPRIGHT", 14, -4);
 		QuestInfo_AdjustTitleWidth(-2);
 	end
 end
 
-function QuestDetailsFrame_OnShow(self)
-	QuestMapFrame.DetailsFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestMapBackgroundTexture());
+QuestLogQuestDetailsMixin = { };
+
+function QuestLogQuestDetailsMixin:OnLoad()
+	QuestMapDetailsScrollFrame:RegisterCallback("OnVerticalScroll", GenerateClosure(self.AdjustRewardsFrameContainer, self));
+	QuestMapDetailsScrollFrame:RegisterCallback("OnScrollRangeChanged", GenerateClosure(self.AdjustRewardsFrameContainer, self));
+end
+
+function QuestLogQuestDetailsMixin:OnShow()
+	self.Bg:SetAtlas(QuestUtil.GetDefaultQuestMapBackgroundTexture());
+	self:AdjustBackgroundTexture(self.Bg);
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(true);
 end
 
-function QuestDetailsFrame_OnHide(self)
+function QuestLogQuestDetailsMixin:OnHide()
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(false);
+end
+
+-- This function will resize the background textures (Bg and SealMaterialBG) proportionally to fit the new bigger size of the panel.
+-- Capping off at 440 max height so it doesn't run out of bounds.
+function QuestLogQuestDetailsMixin:AdjustBackgroundTexture(texture)
+	local atlasName = texture:GetAtlas();
+	if not atlasName then
+		return;
+	end
+
+	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
+	local width = QuestMapFrame.DetailsFrame:GetWidth();
+	local atlasWidth = atlasInfo.width;
+	local ratio = width / atlasWidth;
+	local neededHeight = atlasInfo.height * ratio;
+	local maxHeight = 440;
+	texture:SetWidth(width);
+	if neededHeight > maxHeight then
+		texture:SetTexCoord(0, 1, 0, maxHeight / neededHeight);
+		texture:SetHeight(maxHeight);
+	else
+		texture:SetTexCoord(0, 1, 0, 1);
+		texture:SetHeight(neededHeight);
+	end
+end
+
+function QuestLogQuestDetailsMixin:SetRewardsHeight(height)
+	local container = self.RewardsFrameContainer;
+	container.isFixedHeight = nil;	-- trinary
+	container.RewardsFrame:SetHeight(height);
+	QuestInfo_AdjustSpacerHeight(height);
+	local numRewardRows = QuestInfo_GetNumRewardRows();
+	container.RewardsFrame.Label:SetShown(numRewardRows > 0);
+	self.ScrollFrame:UpdateScrollChildRect();
+	self:AdjustRewardsFrameContainer();
+end
+
+function QuestLogQuestDetailsMixin:AdjustRewardsFrameContainer()
+	local container = self.RewardsFrameContainer;
+	if container.isFixedHeight then
+		return;
+	end
+
+	local scrollRange = self.ScrollFrame:GetVerticalScrollRange();
+	local rewardsHeight = self.RewardsFrameContainer.RewardsFrame:GetHeight();
+	local numRewardRows = QuestInfo_GetNumRewardRows();
+
+	if container.isFixedHeight == nil then
+		container.isFixedHeight = scrollRange == 0 or numRewardRows <= 1;
+		if container.isFixedHeight then
+			-- no further adjusting needed, can display entire reward frame
+			self.RewardsFrameContainer:SetHeight(rewardsHeight);
+			return;
+		end
+	end
+	
+	local offset = self.ScrollFrame:GetVerticalScroll();
+	local pixelsToHide = scrollRange - offset;
+	local containerHeight = rewardsHeight - pixelsToHide;
+	local minHeight = 124;	-- want it where it's clear there are more rewards past 1st row
+	if containerHeight < minHeight then
+		containerHeight = minHeight;
+	end
+	self.RewardsFrameContainer:SetHeight(containerHeight);
 end
 
 function QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID)
@@ -620,11 +725,14 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	C_QuestLog.SetSelectedQuest(questID);
-	QuestMapFrame.DetailsFrame.questID = questID;
+	local detailsFrame = QuestMapFrame.DetailsFrame;
+	detailsFrame.questID = questID;
 	QuestMapFrame:GetParent():SetFocusedQuestID(questID);
-	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
-	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame.RewardsScrollFrame.Contents, nil, nil, true);
-	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:ScrollToBegin();
+	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, detailsFrame.ScrollFrame.Contents);
+	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, detailsFrame.RewardsFrameContainer.RewardsFrame, nil, nil, true);
+	detailsFrame:AdjustBackgroundTexture(detailsFrame.SealMaterialBG);
+
+	detailsFrame.ScrollFrame.ScrollBar:ScrollToBegin();
 
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
@@ -638,48 +746,38 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	-- height
 	local height;
 	if ( MapQuestInfoRewardsFrame:IsShown() ) then
-		height = MapQuestInfoRewardsFrame:GetHeight() + 49;
+		height = MapQuestInfoRewardsFrame:GetHeight() + 62;
 	else
 		height = 59;
 	end
 	height = min(height, 275);
-	QuestMapFrame.DetailsFrame.RewardsFrame:SetHeight(height);
-	QuestMapFrame.DetailsFrame.RewardsFrame.Background:SetTexCoord(0, 1, 0, height / 275);
+	detailsFrame:SetRewardsHeight(height);
 
 	QuestMapFrame.QuestsFrame:Hide();
-	QuestMapFrame.DetailsFrame:Show();
+	detailsFrame:Show();
 
 	-- save current view
-	QuestMapFrame.DetailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
+	detailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
 
 	-- destination/waypoint
 	local ignoreWaypoints = false;
 	if C_QuestLog.GetNextWaypoint(questID) then
 		ignoreWaypoints = ignoreWaypointsByQuestID[questID];
-		QuestMapFrame.DetailsFrame.DestinationMapButton:SetShown(not ignoreWaypoints);
-		QuestMapFrame.DetailsFrame.WaypointMapButton:SetShown(ignoreWaypoints);
+		detailsFrame.DestinationMapButton:SetShown(not ignoreWaypoints);
+		detailsFrame.WaypointMapButton:SetShown(ignoreWaypoints);
 	else
-		QuestMapFrame.DetailsFrame.DestinationMapButton:Hide();
-		QuestMapFrame.DetailsFrame.WaypointMapButton:Hide();
+		detailsFrame.DestinationMapButton:Hide();
+		detailsFrame.WaypointMapButton:Hide();
 	end
 
 	local mapID = GetQuestUiMapID(questID, ignoreWaypoints);
-	QuestMapFrame.DetailsFrame.questMapID = mapID;
+	detailsFrame.questMapID = mapID;
 	if ( mapID ~= 0 ) then
 		QuestMapFrame:GetParent():SetMapID(mapID);
 	end
 
 	QuestMapFrame_UpdateQuestDetailsButtons();
 	QuestMapFrame_AdjustPathButtons();
-
-	local quest = QuestCache:Get(questID);
-	if not quest:IsDisabledForSession() and quest:IsComplete() and quest.isAutoComplete then
-		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Show();
-		QuestMapFrame.DetailsFrame.RewardsFrame:SetPoint("BOTTOMLEFT", 0, 44);
-	else
-		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Hide();
-		QuestMapFrame.DetailsFrame.RewardsFrame:SetPoint("BOTTOMLEFT", 0, 20);
-	end
 
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
@@ -778,9 +876,15 @@ function QuestMapFrame_CheckQuestCriteria(questID, criteriaID, description, fulf
 	return true;
 end
 
+local function QuestLogQuests_IsDisplayEmpty(displayState)
+	return not displayState.hasShownAnyHeader and QuestScrollFrame.titleFramePool:GetNumActive() == 0;
+end
+
 -- Quests Frame
 
-function QuestsFrame_OnLoad(self)
+QuestLogScrollFrameMixin = { };
+
+function QuestLogScrollFrameMixin:OnLoad()
 	ScrollFrame_OnLoad(self);
 
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
@@ -791,9 +895,31 @@ function QuestsFrame_OnLoad(self)
 	self.objectiveFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
 	self.headerFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogHeaderTemplate");
 	self.campaignHeaderFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderTemplate");
-	self.campaignHeaderMinimalFramePool = CreateFramePool("FRAME", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderMinimalTemplate");
+	self.campaignHeaderMinimalFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderMinimalTemplate");
 	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CovenantCallingsHeaderTemplate");
 	self.CampaignTooltip = CreateFrame("Frame", nil, UIParent, "CampaignTooltipTemplate");
+end
+
+function QuestLogScrollFrameMixin:OnSizeChanged()
+	self:ResizeBackground();
+end
+
+function QuestLogScrollFrameMixin:ResizeBackground()
+	local atlasHeight = self.Background:GetHeight();
+	local frameHeight = self:GetHeight();
+	if frameHeight > atlasHeight then
+		self.Background:SetHeight(atlasHeight);
+		self.Background:SetTexCoord(0, 1, 0, 1);
+	else
+		self.Background:SetHeight(frameHeight);
+		self.Background:SetTexCoord(0, 1, 0, frameHeight / atlasHeight);	
+	end
+end
+
+function QuestLogScrollFrameMixin:UpdateBackground(displayState)
+	local atlas = QuestLogQuests_IsDisplayEmpty(displayState) and "QuestLog-empty-quest-background" or "QuestLog-main-background";
+	self.Background:SetAtlas(atlas, true);
+	self:ResizeBackground();
 end
 
 -- *****************************************************************************************************
@@ -969,12 +1095,18 @@ do
 	end
 
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.Header, 8);
+	AddSpacingPair(QuestLogButtonTypes.Header, QuestLogButtonTypes.Header, 6);
+	AddSpacingPair(QuestLogButtonTypes.Header, QuestLogButtonTypes.Quest, -2);
+	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.Header, 4);
+	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.Quest, -3);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.Quest, -6);
+	
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCampaignMinimal, 8);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCampaign, 0);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.StoryHeader, -4);
 	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.StoryHeader, -18);
 	AddSpacingPair(QuestLogButtonTypes.HeaderCallings, QuestLogButtonTypes.Quest, 5);
-	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.HeaderCampaign, 12);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.HeaderCampaign, 2);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaign, 12);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaignMinimal, 10);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCallings, 0);
@@ -1206,23 +1338,10 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local difficultyColor = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
 	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);
 
-	if C_QuestLog.GetQuestWatchType(questID) == Enum.QuestWatchType.Manual then
-		button.Check:Show();
-		button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0);
-	else
-		button.Check:Hide();
-	end
+	local isTracked = C_QuestLog.GetQuestWatchType(questID) == Enum.QuestWatchType.Manual;
+	button.CheckBox.CheckMark:SetShown(isTracked);
 
-	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local isComplete = C_QuestLog.IsComplete(questID);
-	local tagID = QuestLogQuests_GetBestTagID(questID, info, isComplete);
-	local tagAtlas = QuestUtils_GetQuestTagAtlas(tagID);
-	button.TagTexture:SetShown(tagAtlas ~= nil);
-
-	if tagAtlas then
-		button.TagTexture:SetAtlas(tagAtlas, TextureKitConstants.UseAtlasSize);
-		button.TagTexture:SetDesaturated(C_QuestLog.IsQuestDisabledForSession(questID));
-	end
 
 	-- POI/objectives
 	local requiredMoney = C_QuestLog.GetRequiredMoney(questID);
@@ -1299,7 +1418,6 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	-- extra room because of POI icon
 	totalHeight = totalHeight + 6;
 	button.Text:SetPoint("TOPLEFT", 31, -8);
-
 	button:SetHeight(totalHeight);
 
 	return button;
@@ -1327,11 +1445,7 @@ local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
 end
 
 local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, info)
-	button:SetNormalAtlas(info.isCollapsed and "Campaign_HeaderIcon_Closed" or "Campaign_HeaderIcon_Open" );
-	button:SetPushedAtlas(info.isCollapsed and "Campaign_HeaderIcon_ClosedPressed" or "Campaign_HeaderIcon_OpenPressed");
-	button:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
-	button:SetHitRectInsets(0, -button.ButtonText:GetWidth(), 0, 0);
-
+	button.CollapseButton:UpdateCollapsedState(info.isCollapsed);
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
 
@@ -1346,6 +1460,7 @@ end
 
 function CovenantCallingsHeaderMixin:OnLoadCovenantCallings()
 	EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", self.UpdateText, self);
+	self:ClearNormalTexture();
 end
 
 function CovenantCallingsHeaderMixin:UpdateBG()
@@ -1409,15 +1524,6 @@ local function QuestLogQuests_DisplayQuestButton(displayState, info)
 	end
 end
 
-local function QuestLogQuests_IsDisplayEmpty(displayState)
-	return not displayState.hasShownAnyHeader and QuestScrollFrame.titleFramePool:GetNumActive() == 0;
-end
-
-local function QuestLogQuests_UpdateBackground(displayState)
-	local atlas = QuestLogQuests_IsDisplayEmpty(displayState) and "NoQuestsBackground" or "QuestLogBackground";
-	QuestMapFrame.Background:SetAtlas(atlas, true);
-end
-
 local function QuestLogQuests_BuildInitialDisplayState(questInfoContainer)
 	return {
 		questInfoContainer = questInfoContainer,
@@ -1446,7 +1552,7 @@ function QuestLogQuests_Update()
 	QuestScrollFrame.headerFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderMinimalFramePool:ReleaseAll();
-	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();
+	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();	
 	QuestScrollFrame.Contents:ResetUsage();
 	QuestMapFrame:ResetLayoutIndex();
 
@@ -1499,7 +1605,7 @@ function QuestLogQuests_Update()
 	-- Display the rest of the normal quests and their headers.
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, questInfos);
 
-	QuestLogQuests_UpdateBackground(displayState);
+	QuestScrollFrame:UpdateBackground(displayState);
 	QuestScrollFrame.Contents:SelectButtonByQuestID(C_SuperTrack.GetSuperTrackedQuestID());
 	QuestScrollFrame.Contents:Layout();
 end
@@ -1683,8 +1789,26 @@ end
 
 QuestLogTitleMixin = {};
 
+function QuestLogTitleMixin:OnLoad()
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self.CheckBox:SetScript("OnMouseUp", GenerateClosure(self.OnCheckBoxMouseUp, self));
+end
+
+function QuestLogTitleMixin:OnCheckBoxMouseUp(o, button, upInside)
+	if button == "LeftButton" and upInside then
+		self:ToggleTracking();
+	end
+end
+
 function QuestLogTitleMixin:GetButtonType()
 	return QuestLogButtonTypes.Quest;
+end
+
+function QuestLogTitleMixin:ToggleTracking()
+	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
+	if not isDisabledQuest then
+		QuestMapQuestOptions_TrackQuest(self.questID);
+	end
 end
 
 QuestLogObjectiveMixin = {};
@@ -1699,11 +1823,11 @@ function QuestMapLogTitleButton_OnClick(self, button)
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-
-	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
-	if not isDisabledQuest and IsShiftKeyDown() then
-		QuestMapQuestOptions_TrackQuest(self.questID);
+	
+	if IsShiftKeyDown() then
+		self:ToggleTracking();
 	else
+		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
 		if not isDisabledQuest and button == "RightButton" then
 			if ( self.questID ~= QuestMapQuestOptionsDropDown.questID ) then
 				CloseDropDownMenus();
@@ -1719,15 +1843,11 @@ end
 function QuestMapLogTitleButton_OnMouseDown(self)
 	local anchor, _, _, x, y = self.Text:GetPoint(1);
 	self.Text:SetPoint(anchor, x + 1, y - 1);
-	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
-	self.TagTexture:SetPoint(anchor, x + 1, y - 1);
 end
 
 function QuestMapLogTitleButton_OnMouseUp(self)
 	local anchor, _, _, x, y = self.Text:GetPoint(1);
 	self.Text:SetPoint(anchor, x - 1, y + 1);
-	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
-	self.TagTexture:SetPoint(anchor, x - 1, y + 1);
 end
 
 function QuestMapLog_ShowStoryTooltip(self)

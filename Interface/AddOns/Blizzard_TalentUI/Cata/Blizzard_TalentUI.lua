@@ -1120,7 +1120,7 @@ function PlayerTalentFramePanel_Update(self)
 	
 	
 	-- Set desaturation if the tree is not unlocked or the spec is not selected
-	if (not self.pet and ((not isUnlocked and primaryTree) or not(selectedSpec == activeSpec))) then
+	if (not self.pet and ((not isUnlocked and primaryTree) or (selectedSpec ~= activeSpec))) then
 		self.BgTopLeft:SetDesaturated(true);
 		self.BgTopRight:SetDesaturated(true);
 		self.BgBottomLeft:SetDesaturated(true);

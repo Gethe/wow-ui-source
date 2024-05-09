@@ -919,7 +919,7 @@ do
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_ENERGIZE" );
 						end;
 					};
-					[4] = {
+					[5] = {
 						text = "Drains";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_DRAIN", "SPELL_LEECH"); end;
 						keepShownOnClick = true;
@@ -927,7 +927,7 @@ do
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_DRAIN", "SPELL_LEECH" );
 						end;
 					};
-					[5] = {
+					[6] = {
 						text = "Interrupts";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_INTERRUPT"); end;
 						keepShownOnClick = true;
@@ -935,7 +935,7 @@ do
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_INTERRUPT" );
 						end;
 					};
-					[6] = {
+					[7] = {
 						text = "Extra Attacks";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_EXTRA_ATTACKS"); end;
 						keepShownOnClick = true;
@@ -943,7 +943,7 @@ do
 							Blizzard_CombatLog_MenuHelper ( checked, "SPELL_EXTRA_ATTACKS" );
 						end;
 					};
-					[7] = {
+					[8] = {
 						text = "Casting";
 						hasArrow = true;
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_CAST_START", "SPELL_CAST_SUCCESS", "SPELL_CAST_FAILED"); end;
@@ -978,7 +978,7 @@ do
 							};
 						};
 					};
-					[8] = {
+					[9] = {
 						text = "Special";
 						checked = function() return Blizzard_CombatLog_HasEvent (Blizzard_CombatLog_CurrentSettings, "SPELL_INSTAKILL", "SPELL_DURABILITY_DAMAGE"); end;
 						keepShownOnClick = true;
@@ -1386,19 +1386,18 @@ end;
 --
 do
 	local filterId
-	local unitName, unitGUID, special
 	local tabMenu = {
 		[1] = {
 			text = BLIZZARD_COMBAT_LOG_MENU_EVERYTHING;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("EVERYTHING", unitName, unitGUID, special); end;
+			func = function () Blizzard_CombatLog_UnitMenuClick ("EVERYTHING"); end;
 		},
 		[2] = {
 			text = BLIZZARD_COMBAT_LOG_MENU_SAVE;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("SAVE", unitName, unitGUID, special); end;
+			func = function () Blizzard_CombatLog_UnitMenuClick ("SAVE"); end;
 		},
 		[3] = {
 			text = BLIZZARD_COMBAT_LOG_MENU_RESET;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("RESET", unitName, unitGUID, special); end;
+			func = function () Blizzard_CombatLog_UnitMenuClick ("RESET"); end;
 		},
 		[4] = {
 			text = "--------- Temporary Adjustments ---------";
@@ -2081,7 +2080,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local extraSpellId, extraSpellName, extraSpellSchool;
 
 	-- For Melee/Ranged swings and enchants
-	local nameIsNotSpell, extraNameIsNotSpell;
+	local nameIsNotSpell;
+	local extraNameIsNotSpell = false;
 
 	-- Damage standard order
 	local amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, overhealing;

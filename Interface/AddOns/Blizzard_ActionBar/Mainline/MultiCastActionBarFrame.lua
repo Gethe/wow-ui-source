@@ -657,7 +657,7 @@ end
 
 function MultiCastFlyoutFrame_LoadPageSpells(self)
 	local numKnownSpells = 0;
-	for i, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
+	for i, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
 		if ( knownMultiCastSummonSpells[i] ) then
 			numKnownSpells = numKnownSpells + 1;
 		end
@@ -675,7 +675,7 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 	local spellId;
 	local name, _, icon;
 	local buttonIndex = 1;
-	for i, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
+	for i, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
 		if ( knownMultiCastSummonSpells[i] ) then
 			-- create the button
 			if ( buttonIndex <= numButtons ) then
@@ -701,7 +701,6 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 
 			-- setup the button
 			button.page = i;
-			spellId = TOTEM_MULTI_CAST_SUMMON_SPELLS[i];
 			button.spellId = spellId;
 			icon = C_Spell.GetSpellTexture(spellId);
 			button.icon:SetTexture(icon);
@@ -948,7 +947,7 @@ end
 
 function MultiCastSummonSpellButton_Update(self)
 	-- first update which multi-cast spells we actually know
-	for index, spellId in next, TOTEM_MULTI_CAST_SUMMON_SPELLS do
+	for index, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
 		knownMultiCastSummonSpells[index] = (IsSpellKnown(spellId) and spellId) or nil;
 	end
 
@@ -1027,7 +1026,7 @@ end
 
 function MultiCastRecallSpellButton_Update(self)
 	-- first update which multi-cast spells we actually know
-	for index, spellId in next, TOTEM_MULTI_CAST_RECALL_SPELLS do
+	for index, spellId in ipairs(TOTEM_MULTI_CAST_RECALL_SPELLS) do
 		knownMultiCastRecallSpells[index] = (IsSpellKnown(spellId) and spellId) or nil;
 	end
 

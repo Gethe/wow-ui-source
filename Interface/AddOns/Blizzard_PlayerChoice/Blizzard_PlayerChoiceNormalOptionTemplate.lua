@@ -140,6 +140,11 @@ local customFontColorInfo = {
 		title = CreateColor(0.008, 0.051, 0.192),
 		description = CreateColor(0.082, 0.165, 0.373),
 	},
+
+	thewarwithin = {
+		title = CreateColor(0.972, 0.812, 0.706),
+		description = CreateColor(0.972, 0.812, 0.706),
+	},
 };
 
 local defaultOptionFontColors = {

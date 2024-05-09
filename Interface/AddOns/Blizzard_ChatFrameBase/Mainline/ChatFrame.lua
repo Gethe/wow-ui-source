@@ -815,8 +815,8 @@ function ChatFrame_TruncateToMaxLength(text, maxLength)
 	return text;
 end
 
-function ChatFrame_ResolvePrefixedChannelName(communityChannel)
-	local prefix, communityChannel = communityChannel:match("(%d+. )(.*)");
+function ChatFrame_ResolvePrefixedChannelName(communityChannelArg)
+	local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
 	return prefix..ChatFrame_ResolveChannelName(communityChannel);
 end
 
@@ -2540,6 +2540,10 @@ SlashCmdList["SOLOSHUFFLE_WARGAME"] = function(msg)
 	StartSoloShuffleWarGameByName(msg);
 end
 
+SlashCmdList["SOLORBG_WARGAME"] = function(msg)
+	C_PvP.StartSoloRBGWarGameByName(msg);
+end
+
 SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	local target1, target2, size, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)")
 	if (not target1 or not target2 or not size) then
@@ -2562,6 +2566,18 @@ SlashCmdList["SPECTATOR_SOLOSHUFFLE_WARGAME"] = function(msg)
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
 	StartSpectatorSoloShuffleWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
+end
+
+SlashCmdList["SPECTATOR_SOLORBG_WARGAME"] = function(msg)
+	local target1, target2, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)");
+	if (not target1 or not target2) then
+		return;
+	end
+
+	local bnetIDGameAccount1, bnetIDGameAccount2 = ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2);
+	if (area == "" or area == "nil" or area == "0") then area = nil end
+
+	C_PvP.StartSpectatorSoloRBGWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
 end
 
 function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)

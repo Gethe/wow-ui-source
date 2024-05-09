@@ -145,6 +145,16 @@
 	</Button>
 	
 	<Frame name="CharacterFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" mixin="CharacterFrameMixin" inherits="ButtonFrameTemplate">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="character-panel-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
         <Frames>
             <Button name="CharacterFrameTab1" inherits="CharacterFrameTabTemplate" id="1" text="CHARACTER">
 				<Anchors>

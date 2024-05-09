@@ -276,16 +276,11 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Status" mixin="CharacterSelectListStatusTextMixin" inherits="GlueFontDisableLarge" justifyH="LEFT" passThroughButtons="LeftButton">
+								<FontString parentKey="Status" inherits="GlueFontDisableLarge" justifyH="LEFT" passThroughButtons="LeftButton">
 									<Size x="215" y="18"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" x="14" y="17"/>
 									</Anchors>
-									<Scripts>
-										<OnEnter method="OnEnter"/>
-										<OnLeave method="OnLeave"/>
-										<OnMouseUp method="OnMouseUp"/>
-									</Scripts>
 								</FontString>
 							</Layer>
 						</Layers>

@@ -156,6 +156,21 @@ local Bank =
 			},
 		},
 		{
+			Name = "IsItemAllowedInBankType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemAllowedInBankType", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PurchaseBankTab",
 			Type = "Function",
 

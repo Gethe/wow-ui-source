@@ -170,12 +170,24 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
 			</EventFrame>
+
+			<Button parentKey="CurrencyTransferLogToggleButton" inherits="CurrencyTransferLogToggleButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar" relativePoint="TOPRIGHT" x="4" y="12"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
+	</Frame>
+
+	<Frame name="CurrencyTransferLog"  toplevel="true" hidden="true" parent="TokenFrame" inherits="CurrencyTransferLogTemplate">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5"/>
+		</Anchors>
 	</Frame>
 
 	<Frame name="TokenFramePopup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true" mixin="TokenFramePopupMixin">
@@ -218,6 +230,11 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
+			<Button parentKey="CurrencyTransferToggleButton" inherits="CurrencyTransferToggleButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BackpackCheckBox" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+			</Button>
 			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-2" y="-2"/>

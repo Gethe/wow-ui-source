@@ -86,7 +86,7 @@ end
 function WorldMapMixin:SetupMinimizeMaximizeButton()
 	self.minimizedWidth = 702;
 	self.minimizedHeight = 534;
-	self.questLogWidth = 290;
+	self.questLogWidth = 333;
 
 	local function OnMaximize()
 		self:HandleUserActionMaximizeSelf();

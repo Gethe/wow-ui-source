@@ -424,7 +424,7 @@ end
 function PVPMatchResultsMixin:AddItemReward(item)
 	local frame = self.itemPool:Acquire();
 
-	local unusedSpecID;
+	local unusedSpecID = nil;
 	local isCurrency = item.type == "currency";
 	local isIconBorderShown = true;
 	local isIconBorderDropShadowShown = true;

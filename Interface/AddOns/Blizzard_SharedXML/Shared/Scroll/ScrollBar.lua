@@ -288,7 +288,6 @@ function ScrollBarMixin:CanCursorStepInDirection(direction)
 			return c < self:GetLower(self:GetThumb());
 		end
 	end
-	return false;
 end
 
 function ScrollBarMixin:IsThumbMouseDown()

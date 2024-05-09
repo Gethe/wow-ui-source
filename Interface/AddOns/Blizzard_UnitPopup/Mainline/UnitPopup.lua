@@ -70,6 +70,4 @@ function CheckToggleDifficulty(toggleDifficultyID, difficultyID)
 			return toggleDifficultyID == difficultyID;
 		end
 	end
-
-	return false;
 end

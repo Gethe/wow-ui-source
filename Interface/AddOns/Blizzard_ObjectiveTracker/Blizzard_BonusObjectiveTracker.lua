@@ -241,8 +241,12 @@ function BonusObjectiveTrackerMixin:ShowRewardsToast(block, questID)
 	if block then
 		self:AddBlockToCache(block);
 		callback = GenerateClosure(self.OnShowRewardsToastDone, self, block);
-	end	
-	ObjectiveTrackerManager:ShowRewardsToast(rewards, self, block, headerText, callback);
+	end
+	if #rewards > 0 then
+		ObjectiveTrackerManager:ShowRewardsToast(rewards, self, block, headerText, callback);
+	else
+		self:RemoveBlockFromCache(block);
+	end
 end
 
 function BonusObjectiveTrackerMixin:OnShowRewardsToastDone(block)

@@ -101,7 +101,6 @@ local function prepSimple(val, context)
 		else
 			return string_format(FORMATS.opaqueTypeKey, valType);
 		end
-		return string_format(FORMATS.opaqueTypeKey, valType);
 	elseif (valType == "userdata") then
 		local uName = context:GetUserdataName(val);
 		if (uName) then

@@ -252,7 +252,7 @@ function EyeTemplate_StopAnimating(eye)
 	eye.Texture:SetTexCoord(0, textureInfo.iconSize / textureInfo.width, 0, textureInfo.iconSize / textureInfo.height);
 end
 
-function MinimapButton_OnMouseDown(self, button)
+function MinimapButton_OnMouseDown(self, mouseButton)
 	if ( self.isDown ) then
 		return;
 	end

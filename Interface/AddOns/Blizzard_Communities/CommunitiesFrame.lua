@@ -634,7 +634,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 
 	self:UpdateMaximizeMinimizeButton();
 
-	local displayMode = self:GetDisplayMode();
+	displayMode = self:GetDisplayMode();
 	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER then
 		HelpTip:Acknowledge(self, CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_NO_SCROLL);
 		HelpTip:Acknowledge(self, CLUB_FINDER_TUTORIAL_FINDER_BUTTONS_SCROLL);

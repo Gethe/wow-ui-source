@@ -636,8 +636,8 @@ function EventTracePanelMixin:LogCallbackRegistryEvent(sender, event, ...)
 	local elementData = CreateEventElementData(event:upper(), ...);
 	elementData.displayEvent = string.format("%s %s", event, DARKYELLOW_FONT_COLOR:WrapTextInColorCode("(CR)"));
 
-	local sender = DARKYELLOW_FONT_COLOR:WrapTextInColorCode(("(CR: %s)"):format(sender.GetDebugName and sender:GetDebugName() or tostring(sender)));
-	elementData.displayMessage = string.format("%s %s", event, sender);
+	local senderStr = DARKYELLOW_FONT_COLOR:WrapTextInColorCode(("(CR: %s)"):format(sender.GetDebugName and sender:GetDebugName() or tostring(sender)));
+	elementData.displayMessage = string.format("%s %s", event, senderStr);
 	self:LogLine(elementData);
 end
 

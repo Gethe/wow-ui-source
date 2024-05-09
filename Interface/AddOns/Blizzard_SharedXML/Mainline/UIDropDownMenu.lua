@@ -1068,6 +1068,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 	end
 	if ( listFrame:IsShown() and (UIDROPDOWNMENU_OPEN_MENU == tempFrame) ) then
 		listFrame:Hide();
+		return false;
 	else
 		-- Set the dropdownframe scale
 		local uiScale;
@@ -1192,7 +1193,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		UIDropDownMenu_Initialize(dropDownFrame, dropDownFrame.initialize, nil, level, menuList);
 		-- If no items in the drop down don't show it
 		if ( listFrame.numButtons == 0 ) then
-			return;
+			return false;
 		end
 
 		listFrame.onShow = dropDownFrame.listFrameOnShow;
@@ -1204,7 +1205,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		-- Hack will fix this in next revision of dropdowns
 		if ( not x or not y ) then
 			listFrame:Hide();
-			return;
+			return false;
 		end
 
 		listFrame.onHide = dropDownFrame.onHide;
@@ -1277,6 +1278,7 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 			listFrame.parentID = anchorFrame:GetID();
 			listFrame:SetPoint(point, anchorFrame, relativePoint, xOffset, yOffset);
 		end
+		return true;
 	end
 end
 

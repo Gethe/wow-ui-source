@@ -276,7 +276,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true">
+	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="CharacterSelectFrameMixin" setAllPoints="true" enableKeyboard="true" hidden="true" propagateMouseInput="Motion">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LeftBlackBar">
@@ -294,7 +294,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="CharacterSelectUI" name="CharacterSelectUI" inherits="CharacterSelectUITemplate" setAllPoints="true" enableMouse="true">
+			<Frame parentKey="CharacterSelectUI" name="CharacterSelectUI" inherits="CharacterSelectUITemplate" setAllPoints="true" enableMouse="true" propagateMouseInput="Motion">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="CharSelectCharacterName" inherits="GameFontNormalHuge4Outline">
@@ -316,7 +316,7 @@
 							<Anchor point="TOPRIGHT"/>
 						</Anchors>
 					</Frame>
-					<MapScene parentKey="MapScene" name="CharacterSelectMapScene" mixin="CharacterSelectMapSceneMixin" setAllPoints="true">
+					<MapScene parentKey="MapScene" name="CharacterSelectMapScene" mixin="CharacterSelectMapSceneMixin" setAllPoints="true" enableMouseMotion="true" enableMouse="true">
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnUpdate method="OnUpdate"/>

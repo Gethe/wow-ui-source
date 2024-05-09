@@ -2,6 +2,7 @@
 
 local landingPageOverlay = {
 	[LE_EXPANSION_DRAGONFLIGHT] = CreateFromMixins(DragonflightLandingOverlayMixin),
+	[LE_EXPANSION_11_0] = CreateFromMixins(WarWithinLandingOverlayMixin),
 };
 
 ExpansionLandingPageMixin = {};

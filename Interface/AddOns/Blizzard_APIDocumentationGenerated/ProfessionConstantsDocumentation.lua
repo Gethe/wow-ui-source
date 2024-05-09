@@ -198,6 +198,18 @@ local ProfessionConstants =
 			},
 		},
 		{
+			Name = "NpcCraftingOrderSetFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "CraftingOrderFlagAllowMultiple", Type = "NpcCraftingOrderSetFlags", EnumValue = 1 },
+				{ Name = "CraftingOrderFlagAllowDuplicate", Type = "NpcCraftingOrderSetFlags", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "Profession",
 			Type = "Enumeration",
 			NumValues = 15,

@@ -467,7 +467,7 @@ function PaidCharacterTransferFlow:Finish(controller)
 		-- NOTE: This cannot be called while a flow is active, the handler for the retrieving character
 		-- list event conflicts with the character button state updates.
 		-- Just wait a small amount of time, and call it later.
-		C_Timer.NewTimer(1, CharacterSelect_GetCharacterListUpdate);
+		C_Timer.NewTimer(1, CharacterSelectListUtil.GetCharacterListUpdate);
 	end
 
 	return isFinished;

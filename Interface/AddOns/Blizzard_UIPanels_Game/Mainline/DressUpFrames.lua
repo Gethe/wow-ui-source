@@ -75,7 +75,7 @@ end
 
 function DressUpVisualLink(forcedFrame, link, ...)
 	local frame = forcedFrame or GetFrameAndSetBackground();
-	local itemModifiedAppearanceIDs, forcePlayerRefresh = nil;
+	local itemModifiedAppearanceIDs, forcePlayerRefresh = nil, nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();

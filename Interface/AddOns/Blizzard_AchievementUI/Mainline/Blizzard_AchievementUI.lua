@@ -80,13 +80,13 @@ local GuildCategoryIndex = 2;
 local StatisticsCategoryIndex = 3;
 local g_achievementSelectionBehavior = nil;
 local g_achievementSelections = {{},{},{}};
-local function GetSelectedAchievement(categoryIndex)
+local function GetSelectedAchievement()
 	local categoryIndex = achievementFunctions.categoryIndex;
 	return g_achievementSelections[categoryIndex].id or 0;
 end
 
 local g_categorySelections = {{},{},{}};
-local function GetSelectedCategory(categoryIndex)
+local function GetSelectedCategory()
 	local categoryIndex = achievementFunctions.categoryIndex;
 	return g_categorySelections[categoryIndex].id or 0;
 end
@@ -313,7 +313,7 @@ local function OpenToSelectedCategory()
 	return AchievementFrame_GetOrSelectCurrentCategory();
 end
 
-local function InitAchievementPage(category)
+local function InitAchievementPage()
 	local category = OpenToSelectedCategory();
 	if category == "summary" then
 		AchievementFrame_ShowSubFrame(AchievementFrameSummary);
@@ -337,14 +337,14 @@ function AchievementFrameBaseTab_OnClick (tabIndex)
 
 	if tabIndex == AchievementCategoryIndex then
 		achievementFunctions = ACHIEVEMENT_FUNCTIONS;
-		InitAchievementPage(category);
+		InitAchievementPage();
 		AchievementFrameWaterMark:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementWatermark");
 		AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);
 		AchievementFrameGuildEmblemLeft:Hide();
 		AchievementFrameGuildEmblemRight:Hide();
 	elseif tabIndex == GuildCategoryIndex then
 		achievementFunctions = GUILD_ACHIEVEMENT_FUNCTIONS;
-		InitAchievementPage(category);
+		InitAchievementPage();
 		AchievementFrameWaterMark:SetTexture();
 		AchievementFrameCategoriesBG:SetTexCoord(0.5, 1, 0, 1);
 		AchievementFrameGuildEmblemLeft:Show();
@@ -1693,7 +1693,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 		end
 
 		miniAchievement.numCriteria = 0;
-		if ( not ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) == ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) ) then
+		if ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) ~= ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) then
 			for i = 1, GetAchievementNumCriteria(achievementID) do
 				local criteriaString, criteriaType, completed = GetAchievementCriteriaInfo(achievementID, i);
 				if ( completed == false ) then
@@ -3348,7 +3348,7 @@ function AchievementFullSearchResultsButtonMixin:Init(elementData)
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
 	path = categoryName;
-	while ( not (parentCategoryID == -1) ) do
+	while ( parentCategoryID ~= -1 ) do
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;
 	end
@@ -3490,7 +3490,7 @@ function AchievementFrameSearch_InitButton(button, result)
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
 	path = categoryName;
-	while ( not (parentCategoryID == -1) ) do
+	while (  parentCategoryID ~= -1 ) do
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;
 	end

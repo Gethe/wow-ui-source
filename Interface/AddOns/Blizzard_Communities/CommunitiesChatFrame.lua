@@ -27,7 +27,7 @@ function CommunitiesChatMixin:OnLoad()
 	self.eventsSent = {};
 
 	self.MessageFrame:SetOnScrollChangedCallback(function(messageFrame, offset)
-		if not (messageFrame:GetNumMessages() < MAX_NUM_CHAT_LINES) then
+		if messageFrame:GetNumMessages() >= MAX_NUM_CHAT_LINES then
 			return;
 		end
 

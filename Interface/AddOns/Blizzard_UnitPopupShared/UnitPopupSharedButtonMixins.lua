@@ -1342,7 +1342,7 @@ function UnitPopupLegacyRaidDifficulty1ButtonMixin:IsDisabled()
 		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end
 
-	if ( toggleDifficultyID and not GetRaidDifficultyID() == DifficultyUtil.ID.PrimaryRaidMythic and CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID()) ) then
+	if ( toggleDifficultyID and GetRaidDifficultyID() ~= DifficultyUtil.ID.PrimaryRaidMythic and CheckToggleDifficulty(toggleDifficultyID, self:GetDifficultyID()) ) then
 		return false;
 	end
 

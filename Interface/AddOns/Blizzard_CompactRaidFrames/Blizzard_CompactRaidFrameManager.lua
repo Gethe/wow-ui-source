@@ -13,6 +13,15 @@ WORLD_RAID_MARKER_ORDER[8] = 5;
 
 MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 
+RAID_MARKER_RESET_ID = -1;
+
+NUM_RAID_MARKERS = 8;
+MAX_NUM_GROUPS = 8;
+
+local function ReverseMarkerID(id)
+	return NUM_RAID_MARKERS - id + 1; --+1 because it is a 1-based id. 
+end
+
 function CompactRaidFrameManager_OnLoad(self)
 	self.container = CompactRaidFrameContainer;
 
@@ -26,6 +35,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
 
 	self.container:SetFlowFilterFunction(CRFFlowFilterFunc)
 	self.container:SetGroupFilterFunction(CRFGroupFilterFunc)
@@ -35,6 +45,135 @@ function CompactRaidFrameManager_OnLoad(self)
 
 	--Set up the options flow container
 	FlowContainer_Initialize(self.displayFrame.optionsFlowContainer);
+
+	do --filter group pool
+		self.filterGroupPool = CreateFramePool("Button", self, "CRFManagerFilterGroupButtonTemplate");
+		local parent = self.displayFrame.filterOptions;
+
+		local buttons = {};
+		for i = 1,MAX_NUM_GROUPS do
+			local button = self.filterGroupPool:Acquire();
+			button:SetParent(parent);
+			button:SetParentKey("filterGroup"..i);
+			button:SetText(i);
+			button:SetID(i);
+			tinsert(buttons, button);
+			button:Show();
+		end
+
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, MAX_NUM_GROUPS / 2, 2, 0);
+		local anchor = CreateAnchor("TOPLEFT", parent.filterRoleTank, "BOTTOMLEFT", 0, 0);
+		AnchorUtil.GridLayout(buttons, anchor, layout);
+	end
+
+	do --raid marker pool
+		self.raidMarkerPool = CreateFramePool("Button", self, "CRFManagerRaidIconButtonTemplate");
+		local parent = self.displayFrame.raidMarkers;
+
+		local buttons = {};
+
+		local function MakeRow(from, to, finalButton)
+			for i = from, to do
+				local button = self.raidMarkerPool:Acquire();
+				button:SetParent(parent);
+				button:SetID(ReverseMarkerID(i));
+				button:SetParentKey("raidMarker"..i);
+				tinsert(buttons, button);
+				button:Show();
+			end
+
+			finalButton:SetParent(parent);
+			finalButton.backgroundTexture:SetAlpha(0);
+			tinsert(buttons, finalButton);
+			finalButton:Show();
+		end
+
+		local HalfNumMarkers = NUM_RAID_MARKERS / 2;
+		local raidMarkerRemove = self.raidMarkerPool:Acquire();
+		raidMarkerRemove.markerTexture:SetAtlas("GM-raidMarker-remove", false);
+		raidMarkerRemove:SetID(0);
+		MakeRow(1, HalfNumMarkers, raidMarkerRemove);
+		raidMarkerRemove:SetParentKey("raidMarkerRemove");
+
+		local raidMarkerReset = self.raidMarkerPool:Acquire();
+		raidMarkerReset.markerTexture:SetAtlas("GM-raidMarker-reset", false);
+		raidMarkerReset:SetID(RAID_MARKER_RESET_ID);
+		MakeRow(HalfNumMarkers + 1, NUM_RAID_MARKERS, raidMarkerReset);
+		raidMarkerReset:SetParentKey("raidMarkerReset");
+
+		local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, NUM_RAID_MARKERS / 2 + 1, 3, 0);
+		local anchor = CreateAnchor("TOPLEFT", parent.raidMarkerUnitTab, "BOTTOMLEFT", 3, -4);
+		AnchorUtil.GridLayout(buttons, anchor, layout);
+	end
+
+	--divider pools to be filled out on update
+	self.container.dividerVerticalPool = CreateFramePool("Frame", self, "CRFManagerDividerVertical");
+	self.container.dividerHorizontalPool = CreateFramePool("Frame", self, "CRFManagerDividerHorizontal");
+
+	do --restrict pings dropdown
+		local dropdown = CompactRaidFrameManager.displayFrame.RestrictPingsDropDown;
+
+		UIDropDownMenu_Initialize(dropdown, function() 
+			local info = UIDropDownMenu_CreateInfo();
+			local currentRestrict = C_PartyInfo.GetRestrictPings();
+
+			local function AddOption(text, restrict)
+				info.text = text;
+				info.checked = currentRestrict == restrict;
+				info.func = function()
+					C_PartyInfo.SetRestrictPings(C_PartyInfo.GetRestrictPings() == restrict and Enum.RestrictPingsTo.None or restrict);
+				end;
+				UIDropDownMenu_AddButton(info);
+			end
+
+			AddOption(RAID_MANAGER_RESTRICT_PINGS_TO_LEAD, Enum.RestrictPingsTo.Lead);
+			AddOption(RAID_MANAGER_RESTRICT_PINGS_TO_ASSIST, Enum.RestrictPingsTo.Assist);
+			AddOption(RAID_MANAGER_RESTRICT_PINGS_TO_TANKS_HEALERS, Enum.RestrictPingsTo.TankHealer);
+		end);
+    end
+
+	do --mode control dropdown
+		local dropdown = CompactRaidFrameManager.displayFrame.ModeControlDropdown;
+
+		UIDropDownMenu_Initialize(dropdown, function() 
+			local info = UIDropDownMenu_CreateInfo();
+			info.notCheckable = true;
+
+			info.text = RAID;
+			info.func = C_PartyInfo.ConvertToRaid;
+			UIDropDownMenu_AddButton(info);
+
+			info.text = PARTY;
+			info.func = C_PartyInfo.ConvertToParty;
+			UIDropDownMenu_AddButton(info);
+		end)
+	end
+
+	do --difficulty dropdown
+		local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
+
+		UIDropDownMenu_Initialize(dropdown, function() 
+			local info = UIDropDownMenu_CreateInfo();
+			info.notCheckable = true;
+
+			local function AddDifficulty(text, num)
+				info.text = text;
+				info.func = function() 
+					SetDungeonDifficultyID(num);
+					CompactRaidFrameManager_UpdateDifficulty();
+				end
+				UIDropDownMenu_AddButton(info);
+			end
+
+			AddDifficulty(PLAYER_DIFFICULTY1, 1);
+			AddDifficulty(PLAYER_DIFFICULTY2, 2);
+			AddDifficulty(PLAYER_DIFFICULTY6, 23);
+		end)
+
+		dropdown:SetSize(40,40); --doing dropdown operations with a button changes its size for some reason
+	end
+
+	CompactRaidFrameManager_UpdateLabel();
 end
 
 function CompactRaidFrameManager_OnEvent(self, event, ...)
@@ -57,6 +196,8 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		CompactRaidFrameManager_UpdateRaidIcons();
+	elseif ( event == "PLAYER_DIFFICULTY_CHANGED") then
+		CompactRaidFrameManager_UpdateDifficulty();
 	end
 end
 
@@ -75,9 +216,12 @@ end
 
 function CompactRaidFrameManager_UpdateLabel()
 	if ( IsInRaid() ) then
-		CompactRaidFrameManager.displayFrame.label:SetText(RAID_MEMBERS);
+		CompactRaidFrameManager.displayFrame.label:SetText(RAID);
+		CompactRaidFrameManager.displayFrame.ModeControlDropdown.label:SetText(RAID);
+		
 	else
-		CompactRaidFrameManager.displayFrame.label:SetText(PARTY_MEMBERS);
+		CompactRaidFrameManager.displayFrame.label:SetText(PARTY);
+		CompactRaidFrameManager.displayFrame.ModeControlDropdown.label:SetText(PARTY);
 	end
 end
 
@@ -98,80 +242,166 @@ end
 
 function CompactRaidFrameManager_Collapse()
 	CompactRaidFrameManager.collapsed = true;
-	CompactRaidFrameManager:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -182, -140);
+	CompactRaidFrameManager:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -200, -140);
 	CompactRaidFrameManager.displayFrame:Hide();
 	CompactRaidFrameManager.toggleButton:GetNormalTexture():SetTexCoord(0, 0.5, 0, 1);
 end
 
 function CompactRaidFrameManager_UpdateOptionsFlowContainer()
-	local container = CompactRaidFrameManager.displayFrame.optionsFlowContainer;
+	local displayFrame = CompactRaidFrameManager.displayFrame;
+	local container = displayFrame.optionsFlowContainer;
+
+	--set background
+	for _, bg in ipairs(CompactRaidFrameManager.backgrounds) do
+		bg:Hide();
+	end
+	if IsInRaid() then
+		if UnitIsGroupLeader("player") then
+			CompactRaidFrameManager.BGLeads:Show();
+		elseif UnitIsGroupAssistant("player") then
+			CompactRaidFrameManager.BGAssists:Show();
+		else
+			CompactRaidFrameManager.BGRegulars:Show();
+		end
+	else
+		if UnitIsGroupLeader("player") then
+			CompactRaidFrameManager.BGPartyLeads:Show();
+		else
+			CompactRaidFrameManager.BGPartyRegulars:Show();
+		end
+	end
+
+	CompactRaidFrameContainer.dividerVerticalPool:ReleaseAll();
+	CompactRaidFrameContainer.dividerHorizontalPool:ReleaseAll();
 
 	FlowContainer_RemoveAllObjects(container);
 	FlowContainer_PauseUpdates(container);
+	displayFrame.editMode:ClearAllPoints();
+
+	if UnitIsGroupLeader("player") then
+		displayFrame.ModeControlDropdown:Show();
+	else
+		displayFrame.ModeControlDropdown:Hide();
+	end
 
 	if ( IsInRaid() ) then
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.filterOptions);
-		CompactRaidFrameManager.displayFrame.filterOptions:Show();
+		FlowContainer_AddObject(container, displayFrame.filterOptions);
+		displayFrame.filterOptions:Show();
 	else
-		CompactRaidFrameManager.displayFrame.filterOptions:Hide();
+		displayFrame.filterOptions:Hide();
+	end
+
+	local function AddAndShow(frame)
+		FlowContainer_AddObject(container, frame);
+		frame:Show();
+	end
+
+	local function Space(pix)
+		FlowContainer_AddSpacer(container, pix);
+	end
+
+	local verticalDividerPadding = 0;
+	local function AddVerticalDivider()
+		local frame = CompactRaidFrameContainer.dividerVerticalPool:Acquire();
+			
+		Space(verticalDividerPadding);
+		AddAndShow(frame);
+		Space(verticalDividerPadding);
+	end
+
+	local function AddHorizontalDivider()
+		local frame = CompactRaidFrameContainer.dividerHorizontalPool:Acquire();
+		FlowContainer_AddLineBreak(container);
+		AddAndShow(frame);
+	end
+
+	if IsInRaid() then
+		FlowContainer_AddLineBreak(container);
+		verticalDividerPadding = 4;
+		Space(18);
+		AddAndShow(displayFrame.difficulty);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.editMode);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.settings);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.hiddenModeToggle);
+		AddHorizontalDivider();
+	elseif UnitIsGroupLeader("player") then
+		FlowContainer_AddLineBreak(container);
+		verticalDividerPadding = 0;
+		Space(12);
+		AddAndShow(displayFrame.difficulty);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.readyCheckButton);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.rolePollButton);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.countdownButton);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.editMode);
+		AddHorizontalDivider();
+
+		displayFrame.hiddenModeToggle:Hide();
+		displayFrame.settings:Hide();
+	else
+		--editMode will be added below
+
+		displayFrame.difficulty:Hide();
+		displayFrame.readyCheckButton:Hide();
+		displayFrame.rolePollButton:Hide();
+		displayFrame.countdownButton:Hide();
+		displayFrame.hiddenModeToggle:Hide();
+		displayFrame.settings:Hide();
+	end
+
+	FlowContainer_AddLineBreak(container);
+	Space(18);
+
+	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+		AddAndShow(displayFrame.everyoneIsAssistButton);
+	else
+		displayFrame.everyoneIsAssistButton:Hide();
+	end
+
+	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+		verticalDividerPadding = 4;
+		AddVerticalDivider();
+		AddAndShow(displayFrame.readyCheckButton);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.rolePollButton);
+		AddVerticalDivider();
+		AddAndShow(displayFrame.countdownButton);
+		AddHorizontalDivider();
+	elseif IsInRaid() then
+		displayFrame.readyCheckButton:Hide();
+		displayFrame.rolePollButton:Hide();
+		displayFrame.countdownButton:Hide()
 	end
 
 	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.raidMarkers);
-		CompactRaidFrameManager.displayFrame.raidMarkers:Show();
+		FlowContainer_AddLineBreak(container);
+		Space(20);
+		AddAndShow(displayFrame.raidMarkers);
+
+		if not IsInRaid() and not UnitIsGroupLeader("player") then
+			local edit = displayFrame.editMode;
+			edit:SetPoint("LEFT", displayFrame.raidMarkers.raidMarkerGroundTab, "RIGHT", 50, 10);
+			edit:Show();
+		end
 	else
-		CompactRaidFrameManager.displayFrame.raidMarkers:Hide();
+		displayFrame.raidMarkers:Hide();
 	end
 
-	if ( not IsInRaid() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") ) then
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.leaderOptions);
-		CompactRaidFrameManager.displayFrame.leaderOptions:Show();
+	if UnitIsGroupLeader("player") then
+		FlowContainer_AddLineBreak(container);
+		Space(30);
+		AddAndShow(displayFrame.RestrictPingsDropDown);
 	else
-		CompactRaidFrameManager.displayFrame.leaderOptions:Hide();
+		displayFrame.RestrictPingsDropDown:Hide();
 	end
 
-	if ( not IsInRaid() and UnitIsGroupLeader("player") and not HasLFGRestrictions() ) then
-		FlowContainer_AddLineBreak(container);
-		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.convertToRaid);
-		CompactRaidFrameManager.displayFrame.convertToRaid:Show();
-	else
-		CompactRaidFrameManager.displayFrame.convertToRaid:Hide();
-	end
-
-	if ShouldShowRaidFrames() then
-		FlowContainer_AddLineBreak(container);
-		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.editMode);
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.hiddenModeToggle);
-		CompactRaidFrameManager.displayFrame.editMode:Show();
-		CompactRaidFrameManager.displayFrame.hiddenModeToggle:Show();
-	else
-		FlowContainer_AddLineBreak(container);
-		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.editMode);
-		CompactRaidFrameManager.displayFrame.editMode:Show();
-		CompactRaidFrameManager.displayFrame.hiddenModeToggle:Hide();
-	end
-
-	if ( IsInRaid() and UnitIsGroupLeader("player") ) then
-		FlowContainer_AddLineBreak(container);
-		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.everyoneIsAssistButton);
-		CompactRaidFrameManager.displayFrame.everyoneIsAssistButton:Show();
-	else
-		CompactRaidFrameManager.displayFrame.everyoneIsAssistButton:Hide();
-	end
-
-	if CompactRaidFrameManager.displayFrame.RestrictPingsButton:ShouldShow() then
-		FlowContainer_AddLineBreak(container);
-		FlowContainer_AddSpacer(container, 20);
-		FlowContainer_AddObject(container, CompactRaidFrameManager.displayFrame.RestrictPingsButton);
-		CompactRaidFrameManager.displayFrame.RestrictPingsButton:UpdateLabel();
-		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Show();
-	else
-		CompactRaidFrameManager.displayFrame.RestrictPingsButton:Hide();
-	end
+	AddAndShow(displayFrame.BottomButtons);
 
 	FlowContainer_ResumeUpdates(container);
 
@@ -182,24 +412,24 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 
 	--Raid leaders and assistants and leaders of non-dungeon finder parties may initiate a role poll.
 	if ( IsInGroup() and not HasLFGRestrictions() and not UnitInBattleground("player") and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
-		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Enable();
-		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(1);
+		displayFrame.rolePollButton:Enable();
+		displayFrame.rolePollButton:SetAlpha(1);
 	else
-		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:Disable();
-		CompactRaidFrameManager.displayFrame.leaderOptions.rolePollButton:SetAlpha(0.5);
+		displayFrame.rolePollButton:Disable();
+		displayFrame.rolePollButton:SetAlpha(0.5);
 	end
 
 	--Any sort of leader may initiate a ready check.
 	if ( IsInGroup() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) ) then
-		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:Enable();
-		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:SetAlpha(1);
-		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:Enable();
-		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:SetAlpha(1);
+		displayFrame.readyCheckButton:Enable();
+		displayFrame.readyCheckButton:SetAlpha(1);
+		displayFrame.countdownButton:Enable();
+		displayFrame.countdownButton:SetAlpha(1);
 	else
-		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:Disable();
-		CompactRaidFrameManager.displayFrame.leaderOptions.readyCheckButton:SetAlpha(0.5);
-		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:Disable();
-		CompactRaidFrameManager.displayFrame.leaderOptions.countdownButton:SetAlpha(0.5);
+		displayFrame.readyCheckButton:Disable();
+		displayFrame.readyCheckButton:SetAlpha(0.5);
+		displayFrame.countdownButton:Disable();
+		displayFrame.countdownButton:SetAlpha(0.5);
 	end
 end
 
@@ -263,19 +493,21 @@ function CompactRaidFrameManager_UpdateRoleFilterButton(button)
 	local totalAlive, totalCount = RaidInfoCounts["aliveRole"..button.role], RaidInfoCounts["totalRole"..button.role]
 	button:SetFormattedText("%s %d/%d", button.roleTexture, totalAlive, totalCount);
 	local showSeparateGroups = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups();
+
+	local function SetChecked(checked)
+		button.checked = checked;
+		button:GetNormalTexture():SetAtlas(checked and "common-button-tertiary-selected-small" or (button.hovered and "common-button-tertiary-hover-small" or "common-button-tertiary-normal-small"), false);
+	end
+
 	if ( totalCount == 0 or showSeparateGroups ) then
-		button.selectedHighlight:Hide();
+		SetChecked(false);
 		button:Disable();
 		button:SetAlpha(0.5);
 	else
 		button:Enable();
 		button:SetAlpha(1);
 		local isFiltered = CRF_GetFilterRole(button.role)
-		if ( isFiltered ) then
-			button.selectedHighlight:Show();
-		else
-			button.selectedHighlight:Hide();
-		end
+		SetChecked(isFiltered);
 	end
 end
 
@@ -287,17 +519,19 @@ end
 
 function CompactRaidFrameManager_UpdateGroupFilterButton(button, usedGroups)
 	local group = button:GetID();
+
+	local function SetChecked(checked)
+		button.checked = checked;
+		button:GetNormalTexture():SetAtlas(checked and "common-button-tertiary-selected" or (button.hovered and "common-button-tertiary-hover" or "common-button-tertiary-normal"), false);
+	end
+
 	if ( usedGroups[group] ) then
 		button:Enable();
 		button:SetAlpha(1);
 		local isFiltered = CRF_GetFilterGroup(group);
-		if ( isFiltered ) then
-			button.selectedHighlight:Show();
-		else
-			button.selectedHighlight:Hide();
-		end
+		SetChecked(isFiltered);
 	else
-		button.selectedHighlight:Hide();
+		SetChecked(false);
 		button:Disable();
 		button:SetAlpha(0.5);
 	end
@@ -310,31 +544,104 @@ function CompactRaidFrameManager_ToggleGroupFilter(group)
 end
 
 function CompactRaidFrameManager_UpdateRaidIcons()
-	local unit = "target";
-	local disableAll = not CanBeRaidTarget(unit);
-	for i=1, NUM_RAID_ICONS do
-		local button = _G["CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarker"..i];	--.... /cry
-		if ( disableAll or button:GetID() == GetRaidTargetIndex(unit) ) then
-			button:GetNormalTexture():SetDesaturated(true);
-			button:SetAlpha(0.7);
-			button:Disable();
-		else
-			button:GetNormalTexture():SetDesaturated(false);
-			button:SetAlpha(1);
-			button:Enable();
-		end
-	end
+	
+	local raidMarkers = CompactRaidFrameManager.displayFrame.raidMarkers;
 
-	local removeButton = CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarkerRemove;
-	if ( not GetRaidTargetIndex(unit) ) then
-		removeButton:GetNormalTexture():SetDesaturated(true);
+	if raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then 
+		local unit = "target";
+		local disableAll = not CanBeRaidTarget(unit);
+		for i=1, NUM_RAID_ICONS do
+			local button = raidMarkers["raidMarker"..i];
+			if disableAll then
+				button.markerTexture:SetDesaturated(true);
+				button.backgroundTexture:SetAtlas("GM-button-marker-disabled", false);
+				button:Disable();
+			else
+				local applied = false;--IsRaidMarkerActive is for WORLD MARKERS. Leaving this here in case we decide to write an API for unit markers.
+				local selected = (button:GetID() == GetRaidTargetIndex(unit));
+
+				button.markerTexture:SetDesaturated(false);
+				button:Enable();
+				if applied and selected then
+					button.backgroundTexture:SetAtlas("GM-button-marker-appliedSelected", false);
+				elseif applied then
+					button.backgroundTexture:SetAtlas("GM-button-marker-applied", false);
+				elseif selected then
+					button.backgroundTexture:SetAtlas("GM-button-marker-selected", false);
+				else
+					button.backgroundTexture:SetAtlas("GM-button-marker-available", false);
+				end
+			end
+		end
+
+		local removeButton = raidMarkers.raidMarkerRemove;
+		if not GetRaidTargetIndex(unit) then
+			removeButton.markerTexture:SetDesaturated(true);
+			removeButton:Disable();
+		else
+			removeButton.markerTexture:SetDesaturated(false);
+			removeButton:Enable();
+		end
+
+		local clearButton = raidMarkers.raidMarkerReset;
+		clearButton.markerTexture:SetDesaturated(true);
+		clearButton:Disable();
+	else --world markers
+		for i=1, NUM_RAID_ICONS do
+			local button = raidMarkers["raidMarker"..i];
+			local applied = IsRaidMarkerActive(WORLD_RAID_MARKER_ORDER[i]); 
+			button.markerTexture:SetDesaturated(false);
+			button:Enable();
+			if applied then
+				button.backgroundTexture:SetAtlas("GM-button-marker-applied", false);
+			else
+				button.backgroundTexture:SetAtlas("GM-button-marker-available", false);
+			end
+		end
+
+		local removeButton = raidMarkers.raidMarkerRemove;
+		removeButton.markerTexture:SetDesaturated(true);
 		removeButton:Disable();
-	else
-		removeButton:GetNormalTexture():SetDesaturated(false);
-		removeButton:Enable();
+
+		local clearButton = raidMarkers.raidMarkerReset;
+		clearButton.markerTexture:SetDesaturated(false);
+		clearButton:Enable();
 	end
 end
 
+function CompactRaidFrameManager_UpdateDifficulty()
+	local difficulty = GetDungeonDifficultyID();
+	local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
+	local isAssist = UnitIsGroupAssistant("player");
+	local atlas = nil; 
+	if difficulty == 1 then
+		atlas = isAssist and "GM-icon-difficulty-normalAssist" or "GM-icon-difficulty-normal";
+	elseif difficulty == 2 then
+		atlas = isAssist and "GM-icon-difficulty-heroicAssist" or "GM-icon-difficulty-heroic";
+	else
+		atlas = isAssist and "GM-icon-difficulty-mythicAssist" or "GM-icon-difficulty-mythic";
+	end
+
+	dropdown:GetNormalTexture():SetAtlas(atlas, false);
+end
+
+function CompactRaidFrameManager_ClickDifficulty(self)
+	if UnitIsGroupLeader("player") then
+		local shown = ToggleDropDownMenu(1, nil, self, self, 5, 0);
+		local difficulty = GetDungeonDifficultyID();
+		local atlas = nil;
+		if difficulty == 1 then
+			atlas = shown and "GM-icon-difficulty-normalSelected" or "GM-icon-difficulty-normal";
+		elseif difficulty == 2 then
+			atlas = shown and "GM-icon-difficulty-heroicSelected" or "GM-icon-difficulty-heroic";
+		else
+			atlas = shown and "GM-icon-difficulty-mythicSelected" or "GM-icon-difficulty-mythic";
+		end
+
+		self:SetSize(40,40); --doing dropdown operations with a button changes its size for some reason
+		self:GetNormalTexture():SetAtlas(atlas, false);
+	end
+end
 
 --Settings stuff
 local cachedSettings = {};
@@ -403,11 +710,9 @@ do	--Enclosure to make sure people go through SetSetting
 	local function CompactRaidFrameManager_SetIsShown(value)
 		if EditModeManagerFrame:AreRaidFramesForcedShown() or (value and value ~= "0") then
 			CompactRaidFrameManager.container.enabled = true;
-			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(HIDE);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = false;
 		else
 			CompactRaidFrameManager.container.enabled = false;
-			CompactRaidFrameManagerDisplayFrameHiddenModeToggle:SetText(SHOW);
 			CompactRaidFrameManagerDisplayFrameHiddenModeToggle.shownMode = true;
 		end
 		CompactRaidFrameManager_UpdateContainerVisibility();
@@ -567,6 +872,233 @@ function CRF_AddToCount(isDead, assignedRole)
 		RaidInfoCounts.totalAlive = RaidInfoCounts.totalAlive + 1;
 		RaidInfoCounts["aliveRole"..assignedRole] = RaidInfoCounts["aliveRole"..assignedRole] + 1;
 	end
+end
+
+local function FilterButtonOnEnter(self, atlas)
+	self.hovered = true;
+	if not self.checked then
+		self:GetNormalTexture():SetAtlas(atlas, false);
+	end
+end
+
+local function FilterButtonOnLeave(self)
+	self.hovered = false;
+	CompactRaidFrameManager_UpdateFilterInfo();
+end
+
+CRFManagerFilterRoleButtonMixin = {};
+
+function CRFManagerFilterRoleButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	CompactRaidFrameManager_ToggleRoleFilter(self.role);
+end
+
+function CRFManagerFilterRoleButtonMixin:OnEnter()
+	FilterButtonOnEnter(self, "common-button-tertiary-hover-small");
+end
+
+function CRFManagerFilterRoleButtonMixin:OnLeave()
+	FilterButtonOnLeave(self);
+end
+
+CRFManagerFilterGroupButtonMixin = {};
+ 
+function CRFManagerFilterGroupButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	CompactRaidFrameManager_ToggleGroupFilter(self:GetID());
+end
+
+function CRFManagerFilterGroupButtonMixin:OnEnter()
+	FilterButtonOnEnter(self, "common-button-tertiary-hover");
+end
+
+function CRFManagerFilterGroupButtonMixin:OnLeave()
+	FilterButtonOnLeave(self);
+end
+
+CRFManagerRoleMarkerCheckMixin = {};
+
+function CRFManagerRoleMarkerCheckMixin:OnLoad()
+	self.icon.icon:SetAtlas(self.id == 0 and "GM-icon-role-tank" or "GM-icon-role-healer", 16, 16, 0, 0);
+end	
+
+CRFManagerRaidIconButtonMixin = {};
+
+function CRFManagerRaidIconButtonMixin:GetMarker()
+	return ReverseMarkerID(self:GetID());
+end
+
+function CRFManagerRaidIconButtonMixin:OnShow()
+	self.markerTexture:SetAtlas("GM-raidMarker"..self:GetMarker(), false);
+end
+
+function CRFManagerRaidIconButtonMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local raidMarkers = CompactRaidFrameManager.displayFrame.raidMarkers;
+	if self:GetID() == RAID_MARKER_RESET_ID then
+		ClearRaidMarker();
+	elseif raidMarkers.activeTab == raidMarkers.raidMarkerUnitTab then
+		SetRaidTarget("target", self:GetID());
+	else
+		PlaceRaidMarker(WORLD_RAID_MARKER_ORDER[self:GetMarker()]);
+	end
+	CompactRaidFrameManager_UpdateRaidIcons();
+end
+
+function CRFManagerRaidIconButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		self.markerTexture:SetPoint("CENTER", self, "CENTER", -1, -1);
+		self.backgroundTexture:SetAtlas("GM-button-marker-pressed", false);
+	end
+end
+
+function CRFManagerRaidIconButtonMixin:OnMouseUp()
+	self.markerTexture:SetPoint("CENTER", self, "CENTER", 0, 0);
+	self.backgroundTexture:SetAtlas("GM-button-marker-available", false);
+end
+
+function CRFManagerRaidIconButtonMixin:OnEnter()
+	if self.backgroundTexture:GetAtlas() == "GM-button-marker-available" then
+		self.backgroundTexture:SetAtlas("GM-button-marker-hover", false);
+	end
+end
+
+function CRFManagerRaidIconButtonMixin:OnLeave()
+	if self.backgroundTexture:GetAtlas() == "GM-button-marker-hover" then
+		self.backgroundTexture:SetAtlas("GM-button-marker-available", false);
+	end
+end
+
+CRFManagerMarkerTabMixin = {};
+
+function CRFManagerMarkerTabMixin:OnClick()
+	self:GetParent():SetTab(self);
+	CompactRaidFrameManager_UpdateRaidIcons();
+end
+
+CRFRaidMarkersMixin = {};
+
+function CRFRaidMarkersMixin:SetTab(frame)
+	if self.activeTab ~= frame then
+		self.activeTab = frame;
+		for _, tab in ipairs(self.Tabs) do
+			tab:GetNormalTexture():SetAtlas(tab == frame and "GM-tab-active" or "GM-tab-inActive", false);
+		end
+	end
+end
+
+function CRFRaidMarkersMixin:OnLoad()
+	self:SetTab(self.Tabs[1]);
+end
+
+RaidFrameFilterRoleTankMixin = CreateFromMixins(CRFManagerFilterRoleButtonMixin);
+
+function RaidFrameFilterRoleTankMixin:OnLoad()
+	self.role = "TANK";
+	self.roleTexture = CreateAtlasMarkup("GM-icon-role-tank", 16, 16, 0, 0);
+end
+
+RaidFrameFilterRoleHealerMixin = CreateFromMixins(CRFManagerFilterRoleButtonMixin);
+
+function RaidFrameFilterRoleHealerMixin:OnLoad()
+	self.role = "HEALER";
+	self.roleTexture = CreateAtlasMarkup("GM-icon-role-healer", 16, 16, 0, 0);
+end
+
+RaidFrameFilterRoleDamagerMixin = CreateFromMixins(CRFManagerFilterRoleButtonMixin);
+
+function RaidFrameFilterRoleDamagerMixin:OnLoad()
+	self.role = "DAMAGER";
+	self.roleTexture = CreateAtlasMarkup("GM-icon-role-dps", 16, 16, 0, 0);
+end
+
+CRFManagerTooltipButtonMixin = {}
+
+function CRFManagerTooltipButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -10);
+	GameTooltip_SetTitle(GameTooltip, _G[self.tooltip]);
+	GameTooltip:Show();
+end
+
+function CRFManagerTooltipButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+RaidFrameEditModeMixin = CreateFromMixins(CRFManagerTooltipButtonMixin);
+
+function RaidFrameEditModeMixin:OnShow()
+	self:SetEnabled(EditModeManagerFrame:CanEnterEditMode());
+end
+
+function RaidFrameEditModeMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	ShowUIPanel(EditModeManagerFrame);
+end
+
+RaidFrameSettingsMixin = CreateFromMixins(CRFManagerTooltipButtonMixin);
+
+function RaidFrameSettingsMixin:OnClick()
+	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
+end
+
+RaidFrameHiddenModeToggleMixin = CreateFromMixins(CRFManagerTooltipButtonMixin);
+
+function RaidFrameHiddenModeToggleMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	SetCVar("raidOptionIsShown", not GetCVarBool("raidOptionIsShown"));
+end
+
+RaidFrameEveryoneIsAssistMixin = {};
+
+function RaidFrameEveryoneIsAssistMixin:OnLoad()
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
+end
+
+function RaidFrameEveryoneIsAssistMixin:OnEvent()
+	self:SetChecked(IsEveryoneAssistant());
+	if ( UnitIsGroupLeader("player") ) then
+		self:Enable();
+	else
+		self:Disable();
+	end
+end
+
+function RaidFrameEveryoneIsAssistMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	SetEveryoneIsAssistant(self:GetChecked());
+end
+
+function RaidFrameEveryoneIsAssistMixin:OnEnter() --OnLeave in XML
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -10);
+	if ( not self:IsEnabled() ) then
+		GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	else
+		GameTooltip_SetTitle(GameTooltip, CRF_ALL_ASSIST);
+	end
+	GameTooltip:Show();
+end
+
+RaidFrameReadyCheckMixin = CreateFromMixins(CRFManagerTooltipButtonMixin);
+
+function RaidFrameReadyCheckMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	DoReadyCheck();
+end
+
+RaidFrameRolePollMixin = CreateFromMixins(CRFManagerTooltipButtonMixin);
+
+function RaidFrameRolePollMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	InitiateRolePoll();
+end
+
+RaidFrameCountdownMixin = CreateFromMixins(CRFManagerTooltipButtonMixin);
+
+function RaidFrameCountdownMixin:OnClick()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	C_PartyInfo.DoCountdown(10);
 end
 
 RaidFrameManagerRestrictPingsButtonMixin = {};

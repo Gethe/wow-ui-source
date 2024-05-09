@@ -77,7 +77,7 @@ if (InGlue()) then
 		end
 
 		if (VASCharacterGUID) then
-			CharacterSelect_SelectCharacterByGUID(VASCharacterGUID);
+			CharacterSelectListUtil.SelectCharacterByGUID(VASCharacterGUID);
 			VASCharacterGUID = nil;
 		end
 	end

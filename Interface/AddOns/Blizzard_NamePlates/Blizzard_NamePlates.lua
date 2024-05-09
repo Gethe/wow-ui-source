@@ -330,15 +330,15 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 	local bottomMostBar = nil;
 	local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player", issecure());
 	if namePlatePlayer then
-		bottomMostBar = namePlatePlayer.UnitFrame.healthBar;
+		bottomMostBar = namePlatePlayer.UnitFrame.HealthBarsContainer;
 	end
 
 	if self.classNamePlatePowerBar then
 		if namePlatePlayer then
 			self.classNamePlatePowerBar:SetParent(namePlatePlayer);
 			self.classNamePlatePowerBar:ClearAllPoints();
-			self.classNamePlatePowerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMLEFT", 0, 0);
-			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 0);
+			self.classNamePlatePowerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.HealthBarsContainer, "BOTTOMLEFT", 0, 0);
+			self.classNamePlatePowerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.HealthBarsContainer, "BOTTOMRIGHT", 0, 0);
 			self.classNamePlatePowerBar:SetShown(not self.playerHideHealthandPowerBar);
 
 			bottomMostBar = self.classNamePlatePowerBar;
@@ -350,7 +350,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 	if self.classNamePlateAlternatePowerBar then
 		if namePlatePlayer then
 			local powerBar = self.classNamePlatePowerBar;
-			local attachTo = (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.healthBar;
+			local attachTo = (powerBar and powerBar:IsShown() and powerBar) or namePlatePlayer.UnitFrame.HealthBarsContainer;
 			self.classNamePlateAlternatePowerBar:SetParent(namePlatePlayer);
 			self.classNamePlateAlternatePowerBar:ClearAllPoints();
 			self.classNamePlateAlternatePowerBar:SetPoint("TOPLEFT", attachTo, "BOTTOMLEFT", 0, 0);
@@ -594,7 +594,7 @@ end
 
 function NamePlateBaseMixin:GetPreferredInsets()
 	local frame = self.UnitFrame;
-	local health = frame.healthBar;
+	local health = frame.HealthBarsContainer;
 
 	local left = health:GetLeft() - frame:GetLeft();
 	local right = frame:GetRight() - health:GetRight();
@@ -694,7 +694,7 @@ function NameplateBuffContainerMixin:UpdateAnchor()
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else
-		self:SetPoint("BOTTOM", self:GetParent().healthBar, "TOP", 0, 5 + targetYOffset);
+		self:SetPoint("BOTTOM", self:GetParent().HealthBarsContainer.healthBar, "TOP", 0, 5 + targetYOffset);
 	end
 end
 

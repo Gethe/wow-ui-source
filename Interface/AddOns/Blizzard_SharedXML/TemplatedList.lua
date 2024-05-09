@@ -129,7 +129,6 @@ function TemplatedListMixin:UpdatedSelectedHighlight()
 end
 
 function TemplatedListMixin:AttachHighlightToElementFrame(selectedHighlight, elementFrame)
-	local elementFrame = self:GetElementFrame(elementOffset);
 	selectedHighlight:SetPoint("CENTER", elementFrame, "CENTER", 0, 0);
 	selectedHighlight:Show();
 end

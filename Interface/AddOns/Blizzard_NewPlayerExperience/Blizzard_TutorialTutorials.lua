@@ -1466,7 +1466,7 @@ function Class_EnhancedCombatTactics:HideSpenderPrompt()
 	end
 end
 
-function Class_EnhancedCombatTactics:UNIT_POWER_FREQUENT(unit, resource)
+function Class_EnhancedCombatTactics:UNIT_POWER_FREQUENT(unit, _resource)
 	local resourceGateAmount = self.combatData.resourceGateAmount;
 	local resource = UnitPower("player", self.combatData.resource);
 	if resource < resourceGateAmount then
@@ -1582,7 +1582,7 @@ function Class_EnhancedCombatTactics_Warrior:UNIT_TARGETABLE_CHANGED()
 	Dispatcher:RegisterEvent("UNIT_TARGET", self);
 end
 
-function Class_EnhancedCombatTactics_Warrior:UNIT_POWER_FREQUENT(unit, resource)
+function Class_EnhancedCombatTactics_Warrior:UNIT_POWER_FREQUENT(unit, _resource)
 	local resourceGateAmount = self.combatData.resourceGateAmount;
 	local resource = UnitPower("player", self.combatData.resource);
 
@@ -2708,7 +2708,7 @@ function Class_LookingForGroup:OnComplete()
 	self:HideScreenTutorial();
 	ActionButton_HideOverlayGlow(LFDMicroButton);
 
-	if not self.success == true then
+	if self.success ~= true then
 		if not self.questRemoved then
 			TutorialManager:Queue(Class_PromptLFG.name);
 		end

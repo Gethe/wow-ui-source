@@ -461,7 +461,7 @@ end
 
 function LFG_UpdateRoleCheckboxes(category, lfgID, tankButton, healButton, dpsButton, leaderButton)
 	local mode, submode = GetLFGMode(category, lfgID);
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, _category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
 	if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
 		leader, tank, healer, dps = GetLFGRoles();
 	end
@@ -1759,8 +1759,6 @@ function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
 	else
 		return false;
 	end
-
-	return true;
 end
 
 function LFG_QueueForInstanceIfEnabled(category, queueID)
