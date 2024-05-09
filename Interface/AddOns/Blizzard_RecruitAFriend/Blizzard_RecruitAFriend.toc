@@ -1,7 +1,7 @@
 ## Title: Blizzard_RecruitAFriend
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FriendsFrame, Blizzard_FrameXMLUtil
+## Dependencies: Blizzard_BNet, Blizzard_FriendsFrame, Blizzard_FrameXMLUtil
 ## SuppressLocalTableRef: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline

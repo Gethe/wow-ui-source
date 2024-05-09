@@ -2830,7 +2830,7 @@ function LFGListSearchEntry_Update(self)
 	self.VoiceChat:SetShown(searchResultInfo.voiceChat ~= "");
 	self.VoiceChat.tooltip = searchResultInfo.voiceChat;
 
-	local showClassesByRole = true;
+	local showClassesByRole = LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS
 	LFGListGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityID, displayData, searchResultInfo.isDelisted, showClassesByRole);
 
 	local nameWidth = isApplication and 165 or 176;
