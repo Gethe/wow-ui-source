@@ -1198,9 +1198,7 @@ function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 		offhandSpeed = format("%.2F", offhandSpeed);
 	end
 	if ( offhandSpeed ) then
-		displaySpeed =  BreakUpLargeNumbers(displaySpeed).." / ".. offhandSpeed;
-	else
-		displaySpeed =  BreakUpLargeNumbers(displaySpeed);
+		displaySpeed =  displaySpeed.." / ".. offhandSpeed;
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed);
 
@@ -1380,7 +1378,7 @@ function PaperDollFrame_SetRangedAttackSpeed(statFrame, unit)
 		statFrame.tooltip = nil;
 	else
 		local attackTime, _, _, _, _, _ = UnitRangedDamage(unit);
-		displaySpeed = BreakUpLargeNumbers(format("%.2F", attackTime));
+		displaySpeed = format("%.2F", attackTime);
 		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..displaySpeed..FONT_COLOR_CODE_CLOSE;
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, attackTime);

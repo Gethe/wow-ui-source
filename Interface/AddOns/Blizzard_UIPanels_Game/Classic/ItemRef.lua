@@ -287,7 +287,7 @@ function SetItemRef(link, text, button, chatFrame)
 				CollectionsJournal_LoadUI();
 			end
 			if ( CollectionsJournal ) then
-				WardrobeCollectionFrameMixin:OpenTransmogLink(link);
+				WardrobeCollectionFrame:OpenTransmogLink(link);
 			end
 		end
 		return;
@@ -296,7 +296,7 @@ function SetItemRef(link, text, button, chatFrame)
 			CollectionsJournal_LoadUI();
 		end
 		if ( CollectionsJournal ) then
-			WardrobeCollectionFrameMixin:OpenTransmogLink(link);
+			WardrobeCollectionFrame:OpenTransmogLink(link);
 		end
 		return;
 	elseif ( strsub(link, 1, 3) == "api" ) then
