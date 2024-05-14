@@ -525,6 +525,16 @@
 					<Anchor point="TOPLEFT" relativeTo="GuildBankTab5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
+			<Frame name="GuildBankTab7" inherits="GuildBankTabTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="GuildBankTab8" inherits="GuildBankTabTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBankTab7" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="BuyInfo"  hidden="true">
 				<Size x="20" y="20"/>
 				<Anchors>
