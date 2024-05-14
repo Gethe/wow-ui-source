@@ -6,6 +6,43 @@ local TradeSkillUI =
 
 	Functions =
 	{
+		{
+			Name = "GetTradeSkillDisplayName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "professionDisplayName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTradeSkillTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "tradeSkillID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "tradeSkillTexture", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsGuildTradeSkillsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

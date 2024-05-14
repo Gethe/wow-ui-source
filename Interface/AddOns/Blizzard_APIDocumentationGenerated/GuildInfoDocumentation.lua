@@ -167,6 +167,16 @@ local GuildInfo =
 			},
 		},
 		{
+			Name = "QueryGuildMemberRecipes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "guildMemberGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "skillLineID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "QueryGuildMembersForRecipe",
 			Type = "Function",
 
