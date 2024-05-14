@@ -5,5 +5,5 @@ Blizzard_CompactRaidFrameReservationManager.lua
 Blizzard_CompactRaidFrameContainer.xml
 Wrath\Blizzard_CompactRaidFrameManager.lua
 Blizzard_CompactRaidFrameManager_Shared.lua
-Wrath\Blizzard_CompactRaidFrameManager.xml
+Cata\Blizzard_CompactRaidFrameManager.xml
 Localization.lua
