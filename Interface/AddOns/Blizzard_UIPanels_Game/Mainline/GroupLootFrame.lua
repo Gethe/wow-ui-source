@@ -578,6 +578,7 @@ end
 
 function BonusRollFrame_FinishedFading(self)
 	local rollType, roll, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded, wonRoll, showRatedBG; -- luacheck: ignore 221 (variable is never set)
+	isCurrency = false;
 	if ( self.rewardType == "item" or self.rewardType == "artifact_power" ) then
 		wonRoll = self.rewardType == "item";
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);

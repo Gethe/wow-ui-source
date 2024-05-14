@@ -1331,13 +1331,13 @@ function UnitPopupLegacyRaidDifficulty1ButtonMixin:IsChecked()
 end
 
 function UnitPopupLegacyRaidDifficulty1ButtonMixin:IsDisabled()
-	local inInstance, instanceType = IsInInstance();
+	local inInstance = IsInInstance();
 	if ( ( IsInGroup() and not UnitIsGroupLeader("player") ) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or inInstance  or GetRaidDifficultyID() == DifficultyUtil.ID.PrimaryRaidMythic ) then
 		return true;
 	end
 
 	local toggleDifficultyID;
-	local _, instanceType, instanceDifficultyID,  _, _, _, isDynamicInstance = GetInstanceInfo();
+	local _, _, instanceDifficultyID,  _, _, _, isDynamicInstance = GetInstanceInfo();
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
 		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end

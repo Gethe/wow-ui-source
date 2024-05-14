@@ -176,6 +176,14 @@ function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColo
 	tooltip:AddDoubleLine(leftText, rightText, leftR, leftG, leftB, rightR, rightG, rightB, wrap, leftOffset);
 end
 
+-- Common defaults when using GameTooltip_ShowSimpleTooltip
+SimpleTooltipConstants = {
+	NoOverrideColor = nil;
+
+	WrapText = true;
+	DoNotWrapText = false;
+}
+
 function GameTooltip_ShowSimpleTooltip(tooltip, text, overrideColor, wrap, owner, point, offsetX, offsetY)
 	tooltip:SetOwner(owner, point, offsetX, offsetY);
 	GameTooltip_SetTitle(tooltip, text, overrideColor, wrap);

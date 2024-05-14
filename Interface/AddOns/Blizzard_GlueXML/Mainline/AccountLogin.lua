@@ -1,3 +1,7 @@
+
+SHOW_KOREAN_RATINGS = SHOW_KOREAN_RATINGS or nil;
+SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = SHOW_CHINA_AGE_APPROPRIATENESS_WARNING or nil;
+
 local function ShouldShowRegulationOverlay()
 	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
 end
@@ -54,7 +58,7 @@ function AccountLogin_CheckLoginState(self)
 	-- authenticator
 	local tokenEntryShown = false;
 	if ( auroraState == LE_AURORA_STATE_ENTER_EXTRA_AUTH ) then
-		authType = C_Login.GetExtraAuthInfo();
+		local authType = C_Login.GetExtraAuthInfo();
 		if ( authType == LE_AUTH_AUTHENTICATOR ) then
 			tokenEntryShown = true;
 		end
@@ -78,7 +82,6 @@ end
 
 function AccountLogin_Update()
 	local showButtonsAndStuff = true;
-    local shouldCheckSystemReqs = true;
 	if ( ShouldShowRegulationOverlay() ) then
 		showButtonsAndStuff = false;
 		if ( SHOW_KOREAN_RATINGS ) then
@@ -94,7 +97,6 @@ function AccountLogin_Update()
 	local isLauncherLogin = C_Login.IsLauncherLogin();
 	if ( isLauncherLogin ) then
 		showButtonsAndStuff = false;
-        shouldCheckSystemReqs = false;
 	end
 
 	local shouldSuppressServerAlert = isLauncherLogin or ShouldShowRegulationOverlay();

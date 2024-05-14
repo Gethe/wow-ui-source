@@ -768,8 +768,6 @@ function MonthlyActivitiesFrameMixin:OnLoad()
 	local view = CreateScrollBoxListTreeListView(indent, DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
 	view:SetPanExtent(20);
 
-	myView = view;
-
 	local function Initializer(button, node)
 		button:Init();
 	end
@@ -1243,7 +1241,6 @@ local function ActivitySortComparator(a, b)
 	end
 
 	-- Put expired timed activities next
-	local aHasExpired, bHasExpired = HasTimedActivityExpired(aData), HasTimedActivityExpired(bData);
 	if aHasExpired ~= bHasExpired then
 		return aHasExpired;
 	elseif aHasExpired and bHasExpired then

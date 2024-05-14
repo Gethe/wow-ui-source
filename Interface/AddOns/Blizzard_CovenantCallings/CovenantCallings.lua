@@ -100,7 +100,7 @@ function CovenantCallingQuestMixin:UpdateTooltipQuestActive()
 		else
 			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID);
 			if questLogIndex then
-				questDescription = select(2, GetQuestLogQuestText(questLogIndex));
+				local questDescription = select(2, GetQuestLogQuestText(questLogIndex));
 				GameTooltip_AddColoredLine(GameTooltip, QUEST_DASH .. questDescription, HIGHLIGHT_FONT_COLOR);
 			end
 		end

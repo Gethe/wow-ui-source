@@ -1,4 +1,5 @@
 MAX_PARTY_MEMBERS = 4;
+PARTYBACKGROUND_OPACITY = PARTYBACKGROUND_OPACITY or nil;
 
 PartyFrameMixin={};
 
@@ -161,8 +162,8 @@ function PartyMemberBuffTooltipMixin:UpdateTooltip(frame)
 	local frameNum = 1;
 	self.PartyMemberBuffPool:ReleaseAll();
 
-	for frame in self.PartyMemberBuffPool:EnumerateActive() do 
-		frame:Hide()
+	for buffFrame in self.PartyMemberBuffPool:EnumerateActive() do 
+		buffFrame:Hide()
 	end
 	local buffFrames = {};
 

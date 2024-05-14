@@ -672,7 +672,6 @@ function MultiCastFlyoutFrame_LoadPageSpells(self)
 
 	local totalHeight = 0;
 	local button;
-	local spellId;
 	local name, _, icon;
 	local buttonIndex = 1;
 	for i, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do

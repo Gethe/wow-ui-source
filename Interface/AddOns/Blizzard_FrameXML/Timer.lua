@@ -304,10 +304,10 @@ function StartTimer_SetTexNumbers(self, ...)
 			digits[1]:SetPoint("CENTER", self, "CENTER", numberOffset - digits[1].hw, 0);
 		end
 		
-		for i=2,numShown do
-			digits[i]:ClearAllPoints();
-			digits[i]:SetPoint("CENTER", digits[i-1], "CENTER", -(digits[i].hw + digits[i-1].hw), 0)
-			i = i + 1;
+		for j=2,numShown do
+			digits[j]:ClearAllPoints();
+			digits[j]:SetPoint("CENTER", digits[j-1], "CENTER", -(digits[j].hw + digits[j-1].hw), 0)
+			j = j + 1;
 		end
 	end
 end

@@ -86,7 +86,7 @@ function TalentUtil.GetTalentDescription(overrideDescription, spellID)
 	end
 
 	if spellID then
-		local spellDescription = GetSpellDescription(spellID);
+		local spellDescription = C_Spell.GetSpellDescription(spellID);
 		if spellDescription then
 			return spellDescription;
 		end
@@ -298,6 +298,17 @@ function TalentButtonUtil.GetColorForBaseVisualState(visualState)
 	return YELLOW_FONT_COLOR;
 end
 
+function TalentButtonUtil.CalculateIconTextureFromInfo(definitionInfo, subTreeInfo)
+	-- By default, any use of SubTreeSelection nodes without a bespoke override will treat them like regular Selection nodes
+	-- So we need to handle getting an icon from either an entry's subTree OR its definition
+	if subTreeInfo and subTreeInfo.iconElementID and subTreeInfo.iconElementID ~= "" then
+		return subTreeInfo.iconElementID, true;
+	end
+
+	local spellID = definitionInfo and definitionInfo.spellID or nil;
+	return TalentButtonUtil.CalculateIconTexture(definitionInfo, spellID), false;
+end
+
 function TalentButtonUtil.CalculateIconTexture(definitionInfo, overrideSpellID)
 	if definitionInfo then
 		local overrideIcon = definitionInfo.overrideIcon;
@@ -361,51 +372,32 @@ function TalentButtonUtil.CheckAddRefundInvalidInfo(tooltip, isRefundInvalid, re
 	return true;
 end
 
-TalentButtonUtil.ActionBarStatus = {
-	NotMissing = 1, 			-- Either Passive, unlearned, or is on an active bar
-	MissingFromAllBars = 2,		-- Not on any action bar
-	OnInactiveBonusBar = 3,		-- On a bar belonging to a different stance
-	OnDisabledActionBar = 4,	-- On a bar that's been disabled via settings
-};
-
-local ActionBarStatusTooltips = {
-	[TalentButtonUtil.ActionBarStatus.NotMissing] = nil,
-	[TalentButtonUtil.ActionBarStatus.MissingFromAllBars] = TALENT_BUTTON_TOOLTIP_NOT_ON_ACTION_BAR,
-	[TalentButtonUtil.ActionBarStatus.OnInactiveBonusBar] = TALENT_BUTTON_TOOLTIP_ON_INACTIVE_BONUSBAR,
-	[TalentButtonUtil.ActionBarStatus.OnDisabledActionBar] = TALENT_BUTTON_TOOLTIP_ON_DISABLED_ACTIONBAR,
-}
-
-TalentButtonUtil.SearchMatchType = {
-	RelatedMatch = 1,
-	Match = 2,
-	ExactMatch = 3,
-	NotOnActionBar = 4,
-	OnInactiveBonusBar = 5,
-	OnDisabledActionBar = 6,
-};
-
 local SearchMatchStyles = {
-	[TalentButtonUtil.SearchMatchType.RelatedMatch] = {
+	[SpellSearchUtil.MatchType.RelatedMatch] = {
 		icon = "talents-search-relatedmatch",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_RELATED_MATCH
 	},
-	[TalentButtonUtil.SearchMatchType.Match] = {
+	[SpellSearchUtil.MatchType.NameMatch] = {
 		icon = "talents-search-match",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_MATCH
 	},
-	[TalentButtonUtil.SearchMatchType.ExactMatch] = {
+	[SpellSearchUtil.MatchType.DescriptionMatch] = {
+		icon = "talents-search-match",
+		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_MATCH
+	},
+	[SpellSearchUtil.MatchType.ExactMatch] = {
 		icon = "talents-search-exactmatch",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH
 	},
-	[TalentButtonUtil.SearchMatchType.NotOnActionBar] = {
+	[SpellSearchUtil.MatchType.NotOnActionBar] = {
 		icon = "talents-search-notonactionbar",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_NOT_ON_ACTIONBAR
 	},
-	[TalentButtonUtil.SearchMatchType.OnInactiveBonusBar] = {
+	[SpellSearchUtil.MatchType.OnInactiveBonusBar] = {
 		icon = "talents-search-notonactionbarhidden",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_ON_INACTIVE_BONUSBAR
 	},
-	[TalentButtonUtil.SearchMatchType.OnDisabledActionBar] = {
+	[SpellSearchUtil.MatchType.OnDisabledActionBar] = {
 		icon = "talents-search-notonactionbarhidden",
 		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_ON_DISABLED_ACTIONBAR
 	},
@@ -417,77 +409,6 @@ end
 
 function TalentButtonUtil.GetHoverAlphaForVisualStyle(visualStyle)
 	return HoverAlphaByVisualState[visualStyle];
-end
-
-function TalentButtonUtil.GetTooltipForActionBarStatus(status)
-	return ActionBarStatusTooltips[status];
-end
-
-function TalentButtonUtil.GetActionBarStatusForSpell(spellID)
-	if not spellID or C_Spell.IsSpellPassive(spellID) then
-		return TalentButtonUtil.ActionBarStatus.NotMissing;
-	end
-
-	-- First retrieve all action bars the spell is slotted on
-	local excludeNonPlayerBars = true;
-	local excludeSpecialPlayerBars = false;
-	local barsWithSpell = ActionButtonUtil.GetActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
-	if not barsWithSpell then
-		return TalentButtonUtil.ActionBarStatus.MissingFromAllBars;
-	end
-
-	-- Then evaluate whether those are active, and if not, what type of inactive bar
-	local isOnInactiveBonusBar, isOnDisabledBar = false, false;
-	for _, barEntry in pairs(barsWithSpell) do
-		if barEntry.isActive then
-			return TalentButtonUtil.ActionBarStatus.NotMissing;
-		end
-
-		-- Inactive MultiActionBar means bar is disabled in settings
-		if barEntry.barType == ActionButtonUtil.ActionBarType.MultiActionBar then
-			isOnDisabledBar = true;
-		-- Inactive Bonus Bar means bar belongs to a different stance
-		elseif barEntry.barType == ActionButtonUtil.ActionBarType.BonusBar then
-			isOnInactiveBonusBar = true;
-		end
-	end
-
-	-- Spell being on a disabled bar for all stances takes priority over being on another stance's bar
-	if isOnDisabledBar then
-		return TalentButtonUtil.ActionBarStatus.OnDisabledActionBar;
-	elseif isOnInactiveBonusBar then
-		return TalentButtonUtil.ActionBarStatus.OnInactiveBonusBar;
-	else
-		return TalentButtonUtil.ActionBarStatus.MissingFromAllBars;
-	end
-end
-
-function TalentButtonUtil.GetActionBarStatusForNode(nodeInfo, spellID)
-	if not nodeInfo or not nodeInfo.entryIDsWithCommittedRanks or (#nodeInfo.entryIDsWithCommittedRanks <= 0)  then
-		return TalentButtonUtil.ActionBarStatus.NotMissing;
-	end
-
-	return TalentButtonUtil.GetActionBarStatusForSpell(spellID);
-end
-
-function TalentButtonUtil.GetActionBarStatusForNodeEntry(entryID, nodeInfo, spellID)
-	if not nodeInfo or not nodeInfo.entryIDsWithCommittedRanks or (#nodeInfo.entryIDsWithCommittedRanks <= 0)  then
-		return TalentButtonUtil.ActionBarStatus.NotMissing;
-	end
-
-	local isEntryCommitted = false;
-	for _, committedEntryID in ipairs(nodeInfo.entryIDsWithCommittedRanks) do
-		if committedEntryID == entryID then
-			isEntryCommitted = true;
-			break;
-		end
-	end
-
-	if not isEntryCommitted then
-		return TalentButtonUtil.ActionBarStatus.NotMissing;
-	end
-
-	return TalentButtonUtil.GetActionBarStatusForSpell(spellID);
 end
 
 -- TODO:: Replace this temp code that is supplying missing pieces to avoid Lua errors.

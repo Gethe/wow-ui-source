@@ -527,7 +527,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 			PlayerTalentFrame_Refresh();
 		elseif ( event == "UNIT_LEVEL") then
 			if ( selectedSpec ) then
-				local arg1 = ...;
 				if (arg1 == "player") then
 					PlayerTalentFrame_Update();
 					PlayerTalentFramePanel_UpdateSummary(PlayerTalentFramePanel1);
@@ -896,31 +895,33 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 		end
 		
 		-- Hide unused bonus frames
-		local i = #bonuses+1;
-		local bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
-		while (bonusFrame) do
-			bonusFrame:Hide();
-			i = i + 1;
-			bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
+		do
+			local i = #bonuses+1;
+			local bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
+			while (bonusFrame) do
+				bonusFrame:Hide();
+				i = i + 1;
+				bonusFrame = _G[self.Summary:GetName().."ActiveBonus"..i];
+			end
 		end
 		
 		-- Update all Passive bonuses
 		bonuses = {GetMinorTalentTreeBonuses(self.talentTree, self.inspect, self.pet)};
 		local numSmallBonuses = 0;
-		for i=1, #bonuses do
+		for bonusIndex=1, #bonuses do
 			numSmallBonuses = numSmallBonuses+1;
 			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
 			if (bonusFrame) then
-				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, nil, desaturateBonuses);
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[bonusIndex], nil, nil, desaturateBonuses);
 			end
 		end	
 		
 		bonuses = {GetTalentTreeEarlySpells(self.talentTree, self.inspect, self.pet)};
-		for i=1, #bonuses do
+		for bonusIndex=1, #bonuses do
 			numSmallBonuses = numSmallBonuses+1;
 			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
 			if (bonusFrame) then
-				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[i], nil, TALENT_EARLY_SPELLS_LABEL, desaturateBonuses);
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, bonuses[bonusIndex], nil, TALENT_EARLY_SPELLS_LABEL, desaturateBonuses);
 			end
 		end	
 		

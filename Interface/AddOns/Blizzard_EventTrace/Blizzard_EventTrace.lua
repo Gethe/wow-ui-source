@@ -257,8 +257,8 @@ function EventTracePanelMixin:InitializeLog()
 			   tinsert(words, word);
 			end
 
-			for index, elementData in self.logDataProvider:Enumerate() do
-				for index, word in ipairs(words) do
+			for _, elementData in self.logDataProvider:Enumerate() do
+				for _, word in ipairs(words) do
 					if self:TryAddToSearch(elementData, word) then
 						break;
 					end
@@ -583,7 +583,7 @@ end
 function EventTracePanelMixin:ProcessChatCommand(msg)
 	if msg then
 		local words = string.gmatch(msg, "([^ ]+)");
-		for word in words do
+		for word in words do -- luacheck: ignore 512 (loop is executed at most once)
 			local Mark = "MARK";
 			if string.upper(word) == Mark then
 				local index = string.find(msg, word);

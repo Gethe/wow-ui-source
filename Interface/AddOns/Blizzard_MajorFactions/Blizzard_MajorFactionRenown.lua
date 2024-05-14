@@ -293,7 +293,6 @@ function MajorFactionRenownMixin:OnTrackUpdate(leftIndex, centerIndex, rightInde
 		self:Refresh();
 		return;
 	end
-	local elements = track:GetElements();
 	for i = leftIndex, rightIndex do
 		local selected = not self.moving and centerIndex == i;
 		local frame = elements[i];

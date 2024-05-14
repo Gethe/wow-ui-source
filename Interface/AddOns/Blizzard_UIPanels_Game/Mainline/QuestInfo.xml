@@ -448,7 +448,7 @@
 				<Scripts>
 					<OnLoad>
 						MoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
+						MoneyFrame_SetType(self, "QUEST_REWARDS");
 					</OnLoad>
 				</Scripts>
 			</Frame>

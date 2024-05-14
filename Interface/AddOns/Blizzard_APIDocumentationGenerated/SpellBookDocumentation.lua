@@ -20,7 +20,7 @@ local SpellBook =
 		{
 			Name = "ContainsAnyDisenchantSpell",
 			Type = "Function",
-			Documentation = { "Returns true player knows any Disenchant spells" },
+			Documentation = { "Returns true if player knows any Disenchant spells" },
 
 			Returns =
 			{
@@ -119,6 +119,21 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "GetSpellBookItemDescription",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellBookItemInfo",
 			Type = "Function",
 
@@ -196,6 +211,22 @@ local SpellBook =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subName", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellBookItemSkillLineIndex",
+			Type = "Function",
+			Documentation = { "Get the index of the SkillLine this SpellBookItem is part of" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "skillLineIndex", Type = "luaIndex", Nilable = true, Documentation = { "Will be nil if the specified SpellBookItem doesn't exist or isn't part of a SkillLine" } },
 			},
 		},
 		{
@@ -278,6 +309,54 @@ local SpellBook =
 			{
 				{ Name = "numPetSpells", Type = "number", Nilable = false },
 				{ Name = "petNameToken", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAutoAttackSpellBookItem",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookItem is the player's melee Auto Attack spell" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRangedAutoAttackSpellBookItem",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookItem is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRangedAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellBookItemOffSpec",
+			Type = "Function",
+			Documentation = { "Returns true if the SpellBookItem belongs to a non-active class specialization" },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPassive", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -482,7 +561,9 @@ local SpellBook =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "subName", Type = "string", Nilable = false, Documentation = { "May be empty if flyout, or if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
 				{ Name = "iconID", Type = "fileID", Nilable = false },
-				{ Name = "isPassive", Type = "bool", Nilable = false },
+				{ Name = "isPassive", Type = "bool", Nilable = false, Documentation = { "True if the item is a passive spell; Will always be false if it is not a spell" } },
+				{ Name = "isOffSpec", Type = "bool", Nilable = false, Documentation = { "True if the item belongs to a non-active specialization" } },
+				{ Name = "skillLineIndex", Type = "luaIndex", Nilable = true, Documentation = { "Index of the SkillLine this SpellBookItem is part of; Nil this SpellBookItem isn't part of a SkillLine" } },
 			},
 		},
 		{

@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local l10nTable = {
 	deDE = {},
 	enGB = {

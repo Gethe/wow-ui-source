@@ -179,6 +179,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("RAID_INSTANCE_WELCOME");
+	self:RegisterEvent("DAILY_RESET_INSTANCE_WELCOME");
+	self:RegisterEvent("INSTANCE_RESET_WARNING");
 	self:RegisterEvent("RAISED_AS_GHOUL");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
@@ -366,6 +368,12 @@ function UIParent_OnLoad(self)
 
 	-- Event(s) for PlayerSpells
 	self:RegisterEvent("USE_GLYPH");
+
+	-- Event(s) for Enchanting
+	self:RegisterEvent("ENCHANT_SPELL_SELECTED");
+
+	-- Events(s) for updating spell based item contexts
+	self:RegisterEvent("UPDATE_SPELL_TARGET_ITEM_CONTEXT");
 end
 
 function UIParent_OnShow(self)
@@ -2057,6 +2065,20 @@ function UIParent_OnEvent(self, event, ...)
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 
+	elseif ( event == "DAILY_RESET_INSTANCE_WELCOME" ) then
+		local instanceName = arg1;
+		local resetTime = arg2;
+		message = format(DAILY_RESET_INSTANCE_WELCOME, instanceName, SecondsToTime(resetTime, nil, 1));
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
+
+	elseif ( event == "INSTANCE_RESET_WARNING" ) then
+		local warningString = arg1;
+		local resetTime = arg2;
+		message = format(warningString, SecondsToTime(resetTime, nil, 1));
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
+
 	-- Events for taxi benchmarking
 	elseif ( event == "ENABLE_TAXI_BENCHMARK" ) then
 		FramerateFrame:BeginBenchmark();
@@ -2381,6 +2403,11 @@ function UIParent_OnEvent(self, event, ...)
 			PlayerSpellsUtil.OpenToSpellBookTab();
 			PlayerSpellsFrame.SpellBookFrame:OnEvent(event, ...);
 		end
+	elseif event == "ENCHANT_SPELL_SELECTED" then
+		ItemButtonUtil.OpenAndFilterBags(self);
+		ItemButtonUtil.OpenAndFilterCharacterFrame();
+	elseif event == "UPDATE_SPELL_TARGET_ITEM_CONTEXT" then
+		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	end
 end
 
@@ -3262,9 +3289,9 @@ function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
 
 	for i=numFrames + 1,numBuffs do
 		local buffName = frameName..suffix..i;
-		local frame = _G[buffName];
-		if frame then
-			frame:Hide();
+		local buffFrame = _G[buffName];
+		if buffFrame then
+			buffFrame:Hide();
 		else
 			break;
 		end

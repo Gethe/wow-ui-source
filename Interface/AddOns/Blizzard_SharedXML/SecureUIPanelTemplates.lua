@@ -79,7 +79,7 @@ end
 -- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
 -- cursor above or below the current scroll area of the edit box.
 function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
-	local height, range, scroll, size, cursorOffset;
+	local height, range, scroll, cursorOffset;
 	if ( self.handleCursorChange ) then
 		if ( not scrollFrame ) then
 			scrollFrame = self:GetParent();
@@ -87,7 +87,6 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 		height = scrollFrame:GetHeight();
 		range = scrollFrame:GetVerticalScrollRange();
 		scroll = scrollFrame:GetVerticalScroll();
-		size = height + range;
 		cursorOffset = -self.cursorOffset;
 
 		if ( math.floor(height) <= 0 or math.floor(range) <= 0 ) then

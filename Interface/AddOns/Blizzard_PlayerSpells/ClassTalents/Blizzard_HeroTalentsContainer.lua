@@ -246,7 +246,7 @@ function HeroTalentsContainerMixin:UpdateHeroTalentCurrency(skipCheckingExpandSt
 			currencyAvailable = TalentFrameUtil.GetSubTreeCurrencyAvailable(talentFrame, self.activeSubTreeInfo.ID);
 		elseif self:IsDisplayingHeroSpecChoices() then
 			-- If we're displaying hero spec choices, display the highest number of available points between them
-			subTreeIDs = TalentFrameUtil.GetSubTreesIDsFromSubTreeSelectionNode(talentFrame, self.activeSubTreeSelectionNodeInfo);
+			local subTreeIDs = TalentFrameUtil.GetSubTreesIDsFromSubTreeSelectionNode(talentFrame, self.activeSubTreeSelectionNodeInfo);
 			for _, subTreeID in ipairs(subTreeIDs) do
 				local subTreeCurrencyAvailable = TalentFrameUtil.GetSubTreeCurrencyAvailable(talentFrame, subTreeID);
 				if subTreeCurrencyAvailable > currencyAvailable then

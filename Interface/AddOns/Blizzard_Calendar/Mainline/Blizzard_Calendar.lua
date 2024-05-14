@@ -814,7 +814,7 @@ local function _CalendarFrame_CacheEventDungeons_Internal(eventType, textures)
 		end
 	end
 
-	local cacheIndex = 1;
+	cacheIndex = 1;
 	while cacheIndex < #CalendarEventDungeonCache do
 		-- insert headers between expansion levels
 		local entry = CalendarEventDungeonCache[cacheIndex];
@@ -1782,9 +1782,7 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 	end
 
 	local date = C_Calendar.GetMinDate();
-	local testWeekday = date.weekday;
 	local testMonth = date.month;
-	local testDate = date.monthDay;
 	local testYear = date.year;
 	CalendarPrevMonthButton:Enable();
 	if ( CalendarFrame.viewedYear <= testYear ) then
@@ -1794,9 +1792,7 @@ function CalendarFrame_UpdateMonthOffsetButtons()
 	end
 	-- the max create date is the max date we're going to allow people to view
 	date = C_Calendar.GetMaxCreateDate();
-	testWeekday = date.weekday;
 	testMonth = date.month;
-	testDay = date.monthDay;
 	testYear = date.year;
 	CalendarNextMonthButton:Enable();
 	if ( CalendarFrame.viewedYear >= testYear ) then
@@ -2361,7 +2357,7 @@ function CalendarDayContextMenu_DeleteEvent()
 end
 
 function CalendarDayContextMenu_ReportSpam()
-	reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Calendar);
+	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Calendar);
 	ReportFrame:InitiateReport(reportInfo);
 end
 

@@ -351,8 +351,6 @@ function PartyMemberFrameMixin:Setup()
 	self:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	self:RegisterEvent("MUTELIST_UPDATE");
-	self:RegisterEvent("IGNORELIST_UPDATE");
 	self:RegisterEvent("UNIT_FACTION");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("READY_CHECK");
@@ -441,7 +439,6 @@ function PartyMemberFrameMixin:UpdateMember()
 	self:UpdatePet();
 	self:UpdatePvPStatus();
 	self:UpdateAuras();
-	self:UpdateVoiceStatus();
 	self:UpdateReadyCheck();
 	self:UpdateOnlineStatus();
 	self:UpdateNotPresentIcon();
@@ -535,24 +532,6 @@ function PartyMemberFrameMixin:UpdateAssignedRoles()
 	end
 end
 
-function PartyMemberFrameMixin:UpdateVoiceStatus()
-	if not UnitName(self:GetUnit()) then
-		--No need to update if the frame doesn't have a unit.
-		return;
-	end
-
-	local mode;
-	local inInstance, instanceType = IsInInstance();
-
-	if ( (instanceType == "pvp") or (instanceType == "arena") ) then
-		mode = "Battleground";
-	elseif ( IsInRaid() ) then
-		mode = "raid";
-	else
-		mode = "party";
-	end
-end
-
 function PartyMemberFrameMixin:UpdateReadyCheck()
 	local readyCheckFrame = self.ReadyCheck;
 	local readyCheckStatus = GetReadyCheckStatus(self:GetUnit());
@@ -637,8 +616,6 @@ function PartyMemberFrameMixin:OnEvent(event, ...)
 		self:UpdateLeader();
 	elseif event == "PARTY_LEADER_CHANGED" then
 		self:UpdateLeader();
-	elseif event == "MUTELIST_UPDATE" or event == "IGNORELIST_UPDATE" then
-		self:UpdateVoiceStatus();
 	elseif event == "UNIT_FACTION" then
 		if arg1 == self:GetUnit() then
 			self:UpdatePvPStatus();

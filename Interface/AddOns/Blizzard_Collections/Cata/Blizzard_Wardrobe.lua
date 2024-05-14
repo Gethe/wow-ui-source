@@ -692,7 +692,6 @@ function TransmogSlotButtonMixin:Update()
 			end
 		end
 
-		local baseTexture = GetInventoryItemTexture("player", self.transmogLocation.slotID);
 		self.Icon:SetTexture(baseTexture);
 	else
 		if ( self.HiddenVisualIcon ) then

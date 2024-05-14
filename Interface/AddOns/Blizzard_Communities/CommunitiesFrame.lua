@@ -1,4 +1,6 @@
 
+g_clubIdToSeenApplicants = g_clubIdToSeenApplicants or nil;
+
 CommunitiesFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
 CommunitiesFrameMixin:GenerateCallbackEvents(
@@ -350,7 +352,7 @@ function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
 		return;
 	end
 
-	for i, newClubId in ipairs(self.newClubIds) do
+	for _, newClubId in ipairs(self.newClubIds) do
 		if newClubId == clubId then
 			local streams = C_Club.GetStreams(clubId);
 			if streams then
@@ -1681,7 +1683,6 @@ function CommunitiesControlFrameMixin:Update()
 				local shouldShowGuildControl = IsGuildLeader() and (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or communitiesFrame:IsShowingApplicantList());
 				self.GuildControlButton:SetShown(shouldShowGuildControl);
 
-				local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
 				if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT and myMemberInfo and myMemberInfo.guildRankOrder and C_ClubFinder.IsEnabled()) then
 					self.GuildRecruitmentButton:Show();
 

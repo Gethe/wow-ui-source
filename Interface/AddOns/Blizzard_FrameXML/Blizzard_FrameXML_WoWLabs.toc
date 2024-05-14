@@ -25,7 +25,6 @@ Mainline\SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 AzeriteAnimationTemplates.xml
-PetStableModelMixin.lua
 QuestNPCModelFrameMixin.lua
 TabardModelFrameMixin.lua
 WardrobeOutfits.xml

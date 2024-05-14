@@ -1,7 +1,7 @@
 
 local s_vasQueueTimes = {};
 local s_autoSwitchRealm = false;
-
+local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
 CharacterSelectUtil = {};
 
@@ -124,12 +124,16 @@ function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
 	};
 end
 
-function CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID)
+function CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID, offsetX, offsetY)
 	if timerunningSeasonID then
-		return CreateAtlasMarkup("timerunning-glues-icon", 12, 12)..name;
+		return CreateAtlasMarkup("timerunning-glues-icon", 11, 11, offsetX, offsetY)..name;
 	else
 		return name;
 	end
+end
+
+function CharacterSelectUtil.UpdateShowDebugTooltipInfo(state)
+	showDebugTooltipInfo = state;
 end
 
 function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
@@ -162,6 +166,9 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
 	GameTooltip_AddColoredLine(GlueTooltip, realmName, GRAY_FONT_COLOR);
+	if showDebugTooltipInfo then
+		GameTooltip_AddColoredLine(GlueTooltip, characterInfo.guid, GRAY_FONT_COLOR);
+	end
 
 	-- Add a blank line only if we have populated fields for the next section.
 	if className or areaName then

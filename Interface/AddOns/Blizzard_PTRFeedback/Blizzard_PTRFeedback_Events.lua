@@ -42,7 +42,6 @@ local lastPlayerPosition = false
 local currentNumberOfQuests = 0
 ----------------------------------------------------------------------------------------------------
 local function EncounterEndHandler(...)
-    local instanceName, instanceType, difficultyID, difficultyName = GetInstanceInfo()
     local encounterID, encounterName, difficultyID, groupSize, encounterSuccessful = ...
     
     local uiMapID = C_Map.GetBestMapForUnit("player")        

@@ -84,8 +84,8 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 	if resultData.resourcesReturned then
 		local container = ContinuableContainer:Create();
 		for index, resource in ipairs(resultData.resourcesReturned) do
-			local item = Item:CreateFromItemID(resource.itemID);
-			container:AddContinuable(item);
+			local resourceItem = Item:CreateFromItemID(resource.itemID);
+			container:AddContinuable(resourceItem);
 		end
 
 		local function FactoryFunction(index)
@@ -141,8 +141,8 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 		local container = ContinuableContainer:Create();
 		for index, childData in ipairs(resultData.childData) do
 			if childData.itemID then
-				local item = Item:CreateFromItemID(childData.itemID);
-				container:AddContinuable(item);
+				local childItem = Item:CreateFromItemID(childData.itemID);
+				container:AddContinuable(childItem);
 			end
 		end
 

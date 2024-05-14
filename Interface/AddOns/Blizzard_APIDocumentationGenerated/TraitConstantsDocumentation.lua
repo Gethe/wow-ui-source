@@ -5,9 +5,9 @@ local TraitConstants =
 		{
 			Name = "NodeOpFailureReason",
 			Type = "Enumeration",
-			NumValues = 25,
+			NumValues = 26,
 			MinValue = 0,
-			MaxValue = 24,
+			MaxValue = 25,
 			Fields =
 			{
 				{ Name = "None", Type = "NodeOpFailureReason", EnumValue = 0 },
@@ -35,6 +35,7 @@ local TraitConstants =
 				{ Name = "LevelTooLow", Type = "NodeOpFailureReason", EnumValue = 22 },
 				{ Name = "TreeFlaggedNoRefund", Type = "NodeOpFailureReason", EnumValue = 23 },
 				{ Name = "NodeNeverPurchasable", Type = "NodeOpFailureReason", EnumValue = 24 },
+				{ Name = "AccountDataNoMatch", Type = "NodeOpFailureReason", EnumValue = 25 },
 			},
 		},
 		{

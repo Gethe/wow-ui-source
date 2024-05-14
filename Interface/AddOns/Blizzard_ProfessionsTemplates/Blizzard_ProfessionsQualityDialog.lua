@@ -42,47 +42,47 @@ function ProfessionsQualityDialogMixin:OnLoad()
 			end
 		end
 
-		for qualityIndex = 1, self:GetReagentSlotCount() do
-			local container = self.containers[qualityIndex];
+		for reagentIndex = 1, self:GetReagentSlotCount() do
+			local container = self.containers[reagentIndex];
 			local editBox = container.EditBox;
-			editBox:SetValue(self.allocations:GetQuantityAllocated(self:GetReagent(qualityIndex)));
+			editBox:SetValue(self.allocations:GetQuantityAllocated(self:GetReagent(reagentIndex)));
 		end
 
 		self:EvaluateAllocations();
 		return value;
 	end
 
-	for qualityIndex, container in ipairs(self.containers) do
+	for containerIndex, container in ipairs(self.containers) do
 		local editBox = container.EditBox;
 
 		local function ApplyEditBoxText(editBox)
-			Allocate(qualityIndex, math.min(self:GetQuantityRequired(), tonumber(editBox:GetText()) or 0));
+			Allocate(containerIndex, math.min(self:GetQuantityRequired(), tonumber(editBox:GetText()) or 0));
 		end
 
 		editBox:SetScript("OnEnterPressed", ApplyEditBoxText);
 		editBox:SetScript("OnEditFocusLost", ApplyEditBoxText);
 		editBox:SetScript("OnTextChanged", function(editBox, userChanged)
 			if not userChanged then
-				Allocate(qualityIndex, tonumber(editBox:GetText()) or 0);
+				Allocate(containerIndex, tonumber(editBox:GetText()) or 0);
 			end
 		end);
 
 		local button = container.Button;
 		button:SetScript("OnClick", function(button, buttonName, down)
 			if IsShiftKeyDown() then
-				Professions.HandleQualityReagentItemLink(self.recipeID, self.reagentSlotSchematic, qualityIndex);
+				Professions.HandleQualityReagentItemLink(self.recipeID, self.reagentSlotSchematic, containerIndex);
 			else
 				if buttonName == "LeftButton" then
-					Allocate(qualityIndex, self:GetQuantityRequired());
+					Allocate(containerIndex, self:GetQuantityRequired());
 				elseif buttonName == "RightButton" then
-					Allocate(qualityIndex, 0)
+					Allocate(containerIndex, 0)
 				end
 			end
 		end);
 
 		button:SetScript("OnEnter", function()
 			GameTooltip:SetOwner(button, "ANCHOR_TOPLEFT");
-			local reagent = self:GetReagent(qualityIndex);
+			local reagent = self:GetReagent(containerIndex);
 			GameTooltip:SetItemByID(reagent.itemID);
 			GameTooltip:Show();
 		end);

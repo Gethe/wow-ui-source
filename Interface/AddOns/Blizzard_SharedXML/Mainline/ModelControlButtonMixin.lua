@@ -139,9 +139,7 @@ function ModelControlRotateButtonMixin:OnLoad()
 end
 
 function ModelControlRotateButtonMixin:OnClick()
-	if ( not rotationIncrement ) then
-		rotationIncrement = 0.03;
-	end
+	local rotationIncrement = 0.03;
 
 	if (self.rotateDirection == "left") then
 		self.model.rotation = self.model.rotation + rotationIncrement;

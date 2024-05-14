@@ -336,4 +336,23 @@
 			</Layer>
 		</Layers>
 	</Button>
+
+	<Button name="EnchantingItemButtonAnimTemplate" mixin="EnchantingItemButtonAnimMixin" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="AugmentBorderAnim" setToFinalAlpha="false">
+				<Alpha childKey="AugmentBorderAnimTexture" duration="0.5" order="1" startDelay="1.0" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="AugmentBorderAnimTexture" atlas="gearenchant_iconborder" hidden="true" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Button>
  </Ui>

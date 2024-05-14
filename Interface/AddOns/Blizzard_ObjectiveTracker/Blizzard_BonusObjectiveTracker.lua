@@ -178,9 +178,7 @@ end
 function BonusObjectiveTrackerMixin:ShowRewardsToast(block, questID)
 	local rewards = { };
 	-- xp
-	if not xp then
-		xp = GetQuestLogRewardXP(questID);
-	end
+	local xp = GetQuestLogRewardXP(questID);
 	if xp > 0 and not IsPlayerAtEffectiveMaxLevel() then
 		local t = { };
 		t.label = xp;
@@ -224,9 +222,7 @@ function BonusObjectiveTrackerMixin:ShowRewardsToast(block, questID)
 		tinsert(rewards, t);
 	end
 	-- money
-	if not money then
-		money = GetQuestLogRewardMoney(questID);
-	end
+	local money = GetQuestLogRewardMoney(questID);
 	if money > 0 then
 		local t = { };
 		t.label = GetMoneyString(money);
@@ -614,11 +610,11 @@ function BonusObjectiveTrackerProgressBarMixin:OnFree()
 end
 
 function BonusObjectiveTrackerProgressBarMixin:ResetAnimations()
-	for i, frame in ipairs(self.AnimatableFrames) do
+	for _, frame in ipairs(self.AnimatableFrames) do
 		-- a progressbar animatable frame will have one of these two parentkey anims
 		local anim = frame.AnimIn or frame.FlareAnim;
 		anim:Stop();
-		for i, texture in ipairs(frame.AlphaTextures) do
+		for _, texture in ipairs(frame.AlphaTextures) do
 			texture:SetAlpha(0);
 		end
 	end

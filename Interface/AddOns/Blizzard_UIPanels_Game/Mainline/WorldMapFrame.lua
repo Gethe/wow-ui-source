@@ -42,7 +42,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 
 	local numQuestRewards = GetNumQuestLogRewards(questID);
 	for i = 1, numQuestRewards do
-		local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+		local _itemName, _itemTexture, _quantity, _quality, _isUsable, itemID = GetQuestLogRewardInfo(i, questID);
 		if ( itemID ) then
 			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID = C_Item.GetItemInfo(itemID);
 			if ( classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or (classID == Enum.ItemClass.Gem and subclassID == Enum.ItemGemSubclass.Artifactrelic) ) then

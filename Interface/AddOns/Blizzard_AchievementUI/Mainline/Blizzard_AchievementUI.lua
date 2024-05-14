@@ -409,7 +409,7 @@ end
 
 function AchievementFrame_ShowSubFrame(...)
 	for _, subFrame in ipairs(GetOrCreateAchievementSubFramesList()) do
-		show = false;
+		local show = false;
 		for i = 1, select("#", ...) do
 			if subFrame == select(i, ...) then
 				show = true;
@@ -529,7 +529,7 @@ function AchievementFrameCategories_ExpandToCategory(category)
 
 	if elementData and elementData.isChild then
 		local openID = elementData.parent;
-		for index, iterElementData in ipairs(categories) do
+		for _, iterElementData in ipairs(categories) do
 			iterElementData.hidden = iterElementData.isChild and iterElementData.parent ~= openID;
 		end
 	end
@@ -1062,28 +1062,28 @@ function AchievementTemplateMixin:Init(elementData)
 		self.Icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
 		self.Icon.frame:SetTexCoord(0.25976563, 0.40820313, 0.50000000, 0.64453125);
 		self.Icon.frame:SetPoint("CENTER", 2, 2);
-		local tsunami = self.BottomTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0, 0.72265, 0.58984375, 0.65234375);
-		tsunami:SetAlpha(0.2);
-		local tsunami = self.TopTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0.72265, 0, 0.65234375, 0.58984375);
-		tsunami:SetAlpha(0.15);
+		local bottomTsunami = self.BottomTsunami1;
+		bottomTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		bottomTsunami:SetTexCoord(0, 0.72265, 0.58984375, 0.65234375);
+		bottomTsunami:SetAlpha(0.2);
+		local topTsunami = self.TopTsunami1;
+		topTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		topTsunami:SetTexCoord(0.72265, 0, 0.65234375, 0.58984375);
+		topTsunami:SetAlpha(0.15);
 		self.Glow:SetTexCoord(0, 1, 0.26171875, 0.51171875);
 	else
 		self.TitleBar:SetAlpha(0.8);
 		self.Icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
 		self.Icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
 		self.Icon.frame:SetPoint("CENTER", -1, 2);
-		local tsunami = self.BottomTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
-		tsunami:SetAlpha(0.35);
-		local tsunami = self.TopTsunami1;
-		tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-		tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
-		tsunami:SetAlpha(0.3);
+		local bottomTsunami = self.BottomTsunami1;
+		bottomTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		bottomTsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
+		bottomTsunami:SetAlpha(0.35);
+		local topTsunami = self.TopTsunami1;
+		topTsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+		topTsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
+		topTsunami:SetAlpha(0.3);
 		self.Glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
 	end
 
@@ -1353,7 +1353,7 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 
 		local numCriteria = GetAchievementNumCriteria(id);
 		for i = 1, numCriteria do
-			local criteriaString, criteriaType, completed, quantity, reqQuantity, charName, flags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
+			local criteriaString, criteriaType, criteriaCompleted, quantity, reqQuantity, charName, criteriaFlags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
 	
 			if criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID then
 				metas = metas + 1;
@@ -1361,14 +1361,15 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 					numMetaRows = numMetaRows + 1;
 				end
 	
-			elseif bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
+			elseif bit.band(criteriaFlags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
 				progressBars = progressBars + 1;
 				numCriteriaRows = numCriteriaRows + 1;
 			else
 				textStrings = textStrings + 1;
 					
 				local stringWidth = 0;
-				if completed then
+				local maxCriteriaContentWidth;
+				if criteriaCompleted then
 					maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - ACHIEVEMENTUI_CRITERIACHECKWIDTH;
 					AchievementFrame.PlaceholderName:SetText(criteriaString);
 					stringWidth = min(AchievementFrame.PlaceholderName:GetStringWidth(),maxCriteriaContentWidth);
@@ -1652,17 +1653,17 @@ local achievementList = {};
 
 function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, id)
 	local ACHIEVEMENTMODE_PROGRESSIVE = 2;
-	local achievementID = id;
+	local baseAchievementID = id;
 
 	local achievementList = achievementList;
 	for i in next, achievementList do
 		achievementList[i] = nil;
 	end
 
-	tinsert(achievementList, 1, achievementID);
-	while GetPreviousAchievement(achievementID) do
-		tinsert(achievementList, 1, GetPreviousAchievement(achievementID));
-		achievementID = GetPreviousAchievement(achievementID);
+	tinsert(achievementList, 1, baseAchievementID);
+	while GetPreviousAchievement(baseAchievementID) do
+		tinsert(achievementList, 1, GetPreviousAchievement(baseAchievementID));
+		baseAchievementID = GetPreviousAchievement(baseAchievementID);
 	end
 
 	local i = 0;
@@ -1694,15 +1695,15 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 
 		miniAchievement.numCriteria = 0;
 		if ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) ~= ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) then
-			for i = 1, GetAchievementNumCriteria(achievementID) do
-				local criteriaString, criteriaType, completed = GetAchievementCriteriaInfo(achievementID, i);
-				if ( completed == false ) then
+			for criteriaIndex = 1, GetAchievementNumCriteria(achievementID) do
+				local criteriaString, criteriaType, criteriaCompleted = GetAchievementCriteriaInfo(achievementID, criteriaIndex);
+				if ( criteriaCompleted == false ) then
 					criteriaString = "|CFF808080 - " .. criteriaString .. "|r";
 				else
 					criteriaString = "|CFF00FF00 - " .. criteriaString .. "|r";
 				end
-				miniAchievement["criteria" .. i] = criteriaString;
-				miniAchievement.numCriteria = i;
+				miniAchievement["criteria" .. criteriaIndex] = criteriaString;
+				miniAchievement.numCriteria = criteriaIndex;
 			end
 		end
 		miniAchievement.name = achievementName;
@@ -1855,7 +1856,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				numMetaRows = numMetaRows + 1;
 			end
 
-			local id, achievementName, points, achievementCompleted, month, day, year, description, flags, iconpath = GetAchievementInfo(assetID);
+			local achievementId, achievementName, points, achievementCompleted, month, day, year, description, achFlags, iconpath = GetAchievementInfo(assetID);
 
 			if ( month ) then
 				metaCriteria.date = FormatShortDate(day, month, year)
@@ -1863,7 +1864,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				metaCriteria.date = nil;
 			end
 
-			metaCriteria.id = id;
+			metaCriteria.id = achievementId;
 			metaCriteria.Label:SetText(achievementName);
 			metaCriteria.Icon:SetTexture(iconpath);
 
@@ -2091,7 +2092,7 @@ function AchievementStatTemplateMixin:Init(elementData)
 		self.isHeader = true;
 		self.id = category;
 	else
-		local id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category);
+		local id, name = GetAchievementInfo(category);
 		
 		self.id = id;
 
@@ -2344,7 +2345,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			else
 				tAchievements = ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS;
 			end
-			for i=defaultAchievementCount, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
+			for j=defaultAchievementCount, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
 				achievementID = tAchievements[defaultAchievementCount];
 				if ( not achievementID ) then
 					break;
@@ -2845,7 +2846,7 @@ function AchivementComparisonStatMixin:Init(elementData)
 		self.isHeader = true;
 		self.id = id;
 	else
-		local id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfo(category);
+		local id, name = GetAchievementInfo(category);
 
 		self.id = id;
 
@@ -3171,7 +3172,8 @@ function AchievementFrame_FindDisplayedAchievement(baseAchievementID)
 			end
 		end
 	elseif ( completed ) then
-		local nextID, completed = GetNextAchievement(id);
+		local nextID;
+		nextID, completed = GetNextAchievement(id);
 		if ( nextID and completed ) then
 			local newID
 			while ( nextID and completed ) do
@@ -3347,7 +3349,7 @@ function AchievementFullSearchResultsButtonMixin:Init(elementData)
 	
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
-	path = categoryName;
+	local path = categoryName;
 	while ( parentCategoryID ~= -1 ) do
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;
@@ -3489,7 +3491,7 @@ function AchievementFrameSearch_InitButton(button, result)
 
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
-	path = categoryName;
+	local path = categoryName;
 	while (  parentCategoryID ~= -1 ) do
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;

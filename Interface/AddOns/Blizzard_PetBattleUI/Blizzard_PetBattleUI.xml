@@ -1372,7 +1372,7 @@
 						<BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
 						<BarColor r="0.45" g="0.45" b="1.0" />
 						<Scripts>
-							<OnLoad>
+							<OnLoad inherit="prepend">
 								self:SetBarTextPrefix(XP);
 							</OnLoad>
 							<OnEnter>

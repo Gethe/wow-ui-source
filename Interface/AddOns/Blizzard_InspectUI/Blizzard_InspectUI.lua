@@ -1,6 +1,8 @@
 
 INSPECTFRAME_SUBFRAMES = { "InspectPaperDollFrame", "InspectPVPFrame", "InspectGuildFrame" };
 
+INSPECTED_UNIT = nil;
+
 UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
 
 function InspectFrame_Show(unit)
@@ -31,11 +33,14 @@ function InspectFrame_OnLoad(self)
 	self:GetTitleText():SetFontObject("GameFontHighlight");
 end
 
-function InspectFrame_OnEvent(self, event, unit, ...)
+function InspectFrame_OnEvent(self, event, ...)
 
-	if(event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
-		ShowUIPanel(InspectFrame);
-		InspectFrame_UpdateTabs();
+	if(event == "INSPECT_READY") then
+		local unit = ...;
+		if (InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
+			ShowUIPanel(InspectFrame);
+			InspectFrame_UpdateTabs();
+		end
 	end
 
 

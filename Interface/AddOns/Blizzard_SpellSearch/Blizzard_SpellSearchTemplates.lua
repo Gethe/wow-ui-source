@@ -1,91 +1,102 @@
-TalentSearchPreviewButtonMixin = {}
+-------------------------------- Preview Result -------------------------------
 
-function TalentSearchPreviewButtonMixin:Init(elementData)
-	self.definitionID = elementData.definitionID;
-	self.definitionInfo = elementData.definitionInfo;
+SpellSearchPreviewResultMixin = {};
+
+function SpellSearchPreviewResultMixin:Init(elementData)
+	self.resultInfo = elementData.resultInfo;
+	self.resultID = self.resultInfo.resultID;
 	self.index = elementData.index;
 	self.owningFrame = elementData.owner;
+	self.resultType = self.resultInfo.resultType;
 
-	local name = TalentUtil.GetTalentName(self.definitionInfo.overrideName, self.definitionInfo.spellID);
-	local icon = TalentButtonUtil.CalculateIconTexture(self.definitionInfo, self.definitionInfo.spellID);
-
-	self.Name:SetText(name);
-	self.Icon:SetTexture(icon);
+	self.Name:SetText(self.resultInfo.name);
+	self.Icon:SetTexture(self.resultInfo.icon);
 	self.HighlightTexture:SetShown(false);
+
+	self.Icon:SetDesaturated(self.resultInfo.desaturate);
 end
 
-function TalentSearchPreviewButtonMixin:SetHighlighted(isHighlighted)
+function SpellSearchPreviewResultMixin:SetHighlighted(isHighlighted)
 	self.HighlightTexture:SetShown(isHighlighted);
 end
 
-function TalentSearchPreviewButtonMixin:GetIndex()
-	return self.index;
+function SpellSearchPreviewResultMixin:OnClick()
+	self.owningFrame:SelectPreviewResult(self.resultInfo);
 end
 
-function TalentSearchPreviewButtonMixin:GetDefinitionID()
-	return self.definitionID;
-end
-
-function TalentSearchPreviewButtonMixin:OnClick()
-	self.owningFrame:SelectPreviewResult(self:GetDefinitionID());
-end
-
-function TalentSearchPreviewButtonMixin:OnEnter()
+function SpellSearchPreviewResultMixin:OnEnter()
 	self.owningFrame:HighlightPreviewResult(self:GetIndex());
 end
 
-function TalentSearchPreviewButtonMixin:OnShow()
+function SpellSearchPreviewResultMixin:OnShow()
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
 end
 
+function SpellSearchPreviewResultMixin:GetIndex()
+	return self.index;
+end
 
-TalentSearchPreviewContainerMixin = {}
+function SpellSearchPreviewResultMixin:GetResultID()
+	return self.resultID;
+end
 
-function TalentSearchPreviewContainerMixin:OnLoad()
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("TalentSearchPreviewButtonTemplate", function(button, elementData)
+function SpellSearchPreviewResultMixin:GetResultType()
+	return self.resultType;
+end
+
+function SpellSearchPreviewResultMixin:GetResultInfo()
+	return self.resultInfo;
+end
+
+-------------------------------- Preview Results Container -------------------------------
+
+SpellSearchPreviewContainerMixin = {};
+
+function SpellSearchPreviewContainerMixin:OnLoad()
+	local view = CreateScrollBoxListLinearView(1,3,0,0,1);
+	view:SetElementInitializer("SpellSearchPreviewResultTemplate", function(button, elementData)
 		button:Init(elementData);
 	end);
-	view:SetPadding(1,3,0,0,1);
-
 	self.ScrollBox:SetView(view);
-	
+
 	self.DefaultResultButton:SetScript("OnClick", GenerateClosure(self.OnDefaultResultButtonClicked, self));
 	self.DefaultResultButton:SetScript("OnEnter", GenerateClosure(self.OnDefaultResultButtonEnter, self));
 end
 
-function TalentSearchPreviewContainerMixin:SetDefaultResultButton(buttonText, buttonCallback)
+function SpellSearchPreviewContainerMixin:OnShow()
+	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
+end
+
+function SpellSearchPreviewContainerMixin:SetDefaultResultButton(buttonText, buttonCallback)
 	self.defaultButtonCallback = buttonCallback;
 	self.DefaultResultButton.Text:SetText(buttonText);
+	self:UpdateResultsDisplay();
 end
 
-function TalentSearchPreviewContainerMixin:DisableDefaultResultButton()
+function SpellSearchPreviewContainerMixin:DisableDefaultResultButton()
 	self.defaultButtonCallback = nil;
 	self.DefaultResultButton.Text:SetText(nil);
+	self:UpdateResultsDisplay();
 end
 
-function TalentSearchPreviewContainerMixin:OnShow()
-	self.ScrollBox:ScrollToBegin();
-end
-
-function TalentSearchPreviewContainerMixin:SetPreviewResults(previewResults)
+function SpellSearchPreviewContainerMixin:SetPreviewResults(previewResults)
 	self:ClearResults();
 
 	if previewResults then
 		local dataProvider = CreateDataProvider();
 
-		local index = 0;
+		local displayedCount = 0;
 		local totalCount = 0;
-		for definitionID, definitionInfo in pairs(previewResults) do
+		for _, resultInfo in ipairs(previewResults) do
 			totalCount = totalCount + 1;
 
-			if totalCount <= self.maximumEntries then
-				index = index + 1;
-				dataProvider:Insert({definitionID=definitionID, definitionInfo=definitionInfo, index=index, owner=self});
+			if displayedCount < self.maximumEntries then
+				displayedCount = displayedCount + 1;
+				dataProvider:Insert({resultInfo = resultInfo, index = displayedCount, owner = self});
 			end
 		end
 	
-		if index > 0 then
+		if displayedCount > 0 then
 			self.ScrollBox:SetDataProvider(dataProvider);
 		end
 
@@ -100,7 +111,7 @@ function TalentSearchPreviewContainerMixin:SetPreviewResults(previewResults)
 	self:UpdateResultsDisplay();
 end
 
-function TalentSearchPreviewContainerMixin:UpdateResultsDisplay()
+function SpellSearchPreviewContainerMixin:UpdateResultsDisplay()
 	-- Have results, show results
 	if self.ScrollBox:HasDataProvider() then
 		self.DefaultResultButton:Hide();
@@ -128,7 +139,7 @@ function TalentSearchPreviewContainerMixin:UpdateResultsDisplay()
 	end
 end
 
-function TalentSearchPreviewContainerMixin:ClearResults()
+function SpellSearchPreviewContainerMixin:ClearResults()
 	if self.ScrollBox:HasDataProvider() then
 		self.ScrollBox:Flush();
 	end
@@ -140,7 +151,7 @@ function TalentSearchPreviewContainerMixin:ClearResults()
 	self:UpdateResultsDisplay();
 end
 
-function TalentSearchPreviewContainerMixin:HighlightPreviewResult(index)
+function SpellSearchPreviewContainerMixin:HighlightPreviewResult(index)
 	-- No results, highlight the default button if we're using it
 	if not self.ScrollBox:HasDataProvider() then
 		if self.defaultButtonCallback then
@@ -163,15 +174,15 @@ function TalentSearchPreviewContainerMixin:HighlightPreviewResult(index)
 	end);
 end
 
-function TalentSearchPreviewContainerMixin:CycleHighlightedResultUp()
+function SpellSearchPreviewContainerMixin:CycleHighlightedResultUp()
 	self:HighlightPreviewResult(self.highlightedIndex - 1);
 end
 
-function TalentSearchPreviewContainerMixin:CycleHighlightedResultDown()
+function SpellSearchPreviewContainerMixin:CycleHighlightedResultDown()
 	self:HighlightPreviewResult(self.highlightedIndex + 1);
 end
 
-function TalentSearchPreviewContainerMixin:SelectHighlightedResult()
+function SpellSearchPreviewContainerMixin:SelectHighlightedResult()
 	-- Not currently highlighting anything, nothing to select
 	if not self.highlightedIndex or self.highlightedIndex <= 0 then
 		return false;
@@ -188,7 +199,7 @@ function TalentSearchPreviewContainerMixin:SelectHighlightedResult()
 
 	self.ScrollBox:ForEachFrame(function(frame, elementData)
 		if frame:GetIndex() == self.highlightedIndex then
-			self:SelectPreviewResult(frame:GetDefinitionID());
+			self:SelectPreviewResult(frame:GetResultInfo());
 			return true;
 		end
 	end);
@@ -196,30 +207,28 @@ function TalentSearchPreviewContainerMixin:SelectHighlightedResult()
 	return false;
 end
 
-function TalentSearchPreviewContainerMixin:SelectPreviewResult(definitionID)
+function SpellSearchPreviewContainerMixin:SelectPreviewResult(resultInfo)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	self:GetTalentFrame():SetSelectedSearchResult(definitionID);
+	self:GetParent():OnPreviewSearchResultClicked(resultInfo);
 end
 
-function TalentSearchPreviewContainerMixin:OnDefaultResultButtonClicked()
+function SpellSearchPreviewContainerMixin:OnDefaultResultButtonClicked()
 	if self.defaultButtonCallback then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self.defaultButtonCallback();
 	end
 end
 
-function TalentSearchPreviewContainerMixin:OnDefaultResultButtonEnter()
+function SpellSearchPreviewContainerMixin:OnDefaultResultButtonEnter()
 	self:HighlightPreviewResult(1);
 end
 
-function TalentSearchPreviewContainerMixin:GetTalentFrame()
-	return self:GetParent();
-end
 
+-------------------------------- Search Box -------------------------------
 
-TalentSearchBoxMixin = {}
+SpellSearchBoxMixin = {};
 
-function TalentSearchBoxMixin:OnLoad()
+function SpellSearchBoxMixin:OnLoad()
 	SearchBoxTemplate_OnLoad(self);
 
 	self.HasStickyFocus = function()
@@ -237,7 +246,7 @@ function TalentSearchBoxMixin:OnLoad()
 	end);
 end
 
-function TalentSearchBoxMixin:OnTextChanged()
+function SpellSearchBoxMixin:OnTextChanged()
 	SearchBoxTemplate_OnTextChanged(self);
 
 	if self:HasFocus() then
@@ -245,7 +254,7 @@ function TalentSearchBoxMixin:OnTextChanged()
 	end
 end
 
-function TalentSearchBoxMixin:OnKeyDown(key)
+function SpellSearchBoxMixin:OnKeyDown(key)
 	if key == "UP" or key == "DOWN" then
 		local searchPreviewContainer = self:GetSearchPreviewContainer();
 		if not searchPreviewContainer then
@@ -260,7 +269,7 @@ function TalentSearchBoxMixin:OnKeyDown(key)
 	end
 end
 
-function TalentSearchBoxMixin:OnEnterPressed()
+function SpellSearchBoxMixin:OnEnterPressed()
 	-- Try having the Preview Container handle the input by selecting its currently highlighted result
 	local previewContainer = self:GetSearchPreviewContainer();
 	local isHandledByPreview = previewContainer and previewContainer:SelectHighlightedResult();
@@ -273,21 +282,21 @@ function TalentSearchBoxMixin:OnEnterPressed()
 	end
 end
 
-function TalentSearchBoxMixin:OnFocusLost()
+function SpellSearchBoxMixin:OnFocusLost()
 	SearchBoxTemplate_OnEditFocusLost(self);
 	self:HidePreviewResults();
 end
 
-function TalentSearchBoxMixin:OnFocusGained()
+function SpellSearchBoxMixin:OnFocusGained()
 	SearchBoxTemplate_OnEditFocusGained(self);
 	self:UpdatePreviewResults(self:EvaluateSearchText());
 end
 
-function TalentSearchBoxMixin:SetSearchText(searchText)
+function SpellSearchBoxMixin:SetSearchText(searchText)
 	self:SetText(searchText);
 end
 
-function TalentSearchBoxMixin:EvaluateSearchText()
+function SpellSearchBoxMixin:EvaluateSearchText()
 	local searchText = self:GetText();
 
 	if strlen(searchText) >= MIN_CHARACTER_SEARCH then
@@ -297,23 +306,23 @@ function TalentSearchBoxMixin:EvaluateSearchText()
 	end
 end
 
-function TalentSearchBoxMixin:UpdatePreviewResults(searchText)
-	self:GetTalentFrame():SetPreviewResultSearch(searchText);
+function SpellSearchBoxMixin:UpdatePreviewResults(searchText)
+	self:GetSearchFrame():SetPreviewResultSearch(searchText);
 end
 
-function TalentSearchBoxMixin:HidePreviewResults()
-	self:GetTalentFrame():HidePreviewResultSearch();
+function SpellSearchBoxMixin:HidePreviewResults()
+	self:GetSearchFrame():HidePreviewResultSearch();
 end
 
-function TalentSearchBoxMixin:UpdateFullResults(searchText)
-	self:GetTalentFrame():SetFullResultSearch(searchText);
+function SpellSearchBoxMixin:UpdateFullResults(searchText)
+	self:GetSearchFrame():SetFullResultSearch(searchText);
 end
 
-function TalentSearchBoxMixin:GetTalentFrame()
+function SpellSearchBoxMixin:GetSearchFrame()
 	return self:GetParent();
 end
 
-function TalentSearchBoxMixin:GetSearchPreviewContainer()
-	local talentFrame = self:GetTalentFrame();
-	return talentFrame and talentFrame:GetSearchPreviewContainer() or nil;
+function SpellSearchBoxMixin:GetSearchPreviewContainer()
+	local searchFrame = self:GetSearchFrame();
+	return searchFrame and searchFrame:GetSearchPreviewContainer() or nil;
 end

@@ -1019,7 +1019,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	end
 
 	-- Setup Creatures
-	local id, name, displayInfo, iconImage;
+	local id, name, displayInfo, iconImage, uiModelSceneID;
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do
 		id, name, description, displayInfo, iconImage, uiModelSceneID = EJ_GetCreatureInfo(i);
 
@@ -2289,6 +2289,7 @@ end
 function EJ_ContentTab_OnClick(self)
 	C_EncounterJournal.SetTab(self:GetID());
 	EJ_ContentTab_Select(self:GetID());
+	self:SetDisabledFontObject(GameFontHighlightLarge);
 end
 
 function EJ_ContentTab_Select(id)
@@ -2308,8 +2309,8 @@ function EJ_ContentTab_Select(id)
 	-- 	else
 	-- 		EncounterJournal_EnableTierDropDown();
 	-- 	end
-	isDungeon = id == EncounterJournal.dungeonsTab:GetID();
-	isRaid = id == EncounterJournal.raidsTab:GetID();
+	local isDungeon = id == EncounterJournal.dungeonsTab:GetID();
+	local isRaid = id == EncounterJournal.raidsTab:GetID();
 	if ( isDungeon or isRaid ) then
 		EncounterJournal_ListInstances();
 		--EncounterJournal_EnableTierDropDown();
@@ -2414,8 +2415,7 @@ end
 local CLASS_DROPDOWN = 1;
 function EncounterJournal_InitLootFilter(self, level)
 	local filterClassID, filterSpecID = EJ_GetLootFilter();
-	local sex = UnitSex("player");
-	local classDisplayName, classTag, classID;
+	local classDisplayName, _, classID;
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = nil;
 
@@ -2432,7 +2432,7 @@ function EncounterJournal_InitLootFilter(self, level)
 			if (i == 10 and GetClassicExpansionLevel() <= LE_EXPANSION_CATACLYSM) then -- We have an annoying gap between warlock and druid.
 				i = 11;
 			end
-			classDisplayName, classTag, classID = GetClassInfo(i);
+			classDisplayName, _, classID = GetClassInfo(i);
 			info.text = classDisplayName;
 			info.checked = (filterClassID == classID);
 			info.arg1 = classID;
@@ -2456,7 +2456,6 @@ function EncounterJournal_InitLootFilter(self, level)
 			local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
 			if classInfo then
 				classDisplayName = classInfo.className;
-				classTag = classInfo.classFile;
 			end
 		else
 			classDisplayName = ALL_CLASSES;

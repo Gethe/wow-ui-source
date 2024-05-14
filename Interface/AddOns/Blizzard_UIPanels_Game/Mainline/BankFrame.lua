@@ -487,7 +487,7 @@ function BankFrame_UpdateAnchoringForPanel()
 	local xOffset, yOffset = 0, accountBankSelected and 30 or 0;
 	BankFrame.Background:SetPoint("BOTTOMRIGHT", BankFrame, "BOTTOMRIGHT", xOffset, yOffset);
 
-	local xOffset, yOffset = accountBankSelected and -56 or -48, -33;
+	xOffset, yOffset = accountBankSelected and -56 or -48, -33;
 	BankItemSearchBox:SetPoint("TOPRIGHT", BankItemSearchBox:GetParent(), "TOPRIGHT", xOffset, yOffset);
 end
 

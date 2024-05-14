@@ -46,7 +46,7 @@ function ContributionRewardMixin:OnEnter()
 
 	ContributionBuffTooltip.Icon:SetTexture(spellInfo.iconID);
 	ContributionBuffTooltip.Name:SetText(spellInfo.name);
-	ContributionBuffTooltip.Description:SetText(GetSpellDescription(self.rewardID));
+	ContributionBuffTooltip.Description:SetText(C_Spell.GetSpellDescription(self.rewardID));
 
 	ContributionBuffTooltip.Footer:SetShown(not self.isEnabled);
 	if not self.isEnabled then

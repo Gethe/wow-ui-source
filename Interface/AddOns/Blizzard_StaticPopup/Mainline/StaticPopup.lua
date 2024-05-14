@@ -609,7 +609,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	StaticPopup_Resize(dialog, which);
 
 	local buttonPadding = 10;
-	local minButtonWidth = 120;
 	local totalButtonPadding = (#buttons - 1) * buttonPadding;
 	local totalButtonWidth = #buttons * maxButtonWidth;
 	local totalWidth;
@@ -1320,7 +1319,8 @@ function StaticPopupItemFrameMixin:RetrieveInfo(data)
 		data.texture = texture;
 		self.itemID = nil;
 	else
-		local itemID, _, _, _, texture = C_Item.GetItemInfoInstant(data.link);
+		local itemID, _;
+		itemID, _, _, _, texture = C_Item.GetItemInfoInstant(data.link);
 		data.name = RETRIEVING_ITEM_INFO;
 		data.color = {RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1};
 		data.texture = texture;

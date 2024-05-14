@@ -315,7 +315,6 @@ function BattlefieldMapMixin:OnUpdate(elapsed)
 			self.hover = 1;
 			self.hoverTime = 0;
 			self.hasBeenFaded = nil;
-			CURSOR_OLD_X, CURSOR_OLD_Y = GetCursorPosition();
 			-- Remember the oldAlpha so we can return to it later
 			if ( not self.oldAlpha ) then
 				self.oldAlpha = BattlefieldMapTab:GetAlpha();

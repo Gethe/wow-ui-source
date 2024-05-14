@@ -9,6 +9,7 @@ end
 
 -- We use this in the shared XML file
 AddonTooltip = nil;
+AddonDialog = nil;
 
 local UIDropDownMenu_Initialize = UIDropDownMenu_Initialize
 local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
@@ -288,6 +289,7 @@ function AddonList_InitButton(entry, addonIndex)
 	local loadable, reason = C_AddOns.IsAddOnLoadable(addonIndex, character);
 
 	local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
+	local enabled;
 	if ( not InGlue() ) then
 		enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > Enum.AddOnEnableState.None);
 	else

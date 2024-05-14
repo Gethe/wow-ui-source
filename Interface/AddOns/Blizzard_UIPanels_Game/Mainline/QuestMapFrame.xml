@@ -65,7 +65,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" virtual="true">
+	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
 		<Size x="289" y="22"/>
 		<KeyValues>
 			<KeyValue key="leftPadding" value="11" type="number"/>
@@ -89,7 +89,7 @@
 		</Frames>
 	</Button>
 
-	<Button name="CovenantCallingsHeaderTemplate" inherits="QuestLogHeaderTemplate" mixin="CovenantCallingsHeaderMixin" virtual="true">
+	<Button name="CovenantCallingsHeaderTemplate" inherits="QuestLogHeaderTemplate" registerForClicks="LeftButtonUp" mixin="CovenantCallingsHeaderMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="leftPadding" value="4" type="number"/>
 		</KeyValues>
@@ -246,7 +246,7 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="TopDetail" atlas="questlog-frame-filigree" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP" y="2"/>
+						<Anchor point="TOP" y="1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -382,15 +382,42 @@
 		</Layers>
 		<Frames>
 			<Frame name="QuestMapQuestOptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+			<Frame name="QuestLogSettingsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+			<Frame parentKey="SettingsButton" mixin="QuestLogSettingsButtonMixin">
+				<Size x="15" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="questlog-icon-setting" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture atlas="questlog-icon-setting" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Frame>
 			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" mixin="QuestLogScrollFrameMixin" inherits="ScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="scrollBarX" value="8" type="number"/>
-					<KeyValue key="scrollBarTopY" value="-4" type="number"/>
-					<KeyValue key="scrollBarBottomY" value="6" type="number"/>
+					<KeyValue key="scrollBarTopY" value="2" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="-4" type="number"/>
 				</KeyValues>
 				<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
 				<Anchors>
-					<Anchor point="TOPLEFT" y="-22"/>
+					<Anchor point="TOPLEFT" y="-26"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
@@ -400,6 +427,20 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoSearchResultsText" inherits="SystemFont_Med3" text="QUEST_LOG_NO_RESULTS" hidden="true">
+							<Size x="250"/>
+							<Anchors>
+								<Anchor point="TOP" y="-30"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="EmptyText" inherits="Game16Font" text="QUEST_LOG_NO_QUESTS" hidden="true">
+							<Size x="250"/>
+							<Anchors>
+								<Anchor point="CENTER" y="50"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Edge" atlas="questlog_line_scrollbar" useAtlasSize="true" alpha="0">
@@ -473,6 +514,15 @@
 					</Frame>
 				</ScrollChild>
 				<Frames>
+					<EditBox parentKey="SearchBox" mixin="QuestLogSearchBoxMixin" inherits="SearchBoxTemplate" letters="60">
+						<Size x="301" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="6" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged method="OnTextChanged"/>
+						</Scripts>
+					</EditBox>
 					<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
 						<Layers>
 							<Layer level="BORDER">
@@ -688,7 +738,7 @@
 							<Frame parentKey="RewardsFrame">
 								<Size x="307" y="275"/>
 								<Anchors>
-									<Anchor point="TOP"/>
+									<Anchor point="TOPLEFT"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BORDER" textureSubLevel="1">
@@ -727,10 +777,9 @@
 					<EventScrollFrame parentKey="ScrollFrame" name="QuestMapDetailsScrollFrame" inherits="ScrollFrameTemplate">
 						<Size x="298" y="430"/>
 						<KeyValues>
-							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
 							<KeyValue key="scrollBarX" value="13" type="number"/>
-							<KeyValue key="scrollBarTopY" value="-6" type="number"/>
-							<KeyValue key="scrollBarBottomY" value="5" type="number"/>
+							<KeyValue key="scrollBarTopY" value="20" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="-27" type="number"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-43"/>

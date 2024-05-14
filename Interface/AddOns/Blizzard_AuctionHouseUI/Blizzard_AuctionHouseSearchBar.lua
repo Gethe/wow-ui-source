@@ -92,20 +92,20 @@ local function AuctionHouseFilterDropDownMenu_Initialize(self)
 	info.notCheckable = true;
 	UIDropDownMenu_AddButton(info);
 
-	local info = UIDropDownMenu_CreateInfo();
+	info = UIDropDownMenu_CreateInfo();
 	info.customFrame = filterButton.LevelRangeFrame;
 	UIDropDownMenu_AddButton(info);
 
 	local filterGroups = C_AuctionHouse.GetFilterGroups();
 	for i, filterGroup in ipairs(filterGroups) do
-		local info = UIDropDownMenu_CreateInfo();
+		info = UIDropDownMenu_CreateInfo();
 		info.text = GetFilterCategoryName(filterGroup.category);
 		info.isTitle = true;
 		info.notCheckable = true;
 		UIDropDownMenu_AddButton(info);
 
 		for j, filter in ipairs(filterGroup.filters) do
-			local info = UIDropDownMenu_CreateInfo();
+			info = UIDropDownMenu_CreateInfo();
 			info.text = GetFilterName(filter);
 			info.value = nil;
 			info.isNotRadio = true;

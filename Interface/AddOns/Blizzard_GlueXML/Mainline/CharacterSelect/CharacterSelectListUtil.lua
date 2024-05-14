@@ -396,9 +396,9 @@ function CharacterSelectListUtil.UpdateCharacter(frame, characterID)
 
 	local elementData = frame:GetElementData();
 	if elementData.isGroup then
-		for _, frame in ipairs(frame.groupButtons) do
-			if frame:GetCharacterID() == characterID then
-				frame:SetData(updatedCharacterData);
+		for _, buttonFrame in ipairs(frame.groupButtons) do
+			if buttonFrame:GetCharacterID() == characterID then
+				buttonFrame:SetData(updatedCharacterData);
 				return;
 			end
 		end

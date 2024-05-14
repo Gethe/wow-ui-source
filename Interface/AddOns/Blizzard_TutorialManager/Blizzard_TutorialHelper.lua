@@ -169,7 +169,7 @@ function TutorialHelper:FindEmptyButton(optionalPreferredActionBar)
 		end
 	end
 
-	for i, actionBar in pairs(actionBars) do
+	for _, actionBar in pairs(actionBars) do
 		for i = 1, 12 do
 			local btn = _G[actionBar .. i];
 			if btn then

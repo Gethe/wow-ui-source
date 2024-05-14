@@ -107,7 +107,7 @@
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="3">
 				<Texture parentKey="Icon">
-					<Size x="48" y="48"/>
+					<Size x="49" y="49"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-4"/>
 					</Anchors>
@@ -123,8 +123,7 @@
 				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="IconBorder" atlas="services-ring" setAllPoints="true">
-					<Size x="59" y="60"/>
+				<Texture parentKey="IconBorder" atlas="tokens-frame-small" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>
@@ -134,32 +133,22 @@
 				<Texture parentKey="Glow" inherits="services-ring-large-glow" alpha="0.8" hidden="true">
 					<Size x="196" y="193"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Ring" file="Interface\Common\RingBorder" hidden="true">
-					<Size x="26" y="26"/>
+				<Texture parentKey="Ring" atlas="tokens-counterbg" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="1" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="3" y="-6"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Number" inherits="GameTooltipHeaderText" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="2"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="NumberBackground" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$Parent.Ring" relativePoint="CENTER"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -182,7 +171,7 @@
 			<Frame parentKey="GlowSpin" hidden="true">
 				<Size x="253" y="256"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Glow" x="0" y="0"/>
+					<Anchor point="CENTER" relativeKey="$parent.Glow" x="0" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -198,7 +187,7 @@
 			<Frame parentKey="GlowPulse" hidden="true">
 				<Size x="145" y="138"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+					<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -236,14 +225,6 @@
 								<MaskedTexture childKey="Icon"/>
 							</MaskedTextures>
 						</MaskTexture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="IconBorder" atlas="services-ring" alpha="0.15" alphaMode="ADD">
-							<Size x="48" y="48" />
-							<Anchors>
-								<Anchor point="TOP" />
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -693,12 +674,12 @@
 							<KeyValue key="minimumHeight" value="68" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+							<Anchor point="TOPRIGHT" x="-12" y="-2"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="CharacterList" name="CharacterSelectCharacterFrame" inherits="CharacterSelectListTemplate">
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.VASTokenContainer" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.VASTokenContainer" relativePoint="BOTTOMRIGHT" x="10" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ListToggle" relativePoint="TOPRIGHT" x="0" y="5"/>
 						</Anchors>
 					</Frame>
@@ -831,14 +812,14 @@
 							</Layer>
 							<Layer level="BORDER">
 								<Texture parentKey="Icon">
-									<Size x="64" y="64" />
+									<Size x="56" y="56"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="36" y="-36" />
+										<Anchor point="TOPLEFT" x="36" y="-35" />
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture parentKey="IconBorder" inherits="services-cover-ring">
+								<Texture parentKey="IconBorder" atlas="tokens-frame-regular" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="28" y="-30"/>
 									</Anchors>

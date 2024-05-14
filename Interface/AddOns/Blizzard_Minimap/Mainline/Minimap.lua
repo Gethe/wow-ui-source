@@ -607,7 +607,7 @@ function MiniMapTracking_FilterIsVisible(id)
 end
 
 function MiniMapTrackingDropDown_Initialize(self, level)
-	local name, texture, active, category, nested, numTracking;
+	local name, texture, active, category, nested, spellID, numTracking;
 	local count = C_Minimap.GetNumTrackingTypes();
 	local info;
 	local _, class = UnitClass("player");
@@ -712,8 +712,8 @@ function MiniMapTrackingDropDown_Initialize(self, level)
 		return a.arg1 < b.arg1;
 	end);
 
-	for _, info in ipairs(trackingInfos) do
-		UIDropDownMenu_AddButton(info, level);
+	for _, trackingInfo in ipairs(trackingInfos) do
+		UIDropDownMenu_AddButton(trackingInfo, level);
 	end
 
 end
@@ -742,7 +742,7 @@ local GarrisonLandingPageEvents = {
 };
 
 function ExpansionLandingPageMinimapButtonMixin:OnLoad()
-	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.RefreshButton, self);
+	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.OnOverlayChanged, self);
 
 	self.pulseLocks = {};
 
@@ -762,7 +762,11 @@ function ExpansionLandingPageMinimapButtonMixin:IsInMajorFactionRenownMode()
 	return self.mode == ExpansionLandingPageMode.MajorFactionRenown;
 end
 
-function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
+function ExpansionLandingPageMinimapButtonMixin:IsExpansionOverlayMode()
+	return self.mode == ExpansionLandingPageMode.ExpansionOverlay;
+end
+
+function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 	local previousMode = self.mode;
 	local wasInGarrisonMode = self:IsInGarrisonMode();
 	if C_GameModeManager.IsFeatureEnabled(Enum.GameModeFeatureSetting.LandingPageFactionID) then
@@ -770,6 +774,8 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
 		self.majorFactionID = C_GameModeManager.GetFeatureSetting(Enum.GameModeFeatureSetting.LandingPageFactionID);
 	elseif ExpansionLandingPage:IsOverlayApplied() then
 		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
+	else
+		self.mode = nil;
 	end
 
 	if wasInGarrisonMode and not self:IsInGarrisonMode() then
@@ -780,10 +786,13 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton()
 		FrameUtil.UnregisterFrameForEvents(self, GarrisonLandingPageEvents);
 	end
 
-	if self.mode ~= previousMode then
+	if self.mode ~= previousMode or forceUpdateIcon == true then
 		self:Hide();
-		self:UpdateIcon();
-		self:Show();
+
+		if self.mode then
+			self:UpdateIcon();
+			self:Show();
+		end
 	end
 end
 
@@ -801,11 +810,22 @@ function ExpansionLandingPageMinimapButtonMixin:OnHide()
 	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerAlert", self);
 end
 
-
 function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	if self:IsInGarrisonMode() and tContains(GarrisonLandingPageEvents, event) then
 		self:HandleGarrisonEvent(event, ...);
 	end
+end
+
+function ExpansionLandingPageMinimapButtonMixin:OnOverlayChanged()
+	local forceUpdateIcon = false;
+
+	local expansionLandingPageType = ExpansionLandingPage:GetLandingPageType();
+	if self.expansionLandingPageType ~= expansionLandingPageType then
+		self.expansionLandingPageType = expansionLandingPageType;
+		forceUpdateIcon = true;
+	end
+
+	self:RefreshButton(forceUpdateIcon);
 end
 
 local function SetLandingPageIconFromAtlases(self, up, down, highlight, glow, useDefaultButtonSize)
@@ -856,7 +876,7 @@ function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
 	elseif self:IsInGarrisonMode() then
 		GarrisonLandingPage_Toggle();
 		GarrisonMinimap_HideHelpTip(self);
-	else
+	elseif self:IsExpansionOverlayMode() then
 		ToggleExpansionLandingPage();
 	end
 end

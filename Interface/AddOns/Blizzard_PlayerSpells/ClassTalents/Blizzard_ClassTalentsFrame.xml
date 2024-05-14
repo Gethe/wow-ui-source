@@ -213,7 +213,7 @@
 				</Anchors>
 			</Frame>
 
-			<EditBox parentKey="SearchBox" inherits="TalentSearchBoxTemplate" hidden="false">
+			<EditBox parentKey="SearchBox" inherits="SpellSearchBoxTemplate" hidden="false">
 				<Size x="184" y="30"/>
 				<Anchors>
 					<!-- Re-anchored in code -->
@@ -221,7 +221,7 @@
 				</Anchors>
 			</EditBox>
 
-			<Frame parentKey="SearchPreviewContainer" inherits="TalentSearchPreviewContainerTemplate" hidden="true" frameLevel="2000">
+			<Frame parentKey="SearchPreviewContainer" inherits="SpellSearchPreviewContainerTemplate" hidden="true" frameLevel="2000">
 				<Size x="176"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMRIGHT" x="-4" y="2"/>

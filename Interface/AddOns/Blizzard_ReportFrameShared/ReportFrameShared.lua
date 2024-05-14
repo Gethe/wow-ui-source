@@ -1,7 +1,6 @@
 SharedReportFrameMixin = { };
 
 function SharedReportFrameMixin:OnLoad()
-	self:SetParent(GetAppropriateTopLevelParent());
 	NineSliceUtil.ApplyLayoutByName(self.Border, "Dialog");
 	self.minorCategoryFlags = CreateFromMixins(FlagsMixin);
 	self.minorCategoryFlags:OnLoad();

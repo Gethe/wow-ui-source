@@ -418,15 +418,15 @@ local function Register()
 		initializer:SetParentInitializer(masterInitializer);
 
 		-- Effects Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_SFXVolume", options, FX_VOLUME, OPTION_TOOLTIP_FX_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_SFXVolume", options, FX_VOLUME, OPTION_TOOLTIP_FX_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 
 		-- Ambience Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", options, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", options, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 		
 		-- Dialog Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", options, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", options, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 	end
 	
@@ -435,11 +435,13 @@ local function Register()
 		local musicSetting, musicInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
 
 		-- Loop Music
-		local loopingSetting, loopingInitializer = Settings.SetupCVarCheckBox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
-		local function IsModifiable()
-			return musicSetting:GetValue();
+		do
+			local loopingSetting, loopingInitializer = Settings.SetupCVarCheckBox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
+			local function IsModifiable()
+				return musicSetting:GetValue();
+			end
+			loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 		end
-		loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 		
 		-- Pet Battle Music
 		if C_CVar.GetCVar("Sound_EnablePetBattleMusic") then
@@ -456,18 +458,22 @@ local function Register()
 		local soundFXSetting, soundFXInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableSFX", ENABLE_SOUNDFX, OPTION_TOOLTIP_ENABLE_SOUNDFX);
 
 		-- Pet Sounds
-		local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
-		local function IsModifiable()
-			return soundFXSetting:GetValue();
+		do
+			local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
+			local function IsModifiable()
+				return soundFXSetting:GetValue();
+			end
+			petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 		end
-		petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
-			
-		-- Emote Sounds
-		local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
-		local function IsModifiable()
-			return soundFXSetting:GetValue();
+		
+		do
+			-- Emote Sounds
+			local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
+			local function IsModifiable()
+				return soundFXSetting:GetValue();
+			end
+			emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 		end
-		emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 	end
 
 	-- Dialog

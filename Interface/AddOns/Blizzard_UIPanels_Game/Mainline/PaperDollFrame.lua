@@ -914,9 +914,7 @@ function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 		offhandSpeed = format("%.2F", offhandSpeed);
 	end
 	if ( offhandSpeed ) then
-		displaySpeed =  BreakUpLargeNumbers(displaySpeed).." / ".. offhandSpeed;
-	else
-		displaySpeed =  BreakUpLargeNumbers(displaySpeed);
+		displaySpeed =  displaySpeed.." / ".. offhandSpeed
 	end
 	PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed);
 
@@ -1020,7 +1018,6 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	local minCrit = GetSpellCritChance(holySchool);
 	statFrame.spellCrit = {};
 	statFrame.spellCrit[holySchool] = minCrit;
-	local spellCrit;
 	for i=(holySchool+1), MAX_SPELL_SCHOOLS do
 		spellCrit = GetSpellCritChance(i);
 		minCrit = min(minCrit, spellCrit);
@@ -1511,6 +1508,8 @@ function PaperDollFrame_UpdateCorruptedItemGlows(glow)
 end
 
 function PaperDollItemSlotButton_OnLoad(self)
+	EnchantingItemButtonAnimMixin.OnLoad(self);
+	
 	self:RegisterForDrag("LeftButton");
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	
@@ -1546,6 +1545,11 @@ function PaperDollItemSlotButton_OnLoad(self)
 			popoutButton:SetPoint("LEFT", self, "RIGHT", -8, 0);
 		end
 	end
+
+	local function GetItemLocationCallback()
+		return ItemLocation:CreateFromEquipmentSlot(self:GetID());
+	end
+	EnchantingItemButtonAnimMixin.SetItemLocationCallback(self, GetItemLocationCallback);
 end
 
 function PaperDollItemSlotButton_GetSlotName(self)
@@ -1565,8 +1569,10 @@ local PAPERDOLL_FRAME_EVENTS = {
 };
 
 function PaperDollItemSlotButton_OnShow(self, isBag)
-	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+	EnchantingItemButtonAnimMixin.OnShow(self);
 
+	FrameUtil.RegisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
+	
 	if ( not isBag ) then
 		self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	end
@@ -1574,12 +1580,16 @@ function PaperDollItemSlotButton_OnShow(self, isBag)
 end
 
 function PaperDollItemSlotButton_OnHide(self)
+	EnchantingItemButtonAnimMixin.OnHide(self);
+
 	FrameUtil.UnregisterFrameForEvents(self, PAPERDOLL_FRAME_EVENTS);
 
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 end
 
 function PaperDollItemSlotButton_OnEvent(self, event, ...)
+	EnchantingItemButtonAnimMixin.OnEvent(self, event, ...);
+
 	if ( event == "PLAYER_EQUIPMENT_CHANGED" ) then
 		local equipmentSlot, hasCurrent = ...;
 		if ( self:GetID() == equipmentSlot ) then
@@ -1714,7 +1724,7 @@ function PaperDollItemSlotButton_Update(self)
 			CooldownFrame_Set(cooldown, start, duration, enable);
 		end
 	else
-		local textureName = self.backgroundTextureName;
+		textureName = self.backgroundTextureName;
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then
 			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
 		end
@@ -1781,12 +1791,21 @@ function PaperDollItemSlotButton_OnEnter(self)
 			GameTooltip:Show();
 		end
 	end
+
+	local itemLocation = ItemLocation:CreateFromEquipmentSlot(self:GetID());
+	if itemLocation and itemLocation:IsValid() then
+		local itemLocationValid = itemLocation:IsValid();
+		SetCursorHoveredItem(itemLocation);
+	end
+
 	CursorUpdate(self);
 end
 
 function PaperDollItemSlotButton_OnLeave(self)
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
 	GameTooltip:Hide();
+	
+	ClearCursorHoveredItem();
 	ResetCursor();
 end
 
@@ -2720,8 +2739,8 @@ function PaperDollFrame_SetSidebar(self, index)
 	local frame = GetPaperDollSideBarFrame(index);
 	if (not frame:IsShown()) then
 		for i = 1, #PAPERDOLL_SIDEBARS do
-			local frame = GetPaperDollSideBarFrame(i);
-			frame:Hide();
+			local barFrame = GetPaperDollSideBarFrame(i);
+			barFrame:Hide();
 		end
 		frame:Show();
 		PaperDollFrame.currentSideBar = frame;
@@ -2749,12 +2768,12 @@ local inventoryFixupVersionToTutorialIndex =
 };
 
 local function CheckFixupStates(fixupVersion)
-	local tutorialIndices = fixupVersion and inventoryFixupVersionToTutorialIndex[fixupVersion];
+	local fixupTutorialIndices = fixupVersion and inventoryFixupVersionToTutorialIndex[fixupVersion];
 
 	-- Set the appropriate index to check, this is how the client knows the user's
 	-- inventory was fixed up at some point in the past, but hasn't seen the tutorial yet.
-	if tutorialIndices and tutorialIndices.checkIndex then
-		SetCVarBitfield("closedInfoFrames", tutorialIndices.checkIndex, true);
+	if fixupTutorialIndices and fixupTutorialIndices.checkIndex then
+		SetCVarBitfield("closedInfoFrames", fixupTutorialIndices.checkIndex, true);
 	end
 
 	-- Return the any matching tutorial that the user hasn't seen

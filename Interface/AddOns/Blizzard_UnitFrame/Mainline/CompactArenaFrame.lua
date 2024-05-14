@@ -576,6 +576,7 @@ function StealthedArenaUnitFrameMixin:GetUnitClassInfo()
 	if self.unitFrame and self.unitFrame.unitIndex then
 		local specID, gender = GetArenaOpponentSpec(self.unitFrame.unitIndex);
 		if specID and specID > 0 then
+			local _;
 			_, unitClassInfo.specName, _, _, unitClassInfo.role, unitClassInfo.class, unitClassInfo.className = GetSpecializationInfoByID(specID, gender);
 		end
 	end

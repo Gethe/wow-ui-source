@@ -3,151 +3,130 @@ local NotOnActionBarSearchText = TALENT_FRAME_SEARCH_NOT_ON_ACTIONBAR;
 ClassTalentSearchMixin = {};
 
 function ClassTalentSearchMixin:InitializeSearch()
-	if self.isSearchInitialized then
-		return;
-	end
+	local searchSources = {};
+
+	-- Setup search source for our search controller to use
+	local allNodeInfosGetter = GenerateClosure(self.GetAllSearchableNodeInfos, self);
+	local definitionInfoGetter = GenerateClosure(self.GetDefinitionInfoForEntry, self);
+	local subTreeInfoGetter = GenerateClosure(self.GetSubTreeInfoForEntry, self);
+	searchSources[SpellSearchUtil.SourceType.Trait] = CreateAndInitFromMixin(TraitSearchSourceMixin, allNodeInfosGetter, definitionInfoGetter, subTreeInfoGetter);
+
+	-- Initialize search controller
+	self.searchController = CreateAndInitFromMixin(SpellSearchControllerMixin, searchSources);
 
 	self.isInspecting = self:IsInspecting();
-
-	self.textSearch = CreateAndInitFromMixin(ClassTalentTextSearchMixin, self, true);
-	self.actionBarSearch = CreateAndInitFromMixin(ClassTalentActionBarSearchMixin, self, false);
-
-	self.searchMixins = { self.textSearch, self.actionBarSearch	};
-
-	self.isSearchInitialized = true;
 
 	self:UpdateEnabledSearchTypes();
 end
 
+function ClassTalentSearchMixin:IsSearchInitialized()
+	return self.searchController and self.searchController:IsInitialized();
+end
+
 function ClassTalentSearchMixin:UpdateEnabledSearchTypes()
 	-- Avoid reacting if search hasn't initialized yet
-	if not self.isSearchInitialized then
+	if not self:IsSearchInitialized() then
 		return;
 	end
 
 	local wasInspecting = self.isInspecting;
 	self.isInspecting = self:IsInspecting();
 
-	local isActionBarSearchEnabled = not self.isInspecting and not self:HasAnyPendingChanges();
-	local wasActionBarSearchEnabled = self.actionBarSearch:GetIsEnabled();
-	local wasActionBarSearchActive = self.actionBarSearch:GetIsActive();
+	local disableActionBarSearch = self.isInspecting;
+	local forceClearSearch = wasInspecting ~= self.isInspecting;
+	self.searchController:SetFilterDisabled(SpellSearchUtil.FilterType.ActionBar, disableActionBarSearch, forceClearSearch);
 
-	if isActionBarSearchEnabled ~= wasActionBarSearchEnabled then
-		self.actionBarSearch:SetEnabled(isActionBarSearchEnabled);
-
-		if self.actionBarSearch:GetIsEnabled() then
-			self.SearchPreviewContainer:SetDefaultResultButton(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self));
-		else
-			self.SearchPreviewContainer:DisableDefaultResultButton();
-		end
-	end
-
-	if (wasInspecting ~= self.isInspecting) or (isActionBarSearchEnabled ~= wasActionBarSearchEnabled and wasActionBarSearchActive) then
-		self:ClearActiveSearchState();
+	if disableActionBarSearch then
+		self.SearchPreviewContainer:DisableDefaultResultButton();
+	else
+		self.SearchPreviewContainer:SetDefaultResultButton(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self));
 	end
 end
 
 function ClassTalentSearchMixin:SetPreviewResultSearch(previewSearchText)
-	-- Overrides TalentFrameBaseMixin.
+	if not self:IsSearchInitialized() then
+		return;
+	end
 
 	if not previewSearchText then
-		if self.actionBarSearch:GetIsEnabled() then
-			-- Action Bar search enabled, so wil show default action bar preview button
+		if self.searchController:IsFilterEnabled(SpellSearchUtil.FilterType.ActionBar) then
+			-- Action Bar search enabled, so will show default action bar preview button
 			self.SearchPreviewContainer:SetPreviewResults(nil);
 			self.SearchPreviewContainer:Show();
 		else
 			-- Action Bar search disabled, so not showing default action bar preview button
-			self.SearchPreviewContainer:Hide();
-			self.SearchPreviewContainer:ClearResults();
+			self:HidePreviewResultSearch();
 		end
 		return;
 	end
 
-	local previewResults = {};
-	local lowerPreviewSearchText = previewSearchText:lower();
-	local anyResults = false;
-
-	for talentButton in self:EnumerateAllTalentButtons() do
-		local nodeInfo = talentButton:GetNodeInfo();
-		-- Evaluating every entryID as some buttons have multiple choice talents
-		if nodeInfo and nodeInfo.entryIDs then
-			for i, entryID in ipairs(nodeInfo.entryIDs) do
-				local definitionID = self:GetAndCacheEntryInfo(entryID).definitionID;
-				if definitionID then
-					local definitionInfo = self:GetAndCacheDefinitionInfo(definitionID);
-					if definitionInfo then
-						local lowerTalentName = TalentUtil.GetTalentNameFromInfo(definitionInfo):lower();
-						if lowerTalentName:find(lowerPreviewSearchText) then
-							anyResults = true;
-							previewResults[definitionID] = definitionInfo;
-						end
-					end
-				end
-			end
-		end
-	end
-
-	if not anyResults then
-		self.SearchPreviewContainer:Hide();
-		self.SearchPreviewContainer:ClearResults();
-	else
+	local previewResults = self.searchController:RunFilterOnce(SpellSearchUtil.FilterType.Name, nil, previewSearchText);
+	if previewResults and #previewResults > 0 then
 		self.SearchPreviewContainer:SetPreviewResults(previewResults);
 		self.SearchPreviewContainer:Show();
+	else
+		self:HidePreviewResultSearch();
 	end
 end
 
 function ClassTalentSearchMixin:HidePreviewResultSearch()
-	-- Overrides TalentFrameBaseMixin.
-
 	self.SearchPreviewContainer:Hide();
 	self.SearchPreviewContainer:ClearResults();
 end
 
-function ClassTalentSearchMixin:SetFullResultSearch(searchText)
-	-- Overrides TalentFrameBaseMixin.
-	
-	if self.actionBarSearch:GetIsEnabled() and searchText and searchText:lower() == NotOnActionBarSearchText:lower() then
-		self:ActivateSearchMixin(self.actionBarSearch, true);
-	else
-		self:ActivateSearchMixin(self.textSearch, searchText);
+function ClassTalentSearchMixin:OnPreviewSearchResultClicked(resultInfo)
+	if not self:IsSearchInitialized() then
+		return;
 	end
-end
 
-function ClassTalentSearchMixin:SetSelectedSearchResult(definitionID)
-	-- Overrides TalentFrameBaseMixin.
+	if not resultInfo or not resultInfo.name then
+		return;
+	end
 
-	local definitionInfo = self:GetAndCacheDefinitionInfo(definitionID);
-	local talentName = TalentUtil.GetTalentNameFromInfo(definitionInfo);
 	-- Override the search box text to the selected autocomplete talent's name
 	self.SearchBox:ClearFocus();
-	self.SearchBox:SetText(talentName);
+	self.SearchBox:SetText(resultInfo.name);
 	self.SearchPreviewContainer:Hide();
 
 	-- Show the results of searching for that talent name
-	self:SetFullResultSearch(talentName);
+	self:SetFullResultSearch(resultInfo.name);
+end
+
+function ClassTalentSearchMixin:SetFullResultSearch(searchText)
+	if not self:IsSearchInitialized() then
+		return;
+	end
+
+	if self.searchController:IsFilterEnabled(SpellSearchUtil.FilterType.ActionBar) and searchText and SpellSearchUtil.DoStringsMatch(searchText, NotOnActionBarSearchText) then
+		self:ActivateSearchFilter(SpellSearchUtil.FilterType.ActionBar);
+	else
+		self:ActivateSearchFilter(SpellSearchUtil.FilterType.Text, searchText);
+	end
 end
 
 function ClassTalentSearchMixin:UpdateFullSearchResults()
-	local activeSearchMixin = self:GetActiveSearchMixin();
-	if activeSearchMixin then
-		activeSearchMixin:UpdateSearchResults();
+	if not self:IsSearchInitialized() then
+		return;
 	end
+
+	self.searchController:UpdateActiveSearchResults();
+	self:DisplayFullSearchResults();
 end
 
 function ClassTalentSearchMixin:ClearActiveSearchState()
-	local activeSearchMixin = self:GetActiveSearchMixin();
-	if activeSearchMixin then
-		activeSearchMixin:ClearSearchResults();
+	if not self:IsSearchInitialized() then
+		return;
 	end
 
-	self.SearchPreviewContainer:Hide();
-	self.SearchPreviewContainer:ClearResults();
-	self.SearchBox:ClearFocus();
-	self.SearchBox:SetText("");
+	self.searchController:ClearActiveSearchResults();
 end
 
 function ClassTalentSearchMixin:OnNotOnActionBarButtonClicked()
-	if not self.actionBarSearch:GetIsEnabled() then
+	if not self:IsSearchInitialized() then
+		return;
+	end
+
+	if not self.searchController:IsFilterEnabled(SpellSearchUtil.FilterType.ActionBar) then
 		return;
 	end
 
@@ -155,264 +134,43 @@ function ClassTalentSearchMixin:OnNotOnActionBarButtonClicked()
 	self.SearchBox:SetText(NotOnActionBarSearchText);
 	self.SearchPreviewContainer:Hide();
 
-	self:ActivateSearchMixin(self.actionBarSearch, true);
+	self:ActivateSearchFilter(SpellSearchUtil.FilterType.ActionBar);
+end
+
+function ClassTalentSearchMixin:ActivateSearchFilter(filterType, ...)
+	self.searchController:ActivateSearchFilter(filterType, ...);
+	self:DisplayFullSearchResults();
+end
+
+function ClassTalentSearchMixin:DisplayFullSearchResults()
+	for talentButton in self:EnumerateAllTalentButtons() do
+		local nodeID = talentButton:GetNodeID();
+		local entryID = talentButton:GetEntryID();
+		local matchType = self:GetSearchMatchTypeForEntry(nodeID, entryID);
+		talentButton:SetSearchMatchType(matchType);
+	end
 end
 
 function ClassTalentSearchMixin:GetSearchMatchTypeForEntry(nodeID, entryID)
-	local activeSearchMixin = self:GetActiveSearchMixin();
-	if activeSearchMixin then
-		return activeSearchMixin:GetSearchMatchTypeForEntry(nodeID, entryID);
+	if not self:IsSearchInitialized() then
+		return nil;
 	end
 
-	return nil;
-end
-
-function ClassTalentSearchMixin:GetActiveSearchMixin()
-	for i, mixin in ipairs(self.searchMixins) do
-		if mixin:GetIsActive() then
-			return mixin;
-		end
-	end
-	return nil;
-end
-
-function ClassTalentSearchMixin:ActivateSearchMixin(searchMixin, ...)
-	-- Clear previously active mixin
-	local activeSearchMixin = self:GetActiveSearchMixin();
-	if activeSearchMixin and activeSearchMixin ~= searchMixin then
-		activeSearchMixin:ClearSearchResults();
-	end
-
-	-- Set new mixin
-	searchMixin:SetSearch(...);
+	return self.searchController:GetMatchTypeForSourceTypeEntry(SpellSearchUtil.SourceType.Trait, nodeID, entryID);
 end
 
 function ClassTalentSearchMixin:GetSearchPreviewContainer()
-	-- Overrides TalentFrameBaseMixin.
-
 	return self.SearchPreviewContainer;
 end
 
-
--- Search Mixins for different unique talent search types
--- These could easily be genericized and reused in the future if another area wants to use the same search types
-ClassTalentSearchTypeBaseMixin = {}
-
-function ClassTalentSearchTypeBaseMixin:Init(talentFrame, enabled)
-	self.talentFrame = talentFrame;
-	self.enabled = enabled;
-end
-
-function ClassTalentSearchTypeBaseMixin:SetEnabled(enabled)
-	self.enabled = enabled;
-	if not self.enabled and self.isActive then
-		self:ClearSearchResults();
-	end
-end
-
-function ClassTalentSearchTypeBaseMixin:GetIsEnabled()
-	return self.enabled;
-end
-
-function ClassTalentSearchTypeBaseMixin:SetSearch(...)
-	if not self:GetIsEnabled() then
-		return;
-	end
-
-	self.isActive = true;
-	self:UpdateSearchResults();
-end
-
-function ClassTalentSearchTypeBaseMixin:ClearSearchResults()
-	self.isActive = false;
-
+function ClassTalentSearchMixin:GetAllSearchableNodeInfos()
+	local nodeInfoMap = {};
 	for talentButton in self:EnumerateAllTalentButtons() do
-		talentButton:SetSearchMatchType(nil);
-	end
-end
-
-function ClassTalentSearchTypeBaseMixin:GetIsActive()
-	return self.isActive;
-end
-
-function ClassTalentSearchTypeBaseMixin:GetIsActiveAndEnabled()
-	return self:GetIsActive() and self:GetIsEnabled();
-end
-
-function ClassTalentSearchTypeBaseMixin:GetTalentFrame()
-	return self.talentFrame;
-end
-
-function ClassTalentSearchTypeBaseMixin:EnumerateAllTalentButtons()
-	return self:GetTalentFrame():EnumerateAllTalentButtons();
-end
-
-function ClassTalentSearchTypeBaseMixin:UpdateSearchResults()
-	-- Implement in your derived mixin.
-end
-
-function ClassTalentSearchTypeBaseMixin:GetSearchMatchTypeForEntry(nodeID, entryID)
-	-- Implement in your derived mixin.
-end
-
-
--- Search mixin for basic text-based talent searching
-ClassTalentTextSearchMixin = CreateFromMixins(ClassTalentSearchTypeBaseMixin);
-
-function ClassTalentTextSearchMixin:SetSearch(...)
-	-- Overrides ClassTalentSearchTypeBaseMixin.
-	
-	local searchText = ...;
-
-	local newSearch = searchText and searchText:lower() or nil;
-	if self.searchString == newSearch then
-		return;
-	end
-
-	self.searchString = newSearch;
-
-	ClassTalentSearchTypeBaseMixin.SetSearch(self, ...);
-end
-
-function ClassTalentTextSearchMixin:ClearSearchResults()
-	-- Overrides ClassTalentSearchTypeBaseMixin.
-
-	self.searchString = nil;
-
-	ClassTalentSearchTypeBaseMixin.ClearSearchResults(self);
-end
-
-function ClassTalentTextSearchMixin:UpdateSearchResults()
-	-- Overrides ClassTalentSearchTypeBaseMixin.
-
-	if not self:GetIsActiveAndEnabled() then
-		return;
-	end
-
-	self.searchStringExactMatchDescription = nil;
-
-	if not self.searchString then
-		self:ClearSearchResults();
-		return;
-	end
-
-	-- Get the description of any "Exact Match" talent so it can be used to find Related Match talents
-	self.searchStringExactMatchDescription = self:GetExactSearchMatchDescription();
-
-	-- Go through and evaluate all buttons
-	for talentButton in self:EnumerateAllTalentButtons() do
+		local nodeID = talentButton:GetNodeID();
 		local nodeInfo = talentButton:GetNodeInfo();
-		local bestMatchTypeForButton = nil;
-
-		if nodeInfo and nodeInfo.entryIDs then
-			-- Evaluating every entryID as some buttons have multiple choice talents
-			-- We want to mark those buttons with the "best" match type out of those entries
-			for i, entryID in ipairs(nodeInfo.entryIDs) do
-				local matchTypeForEntry = self:GetSearchMatchTypeForEntry(nodeInfo.ID, entryID);
-
-				if matchTypeForEntry and (not bestMatchTypeForButton or matchTypeForEntry > bestMatchTypeForButton) then
-					bestMatchTypeForButton = matchTypeForEntry;
-				end
-			end
-		end
-
-		talentButton:SetSearchMatchType(bestMatchTypeForButton);
-	end
-
-	ClassTalentSearchTypeBaseMixin.UpdateSearchResults(self);
-end
-
-function ClassTalentTextSearchMixin:GetSearchMatchTypeForEntry(nodeID, entryID)
-	-- Overrides ClassTalentSearchTypeBaseMixin.
-
-	if not self:GetIsActiveAndEnabled() or not self.searchString then
-		return nil;
-	end
-
-	local exactMatchDescription = self.searchStringExactMatchDescription;
-	local definitionInfo = self:GetTalentFrame():GetDefinitionInfoForEntry(entryID);
-	if definitionInfo then
-		local lowerTalentName = TalentUtil.GetTalentNameFromInfo(definitionInfo):lower();
-		local lowerTalentDescription = TalentUtil.GetTalentDescriptionFromInfo(definitionInfo):lower();
-		local lowerTalentReplacesName = TalentUtil.GetReplacesSpellNameFromInfo(definitionInfo):lower();
-
-		-- Exact Match -> search matches name exactly
-		if lowerTalentName == self.searchString then
-			return TalentButtonUtil.SearchMatchType.ExactMatch;
-		-- Match -> search is in name, description, or name of replaced spell
-		elseif lowerTalentName:find(self.searchString) or lowerTalentDescription:find(self.searchString) or lowerTalentReplacesName:find(self.searchString) then
-			return TalentButtonUtil.SearchMatchType.Match;
-		-- Related Match -> name is in exact match description
-		elseif exactMatchDescription and exactMatchDescription:find(lowerTalentName) then
-			return TalentButtonUtil.SearchMatchType.RelatedMatch;
-		-- No Match
-		else
-			return nil;
-		end
-	else
-		return nil;
-	end
-end
-
-function ClassTalentTextSearchMixin:GetExactSearchMatchDescription()
-	local lowerExactMatchDescription = nil;
-	-- Find any talent whose name matches the search string exactly and, if found, return its description
-	for talentButton in self:EnumerateAllTalentButtons() do
-		local nodeInfo = talentButton:GetNodeInfo();
-		if nodeInfo and nodeInfo.entryIDs then
-			-- Evaluating every entryID as some buttons have multiple choice talents
-			for i, entryID in ipairs(nodeInfo.entryIDs) do
-				local definitionInfo = self:GetTalentFrame():GetDefinitionInfoForEntry(entryID);
-				if definitionInfo and TalentUtil.GetTalentNameFromInfo(definitionInfo):lower() == self.searchString then
-					lowerExactMatchDescription = TalentUtil.GetTalentDescriptionFromInfo(definitionInfo):lower();
-					return lowerExactMatchDescription;
-				end
-			end
+		if nodeID and nodeInfo then
+			nodeInfoMap[nodeID] = nodeInfo;
 		end
 	end
-	return nil;
-end
-
--- Search mixin for finding all committed, non-passive talents not slotted in the Action Bar
-ClassTalentActionBarSearchMixin = CreateFromMixins(ClassTalentSearchTypeBaseMixin);
-
-local MatchTypeForActionBarStatus = {
-	[TalentButtonUtil.ActionBarStatus.NotMissing] = nil,
-	[TalentButtonUtil.ActionBarStatus.MissingFromAllBars] = TalentButtonUtil.SearchMatchType.NotOnActionBar,
-	[TalentButtonUtil.ActionBarStatus.OnInactiveBonusBar] = TalentButtonUtil.SearchMatchType.OnInactiveBonusBar,
-	[TalentButtonUtil.ActionBarStatus.OnDisabledActionBar] = TalentButtonUtil.SearchMatchType.OnDisabledActionBar,
-}
-
-function ClassTalentActionBarSearchMixin:UpdateSearchResults()
-	-- Overrides ClassTalentSearchTypeBaseMixin.
-
-	if not self:GetIsActiveAndEnabled() then
-		return;
-	end
-
-	for talentButton in self:EnumerateAllTalentButtons() do
-		local matchType = MatchTypeForActionBarStatus[talentButton:GetActionBarStatus()];
-
-		talentButton:SetSearchMatchType(matchType);
-	end
-
-	ClassTalentSearchTypeBaseMixin.UpdateSearchResults(self);
-end
-
-function ClassTalentActionBarSearchMixin:GetSearchMatchTypeForEntry(nodeID, entryID)
-	-- Overrides ClassTalentSearchTypeBaseMixin.
-
-	if not self:GetIsActiveAndEnabled() or not nodeID or not entryID then
-		return nil;
-	end
-
-	local nodeInfo = self:GetTalentFrame():GetAndCacheNodeInfo(nodeID);
-	local definitionInfo = self:GetTalentFrame():GetDefinitionInfoForEntry(entryID);
-
-	if not nodeInfo or not definitionInfo or not definitionInfo.spellID then
-		return nil;
-	end
-
-	local actionbarStatus = TalentButtonUtil.GetActionBarStatusForNodeEntry(entryID, nodeInfo, definitionInfo.spellID);
-	return MatchTypeForActionBarStatus[actionbarStatus];
+	return nodeInfoMap;
 end

@@ -479,7 +479,7 @@ local function InitializeBarForStandardReputation(factionData, reputationBar)
 	local progressText = not isCapped and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil; 
 	reputationBar:UpdateBarProgressText(progressText);
 	local gender = UnitSex("player");
-	reputationStandingtext = GetText("FACTION_STANDING_LABEL" .. factionData.reaction, gender);
+	local reputationStandingtext = GetText("FACTION_STANDING_LABEL" .. factionData.reaction, gender);
 	reputationBar:UpdateReputationStandingText(reputationStandingtext);
 	reputationBar:TryShowReputationStandingText();
 

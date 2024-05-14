@@ -92,13 +92,13 @@ function TalentFrame_Update(TalentFrame)
 		local button = _G[talentFrameTalentName..i];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional, goldBorder =
+			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional, goldBorder =
 				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
 				
 			-- Temp hack - For now, we are just ignoring the "goldBorder" flag and putting the gold border on any "exceptional" talents
 			goldBorder = isExceptional;
 			
-			if ( name and tier <= MAX_NUM_TALENT_TIERS) then
+			if ( talentName and tier <= MAX_NUM_TALENT_TIERS) then
 				local displayRank;
 				if ( preview ) then
 					displayRank = previewRank;

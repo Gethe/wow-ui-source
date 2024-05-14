@@ -1390,6 +1390,7 @@ local QuestLog =
 				{ Name = "isLegendarySort", Type = "bool", Nilable = false },
 				{ Name = "isInternalOnly", Type = "bool", Nilable = false },
 				{ Name = "isAbandonOnDisable", Type = "bool", Nilable = false },
+				{ Name = "headerSortKey", Type = "number", Nilable = true },
 			},
 		},
 		{

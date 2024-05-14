@@ -163,7 +163,9 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		local cvarName, cvarValue = ...;
 		if cvarName == "debugTargetInfo" then
 			showDebugTooltipInfo = (cvarValue == "1");
-			RaceAndClassFrame:UpdateButtons();
+			if RaceAndClassFrame:IsShown() then
+				RaceAndClassFrame:UpdateButtons();
+			end
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:OnDisplaySizeChanged();
@@ -2227,7 +2229,7 @@ function CharacterCreateStartingZoneButtonMixin:OnCheckButtonClick()
 end
 
 function SelectOtherRaceAvailable()
-	currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
+	local currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
 	if (currentFaction == "Alliance") then
 		RaceAndClassFrame:SetCharacterRace(HUMAN_RADE_ID);
 	elseif (currentFaction == "Horde") then

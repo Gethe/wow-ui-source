@@ -1097,7 +1097,8 @@ function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnClick()
 end
 
 function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnEnter()
-	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), OPEN_DYNAMIC_FLIGHT_TREE_TOOLTIP, nil, false, self, "ANCHOR_RIGHT");
+	local tooltipOwner = self;
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), OPEN_DYNAMIC_FLIGHT_TREE_TOOLTIP, SimpleTooltipConstants.NoOverrideColor, SimpleTooltipConstants.DoNotWrapText, tooltipOwner, "ANCHOR_RIGHT");
 end
 
 function MountJournalOpenDynamicFlightSkillTreeButtonMixin:OnLeave()

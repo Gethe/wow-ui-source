@@ -204,7 +204,6 @@ function TutorialFrame_OnEvent(self, event, ...)
 		local spellID = ...;
 		for index, value in pairs(DISPLAY_DATA) do
 			if (value.spellTutorial) then
-				local spellID = ...;
 				local _, className = UnitClass("player");
 				className = strupper(className);
 				local tutorialSpellID = tonumber(_G["TUTORIAL"..index.."_SPELLID_"..className]);
@@ -743,7 +742,6 @@ HELP_BUTTON_LARGE_SIZE = 55;
 HELP_PLATE_BUTTONS = {};
 function HelpPlate_GetButton()
 	local frame;
-	local i = 1;
 	for i=1, #HELP_PLATE_BUTTONS do
 		local button = HELP_PLATE_BUTTONS[i];
 		if ( not button:IsShown() ) then

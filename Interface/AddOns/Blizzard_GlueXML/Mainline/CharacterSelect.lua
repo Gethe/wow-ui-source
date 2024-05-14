@@ -438,7 +438,6 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		if characterGUID then
 			local basicInfo = GetBasicCharacterInfo(characterGUID);
 			local timerunningSeasonID = GetCharacterTimerunningSeasonID(characterGUID);
-        	CharSelectCharacterName:SetText(CharacterSelectUtil.FormatCharacterName(basicInfo.name, timerunningSeasonID));
             CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
 		else
 			CharacterSelect_SetSelectedCharacterName("");
@@ -462,10 +461,10 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
 		    CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
 		end
-		-- Sets up the character rendering in the group scene or legacy BG style.
-		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(self.selectedIndex);
-
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
+
+		-- Sets up the character rendering in the group scene or legacy BG style.
+		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(charID);
 
 		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 			local characterID = CharacterSelectListUtil.GetCharIDFromIndex(self.selectedIndex);
@@ -611,7 +610,9 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 end
 
 function CharacterSelect_SetSelectedCharacterName(name, timerunningSeasonID)
-    CharSelectCharacterName:SetText(CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID));
+	local offsetX = nil;
+	local offsetY = 2;
+    CharSelectCharacterName:SetText(CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID, offsetX, offsetY));
 
 	if timerunningSeasonID then
 		CharSelectCharacterName:EnableMouse(true);
@@ -868,7 +869,6 @@ function CharacterSelect_EnterWorld()
 end
 
 function CharacterSelect_Exit()
-	CharacterSelectListUtil.SaveCharacterOrder();
     PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
     C_Login.DisconnectFromServer();
 end
@@ -1578,13 +1578,6 @@ function CharacterServicesMaster_UpdateServiceButton()
 	CharacterSelectUI.VASTokenContainer:Layout();
 end
 
-function DisplayBattlepayTokens(upgradeInfo, boostType)
-	if upgradeInfo and upgradeInfo.amount > 0 then
-		local charUpgradeDisplayData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
-		DisplayBattlepayTokenType(charUpgradeDisplayData, upgradeInfo);
-	end
-end
-
 function CharSelectServicesFlow_Minimize()
 	local parent = CharSelectServicesFlowFrame;
 	parent.IsMinimized = true;
@@ -1690,15 +1683,15 @@ local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
 	frame.hasFreeBoost = upgradeInfo.hasFree;
 	frame.remainingTime = upgradeInfo.remainingTime;
 
-	if upgradeInfo.overrideAtlas then
-		frame.Icon:SetAtlas(upgradeInfo.overrideAtlas);
-		frame.Highlight.Icon:SetAtlas(upgradeInfo.overrideAtlas);
-	else
+	-- Prefer texture kit if set.
+	if charUpgradeDisplayData.iconTextureKit then
+		local formattedVASIcon = ("%s-small"):format(charUpgradeDisplayData.iconTextureKit);
+		frame.Icon:SetAtlas(formattedVASIcon, true);
+		frame.Highlight.Icon:SetAtlas(formattedVASIcon, true);
+	elseif charUpgradeDisplayData.icon then
 		SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
 		SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
 	end
-
-	frame.Highlight.IconBorder:SetAtlas(charUpgradeDisplayData.iconBorderAtlas);
 
 	frame:SetAlpha(GetVASTokenAlpha(upgradeInfo));
 
@@ -1710,12 +1703,10 @@ local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
 
 	if upgradeInfo.amount > 1 then
 		frame.Ring:Show();
-		frame.NumberBackground:Show();
 		frame.Number:Show();
 		frame.Number:SetText(upgradeInfo.amount);
 	else
 		frame.Ring:Hide();
-		frame.NumberBackground:Hide();
 		frame.Number:Hide();
 	end
 
@@ -1761,7 +1752,6 @@ local textureKitRegionInfo = {
 function DisplayBattlepayTokenFreeFrame(freeFrame)
 	local freeFrameData = freeFrame.data;
 	if not freeFrame.data.isExpansionTrial then
-		freeFrame.Glow:SetPoint("CENTER", freeFrame.IconBorder, "CENTER");
 		freeFrame.Glow:Show();
 		freeFrame.GlowSpin.SpinAnim:Play();
 		freeFrame.GlowPulse.PulseAnim:Play();
@@ -2066,9 +2056,14 @@ function CharacterServicesMaster_SetFlow(self, flow)
 
     flow:Initialize(self);
 
-	if flow.data.icon then
+	-- Prefer texture kit if set.
+	if flow.data.iconTextureKit then
+		local formattedVASIcon = ("%s-regular"):format(flow.data.iconTextureKit);
+		self:GetParent().Icon:SetAtlas(formattedVASIcon, true);
+	elseif flow.data.icon then
 		SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
 	end
+
 	if flow.data.flowTitle then
 		self:GetParent().TitleText:SetText(flow.data.flowTitle);
 	end
@@ -2636,10 +2631,13 @@ function CopyCharacterFrameRegionIDDropdown_Initialize()
 end
 
 function CopyCharacterFrameRegionIDDropdown_OnClick(button)
-    UIDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
-    if ( not IsGMClient() ) then
-        RequestAccountCharacters(button.value);
-    end
+	UIDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
+	if ( not IsGMClient() ) then
+		CopyCharacterFrame_SetSelected(nil);
+		CopyCharacterFrame.ScrollBox:SetDataProvider(CreateIndexRangeDataProvider(0), ScrollBoxConstants.RetainScrollPosition);
+		CopyCharacterFrame.CopyButton:Disable();
+		RequestAccountCharacters(button.value);
+	end
 end
 
 function CopyCharacterFrame_OnEvent(self, event, ...)

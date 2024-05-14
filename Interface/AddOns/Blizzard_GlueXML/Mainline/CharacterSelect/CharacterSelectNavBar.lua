@@ -57,6 +57,7 @@ function CharacterSelectNavBarMixin:OnLoad()
 	self:SetButtonVisuals();
 
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
+	self:RegisterEvent("TIMERUNNING_SEASON_UPDATE");
 
 	-- Rebuild to get valid width calculation in time.
 	self.ButtonTray:Layout();
@@ -74,6 +75,8 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 	if event == "CHARACTER_LIST_UPDATE" then
 		CharacterLoginUtil.EvaluateNewAlliedRaces();
 		self:EvaluateCreateCharacterNewState();
+	elseif event == "TIMERUNNING_SEASON_UPDATE" then
+		self:EvaluateCreateCharacterTimerunningState();
 	end
 end
 
@@ -134,12 +137,22 @@ function CharacterSelectNavBarMixin:InitCreateCharacterButton()
 	newFeatureFrame:SetPoint("TOPLEFT", 20, -10);
 	self.CreateCharacterButton.NewFeatureFrame = newFeatureFrame;
 	self.CreateCharacterButton.NewFeatureFrame:Hide();
+
+	local createCharacterGlow = CreateFrame("Frame", nil, self.CreateCharacterButton, "CharacterCreateTimerunningGlowTemplate");
+	createCharacterGlow:SetPoint("BOTTOM", 0, -40);
+	self.CreateCharacterButton.CreateCharacterGlow = createCharacterGlow;
+	self:EvaluateCreateCharacterTimerunningState();
 end
 
 -- Multiple things can trigger the 'new' text on the create character button, ensure that we show it if any pass.
 function CharacterSelectNavBarMixin:EvaluateCreateCharacterNewState()
 	local isNew = self.isExpansionTrial or CharacterLoginUtil.HasNewAlliedRaces();
 	self.CreateCharacterButton.NewFeatureFrame:SetShown(isNew);
+end
+
+function CharacterSelectNavBarMixin:EvaluateCreateCharacterTimerunningState()
+	local showTimerunning = GetActiveTimerunningSeasonID() ~= nil;
+	self.CreateCharacterButton.CreateCharacterGlow:SetShown(showTimerunning);
 end
 
 function CharacterSelectNavBarMixin:OnExpansionTrialStateUpdated(isExpansionTrial)

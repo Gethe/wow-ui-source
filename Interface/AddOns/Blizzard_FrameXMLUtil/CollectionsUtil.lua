@@ -348,8 +348,8 @@ function CollectionWardrobeUtil.SetAppearanceTooltip(tooltip, sources, primarySo
 				GameTooltip_AddHighlightLine(tooltip, WARDROBE_ALTERNATE_ITEMS);
 			end
 
-			local name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[i], inLegionArtifactCategory);
-			local sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[i]);
+			name, nameColor = CollectionWardrobeUtil.GetAppearanceNameTextAndColor(sources[i], inLegionArtifactCategory);
+			sourceText, sourceColor = CollectionWardrobeUtil.GetAppearanceSourceTextAndColor(sources[i]);
 			if ( i == headerIndex ) then
 				name = WARDROBE_TOOLTIP_CYCLE_ARROW_ICON..name;
 			else
@@ -423,7 +423,7 @@ function CollectionWardrobeUtil.GetPreferredSourceID(initialSourceID, appearance
 			return initialSourceID, hasData, canCollect;
 		end
 		-- the initialSourceID is not collectable, try to find another one
-		local category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
+		local _category, itemAppearanceID = C_TransmogCollection.GetAppearanceSourceInfo(initialSourceID);
 		if itemAppearanceID then
 			local sourceIDs = C_TransmogCollection.GetAllAppearanceSources(itemAppearanceID);
 			for i, sourceID in pairs(sourceIDs) do

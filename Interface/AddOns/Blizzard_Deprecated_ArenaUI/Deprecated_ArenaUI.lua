@@ -195,7 +195,6 @@ function ArenaEnemyMatchFrameMixin:OnLoad()
 	end
 	SecureUnitButton_OnLoad(self, "arena"..self:GetID(), setfocus);
 
-	local id = self:GetID();
 	if ( UnitClass("arena"..id) and (not UnitExists("arena"..id))) then	--It is possible for the unit itself to no longer exist on the client, but some of the information to remain (after reloading the UI)
 		self:Show();
 		LockUnitFrame(self);

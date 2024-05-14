@@ -1,8 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_SharedTalentSearchTemplates.lua"/>
-
-	<Button name="TalentSearchPreviewButtonTemplate" mixin="TalentSearchPreviewButtonMixin" virtual="true">
+	<Button name="SpellSearchPreviewResultTemplate" mixin="SpellSearchPreviewResultMixin" virtual="true">
 		<Size x="176" y="27"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="3">
@@ -42,10 +40,11 @@
 		<Scripts>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Button>
-	
-	<Frame name="TalentSearchPreviewContainerTemplate" mixin="TalentSearchPreviewContainerMixin" virtual="true">
+
+	<Frame name="SpellSearchPreviewContainerTemplate" mixin="SpellSearchPreviewContainerMixin" virtual="true">
 		<Size x="176" y="27"/>
 		<KeyValues>
 			<KeyValue key="maximumEntries" value="3" type="number"/>
@@ -99,11 +98,12 @@
 					<Anchor point="BOTTOMRIGHT"  x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			
+
 			<Frame parentKey="OverflowCount" hidden="true">
 				<Size x="176" y="16"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="5"/>
+					<Anchor point="BOTTOMLEFT" x="0" y="5"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -121,7 +121,8 @@
 			<Button parentKey="DefaultResultButton" hidden="true">
 				<Size x="176" y="27"/>
 				<Anchors>
-					<Anchor point="TOP"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="3">
@@ -158,7 +159,7 @@
 		</Scripts>
 	</Frame>
 
-	<EditBox name="TalentSearchBoxTemplate" mixin="TalentSearchBoxMixin" inherits="SearchBoxTemplate" letters="40" virtual="true">
+	<EditBox name="SpellSearchBoxTemplate" parentKey="SearchBox" mixin="SpellSearchBoxMixin" inherits="SearchBoxTemplate" letters="40" virtual="true">
 		<Size x="184" y="30"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

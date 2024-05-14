@@ -783,8 +783,11 @@ end
 
 function TempMaxHealthLossMixin:OnMaxHealthModifiersChanged(value)
 	--current UI implementation only cares about showing max health loss, not gain
-	if(value <= 1 and value >= 0) then
-		self:Update_MaxHealthLoss(value);
+	local clampedValue = Clamp(value, 0, 1);
+	--disable / enable all tempMaxHealth loss bars with CVar
+	if (GetCVarBool("showTempMaxHealthLoss")) then
+
+		self:Update_MaxHealthLoss(clampedValue);
 	end
 end
 
@@ -1052,14 +1055,14 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 
 			if ( numericIndicator ) then
 				if ( ShowNumericThreat() and UnitClassification(indicator.unit) ~= "minus" ) then
-					local isTanking, status, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
+					local isTanking, detailedStatus, percentage, rawPercentage = UnitDetailedThreatSituation(indicator.feedbackUnit, indicator.unit);
 					local display = rawPercentage;
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
 					end
 					if ( display and display ~= 0 ) then
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
-						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
+						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(detailedStatus));
 						numericIndicator:Show();
 					else
 						numericIndicator:Hide();

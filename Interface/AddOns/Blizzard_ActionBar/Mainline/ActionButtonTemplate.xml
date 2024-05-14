@@ -350,12 +350,6 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="AutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size x="80" y="80"/>
-					<Anchors>
-						<Anchor point="CENTER" x="1" y="-1"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="LevelLinkLockIcon" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -397,11 +391,11 @@
 				</Layers>
 			</Frame>
 
-			<Frame name="$parentShine" parentKey="AutoCastShine" inherits="AutoCastShineTemplate">
+			<Frame parentKey="AutoCastOverlay" inherits="AutoCastOverlayTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
-				<Size x="40" y="40"/>
+				<Size x="45" y="45"/>
 			</Frame>
 
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" useParentLevel="true" parentKey="cooldown">

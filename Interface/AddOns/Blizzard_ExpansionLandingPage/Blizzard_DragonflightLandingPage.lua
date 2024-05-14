@@ -40,13 +40,13 @@ local function CanSpendDragonridingGlyphs()
 
 	-- We have unspent glyphs, but can we actually purchase something?
 	local dragonridingNodeIDs = C_Traits.GetTreeNodes(Constants.MountDynamicFlightConsts.TREE_ID);
-	for index, nodeID in ipairs(dragonridingNodeIDs) do
+	for _, nodeID in ipairs(dragonridingNodeIDs) do
 		local nodeCosts = C_Traits.GetNodeCost(dragonridingConfigID, nodeID);
 		local canAffordNode = (#nodeCosts == 0) or (unspentGlyphCount >= nodeCosts[1].amount);
 		if canAffordNode then
 			-- Some nodes give you multiple choices and let you pick one, let's see if you can purchase any of them
 			local nodeInfo = C_Traits.GetNodeInfo(dragonridingConfigID, nodeID);
-			for index, entryID in ipairs(nodeInfo.entryIDs) do
+			for _, entryID in ipairs(nodeInfo.entryIDs) do
 				if C_Traits.CanPurchaseRank(dragonridingConfigID, nodeID, entryID) then
 					-- We can spend our glyphs on something!
 					return true;
@@ -75,7 +75,8 @@ local function TryShowUnspentDragonridingGlyphReminder()
 end
 
 local minimapDisplayInfo = {
-	useDefaultButtonSize = true;
+	useDefaultButtonSize = true,
+	expansionLandingPageType = Enum.ExpansionLandingPageType.Dragonflight,
 	["normalAtlas"] = "dragonflight-landingbutton-up",
 	["pushedAtlas"] = "dragonflight-landingbutton-down",
 	["highlightAtlas"] = "dragonflight-landingbutton-circlehighlight",
@@ -100,6 +101,8 @@ local minimapPulseLocks = EnumUtil.MakeEnum(
 	"MajorFactionUnlocked"
 );
 
+local overlayFrame = nil;
+
 function DragonflightLandingOverlayMixin.IsOverlayUnlocked()
 	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT);
 end
@@ -117,12 +120,16 @@ function DragonflightLandingOverlayMixin.GetUnlockEvents()
 end
 
 function DragonflightLandingOverlayMixin.CreateOverlay(parent)
-	return CreateFrame("Frame", nil, parent, "DragonflightLandingOverlayTemplate");
+	if not overlayFrame then
+		overlayFrame = CreateFrame("Frame", nil, parent, "DragonflightLandingOverlayTemplate");
+	end
+
+	return overlayFrame;
 end
 
 function DragonflightLandingOverlayMixin:TryCelebrateUnlock()
-	if not GetCVarBitfield("unlockedExpansionLandingPages", Enum.ExpansionLandingPageType.Dragonflight) then
-		SetCVarBitfield("unlockedExpansionLandingPages", Enum.ExpansionLandingPageType.Dragonflight, true);
+	if not GetCVarBitfield("unlockedExpansionLandingPages", minimapDisplayInfo.expansionLandingPageType) then
+		SetCVarBitfield("unlockedExpansionLandingPages", minimapDisplayInfo.expansionLandingPageType, true);
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", DRAGONFLIGHT_LANDING_PAGE_ALERT_SUMMARY_UNLOCKED);
 		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.DragonflightSummaryUnlocked);
 	end
@@ -187,7 +194,7 @@ function DragonflightLandingOverlayMixin:SetUpMajorFactionList()
 	self.MajorFactionList.ScrollBar:SetFrameLevel(self.ScrollFadeOverlay:GetFrameLevel() + 10);
 
 
-	self.MajorFactionList:SetExpansionFilter(--[[LE_EXPANSION_DRAGONFLIGHT Temporary removal for alpha testing]]);
+	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_DRAGONFLIGHT);
 end
 
 ------------------------- Dragonriding Skills Button -------------------------

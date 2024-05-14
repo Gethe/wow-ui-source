@@ -1,7 +1,7 @@
 ## Title: Blizzard_FriendsFrame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_TimerunningUtil
+## Dependencies: Blizzard_BNet, Blizzard_TimerunningUtil
 ## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar
 ## AllowLoad: both
 ## AllowLoadGameType: mainline

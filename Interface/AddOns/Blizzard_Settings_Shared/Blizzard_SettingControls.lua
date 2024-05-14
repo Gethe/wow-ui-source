@@ -498,7 +498,7 @@ function SettingsDropDownControlMixin:InitDropDown()
 	local options = initializer:GetOptions();
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	
-	function OnDropDownValueChanged(o, option)
+	local function OnDropDownValueChanged(o, option)
 		setting:SetValue(option.value);
 	end
 
@@ -842,14 +842,14 @@ function SettingsCheckBoxDropDownControlMixin:Init(initializer)
 	self.CheckBox:Init(cbSetting:GetValue(), initTooltip);
 	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
 
-	function OnDropDownValueChanged(self, option)
+	local function OnDropDownValueChanged(self, option)
 		dropDownSetting:SetValue(option.value);
 	end
 
 	self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
 
-	local initTooltip = Settings.CreateOptionsInitTooltip(dropDownSetting, initializer:GetName(), initializer:GetTooltip(), dropDownOptions);
-	Settings.InitSelectionDropDown(self.DropDown, dropDownSetting, dropDownOptions, 200, initTooltip);
+	local initTooltipDropDown = Settings.CreateOptionsInitTooltip(dropDownSetting, initializer:GetName(), initializer:GetTooltip(), dropDownOptions);
+	Settings.InitSelectionDropDown(self.DropDown, dropDownSetting, dropDownOptions, 200, initTooltipDropDown);
 
 	self.DropDown:SetEnabled_(cbSetting:GetValue());
 

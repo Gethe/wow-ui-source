@@ -59,7 +59,7 @@ GlueParentMixin = {};
 
 function GlueParentMixin:OnLoad()
 	-- alias GlueParent to UIParent
-	UIParent = self;
+	UIParent = self; -- luacheck: ignore 111 (setting non-standard global variable)
 
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");

@@ -188,7 +188,6 @@ function CovenantRenownMixin:OnTrackUpdate(leftIndex, centerIndex, rightIndex, i
 		self:Refresh();
 		return;
 	end
-	local elements = track:GetElements();
 	for i = leftIndex, rightIndex do
 		local selected = not self.moving and centerIndex == i;
 		local frame = elements[i];

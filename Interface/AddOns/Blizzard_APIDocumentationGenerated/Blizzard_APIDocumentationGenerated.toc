@@ -362,6 +362,7 @@ MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
 MinimapConstantsDocumentation.lua
 ModelAnimationSharedDocumentation.lua
+MoneyConstantsDocumentation.lua
 MountConstantsDocumentation.lua
 NamePlateDocumentation.lua
 PVPMgrConstantsDocumentation.lua

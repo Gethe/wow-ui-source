@@ -133,11 +133,11 @@ function AuctionCategoryMixin:CreateSubCategoryAndFilter(classID, subClassID, in
 end
 
 function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID, inventoryTypes)
-	local inventoryType = nil;
+	local inventoryTypeNone = nil;
 	local useParentFilters = true;
-	self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly, useParentFilters);
+	self:CreateSubCategoryAndFilter(classID, subClassID, inventoryTypeNone, Enum.AuctionHouseFilter.LegendaryCraftedItemOnly, useParentFilters);
 
-	for i, inventoryType in ipairs(inventoryTypes) do
+	for _, inventoryType in ipairs(inventoryTypes) do
 		self:CreateSubCategoryAndFilter(classID, subClassID, inventoryType);
 	end
 end

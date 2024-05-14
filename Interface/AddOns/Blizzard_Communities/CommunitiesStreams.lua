@@ -428,7 +428,7 @@ function CommunitiesAddToChatDropDown_Initialize(self, level)
 
 	local canCreateChatWindow = FCF_CanOpenNewWindow();
 	if canCreateChatWindow then
-		local info = UIDropDownMenu_CreateInfo();
+		info = UIDropDownMenu_CreateInfo();
 		info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_NEW_CHAT_WINDOW;
 		info.func = function(button)
 			if isGuildStream then
@@ -460,7 +460,7 @@ function CommunitiesAddToChatDropDown_Initialize(self, level)
 
 	UIDropDownMenu_AddSeparator();
 	
-	local info = UIDropDownMenu_CreateInfo();
+	info = UIDropDownMenu_CreateInfo();
 	info.text = COMMUNITIES_ADD_TO_CHAT_DROP_DOWN_CHAT_SETTINGS;
 	info.func = function()
 		CURRENT_CHAT_FRAME_ID = SELECTED_CHAT_FRAME:GetID();

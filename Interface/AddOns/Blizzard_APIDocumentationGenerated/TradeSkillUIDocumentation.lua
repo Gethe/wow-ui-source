@@ -808,6 +808,15 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "IsGuildTradeSkillsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsNPCCrafting",
 			Type = "Function",
 

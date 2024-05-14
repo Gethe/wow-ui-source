@@ -287,7 +287,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local function InitControlCheckBoxSlider(control, cbSetting, sliderSetting, cbName, cbTooltip, name, tooltip, options)
 		InitControlSlider(control, sliderSetting, name, tooltip, options);
 
-		function OnCheckBoxValueChanged(o, value)
+		local function OnCheckBoxValueChanged(o, value)
 			cbSetting:SetValue(value);
 
 			if value then
@@ -646,19 +646,25 @@ local function Register()
 			return FormatPercentage(value, roundToNearestInteger);
 		end
 
+		local useUIScaleSetting, uiScaleSliderSetting;
+
 		-- Use UI Scale
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useUiScale", Settings.VarType.Boolean);
-		local commitValue = setValue;
-		local useUIScaleSetting = Settings.RegisterProxySetting(category, "PROXY_USE_UI_SCALE", Settings.DefaultVarLocation,
-			Settings.VarType.Boolean, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
-		useUIScaleSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
+		do
+			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("useUiScale", Settings.VarType.Boolean);
+			local commitValue = setValue;
+			useUIScaleSetting = Settings.RegisterProxySetting(category, "PROXY_USE_UI_SCALE", Settings.DefaultVarLocation,
+				Settings.VarType.Boolean, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
+			useUIScaleSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
+		end
 
 		-- Resolution Scale
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("uiscale", Settings.VarType.Number);
-		local commitValue = setValue;
-		local uiScaleSliderSetting = Settings.RegisterProxySetting(category, "PROXY_UI_SCALE", Settings.DefaultVarLocation,
-			Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
-		uiScaleSliderSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
+		do
+			local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("uiscale", Settings.VarType.Number);
+			local commitValue = setValue;
+			uiScaleSliderSetting = Settings.RegisterProxySetting(category, "PROXY_UI_SCALE", Settings.DefaultVarLocation,
+				Settings.VarType.Number, RENDER_SCALE, getDefaultValue(), getValue, nil, commitValue);
+			uiScaleSliderSetting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.Revertable);
+		end
 
 		local minValue, maxValue, step = .65, 1.15, .01;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
@@ -907,7 +913,7 @@ local function Register()
 	end
 
 	-- Graphics Quality
-	function AddAdvancedQualitySetting(settings, category, cvar, name, proxyName, minQualityValue)
+	local function AddAdvancedQualitySetting(settings, category, cvar, name, proxyName, minQualityValue)
 		settings[cvar] = CreateAdvancedQualitySetting(category, cvar, name, proxyName, minQualityValue);
 	end
 
@@ -1190,7 +1196,7 @@ local function Register()
 		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS_ENABLED", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, MAXFPS_CHECK, getDefaultValue(), getValue, setValue);
 
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPS", Settings.VarType.Number);
+		getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPS", Settings.VarType.Number);
 		local commitValue = setValue;
 		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_FOREGROUND_FPS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, MAXFPS, getDefaultValue(), getValue, nil, commitValue);
@@ -1212,7 +1218,7 @@ local function Register()
 		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS_ENABLED", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, MAXFPSBK_CHECK, getDefaultValue(), getValue, setValue);
 
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPSBk", Settings.VarType.Number);
+		getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("maxFPSBk", Settings.VarType.Number);
 		local commitValue = setValue;
 		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_BACKGROUND_FPS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, MAXFPSBK, getDefaultValue(), getValue, nil, commitValue);
@@ -1234,7 +1240,7 @@ local function Register()
 		local fpsSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS_ENABLED", Settings.DefaultVarLocation,
 			Settings.VarType.Boolean, TARGETFPS, getDefaultValue(), getValue, setValue);
 
-		local getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("targetFPS", Settings.VarType.Number);
+		getValue, setValue, getDefaultValue = Settings.CreateCVarAccessorClosures("targetFPS", Settings.VarType.Number);
 		local commitValue = setValue;
 		local fpsSliderSetting = Settings.RegisterProxySetting(category, "PROXY_TARGET_FPS", Settings.DefaultVarLocation,
 			Settings.VarType.Number, TARGETFPS, getDefaultValue(), getValue, nil, commitValue);

@@ -70,13 +70,13 @@ function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source,
 	self.baseOffsetZ = effectDescription.offsetZ;
 	self:SetDynamicOffsets(0, 0, 0);
 
-	local animationSpeed = effectDescription.animationSpeed;
-	if animationSpeed == 0 then
+	local effectAnimationSpeed = effectDescription.animationSpeed;
+	if effectAnimationSpeed == 0 then
 		-- TODO:: Calculate the animation speed to complete 1 full cycle in the effect's duration.
-		animationSpeed = 1.0;
+		effectAnimationSpeed = 1.0;
 	end
 
-	local animationSpeed = self:GetModelScene():GetEffectSpeed() * animationSpeed;
+	local animationSpeed = self:GetModelScene():GetEffectSpeed() * effectAnimationSpeed;
 	self:SetAnimation(effectDescription.animation or 0, 0, animationSpeed, effectDescription.animationStartOffset);
 
 	self.elapsedTime = nil;

@@ -88,7 +88,7 @@ function AutoQuestPopupBlockMixin:Update(questTitle, questID, popUpType)
 
 			contents.BottomText:Hide();
 			contents.TopText:SetPoint("TOP", 0, -15);
-			if blockContents.QuestName:GetStringWidth() > contents.QuestName:GetWidth() then
+			if contents.QuestName:GetStringWidth() > contents.QuestName:GetWidth() then
 				contents.QuestName:SetPoint("TOP", 0, -25);
 			else
 				contents.QuestName:SetPoint("TOP", 0, -29);

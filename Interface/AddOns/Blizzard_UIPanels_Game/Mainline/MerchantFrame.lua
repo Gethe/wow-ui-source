@@ -672,7 +672,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local maxQuality = 0;
 	local usingCurrency = false;
 	for i=1, MAX_ITEM_COST do
-		local itemTexture, costItemCount, itemLink, currencyName = GetMerchantItemCostItem(index, i);
+		local itemTexture, costItemCount, costItemLink, currencyName = GetMerchantItemCostItem(index, i);
 		costItemCount = costItemCount * (numToPurchase / stackCount); -- cost per stack times number of stacks
 		if ( currencyName ) then
 			usingCurrency = true;
@@ -681,8 +681,8 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 			else
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
-		elseif ( itemLink ) then
-			local itemName, itemLink, itemQuality = C_Item.GetItemInfo(itemLink);
+		elseif ( costItemLink ) then
+			local itemName, itemLink, itemQuality = C_Item.GetItemInfo(costItemLink);
 
 			if ( i == 1 and GetMerchantItemCostInfo(index) == 1 ) then
 				local limitedCurrencyItemInfo = MerchantFrame_GetLimitedCurrencyItemInfo(itemLink);

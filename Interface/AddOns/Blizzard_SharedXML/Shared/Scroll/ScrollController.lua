@@ -58,11 +58,22 @@ function ScrollControllerMixin:OnLoad()
 end
 
 function ScrollControllerMixin:OnMouseWheel(value)
+	local panFactor = 1.0;
 	if value < 0 then
-		self:ScrollInDirection(self:GetWheelPanPercentage(), ScrollControllerMixin.Directions.Increase);
+		self:ScrollIncrease(panFactor);
 	else
-		self:ScrollInDirection(self:GetWheelPanPercentage(), ScrollControllerMixin.Directions.Decrease);
+		self:ScrollDecrease(panFactor);
 	end
+end
+
+function ScrollControllerMixin:ScrollIncrease(panFactor)
+	local panPercentage = self:GetWheelPanPercentage() * (panFactor or 1.0);
+	self:ScrollInDirection(panPercentage, ScrollControllerMixin.Directions.Increase);
+end
+
+function ScrollControllerMixin:ScrollDecrease(panFactor)
+	local panPercentage = self:GetWheelPanPercentage() * (panFactor or 1.0);
+	self:ScrollInDirection(panPercentage, ScrollControllerMixin.Directions.Decrease);
 end
 
 function ScrollControllerMixin:ScrollInDirection(scrollPercentage, direction)

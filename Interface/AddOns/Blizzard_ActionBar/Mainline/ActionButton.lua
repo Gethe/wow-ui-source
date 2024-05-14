@@ -1289,23 +1289,16 @@ function ActionBarActionButtonMixin:UpdateFlash()
 		self:StopFlash();
 	end
 	
-	if ( self.AutoCastable ) then
-		self.AutoCastable:SetShown(C_ActionBar.IsAutoCastPetAction(action));
-		if ( C_ActionBar.IsEnabledAutoCastPetAction(action) ) then
-			self.AutoCastShine:Show();
-			AutoCastShine_AutoCastStart(self.AutoCastShine);
-		else
-			self.AutoCastShine:Hide();
-			AutoCastShine_AutoCastStop(self.AutoCastShine);
-		end
+	if ( self.AutoCastOverlay ) then
+		self.AutoCastOverlay:SetShown(C_ActionBar.IsAutoCastPetAction(action));
+		self.AutoCastOverlay:ShowAutoCastEnabled(C_ActionBar.IsEnabledAutoCastPetAction(action));
 	end
 end
 
 function ActionBarActionButtonMixin:ClearFlash()
-	if ( self.AutoCastable ) then
-		self.AutoCastable:Hide();
-		self.AutoCastShine:Hide();
-		AutoCastShine_AutoCastStop(self.AutoCastShine);
+	if ( self.AutoCastOverlay ) then
+		self.AutoCastOverlay:ShowAutoCastEnabled(false);
+		self.AutoCastOverlay:Hide();
 	end
 end
 
@@ -1560,13 +1553,9 @@ function SmallActionButtonMixin:SmallActionButtonMixin_OnLoad()
 	self.IconMask:ClearAllPoints();
 	self.IconMask:SetPoint("CENTER", 0.5, -0.5);
 
-	self.AutoCastable:SetSize(56, 56);
-	self.AutoCastable:ClearAllPoints();
-	self.AutoCastable:SetPoint("CENTER", 0.5, -0.5);
-
-	self.AutoCastShine:SetSize(27, 27);
-	self.AutoCastShine:ClearAllPoints();
-	self.AutoCastShine:SetPoint("CENTER", 0.5, -0.5);
+	self.AutoCastOverlay:SetSize(31, 31);
+	self.AutoCastOverlay:ClearAllPoints();
+	self.AutoCastOverlay:SetPoint("CENTER", 0.5, -0.5);
 
 	self.HighlightTexture:SetSize(31.6, 30.9);
 	self.CheckedTexture:SetSize(31.6, 30.9);
@@ -1613,7 +1602,8 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 	local startTime, endTime; 
 
 	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel; 
-	local isEmpoweredCast = actionButtonCastType == ActionButtonCastType.Empowered; 
+	local isEmpoweredCast = actionButtonCastType == ActionButtonCastType.Empowered;
+	local _; 
 	if(isChannelCast or isEmpoweredCast) then 
 		_, _, _, startTime, endTime = UnitChannelInfo("player");
 	else 

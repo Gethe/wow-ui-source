@@ -81,8 +81,8 @@ function SettingsCategoryListButtonMixin:Init(initializer)
 	local anyNew = false;
 	local layout = SettingsPanel:GetLayout(category);
 	if layout and layout:IsVerticalLayout() then
-		for _, initializer in layout:EnumerateInitializers() do
-			local setting = initializer.data.setting;
+		for _, enumInitializer in layout:EnumerateInitializers() do
+			local setting = enumInitializer.data.setting;
 			if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then
 				anyNew = true;
 				break;
@@ -219,8 +219,8 @@ function SettingsCategoryListMixin:GetOrCreateGroup(groupText, order)
 end
 
 function SettingsCategoryListMixin:GetCategory(categoryID)
-	for index, tbl in ipairs(self.groups) do
-		for index, category in ipairs(tbl.categories) do
+	for _, tbl in ipairs(self.groups) do
+		for _, category in ipairs(tbl.categories) do
 			local id = securecallfunction(SettingsCategoryMixin.GetID, category);
 			if id == categoryID then
 				return category;
@@ -251,8 +251,8 @@ function SettingsCategoryListMixin:AddCategoryInternal(category, group, addOn)
 	end);
 
 	self.allCategories = {};
-	for index, tbl in ipairs(self.groups) do
-		tAppendAll(self.allCategories, tbl.categories);
+	for index, groupTbl in ipairs(self.groups) do
+		tAppendAll(self.allCategories, groupTbl.categories);
 	end
 
 	self:CreateCategories();

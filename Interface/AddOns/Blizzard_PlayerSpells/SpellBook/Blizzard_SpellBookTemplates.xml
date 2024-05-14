@@ -19,7 +19,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="SystemFont_Huge2" setAllPoints="true" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-15" y="0"/>
+						<Anchor point="TOPLEFT" x="-8" y="0"/>
 						<Anchor point="TOPRIGHT" x="-60"/>
 					</Anchors>
 					<Color color="SPELLBOOK_FONT_COLOR" />
@@ -27,7 +27,7 @@
 				<Texture parentKey="Border" atlas="spellbook-divider">
 					<Size y="11"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-15"/>
+						<Anchor point="BOTTOMLEFT" x="-32"/>
 						<Anchor point="BOTTOMRIGHT" x="-60"/>
 					</Anchors>
 				</Texture>

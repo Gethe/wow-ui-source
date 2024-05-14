@@ -8,6 +8,11 @@ local SpellBookItemEvents = {
 
 SpellBookItemMixin = {};
 
+function SpellBookItemMixin:OnLoad()
+	self.Backplate:SetAlpha(self.defaultBackplateAlpha);
+	self.Button.IconHighlight:SetAlpha(self.iconHighlightHoverAlpha);
+end
+
 function SpellBookItemMixin:Init(elementData)
 	self.elementData = elementData;
 	local forceUpdate = true;
@@ -22,10 +27,14 @@ end
 
 function SpellBookItemMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SpellBookItemEvents);
+	self:UpdateActionBarAnim();
+	self:UpdateBorderAnim();
 end
 
 function SpellBookItemMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SpellBookItemEvents);
+	self:UpdateActionBarAnim();
+	self:UpdateBorderAnim();
 end
 
 function SpellBookItemMixin:OnEvent(event, ...)
@@ -83,7 +92,7 @@ function SpellBookItemMixin:UpdateSpellData(forceUpdate)
 	self:ClearSpellData();
 
 	self.spellBookItemInfo = spellBookItemInfo;
-	self.isOffSpec = self.elementData.spellGroup.isOffSpec;
+	self.isOffSpec = self.elementData.isOffSpec;
 	self.slotIndex = self.elementData.slotIndex;
 	self.spellBank = self.elementData.spellBank;
 
@@ -135,7 +144,7 @@ function SpellBookItemMixin:ToggleFlyout(reason)
 		return;
 	end
 
-	local offSpecID = self.isOffSpec and self.elementData.spellGroup.specID or nil;
+	local offSpecID = self.isOffSpec and self.elementData.specID or nil;
 	local distance, isActionBar, showFullTooltip = 1, false, true;
 	SpellFlyout:Toggle(self.spellBookItemInfo.actionID, self.Button, "RIGHT", distance, isActionBar, offSpecID, showFullTooltip, reason);
 	SpellFlyout:SetBorderSize(42);
@@ -173,7 +182,7 @@ function SpellBookItemMixin:UpdateVisuals()
 		self.Button.IconMask:Hide();
 	end
 
-	self.Button.Border:SetAtlas(self.artSet.border, TextureKitConstants.IgnoreAtlasSize);
+	self.Button.IconHighlight:SetAtlas(self.artSet.iconHighlight, TextureKitConstants.IgnoreAtlasSize);
 
 	self.isUnlearned = self.isOffSpec or self.spellBookItemInfo.itemType == Enum.SpellBookItemType.FutureSpell;
 
@@ -186,6 +195,9 @@ function SpellBookItemMixin:UpdateVisuals()
 		self.Name:SetAlpha(self.unlearnedTextAlpha);
 		self.SubName:SetAlpha(self.unlearnedTextAlpha);
 		self.RequiredLevel:SetAlpha(self.unlearnedTextAlpha);
+
+		self.Button.Icon:SetVertexColor(SPELLBOOK_UNLEARNED_TINT_COLOR:GetRGB());
+		self.Button.Icon:SetAlpha(self.unlearnedIconAlpha);
 
 		local levelLearned = C_SpellBook.GetSpellBookItemLevelLearned(self.slotIndex, self.spellBank);
 
@@ -210,8 +222,29 @@ function SpellBookItemMixin:UpdateVisuals()
 		self.SubName:SetAlpha(1);
 		self.RequiredLevel:SetAlpha(1);
 
+		self.Button.Icon:SetVertexColor(1, 1, 1);
+		self.Button.Icon:SetAlpha(1);
+
 		self.RequiredLevel:Hide();
 		self.RequiredLevel:SetText("");
+	end
+
+	local borderAtlas = self.isUnlearned and self.artSet.inactiveBorder or self.artSet.activeBorder;
+	local borderAnchors = self.isUnlearned and self.artSet.inactiveBorderAnchors or self.artSet.activeBorderAnchors;
+	self.Button.Border:SetAtlas(borderAtlas, TextureKitConstants.IgnoreAtlasSize);
+	self.Button.Border:ClearAllPoints();
+	for _, anchor in ipairs(borderAnchors) do
+		local point, relativeTo, relativePoint, x, y = anchor:Get();
+		relativeTo = relativeTo or self.Button;
+		self.Button.Border:SetPoint(point, relativeTo, relativePoint, x, y);
+	end
+
+	self.Button.BorderSheenMask:SetAtlas(self.artSet.borderSheenMask, TextureKitConstants.UseAtlasSize);
+	self.Button.BorderSheenMask:ClearAllPoints();
+	for _, anchor in ipairs(self.artSet.borderSheenMaskAnchors) do
+		local point, relativeTo, relativePoint, x, y = anchor:Get();
+		relativeTo = relativeTo or self.Button.Border;
+		self.Button.BorderSheenMask:SetPoint(point, relativeTo, relativePoint, x, y);
 	end
 
 	local isLevelLinkLocked = self.spellBookItemInfo.spellID and C_LevelLink.IsSpellLocked(self.spellBookItemInfo.spellID) or false;
@@ -223,6 +256,13 @@ function SpellBookItemMixin:UpdateVisuals()
 	self:UpdateAutoCast();
 	self:UpdateGlyphState();
 	self:UpdateClickBindState();
+	self:UpdateBorderAnim();
+
+	-- If already being hovered, make sure to reset any on-hover state that needs to change
+	if self.Button:IsMouseMotionFocus() then
+		self:OnIconLeave();
+		self:OnIconEnter();
+	end
 end
 
 function SpellBookItemMixin:UpdateSubName(subNameText)
@@ -248,13 +288,35 @@ function SpellBookItemMixin:UpdateActionBarStatus()
 	end
 
 	-- Avoid showing "missing from bar" visuals while in click bind mode, or spell is being dragged out of spellbook
-	if not self.spellGrabbed and not self.inClickBindMode and self.elementData.spellGroup.showActionBarstatuses then
-		self.actionBarStatus = SpellBookUtil.GetActionBarStatusForSpellBookItem(self.spellBookItemInfo);
+	if not self.spellGrabbed and not self.inClickBindMode and self.elementData.showActionBarStatus then
+		self.actionBarStatus = SpellSearchUtil.GetActionbarStatusForSpellBookItemInfo(self.spellBookItemInfo);
 	else
 		self.actionBarStatus = ActionButtonUtil.ActionBarActionStatus.NotMissing;
 	end
 
-	self.Button.ActionBarHighlight:SetShown(self.actionBarStatus == ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars);
+	self:UpdateActionBarAnim();
+end
+
+function SpellBookItemMixin:UpdateActionBarAnim()
+	local shouldPlayHighlight = self:HasValidData() and self.actionBarStatus == ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars and self:IsShown();
+	self:UpdateSynchronizedAnimState(self.Button.ActionBarHighlight.Anim, shouldPlayHighlight);
+end
+
+function SpellBookItemMixin:UpdateBorderAnim()
+	local shouldPlaySheen = self:HasValidData() and not self.isUnlearned and self:IsShown();
+	self:UpdateSynchronizedAnimState(self.Button.BorderSheen.Anim, shouldPlaySheen);
+end
+
+function SpellBookItemMixin:UpdateSynchronizedAnimState(animGroup, shouldBePlaying)
+	local isPlaying = animGroup:IsPlaying();
+	if shouldBePlaying and not isPlaying then
+		-- Get a shared calculated time offset so that all looping anims stay synced with other SpellBookItems
+		local timeOffset = SpellBookUtil.GetOrStartSyncedAnimationOffset(animGroup:GetDuration());
+		local reverse = false;
+		animGroup:Play(reverse, timeOffset);
+	elseif not shouldBePlaying and isPlaying then
+		animGroup:Stop();
+	end
 end
 
 function SpellBookItemMixin:UpdateCooldown()
@@ -282,12 +344,7 @@ function SpellBookItemMixin:UpdateAutoCast()
 	end
 
 	self.Button.AutoCastOverlay:SetShown(autoCastAllowed);
-
-	if autoCastEnabled then
-		self.AutoCastAnim:Restart();
-	else
-		self.AutoCastAnim:Stop();
-	end
+	self.Button.AutoCastOverlay:ShowAutoCastEnabled(autoCastEnabled);
 end
 
 function SpellBookItemMixin:ShowGlyphActivation()
@@ -381,16 +438,21 @@ function SpellBookItemMixin:OnIconEnter()
 
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self.Button, "ANCHOR_RIGHT");
-	
+
 	if self.inClickBindMode and not self.canClickBind then
 		GameTooltip_AddErrorLine(tooltip, CLICK_BINDING_NOT_AVAILABLE);
 		tooltip:Show();
 		return;
 	end
 
+	if not self.isUnlearned then
+		self.Button.IconHighlight:Show();
+		self.Backplate:SetAlpha(self.hoverBackplateAlpha);
+	end
+
 	tooltip:SetSpellBookItem(self.slotIndex, self.spellBank)
 
-	local actionBarStatusToolTip = self.actionBarStatus and SpellBookUtil.GetTooltipForActionBarStatus(self.actionBarStatus);
+	local actionBarStatusToolTip = self.actionBarStatus and SpellSearchUtil.GetTooltipForActionBarStatus(self.actionBarStatus);
 	if actionBarStatusToolTip then
 		GameTooltip_AddColoredLine(tooltip, actionBarStatusToolTip, LIGHTBLUE_FONT_COLOR);
 	end
@@ -419,6 +481,10 @@ function SpellBookItemMixin:OnIconLeave()
 	if not self:HasValidData() then
 		return;
 	end
+
+	self.Button.IconHighlight:Hide();
+	self.Button.IconHighlight:SetAlpha(self.iconHighlightHoverAlpha);
+	self.Backplate:SetAlpha(self.defaultBackplateAlpha);
 
 	ClearOnBarHighlightMarks();
 	PetActionBar:ClearPetActionHighlightMarks();
@@ -520,18 +586,67 @@ function SpellBookItemMixin:OnIconDragStart()
 	self:UpdateActionBarStatus();
 end
 
+function SpellBookItemMixin:OnIconMouseDown()
+	if not self:HasValidData() then
+		return;
+	end
+
+	if not self.isUnlearned then
+		self.Button.IconHighlight:SetAlpha(self.iconHighlightPressAlpha);
+	end
+end
+
+function SpellBookItemMixin:OnIconMouseUp()
+	if not self:HasValidData() then
+		return;
+	end
+
+	if not self.isUnlearned then
+		self.Button.IconHighlight:SetAlpha(self.iconHighlightHoverAlpha);
+	end
+end
+
 function SpellBookItemMixin:OnGlyphActivateAnimFinished()
 	self:UpdateGlyphState();
 end
 
 SpellBookItemMixin.ArtSet = {
 	Square = {
-		iconMask = nil,
-		border = "talents-node-square-gray",
+		iconMask = "spellbook-item-spellicon-mask",
+		iconHighlight = "spellbook-item-iconframe-hover",
+		activeBorder = "spellbook-item-iconframe",
+		activeBorderAnchors = {
+			CreateAnchor("TOPLEFT", nil, "TOPLEFT", -11, 1),
+			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 1, -7),
+		},
+		inactiveBorder = "spellbook-item-iconframe-inactive",
+		inactiveBorderAnchors = {
+			CreateAnchor("TOPLEFT", nil, "TOPLEFT", -10, 1),
+			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 2, -5),
+		},
+		borderSheenMask = "spellbook-item-iconframe-sheen-mask",
+		borderSheenMaskAnchors = {
+			CreateAnchor("TOPLEFT"),
+			CreateAnchor("BOTTOMRIGHT"),
+		},
 	},
 	Circle = {
 		iconMask = "talents-node-circle-mask",
-		border = "talents-node-circle-gray",
+		iconHighlight = "spellbook-item-iconframe-passive-hover",
+		activeBorder = "talents-node-circle-gray",
+		activeBorderAnchors = {
+			CreateAnchor("TOPLEFT", nil, "TOPLEFT", 0, 0),
+			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, 0),
+		},
+		inactiveBorder = "spellbook-item-iconframe-passive-inactive",
+		inactiveBorderAnchors = {
+			CreateAnchor("TOPLEFT", nil, "TOPLEFT", 0.5, -0.5),
+			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, 0),
+		},
+		borderSheenMask = "talents-node-circle-sheenmask",
+		borderSheenMaskAnchors = {
+			CreateAnchor("CENTER"),
+		},
 	},
 }
 
@@ -571,4 +686,12 @@ end
 
 function SpellBookItemButtonMixin:OnDragStart()
 	self:GetParent():OnIconDragStart();
+end
+
+function SpellBookItemButtonMixin:OnMouseDown()
+	self:GetParent():OnIconMouseDown();
+end
+
+function SpellBookItemButtonMixin:OnMouseUp()
+	self:GetParent():OnIconMouseUp();
 end

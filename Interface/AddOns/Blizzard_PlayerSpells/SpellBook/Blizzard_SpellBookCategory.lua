@@ -35,6 +35,15 @@ function BaseSpellBookCategoryMixin:GetCategoryEnum()
 	return self.categoryEnum;
 end
 
+function BaseSpellBookCategoryMixin:GetSpellGroupForSlotIndex(slotIndex)
+	for _, spellGroup in ipairs(self.spellGroups) do
+		if spellGroup.spellBookItemSlotIndices and spellGroup.spellBookItemSlotIndices[slotIndex] then
+			return spellGroup;
+		end
+	end
+	return nil;
+end
+
 function BaseSpellBookCategoryMixin:ContainsSlot(slotIndex, spellBank)
 	if not self.spellGroups then
 		return false;
@@ -44,75 +53,97 @@ function BaseSpellBookCategoryMixin:ContainsSlot(slotIndex, spellBank)
 		return false;
 	end
 
-	for _, spellGroup in ipairs(self.spellGroups) do
-		if slotIndex > spellGroup.slotIndexOffset and slotIndex <= (spellGroup.slotIndexOffset + spellGroup.numSpellBookItems) then
-			return true;
-		end
-	end
-
-	return false;
+	local containingSpellGroup = self:GetSpellGroupForSlotIndex(slotIndex);
+	return containingSpellGroup ~= nil;
 end
 
--- Creates a data provider for use with a PagedContent frame
--- See Blizzard_PagedContentFrame.lua -> SetDataProvider for details on expected group data format
-function BaseSpellBookCategoryMixin:CreateDataProvider()
+-- Creates a data for use with a PagedContent frame
+-- byDataGroup: [bool] - See Blizzard_PagedContentFrame.lua -> SetDataProvider for details on expected group data format
+-- itemFilterFunc:
+-- tableToAppendTo: [table] OPTIONAL - 
+function BaseSpellBookCategoryMixin:GetSpellBookItemData(byDataGroup, itemFilterFunc, tableToAppendTo)
 	if not self.spellGroups then
 		return nil;
 	end
 
-	local kioskModeEnabled = Kiosk.IsEnabled();
-
-	local dataGroups = {};
+	local returnData = tableToAppendTo or {};
 	for _, spellGroup in ipairs(self.spellGroups) do
-		local dataGroup = { elements = {} };
-		if spellGroup.displayName then
+		local dataGroup = byDataGroup and { elements = {} } or nil;
+		if byDataGroup and spellGroup.displayName then
 			dataGroup.header = {
 				templateKey = "HEADER",
 				text = spellGroup.displayName,
 				spellGroup = spellGroup,
 			};
 		end
-		for i = 1, spellGroup.numSpellBookItems do
-			local slotIndex = spellGroup.slotIndexOffset + i;
+		for _, slotIndex in pairs(spellGroup.orderedSpellBookItemSlotIndices) do
+			if itemFilterFunc(slotIndex, self.spellBank) then
+				local itemEntry = self:GetElementDataForItem(slotIndex, self.spellBank, spellGroup);
 
-			if self:CanShowIndex(slotIndex, kioskModeEnabled) then
-				table.insert(dataGroup.elements, {
-					templateKey = "SPELL",
-					slotIndex = slotIndex,
-					spellGroup = spellGroup,
-					spellBank = self.spellBank,
-				});
+				if byDataGroup then
+					table.insert(dataGroup.elements, itemEntry);
+				else
+					table.insert(returnData, itemEntry);
+				end
 			end
-			
 		end
-		table.insert(dataGroups, dataGroup);
+		if byDataGroup then
+			table.insert(returnData, dataGroup);
+		end
 	end
 
-	return CreateDataProvider(dataGroups);
+	return returnData;
 end
 
-function BaseSpellBookCategoryMixin:CanShowIndex(slotIndex, kioskModeEnabled)
-	if not kioskModeEnabled then
-		return true;
+function BaseSpellBookCategoryMixin:GetElementDataForItem(slotIndex, spellBank, spellGroup)
+	if not spellGroup then
+		spellGroup = self:GetSpellGroupForSlotIndex(slotIndex);
 	end
-	
-	-- If in Kiosk mode, filter out any future spells
-	local spellBookItemType = C_SpellBook.GetSpellBookItemType(slotIndex, self.spellBank);
-	if not spellBookItemType or spellBookItemType == Enum.SpellBookItemType.FutureSpell then
-		return false;
+	if not spellGroup then
+		return nil;
 	end
-	return true;
+
+	return {
+		templateKey = "SPELL",
+		slotIndex = slotIndex,
+		spellBank = spellBank,
+		specID = spellGroup.specID,
+		isOffSpec = spellGroup.isOffSpec or false,
+		showActionBarStatus = spellGroup.showActionBarStatuses,
+	};
 end
 
 -- Returns true if any of the groups or index ranges within them changed between the old and new collection of groups
-function BaseSpellBookCategoryMixin:DidSpellGroupsChange(oldSpellGroups, newSpellGroups)
+function BaseSpellBookCategoryMixin:DidSpellGroupsChange(oldSpellGroups, newSpellGroups, compareSpellIndicies)
 	if oldSpellGroups == nil and newSpellGroups == nil then
 		return false;
 	elseif oldSpellGroups == nil or newSpellGroups == nil then
 		return true;
 	end
 
-	return not tCompare(oldSpellGroups, newSpellGroups, 2);
+	local compareDepth = compareSpellIndicies and 3 or 2;
+	local anyNonIndicesChanges = not tCompare(oldSpellGroups, newSpellGroups, compareDepth);
+
+	return anyNonIndicesChanges;
+end
+
+-- Use to populate spell groups with contiguous spell book item indices based on a defined offset and count
+function BaseSpellBookCategoryMixin:PopulateSpellGroupsIndiciesByRange()
+	if not self.spellGroups then
+		return;
+	end
+
+	for _, spellGroup in ipairs(self.spellGroups) do
+		if spellGroup.numSpellBookItems and spellGroup.slotIndexOffset then
+			spellGroup.spellBookItemSlotIndices = {}; -- Used for constant-time lookup of what indices the group contains
+			spellGroup.orderedSpellBookItemSlotIndices = {}; -- Used for iterating over the indices in consistent order
+			for i = 1, spellGroup.numSpellBookItems do
+				local slotIndex = spellGroup.slotIndexOffset + i;
+				spellGroup.spellBookItemSlotIndices[slotIndex] = true;
+				spellGroup.orderedSpellBookItemSlotIndices[i] = slotIndex;
+			end
+		end
+	end
 end
 
 -- Updates all spell groups within the category; Returns true if any groups or index ranges within them changed
@@ -148,9 +179,7 @@ function SpellBookClassCategoryMixin:Init(spellBookFrame)
 end
 
 function SpellBookClassCategoryMixin:UpdateSpellGroups()
-	local oldSpellGroups = self.spellGroups;
-
-	self.spellGroups = {};
+	local newSpellGroups = {};
 
 	local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.Class);
 	local classSpellsGroup = {
@@ -158,9 +187,11 @@ function SpellBookClassCategoryMixin:UpdateSpellGroups()
 		slotIndexOffset = skillLineInfo.itemIndexOffset,
 		numSpellBookItems = skillLineInfo.numSpellBookItems,
 		skillLineIndex = Enum.SpellBookSkillLineIndex.Class,
-		showActionBarstatuses = true,
+		showActionBarStatuses = true,
+		spellBookItemSlotIndices = {},
+		orderedSpellBookItemSlotIndices = {},
 	};
-	table.insert(self.spellGroups, classSpellsGroup);
+	table.insert(newSpellGroups, classSpellsGroup);
 
 	local numSpecializations = GetNumSpecializations(false, false);
 	local numAvailableSkillLines = C_SpellBook.GetNumSpellBookSkillLines();
@@ -178,14 +209,23 @@ function SpellBookClassCategoryMixin:UpdateSpellGroups()
 				isOffSpec = skillLineInfo.offSpecID ~= nil,
 				specID = skillLineInfo.specID,
 				skillLineIndex = skillLineIndex,
-				showActionBarstatuses = skillLineInfo.offSpecID == nil,
+				showActionBarStatuses = skillLineInfo.offSpecID == nil,
+				spellBookItemSlotIndices = {},
+				orderedSpellBookItemSlotIndices = {},
 			};
-			table.insert(self.spellGroups, specSpellsGroup);
+			table.insert(newSpellGroups, specSpellsGroup);
 		end
-		
 	end
 
-	return self:DidSpellGroupsChange(oldSpellGroups, self.spellGroups);
+	local compareSpellIndicies = false;
+	local anyChanges = self:DidSpellGroupsChange(self.spellGroups, newSpellGroups, compareSpellIndicies);
+
+	if anyChanges then
+		self.spellGroups = newSpellGroups;
+		self:PopulateSpellGroupsIndiciesByRange();
+	end
+
+	return anyChanges;
 end
 
 function SpellBookClassCategoryMixin:IsAvailable()
@@ -219,18 +259,26 @@ function SpellBookGeneralCategoryMixin:Init(spellBookFrame)
 end
 
 function SpellBookGeneralCategoryMixin:UpdateSpellGroups()
-	local oldSpellGroups = self.spellGroups;
-
 	local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.General);
-	self.spellGroups = {
+	local newSpellGroups = {
 		{
 			slotIndexOffset = skillLineInfo.itemIndexOffset,
 			numSpellBookItems = skillLineInfo.numSpellBookItems,
-			showActionBarstatuses = false,
+			showActionBarStatuses = true,
+			spellBookItemSlotIndices = {},
+			orderedSpellBookItemSlotIndices = {},
 		}
 	};
 
-	return self:DidSpellGroupsChange(oldSpellGroups, self.spellGroups);
+	local compareSpellIndicies = false;
+	local anyChanges = self:DidSpellGroupsChange(self.spellGroups, newSpellGroups, compareSpellIndicies);
+
+	if anyChanges then
+		self.spellGroups = newSpellGroups;
+		self:PopulateSpellGroupsIndiciesByRange();
+	end
+
+	return anyChanges;
 end
 
 function SpellBookGeneralCategoryMixin:IsAvailable()
@@ -260,18 +308,26 @@ function SpellBookPetCategoryMixin:Init(spellBookFrame)
 end
 
 function SpellBookPetCategoryMixin:UpdateSpellGroups()
-	local oldSpellGroups = self.spellGroups;
-
 	local numPetSpells = C_SpellBook.HasPetSpells() or 0;
-	self.spellGroups = {
+	local newSpellGroups = {
 		{
 			slotIndexOffset = 0,
 			numSpellBookItems = numPetSpells,
-			showActionBarstatuses = true,
+			showActionBarStatuses = true,
+			spellBookItemSlotIndices = {},
+			orderedSpellBookItemSlotIndices = {},
 		}
 	};
 
-	return self:DidSpellGroupsChange(oldSpellGroups, self.spellGroups);
+	local compareSpellIndicies = false;
+	local anyChanges = self:DidSpellGroupsChange(self.spellGroups, newSpellGroups, compareSpellIndicies);
+
+	if anyChanges then
+		self.spellGroups = newSpellGroups;
+		self:PopulateSpellGroupsIndiciesByRange();
+	end
+
+	return anyChanges;
 end
 
 function SpellBookPetCategoryMixin:IsAvailable()

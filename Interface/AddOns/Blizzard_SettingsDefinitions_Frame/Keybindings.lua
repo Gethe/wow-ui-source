@@ -36,16 +36,16 @@ function SettingsKeybindingSectionMixin:Init(initializer)
 	local bindingsCategories = data.bindingsCategories;
 	
 	self.Controls = {};
-	for _, data in ipairs(bindingsCategories) do
-		if data == KeybindingSpacer then
+	for _, categoryData in ipairs(bindingsCategories) do
+		if categoryData == KeybindingSpacer then
 			local frame = self.spacerPool:Acquire();
 			table.insert(self.Controls, frame);
 		else
 			local frame = self.bindingsPool:Acquire();
-			local bindingIndex, action = unpack(data);
-			local initializer = {data={}};
-			initializer.data.bindingIndex = bindingIndex;
-			frame:Init(initializer);
+			local bindingIndex, action = unpack(categoryData);
+			local newInitializer = {data={}};
+			newInitializer.data.bindingIndex = bindingIndex;
+			frame:Init(newInitializer);
 			table.insert(self.Controls, frame);
 		end
 	end

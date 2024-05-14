@@ -289,19 +289,19 @@ end
 
 function Professions.GetHighestLearnedRecipe(recipeInfo)
 	local learnedRecipe = nil;
-	for index, recipeInfo in Professions.EnumerateRecipes(recipeInfo) do
-		if not recipeInfo.learned then
+	for index, enumRecipeInfo in Professions.EnumerateRecipes(recipeInfo) do
+		if not enumRecipeInfo.learned then
 			break;
 		end
-		learnedRecipe = recipeInfo;
+		learnedRecipe = enumRecipeInfo;
 	end
 	return learnedRecipe;
 end
 
 function Professions.GetRecipeRank(recipeInfo)
 	local recipeID = recipeInfo.recipeID;
-	for index, recipeInfo in Professions.EnumerateRecipes(recipeInfo) do
-		if recipeID == recipeInfo.recipeID then
+	for index, enumRecipeInfo in Professions.EnumerateRecipes(recipeInfo) do
+		if recipeID == enumRecipeInfo.recipeID then
 			return index;
 		end
 	end
@@ -311,8 +311,8 @@ end
 function Professions.GetRecipeRankLearned(recipeInfo)
 	local rank = 0;
 	if Professions.HasRecipeRanks(recipeInfo) then
-		for index, recipeInfo in Professions.EnumerateRecipes(recipeInfo) do
-			if recipeInfo.learned then
+		for index, enumRecipeInfo in Professions.EnumerateRecipes(recipeInfo) do
+			if enumRecipeInfo.learned then
 				rank = rank + 1;
 			end
 		end
@@ -1252,7 +1252,6 @@ end
 
 function Professions.LayoutReagentSlots(slots, slotContainer, spacingX, spacingY, stride, direction)
 	if slots then
-		local spacingY = -5;
 		local layout = AnchorUtil.CreateGridLayout(direction, stride, spacingX, spacingY);
 		local anchor = CreateAnchor("TOPLEFT", slotContainer, "TOPLEFT", 1, -20);
 		AnchorUtil.GridLayout(slots, anchor, layout);

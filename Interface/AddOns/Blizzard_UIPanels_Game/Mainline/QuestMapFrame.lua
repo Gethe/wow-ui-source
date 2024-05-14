@@ -2,6 +2,199 @@ local tooltipButton;
 
 QuestLogButtonTypes = EnumUtil.MakeEnum("None", "Any", "Header", "HeaderCampaign", "HeaderCampaignMinimal", "HeaderCallings", "StoryHeader", "Quest");
 
+local QuestSearcherObject = { };
+
+function QuestSearcherObject:Init(questInfo)
+	self.questID = questInfo.questID;
+	self.title = questInfo.title:lower();
+	self.numObjectives = 0;
+end
+
+function QuestSearcherObject:Update(questInfo)
+	-- the only thing that could change
+	self.questLogIndex = questInfo.questLogIndex;
+end
+
+function QuestSearcherObject:Matches(text)
+	-- nil means it needs to be evaluated
+	if self.matched ~= nil then
+		-- sequenced quests that were not matched need to run through objectives again
+		if not self.matched and self.sequenced then
+			if self:MatchesObjectives(text) then
+				self.matched = true;
+			end
+		end
+		return self.matched;
+	end
+
+	local ignorePatternMatching = true;
+
+	-- title check
+	if self.title and self.title:find(text, 1, ignorePatternMatching) then
+		self.matched = true;
+		return true;
+	end
+
+	-- log text check
+	if not self.logText then
+		local description, logText = GetQuestLogQuestText(self.questLogIndex);
+		if logText then
+			self.logText = logText:lower();
+		end
+	end
+	if self.logText and self.logText:find(text, 1, ignorePatternMatching) then
+		self.matched = true;
+		return true;
+	end
+
+	-- objectives check
+	if self:MatchesObjectives(text) then
+		self.matched = true;
+		return true;
+	end
+	
+	self.matched = false;
+	return false;
+end
+
+function QuestSearcherObject:MatchesObjectives(text)
+	-- if a quest is sequenced, objectives can change
+	if self.sequenced == nil then
+		self.sequenced = IsQuestSequenced(self.questID);
+	end
+	-- fill out objectives
+	if self.numObjectives == 0 or self.sequenced then
+		if not self.objectives then
+			self.objectives = { };
+		end
+		-- Always adding objectives, never removing. There's an edge case where a player can abandon a sequenced quest after progressing to new objectives,
+		-- pick it up again, do a search, and match what's now a future objective.
+		local numObjectives = GetNumQuestLeaderBoards(self.questLogIndex);
+		for index = self.numObjectives + 1, numObjectives do
+			local objectiveText, objectiveType, finished = GetQuestLogLeaderBoard(index, self.questLogIndex);
+			if objectiveText then
+				table.insert(self.objectives, objectiveText:lower());
+			end
+		end
+		self.numObjectives = numObjectives;
+	end
+	-- check them
+	if self.numObjectives > 0 then
+		local ignorePatternMatching = true;
+		for i, objectiveText in ipairs(self.objectives) do
+			if objectiveText:find(text, 1, ignorePatternMatching) then
+				return true;
+			end
+		end
+	end
+	return false;
+end
+
+local QuestSearcher = { objects = { }; };
+
+function QuestSearcher:IsActive()
+	return self.text ~= nil;
+end
+
+function QuestSearcher:Clear()
+	if self:IsActive() then
+		self:RestoreHeaderStates();
+	end
+	self.text = nil;
+	self.objects = { };
+	self.headerStates = nil;
+end
+
+function QuestSearcher:SetText(text)
+	if not self:IsActive() and (not text or text == "") then
+		return;
+	end
+
+	if text and #text > 0 then
+		local lowercaseText = text:lower();
+		-- Check if the search term is being appended to. If so, no reason to check objects that already failed to match the shorter text.
+		local ignorePatternMatching = true;
+		local skipFailedMatches = self.text and #lowercaseText > #self.text and lowercaseText:find(self.text, 1, ignorePatternMatching) == 1;
+		self:ClearMatches(skipFailedMatches);
+		if not self:IsActive() then
+			self:SaveHeaderStates();
+		end
+		self.text = lowercaseText;
+	else
+		if self:IsActive() then
+			self:RestoreHeaderStates();
+		end
+		self.text = nil;
+	end
+	QuestLogQuests_Update();
+end
+
+function QuestSearcher:ClearMatches(skipFailedMatches)
+	for questID, object in pairs(self.objects) do
+		if not skipFailedMatches or object.matched ~= false then
+			object.matched = nil;
+		end
+	end
+end
+
+function QuestSearcher:IsFilteredOut(questInfo)
+	if not self:IsActive() then
+		return false;
+	end
+
+	local object = self:GetObject(questInfo);
+	return not object:Matches(self.text);
+end
+
+function QuestSearcher:GetObject(questInfo)
+	local questID = questInfo.questID;
+	local object = self.objects[questID];
+	if not object then
+		object = CreateAndInitFromMixin(QuestSearcherObject, questInfo);
+		self.objects[questID] = object;
+	end
+	object:Update(questInfo);
+	return object;
+end
+
+-- Saves the collapsed state of all headers and expands the collapsed ones.
+-- At the end of search all headers are restored to saved state.
+function QuestSearcher:SaveHeaderStates()
+	QuestMapFrame.ignoreQuestLogUpdate = true;
+	self.headerStates = { };
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local info = C_QuestLog.GetInfo(i);
+		if info.isHeader then
+			self.headerStates[info.headerSortKey] = info.isCollapsed;
+			if info.isCollapsed then
+				ExpandQuestHeader(info.questLogIndex);
+			end
+		end
+	end
+	QuestMapFrame.ignoreQuestLogUpdate = false;
+end
+
+function QuestSearcher:RestoreHeaderStates()
+	if not self.headerStates then
+		return;
+	end
+
+	QuestMapFrame.ignoreQuestLogUpdate = true;
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local info = C_QuestLog.GetInfo(i);
+		if info.isHeader then
+			local isCollapsed = self.headerStates[info.headerSortKey];
+			if isCollapsed == true then
+				CollapseQuestHeader(info.questLogIndex);
+			elseif isCollapsed == false then
+				ExpandQuestHeader(info.questLogIndex);
+			end
+		end
+	end
+	QuestMapFrame.ignoreQuestLogUpdate = false;
+	self.headerStates = nil;
+end
+
 QuestLogMixin = { };
 
 function QuestLogMixin:GetCurrentMapID()
@@ -68,6 +261,28 @@ function QuestLogMixin:OnHighlightedQuestPOIChange(questID)
 	end
 end
 
+function QuestLogMixin:SetHeaderQuestsTracked(headerLogIndex, setTracked)
+	self.ignoreQuestWatchListChanged = true;
+	for i = headerLogIndex + 1, C_QuestLog.GetNumQuestLogEntries() do
+		local info = C_QuestLog.GetInfo(i);
+		if info.isHeader then
+			break;
+		else
+			local questID = info.questID;
+			if questID then
+				local questTracked = QuestUtils_IsQuestWatched(questID);
+				if setTracked and not questTracked then
+					C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
+				elseif not setTracked and questTracked then
+					C_QuestLog.RemoveQuestWatch(questID);
+				end
+			end
+		end
+	end
+	self.ignoreQuestWatchListChanged = false;
+	QuestMapFrame_UpdateAll();
+end
+
 QuestLogHeaderCodeMixin = {};
 
 function QuestLogHeaderCodeMixin:GetButtonType()
@@ -78,6 +293,23 @@ function QuestLogHeaderCodeMixin:OnLoad()
 	local isMouseOver = false;
 	self:CheckHighlightTitle(isMouseOver);
 	self:SetPushedTextOffset(1, -1);
+end
+
+local function QuestLogTrackAllDropDown_Initialize(dropdown)
+	local info = UIDropDownMenu_CreateInfo();
+	info.isNotRadio = true;
+	info.text = QUEST_LOG_TRACK_ALL;
+	info.notCheckable = true;
+	info.func = function()
+		QuestMapFrame:SetHeaderQuestsTracked(dropdown.questLogIndex, true);
+	end;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+	
+	info.text = QUEST_LOG_UNTRACK_ALL;
+	info.func = function()
+		QuestMapFrame:SetHeaderQuestsTracked(dropdown.questLogIndex, false);
+	end;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 end
 
 function QuestLogHeaderCodeMixin:OnClick(button)
@@ -91,6 +323,13 @@ function QuestLogHeaderCodeMixin:OnClick(button)
 				CollapseQuestHeader(self.questLogIndex);
 			end
 		end
+	elseif button == "RightButton" then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+		local dropdown = QuestLogSettingsDropDown;
+		dropdown.initialize = QuestLogTrackAllDropDown_Initialize;
+		dropdown.displayMode = "MENU";
+		dropdown.questLogIndex = self.questLogIndex;
+		ToggleDropDownMenu(1, nil, dropdown, self, 296, 22);
 	end
 end
 
@@ -269,7 +508,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		if questLogIndex and GetCVarBool("autoQuestWatch") and GetNumQuestLeaderBoards(questLogIndex) > 0 and C_QuestLog.GetNumQuestWatches() < Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
 			C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Automatic);
 		end
-	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
+	elseif ( event == "QUEST_WATCH_LIST_CHANGED" and not self.ignoreQuestWatchListChanged ) then
 		QuestMapFrame_UpdateQuestDetailsButtons();
 		QuestMapFrame_UpdateAll();
 	elseif ( event == "SUPER_TRACKING_CHANGED" ) then
@@ -304,7 +543,6 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Refresh();
 	elseif ( event == "CVAR_UPDATE" ) then
-		local arg1 =...;
 		if ( arg1 == "questPOI" ) then
 			QuestMapFrame_UpdateAll();
 		end
@@ -312,6 +550,7 @@ function QuestMapFrame_OnEvent(self, event, ...)
 end
 
 function QuestMapFrame_OnHide(self)
+	QuestScrollFrame.SearchBox:Clear();
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
 	QuestMapFrame_CloseQuestDetails(self:GetParent());
 end
@@ -712,15 +951,7 @@ function QuestLogQuestDetailsMixin:AdjustRewardsFrameContainer()
 	self.RewardsFrameContainer:SetHeight(containerHeight);
 end
 
-function QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID)
-	-- Callings never display a POI icon, so super-track it now, yep, this steals the current super-track.
-	if C_QuestLog.IsQuestCalling(questID) then
-		C_SuperTrack.SetSuperTrackedQuestID(questID);
-	end
-end
-
 function QuestMapFrame_ShowQuestDetails(questID)
-	QuestMapFrame_CheckAutoSupertrackOnShowDetails(questID);
 	QuestMapFrame_PingQuestID(questID);
 
 	EventRegistry:TriggerEvent("QuestLog.HideCampaignOverview");
@@ -898,6 +1129,8 @@ function QuestLogScrollFrameMixin:OnLoad()
 	self.campaignHeaderMinimalFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CampaignHeaderMinimalTemplate");
 	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "CovenantCallingsHeaderTemplate");
 	self.CampaignTooltip = CreateFrame("Frame", nil, UIParent, "CampaignTooltipTemplate");
+	
+	self.SearchBox.Instructions:SetText(SEARCH_QUEST_LOG);
 end
 
 function QuestLogScrollFrameMixin:OnSizeChanged()
@@ -917,7 +1150,22 @@ function QuestLogScrollFrameMixin:ResizeBackground()
 end
 
 function QuestLogScrollFrameMixin:UpdateBackground(displayState)
-	local atlas = QuestLogQuests_IsDisplayEmpty(displayState) and "QuestLog-empty-quest-background" or "QuestLog-main-background";
+	local showEmptyText = false;
+	local showNoSearchResultsText = false;
+	local atlas;
+	if QuestLogQuests_IsDisplayEmpty(displayState) then
+		if QuestSearcher:IsActive() then
+			atlas = "QuestLog-main-background";
+			showNoSearchResultsText = true;
+		else
+			atlas = "QuestLog-empty-quest-background";
+			showEmptyText = true;
+		end
+	else
+		atlas = "QuestLog-main-background";
+	end
+	self.EmptyText:SetShown(showEmptyText);
+	self.NoSearchResultsText:SetShown(showNoSearchResultsText);
 	self.Background:SetAtlas(atlas, true);
 	self:ResizeBackground();
 end
@@ -961,7 +1209,6 @@ function QuestMapQuestOptions_TrackQuest(questID)
 		C_QuestLog.RemoveQuestWatch(questID);
 	else
 		C_QuestLog.AddQuestWatch(questID, Enum.QuestWatchType.Manual);
-		QuestSuperTracking_OnQuestTracked(questID);
 	end
 end
 
@@ -1157,6 +1404,10 @@ local function QuestLogQuests_ShouldShowQuestButton(info)
 		return false;
 	end
 
+	if QuestSearcher:IsFilteredOut(info) then
+		return false;
+	end
+
 	-- If it is a quest, but its header is collapsed, then it shouldn't show
 	if info.header and info.header.isCollapsed then
 		return false;
@@ -1186,7 +1437,7 @@ local function QuestLogQuests_BuildSingleQuestInfo(questLogIndex, questInfoConta
 		lastHeader = info;
 
 		local isCampaign = info.campaignID ~= nil;
-		info.shouldDisplay = isCampaign; -- Always display campaign headers, the rest start as hidden
+		info.shouldDisplay = isCampaign and not QuestSearcher:IsActive(); -- Always display campaign headers (unless searching), the rest start as hidden
 		info.questSortType = QuestUtils_GetQuestSortType(info);
 	else
 		info.isCalling = C_QuestLog.IsQuestCalling(info.questID);
@@ -1351,7 +1602,10 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local totalHeight = 8 + button.Text:GetHeight();
 
 	-- objectives
-	if isComplete then
+	local showObjectives = GetCVarBool("showQuestObjectivesInLog");
+	if not showObjectives then
+		totalHeight = totalHeight + 4; 
+	elseif isComplete then
 		local objectiveFrame = QuestScrollFrame.objectiveFramePool:Acquire();
 		objectiveFrame.questID = questID;
 		objectiveFrame:Show();
@@ -1506,6 +1760,7 @@ local function QuestLogQuests_AddHeaderButton(displayState, info)
 	else
 		button = QuestLogQuests_AddStandardHeaderButton(displayState, info);
 	end
+	button.sortKey = info.headerSortKey;
 
 	return button;
 end
@@ -1605,6 +1860,7 @@ function QuestLogQuests_Update()
 	-- Display the rest of the normal quests and their headers.
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, questInfos);
 
+	QuestScrollFrame.SearchBox:UpdateState(displayState);
 	QuestScrollFrame:UpdateBackground(displayState);
 	QuestScrollFrame.Contents:SelectButtonByQuestID(C_SuperTrack.GetSuperTrackedQuestID());
 	QuestScrollFrame.Contents:Layout();
@@ -1796,6 +2052,11 @@ end
 
 function QuestLogTitleMixin:OnCheckBoxMouseUp(o, button, upInside)
 	if button == "LeftButton" and upInside then
+		if QuestUtils_IsQuestWatched(questID) then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		end
 		self:ToggleTracking();
 	end
 end
@@ -1977,4 +2238,57 @@ StoryHeaderMixin = {};
 
 function StoryHeaderMixin:GetButtonType()
 	return QuestLogButtonTypes.StoryHeader;
+end
+
+QuestLogSearchBoxMixin = { };
+
+function QuestLogSearchBoxMixin:OnTextChanged()
+	SearchBoxTemplate_OnTextChanged(self);
+	QuestSearcher:SetText(self:GetText());
+end
+
+function QuestLogSearchBoxMixin:Clear()
+	QuestSearcher:Clear();
+	self:SetText("");
+end
+
+function QuestLogSearchBoxMixin:UpdateState(displayState)
+	local isEmpty = QuestLogQuests_IsDisplayEmpty(displayState);
+	local numQuests = C_QuestLog.GetNumQuestLogEntries();
+	-- don't disable in the middle of a search
+	if isEmpty and not QuestSearcher:IsActive() then
+		self:Disable();
+	else
+		self:Enable();
+	end
+end
+
+QuestLogSettingsButtonMixin = { };
+
+local function QuestLogSettingsDropDown_Initialize()
+	local info = UIDropDownMenu_CreateInfo();
+	info.isNotRadio = true;
+	info.text = QUEST_LOG_SHOW_OBJECTIVES;
+	info.checked = GetCVarBool("showQuestObjectivesInLog");
+	info.func = function()
+		local value = not GetCVarBool("showQuestObjectivesInLog");
+		SetCVar("showQuestObjectivesInLog", value and 1 or 0);
+		QuestLogQuests_Update();
+	end;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+end
+
+function QuestLogSettingsButtonMixin:OnMouseDown()
+	self.Icon:AdjustPointsOffset(1, -1);
+end
+
+function QuestLogSettingsButtonMixin:OnMouseUp(button, upInside)
+	self.Icon:AdjustPointsOffset(-1, 1);
+	if button == "LeftButton" and upInside then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+		local dropdown = QuestLogSettingsDropDown;
+		dropdown.initialize = QuestLogSettingsDropDown_Initialize;
+		dropdown.displayMode = "MENU";		
+		ToggleDropDownMenu(1, nil, dropdown, self, 14, 2);
+	end
 end

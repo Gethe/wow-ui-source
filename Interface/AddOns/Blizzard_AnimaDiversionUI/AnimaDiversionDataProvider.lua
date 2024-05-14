@@ -133,15 +133,6 @@ function AnimaDiversionDataProviderMixin:RefreshAllData(fromOnShow)
 	end 
 
 	self:AddOrigin(originPosition);
-
-	local hasAnyChanneledNodes = false;
-	for _, nodeData in ipairs(animaNodes) do
-		local wasChanneled = self:AddNode(nodeData);
-
-		if wasChanneled then
-			hasAnyChanneledNodes = true;
-		end
-	end
 end
 
 function AnimaDiversionDataProviderMixin:AddNode(nodeData)

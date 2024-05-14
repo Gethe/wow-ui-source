@@ -429,8 +429,9 @@ function QuestUtil.TrackWorldQuest(questID, watchType)
 		lastTrackedQuestID = questID;
 	end
 
-	if watchType == Enum.QuestWatchType.Automatic or not C_SuperTrack.GetSuperTrackedQuestID() then
-		C_SuperTrack.SetSuperTrackedQuestID(questID);
+	if watchType == Enum.QuestWatchType.Automatic then
+		local forceAllowTasks = true;
+		QuestUtil.CheckAutoSuperTrackQuest(questID, forceAllowTasks);
 	end
 end
 
@@ -439,15 +440,30 @@ function QuestUtil.UntrackWorldQuest(questID)
 		if lastTrackedQuestID == questID then
 			lastTrackedQuestID = nil;
 		end
-		if questID == C_SuperTrack.GetSuperTrackedQuestID() then
-			QuestSuperTracking_ChooseClosestQuest();
-		end
 	end
 	ObjectiveTrackerManager:UpdateAll();
 end
 
 function QuestUtil.IsQuestTrackableTask(questID)
 	return C_QuestLog.IsQuestTask(questID) and not C_QuestLog.IsQuestBounty(questID);
+end
+
+function QuestUtil.AllowAutoSuperTrackQuest(questID, forceAllowTasks)
+	if not C_SuperTrack.IsSuperTrackingAnything() then
+		if not forceAllowTasks then
+		 	return not QuestUtils_IsQuestWorldQuest(questID) and not QuestUtils_IsQuestBonusObjective(questID);
+		end
+
+		return true;
+	end
+
+	return false;
+end
+
+function QuestUtil.CheckAutoSuperTrackQuest(questID, forceAllowTasks)
+	if QuestUtil.AllowAutoSuperTrackQuest(questID, forceAllowTasks) then
+		C_SuperTrack.SetSuperTrackedQuestID(questID);
+	end
 end
 
 function QuestUtils_GetQuestTagAtlas(tagID, worldQuestType)
@@ -609,8 +625,8 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 				if TooltipUtil.ShouldDoItemComparison() then
 					GameTooltip_ShowCompareItem(tooltip.ItemTooltip.Tooltip, tooltip.BackdropFrame);
 				else
-					for i, tooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do
-						tooltip:Hide();
+					for i, shoppingTooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do
+						shoppingTooltip:Hide();
 					end
 				end
 			end

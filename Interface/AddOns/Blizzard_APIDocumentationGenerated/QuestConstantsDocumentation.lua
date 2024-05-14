@@ -35,9 +35,9 @@ local QuestConstants =
 		{
 			Name = "QuestCompleteSpellType",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "LegacyBehavior", Type = "QuestCompleteSpellType", EnumValue = 0 },
@@ -48,6 +48,9 @@ local QuestConstants =
 				{ Name = "Spell", Type = "QuestCompleteSpellType", EnumValue = 5 },
 				{ Name = "Unlock", Type = "QuestCompleteSpellType", EnumValue = 6 },
 				{ Name = "Companion", Type = "QuestCompleteSpellType", EnumValue = 7 },
+				{ Name = "QuestlineUnlock", Type = "QuestCompleteSpellType", EnumValue = 8 },
+				{ Name = "QuestlineReward", Type = "QuestCompleteSpellType", EnumValue = 9 },
+				{ Name = "QuestlineUnlockPart", Type = "QuestCompleteSpellType", EnumValue = 10 },
 			},
 		},
 		{

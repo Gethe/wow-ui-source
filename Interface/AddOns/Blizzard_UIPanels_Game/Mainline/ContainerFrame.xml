@@ -60,7 +60,7 @@
 		</Scripts>
 	</DropDownToggleButton>
 
-	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" hidden="true" frameLevel="10" virtual="true">
+	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" inherits="EnchantingItemButtonAnimTemplate" hidden="true" frameLevel="10" virtual="true">
 		<Size x="37" y="37"/>
 		<KeyValues>
 			<KeyValue key="emptyBackgroundAtlas" value="bags-item-slot64" type="string"/>

@@ -1,3 +1,4 @@
+ScenariosList = nil;
 NUM_SCENARIO_CHOICE_BUTTONS = 19;
 SCENARIOS_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 
@@ -209,17 +210,6 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		ScenarioQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
-		-- see if it's heroic 
-		local activeType = ScenarioQueueFrame.type;
-		local isHeroic;
-		if ( activeType and activeType ~= "specific" ) then
-			local difficultyID = select(LFG_RETURN_VALUES.difficulty, GetLFGDungeonInfo(activeType));
-			if ( difficultyID ) then
-				local _;
-				_, _, isHeroic = GetDifficultyInfo(difficultyID);
-			end
-		end
-		
 		if (IsInGroup() and GetNumGroupMembers() > 1) then
 			ScenarioQueueFrameFindGroupButton:SetText(JOIN_AS_GROUP);
 		else

@@ -63,6 +63,20 @@ local MajorFactions =
 			},
 		},
 		{
+			Name = "GetMajorFactionRenownInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "MajorFactionRenownInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRenownLevels",
 			Type = "Function",
 
@@ -184,6 +198,16 @@ local MajorFactions =
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "celebrationSoundKit", Type = "number", Nilable = false },
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MajorFactionRenownInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "renownLevel", Type = "number", Nilable = false },
+				{ Name = "renownReputationEarned", Type = "number", Nilable = false },
+				{ Name = "renownLevelThreshold", Type = "number", Nilable = false },
 			},
 		},
 		{

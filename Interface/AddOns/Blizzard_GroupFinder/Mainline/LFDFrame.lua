@@ -12,6 +12,8 @@ LFD_PROPOSAL_FAILED_CLOSE_TIME = 5;
 
 LFD_NUM_ROLES = 3;
 
+LFDDungeonList = nil;
+
 -------------------------------------
 -----------LFD Frame--------------
 -------------------------------------

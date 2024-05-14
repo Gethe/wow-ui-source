@@ -33,7 +33,7 @@ end
 
 function ClassTalentButtonArtMixin:ShowActionBarHighlights()
 	local spellID = self:GetSpellID();
-	if spellID and self:GetActionBarStatus() == TalentButtonUtil.ActionBarStatus.NotMissing then
+	if spellID and self:GetActionBarStatus() == ActionButtonUtil.ActionBarActionStatus.NotMissing then
 		ClearOnBarHighlightMarks();
 		UpdateOnBarHighlightMarksBySpell(spellID);
 		ActionBarController_UpdateAllSpellHighlights();
@@ -58,9 +58,9 @@ end
 
 function ClassTalentButtonBaseMixin:UpdateActionBarStatus()
 	if self:IsInspecting() or self:FrameHasAnyPendingChanges() then
-		self.actionBarStatus = TalentButtonUtil.ActionBarStatus.NotMissing;
+		self.actionBarStatus = ActionButtonUtil.ActionBarActionStatus.NotMissing;
 	else
-		self.actionBarStatus = TalentButtonUtil.GetActionBarStatusForNode(self:GetNodeInfo(), self:GetSpellID());
+		self.actionBarStatus = SpellSearchUtil.GetActionBarStatusForTraitNode(self:GetNodeInfo(), self:GetSpellID());
 	end
 end
 
@@ -167,7 +167,7 @@ end
 function ClassTalentButtonSpendMixin:AddTooltipInstructions(tooltip)
 	-- Overrides TalentButtonSpendMixin.
 
-	local statusTooltip = TalentButtonUtil.GetTooltipForActionBarStatus(self:GetActionBarStatus());
+	local statusTooltip = SpellSearchUtil.GetTooltipForActionBarStatus(self:GetActionBarStatus());
 	if statusTooltip then
 		local wrap = true;
 		GameTooltip_AddColoredLine(tooltip, statusTooltip, LIGHTBLUE_FONT_COLOR, wrap);
@@ -347,9 +347,9 @@ function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectCh
 	local talentFrame = self:GetTalentFrame();
 
 	if self:IsInspecting() or talentFrame:HasAnyPendingChanges() then
-		self.actionBarStatus = TalentButtonUtil.ActionBarStatus.NotMissing;
+		self.actionBarStatus = ActionButtonUtil.ActionBarActionStatus.NotMissing;
 	else
-		self.actionBarStatus = TalentButtonUtil.GetActionBarStatusForNodeEntry(entryID, nodeInfo, self:GetSpellID());
+		self.actionBarStatus = SpellSearchUtil.GetActionBarStatusForTraitNodeEntry(entryID, nodeInfo, self:GetSpellID());
 	end
 
 	self:SetSearchMatchType(nodeInfo and talentFrame:GetSearchMatchTypeForEntry(nodeInfo.ID, entryID) or nil);
@@ -357,7 +357,7 @@ function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectCh
 end
 
 function ClassTalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
-	local statusTooltip = TalentButtonUtil.GetTooltipForActionBarStatus(self:GetActionBarStatus());
+	local statusTooltip = SpellSearchUtil.GetTooltipForActionBarStatus(self:GetActionBarStatus());
 	if statusTooltip then
 		local wrap = true;
 		GameTooltip_AddColoredLine(tooltip, statusTooltip, LIGHTBLUE_FONT_COLOR, wrap);

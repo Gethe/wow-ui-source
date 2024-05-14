@@ -125,7 +125,6 @@ function ChallengesFrameMixin:OnShow()
     PVEFrame:SetPortraitToAsset("Interface\\Icons\\achievement_bg_wineos_underxminutes");
 
 	self:UpdateTitle();
-	PVEFrame_HideLeftInset();
 
 	C_MythicPlus.RequestCurrentAffixes();
 	C_MythicPlus.RequestMapInfo();
@@ -137,7 +136,6 @@ function ChallengesFrameMixin:OnShow()
 end
 
 function ChallengesFrameMixin:OnHide()
-    PVEFrame_ShowLeftInset();
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("WEEKLY_REWARDS_UPDATE");
 	self:UnregisterEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE");

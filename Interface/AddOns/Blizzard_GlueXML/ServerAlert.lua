@@ -1,4 +1,6 @@
 
+g_collapsedServerAlert = g_collapsedServerAlert or nil;
+
 local s_serverAlertOffsets = {
 	default = {
 		titleX = 0,

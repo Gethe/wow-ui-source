@@ -1,7 +1,5 @@
 --! TODO sounds
 --! TODO art
--- TODO / NOTE when implementing the dashboard, we might not want this frame to be available while player is running a delve.
--- TODO / NOTE ^^^ we should check the "delve progress" world state (partyinfo.cpp / DELVE_COMPLETED_WORLD_STATE_ID) and disable the config button if delve is in progress
 
 -- TODO / NOTE : Some of these are going to be temporary while data is WIP, there's a task open to get this data with a new API
 --[[ LOCALS ]]
@@ -12,6 +10,10 @@ local BRANN_COMBAT_TRINKET_NODE_ID = 99855;
 local BRANN_UTILITY_TRINKET_NODE_ID = 99854;
 local BRANN_CREATURE_DISPLAY_ID = 115505;
 local BRANN_FACTION_ID = 2640;
+
+-- NOTE: This creature is used to open the companion config panel, but may be changed to a gameobject in the near future
+local DELVES_SUPPLIES_CREATURE_ID = 207283;
+local DELVES_SUPPLIES_MAX_DISTANCE = 10;
 
 local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "TRAIT_SYSTEM_NPC_CLOSED",
@@ -69,7 +71,6 @@ function DelvesCompanionConfigurationFrameMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
 end
 
--- TODO will probably need events to listen to for changes to experience, attributes, etc. later on
 function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
     -- TODO this event may change if/when that GameObject changes (see OnHide comment)
     if event == "TRAIT_SYSTEM_NPC_CLOSED" then
@@ -383,10 +384,20 @@ end
 CompanionConfigListButtonMixin = {};
 
 function CompanionConfigListButtonMixin:OnClick()
-    if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
-        EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local delveInProgress = C_PartyInfo.IsDelveInProgress();
+    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+
+    if UnitAffectingCombat("player") then
+        UIErrorsFrame:AddExternalErrorMessage(ERR_NOT_IN_COMBAT);
+    elseif playerMustInteractWithSupplies then
+        UIErrorsFrame:AddExternalErrorMessage(DELVES_ERR_MUST_USE_SUPPLIES);
     else
-        UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+        if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
+            EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
+        else
+            UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+        end
     end
 end
 

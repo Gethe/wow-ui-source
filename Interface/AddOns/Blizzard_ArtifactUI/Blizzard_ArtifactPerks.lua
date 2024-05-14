@@ -1093,7 +1093,7 @@ function ArtifactPerksMixin:AnimateInCrest()
 	end);
 end
 
-function ArtifactPerksMixin:OnRevealAnimationFinished(powerButton)
+function ArtifactPerksMixin:OnRevealAnimationFinished(powerButtonFinished)
 	if self.numRevealsPlaying then
 		self.numRevealsPlaying = self.numRevealsPlaying - 1;
 		if self.numRevealsPlaying == 0 then
@@ -1330,9 +1330,9 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 	for i = 1, numRelicSlots do
 		local relicSlot = self.RelicSlots[i];
 
-		local relicType = C_ArtifactUI.GetRelicSlotType(i);
+		local relicSlotType = C_ArtifactUI.GetRelicSlotType(i);
 
-		local relicAtlasName = ("Relic-%s-Slot"):format(relicType);
+		local relicAtlasName = ("Relic-%s-Slot"):format(relicSlotType);
 		relicSlot:GetNormalTexture():SetAtlas(relicAtlasName, true);
 		relicSlot:GetHighlightTexture():SetAtlas(relicAtlasName, true);
 		relicSlot.GlowBorder1:SetAtlas(relicAtlasName, true);
@@ -1369,7 +1369,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 		end
 
 
-		relicSlot.relicType = relicType;
+		relicSlot.relicType = relicSlotType;
 		relicSlot.relicSlotIndex = i;
 		relicSlot.lockedReason = lockedReason;
 

@@ -531,7 +531,7 @@ function UIWidgetBaseSpellTemplateMixin:Setup(widgetContainer, spellInfo, enable
 	self.Text:SetShown(textShown);
 
 	if textShown then
-		local text = (spellInfo.text == "") and name or spellInfo.text;
+		local text = (spellInfo.text == "") and spellData.name or spellInfo.text;
 		self.Text:Setup(text, spellInfo.textFontType, spellInfo.textSizeType, enabledState, spellInfo.hAlignType);
 
 		if textWidth == 0 then
@@ -1408,7 +1408,7 @@ function UIWidgetBaseItemTemplateMixin:ShowEmbeddedTooltip(itemID)
 		self.Tooltip:SetScript("OnTooltipCleared", nil);
 	end
 
-	function setEmbeddedTooltip()
+	local function setEmbeddedTooltip()
 		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 		self.Tooltip:SetPadding(-10, -10, -10, -10);
 		self.Tooltip:SetItemByID(itemID);

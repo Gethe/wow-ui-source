@@ -24,6 +24,7 @@ PvPTalents/Blizzard_WarmodeButtonTemplate.xml
 SpellBook/Blizzard_SpellBookUtil.lua
 SpellBook/Blizzard_SpellBookTemplates.xml
 SpellBook/Blizzard_SpellBookItem.xml
+SpellBook/Blizzard_SpellBookSearch.lua
 SpellBook/Blizzard_SpellBookFrame.xml
 Blizzard_PlayerSpellsFrame.xml
 

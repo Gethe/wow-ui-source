@@ -245,7 +245,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	local prevButton = nil;
 	local numButtons = 0;
 	for i=1, numSlots do
-		local spellID, overrideSpellID, isKnown, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
+		local spellID, overrideSpellID, isKnownSlot, spellName, slotSpecID = GetFlyoutSlotInfo(flyoutID, i);
 		local visible = true;
 
 		-- Ignore Call Pet spells if there isn't a pet in that slot
@@ -254,7 +254,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			visible = false;
 		end
 
-		if ( ((not offSpec or slotSpecID == 0) and visible and isKnown) or (offSpec and slotSpecID == specID) ) then
+		if ( ((not offSpec or slotSpecID == 0) and visible and isKnownSlot) or (offSpec and slotSpecID == specID) ) then
 			local button = _G["SpellFlyoutButton"..numButtons+1];
 			if (not button) then
 				button = CreateFrame("CHECKBUTTON", "SpellFlyoutButton"..numButtons+1, SpellFlyout, "SpellFlyoutButtonTemplate");

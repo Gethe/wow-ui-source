@@ -1397,6 +1397,7 @@ end
 --
 
 local FOCUS_FRAME_LOCKED = true;
+local FOCUS_FRAME_MOVING = false;
 
 FocusFrameMixin = {};
 

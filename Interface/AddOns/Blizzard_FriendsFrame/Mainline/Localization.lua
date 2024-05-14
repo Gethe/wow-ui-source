@@ -1,3 +1,5 @@
+-- luacheck: ignore 111 (setting non-standard global variable)
+
 local function LocalizeFriendsFrame_zh()
 	ADDFRIENDFRAME_WOWHEIGHT = 232;
 	ADDFRIENDFRAME_BNETHEIGHT = 310;

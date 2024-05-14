@@ -459,7 +459,7 @@ end
 -- Dungeon Difficulty
 --
 						
-local IS_GUILD_GROUP;
+IS_GUILD_GROUP = nil;
 
 function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
 	if ( event == "GUILD_PARTY_STATE_UPDATED" ) then
@@ -678,7 +678,7 @@ function MiniMapBattlefieldDropDown_Initialize()
 end
 
 function BattlefieldFrame_UpdateStatus(tooltipOnly, mapIndex)
-	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
+	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue, waitingOnOtherActivity;
 	local numberQueues = 0;
 	local waitTime, timeInQueue;
 	local tooltip;

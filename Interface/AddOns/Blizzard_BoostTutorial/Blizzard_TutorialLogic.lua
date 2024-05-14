@@ -3001,9 +3001,9 @@ function Tutorials:Quest_ObjectivesComplete(questData)
 	local allQuestsReadyForTurnIn = true;
 
 	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		local questLogQuestID = C_QuestLog.GetQuestIDForLogIndex(i);
 		-- Only check valid non-account quests.
-		if questID and not C_QuestLog.IsAccountQuest(questID) and not C_QuestLog.ReadyForTurnIn(questID) then
+		if questLogQuestID and not C_QuestLog.IsAccountQuest(questLogQuestID) and not C_QuestLog.ReadyForTurnIn(questLogQuestID) then
 			allQuestsReadyForTurnIn = false;
 			break;
 		end

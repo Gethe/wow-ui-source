@@ -25,7 +25,7 @@ local SpellBookWhileVisibleUnitEvents = {
 	"PLAYER_SPECIALIZATION_CHANGED",
 }
 
-SpellBookFrameMixin = CreateFromMixins(SpellBookFrameTutorialsMixin);
+SpellBookFrameMixin = CreateFromMixins(SpellBookFrameTutorialsMixin, SpellBookSearchMixin);
 
 function SpellBookFrameMixin:OnLoad()
 	TabSystemOwnerMixin.OnLoad(self);
@@ -44,10 +44,24 @@ function SpellBookFrameMixin:OnLoad()
 	self.PagedSpellsFrame:SetElementTemplateData(Templates);
 	self.PagedSpellsFrame:RegisterCallback(PagedContentFrameBaseMixin.Event.OnUpdate, self.OnPagedSpellsUpdate, self);
 
+	local initialHidePassives = GetCVarBool("spellBookHidePassives");
+	local isUserInput = false;
+	self.HidePassivesCheckButton:SetControlChecked(initialHidePassives, isUserInput);
+	self.HidePassivesCheckButton:SetCallback(GenerateClosure(self.OnHidePassivesToggled, self));
+
 	FrameUtil.RegisterFrameForEvents(self, SpellBookLifetimeEvents);
 	EventRegistry:RegisterCallback("ClickBindingFrame.UpdateFrames", self.OnClickBindingUpdate, self);
 
+	local onPagingButtonEnter = GenerateClosure(self.OnPagingButtonEnter, self);
+	local onPagingButtonLeave = GenerateClosure(self.OnPagingButtonLeave, self);
+	self.PagedSpellsFrame.PagingControls:SetButtonHoverCallbacks(onPagingButtonEnter, onPagingButtonLeave);
+
+	-- Start the page corner flipbook to sit on its first frame while not playing
+	self.BookCornerFlipbook.Anim:Play();
+	self.BookCornerFlipbook.Anim:Pause();
+
 	SpellBookFrameTutorialsMixin.OnLoad(self);
+	self:InitializeSearch();
 end
 
 function SpellBookFrameMixin:OnPagedSpellsUpdate()
@@ -55,10 +69,16 @@ function SpellBookFrameMixin:OnPagedSpellsUpdate()
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.SpellBookFrame.DisplayedSpellsChanged");
 end
 
+function SpellBookFrameMixin:OnHidePassivesToggled(isChecked, isUserInput)
+	SetCVar("spellBookHidePassives", isChecked);
+	local forceUpdateSpellGroups, resetCurrentPage = true, false;
+	self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
+end
+
 function SpellBookFrameMixin:OnShow()
 	self:UpdateAllSpellData();
 
-	if not self:GetTab() then
+	if not self:GetTab() and not self:IsInSearchResultsMode() then
 		self:ResetToFirstAvailableTab();
 	end
 
@@ -136,6 +156,11 @@ function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
 		self.PagedSpellsFrame.ViewFrames[1]:SetPoint("TOPLEFT", self.view1MinimizedXOffset, self.view1YOffset);
 		self.PagedSpellsFrame:SetViewsPerPage(1, true);
 		self.PagedSpellsFrame.ViewFrames[2]:Hide();
+
+		self.SearchBox:ClearAllPoints();
+		self.SearchBox:SetPoint("RIGHT", self.HidePassivesCheckButton, "LEFT", -15, 0);
+		self.SearchBox:SetPoint("LEFT", self.CategoryTabSystem, "RIGHT", 10, 10);
+
 		self:SetWidth(self.minimizedWidth);
 	elseif self.isMinimized and not shouldBeMinimized then
 		self.isMinimized = false;
@@ -144,6 +169,9 @@ function SpellBookFrameMixin:SetMinimized(shouldBeMinimized)
 		self.PagedSpellsFrame.ViewFrames[2]:Show();
 		self.PagedSpellsFrame.ViewFrames[1]:SetPoint("TOPLEFT", self.view1MaximizedXOffset, self.view1YOffset);
 		self.PagedSpellsFrame:SetViewsPerPage(2, true);
+
+		self.SearchBox:ClearAllPoints();
+		self.SearchBox:SetPoint("RIGHT", self.HidePassivesCheckButton, "LEFT", -30, 0);
 	end
 
 	if minimizedChanged then
@@ -288,6 +316,11 @@ function SpellBookFrameMixin:OnActiveCategoryChanged()
 		return;
 	end
 
+	if self:IsInSearchResultsMode() then
+		local skipTabReset = true;
+		self:ClearActiveSearchState(skipTabReset);
+	end
+
 	local wasCategoryActive = self.lastActiveTabID == newActiveTabID;
 	self.lastActiveTabID = newActiveTabID;
 
@@ -324,12 +357,16 @@ function SpellBookFrameMixin:UpdateAllSpellData(resetCurrentPage)
 		local forceUpdateSpellGroups = didActiveCategorySpellGroupsChange;
 		self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
 	end
+
 	self.isUpdatingAllSpellData = false;
 end
 
 function SpellBookFrameMixin:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage)
 	local activeCategoryMixin = self:GetActiveCategoryMixin();
 	if not activeCategoryMixin then
+		if self:IsInSearchResultsMode() then
+			self:UpdateFullSearchResults();
+		end
 		return;
 	end
 
@@ -341,7 +378,9 @@ function SpellBookFrameMixin:UpdateDisplayedSpells(forceUpdateSpellGroups, reset
 
 	if didSpellGroupsChange or forceUpdateSpellGroups then
 		-- Spell groups updated, so recreate data provider for spell book items using them
-		local categoryDataProvider = activeCategoryMixin:CreateDataProvider();
+		local byDataGroup = true;
+		local categoryData = activeCategoryMixin:GetSpellBookItemData(byDataGroup, GenerateClosure(self.ShouldDisplaySpellBookItem, self));
+		local categoryDataProvider = CreateDataProvider(categoryData);
 		self.PagedSpellsFrame:SetDataProvider(categoryDataProvider, not resetCurrentPage);
 	else
 		-- No spell groups update, so just update the already-populated spell book item frames
@@ -349,6 +388,24 @@ function SpellBookFrameMixin:UpdateDisplayedSpells(forceUpdateSpellGroups, reset
 			spellBookItemFrame:UpdateSpellData();
 		end);
 	end
+end
+
+function SpellBookFrameMixin:ShouldDisplaySpellBookItem(slotIndex, spellBank)
+	if Kiosk.IsEnabled() then
+		-- If in Kiosk mode, filter out any future spells
+		local spellBookItemType = C_SpellBook.GetSpellBookItemType(slotIndex, self.spellBank);
+		if not spellBookItemType or spellBookItemType == Enum.SpellBookItemType.FutureSpell then
+			return false;
+		end
+	end
+	if self.HidePassivesCheckButton:IsControlEnabled() and self.HidePassivesCheckButton:IsControlChecked() then
+		local isPassive = C_SpellBook.IsSpellBookItemPassive(slotIndex, spellBank);
+		if isPassive then
+			return false;
+		end
+	end
+	
+	return true;
 end
 
 function SpellBookFrameMixin:ForEachDisplayedSpell(func)
@@ -389,4 +446,13 @@ function SpellBookFrameMixin:OnClickBindingUpdate()
 	self:ForEachDisplayedSpell(function(spellBookItemFrame)
 		spellBookItemFrame:UpdateClickBindState();
 	end);
+end
+
+function SpellBookFrameMixin:OnPagingButtonEnter()
+	self.BookCornerFlipbook.Anim:Play();
+end
+
+function SpellBookFrameMixin:OnPagingButtonLeave()
+	local reverse = true;
+	self.BookCornerFlipbook.Anim:Play(reverse);
 end

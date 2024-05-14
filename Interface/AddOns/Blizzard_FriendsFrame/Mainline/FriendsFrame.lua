@@ -1679,8 +1679,6 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 				targetPoint = HelpTip.Point.RightEdgeCenter,
 				alignment = HelpTip.Alignment.Left,
 			};
-			crossFactionHelpTipInfo = helpTipInfo;
-			crossFactionHelpTipButton = button;
 			HelpTip:Show(FriendsFrame, helpTipInfo, button.travelPassButton);
 		end
 	end
@@ -2081,7 +2079,6 @@ function FriendsListButtonMixin:OnEnter()
 	local anchor, text;
 	local numGameAccounts = 0;
 	local tooltip = FriendsTooltip;
-	local isOnline = false;
 	local battleTag = "";
 	tooltip.height = 0;
 	tooltip.maxWidth = 0;
@@ -2092,7 +2089,6 @@ function FriendsListButtonMixin:OnEnter()
 			local noCharacterName = true;
 			local nameText, nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo, noCharacterName);
 
-			isOnline = accountInfo.gameAccountInfo.isOnline;
 			battleTag = accountInfo.battleTag;
 
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
@@ -2581,7 +2577,7 @@ function FriendsFrame_GetDisplayedInviteTypeAndGuid(index)
 		end
 	end
 
-	local inviteType = GetDisplayedInviteType(guid);
+	inviteType = GetDisplayedInviteType(guid);
 
 	if (factionName and factionName ~= playerFactionGroup) then
 		inviteType = inviteType .. "_CROSS_FACTION";

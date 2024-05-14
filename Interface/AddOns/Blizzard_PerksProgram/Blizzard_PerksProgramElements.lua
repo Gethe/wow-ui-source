@@ -390,7 +390,6 @@ function PerksProgramFrozenProductButtonMixin:SetupFreezeDraggedItem()
 	self:SetItemInfo(draggedVendorItemInfo);
 
 	-- If we don't have a frozen vendor item already then just instantly freeze the dragged item
-	local frozenVendorItem = PerksProgramFrame:GetFrozenPerksVendorItemInfo();
 	if not frozenVendorItem then
 		self:FreezeDraggedItem();
 		return;

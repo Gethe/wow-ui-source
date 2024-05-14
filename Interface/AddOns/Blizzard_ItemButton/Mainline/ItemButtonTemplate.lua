@@ -696,3 +696,63 @@ function CircularGiantItemButtonMixin:SetItemButtonQuality(quality, itemIDOrLink
 	end
 end
 
+local EnchantingItemButtonEvents = {
+	"ENCHANT_SPELL_COMPLETED",
+};
+
+EnchantingItemButtonAnimMixin = {};
+
+function EnchantingItemButtonAnimMixin:OnLoad()
+	local function AugmentBorderAnimOnFinished()
+		self.AugmentBorderAnimTexture:Hide();
+	end
+
+	if self.AugmentBorderAnim then
+		self.AugmentBorderAnim:SetScript("OnFinished", AugmentBorderAnimOnFinished);
+	end
+end
+
+function EnchantingItemButtonAnimMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, EnchantingItemButtonEvents);
+end
+
+function EnchantingItemButtonAnimMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, EnchantingItemButtonEvents);
+end
+
+local ENCHANT_BURST_EFFECT = 175;
+
+function EnchantingItemButtonAnimMixin:OnEvent(event, ...)
+	if event == "ENCHANT_SPELL_COMPLETED" then
+		local successful, enchantedItem = ...;
+		if not successful or not enchantedItem or not enchantedItem:IsValid() then
+			return;
+		end
+
+		local itemLocation = self:GetItemLocation();
+		if itemLocation and itemLocation:IsValid() and itemLocation:IsEqualTo(enchantedItem) then
+			local function OnEnchantItemEffectResolved()
+				self.gainEnchantEffect = nil;
+			end
+
+			local source, target, onfinishedcallback, onresolutioncallback = self, self, nil, OnEnchantItemEffectResolved;
+			self.gainEnchantEffect = GlobalFXDialogModelScene:AddEffect(ENCHANT_BURST_EFFECT, source, target, onfinishedcallback, onresolutioncallback);
+
+			self.AugmentBorderAnimTexture:Show();
+			self.AugmentBorderAnim:Play();
+		end
+	end
+end
+
+function EnchantingItemButtonAnimMixin:SetItemLocationCallback(callback)
+	self.GetItemLocationCallback = callback;
+end
+
+function EnchantingItemButtonAnimMixin:GetItemLocation()
+	if self.GetItemLocationCallback then
+		return self.GetItemLocationCallback();
+	end
+
+	return nil;
+end
+

@@ -643,7 +643,7 @@ function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
 	local canQueue;
 	local arenaID;
-	local isBrawl;
+	local isBrawl, isSpecialBrawl;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificScrollBox.selectionID ) then
 			canQueue = true;
@@ -1273,7 +1273,6 @@ local function GetFirstAvailableConquestButton()
 end
 
 function ConquestFrame_Update(self)
-	local isOffseason = GetCurrentArenaSeason() == NO_ARENA_SEASON;
 	if self.seasonState == SEASON_STATE_PRESEASON then
 		ConquestFrame.NoSeason:Show();
 		ConquestFrame.Disabled:Hide();
@@ -1685,15 +1684,15 @@ end
 function PVPRewardEnlistmentBonus_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local spellName = C_Spell.GetSpellName(BATTLEGROUND_ENLISTMENT_BONUS);
-	local spellDesc = GetSpellDescription(BATTLEGROUND_ENLISTMENT_BONUS);
+	local spellDesc = C_Spell.GetSpellDescription(BATTLEGROUND_ENLISTMENT_BONUS);
 	GameTooltip:SetText(spellName);
 	GameTooltip:AddLine(spellDesc, 1, 1, 1, true);
 	GameTooltip:Show();
 end
 
 function PvPObjectiveBannerFrame_PlayBanner(self, data)
-	name = data.name or "";
-	description = data.description or "";
+	local name = data.name or "";
+	local description = data.description or "";
 
 	self.Title:SetText(name);
 	self.TitleFlash:SetText(name);

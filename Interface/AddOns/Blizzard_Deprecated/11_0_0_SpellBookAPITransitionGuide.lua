@@ -75,6 +75,13 @@ DoesSpellExist(spellID/name) = C_Spell.DoesSpellExist(spellIdentifier)
 
 HasPetSpells() = C_SpellBook.HasPetSpells()
 
+GetSpellDescription(spellID) = C_Spell.GetSpellDescription(spellIdentifier);
+
+IsAttackSpell(spellName) = C_Spell.IsAutoAttackSpell(spellIdentifier)
+IsAttackSpell(index, bookType) = C_SpellBook.IsAutoAttackSpellBookItem(index, spellBank)
+-- Ranged Auto Attack functions have also been added
+                            C_Spell.IsRangedAutoAttackSpell(spellIdentifier)
+                            C_SpellBook.IsRangedAutoAttackSpellBookItem(index, spellBank)
 
 GameTooltip:SetSpellBookItem(index, bookType) = GameTooltip:SetSpellBookItem(index, spellBank)
 

@@ -32,7 +32,7 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 			Settings.OpenToCategory(Settings.PINGSYSTEM_CATEGORY_ID, ENABLE_PINGS);
 		end
 		local addSearchTags = false;
-		local initializer = CreateSettingsButtonInitializer("", PING_SYSTEM_SETTINGS, onButtonClick, nil, addSearchTags);
+		initializer = CreateSettingsButtonInitializer("", PING_SYSTEM_SETTINGS, onButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
 	end
 end

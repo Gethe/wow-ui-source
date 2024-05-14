@@ -1167,7 +1167,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	end
 
 	-- Setup Creatures
-	local id, name, displayInfo, iconImage;
+	local id, name, displayInfo, iconImage, uiModelSceneID;
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do
 		id, name, description, displayInfo, iconImage, uiModelSceneID = EJ_GetCreatureInfo(i);
 
@@ -2704,7 +2704,7 @@ local CLASS_DROPDOWN = 1;
 function EncounterJournal_InitLootFilter(self, level)
 	local filterClassID, filterSpecID = EJ_GetLootFilter();
 	local sex = UnitSex("player");
-	local classDisplayName, classTag, classID;
+	local classDisplayName, _, classID, classTag;
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = nil;
 
@@ -2742,10 +2742,9 @@ function EncounterJournal_InitLootFilter(self, level)
 			local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
 			if classInfo then
 				classDisplayName = classInfo.className;
-				classTag = classInfo.classFile;
 			end
 		else
-			classDisplayName, classTag, classID = UnitClass("player");
+			classDisplayName, _, classID = UnitClass("player");
 		end
 		info.text = classDisplayName;
 		info.notCheckable = true;
@@ -3260,7 +3259,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			end
 
 			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(rewardData.currencyType);
-			local quality = currencyInfo.quality;
+			quality = currencyInfo.quality;
 			frame.Item2.icon:SetTexture(currencyInfo.iconFileID);
 			frame.Item2.text:SetText(currencyInfo.name);
 			frame.Item2:Show();
@@ -3412,8 +3411,8 @@ function EncounterJournalBossButton_UpdateDifficultyOverlay(self)
 		local hasDefeatedBoss = defeatedOnCurrentDifficulty and IsEJDifficulty(difficultyID);
 		self.DefeatedOverlay:SetShown(hasDefeatedBoss);
 		if hasDefeatedBoss then
-			local name = DifficultyUtil.GetDifficultyName(difficultyID);
-			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(name);
+			local difficultyName = DifficultyUtil.GetDifficultyName(difficultyID);
+			self.DefeatedOverlay.tooltipText = ENCOUNTER_JOURNAL_ENCOUNTER_STATUS_DEFEATED_TOOLTIP:format(difficultyName);
 		end
 	end
 end

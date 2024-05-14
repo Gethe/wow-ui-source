@@ -46,7 +46,7 @@
 		<Size x="18" y="18"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture parentKey="ClassCircle" parentArray="Textures" atlas="CircleMask" hidden="true">
+				<Texture parentKey="ClassCircle" parentArray="Textures" atlas="CircleMask" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

@@ -349,7 +349,7 @@ local CombatLog_Object_IsA = CombatLog_Object_IsA
 -- Create a dummy CombatLogQuickButtonFrame for line 803 of FloatingChatFrame.lua. It causes inappropriate show/hide behavior. Instead, we'll use our own frame display handling.
 -- If there are more than 2 combat log frames, then the CombatLogQuickButtonFrame gets tied to the last frame tab's visibility status. Yuck! Let's just instead tie it to the combat log's tab.
 
-local CombatLogQuickButtonFrame, CombatLogQuickButtonFrameProgressBar, CombatLogQuickButtonFrameTexture
+local CombatLogQuickButtonFrame, CombatLogQuickButtonFrameProgressBar
 _G.CombatLogQuickButtonFrame = CreateFrame("Frame", "CombatLogQuickButtonFrame", UIParent)
 
 local Blizzard_CombatLog_Update_QuickButtons
@@ -2050,22 +2050,18 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local sourceEnabled = true;
 	local falseSource = false;
 	local destEnabled = true;
-	local spellEnabled = true;
-	local actionEnabled = true;
 	local valueEnabled = true;
 	local valueTypeEnabled = true;
 	local resultEnabled = true;
 	local powerTypeEnabled = true;
-	local itemEnabled = false;
 	local extraSpellEnabled = false;
 	local valueIsItem = false;
-	local schoolEnabled = true;
 	local withPoints = false;
 	local forceDestPossessive = false;
 
 	-- Get the initial string
 	local schoolString;
-	local resultStr;
+	local resultStr = nil;
 
 	local formatString = TEXT_MODE_A_STRING_1;
 	if ( EVENT_TEMPLATE_FORMATS[event] ) then
@@ -2076,21 +2072,21 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	-- * Src, Dest, Action, Spell, Amount, Result
 
 	-- Spell standard order
-	local spellId, spellName, spellSchool;
-	local extraSpellId, extraSpellName, extraSpellSchool;
+	local spellId, spellName, spellSchool = nil, nil, nil;
+	local extraSpellId, extraSpellName, extraSpellSchool = nil, nil, nil;
 
 	-- For Melee/Ranged swings and enchants
 	local nameIsNotSpell;
 	local extraNameIsNotSpell = false;
 
 	-- Damage standard order
-	local amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, overhealing;
+	local amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, overhealing = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil;
 	-- Miss argument order
 	local missType, isOffHand, amountMissed;
 	-- Aura arguments
 	local auraType; -- BUFF or DEBUFF
 	-- Energize Arguments
-	local overEnergize;
+	local overEnergize = nil;
 
 	-- Enchant arguments
 	local itemId, itemName;
@@ -2314,7 +2310,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 					resultEnabled = false
 				end
 				valueEnabled = true;
-				schoolEnabled = false;
 			elseif ( event == "SPELL_PERIODIC_LEECH" ) then
 				-- Special attacks
 				amount, powerType, extraAmount, alternatePowerType = select(4, ...);
@@ -2330,7 +2325,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 					resultEnabled = false
 				end
 				valueEnabled = true;
-				schoolEnabled = false;
 			elseif ( event == "SPELL_PERIODIC_ENERGIZE" ) then
 				-- Set value type to be a power type
 				valueType = 2;
@@ -2407,7 +2401,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				resultEnabled = false;
 			end
 			valueEnabled = true;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_LEECH" ) then
 			-- Special attacks
 			amount, powerType, extraAmount, alternatePowerType = select(4, ...);
@@ -2423,7 +2416,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				resultEnabled = false;
 			end
 			valueEnabled = true;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_INTERRUPT" ) then
 			-- Spell interrupted
 			extraSpellId, extraSpellName, extraSpellSchool = select(4, ...);
@@ -2437,7 +2429,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			resultEnabled = false;
 			valueEnabled = false;
 			valueTypeEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_EXTRA_ATTACKS" ) then
 			-- Special attacks
 			amount = select(4, ...);
@@ -2446,39 +2437,32 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			resultEnabled = false;
 			valueEnabled = true;
 			valueTypeEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_SUMMON" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_RESURRECT" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_CREATE" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_INSTAKILL" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-			schoolEnabled = false;
 
 			unconsciousOnDeath = select(5, ...);
 		elseif ( event == "SPELL_DURABILITY_DAMAGE" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_DURABILITY_DAMAGE_ALL" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
 			valueEnabled = false;
-			schoolEnabled = false;
 		elseif ( event == "SPELL_DISPEL_FAILED" ) then
 			-- Extra Spell standard
 			extraSpellId, extraSpellName, extraSpellSchool = select(4, ...);
@@ -2675,7 +2659,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		-- Disable appropriate sections
 		resultEnabled = false;
 		valueEnabled = false;
-		spellEnabled = false;
 
 		unconsciousOnDeath = select(5, ...);
 	elseif ( event == "ENCHANT_APPLIED" ) then
@@ -2685,7 +2668,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 		-- Disable appropriate sections
 		valueIsItem = true;
-		itemEnabled = true;
 		resultEnabled = false;
 	elseif ( event == "ENCHANT_REMOVED" ) then
 		-- Get the enchant name, item id and item name
@@ -2694,7 +2676,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 		-- Disable appropriate sections
 		valueIsItem = true;
-		itemEnabled = true;
 		resultEnabled = false;
 		sourceEnabled = false;
 
@@ -2703,7 +2684,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		recapID, unconsciousOnDeath = ...;
 		-- handle death recaps
 		if ( destGUID == UnitGUID("player") ) then
-			local lineColor = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_MINE];
+			lineColor = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_MINE];
 			return GetDeathRecapLink(recapID), lineColor.r, lineColor.g, lineColor.b;
 		end
 
@@ -2716,7 +2697,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		resultEnabled = false;
 		sourceEnabled = true;
 		destEnabled = false;
-		spellEnabled = false;
 		valueEnabled = false;
 
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
@@ -2798,7 +2778,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 
 		sourceEnabled = true;
 		destEnabled = true;
-		spellEnabled = true;
 		valueEnabled = true;
 	end
 
@@ -3047,8 +3026,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				event ~= "SPELL_DAMAGE" and
 				event ~= "SPELL_PERIODIC_DAMAGE" ) then
 
-				local actionColor = nil;
-
 				if ( settings.actionActorColoring ) then
 					actionColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 				elseif ( settings.actionSchoolColoring ) then
@@ -3079,16 +3056,16 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	end
 	-- If there's a spell name
 	if ( spellName ) then
-		local abilityColor = nil;
+		local spellAbilityColor = nil;
 		-- Color ability names
 		if ( settings.abilityColoring ) then
 			if ( settings.abilityActorColoring ) then
-				abilityColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
+				spellAbilityColor = CombatLog_Color_ColorArrayByUnitType( sourceFlags, filterSettings );
 			elseif ( settings.abilitySchoolColoring ) then
-				abilityColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
+				spellAbilityColor = CombatLog_Color_ColorArrayBySchool( spellSchool, filterSettings );
 			else
 				if ( spellSchool ) then
-					abilityColor = filterSettings.colors.defaults.spell;
+					spellAbilityColor = filterSettings.colors.defaults.spell;
 				end
 			end
 		end
@@ -3096,52 +3073,52 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		-- Highlight this color
 		if ( settings.abilityHighlighting ) then
 			local colorArray;
-			if ( not abilityColor ) then
+			if ( not spellAbilityColor ) then
 				colorArray = lineColor;
 			else
-				colorArray = abilityColor;
+				colorArray = spellAbilityColor;
 			end
-			abilityColor  = CombatLog_Color_HighlightColorArray (colorArray);
+			spellAbilityColor  = CombatLog_Color_HighlightColorArray (colorArray);
 		end
-		if ( abilityColor ) then
-			abilityColor = CombatLog_Color_FloatToText(abilityColor);
+		if ( spellAbilityColor ) then
+			spellAbilityColor = CombatLog_Color_FloatToText(spellAbilityColor);
 			if ( itemId ) then
 				spellNameStr = spellName;
 			else
-				spellNameStr = format("|c%s%s|r", abilityColor, spellName);
+				spellNameStr = format("|c%s%s|r", spellAbilityColor, spellName);
 			end
 		end
 	end
 
 	-- If there's a spell name
 	if ( extraSpellName ) then
-		local abilityColor = nil;
+		local extraAbilityColor = nil;
 		-- Color ability names
 		if ( settings.abilityColoring ) then
 
 			if ( settings.abilitySchoolColoring ) then
-				abilityColor = CombatLog_Color_ColorArrayBySchool( extraSpellSchool, filterSettings );
+				extraAbilityColor = CombatLog_Color_ColorArrayBySchool( extraSpellSchool, filterSettings );
 			else
 				if ( extraSpellSchool ) then
-					abilityColor = CombatLog_Color_ColorArrayBySchool( Enum.Damageclass.MaskHoly, filterSettings );
+					extraAbilityColor = CombatLog_Color_ColorArrayBySchool( Enum.Damageclass.MaskHoly, filterSettings );
 				else
-					abilityColor = CombatLog_Color_ColorArrayBySchool( nil, filterSettings );
+					extraAbilityColor = CombatLog_Color_ColorArrayBySchool( nil, filterSettings );
 				end
 			end
 		end
 		-- Highlight this color
 		if ( settings.abilityHighlighting ) then
 			local colorArray;
-			if ( not abilityColor ) then
+			if ( not extraAbilityColor ) then
 				colorArray = lineColor;
 			else
-				colorArray = abilityColor;
+				colorArray = extraAbilityColor;
 			end
-			abilityColor  = CombatLog_Color_HighlightColorArray (colorArray);
+			extraAbilityColor  = CombatLog_Color_HighlightColorArray (colorArray);
 		end
-		if ( abilityColor ) then
-			abilityColor = CombatLog_Color_FloatToText(abilityColor);
-			extraSpellNameStr = format("|c%s%s|r", abilityColor, extraSpellName);
+		if ( extraAbilityColor ) then
+			extraAbilityColor = CombatLog_Color_FloatToText(extraAbilityColor);
+			extraSpellNameStr = format("|c%s%s|r", extraAbilityColor, extraSpellName);
 		end
 	end
 
@@ -3375,7 +3352,6 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	CombatLogQuickButtonFrame = _G.CombatLogQuickButtonFrame_Custom
 	COMBATLOG.CombatLogQuickButtonFrame = CombatLogQuickButtonFrame;
 	CombatLogQuickButtonFrameProgressBar = _G.CombatLogQuickButtonFrame_CustomProgressBar
-	CombatLogQuickButtonFrameTexture = _G.CombatLogQuickButtonFrame_CustomTexture
 
 	-- Parent it to the tab so that we just inherit the tab's alpha. No need to do special fading for it.
 	CombatLogQuickButtonFrame:SetParent(_G[COMBATLOG:GetName() .. "Tab"]);
@@ -3527,8 +3503,8 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 19) == "garrfollowerability") then
 		if ( IsModifiedClick("CHATLINK") ) then
 			local _, abilityID = strsplit(":", link);
-			local link = C_Garrison.GetFollowerAbilityLink(abilityID);
-			ChatEdit_InsertLink (link);
+			local abilLink = C_Garrison.GetFollowerAbilityLink(abilityID);
+			ChatEdit_InsertLink (abilLink);
 			return;
 		end
 	end

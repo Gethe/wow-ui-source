@@ -77,7 +77,7 @@ local function currencyInfo()
 	end
 
 	local currencyInfo = C_StoreSecure.GetCurrencyInfo();
-	currencyRegion = currencyInfo.sharedData.regionID;
+	local currencyRegion = currencyInfo.sharedData.regionID;
 	FormatCurrencyStringShort = currencyInfo.sharedData.formatShort;
 	FormatCurrencyStringLong = currencyInfo.sharedData.formatLong;
 	
@@ -332,19 +332,6 @@ function WowTokenRedemptionFrameCloseButton_OnClick(self)
 	C_WowTokenSecure.CancelRedeem();
 	WowTokenRedemptionFrame:Hide();
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-end
-
-local function formatLargeNumber(amount)
-	amount = tostring(amount);
-	local newDisplay = "";
-	local strlen = amount:len();
-	--Add each thing behind a comma
-	for i=4, strlen, 3 do
-		newDisplay = LARGE_NUMBER_SEPERATOR..amount:sub(-(i - 1), -(i - 3))..newDisplay;
-	end
-	--Add everything before the first comma
-	newDisplay = amount:sub(1, (strlen % 3 == 0) and 3 or (strlen % 3))..newDisplay;
-	return newDisplay;
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------

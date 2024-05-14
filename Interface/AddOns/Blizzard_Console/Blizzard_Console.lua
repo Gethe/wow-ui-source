@@ -1,4 +1,6 @@
 
+Blizzard_Console_SavedVars = Blizzard_Console_SavedVars or nil;
+
 local forceinsecure = forceinsecure;
 
 local ADDON_NAME = ...;

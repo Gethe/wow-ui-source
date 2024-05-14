@@ -13,7 +13,8 @@ local CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS = {
 };
 
 local DISABLED_ERROR_MESSAGE = {
-	[Enum.CurrencyTransferFailReason.MaxQuantity] = CURRENCY_TRANSFER_DISABLED_MAX_QUANTITY,
+	[Enum.AccountCurrencyTransferResult.MaxQuantity] = CURRENCY_TRANSFER_DISABLED_MAX_QUANTITY,
+	[Enum.AccountCurrencyTransferResult.NoValidSourceCharacter] = CURRENCY_TRANSFER_DISABLED_NO_VALID_SOURCES,
 };
 
 function CurrencyTransferToggleButtonMixin:GetDisabledErrorMessage(failureReason)
@@ -22,6 +23,7 @@ end
 
 function CurrencyTransferToggleButtonMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS);
+	C_CurrencyInfo.RequestCurrencyDataForAccountCharacters();
 end
 
 function CurrencyTransferToggleButtonMixin:OnHide()
@@ -64,9 +66,11 @@ function CurrencyTransferToggleButtonMixin:UpdateEnabledState()
 		return;
 	end
 
+	local dataReady = C_CurrencyInfo.IsAccountCharacterCurrencyDataReady();
+
 	local canTransfer, failureReason = C_CurrencyInfo.CanTransferCurrency(self.currencyID);
-	self:SetEnabled(canTransfer);
-	self:SetDisabledTooltip(self:GetDisabledErrorMessage(failureReason), "ANCHOR_RIGHT");
+	self:SetEnabled(dataReady and canTransfer);
+	self:SetDisabledTooltip(not dataReady and "Data not ready [PH]" or self:GetDisabledErrorMessage(failureReason), "ANCHOR_RIGHT");
 	self:SetShown(self:IsEnabled() or self:GetDisabledTooltip() ~= nil);
 end
 
@@ -74,6 +78,7 @@ CurrencyTransferMenuMixin = CreateFromMixins(CallbackRegistryMixin);
 
 local CURRENCY_TRANSFER_MENU_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
+	"ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
 };
 
 CurrencyTransferMenuMixin:GenerateCallbackEvents({
@@ -97,6 +102,8 @@ function CurrencyTransferMenuMixin:OnEvent(event, ...)
 		if currencyID and currencyID == self:GetCurrencyID() then
 			self:FullRefresh();
 		end
+	elseif event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" then
+		self:FullRefresh();
 	end
 end
 
@@ -296,7 +303,7 @@ end
 CurrencyTransferCancelButtonMixin = CreateFromMixins(CurrencyTransferSystemMixin);
 
 function CurrencyTransferCancelButtonMixin:OnClick()
-	self:GetCurrencyTransferMenu():Hide();
+	HideUIPanel(CurrencyTransferMenu);
 end
 
 CurrencyTransferEntryMixin = CreateFromMixins(CurrencyTransferSystemMixin, CallbackRegistryMixin);
@@ -380,7 +387,7 @@ function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
 	end
 
 	if maxTransferAmount then
-		return math.clamp(inputAmount, 0, maxTransferAmount);
+		return Clamp(inputAmount, 0, maxTransferAmount);
 	else
 		return (inputAmount >= 0) and inputAmount or 0;
 	end
@@ -495,7 +502,7 @@ function CurrencyTransferRosterMixin:RefreshRosterCurrencyData()
 		return;
 	end
 
-	self.rosterCurrencyData = C_CurrencyInfo.FetchRosterCurrencyData(currencyID);
+	self.rosterCurrencyData = C_CurrencyInfo.FetchCurrencyDataFromAccountCharacters(currencyID);
 end
 
 function CurrencyTransferRosterMixin:GetRosterCurrencyData()

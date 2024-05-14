@@ -50,6 +50,14 @@ MoneyTypeInfo["STATIC"] = {
 
 	collapse = 1,
 };
+MoneyTypeInfo["QUEST_REWARDS"] = {
+	UpdateFunc = function(self)
+		return self.staticMoney;
+	end,
+
+	collapse = 1,
+	checkGoldThreshold = 1,
+};
 MoneyTypeInfo["AUCTION"] = {
 	UpdateFunc = function(self)
 		return self.staticMoney;
@@ -441,6 +449,8 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		silverButton:Hide();
 		goldButton:SetPoint("RIGHT", silverButton,	"RIGHT", 0, 0);
 	end
+
+	copper = FormatDisplayCopper(info.checkGoldThreshold, gold, silver, copper);
 
 	-- Used if we're not showing lower denominations
 	silverButton:ClearAllPoints();

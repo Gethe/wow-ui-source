@@ -48,6 +48,20 @@ function ToggleCharacter (tab, onlyShow)
 	end
 end
 
+function ShowCharacterFrameIfMatchesContext()
+	if CharacterFrame:IsShown() then
+		return;
+	end
+
+	local count = 0;
+	for i = 1, NUM_INVSLOTS do
+		if ItemButtonUtil.GetItemContextMatchResultForPaperDollFrame(i) == ItemButtonUtil.ItemContextMatchResult.Match then
+			ToggleCharacter("PaperDollFrame");
+			return;
+		end
+	end
+end
+
 CharacterFrameMixin = {};
 
 function CharacterFrameMixin:ToggleTokenFrame()
@@ -400,4 +414,51 @@ function CharacterFrameTabButtonMixin:OnClick(button)
 		CharacterFrame:ToggleTokenFrame();
 	end
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+end
+
+GearEnchantAnimationMixin = {}
+
+local GearEnchantAnimationEvents = {
+	"ENCHANT_SPELL_COMPLETED",
+};
+
+function GearEnchantAnimationMixin:OnLoad()
+	FrameUtil.RegisterFrameForEvents(self, GearEnchantAnimationEvents);
+
+	local function GearEnchantFXAnimOnFinished()
+		self.FrameFX:Hide();
+	end
+	self.FrameFX.FrameFXAnimGroup:SetScript("OnFinished", GearEnchantFXAnimOnFinished);
+
+	local function GearEnchantTopFrameAnimOnFinished()
+		self.TopFrame:Hide();
+	end
+	self.TopFrame.TopFrameAnimGroup:SetScript("OnFinished", GearEnchantTopFrameAnimOnFinished)
+end
+
+function GearEnchantAnimationMixin:OnEvent(event, ...)
+	if event == "ENCHANT_SPELL_COMPLETED" then
+		local successful, enchantedItem = ...;
+
+		if successful and enchantedItem and enchantedItem:IsValid() and enchantedItem:IsEquipmentSlot() then
+			self:PlayAndShow();
+		end
+	end
+end
+
+function GearEnchantAnimationMixin:PlayAndShow()
+	self:Show();
+
+	self.FrameFX:Show();
+	self.FrameFX.FrameFXAnimGroup:Play();
+
+	self.TopFrame:Show();
+	self.TopFrame.TopFrameAnimGroup:Play();
+end
+
+function GearEnchantAnimationMixin:StopAndHide()
+	self.FrameFX.FrameFXAnimGroup:Stop();
+	self.TopFrame.TopFrameAnimGroup:Stop();
+
+	self:Hide();
 end

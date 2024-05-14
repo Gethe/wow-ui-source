@@ -375,7 +375,7 @@ function TableBuilderMixin:ArrangeCells(row)
 	local previousRightCellPadding = rightCellPadding;
 	for columnIndex = 2, #columns do
 		column = columns[columnIndex];
-		local cell = row.cells[columnIndex];
+		cell = row.cells[columnIndex];
 		cell:SetParent(row);
 		cell:SetHeight(height);
 		leftCellPadding, rightCellPadding = column:GetCellPadding();

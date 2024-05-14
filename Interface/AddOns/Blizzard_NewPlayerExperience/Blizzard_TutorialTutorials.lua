@@ -975,7 +975,7 @@ function Class_UseQuestItem:InRange()
 	local module = QUEST_TRACKER_MODULE:GetBlock(self.questData.ItemQuest)
 	if (module and module.itemButton) then
 		local pointerString = self.questData.PointerTutorialStringID;
-		QuestItemTutorial =	self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", module.itemButton);
+		self:ShowPointerTutorial(TutorialHelper:FormatString(pointerString), "UP", module.itemButton);
 	end
 end
 
@@ -1255,7 +1255,7 @@ function Class_ChangeEquipment:UpdateDragOrigin()
 	else
 		self:UpdateItemContainerAndSlotInfo()
 		if self.data then
-			itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
+			local itemFrame = TutorialHelper:GetItemContainerFrame(self.data.Container, self.data.ContainerSlot);
 			self:HidePointerTutorials();
 			if itemFrame then
 				self:StartAnimation();

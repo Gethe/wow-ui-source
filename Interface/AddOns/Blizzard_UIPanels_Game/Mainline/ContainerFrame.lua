@@ -563,7 +563,7 @@ do
 			UIDropDownMenu_AddButton(info, level);
 
 			for i = 0, Constants.InventoryConstants.NumBagSlots do
-				local info = UIDropDownMenu_CreateInfo();
+				info = UIDropDownMenu_CreateInfo();
 				info.text = bagNames[i];
 				info.hasArrow = true;
 				info.notCheckable = true;
@@ -1348,9 +1348,9 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		refundItemTexture = GetInventoryItemTexture("player", slot);
 		refundItemLink = GetInventoryItemLink("player", slot);
 	else
-		local info = C_Container.GetContainerItemInfo(bag, slot);
-		refundItemTexture = info and info.iconFileID;
-		refundItemLink = info and info.hyperlink;
+		local refundInfo = C_Container.GetContainerItemInfo(bag, slot);
+		refundItemTexture = refundInfo and refundInfo.iconFileID;
+		refundItemLink = refundInfo and refundInfo.hyperlink;
 	end
 	local itemName, _, itemQuality = C_Item.GetItemInfo(refundItemLink);
 	local r, g, b = C_Item.GetItemQualityColor(itemQuality);
@@ -1485,12 +1485,19 @@ function ContainerFrameItemButtonMixin:GetItemContextMatchResult()
 end
 
 function ContainerFrameItemButtonMixin:OnLoad()
+	EnchantingItemButtonAnimMixin.OnLoad(self);
+
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterForDrag("LeftButton");
 
 	self.UpdateTooltip = ContainerFrameItemButtonMixin.OnUpdate;
 	self.timeSinceUpgradeCheck = 0;
 	self.GetDebugReportInfo = ContainerFrameItemButton_GetDebugReportInfo;
+
+	local function GetItemLocationCallback()
+		return ItemLocation:CreateFromBagAndSlot(self:GetBagID(), self:GetID());
+	end
+	self:SetItemLocationCallback(GetItemLocationCallback);
 end
 
 function ContainerFrameItemButtonMixin:OnClick(button)
@@ -1521,6 +1528,12 @@ function ContainerFrameItemButtonMixin:OnEnter()
 	if ArtifactFrame and self:HasItem() then
 		ArtifactFrame:OnInventoryItemMouseEnter(self:GetBagID(), self:GetID());
 	end
+
+	local itemLocation = ItemLocation:CreateFromBagAndSlot(self:GetBagID(), self:GetID());
+	if itemLocation and itemLocation:IsValid() then
+		local itemLocationValid = itemLocation:IsValid();
+		SetCursorHoveredItem(itemLocation);
+	end
 end
 
 function ContainerFrameItemButtonMixin:OnLeave()
@@ -1532,6 +1545,8 @@ function ContainerFrameItemButtonMixin:OnLeave()
 	if ( ArtifactFrame and self:HasItem() ) then
 		ArtifactFrame:OnInventoryItemMouseLeave(self:GetBagID(), self:GetID());
 	end
+
+	ClearCursorHoveredItem();
 end
 
 function ContainerFrameItemButtonMixin:OnUpdate()
@@ -1616,6 +1631,8 @@ function ContainerFrameItemButtonMixin:OnModifiedClick(button)
 end
 
 function ContainerFrameItemButtonMixin:OnHide()
+	EnchantingItemButtonAnimMixin.OnHide(self);
+
 	if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then
 		StackSplitFrame:Hide();
 	end

@@ -644,8 +644,8 @@ end
 
 function StableBeastMasterSecondaryPetButtonMixin:Refresh()
 	local configID = C_ClassTalents.GetActiveConfigID();
-	local animalCompanionTalentInfo = C_Traits.GetNodeInfo(configID, ANIMAL_COMPANION_NODE_ID);
-	local knowsAnimalCompanion = animalCompanionTalentInfo.ranksPurchased > 0;
+	local animalCompanionTalentInfo = configID and C_Traits.GetNodeInfo(configID, ANIMAL_COMPANION_NODE_ID);
+	local knowsAnimalCompanion = animalCompanionTalentInfo and animalCompanionTalentInfo.ranksPurchased > 0;
 	self:SetEnabled(knowsAnimalCompanion);
 	self:SetDesaturated(not knowsAnimalCompanion);
 	self:SetLocked(not knowsAnimalCompanion);
@@ -894,8 +894,8 @@ function StableStabledPetListMixin:UpdateDisplayedPets()
 	-- Sort first by sort order (only used to pin favorites to the top currently), then sort by category name.
 	-- If alphabetically sorting pets, favorites/nonfavorites will have already been sorted and this will just handle sortOrder
 	dataProvider:SetSortComparator(function(a, b)
-		aData = a.data;
-		bData = b.data;
+		local aData = a.data;
+		local bData = b.data;
 		if(aData.categoryInfo and bData.categoryInfo) then
 			if aData.categoryInfo.sortOrder < bData.categoryInfo.sortOrder then
 				return true;

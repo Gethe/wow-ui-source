@@ -40,10 +40,10 @@ function Dispatcher:Initialize()
 
 	-- When loaded in glue, this doesn't exist yet
 	if (SlashCmdList) then
-		SLASH_EVENT1 = "/event";
+		_G["SLASH_EVENT1"] = "/event";
 		SlashCmdList.EVENT = function(msg) self:OnSlash_Event(msg) end;
 
-		SLASH_EVENTVERBOSE1 = "/ev";
+		_G["SLASH_EVENTVERBOSE1"] = "/ev";
 		SlashCmdList.EVENTVERBOSE = function(msg) self:OnSlash_Verbose(msg) end;
 	end
 end

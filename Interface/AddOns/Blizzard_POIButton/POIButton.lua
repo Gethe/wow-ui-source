@@ -293,7 +293,6 @@ local function POIButton_UpdateNormalStyleTexture(poiButton)
 			poiButton.Display:SetOffset(0, 0);
 		elseif style == POIButtonUtil.Style.WorldQuest then
 			local inProgress = false;
-			local questID = poiButton:GetQuestID();
 			local info = C_QuestLog.GetQuestTagInfo(questID);
 			local atlas, width, height = QuestUtil.GetWorldQuestAtlasInfo(info.worldQuestType, false, info.tradeskillLineID);
 			poiButton.Display:SetAtlas(width, height, atlas);
@@ -559,7 +558,7 @@ end
 local function OnSuperTrackingChanged_Quest(self, supertracker)
 	assertsafe(self:GetButtonType() == "quest");
 
-	local isSelected = self:GetQuestID() == supertracker:GetCachedSuperTrackedQuestID();
+	local isSelected = self:GetQuestID() == C_SuperTrack.GetSuperTrackedQuestID();
 	self:ChangeSelected(isSelected);
 end
 

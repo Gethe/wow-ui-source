@@ -557,7 +557,7 @@ end
 
 function ScrollBoxListViewMixin:GetPanExtent(spacing)
 	if not self.panExtent and self:HasDataProvider() then
-		for dataIndex, elementData in self:EnumerateDataProvider() do
+		for dataIndex, elementData in self:EnumerateDataProvider() do -- luacheck: ignore 512 (loop is executed at most once)
 			self.panExtent = self:CalculateFrameExtent(dataIndex, elementData);
 			break;
 		end
@@ -891,7 +891,7 @@ function ScrollBoxListViewMixin:ValidateDataRange(scrollBox)
 				self:Release(frame);
 			end
 
-			local dataIndexBegin, dataIndexEnd = self:GetDataRange();
+			dataIndexBegin, dataIndexEnd = self:GetDataRange();
 			if dataIndexEnd > 0 then
 				local range = {};
 				for dataIndex = dataIndexBegin, dataIndexEnd do

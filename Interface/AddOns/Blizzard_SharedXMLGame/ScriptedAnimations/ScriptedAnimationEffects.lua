@@ -165,13 +165,13 @@ local function GenerateAttackCollisionFunction(pullbackMagnitude)
 		local function AttackCollisionVariationCallback(elapsed, duration)
 			local progress = elapsed / duration;
 			if progress < PullbackPercentage then
-				local progress = progress / PullbackPercentage;
+				progress = progress / PullbackPercentage;
 				return pullbackDistanceX * progress, pullbackDistanceY * progress;
 			elseif progress < ForwardThreshold then
-				local progress = (progress - PullbackPercentage) / ForwardPercentage;
+				progress = (progress - PullbackPercentage) / ForwardPercentage;
 				return pullbackDistanceX + forwardDistanceX * progress, pullbackDistanceY + forwardDistanceY * progress;
 			else
-				local progress = (progress - ForwardThreshold) / BackwardPercentage;
+				progress = (progress - ForwardThreshold) / BackwardPercentage;
 				return distanceX * (1.0 - progress), distanceY * (1.0 - progress);
 			end
 		end

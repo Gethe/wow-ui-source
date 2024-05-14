@@ -13,7 +13,7 @@
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="TopBar" atlas="spellbook-background-evergreen-header">
-					<Size y="51"/>
+					<Size y="54"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="TOPRIGHT"/>
@@ -39,9 +39,20 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="BookCornerFlipbook" atlas="spellbook-corner-flipbook-evergreen" useAtlasSize="false">
+					<Size x="150" y="155"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-15" y="6"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="NONE">
+							<FlipBook flipBookRows="2" flipBookColumns="4" flipBookFrames="8" duration="0.25" smoothing="NONE" />
+						</AnimationGroup>
+					</Animations>
+				</Texture>
 				<Texture parentKey="Bookmark" atlas="spellbook-background-evergreen-ribbon" useAtlasSize="true" parentArray="maximizedArt">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BookBGLeft" x="62" y="55"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BookBGLeft" x="62" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -59,7 +70,34 @@
 					<KeyValue key="tabTemplate" value="SpellBookCategoryTabTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-20"/>
+					<Anchor point="TOPLEFT" x="70" y="-19"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="HidePassivesCheckButton" inherits="ResizeCheckButtonTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="SPELLBOOK_FILTER_PASSIVES" type="global"/>
+					<KeyValue key="labelFont" value="GameFontNormalMed2" type="string"/>
+					<KeyValue key="disabledLabelFont" value="GameFontDisableMed2" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-30" y="-10" />
+				</Anchors>
+			</Frame>
+			<EditBox parentKey="SearchBox" inherits="SpellSearchBoxTemplate" hidden="false">
+				<KeyValues>
+					<KeyValue key="instructionText" value="SPELLBOOK_SEARCH_INSTRUCTIONS" type="global"/>
+				</KeyValues>
+				<Size x="300" y="30"/>
+				<Anchors>
+					<!-- Anchors modified at runtime based on minimized state -->
+					<Anchor point="RIGHT" relativeKey="$parent.HidePassivesCheckButton" relativePoint="LEFT" x="-30"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="SearchPreviewContainer" inherits="SpellSearchPreviewContainerTemplate" hidden="true" frameLevel="200">
+				<Size x="176"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMLEFT" x="20" y="4"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="PagedSpellsFrame" inherits="PagedCondensedVerticalGridContentFrameTemplate">
@@ -92,8 +130,7 @@
 					</Frame>
 					<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-50" y="40"/>
-
+							<Anchor point="BOTTOMRIGHT" x="-75" y="40"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="fontName" value="SystemFont_Med3" type="string" />
@@ -110,14 +147,14 @@
 						<FontString inherits="GameFontNormalLarge" text="New Spellbook is a Work in Progress, art and visuals are not finalized">
 							<Size y="0"/>
 							<Anchors>
-								<Anchor point="RIGHT"/>
+								<Anchor point="LEFT"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Size x="10" y="1"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+					<Anchor point="TOPLEFT" x="30" y="-85"/>
 				</Anchors>
 			</Frame>
 		</Frames>

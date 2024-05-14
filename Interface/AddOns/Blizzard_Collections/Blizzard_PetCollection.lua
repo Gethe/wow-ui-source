@@ -480,15 +480,13 @@ function PetJournal_ShowPetSelect(self)
 	PetJournal_HideAbilityTooltip();
 
 	--Setup spell one
-	local name, icon, petType, requiredLevel;
+	local _name, icon, _petType, requiredLevel;
 	if (abilities[spellIndex1]) then
-		name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex1]);
+		_name, icon, _petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex1]);
 		requiredLevel = PetJournalLoadout_GetRequiredLevel(slotFrame, abilities[spellIndex1]);
 		PetJournal.SpellSelect.Spell1:SetEnabled(requiredLevel <= level);
 	else
-		name = "";
 		icon = "";
-		petType = "";
 		requiredLevel = 0;
 		PetJournal.SpellSelect.Spell1:SetEnabled(false);
 	end
@@ -510,13 +508,11 @@ function PetJournal_ShowPetSelect(self)
 	PetJournal.SpellSelect.Spell1.speciesID = slotFrame.speciesID;
 	--Setup spell two
 	if (abilities[spellIndex2]) then
-		name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex2]);
+		_name, icon, _petType = C_PetJournal.GetPetAbilityInfo(abilities[spellIndex2]);
 		requiredLevel = PetJournalLoadout_GetRequiredLevel(slotFrame, abilities[spellIndex2]);
 		PetJournal.SpellSelect.Spell2:SetEnabled(requiredLevel <= level);
 	else
-		name = "";
 		icon = "";
-		petType = "";
 		requiredLevel = 0;
 		PetJournal.SpellSelect.Spell2:SetEnabled(false);
 	end
@@ -844,7 +840,7 @@ function PetJournal_InitPetButton(pet, elementData)
 		else
 			-- Only display the unusable texture if you'll never be able to summon this pet.
 			local isSummonable, error, errorText = C_PetJournal.GetPetSummonInfo(petID);
-			local neverUsable = error == Enum.PetJournalError.InvalidFaction or error == Enum.PetJournalError.InvalidCovenant;
+			local neverUsable = error == Enum.PetJournalError.InvalidFaction;
 			pet.iconBorder:SetShown(not neverUsable);
 			CollectionItemListButton_SetRedOverlayShown(pet, neverUsable);
 		end
@@ -1358,9 +1354,9 @@ function PetJournal_UpdatePetCard(self, forceSceneChange)
 	for i=1,NUM_PET_ABILITIES do
 		local spellFrame = self["spell"..i];
 		if abilities[i] and canBattle then
-			local name, icon, petType = C_PetJournal.GetPetAbilityInfo(abilities[i]);
+			local _name, abilIcon, _petType = C_PetJournal.GetPetAbilityInfo(abilities[i]);
 			local isNotUsable = not level or level < levels[i];
-			spellFrame.icon:SetTexture(icon);
+			spellFrame.icon:SetTexture(abilIcon);
 			spellFrame.icon:SetDesaturated(isNotUsable);
 			spellFrame.LevelRequirement:SetText(levels[i]);
 			spellFrame.LevelRequirement:SetShown(isNotUsable);
@@ -1540,13 +1536,13 @@ function PetJournalFilterDropDown_AddInSortParameters(filterSystem, level)
 		{ text = TYPE, parameter = LE_SORT_BY_PETTYPE, },
 	};
 
-	for index, sortParameters in ipairs(sortParameters) do
+	for _, sortParameter in ipairs(sortParameters) do
 		local setSelected = function() 
-					C_PetJournal.SetPetSortParameter(sortParameters.parameter); 
+					C_PetJournal.SetPetSortParameter(sortParameter.parameter); 
 					PetJournal_UpdatePetList(); 
 				end
-		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameters.parameter end;
-		FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, sortParameters.text, setSelected, isSelected, level);
+		local isSelected = function() return C_PetJournal.GetPetSortParameter() == sortParameter.parameter end;
+		FilterDropDownSystem.AddRadioButtonToFilterSystem(filterSystem, sortParameter.text, setSelected, isSelected, level);
 	end
 end
 

@@ -1199,8 +1199,8 @@ function GarrisonFollowerList_InitializePrioritizeSpecializationAbilityMissionSo
 			follower.sortNumTraits = relevantForMission and mainFrame.followerTraits[follower.followerID] and #mainFrame.followerTraits[follower.followerID] or 0;
 			follower.sortHasSpecCounter = false;
 			if (relevantForMission) then
-				for i=1, follower.sortNumCounters do
-					if (mainFrame.followerCounters[follower.followerID][i].isSpecialization) then
+				for counter=1, follower.sortNumCounters do
+					if (mainFrame.followerCounters[follower.followerID][counter].isSpecialization) then
 						follower.sortHasSpecCounter = true;
 						break;
 					end
@@ -1425,7 +1425,7 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 	-- valid usage of the given item on the follower (and remain silent), or if none show an appropriate error message
 	-- Typically the error message would be something like follower is on a mission, working, low level, etc...
 	local successCount = 0;
-	local resultMessage;
+	local resultMessage = nil;
 	local followerID = self:GetParent().followerID;
 
 	local showUpgradeClick = false;

@@ -175,7 +175,6 @@ local ipTypes = { "IPv4", "IPv6" }
 
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	local string = "";
-	local i, j, k = 0, 0, 0;
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	GameTooltip_SetTitle(GameTooltip, self.tooltipText);

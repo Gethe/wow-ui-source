@@ -76,6 +76,19 @@ function PagingControlsMixin:GetPageDelta()
 	return delta;
 end
 
+function PagingControlsMixin:SetButtonHoverCallbacks(onEnterCallback, onLeaveCallback)
+	self.onButtonEnterCallback = onEnterCallback;
+	self.onButtonLeaveCallback = onLeaveCallback;
+
+	local onEnterFunc = self.onButtonEnterCallback and GenerateClosure(self.OnPageButtonEnter, self) or nil;
+	self.PrevPageButton:SetScript("OnEnter", onEnterFunc);
+	self.NextPageButton:SetScript("OnEnter", onEnterFunc);
+
+	local onLeaveFunc = self.onButtonLeaveCallback and GenerateClosure(self.OnPageButtonLeave, self) or nil;
+	self.PrevPageButton:SetScript("OnLeave", onLeaveFunc);
+	self.NextPageButton:SetScript("OnLeave", onLeaveFunc);
+end
+
 function PagingControlsMixin:OnMouseWheel(delta)
 	if delta > 0 then
 		self:PreviousPage();
@@ -98,5 +111,17 @@ function PagingControlsMixin:UpdateControls()
 		else
 			self.PageText:SetFormattedText(self.currentPageOnlyText, self.currentPage);
 		end
+	end
+end
+
+function PagingControlsMixin:OnPageButtonEnter(button)
+	if self.onButtonEnterCallback then
+		self.onButtonEnterCallback();
+	end
+end
+
+function PagingControlsMixin:OnPageButtonLeave(button)
+	if self.onButtonLeaveCallback then
+		self.onButtonLeaveCallback();
 	end
 end

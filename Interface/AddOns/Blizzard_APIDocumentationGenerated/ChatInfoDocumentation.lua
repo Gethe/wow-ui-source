@@ -2283,6 +2283,26 @@ local ChatInfo =
 			LiteralName = "CLEAR_BOSS_EMOTES",
 		},
 		{
+			Name = "DailyResetInstanceWelcome",
+			Type = "Event",
+			LiteralName = "DAILY_RESET_INSTANCE_WELCOME",
+			Payload =
+			{
+				{ Name = "mapname", Type = "cstring", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "InstanceResetWarning",
+			Type = "Event",
+			LiteralName = "INSTANCE_RESET_WARNING",
+			Payload =
+			{
+				{ Name = "warningMessage", Type = "cstring", Nilable = false },
+				{ Name = "timeLeft", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "LanguageListChanged",
 			Type = "Event",
 			LiteralName = "LANGUAGE_LIST_CHANGED",

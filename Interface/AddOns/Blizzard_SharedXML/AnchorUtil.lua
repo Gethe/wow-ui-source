@@ -217,7 +217,7 @@ function AnchorUtil.GridLayoutFactory(factoryFunction, initialAnchor, totalWidth
 
 	local frames = { frame };
 	while #frames < rowSize * colSize do
-		local frame = factoryFunction(#frames + 1);
+		frame = factoryFunction(#frames + 1);
 		if not frame then
 			break;
 		end

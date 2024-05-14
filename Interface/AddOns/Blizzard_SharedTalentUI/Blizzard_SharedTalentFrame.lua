@@ -1699,32 +1699,6 @@ function TalentFrameBaseMixin:UpdateColorBlindModeUI(isColorBlindModeActive)
 	end
 end
 
-function TalentFrameBaseMixin:GetSearchPreviewContainer()
-	-- Override in your derived Mixin.
-	return nil;
-end
-
-function TalentFrameBaseMixin:SetPreviewResultSearch(searchText)
-	-- Override in your derived Mixin.
-end
-
-function TalentFrameBaseMixin:HidePreviewResultSearch()
-	-- Override in your derived Mixin.
-end
-
-function TalentFrameBaseMixin:SetFullResultSearch(searchText)
-	-- Override in your derived Mixin.
-end
-
-function TalentFrameBaseMixin:SetSelectedSearchResult(definitionID)
-	-- Override in your derived Mixin.
-end
-
-function TalentFrameBaseMixin:GetSearchMatchTypeForEntry(nodeID, entryID)
-	-- Override in your derived Mixin.
-	return nil;
-end
-
 function TalentFrameBaseMixin:IsInspecting()
 	-- Override in your derived Mixin.
 	return self:GetInspectUnit() ~= nil;

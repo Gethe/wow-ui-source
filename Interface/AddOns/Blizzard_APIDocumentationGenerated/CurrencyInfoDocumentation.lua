@@ -18,7 +18,7 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "canTransferCurrency", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "CurrencyTransferFailReason", Nilable = true },
+				{ Name = "failureReason", Type = "AccountCurrencyTransferResult", Nilable = true },
 			},
 		},
 		{
@@ -47,16 +47,7 @@ local CurrencyInfo =
 			},
 		},
 		{
-			Name = "FetchCurrencyTransferTransactions",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "currencyTransferTransactions", Type = "table", InnerType = "CurrencyTransferTransaction", Nilable = false },
-			},
-		},
-		{
-			Name = "FetchRosterCurrencyData",
+			Name = "FetchCurrencyDataFromAccountCharacters",
 			Type = "Function",
 
 			Arguments =
@@ -67,6 +58,15 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "rosterCurrencyData", Type = "table", InnerType = "CharacterCurrencyData", Nilable = false },
+			},
+		},
+		{
+			Name = "FetchCurrencyTransferTransactions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currencyTransferTransactions", Type = "table", InnerType = "CurrencyTransferTransaction", Nilable = false },
 			},
 		},
 		{
@@ -322,6 +322,15 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "IsAccountCharacterCurrencyDataReady",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAccountTransferableCurrency",
 			Type = "Function",
 
@@ -402,7 +411,11 @@ local CurrencyInfo =
 			},
 		},
 		{
-			Name = "RequestCurrencyFromRoster",
+			Name = "RequestCurrencyDataForAccountCharacters",
+			Type = "Function",
+		},
+		{
+			Name = "RequestCurrencyFromAccountCharacter",
 			Type = "Function",
 
 			Arguments =
@@ -436,6 +449,11 @@ local CurrencyInfo =
 
 	Events =
 	{
+		{
+			Name = "AccountCharacterCurrencyDataReceived",
+			Type = "Event",
+			LiteralName = "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+		},
 		{
 			Name = "AccountMoney",
 			Type = "Event",
@@ -485,7 +503,7 @@ local CurrencyInfo =
 			Fields =
 			{
 				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "characterName", Type = "cstring", Nilable = false },
+				{ Name = "characterName", Type = "string", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},

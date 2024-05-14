@@ -18,7 +18,7 @@ local function ClubFinderGetTotalNumSpecializations()
 	local count = 0;
 	for i = 1, numClasses do
 		local _, _, classID = GetClassInfo(i);
-		for i = 1, GetNumSpecializationsForClassID(classID) do
+		for j = 1, GetNumSpecializationsForClassID(classID) do
 			count = count + 1
 		end
 	end
@@ -46,7 +46,7 @@ function ClubsRecruitmentDialogMixin:UpdatedPostingInformationInit()
 	if (self.clubId) then
 		clubId = self.clubId;
 	else
-		clubInfo = C_Club.GetClubInfo(self:GetParent():GetSelectedClubId());
+		local clubInfo = C_Club.GetClubInfo(self:GetParent():GetSelectedClubId());
 		clubId = clubInfo.clubId;
 	end
 
@@ -304,12 +304,6 @@ function ClubFinderRequestToJoinMixin:ApplyToClub()
 	end
 
 	C_ClubFinder.RequestMembershipToClub(self.info.clubFinderGUID, editbox:GetText():gsub("\n",""), selectedSpecs);
-	local requestType;
-	if (self:GetParent().isGuildType) then
-		requestType = Enum.ClubFinderRequestType.Guild;
-	else
-		requestType = Enum.ClubFinderRequestType.Community;
-	end
 
 	if (self.isLinkedPosting) then -- If we are requesting from finder.
 		self:GetCommunitiesFrame():SelectClub(nil);
@@ -617,8 +611,8 @@ function LookingForDropdownMixin:IsEverySpecCheckedForRole(roleToMatch)
 	local sex = UnitSex("player");
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for i = 1, GetNumSpecializationsForClassID(classID) do
-			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, i, sex);
+		for j = 1, GetNumSpecializationsForClassID(classID) do
+			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				if (not self:IsSpecInList(specID)) then
 					return false;
@@ -634,8 +628,8 @@ function LookingForDropdownMixin:CheckOrUncheckAll(info, roleToMatch, checkAll)
 	local sex = UnitSex("player");
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for i = 1, GetNumSpecializationsForClassID(classID) do
-			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, i, sex);
+		for j = 1, GetNumSpecializationsForClassID(classID) do
+			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				self:ModifyTrackedSpecList(specName, className, specID, checkAll);
 			end
@@ -678,8 +672,8 @@ function LookingForDropdownMixin:AddButtons(info, roleToMatch, level)
 
 	for i = 1, numClasses do
 		local className, classTag, classID = GetClassInfo(i);
-		for i = 1, GetNumSpecializationsForClassID(classID) do
-			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, i, sex);
+		for j = 1, GetNumSpecializationsForClassID(classID) do
+			local specID, specName, _, _, role = GetSpecializationInfoForClassID(classID, j, sex);
 			if(role == roleToMatch) then
 				info.hasArrow = false;
 				info.notCheckable = false;
@@ -995,12 +989,12 @@ function ClubSizeDropdownInitialize(self)
 	UIDropDownMenu_AddButton(info);
 
 	info.text = CLUB_FINDER_MEDIUM;
-	local dropdownText = info.text;
+	dropdownText = info.text;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Medium, dropdownText)
 	UIDropDownMenu_AddButton(info);
 
 	info.text = LARGE;
-	local dropdownText = info.text;
+	dropdownText = info.text;
 	self:SetDropdownInfoForPreferences(info, Enum.ClubFinderSettingFlags.Large, dropdownText)
 	UIDropDownMenu_AddButton(info);
 end

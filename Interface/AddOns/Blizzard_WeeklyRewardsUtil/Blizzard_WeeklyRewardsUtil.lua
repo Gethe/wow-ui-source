@@ -81,6 +81,22 @@ function WeeklyRewardsUtil.HasUnlockedRewards(activityType)
 	return false;
 end
 
+function WeeklyRewardsUtil.GetMaxNumRewards(activityType)
+	return #C_WeeklyRewards.GetActivities(activityType);
+end
+
+function WeeklyRewardsUtil.GetNumUnlockedRewards(activityType)
+	local activities = C_WeeklyRewards.GetActivities();
+	local unlocks = 0;
+	for i, activityInfo in ipairs(activities) do
+		if (not activityType or activityInfo.type == activityType) and activityInfo.progress >= activityInfo.threshold then
+			unlocks = unlocks + 1;
+		end
+	end
+
+	return unlocks;
+end
+
 WeeklyRewardMixin = {};
 
 function WeeklyRewardMixin:OnMouseUp(button, upInside)
@@ -91,4 +107,12 @@ end
 
 function WeeklyRewardMixin:HasUnlockedRewards(activityType)
 	return WeeklyRewardsUtil.HasUnlockedRewards(activityType);
+end
+
+function WeeklyRewardMixin:GetMaxNumRewards(activityType)
+	return WeeklyRewardsUtil.GetMaxNumRewards(activityType);
+end
+
+function WeeklyRewardMixin:GetNumUnlockedRewards(activityType)
+	return WeeklyRewardsUtil.GetNumUnlockedRewards(activityType);
 end

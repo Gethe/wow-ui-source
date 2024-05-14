@@ -250,7 +250,7 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 
 	self.buttonHeight = round(buttonHeight) - offsetY;
 
-	local numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
+	numButtons = math.ceil(self:GetHeight() / buttonHeight) + 1;
 
 	for i = #buttons + 1, numButtons do
 		button = CreateFrame("BUTTON", buttonName and (buttonName .. i) or nil, scrollChild, buttonTemplate);

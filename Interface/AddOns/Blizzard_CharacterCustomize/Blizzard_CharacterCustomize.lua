@@ -568,7 +568,8 @@ function CharCustomizeAudioInterfacePlayButtonMixin:OnClick()
 end
 
 function CharCustomizeAudioInterfacePlayButtonMixin:OnEnter()
-	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), CHAR_CUSTOMIZATION_TOOLTIP_PLAY_VOICE_SAMPLE, nil, false, self, "ANCHOR_LEFT");
+	local tooltipOwner = self;
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), CHAR_CUSTOMIZATION_TOOLTIP_PLAY_VOICE_SAMPLE, SimpleTooltipConstants.NoOverrideColor, SimpleTooltipConstants.DoNotWrapText, tooltipOwner, "ANCHOR_LEFT");
 end
 
 function CharCustomizeAudioInterfacePlayButtonMixin:OnLeave()
@@ -633,7 +634,8 @@ function CharCustomizeAudioInterfaceMuteButtonMixin:GetTooltipText()
 end
 
 function CharCustomizeAudioInterfaceMuteButtonMixin:OnEnter()
-	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), self:GetTooltipText(), nil, false, self, "ANCHOR_LEFT");
+	local tooltipOwner = self;
+	GameTooltip_ShowSimpleTooltip(GetAppropriateTooltip(), self:GetTooltipText(), SimpleTooltipConstants.NoOverrideColor, SimpleTooltipConstants.DoNotWrapText, tooltipOwner, "ANCHOR_LEFT");
 end
 
 function CharCustomizeAudioInterfaceMuteButtonMixin:OnLeave()
@@ -1782,10 +1784,9 @@ end
 
 function CharCustomizeMixin:GetNextMissingOption()
 	local missingOptions = self:GetMissingOptions();
-	if missingOptions then
-		for index, missingOption in ipairs(missingOptions) do
-			return missingOption.categoryIndex, missingOption.optionIndex;
-		end
+	if missingOptions and #missingOptions > 0 then
+		local missingOption = missingOptions[1];
+		return missingOption.categoryIndex, missingOption.optionIndex;
 	end
 end
 

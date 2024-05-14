@@ -48,7 +48,7 @@
 						<Anchor point="TOPLEFT" x="6" y="-6"/>
 						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a=".7"/>
+					<Color r="0" g="0" b="0" a="0.9"/>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">

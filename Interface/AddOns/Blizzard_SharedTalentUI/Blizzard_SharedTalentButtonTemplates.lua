@@ -174,19 +174,8 @@ function TalentDisplayMixin:GetOverrideIcon()
 	return (self.definitionInfo ~= nil) and self.definitionInfo.overrideIcon or nil;
 end
 
-function TalentDisplayMixin:CalculateIconTextureFromInfo(definitionInfo, subTreeInfo)
-	-- By default, any use of SubTreeSelection nodes without a bespoke override will treat them like regular Selection nodes
-	-- So we need to handle getting an icon from either an entry's subTree OR its definition
-	if subTreeInfo and subTreeInfo.iconElementID and subTreeInfo.iconElementID ~= "" then
-		return subTreeInfo.iconElementID, true;
-	end
-
-	local spellID = definitionInfo and definitionInfo.spellID or nil;
-	return TalentButtonUtil.CalculateIconTexture(definitionInfo, spellID), false;
-end
-
 function TalentDisplayMixin:CalculateIconTexture()
-	return self:CalculateIconTextureFromInfo(self.definitionInfo, self.entrySubTreeInfo);
+	return TalentButtonUtil.CalculateIconTextureFromInfo(self.definitionInfo, self.entrySubTreeInfo);
 end
 
 function TalentDisplayMixin:UpdateIconTexture()
@@ -1514,7 +1503,7 @@ end
 
 function TalentButtonSelectMixin:CalculateIconTexture()
 	-- Overrides TalentButtonBaseMixin.
-	return self:CalculateIconTextureFromInfo(self:GetSelectedDefinitionInfo(), self:GetSelectedSubTreeInfo());
+	return TalentButtonUtil.CalculateIconTextureFromInfo(self:GetSelectedDefinitionInfo(), self:GetSelectedSubTreeInfo());
 end
 
 function TalentButtonSelectMixin:UpdateIconTexture()
@@ -1619,7 +1608,7 @@ function TalentButtonSplitSelectMixin:UpdateIconTexture()
 
 		-- By default, any use of SubTreeSelection nodes without a bespoke override will treat them like regular Selection nodes
 		-- So we need to handle getting an icon from either an entry's subTree icon OR its definition texture
-		local firstIcon, firstIconIsAtlas = self:CalculateIconTextureFromInfo(firstDefinitionInfo, firstSubTreeInfo);
+		local firstIcon, firstIconIsAtlas = TalentButtonUtil.CalculateIconTextureFromInfo(firstDefinitionInfo, firstSubTreeInfo);
 		if firstIconIsAtlas then
 			self.Icon:SetAtlas(firstIcon);
 		else
@@ -1633,7 +1622,7 @@ function TalentButtonSplitSelectMixin:UpdateIconTexture()
 			local secondDefinitionInfo = secondEntryInfo.definitionID and talentFrame:GetAndCacheDefinitionInfo(secondEntryInfo.definitionID) or nil;
 			local secondSubTreeInfo = secondEntryInfo.subTreeID and talentFrame:GetAndCacheSubTreeInfo(secondEntryInfo.subTreeID) or nil;
 
-			local secondIcon, secondIconIsAtlas = self:CalculateIconTextureFromInfo(secondDefinitionInfo, secondSubTreeInfo);
+			local secondIcon, secondIconIsAtlas = TalentButtonUtil.CalculateIconTextureFromInfo(secondDefinitionInfo, secondSubTreeInfo);
 			if secondIconIsAtlas then
 				self.Icon2:SetAtlas(secondIcon);
 			else

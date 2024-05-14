@@ -4,7 +4,7 @@
 ## Dependencies: Blizzard_SharedXMLGame
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-Shared\AutoCastShine.lua
-Shared\AutoCastShine.xml
+Mainline\AutoCastTemplates.lua
+Mainline\AutoCastTemplates.xml
 Mainline\UIPanelTemplates.lua
 Mainline\UIPanelTemplates.xml

@@ -828,11 +828,9 @@ local function CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, mec
 		return true;
 	end
 
-	local foundMechanic;
 	local foundIndex;
 	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
 		if (enemy.mechanicEffectID == mechanicEffectID) then
-			foundMechanic = enemy.mechanic;
 			foundIndex = index;
 			break;
 		end
@@ -842,11 +840,9 @@ local function CheckClosedMissionPageOrMechanicEffectCountered(missionFrame, mec
 end
 
 local function PositionAtMechanicEffect(missionFrame, mechanicEffectID)
-	local foundMechanic;
 	local foundIndex;
 	for index, enemy in ipairs(missionFrame.MissionTab.MissionPage.Enemies) do
 		if (enemy.mechanicEffectID == mechanicEffectID) then
-			foundMechanic = enemy.mechanic;
 			foundIndex = index;
 			break;
 		end

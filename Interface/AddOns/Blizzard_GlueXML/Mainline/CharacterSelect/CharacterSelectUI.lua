@@ -29,6 +29,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("MAP_SCENE_CHARACTER_ON_MOUSE_ENTER");
 	self:RegisterEvent("MAP_SCENE_CHARACTER_ON_MOUSE_LEAVE");
+	self:RegisterEvent("CVAR_UPDATE");
 end
 
 function CharacterSelectUIMixin:OnEvent(event, ...)
@@ -63,6 +64,11 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		-- Trigger any updates on the character list entry, if visible.
 		local isHighlight = false;
 		CharacterSelectListUtil:UpdateCharacterHighlight(guid, isHighlight);
+	elseif event == "CVAR_UPDATE" then
+		local cvarName, cvarValue = ...;
+		if cvarName == "debugTargetInfo" then
+			CharacterSelectUtil.UpdateShowDebugTooltipInfo(cvarValue == "1");
+		end
 	end
 end
 
@@ -77,19 +83,22 @@ function CharacterSelectUIMixin:OnUpdate()
 	if self.mapSceneLoading and IsMapSceneLoaded() then
 		self.mapSceneLoading = false;
 
-		-- Set up the model scene first, so that valid model info is at the ready for character UI to reference if needed.
-		self:ShowModelScene();
-
-		-- Set up character UI before any animations are applied.
-		self:SetupCharacterOverlayFrames();
-
-		-- Set poses for each character slot.
 		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
 		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 			return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
 		end);
 
 		if elementData and elementData.isGroup then
+			for index, childElementData in ipairs(elementData.characterData) do
+				SetMapSceneCharPos(childElementData.characterID, index);
+			end
+
+			-- Set up the model scene first, so that valid model info is at the ready for character UI to reference if needed.
+			self:ShowModelScene();
+
+			-- Set up character UI before any animations are applied.
+			self:SetupCharacterOverlayFrames();
+
 			for _, childElementData in ipairs(elementData.characterData) do
 				if childElementData.characterID == selectedCharacterID then
 					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select);
@@ -128,14 +137,13 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 	if selectedElementData then
 		if selectedElementData.isGroup then
 			local mapSceneID = 1;
-
-			for index, childElementData in ipairs(selectedElementData.characterData) do
-				SetMapSceneCharPos(childElementData.characterID, index-1);
-			end
-
 			local loadedMapScene = GetLoadedMapScene();
 			local mapSceneLoaded = loadedMapScene and loadedMapScene == mapSceneID;
 			if mapSceneLoaded then
+				for index, childElementData in ipairs(selectedElementData.characterData) do
+					SetMapSceneCharPos(childElementData.characterID, index);
+				end
+
 				-- Set up the model scene first, so that valid model info is at the ready for character UI to reference if needed.
 				self:ShowModelScene();
 
@@ -372,6 +380,12 @@ function CharacterSelectHeaderMixin:Initialize(characterID)
 	if self.characterInfo then
 		self.Name:SetText(self.characterInfo.name);
 		self.Level:SetText(CHARACTER_SELECT_HEADER_INFO:format(self.characterInfo.experienceLevel));
+
+		local guid = self.characterInfo.guid;
+		local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid) or nil;
+		self.TimerunningIcon:SetShown(timerunningSeasonID ~= nil);
+	else
+		self.TimerunningIcon:Hide();
 	end
 
 	self:SetWidth(math.max(self.Name:GetStringWidth(), self.Level:GetStringWidth()));

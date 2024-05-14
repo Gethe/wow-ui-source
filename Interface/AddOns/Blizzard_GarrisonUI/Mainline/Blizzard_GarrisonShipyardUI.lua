@@ -622,7 +622,6 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 	end
 	-- preload next set
 	local nextIndex = self.currentIndex + 1;
-	local missionList = self.completeMissions;
 	if ( missionList[nextIndex] ) then
 		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID,
 			GarrisonFollowerOptions[self:GetParent().followerTypeID].showSingleMissionCompleteFollower,
@@ -1064,7 +1063,7 @@ end
 function GarrisonShipyardMap_SetupBonus(self, missionFrame, mission)
 	if (mission.type == "Ship-Bonus") then
 		missionFrame.bonusRewardArea = true;
-		for id, reward in pairs(mission.rewards) do
+		for id, reward in pairs(mission.rewards) do -- luacheck: ignore 512 (loop is executed at most once)
 			local posX = reward.posX or 0;
 			local posY = reward.posY or 0;
 			posY = posY * -1;
@@ -1529,7 +1528,7 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 	GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.RewardString, 0, -tooltipFrame.RewardString.yspacing);
 	GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.RewardString);
 
-	for id, reward in pairs(info.rewards) do
+	for id, reward in pairs(info.rewards) do -- luacheck: ignore 512 (loop is executed at most once)
 		if (reward.bonusAbilityID) then
 			tooltipFrame.BonusReward.Icon:SetTexture(reward.icon);
 			tooltipFrame.BonusReward.Name:SetText(reward.name);
@@ -1891,7 +1890,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 				trait.Portrait:SetTexture(ability.icon);
 				trait.followerTypeID = followerInfo.followerTypeID;
 				if (not hideCounters) then
-					for id, counter in pairs(ability.counters) do
+					for id, counter in pairs(ability.counters) do -- luacheck: ignore 512 (loop is executed at most once)
 						trait.Counter.Icon:SetTexture(counter.icon);
 						trait.Counter.tooltip = counter.name;
 						trait.Counter.mainFrame = mainFrame;
@@ -1918,7 +1917,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 					equipment.Icon:SetTexture(ability.icon);
 					equipment.Icon:Show();
 					if (not hideCounters) then
-						for id, counter in pairs(ability.counters) do
+						for id, counter in pairs(ability.counters) do -- luacheck: ignore 512 (loop is executed at most once)
 							equipment.Counter.Icon:SetTexture(counter.icon);
 							equipment.Counter.tooltip = counter.name;
 							equipment.Counter.mainFrame = mainFrame;

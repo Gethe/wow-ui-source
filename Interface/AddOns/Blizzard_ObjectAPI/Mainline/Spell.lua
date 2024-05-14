@@ -51,7 +51,7 @@ function SpellMixin:GetSpellSubtext()
 end
 
 function SpellMixin:GetSpellDescription()
-	return GetSpellDescription(self:GetSpellID());
+	return C_Spell.GetSpellDescription(self:GetSpellID());
 end
 
 -- Add a callback to be executed when spell data is loaded, if the spell data is already loaded then execute it immediately

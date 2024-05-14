@@ -133,38 +133,54 @@ local EXTRA_GUILD_COLUMN_DUNGEON_SCORE = 5;
 
 local COMMUNITY_APPLICANT_LIST_VALUE = 2; 
 
+local function CanShowFinderDropdownOptions()
+	local canGuildInvite = CanGuildInvite() and (C_GuildInfo.IsGuildOfficer() or IsGuildLeader());
+	local isClubFinderEnabled = C_ClubFinder.IsEnabled();
+	return canGuildInvite and isClubFinderEnabled;
+end
+
 local EXTRA_GUILD_COLUMNS = {
 	[EXTRA_GUILD_COLUMN_ACHIEVEMENT] = {
 		dropdownText = GUILD_ROSTER_DROPDOWN_ACHIEVEMENT_POINTS,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_ACHIEVEMENT,
 		attribute = "achievementPoints",
 		width = 115,
+		CanShow = function()
+			return true;
+		end,
 	};
-
 	[EXTRA_GUILD_COLUMN_PROFESSION] = {
 		dropdownText = GUILD_ROSTER_DROPDOWN_PROFESSION,
 		title = COMMUNITIES_ROSTER_COLUMN_TITLE_PROFESSION,
 		attribute = "profession", -- This is a special case since there are 2 separate sets of profession attributes.
 		width = 115,
+		CanShow = function()
+			return C_TradeSkillUI.IsGuildTradeSkillsEnabled();
+		end,
 	};
-	
 	[EXTRA_GUILD_COLUMN_APPLICANTS] = {
 		dropdownText = CLUB_FINDER_APPLICANTS,
 		title = CLUB_FINDER_APPLICANTS,
 		attribute = "applicants",
 		width = 115,
+		CanShow = CanShowFinderDropdownOptions,
 	};
 	[EXTRA_GUILD_COLUMN_PENDING] = {
 		dropdownText = CLUB_FINDER_APPLICANT_HISTORY,
 		title = CLUB_FINDER_APPLICANT_HISTORY,
 		attribute = "pending",
 		width = 115,
+		CanShow = CanShowFinderDropdownOptions,
 	};
 	[EXTRA_GUILD_COLUMN_DUNGEON_SCORE] = {
 		dropdownText = DUNGEON_SCORE,
 		title = DUNGEON_SCORE,
 		attribute = "dungeonScore",
 		width = 115,
+		CanShow = function()
+			-- TODO: Could use an API of C_MythicPlus once it gets exposed to Classic.
+			return ClassicExpansionAtLeast(LE_EXPANSION_LEGION);
+		end,
 	};
 
 };
@@ -249,7 +265,7 @@ end
 
 function CommunitiesMemberListMixin:UpdateSortedProfessionList()
 	self.sortedProfessionList = {};
-	sortedProfessionList = self.sortedProfessionList;
+	local sortedProfessionList = self.sortedProfessionList;
 	for professionId, professionList in pairs(self.professionDisplay) do
 		local professionEntry = {
 			professionHeaderId = professionId,
@@ -1552,56 +1568,58 @@ function GuildMemberListDropDownMenu_Initialize(self)
 	local canGuildInvite = CanGuildInvite() and (C_GuildInfo.IsGuildOfficer() or IsGuildLeader());
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local displayMode = communitiesFrame:GetDisplayMode();
-	local isClubFinderEnabled = C_ClubFinder.IsEnabled(); 
 	if (selectedValue == EXTRA_GUILD_COLUMN_APPLICANTS and self.shouldResetDropdown and communitiesFrame:IsShowingApplicantList()) then 
 		self:ResetDisplayMode();
 	end 
 
+	local availableDropdownOptionsCount = 0;
 	for i, extraColumnInfo in ipairs(EXTRA_GUILD_COLUMNS) do
-		info.text = extraColumnInfo.dropdownText;
-		info.value = i;
-		info.disabled = false; 
-		if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
-			if (self.hasApplicants and canGuildInvite) then 
-				info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+		if (extraColumnInfo:CanShow()) then
+			info.text = extraColumnInfo.dropdownText;
+			info.value = i;
+			info.disabled = false; 
+			if i == EXTRA_GUILD_COLUMN_APPLICANTS then 
+				if (self.hasApplicants and canGuildInvite) then 
+					info.text = extraColumnInfo.dropdownText.." "..CreateAtlasMarkup("communities-icon-notification", 10, 10);
+				end
+				info.disabled = not self.hasApplicants
+				info.func = function(button)
+					communitiesFrame.ApplicantList.isPendingList = false; 
+					communitiesFrame.ApplicantList:BuildList();
+					communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
+					memberList:SetGuildColumnIndex(i);
+					UIDropDownMenu_SetSelectedValue(self, i);
+					UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANTS);
+				end
+			elseif i == EXTRA_GUILD_COLUMN_PENDING then 
+				info.disabled = not self.hasPendingApplicants;
+				info.func = function(button)
+					communitiesFrame.ApplicantList.isPendingList = true; 
+					communitiesFrame.ApplicantList:BuildList();
+					communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
+					memberList:SetGuildColumnIndex(i);
+					UIDropDownMenu_SetSelectedValue(self, i);
+					UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANT_HISTORY);
+				end
+			else 
+				info.func = function(button)
+					communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
+					memberList:SetGuildColumnIndex(i);
+					UIDropDownMenu_SetSelectedValue(self, i);
+				end
 			end
-			info.disabled = not self.hasApplicants
-			info.func = function(button)
-				communitiesFrame.ApplicantList.isPendingList = false; 
-				communitiesFrame.ApplicantList:BuildList();
-				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
-				memberList:SetGuildColumnIndex(i);
-				UIDropDownMenu_SetSelectedValue(self, i);
-				UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANTS);
-			end
-		elseif i == EXTRA_GUILD_COLUMN_PENDING then 
-			info.disabled = not self.hasPendingApplicants;
-			info.func = function(button)
-				communitiesFrame.ApplicantList.isPendingList = true; 
-				communitiesFrame.ApplicantList:BuildList();
-				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_APPLICANT_LIST);
-				memberList:SetGuildColumnIndex(i);
-				UIDropDownMenu_SetSelectedValue(self, i);
-				UIDropDownMenu_SetText(self, CLUB_FINDER_APPLICANT_HISTORY);
-			end
-		else 
-			info.func = function(button)
-				communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
-				memberList:SetGuildColumnIndex(i);
-				UIDropDownMenu_SetSelectedValue(self, i);
-			end
-		end
-		local isFinderDropdownType = (i == EXTRA_GUILD_COLUMN_APPLICANTS or i == EXTRA_GUILD_COLUMN_PENDING); 
-
-		if (not isFinderDropdownType) then 
 			UIDropDownMenu_AddButton(info);
-		elseif(canGuildInvite and isFinderDropdownType and isClubFinderEnabled) then
-			UIDropDownMenu_AddButton(info);
+			availableDropdownOptionsCount = availableDropdownOptionsCount + 1;
 		end
 	end
 
-	self:UpdateNotificationFlash(communitiesFrame:HasNewClubApplications(memberList:GetSelectedClubId()) and canGuildInvite and isClubFinderEnabled);
-	UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
+	if availableDropdownOptionsCount > 1 then
+		self:UpdateNotificationFlash(communitiesFrame:HasNewClubApplications(memberList:GetSelectedClubId()) and canGuildInvite and isClubFinderEnabled);
+		UIDropDownMenu_SetSelectedValue(self, memberList:GetGuildColumnIndex());
+		self:Show();
+	else
+		self:Hide();
+	end
 end
 
 CommunityMemberListDropDownMenuMixin = CreateFromMixins(CommunitiesFrameMemberListDropDownMenuMixin);

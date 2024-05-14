@@ -238,17 +238,16 @@ do
 			info.value = CLASS_DROPDOWN;
 			UIDropDownMenu_AddButton(info, level);
 
-			local classDisplayName, classTag, classID;
+			local classDisplayName, _, classID;
 			if filterClassID ~= NO_CLASS_FILTER then
 				classID = filterClassID;
 				
 				local classInfo = C_CreatureInfo.GetClassInfo(filterClassID);
 				if classInfo then
 					classDisplayName = classInfo.className;
-					classTag = classInfo.classFile;
 				end
 			else
-				classDisplayName, classTag, classID = UnitClass("player");
+				classDisplayName, _, classID = UnitClass("player");
 			end
 			info.text = classDisplayName;
 			info.notCheckable = true;

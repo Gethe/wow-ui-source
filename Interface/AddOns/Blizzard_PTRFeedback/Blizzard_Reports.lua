@@ -111,7 +111,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 				local objectives = C_QuestLog.GetQuestObjectives(questInfo.questID)
 		
 				if (objectives) then
-					for i, objectiveInfo in pairs(objectives) do
+					for _, objectiveInfo in pairs(objectives) do
 						questEntry = questEntry .. "." .. objectiveInfo.numFulfilled
 					end
 				end
@@ -393,10 +393,10 @@ function PTR_IssueReporter.CreateReports()
             local results = ""
             local numberOfBonusIDs = elements[14]
             if (numberOfBonusIDs) and (tonumber(numberOfBonusIDs)) and (tonumber(numberOfBonusIDs) > 0) then
-                for i=15, 15 + numberOfBonusIDs do
-                    table.insert(bonusIDs,elements[i])
+                for index=15, 15 + numberOfBonusIDs do
+                    table.insert(bonusIDs,elements[index])
                 end
-                for i,v in ipairs(bonusIDs) do
+                for _,v in ipairs(bonusIDs) do
                     results = results .. ":" .. v
                 end
             end

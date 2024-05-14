@@ -84,11 +84,25 @@ function QuestObjectiveTrackerMixin:InitDropDown(block)
 	info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 
+	info.text = SUPER_TRACK_QUEST;
+	info.func = function() C_SuperTrack.SetSuperTrackedQuestID(questID); end
+	info.arg1 = questID;
+	info.noClickSound = 1;
+	info.checked = false;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
 	info.text = OBJECTIVES_VIEW_IN_QUESTLOG;
 	info.func = function() QuestUtil.OpenQuestDetails(questID); end
 	info.arg1 = questID;
 	info.noClickSound = 1;
 	info.checked = false;
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
+	info.text = OBJECTIVES_SHOW_QUEST_MAP;
+	info.func = function() QuestMapFrame_OpenToQuestDetails(questID); end
+	info.arg1 = questID;
+	info.checked = false;
+	info.noClickSound = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 
 	info.text = OBJECTIVES_STOP_TRACKING;
@@ -105,12 +119,11 @@ function QuestObjectiveTrackerMixin:InitDropDown(block)
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 
-	info.text = OBJECTIVES_SHOW_QUEST_MAP;
-	info.func = function() QuestMapFrame_OpenToQuestDetails(questID); end
+	info.text = ABANDON_QUEST_ABBREV;
+	info.func = function() QuestMapQuestOptions_AbandonQuest(questID); end
 	info.arg1 = questID;
 	info.checked = false;
-	info.noClickSound = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
 end
 
 function QuestObjectiveTrackerMixin:OnBlockHeaderEnter(block)

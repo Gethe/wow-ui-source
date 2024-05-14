@@ -170,7 +170,7 @@ function InspectPaperDollItemSlotButton_Update(button)
 		SetItemButtonQuality(button, quality, GetInventoryItemID(unit, button:GetID()));
 
 	else
-		local textureName = button.backgroundTextureName;
+		textureName = button.backgroundTextureName;
 		if ( button.checkRelic and UnitHasRelicSlot(unit) ) then
 			textureName = "Interface\\Paperdoll\\UI-PaperDoll-Slot-Relic.blp";
 		end

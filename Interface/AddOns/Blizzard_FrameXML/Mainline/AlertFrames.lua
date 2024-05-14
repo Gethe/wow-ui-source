@@ -233,7 +233,7 @@ function AlertFrameQueueMixin:CanQueueMore()
 end
 
 function AlertFrameQueueMixin:CheckQueuedAlerts()
-	while self:CanShowMore() and self:GetNumQueuedAlerts() > 0 do
+	if self:CanShowMore() and self:GetNumQueuedAlerts() > 0 then
 		local queuedAlertData = table.remove(self.queuedAlerts, 1);
 		return self:ShowAlert(unpack(queuedAlertData, 1, queuedAlertData.numElements));
 	end

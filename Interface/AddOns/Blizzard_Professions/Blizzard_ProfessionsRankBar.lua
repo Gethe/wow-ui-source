@@ -35,7 +35,7 @@ local function ExpansionDropDownButton_Init(self)
 	-- Add each expansion and skill display - Dragon Isles 50/100
 	local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
 	for index, professionInfo in ipairs(childProfessionInfos) do
-		local info = UIDropDownMenu_CreateInfo();
+		info = UIDropDownMenu_CreateInfo();
 		info.text = GenerateRankText(professionInfo.expansionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
 		info.func = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo) end;
 		info.checked = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end;

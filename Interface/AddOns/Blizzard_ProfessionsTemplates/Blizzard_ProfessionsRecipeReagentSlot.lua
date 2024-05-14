@@ -71,7 +71,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 		
 		local function InitButton()
 			local allocations = transaction:GetAllocations(self:GetSlotIndex());
-			for index, allocation in allocations:Enumerate() do
+			for index, allocation in allocations:Enumerate() do -- luacheck: ignore 512 (loop is executed at most once)
 				local reagent = allocation:GetReagent();
 				self:SetItem(Item:CreateFromItemID(reagent.itemID));
 				return;

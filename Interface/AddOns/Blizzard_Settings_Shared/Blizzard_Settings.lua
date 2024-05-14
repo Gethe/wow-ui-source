@@ -398,9 +398,9 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 		local default = setting:GetDefaultValue();
 		local warningOption = nil;
 		local defaultOption = nil;
-		for index, option in ipairs(optionData) do
-			local default = option.value == default;
-			if default then
+		for _, option in ipairs(optionData) do
+			local isDefault = option.value == default;
+			if isDefault then
 				defaultOption = option;
 			end
 			
@@ -423,7 +423,7 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 				if option.tooltip then
 					if option.disabled then
 						optionTooltip = DISABLED_FONT_COLOR:WrapTextInColorCode(option.tooltip);
-					elseif default and option.recommend then
+					elseif isDefault and option.recommend then
 						optionTooltip = GREEN_FONT_COLOR:WrapTextInColorCode(option.tooltip);
 					else
 						optionTooltip = NORMAL_FONT_COLOR:WrapTextInColorCode(option.tooltip);

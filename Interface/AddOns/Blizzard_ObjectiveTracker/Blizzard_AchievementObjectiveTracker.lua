@@ -162,6 +162,7 @@ function AchievementObjectiveTrackerMixin:AddAchievement(achievementID, achievem
 				else
 					-- for meta criteria look up the achievement name
 					if ( criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID ) then
+						local _;
 						_, criteriaString = GetAchievementInfo(assetID);
 					end
 				end

@@ -61,7 +61,7 @@ function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 end
 
 function ProfessionsRecipeTrackerMixin:InitDropDown(block)
-	info = UIDropDownMenu_CreateInfo();
+	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = 1;
 
 	if not IsRecraftBlock(block) and IsSpellKnown(GetRecipeID(block)) then
@@ -183,7 +183,7 @@ function ProfessionsRecipeTrackerMixin:AddRecipe(recipeID, isRecraft)
 				local metQuantity = quantity >= quantityRequired;
 				local dashStyle = metQuantity and OBJECTIVE_DASH_STYLE_HIDE or OBJECTIVE_DASH_STYLE_SHOW;
 				local colorStyle = OBJECTIVE_TRACKER_COLOR[metQuantity and "Complete" or "Normal"];
-				line = block:AddObjective(slotIndex, text, nil, nil, dashStyle, colorStyle);				
+				local line = block:AddObjective(slotIndex, text, nil, nil, dashStyle, colorStyle);				
 				line.Icon:SetShown(metQuantity);
 			end
 		end

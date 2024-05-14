@@ -156,7 +156,6 @@ end
 
 function DelvesDifficultyPickerLevelDropdownMixin:Init()
 	local options = DelvesDifficultyPickerFrame:GetOptions();
-	local firstLockedOptionShown = false;
 	local buttons = {};
 
 	if options then
@@ -173,13 +172,12 @@ function DelvesDifficultyPickerLevelDropdownMixin:Init()
 
 			if isLocked then
 				info.disabled = true;
-				info.tooltipWarning = option.failureDescription;
-			else
-				local spell = Spell:CreateFromSpellID(option.spellID);
-				spell:ContinueWithCancelOnSpellLoad(function()
-					info.tooltipText = spell:GetSpellDescription();
-				end);
 			end
+			
+			local spell = Spell:CreateFromSpellID(option.spellID);
+			spell:ContinueWithCancelOnSpellLoad(function()
+				info.tooltipText = spell:GetSpellDescription();
+			end);
 
 			tinsert(buttons, info);
 		end
@@ -190,13 +188,7 @@ function DelvesDifficultyPickerLevelDropdownMixin:Init()
 				SetupButton(option);
 			elseif (option.status == Enum.GossipOptionStatus.Unavailable or option.status == Enum.GossipOptionStatus.Locked) and not firstLockedOptionShown then
 				SetupButton(option, true);
-				firstLockedOptionShown = true;
-				break;
 			end
-		end
-
-		-- Add buttons in reverse order
-		for i = #buttons, 1, -1 do
 			UIDropDownMenu_AddButton(buttons[i]);
 		end
 	end
@@ -285,10 +277,10 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(reward.id, reward.quantity); 
 			if IsCurrencyContainer then 
 				local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, quantity);
-				table.insert(rewardInfo, {id = reward.id, texture = texture, quantity = quantity, quality = quality, name = name, isCurrencyContainer = true, sortOrder = 0});
+				table.insert(rewardInfo, {id = reward.id, texture = texture, quantity = quantity, quality = quality, name = name, isCurrencyContainer = true});
 			else 
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, texture = currencyInfo.iconFileID, quantity = reward.quantity, quality = currencyInfo.quality, name = currencyInfo.name, isCurrencyContainer = false, sortOrder = 0});
+				table.insert(rewardInfo, {id = reward.id, texture = currencyInfo.iconFileID, quantity = reward.quantity, quality = currencyInfo.quality, name = currencyInfo.name, isCurrencyContainer = false});
 			end 
 		end
 	end
@@ -297,17 +289,10 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		for  _, reward in ipairs(optionRewards) do
 			if	reward.rewardType == Enum.GossipOptionRewardType.Item then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name, sortOrder = 1});
+				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name});
 			end
 		end
 
-		table.sort(rewardInfo, function(a, b)
-			if a.sortOrder == b.sortOrder then
-				return a.quality > b.quality;
-			 end
-			 return a.sortOrder < b.sortOrder;
-		end);
-	
 		if #rewardInfo > 0 then
 			local buttons = {};
 			for i, reward in ipairs(rewardInfo) do

@@ -10,8 +10,6 @@ PANEL_INSET_ATTIC_OFFSET = -60;
 
 -- Magic Button code
 function MagicButton_OnLoad(self)
-	local leftHandled = false;
-	local rightHandled = false;
 
 	-- Find out where this button is anchored and adjust positions/separators as necessary
 	for i=1, self:GetNumPoints() do
@@ -23,7 +21,6 @@ function MagicButton_OnLoad(self)
 				self:SetPoint(point, relativeTo, relativePoint, 1, 0);
 			end
 
-			leftHandled = true;
 
 		elseif (relativeTo:GetObjectType() == "Button" and (point == "TOPRIGHT" or point == "RIGHT")) then
 
@@ -31,18 +28,15 @@ function MagicButton_OnLoad(self)
 				self:SetPoint(point, relativeTo, relativePoint, -1, 0);
 			end
 
-			rightHandled = true;
 
 		elseif (point == "BOTTOMLEFT") then
 			if (offsetX == 0 and offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, 4, 4);
 			end
-			leftHandled = true;
 		elseif (point == "BOTTOMRIGHT") then
 			if (offsetX == 0 and offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, -6, 4);
 			end
-			rightHandled = true;
 		elseif (point == "BOTTOM") then
 			if (offsetY == 0) then
 				self:SetPoint(point, relativeTo, relativePoint, 0, 4);
@@ -240,7 +234,7 @@ end
 function SearchBoxTemplate_OnLoad(self)
 	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 	self:SetTextInsets(16, 20, 0, 0);
-	self.Instructions:SetText(SEARCH);
+	self.Instructions:SetText(self.instructionText);
 	self.Instructions:ClearAllPoints();
 	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
 	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
@@ -555,7 +549,7 @@ end
 -- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
 -- cursor above or below the current scroll area of the edit box.
 function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
-	local height, range, scroll, size, cursorOffset;
+	local height, range, scroll, cursorOffset;
 	if ( self.handleCursorChange ) then
 		if ( not scrollFrame ) then
 			scrollFrame = self:GetParent();
@@ -563,7 +557,6 @@ function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
 		height = scrollFrame:GetHeight();
 		range = scrollFrame:GetVerticalScrollRange();
 		scroll = scrollFrame:GetVerticalScroll();
-		size = height + range;
 		cursorOffset = -self.cursorOffset;
 
 		if ( math.floor(height) <= 0 or math.floor(range) <= 0 ) then
@@ -1422,10 +1415,7 @@ function ResizeCheckButtonMixin:OnLoad()
 
 	if self.Label ~= nil then
 		self.Label:SetText(self.labelText);
-
-		if self.labelFont then
-			self.Label:SetFontObject(self.labelFont);
-		end
+		self:UpdateLabelFont();
 	end
 end
 
@@ -1441,6 +1431,7 @@ end
 function ResizeCheckButtonMixin:SetLabel(labelFontString)
 	self.Label = labelFontString;
 	self.Label:SetText(self.labelText);
+	self:UpdateLabelFont();
 	self:MarkDirty();
 end
 
@@ -1501,14 +1492,20 @@ function ResizeCheckButtonMixin:IsControlChecked()
 end
 
 function ResizeCheckButtonMixin:SetControlEnabled(enabled)
+	if self.Button == nil then
+		return;
+	end
+	
 	self.Button:SetEnabled(enabled);
 
-	if self.Label ~= nil then
-		self.Label:SetFontObject(enabled and "GameFontHighlightLarge" or "GameFontDisableLarge")
-	end
+	self:UpdateLabelFont();
 end
 
 function ResizeCheckButtonMixin:IsControlEnabled()
+	if self.Button == nil then
+		return false;
+	end
+
 	return self.Button:IsEnabled();
 end
 
@@ -1524,6 +1521,17 @@ function ResizeCheckButtonMixin:OnLeave()
 	if(self.tooltipText ~= nil and not self.tooltipDisabled) then
 		GameTooltip:Hide();
 	end
+end
+
+function ResizeCheckButtonMixin:UpdateLabelFont()
+	if not self.Label then
+		return;
+	end
+
+	local enabledFont = self.labelFont or "GameFontHighlightLarge";
+	local disabledFont = self.disabledLabelFont or "GameFontDisableLarge";
+	local enabled = self:IsControlEnabled();
+	self.Label:SetFontObject(enabled and enabledFont or disabledFont);
 end
 
 SubFrameMouseoverButtonMixin = {};
@@ -2108,7 +2116,7 @@ function SelectionPopoutWithButtonsMixin:UpdateButtons()
 		self.IncrementButton:SetEnabled(index ~= nil);
 
 		forward = false;
-		local index = self.Button:GetAdjustedIndex(forward, selections);
+		index = self.Button:GetAdjustedIndex(forward, selections);
 		self.DecrementButton:SetEnabled(index ~= nil);
 	else
 		self.IncrementButton:SetEnabled(false);

@@ -632,6 +632,9 @@ function CompactUnitFrame_SetHideHealth(frame, hideHealth, reason)
 	end
 
 	frame.healthBar:SetShown(not CompactUnitFrame_GetHideHealth(frame));
+	if (frame.HealthBarsContainer) then
+		frame.HealthBarsContainer:SetShown(not CompactUnitFrame_GetHideHealth(frame));
+	end
 end
 
 function CompactUnitFrame_GetHideHealth(frame)
@@ -1980,7 +1983,6 @@ function DefaultCompactUnitFrameSetup(frame)
 		local showPowerBar = displayPowerBar and (not displayOnlyHealerPowerBars or role == "HEALER");
 
 		if showPowerBar then
-			local displayBorder = EditModeManagerFrame:ShouldRaidFrameDisplayBorder(frame.groupType);
 			frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill");
 			frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER");
 			frame.powerBar.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Background");

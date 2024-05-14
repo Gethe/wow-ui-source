@@ -2,7 +2,6 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="InspectTalentFrame.lua"/>
 	
-	<!-- Talent button template, taken from PlayerTalentButtonTemplate in Blizzard_TalentUI.xml -->
 	<Button name="InspectTalentButtonTemplate" virtual="true">
 		<Size x="26" y="26"/>
 		<Layers>
@@ -41,7 +40,6 @@
 		</Scripts>
 	</Button>
 	
-	<!-- Row of player talents, taken from PlayerTalentRowTemplate in Blizzard_TalentUI.xml -->
 	<Frame name="InspectTalentRowTemplate" virtual="true">
 		<Size x="110" y="26"/>
 		<Frames>

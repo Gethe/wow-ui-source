@@ -5,6 +5,7 @@ CHATCONFIG_SELECTED_FILTER = nil;
 CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
 CHATCONFIG_CHANNELS_MAXWIDTH = 145;
+CHAT_CONFIG_CURRENT_COLOR_SWATCH = nil;
 
 local function ShouldDisplayDisabled()
 	return not C_SocialRestrictions.IsMuted() and C_SocialRestrictions.IsChatDisabled();
@@ -879,10 +880,6 @@ function ChatConfig_CreateTieredCheckboxes(frame, checkBoxTable, checkBoxTemplat
 	local yOffset;
 	local numColumns = 2;
 	local columnIndex = 1;
-	local itemsPerColumn;
-	if ( columns ) then
-		itemsPerColumn = ceil(#checkBoxTable/columns);
-	end
 	frame.checkBoxTable = checkBoxTable;
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it

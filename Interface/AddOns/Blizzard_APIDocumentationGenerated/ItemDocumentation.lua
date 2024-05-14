@@ -128,6 +128,20 @@ local Item =
 			},
 		},
 		{
+			Name = "DoesItemMatchTargetEnchantingSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLoc", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "matchesTargetEnchantingSpell", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesItemMatchTrackJump",
 			Type = "Function",
 

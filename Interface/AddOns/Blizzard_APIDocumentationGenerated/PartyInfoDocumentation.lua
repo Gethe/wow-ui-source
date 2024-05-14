@@ -226,6 +226,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "IsDelveInProgress",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDelveComplete", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPartyFull",
 			Type = "Function",
 

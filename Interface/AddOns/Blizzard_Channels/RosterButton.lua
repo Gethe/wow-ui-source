@@ -289,7 +289,6 @@ function ChannelRosterButtonMixin:GetMemberChannelRank()
 	if channel then
 		local ruleset = channel:GetChannelRuleset();
 		if ruleset == Enum.ChatChannelRuleset.Mentor then
-			local memberStatus = self:IsMemberModerator() and Enum.PlayerMentorshipStatus.Mentor or Enum.PlayerMentorshipStatus.Newcomer;
 			local memberStatus = ChatFrame_GetMentorChannelStatus(memberStatus, Enum.ChatChannelRuleset.Mentor);
 			if memberStatus == Enum.PlayerMentorshipStatus.Mentor then
 				return "mentor";

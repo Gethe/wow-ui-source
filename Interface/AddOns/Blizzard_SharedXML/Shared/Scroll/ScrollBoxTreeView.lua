@@ -113,8 +113,8 @@ function ScrollBoxListTreeListViewMixin:PrepareScrollToElementData(elementData)
 			end
 		end
 
-		for index, parent in ipairs_reverse(parents) do
-			parent:SetCollapsed(false, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
+		for index, parentEntry in ipairs_reverse(parents) do
+			parentEntry:SetCollapsed(false, TreeDataProviderConstants.RetainChildCollapse, TreeDataProviderConstants.SkipInvalidation);
 		end
 
 		-- Skip invalidation so that each individual collapse change doesn't unnecessarily signal updates. We're invalidating

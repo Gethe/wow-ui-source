@@ -253,7 +253,7 @@ function Class_ItemUpgradeCheckingService:GetBestItemUpgrades()
 		local highestIlvl = 0;
 
 		for i = 1, #items do
-			itemLink = items[i].ItemLink;
+			local itemLink = items[i].ItemLink;
 			local itemQuality = select(3, C_Item.GetItemInfo(itemLink));
 			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
 			if (itemQuality == Enum.ItemQuality.Heirloom) then

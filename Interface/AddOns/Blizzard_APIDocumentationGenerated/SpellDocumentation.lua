@@ -126,6 +126,21 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellDescription",
+			Type = "Function",
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellIDForSpellIdentifier",
 			Type = "Function",
 			Documentation = { "Meant primarily for getting a spell id from a spell name or link; Returns nothing if spell does not exist" },
@@ -258,6 +273,36 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsAutoAttackSpell",
+			Type = "Function",
+			Documentation = { "Returns true if the spell is the player's melee Auto Attack spell" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRangedAutoAttackSpell",
+			Type = "Function",
+			Documentation = { "Returns true if the spell is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isRangedAutoAttack", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSpellDataCached",
 			Type = "Function",
 			Documentation = { "Returns true if data for the spell has already been loaded and cached this session" },
@@ -330,6 +375,15 @@ local Spell =
 			},
 		},
 		{
+			Name = "TargetSpellIsEnchanting",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnchanting", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "TargetSpellJumpsUpgradeTrack",
 			Type = "Function",
 
@@ -362,6 +416,21 @@ local Spell =
 	Events =
 	{
 		{
+			Name = "EnchantSpellCompleted",
+			Type = "Event",
+			LiteralName = "ENCHANT_SPELL_COMPLETED",
+			Payload =
+			{
+				{ Name = "successful", Type = "bool", Nilable = false },
+				{ Name = "enchantedItem", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
+			},
+		},
+		{
+			Name = "EnchantSpellSelected",
+			Type = "Event",
+			LiteralName = "ENCHANT_SPELL_SELECTED",
+		},
+		{
 			Name = "SpellDataLoadResult",
 			Type = "Event",
 			LiteralName = "SPELL_DATA_LOAD_RESULT",
@@ -370,6 +439,11 @@ local Spell =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "UpdateSpellTargetItemContext",
+			Type = "Event",
+			LiteralName = "UPDATE_SPELL_TARGET_ITEM_CONTEXT",
 		},
 	},
 

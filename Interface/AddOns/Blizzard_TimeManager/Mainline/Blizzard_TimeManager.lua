@@ -1,4 +1,6 @@
 
+BlizzardStopwatchOptions = BlizzardStopwatchOptions or nil;
+
 -- speed optimizations (mostly so update functions are faster)
 local _G = getfenv(0);
 local date = _G.date;

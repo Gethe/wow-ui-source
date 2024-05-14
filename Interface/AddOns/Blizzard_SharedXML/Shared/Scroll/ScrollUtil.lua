@@ -878,7 +878,7 @@ function ScrollBoxDragBehavior:DropLeave()
 end
 
 function ScrollBoxDragBehavior:FindFrame(elementData)
-	for index, frame in self.scrollBox:EnumerateFrames() do
+	for _, frame in self.scrollBox:EnumerateFrames() do
 		if frame:GetElementData() == elementData then
 			return frame;
 		end
@@ -886,11 +886,34 @@ function ScrollBoxDragBehavior:FindFrame(elementData)
 		local getChildrenFrames = self:GetChildrenFrames();
 		local childrenFrames = getChildrenFrames and getChildrenFrames(frame);
 		if childrenFrames then
-			for index, childFrame in ipairs(childrenFrames) do
+			for _, childFrame in ipairs(childrenFrames) do
 				if childFrame:GetElementData() == elementData then
 					return frame;
 				end
 			end
+		end
+	end
+end
+
+local function GetPanFactor(elapsed, delta)
+	local coef = 4;
+	local range = 50;
+	local v = Clamp(math.abs(delta) / range, 0, 1);
+	return coef * elapsed * math.max(.1, math.pow(v, 3));
+end
+
+function ScrollBoxDragBehavior:TryVerticalEdgeScroll(elapsed, cx, cy)
+	local top = self.scrollBox:GetTop();
+	local topDelta = cy - top;
+	if topDelta > 0 then
+		local panFactor = GetPanFactor(elapsed, topDelta);
+		self.scrollBox:ScrollDecrease(panFactor);
+	else
+		local bottom = self.scrollBox:GetBottom();
+		local bottomDelta = cy - bottom;
+		if bottomDelta < 0 then
+			local panFactor = GetPanFactor(elapsed, bottomDelta);
+			self.scrollBox:ScrollIncrease(panFactor);
 		end
 	end
 end
@@ -1005,10 +1028,12 @@ function ScrollBoxDragBehavior:Register(onDragStop, onDragUpdate)
 			dy = cy - frame:GetTop();
 		end
 
-		self.delegate:SetScript("OnUpdate", function()
+		self.delegate:SetScript("OnUpdate", function(delegateFrame, elapsed)
 			local cx, cy = InputUtil.GetCursorPosition(cursorParent);
 			local x, y = cx - dx, cy - dy;
 			self.cursorFrame:SetPoint("TOPLEFT", x, y - cursorParent:GetHeight());
+
+			self:TryVerticalEdgeScroll(elapsed, cx, cy);
 
 			if not self:GetReorderable() then
 				return;

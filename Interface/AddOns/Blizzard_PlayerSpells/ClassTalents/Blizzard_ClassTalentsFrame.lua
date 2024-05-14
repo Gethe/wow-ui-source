@@ -1422,6 +1422,14 @@ function ClassTalentsFrameMixin:GetDefinitionInfoForEntry(entryID)
 	return nil;
 end
 
+function ClassTalentsFrameMixin:GetSubTreeInfoForEntry(entryID)
+	local subTreeID = self:GetAndCacheEntryInfo(entryID).subTreeID;
+	if subTreeID then
+		return self:GetAndCacheSubTreeInfo(subTreeID);
+	end
+	return nil;
+end
+
 function ClassTalentsFrameMixin:GetPlayerSpellsFrame()
 	return self:GetParent();
 end

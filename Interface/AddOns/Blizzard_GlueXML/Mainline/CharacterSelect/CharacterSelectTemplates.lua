@@ -1,4 +1,6 @@
 
+g_characterSelectToolTrayCollapsed = g_characterSelectToolTrayCollapsed or nil;
+
 CharacterSelectListExpandMixin = {};
 
 function CharacterSelectListExpandMixin:OnLoad()

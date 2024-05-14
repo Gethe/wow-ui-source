@@ -1,7 +1,8 @@
 WarWithinLandingOverlayMixin = {};
 
 local minimapDisplayInfo = {
-	useDefaultButtonSize = true;
+	useDefaultButtonSize = true,
+	expansionLandingPageType = Enum.ExpansionLandingPageType.WarWithin,
 	["normalAtlas"] = "warwithin-landingbutton-up",
 	["pushedAtlas"] = "warwithin-landingbutton-down",
 	["highlightAtlas"] = "warwithin-landingbutton-highlight",
@@ -15,8 +16,15 @@ local unlockEvents = {
 };
 
 local minimapAnimationEvents = {
-
+	"MAJOR_FACTION_UNLOCKED",
 };
+
+local minimapPulseLocks = EnumUtil.MakeEnum(
+	"WarWithinSummaryUnlocked",
+	"MajorFactionUnlocked"
+);
+
+local overlayFrame = nil;
 
 function WarWithinLandingOverlayMixin.IsOverlayUnlocked()
 	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_11_0);
@@ -35,16 +43,29 @@ function WarWithinLandingOverlayMixin.GetUnlockEvents()
 end
 
 function WarWithinLandingOverlayMixin.CreateOverlay(parent)
-	return CreateFrame("Frame", nil, parent, "WarWithinLandingOverlayTemplate");
+	if not overlayFrame then
+		overlayFrame = CreateFrame("Frame", nil, parent, "WarWithinLandingOverlayTemplate");
+	end
+
+	return overlayFrame;
 end
 
 function WarWithinLandingOverlayMixin:TryCelebrateUnlock()
+	if not GetCVarBitfield("unlockedExpansionLandingPages", minimapDisplayInfo.expansionLandingPageType) then
+		SetCVarBitfield("unlockedExpansionLandingPages", minimapDisplayInfo.expansionLandingPageType, true);
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", WAR_WITHIN_LANDING_PAGE_ALERT_SUMMARY_UNLOCKED);
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.WarWithinSummaryUnlocked);
+	end
 end
 
 function WarWithinLandingOverlayMixin.HandleUnlockEvent(event, ...)
 end
 
 function WarWithinLandingOverlayMixin.HandleMinimapAnimationEvent(event, ...)
+	if event == "MAJOR_FACTION_UNLOCKED" then
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerAlert", WAR_WITHIN_LANDING_PAGE_ALERT_MAJOR_FACTION_UNLOCKED);
+		EventRegistry:TriggerEvent("ExpansionLandingPage.TriggerPulseLock", minimapPulseLocks.MajorFactionUnlocked);
+	end
 end
 
 function WarWithinLandingOverlayMixin:OnLoad()

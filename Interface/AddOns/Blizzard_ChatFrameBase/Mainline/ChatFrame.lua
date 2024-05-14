@@ -15,6 +15,8 @@ CHAT_FOCUS_OVERRIDE = nil;
 NUM_REMEMBERED_TELLS = 10;
 MAX_WOW_CHAT_CHANNELS = 20;
 MAX_COUNTDOWN_SECONDS = 3600; -- One Hour
+ACTIVE_CHAT_EDIT_BOX = nil;
+LAST_ACTIVE_CHAT_EDIT_BOX = nil;
 
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
 	return LinkUtil.FormatLink("BNplayer", linkDisplayText, name, bnetIDAccount, lineID or 0, chatType, chatTarget);
@@ -2977,7 +2979,7 @@ function ChatFrame_RegisterForMessages(self, ...)
 		messageGroup = ChatTypeGroup[select(i, ...)];
 		if ( messageGroup ) then
 			self.messageTypeList[index] = select(i, ...);
-			for index, value in pairs(messageGroup) do
+			for _, value in pairs(messageGroup) do
 				self:RegisterEvent(value);
 				if ( value == "CHAT_MSG_VOICE_TEXT" ) then
 					self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
@@ -4230,6 +4232,7 @@ function ChatFrame_OpenChat(text, chatFrame, desiredCursorPosition)
 
 			-- Don't default chat type if we already have a specific type (i.e. BN_WHISPER)
 			if editBox:GetAttribute("chatType") == "SAY" then
+				local isInGroup;
 				if IsInGroup(LE_PARTY_CATEGORY_HOME) then
 					local groupCount = GetNumGroupMembers();
 					if groupCount > 1 then
@@ -4483,7 +4486,7 @@ function ChatFrame_DisplayTimePlayed(self, totalTime, levelTime)
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 
 	d, h, m, s = ChatFrame_TimeBreakDown(levelTime);
-	local string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
+	string = format(TIME_PLAYED_LEVEL, format(TIME_DAYHOURMINUTESECOND, d, h, m, s));
 	self:AddMessage(string, info.r, info.g, info.b, info.id);
 end
 

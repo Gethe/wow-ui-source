@@ -960,9 +960,9 @@ function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
 		end
 	end
 
-	for _, button in ipairs(self:GetParent().SpecButtons) do
-		if button:GetID() ~= self:GetID() then
-			button:SetChecked(false);
+	for _, specButton in ipairs(self:GetParent().SpecButtons) do
+		if specButton:GetID() ~= self:GetID() then
+			specButton:SetChecked(false);
 		end
 	end
 end

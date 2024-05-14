@@ -1185,11 +1185,11 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 
 		if self.SchematicForm.OptionalReagents:IsShown() then
 			local y = basicReagentsBoxTop - reagentsBoxHeight - 5;
-			local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
-			local slotCount = slots and #slots or 0;
-			local slotSpacing = (math.max(0, slotCount - 1) * -5);
-			local slotWidth = (50 * math.max(3, slotCount));
-			local width = 25 + slotWidth + slotSpacing;
+			local optionalSlots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Optional);
+			local optionalSlotCount = optionalSlots and #optionalSlots or 0;
+			local optionalSlotSpacing = (math.max(0, optionalSlotCount - 1) * -5);
+			local optionalSlotWidth = (50 * math.max(3, optionalSlotCount));
+			local width = 25 + optionalSlotWidth + optionalSlotSpacing;
 
 			local optionalReagentsSection =
 			{

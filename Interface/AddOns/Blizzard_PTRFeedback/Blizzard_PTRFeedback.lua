@@ -450,6 +450,7 @@ function PTR_IssueReporter.HandleMapEvents()
     end
 end
 ----------------------------------------------------------------------------------------------------
+local groupHasAIBots;
 function PTR_IssueReporter.HandleGroupRosterChanged()
 	if IsInRaid() then
         return
@@ -575,7 +576,6 @@ function PTR_IssueReporter.GetTitleFromSurvey(survey, dataPackage)
             
             table.insert(titleTokens, tokenString)
         end
-        test = titleTokens
         titleString = string.format(survey.Title, unpack(titleTokens))
     elseif (survey.Title) then
         titleString = survey.Title
@@ -692,8 +692,8 @@ local function PlayerEnteringWorldHandler()
     PTR_IssueReporter.Init()
     PTR_IssueReporter:UnregisterEvent("PLAYER_ENTERING_WORLD")  
     
-    SLASH_PTRFEEDBACK1 = "/PTR"
-    SLASH_PTRFEEDBACK2 = "/PTRFEEDBACK"
+    _G["SLASH_PTRFEEDBACK1"] = "/PTR"
+    _G["SLASH_PTRFEEDBACK2"] = "/PTRFEEDBACK"
     SlashCmdList["PTRFEEDBACK"] = PTR_IssueReporter.SlashHandeler
 end
 if not(IsOnGlueScreen()) then

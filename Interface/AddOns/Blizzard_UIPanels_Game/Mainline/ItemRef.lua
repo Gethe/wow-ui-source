@@ -211,7 +211,6 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 11) == "garrmission" ) then
-		local _, garrMissionID = strsplit(":", link);
 		local garrMissionID, garrMissionDBID = link:match("garrmission:(%d+):([0-9a-fA-F]+)")
 		if (garrMissionID and garrMissionDBID and strlen(garrMissionDBID) == 16) then
 			if ( IsModifiedClick() ) then
@@ -301,8 +300,8 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 	elseif ( strsub(link, 1, 4) == "item" ) then
 		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			local name, link = C_Item.GetItemInfo(text);
-			if ChatEdit_InsertLink(link) then
+			local name, itemLink = C_Item.GetItemInfo(text);
+			if ChatEdit_InsertLink(itemLink) then
 				return;
 			end
 		end

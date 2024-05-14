@@ -647,10 +647,10 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 		end
 	end
 
-	for index, category in ipairs(self:GetAllCategories()) do
+	for _, category in ipairs(self:GetAllCategories()) do
 		ParseCategory(category);
 
-		for index, subcategory in EnumerateTaintedKeysTable(category:GetSubcategories()) do
+		for _, subcategory in EnumerateTaintedKeysTable(category:GetSubcategories()) do
 			ParseCategory(subcategory, category);
 		end
 	end

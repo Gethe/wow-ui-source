@@ -157,7 +157,7 @@ end
 function GetPlayerActorLabelTag()
 	local playerRaceName;
 	local playerGender;
-	local playerRaceNameActorTag;
+	local playerRaceNameActorTag = nil;
 	local hasAlternateForm, inAlternateForm = false, false;
 	if IsOnGlueScreen() then
 		local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());

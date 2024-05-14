@@ -170,7 +170,7 @@ function AuctionHouseItemListMixin:Init()
 	
 	ScrollUtil.RegisterAlternateRowBehavior(self.ScrollBox, function(button, alternate)
 		if self.highlightCallback then
-			local highlightShow = false;
+			local highlightShown = false;
 			local highlightAlpha = 1.0;
 
 			-- rowData and elementData are expected to be non-nil.

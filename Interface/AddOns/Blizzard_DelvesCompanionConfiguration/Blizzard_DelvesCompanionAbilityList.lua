@@ -25,7 +25,7 @@ DelvesCompanionAbilityListFrameMixin = {};
 function DelvesCompanionAbilityListFrameMixin:OnLoad()
 	local panelAttributes = {
 		area = "left",
-		pushable = 2,
+		pushable = 3,
 		allowOtherPanels = 1,
 		whileDead = 0,
 	};
@@ -80,6 +80,14 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 
 	if not ignoreDropdown then
 		self.DelvesCompanionRoleDropdown:Refresh();
+	end
+	
+	-- If the ability list is opened and a player has not selected Brann's role yet, refresh with the first option selected instead
+	-- so that we show *something*
+	if #self.buttons == 0 and #self.DelvesCompanionRoleDropdown.dropdownOptions > 0 then
+		self:SetSelection(BRANN_ROLE_NODE_ID, self.DelvesCompanionRoleDropdown.dropdownOptions[1].entryID);
+		self:Refresh(true);
+		self:RollbackConfig(self, true);
 	end
 end
 
@@ -153,9 +161,14 @@ end
 
 function DelvesCompanionAbilityListFrameMixin:InstantiateTalentButton(nodeID, nodeInfo)
 	nodeInfo = nodeInfo or self:GetAndCacheNodeInfo(nodeID);
-	-- TODO / NOTE -> Companaion paragon trait uses the tiered type, and it is not yet fully implemented. Some changes may be required here when it is ready
+	-- TODO / NOTE -> Companion paragon trait uses the tiered type, and it is not yet fully implemented. Some changes may be required here when it is ready
 	if nodeInfo.type == Enum.TraitNodeType.Single or nodeInfo.type == Enum.TraitNodeType.Tiered then
 		local button = TalentFrameBaseMixin.InstantiateTalentButton(self, nodeID, nodeInfo);
+		
+		if not button then
+			return;
+		end
+
 		button:Hide();
 		button.index = self:GetIndexFromNodePosition(nodeInfo.posX, nodeInfo.posY);
 		button:InitAdditionalElements();

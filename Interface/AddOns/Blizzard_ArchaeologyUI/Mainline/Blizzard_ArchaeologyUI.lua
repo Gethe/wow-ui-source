@@ -294,7 +294,7 @@ function ArchaeologyFrame_CurrentArtifactUpdate(self)
 	self.historyScroll.child.text:SetText(description);
 
 	self.historyTitle:ClearAllPoints();
-	local runeName, runeStoneIconPath;
+	local runeName, runeStoneIconPath, _;
 	if RaceitemID > 0 then
 		runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = C_Item.GetItemInfo(RaceitemID);
 	end

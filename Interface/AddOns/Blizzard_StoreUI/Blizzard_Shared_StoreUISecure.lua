@@ -450,7 +450,7 @@ function StoreFrame_CurrencyInfo()
 	local currencyInfo = C_StoreSecure.GetCurrencyInfo();
 	local info = {};
 	if currencyInfo then
-		currencyRegion = currencyInfo.sharedData.regionID;
+		local currencyRegion = currencyInfo.sharedData.regionID;
 		FormatCurrencyStringShort = currencyInfo.sharedData.formatShort;
 		FormatCurrencyStringLong = currencyInfo.sharedData.formatLong;
 		info = currencySpecific[currencyRegion] or currencySpecific[REGION_US];
@@ -472,11 +472,6 @@ end
 function StoreFrame_CurrencyFormatShort(...)
 	local info = StoreFrame_CurrencyInfo();
 	return info.formatShort(...);
-end
-
-local function currencyFormatLong(...)
-	local info = StoreFrame_CurrencyInfo();
-	return info.formatLong(...);
 end
 
 local factionColors = {
@@ -810,7 +805,7 @@ function StoreFrame_SetCategoryProductCards(forceModelUpdate, entries)
 	-- set up the buy buttons and paging buttons
 	if #entries > 1 then
 		local numPages = #pageInfo;
-		local selectedPage = StoreFrame_GetSelectedPageNum();
+		selectedPage = StoreFrame_GetSelectedPageNum();
 		self.PageText:SetText(string.format(BLIZZARD_STORE_PAGE_NUMBER, selectedPage, numPages));
 
 		if numPages > 1 then
@@ -2702,7 +2697,7 @@ end
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
 	local showPreview;
 	if ( IsOnGlueScreen() ) then
-		showPreview = _G.IsControlKeyDown();
+		showPreview = IsControlKeyDown();
 	else
 		showPreview = IsModifiedClick("DRESSUP");
 	end
@@ -2850,7 +2845,7 @@ function StoreTooltip_Show(name, description, isToken)
 	self:SetHeight(buffer*bufferCount + nheight + dheight);
 	local parent = self:GetParent();
 	local modelFrameLevel = 200; -- just a reasonable safe default value
-	for card in StoreFrame.productCardPoolCollection:EnumerateActive() do
+	for card in StoreFrame.productCardPoolCollection:EnumerateActive() do -- luacheck: ignore 512 (loop is executed at most once)
 		modelFrameLevel = card.ModelScene:GetFrameLevel() + 2;
 		break;
 	end

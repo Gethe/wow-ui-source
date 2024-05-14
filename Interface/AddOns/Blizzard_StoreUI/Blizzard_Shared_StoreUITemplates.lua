@@ -203,8 +203,8 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 				end
 			end
 			for _, frame in self.ScrollBox:EnumerateFrames() do
-				local node = frame:GetElementData();
-				SetParentCollapsedState(node, frame);
+				local nodeData = frame:GetElementData();
+				SetParentCollapsedState(nodeData, frame);
 			end
 		end
 	end;
@@ -288,7 +288,7 @@ function CategoryTreeScrollContainerMixin:UpdateCategories()
 			local hasParent = parentGroupID > 0;
 			if hasParent then
 				local parentProductGroup = 	FindParentProductGroup(parentGroupID, productGroups);
-				parentGroupEntry = productGroupMap[parentGroupID];
+				local parentGroupEntry = productGroupMap[parentGroupID];
 				if not parentGroupEntry and parentProductGroup then
 					productGroupMap[parentGroupID] = parentProductGroup;
 					dataProvider:Insert(parentProductGroup);

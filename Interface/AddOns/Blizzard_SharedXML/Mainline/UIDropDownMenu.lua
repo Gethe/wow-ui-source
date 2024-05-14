@@ -623,7 +623,7 @@ function UIDropDownMenu_AddButton(info, level)
 	end
 
 	-- If no open frame then set the frame to the currently initialized frame
-	frame = frame or UIDROPDOWNMENU_INIT_MENU;
+	local frame = frame or UIDROPDOWNMENU_INIT_MENU;
 
 	if ( info.leftPadding ) then
 		xPos = xPos + info.leftPadding;
@@ -735,7 +735,7 @@ function UIDropDownMenu_AddButton(info, level)
 	local customFrameCount = listFrame.customFrames and #listFrame.customFrames or 0;
 	local height = ((index - customFrameCount) * buttonHeight) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2);
 	for frameIndex = 1, customFrameCount do
-		local frame = listFrame.customFrames[frameIndex];
+		frame = listFrame.customFrames[frameIndex];
 		height = height + frame:GetPreferredEntryHeight();
 	end
 

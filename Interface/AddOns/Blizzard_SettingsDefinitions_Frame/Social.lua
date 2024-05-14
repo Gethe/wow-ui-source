@@ -4,7 +4,7 @@ local function Register()
 	
 	-- Disable Chat
 	do
-		function InterceptDisableChatChanged(disabled)
+		local function InterceptDisableChatChanged(disabled)
 			if disabled then
 				StaticPopup_Show("CHAT_CONFIG_DISABLE_CHAT");
 				return true;
@@ -13,7 +13,7 @@ local function Register()
 			end
 		end
 
-		function SetChatDisabled(disabled)
+		local function SetChatDisabled(disabled)
 			C_SocialRestrictions.SetChatDisabled(disabled);
 			ChatConfigFrame_OnChatDisabledChanged(disabled);
 		end

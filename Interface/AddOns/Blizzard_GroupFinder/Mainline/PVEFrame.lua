@@ -7,7 +7,8 @@ PVE_FRAME_BASE_WIDTH = 563;
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
-	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
+	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return GetExpansionLevel() >= LE_EXPANSION_11_0 end, hideLeftInset = true, width = 680 },
 }
 
 function LFGListPVPStub_OnShow(self)
@@ -93,11 +94,22 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 		selection = _G[selection];
 	end
 
+	-- Hide the left panel if the panel doesn't need it
+	if ( panels[tabIndex].hideLeftInset ) then
+		PVEFrame_HideLeftInset();
+	else
+		PVEFrame_ShowLeftInset();
+	end
+
 	-- show it
 	ShowUIPanel(self);
 	self.activeTabIndex = tabIndex;
 	PanelTemplates_SetTab(self, tabIndex);
-	self:SetWidth(PVE_FRAME_BASE_WIDTH);
+	if ( panels[tabIndex].width ) then
+		self:SetWidth(panels[tabIndex].width);
+	else
+		self:SetWidth(PVE_FRAME_BASE_WIDTH);
+	end
 	UpdateUIPanelPositions(PVEFrame);
 	for index, data in pairs(panels) do
 		local panel = _G[data.name];
