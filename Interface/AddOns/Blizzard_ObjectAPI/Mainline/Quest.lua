@@ -2,17 +2,7 @@ local QuestMixin = {};
 
 function QuestMixin:Init(questID)
 	self.questID = questID;
-	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID); -- may not exist, if it doesn't then you get minimal info
-
-	if questLogIndex then
-		Mixin(self, C_QuestLog.GetInfo(questLogIndex));
-
-		-- Remove all dynamic data that could become stale
-		self.questLogIndex = nil;
-		self.isOnMap = nil;
-		self.isCollapsed = nil;
-		self.hasLocalPOI = nil;
-	end
+	self:CheckRefresh();
 
 	self.title = "";
 	self.requiredMoney = 0;
@@ -25,6 +15,28 @@ function QuestMixin:Init(questID)
 		self.isRepeatable = C_QuestLog.IsRepeatableQuest(questID);
 		self.isLegendary = C_QuestLog.IsLegendaryQuest(questID);
 	end);
+end
+
+function QuestMixin:CheckRefresh()
+	if self.hasQuestLogInfo then
+		return;
+	end
+
+	local questLogIndex = C_QuestLog.GetLogIndexForQuestID(self.questID); -- may not exist, if it doesn't then you get minimal info
+	if questLogIndex then
+		local questLogInfo = C_QuestLog.GetInfo(questLogIndex);
+		if questLogInfo then
+			self.hasQuestLogInfo = true;
+
+			Mixin(self, questLogInfo);
+
+			-- Remove all dynamic data that could become stale
+			self.questLogIndex = nil;
+			self.isOnMap = nil;
+			self.isCollapsed = nil;
+			self.hasLocalPOI = nil;
+		end
+	end
 end
 
 function QuestMixin:GetID()

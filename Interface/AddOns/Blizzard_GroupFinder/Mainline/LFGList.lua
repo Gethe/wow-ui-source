@@ -2037,21 +2037,15 @@ function LFGListApplicantMember_OnEnter(self)
 			GameTooltip:AddDoubleLine(DUNGEON_SCORE, color:WrapTextInColorCode(dungeonScore));
 
 			local function AddDungeonScore(leftText, dungeonScoreStruct)
-				if not dungeonScoreStruct then
-					return;
-				end
-
-				local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(dungeonScoreStruct.mapScore);
-				if (not color) then
-					color = HIGHLIGHT_FONT_COLOR;
-				end
-
-				if dungeonScoreStruct.mapScore == 0 then
-					GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_PER_DUNGEON_NO_RATING:format(dungeonScoreStruct.mapName, dungeonScoreStruct.mapScore));
-				elseif dungeonScoreStruct.finishedSuccess then
-					GameTooltip:AddDoubleLine(leftText, MakeRunLevelWithIncrement(dungeonScoreStruct).." "..color:WrapTextInColorCode(dungeonScoreStruct.mapName));
+				if not dungeonScoreStruct or dungeonScoreStruct.mapScore == 0 or not dungeonScoreStruct.finishedSuccess then
+					GameTooltip:AddDoubleLine(leftText, GRAY_FONT_COLOR:WrapTextInColorCode(DUNGEON_SCORE_LINK_NO_SCORE));
 				else
-					GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(dungeonScoreStruct.mapName, color:WrapTextInColorCode(dungeonScoreStruct.mapScore), dungeonScoreStruct.bestRunLevel));
+					local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(dungeonScoreStruct.mapScore);
+					if not color then
+						color = HIGHLIGHT_FONT_COLOR;
+					end
+
+					GameTooltip:AddDoubleLine(leftText, MakeRunLevelWithIncrement(dungeonScoreStruct).." "..color:WrapTextInColorCode(dungeonScoreStruct.mapName));
 				end
 			end
 
