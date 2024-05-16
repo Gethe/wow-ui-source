@@ -10,6 +10,10 @@ local CALL_PET_SPELL_IDS = { -- Each "active" pet slot corresponds to a "call pe
 local ANIMAL_COMPANION_NODE_ID = 79947; -- BM talent required for secondary pet slot
 local STABLE_FRAME_SWAP_TIMEOUT_SECONDS = 0.3; -- 300ms
 
+local STABLED_PETS_FIRST_SLOT_LUA_INDEX = Constants.PetConsts.STABLED_PETS_FIRST_SLOT_INDEX + 1;
+local EXTRA_PET_STABLE_SLOT_LUA_INDEX = Constants.PetConsts.EXTRA_PET_STABLE_SLOT + 1;
+local MAX_PET_SLOT_LUA_INDEX = Constants.PetConsts.NUM_PET_SLOTS + 1;
+
 local STABLE_FRAME_ON_LOAD_EVENTS = {
 	"PET_STABLE_SHOW",
 	"PET_STABLE_CLOSED",
@@ -72,7 +76,7 @@ local function SetPortraitTextureFromCreatureDisplayIDFlipped(texture, creatureD
 end
 
 local function IsActivePetSlot(slot)
-	return slot > 0 and slot < Constants.PetConsts.STABLED_PETS_FIRST_SLOT_INDEX;
+	return slot > 0 and slot < EXTRA_PET_STABLE_SLOT_LUA_INDEX;
 end
 
 local function GetSummonedPetStableSlot()
@@ -93,7 +97,7 @@ local function GetSummonedPet()
 end
 
 local function FindFirstPet()
-	for i=1, Constants.PetConsts.NUM_PET_SLOTS do
+	for i=1, MAX_PET_SLOT_LUA_INDEX do
 		local petInfo = C_StableInfo.GetStablePetInfo(i);
 		if petInfo then
 			return petInfo;
@@ -106,16 +110,28 @@ local function FindFirstUnusedStableSlot()
 		return;
 	end
 
-	for i=Constants.PetConsts.STABLED_PETS_FIRST_SLOT_INDEX, Constants.PetConsts.NUM_PET_SLOTS do
+	local targetSlot = nil;
+
+	for i=STABLED_PETS_FIRST_SLOT_LUA_INDEX, MAX_PET_SLOT_LUA_INDEX do
 		local petInfo = C_StableInfo.GetStablePetInfo(i);
 		if not petInfo then
-			StableFrame.swapTimeout = GetTime() + STABLE_FRAME_SWAP_TIMEOUT_SECONDS;
-			return i;
+			targetSlot = i;
+			break;
 		end
 	end
-	-- If all slots are full, and we're unable to get petData for the intended swap (e.g. on drag+hover)...
-	-- ... then just swap with the first stable slot.
-	return Constants.PetConsts.STABLED_PETS_FIRST_SLOT_INDEX;
+
+	if not targetSlot then
+		if not C_StableInfo.GetStablePetInfo(EXTRA_PET_STABLE_SLOT_LUA_INDEX) then
+			-- If we found no empty slots but the extra pet slot is open use that
+			targetSlot = EXTRA_PET_STABLE_SLOT_LUA_INDEX;
+		else
+			-- Otherwise just swap with the first stable slot
+			targetSlot = STABLED_PETS_FIRST_SLOT_LUA_INDEX;
+		end
+	end
+
+	StableFrame.swapTimeout = GetTime() + STABLE_FRAME_SWAP_TIMEOUT_SECONDS;
+	return targetSlot;
 end
 
 local function IsActivePetSlotUnlocked(activePetSlot)
@@ -139,7 +155,7 @@ local function FindFirstUnusedActivePetSlot()
 end
 
 local function GetBeastmasterSecondaryPet()
-	return C_StableInfo.GetStablePetInfo(Constants.PetConsts.STABLED_PETS_FIRST_SLOT_INDEX);
+	return C_StableInfo.GetStablePetInfo(EXTRA_PET_STABLE_SLOT_LUA_INDEX);
 end
 
 local function GetSelectedPet()

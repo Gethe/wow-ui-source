@@ -152,6 +152,8 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
 
+	self.initialCampaignHeadersUpdate = false;
+
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 
@@ -488,6 +490,11 @@ end
 
 function QuestMapFrame_OnShow(self)
 	QuestMapFrame_UpdateQuestSessionState(self);
+
+	if not self.initialCampaignHeadersUpdate then
+		self.initialCampaignHeadersUpdate = true;
+		C_QuestLog.UpdateCampaignHeaders();
+	end
 end
 
 -- opening/closing the quest frame is different from showing/hiding because of fullscreen map mode

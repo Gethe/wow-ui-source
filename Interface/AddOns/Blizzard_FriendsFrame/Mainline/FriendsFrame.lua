@@ -829,6 +829,7 @@ function WhoList_InitButton(button, elementData)
 	local name = info.fullName;
 	if info.timerunningSeasonID then
 		name = TimerunningUtil.AddTinyIcon(name);
+		button.OriginalName = info.fullName;
 	end
 
 	button.Name:SetText(name);
@@ -2048,7 +2049,7 @@ function WhoListButtonMixin:OnClick(button)
 	if button == "LeftButton" then
 		WhoList_SetSelectedButton(self);
 	else
-		local name = self.Name:GetText();
+		local name = self.OriginalName or self.Name:GetText();		
 		FriendsFrame_ShowDropdown(name, 1);
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
