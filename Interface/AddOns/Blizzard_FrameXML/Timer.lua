@@ -160,7 +160,6 @@ function TimerTracker_OnEvent(self, event, ...)
 	elseif event == "START_PLAYER_COUNTDOWN" then
 		local initiatedBy, timeSeconds, totalTime  = ...;
 		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, timeSeconds, totalTime);
-		PlaySound(SOUNDKIT.READY_CHECK);
 	elseif event == "CANCEL_PLAYER_COUNTDOWN" then
 		local initiatedBy  = ...;
 		TimerTracker_StartTimerOfType(self, TIMER_TYPE_PLAYER_COUNTDOWN, 0, 0);
