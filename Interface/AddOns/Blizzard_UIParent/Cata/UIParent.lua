@@ -2385,7 +2385,7 @@ function InviteToGroup(name)
 			dialog.data = name;
 		end
 	else
-		InviteUnit(name);
+		C_PartyInfo.InviteUnit(name);
 	end
 end
 

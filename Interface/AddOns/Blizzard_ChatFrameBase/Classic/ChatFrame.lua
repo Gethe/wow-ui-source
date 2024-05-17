@@ -4309,7 +4309,7 @@ end
 
 local function ChatEdit_SetDeactivated(editBox)
 	editBox:SetFrameStrata("LOW");
-	if ( editBox.disableActivate or GetCVar("chatStyle") == "classic" and not editBox.isGM ) then
+	if ( editBox.disableActivate or (GetCVar("chatStyle") == "classic" and not IsVoiceTranscription(editBox.chatFrame)) and not editBox.isGM ) then
 		editBox:Hide();
 	else
 		editBox:SetText("");
@@ -4338,7 +4338,7 @@ function ChatEdit_DeactivateChat(editBox)
 end
 
 function ChatEdit_ChooseBoxForSend(preferredChatFrame)
-	if ( GetCVar("chatStyle") == "classic" ) then
+	if ( (not IsVoiceTranscription(ChatEdit_GetLastActiveWindow().chatFrame)) and GetCVar("chatStyle") == "classic" ) then
 		return DEFAULT_CHAT_FRAME.editBox;
 	elseif ( preferredChatFrame and preferredChatFrame:IsShown() ) then
 		return preferredChatFrame.editBox;
@@ -4356,13 +4356,13 @@ function ChatEdit_SetLastActiveWindow(editBox)
 
 	local previousValue = LAST_ACTIVE_CHAT_EDIT_BOX;
 	if ( LAST_ACTIVE_CHAT_EDIT_BOX and not LAST_ACTIVE_CHAT_EDIT_BOX.isGM and LAST_ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
-		if ( GetCVar("chatStyle") == "im" ) then
+		if ( IsVoiceTranscription(editBox.chatFrame) or GetCVar("chatStyle") == "im" ) then
 			LAST_ACTIVE_CHAT_EDIT_BOX:Hide();
 		end
 	end
 
 	LAST_ACTIVE_CHAT_EDIT_BOX = editBox;
-	if ( editBox and GetCVar("chatStyle") == "im" and ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
+	if ( editBox and (IsVoiceTranscription(editBox.chatFrame) or GetCVar("chatStyle") == "im") and ACTIVE_CHAT_EDIT_BOX ~= editBox ) then
 		editBox:Show();
 		ChatEdit_SetDeactivated(editBox);
 	end
@@ -4716,7 +4716,7 @@ end
 
 function ChatEdit_ClearChat(editBox)
 	ChatEdit_ResetChatTypeToSticky(editBox);
-	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or IsMacroEditBox(editBox)) ) then
+	if ( not editBox.isGM and ((not IsVoiceTranscription(editBox.chatFrame) and GetCVar("chatStyle") ~= "im") or IsMacroEditBox(editBox)) ) then
 		editBox:SetText("");
 		editBox:Hide();
 	else

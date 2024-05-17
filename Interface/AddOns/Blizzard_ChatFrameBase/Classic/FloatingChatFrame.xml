@@ -549,6 +549,7 @@
 					<Anchor point="LEFT" relativeTo="$parentButtonFrame" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad method="OnLoad"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Minimize-Up"/>

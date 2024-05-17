@@ -15,7 +15,7 @@ ServerAlert.xml
 Classic\AccountLogin.lua
 Classic\AccountLogin.xml
 TBC\RealmList.lua
-TBC\RealmList.xml
+Cata\RealmList.xml
 Classic\CharacterServicesPatchwerk.xml
 Classic\CharacterSelect.lua
 TBC\CharacterSelect.xml

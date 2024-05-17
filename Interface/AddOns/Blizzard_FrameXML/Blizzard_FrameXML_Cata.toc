@@ -51,7 +51,7 @@ Shared\CinematicFrame.xml
 Classic\ColorPickerFrame.lua
 Classic\ColorPickerFrame.xml
 TBC\WorldStateFrame.lua
-TBC\WorldStateFrame.xml
+Cata\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
 Cata\TalentFrameBase.lua
 Cata\Blizzard_TalentUITemplates.xml

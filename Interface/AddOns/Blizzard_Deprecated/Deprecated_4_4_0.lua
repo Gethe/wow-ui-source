@@ -27,4 +27,6 @@ do
 		local result = newSendAddonMessageLoggedFunc(...);
 		return (result == Enum.RegisterAddonMessagePrefixResult.Success), result;
 	end
+
+	InviteUnit = C_PartyInfo.InviteUnit;
 end
