@@ -150,6 +150,7 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
 
 	self.initialCampaignHeadersUpdate = false;
@@ -267,6 +268,8 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Refresh();
+	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
+		self.initialCampaignHeadersUpdate = false;
 	elseif ( event == "CVAR_UPDATE" ) then
 		local arg1 =...;
 		if ( arg1 == "questPOI" ) then
