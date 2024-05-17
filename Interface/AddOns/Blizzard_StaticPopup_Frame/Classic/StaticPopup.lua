@@ -2620,7 +2620,7 @@ StaticPopupDialogs["CONVERT_TO_RAID"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, data)
 		ConvertToRaid();
-		InviteUnit(data);
+		C_PartyInfo.InviteUnit(data);
 	end,
 	timeout = 0,
 	exclusive = 1,

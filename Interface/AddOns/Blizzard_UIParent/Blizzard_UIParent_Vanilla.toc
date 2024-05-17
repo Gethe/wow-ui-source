@@ -13,3 +13,4 @@ Classic\UIParentDebugMenu.lua
 Vanilla\UIParent.lua
 Classic\UIParent.xml
 Shared\Localization.lua
+Shared\UIParent.lua
