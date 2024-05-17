@@ -39,7 +39,9 @@ function GMChatFrame_OnLoad(self)
 	self:SetFont(DEFAULT_CHAT_FRAME:GetFont());
 	FCF_SetButtonSide(self, "left", true);
 	self.buttonFrame:SetAlpha(1);
-	self.buttonFrame.minimizeButton:Hide();
+	if self.buttonFrame.minimizeButton ~= nil then
+		self.buttonFrame.minimizeButton:Hide();
+	end
 
 	self.editBox:ClearAllPoints();
 	self.editBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 8, -2);

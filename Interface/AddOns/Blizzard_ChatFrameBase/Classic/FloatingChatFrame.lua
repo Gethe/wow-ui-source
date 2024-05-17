@@ -1600,12 +1600,13 @@ function FCF_Tab_OnClick(self, button)
 	-- Close all dropdowns
 	CloseDropDownMenus();
 
+	local lastChatFrame = SELECTED_CHAT_FRAME;
 	-- If frame is docked assume that a click is to select a chat window, not drag it
 	SELECTED_CHAT_FRAME = chatFrame;
 	if ( chatFrame.isDocked and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ~= chatFrame ) then
 		FCF_SelectDockFrame(chatFrame);
 	end
-	if ( GetCVar("chatStyle") ~= "classic" ) then
+	if ( (IsVoiceTranscription(lastChatFrame) or IsVoiceTranscription(chatFrame)) or GetCVar("chatStyle") ~= "classic" ) then
 		ChatEdit_SetLastActiveWindow(chatFrame.editBox);
 	end
 	chatFrame:ResetAllFadeTimes();
@@ -1847,6 +1848,9 @@ end
 
 function FCF_MinimizeFrame(chatFrame, side)
 	local chatTab = _G[chatFrame:GetName().."Tab"];
+	if chatTab == nil then
+		return;
+	end
 
 	local createdFrame = false;
 	if ( not chatFrame.minFrame ) then
@@ -1870,6 +1874,9 @@ end
 function FCF_MaximizeFrame(chatFrame)
 	local minFrame = chatFrame.minFrame;
 	local chatTab = _G[chatFrame:GetName().."Tab"];
+	if chatTab == nil then
+		return;
+	end
 
 	chatFrame.minimized = false;
 
@@ -2605,6 +2612,14 @@ function FloatingChatFrameButtonFrameMixin:OnShow()
 end
 
 FloatingChatFrameMinimizeButtonMixin = {};
+
+function FloatingChatFrameMinimizeButtonMixin:OnLoad()
+	local chatFrame = self:GetParent();
+	local chatTab = _G[chatFrame:GetName().."Tab"];
+	if chatTab == nil then
+		self:Hide();
+	end
+end
 
 function FloatingChatFrameMinimizeButtonMixin:OnClick()
 	local chatFrame = self:GetParent();

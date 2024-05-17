@@ -35,6 +35,20 @@ local AchievementInfo =
 			},
 		},
 		{
+			Name = "IsGuildAchievement",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "achievementId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isGuild", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidAchievement",
 			Type = "Function",
 
