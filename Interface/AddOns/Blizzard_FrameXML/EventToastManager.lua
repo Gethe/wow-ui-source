@@ -129,6 +129,9 @@ end
 function EventToastManagerMixin:SetupGLineAtlas(useWhiteGLineAtlas)
 end
 
+function EventToastManagerMixin:SetupBlackBGAtlas()
+end
+
 EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin); 
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
@@ -177,11 +180,23 @@ function EventToastManagerFrameMixin:Reset()
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
+function EventToastManagerFrameMixin:EnableBlackBGAnimation(enable)
+	self.blackBGAnimationEnabled = enable;
+end
+
 function EventToastManagerFrameMixin:SetupGLineAtlas(useWhiteGLineAtlas)
 	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
 	self.GLine:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.GLine:SetPoint("BOTTOM");
 	self.GLine2:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.GLine2:SetPoint("TOP");
 end		
+
+function EventToastManagerFrameMixin:SetupBlackBGAtlas()
+	self.BlackBG:SetAtlas("levelup-shadow-upper", TextureKitConstants.UseAtlasSize);
+	self.BlackBG:SetAlpha(0.6);
+	self.BlackBG:SetPoint("BOTTOM");
+end	
 
 function EventToastManagerFrameMixin:AreAnimationsPaused()
 	return self.animationsPaused; 
@@ -290,7 +305,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 		C_EventToastManager.RemoveCurrentToast(); 
 	end
 
-	local toastInfo = C_EventToastManager.GetNextToastToDisplay(); 
+	local toastInfo = C_EventToastManager.GetNextToastToDisplay();
 	self.currentDisplayingToast = nil;
 	if(toastInfo) then
 		local toastTable = eventToastTemplatesByToastType[toastInfo.displayType];
@@ -301,6 +316,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 		local toast = self:GetToastFrame(toastTable);
 		self.currentDisplayingToast = toast;
 		self.shouldAnim = true;
+		self:EnableBlackBGAnimation(true);
 		self:UpdateAnchor();
 		self.hideAutomatically = toastTable.hideAutomatically;
 		toast.hideAutomatically = toastTable.hideAutomatically;
@@ -335,13 +351,15 @@ function EventToastManagerFrameMixin:AnimationsPaused()
 end
 
 function EventToastManagerFrameMixin:PlayAnim()
-	self.BlackBG:SetShown(self.shouldAnim); 
+	self.BlackBG:SetShown(self.shouldAnim);
 	self.GLine:SetShown(self.shouldAnim);
 	self.GLine2:SetShown(self.shouldAnim);
 	if(self.shouldAnim) then 
 		self.GLine.grow:Play();
 		self.GLine2.grow:Play();
-		self.BlackBG.grow:Play();
+		if self.blackBGAnimationEnabled then
+			self.BlackBG.grow:Play();
+		end
 	end
 end
 
@@ -480,6 +498,22 @@ function EventToastScenarioBaseToastMixin:PlayAnim()
 	self:AnimIn();
 end
 
+function EventToastScenarioBaseToastMixin:SetupGLineAtlas(useWhiteGLineAtlas)
+	local atlas = useWhiteGLineAtlas and "levelup-bar-white" or "levelup-bar-gold"
+	local parent = self:GetParent();
+	parent.GLine:SetAtlas("evergreen-scenario-line-bottom", TextureKitConstants.UseAtlasSize);
+	parent.GLine:SetPoint("BOTTOM", 0, -4);
+	parent.GLine2:SetAtlas("evergreen-scenario-line-top", TextureKitConstants.UseAtlasSize);
+	parent.GLine2:SetPoint("TOP", 0, -5);
+end
+
+function EventToastScenarioBaseToastMixin:SetupBlackBGAtlas()
+	local parent = self:GetParent();
+	parent.BlackBG:SetAtlas("evergreen-scenario-black-background");
+	parent.BlackBG:SetHeight(64);
+	parent:EnableBlackBGAnimation(false);
+end
+
 EventToastScenarioToastMixin = { };
 
 function EventToastScenarioToastMixin:Setup(toastInfo)
@@ -496,7 +530,6 @@ function EventToastScenarioToastMixin:Setup(toastInfo)
 	self:Show(); 
 	self:PlayAnim(); 
 end
-
 
 function EventToastScenarioToastMixin:OnAnimFinished()
 	EventToastScenarioBaseToastMixin.OnAnimFinished(self);
@@ -670,10 +703,6 @@ end
 EventToastFlightpointDiscoveredMixin = { };
 function EventToastFlightpointDiscoveredMixin:Setup(toastInfo)
 	EventToastWithIconBaseMixin.Setup(self, toastInfo);
-	local parent = self:GetParent();
-
-	parent.BlackBG:SetAtlas("UI-World-Quest-Black-2x", false);
-	parent.BlackBG:SetSize(self:GetWidth(), self:GetHeight() - 3);
 
 	self:Show(); 
 	self:AnimIn(); 
@@ -1018,6 +1047,12 @@ function EventToastAnimationsMixin:BannerPlay()
 		self:SetupGLineAtlas(self.useWhiteGLineAtlas);
 	else
 		self:GetParent():SetupGLineAtlas(self.useWhiteGlineAtlas);
+	end
+
+	if self.SetupBlackBGAtlas then
+		self:SetupBlackBGAtlas();
+	else
+		self:GetParent():SetupBlackBGAtlas();
 	end
 
 	self:SetAnimInStartDelay(self.animInStartDelay or defaultAnimInStartDelay);

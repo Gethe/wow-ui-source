@@ -39,13 +39,35 @@ end
 
 function SuperTrackEventMixin:CacheCurrentSuperTrackInfo()
 	self.isComplete = nil;
-	local supertrackedQuestID = C_SuperTrack.GetSuperTrackedQuestID();
-	if supertrackedQuestID then
-		self.isComplete = C_QuestLog.ReadyForTurnIn(supertrackedQuestID);
-		self.uiMapID, self.worldQuests, self.worldQuestsElite, self.dungeons, self.treasures = C_QuestLog.GetQuestAdditionalHighlights(supertrackedQuestID);
+	self.uiMapID = nil;
+	self.worldQuests = nil;
+	self.worldQuestsElite = nil;
+	self.dungeons = nil;
+	self.treasures = nil;
+
+	local superTrackedQuestID = C_SuperTrack.GetSuperTrackedQuestID();
+	self.superTrackedQuestID = superTrackedQuestID;
+	self.superTrackedMapPinType, self.superTrackedMapPinTypeID = C_SuperTrack.GetSuperTrackedMapPin();
+	self.superTrackedVignetteGUID = C_SuperTrack.GetSuperTrackedVignette();
+	
+	if superTrackedQuestID then
+		self.isComplete = C_QuestLog.ReadyForTurnIn(superTrackedQuestID);
+		self.uiMapID, self.worldQuests, self.worldQuestsElite, self.dungeons, self.treasures = C_QuestLog.GetQuestAdditionalHighlights(superTrackedQuestID);
 	end
 
 	EventRegistry:TriggerEvent("Supertracking.OnChanged", self);
+end
+
+function SuperTrackEventMixin:GetSuperTrackedMapPin()
+	return self.superTrackedMapPinType, self.superTrackedMapPinTypeID;
+end
+
+function SuperTrackEventMixin:GetSuperTrackedQuestID()
+	return self.superTrackedQuestID;
+end
+
+function SuperTrackEventMixin:GetSuperTrackedVignette()
+	return self.superTrackedVignetteGUID;
 end
 
 function SuperTrackEventMixin:OnQuestAccepted(questID)

@@ -738,6 +738,7 @@ function EnchantingItemButtonAnimMixin:OnEvent(event, ...)
 			local source, target, onfinishedcallback, onresolutioncallback = self, self, nil, OnEnchantItemEffectResolved;
 			self.gainEnchantEffect = GlobalFXDialogModelScene:AddEffect(ENCHANT_BURST_EFFECT, source, target, onfinishedcallback, onresolutioncallback);
 
+			PlaySound(SOUNDKIT.ENCHANTMENT_ENCHANT_ANIMATION_START);
 			self.AugmentBorderAnimTexture:Show();
 			self.AugmentBorderAnim:Play();
 		end

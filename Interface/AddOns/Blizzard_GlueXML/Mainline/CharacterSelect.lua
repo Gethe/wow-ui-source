@@ -237,7 +237,6 @@ end
 function CharacterSelectFrameMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 
-    CharacterSelectListUtil.SaveCharacterOrder();
     CharacterDeleteDialog:Hide();
     CharacterRenameDialog:Hide();
     AccountReactivate_CloseDialogs();
@@ -266,6 +265,8 @@ function CharacterSelectFrameMixin:OnHide()
 	end
 
 	SocialContractFrame:Hide();
+
+	GlueTooltip:Hide();
 
     AccountReactivate_CloseDialogs();
     SetInCharacterSelect(false);
@@ -456,10 +457,12 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		else
 			local index = CharacterSelectListUtil.GetIndexFromCharID(charID);
 		    self.selectedIndex = index;
-			local basicInfo = GetBasicCharacterInfo(GetCharacterGUID(charID));
 			local guid = GetCharacterGUID(charID);
-			local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
-		    CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
+			if guid then
+				local basicInfo = GetBasicCharacterInfo(guid);
+				local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
+				CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
+			end
 		end
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 
@@ -710,13 +713,13 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.selectLast = false;
 	elseif CharacterSelect.selectGuid or CharacterSelect.undeleteGuid then
 		for i = 1, numChars do
-			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
+			local characterGuid = GetCharacterGUID(i);
 
 			-- Check each entry if it's an empty character.
-			if characterInfo and (characterInfo.guid == CharacterSelect.selectGuid or characterInfo.guid == CharacterSelect.undeleteGuid) then
+			if characterGuid and (characterGuid == CharacterSelect.selectGuid or characterGuid == CharacterSelect.undeleteGuid) then
 				CharacterSelect.selectedIndex = i;
-				if characterInfo.guid == CharacterSelect.undeleteGuid then
-					local serviceInfo = GetServiceCharacterInfo(characterInfo.guid);
+				if characterGuid == CharacterSelect.undeleteGuid then
+					local serviceInfo = GetServiceCharacterInfo(characterGuid);
 					CharacterSelect.undeleteSucceeded = true;
 					CharacterSelect.undeletePendingRename = serviceInfo.hasNameChange;
 				end
@@ -802,15 +805,15 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 			return; --character selection is zero on startup.
 		end
 		local serviceInfo = GetServiceCharacterInfo(guid);
-        if ( serviceInfo.isTrialBoostLocked ) then
+        if serviceInfo.isTrialBoostCompleted then
             text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
-		elseif ( serviceInfo.revokedCharacterUpgrade ) then
+		elseif serviceInfo.revokedCharacterUpgrade then
 			text = ENTER_WORLD_UNLOCK_REVOKED_CHARACTER_UPGRADE;
         end
 
         CharSelectEnterWorldButton:SetText(text);
 
-		if not serviceInfo.boostInProgress and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
+		if serviceInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
 			if IsRPEBoostEligible(selectedCharacterID) then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if IsVeteranTrialAccount() then
@@ -828,7 +831,12 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 end
 
 function CharacterDeleteDialog_OnShow()
-	local basicInfo = GetBasicCharacterInfo(GetCharacterGUID(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex)));
+	local characterGuid = GetCharacterGUID(CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex));
+	if not characterGuid then
+		return;
+	end
+
+	local basicInfo = GetBasicCharacterInfo(characterGuid);
     CharacterDeleteText1:SetFormattedText(CONFIRM_CHAR_DELETE, basicInfo.name, basicInfo.experienceLevel, basicInfo.className);
     CharacterDeleteBackground:SetHeight(16 + CharacterDeleteText1:GetHeight() + CharacterDeleteText2:GetHeight() + 23 + CharacterDeleteEditBox:GetHeight() + 8 + CharacterDeleteButton1:GetHeight() + 16);
     CharacterDeleteButton1:Disable();
@@ -854,7 +862,12 @@ function CharacterSelect_EnterWorld()
     end
 
 	CharacterSelectListUtil.SaveCharacterOrder();
-	local serviceInfo = GetServiceCharacterInfo(GetCharacterGUID(GetCharacterSelection()));
+	local characterGuid = GetCharacterGUID(GetCharacterSelection());
+	if not characterGuid then
+		return;
+	end
+
+	local serviceInfo = GetServiceCharacterInfo(characterGuid);
 
     if ( serviceInfo.isLocked ) then
         SubscriptionRequestDialog_Open();
@@ -869,8 +882,9 @@ function CharacterSelect_EnterWorld()
 end
 
 function CharacterSelect_Exit()
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
-    C_Login.DisconnectFromServer();
+	CharacterSelectListUtil.SaveCharacterOrder();
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_EXIT);
+	C_Login.DisconnectFromServer();
 end
 
 function CharacterSelect_AccountOptions()
@@ -1387,7 +1401,7 @@ function CharacterSelect_UpdateButtonState()
     local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
 	local inKioskMode = Kiosk.IsEnabled();
 	local guid = GetCharacterGUID(GetCharacterSelection());
-	local boostInProgress = guid and GetServiceCharacterInfo(guid).boostInProgress;
+	local boostInProgress = guid and GetServiceCharacterInfo(guid).boostInProgress == true;
 	local isAccountLocked = CharacterSelectUtil.IsAccountLocked();
 
 	-- Note: enterWorldError will be nil in most cases.

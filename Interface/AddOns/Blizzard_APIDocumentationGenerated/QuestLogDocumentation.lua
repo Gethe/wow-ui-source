@@ -1139,6 +1139,10 @@ local QuestLog =
 				{ Name = "isRelatedToActiveQuest", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "UpdateCampaignHeaders",
+			Type = "Function",
+		},
 	},
 
 	Events =

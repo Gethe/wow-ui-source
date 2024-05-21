@@ -18,6 +18,7 @@ local DELVES_SUPPLIES_MAX_DISTANCE = 10;
 local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "TRAIT_SYSTEM_NPC_CLOSED",
     "UPDATE_FACTION",
+    "QUEST_LOG_UPDATE",
 };
 
 local ConfigSlotType = EnumUtil.MakeEnum(
@@ -261,8 +262,18 @@ function CompanionConfigSlotTemplateMixin:Refresh()
 
     if self.selectionNodeInfo then
         if not self.selectionNodeInfo.isVisible then
+
+            local lockedText = DELVES_CURIO_LOCKED;
+            for _, conditionID in ipairs(self.selectionNodeInfo.conditionIDs) do
+                local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
+                if conditionInfo.tooltipText then
+                    lockedText = conditionInfo.tooltipText;
+                    break;
+                end
+            end
+
             self:SetEnabled(false);
-            self.Value:SetText(DELVES_CURIO_LOCKED);
+            self.Value:SetText(lockedText);
             self.Value:SetTextColor(GRAY_FONT_COLOR:GetRGB());
             self.Label:SetTextColor(GRAY_FONT_COLOR:GetRGB());
             self.Border:SetAtlas("talents-node-pvp-locked"); -- todo art

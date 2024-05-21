@@ -60,6 +60,10 @@ function CombatOverrides.CreateFloatingCombatTextSetting(category)
 	Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", "Blizzard_CombatText");
 end
 
+function CombatOverrides.CreateOccludedSilhouettePlayerSetting(category)
+	Settings.SetupCVarCheckBox(category, "occludedSilhouettePlayer", SHOW_SILHOUETTE_OPTION, OPTION_TOOLTIP_SHOW_SILHOUETTE);
+end
+
 function CombatOverrides.AdjustCombatSettings(category)
 end
 

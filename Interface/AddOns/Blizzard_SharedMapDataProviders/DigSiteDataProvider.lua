@@ -21,3 +21,11 @@ end
 
 --[[ Pin ]]--
 DigSitePinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DIG_SITE");
+
+function DigSitePinMixin:OnAcquired(...)
+	SuperTrackablePoiPinMixin.OnAcquired(self, ...);
+end
+
+function DigSitePinMixin:GetSuperTrackData()
+	return Enum.SuperTrackingMapPinType.DigSite, self.poiInfo.researchSiteID;
+end

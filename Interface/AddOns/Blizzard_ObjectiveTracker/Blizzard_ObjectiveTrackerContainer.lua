@@ -77,11 +77,14 @@ function ObjectiveTrackerContainerMixin:Update(dirtyUpdate)
 			if not module.hasDisplayPriority then
 				availableHeight = availableHeight - heightUsed;
 			end
+			module:ClearAllPoints();
 			if prevModule then
-				module:SetPoint("TOPLEFT", prevModule, "BOTTOMLEFT", 0, -self.moduleSpacing);
+				module:SetPoint("TOP", prevModule, "BOTTOM", 0, -self.moduleSpacing);
+				module:SetPoint("LEFT", self, "LEFT", module.leftMargin, 0);
 				contentsHeight = contentsHeight + heightUsed + self.moduleSpacing;
 			else
-				module:SetPoint("TOPLEFT", 0, -self.topModulePadding);
+				module:SetPoint("TOP", 0, -self.topModulePadding);
+				module:SetPoint("LEFT", self, "LEFT", module.leftMargin, 0);
 				contentsHeight = contentsHeight + heightUsed;
 			end
 			prevModule = module;

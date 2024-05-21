@@ -57,8 +57,9 @@
 					<OnMouseUp method="OnMouseUp"/>
 					<OnClick method="OnClick"/>
 				</Scripts>
-				<NormalTexture parentKey="NormalTexture" atlas="glues-characterselect-button-collapseexpand"/>
+				<NormalTexture parentKey="NormalTexture" atlas="glues-characterSelect-button-collapseExpand"/>
 				<PushedTexture parentKey="PushedTexture" atlas="glues-characterSelect-button-collapseExpand-pressed"/>
+				<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterSelect-button-collapseExpand-disabled"/>
 			</Button>
 			<Frame parentKey="Contents" setAllPoints="true">
 				<Anchors>

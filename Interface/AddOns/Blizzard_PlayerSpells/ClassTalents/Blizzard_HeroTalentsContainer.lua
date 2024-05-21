@@ -471,6 +471,7 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 		local activeSubTreeInfo = talentFrame:GetAndCacheSubTreeInfo(subTreeIDs[1]);
 
 		self.Icon1:SetAtlas(activeSubTreeInfo.iconElementID);
+		self.Icon1Anim:SetAtlas(activeSubTreeInfo.iconElementID);
 		self.Icon2:Hide();
 		for _, mask in ipairs(self.IconSplitMasks) do
 			mask:Hide();
@@ -485,6 +486,7 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 		self.Icon1:SetAtlas(subTree1.iconElementID);
 		self.Icon2:SetAtlas(subTree2.iconElementID);
 		self.Icon2:Show();
+		self.Icon1Anim:Hide();
 
 		for _, mask in ipairs(self.IconSplitMasks) do
 			mask:Show();

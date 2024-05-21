@@ -14,7 +14,7 @@ local trackTextureKitRegions = {
 -- "Burst" effect on the renown reward as you unlock it
 local levelEffects = {
 	[LE_EXPANSION_DRAGONFLIGHT] = 144,
-	[LE_EXPANSION_11_0] = 144,
+	[LE_EXPANSION_WAR_WITHIN] = 144,
 }
 -- Animated Effects behind the renown reward;
 local finalToastSwirlEffects = {
@@ -35,7 +35,7 @@ local ExpansionLayoutInfo =
 			["BottomBorderDecoration"] = { x = 0, y = 10, },
 		},
 	},
-	[LE_EXPANSION_11_0] = {
+	[LE_EXPANSION_WAR_WITHIN] = {
 		textureKit = "Dragonflight",
 		renownFrameDecorations = {
 			["TopLeftBorderDecoration"] = "Dragonflight-DragonHeadLeft",

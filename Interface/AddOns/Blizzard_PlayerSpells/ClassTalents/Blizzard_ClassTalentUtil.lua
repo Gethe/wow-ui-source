@@ -56,7 +56,7 @@ local SpecializationVisuals = {
 
 	-- Warlock
 	[265] = { background = "talents-background-warlock-affliction", heroContainerOffset = -15, },
-	[266] = { background = "talents-background-warlock-demonology", heroContainerOffset = -45, },
+	[266] = { background = "talents-background-warlock-demonology", heroContainerOffset = -15, },
 	[267] = { background = "talents-background-warlock-destruction", heroContainerOffset = -15, },
 
 	-- Warrior

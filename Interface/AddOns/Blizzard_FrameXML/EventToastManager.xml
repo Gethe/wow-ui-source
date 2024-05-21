@@ -311,44 +311,28 @@
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
+						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alphaMode="ADD">
 							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="1" bottom="0" top="1"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture atlas="Banner-FiligreeShadow">
-							<Size x="480" y="35"/>
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="Banner-FiligreeShadow">
-							<Size x="480" y="35"/>
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
 							</Anchors>
 							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
+						<Texture atlas="evergreen-scenario-filigree-top" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="4"/>
+								<Anchor point="TOP" x="0" y="2"/>
 							</Anchors>
 						</Texture>
-						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
+						<Texture atlas="evergreen-scenario-filigree-bottom" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-10"/>
+								<Anchor point="BOTTOM" x="0" y="-7"/>
 							</Anchors>
-							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -606,7 +590,7 @@
 								</Scripts>
 								<Origin point="BOTTOM"/>
 							</Scale>
-							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="0.15" order="2">
+							<Scale scaleX="1.0" scaleY="1000.0" startDelay="0.25" duration="3.15" order="2">
 								 <Origin point="BOTTOM"/>
 							</Scale>
 						</AnimationGroup>
@@ -657,11 +641,13 @@
 							<Scripts>
 								<OnPlay>
 									local parent = self:GetParent():GetParent();
-									parent.BlackBG:Hide();
 									parent.GLine:Hide();
 									parent.GLine2:Hide();
 									parent.GLine2.grow:Play();
-									parent.BlackBG.grow:Play();
+									if parent.blackBGAnimationEnabled then
+										parent.BlackBG:Hide();
+										parent.BlackBG.grow:Play();
+									end
 								</OnPlay>
 							</Scripts>
 						</AnimationGroup>

@@ -1135,7 +1135,11 @@ function CollectionMicroButtonMixin:OnLoad()
 	self:RegisterEvent("COMPANION_LEARNED");
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("TRAIT_CONFIG_LIST_UPDATED");
+
 	self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
+
+	self:TryShowUnspentDragonridingGlyphReminder();
 end
 
 function CollectionMicroButtonMixin:OnEvent(event, ...)
@@ -1168,6 +1172,8 @@ function CollectionMicroButtonMixin:OnEvent(event, ...)
 		self:EvaluateAlertVisibility();
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
+	elseif ( event == "TRAIT_CONFIG_LIST_UPDATED" ) then
+		self:TryShowUnspentDragonridingGlyphReminder();
 	end
 end
 
@@ -1199,6 +1205,14 @@ function CollectionMicroButtonMixin:UpdateMicroButton()
 	end
 end
 
+function CollectionMicroButtonMixin:TryShowUnspentDragonridingGlyphReminder()
+	if DragonridingUtil.CanSpendDragonridingGlyphs() then
+		if MainMenuMicroButton_ShowAlert(CollectionsMicroButton, DRAGONFLIGHT_LANDING_PAGE_UNSPENT_GLYPHS) then
+			local tabIndex = 1;
+			CollectionsMicroButton_SetAlert(tabIndex);
+		end
+	end
+end
 
 EJMicroButtonMixin = {};
 

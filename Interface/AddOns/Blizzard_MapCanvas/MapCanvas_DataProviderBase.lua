@@ -215,6 +215,16 @@ function MapCanvasPinMixin:OnMouseUp(...)
 	end
 end
 
+function MapCanvasPinMixin:ShouldMouseButtonBePassthrough(button)
+	return button == "RightButton"; -- override if necessary
+end
+
+function MapCanvasPinMixin:CheckMouseButtonPassthrough(button)
+	if self:ShouldMouseButtonBePassthrough(button) then
+		self:SetPassThroughButtons(button);
+	end
+end
+
 function MapCanvasPinMixin:OnMapInsetSizeChanged(mapInsetIndex, expanded)
 	-- Optionally override in your mixin, called when a map inset changes sizes
 end

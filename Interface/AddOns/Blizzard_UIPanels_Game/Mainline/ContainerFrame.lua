@@ -356,11 +356,11 @@ function ContainerFrame_IsTutorialShown()
 	return HelpTip:IsShowingAnyInSystem(CONTAINER_HELPTIP_SYSTEM);
 end
 
-function ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialText, tutorialFlag)
+function ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialText, tutorialFlag, cvarBitfield)
 	local helpTipInfo = {
 		text = tutorialText,
 		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFrames",
+		cvarBitfield = cvarBitfield,
 		bitfieldFlag = tutorialFlag,
 		targetPoint = HelpTip.Point.LeftEdgeCenter,
 		offsetX = -3,
@@ -384,14 +384,20 @@ function ContainerFrame_ConsiderItemButtonForUpgradeTutorial(itemButton, itemID)
 	return C_ItemUpgrade.CanUpgradeItem(ItemLocation:CreateFromBagAndSlot(itemButton:GetBagID(), itemButton:GetID()));
 end
 
+function ContainerFrame_ConsiderItemButtonForWarboundUntilEquipTutorial(itemButton, itemID)
+	return C_Item.IsBoundToAccountUntilEquip(ItemLocation:CreateFromBagAndSlot(itemButton:GetBagID(), itemButton:GetID()));
+end
+
 local ContainerFrameTutorialInfo = {
 	{ considerFunction = ContainerFrame_ConsiderItemButtonForAzeriteTutorial, tutorialText = AZERITE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, },
 	{ considerFunction = ContainerFrame_ConsiderItemButtonForUpgradeTutorial, tutorialText = ITEM_UPGRADE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_UPGRADEABLE_ITEM_IN_SLOT, },
+	{ considerFunction = ContainerFrame_ConsiderItemButtonForWarboundUntilEquipTutorial, tutorialText = BIND_TO_ACCOUNT_UNTIL_EQUIP_TUTORIAL, tutorialFlag = LE_FRAME_TUTORIAL_BIND_TO_ACCOUNT_UNTIL_EQUIP, isAccountTutorial = true, },
 };
 
 function ContainerFrame_HasUnacknowledgedItemTutorial()
 	for i, tutorialInfo in ipairs(ContainerFrameTutorialInfo) do
-		if not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorialFlag) then
+		local cvarBitfield = tutorialInfo.isAccountTutorial and "closedInfoFramesAccountWide" or "closedInfoFrames";
+		if not GetCVarBitfield(cvarBitfield, tutorialInfo.tutorialFlag) then
 			return true;
 		end
 	end
@@ -410,8 +416,9 @@ function ContainerFrame_CheckItemButtonForTutorials(itemButton, itemID)
 
 	for i, tutorialInfo in ipairs(ContainerFrameTutorialInfo) do
 		local tutorialFlag = tutorialInfo.tutorialFlag;
-		if not GetCVarBitfield("closedInfoFrames", tutorialFlag) and tutorialInfo.considerFunction(itemButton, itemID) then
-			ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialInfo.tutorialText, tutorialFlag);
+		local cvarBitfield = tutorialInfo.isAccountTutorial and "closedInfoFramesAccountWide" or "closedInfoFrames";
+		if not GetCVarBitfield(cvarBitfield, tutorialFlag) and tutorialInfo.considerFunction(itemButton, itemID) then
+			ContainerFrame_ShowTutorialForItemButton(itemButton, tutorialInfo.tutorialText, tutorialFlag, cvarBitfield);
 			return true;
 		end
 	end

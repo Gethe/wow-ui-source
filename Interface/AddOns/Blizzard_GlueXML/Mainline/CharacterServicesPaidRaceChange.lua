@@ -20,13 +20,9 @@ function PRCCharacterSelectBlock:SetResultsShown(shown)
 
 	if shown then
 		local result = self:GetResult();
-		if result.characterButtonID then
-			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(result.characterButtonID);
-
-			if characterInfo then
-				-- race
-				self.frame.ResultsFrame.CurrentRaceLabel:SetText(characterInfo.raceName);
-			end
+		if result.selectedCharacterGUID then
+			local basicCharacterInfo = GetBasicCharacterInfo(result.selectedCharacterGUID);
+			self.frame.ResultsFrame.CurrentRaceLabel:SetText(basicCharacterInfo.raceName);
 		end
 	end
 end

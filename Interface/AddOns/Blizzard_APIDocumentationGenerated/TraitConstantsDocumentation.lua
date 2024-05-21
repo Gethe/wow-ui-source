@@ -288,7 +288,7 @@ local TraitConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 10 },
+				{ Name = "MAX_COMBAT_TRAIT_CONFIGS", Type = "number", Value = 40 },
 				{ Name = "COMMIT_COMBAT_TRAIT_CONFIG_CHANGES_SPELL_ID", Type = "number", Value = 384255 },
 				{ Name = "INSPECT_TRAIT_CONFIG_ID", Type = "number", Value = -1 },
 				{ Name = "STARTER_BUILD_TRAIT_CONFIG_ID", Type = "number", Value = -2 },

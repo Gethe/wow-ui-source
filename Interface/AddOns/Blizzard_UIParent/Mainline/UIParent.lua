@@ -2404,6 +2404,7 @@ function UIParent_OnEvent(self, event, ...)
 			PlayerSpellsFrame.SpellBookFrame:OnEvent(event, ...);
 		end
 	elseif event == "ENCHANT_SPELL_SELECTED" then
+		PlaySound(SOUNDKIT.ENCHANTMENT_SELECTED);
 		ItemButtonUtil.OpenAndFilterBags(self);
 		ItemButtonUtil.OpenAndFilterCharacterFrame();
 	elseif event == "UPDATE_SPELL_TARGET_ITEM_CONTEXT" then
@@ -3935,17 +3936,6 @@ function GetSortedSelfResurrectOptions()
 		return a.priority < b.priority end
 	);
 	return options;
-end
-
-function OpenAchievementFrameToAchievement(achievementID)
-	if ( not AchievementFrame ) then
-		AchievementFrame_LoadUI();
-	end
-	if ( not AchievementFrame:IsShown() ) then
-		AchievementFrame_ToggleAchievementFrame(false, C_AchievementInfo.IsGuildAchievement(achievementID));
-	end
-
-	AchievementFrame_SelectAchievement(achievementID);
 end
 
 function IsLevelAtEffectiveMaxLevel(level)

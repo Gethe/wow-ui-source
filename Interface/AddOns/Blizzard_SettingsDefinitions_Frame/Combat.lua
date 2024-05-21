@@ -45,7 +45,9 @@ local function Register()
 	end
 
 	-- Show Silhouette when Obscured
-	Settings.SetupCVarCheckBox(category, "occludedSilhouettePlayer", SHOW_SILHOUETTE_OPTION, OPTION_TOOLTIP_SHOW_SILHOUETTE);
+	do
+		CombatOverrides.CreateOccludedSilhouettePlayerSetting(category);
+	end
 
 	-- Target of Target
 	Settings.SetupCVarCheckBox(category, "showTargetOfTarget", SHOW_TARGET_OF_TARGET_TEXT, OPTION_TOOLTIP_SHOW_TARGET_OF_TARGET);

@@ -98,9 +98,7 @@ function ProfessionSpellButtonMixin:OnLoad()
 end
 
 function ProfessionSpellButtonMixin:OnEvent(event, ...)
-	if ( event == "SPELLS_CHANGED" ) then
-		self:UpdateButton();
-	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
 		self:UpdateCooldown();
 		-- Update tooltip
 		if ( GameTooltip:GetOwner() == self ) then
@@ -122,7 +120,6 @@ function ProfessionSpellButtonMixin:OnEvent(event, ...)
 end
 
 function ProfessionSpellButtonMixin:OnShow()
-	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
@@ -132,7 +129,6 @@ function ProfessionSpellButtonMixin:OnShow()
 end
 
 function ProfessionSpellButtonMixin:OnHide()
-	self:UnregisterEvent("SPELLS_CHANGED");
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:UnregisterEvent("TRADE_SKILL_SHOW");

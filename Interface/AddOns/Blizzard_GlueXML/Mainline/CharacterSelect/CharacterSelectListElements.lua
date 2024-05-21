@@ -105,27 +105,39 @@ end
 function CharacterSelectListGroupHeaderMixin:OnButtonStateChanged()
 	local parentGroupElementData = self:GetParent():GetElementData();
 	local atlas;
+	local textColor;
 
-	if self:IsDown() then
+	if not self:IsEnabled() then
+		if parentGroupElementData.collapsed then
+			atlas = "glues-characterSelect-icon-plus-disabled";
+		else
+			atlas = "glues-characterSelect-icon-minus-disabled";
+		end
+		textColor = DISABLED_FONT_COLOR;
+	elseif self:IsDown() then
 		if parentGroupElementData.collapsed then
 			atlas = "glues-characterSelect-icon-plus-pressed";
 		else
 			atlas = "glues-characterSelect-icon-minus-pressed";
 		end
+		textColor = HIGHLIGHT_FONT_COLOR;
 	elseif self:IsOver() then
 		if parentGroupElementData.collapsed then
 			atlas = "glues-characterselect-icon-plus-hover";
 		else
 			atlas = "glues-characterselect-icon-minus-hover";
 		end
+		textColor = HIGHLIGHT_FONT_COLOR;
 	else
 		if parentGroupElementData.collapsed then
 			atlas = "glues-characterSelect-icon-plus";
 		else
 			atlas = "glues-characterSelect-icon-minus";
 		end
+		textColor = HIGHLIGHT_FONT_COLOR;
 	end
 
+	self.Text:SetTextColor(textColor:GetRGBA());
 	self.Icon:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 end
 
@@ -185,7 +197,7 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 	self.guid = self.characterInfo.guid;
 
 	self.isVeteranLocked = false;
-	self.isLockedByExpansion = self.characterInfo.lockedByExpansion;
+	self.isLockedByExpansion = self.characterInfo.isLockedByExpansion;
 	self.isAccountLocked = CharacterSelectUtil.IsAccountLocked();
 
 	if inGroup then
@@ -314,7 +326,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
         end
         upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
         upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
-    elseif (boostInProgress) then
+    elseif characterInfo.boostInProgress then
 		upgradeIcon:Show();
 		upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 		upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
@@ -759,7 +771,7 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 			end
 			infoText:SetText(self.coloredClassName);
 
-			if characterInfo.lockedByExpansion then
+			if characterInfo.isLockedByExpansion then
 				statusText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 			else
 				if IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
@@ -771,11 +783,11 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 				end
 			end
 
-			if characterInfo.lockedByExpansion or characterInfo.isRevokedCharacterUpgrade then
+			if characterInfo.isLockedByExpansion or characterInfo.isRevokedCharacterUpgrade then
 				self:SetupPadlock();
 			else
 				local mailSenders = characterInfo.mailSenders;
-				self.MailIndicationButton:SetShown(#mailSenders >= 1);
+				self.MailIndicationButton:SetShown(mailSenders and #mailSenders >= 1);
 				self.MailIndicationButton:SetMailSenders(mailSenders);
 			end
 		end
@@ -812,7 +824,7 @@ function CharacterSelectListCharacterInnerContentMixin:SetupPadlock()
 	elseif characterInfo.isRevokedCharacterUpgrade then
 		padlock.tooltipTitle = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TITLE;
 		padlock.tooltipText = CHARACTER_SELECT_REVOKED_BOOST_TOKEN_LOCKED_TOOLTIP_TEXT;
-	elseif characterInfo.lockedByExpansion then
+	elseif characterInfo.isLockedByExpansion then
 		padlock.tooltipTitle = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
 		padlock.tooltipText = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION;
 	else

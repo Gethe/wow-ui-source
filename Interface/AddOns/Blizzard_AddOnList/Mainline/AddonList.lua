@@ -560,8 +560,8 @@ function AddonListCharacterDropDown_Initialize()
 
 			-- Check each entry if it's an empty character.
 			if characterInfo then
-				info.text = GetCharacterInfo(i);
-				info.value = GetCharacterInfo(i);
+				info.text = characterInfo.name;
+				info.value = characterInfo.name;
 				info.func = AddonListCharacterDropDown_OnClick;
 				if ( selectedValue == info.value ) then
 					info.checked = 1;

@@ -326,7 +326,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 
 		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
 			settings = {
-				[Enum.EditModeUnitFrameSetting.ViewArenaSize] = 3,
+				[Enum.EditModeUnitFrameSetting.ViewArenaSize] = Enum.ViewArenaSize.Three,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
@@ -942,7 +942,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 
 		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
 			settings = {
-				[Enum.EditModeUnitFrameSetting.ViewArenaSize] = 3,
+				[Enum.EditModeUnitFrameSetting.ViewArenaSize] = Enum.ViewArenaSize.Three,
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,

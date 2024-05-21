@@ -233,6 +233,8 @@ function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
 
 	ToggleDropDownMenu(1, nil, self.DropDown, self, 0, -5);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+	HelpTip:Acknowledge(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseUp()
@@ -241,6 +243,32 @@ end
 
 function WorldMapTrackingOptionsButtonMixin:Refresh()
 	self:GetParent():RefreshAllDataProviders();
+end
+
+function WorldMapTrackingOptionsButtonMixin:OnShow()
+	self:RefreshAccountCompletedQuestFilterTutorial();
+end
+
+function WorldMapTrackingOptionsButtonMixin:RefreshAccountCompletedQuestFilterTutorial()
+	HelpTip:Hide(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
+
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER);
+	if tutorialAcknowledged then
+		return;
+	end
+
+	local helpTipInfo = {
+		text = ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = -2,
+		alignment = HelpTip.Alignment.Center,
+		acknowledgeOnHide = false,
+		checkCVars = true,
+	};
+	HelpTip:Show(self, helpTipInfo);
 end
 
 function WorldMapTrackingOptionsButtonMixin:ShouldShowWorldQuestFilters(mapID)

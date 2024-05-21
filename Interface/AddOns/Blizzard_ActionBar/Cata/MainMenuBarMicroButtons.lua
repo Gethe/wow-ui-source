@@ -169,7 +169,7 @@ function UpdateMicroButtons()
 	end
 
 	-- Keyring microbutton
-	if (KeyRingButton) then
+	if (IsKeyRingEnabled() and KeyRingButton) then
 		if ( IsBagOpen(KEYRING_CONTAINER) ) then
 			KeyRingButton:SetButtonState("PUSHED", 1);
 		else

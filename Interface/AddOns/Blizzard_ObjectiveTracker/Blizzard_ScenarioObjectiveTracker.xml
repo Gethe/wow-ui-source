@@ -238,9 +238,9 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture parentKey="FinalBG" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true">
+						<Texture parentKey="FinalBG" atlas="evergreen-scenario-trackertoast-final-filigree" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="-4"/>
+								<Anchor point="TOPLEFT" x="-10" y="3"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="GlowTexture" atlas="ScenarioTrackerToast" useAtlasSize="true" alpha="0" alphaMode="ADD">

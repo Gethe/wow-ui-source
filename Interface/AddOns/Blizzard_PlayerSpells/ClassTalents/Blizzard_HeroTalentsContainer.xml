@@ -23,6 +23,10 @@
 				<Alpha order="2" childKey="ChoiceBackground" duration="0.75" fromAlpha="0.7" toAlpha="0" smoothing="IN" />
 				<Alpha order="2" childKey="ChoiceBackground2" duration="0.75" fromAlpha="0.7" toAlpha="0" smoothing="IN" />
 			</AnimationGroup>
+			<AnimationGroup parentArray="HeroClassPassiveAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="Icon1Anim" order="1" fromAlpha="0" toAlpha="1" duration="1" smoothing="NONE"/>
+				<Alpha childKey="Icon1Anim" order="2" fromAlpha="1" toAlpha="0" duration="1" smoothing="NONE"/>
+			</AnimationGroup>
 		</Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -37,16 +41,39 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="0">
 				<Texture parentKey="Icon1" file="Interface\Icons\INV_Misc_QuestionMark" setAllPoints="true">
 				</Texture>
 				<Texture parentKey="Icon2" file="Interface\Icons\INV_Misc_QuestionMark"  setAllPoints="true">
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Icon1Anim" file="Interface\Icons\INV_Misc_QuestionMark" setAllPoints="true" alpha="1" alphaMode="ADD" />
+				<Texture parentKey="HeroClassIconSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="174" y="276"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon1" relativePoint="LEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Translation offsetX="282" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<MaskTexture parentKey="HeroClassIconSheenMask" atlas="common-mask-circle" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<MaskedTextures>
+						<MaskedTexture childKey="HeroClassIconSheen"/>
+					</MaskedTextures>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon1"/>
+					</Anchors>
+				</MaskTexture>
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="0">
-				<MaskTexture parentKey="IconMask" atlas="common-mask-circle" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE"  setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<MaskTexture parentKey="IconMask" atlas="common-mask-circle" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon1"/>
+						<MaskedTexture childKey="Icon1Anim"/>
 					</MaskedTextures>
 				</MaskTexture>
 				<MaskTexture parentKey="Icon1SplitMask" atlas="common-mask-semicircle-left" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="IconSplitMasks" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
@@ -93,6 +120,27 @@
 						<Anchor point="CENTER" y="-2"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="HeroClassRingBorderSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="174" y="276"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Border" relativePoint="LEFT"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Translation offsetX="366" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<MaskTexture parentKey="HeroClassRingBorderSheenMask" atlas="talents-animations-mask-heroclass-ring" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<MaskedTextures>
+						<MaskedTexture childKey="HeroClassRingBorderSheen"/>
+					</MaskedTextures>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border" y="3"/>
+					</Anchors>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -178,9 +226,30 @@
 			<Frame parentKey="ExpandedContainer" inherits="HeroTalentsTreeContainerTemplate" hidden="true">
 				<Size x="242" y="362"/>
 				<Layers>
-					<Layer level="BACKGROUND">
+					<Layer level="BACKGROUND" textureSubLevel="0">
 						<Texture parentKey="Background" atlas="talents-heroclass-backplate-full" setAllPoints="true">
 						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="HeroClassBackplateFullSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Size x="261" y="414"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Background" relativePoint="LEFT"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="REPEAT">
+									<Translation offsetX="503" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+						<MaskTexture parentKey="HeroClassBackplateFullSheenMask" atlas="talents-animations-mask-heroclass-backplatefull" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<MaskedTextures>
+								<MaskedTexture childKey="HeroClassBackplateFullSheen"/>
+							</MaskedTextures>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Background"/>
+							</Anchors>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 				<Frames>

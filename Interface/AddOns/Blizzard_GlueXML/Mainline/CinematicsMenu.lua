@@ -94,20 +94,6 @@ MOVIE_LIST = {
 	},
 };
 
-do
-	local function FilterMovieList()
-		local filteredMovieList = {};
-		local maxExpansion = GetClientDisplayExpansionLevel();
-		for _, movieEntry in ipairs(MOVIE_LIST) do
-			if movieEntry.expansion <= maxExpansion then
-				table.insert(filteredMovieList, movieEntry);
-			end
-		end
-		MOVIE_LIST = filteredMovieList;
-	end
-	FilterMovieList();
-end
-
 local function GetMovieIDs(movieIndex)
 	local movieEntry = MOVIE_LIST[movieIndex];
 	local movieIDs = movieEntry and movieEntry.movieIDs;
@@ -127,12 +113,32 @@ local function CheckMovieList(movieIndex, func)
 	return true;
 end
 
+local function IsMovieReadableByIndex(movieIndex)
+	return CheckMovieList(movieIndex, IsMovieReadable);
+end
+
 local function IsMovieLocalByIndex(movieIndex)
 	return CheckMovieList(movieIndex, IsMovieLocal);
 end
 
 local function IsMoviePlayableByIndex(movieIndex)
 	return CheckMovieList(movieIndex, IsMoviePlayable);
+end
+
+do
+	local function FilterMovieList()
+		local filteredMovieList = {};
+		local maxExpansion = GetClientDisplayExpansionLevel();
+		for index, movieEntry in ipairs(MOVIE_LIST) do
+			if movieEntry.expansion <= maxExpansion then
+				if IsMovieReadableByIndex(index) then
+					table.insert(filteredMovieList, movieEntry);
+				end
+			end
+		end
+		MOVIE_LIST = filteredMovieList;
+	end
+	FilterMovieList();
 end
 
 local function GetMovieDownloadProgressByIndex(movieIndex)

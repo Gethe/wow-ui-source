@@ -521,14 +521,13 @@ local EditModeManagerShared =
 		{
 			Name = "ViewArenaSize",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 2,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 1,
 			Fields =
 			{
 				{ Name = "Two", Type = "ViewArenaSize", EnumValue = 0 },
 				{ Name = "Three", Type = "ViewArenaSize", EnumValue = 1 },
-				{ Name = "Five", Type = "ViewArenaSize", EnumValue = 2 },
 			},
 		},
 		{

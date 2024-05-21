@@ -31,7 +31,7 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.Level" relativePoint="TOP" x="0" y="5"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="TimerunningIcon" atlas="timerunning-glues-icon">
+				<Texture parentKey="TimerunningIcon" atlas="timerunning-glues-icon" hidden="true">
 					<Size x="24" y="24"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Name" relativePoint="LEFT" x="-2" y="1"/>

@@ -105,7 +105,7 @@ function CharacterSelectListMixin:InitDragBehavior()
 		statusText:SetScript("OnMouseUp", nil);
 	end
 
-	-- Be aware that of what the various DragIntersectionArea cases translate to here.
+	-- Be aware of what the various DragIntersectionArea cases translate to here.
 	-- Inside == swap the elements, Above/Below == insert next to the element.
 	local dragBehavior = ScrollUtil.AddLinearDragBehavior(self.ScrollBox);
 	dragBehavior:SetReorderable(true);

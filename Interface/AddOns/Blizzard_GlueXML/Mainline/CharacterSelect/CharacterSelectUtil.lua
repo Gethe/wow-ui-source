@@ -41,6 +41,7 @@ function CharacterSelectUtil.CreateNewCharacter(characterType, timerunningSeason
 	if GlueParent_GetCurrentScreen() == "charcreate" then
 		CharacterCreateFrame:UpdateTimerunningChoice();
 	else
+		CharacterSelectListUtil.SaveCharacterOrder();
 		CharacterSelect_SelectCharacter(CharacterSelect.createIndex);
 	end
 end
@@ -72,56 +73,21 @@ function CharacterSelectUtil.GetVASQueueTime(guid)
 end
 
 function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
-	local name, raceName, raceFilename, className, classFilename, classID, experienceLevel, areaName, genderEnum, isGhost,
-		hasCustomize, hasRaceChange, hasFactionChange, deprecated1, guid, profession0, profession1, genderID, boostInProgress,
-	 	hasNameChange, isLocked, isTrialBoost, isTrialBoostCompleted, isRevokedCharacterUpgrade, vasServiceInProgress, lastLoginBuild,
-	 	specID, isExpansionTrialCharacter, faction, lockedByExpansion, mailSenders, customizeDisabled, deprecated2,
-		characterServiceRequiresLogin, raceID, rpeResetAvailable, rpeResetQuestClearAvailable, hasWowToken, hasVasRevoked, realmName = GetCharacterInfo(characterIndex);
+	local characterGuid = GetCharacterGUID(characterIndex);
 
-	if not name then
+	if not characterGuid then
 		return nil;
 	end
 
-	return {
-		name = name,
-		raceName = raceName,
-		raceFilename = raceFilename,
-		className = className,
-		classFilename = classFilename,
-		classID = classID,
-		experienceLevel = experienceLevel,
-		areaName = areaName,
-		genderEnum = genderEnum,
-		isGhost = isGhost,
-		hasCustomize = hasCustomize,
-		hasRaceChange = hasRaceChange,
-		hasFactionChange = hasFactionChange,
-		guid = guid,
-		profession0 = profession0,
-		profession1 = profession1,
-		genderID = genderID,
-		boostInProgress = boostInProgress,
-		hasNameChange = hasNameChange,
-		isLocked = isLocked,
-		isTrialBoost = isTrialBoost,
-		isTrialBoostCompleted = isTrialBoostCompleted,
-		isRevokedCharacterUpgrade = isRevokedCharacterUpgrade,
-		vasServiceInProgress = vasServiceInProgress,
-		lastLoginBuild = lastLoginBuild,
-		specID = specID,
-		isExpansionTrialCharacter = isExpansionTrialCharacter,
-		faction = faction,
-		lockedByExpansion = lockedByExpansion,
-		mailSenders = mailSenders,
-		customizeDisabled = customizeDisabled,
-		characterServiceRequiresLogin = characterServiceRequiresLogin,
-		raceID = raceID,
-		rpeResetAvailable = rpeResetAvailable,
-		rpeResetQuestClearAvailable = rpeResetQuestClearAvailable,
-		hasWowToken = hasWowToken,
-		hasVasRevoked = hasVasRevoked,
-		realmName = realmName
-	};
+	local characterInfo = GetBasicCharacterInfo(characterGuid);
+	if not characterInfo.name then
+		return nil;
+	end
+
+	local serviceCharacterInfo = GetServiceCharacterInfo(characterGuid);
+	MergeTable(characterInfo, serviceCharacterInfo);
+
+	return characterInfo;
 end
 
 function CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID, offsetX, offsetY)

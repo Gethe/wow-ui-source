@@ -493,34 +493,36 @@ end
 -- Korean Ratings
 -- =============================================================
 
+KoreanRatingsMixin = {};
+
 local KOREAN_RATINGS_AUTO_CLOSE_TIMER; -- seconds until automatically closing
-function KoreanRatings_OnLoad(self)
+function KoreanRatingsMixin:OnLoad()
 	if ( WasScreenFirstDisplayed() ) then
-		KoreanRatings_ScreenDisplayed(self);
+		self:ScreenDisplayed();
 	else
 		self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
 	end
 end
 
-function KoreanRatings_OnEvent(self, event, ...)
+function KoreanRatingsMixin:OnEvent(event, ...)
 	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
-		KoreanRatings_ScreenDisplayed(self);
+		self:ScreenDisplayed();
 		self:UnregisterEvent("SCREEN_FIRST_DISPLAYED");
 	end
 end
 
-function KoreanRatings_ScreenDisplayed(self)
-	self:SetScript("OnUpdate", KoreanRatings_OnUpdate);
+function KoreanRatingsMixin:ScreenDisplayed()
+	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
-function KoreanRatings_OnShow(self)
+function KoreanRatingsMixin:OnShow()
 	self.locked = true;
 	KOREAN_RATINGS_AUTO_CLOSE_TIMER = 3;
 	KoreanRatingsText:SetTextHeight(10); -- this is just dumb ... sort out this bug later.
 	KoreanRatingsText:SetTextHeight(50);
 end
 
-function KoreanRatings_OnUpdate(self, elapsed)
+function KoreanRatingsMixin:OnUpdate(elapsed)
 	KOREAN_RATINGS_AUTO_CLOSE_TIMER = KOREAN_RATINGS_AUTO_CLOSE_TIMER - elapsed;
 	if ( KOREAN_RATINGS_AUTO_CLOSE_TIMER <= 0 ) then
 		SHOW_KOREAN_RATINGS = false;

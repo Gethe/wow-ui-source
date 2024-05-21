@@ -182,7 +182,7 @@ function VASCharacterSelectBlockBase:SetResultsShown(shown)
 end
 
 function VASCharacterSelectBlockBase:OnAdvance()
-	CharacterSelectCharacterFrame:SetScrollEnabled(false);
+	CharacterSelectListUtil.SetScrollListInteractiveState(false);
 	CharacterServicesCharacterSelector:Hide();
 	self:SetResultsShown(true);
 

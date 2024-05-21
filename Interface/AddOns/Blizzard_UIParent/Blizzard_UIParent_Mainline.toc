@@ -10,3 +10,4 @@ Mainline\WorldFrame.xml
 Mainline\UIParent.lua
 Mainline\UIParent.xml
 Shared\Localization.lua
+Shared\UIParent.lua

@@ -312,6 +312,7 @@ local ReputationInfo =
 				{ Name = "isWatched", Type = "bool", Nilable = false },
 				{ Name = "hasBonusRepGain", Type = "bool", Nilable = false },
 				{ Name = "canSetInactive", Type = "bool", Nilable = false },
+				{ Name = "isAccountWide", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -59,7 +59,7 @@ end
 FlightPointPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_FLIGHT_POINT");
 
 function FlightPointPinMixin:OnAcquired(poiInfo)
-	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
+	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
 
 	self:ClearNudgeSettings();
 
@@ -79,4 +79,8 @@ function FlightPointPinMixin:SetTexture(poiInfo)
 		self:SetSize(21, 18);
 		self.Texture:SetSize(21, 18);
 	end
+end
+
+function FlightPointPinMixin:GetSuperTrackData()
+	return Enum.SuperTrackingMapPinType.TaxiNode, self.poiInfo.nodeID;
 end

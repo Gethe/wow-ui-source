@@ -48,6 +48,8 @@ function ReputationFrameMixin:OnLoad()
 	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, GenerateClosure(self.RefreshAccountWideReputationTutorial), self);
 end
 
 local ReputationFrameEvents = {
@@ -91,6 +93,33 @@ function ReputationFrameMixin:Update()
 	self.ScrollBox:SetDataProvider(CreateDataProvider(factionList), ScrollBoxConstants.RetainScrollPosition);
 
 	self.ReputationDetailFrame:Refresh();
+end
+
+function ReputationFrameMixin:RefreshAccountWideReputationTutorial()
+	HelpTip:Hide(self, ACCOUNT_WIDE_REPUTATION_TUTORIAL);
+
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION);
+	if tutorialAcknowledged then
+		return;
+	end
+
+	local accountWideReputation = self.ScrollBox:FindFrameByPredicate(function(button, elementData) return elementData.isAccountWide; end);
+	if not accountWideReputation then
+		return;
+	end
+
+	local helpTipInfo = {
+		text = ACCOUNT_WIDE_REPUTATION_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		offsetX = 40,
+		alignment = HelpTip.Alignment.Center,
+		acknowledgeOnHide = false,
+		checkCVars = true,
+	};
+	HelpTip:Show(self, helpTipInfo, accountWideReputation);
 end
 
 ReputationFilterDropDownMixin = {};

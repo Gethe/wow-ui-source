@@ -7,7 +7,7 @@ local buttonAtlasFormatsByExpansion = {
 		progressBarBorderAtlas = "dragonflight-landingpage-radial-frame",
 		progressBarFillAtlas = "dragonflight-landingpage-radial-%s",
 	},
-	[LE_EXPANSION_11_0] = {
+	[LE_EXPANSION_WAR_WITHIN] = {
 		normalAtlas = "dragonflight-landingpage-renownbutton-%s",
 		hoverAtlas = "dragonflight-landingpage-renownbutton-%s-hover",
 		lockedAtlas = "dragonflight-landingpage-renownbutton-locked",

@@ -73,7 +73,7 @@ function AutoQuestPopupBlockMixin:OnMouseUp(button, upInside)
 end
 
 function AutoQuestPopupBlockMixin:Update(questTitle, questID, popUpType)
-	if not self.questID then
+	if self.questID ~= questID then
 		self.questID = questID;
 		self.popUpType = popUpType;
 		self:UpdateIcon(questID, popUpType);

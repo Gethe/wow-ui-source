@@ -193,9 +193,12 @@ function DelvesCompanionAbilityMixin:InitAdditionalElements()
 
 	if not self:HasProgress() then
 		local conditionText = "";
-		if #self.nodeInfo.conditionIDs > 0 then
-			local conditionInfo = self:GetTalentFrame():GetAndCacheCondInfo(self.nodeInfo.conditionIDs[1], true);
-			conditionText = conditionInfo.tooltipText;
+		for _, conditionID in ipairs(self.nodeInfo.conditionIDs) do
+			local conditionInfo = self:GetTalentFrame():GetAndCacheCondInfo(conditionID, true);
+			if conditionInfo.tooltipText then
+				conditionText = conditionInfo.tooltipText;
+				break;
+			end
 		end
 
 		self.Icon:SetDesaturated(true);

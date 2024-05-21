@@ -123,15 +123,21 @@ function CharSelectSearchMixin:GenerateFilteredCharacters(dataProvider)
 	for _, elementData in CharacterSelectCharacterFrame.ScrollBox:EnumerateDataProviderEntireRange() do
 		if elementData.isGroup then
 			for _, characterElementData in ipairs(elementData.characterData) do
-				local data = CharacterSelectUtil.GetCharacterInfoTable(characterElementData.characterID);
-				if data and CheckCharacterDataForMatch(data, words) then
-					dataProvider:Insert(characterElementData);
+				local characterGuid = GetCharacterGUID(characterElementData.characterID);
+				if characterGuid then
+					local data = GetBasicCharacterInfo(characterGuid);
+					if CheckCharacterDataForMatch(data, words) then
+						dataProvider:Insert(characterElementData);
+					end
 				end
 			end
 		elseif elementData.characterID then
-			local data = CharacterSelectUtil.GetCharacterInfoTable(elementData.characterID);
-			if CheckCharacterDataForMatch(data, words) then
-				dataProvider:Insert(elementData);
+			local characterGuid = GetCharacterGUID(elementData.characterID);
+			if characterGuid then
+				local data = GetBasicCharacterInfo(characterGuid);
+				if CheckCharacterDataForMatch(data, words) then
+					dataProvider:Insert(elementData);
+				end
 			end
 		end
 	end

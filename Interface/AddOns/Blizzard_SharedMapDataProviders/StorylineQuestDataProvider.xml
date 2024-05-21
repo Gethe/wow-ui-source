@@ -12,15 +12,15 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>	
+	</Frame>
 
-	<Frame name="QuestOfferPinTemplate" inherits="HeightIndicatorMapPinTemplate" mixin="QuestOfferPinMixin" virtual="true">
+	<Frame name="QuestOfferPinTemplate" inherits="HeightIndicatorMapPinTemplate, SuperTrackableMapPinTemplate" mixin="QuestOfferPinMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Texture" atlas="QuestNormal"/>
 			</Layer>
 		</Layers>		
-	</Frame>
+	</Frame>			
 
 	<Frame name="QuestHubPinTemplate" inherits="AreaPOIPinTemplate, HeightIndicatorMapPinTemplate" mixin="QuestHubPinMixin" virtual="true">
 		<Layers>

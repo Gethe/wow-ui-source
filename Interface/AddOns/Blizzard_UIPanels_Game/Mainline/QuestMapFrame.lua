@@ -427,7 +427,10 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
 	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 	self:RegisterEvent("CVAR_UPDATE");
+
+	self.initialCampaignHeadersUpdate = false;
 
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
@@ -542,6 +545,8 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:Refresh();
+	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
+		self.initialCampaignHeadersUpdate = false;
 	elseif ( event == "CVAR_UPDATE" ) then
 		if ( arg1 == "questPOI" ) then
 			QuestMapFrame_UpdateAll();
@@ -763,6 +768,11 @@ end
 
 function QuestMapFrame_OnShow(self)
 	QuestMapFrame_UpdateQuestSessionState(self);
+
+	if not self.initialCampaignHeadersUpdate then
+		self.initialCampaignHeadersUpdate = true;
+		C_QuestLog.UpdateCampaignHeaders();
+	end
 end
 
 -- opening/closing the quest frame is different from showing/hiding because of fullscreen map mode
@@ -1589,7 +1599,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local difficultyColor = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
 	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);
 
-	local isTracked = C_QuestLog.GetQuestWatchType(questID) == Enum.QuestWatchType.Manual;
+	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.CheckBox.CheckMark:SetShown(isTracked);
 
 	local isComplete = C_QuestLog.IsComplete(questID);

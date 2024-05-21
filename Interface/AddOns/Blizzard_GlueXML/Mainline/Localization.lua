@@ -28,8 +28,6 @@ local l10nTable = {
 	itIT = {},
 	koKR = {
         localizeFrames = function()
-			AccountLogin.UI.CommunityButton:SetPoint("BOTTOMLEFT", AccountLogin.UI, "BOTTOMLEFT", 10, 80);
-
 			-- Defined variable to show gameroom billing messages
 			SHOW_GAMEROOM_BILLING_FRAME = 1;
 

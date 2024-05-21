@@ -491,10 +491,8 @@ function EditModeManagerFrameMixin:GetNumArenaFramesForcedShown()
 		local viewArenaSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, Enum.EditModeUnitFrameSystemIndices.Arena, Enum.EditModeUnitFrameSetting.ViewArenaSize);
 		if viewArenaSize == Enum.ViewArenaSize.Two then
 			return 2;
-		elseif viewArenaSize == Enum.ViewArenaSize.Three then
-			return 3;
 		else
-			return 5;
+			return 3;
 		end
 	end
 

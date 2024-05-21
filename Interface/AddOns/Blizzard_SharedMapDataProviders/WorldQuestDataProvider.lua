@@ -495,11 +495,11 @@ function WorldQuestPinMixin:OnMouseClickAction(button)
 					QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Manual);
 				end
 			else
-				if watchType == Enum.QuestWatchType.Manual then
-					C_SuperTrack.SetSuperTrackedQuestID(self.questID);
-				else
+				if watchType ~= Enum.QuestWatchType.Manual then
 					QuestUtil.TrackWorldQuest(self.questID, Enum.QuestWatchType.Automatic);
 				end
+
+				C_SuperTrack.SetSuperTrackedQuestID(self.questID);
 			end
 		end
 	end

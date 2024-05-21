@@ -27,7 +27,7 @@ local minimapPulseLocks = EnumUtil.MakeEnum(
 local overlayFrame = nil;
 
 function WarWithinLandingOverlayMixin.IsOverlayUnlocked()
-	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_11_0);
+	return C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_WAR_WITHIN);
 end
 
 function WarWithinLandingOverlayMixin.GetMinimapDisplayInfo()
@@ -104,5 +104,5 @@ function WarWithinLandingOverlayMixin:SetUpMajorFactionList()
 	-- And the ScrollBar should be on top of the ScrollFadeOverlay so we can still use it
 	self.MajorFactionList.ScrollBar:SetFrameLevel(self.ScrollFadeOverlay:GetFrameLevel() + 10);
 
-	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_11_0);
+	self.MajorFactionList:SetExpansionFilter(LE_EXPANSION_WAR_WITHIN);
 end

@@ -5,12 +5,14 @@ end
 
 function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
 	local playerguid = GetCharacterGUID(characterID);
-	local basicInfo = GetBasicCharacterInfo(playerguid);
-	local serviceInfo = GetServiceCharacterInfo(playerguid);
-	local sameFaction = CharacterHasAlternativeRaceOptions(characterID);
 	local errors = {};
 
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, basicInfo.experienceLevel >= 10);
+	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
+	if not characterInfo then
+		return false, errors, playerGuid, false;
+	end
+
+	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
 	if IsCharacterNPERestricted then
 		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
 	end
@@ -18,7 +20,7 @@ function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidNameChange));
 
 	local canTransfer = #errors == 0;
-	return canTransfer, errors, playerguid, serviceInfo.characterServiceRequiresLogin;
+	return canTransfer, errors, playerguid, characterInfo.characterServiceRequiresLogin;
 end
 
 local function RequestAssignPNCForResults(results, isValidationOnly)

@@ -69,8 +69,22 @@ AreaPOIPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_AREA_POI");
 
 local AREAPOI_HIGHLIGHT_PARAMS = { backgroundPadding = 20 };
 
+local customOnClickHandlers = 
+{
+	OribosGreatVault = function(self, button, upInside)
+		if upInside and (button == "LeftButton") then
+			WeeklyRewards_ShowUI();
+		end
+	end,
+}
+
+function AreaPOIPinMixin:UpdateCustomMouseHandlers()
+	local onClickHandler = self.textureKit and customOnClickHandlers[self.textureKit];
+	self.CustomOnClickHandler = onClickHandler or nop;
+end
+
 function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
-	BaseMapPoiPinMixin.OnAcquired(self, poiInfo);
+	SuperTrackablePoiPinMixin.OnAcquired(self, poiInfo);
 
 	self.areaPoiID = poiInfo.areaPoiID;
 	self.factionID = poiInfo.factionID;
@@ -80,22 +94,16 @@ function AreaPOIPinMixin:OnAcquired(poiInfo) -- override
 	MapPinHighlight_CheckHighlightPin(self:GetHighlightType(), self, self.Texture, AREAPOI_HIGHLIGHT_PARAMS);
 
 	self:AddIconWidgets();
-
-	if self.textureKit == "OribosGreatVault" then
-		local function OribosGreatVaultPOIOnMouseUp(self, button, upInside)
-			if upInside and (button == "LeftButton") then
-				WeeklyRewards_ShowUI();
-			end
-		end
-
-		self:SetScript("OnMouseUp", OribosGreatVaultPOIOnMouseUp);
-	else
-		self:SetScript("OnMouseUp", nil);
-	end
+	self:UpdateCustomMouseHandlers();
 
 	if poiInfo.isAlwaysOnFlightmap then
 		self:SetAlphaLimits(1.0, 1.0, 1.0);
 	end
+end
+
+function AreaPOIPinMixin:OnMouseClickAction(button)
+	SuperTrackablePinMixin.OnMouseClickAction(self, button);
+	self:CustomOnClickHandler(button);
 end
 
 function AreaPOIPinMixin:SetupHoverInfo(poiInfo)

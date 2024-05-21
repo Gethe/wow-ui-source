@@ -684,17 +684,20 @@ end
 local function UpdateGlueTag()
 	local currentScreen = GlueParent_GetCurrentScreen();
 
-	local race, class, faction, currentTag;
+	local race, class, faction;
 
 	-- Determine which API to use to get character information
-	if ( currentScreen == "charselect") then
-		class = select(5, GetCharacterInfo(GetCharacterSelection()));
-		race = select(2, GetCharacterRace(GetCharacterSelection()));
-		faction = ""; -- Don't need faction for character selection, its currently irrelevant
-
-	elseif ( currentScreen == "charcreate" ) then
+	if currentScreen == "charselect" then
+		local characterGuid = GetCharacterGUID(GetCharacterSelection());
+		if characterGuid then
+			local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+			class = basicCharacterInfo.classFilename;
+			race = basicCharacterInfo.raceName;
+			faction = "";
+		end
+	elseif currentScreen == "charcreate" then
 		local classInfo = C_CharacterCreation.GetSelectedClass();
-		if (classInfo) then
+		if classInfo then
 			class = classInfo.fileName;
 		end
 		local raceID = C_CharacterCreation.GetSelectedRace();
@@ -703,16 +706,16 @@ local function UpdateGlueTag()
 	end
 
 	-- Once valid information is available, determine the current tag
-	if ( race and class and faction ) then
+	if race and class and faction then
 		race, class, faction = strupper(race), strupper(class), strupper(faction);
 
 		-- Try lookup from current screen (current screen may have fixed bg's)
-		if ( UpdateGlueTagWithOrdering(glueScreenTags[currentScreen], class, race, faction) ) then
+		if UpdateGlueTagWithOrdering(glueScreenTags[currentScreen], class, race, faction) then
 			return;
 		end
 
 		-- Try lookup from defaults
-		if ( UpdateGlueTagWithOrdering(glueScreenTags["default"], class, race, faction) ) then
+		if UpdateGlueTagWithOrdering(glueScreenTags["default"], class, race, faction) then
 			return;
 		end
 	end

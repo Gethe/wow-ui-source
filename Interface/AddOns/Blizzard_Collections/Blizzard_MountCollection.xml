@@ -218,120 +218,122 @@
 	
 	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
 		<Frames>
-			<Frame parentKey="MountSpellButtons" inherits="HorizontalLayoutFrame" useParentLevel="true">
-				<KeyValues>
-					<KeyValue key="fixedHeight" value="35" type="number"/>
-				</KeyValues>
+			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate" mixin="MountJournalSummonRandomFavoriteButtonMixin">
+				<Size x="33" y="33"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-6" y="-25"/>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="288" y="-25"/>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
 				</Anchors>
-				<Frames>
-					<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate" mixin="MountJournalSummonRandomFavoriteButtonMixin">
-						<Size x="33" y="33"/>
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="2" type="number"/>
-							<KeyValue key="leftPadding" value="170" type="number"/>
-						</KeyValues>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
-									<Color r="0" g="0" b="0" a="0.6"/>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
-									<Size x="35" y="35"/>
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
-								<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" >
-									<Size x="170" y="0"/>
-									<Color r="1" g="1" b="1"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-							<OnClick method="OnClick"/>
-							<OnDragStart method="OnDragStart"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-					</Button>
-					<Button parentKey="ToggleDynamicFlightFlyoutButton" mixin="MountJournalToggleDynamicFlightFlyoutButtonMixin" frameLevel="10">
-						<Size x="33" y="33"/>
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="0" type="number"/>
-							<KeyValue key="leftPadding" value="170" type="number"/>
-							<KeyValue key="openArrowOffset" value="-3" type="number"/>
-							<KeyValue key="closedArrowOffset" value="-5" type="number"/>
-						</KeyValues>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture file="Interface/ICONS/Ability_DragonRiding_UpwardFlap01" setAllPoints="true"/>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Border" inherits="ActionBarFlyoutButton-IconFrame">
-									<Size x="35" y="35"/>
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-								<FontString inherits="GameFontNormal" text="DYNAMIC_FLIGHT" maxLines="2" justifyH="RIGHT">
-									<Size x="170" y="0"/>
-									<Color r="1" g="1" b="1"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Border" x="-2" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="2">
-								<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" rotation="180">
-									<Size x="15" y="6"/>
-									<Anchors>
-										<Anchor point="BOTTOM"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" rotation="180">
-									<Size x="15" y="6"/>
-									<Anchors>
-										<Anchor point="BOTTOM"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="HIGHLIGHT" textureSubLevel="2">
-								<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" rotation="180">
-									<Size x="15" y="6"/>
-									<Anchors>
-										<Anchor point="BOTTOM"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-							<OnMouseDown method="OnMouseDown"/>
-							<OnMouseUp method="OnMouseUp"/>
-							<OnHide method="OnHide"/>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-					</Button>
-				</Frames>
-			</Frame>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.6"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" >
+							<Size x="170" y="0"/>
+							<Color r="1" g="1" b="1"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnDragStart method="OnDragStart"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="ToggleDynamicFlightFlyoutButton" mixin="MountJournalToggleDynamicFlightFlyoutButtonMixin" frameLevel="1000">
+				<Size x="33" y="33"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.SummonRandomFavoriteButton" x="-210"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="openArrowOffset" value="-3" type="number"/>
+					<KeyValue key="closedArrowOffset" value="-5" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface/ICONS/Ability_DragonRiding_UpwardFlap01" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Border" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GameFontNormal" text="DYNAMIC_FLIGHT" maxLines="2" justifyH="RIGHT">
+							<Size x="170" y="0"/>
+							<Color r="1" g="1" b="1"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.Border" x="-2" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="FlyoutArrowNormal" atlas="UI-HUD-ActionBar-Flyout" rotation="180">
+							<Size x="15" y="6"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="UnspentGlyphsHighlight" atlas="newplayertutorial-drag-slotgreen" useAtlasSize="true" alphaMode="ADD" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FlyoutArrowPushed" atlas="UI-HUD-ActionBar-Flyout-Down" rotation="180">
+							<Size x="15" y="6"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT" textureSubLevel="2">
+						<Texture parentKey="FlyoutArrowHighlight" atlas="UI-HUD-ActionBar-Flyout-Mouseover" rotation="180">
+							<Size x="15" y="6"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="UnspentGlyphsAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="UnspentGlyphsHighlight" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="UnspentGlyphsHighlight" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnHide method="OnHide"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
 			<Frame parentKey="DynamicFlightFlyout" inherits="VerticalLayoutFrame" hidden="true" frameLevel="9">
 				<KeyValues>
 					<KeyValue key="topPadding" value="5" type="number"/>
@@ -340,7 +342,7 @@
 					<KeyValue key="rightPadding" value="6" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.MountSpellButtons.ToggleDynamicFlightFlyoutButton" x="0" y="0"/>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.ToggleDynamicFlightFlyoutButton" x="0" y="0"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="Background" setAllPoints="true">
@@ -379,7 +381,21 @@
 							<Layer level="ARTWORK">
 								<Texture file="Interface/ICONS/Ability_DragonRiding_Glyph01" setAllPoints="true"/>
 							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="UnspentGlyphsHighlight" atlas="newplayertutorial-drag-slotgreen" alphaMode="ADD" alpha="0">
+									<Size x="54" y="54"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="UnspentGlyphsAnim" setToFinalAlpha="true" looping="REPEAT">
+								<Alpha childKey="UnspentGlyphsHighlight" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="UnspentGlyphsHighlight" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 							<OnClick method="OnClick"/>

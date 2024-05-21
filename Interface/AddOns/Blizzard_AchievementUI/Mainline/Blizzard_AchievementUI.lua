@@ -631,7 +631,7 @@ function AchievementFrameCategories_UpdateDataProvider ()
 end
 
 function AchievementFrameCategory_StatusBarTooltip(self)
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetMinimumWidth(128, true);
 	GameTooltip:SetText(self.name, 1, 1, 1, nil, true);
 	GameTooltip_ShowStatusBar(GameTooltip, 0, self.numAchievements, self.numCompleted, self.numCompletedText);
@@ -639,7 +639,7 @@ function AchievementFrameCategory_StatusBarTooltip(self)
 end
 
 function AchievementFrameCategory_FeatOfStrengthTooltip(self)
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(self.name, 1, 1, 1);
 	GameTooltip:AddLine(self.text, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -3065,15 +3065,14 @@ function AchievementShield_OnEnter(self)
 		return;
 	end
 	if ( self.earnedBy ) then
-		GameTooltip:AddLine(format(ACHIEVEMENT_EARNED_BY,self.earnedBy));
+		GameTooltip:AddLine(ACCOUNT_WIDE_ACHIEVEMENT_COMPLETED);
 		local me = UnitName("player")
-		if ( not self.wasEarnedByMe ) then
-			GameTooltip:AddLine(format(ACHIEVEMENT_NOT_COMPLETED_BY, me));
-		elseif ( me ~= self.earnedBy ) then
-			GameTooltip:AddLine(format(ACHIEVEMENT_COMPLETED_BY, me));
-		end
+		local tooltipLine = self.wasEarnedByMe and ACHIEVEMENT_COMPLETED_BY or ACHIEVEMENT_NOT_COMPLETED_BY;
+		GameTooltip_AddNormalLine(GameTooltip, tooltipLine:format(me));
 		GameTooltip:Show();
 		return;
+	else
+		GameTooltip_AddNormalLine(GameTooltip, CHARACTER_ACHIEVEMENT_DESCRIPTION);
 	end
 	-- pass-through to the achievement button
 	local func = parent:GetScript("OnEnter");

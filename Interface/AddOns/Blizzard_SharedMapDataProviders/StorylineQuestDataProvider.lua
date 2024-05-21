@@ -354,7 +354,7 @@ function IconWithHeightIndicatorMapPinMixin:SetHeightIndicator(floorLocation)
 	self.Texture:SetDesaturated(isDifferentFloor);
 end
 
-QuestOfferPinMixin = CreateFromMixins(MapCanvasPinMixin);
+QuestOfferPinMixin = CreateFromMixins(MapCanvasPinMixin, SuperTrackablePinMixin);
 
 function QuestOfferPinMixin:OnLoad()
 	self:SetScalingLimits(1, 1.0, 1.2);
@@ -362,6 +362,8 @@ function QuestOfferPinMixin:OnLoad()
 end
 
 function QuestOfferPinMixin:OnAcquired(questOffer)
+	SuperTrackablePinMixin.OnAcquired(self, questOffer);
+
 	self.mapID = self:GetMap():GetMapID();
 	Mixin(self, questOffer);
 
@@ -381,6 +383,10 @@ end
 
 function QuestOfferPinMixin:OnMouseLeave()
 	TaskPOI_OnLeave(self);
+end
+
+function QuestOfferPinMixin:GetSuperTrackData()
+	return Enum.SuperTrackingMapPinType.QuestOffer, self.questID;
 end
 
 QuestHubPinMixin = {};

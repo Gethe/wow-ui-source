@@ -45,7 +45,7 @@ local settings = {
 	headerText = TRACKER_HEADER_SCENARIO,
 	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "PLAYER_ENTERING_WORLD", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN" },
 	fromHeaderOffsetY = 0,
-	blockOffsetX = 0,
+	blockOffsetX = 20,
 	lineSpacing = 12,
 	fromBlockOffsetY = -2,
 	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
@@ -54,6 +54,7 @@ local settings = {
 	progressBarLineSpacing = 2,
 	showCriteria = true,
 	slideDuration = 0.4,
+	leftMargin = -20,
 };
 
 ScenarioObjectiveTrackerMixin = CreateFromMixins(ObjectiveTrackerModuleMixin, settings);
@@ -72,6 +73,10 @@ function ScenarioObjectiveTrackerMixin:InitModule()
 	self.BottomWidgetContainerBlock.WidgetContainer:SetScript("OnSizeChanged", GenerateClosure(self.MarkDirty, self));
 
 	self.shouldShowCriteria = C_Scenario.ShouldShowCriteria();
+
+	-- StageBlock.FinalBG is outside the bounds, need to make this module wider so it doesn't get cut off during a slide
+	self.Header:SetPoint("TOPLEFT", self, "TOPLEFT", self.blockOffsetX, 0);
+	self:SetWidth(self:GetWidth() + self.blockOffsetX);
 end
 
 local SCENARIO_TRACKER_WIDGET_SET = 252;
@@ -485,12 +490,15 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 	if textureKit then
 		self.Stage:SetTextColor(1, 0.914, 0.682);
 		self.NormalBG:SetAtlas(textureKit.."-TrackerHeader", true);
+		self.NormalBG:SetPoint("TOPLEFT", 0, 0);
 	elseif (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
 		self.Stage:SetTextColor(0.753, 1, 0);
 		self.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
+		self.NormalBG:SetPoint("TOPLEFT", 0, 0);
 	else
 		self.Stage:SetTextColor(1, 0.914, 0.682);
-		self.NormalBG:SetAtlas("ScenarioTrackerToast", true);
+		self.NormalBG:SetAtlas("evergreen-scenario-trackertoast", true);
+		self.NormalBG:SetPoint("TOPLEFT", -7, 3);
 	end
 	
 	self:UpdateFindGroupButton(scenarioID);

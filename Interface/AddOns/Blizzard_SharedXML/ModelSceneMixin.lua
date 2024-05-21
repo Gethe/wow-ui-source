@@ -160,9 +160,12 @@ function GetPlayerActorLabelTag()
 	local playerRaceNameActorTag = nil;
 	local hasAlternateForm, inAlternateForm = false, false;
 	if IsOnGlueScreen() then
-		local _, raceName, raceFilename, _, _, _, _, _, genderEnum = GetCharacterInfo(GetCharacterSelection());
-		playerRaceName = raceFilename;
-		playerGender = genderEnum;
+		local characterGuid = GetCharacterGUID(GetCharacterSelection());
+		if characterGuid then
+			local basicCharacterInfo = GetBasicCharacterInfo(characterGuid);
+			playerRaceName = basicCharacterInfo.raceFilename;
+			playerGender = basicCharacterInfo.genderEnum;
+		end
 	else
 		hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		local _, raceFilename = UnitRace("player");

@@ -1000,6 +1000,20 @@ local Item =
 			},
 		},
 		{
+			Name = "IsBoundToAccountUntilEquip",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBoundToAccountUntilEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsConsumableItem",
 			Type = "Function",
 

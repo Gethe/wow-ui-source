@@ -51,6 +51,7 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>

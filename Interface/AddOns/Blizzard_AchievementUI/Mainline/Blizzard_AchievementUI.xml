@@ -1684,10 +1684,13 @@
 							</Anchors>
 							<TexCoords left="0.419921875" right="0.6796875" top="0.4140625" bottom="0.56640625"/>
 						</Texture>
-						<FontString parentKey="Title" inherits="GameFontNormal" text="ACHIEVEMENT_TITLE">
-							<Size x="200" y="12"/>
+						<FontString parentKey="Title" inherits="GameFontNormalSmall" text="ACHIEVEMENT_TITLE" maxLines="2" mixin="AutoScalingFontStringMixin">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="8" type="number"/>
+							</KeyValues>
+							<Size x="150" y="20"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.PointBorder" relativePoint="TOP" x="0" y="7"/>
+								<Anchor point="TOP" relativeKey="$parent.PointBorder" relativePoint="TOP" x="0" y="12"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="LeftDDLInset" file="Interface\AchievementFrame\UI-Achievement-RightDDLInset" hidden="true">

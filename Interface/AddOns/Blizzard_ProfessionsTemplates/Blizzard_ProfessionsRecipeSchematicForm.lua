@@ -1393,10 +1393,14 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.FinishingReagents:SetPoint("TOPLEFT", self.Reagents, "BOTTOMLEFT", 0, -20);
 		end
 		Professions.LayoutAndShowReagentSlotContainer(finishingSlots, self.FinishingReagents);
+
 		self.Concentrate:SetShown(hasConcentration and recipeInfo.supportsQualities);
-		self.Concentrate.ConcentrateToggleButton:SetOperationInfo(operationInfo);
-		self.Concentrate.ConcentrateToggleButton:SetRecipeInfo(recipeInfo);
-		self.Concentrate.ConcentrateToggleButton:SetTransaction(self.transaction);
+
+		if self.Concentrate:IsShown() then
+			self.Concentrate.ConcentrateToggleButton:SetOperationInfo(operationInfo);
+			self.Concentrate.ConcentrateToggleButton:SetRecipeInfo(recipeInfo);
+			self.Concentrate.ConcentrateToggleButton:SetTransaction(self.transaction);
+		end
 	else
 		-- Finishing reagents are displayed in the details panel instead.
 		self.FinishingReagents:Hide();

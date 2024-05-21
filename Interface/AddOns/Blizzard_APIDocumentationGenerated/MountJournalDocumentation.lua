@@ -358,6 +358,16 @@ local MountJournal =
 			},
 		},
 		{
+			Name = "IsDragonridingUnlocked",
+			Type = "Function",
+			Documentation = { "Returns whether the player has unlocked the ability to switch between Skyriding and steady flight styles for flying mounts ." },
+
+			Returns =
+			{
+				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemMountEquipment",
 			Type = "Function",
 			Documentation = { "Determines if the item is mount equipment based on its class and subclass." },

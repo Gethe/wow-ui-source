@@ -20,7 +20,7 @@ function CharacterServicesCharacterSelectorMixin:InitializedFrameCallback(frame)
 end
 
 function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
-	CharacterSelectCharacterFrame:SetScrollEnabled(true);
+	CharacterSelectListUtil.SetScrollListInteractiveState(true);
 	CharacterSelectListUtil.SaveCharacterOrder();
 
 	self:SetBlock(block);
@@ -184,7 +184,8 @@ end
 function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	self:Hide();
 	self.ButtonPools:ReleaseAll();
-	CharacterSelectCharacterFrame:SetScrollEnabled(true);
+	CharacterSelectListUtil.SetScrollListInteractiveState(true);
+
 	CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(false);
 
 	CharacterSelectCharacterFrame.ScrollBox:Rebuild(ScrollBoxConstants.RetainScrollPosition);

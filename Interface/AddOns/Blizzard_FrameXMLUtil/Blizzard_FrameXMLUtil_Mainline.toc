@@ -37,3 +37,4 @@ Mainline\RaidWarning.lua
 Cooldown.lua
 Mainline\Cooldown.xml
 Localization.lua
+DragonridingUtil.lua

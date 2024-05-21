@@ -101,10 +101,10 @@ function CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize)
 
 	if listSize > 0 then
 		for i = 1, listSize do
-			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(i);
+			local characterGuid = GetCharacterGUID(i);
 
 			-- Check each entry if it's an empty character.
-			if characterInfo == nil then
+			if characterGuid == nil then
 				tinsert(s_characterReorderTranslation, 0);
 			else
 				tinsert(s_characterReorderTranslation, i);
@@ -385,8 +385,8 @@ function CharacterSelectListUtil.ScrollToElement(elementData, alignment)
 end
 
 function CharacterSelectListUtil.UpdateCharacter(frame, characterID)
-	local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(characterID);
-	local isEmpty = characterInfo == nil;
+	local characterGuid = GetCharacterGUID(characterID);
+	local isEmpty = characterGuid == nil;
 
 	local updatedCharacterData = {
 		characterID = characterID,
@@ -562,4 +562,22 @@ end
 function CharacterSelectListUtil.GetCharacterListUpdate()
 	CharacterSelect.waitingforCharacterList = true;
 	GetCharacterListUpdate();
+end
+
+-- Called when we need to lock down or turn back on moving things in the scroll list, useful during various VAS flows.
+function CharacterSelectListUtil.SetScrollListInteractiveState(state)
+	CharacterSelectCharacterFrame:SetScrollEnabled(state);
+	CharacterSelectCharacterFrame.ScrollBar:SetAlpha(state and 1 or .2);
+
+	CharacterSelectCharacterFrame.SearchBox:SetEnabled(state);
+	CharacterSelectCharacterFrame.SearchBox.clearButton:SetEnabled(state);
+	CharacterSelectCharacterFrame.SearchBox:SetAlpha(state and 1 or .2);
+
+	CharacterSelectCharacterFrame.ScrollBox:ForEachFrame(function(frame)
+		local elementData = frame:GetElementData();
+		if elementData.isGroup then
+			frame.Header:SetEnabled(state);
+			frame.Header:OnButtonStateChanged();
+		end
+	end);
 end

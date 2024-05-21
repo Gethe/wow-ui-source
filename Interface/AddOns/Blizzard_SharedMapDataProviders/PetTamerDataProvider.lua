@@ -41,3 +41,7 @@ end
 
 --[[ Pin ]]--
 PetTamerPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_PET_TAMER");
+
+function PetTamerPinMixin:OnAcquired(...)
+	SuperTrackablePoiPinMixin.OnAcquired(self, ...);
+end

@@ -149,7 +149,7 @@ do
 	end
 
 	local function OnPinMouseUp(pin, button, upInside)
-		pin:OnMouseUp(button);
+		pin:OnMouseUp(button, upInside);
 		if upInside then
 			pin:OnClick(button);
 		end
@@ -185,8 +185,8 @@ do
 			pin:SetMouseClickEnabled(isMouseClickEnabled);
 			pin:SetMouseMotionEnabled(isMouseMotionEnabled);
 
-			-- All pins should pass through right clicks to allow the map to zoom out
-			pin:SetPassThroughButtons("RightButton");
+			-- Most pins should pass through right clicks to allow the map to zoom out
+			pin:CheckMouseButtonPassthrough("RightButton");
 		end
 
 		pin.pinTemplate = pinTemplate;

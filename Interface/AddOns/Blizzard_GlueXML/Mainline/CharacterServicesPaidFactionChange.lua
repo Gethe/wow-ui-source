@@ -25,20 +25,17 @@ function PFCCharacterSelectBlock:SetResultsShown(shown)
 
 	if shown then
 		local result = self:GetResult();
-		if result.characterButtonID then
-			local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(result.characterButtonID);
-			if characterInfo then
-				-- factions
-				for factionTag, factionInfo in pairs(factionInfoTable) do
-					local fontString;
-					if factionTag == characterInfo.faction then
-						fontString = self.frame.ResultsFrame.CurrentFactionLabel;
-					else
-						fontString = self.frame.ResultsFrame.NewFactionLabel;
-					end
-					fontString:SetText(factionInfo.name);
-					fontString:SetTextColor(factionInfo.color:GetRGB());
+		if result.selectedCharacterGUID then
+			local basicCharacterInfo = GetBasicCharacterInfo(result.selectedCharacterGUID);
+			for factionTag, factionInfo in pairs(factionInfoTable) do
+				local fontString;
+				if factionTag == basicCharacterInfo.faction then
+					fontString = self.frame.ResultsFrame.CurrentFactionLabel;
+				else
+					fontString = self.frame.ResultsFrame.NewFactionLabel;
 				end
+				fontString:SetText(factionInfo.name);
+				fontString:SetTextColor(factionInfo.color:GetRGB());
 			end
 		end
 	end
@@ -50,8 +47,11 @@ function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
 	local errors = {};
 
 	if characterInfo then
+		if characterInfo.mailSenders then
+			CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
+		end
+
 		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
-		CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
 		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
 		CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, otherFaction);
 		CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(characterInfo.guid));
