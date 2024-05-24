@@ -1,6 +1,4 @@
 function PVPFrame_ExpansionSpecificOnLoad(self)
-	PVPFrameLine1:SetAlpha(0.3);
-	PVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 end
 
@@ -26,31 +24,6 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 		ShowUIPanel(PVPParentFrame);
 		PVPParentFrameTab2:Click();
 		BattlefieldFrame_UpdatePanelInfo();
-	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
-		if ( arg1 ) then
-			if ( PVPTeamDetails:IsShown() ) then
-				ArenaTeamRoster(PVPTeamDetails.team);
-			end
-		elseif ( PVPTeamDetails.team ) then
-			PVPTeamDetails_Update(self, PVPTeamDetails.team);
-			PVPFrame_Update();
-		end
-		if ( PVPTeamDetails:IsShown() ) then
-			local team = GetArenaTeam(PVPTeamDetails.team);
-			if ( not team ) then
-				PVPTeamDetails:Hide();
-			end
-		end
-	elseif ( event == "ARENA_TEAM_UPDATE" ) then
-		PVPFrame_Update();
-		if ( PVPTeamDetails:IsShown() ) then
-			local team = GetArenaTeam(PVPTeamDetails.team);
-			if ( not team ) then
-				PVPTeamDetails:Hide();
-			else
-				PVPTeamDetails_Update(PVPTeamDetails.team); -- team games played/won are shown in the detail frame
-			end
-		end
 	end
 end
 
@@ -75,18 +48,10 @@ function PVPFrame_UpdateTabs()
 	end
 end
 
-function PVPTeam_Update()
-	if ( GetCurrentArenaSeasonUsesTeams() ) then
-		PVPTeam_TeamsUpdate();
-	else
-		PVPTeam_SoloUpdate();
-	end
-end
-
 -- PVP Honor Data
 function PVPHonor_Update()
 	local hk, cp, dk, contribution, rank, highestRank, rankName, rankNumber;
-	
+
 	-- Yesterday's values
 	hk = GetPVPYesterdayStats();
 	PVPHonorYesterdayKills:SetText(hk);

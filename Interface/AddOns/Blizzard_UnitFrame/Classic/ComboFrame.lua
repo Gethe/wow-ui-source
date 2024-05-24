@@ -7,6 +7,7 @@ COMBO_FRAME_LAST_NUM_POINTS = 0;
 
 function ComboFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("COMBO_TARGET_CHANGED");
 	self:RegisterEvent("UNIT_POWER_FREQUENT");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -22,7 +23,7 @@ function ComboFrame_OnLoad(self)
 end
 
 function ComboFrame_OnEvent(self, event, ...)
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
+	if ( event == "PLAYER_TARGET_CHANGED" or event == "COMBO_TARGET_CHANGED" ) then
 		ComboFrame_Update(self);
 	elseif ( event == "UNIT_POWER_FREQUENT" ) then
 		local unit = ...;

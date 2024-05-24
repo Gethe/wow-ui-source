@@ -45,8 +45,17 @@ function TotemFrame_Update()
 	local button;
 	local buttonIndex = 1;
 	TotemFrame.activeTotems = 0;
+
+	local priorities = TOTEM_PRIORITIES;
+	if(GetClassicExpansionLevel() >= LE_EXPANSION_CATACLYSM) then
+		priorities = STANDARD_TOTEM_PRIORITIES;
+		if (class == "SHAMAN") then
+			priorities = SHAMAN_TOTEM_PRIORITIES;
+		end	
+	end
+
 	for i=1, MAX_TOTEMS do
-		slot = TOTEM_PRIORITIES[i];
+		slot = priorities[i];
 		haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
 		if ( haveTotem ) then
 			button = getglobal("TotemFrameTotem"..buttonIndex);

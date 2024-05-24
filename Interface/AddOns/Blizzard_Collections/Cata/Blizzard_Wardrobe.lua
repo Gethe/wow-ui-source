@@ -360,7 +360,7 @@ function TransmogFrameMixin:Update()
 	end
 
 	for i, slotButton in ipairs(self.SlotButtons) do
-		slotButton:RefreshItemModel();
+		slotButton:RefreshItemModel(self.selectedSlotButton);
 	end
 
 	self:UpdateApplyButton();
@@ -759,9 +759,14 @@ function TransmogSlotButtonMixin:GetEffectiveTransmogID()
 	end
 end
 
-function TransmogSlotButtonMixin:RefreshItemModel()
+function TransmogSlotButtonMixin:RefreshItemModel(selectedSlotButton)
 	-- this slot will be handled by the dependencySlot
 	if self.dependencySlot then
+		return;
+	end
+
+	-- only equip ranged weapon if ranged slot is selected
+	if(self.slot == "RANGEDSLOT" and (selectedSlotButton == nil or selectedSlotButton.slot ~= "RANGEDSLOT")) then
 		return;
 	end
 

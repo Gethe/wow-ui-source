@@ -184,6 +184,10 @@ function MainMenuBarBackpackButton_OnEvent(self, event, ...)
 			MainMenuBarBackpackButton_UpdateFreeSlots();
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		if(not IsKeyRingEnabled()) then
+			KeyRingButton:Disable();
+			KeyRingButton:Hide();
+		end
 		if ( GetCVar("displayFreeBagSlots") == "1" ) then
 			MainMenuBarBackpackButtonCount:Show();
 		else

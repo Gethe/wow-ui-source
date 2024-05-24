@@ -71,7 +71,7 @@ function InspectPVPTeam_SoloUpdate()
 		buttonName = "InspectPVPTeam"..buttonIndex;
 		data = buttonName.."Data";
 
-		if (rating > 0) then
+		if (rating > 0 or played > 0) then
 			-- Populate Data
 			getglobal(data.."TypeLabel"):SetText(ARENA_THIS_SEASON);
 			getglobal(data.."Name"):SetText(_G["ARENA_" .. teamSize .. "V" .. teamSize]);

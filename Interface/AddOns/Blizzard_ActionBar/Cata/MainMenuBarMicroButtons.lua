@@ -9,10 +9,10 @@ MICRO_BUTTONS = {
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
 	"GuildMicroButton",
-	"EJMicroButton",
 	"CollectionsMicroButton",
 	"PVPMicroButton",
 	"LFGMicroButton",
+	"EJMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 }
@@ -66,15 +66,51 @@ function UpdateMicroButtonsParent(parent)
 	end
 end
 
-function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
-	CharacterMicroButton:ClearAllPoints();
-	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
-	PVPMicroButton:ClearAllPoints();
-	if ( isStacked ) then
-		PVPMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 23);
-	else
-		PVPMicroButton:SetPoint("BOTTOMLEFT", CollectionsMicroButton, "BOTTOMRIGHT", -2, 0);
+function UnstackMicroButtons()
+	local lastButton;
+	for i=1, #MICRO_BUTTONS do
+		local button = _G[MICRO_BUTTONS[i]];
+
+		if lastButton then
+			button:ClearAllPoints();
+			button:SetPoint("BOTTOMLEFT", lastButton, "BOTTOMRIGHT", -3, 0);
+		end
+
+		lastButton = button;
 	end
+end
+
+function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked, maxRowWidth)
+	if #MICRO_BUTTONS == 0 then
+		return;
+	end
+
+	local firstButton = _G[MICRO_BUTTONS[1]];
+	firstButton:ClearAllPoints();
+	firstButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
+
+	local secondRowButton;
+	local cumulativeWidth = 0;
+	if isStacked and maxRowWidth then
+		for i=1, #MICRO_BUTTONS do
+			local nextWidth = cumulativeWidth + _G[MICRO_BUTTONS[i]]:GetWidth();
+
+			if nextWidth >= maxRowWidth then
+				secondRowButton = _G[MICRO_BUTTONS[i]];
+				break;
+			end
+
+			cumulativeWidth = nextWidth;
+		end
+	end
+
+	if ( isStacked and secondRowButton ) then
+		secondRowButton:ClearAllPoints();
+		secondRowButton:SetPoint("TOPLEFT", firstButton, "BOTTOMLEFT", 0, 24);
+	else
+		UnstackMicroButtons();
+	end
+
 	UpdateMicroButtons();
 end
 
@@ -169,7 +205,7 @@ function UpdateMicroButtons()
 	end
 
 	-- Keyring microbutton
-	if (KeyRingButton) then
+	if (IsKeyRingEnabled() and KeyRingButton) then
 		if ( IsBagOpen(KEYRING_CONTAINER) ) then
 			KeyRingButton:SetButtonState("PUSHED", 1);
 		else

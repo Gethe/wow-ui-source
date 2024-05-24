@@ -45,7 +45,7 @@ ARENABANNER_SMALLFONT = "GameFontNormalSmall"
 
 
 function PVPFrame_ExpansionSpecificOnLoad(self)
-	PanelTemplates_SetNumTabs(self, 3)
+	PanelTemplates_SetNumTabs(self, 4)
 	PVPFrame_TabClicked(PVPFrameTab1);
 	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	
@@ -161,6 +161,8 @@ function PVPFrame_UpdateTabs()
 		PVPFrameTab2:Click();
 	elseif (selectedTab == 3) then
 		PVPFrameTab3:Click();
+	elseif (selectedTab == 4) then
+		PVPFrameTab4:Click();
 	end
 end
 
@@ -276,10 +278,6 @@ end
 
 ---- NEW PVP FRAME FUNCTIONS
 
-function PVPHonor_Update()
-	PVPFrame_UpdateCurrency(self);
-end
-
 function PVPFrame_UpdateCurrency(self)
 	local currencyID = PVPFrameCurrency.currencyID;
 	local currencyName, currencyAmount;
@@ -394,7 +392,7 @@ function PVPFrame_TabClicked(self)
 	PVPFrameRightButton:Hide();
 	PVPFrame.panel1:Hide();	
 	PVPFrame.panel2:Hide();	
-	--PVPFrame.panel3:Hide();
+	PVPFrame.panel3:Hide();
 	PVPFrame.panel4:Hide();
 	
 	PVPFrame.lowLevelFrame:Hide();
@@ -416,7 +414,7 @@ function PVPFrame_TabClicked(self)
 		PVPFrameCurrencyLabel:SetText(HONOR);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..factionGroup);
 		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID;
-	elseif index == 3 then -- War games
+	elseif index == 4 then -- War games
 		PVPFrame.panel4:Show();
 		PVPFrame.TankIcon:Hide();
 		PVPFrame.HealerIcon:Hide();
@@ -445,6 +443,15 @@ function PVPFrame_TabClicked(self)
 		PVPFrameCurrencyLabel:SetText(PVP_CONQUEST);
 		PVPFrameCurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 		PVPFrameCurrency.currencyID = Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID;
+	elseif index == 3 then -- Arena Management
+		PVPFrameLeftButton:Hide();
+		PVPFrameLeftButton:Disable();
+		PVPFrame.TankIcon:Hide();
+		PVPFrame.HealerIcon:Hide();
+		PVPFrame.DPSIcon:Hide();
+		PVPFrame.panel3:Show();	
+		PVPFrameArenaIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+		PVPFrameCurrency.currencyID = none;
 	end
 	
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -936,8 +943,39 @@ function PVPConquestFrame_ButtonClicked(button)
 end
 
 --  PVPTeamManagementFrame
-function PVPTeam_Update()
+function PVPTeamManagementFrame_ToggleSeasonal(self)	
+	if ( PVPFrame.seasonStats ) then
+		PVPFrame.seasonStats = nil;
+		PvP_WeeklyText:SetText(ARENA_WEEKLY_STATS);
+	else
+		PVPFrame.seasonStats = 1;
+		PvP_WeeklyText:SetText(ARENA_SEASON_STATS);
+	end
+	PVPTeam_Update();
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
 
+-- PVP Honor Data
+function PVPHonor_Update()
+	local hk, cp, dk, contribution, rank, highestRank, rankName, rankNumber;
+
+	-- Yesterday's values
+	hk = GetPVPYesterdayStats();
+	PVPHonorYesterdayKills:SetText(hk);
+
+	-- Lifetime values
+	hk =  GetPVPLifetimeStats();
+	PVPHonorLifetimeKills:SetText(hk);
+
+	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
+	PVPFrameHonorPoints:SetText(honorCurrencyInfo.quantity);
+
+	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
+	PVPFrameArenaPoints:SetText(arenaCurrencyInfo.quantity)	
+	
+	-- Today's values
+	hk = GetPVPSessionStats();
+	PVPHonorTodayKills:SetText(hk);
 end
 
 ---- PVP PopUp Functions
