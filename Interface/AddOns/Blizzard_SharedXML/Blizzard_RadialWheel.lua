@@ -1,9 +1,8 @@
 ---------------
 --NOTE - Please do not change this section
-local _, tbl, secureCapsuleGet = ...;
+local _, tbl = ...;
 if tbl then
-	assertsafe(secureCapsuleGet ~= nil, "SecureCapsuleGet not provided to secure environment.");
-	tbl.SecureCapsuleGet = secureCapsuleGet;
+	tbl.SecureCapsuleGet = SecureCapsuleGet;
 	tbl.setfenv = tbl.SecureCapsuleGet("setfenv");
 	tbl.getfenv = tbl.SecureCapsuleGet("getfenv");
 	tbl.type = tbl.SecureCapsuleGet("type");

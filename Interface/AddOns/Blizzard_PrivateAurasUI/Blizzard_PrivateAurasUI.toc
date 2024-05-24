@@ -1,8 +1,8 @@
-## Title: Blizzard Private Auras UI
-## LoadOnDemand: 0
-## GuardedAddOn: 1
+## Title: Blizzard_PrivateAurasUI
+## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+## RequiredDep: Blizzard_SecureCapsule
 ..\Blizzard_SharedXML\Pools.lua
 ..\Blizzard_SharedXMLGame\Tooltip\TooltipUtil.lua
 ..\Blizzard_SharedXMLGame\Tooltip\TooltipDataHandler.lua
