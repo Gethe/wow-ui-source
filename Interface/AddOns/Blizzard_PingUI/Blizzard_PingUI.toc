@@ -1,6 +1,6 @@
-## Title: Blizzard Ping UI
-## LoadOnDemand: 0
-## GuardedAddOn: 1
+## Title: Blizzard_PingUI
+## LoadFirst: 1
+## RequiredDep: Blizzard_SecureCapsule
 ## AllowLoadGameType: mainline
 ..\Blizzard_SharedXML\Pools.lua
 ..\Blizzard_SharedXML\Blizzard_RadialWheel.lua
