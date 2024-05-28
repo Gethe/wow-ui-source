@@ -105,7 +105,7 @@ function OverrideActionBar_UpdateMicroButtons()
 	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then
 		local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
 		UpdateMicroButtonsParent(OverrideActionBar);
-		MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
+		MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true, OverrideActionBar.MicroBGL:GetWidth() + OverrideActionBar._MicroBGMid:GetWidth() + OverrideActionBar.MicroBGR:GetWidth());
 	end
 end
 
@@ -170,13 +170,13 @@ end
 
 
 function OverrideActionBar_GetMicroButtonAnchor()
-	local x, y = 543, 43;
+	local x, y = 542, 41;
 	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
-		x = 626;
+		x = 628;
 	elseif OverrideActionBar.HasPitch then
-		x = 630;
+		x = 632;
 	elseif OverrideActionBar.HasExit then
-		x = 538;
+		x = 540;
 	end
 	return x,y
 end

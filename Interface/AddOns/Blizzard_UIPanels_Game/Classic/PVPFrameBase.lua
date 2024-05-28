@@ -2,6 +2,8 @@ MAX_ARENA_TEAMS = 3;
 MAX_ARENA_TEAM_MEMBERS = 10;
 
 function PVPFrame_OnLoad(self)
+	PVPFrameLine1:SetAlpha(0.3);
+	PVPHonorKillsLabel:SetVertexColor(0.6, 0.6, 0.6);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
@@ -38,6 +40,31 @@ function PVPFrame_OnEvent(self, event, ...)
 
 			PVPHonor_Update();
 		end
+	elseif ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
+		if ( arg1 ) then
+			if ( PVPTeamDetails:IsShown() ) then
+				ArenaTeamRoster(PVPTeamDetails.team);
+			end
+		elseif ( PVPTeamDetails.team ) then
+			PVPTeamDetails_Update(self, PVPTeamDetails.team);
+			PVPFrame_Update();
+		end
+		if ( PVPTeamDetails:IsShown() ) then
+			local team = GetArenaTeam(PVPTeamDetails.team);
+			if ( not team ) then
+				PVPTeamDetails:Hide();
+			end
+		end
+	elseif ( event == "ARENA_TEAM_UPDATE" ) then
+		PVPFrame_Update();
+		if ( PVPTeamDetails:IsShown() ) then
+			local team = GetArenaTeam(PVPTeamDetails.team);
+			if ( not team ) then
+				PVPTeamDetails:Hide();
+			else
+				PVPTeamDetails_Update(PVPTeamDetails.team); -- team games played/won are shown in the detail frame
+			end
+		end
 	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
 		PVPFrame_Update();
 	elseif ( event == "BATTLEFIELD_AUTO_QUEUE" ) then
@@ -65,8 +92,17 @@ function PVPFrame_Update(self)
 			GetArenaTeam(i);
 		end	
 	end
+	PVPFrame_SetFaction();
 	PVPHonor_Update();
 	PVPTeam_Update();
+end
+
+function PVPTeam_Update()
+	if ( GetCurrentArenaSeasonUsesTeams() ) then
+		PVPTeam_TeamsUpdate();
+	else
+		PVPTeam_SoloUpdate();
+	end
 end
 
 function PVPTeam_SoloUpdate()
@@ -94,7 +130,7 @@ function PVPTeam_SoloUpdate()
 		data = buttonName.."Data";
 		standard = buttonName.."Standard";
 
-		if (rating > 0) then
+		if (rating > 0 or seasonPlayed > 0) then
 			if ( PVPFrame.seasonStats ) then
 				getglobal(data.."TypeLabel"):SetText(ARENA_THIS_SEASON);
 				PVPFrameToggleButton:SetText(ARENA_THIS_WEEK_TOGGLE);

@@ -1,3 +1,4 @@
+NUM_INSPECT_TALENT_SLOTS = 40;
 
 local talentSpecInfoCache = {};
 

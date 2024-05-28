@@ -466,6 +466,11 @@ local Unit =
 			LiteralName = "CANCEL_SUMMON",
 		},
 		{
+			Name = "ComboTargetChanged",
+			Type = "Event",
+			LiteralName = "COMBO_TARGET_CHANGED",
+		},
+		{
 			Name = "ConfirmBinder",
 			Type = "Event",
 			LiteralName = "CONFIRM_BINDER",
