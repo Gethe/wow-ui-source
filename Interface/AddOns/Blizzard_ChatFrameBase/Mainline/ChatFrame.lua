@@ -5667,62 +5667,35 @@ function ChatFrame_ActivateCombatMessages(chatFrame)
 	ChatFrame_AddMessageGroup(chatFrame, "COMBAT_FACTION_CHANGE");
 end
 
-function ChatChannelDropDown_Show(chatFrame, chatType, chatTarget, chatName)
-	HideDropDownMenu(1);
-	ChatChannelDropDown.initialize = ChatChannelDropDown_Initialize;
-	ChatChannelDropDown.displayMode = "MENU";
-	ChatChannelDropDown.chatType = chatType;
-	ChatChannelDropDown.chatTarget = chatTarget;
-	ChatChannelDropDown.chatName = chatName;
-	ChatChannelDropDown.chatFrame = chatFrame;
-	ToggleDropDownMenu(1, nil, ChatChannelDropDown, "cursor");
+function ChatChannelDropdown_Show(chatFrame, chatType, chatTarget, chatName)
+	MenuUtil.CreateContextMenu(chatFrame, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_CHAT_FRAME_CHANNEL");
+
+		rootDescription:CreateTitle(ChatFrame_ResolveChannelName(chatName));
+
+		local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(chatName);
+		if clubId and streamId and C_Club.IsEnabled() then
+			rootDescription:CreateButton(CHAT_CHANNEL_DROP_DOWN_OPEN_COMMUNITIES_FRAME, function()
+				if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
+					ToggleCommunitiesFrame();
+				end
+
+				CommunitiesFrame:SelectStream(clubId, streamId);
+				CommunitiesFrame:SelectClub(clubId);
+			end);
+		end
+
+		local button = rootDescription:CreateButton(MOVE_TO_NEW_WINDOW, function()
+			ChatChannelDropdown_PopOutChat(chatFrame, chatType, chatTarget);
+		end);
+
+		if not FCF_CanOpenNewWindow() then
+			button:SetEnabled(false);
+		end
+	end);
 end
 
-function ChatChannelDropDown_Initialize()
-	local frame = ChatChannelDropDown;
-
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = ChatFrame_ResolveChannelName(frame.chatName);
-	info.notCheckable = true;
-	info.isTitle = true;
-	UIDropDownMenu_AddButton(info, 1);
-
-	local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(frame.chatName);
-	if clubId and streamId and C_Club.IsEnabled() then
-		info = UIDropDownMenu_CreateInfo();
-		info.text = CHAT_CHANNEL_DROP_DOWN_OPEN_COMMUNITIES_FRAME;
-		info.notCheckable = true;
-		info.func = function ()
-			if not CommunitiesFrame or not CommunitiesFrame:IsShown() then
-				ToggleCommunitiesFrame();
-			end
-
-			CommunitiesFrame:SelectStream(clubId, streamId);
-			CommunitiesFrame:SelectClub(clubId);
-		end;
-
-		UIDropDownMenu_AddButton(info);
-	end
-
-	info = UIDropDownMenu_CreateInfo();
-
-	info.text = MOVE_TO_NEW_WINDOW;
-	info.notCheckable = 1;
-	info.func = ChatChannelDropDown_PopOutChat;
-	info.arg1 = frame.chatType;
-	info.arg2 = frame.chatTarget;
-
-	if ( not FCF_CanOpenNewWindow() ) then
-		info.disabled = 1;
-	end
-
-	UIDropDownMenu_AddButton(info);
-end
-
-function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
-	local sourceChatFrame = ChatChannelDropDown.chatFrame;
-
+function ChatChannelDropdown_PopOutChat(sourceChatFrame, chatType, chatTarget)
 	local windowName;
 	if ( chatType == "CHANNEL" ) then
 		windowName = Chat_GetChannelShortcutName(chatTarget);
@@ -5787,10 +5760,6 @@ function Chat_GetChannelShortcutName(index)
 	end
 
 	return C_ChatInfo.GetChannelShortcut(index);
-end
-
-function ChatChannelDropDown_PopInChat(self, chatType, chatTarget)
-	--PopOutChat_PopInChat(chatType, chatTarget);
 end
 
 function ChatClassColorOverrideShown()

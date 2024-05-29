@@ -15,6 +15,9 @@
 						<Anchor point="TOP" y="-15"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="LayoutLabel" justifyH="LEFT" inherits="GameFontNormal">
+					<Size x="96" y="20"/>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -44,12 +47,11 @@
 					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="LayoutDropdown" inherits="DropDownControlTemplate">
-				<Size x="220" y="50"/>
+			<DropdownButton parentKey="LayoutDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-35"/>
+					<Anchor point="TOPLEFT" x="25" y="-52"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="MagnetismPreviewLinesContainer" frameStrata="HIGH">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>

@@ -8,7 +8,7 @@
 -- HEADER (fixed-size)
 
 -- 	Serialization Version, 8 bits. 
--- 	The version of the serialization method.  If the client updates the export algorithm, the version will be incremented, and loadouts exported with older serialization version will fail to import and need to be re-exported. Currently set to 1, as defined by C_Traits.GetLoadoutSerializationVersion.
+-- 	The version of the serialization method.  If the client updates the export algorithm, the version will be incremented, and loadouts exported with older serialization version will fail to import and need to be re-exported. The current version is defined by C_Traits.GetLoadoutSerializationVersion.
 
 -- 	Specialization ID, 16 bits.  
 -- 	The class specialization for this loadout.  Uses the player's currently assigned specialization.  Attempting to import a loadout for a different class specialization will result in a failure.
@@ -18,18 +18,22 @@
 
 -- FILE CONTENT (variable-size)
 
--- 	Is Node Selected, 1 bit
--- 		Is Partially Ranked, 1 bit
--- 			Ranks Purchased, 6 bits
--- 		Is Choice Node, 1 bit
--- 			Choice Entry Index, 2 bits
+-- 	Is Node Selected (either purchased or granted), 1 bit
+--		Is Node Purchased 1 bit
+--			Is Partially Ranked, 1 bit
+-- 				Ranks Purchased, 6 bits
+-- 			Is Choice Node, 1 bit
+-- 				Choice Entry Index, 2 bits
 
 -- The content section uses single bits for boolean values for various node states (0=false, 1=true).  If the boolean is true, additional information is written to the file.
 
 -- The order of the nodes is determined by C_Traits.GetTreeNodes API.  It returns all nodes for a class tree, including nodes from all class specializations, ordered in ascending order by the nodeID.  Only nodes from the specID defined in the header should be marked as selected for this loadout.
 
 -- Is Node Selected, 1 bit.
--- Specifies if the node is selected in the loadout. If it is unselected, the 0 bit is the only information written for that node, and the next bit in the stream will contain the selected value for the next node in the tree. 
+-- Specifies if the node is purchased or granted in the loadout. If it is unselected, the 0 bit is the only information written for that node, and the next bit in the stream will contain the selected value for the next node in the tree. 
+
+-- Is Node Purchased, 1 bit.
+-- Specifies if the node is purchased rather than automatically granted. If the node is selected but not purchased it is assumed to be granted at rank 1.
 
 -- Is Partially Ranked, 1 bit.
 -- (Only written if isNodeSelected is true). Indicates if the node is partially ranked.  For example, if a node has 3 ranks, and the player only puts 2 ranks into that node, it is marked as partially ranked and the number of ranks is written to the stream.  If it is not partially ranked, the max number of ranks is assumed.
@@ -68,26 +72,32 @@ function ClassTalentImportExportMixin:WriteLoadoutContent(exportStream, configID
 	for i, treeNodeID in ipairs(treeNodes) do
 		local treeNode = C_Traits.GetNodeInfo(configID, treeNodeID);
 
-		local isNodeSelected = treeNode.ranksPurchased > 0;
+		local isNodeGranted = treeNode.activeRank - treeNode.ranksPurchased > 0;
+		local isNodePurchased = treeNode.ranksPurchased > 0;
+		local isNodeSelected = isNodeGranted or isNodePurchased;
 		local isPartiallyRanked = treeNode.ranksPurchased ~= treeNode.maxRanks;
 		local isChoiceNode = treeNode.type == Enum.TraitNodeType.Selection or treeNode.type == Enum.TraitNodeType.SubTreeSelection;
 
 		exportStream:AddValue(1, isNodeSelected and 1 or 0);
 		if(isNodeSelected) then
-			exportStream:AddValue(1, isPartiallyRanked and 1 or 0);
-			if(isPartiallyRanked) then
-				exportStream:AddValue(self.bitWidthRanksPurchased, treeNode.ranksPurchased);
-			end
+			exportStream:AddValue(1, isNodePurchased and 1 or 0);
 
-			exportStream:AddValue(1, isChoiceNode and 1 or 0);
-			if(isChoiceNode) then
-				local entryIndex = self:GetActiveEntryIndex(treeNode);
-				if(entryIndex <= 0 or entryIndex > 4) then
-					error("Error exporting tree node " .. treeNode.ID .. ". The active choice node entry index (" .. entryIndex .. ") is out of bounds. ");
+			if isNodePurchased then
+				exportStream:AddValue(1, isPartiallyRanked and 1 or 0);
+				if(isPartiallyRanked) then
+					exportStream:AddValue(self.bitWidthRanksPurchased, treeNode.ranksPurchased);
 				end
+
+				exportStream:AddValue(1, isChoiceNode and 1 or 0);
+				if(isChoiceNode) then
+					local entryIndex = self:GetActiveEntryIndex(treeNode);
+					if(entryIndex <= 0 or entryIndex > 4) then
+						error("Error exporting tree node " .. treeNode.ID .. ". The active choice node entry index (" .. entryIndex .. ") is out of bounds. ");
+					end
 				
-				-- store entry index as zero-index
-				exportStream:AddValue(2, entryIndex - 1);
+					-- store entry index as zero-index
+					exportStream:AddValue(2, entryIndex - 1);
+				end
 			end
 		end
 	end
@@ -108,28 +118,35 @@ function ClassTalentImportExportMixin:ReadLoadoutContent(importStream, treeID)
 
 	local treeNodes = C_Traits.GetTreeNodes(treeID);
 	for i, _ in ipairs(treeNodes) do
-		local nodeSelectedValue = importStream:ExtractValue(1)
+		local nodeSelectedValue = importStream:ExtractValue(1);
 		local isNodeSelected =  nodeSelectedValue == 1;
+		local isNodePurchased = false;
 		local isPartiallyRanked = false;
 		local partialRanksPurchased = 0;
 		local isChoiceNode = false;
 		local choiceNodeSelection = 0;
 
 		if(isNodeSelected) then
-			local isPartiallyRankedValue = importStream:ExtractValue(1);
-			isPartiallyRanked = isPartiallyRankedValue == 1;
-			if(isPartiallyRanked) then
-				partialRanksPurchased = importStream:ExtractValue(self.bitWidthRanksPurchased);
-			end
-			local isChoiceNodeValue = importStream:ExtractValue(1);
-			isChoiceNode = isChoiceNodeValue == 1;
-			if(isChoiceNode) then
-				choiceNodeSelection = importStream:ExtractValue(2);
+			local nodePurchasedValue = importStream:ExtractValue(1);
+
+			isNodePurchased = nodePurchasedValue == 1;
+			if(isNodePurchased) then
+				local isPartiallyRankedValue = importStream:ExtractValue(1);
+				isPartiallyRanked = isPartiallyRankedValue == 1;
+				if(isPartiallyRanked) then
+					partialRanksPurchased = importStream:ExtractValue(self.bitWidthRanksPurchased);
+				end
+				local isChoiceNodeValue = importStream:ExtractValue(1);
+				isChoiceNode = isChoiceNodeValue == 1;
+				if(isChoiceNode) then
+					choiceNodeSelection = importStream:ExtractValue(2);
+				end
 			end
 		end
 
 		local result = {};
 		result.isNodeSelected = isNodeSelected;
+		result.isNodeGranted = isNodeSelected and not isNodePurchased;
 		result.isPartiallyRanked = isPartiallyRanked;
 		result.partialRanksPurchased = partialRanksPurchased;
 		result.isChoiceNode = isChoiceNode;
@@ -141,7 +158,6 @@ function ClassTalentImportExportMixin:ReadLoadoutContent(importStream, treeID)
 
 	return results;
 end
-
 
 function ClassTalentImportExportMixin:GetLoadoutExportString()
 	local exportStream = ExportUtil.MakeExportDataStream();
@@ -310,25 +326,34 @@ function ClassTalentImportExportMixin:ConvertToImportLoadoutEntryInfo(configID, 
 			if (treeNode) then
 				local result = {};
 				result.nodeID = treeNode.ID;
-				result.ranksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNode.maxRanks;
 
-				result.selectionEntryID = nil;
+				 -- For now this assumes there is only ever one granted rank. If this changes it will need to be stored in the loadout string/stream.
+				result.ranksGranted = indexInfo.isNodeGranted and 1 or 0;
 
-				if (indexInfo.isChoiceNode and indexInfo.choiceNodeSelection) then
-					result.selectionEntryID = treeNode.entryIDs[indexInfo.choiceNodeSelection];
-				elseif (treeNode.activeEntry) then
-					result.selectionEntryID = treeNode.activeEntry.entryID;
+				if (indexInfo.isNodeSelected and not indexInfo.isNodeGranted) then
+					result.ranksPurchased = indexInfo.isPartiallyRanked and indexInfo.partialRanksPurchased or treeNode.maxRanks;
+				else
+					result.ranksPurchased = 0;
 				end
 
-				if (not result.selectionEntryID) then
-					result.selectionEntryID = treeNode.entryIDs[1];
-				end
+					result.selectionEntryID = nil;
 
-				-- There's something wrong with this loadout string if we still don't have an entry ID.
-				if (result.selectionEntryID ~= nil) then
-					results[count] = result;
-					count = count + 1;
-				end
+					if (indexInfo.isChoiceNode and indexInfo.choiceNodeSelection) then
+						result.selectionEntryID = treeNode.entryIDs[indexInfo.choiceNodeSelection];
+					elseif (treeNode.activeEntry) then
+						result.selectionEntryID = treeNode.activeEntry.entryID;
+					end
+
+					if (not result.selectionEntryID) then
+						result.selectionEntryID = treeNode.entryIDs[1];
+					end
+
+					-- There's something wrong with this loadout string if we still don't have an entry ID.
+					if (result.selectionEntryID ~= nil) then
+						results[count] = result;
+						count = count + 1;
+					end
+
 			end
 		end
 

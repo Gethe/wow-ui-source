@@ -10,7 +10,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="BorderSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="BorderSheen" atlas="talents-sheen-node" useAtlasSize="true" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Anchors>
 						<Anchor point="RIGHT" relativePoint="LEFT"/>
 					</Anchors>

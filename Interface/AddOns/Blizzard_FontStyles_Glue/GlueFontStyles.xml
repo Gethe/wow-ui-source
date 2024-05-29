@@ -127,7 +127,7 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 
-	<Font name="NumberFontNormal" inherits="NumberFont_OutlineThick_Med2" virtual="true">
+	<Font name="GlueNumberFontNormal" inherits="NumberFont_OutlineThick_Med2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="NumberFontNormalSmall" inherits="NumberFont_OutlineThick_Med1" virtual="true">

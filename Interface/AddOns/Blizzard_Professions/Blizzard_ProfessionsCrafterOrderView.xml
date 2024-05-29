@@ -11,6 +11,11 @@
 			<!-- OnUpdate set dynamically -->
 		</Scripts>
 		<Frames>
+			<Frame parentKey="ConcentrationDisplay" inherits="ProfessionsCurrencyTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="120" y="-35"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="OrderInfo">
 				<Size x="300" y="553"/>
 				<Anchors>
@@ -89,7 +94,7 @@
 						</Anchors>
 					</Button>
 
-					<DropDownToggleButton parentKey="SocialDropdownButton" inherits="UIMenuButtonStretchTemplate">
+					<DropdownButton parentKey="SocialDropdown" inherits="UIMenuButtonStretchTemplate">
 						<Size x="22" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.PostedByValue" relativePoint="RIGHT" x="5" y="0"/>
@@ -105,13 +110,8 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate">
-								<Size x="10" y="10"/>
-							</Frame>
-						</Frames>
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</DropDownToggleButton>
+					</DropdownButton>
 
 					<Frame parentKey="NoteBox">
 						<Size x="280" y="140"/>

@@ -495,33 +495,6 @@ function PVPQueueFrameButton_OnLeave(self)
 	end
 end
 
-local function InitializeHonorXPBarDropDown(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.isNotRadio = true;
-	info.text = SHOW_FACTION_ON_MAINSCREEN;
-	info.checked = IsWatchingHonorAsXP();
-	info.func = function(_, _, _, value)
-		if ( value ) then
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-			SetWatchingHonorAsXP(false);
-		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			SetWatchingHonorAsXP(true);
-			C_Reputation.SetWatchedFactionByIndex(0);
-		end
-
-		StatusTrackingBarManager:UpdateBarsShown();
-	end
-
-	UIDropDownMenu_AddButton(info, level);
-
-	info.notCheckable = true;
-	info.checked = false;
-	info.text = CANCEL;
-
-	UIDropDownMenu_AddButton(info, level);
-end
-
 ---------------------------------------------------------------
 -- HONOR FRAME
 ---------------------------------------------------------------
@@ -540,14 +513,37 @@ function HonorFrame_OnLoad(self)
 
 	-- min level for bonus frame
 	MIN_BONUS_HONOR_LEVEL = (C_PvP.GetRandomBGInfo()).minLevel;
-
-	UIDropDownMenu_SetWidth(HonorFrameTypeDropDown, 160);
-	UIDropDownMenu_Initialize(HonorFrameTypeDropDown, HonorFrameTypeDropDown_Initialize);
+	
 	if ( UnitLevel("player") < MIN_BONUS_HONOR_LEVEL ) then
 		HonorFrame_SetType("specific");
 	else
 		HonorFrame_SetType("bonus");
 	end
+
+	self.TypeDropdown:SetWidth(180);
+	self.TypeDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PVPUI_TYPE");
+
+		local function IsSelected(pvpType)
+			return HonorFrame.type == pvpType;
+		end
+		
+		local function SetSelected(pvpType)
+			HonorFrame_SetTypeInternal(pvpType);
+		end
+
+		local bonusRadio = rootDescription:CreateRadio(BONUS_BATTLEGROUNDS, IsSelected, SetSelected, "bonus");
+
+		if ( UnitLevel("player") < MIN_BONUS_HONOR_LEVEL ) then
+			bonusRadio:SetEnabled(false);
+			bonusRadio:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, UNAVAILABLE);
+				GameTooltip_AddNormalLine(tooltip, string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MIN_BONUS_HONOR_LEVEL));
+			end);
+		end
+
+		rootDescription:CreateRadio(SPECIFIC_BATTLEGROUNDS, IsSelected, SetSelected, "specific");
+	end);
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
@@ -590,41 +586,8 @@ function HonorFrame_OnEvent(self, event, ...)
 	end
 end
 
-function HonorFrameTypeDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = BONUS_BATTLEGROUNDS;
-	info.value = "bonus";
-	info.func = HonorFrameTypeDropDown_OnClick;
-	info.checked = HonorFrame.type == info.value;
-	if ( UnitLevel("player") < MIN_BONUS_HONOR_LEVEL ) then
-		info.disabled = 1;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = UNAVAILABLE;
-		info.tooltipText = string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MIN_BONUS_HONOR_LEVEL);
-		info.tooltipOnButton = 1;
-	end
-	UIDropDownMenu_AddButton(info);
-
-	info.text = SPECIFIC_BATTLEGROUNDS;
-	info.value = "specific";
-	info.func = HonorFrameTypeDropDown_OnClick;
-	info.checked = HonorFrame.type == info.value;
-	info.disabled = nil;
-	info.tooltipWhileDisabled = nil;
-	info.tooltipTitle = nil;
-	info.tooltipText = nil;
-	info.tooltipOnButton = nil;
-	UIDropDownMenu_AddButton(info);
-end
-
-function HonorFrameTypeDropDown_OnClick(self)
-	HonorFrame_SetType(self.value);
-end
-
-function HonorFrame_SetType(value)
+function HonorFrame_SetTypeInternal(value)
 	HonorFrame.type = value;
-	UIDropDownMenu_SetSelectedValue(HonorFrameTypeDropDown, value);
 
 	if ( value == "specific" ) then
 		HonorFrame.SpecificScrollBox:Show();
@@ -637,6 +600,11 @@ function HonorFrame_SetType(value)
 	end
 
 	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
+end
+
+function HonorFrame_SetType(value)
+	HonorFrame_SetTypeInternal(value);
+	HonorFrame.TypeDropdown:GenerateMenu();
 end
 
 function HonorFrame_UpdateQueueButtons()
@@ -1493,7 +1461,6 @@ function ConquestFrame_GetSelectedModeRoleShortageBonus()
 end
 
 function ConquestFrameButton_OnClick(self, button)
-	CloseDropDownMenus();
 	if(IsModifiedClick("CHATLINK")) then
 		local link = GetPvpRatingLink(UnitName("player"));
 		if not ChatEdit_InsertLink(link) then
@@ -1851,8 +1818,26 @@ end
 
 function PVPUIHonorLevelDisplayMixin:OnMouseUp(button)
 	if button == "RightButton" then
-		UIDropDownMenu_Initialize(self.DropDown, InitializeHonorXPBarDropDown, "MENU");
-		ToggleDropDownMenu(1, nil, self.DropDown, "cursor", 10, -10);
+		MenuUtil.CreateContextMenu(function(owner, rootDescription)
+			rootDescription:SetTag("MENU_PVPUI_HONOR_LEVEL");
+
+			local function IsSelected()
+				return IsWatchingHonorAsXP();
+			end
+
+			local function SetSelected()
+				local newValue = not IsSelected();
+				SetWatchingHonorAsXP(newValue);
+
+				if newValue then
+					C_Reputation.SetWatchedFactionByIndex(0);
+				end
+
+				StatusTrackingBarManager:UpdateBarsShown();
+			end
+
+			rootDescription:CreateCheckbox(SHOW_FACTION_ON_MAINSCREEN, IsSelected, SetSelected);
+		end);
 	end
 end
 

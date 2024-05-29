@@ -94,22 +94,21 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" frameLevel="2" setAllPoints="true"/>
-			<Frame parentKey="ReportingMajorCategoryDropdown" inherits="UIDropDownMenuTemplate" mixin="ReportingMajorCategoryDropdownMixin">
-				<Size x="50" y="15"/>
+			<DropdownButton parentKey="ReportingMajorCategoryDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.ReportString" relativePoint="BOTTOM" x="-70" y="-20"/>
+					<Anchor point="TOP" relativeKey="$parent.ReportString" relativePoint="BOTTOM" x="-75" y="-20"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" text="REPORTING_REPORT_REASON" justifyH="LEFT" inherits="GameFontNormal">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="13"/>
+								<Anchor point="TOPLEFT" x="0" y="15"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-			</Frame>
+			</DropdownButton>
 			<Button parentKey="ReportButton" inherits="UIPanelButtonTemplate" mixin="ReportButtonMixin" motionScriptsWhileDisabled="true" text="REPORTING_REPORT">
 				<Size x="140" y="21"/>
 				<Anchors>
@@ -151,7 +150,7 @@
 				<FontString parentKey="MinorReportDescription" inherits="GameFontNormal" justifyH="LEFT" text="REPORTING_REPORT_DETAILS" hidden="true">
 					<Size x="350" y="25"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.ReportingMajorCategoryDropdown" relativePoint="BOTTOM" x="70" y="0"/>
+						<Anchor point="TOP" relativeKey="$parent.ReportingMajorCategoryDropdown" relativePoint="BOTTOM" x="75" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

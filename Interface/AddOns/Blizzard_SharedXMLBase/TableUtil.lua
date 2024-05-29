@@ -240,6 +240,14 @@ function SetTablePairsToTable(destination, source)
 	MergeTable(destination, source);
 end
 
+function CountTable(tbl)
+	local count = 0;
+	for k, v in pairs(tbl) do
+		count = count + 1;
+	end
+	return count;
+end
+
 function Accumulate(tbl)
 	local count = 0;
 	for k, v in pairs(tbl) do
@@ -289,6 +297,16 @@ function ContainsIf(tbl, pred)
 	end
 
 	return false;
+end
+
+function FindInTable(tbl, value)
+	for k, v in pairs(tbl) do
+		if v == value then
+			return k, v;
+		end
+	end
+
+	return nil;
 end
 
 function FindInTableIf(tbl, pred)
@@ -370,8 +388,8 @@ function SafePack(...)
 	return tbl;
 end
 
-function SafeUnpack(tbl)
-	return unpack(tbl, 1, tbl.n);
+function SafeUnpack(tbl, startIndex)
+	return unpack(tbl, startIndex or 1, tbl.n);
 end
 
 function GetOrCreateTableEntry(table, key, defaultValue)
@@ -458,12 +476,6 @@ function GetKeysArraySortedByValue(tbl)
 	end);
 	
 	return keysArray;
-end
-
-function TableUtil.OperateOnKeys(tbl, operation)
-	for key, value in pairs(tbl) do
-		operation(key);
-	end
 end
 
 function TableUtil.GetTableValueListFromEnumeration(tableKey, ...)

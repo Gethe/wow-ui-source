@@ -123,7 +123,7 @@ function CharacterSelectNavBarMixin:InitCreateCharacterButton()
 		self.CreateCharacterButton:OnEnter();
 
 		GlueTooltip:SetOwner(self.CreateCharacterButton, "ANCHOR_BOTTOM");
-		GameTooltip_SetTitle(GlueTooltip, string.format(CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER_TOOLTIP, self:GetFormattedCurrentRealmName()));
+		GameTooltip_SetTitle(GlueTooltip, CHARACTER_SELECT_NAV_BAR_CREATE_CHARACTER_TOOLTIP:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 		GlueTooltip:Show();
 	end);
 
@@ -134,7 +134,7 @@ function CharacterSelectNavBarMixin:InitCreateCharacterButton()
 	end);
 
 	local newFeatureFrame = CreateFrame("Frame", nil, self.CreateCharacterButton, "NewFeatureLabelNoAnimateTemplate");
-	newFeatureFrame:SetPoint("TOPLEFT", 20, -10);
+	newFeatureFrame:SetPoint("TOPLEFT", 18, -8);
 	self.CreateCharacterButton.NewFeatureFrame = newFeatureFrame;
 	self.CreateCharacterButton.NewFeatureFrame:Hide();
 
@@ -158,22 +158,6 @@ end
 function CharacterSelectNavBarMixin:OnExpansionTrialStateUpdated(isExpansionTrial)
 	self.isExpansionTrial = isExpansionTrial;
 	self:EvaluateCreateCharacterNewState();
-end
-
-function CharacterSelectNavBarMixin:GetFormattedCurrentRealmName()
-	local formattedRealmName;
-
-	local serverName, _, isRP = GetServerName();
-	local connected = IsConnectedToServer();
-	if serverName then
-		if not connected then
-			serverName = serverName .. " (" .. SERVER_DOWN .. ")";
-		end
-
-		formattedRealmName = isRP and (serverName .. " " .. RP_PARENTHESES) or serverName;
-	end
-
-	return formattedRealmName;
 end
 
 function CharacterSelectNavBarMixin:SetCharacterCreateButtonEnabled(enabled)

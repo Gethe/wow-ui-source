@@ -12,7 +12,10 @@ CommunitiesStreams.xml
 CommunitiesAvatarPickerDialog.xml
 CommunitiesAddDialogInsecure.xml
 CommunitiesTabs.xml
+CommunitiesLanguage.xml
+CommunitiesLanguage.lua
 ClubFinderApplicantList.xml
+ClubFinder.lua
 ClubFinder.xml
 CommunitiesSettings.xml
 CommunitiesTicketManagerDialog.xml

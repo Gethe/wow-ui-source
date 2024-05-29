@@ -51,7 +51,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="BankTabDepositSettingsMenuTemplate" virtual="true">
+	<Frame name="BankTabDepositSettingsMenuTemplate" mixin="BankTabDepositSettingsMenuMixin" virtual="true">
 		<Size y="90"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -147,16 +147,16 @@
 				</Anchors>
 			</CheckButton>
 
-			<Frame parentKey="ExpansionFilterDropDown" inherits="UIDropDownMenuTemplate" mixin="BankPanelTabSettingsExpansionFilterDropDownMixin">
+			<DropdownButton parentKey="ExpansionFilterDropDown" inherits="WowStyle1DropdownTemplate" mixin="BankPanelTabSettingsExpansionFilterDropDownMixin">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AssignExpansionHeader" relativePoint="BOTTOMLEFT" x="-18" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AssignExpansionHeader" relativePoint="BOTTOMLEFT" x="-1" y="-8"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="BankPanelHeaderFrameTemplate" virtual="true">

@@ -477,7 +477,7 @@ function PlayerChoiceBaseOptionButtonsContainerMixin:Setup(optionInfo, numColumn
 	end
 
 	self.buttonPool:ReleaseAll();
-	self.buttonPool:CreatePoolIfNeeded("Button", self, self.buttonTemplate);
+	self.buttonPool:GetOrCreatePool("Button", self, self.buttonTemplate);
 
 	local buttons = {};
 	for buttonIndex, buttonInfo in ipairs(optionInfo.buttons) do

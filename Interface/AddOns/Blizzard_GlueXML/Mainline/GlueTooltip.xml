@@ -7,6 +7,12 @@
 			<KeyValue key="textLeft2Font" value="GlueFontNormalSmall" type="string"/>
 			<KeyValue key="textRight2Font" value="GlueFontNormalSmall" type="string"/>
 		</KeyValues>
+		<Scripts>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+				SharedTooltip_ClearInsertedFrames(self);
+			</OnTooltipCleared>
+		</Scripts>
 	</GameTooltip>
 
 	<GameTooltip name="GlueTooltip" inherits="GlueTooltipTemplate" parent="GlueParent" />

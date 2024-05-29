@@ -229,6 +229,14 @@ function TalentFrame_Update(TalentFrame)
 		end
 	end
 
+	-- Hide unused inspect talent buttons
+	if ( TalentFrame.inspect ) then
+		for i=MAX_NUM_TALENTS + 1, NUM_INSPECT_TALENT_SLOTS do
+			local button = _G["InspectTalentFrameTalent"..i];
+			button:Hide();
+		end
+	end
+
 	-- Draw the prereq branches
 	local node;
 	local textureIndex = 1;
@@ -377,5 +385,4 @@ function SetTalentButtonLocation(button, tier, column, talentButtonSize, initial
 	tier = -((tier - 1) * (buttonSpacingY)) - initialOffsetY;
 	button:SetPoint("TOPLEFT", button:GetParent(), "TOPLEFT", column, tier);
 end
-
 

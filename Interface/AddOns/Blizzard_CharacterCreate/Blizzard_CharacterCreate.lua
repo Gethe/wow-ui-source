@@ -1294,6 +1294,13 @@ function CharacterCreateRaceAndClassMixin:OnLoad()
 	self.ClassTrialCheckButton.Button:SetScript("OnEnter", function() self.ClassTrialCheckButton.OnEnter(self.ClassTrialCheckButton); end);
 	self.ClassTrialCheckButton.Button:SetScript("OnLeave", function() self.ClassTrialCheckButton.OnLeave(self.ClassTrialCheckButton); end);
 
+	self.CurrentRealmText:SetScript("OnEnter", function()
+		GlueTooltip:SetOwner(self.CurrentRealmText, "ANCHOR_LEFT");
+		GameTooltip_SetTitle(GlueTooltip, CHARACTER_CREATE_REALM_TOOLTIP);
+		GlueTooltip:Show();
+	end);
+	self.CurrentRealmText:SetScript("OnLeave", function() GlueTooltip:Hide(); end);
+
 	self.buttonPool = CreateFramePoolCollection();
 	self.buttonPool:CreatePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
 	self.buttonPool:CreatePool("CHECKBUTTON", self.AllianceRaces, "CharacterCreateAllianceButtonTemplate");
@@ -1383,6 +1390,8 @@ function CharacterCreateRaceAndClassMixin:OnShow()
 
 	self.ClassTrialCheckButton:ClearTooltipLines();
 	self.ClassTrialCheckButton:AddTooltipLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP:format(C_CharacterCreation.GetTrialBoostStartingLevel()));
+
+	self.CurrentRealmText:SetText(CHARACTER_CREATE_REALM:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 end
 
 function CharacterCreateRaceAndClassMixin:OnHide()

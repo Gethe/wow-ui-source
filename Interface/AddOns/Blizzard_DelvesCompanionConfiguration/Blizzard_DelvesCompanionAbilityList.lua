@@ -1,23 +1,37 @@
 --! todo art
 --! todo sounds
 
--- TODO / NOTE : Some of these are going to be temporary while data is WIP, there's a task open to get this data with a new API
 --[[ LOCALS ]]
--- Brann data
-local BRANN_TREE_ID = 874;
-local BRANN_ROLE_NODE_ID = 99809;
-local BRANN_CREATURE_DISPLAY_ID = 115505;
-local BRANN_DPS_SUBTREE_ID = 29;
-local BRANN_HEALER_SUBTREE_ID = 30;
-
--- Frame constants
-local ROLE_DROPDOWN_WIDTH = 150;
 local MAX_DISPLAYED_BUTTONS = 12;
+local LAST_LOCKED_ABILITIES_CVAR = "lastLockedDelvesCompanionAbilities";
+local UPDATE_LAST_LOCKED_ABILITIES_DELAY = 0.2; -- 200ms
 
 local COMPANION_ABILITY_LIST_ON_SHOW_EVENTS = {
 	"UPDATE_FACTION",
 	"QUEST_LOG_UPDATE",
 };
+
+-- Update the cvar list of locked abilities, so we know when to show the "new" ability glow
+local function UpdateLastLockedAbilities()
+	C_Timer.After(UPDATE_LAST_LOCKED_ABILITIES_DELAY, function() 
+		local lastLockedAbilities = "";
+		local configID = C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+
+		-- configID can be nil if player has not set up their companion yet
+		if not configID then
+			return;
+		end
+
+		local nodes = C_Traits.GetTreeNodes(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+		for _, node in ipairs(nodes) do
+			local nodeInfo = C_Traits.GetNodeInfo(configID, node);
+			if nodeInfo and nodeInfo.activeRank < 1 then
+				lastLockedAbilities = lastLockedAbilities .. tostring(node) .. " ";
+			end
+		end
+		SetCVar(LAST_LOCKED_ABILITIES_CVAR, lastLockedAbilities);
+	end);
+end
 
 --[[ Ability List Frame ]]
 DelvesCompanionAbilityListFrameMixin = {};
@@ -34,8 +48,9 @@ function DelvesCompanionAbilityListFrameMixin:OnLoad()
 	self.DelvesCompanionAbilityListPagingControls:Init();
 	self:ClearButtons();
 
-	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), BRANN_CREATURE_DISPLAY_ID); -- TODO art, not sure what we're planning for this yet
+	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), Constants.DelvesConsts.BRANN_CREATURE_DISPLAY_ID);
 	self:SetTitle(DELVES_COMPANION_ABILITY_LIST_TITLE);
+	UpdateLastLockedAbilities();
 end
 
 function DelvesCompanionAbilityListFrameMixin:ClearButtons()
@@ -44,8 +59,8 @@ end
 
 function DelvesCompanionAbilityListFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, COMPANION_ABILITY_LIST_ON_SHOW_EVENTS);
-	self:SetConfigID(C_Traits.GetConfigIDByTreeID(BRANN_TREE_ID));
-	self:SetTalentTreeID(BRANN_TREE_ID);
+	self:SetConfigID(C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID));
+	self:SetTalentTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
 	TalentFrameBaseMixin.OnShow(self);
 	self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(1);
 	self:Refresh();
@@ -68,6 +83,22 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 			return a.index < b.index;
 		end);
 
+		-- Now that the buttons are sorted, check to see what the last locked abilities were. If any
+		-- are no longer locked, then give them a glow!
+		local lastLockedAbilities = GetCVar(LAST_LOCKED_ABILITIES_CVAR);
+		if lastLockedAbilities then
+			for _, button in ipairs(self.buttons) do
+				if button.locked then
+					button.NewGlow:Hide();
+				elseif not button.locked and string.find(lastLockedAbilities, tostring(button.nodeID)) then
+					button.NewGlow:Show();
+					button:SetScript("OnHide", function(button)
+						button.NewGlow:Hide();
+					end);
+				end
+			end
+		end
+
 		self.ButtonsParent:ClearAllPoints();
 		self.ButtonsParent:SetPoint("TOPLEFT", self.CompanionAbilityListBackground, "TOPLEFT", 0, -25);
 		self.ButtonsParent:SetPoint("BOTTOMRIGHT", self.CompanionAbilityListBackground, "BOTTOMRIGHT");
@@ -84,8 +115,8 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 	
 	-- If the ability list is opened and a player has not selected Brann's role yet, refresh with the first option selected instead
 	-- so that we show *something*
-	if #self.buttons == 0 and #self.DelvesCompanionRoleDropdown.dropdownOptions > 0 then
-		self:SetSelection(BRANN_ROLE_NODE_ID, self.DelvesCompanionRoleDropdown.dropdownOptions[1].entryID);
+	if #self.buttons == 0 and #self.DelvesCompanionRoleDropdown.options > 0 then
+		self:SetSelection(Constants.DelvesConsts.BRANN_ROLE_NODE_ID, self.DelvesCompanionRoleDropdown.options[1].entryID);
 		self:Refresh(true);
 		self:RollbackConfig(self, true);
 	end
@@ -109,11 +140,11 @@ function DelvesCompanionAbilityListFrameMixin:UpdatePaginatedButtonDisplay()
 			-- NOTE: Only supporting 2 columns of buttons, if that ever incrases this logic would need to change
 			-- to anchor buttons 3..MAX to the prevButton - not using a constant here so that this note is seen.
 			if (col % 2) ~= 0 then
-				button:SetPoint("TOPLEFT", self.ButtonsParent, "TOPLEFT", 25, -((self.buttonHeight * row) + (10 * row)));
+				button:SetPoint("TOPLEFT", self.ButtonsParent, "TOPLEFT", 20, -((self.buttonHeight * row) + (10 * row)));
 				col = col + 1;
 			else
 				if prevButton then
-					button:SetPoint("LEFT", prevButton, "RIGHT", 50, 0);
+					button:SetPoint("LEFT", prevButton, "RIGHT", 35, 0);
 					col = 1;
 					row = row + 1;
 				end
@@ -127,6 +158,7 @@ function DelvesCompanionAbilityListFrameMixin:UpdatePaginatedButtonDisplay()
 end
 
 function DelvesCompanionAbilityListFrameMixin:OnHide()
+	UpdateLastLockedAbilities();
 	FrameUtil.UnregisterFrameForEvents(self, COMPANION_ABILITY_LIST_ON_SHOW_EVENTS);
 	TalentFrameBaseMixin.OnHide(self);
 
@@ -157,6 +189,11 @@ end
 --[[ Ability List Frame: SharedTalentFrame overrides and utilities ]]
 function DelvesCompanionAbilityListFrameMixin:GetTemplateForTalentType(...)
 	return "DelvesCompanionAbilityTemplate";
+end
+
+-- The condition being in the tooltip here would be redundant, since we show it under the ability name
+-- So, remove it via override
+function DelvesCompanionAbilityListFrameMixin:AddConditionsToTooltip(...)
 end
 
 function DelvesCompanionAbilityListFrameMixin:InstantiateTalentButton(nodeID, nodeInfo)
@@ -192,6 +229,7 @@ function DelvesCompanionAbilityMixin:InitAdditionalElements()
 	self.Name:SetText(self:GetName());
 
 	if not self:HasProgress() then
+		self.locked = true;
 		local conditionText = "";
 		for _, conditionID in ipairs(self.nodeInfo.conditionIDs) do
 			local conditionInfo = self:GetTalentFrame():GetAndCacheCondInfo(conditionID, true);
@@ -206,6 +244,7 @@ function DelvesCompanionAbilityMixin:InitAdditionalElements()
 		self.UnlockCondition:SetText(conditionText);
 		self.Rank:SetText("");
 	else
+		self.locked = false;
 		self.Icon:SetDesaturated(false);
 		self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
 		self.UnlockCondition:SetText("");
@@ -232,86 +271,77 @@ end
 DelvesCompanionRoleDropdownMixin = {};
 
 function DelvesCompanionRoleDropdownMixin:OnLoad()
-	self.selectedOption = nil;
-end
+	WowStyle1DropdownMixin.OnLoad(self);
 
-function DelvesCompanionRoleDropdownMixin:OnShow()
-	UIDropDownMenu_SetWidth(self, ROLE_DROPDOWN_WIDTH);
-	UIDropDownMenu_JustifyText(self, "LEFT");
-end
+	self:SetWidth(150);
+	
+	self.selectedEntryID = nil;
+	end
+
+local function GetRoleOptionText(option)
+	if option.iconAtlas then
+			local iconSize = 16;
+		local fmt = CreateAtlasMarkup(option.iconAtlas, iconSize, iconSize);
+		return DELVES_ABILITY_LIST_DROPDOWN_OPTION_LABEL:format(fmt, option.name);
+			end
+	return option.name;
+				end
+
+local function GetRoleIconAtlas(entryInfo)
+	if entryInfo.subTreeID == Constants.DelvesConsts.BRANN_DPS_SUBTREE_ID then
+		return "roleicon-tiny-dps";
+	elseif entryInfo.subTreeID == Constants.DelvesConsts.BRANN_HEALER_SUBTREE_ID then
+		return "roleicon-tiny-healer";
+			end
+	return nil;
+		end
 
 function DelvesCompanionRoleDropdownMixin:Refresh()
 	local abilityListFrame = self:GetParent();
+	local roleNode = abilityListFrame:GetAndCacheNodeInfo(Constants.DelvesConsts.BRANN_ROLE_NODE_ID);
 
-	self:PopulateDropdownOptions();
-	
-	for idx, option in ipairs(self.dropdownOptions) do
-		if option.active then 
-			self.selectedOption = idx;
-		end
-	end
-
-	UIDropDownMenu_Initialize(self, function() 
-		for idx, option in ipairs(self.dropdownOptions) do
-			local button = {};
-
-			local iconSize = 16;
-			local text = option.name;
-			if option.dropdownIconAtlas then
-				text = DELVES_ABILITY_LIST_DROPDOWN_OPTION_LABEL:format(CreateAtlasMarkup(option.dropdownIconAtlas, iconSize, iconSize), option.name);
-			end
-
-			button.text = text;
-			button.value = idx;
-			button.func = function()
-				if button.value == self.selectedOption then return end;
-				if not option.active then
-					abilityListFrame:SetSelection(BRANN_ROLE_NODE_ID, option.entryID);
-				end
-				abilityListFrame:Refresh(true);
-				abilityListFrame:RollbackConfig(self, true);
-				UIDropDownMenu_SetSelectedValue(self, idx);
-				self.selectedOption = idx;
-			end;
-			button.minWidth = ROLE_DROPDOWN_WIDTH;
-
-			if self.selectedOption then
-				button.checked = self.selectedOption == idx;
-			else
-				button.checked = option.active;
-				self.selectedOption = idx;
-			end
-
-			UIDropDownMenu_AddButton(button);
-		end
-	end);
-
-	UIDropDownMenu_SetSelectedValue(self, self.selectedOption);
-end
-
-function DelvesCompanionRoleDropdownMixin:PopulateDropdownOptions()
-	self.dropdownOptions = {};
-	local abilityListFrame = self:GetParent();
-	local roleNode = abilityListFrame:GetAndCacheNodeInfo(BRANN_ROLE_NODE_ID);
-
-	for _, entryID in ipairs(roleNode.entryIDs) do
+	self.options = {};
+	for idx, entryID in ipairs(roleNode.entryIDs) do
 		local entryInfo = abilityListFrame:GetAndCacheEntryInfo(entryID);
 		local subTreeInfo = abilityListFrame:GetAndCacheSubTreeInfo(entryInfo.subTreeID);
-
-		local dropdownIconAtlas = nil;
-		if entryInfo.subTreeID == BRANN_DPS_SUBTREE_ID then
-			dropdownIconAtlas = "roleicon-tiny-dps";
-		elseif entryInfo.subTreeID == BRANN_HEALER_SUBTREE_ID then
-			dropdownIconAtlas = "roleicon-tiny-healer";
+		local isActive = subTreeInfo.isActive;
+		if isActive then
+			self.selectedEntryID = entryID;
 		end
 
-		tinsert(self.dropdownOptions, {
-			active = subTreeInfo.isActive,
+		tinsert(self.options, {
+			isActive = isActive,
 			name = subTreeInfo.name,
-			dropdownIconAtlas = dropdownIconAtlas,
+			iconAtlas = GetRoleIconAtlas(entryInfo),
 			entryID = entryID,
 		});
 	end
+
+	local function IsSelected(option)
+		return self.selectedEntryID == option.entryID;
+	end
+
+	local function SetSelected(option)
+		if self.selectedEntryID ~= option.entryID then 
+			self.selectedEntryID = option.entryID;
+
+			if not option.isActive then
+				abilityListFrame:SetSelection(Constants.DelvesConsts.BRANN_ROLE_NODE_ID, option.entryID);
+			end
+
+			abilityListFrame:Refresh(true);
+			abilityListFrame:RollbackConfig(self, true);
+		end
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_DELVES_ABILITY_LIST");
+
+		for idx, option in ipairs(self.options) do
+			local text = GetRoleOptionText(option);
+			rootDescription:CreateRadio(text, IsSelected, SetSelected, option);
+		end
+	end);
 end
 
 DelvesCompanionAbilityListPagingControlsMixin = {};

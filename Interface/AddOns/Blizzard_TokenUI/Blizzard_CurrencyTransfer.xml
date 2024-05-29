@@ -10,60 +10,6 @@
 		</Scripts>
 	</EditBox>
 
-	<Button name="CurrencyTransferEntryTemplate" inherits="CallbackRegistrantTemplate" mixin="CurrencyTransferEntryMixin" virtual="true">
-		<Size y="22"/>
-		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="CurrencyIcon">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-2"/>
-					</Anchors>
-				</Texture>
-
-				<FontString parentKey="CurrencyBalance" inherits="GameFontHighlight" maxLines="1" justifyH="RIGHT">
-					<Size x="50"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-2"/>
-					</Anchors>
-				</FontString>
-
-				<FontString parentKey="CharacterName" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" x="2"/>
-						<Anchor point="RIGHT" relativeKey="$parent.CurrencyBalance" relativePoint="LEFT" x="-2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<HighlightTexture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true"/>
-		<Scripts>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Frame name="CurrencyTransferRosterTemplate" mixin="CurrencyTransferRosterMixin" inherits="UIDropDownCustomMenuEntryTemplate" virtual="true">
-		<Size x="250" y="130"/>
-		<Frames>
-			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-20"/>
-				</Anchors>
-			</Frame>
-
-			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-5"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="3"/>
-				</Anchors>
-			</EventFrame>
-		</Frames>
-		<Scripts>
-			<OnShow method="OnShow"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="CurrencyTransferSourceSelectorTemplate" mixin="CurrencyTransferSourceSelectorMixin" virtual="true">
 		<Size y="35"/>
 		<Layers>
@@ -84,26 +30,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" mixin="CurrencyTransferSourceSelectorDropDownMixin">
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SourceLabel" relativePoint="RIGHT" x="-20" y="-2"/>
+					<Anchor point="LEFT" relativeKey="$parent.SourceLabel" relativePoint="RIGHT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="Arrow" atlas="arrow-long" useAtlasSize="true">
+						<Texture parentKey="LongArrow" atlas="arrow-long" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="20"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="Roster" inherits="CurrencyTransferRosterTemplate" hidden="true"/>
+			</DropdownButton>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
@@ -243,6 +186,16 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				 <!-- Warbands_Todo: Remove this -->
+                <FontString parentKey="WIPText" inherits="GameFontNormal" text="Work in Progress">
+                    <Size x="150"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeKey="$parent.Background" y="-15"/>
+                    </Anchors>
+                    <Color color="RED_FONT_COLOR" a="1"/> 
+                </FontString>
+            </Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="ConfirmButton" inherits="CurrencyTransferConfirmButtonTemplate">
@@ -295,6 +248,14 @@
 
 	<Button name="CurrencyTransferToggleButtonTemplate" inherits="UIPanelButtonTemplate, DisabledTooltipButtonTemplate" text="CURRENCY_TRANSFER_TOGGLE_BUTTON_LABEL" virtual="true" mixin="CurrencyTransferToggleButtonMixin">
 		<Size x="120" y="22"/>
+		<Frames>
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
@@ -401,6 +362,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="EmptyLogMessage" inherits="GameFontNormalMed2" text="CURRENCY_TRANSFER_LOG_EMPTY">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
@@ -416,6 +384,13 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="3"/>
 				</Anchors>
 			</EventFrame>
+
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

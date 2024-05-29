@@ -5,8 +5,11 @@ function SharedReportFrameMixin:OnLoad()
 	self.minorCategoryFlags = CreateFromMixins(FlagsMixin);
 	self.minorCategoryFlags:OnLoad();
 	self.selectedMajorType = nil;
-	self.MinorCategoryButtonPool = CreateFramePool("CHECKBUTTON", self, "ReportingFrameMinorCategoryButtonTemplate", FramePool_HideAndClearAnchors);
+	self.MinorCategoryButtonPool = CreateFramePool("CHECKBUTTON", self, "ReportingFrameMinorCategoryButtonTemplate");
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+
+	self.ReportingMajorCategoryDropdown:SetWidth(200);
+	self.ReportingMajorCategoryDropdown:SetDefaultText(REPORTING_MAKE_SELECTION);
 end
 
 function SharedReportFrameMixin:OnHide()
@@ -43,13 +46,26 @@ function SharedReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
 end
 
 function SharedReportFrameMixin:SetupDropdownByReportType(reportType)
-	self.ReportingMajorCategoryDropdown.reportType = reportType;
-	UIDropDownMenu_SetWidth(self.ReportingMajorCategoryDropdown, 200);
-	UIDropDownMenu_Initialize(self.ReportingMajorCategoryDropdown, ReportingMajorCategoryDropdownInitialize);
+	local function IsChecked(majorType)
+		return self.selectedMajorType == majorType;
+	end
+
+	local function SetChecked(majorType)
+		self:MajorTypeSelected(reportType, majorType);
+	end
+
+	self.ReportingMajorCategoryDropdown:SetupMenu(function(dropdown, rootDescription)
+		local majorCategories = C_ReportSystem.GetMajorCategoriesForReportType(reportType);
+		for index_, majorType in ipairs(majorCategories) do
+			local text = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
+			if text then
+				rootDescription:CreateRadio(text, IsChecked, SetChecked, majorType);
+			end
+		end
+	end);
+
 	self.ReportingMajorCategoryDropdown:Show();
 end
-
-
 
 function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
 	self:SetAttribute("initiate_report", {
@@ -163,43 +179,6 @@ end
 
 function SharedReportFrameMixin:SetMinorCategoryFlag(flag, flagValue)
 	self.minorCategoryFlags:SetOrClear(flag, flagValue);
-end
-
-ReportingMajorCategoryDropdownMixin = { };
-function ReportingMajorCategoryDropdownInitialize(self)
-	if(not self.reportType) then
-		return;
-	end
-
-	local reportOptions = C_ReportSystem.GetMajorCategoriesForReportType(self.reportType);
-	if(not reportOptions) then
-		return;
-	end
-
-	local info = UIDropDownMenu_CreateInfo();
-	local selectedMajorType = self:GetParent().selectedMajorType;
-	for _, majorType in ipairs(reportOptions) do
-		local reportText = _G[C_ReportSystem.GetMajorCategoryString(majorType)];
-		if(reportText) then
-			info.text = reportText;
-			info.value = majorType;
-			info.func = function() self:ValueSelected(self.reportType, majorType); end;
-			info.checked = function() return selectedMajorType == majorType; end;
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-	self.Text:SetJustifyH("LEFT");
-	if (selectedMajorType) then
-		local selectedText = _G[C_ReportSystem.GetMajorCategoryString(selectedMajorType)];
-		UIDropDownMenu_SetText(self, selectedText);
-	else
-		UIDropDownMenu_SetText(self, REPORTING_MAKE_SELECTION);
-	end
-end
-
-function ReportingMajorCategoryDropdownMixin:ValueSelected(reportType, majorType)
-	self:GetParent():MajorTypeSelected(reportType, majorType);
-	UIDropDownMenu_SetText(self, _G[C_ReportSystem.GetMajorCategoryString(majorType)]);
 end
 
 ReportingFrameMinorCategoryButtonMixin = { };

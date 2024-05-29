@@ -3,7 +3,6 @@
 	<Frame name="GluePartyPoseFrame" hidden="true" setAllPoints="true" parent="GlueParent" mixin="GluePartyPoseMixin">
 		<Frames>
 			<ModelScene parentKey="ModelScene" inherits="NonInteractableModelSceneMixinTemplate" setAllPoints="true" enableMouse="false" useParentLevel="true"/>
-			<Frame name="GluePartyFrameMemberDropdown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="PartyPoseDialogSpinner" inherits="LoadingSpinnerTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="14" />

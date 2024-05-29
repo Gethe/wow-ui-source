@@ -22,17 +22,9 @@ function ButtonTrayUtil.TestCheckBoxTraySetup(button, labelText, callback, custo
 	button:SetTooltipDisabled(false);
 end
 
-function ButtonTrayUtil.TestDropdownTraySetup(dropDownControl, label, callback, enum, nameTranslation, ordering)
-	dropDownControl:SetEnum(enum, nameTranslation, ordering);
-	dropDownControl:SetLabelText(label);
 
-	local function DropDownOptionSelectedCallback(option, isUserInput)
-		if isUserInput then
-			callback(option);
-		end
-	end
-
-	dropDownControl:SetOptionSelectedCallback(DropDownOptionSelectedCallback);
+function ButtonTrayUtil.TestDropdownTraySetup(dropdown, label, callback, isSet, enum, nameTranslation, ordering)
+	-- Setup your dropdown at the return
 end
 
 function ButtonTrayUtil.TestSliderTraySetup(slider, label, callback, min, max, currentValue, increment)

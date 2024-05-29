@@ -23,9 +23,13 @@
 				<Alpha order="2" childKey="ChoiceBackground" duration="0.75" fromAlpha="0.7" toAlpha="0" smoothing="IN" />
 				<Alpha order="2" childKey="ChoiceBackground2" duration="0.75" fromAlpha="0.7" toAlpha="0" smoothing="IN" />
 			</AnimationGroup>
-			<AnimationGroup parentArray="HeroClassPassiveAnims" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
-				<Alpha childKey="Icon1Anim" order="1" fromAlpha="0" toAlpha="1" duration="1" smoothing="NONE"/>
-				<Alpha childKey="Icon1Anim" order="2" fromAlpha="1" toAlpha="0" duration="1" smoothing="NONE"/>
+			<AnimationGroup parentKey="HeroClassPassiveAnim" looping="REPEAT" inherits="TargetsVisibleWhilePlayingAnimGroupTemplate">
+				<Alpha childKey="Icon1Anim" order="1" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="Icon1Anim" order="2" fromAlpha="0" toAlpha="1" duration="5" smoothing="NONE"/>
+				<Alpha childKey="Icon1Anim" order="2" fromAlpha="1" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
+				<Alpha childKey="Icon1Anim" order="3" fromAlpha="0" toAlpha="0" duration="5" smoothing="NONE"/>
+				<Alpha childKey="Icon1Anim" order="4" fromAlpha="0" toAlpha=".5" duration="5" smoothing="NONE"/>
+				<Alpha childKey="Icon1Anim" order="4" fromAlpha=".5" toAlpha="0" startDelay="5" duration="5" smoothing="NONE"/>
 			</AnimationGroup>
 		</Animations>
 		<Layers>
@@ -49,18 +53,21 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Icon1Anim" file="Interface\Icons\INV_Misc_QuestionMark" setAllPoints="true" alpha="1" alphaMode="ADD" />
-				<Texture parentKey="HeroClassIconSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="174" y="276"/>
+				<Texture parentKey="Icon1Hover" file="Interface\Icons\INV_Misc_QuestionMark" setAllPoints="true" alpha="0.4" alphaMode="ADD" hidden="true" />
+				<Texture parentKey="Icon2Hover" file="Interface\Icons\INV_Misc_QuestionMark" setAllPoints="true" alpha="0.4" alphaMode="ADD" hidden="true" />
+				<Texture parentKey="HeroClassIconSheen" atlas="talents-sheen-heroclassicon" useAtlasSize="false" alpha="0.5" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="296" y="130"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Icon1" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Icon1" relativePoint="LEFT" x="-40"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT">
-							<Translation offsetX="282" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+							<Translation offsetX="538" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
 						</AnimationGroup>
 					</Animations>
 				</Texture>
-				<MaskTexture parentKey="HeroClassIconSheenMask" atlas="common-mask-circle" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<MaskTexture parentKey="HeroClassIconSheenMask" atlas="common-mask-circle" useAtlasSize="false" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="108" y="108"/>
 					<MaskedTextures>
 						<MaskedTexture childKey="HeroClassIconSheen"/>
 					</MaskedTextures>
@@ -74,16 +81,19 @@
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon1"/>
 						<MaskedTexture childKey="Icon1Anim"/>
+						<MaskedTexture childKey="Icon1Hover"/>
 					</MaskedTextures>
 				</MaskTexture>
 				<MaskTexture parentKey="Icon1SplitMask" atlas="common-mask-semicircle-left" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="IconSplitMasks" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon1"/>
+						<MaskedTexture childKey="Icon1Hover"/>
 					</MaskedTextures>
 				</MaskTexture>
 				<MaskTexture parentKey="Icon2SplitMask" atlas="common-mask-semicircle-right" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" parentArray="IconSplitMasks" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<MaskedTextures>
 						<MaskedTexture childKey="Icon2"/>
+						<MaskedTexture childKey="Icon2Hover"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
@@ -122,14 +132,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="3">
-				<Texture parentKey="HeroClassRingBorderSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+				<Texture parentKey="HeroClassRingBorderSheen" atlas="talents-sheen-node" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 					<Size x="174" y="276"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.Border" relativePoint="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Border" relativePoint="LEFT" x="0"/>
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT">
-							<Translation offsetX="366" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+							<Translation offsetX="462" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -231,14 +241,14 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="HeroClassBackplateFullSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="false" alpha="1" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
+						<Texture parentKey="HeroClassBackplateFullSheen" atlas="talents-sheen-node" useAtlasSize="false" alpha="0.3" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Size x="261" y="414"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Background" relativePoint="LEFT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Background" relativePoint="LEFT" x="-130"/>
 							</Anchors>
 							<Animations>
 								<AnimationGroup parentKey="Anim" looping="REPEAT">
-									<Translation offsetX="503" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
+									<Translation offsetX="890" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
 								</AnimationGroup>
 							</Animations>
 						</Texture>

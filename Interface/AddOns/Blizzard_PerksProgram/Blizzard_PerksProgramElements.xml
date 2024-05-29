@@ -456,39 +456,6 @@
 		</Layers>
 	</Frame>
 
-	<Button name="PerksProgramFilterButtonTemplate" virtual="true">
-		<Size x="40" y="26"/>
-		<NormalTexture parentKey="NormalTexture" atlas="perks-dropdownbox"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="perks-dropdownbox-hover" alphaMode="ADD" alpha="0.5"/>
-		<PushedTextOffset x="2" y="-2"/>
-		<ButtonText parentKey="ButtonText">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="10" y="-10"/>
-				<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
-			</Anchors>
-		</ButtonText>
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-		</Scripts>
-		<NormalFont style="GameFontHighlight"/>
-		<HighlightFont style="GameFontHighlight"/>
-		<DisabledFont style="GameFontDisable"/>
-	</Button>
-
-	<Frame name="FilterDropDownContainerTemplate" mixin="FilterDropDownContainerMixin" virtual="true">
-		<Frames>
-			<DropDownToggleButton parentKey="FilterDropDownButton" mixin="FilterDropDownButtonMixin" inherits="PerksProgramFilterButtonTemplate" text="FILTER" setAllPoints="true">		
-				<Scripts>
-					<OnMouseDown method="OnMouseDown"/>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="FilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate" />
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
 	<Button name="PerksProgramButtonTemplate" inherits="SharedButtonLargeTemplate" mixin="PerksProgramButtonMixin" virtual="true" >
 		<Size x="180" y="46"/>
 		<Scripts>

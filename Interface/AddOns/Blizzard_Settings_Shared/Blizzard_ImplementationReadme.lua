@@ -35,7 +35,7 @@ local myVariableTable = {}; -- Saved in your .toc
 -- check box
 local variable, name, tooltip = "MyCheckBox", "My CheckBox", "My CheckBox Tooltip";
 local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Boolean, name, Settings.Default.True);
-Settings.CreateCheckBox(category, setting, tooltip);
+Settings.CreateCheckbox(category, setting, tooltip);
 
 -- slider
 local variable, name, tooltip = "MySlider", "My Slider", "My Slider Tooltip";
@@ -59,5 +59,5 @@ end
 
 local defaultValue = 0;
 local setting = Settings.RegisterProxySetting(category, variable, myVariableTable, Settings.VarType.Number, name, defaultValue);
-Settings.CreateDropDown(category, setting, GetOptions, tooltip);
+Settings.CreateDropdown(category, setting, GetOptions, tooltip);
 ]]--

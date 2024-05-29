@@ -1025,11 +1025,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="dropDown">
+							<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 								<Anchors>
 									<Anchor point="TOP" x="0" y="-54"/>
 								</Anchors>
-							</Frame>
+							</DropdownButton>
 							<Button parentKey="CreateTemplateButton" inherits="GlueButtonSmallTemplate" text="CREATE_CHARACTER">
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="22"/>
@@ -1038,15 +1038,11 @@
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
-									<OnClick>
-										PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-										C_CharacterCreation.SetCharacterTemplate(UIDropDownMenu_GetSelectedID(CharacterTemplatesFrameDropDown));
-										GlueParent_SetScreen("charcreate");
-									</OnClick>
 								</Scripts>
 							</Button>
 						</Frames>
 						<Scripts>
+							<OnLoad function="CharacterTemplatesFrame_OnLoad"/>
 							<OnShow function="CharacterTemplatesFrame_OnShow"/>
 						</Scripts>
 					</Frame>
@@ -1492,16 +1488,15 @@
 					<OnClick function="CopyKeyBindings_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentRegionID" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="RegionID">
-				<Size x="50" y="16"/>
+			<DropdownButton name="$parentRegionID" inherits="WowStyle1DropdownTemplate" parentKey="RegionID">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-10" y="-30"/>
+					<Anchor point="TOPLEFT" x="11" y="-35"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<EditBox parentKey="RealmName" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
 				<Size x="200" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RegionID" relativePoint="RIGHT" x="0" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.RegionID" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -1524,7 +1519,7 @@
 			<EditBox parentKey="CharacterName" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
 				<Size x="150" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RealmName" relativePoint="RIGHT" x="20" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.RealmName" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

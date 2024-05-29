@@ -312,7 +312,9 @@ function ScrollBoxBaseMixin:SetScrollAllowed(allowScroll)
 end
 
 function ScrollBoxBaseMixin:GetDerivedScrollRange()
-	return math.max(0, self:GetDerivedExtent() - self:GetVisibleExtent());
+	local derivedExtent = self:GetDerivedExtent();
+	local visibleExtent = self:GetVisibleExtent();
+	return math.max(0, derivedExtent - visibleExtent);
 end
 
 function ScrollBoxBaseMixin:GetDerivedScrollOffset()
@@ -691,6 +693,10 @@ function ScrollBoxListMixin:Update(forceLayout)
 		return;
 	end
 
+	if not view:IsInitialized() then
+		return;
+	end
+	
 	self:SetUpdateLocked(true);
 
 	local changed = view:ValidateDataRange(self);

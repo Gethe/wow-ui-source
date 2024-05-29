@@ -17,7 +17,12 @@ function ScrollBoxViewMixin:SetFrameLevelPolicy(frameLevelPolicy)
 end
 
 function ScrollBoxViewMixin:Init()
+	self.initialized = true;
 	self.frames = {};
+end
+
+function ScrollBoxViewMixin:IsInitialized()
+	return self.initialized;
 end
 
 function ScrollBoxViewMixin:SetPadding(padding)

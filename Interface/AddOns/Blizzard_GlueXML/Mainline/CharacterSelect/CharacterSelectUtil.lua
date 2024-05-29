@@ -128,10 +128,10 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 	-- PvP Rating
 
 	-- Block 4
-	-- Gold
+	local money = characterInfo.money;
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
-	GameTooltip_AddColoredLine(GlueTooltip, realmName, GRAY_FONT_COLOR);
+	GameTooltip_AddColoredLine(GlueTooltip, CHARACTER_SELECT_REALM_TOOLTIP:format(realmName), GRAY_FONT_COLOR);
 	if showDebugTooltipInfo then
 		GameTooltip_AddColoredLine(GlueTooltip, characterInfo.guid, GRAY_FONT_COLOR);
 	end
@@ -163,4 +163,27 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo)
 			GameTooltip_AddColoredLine(GlueTooltip, professionName1, WHITE_FONT_COLOR);
 		end
 	end
+
+	-- Add a blank line only if we have populated fields for the next section.
+	if money then
+		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
+
+		SetTooltipMoney(GlueTooltip, money);
+	end
+end
+
+function CharacterSelectUtil.GetFormattedCurrentRealmName()
+	local formattedRealmName;
+
+	local serverName, _, isRP = GetServerName();
+	local connected = IsConnectedToServer();
+	if serverName then
+		if not connected then
+			serverName = serverName .. " (" .. SERVER_DOWN .. ")";
+		end
+
+		formattedRealmName = isRP and (serverName .. " " .. RP_PARENTHESES) or serverName;
+	end
+
+	return formattedRealmName;
 end

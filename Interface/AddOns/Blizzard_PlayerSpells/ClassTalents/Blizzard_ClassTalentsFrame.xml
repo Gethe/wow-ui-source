@@ -203,11 +203,8 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="LoadoutDropDown" inherits="DropDownLoadSystemTemplate">
-				<KeyValues>
-					<KeyValue key="dropdownTooltipBackdropStyle" value="GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT" type="global"/>
-				</KeyValues>
-				<Size x="170" y="30"/>
+			<Frame parentKey="LoadSystem" inherits="DropdownLoadSystemTemplate">
+				<Size x="200" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.BottomBar" relativePoint="LEFT" x="48" y="0"/>
 				</Anchors>
@@ -217,7 +214,7 @@
 				<Size x="184" y="30"/>
 				<Anchors>
 					<!-- Re-anchored in code -->
-					<Anchor point="LEFT" relativeKey="$parent.LoadoutDropDown" relativePoint="RIGHT" x="20" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.LoadSystem" relativePoint="RIGHT" x="20" y="0"/>
 				</Anchors>
 			</EditBox>
 
@@ -274,8 +271,14 @@
 				</Anchors>
 			</Button>
 
-			<DropDownToggleButton parentKey="ResetButton" inherits="IconButtonTemplate, DropDownMouseoverButtonTemplate">
+			<DropdownButton parentKey="ResetButton" inherits="IconButtonTemplate">
 				<KeyValues>
+					<!--<KeyValue key="canOpenOnEnter" value="true" type="boolean"/>-->
+					<KeyValue key="menuPoint" type="string" value="BOTTOMLEFT"/>
+					<KeyValue key="menuPointX" type="number" value="0"/>
+					<KeyValue key="menuPointY" type="number" value="0"/>
+					<KeyValue key="menuRelativePoint" type="string" value="TOPRIGHT"/>
+					
 					<KeyValue key="iconAtlas" value="talents-button-reset" type="string"/>
 					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
 					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
@@ -284,10 +287,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="14" y="0"/>
 				</Anchors>
-				<Frames>
-					<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
-				</Frames>
-			</DropDownToggleButton>
+			</DropdownButton>
 
 			<Button parentKey="UndoButton" inherits="IconButtonTemplate">
 				<KeyValues>

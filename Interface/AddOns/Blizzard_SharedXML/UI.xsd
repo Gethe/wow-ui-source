@@ -988,10 +988,10 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:FrameRef"/>
-  <xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:FrameRef"/>
   <xs:element name="MapScene" type="ModelType" substitutionGroup="ui:FrameRef"/>
 
-  <xs:complexType name="SimpleHTMLType">
+	<xs:complexType name="SimpleHTMLType">
 		<xs:complexContent>
 			<xs:extension base="ui:FrameRefType">
 				<xs:sequence minOccurs="0">
@@ -1589,6 +1589,7 @@
 	<!-- instrinsic types -->
 	<xs:element name="ContainedAlertFrame" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="DropDownToggleButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="DropdownButton" type="ButtonType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventEditBox" type="EditBoxType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventScrollFrame" type="ScrollFrameType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="EventFrame" type="FrameType" substitutionGroup="ui:FrameRef"/>

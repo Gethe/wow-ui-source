@@ -1,3 +1,4 @@
+local envTable = GetCurrentEnvironment();
 
 --Local variables (here instead of as members on frames for now)
 local JustOrderedProduct = false;
@@ -1132,8 +1133,8 @@ function StoreFrame_OnLoad(self)
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					if ( _G.ModelPreviewFrame:IsShown() ) then
-						_G.ModelPreviewFrame:Hide();
+					if ( ModelPreviewFrame:IsShown() ) then
+						ModelPreviewFrame:Hide();
 					else
 						StoreFrame:SetAttribute("action", "EscapePressed");
 					end
@@ -1144,7 +1145,7 @@ function StoreFrame_OnLoad(self)
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 150);
 
-	self.productCardPoolCollection = CreateFixedSizeFramePoolCollection();
+	self.productCardPoolCollection = CreateFramePoolCollection();
 
 	-- we preallocate all the card pools because if we create frames outside
 	-- of the LoadAddOn call, then the scripts aren't set properly due to scoped modifier issues
@@ -1152,7 +1153,7 @@ function StoreFrame_OnLoad(self)
 	local specialization = nil;
 	local preallocate = true;
 	for template, info in pairs(productCardTemplateData) do
-		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, specialization, info.poolSize, preallocate);
+		self.productCardPoolCollection:CreatePool("Button", self, template, nil, forbidden, specialization, info.poolSize);
 	end
 
 	StoreFrame.Notice.Description:SetSpacing(5);
@@ -1287,7 +1288,7 @@ function StoreFrame_OnEvent(self, event, ...)
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
 		if not SimpleCheckout:IsShown() then
 			self:Hide();
-			_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "LOGIN_STATE_CHANGED") then
 		if (IsOnGlueScreen()) then
@@ -1368,10 +1369,10 @@ function StoreFrame_OnMouseWheel(self, value)
 end
 
 function StoreFrame_OnCharacterBoostDelivered(self)
-	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not _G.CharacterSelect.undeleting) then
+	if (IsOnGlueScreen() and BoostDeliveredUsageReason and not CharacterSelect.undeleting) then
 		self:Hide();
 
-		_G.CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
+		CharacterUpgradePopup_OnCharacterBoostDelivered(BoostType, BoostDeliveredUsageGUID, BoostDeliveredUsageReason);
 	elseif (not IsOnGlueScreen() and StoreFrameHasBeenShown and not StoreOutbound.IsExpansionTrialUpgradeDialogShowing()) then
 		self:Hide();
 
@@ -1390,7 +1391,7 @@ end
 function StoreFrame_OnLegionDelivered(self)
 	self:Hide();
 	if (IsOnGlueScreen()) then
-		_G.GlueDialog_Show("LEGION_PURCHASE_READY");
+		GlueDialog_Show("LEGION_PURCHASE_READY");
 	else
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forLegion");
 	end
@@ -2410,12 +2411,12 @@ local function UpdateQueueStatusDisclaimer(self, queueTime)
 	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 	if vasDisclaimerData and vasDisclaimerData[VASServiceType] then
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
-			self.Disclaimer:SetTextColor("P", _G.RED_FONT_COLOR:GetRGB());
+			self.Disclaimer:SetTextColor("P", RED_FONT_COLOR:GetRGB());
 		else
 			self.Disclaimer:SetTextColor("P", 0, 0, 0);
 		end
 
-		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, _G["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
+		self.Disclaimer:SetText(HTML_START_CENTERED..string.format(vasDisclaimerData[VASServiceType].disclaimer, envTable["VAS_QUEUE_"..VasQueueStatusToString[queueTime]])..HTML_END);
 		self.Disclaimer:Show();
 	end
 end
@@ -2528,7 +2529,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			JustFinishedOrdering = WaitingOnVASToComplete == WaitingOnVASToCompleteToken;
 			local fromVASPurchaseCompletion = true;
 			StoreFrame_UpdateActivePanel(StoreFrame, fromVASPurchaseCompletion);
-		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
+		elseif (IsOnGlueScreen() and CharacterSelect:IsVisible()) then
 			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 		end
 	elseif ( event == "VAS_TRANSFER_VALIDATION_UPDATE" ) then
@@ -2626,7 +2627,7 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 	local productInfo = C_StoreSecure.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
 		self:GetParent():Hide();
-		_G.StoreFrame_ShowGlueDialog(string.format(_G.BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
+		StoreFrame_ShowGlueDialog(string.format(BLIZZARD_STORE_VAS_PRODUCT_READY, productInfo.sharedData.name), guid, realmName, shouldHandle);
 	else
 		self:GetParent():Hide();
 
@@ -3100,10 +3101,10 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 		for i = 1, #races do
 			local raceInfo = races[i];
 			if (raceInfo.isAlliedRace and not raceInfo.isHeritageArmorUnlocked) then
-				descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
+				descStr = descStr .. string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE_ALLIED_RACE, raceInfo.raceName);
 				seenAlliedRace = true;
 			else
-				descStr = descStr .. string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
+				descStr = descStr .. string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TOOLTIP_LINE, raceInfo.raceName);
 			end
 			if (i ~= #races) then
 				descStr = descStr .. "|n";
@@ -3111,13 +3112,13 @@ function VASCharacterSelectionChangeIconFrame_OnEnter(self)
 		end
 	end
 	if (seenAlliedRace) then
-		descStr = descStr .. "|n" .. _G.BLIZZARD_STORE_VAS_ALLIED_RACE_CHANGE_HERITAGE_WARNING;
+		descStr = descStr .. "|n" .. BLIZZARD_STORE_VAS_ALLIED_RACE_CHANGE_HERITAGE_WARNING;
 	end
 
 	StoreTooltip:ClearAllPoints();
 	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOP", 0, -4);
 	local title = "";
-	title = string.format(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_TITLE, character.name);
+	title = string.format(BLIZZARD_STORE_VAS_RACE_CHANGE_TITLE, character.name);
 	StoreTooltip_Show(title, descStr);
 end
 
@@ -3151,7 +3152,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	end
 	toIcon:Show();
 
-	frame.ViewRaces:SetText(_G.BLIZZARD_STORE_VAS_RACE_CHANGE_VIEW_AVAILABLE_RACES);
+	frame.ViewRaces:SetText(BLIZZARD_STORE_VAS_RACE_CHANGE_VIEW_AVAILABLE_RACES);
 
 	frame:Show();
 end
@@ -3339,7 +3340,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", frame.TransferFactionCheckbox, "BOTTOMLEFT", 8, -8);
 	elseif (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
-		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount and (StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount or (#_G.C_Login.GetGameAccounts() > 1))) then
+		if (StoreVASValidationFrame.productInfo.sharedData.canChangeAccount and (StoreVASValidationFrame.productInfo.sharedData.canChangeBNetAccount or (#C_Login.GetGameAccounts() > 1))) then
 			frame.TransferAccountCheckbox:Show();
 			frame.TransferFactionCheckbox:ClearAllPoints();
 			frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.TransferAccountCheckbox, "BOTTOMLEFT", 0, -4);
@@ -3896,7 +3897,7 @@ end
 function VASCharacterSelection_CheckForValidName(self, nameToCheck, validNameCheckFunction)
 	local valid, reason = validNameCheckFunction(nameToCheck);
 	if not valid then
-		StoreVASValidationFrame_ValidationDescription_SetText(_G[reason], true);
+		StoreVASValidationFrame_ValidationDescription_SetText(envTable[reason], true);
 		self:GetParent().ValidationDescription:Show();
 		StoreVASValidationState_Unlock();
 		self:GetParent().ContinueButton:Disable();
@@ -3941,42 +3942,42 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	if ( VASServiceType == Enum.VasServiceType.NameChange ) then
 		NameChangeNewName = self:GetParent().NewCharacterName:GetText();
 
-		if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsCharacterNameValid) then
+		if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, C_CharacterCreation.IsCharacterNameValid) then
 			return;
 		end
 	elseif ( VASServiceType == Enum.VasServiceType.GuildNameChange ) then
 		NameChangeNewName = self:GetParent().NewGuildName:GetText();
 
-		if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+		if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, C_CharacterCreation.IsGuildNameValid) then
 			return;
 		end
 	elseif ( VASServiceType == Enum.VasServiceType.GuildFactionChange ) then
 		if self:GetParent().RenameGuildCheckbox:GetChecked() then
 			NameChangeNewName = self:GetParent().RenameGuildEditbox:GetText();
 			OldGuildNewName = nil;
-			if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+			if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, C_CharacterCreation.IsGuildNameValid) then
 				return;
 			end
 		else
 			NameChangeNewName = nil;
 			OldGuildNewName = self:GetParent().OldGuildNewName:GetText();
-			if not VASCharacterSelection_CheckForValidName(self, OldGuildNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+			if not VASCharacterSelection_CheckForValidName(self, OldGuildNewName, C_CharacterCreation.IsGuildNameValid) then
 				return;
 			end
 		end
 
-		if not VASCharacterSelection_CheckForValidName(self, NewGuildMaster, _G.C_CharacterCreation.IsCharacterNameValid) then
+		if not VASCharacterSelection_CheckForValidName(self, NewGuildMaster, C_CharacterCreation.IsCharacterNameValid) then
 			return;
 		end
 	elseif ( VASServiceType == Enum.VasServiceType.GuildTransfer ) then
 		if self:GetParent().RenameGuildCheckbox:GetChecked() then
 			NameChangeNewName = self:GetParent().RenameGuildEditbox:GetText();
-			if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, _G.C_CharacterCreation.IsGuildNameValid) then
+			if not VASCharacterSelection_CheckForValidName(self, NameChangeNewName, C_CharacterCreation.IsGuildNameValid) then
 				return;
 			end
 		end
 
-		if not VASCharacterSelection_CheckForValidName(self, NewGuildMaster, _G.C_CharacterCreation.IsCharacterNameValid) then
+		if not VASCharacterSelection_CheckForValidName(self, NewGuildMaster, C_CharacterCreation.IsCharacterNameValid) then
 			return;
 		end
 	end
@@ -4063,7 +4064,7 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 		return;
 	end
 	local character = CharacterList[SelectedCharacter];
-	local gameAccounts = _G.C_Login.GetGameAccounts();
+	local gameAccounts = C_Login.GetGameAccounts();
 	local infoTable = {};
 	for i, gameAccount in ipairs(gameAccounts) do
 		if (C_StoreSecure.GetWoWAccountGUIDFromName(gameAccount, true) ~= character.wowAccount) then

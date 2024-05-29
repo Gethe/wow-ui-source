@@ -378,6 +378,10 @@ Class_StarterTalentWatcher = class("StarterTalentWatcher", Class_TutorialBase);
 		handlesGlobalMouseEventCallback = function() return true; end,
 	};
 
+local function GetTalentLoadoutDropdown()
+	return PlayerSpellsFrame.TalentsFrame.LoadSystem.Dropdown;
+end
+
 function Class_StarterTalentWatcher:EvaluateTalentFrame()
 	if PlayerSpellsFrame and PlayerSpellsFrame:IsShown() and C_ClassTalents.HasUnspentTalentPoints() then
 		if self.Timer then
@@ -385,7 +389,7 @@ function Class_StarterTalentWatcher:EvaluateTalentFrame()
 		end
 				
 		if PlayerSpellsFrame.TalentsFrame:IsShown() then
-			self.Timer = C_Timer.NewTimer(30, function() self:ShowStarterTalentsHelp(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown) end);
+			self.Timer = C_Timer.NewTimer(30, function() self:ShowStarterTalentsHelp(GetTalentLoadoutDropdown()) end);
 		else
 			self:HideStarterTalentsHelp();
 		end
@@ -394,11 +398,11 @@ function Class_StarterTalentWatcher:EvaluateTalentFrame()
 	end	
 end
 
-function Class_StarterTalentWatcher:ShowStarterTalentsHelp(pointerTarget)
-	HelpTip:Hide(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
+function Class_StarterTalentWatcher:ShowStarterTalentsHelp(dropdown)
+	HelpTip:Hide(dropdown, NPEV2_TALENTS_STARTER_BUILD);
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
-		EventRegistry:RegisterCallback("UIDropDownMenu.Show", self.TalentFrameDropDownShow, self);
-		HelpTip:Show(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown, helpTipInfo, pointerTarget);
+		dropdown:RegisterCallback("OnMenuOpen", self.TalentFrameDropdownShow, self);
+		HelpTip:Show(dropdown, helpTipInfo, dropdown);
 	end
 end
 
@@ -409,18 +413,19 @@ function Class_StarterTalentWatcher:HideStarterTalentsHelp()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	HelpTip:Hide(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
+	HelpTip:Hide(GetTalentLoadoutDropdown(), NPEV2_TALENTS_STARTER_BUILD);
 end
 
-function Class_StarterTalentWatcher:TalentFrameDropDownShow(dropdownFrame)
-	EventRegistry:UnregisterCallback("UIDropDownMenu.Show", self);
-	EventRegistry:RegisterCallback("UIDropDownMenu.Hide", self.TalentFrameDropDownHide, self);
-	self:ShowStarterTalentsHelp(dropdownFrame);
-end
+function Class_StarterTalentWatcher:TalentFrameDropdownShow(dropdown)
+	dropdown:UnregisterCallback("OnMenuOpen", self);
 
-function Class_StarterTalentWatcher:TalentFrameDropDownHide()
-	EventRegistry:UnregisterCallback("UIDropDownMenu.Hide", self);
-	self:ShowStarterTalentsHelp(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown);
+	local function OnMenuClose()
+		EventRegistry:UnregisterCallback("OnMenuClose", self);
+		self:HideStarterTalentsHelp();
+	end
+
+	dropdown:RegisterCallback("OnMenuClose", OnMenuClose, self);
+	self:ShowStarterTalentsHelp(dropdown);
 end
 
 function Class_StarterTalentWatcher:DelayedEvaluateTalentFrame()
@@ -460,8 +465,6 @@ function Class_StarterTalentWatcher:StopWatching()
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TalentTab.Show", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpecFrame.Show", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TalentTab.StarterBuild", self);
-	EventRegistry:UnregisterCallback("UIDropDownMenu.Show", self);
-	EventRegistry:UnregisterCallback("UIDropDownMenu.Hide", self);
 end
 
 function Class_StarterTalentWatcher:OnInterrupt(interruptedBy)
@@ -476,13 +479,13 @@ end
 -- NPE Version Starter Helper Watcher
 -- ------------------------------------------------------------------------------------------------------------
 Class_StarterTalentWatcher_NPE = class("StarterTalentWatcher_NPE", Class_StarterTalentWatcher);
-function Class_StarterTalentWatcher_NPE:ShowStarterTalentsHelp(pointerTarget)
+function Class_StarterTalentWatcher_NPE:ShowStarterTalentsHelp(dropdown)
 	HelpTip:SetHelpTipsEnabled("NPEv2", true);
-	HelpTip:Hide(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
+	HelpTip:Hide(dropdown, NPEV2_TALENTS_STARTER_BUILD);
 
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
-		EventRegistry:RegisterCallback("UIDropDownMenu.Show", self.TalentFrameDropDownShow, self);
-		HelpTip:Show(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown, helpTipInfo, pointerTarget);
+		dropdown:RegisterCallback("OnMenuOpen", self.TalentFrameDropdownShow, self);
+		HelpTip:Show(dropdown, helpTipInfo, dropdown);
 	end
 end
 
@@ -493,6 +496,6 @@ function Class_StarterTalentWatcher_NPE:HideStarterTalentsHelp()
 	if self.Timer then
 		self.Timer:Cancel();
 	end
-	HelpTip:Hide(PlayerSpellsFrame.TalentsFrame.LoadoutDropDown, NPEV2_TALENTS_STARTER_BUILD);
+	HelpTip:Hide(GetTalentLoadoutDropdown(), NPEV2_TALENTS_STARTER_BUILD);
 	HelpTip:SetHelpTipsEnabled("NPEv2", false);
 end

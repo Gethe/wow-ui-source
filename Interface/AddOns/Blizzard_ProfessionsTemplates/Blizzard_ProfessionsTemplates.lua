@@ -637,6 +637,15 @@ function ProfessionsCurrencyMixin:SetCurrencyType(currencyType)
 	self.RechargeTicker = C_Timer.NewTicker(currencyInfo.rechargingCycleDurationMS / 1000, function() self:UpdateQuantity() end);
 end
 
+function ProfessionsCurrencyMixin:ShowProfessionConcentration(professionInfo)
+	local concentrationCurrency = C_TradeSkillUI.GetConcentrationCurrencyID(professionInfo.professionID);
+	local hasConcentration = concentrationCurrency ~= 0;
+	if hasConcentration then
+		self:SetCurrencyType(concentrationCurrency);
+	end
+	self:SetShown(hasConcentration);
+end
+
 function ProfessionsCurrencyMixin:GetCurrencyInfo()
 	return self.currencyType and C_CurrencyInfo.GetCurrencyInfo(self.currencyType) or nil;
 end

@@ -10,37 +10,93 @@
 		</Scripts>
 	</Button>
 
+	<!-- Bountiful Widget Animations -->
+	<Frame name="BountifulWidgetAnimationTemplate" virtual="true">
+		<Size x="36" y="36"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="BountifulDarkCircle" alpha="1" atlas="bountiful-dark-circle" useAtlasSize="false">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Glow" alpha="0" atlas="bountiful-glow" useAtlasSize="false">
+					<Size x="42" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="16"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RaysMask" alpha="0" alphaMode="BLEND" atlas="bountiful-glow-rays-mask" useAtlasSize="false">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="15"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Rays" alpha="0" atlas="bountiful-glow-rays" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" x="-300" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="RaysMask"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+				<Alpha childKey="Glow" duration="1" order="1" startDelay="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BountifulDarkCircle" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RaysTranslation" setToFinalAlpha="true">
+				<Alpha childKey="RaysMask" duration="1" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="Rays" duration="8" order="1" offsetX="300" offsetY="0"/>
+				<Alpha childKey="Rays" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
 	<!-- Delve Difficulty Picker -->
-	<Frame name="DelvesDifficultyPickerFrame" hidden="true" inherits="CustomGossipFrameBaseTemplate" mixin="DelvesDifficultyPickerFrameMixin">
-		<Size x="350" y="480"/>
+	<Frame name="DelvesDifficultyPickerFrame" hidden="true" inherits="CustomGossipFrameBaseTemplate, InsetFrameTemplate" mixin="DelvesDifficultyPickerFrameMixin">
+		<Size x="584" y="384"/>
 		<Anchors>
 			<Anchor point="CENTER" y="60"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<!-- TODO: Replace this with a better default - this is currently used if a background widget is not set up for the gossip option. Since a lot of them aren't set up, it is now our "placeholder" background -->
-				<Texture parentKey="DefaultBackground" atlas="auctionhouse-background-index" useAtlasSize="false"/>
-			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" justifyV="BOTTOM" justifyH="CENTER" inherits="GameFontNormalHuge2"> <!-- TODO mock has a circular shadow around this -->
+				<FontString parentKey="Title" justifyV="BOTTOM" justifyH="CENTER" inherits="GameFontHighlightHuge2">
 					<Size x="270" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" y="-25"/>
+						<Anchor point="TOPLEFT" x="40" y="-30"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="PLACEHOLDER-TEXT" justifyH="CENTER" inherits="GameFontHighlight" text="UI: Work in Progress"> <!-- TODO remove me, eventually - or reuse for "continue" text -->
+				<FontString parentKey="ScenarioLabel" justifyH="CENTER" inherits="GameFontNormal" text="DELVE_LABEL">
 					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" y="-8"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Title" relativePoint="TOP" y="5"/>
 					</Anchors>
-					<Color r="1"/> 
+				</FontString>
+				<FontString parentKey="Description" justifyH="LEFT" justifyV="TOP" spacing="1.5" inherits="GameFontNormalMed1">
+					<Size x="200" y="130"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-15" y="-30"/>
+					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-8" y="9"/>
+					<Anchor point="BOTTOMRIGHT" x="9" y="-8"/>
+				</Anchors>
+			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="510">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Border" relativePoint="TOPRIGHT" x="-1" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<!-- TODO sound -->
@@ -50,21 +106,19 @@
 				</Scripts>
 			</Button>
 
-			<Frame name="DelvesDifficultyPickerLevelDropdown" inherits="UIDropDownMenuTemplate" mixin="DelvesDifficultyPickerLevelDropdownMixin">
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="CENTER"/>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
-				<Scripts>
-					<OnShow method="OnShow"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<!-- Delve Modifers -->
 			<Frame parentKey="DelveModifiersWidgetContainer" inherits="UIWidgetContainerTemplate">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="CENTER" y="-62"/>
+					<Anchor point="CENTER" relativeKey="$parent.Title"/>
+					<Anchor point="BOTTOM" y="75"/>
 				</Anchors>
 			</Frame>
 
@@ -77,16 +131,30 @@
 				</Anchors>
 			</Frame>
 
+			<!-- Enter Delve Button -->
+			<Button parentKey="EnterDelveButton" inherits="UIPanelButtonTemplate" mixin="DelvesDifficultyPickerEnterDelveButtonMixin" motionScriptsWhileDisabled="true" frameLevel="510" text="DELVES_DIFFICULTY_PICKER_ENTER">
+				<Size x="110" y="25"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Title"/>
+					<Anchor point="BOTTOM" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+
 			<!-- Rewards -->
 			<Frame parentKey="DelveRewardsContainerFrame" mixin="DelveRewardsContainerFrameMixin" hidden="true">
-				<Size x="320" y="105"/>
+				<Size x="200" y="200"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.DelveModifiersWidgetContainer" relativePoint="BOTTOM" y="-10"/>
+					<Anchor point="RIGHT" x="-25"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.EnterDelveButton" relativePoint="BOTTOM"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="RewardText" inherits="GameFontHighlight" text="REWARD_ITEMS_ONLY">
-							<Color r="0.902" g="0.788" b="0.671"/>
+						<FontString parentKey="RewardText" inherits="GameFontNormal" text="REWARD_ITEMS_ONLY">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15"/>
 							</Anchors>
@@ -97,18 +165,6 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
-
-			<Button parentKey="EnterDelveButton" inherits="UIPanelButtonTemplate" mixin="DelvesDifficultyPickerEnterDelveButtonMixin" motionScriptsWhileDisabled="true" frameLevel="510" text="DELVES_DIFFICULTY_PICKER_ENTER">
-				<Size x="110" y="25"/>
-				<Anchors>
-					<Anchor point="BOTTOM" y="5"/>
-				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnHide method="OnHide"/>

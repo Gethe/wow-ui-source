@@ -19,6 +19,10 @@ function ScriptAnimationUtil.IsScriptAnimationLockActive(region)
 end
 
 function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequency)
+	if duration == 0 then
+		return nop;
+	end
+
 	if frequency <= 0 or ScriptAnimationUtil.IsScriptAnimationLockActive(region) then
 		return nop;
 	end
@@ -35,6 +39,10 @@ end
 function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequency)
 	local shakeStrength = tonumber(GetCVar("ShakeStrengthUI"));
 	if shakeStrength <= 0 or not ScriptAnimationUtil.GetScriptAnimationLock(region) then
+		return nop;
+	end
+
+	if shake[1] == nil then
 		return nop;
 	end
 

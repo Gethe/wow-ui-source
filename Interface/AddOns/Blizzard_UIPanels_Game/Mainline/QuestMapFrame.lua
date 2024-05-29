@@ -295,23 +295,6 @@ function QuestLogHeaderCodeMixin:OnLoad()
 	self:SetPushedTextOffset(1, -1);
 end
 
-local function QuestLogTrackAllDropDown_Initialize(dropdown)
-	local info = UIDropDownMenu_CreateInfo();
-	info.isNotRadio = true;
-	info.text = QUEST_LOG_TRACK_ALL;
-	info.notCheckable = true;
-	info.func = function()
-		QuestMapFrame:SetHeaderQuestsTracked(dropdown.questLogIndex, true);
-	end;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-	
-	info.text = QUEST_LOG_UNTRACK_ALL;
-	info.func = function()
-		QuestMapFrame:SetHeaderQuestsTracked(dropdown.questLogIndex, false);
-	end;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
 function QuestLogHeaderCodeMixin:OnClick(button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	if button == "LeftButton" then
@@ -324,12 +307,17 @@ function QuestLogHeaderCodeMixin:OnClick(button)
 			end
 		end
 	elseif button == "RightButton" then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-		local dropdown = QuestLogSettingsDropDown;
-		dropdown.initialize = QuestLogTrackAllDropDown_Initialize;
-		dropdown.displayMode = "MENU";
-		dropdown.questLogIndex = self.questLogIndex;
-		ToggleDropDownMenu(1, nil, dropdown, self, 296, 22);
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_QUEST_MAP_FRAME");
+
+			rootDescription:CreateButton(QUEST_LOG_TRACK_ALL, function()
+				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
+			end);
+
+			rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
+				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
+			end);
+		end);
 	end
 end
 
@@ -397,6 +385,10 @@ function QuestLogHeaderCodeMixin:OnMouseUp()
 	self.CollapseButton:UpdatePressedState(pressed);
 end
 
+function QuestLogHeaderCodeMixin:UpdateCollapsedState(_displayState, info)
+	self.CollapseButton:UpdateCollapsedState(info.isCollapsed);
+end
+
 QuestLogHeaderCollapseButtonMixin = { };
 
 function QuestLogHeaderCollapseButtonMixin:UpdatePressedState(pressed)
@@ -439,12 +431,28 @@ function QuestMapFrame_OnLoad(self)
 	local onCreateFunc = nil;
 	local useHighlightManager = true;
 	QuestScrollFrame.Contents:Init(onCreateFunc, useHighlightManager);
-	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
-	UIDropDownMenu_SetInitializeFunction(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize);
-	UIDropDownMenu_SetDisplayMode(QuestMapQuestOptionsDropDown, "MENU");
 
 	QuestMapFrame.DetailsFrame.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(o, xrange, yrange)
 		QuestMapFrame_AdjustPathButtons();
+	end);
+
+	QuestMapFrame_SetupSettingsDropdown(self);
+end
+
+function QuestMapFrame_SetupSettingsDropdown(self)
+	local function IsSelected()
+		return GetCVarBool("showQuestObjectivesInLog");
+	end
+
+	local function SetSelected()
+		SetCVar("showQuestObjectivesInLog", not IsSelected());
+		QuestLogQuests_Update();
+	end
+
+	self.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_QUEST_MAP_FRAME_SETTINGS");
+
+		rootDescription:CreateCheckbox(QUEST_LOG_SHOW_OBJECTIVES, IsSelected, SetSelected);
 	end);
 end
 
@@ -991,7 +999,6 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	else
 		height = 59;
 	end
-	height = min(height, 275);
 	detailsFrame:SetRewardsHeight(height);
 
 	QuestMapFrame.QuestsFrame:Hide();
@@ -1129,7 +1136,7 @@ function QuestLogScrollFrameMixin:OnLoad()
 	ScrollFrame_OnLoad(self);
 
 	self.titleFramePool = CreateFramePool("BUTTON", QuestMapFrame.QuestsFrame.Contents, "QuestLogTitleTemplate", function(framePool, frame)
-		FramePool_HideAndClearAnchors(framePool, frame);
+		Pool_HideAndClearAnchors(framePool, frame);
 		frame.info = nil;
 	end);
 
@@ -1178,40 +1185,6 @@ function QuestLogScrollFrameMixin:UpdateBackground(displayState)
 	self.NoSearchResultsText:SetShown(showNoSearchResultsText);
 	self.Background:SetAtlas(atlas, true);
 	self:ResizeBackground();
-end
-
--- *****************************************************************************************************
--- ***** QUEST OPTIONS DROPDOWN
--- *****************************************************************************************************
-
-function QuestMapQuestOptionsDropDown_Initialize(self)
-	local info = UIDropDownMenu_CreateInfo();
-	info.isNotRadio = true;
-	info.notCheckable = true;
-
-	info.text = TRACK_QUEST;
-	if QuestUtils_IsQuestWatched(self.questID) then
-		info.text = UNTRACK_QUEST;
-	end
-	info.func = function(_, questID) QuestMapQuestOptions_TrackQuest(questID) end;
-	info.arg1 = self.questID;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	info.text = SHARE_QUEST;
-	info.func = function(_, questID) QuestMapQuestOptions_ShareQuest(questID) end;
-	info.arg1 = self.questID;
-	if ( not C_QuestLog.IsPushableQuest(self.questID) or not IsInGroup() ) then
-		info.disabled = 1;
-	end
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	if C_QuestLog.CanAbandonQuest(self.questID) then
-		info.text = ABANDON_QUEST;
-		info.func = function(_, questID) QuestMapQuestOptions_AbandonQuest(questID) end;
-		info.arg1 = self.questID;
-		info.disabled = nil;
-		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-	end
 end
 
 function QuestMapQuestOptions_TrackQuest(questID)
@@ -1351,6 +1324,7 @@ do
 		return spacing or 0;
 	end
 
+	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.Header, 4);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.Header, 8);
 	AddSpacingPair(QuestLogButtonTypes.Header, QuestLogButtonTypes.Header, 6);
 	AddSpacingPair(QuestLogButtonTypes.Header, QuestLogButtonTypes.Quest, -2);
@@ -1361,7 +1335,7 @@ do
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCampaignMinimal, 8);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCampaign, 0);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.StoryHeader, -4);
-	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.StoryHeader, -18);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCallings, QuestLogButtonTypes.StoryHeader, 5);
 	AddSpacingPair(QuestLogButtonTypes.HeaderCallings, QuestLogButtonTypes.Quest, 5);
 	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.HeaderCampaign, 2);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaign, 12);
@@ -1709,7 +1683,7 @@ local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
 end
 
 local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, info)
-	button.CollapseButton:UpdateCollapsedState(info.isCollapsed);
+	button:UpdateCollapsedState(displayState, info);
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
 
@@ -1725,6 +1699,15 @@ end
 function CovenantCallingsHeaderMixin:OnLoadCovenantCallings()
 	EventRegistry:RegisterCallback("CovenantCallings.CallingsUpdated", self.UpdateText, self);
 	self:ClearNormalTexture();
+	self.CollapseButton:SetPoint("RIGHT", -4, 0);
+end
+
+function CovenantCallingsHeaderMixin:OnEnterCovenantCallings()
+	self.HighlightTexture:Show();
+end
+
+function CovenantCallingsHeaderMixin:OnLeaveCovenantCallings()
+	self.HighlightTexture:Hide();
 end
 
 function CovenantCallingsHeaderMixin:UpdateBG()
@@ -1732,8 +1715,8 @@ function CovenantCallingsHeaderMixin:UpdateBG()
 
 	if covenantData then
 		local bgAtlas = GetFinalNameFromTextureKit("Callings-Header-%s", covenantData.textureKit);
-		self.HighlightBackground:SetAtlas(bgAtlas, TextureKitConstants.UseAtlasSize);
-		self.Background:SetAtlas(bgAtlas, TextureKitConstants.UseAtlasSize);
+		self.Background:SetAtlas(bgAtlas, TextureKitConstants.IgnoreAtlasSize);
+		self.HighlightTexture:SetAtlas(bgAtlas, TextureKitConstants.IgnoreAtlasSize);
 	end
 end
 
@@ -1741,10 +1724,14 @@ function CovenantCallingsHeaderMixin:UpdateText()
 	self:SetText(QUEST_LOG_COVENANT_CALLINGS_HEADER:format(CovenantCalling_GetCompletedCount(), Constants.Callings.MaxCallings));
 end
 
+function CovenantCallingsHeaderMixin:UpdateCollapsedState(displayState, info)
+	QuestLogHeaderCodeMixin.UpdateCollapsedState(self, displayState, info);
+	self.SelectedHighlight:SetShown(not info.isCollapsed);
+end
+
 local function QuestLogQuests_AddCovenantCallingsHeaderButton(displayState, info)
 	local button = QuestScrollFrame.covenantCallingsHeaderFramePool:Acquire();
 	QuestLogQuests_SetupStandardHeaderButton(button, displayState, info);
-	button.SelectedTexture:SetShown(not info.isCollapsed);
 	CovenantCalling_CheckCallings();
 	button:UpdateText();
 	button:UpdateBG();
@@ -1817,7 +1804,7 @@ function QuestLogQuests_Update()
 	QuestScrollFrame.headerFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderFramePool:ReleaseAll();
 	QuestScrollFrame.campaignHeaderMinimalFramePool:ReleaseAll();
-	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();	
+	QuestScrollFrame.covenantCallingsHeaderFramePool:ReleaseAll();
 	QuestScrollFrame.Contents:ResetUsage();
 	QuestMapFrame:ResetLayoutIndex();
 
@@ -1835,17 +1822,6 @@ function QuestLogQuests_Update()
 	-- Display the zone story stuff if appropriate, updating separators as necessary...TODO: Refactor this out as well
 	local mapID = QuestMapFrame:GetParent():GetMapID();
 	local storyAchievementID, storyMapID = C_QuestLog.GetZoneStoryInfo(mapID);
-
-	local separator = QuestScrollFrame.Contents.Separator;
-	separator:SetShown(displayState.campaignShown);
-	if displayState.campaignShown then
-		QuestMapFrame:SetFrameLayoutIndex(separator);
-		if storyAchievementID then
-			separator.Divider:SetAtlas("ZoneStory_Divider", true);
-		else
-			separator.Divider:SetAtlas("QuestLog_Divider_NormalQuests", true);
-		end
-	end
 
 	if storyAchievementID then
 		QuestScrollFrame.Contents.StoryHeader:Show();
@@ -1866,6 +1842,10 @@ function QuestLogQuests_Update()
 	else
 		QuestScrollFrame.Contents.StoryHeader:Hide();
 	end
+
+	local separator = QuestScrollFrame.Contents.Separator;
+	separator:SetShown(displayState.campaignShown or storyAchievementID);
+	QuestMapFrame:SetFrameLayoutIndex(separator);
 
 	-- Display the rest of the normal quests and their headers.
 	QuestLogQuests_DisplayQuestsFromIndices(displayState, questInfos);
@@ -2088,23 +2068,43 @@ function QuestLogObjectiveMixin:GetButtonType()
 	return QuestLogButtonTypes.Quest;
 end
 
+function QuestMapLogTitleButton_CreateContextMenu(self)
+	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_QUEST_MAP_LOG_TITLE");
+
+		local text = QuestUtils_IsQuestWatched(self.questID) and UNTRACK_QUEST or TRACK_QUEST;
+		rootDescription:CreateButton(TRACK_QUEST, function()
+			QuestMapQuestOptions_TrackQuest(self.questID);
+		end);
+
+		local button = rootDescription:CreateButton(SHARE_QUEST, function()
+			QuestMapQuestOptions_ShareQuest(self.questID);
+		end);
+		if not C_QuestLog.IsPushableQuest(self.questID) or not IsInGroup() then
+			button:SetEnabled(false);
+		end
+
+		if C_QuestLog.CanAbandonQuest(self.questID) then
+			rootDescription:CreateButton(ABANDON_QUEST, function()
+				QuestMapQuestOptions_AbandonQuest(self.questID);
+			end);
+		end
+	end);
+end
+
 function QuestMapLogTitleButton_OnClick(self, button)
 	if ChatEdit_TryInsertQuestLinkForQuestID(self.questID) then
 		return;
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	
+
 	if IsShiftKeyDown() then
 		self:ToggleTracking();
 	else
-		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
+	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
 		if not isDisabledQuest and button == "RightButton" then
-			if ( self.questID ~= QuestMapQuestOptionsDropDown.questID ) then
-				CloseDropDownMenus();
-			end
-			QuestMapQuestOptionsDropDown.questID = self.questID;
-			ToggleDropDownMenu(1, nil, QuestMapQuestOptionsDropDown, "cursor", 6, -6);
+			QuestMapLogTitleButton_CreateContextMenu(self);
 		elseif button == "LeftButton" then
 			QuestMapFrame_ShowQuestDetails(self.questID);
 		end
@@ -2121,7 +2121,62 @@ function QuestMapLogTitleButton_OnMouseUp(self)
 	self.Text:SetPoint(anchor, x - 1, y + 1);
 end
 
-function QuestMapLog_ShowStoryTooltip(self)
+function QuestMapLog_GetCampaignTooltip()
+	return QuestScrollFrame.CampaignTooltip;
+end
+
+-- *****************************************************************************************************
+-- ***** POPUP DETAIL FRAME
+-- *****************************************************************************************************
+
+function QuestLogPopupDetailFrame_OnHide(self)
+	self.questID = nil;
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
+end
+
+function QuestLogPopupDetailFrame_Show(questLogIndex)
+	local questID = C_QuestLog.GetQuestIDForLogIndex(questLogIndex);
+	if ( QuestLogPopupDetailFrame.questID == questID and QuestLogPopupDetailFrame:IsShown() ) then
+		HideUIPanel(QuestLogPopupDetailFrame);
+		return;
+	end
+
+	QuestLogPopupDetailFrame.questID = questID;
+	C_QuestLog.SetSelectedQuest(questID);
+	StaticPopup_Hide("ABANDON_QUEST");
+	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
+	C_QuestLog.SetAbandonQuest();
+
+	QuestMapFrame_UpdateQuestDetailsButtons();
+
+	QuestLogPopupDetailFrame_Update(true);
+	ShowUIPanel(QuestLogPopupDetailFrame);
+	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
+	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
+
+	-- portrait
+	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
+		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
+	else
+		QuestFrame_HideQuestPortrait();
+	end
+end
+
+function QuestLogPopupDetailFrame_Update(resetScrollBar)
+	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogPopupDetailFrame.ScrollFrame.ScrollChild)
+	if ( resetScrollBar ) then
+		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:ScrollToBegin();
+	end
+end
+
+StoryHeaderMixin = {};
+
+function StoryHeaderMixin:GetButtonType()
+	return QuestLogButtonTypes.StoryHeader;
+end
+
+function StoryHeaderMixin:ShowTooltip()
 	local tooltip = QuestScrollFrame.StoryTooltip;
 	local mapID = QuestMapFrame:GetParent():GetMapID();
 	local storyAchievementID, storyMapID = C_QuestLog.GetZoneStoryInfo(mapID);
@@ -2191,63 +2246,14 @@ function QuestMapLog_ShowStoryTooltip(self)
 	tooltip:Show();
 end
 
-function QuestMapLog_HideStoryTooltip(self)
+function StoryHeaderMixin:OnEnter()
+	self:ShowTooltip();
+	self.HighlightTexture:Show();
+end
+
+function StoryHeaderMixin:OnLeave()
 	QuestScrollFrame.StoryTooltip:Hide();
-end
-
-function QuestMapLog_GetCampaignTooltip()
-	return QuestScrollFrame.CampaignTooltip;
-end
-
--- *****************************************************************************************************
--- ***** POPUP DETAIL FRAME
--- *****************************************************************************************************
-
-function QuestLogPopupDetailFrame_OnHide(self)
-	self.questID = nil;
-	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
-end
-
-function QuestLogPopupDetailFrame_Show(questLogIndex)
-	local questID = C_QuestLog.GetQuestIDForLogIndex(questLogIndex);
-	if ( QuestLogPopupDetailFrame.questID == questID and QuestLogPopupDetailFrame:IsShown() ) then
-		HideUIPanel(QuestLogPopupDetailFrame);
-		return;
-	end
-
-	QuestLogPopupDetailFrame.questID = questID;
-	C_QuestLog.SetSelectedQuest(questID);
-	StaticPopup_Hide("ABANDON_QUEST");
-	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
-	C_QuestLog.SetAbandonQuest();
-
-	QuestMapFrame_UpdateQuestDetailsButtons();
-
-	QuestLogPopupDetailFrame_Update(true);
-	ShowUIPanel(QuestLogPopupDetailFrame);
-	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
-	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
-
-	-- portrait
-	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
-	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
-		QuestFrame_ShowQuestPortrait(QuestLogPopupDetailFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, -3, -42);
-	else
-		QuestFrame_HideQuestPortrait();
-	end
-end
-
-function QuestLogPopupDetailFrame_Update(resetScrollBar)
-	QuestInfo_Display(QUEST_TEMPLATE_LOG, QuestLogPopupDetailFrame.ScrollFrame.ScrollChild)
-	if ( resetScrollBar ) then
-		QuestLogPopupDetailFrame.ScrollFrame.ScrollBar:ScrollToBegin();
-	end
-end
-
-StoryHeaderMixin = {};
-
-function StoryHeaderMixin:GetButtonType()
-	return QuestLogButtonTypes.StoryHeader;
+	self.HighlightTexture:Hide();
 end
 
 QuestLogSearchBoxMixin = { };
@@ -2275,30 +2281,10 @@ end
 
 QuestLogSettingsButtonMixin = { };
 
-local function QuestLogSettingsDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-	info.isNotRadio = true;
-	info.text = QUEST_LOG_SHOW_OBJECTIVES;
-	info.checked = GetCVarBool("showQuestObjectivesInLog");
-	info.func = function()
-		local value = not GetCVarBool("showQuestObjectivesInLog");
-		SetCVar("showQuestObjectivesInLog", value and 1 or 0);
-		QuestLogQuests_Update();
-	end;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
 function QuestLogSettingsButtonMixin:OnMouseDown()
 	self.Icon:AdjustPointsOffset(1, -1);
 end
 
 function QuestLogSettingsButtonMixin:OnMouseUp(button, upInside)
 	self.Icon:AdjustPointsOffset(-1, 1);
-	if button == "LeftButton" and upInside then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-		local dropdown = QuestLogSettingsDropDown;
-		dropdown.initialize = QuestLogSettingsDropDown_Initialize;
-		dropdown.displayMode = "MENU";		
-		ToggleDropDownMenu(1, nil, dropdown, self, 14, 2);
-	end
 end

@@ -1,9 +1,9 @@
 local PURCHASE_TAB_ID = -1;
 
 BANK_PANELS = {
-	{ name = "BankSlotsFrame", size = {x=386, y=415}, SetTitle=function() BankFrame:SetTitle(UnitName("npc")); end },
-	{ name = "ReagentBankFrame", size = {x=738, y=415}, SetTitle=function() BankFrame:SetTitle(REAGENT_BANK); end },
-	{ name = "AccountBankPanel", size = {x=738, y=460}, SetTitle=function() BankFrame:SetTitle(ACCOUNT_BANK_PANEL_TITLE); end },
+	{ name = "BankSlotsFrame", size = {x=386, y=415}, SetTitle=function() BankFrame:SetTitle(UnitName("npc")); end, bankType = Enum.BankType.Character },
+	{ name = "ReagentBankFrame", size = {x=738, y=415}, SetTitle=function() BankFrame:SetTitle(REAGENT_BANK); end, bankType = Enum.BankType.Character },
+	{ name = "AccountBankPanel", size = {x=738, y=460}, SetTitle=function() BankFrame:SetTitle(ACCOUNT_BANK_PANEL_TITLE); end, bankType = Enum.BankType.Account },
 }
 
 function ButtonInventorySlot (self)
@@ -284,8 +284,26 @@ function CloseBankBagFrames ()
 	end
 end
 
+local function RefreshBankTabVisibility()
+	local usableBankTabIndicies = {};
+	for index, panelData in pairs(BANK_PANELS) do
+		if C_Bank.CanUseBank(panelData.bankType) then
+			table.insert(usableBankTabIndicies, index);
+		end
+	end
+
+	local hasMultipleTabs = #usableBankTabIndicies > 1;
+	for index, panelData in pairs(BANK_PANELS) do
+		PanelTemplates_SetTabShown(BankFrame, index, hasMultipleTabs and tContains(usableBankTabIndicies, index));
+	end
+
+	local firstUsableTab = BANK_PANELS[usableBankTabIndicies[1]];
+	BankFrame_ShowPanel(firstUsableTab.name);
+end
+
 function BankFrame_Open()
-	BankFrame_ShowPanel(BANK_PANELS[1].name);
+	RefreshBankTabVisibility();
+
 	BankFrame:SetPortraitToUnit("npc");
 	ShowUIPanel(BankFrame);
 	if ( not BankFrame:IsShown() ) then
@@ -828,7 +846,7 @@ function BankPanelTabMixin:RefreshVisuals()
 end
 
 function BankPanelTabMixin:RefreshSearchOverlay()
-	self.SearchOverlay:SetShown(self.tabData.ID and C_Container.IsContainerFiltered(self.tabData.ID));
+	self.SearchOverlay:SetShown(self.tabData.ID and not self:IsPurchaseTab() and C_Container.IsContainerFiltered(self.tabData.ID));
 end
 
 function BankPanelTabMixin:Init(tabData)
@@ -1675,8 +1693,8 @@ function BankPanelTabSettingsMenuMixin:OverrideInheritedAnchoring()
 	self.BorderBox.IconSelectionText:ClearAllPoints();
 	self.BorderBox.IconSelectionText:SetPoint("BOTTOMLEFT", self.IconSelector, "TOPLEFT", 0, 10);
 
-	self.BorderBox.IconTypeDropDown:ClearAllPoints();
-	self.BorderBox.IconTypeDropDown:SetPoint("BOTTOMRIGHT", self.IconSelector, "TOPRIGHT", -33, 0);
+	self.BorderBox.IconTypeDropdown:ClearAllPoints();
+	self.BorderBox.IconTypeDropdown:SetPoint("BOTTOMRIGHT", self.IconSelector, "TOPRIGHT", -33, 0);
 end
 
 function BankPanelTabSettingsMenuMixin:OnShow()
@@ -1687,7 +1705,8 @@ function BankPanelTabSettingsMenuMixin:OnShow()
 
 	self:Update();
 
-	self.BorderBox.IconTypeDropDown:SetSelectedValue(IconSelectorPopupFrameIconFilterTypes.All);
+	self:SetIconFilter(IconSelectorPopupFrameIconFilterTypes.All);
+
 	self.BorderBox.IconSelectorEditBox:SetFocus();
 	self.BorderBox.IconSelectorEditBox:OnTextChanged();
 
@@ -1834,19 +1853,6 @@ function BankPanelTabSettingsMenuMixin:GetSelectedTabData()
 	return self.selectedTabData;
 end
 
-BankPanelTabSettingsExpansionFilterDropDownMixin = {};
-
-function BankPanelTabSettingsExpansionFilterDropDownMixin:OnLoad()
-	local width, height = 90, 40;
-	UIDropDownMenu_SetWidth(self, width, height, padding);
-
-	UIDropDownMenu_SetAnchor(self, 0, 22, "TOP", self.Middle, "BOTTOM");
-
-	self.Text:ClearAllPoints();
-	self.Text:SetPoint("RIGHT", self.Right, "RIGHT", -41, 2);
-	self.Text:SetPoint("LEFT", self.Left, "RIGHT", 0, 2);
-end
-
 local BankTabExpansionFilterTypes = {
 	["All"] = 0,
 	["ExpansionCurrent"] = Enum.BagSlotFlags.ExpansionCurrent,
@@ -1865,9 +1871,24 @@ local BankTabExpansionFilterTypeNames = {
 	[BankTabExpansionFilterTypes.ExpansionLegacy] = BANK_TAB_EXPANSION_FILTER_LEGACY,
 };
 
-function BankPanelTabSettingsExpansionFilterDropDownMixin:OnShow()	
-	UIDropDownMenu_Initialize(self, BankPanelTabSettingsExpansionFilterDropDownMixin.InitializeDropDown);
-	self:Refresh();
+BankTabDepositSettingsMenuMixin = {};
+
+function BankTabDepositSettingsMenuMixin:OnLoad()
+	self.ExpansionFilterDropDown:SetWidth(110);
+end
+
+function BankTabDepositSettingsMenuMixin:OnShow()
+	self.ExpansionFilterDropDown:Refresh();
+end
+
+BankPanelTabSettingsExpansionFilterDropDownMixin = {};
+
+local function GetCurrentFilterType(tabData)
+	local filterType = 0;
+	for index, filterValue in ipairs(BankTabExpansionFilterOrder) do
+		filterType = FlagsUtil.Combine(filterType, filterValue, FlagsUtil.IsSet(tabData.depositFlags, filterValue));
+	end
+	return filterType;
 end
 
 function BankPanelTabSettingsExpansionFilterDropDownMixin:Refresh()
@@ -1876,26 +1897,28 @@ function BankPanelTabSettingsExpansionFilterDropDownMixin:Refresh()
 		return;
 	end
 
-	local selectedExpansionFlags = 0;
-	for index, filterValue in ipairs(BankTabExpansionFilterOrder) do
-		selectedExpansionFlags = FlagsUtil.Combine(selectedExpansionFlags, filterValue, FlagsUtil.IsSet(tabData.depositFlags, filterValue));
+	self:SetFilterValue(GetCurrentFilterType(tabData));
+
+	local function IsSelected(filterType)
+		return self:GetFilterValue() == filterType;
 	end
-	UIDropDownMenu_SetSelectedValue(self, selectedExpansionFlags);
+
+	local function SetSelected(filterType)
+		self:SetFilterValue(filterType);
+	end
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_BANK_EXPANSION_FILTER");
+
+		for index, filterType in ipairs(BankTabExpansionFilterOrder) do
+			rootDescription:CreateRadio(BankTabExpansionFilterTypeNames[filterType], IsSelected, SetSelected, filterType);
+		end
+	end);
 end
 
 function BankPanelTabSettingsExpansionFilterDropDownMixin:GetSelectedTabData()
 	local settingsMenu = self:GetParent():GetParent();
 	return settingsMenu:GetSelectedTabData();
-end
-
-function BankPanelTabSettingsExpansionFilterDropDownMixin:InitializeDropDown()
-	for index, filterType in ipairs(BankTabExpansionFilterOrder) do
-		local buttonInfo = UIDropDownMenu_CreateInfo();
-		buttonInfo.text = BankTabExpansionFilterTypeNames[filterType];
-		buttonInfo.checked = function() return self:GetFilterValue() == filterType; end;
-		buttonInfo.func = function() self:SetFilterValue(filterType); end;
-		UIDropDownMenu_AddButton(buttonInfo);
-	end
 end
 
 function BankPanelTabSettingsExpansionFilterDropDownMixin:GetFilterValue()
@@ -1904,7 +1927,6 @@ end
 
 function BankPanelTabSettingsExpansionFilterDropDownMixin:SetFilterValue(value)
 	self.selectedValue = value;
-	UIDropDownMenu_Refresh(self);
 end
 
 BankPanelCheckBoxMixin = {};

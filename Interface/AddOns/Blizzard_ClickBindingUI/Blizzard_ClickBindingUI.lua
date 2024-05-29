@@ -381,6 +381,44 @@ function ClickBindingFrameMixin:InitializeButtons()
 			end
 		end);
 	end
+
+	local function GetModifierKeyTooltipText(modifierKey)
+		return _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..modifierKey.."_KEY"];
+	end
+
+	self.MouseoverCastKeyDropdown:SetWidth(130);
+	self.MouseoverCastKeyDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_MOUSEOVER_CAST_KEY");
+
+		-- This should keep parity with the Interface Option Panel's MouseoverCast settings
+		local function IsSelected(modifierKey)
+			return modifierKey == GetModifiedClick("MOUSEOVERCAST");
+		end
+
+		local function SetSelected(modifierKey)
+			SetModifiedClick("MOUSEOVERCAST", modifierKey);
+			SaveBindings(GetCurrentBindingSet());
+		end
+
+		for index, modifierKey in ipairs({"NONE", "ALT", "CTRL", "SHIFT"}) do
+			local text = _G[modifierKey.."_KEY"];
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, modifierKey);
+			radio:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, text);
+				GameTooltip_AddNormalLine(tooltip, GetModifierKeyTooltipText(modifierKey), true);
+			end);
+		end
+	end);
+
+	self.MouseoverCastKeyDropdown:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self.MouseoverCastKeyDropdown, "ANCHOR_RIGHT");
+		local modifierKey = GetModifiedClick("MOUSEOVERCAST") or "NONE";
+		GameTooltip:SetText(GetModifierKeyTooltipText(modifierKey), nil, nil, nil, nil, true);
+	end);
+
+	self.MouseoverCastKeyDropdown:SetScript("OnLeave", function()
+		GameTooltip:Hide();
+	end);
 end
 
 local function AddFromCursorInfo(addFunc)
@@ -738,7 +776,8 @@ function ClickBindingFrameMixin:UpdateMouseoverCastUI()
 	self.EnableMouseoverCastCheckbox:UpdateCheckbox();
 
 	local enableMouseoverCast = GetCVarBool("enableMouseoverCast");
-	self.MouseoverCastKeyDropDown:SetShown(enableMouseoverCast);
+	self.MouseoverCastKeyDropdown:SetShown(enableMouseoverCast);
+	self.MouseoverCastKeyDropdown:GenerateMenu();
 
 	local dropDownSizeYOffset = 25;
 	if enableMouseoverCast and not self.isApplyingEnabledMouseOverCastFrameSizeOffset then
@@ -798,59 +837,4 @@ end
 
 function ClickableBindingsEnableMouseoverCastCheckboxMixin:UpdateCheckbox()
 	self:SetChecked(GetCVarBool("enableMouseoverCast"));
-end
-
--- [[ Mouseover Cast Key ]]
--- This should keep parity with the Interface Option Panel's MouseoverCast settings
-ClickableBindingsMouseoverCastKeyDropDownMixin = {};
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:OnShow()
-	self:RefreshValue();
-end
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
-end
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
-function ClickableBindingsMouseoverCastKeyDropDownMixin:RefreshValue()
-	local function Initialize()
-		local function GetTooltipText(value)
-			return _G["OPTION_TOOLTIP_MOUSEOVER_CAST_"..value.."_KEY"];
-		end
-
-		local defaultValue = "NONE";
-		local oldValue = GetModifiedClick("MOUSEOVERCAST");
-		self.selectedValue = oldValue or defaultValue;
-
-		local info = UIDropDownMenu_CreateInfo();
-
-		info.func = function(info)
-			SetModifiedClick("MOUSEOVERCAST", info.value);
-			SaveBindings(GetCurrentBindingSet());
-			self:RefreshValue();
-		end;
-
-		local function AddDropdownButton(value)
-			info.text = _G[value.."_KEY"];
-			info.value = value;
-			info.tooltipTitle = info.text;
-			info.tooltipText = GetTooltipText(value);
-			UIDropDownMenu_AddButton(info);
-		end
-
-		AddDropdownButton("NONE");
-		AddDropdownButton("ALT");
-		AddDropdownButton("CTRL");
-		AddDropdownButton("SHIFT");
-
-		UIDropDownMenu_SetSelectedValue(self, self.selectedValue);
-		self.tooltipText = GetTooltipText(self.selectedValue);
-	end
-
-	UIDropDownMenu_Initialize(self, GenerateClosure(Initialize, self));
 end

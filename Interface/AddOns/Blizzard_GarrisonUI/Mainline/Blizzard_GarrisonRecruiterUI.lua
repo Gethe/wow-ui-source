@@ -18,18 +18,20 @@ function GarrisonRecruiterFrame_OnLoad(self)
 	self.Pick.Radio1.Text:SetText(GARRISON_RECRUIT_ABILITY);
 	self.Pick.Radio2.Text:SetText(GARRISON_RECRUIT_TRAIT);
 	
-	GarrisonRecruiterFrame.Pick.Radio1:SetChecked(true);
+	self.Pick.Radio1:SetChecked(true);
 	self.Pick.entries = {};
 	
 	self.onCloseCallback = GarrisonRecruiterFrame_OnClickClose;
-	self.Pick.categories ={};
+	self.Pick.categories = {};
 	self.categoriesTable = C_Garrison.GetRecruiterAbilityCategories();
 	for index, category in pairs(self.categoriesTable)do
 		self.Pick.categories[category] = {
 			name = category,
-			entries = {}
+			entries = {},
 		};
 	end
+
+	self.Pick.ThreatDropdown:SetWidth(207);
 end
 
 function GarrisonRecruiterFrame_OnEvent(self, event, ...)
@@ -38,6 +40,13 @@ function GarrisonRecruiterFrame_OnEvent(self, event, ...)
 	elseif( event == "GARRISON_RECRUITMENT_READY" ) then
 		GarrisonRecruiterFrame_OnShow(self);
 	end
+end
+
+local function SetTooltip(elementDescription, entry)
+	elementDescription:SetTooltip(function(tooltip, elementDescription)
+		GameTooltip_SetTitle(tooltip, entry.name);
+		GameTooltip_AddNormalLine(tooltip, entry.description);
+	end);
 end
 
 function GarrisonRecruiterFrame_OnShow(self)
@@ -56,44 +65,70 @@ function GarrisonRecruiterFrame_OnShow(self)
 		ShowUIPanel(GarrisonRecruitSelectFrame);
 	else
 		self.keepRecruitmentNPCOpen = nil;
-		GarrisonRecruiterFrame_Show( C_Garrison.CanGenerateRecruits(), C_Garrison.CanSetRecruitmentPreference() );
-	end
-end
 
-function GarrisonRecruiterFrame_Show( canRecruit, prefAvailable )
-	if( canRecruit ) then
-		if( prefAvailable )then
-			local frame = GarrisonRecruiterFrame.Pick;
-			local ability, name, desc, icon, id = C_Garrison.GetRecruitmentPreferences()
-			if( name ) then
-				if( ability ) then
-					frame.Radio1:SetChecked(true);
-					frame.Radio2:SetChecked(false);
-					GarrisonRecruiterFrame_UpdateAbilityEntries(false);
-					frame.Title2:SetText(GARRISON_CHOOSE_THREAT);
+		if( C_Garrison.CanGenerateRecruits() ) then
+			if( C_Garrison.CanSetRecruitmentPreference() ) then
+				local frame = GarrisonRecruiterFrame.Pick;
+				local ability, name, desc, icon, id = C_Garrison.GetRecruitmentPreferences()
+				if( name ) then
+					if( ability ) then
+						frame.Radio1:SetChecked(true);
+						frame.Radio2:SetChecked(false);
+						GarrisonRecruiterFrame_UpdateAbilityEntries(false);
+						frame.Title2:SetText(GARRISON_CHOOSE_THREAT);
+					else
+						frame.Radio1:SetChecked(false);
+						frame.Radio2:SetChecked(true);
+						GarrisonRecruiterFrame_UpdateAbilityEntries(true);
+						frame.Title2:SetText(GARRISON_CHOOSE_TRAIT);
+					end
+					GarrisonRecruiterFrame_SetAbilityPreference ({id=id, name=name, description=desc, icon=icon});
 				else
-					frame.Radio1:SetChecked(false);
-					frame.Radio2:SetChecked(true);
-					GarrisonRecruiterFrame_UpdateAbilityEntries(true);
-					frame.Title2:SetText(GARRISON_CHOOSE_TRAIT);
+					GarrisonRecruiterFrame_UpdateAbilityEntries(frame.Radio2:GetChecked());
+					GarrisonRecruiterFrame_SetAbilityPreference (frame.entries[1]);
 				end
-				GarrisonRecruiterFrame_SetAbilityPreference ({id=id, name=name, description=desc, icon=icon});
+				frame:Show();
 			else
-				GarrisonRecruiterFrame_UpdateAbilityEntries(frame.Radio2:GetChecked());
-				GarrisonRecruiterFrame_SetAbilityPreference (frame.entries[1]);
+				GarrisonRecruiterFrame.Random:Show();
 			end
-			frame:Show();
 		else
-			GarrisonRecruiterFrame.Random:Show();
+			GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_RECRUIT_NEXT_WEEK);	
+			GarrisonRecruiterFrame.UnavailableFrame:Show();
 		end
-	else
-		GarrisonRecruiterFrame_ShowUnavailableFrame();
-	end
-end
 
-function GarrisonRecruiterFrame_ShowUnavailableFrame()
-	GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_RECRUIT_NEXT_WEEK);	
-	GarrisonRecruiterFrame.UnavailableFrame:Show();
+		self.Pick.ThreatDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_GARRISON_RECRUITER_THREAT");
+
+			for i, category in pairs(GarrisonRecruiterFrame.categoriesTable) do
+				local categoryEntry = GarrisonRecruiterFrame.Pick.categories[category];
+				if #categoryEntry.entries > 0 then
+					categoryEntry.id = category;
+
+					local submenu = rootDescription:CreateButton(tbl.name);
+
+					for _, entry in pairs(categoryEntry.entries) do
+						local button = submenu:CreateButton(entry.name, function()
+							GarrisonRecruiterFrame_SetAbilityPreference(entry);
+						end);
+						SetTooltip(button, entry);
+					end
+				end
+			end
+
+			local function IsChecked(entry)
+				return GarrisonRecruiterFrame.Pick.selectedID == entry.id;
+			end
+
+			local function SetChecked(entry)
+				GarrisonRecruiterFrame_SetAbilityPreference(entry);
+			end
+
+			for _, entry in pairs(GarrisonRecruiterFrame.Pick.entries) do
+				local checkbox = rootDescription:CreateCheckbox(entry.name, IsChecked, SetChecked, entry);
+				SetTooltip(checkbox, entry);
+			end
+		end);
+	end
 end
 
 function GarrisonRecruiterFrame_OnClickClose(self)
@@ -103,8 +138,8 @@ end
 function GarrisonRecruiterFrame_OnHide(self)
 	if( C_Garrison.CanSetRecruitmentPreference() ) then	
 		local frame = GarrisonRecruiterFrame.Pick;
-		local arg1 = (frame.Radio1:GetChecked() and frame.dropDownValue) or 0;
-		local arg2 = (frame.Radio2:GetChecked() and frame.dropDownValue) or 0;
+		local arg1 = (frame.Radio1:GetChecked() and frame.selectedID) or 0;
+		local arg2 = (frame.Radio2:GetChecked() and frame.selectedID) or 0;
 		C_Garrison.SetRecruitmentPreferences(arg1, arg2);
 	end
 	self:UnregisterEvent("GARRISON_RECRUITMENT_NPC_CLOSED");
@@ -118,7 +153,6 @@ function GarrisonRecruiterFrame_OnHide(self)
 end
 
 function GarrisonRecruiterType_OnClick( self )
-	CloseDropDownMenus();
 	local frame = GarrisonRecruiterFrame.Pick;
 	if( self:GetID() == 1 ) then
 		frame.Radio1:SetChecked(true);
@@ -133,67 +167,6 @@ function GarrisonRecruiterType_OnClick( self )
 	end
 end
 
-function GarrisonRecruiterFrame_Init(self, level)
-	local frame = GarrisonRecruiterFrame.Pick;
-	if( level == 1 ) then
-		local info = UIDropDownMenu_CreateInfo();
-		info.isTitle = nil;
-		info.disabled = nil;
-		info.tooltipWhileDisabled = nil;
-		info.tooltipOnButton = nil;
-		info.tooltipTitle = nil;
-		info.tooltipText = nil;
-		info.hasArrow = true;
-		info.notCheckable = true;
-		info.func = function() CloseDropDownMenus() end;
-		for i, category in pairs(GarrisonRecruiterFrame.categoriesTable) do
-			local entry = frame.categories[category];
-			if( #entry.entries > 0 ) then
-				entry.id = category;
-				GarrisonRecruiterFrame_AddEntryToDropdown(entry, info);
-			end
-		end
-		
-		info.hasArrow = false;
-		info.notCheckable = false;
-		info.func = function(self, arg1)
-			GarrisonRecruiterFrame_SetAbilityPreference (arg1);
-			CloseDropDownMenus();
-		end
-		for _, entry in pairs(frame.entries) do
-			info.arg1 = entry;
-			info.tooltipOnButton = 1;
-			info.tooltipTitle = entry.name;
-			info.tooltipText = entry.description;
-			GarrisonRecruiterFrame_AddEntryToDropdown(entry, info);
-		end
-	
-		UIDropDownMenu_SetText(frame.ThreatDropDown, frame.dropDownName);
-	else
-		local category = frame.categories[UIDROPDOWNMENU_MENU_VALUE];
-		if(category)then
-			local info = UIDropDownMenu_CreateInfo();
-			info.isTitle = nil;
-			info.disabled = nil;
-			info.tooltipWhileDisabled = nil;
-			info.tooltipOnButton = nil;
-			info.tooltipTitle = nil;
-			info.tooltipText = nil;
-			info.func = function(self, arg1)
-				GarrisonRecruiterFrame_SetAbilityPreference (arg1);
-				CloseDropDownMenus();
-			end
-			for _, entry in pairs(category.entries) do
-				info.arg1 = entry;
-				info.tooltipOnButton = 1;
-				info.tooltipTitle = entry.name;
-				info.tooltipText = entry.description;
-				GarrisonRecruiterFrame_AddEntryToDropdown(entry, info, level);
-			end
-		end
-	end
-end
-
 function GarrisonRecruiterFrame_GenerateRecruits(ability, trait)
 	C_Garrison.GenerateRecruits(ability, trait);
 	GarrisonRecruiterFrame.keepRecruitmentNPCOpen = true;
@@ -205,8 +178,8 @@ end
 
 function GarrisonRecruiterFrame_ChooseRecruits()
 	local frame = GarrisonRecruiterFrame.Pick;
-	local ability = (frame.Radio1:GetChecked() and frame.dropDownValue) or 0;
-	local trait = (frame.Radio2:GetChecked() and frame.dropDownValue) or 0;
+	local ability = (frame.Radio1:GetChecked() and frame.selectedID) or 0;
+	local trait = (frame.Radio2:GetChecked() and frame.selectedID) or 0;
 	GarrisonRecruiterFrame_GenerateRecruits(ability, trait);
 end
 
@@ -249,15 +222,12 @@ end
 function GarrisonRecruiterFrame_SetAbilityPreference(data)
 	if( data ) then
 		local frame = GarrisonRecruiterFrame.Pick;
-		frame.dropDownValue = data.id;
-		frame.dropDownName = data.name;
+		frame.selectedID = data.id;
 		
 		frame.Counter.Title:SetText(data.name);
 		frame.Counter.Description:SetText(data.description);
 		frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 		frame.Counter.Icon:SetTexture(data.icon);
-		
-		UIDropDownMenu_SetText(frame.ThreatDropDown, data.name);
 	end
 end
 
@@ -403,14 +373,6 @@ function GarrisonRecruiterFrame_HireRecruit(self)
 	local followerName = followers[followerIndex].name;
 	local color = FOLLOWER_QUALITY_COLORS[followers[followerIndex].quality].hex;
 	StaticPopup_Show("CONFIRM_RECRUIT_FOLLOWER", color..followerName..FONT_COLOR_CODE_CLOSE, nil, followerIndex);
-end
-
--- add abilty/trait to recruiter drop down
-function GarrisonRecruiterFrame_AddEntryToDropdown( entry, info, level )
-	info.text = entry.name;
-	info.value = entry.id;
-	info.checked = (GarrisonRecruiterFrame.Pick.dropDownValue == info.value);	
-	UIDropDownMenu_AddButton(info, level);
 end
 
 -- create or retrieve recruit ability/trait entry

@@ -218,15 +218,15 @@
 					</Layer>
 				</Layers>
 			</CheckButton>
-			<Frame parentKey="MouseoverCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" mixin="ClickableBindingsMouseoverCastKeyDropDownMixin">
+			<DropdownButton parentKey="MouseoverCastKeyDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.EnableMouseoverCastCheckbox" relativePoint="BOTTOMLEFT" x="-12" y="-15"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnableMouseoverCastCheckbox" relativePoint="BOTTOMLEFT" x="4" y="-15"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString parentKey="Label" inherits="GameFontNormal" text="MOUSEOVER_CAST_KEY">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="19" y="3"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="3" y="3"/>
 							</Anchors>
 						</FontString>
 				  	</Layer>
@@ -236,8 +236,8 @@
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 				</Scripts>
-			</Frame>
-			<Button parentKey="PlayerSpellsPortrait" inherits="ClickBindingFramePortraitTemplate">
+			</DropdownButton>
+			<Button parentKey="MacrosPortrait" inherits="ClickBindingFramePortraitTemplate">
 				<KeyValues>
 					<KeyValue key="FrameName" value="PlayerSpellsFrame" type="string"/>
 					<KeyValue key="PortraitAtlas" value="UI-HUD-MicroMenu-SpecTalents-Up" type="string"/>

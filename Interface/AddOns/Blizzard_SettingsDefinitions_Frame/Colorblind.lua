@@ -10,7 +10,7 @@ local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(COLORBLIND_LABEL);
 
 	-- Enable Colorblind Mode
-	Settings.SetupCVarCheckBox(category, "colorblindMode", USE_COLORBLIND_MODE, OPTION_TOOLTIP_USE_COLORBLIND_MODE);
+	Settings.SetupCVarCheckbox(category, "colorblindMode", USE_COLORBLIND_MODE, OPTION_TOOLTIP_USE_COLORBLIND_MODE);
 
 	-- Colorblind Filter
 	do
@@ -24,7 +24,7 @@ local function Register()
 		end
 
 		local filterSetting = Settings.RegisterCVarSetting(category, "colorblindSimulator", Settings.VarType.Number, COLORBLIND_FILTER);
-		local filterInitializer = Settings.CreateDropDown(category, filterSetting, GetOptions, OPTION_TOOLTIP_COLORBLIND_FILTER);
+		local filterInitializer = Settings.CreateDropdown(category, filterSetting, GetOptions, OPTION_TOOLTIP_COLORBLIND_FILTER);
 	
 		-- Adjust Strength
 		local minValue, maxValue, step = 0, 1, .05;

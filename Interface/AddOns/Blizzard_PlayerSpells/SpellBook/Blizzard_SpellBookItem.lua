@@ -20,7 +20,7 @@ function SpellBookItemMixin:Init(elementData)
 end
 
 function SpellBookItemMixin.Reset(framePool, self)
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 	self:ClearSpellData();
 	self.elementData = nil;
 end

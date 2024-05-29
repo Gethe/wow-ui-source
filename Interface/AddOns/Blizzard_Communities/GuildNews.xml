@@ -364,12 +364,6 @@
 					</Layer>
 				</Layers>
 			</EventFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Size x="10" y="10"/>
-				<Scripts>
-					<OnLoad function="CommunitiesGuildNewsDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<PlayerModel parentKey="BossModel" inherits="CommunitiesGuildNewsBossModelTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-8" y="-20"/>
@@ -380,7 +374,6 @@
 			<OnLoad function="CommunitiesGuildNewsFrame_OnLoad"/>
 			<OnShow function="CommunitiesGuildNewsFrame_OnShow"/>
 			<OnEvent function="CommunitiesGuildNewsFrame_OnEvent"/>
-			<OnHide function="CommunitiesGuildNewsFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 <!--

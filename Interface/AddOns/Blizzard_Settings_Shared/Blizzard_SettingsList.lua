@@ -60,7 +60,7 @@ function SettingsListMixin:OnLoad()
 
 	local function ExtentCalculator(dataIndex, elementData)
 		local extent = securecallfunction(elementData.GetExtent, elementData);
-		return extent or view:CreateTemplateExtent(securecallfunction(elementData.GetTemplate, elementData));
+		return extent or view:GetTemplateExtent(securecallfunction(elementData.GetTemplate, elementData));
 	end
 
 	view:SetElementFactory(Factory);

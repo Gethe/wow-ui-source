@@ -60,6 +60,27 @@ function AchievementFrame_OnLoad (self)
 	self.displayCategories = {};
 	PanelTemplates_UpdateTabs(self);
 
+	local function IsFilterSelected(filter)
+		return ACHIEVEMENTUI_SELECTEDFILTER == filter.func;
+	end
+
+	local function SetFilterSelected(filter)
+		if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
+			ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
+			AchievementFrameAchievements_ForceUpdate();
+		end
+	end
+
+	AchievementFrameFilterDropDown:SetWidth(112);
+	AchievementFrameFilterDropDown:SetFrameLevel(AchievementFrameFilterDropDown:GetFrameLevel() + 1);
+	AchievementFrameFilterDropDown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
+
+		for i, filter in ipairs(AchievementFrameFilters) do
+			rootDescription:CreateRadio(filter.text, IsFilterSelected, SetFilterSelected, filter);
+		end
+	end);
+
 	AchievementFrame_ShowSubFrame(AchievementFrameSummary);
 	AchievementFrameSummary.forceOnShow = AchievementFrameSummary_OnShow;
 	AchievementFrameAchievements.forceOnShow = AchievementFrameAchievements_OnShow;
@@ -2325,14 +2346,6 @@ function AchievementShield_OnLeave(self)
 	end
 	GameTooltip:Hide();
 	guildMemberRequestFrame = nil;
-end
-
-
-function AchievementFrameFilterDropDown_OnEnter(self)
-	local currentFilter = AchievementFrameFilterDropDown.value;
-	GameTooltip:SetOwner(AchievementFrameFilterDropDown, "ANCHOR_RIGHT", -18, 0);
-	GameTooltip:AddLine(AchievementFrameFilterStrings[currentFilter]);
-	GameTooltip:Show();
 end
 
 function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)

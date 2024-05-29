@@ -159,8 +159,11 @@ function HeroTalentsSelectionMixin:UpdateActiveHeroSpec()
 
 	self.selectedSubTreeID = nil;
 
+	local isAnySpecActive = activeSubTreeID ~= nil;
+
 	for subTreeID, specFrame in pairs(self.specFramesBySubTreeID) do
 		specFrame:SetIsActive(subTreeID == activeSubTreeID);
+		specFrame:SetIsAnySpecActive(isAnySpecActive);
 	end
 end
 
@@ -350,7 +353,7 @@ function HeroTalentSpecContentMixin.Reset(framePool, self)
 		self:SetActivationFlashPlaying(false);
 	end
 
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 
 	self.subTreeID = nil;
 	self.layoutIndex = nil;
@@ -482,6 +485,24 @@ function HeroTalentSpecContentMixin:SetIsActive(isActiveSpec)
 	end
 
 	self:CheckTutorials();
+end
+
+function HeroTalentSpecContentMixin:SetIsAnySpecActive(isAnySpecActive)
+	if self.isAnySpecActive == isAnySpecActive then
+		return;
+	end
+
+	self.isAnySpecActive = isAnySpecActive;
+
+	-- Show a green glow around the Activate button until the player picks a spec.
+	if self.isAnySpecActive then
+		GlowEmitterFactory:Hide(self.ActivateButton);
+	else
+		GlowEmitterFactory:Show(self.ActivateButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
+	end
+
+	-- Don't show points available until the player has picked a spec.
+	self.CurrencyFrame:SetShown(self.isAnySpecActive);
 end
 
 function HeroTalentSpecContentMixin:SetHoverStateActive(isActive)

@@ -18,7 +18,7 @@ end
 
 function ArcaneChargeMixin.OnRelease(framePool, self)
 	self:ResetVisuals();
-	FramePool_HideAndClearAnchors(framePool, self);
+	Pool_HideAndClearAnchors(framePool, self);
 end
 
 function ArcaneChargeMixin:SetActive(isActive)

@@ -15,31 +15,23 @@ function ScrollBoxListViewMixin:Init()
 	CallbackRegistryMixin.OnLoad(self);
 	ScrollBoxViewMixin.Init(self);
 
-	self.poolCollection = CreateFramePoolCollection();
-	self.initializerList = {};
-	self.templateInfos = {};
+	self.canSignalWithoutInitializer = true;
+	self.initializers = {};
+
+	self.frameFactory = CreateFrameFactory();
+	self.templateInfoCache = self.frameFactory:GetTemplateInfoCache();
+	self.templateInfoCache:SetInfoAddedCallback(function(info)
+		-- We need to know when a new infos was added so we can reevaluate if
+		-- the extents of each template are identical. This state could be stored
+		-- in the cache, but it has no use for the dirty state, so we're subscribing
+		-- for it instead.
+		self.templateInfoDirty = true;
+	end);
 
 	self.factory = function(frameTemplateOrFrameType, initializer)
-		local frameTemplate = nil;
-		local frameType = nil;
-		local specialization = nil;
+		local frame, new = self.frameFactory:Create(self:GetScrollTarget(), frameTemplateOrFrameType);
+		self.initializers[frame] = initializer;
 
-		local info = self:CreateTemplateInfoForTemplate(frameTemplateOrFrameType);
-		if info then
-			frameTemplate = frameTemplateOrFrameType;
-			frameType = info.type;
-		else
-			-- Couldn't obtain template info, so the presumption is that this is a basic frame type.
-			frameTemplate = "";
-			frameType = frameTemplateOrFrameType;
-			specialization = frameType;
-		end
-
-		-- The frame type is passed as a specialization argument if this is deduced to be a basic frame type (i.e. button, frame) to
-		-- enable the pool collection to support multiple buckets for untemplated frame types. We're not leveraging it to provide any
-		-- custom initialization of the frame, but only to define a distincy key for each frame bucket.
-		local pool = self.poolCollection:GetOrCreatePool(frameType, self:GetScrollTarget(), frameTemplate, nil, nil, specialization);
-		local frame, new = pool:Acquire();
 		if not frame then
 			error(string.format("ScrollBoxListViewMixin: Failed to create a frame from pool for frame template or frame type '%s'", frameTemplateOrFrameType));
 		end
@@ -49,20 +41,15 @@ function ScrollBoxListViewMixin:Init()
 		-- once all frames have been arranged in the layout step.
 		self.factoryFrame = frame;
 		self.factoryFrameIsNew = new;
-
-		-- An initializer is not required, and we might expect this if the frame represents a line or divider.
-		self.initializerList[frame] = initializer;
 	end
 end
 
-function ScrollBoxListViewMixin:CreateTemplateInfoForTemplate(frameTemplate)
-	local info = self.templateInfos[frameTemplate] or C_XMLUtil.GetTemplateInfo(frameTemplate);
-	if info then
-		info.extent = self:IsHorizontal() and info.width or info.height;
-		self.templateInfos[frameTemplate] = info;
-		self.templateInfoDirty = true;
-	end
-	return info;
+function ScrollBoxListViewMixin:GetExtentFromInfo(info)
+	return self:IsHorizontal() and info.width or info.height;
+end
+
+function ScrollBoxListViewMixin:GetTemplateInfo(frameTemplate)
+	return self.templateInfoCache:GetTemplateInfo(frameTemplate);
 end
 
 function ScrollBoxListViewMixin:AssignAccessors(frame, elementData)
@@ -127,7 +114,7 @@ function ScrollBoxListViewMixin:Flush()
 	self.dataIndexBegin = nil;
 	self.dataIndexEnd = nil;
 	self.dataIndicesInvalidated = nil;
-	self.poolCollection:ReleaseAll();
+	self.frameFactory:ReleaseAll();
 
 	self:RemoveDataProvider();
 end
@@ -381,18 +368,28 @@ end
 
 function ScrollBoxListViewMixin:InvokeInitializer(frame, initializer)
 	local elementData = frame:GetElementData();
-	initializer(frame, elementData);
-	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnInitializedFrame, frame, elementData);
+	if initializer then
+		initializer(frame, elementData);
+	end
+
+	-- OnInitializedFrame is still called even if there isn't an initializer because an addon
+	-- may still want this event. The cases where elements are used without an initializer (dividers, etc.)
+	-- imply they would be using a factory initializer instead of an element initializer, and 
+	-- since they are able to check the element data type there, they can also check it in the event callback. 
+	-- To be safe, this is behavior will be configurable, but on by default.
+	if initializer or self.canSignalWithoutInitializer then
+		self:TriggerEvent(ScrollBoxListViewMixin.Event.OnInitializedFrame, frame, elementData);
+	end
 end
 
 -- Frame initialization is no longer supported during the factory step. The initializer passed to the
 -- factory object is called once layout has completed, ensuring that the frame can access it's effective
 -- dimensions inside it's own initializer.
 function ScrollBoxListViewMixin:InvokeInitializers()
-	for frame, initializer in pairs(self.initializerList) do
+	for frame, initializer in pairs(self.initializers) do
 		self:InvokeInitializer(frame, initializer);
 	end
-	wipe(self.initializerList);
+	wipe(self.initializers);
 end
 
 function ScrollBoxListViewMixin:AcquireRange(dataIndices)
@@ -412,6 +409,14 @@ function ScrollBoxListViewMixin:AcquireRange(dataIndices)
 	end
 end
 
+function ScrollBoxListViewMixin:ReinitializeFrames()
+	for index, frame in self:EnumerateFrames() do
+		local elementData = frame:GetElementData();
+		local template, initializer = self:GetFactoryDataFromElementData(elementData);
+		self:InvokeInitializer(frame, initializer);
+	end
+end
+
 function ScrollBoxListViewMixin:Release(frame)
 	local elementData = frame:GetElementData();
 
@@ -422,9 +427,11 @@ function ScrollBoxListViewMixin:Release(frame)
 	self:TriggerEvent(ScrollBoxListViewMixin.Event.OnReleasedFrame, frame, elementData);
 	
 	tDeleteItem(self:GetFrames(), frame);
-	self.poolCollection:Release(frame);
+	self.frameFactory:Release(frame);
 
 	self:UnassignAccessors(frame);
+
+	self.initializers[frame] = nil;
 end
 
 function ScrollBoxListViewMixin:GetFrameCount()
@@ -458,7 +465,7 @@ function ScrollBoxListViewMixin:SetElementInitializer(frameTemplateOrFrameType, 
 	-- after invoking the factory. See GetFactoryDataFromElementData for details on how this is
 	-- happening.
 	if not self.elementExtent and not self.elementExtentCalculator then
-		local extent = self:CreateTemplateExtent(frameTemplateOrFrameType);
+		local extent = self:GetTemplateExtent(frameTemplateOrFrameType);
 		if extent and extent > 0 then
 			self:SetElementExtent(extent);
 		end
@@ -512,14 +519,14 @@ function ScrollBoxListViewMixin:CalculateFrameExtent(dataIndex, elementData)
 		return math.max(1, self.elementExtentCalculator(dataIndex, elementData));
 	end
 
-	return self:CreateTemplateExtentFromElementData(elementData);
+	return self:GetTemplateExtentFromElementData(elementData);
 end
 
--- This local factory function allows us to ask for the template and initializer
--- without actually creating a frame. This is useful in these cases:
--- 1) Asking for the template extents before a frame is created
--- 2) Asking for the template and initializer for creating a drag and drop cursor attachment
--- 3) Asking for the initializers again to reinitialize every visible frame
+	-- This local factory function allows us to ask for the template and initializer
+	-- without actually creating a frame. This is useful in these cases:
+	-- 1) Asking for the template extents before a frame is created
+	-- 2) Asking for the template and initializer for creating a drag and drop cursor attachment
+	-- 3) Asking for the initializers again to reinitialize every visible frame
 do
 	local template;
 	local initializer;
@@ -534,25 +541,17 @@ do
 	end
 end
 
-function ScrollBoxListViewMixin:ReinitializeFrames()
-	for index, frame in self:EnumerateFrames() do
-		local elementData = frame:GetElementData();
-		local template, initializer = self:GetFactoryDataFromElementData(elementData);
-		self:InvokeInitializer(frame, initializer);
-	end
+function ScrollBoxListViewMixin:GetTemplateExtentFromElementData(elementData)
+	local frameTemplate, initializer = self:GetFactoryDataFromElementData(elementData);
+	return self:GetTemplateExtent(frameTemplate);
 end
 
-function ScrollBoxListViewMixin:CreateTemplateExtentFromElementData(elementData)
-	local template, initializer = self:GetFactoryDataFromElementData(elementData);
-	return self:CreateTemplateExtent(template);
-end
-
-function ScrollBoxListViewMixin:CreateTemplateExtent(frameTemplate)
-	local info = self:CreateTemplateInfoForTemplate(frameTemplate);
+function ScrollBoxListViewMixin:GetTemplateExtent(frameTemplate)
+	local info = self:GetTemplateInfo(frameTemplate);
 	if not info then
 		error(string.format("ScrollBoxListViewMixin: Failed to obtain template info for frame template '%s'", frameTemplate));
 	end
-	return info.extent;
+	return self:GetExtentFromInfo(info);
 end
 
 function ScrollBoxListViewMixin:GetPanExtent(spacing)
@@ -714,15 +713,16 @@ function ScrollBoxListViewMixin:GetExtent(scrollBox, stride, spacing)
 end
 
 do
-	local function HasEqualTemplateInfoExtents(view)
-		local infos = view.templateInfos;
+	local function HasEqualTemplateInfoExtents(view, infos)
 		local refInfo = infos[next(infos)];
-		if not refInfo or refInfo.extent <= 0 then
+		local refInfoExtent = view:GetExtentFromInfo(refInfo);
+		if not refInfo or refInfoExtent <= 0 then
 			return false;
 		end
 	
 		for frameTemplate, info in pairs(infos) do
-			if not ApproximatelyEqual(refInfo.extent, info.extent) then
+			local infoExtent = view:GetExtentFromInfo(info);
+			if not ApproximatelyEqual(refInfoExtent, infoExtent) then
 				return false;
 			end
 		end
@@ -730,16 +730,6 @@ do
 		return true;
 	end
 	
-	function ScrollBoxListViewMixin:HasEqualTemplateInfoExtents()
-		if self.templateInfoDirty then
-			self.templateInfoDirty = nil;
-			self.hasEqualTemplateInfoExtents = HasEqualTemplateInfoExtents(self);
-		end
-	
-		return self.hasEqualTemplateInfoExtents;
-	end
-end
-
 function ScrollBoxListViewMixin:HasIdenticalElementExtents()
 	if self.elementExtentCalculator then
 		return false;
@@ -749,7 +739,15 @@ function ScrollBoxListViewMixin:HasIdenticalElementExtents()
 		return true;
 	end
 
-	return self:HasEqualTemplateInfoExtents();
+		if self.templateInfoDirty then
+			self.templateInfoDirty = nil;
+	
+			local infos = self.templateInfoCache:GetTemplateInfos();
+			self.hasEqualTemplateInfoExtents = HasEqualTemplateInfoExtents(self, infos);
+		end
+		
+		return self.hasEqualTemplateInfoExtents;
+	end
 end
 
 function ScrollBoxListViewMixin:GetIdenticalElementExtents()
@@ -758,10 +756,12 @@ function ScrollBoxListViewMixin:GetIdenticalElementExtents()
 		return self.elementExtent;
 	end
 
-	local info = self.templateInfos[next(self.templateInfos)];
-	return info.extent;
+	local infos = self.templateInfoCache:GetTemplateInfos();
+	local info = infos[next(infos)];
+	return self:GetExtentFromInfo(info);
 end
 
+-- Retained for debugging.
 local function ValidateExtent(extentsTbl, dataIndex)
 	if not extentsTbl[dataIndex] then
 		Dump(extentsTbl);

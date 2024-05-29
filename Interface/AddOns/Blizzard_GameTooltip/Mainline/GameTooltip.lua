@@ -306,66 +306,6 @@ function GameTooltip_OnTooltipAddMoney(self, cost, maxcost)
 	end
 end
 
-function SetTooltipMoney(frame, money, type, prefixText, suffixText)
-	GameTooltip_AddBlankLinesToTooltip(frame, 1);
-	local numLines = frame:NumLines();
-	if ( not frame.numMoneyFrames ) then
-		frame.numMoneyFrames = 0;
-	end
-	if ( not frame.shownMoneyFrames ) then
-		frame.shownMoneyFrames = 0;
-	end
-	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
-	local moneyFrame = _G[name];
-	if ( not moneyFrame ) then
-		frame.numMoneyFrames = frame.numMoneyFrames+1;
-		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
-		name = moneyFrame:GetName();
-		MoneyFrame_SetType(moneyFrame, "STATIC");
-	end
-	moneyFrame.PrefixText:SetText(prefixText);
-	moneyFrame.SuffixText:SetText(suffixText);
-	if ( type ) then
-		MoneyFrame_SetType(moneyFrame, type);
-	end
-	--We still have this variable offset because many AddOns use this function. The money by itself will be unaligned if we do not use this.
-	local xOffset;
-	if ( prefixText ) then
-		xOffset = 4;
-	else
-		xOffset = 0;
-	end
-	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", xOffset, 0);
-	moneyFrame:Show();
-	if ( not frame.shownMoneyFrames ) then
-		frame.shownMoneyFrames = 1;
-	else
-		frame.shownMoneyFrames = frame.shownMoneyFrames+1;
-	end
-	MoneyFrame_Update(moneyFrame:GetName(), money);
-	local moneyFrameWidth = moneyFrame:GetWidth();
-	if ( frame:GetMinimumWidth() < moneyFrameWidth ) then
-		frame:SetMinimumWidth(moneyFrameWidth);
-	end
-	frame.hasMoney = 1;
-end
-
-function GameTooltip_ClearMoney(self)
-	if ( not self.shownMoneyFrames ) then
-		return;
-	end
-
-	local moneyFrame;
-	for i=1, self.shownMoneyFrames do
-		moneyFrame = _G[self:GetName().."MoneyFrame"..i];
-		if(moneyFrame) then
-			moneyFrame:Hide();
-			MoneyFrame_SetType(moneyFrame, "STATIC");
-		end
-	end
-	self.shownMoneyFrames = nil;
-end
-
 GAME_TOOLTIP_BACKDROP_STYLE_DEFAULT_DARK = {
 	layoutType = "TooltipDefaultDarkLayout",
 };

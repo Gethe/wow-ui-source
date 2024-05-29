@@ -34,6 +34,21 @@ local CharacterSelectionConstants =
 			},
 		},
 		{
+			Name = "WarbandSceneAnimationStandState",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Maintain", Type = "WarbandSceneAnimationStandState", EnumValue = 0 },
+				{ Name = "Stand", Type = "WarbandSceneAnimationStandState", EnumValue = 1 },
+				{ Name = "Sit", Type = "WarbandSceneAnimationStandState", EnumValue = 2 },
+				{ Name = "Kneel", Type = "WarbandSceneAnimationStandState", EnumValue = 3 },
+				{ Name = "Sleep", Type = "WarbandSceneAnimationStandState", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "WarbandSceneSlotType",
 			Type = "Enumeration",
 			NumValues = 2,

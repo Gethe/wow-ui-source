@@ -21,6 +21,7 @@ function CommunitiesGuildInfoFrame_OnLoad(self)
 	RequestGuildChallengeInfo();
 end
 
+
 function CommunitiesGuildInfoFrame_OnEvent(self, event, arg1)
 	if ( event == "GUILD_MOTD" ) then
 		self.MOTDScrollFrame.MOTD:SetText(arg1, true);	--Ignores markup.
@@ -68,17 +69,19 @@ function CommunitiesGuildInfoFrame_UpdateChallenges(self)
 		local orderIndex = GUILD_CHALLENGE_ORDER[i];
 		if orderIndex then
 			local id, current, max, desc = GetGuildChallengeInfo(orderIndex);
-			frame.orderIndex = orderIndex;
-			frame.label:SetText(_G["GUILD_CHALLENGE_TYPE"..id]);
-			if ( current == max ) then
-				frame.count:Hide();
-				frame.check:Show();
-				frame.label:SetTextColor(0.1, 1, 0.1);
-			else
-				frame.count:Show();
-				frame.count:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
-				frame.check:Hide();
-				frame.label:SetTextColor(1, 1, 1);
+			if id then
+				frame.orderIndex = orderIndex;
+				frame.label:SetText(_G["GUILD_CHALLENGE_TYPE"..id]);
+				if ( current == max ) then
+					frame.count:Hide();
+					frame.check:Show();
+					frame.label:SetTextColor(0.1, 1, 0.1);
+				else
+					frame.count:Show();
+					frame.count:SetFormattedText(GUILD_CHALLENGE_PROGRESS_FORMAT, current, max);
+					frame.check:Hide();
+					frame.label:SetTextColor(1, 1, 1);
+				end				
 			end
 		else
 			frame:Hide();

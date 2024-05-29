@@ -49,6 +49,7 @@ ScrollControllerMixin.Directions =
 }
 
 function ScrollControllerMixin:OnLoad()
+	self.isScrollController = true;
 	self.panExtentPercentage = .1;
 	self.allowScroll = true;
 
@@ -138,4 +139,8 @@ end
 
 function ScrollControllerMixin:SetScrollAllowed(allowScroll)
 	self.allowScroll = allowScroll;
+end
+
+function IsScrollController(object)
+	return object.isScrollController;
 end

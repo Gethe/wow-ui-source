@@ -219,8 +219,6 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ObjectiveTrackerBlockDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-	
 	<Frame name="ObjectiveTrackerProgressBarTemplate" mixin="ObjectiveTrackerProgressBarMixin" virtual="true" hidden="true">
 		<Size x="192" y="25"/>
 		<Anchors>

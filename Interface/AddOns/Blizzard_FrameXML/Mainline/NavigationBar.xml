@@ -148,7 +148,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DropDownToggleButton parentKey="MenuArrowButton" hidden="true">
+			<DropdownButton parentKey="MenuArrowButton" hidden="true">
 				<Size x="27" y="31"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="-2" y="-15"/>
@@ -185,8 +185,6 @@
 				<Scripts>
 					<OnMouseDown>
 						self.Art:SetPoint("CENTER", -1, -2);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-						NavBar_ToggleMenu(self:GetParent());
 					</OnMouseDown>
 					<OnMouseUp>
 						self.Art:SetPoint("CENTER", 0, -1);
@@ -200,9 +198,10 @@
 						self.PushedTexture:SetAlpha(0);
 					</OnLeave>
 				</Scripts>
-			</DropDownToggleButton>
+			</DropdownButton>
 		</Frames>
 		<Scripts>
+			<OnShow function="NavButtonTemplate_OnShow"/>
 			<OnMouseDown>
 				if self:IsEnabled() then
 					self.arrowUp:Hide();
@@ -213,9 +212,6 @@
 				self.arrowDown:Hide();
 				self.arrowUp:Show();
 			</OnMouseUp>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			</OnClick>
 			<OnEnable>
 				self.arrowDown:Hide();
 				self.arrowUp:Show();
@@ -278,15 +274,12 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<DropDownToggleButton name="$parentOverflowButton" parentKey="overflow">
+			<DropdownButton name="$parentOverflowButton" parentKey="overflow">
 				<Size x="44" y="30"/>
 				<Scripts>
 					<OnLoad>
 						self.xoffset = -18
 					</OnLoad>
-					<OnMouseDown>
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnMouseDown>
 				</Scripts>
 				<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
 					<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
@@ -297,7 +290,7 @@
 				<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures" alphaMode="ADD" alpha="0.4">
 					<TexCoords left="0.54296875" right="0.62890625" top="0.75781250" bottom="0.99218750"/>
 				</HighlightTexture>
-			</DropDownToggleButton>
+			</DropdownButton>
 			<Button name="$parentHomeButton" parentKey="home" text="HOME">
 				<Size x="128" y="30"/>
 				<Layers>

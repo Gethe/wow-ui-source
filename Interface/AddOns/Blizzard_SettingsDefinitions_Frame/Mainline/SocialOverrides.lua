@@ -49,5 +49,5 @@ function SocialOverrides.CreateCensorMessagesSetting(category)
 		local defaultValue = EVERYONE_EXCEPT_FRIEND;
 		local setting = Settings.RegisterProxySetting(category, "PROXY_CENSOR_MESSAGES", Settings.DefaultVarLocation,
 			Settings.VarType.Number, CENSOR_SOURCE_EXCLUDE, defaultValue, GetValue, SetValue);
-		Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_CENTER_SOURCE_EXCLUDE);
+		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CENTER_SOURCE_EXCLUDE);
 end

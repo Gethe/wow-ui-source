@@ -14,7 +14,7 @@ MoneyTypeInfo["PLAYER"] = {
 	OnloadFunc = function(self)
 		self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	end,
-	
+
 	UpdateFunc = function(self)
 		return MoneyFrame_UpdateTrialErrorButton(self);
 	end,
@@ -227,7 +227,7 @@ function MoneyFrame_OnEvent (self, event, ...)
 	end
 
 	local moneyType = self.moneyType;
-	
+
 	if ( event == "PLAYER_MONEY" and moneyType == "PLAYER" ) then
 		MoneyFrame_UpdateMoney(self);
 	elseif ( event == "ACCOUNT_MONEY" and moneyType == "ACCOUNT" ) then
@@ -252,20 +252,21 @@ end
 function MoneyFrame_OnEnter(moneyFrame)
 	if ( moneyFrame.showTooltip ) then
 		local copperButton = moneyFrame.CopperButton;
-		GameTooltip:SetOwner(copperButton, "ANCHOR_TOPRIGHT", 20, 2);		
-		SetTooltipMoney(GameTooltip, moneyFrame.staticMoney, "TOOLTIP", "");
-		GameTooltip:Show();
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(copperButton, "ANCHOR_TOPRIGHT", 20, 2);
+		SetTooltipMoney(tooltip, moneyFrame.staticMoney, "TOOLTIP", "");
+		tooltip:Show();
 	end
 end
 
 function MoneyFrame_OnLeave(moneyFrame)
 	if ( moneyFrame.showTooltip ) then
-		GameTooltip:Hide();
+		local tooltip = GetAppropriateTooltip();
+		tooltip:Hide();
 	end
 end
 
 function MoneyFrame_SetType(self, type)
-
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
 		message("Invalid money type: "..type);
@@ -326,7 +327,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	else
 		frame = _G[frameName];
 	end
-	
+
 	local info = frame.info;
 	if ( not info ) then
 		message("Error moneyType not set");
@@ -350,7 +351,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	end
 
 	local maxDisplayWidth = frame.maxDisplayWidth;
-	
+
 	-- Set values for each denomination
 	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
 		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
@@ -395,11 +396,11 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		copperButton:SetWidth(copperButton:GetTextWidth() + iconWidth);
 		copperButton:Show();
 	end
-		
+
 	-- Store how much money the frame is displaying
 	frame.staticMoney = money;
 	frame.showTooltip = nil;
-	
+
 	-- If not collapsable or not using maxDisplayWidth don't need to continue
 	if ( not info.collapse and not maxDisplayWidth ) then
 		return;
@@ -428,7 +429,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( showLowerDenominations and info.fixedWidth ) then
 			silverButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
-		
+
 		local silverWidth = silverButton:GetWidth();
 		goldButton:SetPoint("RIGHT", silverButton, "LEFT", spacing, 0);
 		if ( goldButton:IsShown() ) then
@@ -461,7 +462,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		if ( showLowerDenominations and info.fixedWidth ) then
 			copperButton:SetWidth(COIN_BUTTON_WIDTH);
 		end
-		
+
 		local copperWidth = copperButton:GetWidth();
 		silverButton:SetPoint("RIGHT", copperButton, "LEFT", spacing, 0);
 		if ( silverButton:IsShown() or goldButton:IsShown() ) then
@@ -533,7 +534,7 @@ function MoneyFrame_UpdateTrialErrorButton(self)
 		local moneyIsRestricted = GameLimitedMode_IsActive() and money >= rMoney;
 		self.trialErrorButton:SetShown(moneyIsRestricted);
 	end
-	
+
 	return money;
 end
 
@@ -575,7 +576,7 @@ function SetMoneyFrameColor(frameName, color)
 	if ( not moneyFrame ) then
 		return;
 	end
-	
+
 	SetMoneyFrameColorByFrame(moneyFrame, color);
 end
 
@@ -634,7 +635,7 @@ MoneyDenominationDisplayMixin = {};
 
 function MoneyDenominationDisplayMixin:OnLoad()
 	self.amount = 0;
-	
+
 	if self.displayType == nil then
 		error("A money denomination display needs a type. Add a KeyValue entry, displayType = MoneyDenominationDisplayType.[Copper|Silver|Gold|AuctionHouseCopper|AuctionHouseSilver|AuctionHouseGold].");
 		return;
@@ -796,7 +797,7 @@ function MoneyDisplayFrameMixin:UpdateAnchoring()
 		else
 			self.SilverDisplay:SetPoint("LEFT", self.GoldDisplay, "LEFT");
 		end
-		
+
 		if self.SilverDisplay:ShouldBeShown() then
 			self.CopperDisplay:SetPoint("RIGHT", self.SilverDisplay, "RIGHT", DENOMINATION_DISPLAY_WIDTH, 0);
 		else
@@ -810,7 +811,7 @@ function MoneyDisplayFrameMixin:UpdateAnchoring()
 		else
 			self.SilverDisplay:SetPoint("RIGHT", self.CopperDisplay, "RIGHT");
 		end
-		
+
 		if self.SilverDisplay:ShouldBeShown() then
 			self.GoldDisplay:SetPoint("RIGHT", self.SilverDisplay, "RIGHT", -DENOMINATION_DISPLAY_WIDTH, 0);
 		else
@@ -821,7 +822,7 @@ end
 
 function MoneyDisplayFrameMixin:SetAmount(rawCopper)
 	self.rawCopper = rawCopper;
-	
+
 	local gold = floor(rawCopper / (COPPER_PER_SILVER * SILVER_PER_GOLD));
 	local silver = floor((rawCopper - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = mod(rawCopper, COPPER_PER_SILVER);
@@ -869,4 +870,64 @@ end
 
 function MoneyDisplayFrameMixin:SetResizeToFit(resizeToFit)
 	self.resizeToFit = resizeToFit;
+end
+
+function SetTooltipMoney(frame, money, type, prefixText, suffixText)
+	GameTooltip_AddBlankLinesToTooltip(frame, 1);
+	local numLines = frame:NumLines();
+	if ( not frame.numMoneyFrames ) then
+		frame.numMoneyFrames = 0;
+	end
+	if ( not frame.shownMoneyFrames ) then
+		frame.shownMoneyFrames = 0;
+	end
+	local name = frame:GetName().."MoneyFrame"..frame.shownMoneyFrames+1;
+	local moneyFrame = _G[name];
+	if ( not moneyFrame ) then
+		frame.numMoneyFrames = frame.numMoneyFrames+1;
+		moneyFrame = CreateFrame("Frame", name, frame, "TooltipMoneyFrameTemplate");
+		name = moneyFrame:GetName();
+		MoneyFrame_SetType(moneyFrame, "STATIC");
+	end
+	moneyFrame.PrefixText:SetText(prefixText);
+	moneyFrame.SuffixText:SetText(suffixText);
+	if ( type ) then
+		MoneyFrame_SetType(moneyFrame, type);
+	end
+	--We still have this variable offset because many AddOns use this function. The money by itself will be unaligned if we do not use this.
+	local xOffset;
+	if ( prefixText ) then
+		xOffset = 4;
+	else
+		xOffset = 0;
+	end
+	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", xOffset, 0);
+	moneyFrame:Show();
+	if ( not frame.shownMoneyFrames ) then
+		frame.shownMoneyFrames = 1;
+	else
+		frame.shownMoneyFrames = frame.shownMoneyFrames+1;
+	end
+	MoneyFrame_Update(moneyFrame:GetName(), money);
+	local moneyFrameWidth = moneyFrame:GetWidth();
+	if ( frame:GetMinimumWidth() < moneyFrameWidth ) then
+		frame:SetMinimumWidth(moneyFrameWidth);
+	end
+	frame.hasMoney = 1;
+end
+
+function GameTooltip_ClearMoney(self)
+	if ( not self.shownMoneyFrames ) then
+		return;
+	end
+
+	local moneyFrame;
+	for i=1, self.shownMoneyFrames do
+		moneyFrame = _G[self:GetName().."MoneyFrame"..i];
+		if(moneyFrame) then
+			moneyFrame:Hide();
+			MoneyFrame_SetType(moneyFrame, "STATIC");
+		end
+	end
+	self.shownMoneyFrames = nil;
 end

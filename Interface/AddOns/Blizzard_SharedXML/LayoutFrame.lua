@@ -3,10 +3,16 @@
 -- BaseLayout Mixin
 --------------------------------------------------------------------------------
 
+local function IsLayoutFrame(frame)
+	return frame.IsLayoutFrame and frame:IsLayoutFrame();
+end
+
 BaseLayoutMixin = {};
 
 function BaseLayoutMixin:OnShow()
-	self:Layout();
+	if not self.skipLayoutOnShow then
+		self:Layout();
+	end
 end
 
 function BaseLayoutMixin:IsLayoutFrame()
@@ -24,14 +30,12 @@ function BaseLayoutMixin:MarkIgnoreInLayout(region, ...)
 	end
 end
 
-local function IsLayoutFrame(f)
-	return f.IsLayoutFrame and f:IsLayoutFrame();
-end
-
 function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 	for i = 1, select("#", ...) do
 		local region = select(i, ...);
-		if region:IsShown() and not region.ignoreInLayout and (self:IgnoreLayoutIndex() or region.layoutIndex) then
+		-- Individual regions can be ignored or every region can be ignored and require individual opt-in.
+		local canInclude = (not region.ignoreInLayout) and (not self.ignoreAllChildren or region.includeInLayout);
+		if region:IsShown() and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -119,6 +123,11 @@ end
 function BaseLayoutMixin:SetFixedSize(width, height)
 	self:SetFixedWidth(width);
 	self:SetFixedHeight(height);
+end
+
+function BaseLayoutMixin:ClearFixedSize()
+	self:SetFixedWidth(nil);
+	self:SetFixedHeight(nil);
 end
 
 function BaseLayoutMixin:GetFixedWidth()
@@ -368,6 +377,22 @@ function ResizeLayoutMixin:IgnoreLayoutIndex()
 	return true;
 end
 
+function ResizeLayoutMixin:SetWidthPadding(widthPadding)
+	self.widthPadding = widthPadding;
+end
+
+function ResizeLayoutMixin:SetHeightPadding(heightPadding)
+	self.heightPadding = heightPadding;
+end
+
+function ResizeLayoutMixin:SetMinimumWidth(minimumWidth)
+	self.minimumWidth = minimumWidth;
+end
+
+function ResizeLayoutMixin:SetMaximumWidth(maximumWidth)
+	self.maximumWidth = maximumWidth;
+end
+
 function ResizeLayoutMixin:Layout()
 	-- GetExtents will fail if the LayoutFrame has 0 width or height, so set them to 1 to start
 	self:SetSize(1, 1);
@@ -381,7 +406,10 @@ function ResizeLayoutMixin:Layout()
 	local left, right, top, bottom, defaulted;
 	local layoutFrameScale = self:GetEffectiveScale();
 	for childIndex, child in ipairs(self:GetLayoutChildren()) do
-		if IsLayoutFrame(child) then
+		-- skipChildLayout is to prevent menus from calling Layout on children
+		-- that have potentially had their extents overwritten by the menu. Their
+		-- extents have already been accounted for.
+		if not self.skipChildLayout and IsLayoutFrame(child) then
 			child:Layout();
 		end
 
@@ -390,9 +418,14 @@ function ResizeLayoutMixin:Layout()
 		defaulted = defaulted or d;
 	end
 
-	if left and right and top and bottom then
-		local width = GetSize((right - left) + self:GetWidthPadding(), self:GetFixedWidth(), self.minimumWidth, self.maximumWidth);
-		local height = GetSize((top - bottom) + self:GetHeightPadding(), self:GetFixedHeight(), self.minimumHeight, self.maximumHeight);
+	local fw, fh = self:GetFixedSize();
+	if fw and fh then
+		self:SetSize(fw, fh);
+	elseif left and right and top and bottom then
+		local minw = self.minimumWidth;
+		local maxw = self.maximumWidth;
+		local width = GetSize((right - left) + self:GetWidthPadding(), fw, self.minimumWidth, self.maximumWidth);
+		local height = GetSize((top - bottom) + self:GetHeightPadding(), fh, self.minimumHeight, self.maximumHeight);
 
 		self:SetSize(width, height);
 	end

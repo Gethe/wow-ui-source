@@ -74,36 +74,20 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 				end
 			end
 		elseif button == "RightButton" and not isThreatQuest then
-			self:ToggleDropDown(block);
+			-- Ensure at least one option will appear before showing the dropdown.
+			if not QuestUtils_IsQuestWatched(questID) then
+				return;
+			end
+
+			MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+				rootDescription:SetTag("MENU_BONUS_OBJECTIVE_TRACKER", block);
+
+				rootDescription:CreateTitle(C_TaskQuest.GetQuestInfoByQuestID(questID));
+				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+					QuestUtil.UntrackWorldQuest(questID);
+				end);
+			end);
 		end
-	end
-end
-
-function BonusObjectiveTrackerMixin:InitDropDown(block)
-	local questID = block.id;
-	local addStopTracking = QuestUtils_IsQuestWatched(questID);
-
-	-- Ensure at least one option will appear before showing the dropdown.
-	if not addStopTracking then
-		return;
-	end
-
-	-- Add title
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = C_TaskQuest.GetQuestInfoByQuestID(questID);
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	-- Add "stop tracking"
-	if addStopTracking then
-		info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = true;
-		info.text = OBJECTIVES_STOP_TRACKING;
-		info.func = function()
-			QuestUtil.UntrackWorldQuest(questID);
-		end
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 end
 

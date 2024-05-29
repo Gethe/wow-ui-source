@@ -215,7 +215,9 @@ end
 
 function MoneyInputFrame_OpenPopup(moneyFrame)
 	if moneyFrame.showCurrencyTracking then
-		CharacterFrame:ToggleTokenFrame();
+		if CharacterFrame then
+			CharacterFrame:ToggleTokenFrame();
+		end
 		return;
 	end
 
@@ -237,7 +239,9 @@ end
 function MoneyInputFrame_PickupPlayerMoney(moneyFrame)
 	local copper = MoneyInputFrame_GetCopper(moneyFrame);
 	if ( copper > GetMoney() ) then
-		UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);
+		if UIErrorsFrame then
+			UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);			
+		end
 	else
 		PickupPlayerMoney(copper);
 	end

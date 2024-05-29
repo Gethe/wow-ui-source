@@ -666,10 +666,6 @@ function AuctionHouseFrameMixin:GetCommoditiesSellListFrames()
 	return self.CommoditiesSellList, self.CommoditiesSellListHeaders;
 end
 
-function AuctionHouseFrameMixin:GetFavoriteDropDown()
-	return self.FavoriteDropDown;
-end
-
 function AuctionHouseFrameMixin:GetBrowseSearchContext()
 	if self.isDisplayingFavorites then
 		return AuctionHouseSearchContext.AllFavorites;

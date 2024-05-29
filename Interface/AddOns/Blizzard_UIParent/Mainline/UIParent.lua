@@ -738,10 +738,6 @@ function GenericTraitUI_LoadUI()
 	UIParentLoadAddOn("Blizzard_GenericTraitUI");
 end
 
-function DelvesCompanionConfiguration_LoadUI()
-	UIParentLoadAddOn("Blizzard_DelvesCompanionConfiguration");
-end
-
 function SubscriptionInterstitial_LoadUI()
 	C_AddOns.LoadAddOn("Blizzard_SubscriptionInterstitialUI");
 end
@@ -1276,8 +1272,8 @@ local function PlayBattlefieldBanner(self)
 	end
 end
 
-local function HandlesGlobalMouseEvent(focus, buttonID, event)
-	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonID, event);
+local function HandlesGlobalMouseEvent(focus, buttonName, event)
+	return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonName, event);
 end
 
 local function HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus)
@@ -2316,7 +2312,6 @@ function UIParent_OnEvent(self, event, ...)
 		local traitTreeID = ...;
 		local DELVES_TEST_TREE = 874;
 		if traitTreeID == DELVES_TEST_TREE then
-			DelvesCompanionConfiguration_LoadUI();
 			ShowUIPanel(DelvesCompanionConfigurationFrame);
 		else
 			GenericTraitUI_LoadUI();
@@ -2350,7 +2345,6 @@ function UIParent_OnEvent(self, event, ...)
 		for _, mouseFocus in ipairs(mouseFoci) do
 			if not HandlesGlobalMouseEvent(mouseFocus, buttonID, event) then
 				UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
-				SelectionPopouts:HandleGlobalMouseEvent(buttonID, event);
 			end
 		end
 
@@ -2360,15 +2354,18 @@ function UIParent_OnEvent(self, event, ...)
 			tinsert(autoCompleteBoxList, LFGListFrame.SearchPanel.AutoCompleteFrame);
 		end
 
-		if not HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus) then
-			if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
-				local keyBoardFocus = GetCurrentKeyBoardFocus();
-				if keyBoardFocus then
-					local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
-					if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
-						keyBoardFocus:ClearFocus();
-					end
- 				end
+
+		for _, mouseFocus in ipairs(mouseFoci) do
+			if not HasVisibleAutoCompleteBox(autoCompleteBoxList, mouseFocus) then
+				if event == "GLOBAL_MOUSE_DOWN" and buttonID == "LeftButton" and not IsModifierKeyDown() then
+					local keyBoardFocus = GetCurrentKeyBoardFocus();
+					if keyBoardFocus then
+						local hasStickyFocus = keyBoardFocus.HasStickyFocus and keyBoardFocus:HasStickyFocus();
+						if keyBoardFocus.ClearFocus and not hasStickyFocus and keyBoardFocus ~= mouseFocus then
+							keyBoardFocus:ClearFocus();
+						end
+ 					end
+				end
 			end
 		end
 	elseif (event == "SCRIPTED_ANIMATIONS_UPDATE") then
@@ -2780,6 +2777,10 @@ end
 
 -- Function that handles the escape key functions
 function ToggleGameMenu()
+	if Menu.GetManager():HandleESC() then
+		return;
+	end
+
 	if ( CanAutoSetGamePadCursorControl(true) and (not IsModifierKeyDown()) ) then
 		-- There are a few gameplay related cancel cases we want to handle before toggling cursor control on.
 		if ( SpellStopCasting() ) then
@@ -3959,7 +3960,6 @@ function DisplayInterfaceActionBlockedMessage()
 		DEFAULT_CHAT_FRAME:AddMessage(INTERFACE_ACTION_BLOCKED, info.r, info.g, info.b, info.id);
 	end
 end
-
 function AllowChatFramesToShow(chatFrame)
 	-- this is InGame - and we always show while InGame.  chatFrame is not referenced, only Glues
 	return true;

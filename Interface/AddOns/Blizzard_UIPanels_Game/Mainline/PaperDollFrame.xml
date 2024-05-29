@@ -315,7 +315,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<DropDownToggleButton name="$parentEditButton" parentKey="EditButton" hidden="true">
+			<Button name="$parentEditButton" parentKey="EditButton" hidden="true">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.DeleteButton" relativePoint="LEFT" x="-1"/>
@@ -326,7 +326,6 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnLoad function="GearSetEditButton_OnLoad"/>
 					<OnEnter>
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -341,7 +340,7 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 				</Scripts>
-			</DropDownToggleButton>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -475,7 +474,6 @@
 				</Layer>
 			</Layers>
         <Frames>
-			<Frame parentKey="EditButtonDropdown" name="GearSetEditButtonDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="PaperDollSidebarTabs" parent="CharacterFrameInsetRight" hidden="true">
 				<Size x="168" y="35"/>
 				<Anchors>

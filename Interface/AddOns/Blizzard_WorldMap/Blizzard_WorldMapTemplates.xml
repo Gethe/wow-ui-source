@@ -2,13 +2,9 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_WorldMapTemplates.lua"/>
 
-	<Frame name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="UIDropDownMenuTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true">
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
+	<DropdownButton name="WorldMapFloorNavigationFrameTemplate" frameStrata="HIGH" inherits="WowStyle1DropdownTemplate" mixin="WorldMapFloorNavigationFrameMixin" virtual="true"/>
 
-	<DropDownToggleButton name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="UIResettableDropdownButtonMixin, WorldMapTrackingOptionsButtonMixin" virtual="true">
+	<DropdownButton name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -46,7 +42,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true"/>
+			<Button parentKey="ResetButton" inherits="UIResetButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-5" y="-7"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
@@ -57,7 +57,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-	</DropDownToggleButton>
+	</DropdownButton>
 
 	<Button name="WorldMapTrackingPinButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingPinButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="32" y="32"/>
@@ -112,9 +112,6 @@
 				</Texture>
 			</Layer>			
 		</Layers>
-		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" hidden="true"/>
-		</Frames>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

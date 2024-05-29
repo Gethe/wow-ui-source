@@ -553,15 +553,14 @@ function RaidGroupFrame_ReadyCheckFinished()
 	end
 end
 
-function RaidGroupButton_ShowMenu(self)
-	HideDropDownMenu(1);
-	if ( self.id and self.name ) then
-		FriendsDropDown.name = self.name;
-		FriendsDropDown.id = self.id;
-		FriendsDropDown.unit = self.unit;
-		FriendsDropDown.initialize = RaidFrameDropDown_Initialize;
-		FriendsDropDown.displayMode = "MENU";
-		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
+function RaidGroupButton_OpenMenu(self)
+	if self.id and self.name then
+		local contextData =
+		{
+			unit = self.unit,
+			name = self.name;
+		};
+		UnitPopup_OpenMenu("RAID", contextData);
 	end
 end
 
@@ -617,10 +616,6 @@ function RaidGroupButton_OnEnter(raidbutton)
 	if ( raidbutton.unit ) then
 		UnitFrame_UpdateTooltip(raidbutton);
 	end
-end
-
-function RaidFrameDropDown_Initialize(self)
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "RAID", self.unit, self.name, self.id);
 end
 
 function RaidButton_OnClick(self, button)
@@ -816,7 +811,6 @@ function RaidPullout_Update(pullOutFrame)
 	-- Fill out the buttons
 	local pulloutButton, pulloutButtonName, color, unit, target;
 	local pulloutHealthBar, pulloutManaBar;
-	local pulloutClearButton;
 	if ( numPulloutEntries > pullOutFrame.numPulloutButtons ) then
 		local index = pullOutFrame.numPulloutButtons + 1;
 		local relative;
@@ -880,8 +874,6 @@ function RaidPullout_Update(pullOutFrame)
 			pulloutButton.secondaryUnit = unit;
 
 			-- Set for tooltip support
-			pulloutClearButton = pulloutButton.clearButton;
-			SecureUnitButton_OnLoad(pulloutClearButton, unit, RaidPulloutButton_ShowMenu);
 			pullOutFrame.name = name;
 			pullOutFrame.single = single;
 			pulloutButton.raidIndex = id;
@@ -1035,16 +1027,10 @@ function RaidPulloutButton_UpdateDead(button, isDead, class)
 	end
 end
 
-function RaidPulloutButton_ShowMenu(self)
-	ToggleDropDownMenu(1, nil, _G[self:GetParent():GetParent():GetName().."DropDown"]);
-end
-
 function RaidPulloutButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:SetFrameLevel(self:GetFrameLevel() + 1);
-
-	self.showmenu = RaidPulloutButton_ShowMenu;
 end
 
 function RaidPulloutButton_OnDragStart(frame)
@@ -1215,117 +1201,3 @@ function RaidPullout_GetFrame(filterID)
 	raid_pullout_frames[NUM_RAID_PULLOUT_FRAMES] = frame;
 	return frame;
 end
-
-function RaidPulloutDropDown_OnLoad(self)
-	self.raidPulloutDropDown = true;
-	UIDropDownMenu_Initialize(self, RaidPulloutDropDown_Initialize, "MENU");
-	UIDropDownMenu_SetAnchor(self, 0, 0, "TOPLEFT", self:GetParent():GetName(), "TOPRIGHT")
-end
-
-function RaidPulloutDropDown_Initialize()
-	if ( not UIDROPDOWNMENU_OPEN_MENU or not UIDROPDOWNMENU_OPEN_MENU.raidPulloutDropDown ) then
-		return;
-	end
-	local currentPullout = UIDROPDOWNMENU_OPEN_MENU:GetParent();
-	local unit, voice, pvpType;
-	local info = UIDropDownMenu_CreateInfo();
-
-	-- Show target if it is allowed
-	info.text = SHOW_TARGET;
-	info.func = function()
-		if ( currentPullout.showTarget == 1 ) then
-			currentPullout.showTarget = nil;
-		else
-			currentPullout.showTarget = 1;
-		end
-		RaidPullout_Update(currentPullout);
-		RaidPullout_SaveFrames(currentPullout);
-	end;
-	info.checked = currentPullout.showTarget;
-	info.isTitle = nil;
-	info.disabled = nil;
-	info.notCheckable = nil;
-	UIDropDownMenu_AddButton(info);
-
-	if ( currentPullout.showTarget == 1 ) then
-		info.text = SHOW_TARGET_OF_TARGET_TEXT;
-		info.func = function()
-			if ( currentPullout.showTargetTarget == 1 ) then
-				currentPullout.showTargetTarget = nil;
-			else
-				currentPullout.showTargetTarget = 1;
-			end
-			RaidPullout_Update(currentPullout);
-			RaidPullout_SaveFrames(currentPullout);
-		end;
-		info.checked = currentPullout.showTargetTarget;
-		info.isTitle = nil;
-		info.disabled = nil;
-		info.notCheckable = nil;
-		UIDropDownMenu_AddButton(info);
-	end
-
-	-- Show buffs or debuffs they are exclusive for now
-	info.text = SHOW_BUFFS;
-	info.func = function()
-		currentPullout.showBuffs = 1;
-		RaidPullout_Update(currentPullout);
-		RaidPullout_SaveFrames(currentPullout);
-	end;
-	info.checked = currentPullout.showBuffs;
-	UIDropDownMenu_AddButton(info);
-
-	info.text = SHOW_DEBUFFS;
-	info.func = function()
-		currentPullout.showBuffs = nil;
-		RaidPullout_Update(currentPullout);
-		RaidPullout_SaveFrames(currentPullout);
-	end;
-	info.checked = (not currentPullout.showBuffs);
-	info.isTitle = nil;
-	info.disabled = nil;
-	info.notCheckable = nil;
-	UIDropDownMenu_AddButton(info);
-
-	-- Hide background option
-	local backdrop = _G[currentPullout:GetName().."MenuBackdrop"];
-	info.text = HIDE_PULLOUT_BG;
-	info.func = function ()
-		currentPullout.showBG = (not backdrop:IsShown());
-		if ( backdrop:IsShown() ) then
-			backdrop:Hide();
-		else
-			backdrop:Show();
-		end
-		RaidPullout_SaveFrames(currentPullout);
-	end;
-	info.checked = (not backdrop:IsShown());
-	info.isTitle = nil;
-	info.disabled = nil;
-	info.notCheckable = nil;
-	UIDropDownMenu_AddButton(info);
-
-	-- Close option
-	info.text = CLOSE;
-	info.func = function()
-		if ( currentPullout.showTarget == 1 ) then
-			currentPullout.showTarget = nil;
-		end
-		if ( RAID_PULLOUT_POSITIONS[tostring(currentPullout.filterID)] ) then
-			RAID_PULLOUT_POSITIONS[tostring(currentPullout.filterID)] = nil;
-		end
-		for index, value in pairs(RAID_SINGLE_POSITIONS) do
-			if ( value["name"] == currentPullout.filterID ) then
-				tremove(RAID_SINGLE_POSITIONS, index);
-			end
-		end
-		currentPullout:Hide();
-	end;
-	info.checked = nil;
-	info.isTitle = nil;
-	info.disabled = nil;
-	info.notCheckable = nil;
-	UIDropDownMenu_AddButton(info);
-end
-
-

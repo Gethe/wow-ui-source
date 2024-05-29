@@ -67,8 +67,6 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
-
-			<Frame parentKey="Dropdown" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

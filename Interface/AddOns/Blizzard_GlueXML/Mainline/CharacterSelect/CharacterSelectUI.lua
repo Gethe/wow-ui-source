@@ -107,11 +107,13 @@ function CharacterSelectUIMixin:OnUpdate()
 			-- Set up character UI before any animations are applied.
 			self:SetupCharacterOverlayFrames();
 
+			local isSceneChange = true;
+
 			for _, childElementData in ipairs(elementData.characterData) do
 				if childElementData.characterID == selectedCharacterID then
-					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select);
+					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select, isSceneChange);
 				elseif not childElementData.isEmpty then
-					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.StartingPose);
+					PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.StartingPose, isSceneChange);
 				end
 			end
 		end
@@ -152,6 +154,8 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 					SetMapSceneCharPos(childElementData.characterID, index);
 				end
 
+				local isSceneChange = self.ModelFFX:IsShown();
+
 				-- Set up the model scene first, so that valid model info is at the ready for character UI to reference if needed.
 				self:ShowModelScene();
 
@@ -161,9 +165,9 @@ function CharacterSelectUIMixin:SetCharacterDisplay(selectedCharacterID)
 				-- Note that just because we are attempting to play deselect, does not mean it necessarily will happen. See PlayRandomAnimation for details.
 				for _, childElementData in ipairs(selectedElementData.characterData) do
 					if childElementData.characterID == selectedCharacterID then
-						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select);
+						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Select, isSceneChange);
 					elseif not childElementData.isEmpty then
-						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Deselect);
+						PlayRandomAnimation(childElementData.characterID, Enum.WarbandSceneAnimationEvent.Deselect, isSceneChange);
 					end
 				end
 			else
@@ -184,6 +188,8 @@ end
 function CharacterSelectUIMixin:ShowModelScene()
 	self.ModelFFX:Hide();
 	self.MapScene:Show();
+
+	PlayGlueAmbience(GLUE_AMBIENCE_TRACKS["WARBANDS_MAPSCENE"], 4.0);
 
 	CharacterSelectRotateLeft:Hide();
 	CharacterSelectRotateRight:Hide();

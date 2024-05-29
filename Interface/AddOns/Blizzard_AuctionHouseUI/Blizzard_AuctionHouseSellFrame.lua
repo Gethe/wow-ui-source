@@ -139,67 +139,51 @@ function AuctionHousePriceErrorFrameMixin:SetTooltip(tooltip)
 end
 
 
-AuctionHouseDurationDropDownMixin = {};
+AuctionHouseAlignedDurationMixin = {};
 
-function AuctionHouseDurationDropDownMixin:OnLoad()
-	UIDropDownMenu_SetWidth(self, 80, 40);
+function AuctionHouseAlignedDurationMixin:OnLoad()
+	AuctionHouseSellFrameAlignedControlMixin.OnLoad(self);
 
-	self.Text:SetFontObject(Number12Font);
-end
-
-function AuctionHouseDurationDropDownMixin:OnShow()
-	UIDropDownMenu_Initialize(self, AuctionHouseDurationDropDownMixin.Initialize);
-
-	if self.durationValue == nil then
-		self:SetDuration(tonumber(GetCVar("auctionHouseDurationDropdown")));
-	end
-end
-
-local AUCTION_DURATIONS = {
-	AUCTION_DURATION_ONE,
-	AUCTION_DURATION_TWO,
-	AUCTION_DURATION_THREE,
-};
-
-function AuctionHouseDurationDropDownMixin:Initialize()
-	local function AuctionHouseDurationDropDownButton_OnClick(button)
-		self:SetDuration(button.value);
-		SetCVar("auctionHouseDurationDropdown", button.value);
+	local function IsSelected(index)
+		return self:GetDuration() == index;
 	end
 
-	for i, durationText in ipairs(AUCTION_DURATIONS) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.fontObject = Number12Font;
-		info.text = durationText;
-		info.minWidth = 108;
-		info.value = i;
-		info.checked = nil;
-		info.func = AuctionHouseDurationDropDownButton_OnClick;
-		UIDropDownMenu_AddButton(info);
+	local function SetSelected(index)
+		self:SetDuration(index);
 	end
+	
+	self.Dropdown:SetWidth(115);
+	self.Dropdown.Text:SetFontObject("Number12Font");
+	self.Dropdown.Text:SetJustifyH("RIGHT");
+	self.Dropdown:SetupMenu(function(region, rootDescription)
+		rootDescription:SetTag("MENU_AUCTION_HOUSE_DURATION");
+
+		for index, durationText in ipairs({AUCTION_DURATION_ONE, AUCTION_DURATION_TWO, AUCTION_DURATION_THREE}) do
+			local radio = rootDescription:CreateRadio(durationText, IsSelected, SetSelected, index);
+			radio:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject("Number12Font");
+			end);
+		end
+	end);
 end
 
-function AuctionHouseDurationDropDownMixin:SetDuration(durationValue)
-	self.durationValue = durationValue;
-	UIDropDownMenu_SetSelectedValue(self, durationValue);
+function AuctionHouseAlignedDurationMixin:OnShow()
+	if self.durationIndex == nil then
+		self.durationIndex = tonumber(GetCVar("auctionHouseDurationDropdown"));
+	end
+
+	self.Dropdown:GenerateMenu();
+end
+
+function AuctionHouseAlignedDurationMixin:GetDuration()
+	return self.durationIndex or tonumber(GetCVar("auctionHouseDurationDropdown"));
+end
+
+function AuctionHouseAlignedDurationMixin:SetDuration(index)
+	self.durationIndex = index;
+	SetCVar("auctionHouseDurationDropdown", index);
 	self:GetParent():OnDurationUpdated();
 end
-
-function AuctionHouseDurationDropDownMixin:GetDuration()
-	return self.durationValue or tonumber(GetCVar("auctionHouseDurationDropdown"));
-end
-
-
-AuctionHouseAlignedDurationDropDownMixin = {};
-
-function AuctionHouseAlignedDurationDropDownMixin:OnDurationUpdated()
-	self:GetParent():OnDurationUpdated();
-end
-
-function AuctionHouseAlignedDurationDropDownMixin:GetDuration()
-	return self.DropDown:GetDuration();
-end
-
 
 AuctionHouseAlignedPriceDisplayMixin = {};
 
@@ -440,7 +424,7 @@ function AuctionHouseSellFrameMixin:GetDefaultPrice()
 end
 
 function AuctionHouseSellFrameMixin:GetDuration()
-	return self.DurationDropDown:GetDuration();
+	return self.Duration:GetDuration();
 end
 
 function AuctionHouseSellFrameMixin:GetQuantity()

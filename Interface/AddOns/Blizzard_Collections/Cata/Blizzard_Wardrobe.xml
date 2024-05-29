@@ -76,6 +76,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnModelLoaded method="OnModelLoaded"/>
 			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnShow method="OnShow"/>
@@ -246,6 +247,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
 
@@ -427,41 +429,14 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ItemsTab" relativePoint="TOPLEFT" x="195" y="-11"/>
 				</Anchors>
 			</StatusBar>
-			<DropDownToggleButton parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="93" y="22"/>
+			<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="-1"/>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="7" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-							<Size x="10" y="12"/>
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnMouseDown inherit="prepend">
-						if self:IsEnabled() then
-							ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
-						end
-					</OnMouseDown>
-					<OnEnable>
-						self.Icon:SetDesaturated(false);
-					</OnEnable>
-					<OnDisable>
-						self.Icon:SetDesaturated(true);
-						<!--self.ResetButton:Hide();-->
-					</OnDisable>
-				</Scripts>
-			</DropDownToggleButton>
-			<Frame name="WardrobeFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="WardrobeFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame parentKey="ItemsCollectionFrame" parentArray="ContentFrames" mixin="WardrobeItemsCollectionMixin" inherits="CollectionsBackgroundTemplate">
 				<KeyValues>
@@ -483,16 +458,11 @@
 							<Anchor point="BOTTOM" x="22" y="38"/>
 						</Anchors>
 					</Frame>
-					<Frame name="WardrobeModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-					<Frame parentKey="WeaponDropDown" name="$parentWeaponDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="true">
-						<Size x="87" y="22"/>
+					<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-6" y="-22"/>
+							<Anchor point="TOPRIGHT" x="-25" y="-58"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="WardrobeCollectionFrameWeaponDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 					<Frame parentKey="SlotsFrame">
 						<Size x="10" y="10"/>
 						<Anchors>
@@ -1195,24 +1165,17 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<!--Frame parentKey="OutfitDropDown" name="WardrobeOutfitDropDown" inherits="WardrobeOutfitDropDownTemplate" mixin="WardrobeOutfitMixin">
+					<DropdownButton parentKey="OutfitDropdown" inherits="WardrobeOutfitDropdownTemplate" mixin="WardrobeOutfitDropdownOverrideMixin">
 						<KeyValues>
-							<KeyValue key="width" value="188" type="number"/>
+							<KeyValue key="width" value="207" type="number"/>
 							<KeyValue key="minMenuStringWidth" value="152" type="number"/>
 							<KeyValue key="maxMenuStringWidth" value="216" type="number"/>
 							<KeyValue key="replaceInvalidSources" value="false" type="boolean"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-14" y="28"/>
+							<Anchor point="TOPLEFT" x="0" y="28"/>
 						</Anchors>
-					</Frame-->
-
-
-					<!--DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" virtual="true"-->
-
-
-
-					<!--ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate"-->
+					</DropdownButton>
 					<DressUpModel parentKey="Model" mixin="WardrobeItemsModelMixin" enableMouse="true" modelScale="2.0" inherits="ModelWithControlsTemplate">
 						<Size x="294" y="488"/>
 						<Anchors>

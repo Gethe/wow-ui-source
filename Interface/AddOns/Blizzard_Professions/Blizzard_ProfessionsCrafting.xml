@@ -357,7 +357,7 @@
 				</Layers>
 			</Frame>
 
-			<Button parentKey="LinkButton" mixin="DropDownToggleButtonMixin">
+			<DropdownButton parentKey="LinkButton">
 				<Size x="30" y="30"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="-2"/>
@@ -373,8 +373,7 @@
 				<NormalTexture file="Interface\Buttons\UI-LinkProfession-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-LinkProfession-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-			</Button>
-			<Frame parentKey="LinkDropDown" inherits="UIDropDownMenuTemplate"/>
+			</DropdownButton>
 
 			<Frame parentKey="OverlayCastBarAnchor">
 				<Size x="1" y="1"/>

@@ -90,7 +90,7 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Button>
-	<Button name="ChinaAgeAppropriatenessWarning" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true">
+	<Button name="ChinaAgeAppropriatenessWarning" toplevel="true" setAllPoints="true" parent="GlueParent" ignoreParentScale="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true" hyperlinksEnabled="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" file="Interface\Glues\Login\Glues-CADPA16">
@@ -602,14 +602,11 @@
 							<OnKeyDown function="TokenEntry_OnKeyDown"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="LargeUIDropDownMenuTemplate">
+					<DropdownButton parentKey="AccountsDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="AccountLoginDropDown_OnLoad"/>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">

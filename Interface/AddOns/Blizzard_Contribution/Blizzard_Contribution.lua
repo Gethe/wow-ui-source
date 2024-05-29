@@ -275,7 +275,7 @@ end
 
 function ContributionMixin:OnReset(pool)
 	self:ReleaseRewards();
-	FramePool_HideAndClearAnchors(pool, self);
+	Pool_HideAndClearAnchors(pool, self);
 
 	self.layoutIndex = nil;
 	self.contributionID = nil;

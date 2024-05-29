@@ -113,11 +113,11 @@
 
 			<StatusBar parentKey="RecipeLevelBar" mixin="ProfessionsRecipeLevelBarMixin" inherits="ProfessionsRecipeLevelBar"/>
 			
-			<DropDownToggleButton parentKey="RecipeLevelSelector" inherits="ProfessionsRecipeLevelSelectorTemplate">
+			<DropdownButton parentKey="RecipeLevelDropdown" inherits="ProfessionsRecipeLevelDropdownTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.RecipeLevelBar" relativePoint="RIGHT" x="20"/>
 				</Anchors>
-			</DropDownToggleButton>
+			</DropdownButton>
 			
 			<Frame parentKey="Details" inherits="ProfessionsRecipeCrafterDetailsTemplate">
 				<Anchors>

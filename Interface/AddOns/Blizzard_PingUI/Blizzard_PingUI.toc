@@ -1,4 +1,4 @@
-## Title: Blizzard Ping UI
+## Title: Blizzard_PingUI
 ## LoadFirst: 1
 ## RequiredDep: Blizzard_SharedXML
 ## UseSecureEnvironment: 1

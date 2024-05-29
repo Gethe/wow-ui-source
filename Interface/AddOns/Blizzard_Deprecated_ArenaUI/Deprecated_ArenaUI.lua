@@ -188,8 +188,6 @@ function ArenaEnemyMatchFrameMixin:OnLoad()
 	self:RegisterEvent("ARENA_COOLDOWNS_UPDATE");
 	self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE");
 
-	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyDropDown_Initialize, "MENU");
-
 	local setfocus = function()
 		FocusUnit("arena"..self:GetID());
 	end
@@ -389,8 +387,6 @@ function ArenaEnemyPetFrameMixin:OnLoad()
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 
-	UIDropDownMenu_Initialize(self.DropDown, ArenaEnemyPetDropDown_Initialize, "MENU");
-
 	local setfocus = function()
 		FocusUnit("arenapet"..self:GetID());
 	end
@@ -439,14 +435,6 @@ end
 
 function ArenaEnemyPetFrameMixin:OnHide()
 	ArenaEnemyFramesContainer:Update();
-end
-
-function ArenaEnemyDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "ARENAENEMY", "arena"..self:GetParent():GetID());
-end
-
-function ArenaEnemyPetDropDown_Initialize(self)
-	UnitPopup_ShowMenu(self, "ARENAENEMY", "arenapet"..self:GetParent():GetID());
 end
 
 -----------------------------------------------------------------------------

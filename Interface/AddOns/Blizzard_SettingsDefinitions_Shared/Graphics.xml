@@ -17,7 +17,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DropDown" inherits="SettingsSelectionPopoutWithButtonsTemplate">
+			<Frame parentKey="Control" inherits="SettingsDropdownWithButtonsTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="CENTER" x="-40"/>
 				</Anchors>
@@ -96,7 +96,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="SettingsCheckBoxTemplate">
+			<CheckButton parentKey="CheckBox" inherits="SettingsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="CENTER" x="-80" y="0"/>
 				</Anchors>

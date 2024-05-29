@@ -85,7 +85,7 @@
 						<Texture parentKey="IconHighlight" setAllPoints="true" atlas="spellbook-item-iconframe-hover" useAtlasSize="false" hidden="true" alpha="0.25" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false"/>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="3">
-						<Texture parentKey="BorderSheen" atlas="soulbinds_backgroundfx_chargesheen" useAtlasSize="true" alpha="0.5" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+						<Texture parentKey="BorderSheen" atlas="talents-sheen-node" useAtlasSize="true" alpha="0.5" alphaMode="ADD" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>

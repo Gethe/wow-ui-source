@@ -53,7 +53,6 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 	end
 
 	if mouseButton ~= "RightButton" then
-		CloseDropDownMenus();
 		local questID = block.id;
 		if IsModifiedClick("QUESTWATCHTOGGLE") then
 			C_QuestLog.RemoveQuestWatch(questID);
@@ -66,64 +65,45 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 				QuestMapFrame_OpenToQuestDetails(questID);
 			end
 		end
-		return;
 	else
-		self:ToggleDropDown(block);
+		MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+			rootDescription:SetTag("MENU_QUEST_OBJECTIVE_TRACKER");
+
+			local questID = block.id;
+			rootDescription:CreateTitle(C_QuestLog.GetTitleForQuestID(questID));
+
+			if C_SuperTrack.GetSuperTrackedQuestID() ~= questID then
+				rootDescription:CreateButton(SUPER_TRACK_QUEST, function()
+					C_SuperTrack.SetSuperTrackedQuestID(questID);
+				end);
+			else
+				rootDescription:CreateButton(STOP_SUPER_TRACK_QUEST, function()
+					C_SuperTrack.SetSuperTrackedQuestID(0);
+				end);
+			end				
+
+			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
+				QuestUtil.OpenQuestDetails(questID);
+			end);
+
+			rootDescription:CreateButton(OBJECTIVES_SHOW_QUEST_MAP, function()
+				QuestMapFrame_OpenToQuestDetails(questID);
+			end);
+
+			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+				C_QuestLog.RemoveQuestWatch(questID);
+			end);
+
+			if C_QuestLog.IsPushableQuest(questID) and IsInGroup() then
+				rootDescription:CreateButton(SHARE_QUEST, function()
+					QuestUtil.ShareQuest(questID);
+				end);
+			end
+			rootDescription:CreateButton(ABANDON_QUEST_ABBREV, function()
+				QuestMapQuestOptions_AbandonQuest(questID);
+			end);
+		end);
 	end
-end
-
-function QuestObjectiveTrackerMixin:InitDropDown(block)
-	local questID = block.id;
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = C_QuestLog.GetTitleForQuestID(questID);
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	info.text = SUPER_TRACK_QUEST;
-	info.func = function() C_SuperTrack.SetSuperTrackedQuestID(questID); end
-	info.arg1 = questID;
-	info.noClickSound = 1;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info.text = OBJECTIVES_VIEW_IN_QUESTLOG;
-	info.func = function() QuestUtil.OpenQuestDetails(questID); end
-	info.arg1 = questID;
-	info.noClickSound = 1;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info.text = OBJECTIVES_SHOW_QUEST_MAP;
-	info.func = function() QuestMapFrame_OpenToQuestDetails(questID); end
-	info.arg1 = questID;
-	info.checked = false;
-	info.noClickSound = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info.text = OBJECTIVES_STOP_TRACKING;
-	info.func = function() C_QuestLog.RemoveQuestWatch(questID); end
-	info.arg1 = questID;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	if C_QuestLog.IsPushableQuest(block.id) and IsInGroup() then
-		info.text = SHARE_QUEST;
-		info.func = function() QuestUtil.ShareQuest(questID); end
-		info.arg1 = questID;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-
-	info.text = ABANDON_QUEST_ABBREV;
-	info.func = function() QuestMapQuestOptions_AbandonQuest(questID); end
-	info.arg1 = questID;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
 end
 
 function QuestObjectiveTrackerMixin:OnBlockHeaderEnter(block)

@@ -370,14 +370,7 @@ function CompactUnitFrame_SetUpClicks(frame)
     frame:SetAttribute("*type2", "menu");
 	--NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
 	frame:RegisterForClicks("AnyDown");
-	CompactUnitFrame_SetMenuFunc(frame, CompactUnitFrameDropDown_Initialize);
-end
-
-function CompactUnitFrame_SetMenuFunc(frame, menuFunc)
-	UIDropDownMenu_Initialize(frame.dropDown, menuFunc, "MENU");
-	frame.menu = function()
-		ToggleDropDownMenu(1, nil, frame.dropDown, frame:GetName(), 0, 0);
-	end
+	frame.menu = CompactUnitFrame_OpenMenu;
 end
 
 function CompactUnitFrame_SetMaxBuffs(frame, numBuffs)
@@ -1878,37 +1871,40 @@ function CompactUnitFrame_UnitExists(unitToken)
 end
 
 --Dropdown
-function CompactUnitFrameDropDown_Initialize(self)
-	local unit = self:GetParent().unit;
+function CompactUnitFrame_OpenMenu(self)
+	local unit = self.unit;
 	if ( not unit ) then
 		return;
 	end
-	local menu;
+	local which;
 	local name;
-	local id = nil;
 	if ( UnitIsUnit(unit, "player") ) then
-		menu = "SELF";
+		which = "SELF";
 	elseif ( UnitIsUnit(unit, "vehicle") ) then
 		-- NOTE: vehicle check must come before pet check for accuracy's sake because
 		-- a vehicle may also be considered your pet
-		menu = "VEHICLE";
+		which = "VEHICLE";
 	elseif ( UnitIsUnit(unit, "pet") ) then
-		menu = "PET";
+		which = "PET";
 	elseif ( UnitIsPlayer(unit) ) then
-		id = UnitInRaid(unit);
-		if ( id ) then
-			menu = "RAID_PLAYER";
+		if ( UnitInRaid(unit) ) then
+			which = "RAID_PLAYER";
 		elseif ( UnitInParty(unit) ) then
-			menu = "PARTY";
+			which = "PARTY";
 		else
-			menu = "PLAYER";
+			which = "PLAYER";
 		end
 	else
-		menu = "TARGET";
+		which = "TARGET";
 		name = RAID_TARGET_ICON;
 	end
-	if ( menu ) then
-		UnitPopup_ShowMenu(self, menu, unit, name, id);
+	if ( which ) then
+		local contextData = 
+		{
+			unit = unit,
+			name = name,
+		};
+		UnitPopup_OpenMenu(which, contextData);
 	end
 end
 

@@ -30,7 +30,7 @@ UIWidgetContainerMixin = {};
 
 local function ResetHorizontalWidgetContainer(framePool, frame)
 	frame:ResetChildWidgets();
-	FramePool_HideAndClearAnchors(framePool, frame);
+	Pool_HideAndClearAnchors(framePool, frame);
 end
 
 function UIWidgetContainerMixin:OnLoad()
@@ -396,7 +396,7 @@ end
 
 function UIWidgetContainerMixin:GetWidgetFromPools(templateInfo)
 	if templateInfo then
-		self.widgetPools:CreatePoolIfNeeded(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
+		self.widgetPools:GetOrCreatePool(templateInfo.frameType, self, templateInfo.frameTemplate, ResetWidget);
 
 		local widgetFrame = self.widgetPools:Acquire(templateInfo.frameTemplate);
 		widgetFrame:SetParent(self);

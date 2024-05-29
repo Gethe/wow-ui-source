@@ -32,13 +32,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="OptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOP" x="-80" y="-35"/>
-				</Anchors>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

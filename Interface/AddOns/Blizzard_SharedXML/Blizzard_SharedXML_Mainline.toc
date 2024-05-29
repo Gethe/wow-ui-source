@@ -3,7 +3,7 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
-## Dependencies: Blizzard_PrintHandler, Blizzard_SharedXMLBase
+## Dependencies: Blizzard_PrintHandler, Blizzard_Menu
 ## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
 Shared\LocalizationMachinery.lua
 EnvironmentUtil.lua

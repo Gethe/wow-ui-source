@@ -24,12 +24,15 @@ function DefaultTooltipMixin:InitDefaultTooltipScriptHandlers()
 end
 
 function DefaultTooltipMixin:OnLoad()
+	self:SetDefaultTooltipAnchors();
+	self:InitDefaultTooltipScriptHandlers();
+end
+
+function DefaultTooltipMixin:SetDefaultTooltipAnchors()
 	self.tooltipAnchorParent = nil;
 	self.tooltipAnchoring = "ANCHOR_RIGHT";
 	self.tooltipXOffset = -10;
 	self.tooltipYOffset = 0;
-
-	self:InitDefaultTooltipScriptHandlers();
 end
 
 function DefaultTooltipMixin:SetTooltipFunc(tooltipFunc)
@@ -283,6 +286,10 @@ function SettingsControlMixin:GetSetting()
 	return self.data.setting;
 end
 
+function SettingsControlMixin:SetValue(value)
+	-- Implement in derived
+end
+
 function SettingsControlMixin:OnSettingValueChanged(setting, value)
 	self:SetValue(value);
 end
@@ -311,33 +318,33 @@ function SettingsControlMixin:ShouldInterceptSetting(value)
 	return false;
 end
 
-SettingsCheckBoxMixin = CreateFromMixins(CallbackRegistryMixin, DefaultTooltipMixin);
-SettingsCheckBoxMixin:GenerateCallbackEvents(
+SettingsCheckboxMixin = CreateFromMixins(CallbackRegistryMixin, DefaultTooltipMixin);
+SettingsCheckboxMixin:GenerateCallbackEvents(
 	{
 		"OnValueChanged",
 	}
 );
 
-function SettingsCheckBoxMixin:OnLoad()
+function SettingsCheckboxMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	DefaultTooltipMixin.OnLoad(self);
 	self.tooltipXOffset = 0;
 end
 
-function SettingsCheckBoxMixin:Init(value, initTooltip)
+function SettingsCheckboxMixin:Init(value, initTooltip)
 	self:SetValue(value);
 	self:SetTooltipFunc(initTooltip);
 
 	self:SetScript("OnClick", function(button, buttonName, down)
-		self:TriggerEvent(SettingsCheckBoxMixin.Event.OnValueChanged, button:GetChecked());
+		self:TriggerEvent(SettingsCheckboxMixin.Event.OnValueChanged, button:GetChecked());
 	end);
 end
 
-function SettingsCheckBoxMixin:Release()
+function SettingsCheckboxMixin:Release()
 	self:SetScript("OnClick", nil);
 end
 
-function SettingsCheckBoxMixin:SetValue(value)
+function SettingsCheckboxMixin:SetValue(value)
 	self:SetChecked(value);
 end
 
@@ -346,7 +353,7 @@ SettingsCheckBoxControlMixin = CreateFromMixins(SettingsControlMixin);
 function SettingsCheckBoxControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
 
-	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckBoxTemplate");
+	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate");
 	self.CheckBox:SetPoint("LEFT", self, "CENTER", -80, 0);
 
 	self.Tooltip:SetScript("OnMouseUp", function()
@@ -365,7 +372,7 @@ function SettingsCheckBoxControlMixin:Init(initializer)
 
 	self.CheckBox:Init(setting:GetValue(), initTooltip);
 	
-	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
+	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
 
 	self:EvaluateState();
 end
@@ -471,82 +478,81 @@ end
 function SettingsSliderControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
-	self.SliderWithSteppers:SetEnabled_(enabled);
+	self.SliderWithSteppers:SetEnabled(enabled);
 	self:DisplayEnabled(enabled);
 end
 
-SettingsDropDownControlMixin = CreateFromMixins(SettingsControlMixin);
+SettingsDropdownControlMixin = CreateFromMixins(SettingsControlMixin);
 
-function SettingsDropDownControlMixin:OnLoad()
+function SettingsDropdownControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
 	
-	self.DropDown = CreateFrame(self.dropDownType, nil, self, self.dropDownTemplate);
-	self.DropDown:SetPoint("LEFT", self, "CENTER", -40, 3);
-	self.DropDown.Button:SetPopoutStrata("FULLSCREEN_DIALOG");
+	local dropdownType = self.dropdownType or "SettingsDropdownWithButtonsTemplate";
+	self.Control = CreateFrame("Frame", nil, self, dropdownType);
+	self.Control:SetPoint("LEFT", self, "CENTER", -48, 3);
+	self.Control.Dropdown:SetWidth(220);
+
+	local function OnShow()
+		local initializer = self:GetElementData();
+		if initializer.OnShow then
+			initializer.OnShow();
+		end
+	end
+
+	local function OnHide()
+		local initializer = self:GetElementData();
+		if initializer.OnHide then
+			initializer.OnHide();
+		end
+	end
+
+	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, OnShow);
+	self.Control.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, OnHide);
+
+	Mixin(self.Control.Dropdown, DefaultTooltipMixin);
 end
 
-function SettingsDropDownControlMixin:Init(initializer)
+function SettingsDropdownControlMixin:Init(initializer)
 	SettingsControlMixin.Init(self, initializer);
 
-	self:InitDropDown();
+	self:InitDropdown();
 	self:EvaluateState();
 end
 
-function SettingsDropDownControlMixin:InitDropDown()
+function SettingsDropdownControlMixin:InitDropdown()
 	local setting = self:GetSetting();
 	local initializer = self:GetElementData();
 	local options = initializer:GetOptions();
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
-	
-	local function OnDropDownValueChanged(o, option)
-		setting:SetValue(option.value);
+	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
 	end
 
-	self.DropDown.Button.selectedDataFunc = initializer.data.selectedDataFunc;
-	self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
-	if setting.OnShow then
-		self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnPopoutShow, setting.OnShow);
-	end
-	if setting.OnHide then
-		self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnPopoutHide, setting.OnHide);
-	end
-
-	local selectionIndex = Settings.InitSelectionDropDown(self.DropDown, setting, options, 200, initTooltip);
-	if not initializer.skipAssertMissingOption then
-		-- Retained for debugging
-		--assertsafe(selectionIndex ~= nil, ("Failed to matching option matching value '%s' for setting name '%s'"):format(
-			--tostring(setting:GetValue()), setting:GetName()));
-	end
+function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
+	local inserter = Settings.CreateDropdownOptionInserter(options);
+	Settings.InitDropdown(self.Control.Dropdown, setting, inserter, initTooltip);
 end
 
-function SettingsDropDownControlMixin:Release()
+function SettingsDropdownControlMixin:Release()
 	SettingsControlMixin.Release(self);
 end
 
-function SettingsDropDownControlMixin:OnSettingValueChanged(setting, value)
+function SettingsDropdownControlMixin:OnSettingValueChanged(setting, value)
 	SettingsControlMixin.OnSettingValueChanged(self, setting, value);
 	
 	local initializer = self:GetElementData();
 	if initializer.reinitializeOnValueChanged then
-		self:InitDropDown();
+		self:InitDropdown();
 	end
-
-	self:SetValue(value);
-
-	self.DropDown.Button:Update();
 end
 
-function SettingsDropDownControlMixin:SetValue(value)
-	local index = self.DropDown.Button:FindIndex(function(data)
-		return data.value == value;
-	end);
-	self.DropDown.Button:SetSelectedIndex(index);
+function SettingsDropdownControlMixin:SetValue(value)
+	self:InitDropdown();
 end
 
-function SettingsDropDownControlMixin:EvaluateState()
+function SettingsDropdownControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
-	self.DropDown:SetEnabled_(enabled);
+	self.Control.Dropdown:SetEnabled(enabled);
 
 	self:DisplayEnabled(enabled);
 	return enabled;
@@ -610,7 +616,7 @@ SettingsCheckBoxWithButtonControlMixin = CreateFromMixins(SettingsControlMixin);
 function SettingsCheckBoxWithButtonControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
 
-	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckBoxTemplate");
+	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate");
 	self.CheckBox:SetPoint("LEFT", self, "CENTER", -80, 0);
 
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
@@ -631,7 +637,7 @@ function SettingsCheckBoxWithButtonControlMixin:Init(initializer)
 	local initTooltip = GenerateClosure(InitializeSettingTooltip, initializer);
 	
 	self.CheckBox:Init(setting:GetValue(), initTooltip);
-	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
+	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
 
 	self.Button:SetText(self.data.buttonText);
 	self.Button:SetScript("OnClick", self.data.OnButtonClick);
@@ -703,7 +709,7 @@ SettingsCheckBoxSliderControlMixin = CreateFromMixins(SettingsListElementMixin);
 function SettingsCheckBoxSliderControlMixin:OnLoad()
 	SettingsListElementMixin.OnLoad(self);
 
-	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckBoxTemplate");
+	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate");
 	self.CheckBox:SetPoint("LEFT", self, "CENTER", -80, 0);
 
 	self.SliderWithSteppers = CreateFrame("Frame", nil, self, "MinimalSliderWithSteppersTemplate");
@@ -736,7 +742,7 @@ function SettingsCheckBoxSliderControlMixin:Init(initializer)
 	self:SetTooltipFunc(cbInitTooltip);
 
 	self.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
-	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
+	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
 
 	self.SliderWithSteppers.Slider:SetTooltipFunc(GenerateClosure(Settings.InitTooltip, sliderLabel, sliderTooltip));
 
@@ -781,7 +787,7 @@ function SettingsCheckBoxSliderControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = SettingsControlMixin.IsEnabled(self);
 	self.CheckBox:SetEnabled(enabled);
-	self.SliderWithSteppers:SetEnabled_(enabled and self.CheckBox:GetChecked());
+	self.SliderWithSteppers:SetEnabled(enabled and self.CheckBox:GetChecked());
 	self:DisplayEnabled(enabled);
 end
 
@@ -791,7 +797,7 @@ function SettingsCheckBoxSliderControlMixin:Release()
 	SettingsListElementMixin.Release(self);
 end
 
-function CreateSettingsCheckBoxSliderInitializer(cbSetting, cbLabel, cbTooltip, sliderSetting, sliderOptions, sliderLabel, sliderTooltip)
+function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, sliderSetting, sliderOptions, sliderLabel, sliderTooltip)
 	local data =
 	{
 		name = cbLabel,
@@ -807,16 +813,19 @@ function CreateSettingsCheckBoxSliderInitializer(cbSetting, cbLabel, cbTooltip, 
 	return Settings.CreateSettingInitializer("SettingsCheckBoxSliderControlTemplate", data);
 end
 
-SettingsCheckBoxDropDownControlMixin = CreateFromMixins(SettingsListElementMixin);
+SettingsCheckBoxDropdownControlMixin = CreateFromMixins(SettingsListElementMixin);
 
-function SettingsCheckBoxDropDownControlMixin:OnLoad()
+function SettingsCheckBoxDropdownControlMixin:OnLoad()
 	SettingsListElementMixin.OnLoad(self);
 
-	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckBoxTemplate");
+	self.CheckBox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate");
 	self.CheckBox:SetPoint("LEFT", self, "CENTER", -80, 0);
 
-	self.DropDown = CreateFrame("Frame", nil, self, "SettingsSelectionPopoutWithButtonsTemplate");
-	self.DropDown:SetPoint("LEFT", self.CheckBox, "RIGHT", 50, 0);
+	self.Control = CreateFrame("Frame", nil, self, "SettingsDropdownWithButtonsTemplate");
+	self.Control:SetPoint("LEFT", self.CheckBox, "RIGHT", 32, 0);
+	self.Control.Dropdown:SetWidth(220);
+
+	Mixin(self.Control.Dropdown, DefaultTooltipMixin);
 
 	self.Tooltip:SetScript("OnMouseUp", function()
 		if self.CheckBox:IsEnabled() then
@@ -825,51 +834,31 @@ function SettingsCheckBoxDropDownControlMixin:OnLoad()
 	end);
 end
 
-function SettingsCheckBoxDropDownControlMixin:Init(initializer)
+function SettingsCheckBoxDropdownControlMixin:Init(initializer)
 	SettingsListElementMixin.Init(self, initializer);
 
 	local cbSetting = initializer.data.cbSetting;
 	local cbLabel = initializer.data.cbLabel;
 	local cbTooltip = initializer.data.cbTooltip;
-	local dropDownSetting = initializer.data.dropDownSetting;
-	local dropDownOptions = initializer.data.dropDownOptions;
+	local dropdownSetting = initializer.data.dropdownSetting;
+	local dropdownOptions = initializer.data.dropdownOptions;
 	local dropDownLabel = initializer.data.dropDownLabel;
 	local dropDownTooltip = initializer.data.dropDownTooltip;
 
-	local initTooltip = GenerateClosure(Settings.InitTooltip, cbLabel, cbTooltip);
-	self:SetTooltipFunc(initTooltip);
+	local initCheckboxTooltip = GenerateClosure(Settings.InitTooltip, cbLabel, cbTooltip);
+	self:SetTooltipFunc(initCheckboxTooltip);
 
-	self.CheckBox:Init(cbSetting:GetValue(), initTooltip);
-	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckBoxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
+	self.CheckBox:Init(cbSetting:GetValue(), initCheckboxTooltip);
+	self.cbrHandles:RegisterCallback(self.CheckBox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckBoxValueChanged, self);
 
-	local function OnDropDownValueChanged(self, option)
-		dropDownSetting:SetValue(option.value);
-	end
+	local inserter = Settings.CreateDropdownOptionInserter(dropdownOptions);
+	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
+	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
 
-	self.cbrHandles:RegisterCallback(self.DropDown.Button, SelectionPopoutButtonMixin.Event.OnValueChanged, OnDropDownValueChanged);
-
-	local initTooltipDropDown = Settings.CreateOptionsInitTooltip(dropDownSetting, initializer:GetName(), initializer:GetTooltip(), dropDownOptions);
-	Settings.InitSelectionDropDown(self.DropDown, dropDownSetting, dropDownOptions, 200, initTooltipDropDown);
-
-	self.DropDown:SetEnabled_(cbSetting:GetValue());
-
-	-- Defaults...
-	local function OnCheckBoxSettingValueChanged(o, setting, value)
-		self.CheckBox:SetValue(value);
-		self.DropDown:SetEnabled_(value);
-	end
-	self.cbrHandles:SetOnValueChangedCallback(cbSetting:GetVariable(), OnCheckBoxSettingValueChanged);
-
-	local function OnDropDownSettingValueChanged(o, setting, value)
-		local index = self.DropDown.Button:FindIndex(function(data)
-			return data.value == value;
-		end);
-		self.DropDown.Button:SetSelectedIndex(index);
-	end
-	self.cbrHandles:SetOnValueChangedCallback(dropDownSetting:GetVariable(), OnDropDownSettingValueChanged);
+	self.Control:SetEnabled(cbSetting:GetValue());
 end
 
-function SettingsCheckBoxDropDownControlMixin:OnCheckBoxValueChanged(value)
+function SettingsCheckBoxDropdownControlMixin:OnCheckBoxValueChanged(value)
 	local initializer = self:GetElementData();
 	local cbSetting = initializer.data.cbSetting;
 	cbSetting:SetValue(value);
@@ -879,21 +868,15 @@ function SettingsCheckBoxDropDownControlMixin:OnCheckBoxValueChanged(value)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
-	self.DropDown:SetEnabled_(value);
+	self.Control:SetEnabled(value);
 end
 
-function SettingsCheckBoxDropDownControlMixin:OnDropDownValueChanged(option)
-	local initializer = self:GetElementData();
-	local dropDownSetting = initializer.data.dropDownSetting;
-	dropDownSetting:SetValue(option.value);
-end
-
-function SettingsCheckBoxDropDownControlMixin:Release()
+function SettingsCheckBoxDropdownControlMixin:Release()
 	self.CheckBox:Release();
 	SettingsListElementMixin.Release(self);
 end
 
-function CreateSettingsCheckBoxDropDownInitializer(cbSetting, cbLabel, cbTooltip, dropDownSetting, dropDownOptions, dropDownLabel, dropDownTooltip)
+function CreateSettingsCheckBoxDropDownInitializer(cbSetting, cbLabel, cbTooltip, dropdownSetting, dropdownOptions, dropDownLabel, dropDownTooltip)
 	local data =
 	{
 		name = cbLabel,
@@ -901,170 +884,12 @@ function CreateSettingsCheckBoxDropDownInitializer(cbSetting, cbLabel, cbTooltip
 		cbSetting = cbSetting,
 		cbLabel = cbLabel,
 		cbTooltip = cbTooltip,
-		dropDownSetting = dropDownSetting,
-		dropDownOptions = dropDownOptions,
+		dropdownSetting = dropdownSetting,
+		dropdownOptions = dropdownOptions,
 		dropDownLabel = dropDownLabel,
 		dropDownTooltip = dropDownTooltip,
 	};
-	return Settings.CreateSettingInitializer("SettingsCheckBoxDropDownControlTemplate", data);
-end
-
-SettingsSelectionPopoutEntryMixin = CreateFromMixins(SelectionPopoutEntryMixin);
-
-function SettingsSelectionPopoutEntryMixin:GetTooltipText()
-	return self.SelectionDetails:GetTooltipText();
-end
-
-function SettingsSelectionPopoutEntryMixin:OnEnter()
-	SelectionPopoutEntryMixin.OnEnter(self);
-	
-	self.HighlightBGTex:SetAlpha(0.15);
-
-	if self.selectionData.OnEnter then
-		self.selectionData.OnEnter(self.selectionData.value)
-	end
-
-	if not self.isSelected then
-		if self.selectionData.disabled == nil then
-			self.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-		end
-	end
-
-	self.parentButton:OnEntryMouseEnter(self);
-end
-
-function SettingsSelectionPopoutEntryMixin:OnLeave()
-	SelectionPopoutEntryMixin.OnLeave(self);
-	
-	self.HighlightBGTex:SetAlpha(0);
-
-	if not self.isSelected then
-		local fontColor = nil;
-		if self.selectionData.disabled == nil then
-			fontColor = VERY_LIGHT_GRAY_COLOR;
-		else
-			fontColor = DISABLED_FONT_COLOR;
-		end
-		self.SelectionDetails.SelectionName:SetTextColor(fontColor:GetRGB());
-	end
-
-	self.parentButton:OnEntryMouseLeave(self);
-end
-
-function SettingsSelectionPopoutEntryMixin:OnClick()
-	if self.selectionData.disabled == nil then
-		SelectionPopoutEntryMixin.OnClick(self);
-	end
-end
-
-SettingsSelectionPopoutDetailsMixin = {};
-
-function SettingsSelectionPopoutDetailsMixin:GetTooltipText()
-	if self.SelectionName:IsShown() and self.SelectionName:IsTruncated() then
-		return self.label;
-	end
-
-	return nil;
-end
-
-function SettingsSelectionPopoutDetailsMixin:AdjustWidth(multipleColumns, defaultWidth)
-	if multipleColumns then
-		self:SetWidth(Round(defaultWidth / 2));
-	else
-		local nameWidth = self.SelectionName:GetUnboundedStringWidth() + self.selectionNamePadding;
-		self:SetWidth(Round(math.max(nameWidth, defaultWidth)));
-		self.SelectionName:SetWidth(nameWidth);
-	end
-end
-
-function SettingsSelectionPopoutDetailsMixin:SetupDetails(selectionData, index, isSelected, hasAFailedReq, hasALockedChoice)
-	self.label = selectionData.label;
-
-	self.SelectionName:Show();
-	self.SelectionName:SetText(selectionData.label);
-
-	if isSelected ~= nil then
-		local fontColor = nil;
-		if isSelected then
-			fontColor = NORMAL_FONT_COLOR;
-		elseif selectionData.disabled then
-			fontColor = DISABLED_FONT_COLOR;
-		else
-			fontColor = VERY_LIGHT_GRAY_COLOR;
-		end
-		self.SelectionName:SetTextColor(fontColor:GetRGB());
-	end
-
-	local maxNameWidth = 200;
-	if self.SelectionName:GetWidth() > maxNameWidth then
-		self.SelectionName:SetWidth(maxNameWidth);
-	end
-end
-
-function SettingsSelectionPopoutDetailsMixin:SetupCustomDetails()
-	self.label = CUSTOM;
-
-	self.SelectionName:Show();
-	self.SelectionName:SetText(self.label);
-	self.SelectionName:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
-
-	local maxNameWidth = 200;
-	if self.SelectionName:GetWidth() > maxNameWidth then
-		self.SelectionName:SetWidth(maxNameWidth);
-	end
-end
-
-function CreateSettingsSelectionCustomSelectedData(data, label)
-	data.selectedDataFunc = function()
-		return {label = label};
-	end;
-end
-
-SettingsSelectionPopoutButtonMixin = CreateFromMixins(SelectionPopoutButtonMixin, DefaultTooltipMixin);
-
-function SettingsSelectionPopoutButtonMixin:OnLoad()
-	SelectionPopoutButtonMixin.OnLoad(self);
-	DefaultTooltipMixin.OnLoad(self);
-
-	self:SetScript("OnMouseWheel", nil);
-end
-
-function SettingsSelectionPopoutButtonMixin:OnEnter()
-	SelectionPopoutButtonMixin.OnEnter(self);
-	DefaultTooltipMixin.OnEnter(self);
-end
-
-function SettingsSelectionPopoutButtonMixin:OnLeave()
-	SelectionPopoutButtonMixin.OnLeave(self);
-	DefaultTooltipMixin.OnLeave(self);
-end
-
-function SettingsSelectionPopoutButtonMixin:SetEnabled_(enabled)
-	SelectionPopoutButtonMixin.SetEnabled_(self, enabled);
-	
-	if enabled then
-		self.SelectionDetails.SelectionName:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
-	else
-		self.SelectionDetails.SelectionName:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
-	end
-end
-
-function SettingsSelectionPopoutButtonMixin:IsDataMatch(data1, data2)
-	return data1.value == data2.value;
-end
-
-function SettingsSelectionPopoutButtonMixin:UpdateButtonDetails()
-	local currentSelectedData = self:GetCurrentSelectedData();
-	if not currentSelectedData and self.selectedDataFunc then
-		currentSelectedData = self.selectedDataFunc();
-	end
-
-	if currentSelectedData then
-		self.SelectionDetails:SetupDetails(currentSelectedData, self.selectedIndex);
-	else
-		self.SelectionDetails:SetupCustomDetails();
-	end
-	return currentSelectedData ~= nil;
+	return Settings.CreateSettingInitializer("SettingsCheckBoxDropdownControlTemplate", data);
 end
 
 SettingsExpandableSectionMixin = {};

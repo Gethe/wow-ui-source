@@ -233,15 +233,11 @@
 
 	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" mixin="ReputationFrameMixin" hidden="true" id="2">
 		<Frames>
-			<Frame parentKey="filterDropDown" inherits="UIDropDownMenuTemplate" mixin="ReputationFilterDropDownMixin">
+			<DropdownButton parentKey="filterDropDown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-30"/>
+					<Anchor point="TOPRIGHT" x="-8" y="-30"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnShow method="OnShow"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
 				<Anchors>

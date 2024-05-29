@@ -336,6 +336,15 @@
 				</Scripts>
 			</Button>
 			<Frame parentKey="RaceAndClassFrame" mixin="CharacterCreateRaceAndClassMixin" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="CurrentRealmText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-50" y="110"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="AllianceHeader" inherits="ResizeLayoutFrame, CharCustomizeFrameWithTooltipTemplate" mixin="CharacterCreateFactionHeaderMixin">
 						<KeyValues>

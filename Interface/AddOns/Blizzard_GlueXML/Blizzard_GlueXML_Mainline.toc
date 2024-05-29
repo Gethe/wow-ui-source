@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil
+## Dependencies: Blizzard_GlueDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline
@@ -71,5 +71,7 @@ Mainline\CinematicsMenu.lua
 Mainline\CinematicsMenu.xml
 MovieFrame.lua
 MovieFrame.xml
+PhotosensitivityWarningFrame.lua
+PhotosensitivityWarningFrame.xml
 Mainline\CreditsFrame.lua
 Mainline\CreditsFrame.xml

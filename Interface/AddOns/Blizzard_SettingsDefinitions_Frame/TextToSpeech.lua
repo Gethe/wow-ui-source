@@ -1,14 +1,14 @@
-RTTSMixin = CreateFromMixins(SettingsDropDownControlMixin);
+RTTSMixin = CreateFromMixins(SettingsDropdownControlMixin);
 
 function RTTSMixin:OnLoad()
-	SettingsDropDownControlMixin.OnLoad(self);
+	SettingsDropdownControlMixin.OnLoad(self);
 
 	self.Button:ClearAllPoints();
 	self.Button:SetPoint("TOPLEFT", self.DropDown, "BOTTOMLEFT");
 end
 
 function RTTSMixin:Init(initializer)
-	SettingsDropDownControlMixin.Init(self, initializer);
+	SettingsDropdownControlMixin.Init(self, initializer);
 	
 	local options = initializer.data.options();
 	if #options == 0 then
@@ -28,7 +28,7 @@ function RTTSMixin:Init(initializer)
 end
 
 function RTTSMixin:EvaluateState()
-	local enabled = SettingsDropDownControlMixin.EvaluateState(self);
+	local enabled = SettingsDropdownControlMixin.EvaluateState(self);
 	self:SetButtonState(enabled);
 end
 
@@ -37,12 +37,12 @@ function RTTSMixin:SetButtonState(enabled)
 end
 
 function RTTSMixin:OnSettingValueChanged(setting, value)
-	SettingsDropDownControlMixin.OnSettingValueChanged(self, setting, value);
+	SettingsDropdownControlMixin.OnSettingValueChanged(self, setting, value);
 	self:SetButtonState(value);
 end
 
 function RTTSMixin:Release()
-	SettingsDropDownControlMixin.Release(self);
+	SettingsDropdownControlMixin.Release(self);
 	self.Button:SetScript("OnClick", nil);
 end
 
@@ -71,7 +71,7 @@ local function Register()
 
 		-- Speak for me in Voice Chat
 		do
-			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckBox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH);
+			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckbox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH);
 
 			local function IsSpeakForMeAllowed()
 				return C_VoiceChat.IsSpeakForMeAllowed();

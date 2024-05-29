@@ -7,20 +7,12 @@
 -- ^ The GV frame will be broken because TWW S1 lacks Ranked PVP activities, but that is changing soon.
 --! TODO ^ revisit both of these closer to launch
 
--- TODO / NOTE : Some of these are going to be temporary while data is WIP, there's a task open to get this data with a new API
---[[ Locals ]]
--- Brann data
-local BRANN_TREE_ID = 874;
-local BRANN_CREATURE_DISPLAY_ID = 115505;
-local BRANN_FACTION_ID = 2640;
-
 -- Season/reward data
-local DELVES_S1_FACTION_ID = 2644;
 local MIN_REP_RANK_FOR_REWARDS = 2;
 local MAX_REP_RANK_FOR_REWARDS = 11;
 local MAX_NUM_REWARDS = 10;
 local DELVES_SEASON_RENOWN_CVAR = "lastRenownForDelvesSeason";
-local REPUTATION_UPDATE_TIMEOUT_SECONDS = 0.2 -- 200ms
+local REPUTATION_UPDATE_TIMEOUT_SECONDS = 0.2; -- 200ms
 
 -- Model scene data
 local DASHBOARD_MODEL_SCENE_ACTOR_TAG = "actor";
@@ -56,14 +48,14 @@ end
 function DelvesDashboardFrameMixin:OnEvent(event)
 	if event == "UPDATE_FACTION" and self:IsVisible() then
 		C_Timer.After(REPUTATION_UPDATE_TIMEOUT_SECONDS, function()
-			self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(DELVES_S1_FACTION_ID);
+			self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(Constants.DelvesConsts.DELVES_S1_FACTION_ID);
 			self:SetThresholds();
 		end);
 	end
 end
 
 function DelvesDashboardFrameMixin:OnShow()
-	self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(DELVES_S1_FACTION_ID);
+	self.renownInfo = C_MajorFactions.GetMajorFactionRenownInfo(Constants.DelvesConsts.DELVES_S1_FACTION_ID);
 	self.rewardsInfo = self:GetRewardsInfo();
 
     PVEFrame:SetPortraitToAsset("Interface\\ICONS\\INV_Cape_Special_Explorer_B_03");
@@ -125,7 +117,7 @@ function DelvesDashboardFrameMixin:GetRewardsInfo()
 	local rewardsInfo = {};
 	
 	for i = MIN_REP_RANK_FOR_REWARDS, MAX_REP_RANK_FOR_REWARDS do
-		local renownLevelRewards = C_MajorFactions.GetRenownRewardsForLevel(DELVES_S1_FACTION_ID, i);
+		local renownLevelRewards = C_MajorFactions.GetRenownRewardsForLevel(Constants.DelvesConsts.DELVES_S1_FACTION_ID, i);
 
 		-- There should only ever be one reward per level for Delves, up to a maximum of 10 levels (MAX_REP_RANK_FOR_REWARDS)
 		-- There *can* be multiple rewards per level, but we only care about the first.
@@ -241,12 +233,12 @@ end
 CompanionConfigButtonPanelMixin = {};
 
 function CompanionConfigButtonPanelMixin:OnShow()
-    local companionFactionInfo = C_Reputation.GetFactionDataByID(BRANN_FACTION_ID);
+    local companionFactionInfo = C_Reputation.GetFactionDataByID(Constants.DelvesConsts.BRANN_FACTION_ID);
 
     self.PanelTitle:SetText(companionFactionInfo.name);
     self.PanelDescription:SetText(DELVES_COMPANION_LABEL);
 
-	if not C_Traits.GetConfigIDByTreeID(BRANN_TREE_ID) then
+	if not C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID) then
 		self.CompanionConfigButton.disabled = true;
 		self.CompanionConfigButton:SetEnabled(false);
 		self.CompanionConfigButton.ButtonText:SetTextColor(GRAY_FONT_COLOR:GetRGB());
@@ -283,7 +275,7 @@ function CompanionConfigButtonPanelModelSceneMixin:OnShow()
 	if actor then
 		actor:Hide();
 		actor:SetOnModelLoadedCallback(GenerateClosure(self.OnModelLoaded, actor));
-		actor:SetModelByCreatureDisplayID(BRANN_CREATURE_DISPLAY_ID);
+		actor:SetModelByCreatureDisplayID(Constants.DelvesConsts.BRANN_CREATURE_DISPLAY_ID);
 	end
 end
 

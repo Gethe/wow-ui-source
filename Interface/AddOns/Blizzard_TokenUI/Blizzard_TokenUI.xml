@@ -171,7 +171,7 @@
 				</Anchors>
 			</EventFrame>
 
-			<Button parentKey="CurrencyTransferLogToggleButton" inherits="CurrencyTransferLogToggleButtonTemplate" hidden="true">
+			<Button parentKey="CurrencyTransferLogToggleButton" inherits="CurrencyTransferLogToggleButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar" relativePoint="TOPRIGHT" x="4" y="12"/>
 				</Anchors>

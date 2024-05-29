@@ -95,7 +95,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		slot.Button:SetScript("OnEnter", nil);
 		slot.Button:SetScript("OnClick", nil);
 		slot.Button:SetScript("OnMouseDown", nil);
-		FramePool_HideAndClearAnchors(pool, slot);
+		Pool_HideAndClearAnchors(pool, slot);
 	end
 
 	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate", PoolReset);
@@ -146,7 +146,7 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 	self.Stars:SetPoint("TOPLEFT", self.OutputText, "TOPLEFT", 0, -15);
 	self.Stars:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.RecipeLevelSelector:SetSelectorCallback(function(recipeInfo, level)
+	self.RecipeLevelDropdown:SetSelectionCallback(function(recipeInfo, level)
 		self:SetSelectedRecipeLevel(recipeInfo.recipeID, level);
 		self:Init(recipeInfo);
 	end);
@@ -350,7 +350,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.Stars:SetScript("OnEnter", nil);
 	self.Stars:Hide();
 	self.RecipeLevelBar:Hide();
-	self.RecipeLevelSelector:Hide();
+	self.RecipeLevelDropdown:Hide();
 	self.MinimizedCooldown:Hide();
 	self.MinimizedCooldown:SetText("");
 	self.Cooldown:Hide();
@@ -708,17 +708,21 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 			self.Stars:Show();
 		end
 	elseif recipeInfo.unlockedRecipeLevel then
+		-- The current recipe info won't have updated experience and recipe level information,
+		-- so we need to fetch an updated state.
+		local updatedRecipeInfo = C_TradeSkillUI.GetRecipeInfo(recipeID);
+
 		if not minimized then
-			self.RecipeLevelBar:SetExperience(recipeInfo.currentRecipeExperience, recipeInfo.nextLevelRecipeExperience, recipeInfo.unlockedRecipeLevel);
+			self.RecipeLevelBar:SetExperience(updatedRecipeInfo);
 		end
 
 		if not self:GetCurrentRecipeLevel() then
-			self:SetSelectedRecipeLevel(recipeID, recipeInfo.unlockedRecipeLevel);
+			self:SetSelectedRecipeLevel(recipeID, updatedRecipeInfo.unlockedRecipeLevel);
 		end
 
 		if not minimized then
-			self.RecipeLevelSelector:SetRecipeInfo(recipeInfo, self:GetCurrentRecipeLevel());
-			self.RecipeLevelSelector:Show();
+			self.RecipeLevelDropdown:SetRecipeInfo(updatedRecipeInfo, self:GetCurrentRecipeLevel());
+			self.RecipeLevelDropdown:Show();
 			self.RecipeLevelBar:Show();
 		end
 	end

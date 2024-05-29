@@ -417,7 +417,17 @@ function ProfessionsRecipeCrafterDetailsMixin:Reset()
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:GetProjectedQuality()
-	return self.craftingQuality;
+	local quality = self.craftingQuality;
+
+	-- When applying concentration project that the craft is guaranteed to reach the next quality.
+	if self.transaction and self.operationInfo then
+		local applyConcentration = self.transaction:IsApplyingConcentration();
+		if applyConcentration then
+			quality = math.ceil(self.operationInfo.quality);
+		end
+	end
+
+	return quality;
 end
 
 ProfessionsQualityMeterMixin = {};

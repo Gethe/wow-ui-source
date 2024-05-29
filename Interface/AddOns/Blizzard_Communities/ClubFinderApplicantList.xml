@@ -44,7 +44,6 @@
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Frame parentKey="RightClickDropdown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -111,10 +110,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 		<NormalTexture setAllPoints="true" file="Interface\GuildFrame\GuildFrame">
 			<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
@@ -150,7 +148,6 @@
 					</Layer>
 				</Layers>
 			</EventFrame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="InsetFrame" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="3"/>

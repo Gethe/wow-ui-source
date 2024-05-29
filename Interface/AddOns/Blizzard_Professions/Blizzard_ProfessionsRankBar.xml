@@ -2,13 +2,6 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRankBar.lua"/>
 	
-	<Button name="ProfessionsRankBarDropDownButtonTemplate" virtual="true">
-		<NormalTexture parentKey="NormalTexture" atlas="glues-characterselect-button-card-down" snapToPixelGrid="false" setAllPoints="true"/>
-		<PushedTexture parentKey="PushedTexture" atlas="glues-characterselect-button-card-down-pressed" setAllPoints="true"/>
-		<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterselect-button-card-down-disabled" setAllPoints="true"/>
-		<HighlightTexture parentKey="HighlightTexture" atlas="glues-characterselect-button-card-hover" alphaMode="ADD" setAllPoints="true"/>
-	</Button>
-
 	<Frame name="ProfessionsRankBarTemplate" frameStrata="BACKGROUND" mixin="ProfessionsRankBarMixin" virtual="true">
 		<Size x="453" y="18"/>
 			<Layers>
@@ -68,18 +61,34 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="ExpansionDropDownButton" inherits="ProfessionsRankBarDropDownButtonTemplate">
+			<DropdownButton parentKey="ExpansionDropdownButton" mixin="ProfessionsRankBarDropdownMixin">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+				</KeyValues>
+				<Size x="19" y="19"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-6" y="-3"/>
 				</Anchors>
-				<Size x="19" y="19"/>
-			</Button>
-			<Frame parentKey="ExpansionDropDownFrame">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ExpansionDropDownButton"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExpansionDropDownButton"/>
-				</Anchors>
-			</Frame>
+				<Layers>
+					<Layer>
+						<Texture parentKey="Texture">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="2" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnEnable method="OnEnable"/>
+					<OnDisable method="OnDisable"/>
+				</Scripts>
+			</DropdownButton>
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="BarAnimation" looping="NONE" setToFinalAlpha="true">

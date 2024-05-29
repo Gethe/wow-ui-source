@@ -442,12 +442,6 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="10" y="-60"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEvent method="OnEvent"/>
@@ -662,7 +656,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				self:OnLoad("target", TargetFrameDropDown_Initialize);
+				self:OnLoad("target", TargetFrame_OpenMenu);
 				self:CreateSpellbar("PLAYER_TARGET_CHANGED");
 				self:CreateTargetofTarget("targettarget");
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -703,7 +697,7 @@
 				self.showPortrait = true;
 				self.showClassification = true;
 				self.showAuraCount = true;
-				self:OnLoad("focus", FocusFrameDropDown_Initialize);
+				self:OnLoad("focus", FocusFrame_OpenMenu);
 				self:CreateSpellbar("PLAYER_FOCUS_CHANGED");
 				self:CreateTargetofTarget("focustarget");
 				self:RegisterEvent("PLAYER_FOCUS_CHANGED");

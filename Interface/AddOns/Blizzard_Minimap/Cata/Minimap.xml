@@ -219,15 +219,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame name="MiniMapBattlefieldDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-								<Scripts>
-									<OnLoad>
-										MiniMapBattlefieldDropDown_OnLoad(self);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-						</Frames>
 						<Scripts>
 							<OnLoad>
 								self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -251,22 +242,7 @@
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
-							<OnClick>
-								-- Hide tooltip
-								if ( MiniMapBattlefieldFrame.status == "active") then
-									GameTooltip:Hide();
-									if ( button == "RightButton" ) then
-										ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
-									elseif ( IsShiftKeyDown() ) then
-										ToggleBattlefieldMap();
-									else
-										ToggleWorldStateScoreFrame();
-									end
-								elseif ( button == "RightButton" ) then
-									GameTooltip:Hide();
-									ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 10, -5);
-								end
-							</OnClick>
+							<OnClick function="MiniMapBattlefieldFrame_OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="MinimapBackdrop">
@@ -409,12 +385,7 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true">
-										<Scripts>
-											<OnLoad function="MiniMapTrackingDropDown_OnLoad"/>
-										</Scripts>
-									</Frame>
-									<Button name="$parentButton">
+									<DropdownButton name="$parentButton" mixin="MiniMapTrackingButtonMixin">
 										<Size x="32" y="32"/>
 										<Anchors>
 											<Anchor point="TOPLEFT"/>
@@ -441,32 +412,13 @@
 											</Layer>
 										</Layers>
 										<Scripts>
-											<OnLoad>
-												self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
-												MiniMapTracking_Update();
-											</OnLoad>
-											<OnEvent function="MiniMapTracking_Update"/>
-											<OnClick>
-												ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 0, -5);
-											</OnClick>
-											<OnMouseDown>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 8, -8);
-												MiniMapTrackingIconOverlay:Show();
-											</OnMouseDown>
-											<OnMouseUp>
-												MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6);
-												MiniMapTrackingIconOverlay:Hide();
-											</OnMouseUp>
-											<OnEnter>
-												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-												GameTooltip:SetText(TRACKING, 1, 1, 1);
-												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
-												GameTooltip:Show();
-											</OnEnter>
-											<OnLeave function="GameTooltip_Hide"/>
+											<OnLoad method="OnLoad"/>
+											<OnEvent method="OnEvent"/>
+											<OnEnter method="OnEnter"/>
+											<OnLeave method="OnLeave"/>
 										</Scripts>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-									</Button>
+									</DropdownButton>
 								</Frames>
 							</Frame>
 							<Button name="MiniMapLFGFrame" hidden="true" inherits="MiniMapButtonTemplate">
@@ -503,7 +455,6 @@
 											<Anchor point="CENTER"/>
 										</Anchors>
 									</Frame>
-									<Frame parentKey="DropDown" name="$parentDropDown" inherits="UIDropDownMenuTemplate"/>									
 								</Frames>
 								<Scripts>
 									<OnLoad function="MiniMapLFGFrame_OnLoad"/>

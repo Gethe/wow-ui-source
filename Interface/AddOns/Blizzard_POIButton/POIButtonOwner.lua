@@ -1,8 +1,14 @@
 
 POIButtonOwnerMixin = {};
 
+
+local function HideAndClearAnchorsWithReset(pool, frame)
+	Pool_HideAndClearAnchors(pool, frame);
+	frame:Reset();
+end
+
 function POIButtonOwnerMixin:Init(onCreateFunc, useHighlightManager)
-	self.buttonPool = CreateFramePool("Button", self, "POIButtonTemplate", FramePool_HideAndClearAnchorsWithReset);
+	self.buttonPool = CreateFramePool("Button", self, "POIButtonTemplate", HideAndClearAnchorsWithReset);
 	self.poiOnCreateFunc = onCreateFunc;
 	self.useHighlightManager = useHighlightManager;
 end

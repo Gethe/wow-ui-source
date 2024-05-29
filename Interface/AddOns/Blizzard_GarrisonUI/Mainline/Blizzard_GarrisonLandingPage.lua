@@ -255,7 +255,7 @@ end
 ---------------------------------------------------------------------------------
 
 local function OnShipmentReleased(pool, shipmentFrame)
-	FramePool_HideAndClearAnchors(pool, shipmentFrame);
+	Pool_HideAndClearAnchors(pool, shipmentFrame);
 	shipmentFrame.talent = nil;
 	shipmentFrame.Done:Hide();
 	shipmentFrame.Border:Show();

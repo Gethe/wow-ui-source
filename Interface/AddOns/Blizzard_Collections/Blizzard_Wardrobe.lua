@@ -82,6 +82,35 @@ function TransmogFrameMixin:OnLoad()
 
 	self.ModelScene.ControlFrame:SetModelScene(WardrobeTransmogFrame.ModelScene);
 	self.ToggleSecondaryAppearanceCheckbox.Label:SetPoint("RIGHT", WardrobeCollectionFrame.ItemsCollectionFrame.PagingFrame.PageText, "LEFT", -40, 0);
+
+	self.SpecDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_TRANSMOG");
+
+		rootDescription:CreateTitle(TRANSMOG_APPLY_TO);
+
+		local function IsSelected(currentSpecOnly)
+			return GetCVarBool("transmogCurrentSpecOnly") == currentSpecOnly;
+		end
+
+		local function SetSelected(currentSpecOnly)
+			SetCVar("transmogCurrentSpecOnly", currentSpecOnly);
+		end
+
+		local currentSpecOnly = true;
+		rootDescription:CreateRadio(TRANSMOG_ALL_SPECIALIZATIONS, IsSelected, SetSelected, not currentSpecOnly);
+
+		local spec = GetSpecialization();
+		local name = spec and select(2, GetSpecializationInfo(spec)) or nil;
+		if name then
+			rootDescription:CreateRadio(TRANSMOG_CURRENT_SPECIALIZATION, IsSelected, SetSelected, currentSpecOnly);
+
+			local title = rootDescription:CreateTitle(format(PARENS_TEMPLATE, name));
+			title:AddInitializer(function(button, description, menu)
+				button.fontString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
+				button.fontString:AdjustPointsOffset(16, 0);
+			end);
+		end
+	end);
 end
 
 function TransmogFrameMixin:OnEvent(event, ...)
@@ -111,7 +140,7 @@ function TransmogFrameMixin:OnEvent(event, ...)
 						onAcknowledgeCallback = function() WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
 						acknowledgeOnHide = true,
 					};
-					HelpTip:Show(self, helpTipInfo, self.SpecButton);
+					HelpTip:Show(self, helpTipInfo, self.SpecDropdown);
 				end
 			end
 		end
@@ -418,7 +447,7 @@ function TransmogFrameMixin:Update()
 	end
 
 	self:UpdateApplyButton();
-	self.OutfitDropDown:UpdateSaveButton();
+	self.OutfitDropdown:UpdateSaveButton();
 
 	self:CheckSecondarySlotButtons();
 
@@ -514,7 +543,7 @@ function TransmogFrameMixin:ApplyPending(lastAcceptedWarningIndex)
 						onAcknowledgeCallback = function() WardrobeCollectionFrame.ItemsCollectionFrame:CheckHelpTip(); end,
 						acknowledgeOnHide = true,
 					};
-					HelpTip:Show(self, helpTipInfo, self.OutfitDropDown);
+					HelpTip:Show(self, helpTipInfo, self.OutfitDropdown);
 				end
 			end
 		else
@@ -526,26 +555,22 @@ function TransmogFrameMixin:ApplyPending(lastAcceptedWarningIndex)
 end
 
 function TransmogFrameMixin:OnTransmogApplied()
-	local dropDown = self.OutfitDropDown;
-	if dropDown.selectedOutfitID and dropDown:IsOutfitDressed() then
-		dropDown:OnOutfitApplied(dropDown.selectedOutfitID);
+	local dropdown = self.OutfitDropdown;
+	if dropdown.selectedOutfitID and dropdown:IsOutfitDressed() then
+		dropdown:SaveLastOutfit(dropdown.selectedOutfitID);
 	end
 end
 
-WardrobeOutfitMixin = CreateFromMixins(WardrobeOutfitFrameMixin);
+WardrobeOutfitDropdownOverrideMixin = {};
 
-function WardrobeOutfitMixin:OnOutfitApplied(outfitID)
-	self:SaveLastOutfit(outfitID);
-end
-
-function WardrobeOutfitMixin:LoadOutfit(outfitID)
+function WardrobeOutfitDropdownOverrideMixin:LoadOutfit(outfitID)
 	if ( not outfitID ) then
 		return;
 	end
 	C_Transmog.LoadOutfit(outfitID);
 end
 
-function WardrobeOutfitMixin:GetItemTransmogInfoList()
+function WardrobeOutfitDropdownOverrideMixin:GetItemTransmogInfoList()
 	local playerActor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
 	if playerActor then
 		return playerActor:GetItemTransmogInfoList();
@@ -553,7 +578,7 @@ function WardrobeOutfitMixin:GetItemTransmogInfoList()
 	return nil;
 end
 
-function WardrobeOutfitMixin:GetLastOutfitID()
+function WardrobeOutfitDropdownOverrideMixin:GetLastOutfitID()
 	local specIndex = GetSpecialization();
 	return tonumber(GetCVar("lastTransmogOutfitIDSpec"..specIndex));
 end
@@ -1049,10 +1074,9 @@ function WardrobeCollectionFrameMixin:SetContainer(parent)
 		self.ItemsCollectionFrame.SlotsFrame:Show();
 		self.ItemsCollectionFrame.BGCornerTopLeft:Hide();
 		self.ItemsCollectionFrame.BGCornerTopRight:Hide();
-		self.ItemsCollectionFrame.WeaponDropDown:SetPoint("TOPRIGHT", -6, -56);
-		self.ClassDropDown:Show();
+		self.ItemsCollectionFrame.WeaponDropdown:SetPoint("TOPRIGHT", -25, -58);
+		self.ClassDropdown:Show();
 		self.ItemsCollectionFrame.NoValidItemsLabel:Hide();
-		self.FilterButton:SetText(FILTER);
 		self.ItemsTab:SetPoint("TOPLEFT", 58, -28);
 		self:SetTab(self.selectedCollectionTab);
 	elseif parent == WardrobeFrame then
@@ -1063,9 +1087,8 @@ function WardrobeCollectionFrameMixin:SetContainer(parent)
 		self.ItemsCollectionFrame.SlotsFrame:Hide();
 		self.ItemsCollectionFrame.BGCornerTopLeft:Show();
 		self.ItemsCollectionFrame.BGCornerTopRight:Show();
-		self.ItemsCollectionFrame.WeaponDropDown:SetPoint("TOPRIGHT", -32, -25);
-		self.ClassDropDown:Hide();
-		self.FilterButton:SetText(SOURCES);
+		self.ItemsCollectionFrame.WeaponDropdown:SetPoint("TOPRIGHT", -48, -26);
+		self.ClassDropdown:Hide();
 		self.ItemsTab:SetPoint("TOPLEFT", 8, -28);
 		self:SetTab(self.selectedTransmogTab);
 	end
@@ -1098,8 +1121,9 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		self.SearchBox:SetEnabled(enableSearchAndFilter);
 		self.FilterButton:Show();
 		self.FilterButton:SetEnabled(enableSearchAndFilter);
-		self.ClassDropDown:ClearAllPoints();
-		self.ClassDropDown:SetPoint("TOPRIGHT", self.ItemsCollectionFrame.SlotsFrame, "TOPLEFT", 8, 0);
+		self.ClassDropdown:ClearAllPoints();
+		self.ClassDropdown:SetPoint("TOPRIGHT", self.ItemsCollectionFrame.SlotsFrame, "TOPLEFT", -12, -2);
+		self:InitItemsFilterButton();
 	elseif tabID == TAB_SETS then
 		self.ItemsCollectionFrame:Hide();
 		self.SearchBox:ClearAllPoints();
@@ -1114,15 +1138,118 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 			self.SearchBox:SetWidth(145);
 			self.FilterButton:Show();
 			self.FilterButton:SetEnabled(true);
+			self:InitBaseSetsFilterButton();
 		end
+
 		self.SearchBox:SetEnabled(true);
-		self.ClassDropDown:ClearAllPoints();
-		self.ClassDropDown:SetPoint("BOTTOMRIGHT", self.SetsCollectionFrame, "TOPRIGHT", 7, 0);
+		self.ClassDropdown:ClearAllPoints();
+		self.ClassDropdown:SetPoint("BOTTOMRIGHT", self.SetsCollectionFrame, "TOPRIGHT", -9, 4);
 		self.SetsCollectionFrame:SetShown(not atTransmogrifier);
 		self.SetsTransmogFrame:SetShown(atTransmogrifier);
 	end
-	WardrobeResetFiltersButton_UpdateVisibility();
+
 	WardrobeFrame:TriggerEvent(WardrobeFrameMixin.Event.OnCollectionTabChanged);
+end
+
+local transmogSourceOrderPriorities = {
+	[Enum.TransmogSource.JournalEncounter] = 5,
+	[Enum.TransmogSource.Quest] = 5,
+	[Enum.TransmogSource.Vendor] = 5,
+	[Enum.TransmogSource.WorldDrop] = 5,
+	[Enum.TransmogSource.Achievement] = 5,
+	[Enum.TransmogSource.Profession] = 5,
+	[Enum.TransmogSource.TradingPost] = 4,
+};
+
+function WardrobeCollectionFrameMixin:InitItemsFilterButton()
+	-- Source filters are in a submenu when unless we're at a transmogrifier.
+	local function CreateSourceFilters(description)
+		description:CreateButton(CHECK_ALL, function()
+			C_TransmogCollection.SetAllSourceTypeFilters(true);
+		end);
+
+		description:CreateButton(UNCHECK_ALL, function()
+			C_TransmogCollection.SetAllSourceTypeFilters(false);
+		end);
+		
+		local function IsChecked(filter)
+			return C_TransmogCollection.IsSourceTypeFilterChecked(filter);
+		end
+
+		local function SetChecked(filter)
+			C_TransmogCollection.SetSourceTypeFilter(filter, not IsChecked(filter));
+		end
+		
+		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("TRANSMOG", transmogSourceOrderPriorities);
+		for index = 1, C_TransmogCollection.GetNumTransmogSources() do
+			local filterIndex = filterIndexList[i] and filterIndexList[i].index or index;
+			description:CreateCheckbox(_G["TRANSMOG_SOURCE_"..filterIndex], IsChecked, SetChecked, filterIndex);
+		end
+	end
+
+	self.FilterButton:SetIsDefaultCallback(function()
+		return C_TransmogCollection.IsUsingDefaultFilters();
+	end);
+
+	self.FilterButton:SetDefaultCallback(function()
+		return C_TransmogCollection.SetDefaultFilters();
+	end);
+	
+	if C_Transmog.IsAtTransmogNPC() then
+		self.FilterButton:SetText(SOURCES);
+		self.FilterButton:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_WARDROBE_FILTER");
+
+			CreateSourceFilters(rootDescription);
+		end);
+	else
+		self.FilterButton:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_WARDROBE_FILTER");
+
+			rootDescription:CreateCheckbox(COLLECTED, C_TransmogCollection.GetCollectedShown, function()
+				C_TransmogCollection.SetCollectedShown(not C_TransmogCollection.GetCollectedShown());
+			end);
+
+			rootDescription:CreateCheckbox(NOT_COLLECTED, C_TransmogCollection.GetUncollectedShown, function()
+				C_TransmogCollection.SetUncollectedShown(not C_TransmogCollection.GetUncollectedShown());
+			end);
+
+			rootDescription:CreateCheckbox(TRANSMOG_SHOW_ALL_FACTIONS, C_TransmogCollection.GetAllFactionsShown, function()
+				C_TransmogCollection.SetAllFactionsShown(not C_TransmogCollection.GetAllFactionsShown());
+			end);
+
+			rootDescription:CreateCheckbox(TRANSMOG_SHOW_ALL_RACES, C_TransmogCollection.GetAllRacesShown, function()
+				C_TransmogCollection.SetAllRacesShown(not C_TransmogCollection.GetAllRacesShown());
+			end);
+
+			local submenu = rootDescription:CreateButton(SOURCES);
+			CreateSourceFilters(submenu);
+		end);
+	end
+end
+
+function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
+	self.FilterButton:SetIsDefaultCallback(function()
+		return C_TransmogSets.IsUsingDefaultBaseSetsFilters();
+	end);
+
+	self.FilterButton:SetDefaultCallback(function()
+		return C_TransmogSets.SetDefaultBaseSetsFilters();
+	end);
+
+	self.FilterButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WARDROBE_BASE_SETS_FILTER");
+
+		local function GetBaseSetsFilter(filter)
+			C_TransmogSets.SetBaseSetsFilter(filter, not C_TransmogSets.GetBaseSetsFilter(filter));
+		end
+
+		rootDescription:CreateCheckbox(COLLECTED, C_TransmogSets.GetBaseSetsFilter, GetBaseSetsFilter, LE_TRANSMOG_SET_FILTER_COLLECTED);
+		rootDescription:CreateCheckbox(NOT_COLLECTED, C_TransmogSets.GetBaseSetsFilter, GetBaseSetsFilter, LE_TRANSMOG_SET_FILTER_UNCOLLECTED);
+		rootDescription:CreateDivider();
+		rootDescription:CreateCheckbox(TRANSMOG_SET_PVE, C_TransmogSets.GetBaseSetsFilter, GetBaseSetsFilter, LE_TRANSMOG_SET_FILTER_PVE);
+		rootDescription:CreateCheckbox(TRANSMOG_SET_PVP, C_TransmogSets.GetBaseSetsFilter, GetBaseSetsFilter, LE_TRANSMOG_SET_FILTER_PVP);
+	end);
 end
 
 function WardrobeCollectionFrameMixin:GetActiveTab()
@@ -1141,6 +1268,8 @@ function WardrobeCollectionFrameMixin:OnLoad()
 	self.selectedTransmogTab = TAB_ITEMS;
 
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
+
+	self.FilterButton:SetWidth(85);
 
 	-- TODO: Remove this at the next deprecation reset
 	self.searchBox = self.SearchBox;
@@ -1564,8 +1693,7 @@ function WardrobeItemsCollectionMixin:OnLoad()
 	self.NUM_COLS = 6;
 	self.PAGE_SIZE = self.NUM_ROWS * self.NUM_COLS;
 
-	UIDropDownMenu_Initialize(self.RightClickDropDown, nil, "MENU");
-	self.RightClickDropDown.initialize = WardrobeCollectionFrameRightClickDropDown_Init;
+	self.WeaponDropdown:SetWidth(157);
 
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 
@@ -1663,7 +1791,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 		WardrobeCollectionFrame:UpdateUsableAppearances();
 		self:RefreshVisualsList();
 		self:UpdateItems();
-		self:UpdateWeaponDropDown();
+		self:UpdateWeaponDropdown();
 	end
 
 	self:UpdateSlotButtons();
@@ -1901,7 +2029,6 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(transmogLocation, category, 
 	end
 	-- set only if category is different or slot is different
 	if ( category ~= self.activeCategory or slotChanged ) then
-		CloseDropDownMenus();
 		self:SetActiveCategory(category);
 	end
 end
@@ -1911,25 +2038,57 @@ function WardrobeItemsCollectionMixin:SetTransmogrifierAppearancesShown(hasAnyVa
 	C_TransmogCollection.SetCollectedShown(hasAnyValidSlots);
 end
 
-function WardrobeItemsCollectionMixin:UpdateWeaponDropDown()
-	local dropdown = self.WeaponDropDown;
+function WardrobeItemsCollectionMixin:UpdateWeaponDropdown()
 	local name, isWeapon;
-	if ( self.transmogLocation:IsAppearance() ) then
-		name, isWeapon = C_TransmogCollection.GetCategoryInfo(self.activeCategory);
+	if self.transmogLocation:IsAppearance() then
+		name, isWeapon = C_TransmogCollection.GetCategoryInfo(self:GetActiveCategory());
 	end
-	if ( not isWeapon ) then
-		dropdown:Hide();
-	else
-		dropdown:Show();
-		UIDropDownMenu_SetSelectedValue(dropdown, self.activeCategory);
-		UIDropDownMenu_SetText(dropdown, name);
-		local validCategories = WardrobeCollectionFrameWeaponDropDown_Init(dropdown);
-		if ( validCategories > 1 ) then
-			UIDropDownMenu_EnableDropDown(dropdown);
-		else
-			UIDropDownMenu_DisableDropDown(dropdown);
+
+	self.WeaponDropdown:SetShown(isWeapon);
+
+	if not isWeapon then
+		return;
+	end
+
+	local function IsSelected(categoryID)
+		return categoryID == self:GetActiveCategory();
+	end
+
+	local function SetSelected(categoryID)
+		if self:GetActiveCategory() ~= categoryID then
+			self:SetActiveCategory(categoryID);
 		end
 	end
+
+	local transmogLocation = self.transmogLocation;
+	self.WeaponDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WARDROBE_WEAPONS_FILTER");
+
+		local equippedItemID = GetInventoryItemID("player", transmogLocation:GetSlotID());
+		local checkCategory = equippedItemID and C_Transmog.IsAtTransmogNPC();
+		if checkCategory then
+			-- if the equipped item cannot be transmogrified, relax restrictions
+			local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo = C_Transmog.GetSlotInfo(transmogLocation);
+			if not canTransmogrify and not hasUndo then
+				checkCategory = false;
+			end
+		end
+
+		local isForMainHand = transmogLocation:IsMainHand();
+		local isForOffHand = transmogLocation:IsOffHand();
+		for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
+			local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+			if name and isWeapon then
+				if (isForMainHand and canMainHand) or (isForOffHand and canOffHand) then
+					if not checkCategory or C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID) then
+						rootDescription:CreateRadio(name, IsSelected, SetSelected, categoryID);
+					end
+				end
+			end
+		end
+
+		self.WeaponDropdown:SetEnabled(rootDescription:HasElements());
+	end);
 end
 
 function WardrobeItemsCollectionMixin:SetActiveCategory(category)
@@ -1946,7 +2105,7 @@ function WardrobeItemsCollectionMixin:SetActiveCategory(category)
 		self:RefreshVisualsList();
 		self:UpdateItems();
 	end
-	self:UpdateWeaponDropDown();
+	self:UpdateWeaponDropdown();
 
 	self:GetParent().progressBar:SetShown(not TransmogUtil.IsCategoryLegionArtifact(category));
 
@@ -2499,7 +2658,6 @@ end
 
 function WardrobeItemsCollectionMixin:OnPageChanged(userAction)
 	PlaySound(SOUNDKIT.UI_TRANSMOG_PAGE_TURN);
-	CloseDropDownMenus();
 	if ( userAction ) then
 		self:UpdateItems();
 	end
@@ -2574,10 +2732,10 @@ function WardrobeItemsModelMixin:UpdateContentTracking()
 			local sources = CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(self.visualInfo.visualID, C_TransmogCollection.GetClassFilter(), itemsCollectionFrame:GetActiveCategory(), itemsCollectionFrame.transmogLocation);
 			for i, sourceInfo in ipairs(sources) do
 				if sourceInfo.playerCanCollect then
-					self:AddTrackable(Enum.ContentTrackingType.Appearance, sourceInfo.sourceID);
-				end
+				self:AddTrackable(Enum.ContentTrackingType.Appearance, sourceInfo.sourceID);
 			end
 		end
+	end
 	end
 
 	self:UpdateTrackingCheckmark();
@@ -2661,19 +2819,55 @@ function WardrobeItemsModelMixin:OnMouseDown(button)
 	end
 
 	if ( button == "LeftButton" ) then
-		CloseDropDownMenus();
 		self:GetParent():SelectVisual(self.visualInfo.visualID);
-	elseif ( button == "RightButton" ) then
-		local dropDown = self:GetParent().RightClickDropDown;
-		if ( dropDown.activeFrame ~= self ) then
-			CloseDropDownMenus();
 		end
+end
+
+function WardrobeItemsModelMixin:OnMouseUp(button)
+	if button == "RightButton" then
+		local itemsCollectionFrame = self:GetParent();
 		if ( not self.visualInfo.isCollected or self.visualInfo.isHideVisual or itemsCollectionFrame.transmogLocation:IsIllusion() ) then
 			return;
 		end
-		dropDown.activeFrame = self;
-		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_WARDROBE_ITEMS_MODEL_FILTER");
+
+			local appearanceID = self.visualInfo.visualID;
+			local favorite = C_TransmogCollection.GetIsAppearanceFavorite(appearanceID);
+			local text = favorite and TRANSMOG_ITEM_UNSET_FAVORITE or TRANSMOG_ITEM_SET_FAVORITE;
+			rootDescription:CreateButton(text, function()
+				WardrobeCollectionFrameModelDropdown_SetFavorite(appearanceID, not favorite);
+			end);
+
+			MenuUtil.QueueSpacer(rootDescription);
+			MenuUtil.QueueTitle(rootDescription, WARDROBE_TRANSMOGRIFY_AS);
+
+			local activeCategory = itemsCollectionFrame:GetActiveCategory();
+			local transmogLocation = itemsCollectionFrame.transmogLocation;
+			local chosenSourceID = itemsCollectionFrame:GetChosenVisualSource(appearanceID);
+			for index, source in ipairs(CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceID, activeCategory, transmogLocation)) do
+				if source.isCollected and itemsCollectionFrame:IsAppearanceUsableForActiveCategory(source) then
+					if chosenSourceID == Constants.Transmog.NoTransmogID then
+						chosenSourceID = source.sourceID;
+					end
+
+					local function IsChecked(data)
+						return chosenSourceID == data.sourceID;
+					end
+
+					local function SetChecked(data)
+						itemsCollectionFrame:SetChosenVisualSource(data.appearanceID, data.sourceID);
+						itemsCollectionFrame:SelectVisual(data.appearanceID);
+					end
+
+					local name, color = WardrobeCollectionFrame:GetAppearanceNameTextAndColor(source);
+					local coloredText = color:WrapTextInColorCode(name);
+					local data = {appearanceID = appearanceID, sourceID = source.sourceID};
+					rootDescription:CreateRadio(coloredText, IsChecked, SetChecked, data);
+				end
+			end
+		end);
 	end
 end
 
@@ -2789,17 +2983,36 @@ function WardrobeSetsTransmogModelMixin:OnMouseDown(button)
 	if ( button == "LeftButton" ) then
 		self:GetParent():SelectSet(self.setID);
 		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
-	elseif ( button == "RightButton" ) then
-		local dropDown = self:GetParent().RightClickDropDown;
-		if ( dropDown.activeFrame ~= self ) then
-			CloseDropDownMenus();
 		end
-		dropDown.activeFrame = self;
-		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function WardrobeSetsTransmogModelMixin:OnMouseUp(button)
+	if button == "RightButton" then
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_WARDROBE_SETS_MODEL_FILTER");
+
+			local favorite, isGroupFavorite = C_TransmogSets.GetIsFavorite(self.setID);
+			if favorite then
+				rootDescription:CreateButton(TRANSMOG_ITEM_UNSET_FAVORITE, function()
+					C_TransmogSets.SetIsFavorite(self.setID, false);
+				end);
+			else
+				rootDescription:CreateButton(TRANSMOG_ITEM_SET_FAVORITE, function()
+					if isGroupFavorite then
+						local baseSetID = C_TransmogSets.GetBaseSetID(self.setID);
+						C_TransmogSets.SetIsFavorite(baseSetID, false);
+
+						for index, variantSet in ipairs(C_TransmogSets.GetVariantSets(baseSetID)) do
+							C_TransmogSets.SetIsFavorite(variantSet.setID, false);
 	end
 end
 
+					C_TransmogSets.SetIsFavorite(self.setID, true);
+				end);
+			end
+		end);
+	end
+end
 function WardrobeSetsTransmogModelMixin:OnEnter()
 	self:GetParent().tooltipModel = self;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -2889,74 +3102,8 @@ function WardrobeItemsCollectionMixin:ValidateChosenVisualSources()
 	end
 end
 
-function WardrobeCollectionFrameRightClickDropDown_Init(self)
-	local appearanceID = self.activeFrame.visualInfo.visualID;
-	local info = UIDropDownMenu_CreateInfo();
-	-- Set Favorite
-	if ( C_TransmogCollection.GetIsAppearanceFavorite(appearanceID) ) then
-		info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
-		info.arg1 = appearanceID;
-		info.arg2 = 0;
-	else
-		info.text = TRANSMOG_ITEM_SET_FAVORITE;
-		info.arg1 = appearanceID;
-		info.arg2 = 1;
-	end
-	info.notCheckable = true;
-	info.func = function(_, visualID, value) WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value); end;
-	UIDropDownMenu_AddButton(info);
-	-- Cancel
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.text = CANCEL;
-	UIDropDownMenu_AddButton(info);
-
-	local headerInserted = false;
-	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceID, WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory(), WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation);
-	local chosenSourceID = WardrobeCollectionFrame.ItemsCollectionFrame:GetChosenVisualSource(appearanceID);
-	info.func = WardrobeCollectionFrameModelDropDown_SetSource;
-	for i = 1, #sources do
-		if ( sources[i].isCollected and WardrobeCollectionFrame.ItemsCollectionFrame:IsAppearanceUsableForActiveCategory(sources[i]) ) then
-			if ( not headerInserted ) then
-				headerInserted = true;
-				-- space
-				info.text = " ";
-				info.disabled = true;
-				UIDropDownMenu_AddButton(info);
-				info.disabled = nil;
-				-- header
-				info.text = WARDROBE_TRANSMOGRIFY_AS;
-				info.isTitle = true;
-				info.colorCode = NORMAL_FONT_COLOR_CODE;
-				UIDropDownMenu_AddButton(info);
-				info.isTitle = nil;
-				-- turn off notCheckable
-				info.notCheckable = nil;
-			end
-			local name, nameColor = WardrobeCollectionFrame:GetAppearanceNameTextAndColor(sources[i]);
-			info.text = name;
-			info.colorCode = nameColor:GenerateHexColorMarkup();
-			info.disabled = nil;
-			info.arg1 = appearanceID;
-			info.arg2 = sources[i].sourceID;
-			-- choose the 1st valid source if one isn't explicitly chosen
-			if ( chosenSourceID == Constants.Transmog.NoTransmogID ) then
-				chosenSourceID = sources[i].sourceID;
-			end
-			info.checked = (chosenSourceID == sources[i].sourceID);
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-end
-
-function WardrobeCollectionFrameModelDropDown_SetSource(self, visualID, sourceID)
-	WardrobeCollectionFrame.ItemsCollectionFrame:SetChosenVisualSource(visualID, sourceID);
-	WardrobeCollectionFrame.ItemsCollectionFrame:SelectVisual(visualID);
-end
-
-function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confirmed)
-	local set = (value == 1);
-	if ( set and not confirmed ) then
+function WardrobeCollectionFrameModelDropdown_SetFavorite(visualID, setFavorite, confirmed)
+	if ( setFavorite and not confirmed ) then
 		local allSourcesConditional = true;
 		local sources = C_TransmogCollection.GetAppearanceSources(visualID, WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory(), WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation);
 		for i, sourceInfo in ipairs(sources) do
@@ -2971,7 +3118,7 @@ function WardrobeCollectionFrameModelDropDown_SetFavorite(visualID, value, confi
 			return;
 		end
 	end
-	C_TransmogCollection.SetIsAppearanceFavorite(visualID, set);
+	C_TransmogCollection.SetIsAppearanceFavorite(visualID, setFavorite);
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true);
 	HelpTip:Hide(WardrobeCollectionFrame.ItemsCollectionFrame, TRANSMOG_MOUSE_CLICK_TUTORIAL);
 end
@@ -3001,47 +3148,29 @@ function WardrobeCollectionTutorialMixin:OnLeave()
 	HelpTip:Hide(self, WARDROBE_SHORTCUTS_TUTORIAL_1);
 end
 
-WardrobeCollectionClassDropDownMixin = {};
+WardrobeCollectionClassDropdownMixin = {};
 
-function WardrobeCollectionClassDropDownMixin:OnLoad()
-	UIDropDownMenu_SetWidth(self, 140);
-	UIDropDownMenu_SetAnchor(self, 0, 22, "TOP", self.Middle, "BOTTOM");
+function WardrobeCollectionClassDropdownMixin:OnLoad()
+	self:SetWidth(150);
+
+	self:SetSelectionTranslator(function(selection)
+		local classInfo = selection.data;
+		local classColor = GetClassColorObj(classInfo.classFile) or HIGHLIGHT_FONT_COLOR;
+		return classColor:WrapTextInColorCode(classInfo.className);
+	end);
 end
 
-function WardrobeCollectionClassDropDownMixin:OnShow()
-	UIDropDownMenu_Initialize(self, self.InitializeDropdown);
+function WardrobeCollectionClassDropdownMixin:OnShow()
+	self:Refresh();
+
 	WardrobeFrame:RegisterCallback(WardrobeFrameMixin.Event.OnCollectionTabChanged, self.Refresh, self);
 end
 
-function WardrobeCollectionClassDropDownMixin:OnHide()
+function WardrobeCollectionClassDropdownMixin:OnHide()
 	WardrobeFrame:UnregisterCallback(WardrobeFrameMixin.Event.OnCollectionTabChanged, self);
 end
 
-function WardrobeCollectionClassDropDownMixin:InitializeDropdown()
-	local function IsClassFilterSet(button)
-		return self:GetClassFilter() == button.value; 
-	end;
-
-	local function SetClassFilter(button)
-		self:SetClassFilter(button.value); 
-	end;
-
-	for classID = 1, GetNumClasses() do
-		local classInfo = C_CreatureInfo.GetClassInfo(classID);
-		if classInfo then
-			local buttonInfo = UIDropDownMenu_CreateInfo();
-			buttonInfo.text = classInfo.className;
-			buttonInfo.value = classInfo.classID;
-			buttonInfo.checked = IsClassFilterSet;
-			buttonInfo.func = SetClassFilter;
-			UIDropDownMenu_AddButton(buttonInfo);
-		end
-	end
-
-	self:Refresh();
-end
-
-function WardrobeCollectionClassDropDownMixin:GetClassFilter()
+function WardrobeCollectionClassDropdownMixin:GetClassFilter()
 	local searchType = WardrobeCollectionFrame:GetSearchType();
 	if searchType == Enum.TransmogSearchType.Items then
 		return C_TransmogCollection.GetClassFilter();
@@ -3050,7 +3179,7 @@ function WardrobeCollectionClassDropDownMixin:GetClassFilter()
 	end
 end
 
-function WardrobeCollectionClassDropDownMixin:SetClassFilter(classID)
+function WardrobeCollectionClassDropdownMixin:SetClassFilter(classID)
 	local searchType = WardrobeCollectionFrame:GetSearchType();
 	if searchType == Enum.TransmogSearchType.Items then
 		-- Let's reset to the helmet category if the class filter changes while a weapon category is active
@@ -3068,7 +3197,7 @@ function WardrobeCollectionClassDropDownMixin:SetClassFilter(classID)
 	self:Refresh();
 end
 
-function WardrobeCollectionClassDropDownMixin:Refresh()
+function WardrobeCollectionClassDropdownMixin:Refresh()
 	local classFilter = self:GetClassFilter();
 	if not classFilter then
 		return;
@@ -3079,71 +3208,22 @@ function WardrobeCollectionClassDropDownMixin:Refresh()
 		return;
 	end
 
-	local classColor = GetClassColorObj(classInfo.classFile) or HIGHLIGHT_FONT_COLOR;
-	UIDropDownMenu_SetSelectedValue(self, classInfo.classID);
-	UIDropDownMenu_SetText(self, classColor:WrapTextInColorCode(classInfo.className));
-end
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WARDROBE_CLASS");
 
--- ***** WEAPON DROPDOWN
+		local function IsClassFilterSet(classInfo)
+			return self:GetClassFilter() == classInfo.classID; 
+		end;
 
-function WardrobeCollectionFrameWeaponDropDown_OnLoad(self)
-	UIDropDownMenu_SetWidth(self, 140);
-end
+		local function SetClassFilter(classInfo)
+			self:SetClassFilter(classInfo.classID); 
+		end;
 
-function WardrobeCollectionFrameWeaponDropDown_OnShow(self)
-	UIDropDownMenu_Initialize(self, WardrobeCollectionFrameWeaponDropDown_Init);
-end
-
-function WardrobeCollectionFrameWeaponDropDown_Init(self)
-	local transmogLocation = WardrobeCollectionFrame.ItemsCollectionFrame.transmogLocation;
-	if ( not transmogLocation ) then
-		return;
-	end
-
-	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
-	local info = UIDropDownMenu_CreateInfo();
-	info.func = WardrobeCollectionFrameWeaponDropDown_OnClick;
-
-	local equippedItemID = GetInventoryItemID("player", transmogLocation:GetSlotID());
-	local checkCategory = equippedItemID and C_Transmog.IsAtTransmogNPC();
-	if ( checkCategory ) then
-		-- if the equipped item cannot be transmogrified, relax restrictions
-		local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo = C_Transmog.GetSlotInfo(transmogLocation);
-		if ( not canTransmogrify and not hasUndo ) then
-			checkCategory = false;
+		for classID = 1, GetNumClasses() do
+			local classInfo = C_CreatureInfo.GetClassInfo(classID);
+			rootDescription:CreateRadio(classInfo.className, IsClassFilterSet, SetClassFilter, classInfo);
 		end
-	end
-	local buttonsAdded = 0;
-
-	local isForMainHand = transmogLocation:IsMainHand();
-	local isForOffHand = transmogLocation:IsOffHand();
-	for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
-		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-		if ( name and isWeapon ) then
-			if ( (isForMainHand and canMainHand) or (isForOffHand and canOffHand) ) then
-				if ( not checkCategory or C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID) ) then
-					info.text = name;
-					info.arg1 = categoryID;
-					info.value = categoryID;
-					if ( info.value == selectedValue ) then
-						info.checked = 1;
-					else
-						info.checked = nil;
-					end
-					UIDropDownMenu_AddButton(info);
-					buttonsAdded = buttonsAdded + 1;
-				end
-			end
-		end
-	end
-	return buttonsAdded;
-end
-
-function WardrobeCollectionFrameWeaponDropDown_OnClick(self, category)
-	if ( category and WardrobeCollectionFrame.ItemsCollectionFrame:GetActiveCategory() ~= category ) then
-		CloseDropDownMenus();
-		WardrobeCollectionFrame.ItemsCollectionFrame:SetActiveCategory(category);
-	end
+	end);
 end
 
 WardrobeCollectionFrameSearchBoxProgressMixin = { };
@@ -3242,161 +3322,6 @@ function WardrobeCollectionFrameSearchBoxMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
 		GameTooltip:SetText(WARDROBE_NO_SEARCH);
 	end
-end
-
--- ***** FILTER
-
-function WardrobeFilterDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WardrobeFilterDropDown_Initialize, "MENU");
-end
-
-function WardrobeFilterDropDown_Initialize(self, level)
-	if ( not WardrobeCollectionFrame.activeFrame ) then
-		return;
-	end
-
-	if ( WardrobeCollectionFrame:GetSearchType() == Enum.TransmogSearchType.Items ) then
-		WardrobeFilterDropDown_InitializeItems(self, level);
-	elseif ( WardrobeCollectionFrame:GetSearchType() == Enum.TransmogSearchType.BaseSets ) then
-		WardrobeFilterDropDown_InitializeBaseSets(self, level);
-	end
-end
-
-function WardrobeFilterDropDown_SetAllSourceTypeFilters(value)
-	C_TransmogCollection.SetAllSourceTypeFilters(value);
-	UIDropDownMenu_Refresh(WardrobeFilterDropDown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-end
-
-local transmogSourceOrderPriorities = {
-	[Enum.TransmogSource.JournalEncounter] = 5,
-	[Enum.TransmogSource.Quest] = 5,
-	[Enum.TransmogSource.Vendor] = 5,
-	[Enum.TransmogSource.WorldDrop] = 5,
-	[Enum.TransmogSource.Achievement] = 5,
-	[Enum.TransmogSource.Profession] = 5,
-	[Enum.TransmogSource.TradingPost] = 4,
-};
-
-function WardrobeFilterDropDown_InitializeItems(self, level)
-	-- Transmog NPC only uses source filters
-	local sourceFilters = {
-		{ type = FilterComponent.TextButton,
-		  text = CHECK_ALL,
-		  set = function() WardrobeFilterDropDown_SetAllSourceTypeFilters(true) end,
-		},
-		{ type = FilterComponent.TextButton,
-		  text = UNCHECK_ALL,
-		  set = function() WardrobeFilterDropDown_SetAllSourceTypeFilters(false) end,
-		},
-		{ type = FilterComponent.DynamicFilterSet,
-		  buttonType = FilterComponent.Checkbox,
-		  set = C_TransmogCollection.SetSourceTypeFilter,
-		  isSet = C_TransmogCollection.IsSourceTypeFilterChecked,
-		  numFilters = C_TransmogCollection.GetNumTransmogSources,
-		  globalPrepend = "TRANSMOG_SOURCE_",
-		  customSortOrder = CollectionsUtil.GetSortedFilterIndexList("TRANSMOG", transmogSourceOrderPriorities);
-		},
-	};
-
-	local appearanceCollectionFilters = {
-		{ type = FilterComponent.Checkbox, text = COLLECTED, set = C_TransmogCollection.SetCollectedShown, isSet = C_TransmogCollection.GetCollectedShown },
-		{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, set = C_TransmogCollection.SetUncollectedShown, isSet = C_TransmogCollection.GetUncollectedShown },
-		{ type = FilterComponent.Checkbox, text = TRANSMOG_SHOW_ALL_FACTIONS, set = C_TransmogCollection.SetAllFactionsShown, isSet = C_TransmogCollection.GetAllFactionsShown },
-		{ type = FilterComponent.Checkbox, text = TRANSMOG_SHOW_ALL_RACES, set = C_TransmogCollection.SetAllRacesShown, isSet = C_TransmogCollection.GetAllRacesShown },
-		{ type = FilterComponent.Submenu, text = SOURCES, value = 1, childrenInfo = {
-				-- "Appearances" Collection tab has collection filters + source filters
-				filters = sourceFilters,
-			},
-		},
-	};
-
-	local atTransmogrifier = C_Transmog.IsAtTransmogNPC();
-	local filterSystem = {
-		onUpdate = WardrobeResetFiltersButton_UpdateVisibility,
-		filters = (atTransmogrifier and sourceFilters or appearanceCollectionFilters),
-	};
-
-	FilterDropDownSystem.Initialize(self, filterSystem, level);
-end
-
-function WardrobeFilterDropDown_ResetFilters()
-	if ( WardrobeCollectionFrame:GetSearchType() == Enum.TransmogSearchType.BaseSets ) then
-		C_TransmogSets.SetDefaultBaseSetsFilters();
-	else
-		C_TransmogCollection.SetDefaultFilters();
-	end
-	WardrobeCollectionFrame.FilterButton.ResetButton:Hide();
-end
-
-function WardrobeResetFiltersButton_UpdateVisibility()
-	if ( WardrobeCollectionFrame:GetSearchType() == Enum.TransmogSearchType.BaseSets ) then
-		WardrobeCollectionFrame.FilterButton.ResetButton:SetShown(not C_TransmogSets.IsUsingDefaultBaseSetsFilters());
-	else
-		WardrobeCollectionFrame.FilterButton.ResetButton:SetShown(not C_TransmogCollection.IsUsingDefaultFilters());
-	end
-end
-
-function WardrobeFilterDropDown_InitializeBaseSets(self, level)
-	local filterSystem = {
-		onUpdate = WardrobeResetFiltersButton_UpdateVisibility,
-		filters = {
-			{ type = FilterComponent.Checkbox, text = COLLECTED, filter = LE_TRANSMOG_SET_FILTER_COLLECTED, set = C_TransmogSets.SetBaseSetsFilter, isSet = C_TransmogSets.GetBaseSetsFilter, },
-			{ type = FilterComponent.Checkbox, text = NOT_COLLECTED, filter = LE_TRANSMOG_SET_FILTER_UNCOLLECTED, set = C_TransmogSets.SetBaseSetsFilter, isSet = C_TransmogSets.GetBaseSetsFilter, },
-			{ type = FilterComponent.Separator },
-			{ type = FilterComponent.Checkbox, text = TRANSMOG_SET_PVE, filter = LE_TRANSMOG_SET_FILTER_PVE, set = C_TransmogSets.SetBaseSetsFilter, isSet = C_TransmogSets.GetBaseSetsFilter, },
-			{ type = FilterComponent.Checkbox, text = TRANSMOG_SET_PVP, filter = LE_TRANSMOG_SET_FILTER_PVP, set = C_TransmogSets.SetBaseSetsFilter, isSet = C_TransmogSets.GetBaseSetsFilter, },
-		},
-	};
-
-	FilterDropDownSystem.Initialize(self, filterSystem, level);
-end
-
--- ***** SPEC DROPDOWN
-
-function WardrobeTransmogFrameSpecDropDown_OnLoad(self)
-	UIDropDownMenu_Initialize(self, WardrobeTransmogFrameSpecDropDown_Initialize, "MENU");
-end
-
-function WardrobeTransmogFrameSpecDropDown_Initialize()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = TRANSMOG_APPLY_TO;
-	info.isTitle = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-
-	local currentSpecOnly = GetCVarBool("transmogCurrentSpecOnly");
-
-	info.text = TRANSMOG_ALL_SPECIALIZATIONS;
-	info.func = WardrobeTransmogFrameSpecDropDown_OnClick;
-	info.checked = not currentSpecOnly;
-	info.value = 0;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-	-- We do not add a current specialization option if none is set.
-	local spec = GetSpecialization();
-	if  spec then
-		local _, name = GetSpecializationInfo(spec);
-		if name and name ~= "" then
-			info.text = TRANSMOG_CURRENT_SPECIALIZATION;
-			info.func = WardrobeTransmogFrameSpecDropDown_OnClick;
-			info.checked = currentSpecOnly;
-			info.value = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
-			info.text = format(PARENS_TEMPLATE, name);
-			info.leftPadding = 16;
-			info.notCheckable = true;
-			info.notClickable = true;
-			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-		end
-	end
-end
-
-function WardrobeTransmogFrameSpecDropDown_OnClick(self)
-	SetCVar("transmogCurrentSpecOnly", self.value == 1);
 end
 
 -- ************************************************************************************************************************************************************
@@ -3694,6 +3619,11 @@ function WardrobeSetsCollectionMixin:OnLoad()
 
 	self.DetailsFrame.itemFramesPool = CreateFramePool("FRAME", self.DetailsFrame, "WardrobeSetsDetailsItemFrameTemplate");
 
+	self.DetailsFrame.VariantSetsDropdown:SetSelectionTranslator(function(selection)
+		local variantSet = selection.data;
+		return variantSet.description;
+	end);
+
 	self.selectedVariantSets = { };
 end
 
@@ -3731,6 +3661,36 @@ function WardrobeSetsCollectionMixin:OnShow()
 		end
 		self:ClearLatestSource();
 	end
+
+	self.DetailsFrame.VariantSetsDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_WARDROBE_VARIANT_SETS");
+
+		local selectedSetID = self:GetSelectedSetID();
+		local baseSetID = C_TransmogSets.GetBaseSetID(selectedSetID);
+
+		local function IsSelected(variantSet)
+			return variantSet.setID == self:GetSelectedSetID();
+		end
+		
+		local function SetSelected(variantSet)
+			self:SelectSet(variantSet.setID);
+		end
+
+		for index, variantSet in ipairs(SetsDataProvider:GetVariantSets(baseSetID)) do
+			if not variantSet.hiddenUntilCollected or variantSet.collected then
+				local numSourcesCollected, numSourcesTotal = SetsDataProvider:GetSetSourceCounts(variantSet.setID);
+				local colorCode = IN_PROGRESS_FONT_COLOR_CODE;
+				if numSourcesCollected == numSourcesTotal then
+					colorCode = NORMAL_FONT_COLOR_CODE;
+				elseif numSourcesCollected == 0 then
+					colorCode = GRAY_FONT_COLOR_CODE;
+				end
+
+				local text = format(ITEM_SET_NAME, (variantSet.description)..colorCode, numSourcesCollected, numSourcesTotal);
+				rootDescription:CreateRadio(text, IsSelected, SetSelected, variantSet);
+			end
+		end
+	end);
 
 	WardrobeCollectionFrame.progressBar:Show();
 	self:UpdateProgressBar();
@@ -3852,7 +3812,7 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 	end
 
 	-- variant sets
-	local showVariantSetsButton = false;
+	local showVariantSetsDropdown = false;
 	local baseSetID = C_TransmogSets.GetBaseSetID(setID);
 	local variantSets = SetsDataProvider:GetVariantSets(baseSetID);
 	if variantSets then
@@ -3862,13 +3822,13 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 				numVisibleSets = numVisibleSets + 1;
 			end
 		end
-		showVariantSetsButton = numVisibleSets > 1;
+		showVariantSetsDropdown = numVisibleSets > 1;
 	end
-	if showVariantSetsButton then
-		self.DetailsFrame.VariantSetsButton:Show();
-		self.DetailsFrame.VariantSetsButton:SetText(setInfo.description);
+	if showVariantSetsDropdown then
+		self.DetailsFrame.VariantSetsDropdown:Show();
+		self.DetailsFrame.VariantSetsDropdown:SetText(setInfo.description);
 	else
-		self.DetailsFrame.VariantSetsButton:Hide();
+		self.DetailsFrame.VariantSetsDropdown:Hide();
 	end
 end
 
@@ -3918,32 +3878,6 @@ function WardrobeSetsCollectionMixin:RefreshCameras()
 		if ( model.cameraID ~= detailsCameraID ) then
 			model.cameraID = detailsCameraID;
 			model.defaultPosX, model.defaultPosY, model.defaultPosZ, model.yaw = GetUICameraInfo(detailsCameraID);
-		end
-	end
-end
-
-function WardrobeSetsCollectionMixin:OpenVariantSetsDropDown()
-	local selectedSetID = self:GetSelectedSetID();
-	if ( not selectedSetID ) then
-		return;
-	end
-	local info = UIDropDownMenu_CreateInfo();
-	local baseSetID = C_TransmogSets.GetBaseSetID(selectedSetID);
-	local variantSets = SetsDataProvider:GetVariantSets(baseSetID);
-	for i = 1, #variantSets do
-		local variantSet = variantSets[i];
-		if not variantSet.hiddenUntilCollected or variantSet.collected then
-			local numSourcesCollected, numSourcesTotal = SetsDataProvider:GetSetSourceCounts(variantSet.setID);
-			local colorCode = IN_PROGRESS_FONT_COLOR_CODE;
-			if ( numSourcesCollected == numSourcesTotal ) then
-				colorCode = NORMAL_FONT_COLOR_CODE;
-			elseif ( numSourcesCollected == 0 ) then
-				colorCode = GRAY_FONT_COLOR_CODE;
-			end
-			info.text = format(ITEM_SET_NAME, variantSet.description..colorCode, numSourcesCollected, numSourcesTotal);
-			info.checked = (variantSet.setID == selectedSetID);
-			info.func = function() self:SelectSet(variantSet.setID); end;
-			UIDropDownMenu_AddButton(info);
 		end
 	end
 end
@@ -4076,55 +4010,6 @@ function WardrobeSetsCollectionMixin:ScrollToSet(setID, alignment)
 	scrollBox:ScrollToElementDataByPredicate(FindSet, alignment);
 end
 
-do
-	local function OpenVariantSetsDropDown(self)
-		self:GetParent():GetParent():OpenVariantSetsDropDown();
-	end
-	function WardrobeSetsCollectionVariantSetsDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenVariantSetsDropDown, "MENU");
-	end
-end
-
-local function WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit(self)
-	if ( not self.baseSetID ) then
-		return;
-	end
-
-	local baseSet = SetsDataProvider:GetBaseSetByID(self.baseSetID);
-	local variantSets = SetsDataProvider:GetVariantSets(self.baseSetID);
-	local useDescription = (#variantSets > 0);
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.disabled = nil;
-
-	if ( baseSet.favoriteSetID ) then
-		if ( useDescription ) then
-			local setInfo = C_TransmogSets.GetSetInfo(baseSet.favoriteSetID);
-			info.text = format(TRANSMOG_SETS_UNFAVORITE_WITH_DESCRIPTION, setInfo.description);
-		else
-			info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
-		end
-		info.func = function()
-			C_TransmogSets.SetIsFavorite(baseSet.favoriteSetID, false);
-		end
-	else
-		local targetSetID = WardrobeCollectionFrame.SetsCollectionFrame:GetDefaultSetIDForBaseSet(self.baseSetID);
-		if ( useDescription ) then
-			local setInfo = C_TransmogSets.GetSetInfo(targetSetID);
-			info.text = format(TRANSMOG_SETS_FAVORITE_WITH_DESCRIPTION, setInfo.description);
-		else
-			info.text = TRANSMOG_ITEM_SET_FAVORITE;
-		end
-		info.func = function()
-			C_TransmogSets.SetIsFavorite(targetSetID, true);
-		end
-	end
-
-	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
-end
-
 WardrobeSetsScrollFrameButtonMixin = {};
 
 function WardrobeSetsScrollFrameButtonMixin:Init(elementData)
@@ -4178,10 +4063,38 @@ function WardrobeSetsScrollFrameButtonMixin:OnClick(buttonName, down)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		g_selectionBehavior:Select(self);
 	elseif ( buttonName == "RightButton" ) then
-		local dropDown = self:GetParent():GetParent():GetParent().FavoriteDropDown;
-		dropDown.baseSetID = self.setID;
-		ToggleDropDownMenu(1, nil, dropDown, self, 0, 0);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_WARDROBE_SETS_SET");
+
+			local baseSetID = self.setID;
+			local baseSet = SetsDataProvider:GetBaseSetByID(baseSetID);
+			local useDescription = (#SetsDataProvider:GetVariantSets(baseSetID) > 0);
+
+			local text;
+			local targetSetID;
+			local favorite = baseSet.favoriteSetID ~= nil;
+			if favorite then
+				targetSetID = baseSet.favoriteSetID;
+				if useDescription then
+					local setInfo = C_TransmogSets.GetSetInfo(baseSet.favoriteSetID);
+					text = format(TRANSMOG_SETS_UNFAVORITE_WITH_DESCRIPTION, setInfo.description);
+				else
+					text = TRANSMOG_ITEM_UNSET_FAVORITE;
+				end
+			else
+				targetSetID = WardrobeCollectionFrame.SetsCollectionFrame:GetDefaultSetIDForBaseSet(baseSetID);
+				if useDescription then
+					local setInfo = C_TransmogSets.GetSetInfo(targetSetID);
+					text = format(TRANSMOG_SETS_FAVORITE_WITH_DESCRIPTION, setInfo.description);
+				else
+					text = TRANSMOG_ITEM_SET_FAVORITE;
+				end
+			end
+
+			rootDescription:CreateButton(text, function()
+				C_TransmogSets.SetIsFavorite(targetSetID, not favorite);
+			end);
+		end);
 	end
 end
 
@@ -4283,8 +4196,6 @@ function WardrobeSetsCollectionContainerMixin:OnLoad()
 			end
 		end
 	end, self);
-
-	UIDropDownMenu_Initialize(self.FavoriteDropDown, WardrobeSetsCollectionScrollFrame_FavoriteDropDownInit, "MENU");
 end
 
 function WardrobeSetsCollectionContainerMixin:OnShow()
@@ -4435,11 +4346,6 @@ end
 
 WardrobeSetsDetailsItemMixin = { };
 
-function WardrobeSetsDetailsItemMixin:OnLoad()
-	UIDropDownMenu_Initialize(self.RightClickDropDown, nil, "MENU");
-	self.RightClickDropDown.initialize = WardrobeSetsDetailsItemFrameRightClickDropDown_Init;
-end
-
 function WardrobeSetsDetailsItemMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE");
 
@@ -4522,44 +4428,25 @@ function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		DressUpVisual(self.sourceID);
 	end
-
-	if ( button == "LeftButton" ) then
-		CloseDropDownMenus();
-	elseif ( button == "RightButton" ) then
-		local dropDown = self.RightClickDropDown;
-		if ( dropDown.activeFrame ~= self ) then
-			CloseDropDownMenus();
-		end
-		if ( not self.collected ) then
-			return;
-		end
-		dropDown.activeFrame = self;
-		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	end
 end
 
-function WardrobeSetsDetailsItemFrameRightClickDropDown_Init(self)
-	local appearanceID = self:GetParent().visualID;
-	local info = UIDropDownMenu_CreateInfo();
-	-- Set Favorite
-	if ( C_TransmogCollection.GetIsAppearanceFavorite(appearanceID) ) then
-		info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
-		info.arg1 = appearanceID;
-		info.arg2 = 0;
-	else
-		info.text = TRANSMOG_ITEM_SET_FAVORITE;
-		info.arg1 = appearanceID;
-		info.arg2 = 1;
+function WardrobeSetsDetailsItemMixin:OnMouseUp(button)
+	if button == "RightButton" then
+		if not self.collected then
+			return;
+		end
+
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_WARDROBE_SETS_SET_DETAIL");
+
+			local appearanceID = self.visualID;
+			local favorite = C_TransmogCollection.GetIsAppearanceFavorite(appearanceID);
+			local text = favorite and TRANSMOG_ITEM_UNSET_FAVORITE or TRANSMOG_ITEM_SET_FAVORITE;
+			rootDescription:CreateButton(text, function()
+				C_TransmogCollection.SetIsAppearanceFavorite(appearanceID, not favorite);
+			end);
+		end);
 	end
-	info.notCheckable = true;
-	info.func = function(_, visualID, value) C_TransmogCollection.SetIsAppearanceFavorite(visualID, (value == 1)); end;
-	UIDropDownMenu_AddButton(info);
-	-- Cancel
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.text = CANCEL;
-	UIDropDownMenu_AddButton(info);
 end
 
 WardrobeSetsTransmogMixin = CreateFromMixins(DirtiableMixin);
@@ -4726,7 +4613,7 @@ end
 
 function WardrobeSetsTransmogMixin:OnPageChanged(userAction)
 	PlaySound(SOUNDKIT.UI_TRANSMOG_PAGE_TURN);
-	CloseDropDownMenus();
+
 	if ( userAction ) then
 		self:UpdateSets();
 	end
@@ -4896,53 +4783,4 @@ function WardrobeSetsTransmogMixin:ResetPage()
 	end
 	self.PagingFrame:SetCurrentPage(page);
 	self:UpdateSets();
-end
-
-function WardrobeSetsTransmogMixin:OpenRightClickDropDown()
-	if ( not self.RightClickDropDown.activeFrame ) then
-		return;
-	end
-	local setID = self.RightClickDropDown.activeFrame.setID;
-	local info = UIDropDownMenu_CreateInfo();
-	if ( C_TransmogSets.GetIsFavorite(setID) ) then
-		info.text = TRANSMOG_ITEM_UNSET_FAVORITE;
-		info.func = function() self:SetFavorite(setID, false); end
-	else
-		info.text = TRANSMOG_ITEM_SET_FAVORITE;
-		info.func = function() self:SetFavorite(setID, true); end
-	end
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info);
-	-- Cancel
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.text = CANCEL;
-	UIDropDownMenu_AddButton(info);
-end
-
-function WardrobeSetsTransmogMixin:SetFavorite(setID, favorite)
-	if ( favorite ) then
-		-- remove any existing favorite in this group
-		local isFavorite, isGroupFavorite = C_TransmogSets.GetIsFavorite(setID);
-		if ( isGroupFavorite ) then
-			local baseSetID = C_TransmogSets.GetBaseSetID(setID);
-			C_TransmogSets.SetIsFavorite(baseSetID, false);
-			local variantSets = C_TransmogSets.GetVariantSets(baseSetID);
-			for i, variantSet in ipairs(variantSets) do
-				C_TransmogSets.SetIsFavorite(variantSet.setID, false);
-			end
-		end
-		C_TransmogSets.SetIsFavorite(setID, true);
-	else
-		C_TransmogSets.SetIsFavorite(setID, false);
-	end
-end
-
-do
-	local function OpenRightClickDropDown(self)
-		self:GetParent():OpenRightClickDropDown();
-	end
-	function WardrobeSetsTransmogModelRightClickDropDown_OnLoad(self)
-		UIDropDownMenu_Initialize(self, OpenRightClickDropDown, "MENU");
-	end
 end

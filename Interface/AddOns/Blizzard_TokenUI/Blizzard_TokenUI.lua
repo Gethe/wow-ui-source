@@ -128,7 +128,7 @@ function TokenEntryMixin:OnEnter()
 		local transferPercentage = self.elementData.transferPercentage;
 		local percentageLost = transferPercentage and (100 - transferPercentage) or 0;
 		if percentageLost > 0 then
-			GameTooltip_AddNormalLine(GameTooltip, CURRENCY_TRANSFER_LOSS:format(percentageLost));
+			GameTooltip_AddNormalLine(GameTooltip, CURRENCY_TRANSFER_LOSS:format(math.ceil(percentageLost)));
 		end
 	end
 
@@ -334,7 +334,7 @@ function TokenFrameMixin:UpdatePopup(button)
 	TokenFramePopup.BackpackCheckBox:SetChecked(button.elementData.isShowInBackpack);
 
 	TokenFramePopup.CurrencyTransferToggleButton:Refresh(button.elementData);
-	TokenFramePopup:SetHeight(TokenFramePopup.CurrencyTransferToggleButton:IsShown() and 135 or 100);
+	TokenFramePopup:SetHeight(button.elementData.isAccountTransferable and 135 or 100);
 end
 
 InactiveCurrencyCheckBoxMixin = {};

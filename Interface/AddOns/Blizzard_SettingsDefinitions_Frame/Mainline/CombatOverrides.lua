@@ -52,16 +52,16 @@ function CombatOverrides.CreateRaidSelfHighlightSetting(category)
 	end;
 	EventRegistry:RegisterCallback("SelfHighlight.ValueChanged", OnSelfHighlightValueChanged);
 
-	return setting, Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_SELF_HIGHLIGHT);
+	return setting, Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_SELF_HIGHLIGHT);
 end
 
 function CombatOverrides.CreateFloatingCombatTextSetting(category)
-	Settings.SetupCVarCheckBox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
+	Settings.SetupCVarCheckbox(category, "enableFloatingCombatText", SHOW_COMBAT_TEXT_TEXT, OPTION_TOOLTIP_SHOW_COMBAT_TEXT);
 	Settings.LoadAddOnCVarWatcher("enableFloatingCombatText", "Blizzard_CombatText");
 end
 
 function CombatOverrides.CreateOccludedSilhouettePlayerSetting(category)
-	Settings.SetupCVarCheckBox(category, "occludedSilhouettePlayer", SHOW_SILHOUETTE_OPTION, OPTION_TOOLTIP_SHOW_SILHOUETTE);
+	Settings.SetupCVarCheckbox(category, "occludedSilhouettePlayer", SHOW_SILHOUETTE_OPTION, OPTION_TOOLTIP_SHOW_SILHOUETTE);
 end
 
 function CombatOverrides.AdjustCombatSettings(category)

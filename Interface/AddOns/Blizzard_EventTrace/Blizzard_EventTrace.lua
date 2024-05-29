@@ -462,67 +462,68 @@ function EventTracePanelMixin:InitializeFilter()
 end
 
 function EventTracePanelMixin:InitializeOptions()
-	local function Initializer(dropDown, level)
-		local info = UIDropDownMenu_CreateInfo();
-		info.notCheckable = true;
-		info.text = string.format(EVENTTRACE_APPLY_DEFAULT_FILTER);
-		info.func = function()
+	self.SubtitleBar.OptionsDropdown:SetText(EVENTTRACE_OPTIONS);
+	self.SubtitleBar.OptionsDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_EVENT_TRACE_FILTER");
+
+		rootDescription:CreateButton(EVENTTRACE_APPLY_DEFAULT_FILTER, function()
 			self.filterDataProvider:Flush();
 			for index, elementData in ipairs(DefaultFilter) do
 				self.filterDataProvider:Insert(CopyTable(elementData));
 			end
-		end;
-		UIDropDownMenu_AddButton(info);
+		end);
 
-		info = UIDropDownMenu_CreateInfo();
-		info.text = string.format(EVENTTRACE_LOG_WHEN_HIDDEN);
-		info.checked = self:IsLoggingEventsWhenHidden();
-		info.keepShownOnClick = 1;
-		info.func = function()
-			self:SetLoggingEventsWhenHidden(not self:IsLoggingEventsWhenHidden());
+		rootDescription:CreateDivider();
+
+		do
+			local function IsSelected()
+				return self:IsLoggingEventsWhenHidden();
+			end
+
+			local function SetSelected()
+				self:SetLoggingEventsWhenHidden(not self:IsLoggingEventsWhenHidden());
+			end
+
+			rootDescription:CreateCheckbox(EVENTTRACE_LOG_WHEN_HIDDEN, IsSelected, SetSelected);
 		end
-		UIDropDownMenu_AddButton(info);
 
-		info = UIDropDownMenu_CreateInfo();
-		info.text = string.format(EVENTTRACE_SHOW_ARGUMENTS);
-		info.checked = self:IsShowingArguments();
-		info.keepShownOnClick = 1;
-		info.func = function()
-			self:SetShowingArguments(not self:IsShowingArguments());
+		do
+			local function IsSelected()
+				return self:IsShowingArguments();
+			end
+
+			local function SetSelected()
+				self:SetShowingArguments(not self:IsShowingArguments());
+			end
+
+			rootDescription:CreateCheckbox(EVENTTRACE_SHOW_ARGUMENTS, IsSelected, SetSelected);
 		end
-		UIDropDownMenu_AddButton(info);
 
-		info = UIDropDownMenu_CreateInfo();
-		info.text = string.format(EVENTTRACE_SHOW_TIMESTAMP);
-		info.checked = self:IsShowingTimestamp();
-		info.keepShownOnClick = 1;
-		info.func = function()
-			self:SetShowingTimestamp(not self:IsShowingTimestamp());
+		do
+			local function IsSelected()
+				return self:IsShowingTimestamp();
+			end
+
+			local function SetSelected()
+				self:SetShowingTimestamp(not self:IsShowingTimestamp());
+			end
+
+			rootDescription:CreateCheckbox(EVENTTRACE_SHOW_TIMESTAMP, IsSelected, SetSelected);
 		end
-		UIDropDownMenu_AddButton(info);
 
-		info = UIDropDownMenu_CreateInfo();
-		info.text = string.format(EVENTTRACE_LOG_CR_EVENTS);
-		info.checked = self:IsLoggingCREvents();
-		info.keepShownOnClick = 1;
-		info.func = function()
-			self:SetLoggingCREvents(not self:IsLoggingCREvents());
+		do
+			local function IsSelected()
+				return self:IsLoggingCREvents();
+			end
+
+			local function SetSelected()
+				self:SetLoggingCREvents(not self:IsLoggingCREvents());
+			end
+
+			rootDescription:CreateCheckbox(EVENTTRACE_LOG_CR_EVENTS, IsSelected, SetSelected);
 		end
-		UIDropDownMenu_AddButton(info);
-	end
-
-	local dropDown = self.SubtitleBar.DropDown;
-	UIDropDownMenu_SetInitializeFunction(dropDown, Initializer);
-	UIDropDownMenu_SetDisplayMode(dropDown, "MENU");
-
-	self.SubtitleBar.OptionsDropDown.Text:SetText(EVENTTRACE_OPTIONS);
-	self.SubtitleBar.OptionsDropDown:SetScript("OnMouseDown", function(o, button)
-		UIMenuButtonStretchMixin.OnMouseDown(self.SubtitleBar.OptionsDropDown, button);
-		ToggleDropDownMenu(1, nil, dropDown, self.SubtitleBar.OptionsDropDown, 130, 20);
 	end);
 end
-
-
 
 function EventTracePanelMixin:IsLoggingEventsWhenHidden()
 	return self.logEventsWhenHidden;

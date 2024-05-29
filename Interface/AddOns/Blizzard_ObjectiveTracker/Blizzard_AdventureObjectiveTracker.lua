@@ -47,8 +47,6 @@ end
 function AdventureObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 	if not ContentTrackingUtil.ProcessChatLink(block.trackableType, block.trackableID) then
 		if mouseButton ~= "RightButton" then
-			CloseDropDownMenus();
-
 			if ContentTrackingUtil.IsTrackingModifierDown() then
 				C_ContentTracking.StopTracking(block.trackableType, block.trackableID, Enum.ContentTrackingStopType.Manual);
 			elseif (block.trackableType == Enum.ContentTrackingType.Appearance) and IsModifiedClick("DRESSUP") then
@@ -63,7 +61,19 @@ function AdventureObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		else
-			self:ToggleDropDown(block);
+			MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+				rootDescription:SetTag("MENU_OBJECTIVE_TRACKER", block);
+
+				rootDescription:CreateTitle(block.name);
+				if block.trackableType == Enum.ContentTrackingType.Appearance then
+					rootDescription:CreateButton(CONTENT_TRACKING_OPEN_JOURNAL_OPTION, function()
+						self:OpenToAppearance(block.trackableID);
+					end);
+				end
+				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+					self:Untrack(block.trackableType, block.trackableID);
+				end);
+			end);
 		end
 	end
 end
@@ -106,29 +116,6 @@ function AdventureObjectiveTrackerMixin:ClickProfessionTarget(recipeID)
 	if not ProfessionsUtil.OpenProfessionFrameToRecipe(recipeID) then
 		UIErrorsFrame:AddExternalErrorMessage(ADVENTURE_TRACKING_OPEN_PROFESSION_ERROR_TEXT)
 	end
-end
-
-function AdventureObjectiveTrackerMixin:InitDropDown(block)
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = block.name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	if block.trackableType == Enum.ContentTrackingType.Appearance then
-		info.text = CONTENT_TRACKING_OPEN_JOURNAL_OPTION;
-		info.func = function() self:OpenToAppearance(block.trackableID); end;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	end
-
-	info.text = OBJECTIVES_STOP_TRACKING;
-	info.func = function() self:Untrack(block.trackableType, block.trackableID); end;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 
 function AdventureObjectiveTrackerMixin:OpenToAppearance(appearanceID)

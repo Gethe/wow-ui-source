@@ -5,9 +5,9 @@ local PlayerInteractionManagerConstants =
 		{
 			Name = "PlayerInteractionType",
 			Type = "Enumeration",
-			NumValues = 67,
+			NumValues = 69,
 			MinValue = 0,
-			MaxValue = 66,
+			MaxValue = 68,
 			Fields =
 			{
 				{ Name = "None", Type = "PlayerInteractionType", EnumValue = 0 },
@@ -77,6 +77,8 @@ local PlayerInteractionManagerConstants =
 				{ Name = "MajorFactionRenown", Type = "PlayerInteractionType", EnumValue = 64 },
 				{ Name = "PersonalTabardVendor", Type = "PlayerInteractionType", EnumValue = 65 },
 				{ Name = "ForgeMaster", Type = "PlayerInteractionType", EnumValue = 66 },
+				{ Name = "CharacterBanker", Type = "PlayerInteractionType", EnumValue = 67 },
+				{ Name = "AccountBanker", Type = "PlayerInteractionType", EnumValue = 68 },
 			},
 		},
 	},

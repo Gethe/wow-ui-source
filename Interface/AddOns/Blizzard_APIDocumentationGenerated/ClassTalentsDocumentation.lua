@@ -387,6 +387,7 @@ local ClassTalents =
 			Fields =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "ranksGranted", Type = "number", Nilable = false },
 				{ Name = "ranksPurchased", Type = "number", Nilable = false },
 				{ Name = "selectionEntryID", Type = "number", Nilable = false },
 			},

@@ -126,28 +126,37 @@ StaticPopupDialogs["GENERIC_DROP_DOWN"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasDropDown = 1,
-	dropDownOptions = {};
 	OnShow = function(self, data)
 		self.text:SetText(data.text);
-		self.DropDownControl:SetOptions(data.options, data.defaultOption);
-
-		local hasButtons = not not data.hasButtons;
-		self.button1:SetShown(hasButtons);
-		self.button2:SetShown(hasButtons);
-
-		if hasButtons then
-			self.DropDownControl:SetOptionSelectedCallback(nil);
-		else
-			local function StaticPopupGenericDropDownOptionSelectedCallback(option)
+		
+		local requiresConfirmation = not not data.requiresConfirmation;
+		self.button1:SetShown(requiresConfirmation);
+		self.button2:SetShown(requiresConfirmation);
+	
+		self.selection = data.defaultOption;
+		local function SetSelected(option)
+			if requiresConfirmation then
+				self.selection = option;
+			else
 				data.callback(option);
 				self:Hide();
 			end
-
-			self.DropDownControl:SetOptionSelectedCallback(StaticPopupGenericDropDownOptionSelectedCallback);
 		end
+
+		self.Dropdown:SetupMenu(function(dropdown, rootDescription)
+			local function IsSelected(option)
+				return option == self.selection;
+			end
+
+			for index, option in ipairs(data.options) do
+				rootDescription:CreateRadio(option.text, IsSelected, SetSelected, option.value);
+			end
+		end);
 	end,
 	OnAccept = function(self, data)
-		data.callback(self.DropDownControl:GetSelectedValue());
+		if self.selection then
+			data.callback(self.selection);
+		end
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -3870,7 +3879,7 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		WardrobeOutfitFrame:NameOutfit(self.editBox:GetText(), self.data);
+		WardrobeOutfitManager:NameOutfit(self.editBox:GetText(), self.data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -3900,7 +3909,7 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame:OverwriteOutfit(self.data.outfitID) end,
+	OnAccept = function (self) WardrobeOutfitManager:OverwriteOutfit(self.data.outfitID) end,
 	OnCancel = function (self)
 		local name = self.data.name;
 		self:Hide();
@@ -3919,7 +3928,9 @@ StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_DELETE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame:DeleteOutfit(self.data); end,
+	OnAccept = function (self)
+		C_TransmogCollection.DeleteOutfit(self.data);
+	end,
 	OnCancel = function (self) end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -3944,17 +3955,10 @@ StaticPopupDialogs["TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES"] = {
 
 StaticPopupDialogs["TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES"] = {
 	text = TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES,
-	button1 = OKAY,
+	button1 = SAVE,
 	button2 = CANCEL,
-	OnShow = function(self)
-		if ( WardrobeOutfitFrame.name ) then
-			self.button1:SetText(SAVE);
-		else
-			self.button1:SetText(CONTINUE);
-		end
-	end,
 	OnAccept = function(self)
-		WardrobeOutfitFrame:ContinueWithSave();
+		WardrobeOutfitManager:ContinueWithSave();
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -3981,7 +3985,7 @@ StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		local setFavorite = 1;
+		local setFavorite = true;
 		local confirmed = true;
 		WardrobeCollectionFrameModelDropDown_SetFavorite(self.data, setFavorite, confirmed);
 	end,

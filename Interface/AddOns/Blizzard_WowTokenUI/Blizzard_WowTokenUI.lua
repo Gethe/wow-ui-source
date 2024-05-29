@@ -68,23 +68,11 @@ local currencySpecific = {
 };
 
 local function currencyInfo()
-	local currency = C_StoreSecure.GetCurrencyID();
-	if currency == 0 or C_StoreSecure.GetLastProductListResponseError() ~= 0 then
-		-- If currency hasn't been updated yet, this is fine, it will be updated eventually.
-		-- If there was an error updating currency, this is also fine, it will either remain broken for
-		-- the remainder of the session or will eventually update.
-		return nil;
-	end
-
 	local currencyInfo = C_StoreSecure.GetCurrencyInfo();
-	local currencyRegion = currencyInfo.sharedData.regionID;
 	FormatCurrencyStringShort = currencyInfo.sharedData.formatShort;
 	FormatCurrencyStringLong = currencyInfo.sharedData.formatLong;
 	
-	-- If the currency has been set to a non-zero value and there was no error, then this assert still needs to check that the formatting data exists.
-	local info = currencySpecific[currencyRegion];
-	assert(info ~= nil, ("Missing currency info for currency ID '%d', bpay product list status '%d'"):format(currency, C_StoreSecure.GetLastProductListResponseError()));
-	return info;
+	return currencySpecific[currencyInfo.sharedData.regionID];
 end
 
 function SecureFormatShortDate(day, month, year)

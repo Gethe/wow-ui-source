@@ -38,7 +38,6 @@ function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			ChatEdit_InsertLink(link);
 		end
 	elseif mouseButton ~= "RightButton" then
-		CloseDropDownMenus();
 		if not ProfessionsFrame then
 			ProfessionsFrame_LoadUI();
 		end
@@ -56,32 +55,21 @@ function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			end
 		end
 	else
-		self:ToggleDropDown(block);
-	end
-end
+		MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+			rootDescription:SetTag("MENU_PROFESSIONS_RECIPE_TRACKER");
 
-function ProfessionsRecipeTrackerMixin:InitDropDown(block)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	if not IsRecraftBlock(block) and IsSpellKnown(GetRecipeID(block)) then
-		info.text = PROFESSIONS_TRACKING_VIEW_RECIPE;
-		info.func = function()
+			local recipeId = GetRecipeID(block);
+			if not IsRecraftBlock(block) and IsSpellKnown(recipeId) then
+				rootDescription:CreateButton(PROFESSIONS_TRACKING_VIEW_RECIPE, function()
 			C_TradeSkillUI.OpenRecipe(recipeID);
-		end;
-		info.arg1 = block.id;
-		info.checked = false;
-		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+				end);
 	end
-	
-	info.text = PROFESSIONS_UNTRACK_RECIPE;
-	info.func = function()
+			rootDescription:CreateButton(PROFESSIONS_UNTRACK_RECIPE, function()
 		local track = false;
-		C_TradeSkillUI.SetRecipeTracked(GetRecipeID(block), track, IsRecraftBlock(block));
-	end;
-	info.arg1 = block.id;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+				C_TradeSkillUI.SetRecipeTracked(recipeId, track, IsRecraftBlock(block));
+			end);
+		end);
+	end
 end
 
 function ProfessionsRecipeTrackerMixin:LayoutContents()

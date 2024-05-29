@@ -20,5 +20,10 @@ GlobalCallbackRegistry.lua
 CvarUtil.lua
 TemplateInfoCache.lua
 FrameUtil.lua
+FrameFactory.lua
+SecureTypes.lua
+ProxyUtil.lua
 Pools.lua
 ButtonStateBehavior.lua
+ColorSwatch.xml
+ColorSwatch.lua

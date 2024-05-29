@@ -26,15 +26,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="PetFrameDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 			<Frame setAllPoints="true">
 				<Frames>
 					<Frame setAllPoints="true">

@@ -28,7 +28,7 @@
 				<Texture parentKey="PriorityQuest" atlas="QuestNormal">
 					<Size x="16" y="16" />
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-10" y="-10"/>
+						<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-5" y="-5"/>
 					</Anchors>
 				</Texture>
 			</Layer>

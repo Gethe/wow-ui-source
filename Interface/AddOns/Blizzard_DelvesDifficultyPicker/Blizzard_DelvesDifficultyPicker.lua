@@ -1,5 +1,4 @@
 --! TODO sounds
---! TODO art
 
 --[[ LOCALS ]]
 -- TODO not sure all these events are needed, they were pulled from the torghast difficulty picker
@@ -11,10 +10,27 @@ local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"UNIT_PHASE", 
 	"GROUP_FORMED",
 };
-
-local DIFFICULTY_PICKER_DROPDOWN_WIDTH = 110;
 local MAX_NUM_REWARDS = 4;
-local REQUIRED_PLAYER_LEVEL = 70;
+local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
+
+local DelvesKeyState = EnumUtil.MakeEnum(
+	"None",
+	"Normal",
+	"Epic"
+);
+
+function GetPlayerKeyState()
+	local normalKeyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.DelvesConsts.DELVE_NORMAL_KEY_CURRENCY_ID);
+	local epicKeyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.DelvesConsts.DELVE_EPIC_KEY_CURRENCY_ID);
+
+	if epicKeyInfo and epicKeyInfo.quantity > 0 then
+		return DelvesKeyState.Epic;
+	elseif normalKeyInfo and normalKeyInfo.quantity > 0 then
+		return DelvesKeyState.Normal;
+	else
+		return DelvesKeyState.None;
+	end
+end
 
 --[[ Difficulty Picker ]]
 -- ! TODO need continue screen + reset button
@@ -30,6 +46,8 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
         whileDead = 0,
 	};
 	RegisterUIPanel(self, panelAttributes);
+
+	self.Dropdown:SetWidth(130);
 
 	CustomGossipFrameBaseMixin.OnLoad(self);
 end
@@ -48,12 +66,61 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 end 
 
 function DelvesDifficultyPickerFrameMixin:OnShow()
+	self.Border.Bg:Hide();
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
+
+	DelvesDifficultyPickerFrame:SetInitialLevel();
+end
+
+function DelvesDifficultyPickerFrameMixin:SetupDropdown()
+	self.Dropdown:SetupMenu(function(owner, rootDescription)
+		rootDescription:SetTag("MENU_DELVES_DIFFICULTY");
+
+		local options = DelvesDifficultyPickerFrame:GetOptions();
+		if not options then
+			return;
+		end
+
+		local function IsSelected(option)
+			return DelvesDifficultyPickerFrame:GetSelectedLevel() == option.orderIndex;
+		end
+
+		local function SetSelected(option)
+			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:Hide();
+			DelvesDifficultyPickerFrame:SetSelectedLevel(option.orderIndex);
+			DelvesDifficultyPickerFrame:UpdateWidgets(option.gossipOptionID);
+			DelvesDifficultyPickerFrame:SetSelectedOption(option);
+			DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
+		end
+
+		local function SetupButton(option, isLocked)
+			local radio = rootDescription:CreateRadio(option.name, IsSelected, SetSelected, option);
+
+			if isLocked then
+				radio:SetEnabled(false);
+			end
+
+			local spell = Spell:CreateFromSpellID(option.spellID);
+			spell:ContinueWithCancelOnSpellLoad(function()
+				radio:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_AddNormalLine(tooltip, spell:GetSpellDescription());
+				end);
+			end);
+		end
+		
+		for i, option in ipairs(options) do
+			if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
+				SetupButton(option);
+			elseif (option.status == Enum.GossipOptionStatus.Unavailable or option.status == Enum.GossipOptionStatus.Locked) then
+				SetupButton(option, true);
+			end
+		end
+	end);
 end
 
 -- TODO there may be other conditions for this in the future. We're no longer doing a ready check, but the continue screen might affect this
 function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
-	self.EnterDelveButton:SetEnabled(self.isPartyLeader and UnitLevel("player") >= REQUIRED_PLAYER_LEVEL);
+	self.EnterDelveButton:SetEnabled(self.isPartyLeader and UnitLevel("player") >= Constants.DelvesConsts.MIN_PLAYER_LEVEL);
 end
 
 function DelvesDifficultyPickerFrameMixin:GetOptions()
@@ -88,8 +155,9 @@ function DelvesDifficultyPickerFrameMixin:SetInitialLevel()
 		end
 	end
 
-	UIDropDownMenu_SetSelectedValue(DelvesDifficultyPickerLevelDropdown, highestUnlockedLevel);
 	DelvesDifficultyPickerFrame:SetSelectedLevel(highestUnlockedLevel);
+
+	self:SetupDropdown();
 
 	if highestUnlockedLevelOptionID then
 		DelvesDifficultyPickerFrame:UpdateWidgets(highestUnlockedLevelOptionID);
@@ -100,7 +168,7 @@ end
 function DelvesDifficultyPickerFrameMixin:UpdateWidgets(gossipOptionID)
 	self.DelveBackgroundWidgetContainer:UnregisterForWidgetSet();
 	self.DelveModifiersWidgetContainer:UnregisterForWidgetSet();
-	self.DefaultBackground:Show();
+	self.Bg:Show();
 
 	local widgetSetsForOption = C_GossipInfo.GetOptionUIWidgetSetsAndTypesByOptionID(gossipOptionID);
 
@@ -109,7 +177,28 @@ function DelvesDifficultyPickerFrameMixin:UpdateWidgets(gossipOptionID)
 			self.DelveModifiersWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
 		elseif widgetSetInfo.widgetType == Enum.GossipOptionUIWidgetSetTypes.Background then
 			self.DelveBackgroundWidgetContainer:RegisterForWidgetSet(widgetSetInfo.uiWidgetSetID);
-			self.DefaultBackground:Hide();
+			self.Bg:Hide();
+		end
+	end
+
+	self:UpdateBountifulWidgetVisualization();
+end
+
+function DelvesDifficultyPickerFrameMixin:UpdateBountifulWidgetVisualization()
+	for _, widgetFrame in UIWidgetManager:EnumerateWidgetsByWidgetTag(BOUNTIFUL_DELVE_WIDGET_TAG) do
+		local playerKeyState = GetPlayerKeyState();
+		
+		-- Cancel the model scene effect if player does not own any epic keys
+		if playerKeyState ~= DelvesKeyState.Epic and widgetFrame.effectController then
+			widgetFrame.effectController:CancelEffect();
+			widgetFrame.effectController = nil;
+		end
+
+		-- Add glow animation if player owns any key
+		if playerKeyState >= DelvesKeyState.Normal and not self.bountifulAnimFrame then
+			self.bountifulAnimFrame = CreateFrame("FRAME", "BountifulWidgetAnimationFrame", widgetFrame, "BountifulWidgetAnimationTemplate");
+			self.bountifulAnimFrame.FadeIn:Play();
+			self.bountifulAnimFrame.RaysTranslation:Play();
 		end
 	end
 end
@@ -130,6 +219,7 @@ end
 function DelvesDifficultyPickerFrameMixin:TryShow(textureKit) 
 	self.textureKit = textureKit; 
 	self.Title:SetText(C_GossipInfo.GetText());
+	self.Description:SetText(C_GossipInfo.GetCustomGossipDescriptionString());
 	local inParty = UnitInParty("player"); 
 	self.isPartyLeader = not inParty or UnitIsGroupLeader("player");
 	self:SetupOptions();
@@ -142,74 +232,10 @@ function DelvesDifficultyPickerFrameMixin:OnHide()
 	self.DelveRewardsContainerFrame:Hide();
 	FrameUtil.UnregisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
 	C_GossipInfo.CloseGossip();
+	if self.bountifulAnimFrame then
+		self.bountifulAnimFrame:Hide();
+	end
 end		
-
--- [[ Difficulty Dropdown ]]
-DelvesDifficultyPickerLevelDropdownMixin = {};
-
-function DelvesDifficultyPickerLevelDropdownMixin:OnShow()
-	UIDropDownMenu_SetWidth(self, DIFFICULTY_PICKER_DROPDOWN_WIDTH);
-	UIDropDownMenu_JustifyText(self, "LEFT");
-	UIDropDownMenu_Initialize(self, self.Init);
-	DelvesDifficultyPickerFrame:SetInitialLevel();
-end
-
-function DelvesDifficultyPickerLevelDropdownMixin:Init()
-	local options = DelvesDifficultyPickerFrame:GetOptions();
-	local buttons = {};
-
-	if options then
-		local function SetupButton(option, isLocked)
-			local info = UIDropDownMenu_CreateInfo();
-			info.text = option.name;
-			info.value = option.orderIndex;
-			info.func = self.DropdownClickHandler;
-			info.minWidth = DIFFICULTY_PICKER_DROPDOWN_WIDTH;
-			info.tooltipOnButton = true;
-			info.tooltipWhileDisabled = true;
-			info.tooltipTitle = "";
-			info.checked = DelvesDifficultyPickerFrame:GetSelectedLevel() == option.orderIndex;
-
-			if isLocked then
-				info.disabled = true;
-			end
-			
-			local spell = Spell:CreateFromSpellID(option.spellID);
-			spell:ContinueWithCancelOnSpellLoad(function()
-				info.tooltipText = spell:GetSpellDescription();
-			end);
-
-			tinsert(buttons, info);
-		end
-		
-		-- Add buttons (dropdown info) to table
-		for i, option in pairs(options) do
-			if option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete then
-				SetupButton(option);
-			elseif (option.status == Enum.GossipOptionStatus.Unavailable or option.status == Enum.GossipOptionStatus.Locked) and not firstLockedOptionShown then
-				SetupButton(option, true);
-			end
-			UIDropDownMenu_AddButton(buttons[i]);
-		end
-	end
-end
-
-function DelvesDifficultyPickerLevelDropdownMixin:DropdownClickHandler()
-	DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:Hide();
-	UIDropDownMenu_SetSelectedValue(DelvesDifficultyPickerLevelDropdown, self.value);
-	DelvesDifficultyPickerFrame:SetSelectedLevel(self.value);
-
-	-- Get the optionID so we can update widgets
-	for _, option in pairs(DelvesDifficultyPickerFrame:GetOptions()) do
-		if option.orderIndex == self.value then
-			DelvesDifficultyPickerFrame:UpdateWidgets(option.gossipOptionID);
-			DelvesDifficultyPickerFrame:SetSelectedOption(option);
-			break;
-		end
-	end
-
-	DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:SetRewards();
-end
 
 --[[ Enter Button ]]
 DelvesDifficultyPickerEnterDelveButtonMixin = {};
@@ -220,7 +246,7 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
 		GameTooltip_AddNormalLine(GameTooltip, DELVES_LEVEL_PICKER_LEADER_ERROR);
 		GameTooltip:Show(); 
-	elseif UnitLevel("player") < REQUIRED_PLAYER_LEVEL then
+	elseif UnitLevel("player") < Constants.DelvesConsts.MIN_PLAYER_LEVEL then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
 		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR);
@@ -316,7 +342,11 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 				end
 			end
 	
-			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 2, 3, 3);
+			local vertPadding = 5;
+			local buttonHeight = C_XMLUtil.GetTemplateInfo("DelveRewardItemButtonTemplate").height;
+			self:SetHeight(self.RewardText:GetHeight() + ((buttonHeight + vertPadding) * #rewardInfo));
+	
+			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, vertPadding);
 			local anchor = CreateAnchor("TOP", self.RewardText, "BOTTOM", 20, -5);
 			AnchorUtil.GridLayout(buttons, anchor, layout);
 	

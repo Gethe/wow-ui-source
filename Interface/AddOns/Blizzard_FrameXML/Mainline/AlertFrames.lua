@@ -82,7 +82,7 @@ end
 AlertFrameQueueMixin = CreateFromMixins(ContainedAlertSubSystemMixin);
 
 function OnPooledAlertFrameQueueReset(framePool, frame)
-	FramePool_HideAndClearAnchors(framePool, frame);
+	Pool_HideAndClearAnchors(framePool, frame);
 	if frame.queue and not frame.queue:CheckQueuedAlerts() then
 		frame.queue:GetAlertContainer():UpdateAnchors();
 	end

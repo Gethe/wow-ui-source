@@ -239,7 +239,7 @@ local function InitVoiceSettings(category, layout)
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE", Settings.DefaultVarLocation,
 				Settings.VarType.String, VOICE_CHAT_OUTPUT_DEVICE, defaultValue, GetActiveOutputDeviceID, C_VoiceChat.SetOutputDevice);
 
-			outputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
+			outputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
 		end
 
 		-- Volume
@@ -299,7 +299,7 @@ local function InitVoiceSettings(category, layout)
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", Settings.DefaultVarLocation, 
 				Settings.VarType.String, VOICE_CHAT_MIC_DEVICE, defaultValue, GetActiveInputDeviceID, C_VoiceChat.SetInputDevice);
 
-			inputInitializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
+			inputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
 		end
 
 		-- Volume
@@ -364,7 +364,7 @@ local function InitVoiceSettings(category, layout)
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_CHAT_MODE", Settings.DefaultVarLocation,
 				Settings.VarType.Number, VOICE_CHAT_MODE, defaultValue, C_VoiceChat.GetCommunicationMode, C_VoiceChat.SetCommunicationMode);
 
-			chatModeInitializer = Settings.CreateDropDown(category, setting, GetOptionData, OPTION_TOOLTIP_VOICE_CHAT_MODE);
+			chatModeInitializer = Settings.CreateDropdown(category, setting, GetOptionData, OPTION_TOOLTIP_VOICE_CHAT_MODE);
 		end
 
 		-- Push To Talk
@@ -383,7 +383,7 @@ local function Register()
 	Settings.AUDIO_CATEGORY_ID = category:GetID();
 
 	-- Enable Sound
-	Settings.SetupCVarCheckBox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableAllSound", ENABLE_SOUND, OPTION_TOOLTIP_ENABLE_SOUND);
 
 	-- Game Sound Ouptut
 	do
@@ -397,7 +397,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
+		Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
 		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
 	
@@ -432,20 +432,20 @@ local function Register()
 	
 	-- Music
 	do
-		local musicSetting, musicInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
+		local musicSetting, musicInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
 
 		-- Loop Music
 		do
-			local loopingSetting, loopingInitializer = Settings.SetupCVarCheckBox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
-			local function IsModifiable()
-				return musicSetting:GetValue();
-			end
-			loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
+		local loopingSetting, loopingInitializer = Settings.SetupCVarCheckbox(category, "Sound_ZoneMusicNoDelay", ENABLE_MUSIC_LOOPING, OPTION_TOOLTIP_ENABLE_MUSIC_LOOPING);
+		local function IsModifiable()
+			return musicSetting:GetValue();
+		end
+		loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 		end
 		
 		-- Pet Battle Music
 		if C_CVar.GetCVar("Sound_EnablePetBattleMusic") then
-			local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
+			local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
 			local function IsModifiable()
 				return musicSetting:GetValue();
 			end
@@ -455,33 +455,33 @@ local function Register()
 
 	-- Sound Effects
 	do
-		local soundFXSetting, soundFXInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableSFX", ENABLE_SOUNDFX, OPTION_TOOLTIP_ENABLE_SOUNDFX);
+		local soundFXSetting, soundFXInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableSFX", ENABLE_SOUNDFX, OPTION_TOOLTIP_ENABLE_SOUNDFX);
 
 		-- Pet Sounds
 		do
-			local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
-			local function IsModifiable()
-				return soundFXSetting:GetValue();
-			end
-			petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
+		local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
+		local function IsModifiable()
+			return soundFXSetting:GetValue();
 		end
-		
+		petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
+		end
+			
 		do
-			-- Emote Sounds
-			local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
-			local function IsModifiable()
-				return soundFXSetting:GetValue();
-			end
-			emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
+		-- Emote Sounds
+		local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
+		local function IsModifiable()
+			return soundFXSetting:GetValue();
 		end
+		emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
+	end
 	end
 
 	-- Dialog
 	do
-		local dialogSetting, dialogInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableDialog", ENABLE_DIALOG, OPTION_TOOLTIP_ENABLE_DIALOG);
+		local dialogSetting, dialogInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableDialog", ENABLE_DIALOG, OPTION_TOOLTIP_ENABLE_DIALOG);
 
 		-- Error Speech
-		local errorSpeechSetting, errorSpeechInitializer = Settings.SetupCVarCheckBox(category, "Sound_EnableErrorSpeech", ENABLE_ERROR_SPEECH, OPTION_TOOLTIP_ENABLE_ERROR_SPEECH);
+		local errorSpeechSetting, errorSpeechInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableErrorSpeech", ENABLE_ERROR_SPEECH, OPTION_TOOLTIP_ENABLE_ERROR_SPEECH);
 		local function IsModifiable()
 			return dialogSetting:GetValue();
 		end
@@ -489,16 +489,16 @@ local function Register()
 	end
 	
 	-- Ambient Sounds
-	Settings.SetupCVarCheckBox(category, "Sound_EnableAmbience", ENABLE_AMBIENCE, OPTION_TOOLTIP_ENABLE_AMBIENCE);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableAmbience", ENABLE_AMBIENCE, OPTION_TOOLTIP_ENABLE_AMBIENCE);
 	
 	-- Sound in Background
-	Settings.SetupCVarCheckBox(category, "Sound_EnableSoundWhenGameIsInBG", ENABLE_BGSOUND, OPTION_TOOLTIP_ENABLE_BGSOUND);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableSoundWhenGameIsInBG", ENABLE_BGSOUND, OPTION_TOOLTIP_ENABLE_BGSOUND);
 
 	-- Enable Reverb
-	Settings.SetupCVarCheckBox(category, "Sound_EnableReverb", ENABLE_REVERB, OPTION_TOOLTIP_ENABLE_REVERB);
+	Settings.SetupCVarCheckbox(category, "Sound_EnableReverb", ENABLE_REVERB, OPTION_TOOLTIP_ENABLE_REVERB);
 	
 	-- Distance Filtering
-	Settings.SetupCVarCheckBox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);
+	Settings.SetupCVarCheckbox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);
 
 	-- Sound Channels
 	do
@@ -521,7 +521,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropDown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
+		Settings.SetupCVarDropdown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
 	end
 
 	--Voice

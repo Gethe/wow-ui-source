@@ -161,6 +161,7 @@ local CraftingOrderUIConstants =
 				{ Name = "customerName", Type = "string", Nilable = true },
 				{ Name = "crafterGuid", Type = "WOWGUID", Nilable = true },
 				{ Name = "crafterName", Type = "string", Nilable = true },
+				{ Name = "npcCustomerCreatureID", Type = "number", Nilable = true },
 				{ Name = "customerNotes", Type = "string", Nilable = false },
 				{ Name = "reagents", Type = "table", InnerType = "CraftingOrderReagentInfo", Nilable = false },
 				{ Name = "outputItemHyperlink", Type = "string", Nilable = true },

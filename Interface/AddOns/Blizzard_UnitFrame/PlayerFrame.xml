@@ -467,15 +467,6 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-10" y="-50"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="PlayerFrameDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="PlayerFrame_OnLoad" inherit="append"/>

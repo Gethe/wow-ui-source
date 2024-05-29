@@ -142,7 +142,7 @@ function StaticPopup_Resize(dialog, which)
 		height = height + 22;
 	end
 	if ( info.hasDropDown ) then
-		height = height + 8 + dialog.DropDownControl:GetHeight();
+		height = height + 8 + dialog.Dropdown:GetHeight();
 	end
 	if ( dialog.insertedFrame ) then
 		height = height + dialog.insertedFrame:GetHeight();
@@ -238,9 +238,9 @@ function StaticPopup_ShowCustomGenericInputBox(customData, insertedFrame)
 	StaticPopup_Show("GENERIC_INPUT_BOX", nil, nil, customData, insertedFrame);
 end
 
-function StaticPopup_ShowGenericDropDown(text, callback, options, hasButtons, defaultOption, insertedFrame)
-	local data = { text = text, callback = callback, options = options, hasButtons = hasButtons, defaultOption = defaultOption };
-	StaticPopup_Show("GENERIC_DROP_DOWN", nil, nil, data, insertedFrame);
+function StaticPopup_ShowGenericDropDown(text, callback, options, requiresConfirmation, defaultOption)
+	local data = { text = text, callback = callback, options = options, requiresConfirmation = requiresConfirmation, defaultOption = defaultOption };
+	StaticPopup_Show("GENERIC_DROP_DOWN", nil, nil, data);
 end
 
 local tempButtonLocs = {};	--So we don't make a new table each time.
@@ -455,23 +455,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		editBox:Hide();
 	end
 
-	if ( info.hasDropDown ) then
-		dialog.DropDownControl:Show();
-		dialog.DropDownControl:SetOptions(info.dropDownOptions, info.dropDownDefaultOption);
-
-		local function StaticPopup_OnDropDownOptionSelected(value, isUserInput)
-			info.OnDropDownOptionSelected(dialog, data, value, isUserInput);
-		end
-
-		dialog.DropDownControl:SetOptionSelectedCallback(nil);
-		dialog.DropDownControl:SetSelectedValue(nil);
-
-		if info.OnDropDownOptionSelected then
-			dialog.DropDownControl:SetOptionSelectedCallback(StaticPopup_OnDropDownOptionSelected);
-		end
-	else
-		dialog.DropDownControl:Hide();
-	end
+	--See StaticPopup_ShowGenericDropDown
+	dialog.Dropdown:SetShown(info.hasDropDown);
 
 	-- Show or hide money frame
 	if ( info.hasMoneyFrame ) then

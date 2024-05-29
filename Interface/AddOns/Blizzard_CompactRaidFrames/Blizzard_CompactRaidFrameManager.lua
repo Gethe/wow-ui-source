@@ -36,6 +36,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	self:RegisterEvent("RAID_TARGET_UPDATE");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
+	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 
 	self.container:SetFlowFilterFunction(CRFFlowFilterFunc)
 	self.container:SetGroupFilterFunction(CRFGroupFilterFunc)
@@ -111,66 +112,69 @@ function CompactRaidFrameManager_OnLoad(self)
 	self.container.dividerHorizontalPool = CreateFramePool("Frame", self, "CRFManagerDividerHorizontal");
 
 	do --restrict pings dropdown
+		local function IsSelected(restrictEnum)
+			return C_PartyInfo.GetRestrictPings() == restrictEnum;
+		end
+
+		local function SetSelected(restrictEnum)
+			local newValue = IsSelected(restrictEnum) and Enum.RestrictPingsTo.None or restrictEnum;
+			C_PartyInfo.SetRestrictPings(newValue);
+		end
+
 		local dropdown = CompactRaidFrameManager.displayFrame.RestrictPingsDropDown;
+		dropdown:SetWidth(158);
+		dropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_RAID_FRAME_RESTRICT_PINGS");
 
-		UIDropDownMenu_Initialize(dropdown, function() 
-			local info = UIDropDownMenu_CreateInfo();
-			local currentRestrict = C_PartyInfo.GetRestrictPings();
-
-			local function AddOption(text, restrict)
-				info.text = text;
-				info.checked = currentRestrict == restrict;
-				info.func = function()
-					C_PartyInfo.SetRestrictPings(C_PartyInfo.GetRestrictPings() == restrict and Enum.RestrictPingsTo.None or restrict);
-				end;
-				UIDropDownMenu_AddButton(info);
-			end
-
-			AddOption(RAID_MANAGER_RESTRICT_PINGS_TO_LEAD, Enum.RestrictPingsTo.Lead);
-			AddOption(RAID_MANAGER_RESTRICT_PINGS_TO_ASSIST, Enum.RestrictPingsTo.Assist);
-			AddOption(RAID_MANAGER_RESTRICT_PINGS_TO_TANKS_HEALERS, Enum.RestrictPingsTo.TankHealer);
+			rootDescription:CreateRadio(NONE, IsSelected, SetSelected, Enum.RestrictPingsTo.None);
+			rootDescription:CreateRadio(RAID_MANAGER_RESTRICT_PINGS_TO_LEAD, IsSelected, SetSelected, Enum.RestrictPingsTo.Lead);
+			rootDescription:CreateRadio(RAID_MANAGER_RESTRICT_PINGS_TO_ASSIST, IsSelected, SetSelected, Enum.RestrictPingsTo.Assist);
+			rootDescription:CreateRadio(RAID_MANAGER_RESTRICT_PINGS_TO_TANKS_HEALERS, IsSelected, SetSelected, Enum.RestrictPingsTo.TankHealer);
 		end);
     end
 
 	do --mode control dropdown
+		local function IsSelected(isRaid)
+			return IsInRaid() == isRaid;
+		end
+
+		local function SetSelected(isRaid)
+			if isRaid then
+				C_PartyInfo.ConvertToRaid();
+			else
+				C_PartyInfo.ConvertToParty();
+			end
+		end
+
 		local dropdown = CompactRaidFrameManager.displayFrame.ModeControlDropdown;
+		dropdown:SetWidth(100);
+		dropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_RAID_FRAME_CONVERT_PARTY");
 
-		UIDropDownMenu_Initialize(dropdown, function() 
-			local info = UIDropDownMenu_CreateInfo();
-			info.notCheckable = true;
-
-			info.text = RAID;
-			info.func = C_PartyInfo.ConvertToRaid;
-			UIDropDownMenu_AddButton(info);
-
-			info.text = PARTY;
-			info.func = C_PartyInfo.ConvertToParty;
-			UIDropDownMenu_AddButton(info);
-		end)
+			local inRaid = true;
+			rootDescription:CreateRadio(RAID, IsSelected, SetSelected, inRaid);
+			rootDescription:CreateRadio(PARTY, IsSelected, SetSelected, not inRaid);
+		end);
 	end
 
 	do --difficulty dropdown
 		local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
 
-		UIDropDownMenu_Initialize(dropdown, function() 
-			local info = UIDropDownMenu_CreateInfo();
-			info.notCheckable = true;
+		dropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_RAID_FRAME_DIFFICULTY");
 
-			local function AddDifficulty(text, num)
-				info.text = text;
-				info.func = function() 
-					SetDungeonDifficultyID(num);
-					CompactRaidFrameManager_UpdateDifficulty();
-				end
-				UIDropDownMenu_AddButton(info);
+			local function IsSelected(difficultyID)
+				return GetDungeonDifficultyID() == difficultyID;
 			end
 
-			AddDifficulty(PLAYER_DIFFICULTY1, 1);
-			AddDifficulty(PLAYER_DIFFICULTY2, 2);
-			AddDifficulty(PLAYER_DIFFICULTY6, 23);
-		end)
+			local function SetSelected(difficultyID)
+				SetDungeonDifficultyID(difficultyID);
+			end
 
-		dropdown:SetSize(40,40); --doing dropdown operations with a button changes its size for some reason
+			rootDescription:CreateRadio(PLAYER_DIFFICULTY1, IsSelected, SetSelected, 1);
+			rootDescription:CreateRadio(PLAYER_DIFFICULTY2, IsSelected, SetSelected, 2);
+			rootDescription:CreateRadio(PLAYER_DIFFICULTY6, IsSelected, SetSelected, 23);
+		end);
 	end
 
 	CompactRaidFrameManager_UpdateLabel();
@@ -198,6 +202,9 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateRaidIcons();
 	elseif ( event == "PLAYER_DIFFICULTY_CHANGED") then
 		CompactRaidFrameManager_UpdateDifficulty();
+	elseif ( event == "PLAYER_ROLES_ASSIGNED") then
+		self.displayFrame.ModeControlDropdown:GenerateMenu();
+		self.displayFrame.RestrictPingsDropDown:GenerateMenu();
 	end
 end
 
@@ -217,11 +224,8 @@ end
 function CompactRaidFrameManager_UpdateLabel()
 	if ( IsInRaid() ) then
 		CompactRaidFrameManager.displayFrame.label:SetText(RAID);
-		CompactRaidFrameManager.displayFrame.ModeControlDropdown.label:SetText(RAID);
-		
 	else
 		CompactRaidFrameManager.displayFrame.label:SetText(PARTY);
-		CompactRaidFrameManager.displayFrame.ModeControlDropdown.label:SetText(PARTY);
 	end
 end
 
@@ -396,6 +400,10 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 	if UnitIsGroupLeader("player") then
 		FlowContainer_AddLineBreak(container);
 		Space(30);
+		AddAndShow(displayFrame.RestrictPingsLabel);
+
+		FlowContainer_AddLineBreak(container);
+		Space(32);
 		AddAndShow(displayFrame.RestrictPingsDropDown);
 	else
 		displayFrame.RestrictPingsDropDown:Hide();
@@ -431,40 +439,6 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		displayFrame.countdownButton:Disable();
 		displayFrame.countdownButton:SetAlpha(0.5);
 	end
-end
-
-local function RaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	if ( checked ) then
-		ClearRaidMarker(arg1);
-	else
-		PlaceRaidMarker(arg1);
-	end
-end
-
-local function ClearRaidWorldMarker_OnClick(self, arg1, arg2, checked)
-	ClearRaidMarker();
-end
-
-function CRFManager_RaidWorldMarkerDropDown_Update()
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.isNotRadio = true;
-
-	for i=1, NUM_WORLD_RAID_MARKERS do
-		local index = WORLD_RAID_MARKER_ORDER[i];
-		info.text = _G["WORLD_MARKER"..index];
-		info.func = RaidWorldMarker_OnClick;
-		info.checked = IsRaidMarkerActive(index);
-		info.arg1 = index;
-		UIDropDownMenu_AddButton(info);
-	end
-
-
-	info.notCheckable = 1;
-	info.text = REMOVE_WORLD_MARKERS;
-	info.func = ClearRaidWorldMarker_OnClick;
-	info.arg1 = nil;	--Remove everything
-	UIDropDownMenu_AddButton(info);
 end
 
 function CompactRaidFrameManager_UpdateDisplayCounts()
@@ -625,9 +599,10 @@ function CompactRaidFrameManager_UpdateDifficulty()
 	dropdown:GetNormalTexture():SetAtlas(atlas, false);
 end
 
-function CompactRaidFrameManager_ClickDifficulty(self)
+function CompactRaidFrameManager_MouseDownDifficulty(self)
 	if UnitIsGroupLeader("player") then
-		local shown = ToggleDropDownMenu(1, nil, self, self, 5, 0);
+		local dropdown = CompactRaidFrameManager.displayFrame.difficulty;
+		local shown = dropdown:IsMenuOpen();
 		local difficulty = GetDungeonDifficultyID();
 		local atlas = nil;
 		if difficulty == 1 then
@@ -638,7 +613,6 @@ function CompactRaidFrameManager_ClickDifficulty(self)
 			atlas = shown and "GM-icon-difficulty-mythicSelected" or "GM-icon-difficulty-mythic";
 		end
 
-		self:SetSize(40,40); --doing dropdown operations with a button changes its size for some reason
 		self:GetNormalTexture():SetAtlas(atlas, false);
 	end
 end

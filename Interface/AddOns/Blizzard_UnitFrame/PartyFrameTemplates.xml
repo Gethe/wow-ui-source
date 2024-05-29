@@ -226,12 +226,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="PowerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="13" y="5"/>

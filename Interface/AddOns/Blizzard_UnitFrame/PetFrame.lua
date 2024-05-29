@@ -46,10 +46,26 @@ function PetFrameMixin:OnLoad()
 	self:RegisterEvent("PET_UI_UPDATE");
 	self:RegisterUnitEvent("UNIT_COMBAT", "pet", "player");
 	self:RegisterUnitEvent("UNIT_AURA", "pet", "player");
-	local showmenu = function()
-		ToggleDropDownMenu(1, nil, PetFrameDropDown, "PetFrame", 44, 8);
+
+	local function OpenContextMenu(frame, unit, button, isKeyPress)
+		if UnitExists(self.unit) then
+			local which = nil;
+			local contextData = {};
+			if self.unit == "player" then
+				which = "SELF";
+				contextData.unit = "player";
+			elseif UnitIsUnit("pet", "vehicle") then
+				which = "VEHICLE";
+				contextData.unit = "vehicle";
+			else
+				which = "PET";
+				contextData.unit = "pet";
+			end
+			UnitPopup_OpenMenu(which, contextData);
+		end
 	end
-	SecureUnitButton_OnLoad(self, "pet", showmenu);
+
+	SecureUnitButton_OnLoad(self, "pet", OpenContextMenu);
 end
 
 function PetFrameMixin:Update(override)
@@ -152,26 +168,6 @@ end
 function PetFrameMixin:UpdateShownState()
 	self:SetShown(self.isInEditMode
 		or (UnitIsVisible(self.unit) and PetUsesPetFrame() and not PlayerFrame.vehicleHidesPet));
-end
-
-PetFrameDropDownMixin = {};
-
-function PetFrameDropDownMixin:OnLoad()
-	UIDropDownMenu_Initialize(self, self.Initialize, "MENU");
-end
-
-function PetFrameDropDownMixin:Initialize()
-	if UnitExists(PetFrame.unit) then
-		if PetFrame.unit == "player" then
-			UnitPopup_ShowMenu(PetFrameDropDown, "SELF", "player");
-		else
-			if UnitIsUnit("pet", "vehicle") then
-				UnitPopup_ShowMenu(PetFrameDropDown, "VEHICLE", "vehicle");
-			else
-				UnitPopup_ShowMenu(PetFrameDropDown, "PET", "pet");
-			end
-		end
-	end
 end
 
 PetCastingBarMixin = CreateFromMixins(CastingBarMixin);

@@ -44,6 +44,20 @@ local Bank =
 			},
 		},
 		{
+			Name = "CanUseBank",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canUseBank", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanWithdrawMoney",
 			Type = "Function",
 

@@ -64,12 +64,23 @@ function ProfessionsCrafterOrderListElementMixin:OnClick(button)
 			self.pageFrame:ViewOrder(self.option);
 		end
 	elseif button == "RightButton" then
-		local dropdownInfo =
-		{
-			recipeID = self.option.spellID,
-			orderID = self.option.orderID,
-		};
-		ToggleDropDownMenu(1, dropdownInfo, self.contextMenu, "cursor");
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_PROFESSIONS_CRAFTER_ORDER");
+
+			local recipeID = self.option.spellID;
+			local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(recipeID);
+			local text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
+			rootDescription:CreateButton(text, function()
+				C_TradeSkillUI.SetRecipeFavorite(recipeID, not currentlyFavorite);
+			end);
+
+			if self.orderType == Enum.CraftingOrderType.Personal then
+				rootDescription:CreateButton(PROFESSIONS_DECLINE_ORDER, function()
+					local emptyRejectionNote = "";
+					C_CraftingOrders.RejectOrder(self.option.orderID, emptyRejectionNote, self.professionInfo.profession);
+				end);
+			end
+		end);
 	end
 end
 
@@ -77,7 +88,6 @@ function ProfessionsCrafterOrderListElementMixin:Init(elementData)
 	self.option = elementData.option;
 	self.browseType = elementData.browseType;
 	self.pageFrame = elementData.pageFrame;
-	self.contextMenu = elementData.contextMenu;
 end
 
 
@@ -151,21 +161,32 @@ function ProfessionsCraftingOrderPageMixin:InitRecipeList()
 		SearchBoxTemplate_OnTextChanged(editBox);
 		Professions.OnRecipeListSearchTextChanged(editBox:GetText());
 	end);
+
 	local function StartSearch()
 		local selectedRecipe = nil;
 		local searchFavorites = false;
 		local initialNonPublicSearch = false;
 		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
 	end
-	self.BrowseFrame.RecipeList.SearchBox:SetScript("OnEnterPressed", function() self.BrowseFrame.RecipeList.SearchBox:ClearFocus(); end);
+
+	self.BrowseFrame.RecipeList.SearchBox:SetScript("OnEnterPressed", function() 
+		self.BrowseFrame.RecipeList.SearchBox:ClearFocus(); 
+	end);
+
 	self.BrowseFrame.RecipeList.SearchBox:SetScript("OnEditFocusLost", StartSearch);
 
-	self.BrowseFrame.RecipeList.FilterButton:SetResetFunction(function() Professions.SetDefaultFilters(ignoreSkillLine); StartSearch(); end);
-	self.BrowseFrame.RecipeList.FilterButton:SetScript("OnMouseDown", function(button, buttonName, down)
-		UIMenuButtonStretchMixin.OnMouseDown(self.BrowseFrame.RecipeList.FilterButton, buttonName);
-		ToggleDropDownMenu(1, nil, self.BrowseFrame.RecipeList.FilterDropDown, self.BrowseFrame.RecipeList.FilterButton, 74, 15);
-		PlaySound(SOUNDKIT.UI_PROFESSION_FILTER_MENU_OPEN_CLOSE);
-	end);
+	local function OnFilterDefault()
+		StartSearch();
+	end
+
+	local function OnFilterUpdate()
+		local selectedRecipe = nil;
+		local searchFavorites = false;
+		local initialNonPublicSearch = false;
+		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
+	end
+
+	Professions.InitFilterMenu(self.BrowseFrame.RecipeList.FilterDropdown, OnFilterDefault, OnFilterUpdate, ignoreSkillLine);
 
 	local function OnDataRangeChanged(sortPending, indexBegin, indexEnd)
 		if (not self.expectMoreRows) or (self.requestCallback ~= nil) or (not self.numOrders) then
@@ -179,23 +200,6 @@ function ProfessionsCraftingOrderPageMixin:InitRecipeList()
 		end
 	end
 	self.BrowseFrame.OrderList.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, OnDataRangeChanged, self);
-
-	UIDropDownMenu_SetInitializeFunction(self.BrowseFrame.RecipeList.FilterDropDown, GenerateClosure(self.InitFilterMenu, self));
-end
-
-function ProfessionsCraftingOrderPageMixin:InitFilterMenu(dropdown, level)
-	local function OnFiltersChanged()
-		self:UpdateFilterResetVisibility();
-		local selectedRecipe = nil;
-		local searchFavorites = false;
-		local initialNonPublicSearch = false;
-		self:RequestOrders(selectedRecipe, searchFavorites, initialNonPublicSearch);
-	end
-	Professions.InitFilterMenu(dropdown, level, OnFiltersChanged, ignoreSkillLine);
-end
-
-function ProfessionsCraftingOrderPageMixin:UpdateFilterResetVisibility()
-	self.BrowseFrame.RecipeList.FilterButton.ResetButton:SetShown(not Professions.IsUsingDefaultFilters(ignoreSkillLine));
 end
 
 function ProfessionsCraftingOrderPageMixin:SetBrowseType(browseType)
@@ -313,24 +317,6 @@ function ProfessionsCraftingOrderPageMixin:SetupTable()
 	self.tableBuilder:Arrange();
 end
 
-function ProfessionsCraftingOrderPageMixin:InitContextMenu(dropDown, level)
-	local dropdownInfo = UIDROPDOWNMENU_MENU_VALUE;
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	
-	local currentlyFavorite = C_TradeSkillUI.IsRecipeFavorite(dropdownInfo.recipeID);
-	info.text = currentlyFavorite and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE;
-	info.func = GenerateClosure(C_TradeSkillUI.SetRecipeFavorite, dropdownInfo.recipeID, not currentlyFavorite);
-	UIDropDownMenu_AddButton(info, level);
-
-	if self.orderType == Enum.CraftingOrderType.Personal then
-		info.text = PROFESSIONS_DECLINE_ORDER;
-		local emptyRejectionNote = "";
-		info.func = GenerateClosure(C_CraftingOrders.RejectOrder, dropdownInfo.orderID, emptyRejectionNote, self.professionInfo.profession);
-		UIDropDownMenu_AddButton(info, level);
-	end
-end
-
 function ProfessionsCraftingOrderPageMixin:InitOrderList()
 	local pad = 5;
 	local spacing = 1;
@@ -339,9 +325,6 @@ function ProfessionsCraftingOrderPageMixin:InitOrderList()
 		button:Init(elementData);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.BrowseFrame.OrderList.ScrollBox, self.BrowseFrame.OrderList.ScrollBar, view);
-
-	UIDropDownMenu_SetInitializeFunction(self.BrowseFrame.OrderList.ContextMenu, GenerateClosure(self.InitContextMenu, self));
-	UIDropDownMenu_SetDisplayMode(self.BrowseFrame.OrderList.ContextMenu, "MENU");
 end
 
 local ProfessionsCraftingOrderPageAlwaysListenEvents =
@@ -549,7 +532,6 @@ function ProfessionsCraftingOrderPageMixin:Init(professionInfo)
 	self.BrowseFrame.BackButton:Hide();
 	self:UpdateFavoritesButton();
 	self:UpdateOrdersRemaining();
-	self:UpdateFilterResetVisibility();
 
 	local changedProfessionID = not oldProfessionInfo or oldProfessionInfo.professionID ~= self.professionInfo.professionID;
 
@@ -717,14 +699,14 @@ function ProfessionsCraftingOrderPageMixin:ShowGeneric(orders, browseType, offse
 	if offset == 0 then
 		dataProvider = CreateDataProvider();
 		for _, order in ipairs(orders) do
-			dataProvider:Insert({option = order, browseType = browseType, pageFrame = self, contextMenu = self.BrowseFrame.OrderList.ContextMenu});
+			dataProvider:Insert({option = order, browseType = browseType, pageFrame = self});
 		end
 		self.BrowseFrame.OrderList.ScrollBox:SetDataProvider(dataProvider);
 	else
 		dataProvider = self.BrowseFrame.OrderList.ScrollBox:GetDataProvider();
 		for idx = offset + 1, #orders do
 			local order = orders[idx];
-			dataProvider:Insert({option = order, browseType = browseType, pageFrame = self, contextMenu = self.BrowseFrame.OrderList.ContextMenu});
+			dataProvider:Insert({option = order, browseType = browseType, pageFrame = self});
 		end
 	end
 	self.numOrders = #orders;

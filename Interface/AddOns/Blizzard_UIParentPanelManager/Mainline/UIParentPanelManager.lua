@@ -1109,16 +1109,12 @@ end
 -- this function handles possibly tainted values and so
 -- should always be called from secure code using securecall()
 function CloseMenus()
-	local menusVisible = nil;
-	local menu
 	for index, value in pairs(UIMenus) do
-		menu = _G[value];
+		local menu = _G[value];
 		if ( menu and menu:IsShown() ) then
 			menu:Hide();
-			menusVisible = 1;
 		end
 	end
-	return menusVisible;
 end
 
 function UpdateUIPanelPositions(currentFrame)

@@ -458,5 +458,4 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
- <Frame name="PVPMatchResultsNameDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true" />
 </Ui>

@@ -163,11 +163,11 @@
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<Frame parentKey="DropDownControl" hidden="true" inherits="DropDownControlTemplate">
+			<DropdownButton parentKey="Dropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="45"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>

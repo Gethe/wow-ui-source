@@ -133,7 +133,6 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="2"/>
 								</Anchors>
 							</EventFrame>
-							<Frame parentKey="ContextMenu" inherits="UIDropDownMenuTemplate" enableMouse="true"/>
 							<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true" frameLevel="2000">
 								<Size x="80" y="80"/>
 								<Anchors>

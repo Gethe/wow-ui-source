@@ -83,22 +83,14 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="Campaign_Horde">
-					<Size x="303" y="68"/>
+					<Size x="303" y="73"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" y="0"/>
 					</Anchors>
+					<TexCoords left="0.02" right="0.98" top="0" bottom="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<!-- TODO: Temporarily alpha 0 until we figure out what's happening with dividers -->
-				<Texture parentKey="TopFiligree" atlas="ZoneStory_Divider" useAtlasSize="true" alpha="0">
-					<KeyValues>
- 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
- 					</KeyValues>
-					<Anchors>
-						<Anchor point="TOP" y="25"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Text" inherits="Game15Font_Shadow" justifyH="LEFT" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<KeyValues>
 						<KeyValue key="minLineHeight" value="10" type="number"/>
@@ -117,16 +109,29 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightTexture" atlas="Campaign_Horde" alphaMode="ADD" alpha="0.4">
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="HighlightTexture" atlas="Campaign_Horde" hidden="true" inherits="QuestLogHighlightTextureTemplate">
 					<KeyValues>
- 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
- 					</KeyValues>
- 					<Anchors>
- 						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
- 					</Anchors>
+					</Anchors>
+					<TexCoords left="0.02" right="0.98" top="0" bottom="1"/>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopFiligree" atlas="QuestLog-frame-devider">
+					<Size x="0" y="15"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="5"/>
+						<Anchor point="TOPRIGHT" x="0" y="5"/>
+					</Anchors>
+				</Texture>	
 			</Layer>
 		</Layers>
 		<Frames>
@@ -167,7 +172,7 @@
  						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
  					</KeyValues>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="9"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="12"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -226,7 +231,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" atlas="questlog-tab" alphaMode="ADD" alpha="0.4">
+				<Texture parentKey="Highlight" atlas="questlog-tab" inherits="QuestLogHighlightTextureTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>

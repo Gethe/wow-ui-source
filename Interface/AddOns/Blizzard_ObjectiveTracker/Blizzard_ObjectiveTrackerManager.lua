@@ -72,20 +72,6 @@ function ObjectiveTrackerManager:ReleaseFrame(frame)
 	self.poolCollection:Release(frame);
 end
 
-function ObjectiveTrackerManager:ToggleDropDown(module, frame, handlerFunc)
-	local dropDown = ObjectiveTrackerBlockDropDown;	
-	if not dropDown.initialize then
-		UIDropDownMenu_Initialize(dropDown, nil, "MENU");
-	end
-
-	local container = self:GetContainerForModule(module);	
-	dropDown:SetParent(container);
-
-	dropDown.initialize = handlerFunc;
-	ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-end
-
 function ObjectiveTrackerManager:SetOpacity(opacity)
 	self.backgroundAlpha = (opacity or 0) / 100;
 	for container in pairs(self.containers) do

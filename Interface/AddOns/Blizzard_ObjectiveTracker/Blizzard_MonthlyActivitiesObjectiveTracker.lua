@@ -38,7 +38,6 @@ function MonthlyActivitiesObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseB
 		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(block.id);
 		ChatEdit_InsertLink(perksActivityLink);
 	elseif mouseButton ~= "RightButton" then
-		CloseDropDownMenus();
 		if not EncounterJournal then
 			EncounterJournal_LoadUI();
 		end
@@ -50,31 +49,18 @@ function MonthlyActivitiesObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseB
 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		self:ToggleDropDown(block);
+		MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+			rootDescription:SetTag("MENU_MONTHLY_ACTVITIES_TRACKER");
+
+			rootDescription:CreateTitle(block.name);
+			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
+				self:OpenFrameToActivity(block.id);
+			end);
+			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+				self:UntrackPerksActivity(block.id);
+			end);
+		end);
 	end
-end
-
-function MonthlyActivitiesObjectiveTrackerMixin:InitDropDown(block)
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = block.name;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	info.text = OBJECTIVES_VIEW_IN_QUESTLOG;
-	info.func = function (button, ...) self:OpenFrameToActivity(...); end;
-	info.arg1 = block.id;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info.text = OBJECTIVES_STOP_TRACKING;
-	info.func = function (button, ...) self:UntrackPerksActivity(...); end;
-	info.arg1 = block.id;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 
 function MonthlyActivitiesObjectiveTrackerMixin:OpenFrameToActivity(activityID)

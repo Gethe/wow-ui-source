@@ -66,12 +66,12 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		C_Garrison.RemoveFollower(self.data.followerID, true);
+		C_Garrison.RemoveFollower(self.data, true);
 		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_DECOMISSION_SHIP);
 	end,
 	OnShow = function(self)
-		local quality = C_Garrison.GetFollowerQuality(self.data.followerID);
-		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data.followerID)..FONT_COLOR_CODE_CLOSE;
+		local quality = C_Garrison.GetFollowerQuality(self.data);
+		local name = FOLLOWER_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
 		self.text:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
 	end,
 	showAlert = 1,
@@ -174,9 +174,6 @@ function GarrisonShipyardMission:SelectTab(id)
 		self.BorderFrame.TitleText:SetText(GARRISON_SHIPYARD_TITLE);
 	else
 		self.BorderFrame.TitleText:SetText(GARRISON_SHIPYARD_FLEET_TITLE);
-	end
-	if ( UIDropDownMenu_GetCurrentDropDown() == GarrisonShipyardFollowerOptionDropDown ) then
-		CloseDropDownMenus();
 	end
 end
 
@@ -2064,13 +2061,35 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 		followerList:UpdateData();
 		followerList:ShowFollower(self.id);
 	elseif (button == "RightButton" and not followerList.isLandingPage) then
-			if ( GarrisonShipyardFollowerOptionDropDown.followerID ~= self.id ) then
-				CloseDropDownMenus();
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_GARRISON_SHIP_FOLLOWER");
+
+			local followerID = self.id;
+			
+			rootDescription:CreateButton(GARRISON_SHIP_RENAME, function()
+				StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, followerID);
+			end);
+
+			local button = rootDescription:CreateButton(GARRISON_SHIP_DECOMMISSION, function()
+				StaticPopup_Show("GARRISON_SHIP_DECOMMISSION", nil, nil, followerID);
+			end);
+
+			local followerStatus = C_Garrison.GetFollowerStatus(followerID);
+			if followerStatus == GARRISON_FOLLOWER_ON_MISSION then
+				button:SetEnabled(false);
+				button:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, GARRISON_SHIP_DECOMMISSION);
+					GameTooltip_AddNormalLine(tooltip, GARRISON_SHIP_CANNOT_DECOMMISSION_ON_MISSION);
+				end);
+			elseif C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) < C_Garrison.GetFollowerSoftCap(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) then
+				button:SetEnabled(false);
+				button:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, GARRISON_SHIP_DECOMMISSION);
+					GameTooltip_AddNormalLine(tooltip, GARRISON_SHIP_CANNOT_DECOMMISSION_UNTIL_FULL);
+				end);
 			end
-			GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
-			ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		end
+		end);
+	end
 end
 
 function GarrisonShipTrait_OnClick(self, button)
@@ -2213,45 +2232,6 @@ end
 
 function GarrisonShipMissionPageFollowerFrame_OnLeave(self)
 	GarrisonShipyardFollowerTooltip:Hide();
-end
-
----------------------------------------------------------------------------------
---- Ship Renaming                                                             ---
----------------------------------------------------------------------------------
-
-function GarrisonShipOptionsMenu_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-
-	info.text = GARRISON_SHIP_RENAME;
-	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, self.followerID); end
-	UIDropDownMenu_AddButton(info, level);
-
-	info.text = GARRISON_SHIP_DECOMMISSION;
-	local data = {};
-	data.followerID = self.followerID;
-	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_DECOMMISSION", nil, nil, data); end
-	local followerStatus = self.followerID and C_Garrison.GetFollowerStatus(self.followerID);
-	if ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
-		info.disabled = 1;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
-		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_ON_MISSION;
-		info.tooltipOnButton = 1;
-	elseif ( C_Garrison.GetNumFollowers(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) <  C_Garrison.GetFollowerSoftCap(Enum.GarrisonFollowerType.FollowerType_6_0_Boat) ) then
-		info.disabled = 1;
-		info.tooltipWhileDisabled = 1;
-		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
-		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_UNTIL_FULL;
-		info.tooltipOnButton = 1;
-	end
-	UIDropDownMenu_AddButton(info, level);
-
-	info.text = CANCEL
-	info.func = nil
-	info.tooltipTitle = nil;
-	info.disabled = nil;
-	UIDropDownMenu_AddButton(info, level)
 end
 
 ---------------------------------------------------------------------------------

@@ -362,7 +362,7 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	self:ResetPlayerChoiceOptionHeightData();
 
 	self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
-	self.optionPools:CreatePoolIfNeeded("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
+	self.optionPools:GetOrCreatePool("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
 
 	local soloOption = (#self.choiceInfo.options == 1);
 

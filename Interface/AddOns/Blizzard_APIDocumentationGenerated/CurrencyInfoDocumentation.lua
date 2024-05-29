@@ -152,6 +152,21 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetCostToTransferCurrency",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "totalQuantityConsumed", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrencyContainerInfo",
 			Type = "Function",
 
@@ -275,20 +290,6 @@ local CurrencyInfo =
 			},
 		},
 		{
-			Name = "GetCurrencyTransferPercentage",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "currencyID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "currencyTransferPercentage", Type = "number", Nilable = true },
-			},
-		},
-		{
 			Name = "GetDragonIslesSuppliesCurrencyID",
 			Type = "Function",
 
@@ -310,6 +311,21 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "factionID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetMaxTransferableAmountFromQuantity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currencyID", Type = "number", Nilable = false },
+				{ Name = "requestedQuantity", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxTransferableAmount", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -371,6 +387,15 @@ local CurrencyInfo =
 			Returns =
 			{
 				{ Name = "isCurrencyContainer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrencyTransferTransactionDataReady",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -558,10 +583,13 @@ local CurrencyInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "sourceCharacterName", Type = "cstring", Nilable = false },
-				{ Name = "destinationCharacterName", Type = "cstring", Nilable = false },
-				{ Name = "currencyID", Type = "number", Nilable = false },
-				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "sourceCharacterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "sourceCharacterName", Type = "string", Nilable = false, Default = "" },
+				{ Name = "destinationCharacterGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "destinationCharacterName", Type = "string", Nilable = false, Default = "" },
+				{ Name = "currencyType", Type = "number", Nilable = false },
+				{ Name = "quantityTransferred", Type = "number", Nilable = false },
+				{ Name = "totalQuantityConsumed", Type = "number", Nilable = false },
 				{ Name = "timestamp", Type = "time_t", Nilable = false },
 			},
 		},

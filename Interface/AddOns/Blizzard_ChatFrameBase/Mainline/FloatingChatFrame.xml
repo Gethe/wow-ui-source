@@ -291,18 +291,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOP" x="-80" y="-35"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="FCFOptionsDropDown_OnLoad"/>
-					<OnShow function="FCFOptionsDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
+				CURRENT_CHAT_FRAME_ID = self:GetID();
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>

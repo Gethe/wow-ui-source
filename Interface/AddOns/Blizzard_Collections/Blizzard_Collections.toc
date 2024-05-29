@@ -4,6 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
+## Dependencies: Blizzard_ClassMenu
 ## AllowLoadGameType: mainline
 Blizzard_CollectionTemplates.xml
 Blizzard_Collections.xml

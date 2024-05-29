@@ -202,17 +202,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						PartyFrameDropDown_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentPowerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>

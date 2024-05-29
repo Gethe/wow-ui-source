@@ -3,7 +3,6 @@ local ProfessionsRankBarEvents =
 	"SKILL_LINES_CHANGED",
 	"TRIAL_STATUS_UPDATE",
 }
-
 local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skillModifier)
 	local rankText;
 	if skillModifier > 0  then
@@ -21,26 +20,56 @@ local function GenerateRankText(professionName, skillLevel, maxSkillLevel, skill
 	return rankText;
 end
 
-local function ExpansionDropDownButton_Init(self)
-	-- Add profession header ie Engineering
-	local baseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+ProfessionsRankBarDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.isTitle = true;
-	info.text = baseProfessionInfo.professionName;
-	info.justifyH = "CENTER";
-	UIDropDownMenu_AddButton(info, level)
+local function IsSelected(professionInfo)
+	local baseProfessionInfo = C_TradeSkillUI.GetChildProfessionInfo();
+	return baseProfessionInfo.professionID == professionInfo.professionID;
+end
 
-	-- Add each expansion and skill display - Dragon Isles 50/100
-	local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
-	for index, professionInfo in ipairs(childProfessionInfos) do
-		info = UIDropDownMenu_CreateInfo();
-		info.text = GenerateRankText(professionInfo.expansionName, professionInfo.skillLevel, professionInfo.maxSkillLevel, professionInfo.skillModifier);
-		info.func = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo) end;
-		info.checked = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end;
-		UIDropDownMenu_AddButton(info, level)
+local function SetSelected(professionInfo)
+	EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo);
+end
+
+function ProfessionsRankBarDropdownMixin:OnLoad()
+	ButtonStateBehaviorMixin.OnLoad(self);
+
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_RANK_BAR");
+
+		local baseProfessionInfo = C_TradeSkillUI.GetBaseProfessionInfo();
+		local title = rootDescription:CreateTitle(baseProfessionInfo.professionName);
+		title:AddInitializer(function(frame, description, menu)
+			local fontString = frame.fontString;
+			fontString:SetWidth(200);
+			fontString:SetFontObject("GameFontNormal");
+			fontString:SetJustifyH("CENTER");
+		end);
+
+		-- Add each expansion and skill display - Dragon Isles 50/100
+		for index, professionInfo in ipairs(C_TradeSkillUI.GetChildProfessionInfos()) do
+			local text = professionInfo.expansionName;
+			local radio = rootDescription:CreateRadio(text, IsSelected, SetSelected, professionInfo);
+			radio:AddInitializer(function(frame, description, menu)
+				local fontString = frame.fontString;
+				fontString:SetFontObject("GameFontHighlightOutline");
+
+				local fontString2 = frame:AttachFontString();
+				fontString2:SetHeight(20);
+				fontString2:SetPoint("RIGHT");
+				fontString2:SetFontObject("GameFontHighlightOutline");
+				fontString2:SetTextToFit(string.format("%d/%d", professionInfo.skillLevel, professionInfo.maxSkillLevel));
+			end);
 	end
+	end)
+end
+
+function ProfessionsRankBarDropdownMixin:GetAtlas()
+	return GetWowStyle1ArrowButtonState(self);
+end
+
+function ProfessionsRankBarDropdownMixin:OnButtonStateChanged()
+	self.Texture:SetAtlas(self:GetAtlas(), TextureKitConstants.UseAtlasSize);
 end
 
 ProfessionsRankBarMixin = {};
@@ -48,13 +77,6 @@ ProfessionsRankBarMixin = {};
 function ProfessionsRankBarMixin:OnLoad()
 	self.Flare:ClearAllPoints();
 	self.Flare:SetPoint("RIGHT", self.Mask, "RIGHT", 0, 0);
-
-	UIDropDownMenu_SetInitializeFunction(self.ExpansionDropDownFrame, ExpansionDropDownButton_Init);
-	UIDropDownMenu_SetAnchor(self.ExpansionDropDownFrame, 0, 0, "TOPRIGHT", self.ExpansionDropDownButton, "BOTTOMRIGHT");
-
-	self.ExpansionDropDownButton:SetScript("OnClick", function(_, button) 
-		ToggleDropDownMenu(nil, nil, self.ExpansionDropDownFrame, nil, nil, nil, nil, nil, nil, "MENU");
-	end);
 end
 
 function ProfessionsRankBarMixin:OnShow()

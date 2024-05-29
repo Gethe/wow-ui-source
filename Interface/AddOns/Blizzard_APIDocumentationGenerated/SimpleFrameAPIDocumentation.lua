@@ -709,6 +709,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsVisible",
 			Type = "Function",
 
@@ -1064,6 +1077,15 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "userPlaced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetUsingParentLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "usingParentLevel", Type = "bool", Nilable = false },
 			},
 		},
 		{

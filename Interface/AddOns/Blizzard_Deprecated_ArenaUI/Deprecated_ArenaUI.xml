@@ -139,12 +139,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -175,12 +169,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="-20" y="-10"/>
-				</Anchors>
-			</Frame>
 			<Frame setAllPoints="true"> <!-- These silly nested frames make it so the health/mana bars are underneath the frame borders like they're supposed to be-->
 				<Frames>
 					<Frame setAllPoints="true">

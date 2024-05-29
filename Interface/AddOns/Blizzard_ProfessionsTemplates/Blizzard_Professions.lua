@@ -1058,162 +1058,112 @@ function Professions.GetNewestKnownProfessionInfo()
 	end
 end
 
-function Professions.InitFilterMenu(dropdown, level, onUpdate, ignoreSkillLine)
-	local filterSystem = {};
-	filterSystem.onUpdate = onUpdate;
-	filterSystem.filters = 
-	{
-		{
-			type = FilterComponent.Checkbox,
-			text = PROFESSION_RECIPES_SHOW_LEARNED,
-			set = C_TradeSkillUI.SetShowLearned,
-			isSet = C_TradeSkillUI.GetShowLearned
-		},
-		{
-			type = FilterComponent.Checkbox,
-			text = PROFESSION_RECIPES_SHOW_UNLEARNED,
-			set = C_TradeSkillUI.SetShowUnlearned,
-			isSet = C_TradeSkillUI.GetShowUnlearned
-		},
-		{
-			type = FilterComponent.Checkbox,
-			text = CRAFT_IS_MAKEABLE,
-			set = C_TradeSkillUI.SetOnlyShowMakeableRecipes,
-			isSet = C_TradeSkillUI.GetOnlyShowMakeableRecipes
-		}
-	};
-
-	local isGatheringProfession = Professions.GetProfessionType(Professions.GetProfessionInfo()) == Professions.ProfessionType.Gathering;
-	
-	if not C_TradeSkillUI.IsNPCCrafting() then
-		local sourcesFilters = {
-			type = FilterComponent.Submenu,
-			text = SOURCES,
-			value = 2,
-			childrenInfo = {
-				filters = {
-					{
-						type = FilterComponent.TextButton,
-						text = CHECK_ALL,
-						set = function()
-							Professions.SetAllSourcesFiltered(false);
-							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-						end
-					},
-					{
-						type = FilterComponent.TextButton,
-						text = UNCHECK_ALL,
-						set = function()
-							Professions.SetAllSourcesFiltered(true);
-							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-						end
-					},
-					{
-						type = FilterComponent.DynamicFilterSet,
-						buttonType = FilterComponent.Checkbox,
-						set = function(filter, value)
-							C_TradeSkillUI.SetRecipeSourceTypeFilter(filter, not value)
-						end,
-						isSet = function(filter)
-							return not C_TradeSkillUI.IsRecipeSourceTypeFiltered(filter)
-						end,
-						numFilters = C_PetJournal.GetNumPetSources,
-						filterValidation = C_TradeSkillUI.IsAnyRecipeFromSource,
-						globalPrepend = "BATTLE_PET_SOURCE_"
-					}
-				}
-			}
-		};
-		table.insert(filterSystem.filters, sourcesFilters);
-
-		if not isGatheringProfession then
-			local firstCraftFilters = {
-				type = FilterComponent.Checkbox,
-				text = PROFESSION_RECIPES_IS_FIRST_CRAFT,
-				set = C_TradeSkillUI.SetOnlyShowFirstCraftRecipes,
-				isSet = C_TradeSkillUI.GetOnlyShowFirstCraftRecipes
-			};
-			table.insert(filterSystem.filters, 3, firstCraftFilters);
+function Professions.InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSkillLine)
+	dropdown:SetDefaultCallback(function()
+		Professions.SetDefaultFilters(ignoreSkillLine);
+		
+		if onDefault then
+			onDefault();
 		end
+	end);
+	
+	dropdown:SetUpdateCallback(onUpdate);
+
+	dropdown:SetIsDefaultCallback(function()
+		return Professions.IsUsingDefaultFilters(ignoreSkillLine);
+	end);
+	
+	local function IsSourceChecked(filterIndex) 
+		return not C_TradeSkillUI.IsRecipeSourceTypeFiltered(filterIndex);
 	end
 
-	if not isGatheringProfession then
-		local slotsFilters = {
-			type = FilterComponent.Submenu,
-			text = TRADESKILL_FILTER_SLOTS,
-			value = 1,
-			childrenInfo = {
-				filters = {
-					{
-						type = FilterComponent.TextButton,
-						text = CHECK_ALL,
-						set = function()
-							Professions.SetAllInventorySlotsFiltered(true);
-							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-						end
-					},
-					{
-						type = FilterComponent.TextButton,
-						text = UNCHECK_ALL,
-						set = function()
-							Professions.SetAllInventorySlotsFiltered(false);
-							UIDropDownMenu_Refresh(dropdown, UIDROPDOWNMENU_MENU_VALUE, UIDROPDOWNMENU_MENU_LEVEL);
-						end
-					},
-					{
-						type = FilterComponent.DynamicFilterSet,
-						buttonType = FilterComponent.Checkbox,
-						set = C_TradeSkillUI.SetInventorySlotFilter,
-						isSet = function(filter)
-							return not C_TradeSkillUI.IsInventorySlotFiltered(filter);
-						end,
-						numFilters = C_TradeSkillUI.GetAllFilterableInventorySlotsCount,
-						nameFunction = C_TradeSkillUI.GetFilterableInventorySlotName,
-					}
-				}
-			}
-		};
-		table.insert(filterSystem.filters, slotsFilters);
+	local function SetSourceChecked(filterIndex) 
+		C_TradeSkillUI.SetRecipeSourceTypeFilter(filterIndex, IsSourceChecked(filterIndex));
 	end
 	
-	if not C_TradeSkillUI.IsTradeSkillGuild() then
-		local professionInfo = Professions.GetProfessionInfo();
-		local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting() and professionInfo.maxSkillLevel == 0;
+	local function IsSlotChecked(filterIndex) 
+		return not C_TradeSkillUI.IsInventorySlotFiltered(filterIndex);
+	end
+
+	local function SetSlotChecked(filterIndex) 
+		C_TradeSkillUI.SetInventorySlotFilter(filterIndex, not IsSlotChecked(filterIndex));
+	end
+
+	local function IsExpansionChecked(professionInfo) 
+		return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID;
+	end
+
+	local function SetExpansionChecked(professionInfo) 
+		EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo);
+	end
+
+	dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PROFESSIONS_FILTER");
+
+		local isGatheringProfession = Professions.GetProfessionType(Professions.GetProfessionInfo()) == Professions.ProfessionType.Gathering;
+		local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting();
+
+		rootDescription:CreateCheckbox(PROFESSION_RECIPES_SHOW_LEARNED, C_TradeSkillUI.GetShowLearned, function()
+			C_TradeSkillUI.SetShowLearned(not C_TradeSkillUI.GetShowLearned());
+		end);
+
+		rootDescription:CreateCheckbox(PROFESSION_RECIPES_SHOW_UNLEARNED, C_TradeSkillUI.GetShowUnlearned, function()
+			C_TradeSkillUI.SetShowUnlearned(not C_TradeSkillUI.GetShowUnlearned());
+		end);
+
+		if not C_TradeSkillUI.IsTradeSkillGuild() then
+			local professionInfo = Professions.GetProfessionInfo();
+			if not (isNPCCrafting and professionInfo.maxSkillLevel == 0) then
+				rootDescription:CreateCheckbox(TRADESKILL_FILTER_HAS_SKILL_UP, C_TradeSkillUI.GetOnlyShowSkillUpRecipes, function()
+					C_TradeSkillUI.SetOnlyShowSkillUpRecipes(not C_TradeSkillUI.GetOnlyShowSkillUpRecipes());
+				end);
+			end
+		end
+
+		if not isNPCCrafting and not isGatheringProfession then
+			rootDescription:CreateCheckbox(PROFESSION_RECIPES_IS_FIRST_CRAFT, C_TradeSkillUI.GetOnlyShowFirstCraftRecipes, function()
+				C_TradeSkillUI.SetOnlyShowFirstCraftRecipes(not C_TradeSkillUI.GetOnlyShowFirstCraftRecipes());
+			end);
+		end
+
+		rootDescription:CreateCheckbox(CRAFT_IS_MAKEABLE, C_TradeSkillUI.GetOnlyShowMakeableRecipes, function()
+			C_TradeSkillUI.SetOnlyShowMakeableRecipes(not C_TradeSkillUI.GetOnlyShowMakeableRecipes());
+		end);
+
 		if not isNPCCrafting then
-			local onlyShowSkillUpRecipes = { 
-				type = FilterComponent.Checkbox, 
-				text = TRADESKILL_FILTER_HAS_SKILL_UP, 
-				set = C_TradeSkillUI.SetOnlyShowSkillUpRecipes, 
-				isSet = C_TradeSkillUI.GetOnlyShowSkillUpRecipes,
-			};
-			table.insert(filterSystem.filters, 3, onlyShowSkillUpRecipes);
-		end
-	end
+			local sourceSubmenu = rootDescription:CreateButton(SOURCES);
+			local button = sourceSubmenu:CreateButton(CHECK_ALL, Professions.SetAllSourcesFiltered, false);
+			sourceSubmenu:CreateButton(UNCHECK_ALL, Professions.SetAllSourcesFiltered, true);
 
-	if not ignoreSkillLine then
-		if not C_TradeSkillUI.IsNPCCrafting() then
-			local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
-			if #childProfessionInfos > 0 then
-				local spacer = { type = FilterComponent.Space };
-				table.insert(filterSystem.filters, spacer);
-
-				for index, professionInfo in ipairs(childProfessionInfos) do
-					local skillLine = { 
-						type = FilterComponent.Radio,
-						text = professionInfo.expansionName,
-						set = function() EventRegistry:TriggerEvent("Professions.SelectSkillLine", professionInfo); end, 
-						isSet = function() return C_TradeSkillUI.GetChildProfessionInfo().professionID == professionInfo.professionID; end,
-						hideMenuOnClick = true,
-					};
-					table.insert(filterSystem.filters, skillLine);
+			for filterIndex = 1, C_PetJournal.GetNumPetSources() do
+				if C_TradeSkillUI.IsAnyRecipeFromSource(filterIndex) then
+					sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
 				end
 			end
 		end
-	end
 
-	FilterDropDownSystem.Initialize(dropdown, filterSystem, level);
+		if not isGatheringProfession then
+			local slotsSubmenu = rootDescription:CreateButton(TRADESKILL_FILTER_SLOTS);
+			slotsSubmenu:CreateButton(CHECK_ALL, Professions.SetAllInventorySlotsFiltered, true);
+			slotsSubmenu:CreateButton(UNCHECK_ALL, Professions.SetAllInventorySlotsFiltered, false);
 
-	return filterSystem;
+			for filterIndex = 1, C_TradeSkillUI.GetAllFilterableInventorySlotsCount() do
+				local name = C_TradeSkillUI.GetFilterableInventorySlotName(filterIndex);
+				slotsSubmenu:CreateCheckbox(name, IsSlotChecked, SetSlotChecked, filterIndex);
+			end
+		end
+
+		if not ignoreSkillLine and not isNPCCrafting then
+			local childProfessionInfos = C_TradeSkillUI.GetChildProfessionInfos();
+			if #childProfessionInfos > 0 then
+				rootDescription:CreateSpacer();
+
+				for index, professionInfo in ipairs(childProfessionInfos) do
+					rootDescription:CreateRadio(professionInfo.expansionName, IsExpansionChecked, SetExpansionChecked, professionInfo);
+				end
+			end
+		end
+	end);
 end
 
 function Professions.OnRecipeListSearchTextChanged(text)

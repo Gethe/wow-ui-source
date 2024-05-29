@@ -1718,13 +1718,6 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="GarrisonShipyardFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonShipOptionsMenu_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow method="OnShow"/>

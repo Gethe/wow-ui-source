@@ -21,8 +21,9 @@ function NamePlateDriverMixin:OnLoad()
 	self:SetBaseNamePlateSize(110, 45);
 
 	self.pools = CreateFramePoolCollection();
-	-- Forbidden dictated by namePlateFrameBase.
-	self.pools:CreatePool("BUTTON", self, "ForbiddenNamePlateUnitFrameTemplate");
+
+	local forbidden = true;
+	self.pools:CreatePool("BUTTON", self, "ForbiddenNamePlateUnitFrameTemplate", nil, forbidden);
 	self.pools:CreatePool("BUTTON", self, "NamePlateUnitFrameTemplate");
 
 	self.namePlateSetupFunctions =

@@ -1349,7 +1349,7 @@ function RestoreUIPanelArea(currentFrame)
 end
 
 function IsOptionFrameOpen()
-	if ( GameMenuFrame:IsShown() or InterfaceOptionsFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
+	if ( GameMenuFrame:IsShown() or (KeyBindingFrame and KeyBindingFrame:IsShown()) ) then
 		return 1;
 	else
 		return nil;

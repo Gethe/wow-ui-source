@@ -196,6 +196,7 @@ function HeroTalentsContainerMixin:UpdateHeroTalentUI()
 
 	self:UpdateHeroTalentsUnlockedAnim();
 	self:UpdateChoiceGlowAnim();
+	self:UpdateBackgroundAnims();
 
 	self:MarkHeroTalentUIClean();
 
@@ -313,6 +314,30 @@ function HeroTalentsContainerMixin:UpdateChoiceGlowAnim()
 		self.HeroSpecButton.ChoiceGlowAnim:Play();
 	else
 		self.HeroSpecButton.ChoiceGlowAnim:Stop();
+	end
+end
+
+function HeroTalentsContainerMixin:UpdateBackgroundAnims()
+	-- These animations only play after the player has selected a hero spec.
+	local playing = self:IsDisplayingActiveHeroSpec();
+
+	self.HeroSpecButton.HeroClassPassiveAnim:SetPlaying(playing);
+
+	-- Play the sheen animations so they're syncronized with the sheen animation on the talent buttons.
+	if playing then
+		local function PlayAndSyncSheenAnimation(sheenAnim)
+			local reverse = false;
+			local timeOffset = ClassTalentUtil.GetOrStartSyncedAnimationOffset(sheenAnim:GetDuration());
+			sheenAnim:Play(reverse, timeOffset);
+		end
+
+		PlayAndSyncSheenAnimation(self.HeroSpecButton.HeroClassIconSheen.Anim);
+		PlayAndSyncSheenAnimation(self.HeroSpecButton.HeroClassRingBorderSheen.Anim);
+		PlayAndSyncSheenAnimation(self.ExpandedContainer.HeroClassBackplateFullSheen.Anim);
+	else
+		self.HeroSpecButton.HeroClassIconSheen.Anim:Stop();
+		self.HeroSpecButton.HeroClassRingBorderSheen.Anim:Stop();
+		self.ExpandedContainer.HeroClassBackplateFullSheen.Anim:Stop();
 	end
 end
 
@@ -472,6 +497,7 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 
 		self.Icon1:SetAtlas(activeSubTreeInfo.iconElementID);
 		self.Icon1Anim:SetAtlas(activeSubTreeInfo.iconElementID);
+		self.Icon1Hover:SetAtlas(activeSubTreeInfo.iconElementID);
 		self.Icon2:Hide();
 		for _, mask in ipairs(self.IconSplitMasks) do
 			mask:Hide();
@@ -484,7 +510,9 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 		local subTree2 = talentFrame:GetAndCacheSubTreeInfo(subTreeIDs[2]);
 
 		self.Icon1:SetAtlas(subTree1.iconElementID);
+		self.Icon1Hover:SetAtlas(subTree1.iconElementID);
 		self.Icon2:SetAtlas(subTree2.iconElementID);
+		self.Icon2Hover:SetAtlas(subTree2.iconElementID);
 		self.Icon2:Show();
 		self.Icon1Anim:Hide();
 
@@ -511,6 +539,8 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 
 	if self:IsMouseMotionFocus() then
 		self.BorderHover:Hide();
+		self.Icon1Hover:Hide();
+		self.Icon2Hover:Hide();
 		self.ChoiceBorderHover:Hide();
 		self:OnEnter();
 	end
@@ -523,8 +553,11 @@ function HeroSpecButtonMixin:OnEnter()
 
 	if self.areChoicesActive then
 		self.ChoiceBorderHover:Show();
+		self.Icon1Hover:Show();
+		self.Icon2Hover:Show();
 	else
 		self.BorderHover:Show();
+		self.Icon1Hover:Show();
 	end
 end
 
@@ -535,8 +568,11 @@ function HeroSpecButtonMixin:OnLeave()
 
 	if self.areChoicesActive then
 		self.ChoiceBorderHover:Hide();
+		self.Icon1Hover:Hide();
+		self.Icon2Hover:Hide();
 	else
 		self.BorderHover:Hide();
+		self.Icon1Hover:Hide();
 	end
 end
 

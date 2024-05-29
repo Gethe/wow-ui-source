@@ -226,6 +226,31 @@ function AchievementFrame_OnLoad (self)
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
 
+	local function IsFilterSelected(filter)
+		return ACHIEVEMENTUI_SELECTEDFILTER == filter.func;
+	end
+
+	local function SetFilterSelected(filter)
+		if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
+			ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
+			AchievementFrameAchievements_ForceUpdate();
+		end
+	end
+
+	AchievementFrameFilterDropDown:SetWidth(112);
+	AchievementFrameFilterDropDown:SetFrameLevel(AchievementFrameFilterDropDown:GetFrameLevel() + 1);
+	AchievementFrameFilterDropDown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
+
+		for i, filter in ipairs(AchievementFrameFilters) do
+			local radio = rootDescription:CreateRadio(filter.text, IsFilterSelected, SetFilterSelected, filter);
+			radio:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, ACHIEVEMENT_FILTER_TITLE);
+				GameTooltip_AddNormalLine(tooltip, AchievementFrameFilterStrings[i]);
+			end);
+		end
+	end);
+
 	self.PlaceholderHiddenDescription:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
 end
 
@@ -1736,48 +1761,18 @@ end
 
 ACHIEVEMENTUI_SELECTEDFILTER = AchievementFrame_GetCategoryNumAchievements_All;
 
-AchievementFrameFilters = { {text=ACHIEVEMENTFRAME_FILTER_ALL, func= AchievementFrame_GetCategoryNumAchievements_All},
- {text=ACHIEVEMENTFRAME_FILTER_COMPLETED, func=AchievementFrame_GetCategoryNumAchievements_Complete},
-{text=ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func=AchievementFrame_GetCategoryNumAchievements_Incomplete} };
-
-function AchievementFrameFilterDropDown_OnLoad (self)
-	self.relativeTo = "AchievementFrameFilterDropDown"
-	self.xOffset = -14;
-	self.yOffset = 10;
-	UIDropDownMenu_Initialize(self, AchievementFrameFilterDropDown_Initialize);
-end
-
-function AchievementFrameFilterDropDown_Initialize (self)
-	local info = UIDropDownMenu_CreateInfo();
-	for i, filter in ipairs(AchievementFrameFilters) do
-		info.text = filter.text;
-		info.value = i;
-		info.func = AchievementFrameFilterDropDownButton_OnClick;
-		info.tooltipOnButton = 1;
-		info.tooltipTitle = ACHIEVEMENT_FILTER_TITLE;
-		info.tooltipText = AchievementFrameFilterStrings[i];
-		if ( filter.func == ACHIEVEMENTUI_SELECTEDFILTER ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, filter.text);
-			self.value =  i;
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
-	end
-end
-
-function AchievementFrameFilterDropDownButton_OnClick (self)
-	AchievementFrame_SetFilter(self.value);
-end
+AchievementFrameFilters = { 
+	{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
+	{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
+	{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete} 
+};
 
 function AchievementFrame_SetFilter(value)
-	local func = AchievementFrameFilters[value].func;
-	if ( func ~= ACHIEVEMENTUI_SELECTEDFILTER ) then
-		ACHIEVEMENTUI_SELECTEDFILTER = func;
-		UIDropDownMenu_SetText(AchievementFrameFilterDropDown, AchievementFrameFilters[value].text)
+	local filter = AchievementFrameFilters[value];
+	if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
+		ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
 		AchievementFrameAchievements_ForceUpdate();
-		AchievementFrameFilterDropDown.value = value;
+		AchievementFrameFilterDropDown:GenerateMenu();
 	end
 end
 
@@ -3093,14 +3088,6 @@ function AchievementShield_OnLeave(self)
 	end
 	GameTooltip:Hide();
 	guildMemberRequestFrame = nil;
-end
-
-
-function AchievementFrameFilterDropDown_OnEnter(self)
-	local currentFilter = AchievementFrameFilterDropDown.value;
-	GameTooltip:SetOwner(AchievementFrameFilterDropDown, "ANCHOR_RIGHT", -18, 0);
-	GameTooltip:AddLine(AchievementFrameFilterStrings[currentFilter]);
-	GameTooltip:Show();
 end
 
 function AchievementFrameAchievements_CheckGuildMembersTooltip(requestFrame)

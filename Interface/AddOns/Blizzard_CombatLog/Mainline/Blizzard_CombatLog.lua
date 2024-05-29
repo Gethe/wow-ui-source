@@ -785,8 +785,7 @@ do
 			func = function () Blizzard_CombatLog_SpellMenuClick ("HIDE", spellName, spellId, eventType); end;
 		},
 		[3] = {
-			text = "------------------";
-			disabled = true;
+			divider = true;
 		},
 	};
 	function Blizzard_CombatLog_CreateSpellMenu(spellName_arg, spellId_arg, eventType_arg)
@@ -1377,47 +1376,6 @@ function Blizzard_CombatLog_MenuHelper ( checked, ... )
 end;
 
 --
--- Blizzard_CombatLog_CreateTabMenu
---
--- 	Creates a context sensitive menu based on the current quick button
---
--- args:
--- 	settingsIndex - the filter settings to use
---
-do
-	local filterId
-	local tabMenu = {
-		[1] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_EVERYTHING;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("EVERYTHING"); end;
-		},
-		[2] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_SAVE;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("SAVE"); end;
-		},
-		[3] = {
-			text = BLIZZARD_COMBAT_LOG_MENU_RESET;
-			func = function () Blizzard_CombatLog_UnitMenuClick ("RESET"); end;
-		},
-		[4] = {
-			text = "--------- Temporary Adjustments ---------";
-			disabled = true;
-		},
-	};
-	function Blizzard_CombatLog_CreateTabMenu ( filterId_arg )
-		-- Update upvalues
-		filterId = filterId_arg
-
-		-- Update menus
-		tabMenu[2].disabled = (Blizzard_CombatLog_PreviousSettings == Blizzard_CombatLog_CurrentSettings)
-		tabMenu[5] = Blizzard_CombatLog_FormattingMenu(filterId);
-		tabMenu[6] = Blizzard_CombatLog_MessageTypesMenu(filterId);
-		return tabMenu;
-	end
-end
-
-
---
 -- Temporary Menu
 --
 do
@@ -1440,8 +1398,7 @@ do
 				func = function () Blizzard_CombatLog_UnitMenuClick ("OUTGOING", unitName, unitGUID, special); end;
 			},
 			[4] = {
-				text = "------------------";
-				disabled = true;
+				divider = true;
 			},
 			[5] = {
 				text = BLIZZARD_COMBAT_LOG_MENU_EVERYTHING;
@@ -3429,6 +3386,26 @@ local function Blizzard_CombatLog_BitToBraceCode(bit)
 	return "";
 end
 
+-- The format of the data describing context menu entries was originally written for the legacy menus
+-- but is being funneled into the updated menu system to minimize any changes.
+local function CreateContextMenu(region, tbls)
+	MenuUtil.CreateContextMenu(region, function(owner, rootDescription)
+		rootDescription:SetTag("MENU_COMBAT_LOG", tbls);
+
+		for index, tbl in ipairs(tbls) do
+			if tbl.divider then
+				rootDescription:CreateDivider();
+			else
+				local button = rootDescription:CreateButton(tbl.text, tbl.func);
+
+				-- We can invert 'disabled' here as none of it's uses were functions. If functions are added, 
+				-- a function wrapper can be passed instead that inverts the return value of the added function.
+				button:SetEnabled(not tbl.disabled);
+			end
+		end
+	end);
+end
+
 -- Override Hyperlink Handlers
 -- The SetItemRef() function hook is to be moved out into the core FrameXML.
 -- It is currently in the Constants.lua stub file to simulate being moved out to the core.
@@ -3459,7 +3436,7 @@ function SetItemRef(link, text, button, chatFrame)
 			return;
 		elseif( button == "RightButton") then
 			-- Show Popup Menu
-			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(name, guid), CombatLogDropDown, "cursor", nil, nil, "MENU");
+			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(name, guid));
 			return;
 		end
 	elseif ( strsub(link, 1, 4) == "icon") then
@@ -3468,7 +3445,7 @@ function SetItemRef(link, text, button, chatFrame)
 		-- Show Popup Menu
 		if( button == "RightButton") then
 			-- need to fix this to be actual texture
-			EasyMenu(Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)), CombatLogDropDown, "cursor", nil, nil, "MENU");
+			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
 		elseif ( IsModifiedClick("CHATLINK") ) then
 			ChatEdit_InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
 		end
@@ -3489,7 +3466,7 @@ function SetItemRef(link, text, button, chatFrame)
 			end
 		-- Show Popup Menu
 		elseif( button == "RightButton" and event ) then
-			EasyMenu(Blizzard_CombatLog_CreateSpellMenu(text, spellId, event), CombatLogDropDown, "cursor", nil, nil, "MENU");
+			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateSpellMenu(text, spellId, event));
 			return;
 		end
 	elseif ( strsub(link, 1,6) == "action" ) then
@@ -3497,7 +3474,7 @@ function SetItemRef(link, text, button, chatFrame)
 
 		-- Show Popup Menu
 		if( button == "RightButton") then
-			EasyMenu(Blizzard_CombatLog_CreateActionMenu(event), CombatLogDropDown, "cursor", nil, nil, "MENU");
+			CreateContextMenu(chatFrame, Blizzard_CombatLog_CreateActionMenu(event));
 		end
 		return;
 	elseif ( strsub(link, 1, 19) == "garrfollowerability") then

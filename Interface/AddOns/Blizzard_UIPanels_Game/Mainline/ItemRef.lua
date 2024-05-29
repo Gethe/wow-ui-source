@@ -121,7 +121,7 @@ function SetItemRef(link, text, button, chatFrame)
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
 			if not ( (strupper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) ) then	--Don't show the dropdown if this is a channel we are no longer in.
-				ChatChannelDropDown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
+				ChatChannelDropdown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
 			end
 		end
 		return;
@@ -151,6 +151,10 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 10) == "talentpane" ) then
 		PlayerSpellsUtil.OpenToClassTalentsTab();
+		return;
+	elseif ( strsub(link, 1, 20) == "delvecompanionconfig" ) then
+		ShowUIPanel(DelvesCompanionConfigurationFrame);
+		ShowUIPanel(DelvesCompanionAbilityListFrame);
 		return;
 	elseif ( strsub(link, 1, 14) == "mountequipment" ) then
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);

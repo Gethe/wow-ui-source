@@ -33,6 +33,7 @@ Mainline\NavigationBar.xml
 FilterDropDown.lua
 UIErrorsFrame.xml
 Mainline\Sound.lua
+DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Mainline\AlertFrames.lua
 Mainline\AlertFrames.xml
@@ -63,7 +64,6 @@ Mainline\ColorPickerFrame.xml
 Mainline\RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
-EasyMenu.lua
 Mainline\MovieFrame.lua
 Mainline\MovieFrame.xml
 BossBannerToast.xml

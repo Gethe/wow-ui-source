@@ -282,103 +282,16 @@
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Frame name="CalendarFilterFrame">
-				<Size x="106" y="20"/>
+			<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="CalendarFrame" relativePoint="TOPRIGHT" x="-44" y="-21"/>
+					<Anchor point="TOPRIGHT" relativeTo="CalendarFrame" relativePoint="TOPRIGHT" x="-27" y="-20"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="16"/>
-							<Anchors>
-								<Anchor point="LEFT" x="-5" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="16"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="10" y="16"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-						</Texture>
-						<FontString name="$parentText" inherits="GameFontHighlightSmall" text="CALENDAR_FILTERS" justifyH="RIGHT">
-							<Anchors>
-								<Anchor point="RIGHT" x="-24" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<DropDownToggleButton name="CalendarFilterButton">
-						<Size x="20" y="20"/>
-						<Anchors>
-							<Anchor point="RIGHT"/>
-						</Anchors>
-						<Scripts>
-							<OnMouseDown function="CalendarFilterButton_OnMouseDown"/>
-						</Scripts>
-						<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
-							</Anchors>
-						</NormalTexture>
-						<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
-							</Anchors>
-						</PushedTexture>
-						<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
-							</Anchors>
-						</DisabledTexture>
-						<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="3" y="0"/>
-							</Anchors>
-						</HighlightTexture>
-					</DropDownToggleButton>
-				</Frames>
-			</Frame>
-			<Frame name="CalendarFilterDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Scripts>
-					<OnLoad function="CalendarFilterDropDown_OnLoad"/>
-				</Scripts>
-			</Frame>
+			</DropdownButton>
 			<Button name="CalendarCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="1" y="-17"/>
 				</Anchors>
 			</Button>
-
-			<!-- Context menus -->
-			<Frame name="CalendarContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" clampedToScreen="true" hidden="true">
-				<Scripts>
-					<OnLoad inherit="prepend" function="CalendarContextMenu_OnLoad"/>
-					<OnHide function="CalendarContextMenu_OnHide"/>
-				</Scripts>
-			</Frame>
-			<Frame name="CalendarInviteStatusContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
-				<Scripts>
-					<OnLoad inherit="prepend" function="CalendarInviteStatusContextMenu_OnLoad"/>
-					<OnShow function="CalendarInviteStatusContextMenu_OnShow"/>
-					<OnEvent function="CalendarInviteStatusContextMenu_OnEvent"/>
-				</Scripts>
-			</Frame>
 
 			<!-- Modal frame support -->
 			<Frame name="CalendarModalDummy" enableMouse="true" enableKeyboard="true" hidden="true">
@@ -704,7 +617,6 @@
 			<OnLoad function="CalendarViewEventFrame_OnLoad"/>
 			<OnEvent function="CalendarViewEventFrame_OnEvent"/>
 			<OnShow function="CalendarViewEventFrame_OnShow"/>
-			<OnHide function="CalendarViewEventFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 
@@ -782,36 +694,36 @@
 					<OnEditFocusGained function="EditBox_HighlightText"/>
 				</Scripts>
 			</EditBox>
-			<Frame name="CalendarCreateEventTypeDropDown" inherits="UIDropDownMenuTemplate">
+			<DropdownButton parentKey="EventTypeDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="160" y="-82"/>
+					<Anchor point="TOPLEFT" x="190" y="-82"/>
 				</Anchors>
-			</Frame>
-			<Frame name="CalendarCreateEventHourDropDown" inherits="UIDropDownMenuTemplate">
+			</DropdownButton>
+			<DropdownButton parentKey="HourDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="2" y="-114"/>
+					<Anchor point="TOPLEFT" x="20" y="-114"/>
 				</Anchors>
-			</Frame>
-			<Frame name="CalendarCreateEventMinuteDropDown" inherits="UIDropDownMenuTemplate">
+			</DropdownButton>
+			<DropdownButton parentKey="MinuteDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CalendarCreateEventHourDropDown" relativePoint="RIGHT" x="-22" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.HourDropdown" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
-			</Frame>
-			<Frame name="CalendarCreateEventAMPMDropDown" inherits="UIDropDownMenuTemplate">
+			</DropdownButton>
+			<DropdownButton parentKey="AMPMDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="CalendarCreateEventMinuteDropDown" relativePoint="RIGHT" x="-22" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.MinuteDropdown" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
-			</Frame>
-			<Frame name="CalendarCreateEventDifficultyOptionDropDown" inherits="UIDropDownMenuTemplate">
+			</DropdownButton>
+			<DropdownButton parentKey="DifficultyOptionDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="160" y="-114"/>
+					<Anchor point="TOPLEFT" x="190" y="-114"/>
 				</Anchors>
-			</Frame>
-			<Frame name="CalendarCreateEventCommunityDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+			</DropdownButton>
+			<DropdownButton parentKey="CommunityDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="52" y="-50"/>
+					<Anchor point="TOPLEFT" x="82" y="-50"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame name="CalendarCreateEventInviteListSection">
 				<Size x="320" y="330"/>
 				<Anchors>
@@ -1106,11 +1018,11 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderDarkTemplate"/>
-			<Frame name="CalendarMassInviteCommunityDropDown" inherits="UIDropDownMenuTemplate">
+			<DropdownButton parentKey="CommunityDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-30"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
 				<KeyValues>
 					<KeyValue key="textString" value="CALENDAR_MASS_INVITE" type="global"/>
@@ -1146,11 +1058,11 @@
 					</OnEditFocusGained>
 				</Scripts>
 			</EditBox>
-			<Frame name="CalendarMassInviteRankMenu" inherits="UIDropDownMenuTemplate" clampedToScreen="true">
+			<DropdownButton parentKey="RankDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="149" y="-118"/>
+					<Anchor point="TOPLEFT" x="149" y="-120"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Button name="CalendarMassInviteAcceptButton" inherits="CalendarEventButtonTemplate" text="ACCEPT">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-160"/>

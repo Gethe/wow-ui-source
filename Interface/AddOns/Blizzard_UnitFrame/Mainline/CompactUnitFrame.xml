@@ -192,12 +192,6 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown" hidden="true">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="TOP" x="10" y="-60"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CompactUnitFrame_OnLoad"/>

@@ -493,7 +493,11 @@ function TalentFrameBaseMixin:GetPanExtents()
 	return Clamp(panWidth, 0, math.huge), Clamp(panHeight, 0, math.huge);
 end
 
-function TalentFrameBaseMixin:TalentButtonCollectionReset(framePool, talentButton)
+function TalentFrameBaseMixin:TalentButtonCollectionReset(framePool, talentButton, new)
+	if new then
+		return;
+	end
+
 	local function TalentFrameBaseIsEdgeConnectedToTalentButton(edgeFrame)
 		return (edgeFrame:GetEndButton() == talentButton) or (edgeFrame:GetStartButton() == talentButton);
 	end
@@ -511,7 +515,7 @@ function TalentFrameBaseMixin:TalentButtonCollectionReset(framePool, talentButto
 
 	self.buttonsWithDirtyEdges[talentButton] = nil;
 
-	FramePool_HideAndClearAnchors(framePool, talentButton);
+	Pool_HideAndClearAnchors(framePool, talentButton);
 
 	if talentButton:GetParent() ~= self.ButtonsParent then
 		talentButton:SetParent(self.ButtonsParent);

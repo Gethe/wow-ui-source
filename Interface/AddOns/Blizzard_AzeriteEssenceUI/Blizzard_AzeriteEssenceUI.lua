@@ -1179,10 +1179,10 @@ function AzeriteMilestoneSlotMixin:Refresh()
 		end
 
 		stateFrame:DesaturateHierarchy(desaturation);
-	else
-		if not self:IsMajorSlot() then
-			self:CheckAndSetUpUnlockEffect();
-		end
+	elseif not self:IsMajorSlot() then
+			
+		self:CheckAndSetUpUnlockEffect();
+		
 		if self:ShouldShowUnlockState() then
 			self:ShowStateFrame(self.AvailableState);
 			self.AvailableState:DesaturateHierarchy(desaturation);

@@ -6,7 +6,7 @@ QUEST_CHOICE_DIALOG_RESULT_DECLINED = 2;
 QUEST_CHOICE_DIALOG_RESULT_ABSTAIN = 3;
 
 function AdventureMapQuestChoiceDialogMixin:OnLoad()
-	self.rewardPool = CreateFramePool("FRAME", self, "AdventureMapQuestRewardTemplate", FramePool_HideAndClearAnchors);
+	self.rewardPool = CreateFramePool("FRAME", self, "AdventureMapQuestRewardTemplate");
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnParentHide(parent)

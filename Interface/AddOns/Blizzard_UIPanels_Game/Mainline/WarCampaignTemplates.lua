@@ -246,6 +246,9 @@ end
 function CampaignHeaderCollapsibleMixin:UpdateCollapsedState()
 	local isCollapsed = self:IsCollapsed();
 	self.CollapseButton:UpdateCollapsedState(isCollapsed);
+	if self.SelectedHighlight then
+		self.SelectedHighlight:SetShown(not isCollapsed);
+	end
 	return isCollapsed;
 end
 
@@ -288,14 +291,9 @@ function CampaignHeaderMixin:RequestLore()
 	C_LoreText.RequestLoreTextForCampaignID(self:GetCampaign():GetID());
 end
 
-function CampaignHeaderMixin:UpdateCollapsedState()
-	local isCollapsed = CampaignHeaderCollapsibleMixin.UpdateCollapsedState(self);
-	self.SelectedHighlight:SetShown(not isCollapsed);
-end
-
 function CampaignHeaderMixin:OnEnter()
 	self:ShowTooltip();
-
+	self.HighlightTexture:Show();
 	-- Keep requesting lore for every mouse enter, the alternative is to make the dangerous assumption that lore would only update on quest complete
 	if not self:HasLoreEntries() then
 		C_LoreText.RequestLoreTextForCampaignID(self:GetCampaign():GetID());
@@ -304,6 +302,7 @@ end
 
 function CampaignHeaderMixin:OnLeave()
 	QuestMapLog_GetCampaignTooltip():Hide();
+	self.HighlightTexture:Hide();
 end
 
 function CampaignHeaderMixin:CheckOnLeave()

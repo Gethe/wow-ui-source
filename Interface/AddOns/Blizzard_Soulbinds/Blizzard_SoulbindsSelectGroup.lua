@@ -11,7 +11,7 @@ function SoulbindSelectGroupMixin:OnLoad()
 
 	local resetterCb = function(pool, frame)
 		frame:Reset();
-		FramePool_HideAndClearAnchors(pool, frame);
+		Pool_HideAndClearAnchors(pool, frame);
 	end;
 
 	self.pool = CreateFramePool("BUTTON", self, "SoulbindsSelectButtonTemplate", resetterCb);

@@ -207,21 +207,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentModeControlDropdown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="ModeControlDropdown" hidden="true">
-						<Size x="100" y="30"/>
+					<DropdownButton parentKey="ModeControlDropdown" name="$parentModeControlDropdown" inherits="WowStyle1DropdownTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="-10" y="-7"/>
+							<Anchor point="TOPLEFT" x="10" y="-10"/>
 						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="$parentRaidMembersLabel2" inherits="GameFontNormalMed3" text="PARTY" parentKey="label">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="28" y="-8"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
+					</DropdownButton>
 					<Button name="$parentOptionsButton" inherits="UIPanelInfoButton">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-12" y="-13"/>
@@ -323,7 +313,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					<Button name="$parentDifficulty" parentKey="difficulty" inherits="CRFManagerTooltipButtonTemplate" hidden="true">
+					<DropdownButton name="$parentDifficulty" parentKey="difficulty" inherits="CRFManagerTooltipButtonTemplate" hidden="true">
 						<Size x="40" y="40"/>
 						<NormalTexture atlas="GM-icon-difficulty-normal"/>
 						<KeyValues>
@@ -331,11 +321,11 @@
 						</KeyValues>
 						<Scripts>
 							<OnShow function="CompactRaidFrameManager_UpdateDifficulty"/>
-							<OnClick>
-								CompactRaidFrameManager_ClickDifficulty(self);
-							</OnClick>
+							<OnMouseDown>
+								CompactRaidFrameManager_MouseDownDifficulty(self);
+							</OnMouseDown>
 						</Scripts>
-					</Button>
+					</DropdownButton>
 					<Button name="$parentInitiateReadyCheck" parentKey="readyCheckButton" inherits="CRFManagerTooltipButtonTemplate" mixin="RaidFrameReadyCheckMixin">
 						<Size x="40" y="40"/>
 						<NormalTexture atlas="GM-icon-readyCheck"/>
@@ -394,48 +384,19 @@
 							<OnLoad method="OnLoad"/>
 						</Scripts>
 					</Frame>
-					<Frame name="$parentLeaderOptions" parentKey="leaderOptions" hidden="true">
-						<Size x="222" y="45"/>
-						<Frames>
-							<DropDownToggleButton name="$parentRaidWorldMarkerButton" inherits="UIMenuButtonStretchTemplate">
-								<Size x="40" y="20"/>
-								<Frames>
-									<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" parentKey="dropDown">
-										<Scripts>
-											<OnLoad>
-												UIDropDownMenu_Initialize(self, CRFManager_RaidWorldMarkerDropDown_Update, "MENU");
-											</OnLoad>
-										</Scripts>
-									</Frame>
-								</Frames>
-								<Scripts>
-									<OnMouseDown>
-										UIMenuButtonStretchMixin.OnMouseDown(self, button);
-										PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
-									</OnMouseDown>
-								</Scripts>
-								<NormalTexture parentKey="Icon" file="Interface\RaidFrame\Raid-WorldPing">
-									<Size x="14" y ="14"/>
-									<Anchors>
-										<Anchor point="CENTER" x="0" y="-1"/>
-									</Anchors>
-								</NormalTexture>
-							</DropDownToggleButton>
-						</Frames>
-					</Frame>
-					<Frame name="$parentRestrictPingsDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="RestrictPingsDropDown">
-						<Size x="150" y="24"/>
+					<Frame parentKey="RestrictPingsLabel">
+						<Size x="1" y="18"/>
 						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Label" inherits="GameFontNormalSmall" text="RAID_MANAGER_RESTRICT_PINGS_TO">
+							<Layer>
+								<FontString parentKey="Label" inherits="GameFontNormal" text="RAID_MANAGER_RESTRICT_PINGS_TO">
 									<Anchors>
-										<Anchor point="LEFT" relativePoint="LEFT" x="25" y="2"/>
+										<Anchor point="LEFT" relativePoint="LEFT" x="0" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>
+					<DropdownButton parentKey="RestrictPingsDropDown" name="$parentRestrictPingsDropDown" inherits="WowStyle1DropdownTemplate"/>
 					<Frame name="parentBottomButtons" parentKey="BottomButtons" hidden="true">
 						<Size x="222" y="40"/>
 						<Frames>

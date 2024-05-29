@@ -344,12 +344,6 @@
 					</Layer>
 				</Layers>
 			</EventFrame>
-			<Frame parentKey="DropDown" hidden="true" inherits="UIDropDownMenuTemplate">
-				<Scripts>
-					<OnLoad function="CommunitiesMemberListDropDown_OnLoad"/>
-					<OnHide function="CommunitiesMemberListDropDown_OnHide"/>
-				</Scripts>
-			</Frame>
 			<Frame parentKey="InsetFrame" useParentLevel="false" inherits="InsetFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-3" y="3"/>
@@ -372,8 +366,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CommunitiesFrameMemberListDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" mixin="CommunitiesFrameMemberListDropDownMenuMixin" virtual="true">
-		<Size x="40" y="28"/>
+	<DropdownButton name="CommunitiesFrameMemberListDropdownTemplate" inherits="WowStyle1DropdownTemplate" mixin="CommunitiesFrameMemberListDropdownMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">
 				<Layers>
@@ -381,7 +374,7 @@
 						<Texture parentKey="UnreadNotificationIcon" atlas="communities-icon-notification">
 							<Size x="11" y="11"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-19" y="-4"/>
+								<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Flash" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight-yellow" setAllPoints="true" alphaMode="ADD">
@@ -404,9 +397,8 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
-	</Frame>
-	
-	<Frame name="GuildMemberListDropDownMenuTemplate" inherits="CommunitiesFrameMemberListDropDownMenuTemplate" mixin="GuildMemberListDropDownMenuMixin" virtual="true"/>
+	</DropdownButton>
 
-	<Frame name="CommunityMemberListDropDownMenuTemplate" inherits="CommunitiesFrameMemberListDropDownMenuTemplate" mixin="CommunityMemberListDropDownMenuMixin" virtual="true"/>
+	<DropdownButton name="GuildMemberListDropdownTemplate" inherits="CommunitiesFrameMemberListDropdownTemplate" mixin="GuildMemberListDropdownMixin" virtual="true"/>
+	<DropdownButton name="CommunityMemberListDropdownTemplate" inherits="CommunitiesFrameMemberListDropdownTemplate" mixin="CommunityMemberListDropdownMixin" virtual="true"/>
 </Ui>

@@ -74,30 +74,14 @@ function ClassTalentsFrameMixin:OnLoad()
 
 	self:UpdateClassVisuals();
 
-	local function ResetButtonDropDown_Initialize()
-		local titleInfo = UIDropDownMenu_CreateInfo();
-		titleInfo.notCheckable = 1;
-		titleInfo.text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_TITLE;
-		titleInfo.isTitle = true;
-		UIDropDownMenu_AddButton(titleInfo);
+	self.ResetButton:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_CLASS_TALENT_FRAME_RESET");
 
-		local DropDownButtonInfo = {
-			{ text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_LEFT, method = self.ResetClassTalents, },
-			{ text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_RIGHT, method = self.ResetSpecTalents, },
-			{ text = TALENT_FRAME_RESET_BUTTON_DROPDOWN_ALL, method = self.ResetTree, },
-		};
-
-		for i, buttonInfo in ipairs(DropDownButtonInfo) do
-			local info = UIDropDownMenu_CreateInfo();
-			info.notCheckable = 1;
-			info.text = buttonInfo.text;
-			info.func = GenerateClosure(buttonInfo.method, self);
-			UIDropDownMenu_AddButton(info);
-		end
-	end
-
-	self.ResetButton:SetDropDown(self.ResetButton.DropDown, ResetButtonDropDown_Initialize, "MENU");
-	self.ResetButton:SetDropDownAnchor("BOTTOMLEFT", "TOPRIGHT");
+		rootDescription:CreateTitle(TALENT_FRAME_RESET_BUTTON_DROPDOWN_TITLE);
+		rootDescription:CreateButton(TALENT_FRAME_RESET_BUTTON_DROPDOWN_LEFT, GenerateClosure(self.ResetClassTalents, self));
+		rootDescription:CreateButton(TALENT_FRAME_RESET_BUTTON_DROPDOWN_RIGHT, GenerateClosure(self.ResetSpecTalents, self));
+		rootDescription:CreateButton(TALENT_FRAME_RESET_BUTTON_DROPDOWN_ALL, GenerateClosure(self.ResetTree, self));
+	end);
 
 	self.ApplyButton:SetOnClickHandler(GenerateClosure(self.ApplyConfig, self));
 	self.ApplyButton:SetOnEnterHandler(GenerateClosure(self.UpdateConfigButtonsState, self));
@@ -111,7 +95,7 @@ function ClassTalentsFrameMixin:OnLoad()
 
 	self.HeroTalentsContainer:Init(self, self.heroSpecSelectionDialog);
 
-	self:InitializeLoadoutDropDown();
+	self:InitializeLoadSystem();
 
 	self:InitializeSearch();
 
@@ -232,8 +216,8 @@ function ClassTalentsFrameMixin:CheckSetSelectedConfigID()
 		return;
 	end
 	
-	local currentSelection = self.LoadoutDropDown:GetSelectionID();
-	if (currentSelection ~= nil) and self.LoadoutDropDown:IsSelectionIDValid(currentSelection) then
+	local currentSelection = self.LoadSystem:GetSelectionID();
+	if (currentSelection ~= nil) and self.LoadSystem:IsSelectionIDValid(currentSelection) then
 		-- Check to see if starter build is the correct selection, as on spec change it's a valid choice but may not be active for the new spec
 		if (currentSelection ~= Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID) then
 			return;
@@ -252,7 +236,7 @@ function ClassTalentsFrameMixin:CheckSetSelectedConfigID()
 
 	-- If the last selected configID has ended up invalid, clear out the saved value
 	-- This can happen due to loadout deletion, or base spec config being saved as last selected, prior to the handling of those being fixed
-	if lastSelectedSavedConfigID and not self.LoadoutDropDown:IsSelectionIDValid(lastSelectedSavedConfigID) then
+	if lastSelectedSavedConfigID and not self.LoadSystem:IsSelectionIDValid(lastSelectedSavedConfigID) then
 		self:ClearLastSelectedConfigID();
 		lastSelectedSavedConfigID = nil;
 	end
@@ -264,7 +248,7 @@ function ClassTalentsFrameMixin:CheckSetSelectedConfigID()
 	elseif lastSelectedSavedConfigID then
 		self:SetSelectedSavedConfigID(lastSelectedSavedConfigID);
 	else
-		self.LoadoutDropDown:ClearSelection();
+		self.LoadSystem:ClearSelection();
 	end
 end
 
@@ -346,7 +330,7 @@ function ClassTalentsFrameMixin:OnEvent(event, ...)
 			if lastSelectedSavedConfigID ~= nil then
 				self:SetSelectedSavedConfigID(lastSelectedSavedConfigID, false, true);
 			else
-				self.LoadoutDropDown:ClearSelection();
+				self.LoadSystem:ClearSelection();
 			end
 		end
 	end
@@ -432,7 +416,7 @@ function ClassTalentsFrameMixin:OnTraitConfigCreateFinished(configID)
 end
 
 function ClassTalentsFrameMixin:ResetToLastConfigID()
-	if self.lastSelectedConfigID and self.LoadoutDropDown:IsSelectionIDValid(self.lastSelectedConfigID) and not self:IsStarterBuildConfig(self.lastSelectedConfigID) then
+	if self.lastSelectedConfigID and self.LoadSystem:IsSelectionIDValid(self.lastSelectedConfigID) and not self:IsStarterBuildConfig(self.lastSelectedConfigID) then
 		-- Have a valid last selected config, reset back to that
 		local autoApply = false;
 		local skipLoad = false;
@@ -451,16 +435,31 @@ function ClassTalentsFrameMixin:ResetToLastConfigID()
 	end
 end
 
-function ClassTalentsFrameMixin:InitializeLoadoutDropDown()
-	self.LoadoutDropDown:SetEnabledCallback(GenerateClosure(self.CanSetDropDownValue, self));
+function ClassTalentsFrameMixin:InitializeLoadSystem()
+	local dropdown = self.LoadSystem:GetDropdown();
+	dropdown:SetWidth(200);
 
-	local loadoutWidth = self.LoadoutDropDown:GetWidth();
-	local loadoutDropDownControl = self.LoadoutDropDown:GetDropDownControl();
-	loadoutDropDownControl:SetDropDownListMinWidth(loadoutWidth+5);
-	loadoutDropDownControl:SetControlWidth(loadoutWidth);
-	loadoutDropDownControl:SetCustomMenuAnchorInfo(-2, 0, "BOTTOMLEFT", "TOPLEFT", loadoutDropDownControl);
-	loadoutDropDownControl:SetNoneSelectedText(TALENT_FRAME_DROP_DOWN_DEFAULT);
-	loadoutDropDownControl:SetNoneSelectedTextColor(0.5, 0.5, 0.5, 1);
+	self.LoadSystem:SetDropdownDefaultText(WrapTextInColor(TALENT_FRAME_DROP_DOWN_DEFAULT, GRAY_FONT_COLOR));
+	
+	local function SelectionEnabledCallback(selectionID, isUserInput)
+		if self:IsCommitInProgress() and (selectionID ~= self.lastSelectedConfigID) then
+			return false;
+		end
+		
+		if self:IsStarterBuildConfig(selectionID) then
+			if not isUserInput and not self:GetIsStarterBuildActive() then
+				return false; -- Cannot auto-select starter build unless already in it, or the player is switching to it
+			end
+		
+			if not self:GetHasStarterBuild() then
+				return false; -- Cannot select Starter Build if it is not available
+			end
+		end
+
+		return true;
+	end
+
+	self.LoadSystem:SetSelectionEnabled(SelectionEnabledCallback);
 
 	self:RefreshLoadoutOptions();
 	self:RefreshConfigID();
@@ -487,7 +486,7 @@ function ClassTalentsFrameMixin:InitializeLoadoutDropDown()
 		return disabled, title, text, warning;
 	end
 
-	self.LoadoutDropDown:SetNewEntryCallbackCustomPopup(NewEntryCallback, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT, ClassTalentLoadoutCreateDialog, NewEntryDisabledCallback);
+	self.LoadSystem:SetNewEntryCallbackCustomPopup(NewEntryCallback, TALENT_FRAME_DROP_DOWN_NEW_LOADOUT, ClassTalentLoadoutCreateDialog, NewEntryDisabledCallback);
 
 	local function EditLoadoutCallback(configID)
 		ClassTalentLoadoutEditDialog:ShowDialog(configID);
@@ -498,7 +497,7 @@ function ClassTalentsFrameMixin:InitializeLoadoutDropDown()
 		return not self:IsStarterBuildConfig(configID);
 	end
 
-	self.LoadoutDropDown:SetEditEntryCallback(EditLoadoutCallback, TALENT_FRAME_DROP_DOWN_TOOLTIP_EDIT, CanEditLoadoutCallback);
+	self.LoadSystem:SetEditEntryCallback(EditLoadoutCallback, TALENT_FRAME_DROP_DOWN_TOOLTIP_EDIT, CanEditLoadoutCallback);
 
 	local function ImportCallback()
 		ClassTalentLoadoutImportDialog:ShowDialog();
@@ -536,45 +535,48 @@ function ClassTalentsFrameMixin:InitializeLoadoutDropDown()
 
 	local importSentinelInfo = {
 		text = TALENT_FRAME_DROP_DOWN_IMPORT,
-		colorCode = WHITE_FONT_COLOR_CODE,
+		color = WHITE_FONT_COLOR,
 		callback = ImportCallback,
 		disabledCallback = ImportDisabledCallback,
 	};
 
-	self.LoadoutDropDown:AddSentinelValue(importSentinelInfo);
+	self.LoadSystem:AddSentinelValue(importSentinelInfo);
 
 	local copyToClipboardSentinelInfo = {
 		text = TALENT_FRAME_DROP_DOWN_EXPORT_CLIPBOARD,
-		colorCode = WHITE_FONT_COLOR_CODE,
+		color = WHITE_FONT_COLOR,
 		callback = ClipboardExportCallback,
 		disabledCallback = ExportDisabledCallback,
 	};
 
 	local chatLinkSentinelInfo = {
 		text = TALENT_FRAME_DROP_DOWN_EXPORT_CHAT_LINK,
-		colorCode = WHITE_FONT_COLOR_CODE,
+		color = WHITE_FONT_COLOR,
 		callback = ChatLinkCallback,
 		disabledCallback = ExportDisabledCallback,
 	};
 
 	local exportSentinelListInfo = {
 		text = TALENT_FRAME_DROP_DOWN_EXPORT,
-		colorCode = WHITE_FONT_COLOR_CODE,
-		sentinelKeyInfos = {
+		color = WHITE_FONT_COLOR,
+		sentinelInfos = {
 			copyToClipboardSentinelInfo,
 			chatLinkSentinelInfo,
 		},
 		disabledCallback = ExportDisabledCallback,
 	};
-	self.LoadoutDropDown:AddSentinelSubDropDown(exportSentinelListInfo);
+	self.LoadSystem:AddSentinelValue(exportSentinelListInfo);
 
 	local function LoadConfiguration(configID, isUserInput)
-		if isUserInput then
+		if not isUserInput then
+			return;
+		end
+
 			local function CancelLoadConfiguration()
 				if self.lastSelectedConfigID then
-					self.LoadoutDropDown:SetSelectionID(self.lastSelectedConfigID);
+				self.LoadSystem:SetSelectionID(self.lastSelectedConfigID);
 				else
-					self.LoadoutDropDown:ClearSelection();
+				self.LoadSystem:ClearSelection();
 				end
 			end
 
@@ -600,9 +602,8 @@ function ClassTalentsFrameMixin:InitializeLoadoutDropDown()
 
 			self:GetParent():CheckConfirmResetAction(ConfirmFinishLoadConfiguration, CancelLoadConfiguration);
 		end
-	end
 
-	self.LoadoutDropDown:SetLoadCallback(LoadConfiguration);
+	self.LoadSystem:SetLoadCallback(LoadConfiguration);
 end
 
 function ClassTalentsFrameMixin:CheckUpdateLastSelectedConfigID(configID)
@@ -628,7 +629,7 @@ function ClassTalentsFrameMixin:ClearLastSelectedConfigID()
 	if currentSpecID then
 		C_ClassTalents.UpdateLastSelectedSavedConfigID(currentSpecID, nil);
 	end
-	self.LoadoutDropDown:ClearSelection();
+	self.LoadSystem:ClearSelection();
 end
 
 function ClassTalentsFrameMixin:RefreshGates()
@@ -773,10 +774,10 @@ function ClassTalentsFrameMixin:RefreshLoadoutOptions()
 		end
 	end
 
-	self.LoadoutDropDown:SetSelectionOptions(self.configIDs, SelectionNameTranslation, NORMAL_FONT_COLOR, SelectionTooltipTranslation);
+	self.LoadSystem:SetSelectionOptions(self.configIDs, SelectionNameTranslation, NORMAL_FONT_COLOR, SelectionTooltipTranslation);
 
 	if #self.configIDs == 0 then
-		self.LoadoutDropDown:ClearSelection();
+		self.LoadSystem:ClearSelection();
 	end
 end
 
@@ -791,7 +792,9 @@ function ClassTalentsFrameMixin:ResetSpecTalents()
 end
 
 function ClassTalentsFrameMixin:ResetTree()
-	self:AttemptConfigOperation(C_Traits.ResetTree, self:GetTalentTreeID());
+	-- Intentionally not using C_Traits.ResetTree so that Hero Talents are not reset.
+	self:ResetClassTalents();
+	self:ResetSpecTalents();
 end
 
 function ClassTalentsFrameMixin:LoadTalentTreeInternal()
@@ -806,12 +809,12 @@ function ClassTalentsFrameMixin:LoadTalentTreeInternal()
 end
 
 function ClassTalentsFrameMixin:SetSelectedSavedConfigID(configID, autoApply, skipLoad, forceSkipAnimation)
-	local previousSelection = self.LoadoutDropDown:GetSelectionID();
+	local previousSelection = self.LoadSystem:GetSelectionID();
 	if previousSelection == configID then
 		return;
 	end
 
-	self.LoadoutDropDown:SetSelectionID(configID);
+	self.LoadSystem:SetSelectionID(configID);
 
 	if not skipLoad then
 		local skipAnimation = forceSkipAnimation or (previousSelection == nil);
@@ -1085,7 +1088,7 @@ function ClassTalentsFrameMixin:ApplyConfig()
 		self.isConfigReadyToApply = false;
 		self:CommitConfig();
 	else
-		local selectedConfig = self.LoadoutDropDown:GetSelectionID();
+		local selectedConfig = self.LoadSystem:GetSelectionID();
 		if selectedConfig and not self:IsStarterBuildConfig(selectedConfig) then
 			-- Selected config is a loadout, save to that config
 			self.isConfigReadyToApply = not C_ClassTalents.SaveConfig(selectedConfig);
@@ -1100,7 +1103,7 @@ end
 function ClassTalentsFrameMixin:CommitConfigInternal()
 	-- Overrides TalentFrameBaseMixin.
 
-	local selectedConfigID = self.LoadoutDropDown:GetSelectionID();
+	local selectedConfigID = self.LoadSystem:GetSelectionID();
 
 	return C_ClassTalents.CommitConfig(selectedConfigID);
 end
@@ -1128,7 +1131,7 @@ function ClassTalentsFrameMixin:PurchaseRank(nodeID)
 			-- Player is deviating from the Starter Build, so need to unflag them as using it
 			-- Unflagging resets any pending changes though, so we have to wait until they commit all their changes to unflag safely
 			self.unflagStarterBuildAfterNextCommit = true;
-			self.LoadoutDropDown:ClearSelection();
+			self.LoadSystem:ClearSelection();
 			TalentFrameBaseMixin.PurchaseRank(self, nodeID);
 		end
 		self:CheckConfirmStarterBuildDeviation(FinishPurchase);
@@ -1153,7 +1156,7 @@ function ClassTalentsFrameMixin:SetSelection(nodeID, entryID, oldEntryID)
 			-- Player is deviating from the Starter Build, so need to unflag them as using it
 			-- Unflagging resets any pending changes though, so we have to wait until they commit all their changes to unflag safely
 			self.unflagStarterBuildAfterNextCommit = true;
-			self.LoadoutDropDown:ClearSelection();
+			self.LoadSystem:ClearSelection();
 			self:AttemptConfigOperation(C_Traits.SetSelection, nodeID, entryID, shouldClearEdges);
 		end
 		local function CancelSelect()
@@ -1254,7 +1257,8 @@ function ClassTalentsFrameMixin:UpdateConfigButtonsState()
 	self.UndoButton:SetShown(shouldShowUndo);
 	self.ResetButton:SetShown(not shouldShowUndo);
 	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks() and not self:IsCommitInProgress());
-	self.LoadoutDropDown:SetEnabledState(not self:IsCommitInProgress());
+
+	self.LoadSystem:SetEnabledState(not self:IsCommitInProgress());
 
 	self:UpdatePendingChangeState(isAnythingPending);
 end
@@ -1282,38 +1286,6 @@ function ClassTalentsFrameMixin:HasAnyPurchasedRanks()
 	end
 
 	return false;
-end
-
-function ClassTalentsFrameMixin:CanSetDropDownValue(selectedValue, isUserInput)
-	if self:IsCommitInProgress() and (selectedValue ~= self.lastSelectedConfigID) then
-		return false;
-	end
-
-	if selectedValue == nil then
-		return true; -- The dropdown can always be cleared.
-	end
-
-	if self:IsStarterBuildConfig(selectedValue) then
-		if not isUserInput and not self:GetIsStarterBuildActive() then
-			return false; -- Cannot auto-select starter build unless already in it, or the player is switching to it
-		end
-
-		if not self:GetHasStarterBuild() then
-			return false; -- Cannot select Starter Build if it is not available
-		end
-	end
-
-	local currentSelectionID = self.LoadoutDropDown:GetSelectionID();
-	if (currentSelectionID == nil) or not self.LoadoutDropDown:IsSelectionIDValid(currentSelectionID) then
-		return true; -- The dropdown can always be initialized if the current selection is invalid.
-	end
-
-	local sentinelKey = self.LoadoutDropDown:GetSentinelKeyInfoFromSelectionID(selectedValue);
-	if sentinelKey ~= nil then
-		return true; -- new/import/export always enabled
-	end
-
-	return self.LoadoutDropDown:IsSelectionIDValid(selectedValue);
 end
 
 function ClassTalentsFrameMixin:HasAnyRefundInvalidNodes()
@@ -1347,7 +1319,7 @@ function ClassTalentsFrameMixin:UpdateInspecting()
 		self.ResetButton,
 		self.UndoButton,
 		self.WarmodeButton,
-		self.LoadoutDropDown,
+		self.LoadSystem,
 	};
 
 	local isInspecting = self:IsInspecting();
@@ -1364,7 +1336,7 @@ function ClassTalentsFrameMixin:UpdateInspecting()
 	if isInspecting then
 		self.SearchBox:SetPoint("BOTTOMLEFT", 53, 27);
 	else
-		self.SearchBox:SetPoint("LEFT", self.LoadoutDropDown, "RIGHT", 20, 0);
+		self.SearchBox:SetPoint("LEFT", self.LoadSystem, "RIGHT", 20, 0);
 	end
 
 	self:RefreshCurrencyDisplay();

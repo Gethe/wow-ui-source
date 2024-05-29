@@ -707,6 +707,7 @@ local LFGListInfo =
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
 				{ Name = "crossFactionListing", Type = "bool", Nilable = true },
 				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
+				{ Name = "partyGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

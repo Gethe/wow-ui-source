@@ -341,6 +341,7 @@ ContentTrackingTypesDocumentation.lua
 CurrencyConstantsDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
+DelvesConstantsDocumentation.lua
 EditModeManagerSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua

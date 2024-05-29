@@ -12,7 +12,7 @@ local function Register()
     Settings.AssignTutorialToCategory(category, tooltip, PingSystemTutorialCallback);
 
     -- Enable Pings
-    local enablePingsSetting, enablePingsInitializer = Settings.SetupCVarCheckBox(category, "enablePings", ENABLE_PINGS, OPTION_TOOLTIP_ENABLE_PINGS);
+    local enablePingsSetting, enablePingsInitializer = Settings.SetupCVarCheckbox(category, "enablePings", ENABLE_PINGS, OPTION_TOOLTIP_ENABLE_PINGS);
 
     local function CanModifyPingSettings()
         return enablePingsSetting:GetValue();
@@ -28,7 +28,7 @@ local function Register()
         end
 
         local setting = Settings.RegisterCVarSetting(category, "pingMode", Settings.VarType.Number, PING_MODE);
-        local initializer = Settings.CreateDropDown(category, setting, GetOptions, OPTION_TOOLTIP_PING_MODE);
+        local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_PING_MODE);
         initializer:SetParentInitializer(enablePingsInitializer, CanModifyPingSettings);
 	end
 

@@ -294,7 +294,7 @@ function EditModeSystemSettingsDialogMixin:OnLoad()
 	self.pools:CreatePool("FRAME", self.Settings, "EditModeSettingCheckboxTemplate");
 
 	local function resetExtraButton(pool, button)
-		FramePool_HideAndClearAnchors(pool, button);
+		Pool_HideAndClearAnchors(pool, button);
 		button:Enable();
 	end
 	self.pools:CreatePool("BUTTON", self.Buttons, "EditModeSystemSettingsDialogExtraButtonTemplate", resetExtraButton);

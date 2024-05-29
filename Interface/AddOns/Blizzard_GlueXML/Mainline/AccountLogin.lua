@@ -6,6 +6,8 @@ local function ShouldShowRegulationOverlay()
 	return SHOW_KOREAN_RATINGS or (SHOW_CHINA_AGE_APPROPRIATENESS_WARNING and not C_Login.WasEverLauncherLogin());
 end
 
+local selectedSavedAccount = nil;
+
 AccountLoginEditBoxBehaviorMixin = {}
 
 function AccountLoginEditBoxBehaviorMixin:OnKeyDown(key)
@@ -30,6 +32,11 @@ function AccountLogin_OnLoad(self)
 	self.UI.BlizzDisclaimer:SetText(BLIZZ_DISCLAIMER_FORMAT:format(year));
 
 	self.UI.MenuButton:SetScript("OnClick", GenerateFlatClosure(GlueMenuFrameUtil.ShowMenu));
+
+	local defaultText = nil;
+	self.UI.AccountsDropdown:SetWidth(234);
+
+	AccountLoginDropDown_SetupList();
 end
 
 function AccountLogin_OnEvent(self, event, ...)
@@ -120,13 +127,17 @@ function AccountLogin_Update()
 	end
 
 	if (GetSavedAccountName() ~= "" and GetSavedAccountList() ~= "" and not isReconnectMode) then
-		AccountLogin.UI.PasswordEditBox:SetPoint("TOP", AccountLogin.UI.AccountsDropDown, "BOTTOM", 0, -30);
-		AccountLogin.UI.AccountsDropDown:SetShown(showButtonsAndStuff);
+		AccountLogin.UI.PasswordEditBox:SetPoint("TOP", AccountLogin.UI.AccountsDropdown, "BOTTOM", 0, -30);
+		AccountLogin.UI.AccountsDropdown:SetShown(showButtonsAndStuff);
+
+		if showButtonsAndStuff then
+			-- Account list information may have changed so we need to regenerate the menu.
+			AccountLogin.UI.AccountsDropdown:GenerateMenu();
+		end
 	else
 		AccountLogin.UI.PasswordEditBox:SetPoint("TOP", AccountLogin.UI.AccountEditBox, "BOTTOM", 0, -30);
-		AccountLogin.UI.AccountsDropDown:Hide();
+		AccountLogin.UI.AccountsDropdown:Hide();
 	end
-
 end
 
 function AccountLogin_UpdateSavedData(self)
@@ -171,8 +182,9 @@ function AccountLogin_Login()
 	else
 		local username = AccountLogin.UI.AccountEditBox:GetText();
 		C_Login.Login(string.gsub(username, "||", "|"), AccountLogin.UI.PasswordEditBox);
-		if ( AccountLoginDropDown:IsShown() ) then
-			C_Login.SelectGameAccount(UIDropDownMenu_GetSelectedValue(AccountLoginDropDown));
+		if ( AccountLogin.UI.AccountsDropdown:IsShown() ) then
+			local accountStr = AccountLogin_GetPendingSavedAccountString();
+			C_Login.SelectGameAccount(accountStr);
 		end
 	end
 
@@ -324,40 +336,58 @@ end
 -- Accounts dropdown
 -- =============================================================
 
-function AccountLoginDropDown_OnLoad(self)
-	UIDropDownMenu_SetWidth(self, 174);
-	UIDropDownMenu_SetSelectedValue(self, 1);
-	UIDropDownMenu_JustifyText(self, "LEFT")
-	AccountLoginDropDown_SetupList();
-	UIDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
-end
-
-function AccountLoginDropDown_OnClick(self)
-	UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, self.value);
-end
-
-function AccountLoginDropDown_Initialize()
-	local selectedValue = UIDropDownMenu_GetSelectedValue(AccountLoginDropDown);
-	local list = AccountLoginDropDown.list;
-	for i = 1, #list do
-		list[i].checked = (list[i].text == selectedValue);
-		UIDropDownMenu_AddButton(list[i]);
+function AccountLogin_FindSelectedSavedAccount(accounts)
+	if #accounts > 0 then
+		local account = FindValueInTableIf(accounts, function(account)
+			return account.selected;
+		end);
+		return account;
 	end
 end
 
-function AccountLoginDropDown_SetupList()
-	AccountLoginDropDown.list = {};
-	local i = 1;
+function AccountLogin_GetSavedAccountList()
+	local accounts = {};
+
 	for str in string.gmatch(GetSavedAccountList(), "([%w!]+)|?") do
-		local selected = false;
-		if ( strsub(str, 1, 1) == "!" ) then
-			selected = true;
+		local selected = strsub(str, 1, 1) == "!";
+		if selected then
 			str = strsub(str, 2, #str);
-			UIDropDownMenu_SetSelectedValue(AccountLoginDropDown, str);
-			UIDropDownMenu_SetText(AccountLoginDropDown, str);
 		end
-		AccountLoginDropDown.list[i] = { ["text"] = str, ["value"] = str, ["selected"] = selected, func = AccountLoginDropDown_OnClick };
-		i = i + 1;
+
+		table.insert(accounts, {str = str, selected = selected});
+	end
+
+	return accounts;
+end
+
+function AccountLogin_GetPendingSavedAccountString()
+	return selectedSavedAccount.str;
+end
+
+local function AccountLogin_SetPendingSavedAccount(account)
+	selectedSavedAccount = account;
+end
+
+do
+	local function IsSelected(account)
+		return account.selected;
+	end
+
+	local function SetSelected(account)
+		AccountLogin_SetPendingSavedAccount(account);
+	end
+	
+	function AccountLoginDropDown_SetupList()
+		local accounts = AccountLogin_GetSavedAccountList();
+		selectedSavedAccount = AccountLogin_FindSelectedSavedAccount(accounts);
+	
+		AccountLogin.UI.AccountsDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_ACCOUNT_LOGIN");
+
+			for index, account in ipairs(AccountLogin_GetSavedAccountList()) do
+				rootDescription:CreateRadio(account.str, IsSelected, SetSelected, account);
+			end
+		end);
 	end
 end
 
@@ -526,15 +556,26 @@ function KoreanRatingsMixin:OnUpdate(elapsed)
 	KOREAN_RATINGS_AUTO_CLOSE_TIMER = KOREAN_RATINGS_AUTO_CLOSE_TIMER - elapsed;
 	if ( KOREAN_RATINGS_AUTO_CLOSE_TIMER <= 0 ) then
 		SHOW_KOREAN_RATINGS = false;
-		AccountLogin_Update();
-		AccountLogin_CheckAutoLogin();
+
+		if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
+			KoreanRatings:Hide();
+			PhotosensitivityWarningFrame:TryShow();
+		else
+			AccountLogin_Update();
+			AccountLogin_CheckAutoLogin();
+		end
 	end
 end
 
 function ChinaAgeAppropriatenessWarning_Close()
 	SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = false;
-	AccountLogin_Update();
-	AccountLogin_CheckAutoLogin();
+	if PhotosensitivityWarningFrame:GetLockedByOtherWarning() then
+		ChinaAgeAppropriatenessWarning:Hide();
+		PhotosensitivityWarningFrame:TryShow();
+	else
+		AccountLogin_Update();
+		AccountLogin_CheckAutoLogin();
+	end
 end
 
 SaveAccountNameCheckButton = {};
@@ -553,6 +594,8 @@ function SaveAccountNameCheckButton:OnLoad()
 			AccountLogin_UpdateSavedData(AccountLogin);
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		end
+
+		AccountLogin_Update();
 	end
 
 	self:SetCallback(OnBoxToggled);

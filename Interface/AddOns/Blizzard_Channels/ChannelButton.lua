@@ -15,7 +15,7 @@ function ChannelButtonBaseMixin:GetChannelList()
 end
 
 function ChannelButtonBaseMixin:Reset(pool)
-	FramePool_HideAndClearAnchors(pool, self);
+	Pool_HideAndClearAnchors(pool, self);
 	self:Enable();
 end
 

@@ -55,7 +55,6 @@ function AchievementObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			ChatEdit_InsertLink(achievementLink);
 		end
 	elseif mouseButton ~= "RightButton" then
-		CloseDropDownMenus();
 		if not AchievementFrame then
 			AchievementFrame_LoadUI();
 		end
@@ -72,33 +71,19 @@ function AchievementObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			end
 		end
 	else
-		self:ToggleDropDown(block);
+		MenuUtil.CreateContextMenu(self:GetContextMenuParent(), function(owner, rootDescription)
+			rootDescription:SetTag("MENU_ACHIEVEMENT_TRACKER", block);
+
+			local _, achievementName = GetAchievementInfo(block.id);
+			rootDescription:CreateTitle(achievementName);
+			rootDescription:CreateButton(OBJECTIVES_VIEW_ACHIEVEMENT, function()
+				OpenAchievementFrameToAchievement(block.id);
+			end);
+			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+				self:UntrackAchievement(block.id);
+			end);
+		end);
 	end
-end
-
-function AchievementObjectiveTrackerMixin:InitDropDown(block)
-	local _, achievementName, _, completed, _, _, _, _, _, icon = GetAchievementInfo(block.id);
-
-	local info = UIDropDownMenu_CreateInfo();
-	info.text = achievementName;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = 1;
-
-	info.text = OBJECTIVES_VIEW_ACHIEVEMENT;
-	info.func = function() OpenAchievementFrameToAchievement(block.id); end;
-	info.arg1 = block.id;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	info.text = OBJECTIVES_STOP_TRACKING;
-	info.func = function() self:UntrackAchievement(block.id); end;
-	info.arg1 = block.id;
-	info.checked = false;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 end
 
 function AchievementObjectiveTrackerMixin:UntrackAchievement(achievementID)

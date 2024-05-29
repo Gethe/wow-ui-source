@@ -240,19 +240,12 @@
 						</Scripts>
 					</CheckButton>
 
-					<Frame name="GarrisonRecruiterFramePickThreatDropDown" parentKey="ThreatDropDown" inherits="UIDropDownMenuTemplate">
+					<DropdownButton parentKey="ThreatDropdown" inherits="WowStyle1DropdownTemplate">
 						<Size x="223" y="32"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Line2" relativePoint="BOTTOM" x="0" y="-12"/>
 						</Anchors>
-						<Scripts>
-							<OnShow>
-								UIDropDownMenu_SetWidth(self, 207);
-								UIDropDownMenu_JustifyText(self, "LEFT");
-								UIDropDownMenu_Initialize(self, GarrisonRecruiterFrame_Init);
-							</OnShow>
-						</Scripts>
-					</Frame>
+					</DropdownButton>
 
 					<Frame parentKey="Counter" inherits="GarrisonAbilityCounterTemplate">
 						<Anchors>
@@ -264,14 +257,14 @@
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="8" y="0"/>
 										<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="1"/>
-										<Anchor point="RIGHT" relativeTo="GarrisonRecruiterFramePickThreatDropDown" relativePoint="RIGHT"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.ThreatDropdown" relativePoint="RIGHT"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" wordwrap="true">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-6" y="-6"/>
 										<Anchor point="BOTTOM" x="0" y="-80"/>
-										<Anchor point="RIGHT" relativeTo="GarrisonRecruiterFramePickThreatDropDown" x="-8" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.ThreatDropdown" x="-8" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>

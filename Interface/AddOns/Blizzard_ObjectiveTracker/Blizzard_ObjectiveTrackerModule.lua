@@ -74,7 +74,7 @@ function ObjectiveTrackerModuleMixin:SetContainer(container)
 		self:InitModule();
 	end
 end
-	
+
 function ObjectiveTrackerModuleMixin:InitModule()
 	-- override in your mixin, called the first time the module is added to a container
 end
@@ -456,8 +456,8 @@ function ObjectiveTrackerModuleMixin:IsCollapsed()
 	return self.isCollapsed;
 end
 
-function ObjectiveTrackerModuleMixin:ToggleDropDown(block)
-	ObjectiveTrackerManager:ToggleDropDown(self, block, GenerateClosure(self.InitDropDown, self, block));
+function ObjectiveTrackerModuleMixin:GetContextMenuParent()
+	return ObjectiveTrackerManager:GetContainerForModule(self);
 end
 
 function ObjectiveTrackerModuleMixin:GetTimerBar(key)

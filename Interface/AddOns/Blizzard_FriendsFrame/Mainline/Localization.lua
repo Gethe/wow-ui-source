@@ -14,17 +14,17 @@ local function LocalizeFriendsFrame_zh()
 end
 
 local function AdjustFriendsFrameDropdown_132()
-	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 132);
+	FriendsFriendsFrameDropDown:SetWidth(132);
 end
 
 local function AdjustFriendsFrameDropdown_136()
-	UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 136);
+	FriendsFriendsFrameDropDown:SetWidth(136);
 end
 
 local l10nTable = {
 	deDE = {
 		localizeFrames = function()
-			UIDropDownMenu_SetWidth(FriendsFriendsFrameDropDown, 146);
+			FriendsFriendsFrameDropDown:SetWidth(146);
 		end
 	},
 	enGB = {},

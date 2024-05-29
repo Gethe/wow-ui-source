@@ -1450,7 +1450,7 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 }
 
 function ChatUnitColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	info.r, info.g, info.b = GetChatUnitColor(self.type);
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.chatUnitColorSwatch;
@@ -1459,7 +1459,7 @@ function ChatUnitColor_OpenColorPicker(self)
 end
 
 function SpellColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorSwatch;
@@ -1468,7 +1468,7 @@ function SpellColor_OpenColorPicker(self)
 end
 
 function DamageColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
 	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorSwatch;
@@ -1477,7 +1477,7 @@ function DamageColor_OpenColorPicker(self)
 end
 
 function MessageTypeColor_OpenColorPicker(self)
-	local info = UIDropDownMenu_CreateInfo();
+	local info = {};
 	local messageTypeTable;
 	info.r, info.g, info.b, messageTypeTable = GetMessageTypeColor(self.type);
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;

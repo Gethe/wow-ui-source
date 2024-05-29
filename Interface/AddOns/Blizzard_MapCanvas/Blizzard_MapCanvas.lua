@@ -141,7 +141,7 @@ end
 
 do
 	local function OnPinReleased(pinPool, pin)
-		FramePool_HideAndClearAnchors(pinPool, pin);
+		Pool_HideAndClearAnchors(pinPool, pin);
 		pin:OnReleased();
 
 		pin.pinTemplate = nil;
