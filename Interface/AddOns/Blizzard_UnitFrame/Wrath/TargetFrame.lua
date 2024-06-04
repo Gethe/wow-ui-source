@@ -66,14 +66,19 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		portraitFrame = _G[thisName.."Portrait"];
 	end
 
+	local healthBar = self.HealthBar;
+	local manaBar = self.PowerBar;
 	UnitFrame_Initialize(self, unit, self.textureFrame.Name, portraitFrame,
-						self.HealthBar, self.textureFrame.HealthBarText,
-						self.PowerBar, self.textureFrame.ManaBarText,
-	                     threatFrame, "player", _G[thisName.."NumericalThreat"],
-						 nil, nil,
-						 nil, nil, nil,
-						 nil, nil,
-						 nil, nil);
+						healthBar,
+						self.textureFrame.HealthBarText,
+						manaBar,
+						self.textureFrame.ManaBarText,
+	                    threatFrame, "player", _G[thisName.."NumericalThreat"],
+						healthBar.MyHealPredictionBar,
+						healthBar.OtherHealPredictionBar,
+						nil, nil, nil,
+						nil, nil,
+						nil, nil);
 
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");

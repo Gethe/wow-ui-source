@@ -5,8 +5,11 @@
 ## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: vanilla
+Vanilla\PredictiveHealing.lua
+StatusBarOverlaySegment.lua
+StatusBarOverlaySegment.xml
 Classic\UnitFrame.lua
-Classic\UnitFrame.xml
+UnitFrame.xml
 Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
 Classic\PartyFrameTemplates.xml

@@ -6,18 +6,30 @@ function PlayerFrame_OnLoad(self)
 	PlayerFrameManaBar.LeftText = PlayerFrameManaBarTextLeft;
 	PlayerFrameManaBar.RightText = PlayerFrameManaBarTextRight;
 
+	local healthBar = PlayerFrame_GetHealthBar();
+	local manaBar = PlayerFrame_GetManaBar();
 	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
-						 PlayerFrameHealthBar, PlayerFrameHealthBarText,
-						 PlayerFrameManaBar, PlayerFrameManaBarText,
+						 healthBar,
+						 healthBar.HealthBarText,
+						 manaBar,
+						 manaBar.ManaBarText,
 						 nil, nil, nil,
-						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar,
-						 PlayerFrameTotalAbsorbBar, PlayerFrameTotalAbsorbBarOverlay, PlayerFrameOverAbsorbGlow,
-						 PlayerFrameOverHealAbsorbGlow, PlayerFrameHealAbsorbBar, PlayerFrameHealAbsorbBarLeftShadow,
-						 PlayerFrameHealAbsorbBarRightShadow, PlayerFrameManaCostPredictionBar);
+						 healthBar.MyHealPredictionBar,
+						 healthBar.OtherHealPredictionBar,
+						 healthBar.TotalAbsorbBar,
+						 healthBar.TotalAbsorbBarOverlay,
+						 healthBar.OverAbsorbGlow,
+						 healthBar.OverHealAbsorbGlow,
+						 healthBar.HealAbsorbBar,
+						 healthBar.HealAbsorbBarLeftShadow,
+						 healthBar.HealAbsorbBarRightShadow,
+						 manaBar.ManaCostPredictionBar);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;
+
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
+
 	PlayerFrame_Update();
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_FACTION");
@@ -52,9 +64,23 @@ function PlayerFrame_OnLoad(self)
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
 	end
+
 	UIParent_UpdateTopFramePositions();
 	SecureUnitButton_OnLoad(self, "player", showmenu);
 end
+
+--
+-- Helper functions to access frequently needed UI.
+--
+
+function PlayerFrame_GetHealthBar()
+	return PlayerFrame.HealthBar;
+end
+
+function PlayerFrame_GetManaBar()
+	return PlayerFrame.ManaBar;
+end
+
 
 --This is overwritten in LocalizationPost for different languages.
 function PlayerFrame_UpdateLevelTextAnchor(level)

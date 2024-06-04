@@ -74,15 +74,19 @@ function PartyMemberFrame_OnLoad (self)
 	self.numDebuffs = 0;
 	self.noTextPrefix = true;
 	local prefix = "PartyMemberFrame"..id;
-	_G[prefix.."HealthBar"].LeftText = _G[prefix.."HealthBarTextLeft"];
-	_G[prefix.."HealthBar"].RightText = _G[prefix.."HealthBarTextRight"];
-	_G[prefix.."ManaBar"].LeftText = _G[prefix.."ManaBarTextLeft"];
-	_G[prefix.."ManaBar"].RightText = _G[prefix.."ManaBarTextRight"];
+	self.HealthBar.LeftText = _G[prefix.."HealthBarTextLeft"];
+	self.HealthBar.RightText = _G[prefix.."HealthBarTextRight"];
+	self.ManaBar.LeftText = _G[prefix.."ManaBarTextLeft"];
+	self.ManaBar.RightText = _G[prefix.."ManaBarTextRight"];
 
 	UnitFrame_Initialize(self, self.unitToken,  _G[prefix.."Name"], _G[prefix.."Portrait"],
-		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
-		   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
-		   _G[prefix.."Flash"], nil, nil, nil, nil, 
+		   self.HealthBar,
+		   _G[prefix.."HealthBarText"],
+		   self.ManaBar,
+		   _G[prefix.."ManaBarText"],
+		   _G[prefix.."Flash"], nil, nil,
+		   self.HealthBar.MyHealPredictionBar,
+		   self.HealthBar.OtherHealPredictionBar,
 		   nil, nil, nil,
 		   nil, nil, nil,
 		   nil);

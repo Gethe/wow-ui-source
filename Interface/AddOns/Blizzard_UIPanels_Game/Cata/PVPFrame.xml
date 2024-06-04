@@ -1069,7 +1069,7 @@
 							</Anchors>
 							<Layers>
 								<Layer level="BACKGROUND">
-									<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="PVP_LABEL_ARENA">
+									<FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="PVP_CONQUEST">
 										<Anchors>
 											<Anchor point="LEFT" relativeTo="$parent">
 												<Offset>
