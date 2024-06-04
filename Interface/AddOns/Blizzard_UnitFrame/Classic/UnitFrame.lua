@@ -84,12 +84,6 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
 	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
-	if ( self.myHealPredictionBar ) then
-		self.myHealPredictionBar:ClearAllPoints();
-	end
-	if ( self.otherHealPredictionBar ) then
-		self.otherHealPredictionBar:ClearAllPoints();
-	end
 	if ( self.totalAbsorbBar ) then
 		self.totalAbsorbBar:ClearAllPoints();
 	end
@@ -253,6 +247,26 @@ end
 local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
 function UnitFrameHealPredictionBars_Update(frame)
 	if ( not frame.myHealPredictionBar and not frame.otherHealPredictionBar and not frame.healAbsorbBar and not frame.totalAbsorbBar ) then
+		return;
+	end
+
+	if (not UnitFrame_IsHealPredictionEnabled()) then
+		if (frame.myHealPredictionBar) then
+			frame.myHealPredictionBar:Hide();
+		end
+
+		if (frame.otherHealPredictionBar) then
+			frame.otherHealPredictionBar:Hide();
+		end
+
+		if (frame.healAbsorbBar) then
+			frame.healAbsorbBar:Hide();
+		end
+
+		if (frame.totalAbsorbBar) then
+			frame.totalAbsorbBar:Hide();
+		end
+
 		return;
 	end
 

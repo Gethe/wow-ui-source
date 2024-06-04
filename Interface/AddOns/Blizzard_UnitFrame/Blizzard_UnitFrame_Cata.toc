@@ -5,9 +5,12 @@
 ## SuppressLocalTableRef: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: cata
+Cata\PredictiveHealing.lua
 Cata\UnitPowerBarAlt.xml
+StatusBarOverlaySegment.lua
+StatusBarOverlaySegment.xml
 Classic\UnitFrame.lua
-Classic\UnitFrame.xml
+UnitFrame.xml
 Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
 Wrath\AlternatePowerBar.lua

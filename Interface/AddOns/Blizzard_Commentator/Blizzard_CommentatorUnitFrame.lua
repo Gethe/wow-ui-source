@@ -1,5 +1,13 @@
 LOSS_OF_CONTROL_ACTIVE_INDEX = 1;
 
+CooldownCircleTrackerMixin = {};
+
+function CooldownCircleTrackerMixin:OnLoad()
+	local seconds = 60;
+	self.Cooldown:SetCountdownAbbrevThreshold(seconds);
+	self.Cooldown:SetSwipeColor(0, 0, 0, .7);
+end
+
 CommentatorUnitFrameMixin = {};
 
 local CommentatorUnitFrameEvents =
@@ -37,6 +45,7 @@ function CommentatorUnitFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CommentatorUnitFrameEvents);
 
 	self:UpdateCCRemover();
+	self:UpdateRacialAbilityTracker();
 end
 
 function CommentatorUnitFrameMixin:OnHide()
@@ -57,6 +66,7 @@ function CommentatorUnitFrameMixin:SetAlignment(alignment)
 			{region = self.Role},
 			{region = self.Circle},
 			{region = self.CCRemover},
+			{region = self.RacialAbilityTracker},
 			{region = self.Name},
 			{region = self.DefensiveSpellTray},
 			{region = self.DebuffSpellTray},
@@ -125,6 +135,7 @@ function CommentatorUnitFrameMixin:OnEvent(event, ...)
 		local unitToken = ...;
 		if unitToken == self.unitToken then
 			self:UpdateCCRemover();
+			self:UpdateRacialAbilityTracker();
 			self:InitSpells();
 		end
 	elseif event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" then
@@ -431,6 +442,64 @@ function CommentatorUnitFrameMixin:UpdateCCRemover()
 			C_PvP.RequestCrowdControlSpell(self.unitToken);
 		end
 	end
+end
+
+function CommentatorUnitFrameMixin:SetRacialAbilityTrackerIcon(spellID)
+	self.RacialAbilityTracker:SetShown(spellID > 0);
+
+	if spellID ~= circleTracker.Icon.spellID then
+		local textureID = select(3, GetSpellInfo(spellID));
+		local icon = circleTracker.Icon;
+		icon.spellID = spellID;
+		icon:SetTexture(textureID);
+	end
+end
+
+function CommentatorUnitFrameMixin:UpdateRacialAbilityTracker()
+	local function GetRacialAbilityInfo(unitToken)
+		local spells = C_Commentator.GetTrackedSpellsByUnit(unitToken, Enum.TrackedSpellCategory.RacialAbility);
+		local primarySpellID = spells and spells[1];
+		if not primarySpellID then
+			return nil, nil, nil;
+		end
+
+		local start, duration = C_Commentator.GetPlayerCooldownInfoByUnit(unitToken, primarySpellID);
+		return primarySpellID, (start or 0) * 1000, (duration or 0) * 1000; -- Adjust to milliseconds
+	end
+
+	self:UpdateCircleTracker(self.RacialAbilityTracker, GetRacialAbilityInfo);
+end
+
+function CommentatorUnitFrameMixin:SetCircleTrackerIcon(circleTracker, spellID)
+	circleTracker:SetShown(spellID > 0);
+
+	if spellID ~= circleTracker.Icon.spellID then
+		local textureID = select(3, GetSpellInfo(spellID));
+		local icon = circleTracker.Icon;
+		icon.spellID = spellID;
+		icon:SetTexture(textureID);
+	end
+end
+
+function CommentatorUnitFrameMixin:UpdateCircleTracker(circleTracker, infoCallback)
+	if self.unitToken then
+		local spellID, startTimeMs, durationMs = infoCallback(self.unitToken);
+		if spellID then
+			self:SetCircleTrackerIcon(circleTracker, spellID);
+
+			if (startTimeMs ~= 0 and durationMs ~= 0) then
+				circleTracker.Cooldown:SetCooldown(startTimeMs / 1000.0, durationMs / 1000.0);
+			else
+				circleTracker.Cooldown:Clear();
+			end
+
+			return true;
+		else
+			return false;
+		end
+	end
+
+	return false;
 end
 
 function CommentatorUnitFrameMixin:UpdateCrowdControlAuras()

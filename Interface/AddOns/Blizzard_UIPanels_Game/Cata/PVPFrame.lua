@@ -297,9 +297,9 @@ function PVPFrame_UpdateCurrency(self)
 
 			local tier1Limit = arenaCurrencyInfo.maxQuantity;
 			local tier2Limit = bgCurrencyInfo.maxQuantity;
-			local tier1Quantity = arenaCurrencyInfo.quantity;
-			local tier2Quantity = bgCurrencyInfo.quantity;
-			local pointsThisWeek = conquestCurrencyInfo.quantity;
+			local tier1Quantity = arenaCurrencyInfo.totalEarned;
+			local tier2Quantity = bgCurrencyInfo.totalEarned;
+			local pointsThisWeek = conquestCurrencyInfo.totalEarned;
 			local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity;
 
 			-- if BG limit is below arena, swap them
@@ -333,7 +333,7 @@ function PVPFrameConquestBar_OnEnter(self)
 	local bgCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_BG_META_CURRENCY_ID);
 	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
 
-	local pointsThisWeek = conquestCurrencyInfo.quantity;
+	local pointsThisWeek = conquestCurrencyInfo.totalEarned;
 	local maxPointsThisWeek = conquestCurrencyInfo.maxQuantity;
 	
 	local r, g, b = 1, 1, 1;
@@ -350,14 +350,14 @@ function PVPFrameConquestBar_OnEnter(self)
 	else
 		r, g, b = 1, 1, 1;
 	end
-	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, bgCurrencyInfo.quantity, r, g, b, r, g, b);	
+	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, bgCurrencyInfo.totalEarned, r, g, b, r, g, b);	
 	
 	if ( capped ) then
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		r, g, b = 1, 1, 1;
 	end
-	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, arenaCurrencyInfo.quantity, r, g, b, r, g, b);
+	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, arenaCurrencyInfo.totalEarned, r, g, b, r, g, b);
 
 	GameTooltip:Show();
 end
@@ -970,7 +970,7 @@ function PVPHonor_Update()
 	local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
 	PVPFrameHonorPoints:SetText(honorCurrencyInfo.quantity);
 
-	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_ARENA_META_CURRENCY_ID);
+	local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
 	PVPFrameArenaPoints:SetText(arenaCurrencyInfo.quantity)	
 	
 	-- Today's values

@@ -888,7 +888,10 @@ function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
 end
 
 function EmbeddedItemTooltip_SetCurrencyByID(self, currencyID, quantity)
-	local name, _, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
+	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+	local name = currencyInfo.name;
+	local texture = currencyInfo.iconFileID;
+	local quality = currencyInfo.quality;
 	if name and texture then
 		self.itemID = nil;
 		self.spellID = nil;
