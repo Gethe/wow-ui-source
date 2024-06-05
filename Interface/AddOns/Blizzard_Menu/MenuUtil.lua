@@ -1,4 +1,35 @@
 local MenuUtilPrivate = {};
+local CreateDropdownMenuUsingInserter = nil;
+local CreateContextMenuUsingInserter = nil;
+
+do
+	local function VariadicInsert(elementDescription, inserter, ...)
+		local arg = ...;
+		if arg == nil then
+			return;
+		end
+
+		elementDescription:Insert(inserter(unpack(arg)));
+		VariadicInsert(elementDescription, inserter, select(2, ...));
+	end
+
+	CreateDropdownMenuUsingInserter = function(dropdown, inserter, ...)
+		local tbl = {...};
+
+		dropdown:SetupMenu(function(dropdown, rootDescription)
+			VariadicInsert(rootDescription, inserter, unpack(tbl));
+		end);
+	end
+
+	CreateContextMenuUsingInserter = function(ownerRegion, inserter, ...)
+		local tbl = {...};
+
+		MenuUtil.CreateContextMenu(ownerRegion, function(ownerRegion, rootDescription)
+			VariadicInsert(rootDescription, inserter, unpack(tbl));
+		end);
+	end
+end
+
 
 MenuUtil = {};
 
@@ -206,26 +237,6 @@ function MenuUtil.CreateSpacer(extent)
 	return MenuTemplates.CreateSpacer(extent);
 end
 
-local function QueueDescription(description, queueDesciption, clearQueue)
-	if clearQueue then
-		description:ClearQueuedDescriptions();
-	end
-	description:AddQueuedDescription(queueDesciption);
-end
-
-function MenuUtil.QueueTitle(description, text, color, clearQueue)
-	QueueDescription(description, MenuUtil.CreateTitle(text, color), clearQueue);
-end
-
-function MenuUtil.QueueDivider(description, clearQueue)
-	QueueDescription(description, MenuUtil.CreateDivider(), clearQueue);
-end
-
-function MenuUtil.QueueSpacer(description, extent, clearQueue)
-	QueueDescription(description, MenuUtil.CreateSpacer(extent), clearQueue);
-end
-
-
 MenuUtilPrivate.Inserters =
 {
 	CreateFrame = MenuUtil.CreateFrame,
@@ -258,71 +269,96 @@ local function SetTooltip(elementDescription, initializer)
 	end);
 end
 
+local function QueueDescription(description, queueDesciption, clearQueue)
+	if clearQueue then
+		description:ClearQueuedDescriptions();
+	end
+	description:AddQueuedDescription(queueDesciption);
+end
+
+function QueueTitle(description, text, color, clearQueue)
+	QueueDescription(description, MenuUtil.CreateTitle(text, color), clearQueue);
+end
+
+function QueueDivider(description, clearQueue)
+	QueueDescription(description, MenuUtil.CreateDivider(), clearQueue);
+end
+
+function QueueSpacer(description, extent, clearQueue)
+	QueueDescription(description, MenuUtil.CreateSpacer(extent), clearQueue);
+end
+
 MenuUtilPrivate.Utilities =
 {
 	SetTooltip = SetTooltip,
+	QueueTitle = QueueTitle,
+	QueueDivider = QueueDivider,
+	QueueSpacer = QueueSpacer,
 };
 
 function MenuUtilPrivate.GetUtilities()
 	return MenuUtilPrivate.Utilities;
 end
 
-do
-	local function VariadicInsert(elementDescription, inserter, ...)
-		local arg = ...;
-		if arg == nil then
-			return;
-		end
-
-		elementDescription:Insert(inserter(unpack(arg)));
-		VariadicInsert(elementDescription, inserter, select(2, ...));
-	end
-
-	function RegisterUsingInserter(dropdown, inserter, ...)
-		local tbl = {...};
-		dropdown:SetupMenu(function(dropdown, rootDescription)
-			VariadicInsert(rootDescription, inserter, unpack(tbl));
-		end);
-	end
-end
+--Variadic menu functions
 
 --[[
 ... is a variadic array of non-associative tables, whose values match the Inserter function below.
 The 'data' argument is optional.
 ]]
-function MenuUtil.RegisterButtonMenu(dropdown, ...)
+function MenuUtil.CreateButtonMenu(dropdown, ...)
 	local function Inserter(text, onClick, data)
 		return MenuUtil.CreateButton(text, onClick, data);
 	end
 
-	return RegisterUsingInserter(dropdown, Inserter, ...);
+	return CreateDropdownMenuUsingInserter(dropdown, Inserter, ...);
+end
+
+function MenuUtil.CreateButtonContextMenu(ownerRegion, ...)
+	local function Inserter(text, onClick, data)
+		return MenuUtil.CreateButton(text, onClick, data);
+	end
+	return CreateContextMenuUsingInserter(ownerRegion, Inserter, ...);
 end
 
 --[[
 ... is a variadic array of non-associative tables, whose values match the Inserter function below.
 The 'data' argument is optional.
 ]]
-function MenuUtil.RegisterCheckboxMenu(dropdown, isSelected, setSelected, ...)
+function MenuUtil.CreateCheckboxMenu(dropdown, isSelected, setSelected, ...)
 	local function Inserter(text, data)
 		return MenuUtil.CreateCheckbox(text, isSelected, setSelected, data);
 	end
 
-	return RegisterUsingInserter(dropdown, Inserter, ...);
+	return CreateDropdownMenuUsingInserter(dropdown, Inserter, ...);
+end
+
+function MenuUtil.CreateCheckboxContextMenu(ownerRegion, isSelected, setSelected, ...)
+	local function Inserter(text, data)
+		return MenuUtil.CreateCheckbox(text, isSelected, setSelected, data);
+	end
+	return CreateContextMenuUsingInserter(ownerRegion, Inserter, ...);
 end
 
 --[[
 ... is a variadic array of non-associative tables, whose values match the Inserter function below.
 The 'data' argument is optional.
 ]]
-function MenuUtil.RegisterRadioMenu(dropdown, isSelected, setSelected, ...)
+function MenuUtil.CreateRadioMenu(dropdown, isSelected, setSelected, ...)
 	local function Inserter(text, data)
 		return MenuUtil.CreateRadio(text, isSelected, setSelected, data);
 	end
-
-	return RegisterUsingInserter(dropdown, Inserter, ...);
+	return CreateDropdownMenuUsingInserter(dropdown, Inserter, ...);
 end
 
-function MenuUtil.RegisterEnumRadioMenu(dropdown, enum, enumTranslator, isSelected, setSelected, orderTbl)
+function MenuUtil.CreateRadioContextMenu(ownerRegion, isSelected, setSelected, ...)
+	local function Inserter(text, data)
+		return MenuUtil.CreateRadio(text, isSelected, setSelected, data);
+	end
+	return CreateContextMenuUsingInserter(ownerRegion, Inserter, ...);
+end
+
+local function CreateEnumTables(enum, enumTranslator, orderTbl)
 	local enumTbls = {};
 
 	for enumKey, enumValue in pairs(enum) do
@@ -339,35 +375,15 @@ function MenuUtil.RegisterEnumRadioMenu(dropdown, enum, enumTranslator, isSelect
 		end);
 	end
 
-	return MenuUtil.RegisterRadioMenu(dropdown, isSelected, setSelected, unpack(enumTbls));
+	return enumTbls;
 end
 
---[[
-RegisterVariadicMenu no longer in use. Was replaced with specialized variants above.
-do
-	local function VariadicInsert(elementDescription, ...)
-		local args = ...;
-		if args == nil then
-			return;
-		end
-	
-		local inserter = args[1];
-		local description = inserter(unpack(args, 2));
-		elementDescription:Insert(description);
-	
-		VariadicInsert(elementDescription, select(2, ...));
-	end
-	
-	function MenuUtil.RegisterVariadicMenu(dropdown, ...)
-		-- ... are tables containing an inserter followed by the argument list matching the inserter's signature.
-		-- for example, {MenuUtil.CreateButton, "Button 1", onClick, data);
-		local tbls = {...};
-
-		dropdown:SetupMenu(function(dropdown, rootDescription)
-			VariadicInsert(elementDescription, unpack(tbls));
-		end);
-		
-		return menuDescription;
-	end
+function MenuUtil.CreateEnumRadioMenu(dropdown, enum, enumTranslator, isSelected, setSelected, orderTbl)
+	local enumTbls = CreateEnumTables(enum, enumTranslator, orderTbl);
+	return MenuUtil.CreateRadioMenu(dropdown, isSelected, setSelected, unpack(enumTbls));
 end
-]]--
+
+function MenuUtil.CreateEnumRadioContextMenu(dropdown, enum, enumTranslator, isSelected, setSelected, orderTbl)
+	local enumTbls = CreateEnumTables(enum, enumTranslator, orderTbl);
+	return MenuUtil.CreateRadioContextMenu(dropdown, isSelected, setSelected, unpack(enumTbls));
+end

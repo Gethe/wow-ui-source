@@ -1082,7 +1082,7 @@ function WardrobeCollectionFrameMixin:InitBaseSetsFilterButton()
 	self.FilterButton:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_WARDROBE_BASE_SETS_FILTER");
 
-		local function GetBaseSetsFilter(filter, menuInputContext, menu)
+		local function GetBaseSetsFilter(filter)
 			C_TransmogSets.SetBaseSetsFilter(filter, not C_TransmogSets.GetBaseSetsFilter(filter));
 		end
 
@@ -1527,7 +1527,7 @@ function WardrobeItemsCollectionMixin:OnShow()
 		WardrobeCollectionFrame:UpdateUsableAppearances();
 		self:RefreshVisualsList();
 		self:UpdateItems();
-		self:UpdateWeaponDropDown();
+		self:UpdateWeaponDropdown();
 	end
 
 	self:UpdateSlotButtons();
@@ -2377,8 +2377,8 @@ function WardrobeItemsModelMixin:OnMouseUp(button)
 				WardrobeCollectionFrameModelDropdown_SetFavorite(appearanceID, not favorite);
 			end);
 
-			MenuUtil.QueueSpacer(rootDescription);
-			MenuUtil.QueueTitle(rootDescription, WARDROBE_TRANSMOGRIFY_AS);
+			rootDescription:QueueSpacer();
+			rootDescription:QueueTitle(WARDROBE_TRANSMOGRIFY_AS);
 
 			local activeCategory = itemsCollectionFrame:GetActiveCategory();
 			local transmogLocation = itemsCollectionFrame.transmogLocation;

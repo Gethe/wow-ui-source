@@ -337,10 +337,13 @@ function GreatVaultButtonMixin:OnEnter()
 	end
 
 	if self:GetParent().disabled then
+		local serverExpansionLevel = GetServerExpansionLevel();
+		local maxLevel = GetMaxLevelForExpansionLevel(serverExpansionLevel);
+
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
 		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
-		GameTooltip_AddNormalLine(GameTooltip, DELVES_GREAT_VAULT_ERR_AVAIL_AT_MAX_LEVEL);
+		GameTooltip_AddNormalLine(GameTooltip, DELVES_GREAT_VAULT_ERR_AVAIL_AT_MAX_LEVEL:format(maxLevel));
 		GameTooltip:Show();
 		return;
 	end

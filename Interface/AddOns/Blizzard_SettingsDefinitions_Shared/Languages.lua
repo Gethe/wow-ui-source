@@ -79,9 +79,9 @@ end
 
 SettingsLanguageDropdownControlMixin = CreateFromMixins(BaseLanguageDropdownControlMixin);
 
-SettingsAudioLocaleDropDownMixin = CreateFromMixins(BaseLanguageDropdownControlMixin);
+SettingsAudioLocaleDropdownMixin = CreateFromMixins(BaseLanguageDropdownControlMixin);
 
-function SettingsAudioLocaleDropDownMixin:Init(initializer)
+function SettingsAudioLocaleDropdownMixin:Init(initializer)
 	SettingsDropdownControlMixin.Init(self, initializer);
 
 	-- Changing the text locale changed the audio locale options. Since CBR callbacks are unordered, we need
@@ -134,7 +134,7 @@ local function Register()
 	
 	-- Defaulting the audio locale cvar based on a dependent cvar ideally wouldn't be done
 	-- on the Lua side at all. Should investigate moving this into the client code. Also
-	-- see OnTextLocaleChanged above in SettingsAudioLocaleDropDownMixin!
+	-- see OnTextLocaleChanged above in SettingsAudioLocaleDropdownMixin!
 	local function OnTextLocaleChanged(o, setting, value)
 		SetAudioLocaleSettingToDefault(audioLocaleSetting);
 	end

@@ -59,10 +59,16 @@ end
 
 function PagingControlsMixin:NextPage()
 	self:SetCurrentPage(self.currentPage + self:GetPageDelta());
+	if self.nextPageSound then
+		PlaySound(self.nextPageSound);
+	end
 end
 
 function PagingControlsMixin:PreviousPage()
 	self:SetCurrentPage(self.currentPage - self:GetPageDelta());
+	if self.prevPageSound then
+		PlaySound(self.prevPageSound);
+	end
 end
 
 function PagingControlsMixin:GetPageDelta()

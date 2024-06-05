@@ -263,6 +263,7 @@ CovenantSanctumDocumentation.lua
 CovenantsDocumentation.lua
 CraftingOrderUIDocumentation.lua
 DateAndTimeDocumentation.lua
+DelvesUIDocumentation.lua
 ExpansionTrialDocumentation.lua
 FrameAPIArchaeologyDigsiteDocumentation.lua
 FrameAPICharacterModelBaseDocumentation.lua

@@ -172,7 +172,7 @@ function CommunitiesEditStreamDialogMixin:ShowCreateDialog(clubId)
 	self.Description.EditBox:SetText("");
 	self.Accept:SetScript("OnClick", function(self)
 		local editStreamDialog = self:GetParent();
-		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckbox:GetChecked();
 		if editStreamDialog:ValidateText(clubId) then
 			C_Club.CreateStream(clubId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), leadersAndModeratorsOnly);
 			editStreamDialog:Hide();
@@ -192,10 +192,10 @@ function CommunitiesEditStreamDialogMixin:ShowEditDialog(clubId, stream)
 	self.TitleLabel:SetText(COMMUNITIES_EDIT_CHANNEL);
 	self.NameEdit:SetText(stream.name);
 	self.Description.EditBox:SetText(stream.subject);
-	self.TypeCheckBox:SetChecked(stream.leadersAndModeratorsOnly);
+	self.TypeCheckbox:SetChecked(stream.leadersAndModeratorsOnly);
 	self.Accept:SetScript("OnClick", function(self)
 		local editStreamDialog = self:GetParent();
-		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckBox:GetChecked();
+		local leadersAndModeratorsOnly = editStreamDialog.TypeCheckbox:GetChecked();
 		if editStreamDialog:ValidateText(clubId) then
 			C_Club.EditStream(clubId, stream.streamId, editStreamDialog.NameEdit:GetText(), editStreamDialog.Description.EditBox:GetText(), leadersAndModeratorsOnly)
 			editStreamDialog:Hide();

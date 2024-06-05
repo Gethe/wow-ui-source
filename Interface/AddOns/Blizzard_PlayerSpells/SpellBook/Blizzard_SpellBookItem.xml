@@ -90,7 +90,10 @@
 								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
 							<Animations>
-								<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" looping="REPEAT">
+								<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate, SyncedAnimGroupTemplate" looping="REPEAT">
+									<KeyValues>
+										<KeyValue key="syncKey" value="SpellBookItemLoops" type="string"/>
+									</KeyValues>
 									<Translation offsetX="150" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
 								</AnimationGroup>
 							</Animations>
@@ -145,7 +148,10 @@
 								<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
 							</Anchors>
 							<Animations>
-								<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" looping="REPEAT" setToFinalAlpha="true">
+								<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate, SyncedAnimGroupTemplate" looping="REPEAT" setToFinalAlpha="true">
+									<KeyValues>
+										<KeyValue key="syncKey" value="SpellBookItemLoops" type="string"/>
+									</KeyValues>
 									<Alpha fromAlpha="0.5" toAlpha="1" duration="0.5" order="1" smoothing="OUT"/>
 									<Alpha fromAlpha="1" toAlpha="0.5" duration="0.5" order="2" smoothing="IN"/>
 								</AnimationGroup>

@@ -28,6 +28,7 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	self.animationPools:ReleaseAll();
 	self.spacing = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_SPACING;
 	self.fixedWidth = widgetInfo.fixedWidth;
+	self.childLayoutDirection = (widgetInfo.groupAlignment == Enum.UIWidgetHorizontalDirection.LeftToRight) and "leftToRight" or "rightToLeft";
 
 	self.animationInfo = texturekitAnimationTemplatesInfo[widgetInfo.frameTextureKit];
 	local shownEntries = {};
@@ -52,12 +53,15 @@ function UIWidgetTemplateTextureAndTextRowMixin:Setup(widgetInfo, widgetContaine
 	self.lastShownEntries = shownEntries;
 
 	if #widgetInfo.entries == 0 then
-		self:Hide();
-		return;
-	else
-		self:Layout(); -- Layout visible entries horizontally
+		-- If there are no entries showing (but the widget is shown) we need to make a dummy entry for sizing purposes (but set to 0 alpha)
+		local entryFrame = self.entryPool:Acquire();
+		entryFrame:Setup(widgetContainer, "", "", widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, 1);
+		entryFrame:Show();
+		entryFrame:SetAlpha(0);
 	end
 
+	self:Layout(); -- Layout entries horizontally
+		
 	if self.animationInfo then
 		self:PlayAnimations(widgetInfo, animateEntries);
 	end

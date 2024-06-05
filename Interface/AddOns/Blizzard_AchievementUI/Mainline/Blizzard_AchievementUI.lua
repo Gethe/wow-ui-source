@@ -237,9 +237,9 @@ function AchievementFrame_OnLoad (self)
 		end
 	end
 
-	AchievementFrameFilterDropDown:SetWidth(112);
-	AchievementFrameFilterDropDown:SetFrameLevel(AchievementFrameFilterDropDown:GetFrameLevel() + 1);
-	AchievementFrameFilterDropDown:SetupMenu(function(dropdown, rootDescription)
+	AchievementFrameFilterDropdown:SetWidth(112);
+	AchievementFrameFilterDropdown:SetFrameLevel(AchievementFrameFilterDropdown:GetFrameLevel() + 1);
+	AchievementFrameFilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
 
 		for i, filter in ipairs(AchievementFrameFilters) do
@@ -689,10 +689,10 @@ function AchievementFrameCategories_OnCategoryChanged(category)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 			AchievementFrameAchievements_UpdateDataProvider();
 			if IsCategoryFeatOfStrength(category) then
-				AchievementFrameFilterDropDown:Hide();
+				AchievementFrameFilterDropdown:Hide();
 				AchievementFrame.Header.LeftDDLInset:Hide();
 			else
-				AchievementFrameFilterDropDown:Show();
+				AchievementFrameFilterDropdown:Show();
 				AchievementFrame.Header.LeftDDLInset:Show();
 			end
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
@@ -729,10 +729,10 @@ function AchievementFrameAchievements_OnShow(self)
 	FrameUtil.RegisterFrameForEvents(self, AchievementFrameShownEvents);
 
 	if IsCategoryFeatOfStrength(GetSelectedCategory()) then
-		AchievementFrameFilterDropDown:Hide();
+		AchievementFrameFilterDropdown:Hide();
 		AchievementFrame.Header.LeftDDLInset:Hide();
 	else
-		AchievementFrameFilterDropDown:Show();
+		AchievementFrameFilterDropdown:Show();
 		AchievementFrame.Header.LeftDDLInset:Show();
 	end
 end
@@ -740,7 +740,7 @@ end
 function AchievementFrameAchievements_OnHide(self)
 	FrameUtil.UnregisterFrameForEvents(self, AchievementFrameShownEvents);
 
-	AchievementFrameFilterDropDown:Hide();
+	AchievementFrameFilterDropdown:Hide();
 	AchievementFrame.Header.LeftDDLInset:Hide();
 end
 
@@ -1772,7 +1772,7 @@ function AchievementFrame_SetFilter(value)
 	if filter.func ~= ACHIEVEMENTUI_SELECTEDFILTER then
 		ACHIEVEMENTUI_SELECTEDFILTER = filter.func;
 		AchievementFrameAchievements_ForceUpdate();
-		AchievementFrameFilterDropDown:GenerateMenu();
+		AchievementFrameFilterDropdown:GenerateMenu();
 	end
 end
 

@@ -213,7 +213,7 @@ local function Register()
 			setting:SetValue(true);
 		end;
 
-		local initializer = CreateSettingsCheckBoxWithButtonInitializer(setting, RESET_TUTORIALS, OnButtonClick, false, OPTION_TOOLTIP_SHOW_TUTORIALS);
+		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, RESET_TUTORIALS, OnButtonClick, false, OPTION_TOOLTIP_SHOW_TUTORIALS);
 		layout:AddInitializer(initializer);
 	end);
 

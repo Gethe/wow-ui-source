@@ -140,7 +140,7 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
-			<CheckButton parentKey="TypeCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="TypeCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.TypeLabel" relativePoint="LEFT" x="-3" y="0"/>

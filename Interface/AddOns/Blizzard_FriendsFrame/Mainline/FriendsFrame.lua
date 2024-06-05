@@ -1085,7 +1085,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		WhoList_Update();
 		FriendsFrame_Update();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
-		FriendsFrameStatusDropDown:GenerateMenu();
+		FriendsFrameStatusDropdown:GenerateMenu();
 		FriendsFrame_CheckBattlenetStatus();
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED") then
 		FriendsFrame_CheckBattlenetStatus();
@@ -2237,8 +2237,8 @@ function FriendsFriendsFrameMixin:OnEvent(event)
 	if event == "BN_REQUEST_FOF_SUCCEEDED" then
 		if self:IsShown() then
 			FriendsFriendsFrame.view = FRIENDS_FRIENDS_ALL;
-			FriendsFriendsFrameDropDown:Enable();
-			FriendsFriendsFrameDropDown:GenerateMenu();
+			FriendsFriendsFrameDropdown:Enable();
+			FriendsFriendsFrameDropdown:GenerateMenu();
 
 			local waitFrame = FriendsFriendsWaitFrame;
 			-- need to stop the flashing because it's flashing with showWhenDone set to true
@@ -2405,7 +2405,7 @@ function FriendsFriendsFrame_Show(bnetIDAccount)
 	end
 	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..accountInfo.accountName..FONT_COLOR_CODE_CLOSE);
 	FriendsFriendsFrame.bnetIDAccount = accountInfo.bnetAccountID;
-	FriendsFriendsFrameDropDown:Disable();
+	FriendsFriendsFrameDropdown:Disable();
 	FriendsFriendsFrame:Reset();
 	FriendsFriendsWaitFrame:Show();
 	StaticPopupSpecial_Show(FriendsFriendsFrame);

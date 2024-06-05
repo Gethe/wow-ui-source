@@ -160,7 +160,7 @@
 			<OnLeave method="OnLeaveCovenantCallings" inherit="prepend"/>
 		</Scripts>
 	</Button>
-	<Frame name="QuestLogTrackCheckBoxTemplate" propagateMouseInput="Motion" virtual="true">
+	<Frame name="QuestLogTrackCheckboxTemplate" propagateMouseInput="Motion" virtual="true">
 		<Size x="14" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -198,7 +198,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="CheckBox" inherits="QuestLogTrackCheckBoxTemplate">
+			<Frame parentKey="Checkbox" inherits="QuestLogTrackCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" y="-6"/>
 				</Anchors>

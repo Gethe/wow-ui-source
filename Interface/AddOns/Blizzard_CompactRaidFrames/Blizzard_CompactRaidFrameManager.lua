@@ -121,7 +121,7 @@ function CompactRaidFrameManager_OnLoad(self)
 			C_PartyInfo.SetRestrictPings(newValue);
 		end
 
-		local dropdown = CompactRaidFrameManager.displayFrame.RestrictPingsDropDown;
+		local dropdown = CompactRaidFrameManager.displayFrame.RestrictPingsDropdown;
 		dropdown:SetWidth(158);
 		dropdown:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_RAID_FRAME_RESTRICT_PINGS");
@@ -204,7 +204,7 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateDifficulty();
 	elseif ( event == "PLAYER_ROLES_ASSIGNED") then
 		self.displayFrame.ModeControlDropdown:GenerateMenu();
-		self.displayFrame.RestrictPingsDropDown:GenerateMenu();
+		self.displayFrame.RestrictPingsDropdown:GenerateMenu();
 	end
 end
 
@@ -404,9 +404,9 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 
 		FlowContainer_AddLineBreak(container);
 		Space(32);
-		AddAndShow(displayFrame.RestrictPingsDropDown);
+		AddAndShow(displayFrame.RestrictPingsDropdown);
 	else
-		displayFrame.RestrictPingsDropDown:Hide();
+		displayFrame.RestrictPingsDropdown:Hide();
 	end
 
 	AddAndShow(displayFrame.BottomButtons);

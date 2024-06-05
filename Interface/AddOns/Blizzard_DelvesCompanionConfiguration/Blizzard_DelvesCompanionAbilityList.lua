@@ -206,8 +206,8 @@ function DelvesCompanionAbilityListFrameMixin:InstantiateTalentButton(nodeID, no
 			return;
 		end
 
-		button:Hide();
 		button.index = self:GetIndexFromNodePosition(nodeInfo.posX, nodeInfo.posY);
+		button:Hide();
 		button:InitAdditionalElements();
 		local buttonElementsExist = button.Name:GetText() and button.Icon:GetTexture();
 		if nodeInfo.subTreeActive and buttonElementsExist then
@@ -250,6 +250,8 @@ function DelvesCompanionAbilityMixin:InitAdditionalElements()
 		self.UnlockCondition:SetText("");
 		if self.nodeInfo.maxRanks > 1 then
 			self.Rank:SetText(DELVES_ABILITY_RANK_LABEL:format(self.nodeInfo.currentRank));
+		else
+			self.Rank:SetText("");
 		end
 	end
 end
@@ -265,6 +267,10 @@ end
 
 -- Do nothing, we aren't using a state border right now
 function DelvesCompanionAbilityMixin:UpdateStateBorder()
+end
+
+function DelvesCompanionAbilityMixin:SetTooltipInternal()
+	TalentDisplayMixin.SetTooltipInternal(self, self.nodeInfo.maxRanks <= 1);
 end
 
 --[[ Role Dropdown ]]

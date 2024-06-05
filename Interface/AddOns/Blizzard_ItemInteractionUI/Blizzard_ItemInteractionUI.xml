@@ -116,14 +116,14 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background_Flash" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Background_Flash2" useAtlasSize="true" alphaMode="ADD" alpha="0">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Background" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
 					</Layer>

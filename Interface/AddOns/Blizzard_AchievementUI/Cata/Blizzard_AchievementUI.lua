@@ -71,9 +71,9 @@ function AchievementFrame_OnLoad (self)
 		end
 	end
 
-	AchievementFrameFilterDropDown:SetWidth(112);
-	AchievementFrameFilterDropDown:SetFrameLevel(AchievementFrameFilterDropDown:GetFrameLevel() + 1);
-	AchievementFrameFilterDropDown:SetupMenu(function(dropdown, rootDescription)
+	AchievementFrameFilterDropdown:SetWidth(112);
+	AchievementFrameFilterDropdown:SetFrameLevel(AchievementFrameFilterDropdown:GetFrameLevel() + 1);
+	AchievementFrameFilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
 
 		for i, filter in ipairs(AchievementFrameFilters) do
@@ -435,10 +435,10 @@ function AchievementFrameCategories_SelectButton (button)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 			AchievementFrameAchievementsContainerScrollBar:SetValue(0);
 			if ( id == FEAT_OF_STRENGTH_ID or id == GUILD_FEAT_OF_STRENGTH_ID) then
-				AchievementFrameFilterDropDown:Hide();
+				AchievementFrameFilterDropdown:Hide();
 				AchievementFrameHeaderRightDDLInset:Hide();
 			else
-				AchievementFrameFilterDropDown:Show();
+				AchievementFrameFilterDropdown:Show();
 				AchievementFrameHeaderRightDDLInset:Show();
 			end
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
@@ -465,10 +465,10 @@ function AchievementFrameAchievements_OnShow()
 		AchievementFrameAchievements_ToggleView();
 	end
 	if ( achievementFunctions.selectedCategory == FEAT_OF_STRENGTH_ID or achievementFunctions.selectedCategory == GUILD_FEAT_OF_STRENGTH_ID ) then
-		AchievementFrameFilterDropDown:Hide();
+		AchievementFrameFilterDropdown:Hide();
 		AchievementFrameHeaderRightDDLInset:Hide();
 	else
-		AchievementFrameFilterDropDown:Show();
+		AchievementFrameFilterDropdown:Show();
 		AchievementFrameHeaderRightDDLInset:Show();	
 	end
 end

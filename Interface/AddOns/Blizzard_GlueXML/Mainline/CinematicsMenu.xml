@@ -90,7 +90,7 @@
 					<Anchor point="TOPRIGHT" x="1" y="0"/>
 				</Anchors>
 			</Button>
-			<CheckButton parentKey="SubtitlesCheckBox" mixin="CinematicsMenuSubtitlesCheckBoxMixin" inherits="GlueCheckButtonTemplate">
+			<CheckButton parentKey="SubtitlesCheckbox" mixin="CinematicsMenuSubtitlesCheckboxMixin" inherits="GlueCheckButtonTemplate">
 				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SubtitlesLabel" relativePoint="LEFT" x="-4" y="0"/>

@@ -14,7 +14,7 @@
 	<Frame name="BountifulWidgetAnimationTemplate" virtual="true">
 		<Size x="36" y="36"/>
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="CENTER" y="-3"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -51,7 +51,7 @@
 				<Alpha childKey="Glow" duration="1" order="1" startDelay="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="BountifulDarkCircle" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="RaysTranslation" setToFinalAlpha="true">
+			<AnimationGroup parentKey="RaysTranslation" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="RaysMask" duration="1" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="0" toAlpha="1"/>
 				<Translation childKey="Rays" duration="8" order="1" offsetX="300" offsetY="0"/>
 				<Alpha childKey="Rays" duration="1" order="1" fromAlpha="0" toAlpha="1"/>

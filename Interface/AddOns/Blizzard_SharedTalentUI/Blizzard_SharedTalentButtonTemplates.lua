@@ -80,14 +80,16 @@ function TalentDisplayMixin:OnRelease()
 	self:ResetActiveVisuals();
 end
 
-function TalentDisplayMixin:SetTooltipInternal()
+function TalentDisplayMixin:SetTooltipInternal(ignoreTooltipInfo)
 	local tooltip = self:AcquireTooltip();
 	self:AddTooltipTitle(tooltip);
 
 	-- Used for debug purposes.
 	EventRegistry:TriggerEvent("TalentDisplay.TooltipHook", self);
 
-	self:AddTooltipInfo(tooltip);
+	if not ignoreTooltipInfo then
+		self:AddTooltipInfo(tooltip);
+	end
 	self:AddTooltipDescription(tooltip);
 	self:AddTooltipCost(tooltip);
 
@@ -324,6 +326,10 @@ end
 function TalentDisplayMixin:SetSearchMatchType(matchType)
 	self.matchType = matchType;
 	self:UpdateSearchIcon();
+end
+
+function TalentDisplayMixin:GetSearchMatchType()
+	return self.matchType;
 end
 
 function TalentDisplayMixin:SetGlowing(shouldGlow)
@@ -922,10 +928,6 @@ function TalentButtonArtMixin:OnLoad()
 			shadow:SetFontObject(self.artSet.spendFont);
 		end
 	end
-
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnSearchIconEnter, self));
-	end
 end
 
 function TalentButtonArtMixin:ApplyVisualState(visualState)
@@ -1036,44 +1038,14 @@ function TalentButtonArtMixin:GetChoiceEdgeDiameterOffset(angle)
 	return Lerp(TalentButtonUtil.ChoiceEdgeMinDiameterOffset, TalentButtonUtil.ChoiceEdgeMaxDiameterOffset, progress);
 end
 
-function TalentButtonArtMixin:DisableSearchIconMouseover()
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:Hide();
-	end
-end
-
-function TalentButtonArtMixin:EnableSearchIconMouseover()
-	if self.SearchIcon then
-		self.SearchIcon.Mouseover:Show();
-	end
-end
-
-function TalentButtonArtMixin:OnSearchIconEnter()
-	if self.searchIconTooltipText then
-		GameTooltip:SetOwner(self.SearchIcon.Mouseover, "ANCHOR_RIGHT", 0, 0);
-		if self.tooltipBackdropStyle then
-			SharedTooltip_SetBackdropStyle(GameTooltip, self.tooltipBackdropStyle);
-		end
-		GameTooltip_AddNormalLine(GameTooltip, self.searchIconTooltipText);
-		GameTooltip:Show();
-	end
-end
-
 function TalentButtonArtMixin:UpdateSearchIcon()
 	if not self.SearchIcon then
 		return;
 	end
 
-	if not self.matchType then
-		self.searchIconTooltipText = nil;
-		self.SearchIcon:SetShown(false);
-	else
+	self.SearchIcon:SetMatchType(self.matchType);
+	if self.matchType then
 		self.SearchIcon:SetFrameLevel(self:GetFrameLevel() + 50);
-		self.SearchIcon:SetShown(true);
-		local matchStyle = TalentButtonUtil.GetStyleForSearchMatchType(self.matchType);
-		self.SearchIcon.Icon:SetAtlas(matchStyle.icon);
-		self.SearchIcon.OverlayIcon:SetAtlas(matchStyle.icon);
-		self.searchIconTooltipText = matchStyle.tooltipText;
 	end
 end
 
@@ -1370,14 +1342,14 @@ end
 function TalentButtonSelectMixin:ShowSelections()
 	self:GetTalentFrame():ShowSelections(self, self.talentSelections, self:CanSelectChoice(), self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
 	-- Prevent SearchIcon from potentially interrupting selection mouseover
-	self:DisableSearchIconMouseover();
+	self.SearchIcon:SetMouseoverEnabled(false);
 end
 
 function TalentButtonSelectMixin:ClearSelections()
 	self:GetTalentFrame():HideSelections(self);
 	self.timeSinceMouseOver = nil;
 	self:SetScript("OnUpdate", nil);
-	self:EnableSearchIconMouseover();
+	self.SearchIcon:SetMouseoverEnabled(true);
 end
 
 function TalentButtonSelectMixin:AddTooltipTitle(tooltip)
@@ -1630,4 +1602,46 @@ function TalentButtonSplitSelectMixin:UpdateIconTexture()
 			end
 		end
 	end
+end
+
+
+TalentButtonSearchIconMixin = {};
+
+function TalentButtonSearchIconMixin:OnLoad()
+	self.Mouseover:SetScript("OnEnter", GenerateClosure(self.OnEnter, self));
+	self.Mouseover:SetScript("OnLeave", GenerateClosure(self.OnLeave, self));
+	self.Mouseover:SetSize(self.mouseoverSize, self.mouseoverSize);
+end
+
+function TalentButtonSearchIconMixin:SetMatchType(matchType)
+	self.matchType = matchType;
+	if not self.matchType then
+		self.tooltipText = nil;
+		self:Hide();
+	else
+		self:Show();
+		local matchStyle = TalentButtonUtil.GetStyleForSearchMatchType(self.matchType);
+		self.Icon:SetAtlas(matchStyle.icon);
+		self.OverlayIcon:SetAtlas(matchStyle.icon);
+		self.tooltipText = matchStyle.tooltipText;
+	end
+end
+
+function TalentButtonSearchIconMixin:SetMouseoverEnabled(mouseoverEnabled)
+	self.Mouseover:SetShown(mouseoverEnabled);
+end
+
+function TalentButtonSearchIconMixin:OnEnter()
+	if self.tooltipText then
+		GameTooltip:SetOwner(self.Mouseover, "ANCHOR_RIGHT", 0, 0);
+		if self.tooltipBackdropStyle then
+			SharedTooltip_SetBackdropStyle(GameTooltip, self.tooltipBackdropStyle);
+		end
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText);
+		GameTooltip:Show();
+	end
+end
+
+function TalentButtonSearchIconMixin:OnLeave()
+	GameTooltip_Hide();
 end

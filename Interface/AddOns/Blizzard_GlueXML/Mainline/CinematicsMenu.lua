@@ -351,12 +351,12 @@ function CinematicsMenuButtonMixin:UpdateState()
 	end
 end
 
-CinematicsMenuSubtitlesCheckBoxMixin = {};
+CinematicsMenuSubtitlesCheckboxMixin = {};
 
-function CinematicsMenuSubtitlesCheckBoxMixin:OnShow()
+function CinematicsMenuSubtitlesCheckboxMixin:OnShow()
 	self:SetChecked(GetCVarBool("movieSubtitle"));
 end
 
-function CinematicsMenuSubtitlesCheckBoxMixin:OnClick()
+function CinematicsMenuSubtitlesCheckboxMixin:OnClick()
 	SetCVar("movieSubtitle", self:GetChecked());
 end

@@ -206,7 +206,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
-			<CheckButton parentKey="InactiveCheckBox" inherits="UICheckButtonTemplate" mixin="InactiveCurrencyCheckBoxMixin">
+			<CheckButton parentKey="InactiveCheckbox" inherits="UICheckButtonTemplate" mixin="InactiveCurrencyCheckboxMixin">
 				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="32" y="-32"/>
@@ -218,10 +218,10 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</CheckButton>
-			<CheckButton parentKey="BackpackCheckBox" inherits="UICheckButtonTemplate" mixin="BackpackCurrencyCheckBoxMixin">
+			<CheckButton parentKey="BackpackCheckbox" inherits="UICheckButtonTemplate" mixin="BackpackCurrencyCheckboxMixin">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.InactiveCheckBox" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InactiveCheckbox" relativePoint="BOTTOMLEFT" x="0" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -232,7 +232,7 @@
 			</CheckButton>
 			<Button parentKey="CurrencyTransferToggleButton" inherits="CurrencyTransferToggleButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BackpackCheckBox" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BackpackCheckbox" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">

@@ -1056,6 +1056,21 @@ local Item =
 			},
 		},
 		{
+			Name = "IsCurioItem",
+			Type = "Function",
+			Documentation = { "Returns whether the item is a consumable curio that can be applied to a delves companion." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "IsCurrentItem",
 			Type = "Function",
 

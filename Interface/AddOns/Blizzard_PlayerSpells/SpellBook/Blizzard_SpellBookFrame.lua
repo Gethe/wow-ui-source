@@ -73,6 +73,11 @@ function SpellBookFrameMixin:OnHidePassivesToggled(isChecked, isUserInput)
 	SetCVar("spellBookHidePassives", isChecked);
 	local forceUpdateSpellGroups, resetCurrentPage = true, false;
 	self:UpdateDisplayedSpells(forceUpdateSpellGroups, resetCurrentPage);
+
+	if isUserInput then
+		local checkboxSound = isChecked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
+		PlaySound(checkboxSound);
+	end
 end
 
 function SpellBookFrameMixin:OnShow()

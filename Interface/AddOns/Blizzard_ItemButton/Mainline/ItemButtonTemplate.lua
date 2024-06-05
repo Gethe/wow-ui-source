@@ -269,6 +269,13 @@ function SetItemButtonQuality(button, quality, itemIDOrLink, suppressOverlays, i
 	end
 end
 
+function GetItemQualityColor(quality)
+	if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
+		quality = Enum.ItemQuality.Common;
+	end
+	return BAG_ITEM_QUALITY_COLORS[quality];
+end
+
 -- Remember to update the OverlayKeys table if adding an overlay texture here.
 function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	ClearItemButtonOverlay(button);
@@ -283,10 +290,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		button.IconOverlay:SetAtlas("CosmeticIconFrame");
 		button.IconOverlay:Show();
 	elseif C_Soulbinds.IsItemConduitByItemInfo(itemIDOrLink) then
-		if not quality or not BAG_ITEM_QUALITY_COLORS[quality] then
-			quality = Enum.ItemQuality.Common;
-		end
-		local color = BAG_ITEM_QUALITY_COLORS[quality];
+		local color = GetItemQualityColor(quality);
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("ConduitIconFrame");
 		button.IconOverlay:Show();
@@ -296,6 +300,11 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
 			button.IconOverlay2:Show();
 		end
+	elseif C_Item.IsCurioItem(itemIDOrLink) then
+		local color = GetItemQualityColor(quality);
+		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		button.IconOverlay:SetAtlas("delves-curios-icon-border");
+		button.IconOverlay:Show();
 	else
 		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
 		-- hidden if more than 1 quality of reagent is assigned to the slot. Those slots have a separate overlay that is

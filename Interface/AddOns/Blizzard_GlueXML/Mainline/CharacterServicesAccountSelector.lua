@@ -117,7 +117,7 @@ function AccountSelectorMixin:GetFirstTransferBNetWoWGameAccount()
 	end
 end
 
-function AccountSelectorMixin:PopulateBNetWoWAccountDropDown()
+function AccountSelectorMixin:PopulateBNetWoWAccountDropdown()
 	local accountData = self:GetFirstTransferBNetWoWGameAccount();
 	if not accountData then
 		-- The account data is requested and this will be called again by UpdateDestinationBNetAccount() when it's ready.
@@ -198,7 +198,7 @@ end
 function AccountSelectorMixin:ClearDestinationBNetAccount(clearErrorMessage)
 	self:ClearBNetAccountGuid();
 	self:ClearBNetWoWGameAccounts();
-	self:PopulateBNetWoWAccountDropDown();
+	self:PopulateBNetWoWAccountDropdown();
 
 	if clearErrorMessage then
 		CharSelectServicesFlowFrame:ClearErrorMessage();
@@ -216,7 +216,7 @@ function AccountSelectorMixin:UpdateDestinationBNetAccount()
 	local guid, gameAccounts = C_StoreSecure.GetBnetTransferInfo();
 	self:SetBNetAccountGuid(guid);
 	self:SetBnetWoWGameAccounts(gameAccounts);
-	self:PopulateBNetWoWAccountDropDown();
+	self:PopulateBNetWoWAccountDropdown();
 end
 
 function AccountSelectorMixin:OnVASTranferValidationUpdate(error)

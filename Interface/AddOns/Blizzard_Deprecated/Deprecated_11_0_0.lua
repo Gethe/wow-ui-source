@@ -1,6 +1,9 @@
 -- These are functions that were deprecated in 11.0.0 and will be removed before it ships.
 -- Please upgrade to the updated APIs as soon as possible.
 
+-- Notices
+-- UIDropDownMenu has been deprecated. There are currently no plans to delete it, but it will no longer be used in any future implementations. For information on the replacement, please see Blizzard_Menu\11_0_0_MenuImplementationGuide.lua
+
 if not GetCVarBool("loadDeprecationFallbacks") then
 	return;
 end

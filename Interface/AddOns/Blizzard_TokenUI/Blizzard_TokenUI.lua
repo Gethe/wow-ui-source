@@ -330,21 +330,21 @@ function GetNumWatchedTokens()
 end
 
 function TokenFrameMixin:UpdatePopup(button)
-	TokenFramePopup.InactiveCheckBox:SetChecked(button.elementData.isTypeUnused);
-	TokenFramePopup.BackpackCheckBox:SetChecked(button.elementData.isShowInBackpack);
+	TokenFramePopup.InactiveCheckbox:SetChecked(button.elementData.isTypeUnused);
+	TokenFramePopup.BackpackCheckbox:SetChecked(button.elementData.isShowInBackpack);
 
 	TokenFramePopup.CurrencyTransferToggleButton:Refresh(button.elementData);
 	TokenFramePopup:SetHeight(button.elementData.isAccountTransferable and 135 or 100);
 end
 
-InactiveCurrencyCheckBoxMixin = {};
+InactiveCurrencyCheckboxMixin = {};
 
-function InactiveCurrencyCheckBoxMixin:OnLoad()
+function InactiveCurrencyCheckboxMixin:OnLoad()
 	self.Text:SetText(UNUSED);
 	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 end
 
-function InactiveCurrencyCheckBoxMixin:OnClick()
+function InactiveCurrencyCheckboxMixin:OnClick()
 	if ( self:GetChecked() ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		C_CurrencyInfo.SetCurrencyUnused(TokenFrame.selectedID, true);
@@ -365,20 +365,20 @@ function InactiveCurrencyCheckBoxMixin:OnClick()
 	TokenFramePopup:CloseIfHidden();
 end
 
-function InactiveCurrencyCheckBoxMixin:OnEnter()
+function InactiveCurrencyCheckboxMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, TOKEN_MOVE_TO_UNUSED);
 	GameTooltip:Show();
 end
 
-BackpackCurrencyCheckBoxMixin = {};
+BackpackCurrencyCheckboxMixin = {};
 
-function BackpackCurrencyCheckBoxMixin:OnLoad()
+function BackpackCurrencyCheckboxMixin:OnLoad()
 	self.Text:SetText(SHOW_ON_BACKPACK);
 	self.Text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 end
 
-function BackpackCurrencyCheckBoxMixin:OnClick()
+function BackpackCurrencyCheckboxMixin:OnClick()
 	local watched = self:GetChecked();
 	local success = TokenFrame:SetTokenWatched(TokenFrame.selectedID, watched);
 
@@ -394,7 +394,7 @@ function BackpackCurrencyCheckBoxMixin:OnClick()
 	end
 end
 
-function BackpackCurrencyCheckBoxMixin:OnEnter()
+function BackpackCurrencyCheckboxMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, TOKEN_SHOW_ON_BACKPACK);
 	GameTooltip:Show();

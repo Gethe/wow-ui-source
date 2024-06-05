@@ -233,7 +233,7 @@
 
 	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" mixin="ReputationFrameMixin" hidden="true" id="2">
 		<Frames>
-			<DropdownButton parentKey="filterDropDown" inherits="WowStyle1DropdownTemplate">
+			<DropdownButton parentKey="filterDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-8" y="-30"/>
 				</Anchors>
@@ -295,7 +295,7 @@
 							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 						</Anchors>
 					</Button>
-					<CheckButton parentKey="AtWarCheckBox" mixin="ReputationDetailAtWarCheckBoxMixin">
+					<CheckButton parentKey="AtWarCheckbox" mixin="ReputationDetailAtWarCheckboxMixin">
 						<Size x="26" y="26"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="14" y="-143"/>
@@ -326,10 +326,10 @@
 						</CheckedTexture>
 						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
-					<CheckButton parentKey="MakeInactiveCheckBox" inherits="UICheckButtonTemplate" mixin="ReputationDetailInactiveCheckBoxMixin">
+					<CheckButton parentKey="MakeInactiveCheckbox" inherits="UICheckButtonTemplate" mixin="ReputationDetailInactiveCheckboxMixin">
 						<Size x="26" y="26"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.AtWarCheckBox.Label" relativePoint="RIGHT" x="3" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.AtWarCheckbox.Label" relativePoint="RIGHT" x="3" y="0"/>
 						</Anchors>
 						<HitRectInsets>
 							<AbsInset left="0" right="0" top="0" bottom="0"/>
@@ -349,10 +349,10 @@
 							<OnLeave method="OnLeave"/>
 						</Scripts>
 					</CheckButton>
-					<CheckButton parentKey="WatchFactionCheckBox" inherits="UICheckButtonTemplate" mixin="ReputationDetailWatchFactionCheckBoxMixin">
+					<CheckButton parentKey="WatchFactionCheckbox" inherits="UICheckButtonTemplate" mixin="ReputationDetailWatchFactionCheckboxMixin">
 						<Size x="26" y="26"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AtWarCheckBox" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AtWarCheckbox" relativePoint="BOTTOMLEFT" x="0" y="3"/>
 						</Anchors>
 						<HitRectInsets>
 							<AbsInset left="0" right="0" top="0" bottom="0"/>

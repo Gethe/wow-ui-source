@@ -1574,7 +1574,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	button.Text:SetTextColor(difficultyColor.r, difficultyColor.g, difficultyColor.b);
 
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
-	button.CheckBox.CheckMark:SetShown(isTracked);
+	button.Checkbox.CheckMark:SetShown(isTracked);
 
 	local isComplete = C_QuestLog.IsComplete(questID);
 
@@ -2037,10 +2037,10 @@ QuestLogTitleMixin = {};
 
 function QuestLogTitleMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self.CheckBox:SetScript("OnMouseUp", GenerateClosure(self.OnCheckBoxMouseUp, self));
+	self.Checkbox:SetScript("OnMouseUp", GenerateClosure(self.OnCheckboxMouseUp, self));
 end
 
-function QuestLogTitleMixin:OnCheckBoxMouseUp(o, button, upInside)
+function QuestLogTitleMixin:OnCheckboxMouseUp(o, button, upInside)
 	if button == "LeftButton" and upInside then
 		if QuestUtils_IsQuestWatched(questID) then
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);

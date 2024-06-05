@@ -68,10 +68,10 @@ function UnitPopupManager:OpenMenu(which, contextData)
 		end
 
 		if entry:IsTitle() then
-			MenuUtil.QueueDivider(description, true);
-			MenuUtil.QueueTitle(description, entry:GetText());
+			description:QueueDivider(true);
+			description:QueueTitle(entry:GetText());
 		elseif entry:IsDivider() then
-			MenuUtil.QueueDivider(description, true);
+			description:QueueDivider(true);
 		else
 			local childDescription = entry:CreateMenuDescription(description, contextData);
 			if not childDescription then

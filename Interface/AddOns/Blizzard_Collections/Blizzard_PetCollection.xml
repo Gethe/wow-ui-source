@@ -958,7 +958,7 @@
 			</EditBox>
 			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-7" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-10"/>
 				</Anchors>
 			</DropdownButton>
 

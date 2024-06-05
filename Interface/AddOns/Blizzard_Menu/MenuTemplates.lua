@@ -24,9 +24,9 @@ end
 
 local function GetCheckboxSoundKit(description)
 	if description:IsSelected() then
-		return MenuVariants.GetCheckBoxCheckSoundKit();
+		return MenuVariants.GetCheckboxCheckSoundKit();
 	else
-		return MenuVariants.GetCheckBoxUncheckSoundKit();
+		return MenuVariants.GetCheckboxUncheckSoundKit();
 	end
 end
 
@@ -55,13 +55,13 @@ local function OnButtonDisable(button)
 	MenuTemplates.SetHierarchyEnabled(button, false);
 end
 
-local function OnButtonClick(button)
+local function OnButtonClick(button, buttonName)
 	local description = button:GetElementDescription();
 	if not description:CanOpenSubmenu() then
 		PlaySound(description:GetSoundKit());
 	end
 
-	description:Pick(MenuInputContext.MouseButton);
+	description:Pick(MenuInputContext.MouseButton, buttonName);
 	securecallfunction(CheckSecure);
 end
 

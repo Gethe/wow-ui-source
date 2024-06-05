@@ -2,7 +2,7 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="TextToSpeech.lua"/>
 
-	<Frame name="STTTemplate" inherits="SettingsCheckBoxControlTemplate" mixin="SpeechToTextMixin" virtual="true">
+	<Frame name="STTTemplate" inherits="SettingsCheckboxControlTemplate" mixin="SpeechToTextMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="SubTextContainer" setAllPoints="true" hyperlinksEnabled="true" enableMouse="true">
 				<Layers>

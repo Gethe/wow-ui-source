@@ -68,6 +68,7 @@
 					<KeyValue key="minTabWidth" value="100" type="number"/>
 					<KeyValue key="maxTabWidth" value="150" type="number"/>
 					<KeyValue key="tabTemplate" value="SpellBookCategoryTabTemplate" type="string"/>
+					<KeyValue key="tabSelectSound" value="SOUNDKIT.IG_SPELLBOOK_OPEN" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="70" y="-19"/>
@@ -136,6 +137,8 @@
 							<KeyValue key="fontName" value="SystemFont_Med3" type="string" />
 							<KeyValue key="fontColor" value="SPELLBOOK_FONT_COLOR" type="global" />
 							<KeyValue key="spacing" value="8" type="number"/>
+							<KeyValue key="prevPageSound" value="SOUNDKIT.IG_ABILITY_PAGE_TURN" type="global"/>
+							<KeyValue key="nextPageSound" value="SOUNDKIT.IG_ABILITY_PAGE_TURN" type="global"/>
 						</KeyValues>
 					</Frame>
 				</Frames>

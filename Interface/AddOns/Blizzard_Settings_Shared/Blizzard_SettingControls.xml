@@ -84,7 +84,7 @@
 		<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
 	</CheckButton>
 
-	<Frame name="SettingsCheckBoxControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -125,21 +125,21 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="SettingsCheckBoxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxWithButtonControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxWithButtonControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsCheckBoxSliderControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxSliderControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxSliderControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxSliderControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="SettingsCheckBoxDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckBoxDropdownControlMixin" virtual="true">
+	<Frame name="SettingsCheckboxDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxDropdownControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

@@ -492,8 +492,8 @@ function Settings.CreateDropdownButton(optionDescription, optionData, isSelected
 	end
 
 	optionDescription:AddInitializer(function(button, description, menu)
-		button:SetScript("OnClick", function(button)
-			description:Pick(MenuInputContext.MouseButton);
+		button:SetScript("OnClick", function(button, buttonName)
+			description:Pick(MenuInputContext.MouseButton, buttonName);
 		end);
 
 		-- This button template is modified in Languages.lua to hide the text and display

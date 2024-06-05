@@ -46,11 +46,11 @@ function MenuVariants.CreateHighlight(frame)
 	return highlight;
 end
 
-function MenuVariants.GetCheckBoxCheckSoundKit()
+function MenuVariants.GetCheckboxCheckSoundKit()
 	return SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON;
 end
 
-function MenuVariants.GetCheckBoxUncheckSoundKit()
+function MenuVariants.GetCheckboxUncheckSoundKit()
 	return SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
 end
 

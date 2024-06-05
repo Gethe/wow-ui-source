@@ -740,7 +740,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropDown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="StatusDropdown" name="FriendsFrameStatusDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="52" y="-27"/>
 						</Anchors>
@@ -1483,7 +1483,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<DropdownButton parentKey="FriendsDropdown" name="FriendsFriendsFrameDropDown" inherits="WowStyle1DropdownTemplate">
+			<DropdownButton parentKey="FriendsDropdown" name="FriendsFriendsFrameDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="24" y="-40"/>
 				</Anchors>

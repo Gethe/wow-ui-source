@@ -78,7 +78,7 @@ local function Register()
 		local options = Settings.CreateModifiedClickOptions(tooltips);
 		local dropdownSetting = Settings.RegisterModifiedClickSetting(category, "MOUSEOVERCAST", MOUSEOVER_CAST_KEY, "NONE");
 
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
+		local initializer = CreateSettingsCheckboxDropdownInitializer(
 			cbSetting, ENABLE_MOUSEOVER_CAST, OPTION_TOOLTIP_ENABLE_MOUSEOVER_CAST,
 			dropdownSetting, options, MOUSEOVER_CAST_KEY, OPTION_TOOLTIP_MOUSEOVER_CAST_KEY_TEXT);
 		initializer:AddSearchTags(ENABLE_MOUSEOVER_CAST);

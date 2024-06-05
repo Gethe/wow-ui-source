@@ -15,7 +15,10 @@
 						<Anchor point="RIGHT" relativePoint="LEFT"/>
 					</Anchors>
 					<Animations>
-						<AnimationGroup parentKey="Anim" looping="REPEAT">
+						<AnimationGroup parentKey="Anim" looping="REPEAT" inherits="SyncedAnimGroupTemplate">
+							<KeyValues>
+								<KeyValue key="syncKey" value="ClassTalentBorderSheenSyncKey" type="global"/>
+							</KeyValues>
 							<Translation offsetX="150" order="1" startDelay="5" endDelay="10.5" duration="6.5" />
 						</AnimationGroup>
 					</Animations>

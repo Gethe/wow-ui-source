@@ -4,7 +4,7 @@
 	<Frame name="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin" virtual="true">
 		<Size x="35.5" y="36.5"/>
 		<Frames>
-			<Frame parentKey="Instance" inherits="VerticalLayoutFrame">
+			<Frame parentKey="Default" parentArray="ContentModes" inherits="VerticalLayoutFrame">
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -22,7 +22,7 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="NormalTexture" atlas="ui-hud-minimap-guildbanner-normal-large" useAtlasSize="true">
+						<Texture parentKey="NormalTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-normal-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="0" type="number"/>
 								<KeyValue key="rightPadding" value="1" type="number"/>
@@ -31,7 +31,7 @@
 								<Anchor point="CENTER" x="0" y="7"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="HeroicTexture" atlas="ui-hud-minimap-guildbanner-heroic-large" useAtlasSize="true">
+						<Texture parentKey="HeroicTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-heroic-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="1" type="number"/>
 								<KeyValue key="rightPadding" value="1" type="number"/>
@@ -40,7 +40,7 @@
 								<Anchor point="CENTER" x="0" y="7"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="MythicTexture" atlas="ui-hud-minimap-guildbanner-mythic-large" useAtlasSize="true">
+						<Texture parentKey="MythicTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-mythic-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="2" type="number"/>
 								<KeyValue key="rightPadding" value="1" type="number"/>
@@ -49,9 +49,18 @@
 								<Anchor point="CENTER" x="0" y="7"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER">
+						<Texture parentKey="WalkInTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-delves-large" useAtlasSize="true">
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="3" type="number"/>
+								<KeyValue key="rightPadding" value="1" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
 								<KeyValue key="align" value="center" type="string"/>
 								<KeyValue key="rightPadding" value="1" type="number"/>
 							</KeyValues>
@@ -62,7 +71,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="Guild" inherits="VerticalLayoutFrame" mixin="GuildInstanceDifficultyMixin" setAllPoints="true">
+			<Frame parentKey="Guild" parentArray="ContentModes" inherits="VerticalLayoutFrame" mixin="GuildInstanceDifficultyMixin" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" atlas="ui-hud-minimap-guildbanner-background-top" useAtlasSize="true">
@@ -108,7 +117,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture parentKey="NormalTexture" atlas="ui-hud-minimap-guildbanner-normal-mini" useAtlasSize="true">
+								<Texture parentKey="NormalTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-normal-mini" useAtlasSize="true">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="0" type="number"/>
 									</KeyValues>
@@ -116,7 +125,7 @@
 										<Anchor point="BOTTOMLEFT" x="8" y="7"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="HeroicTexture" atlas="ui-hud-minimap-guildbanner-heroic-mini" useAtlasSize="true">
+								<Texture parentKey="HeroicTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-heroic-mini" useAtlasSize="true">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="1" type="number"/>
 									</KeyValues>
@@ -124,7 +133,7 @@
 										<Anchor point="BOTTOMLEFT" x="8" y="7"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="MythicTexture" atlas="ui-hud-minimap-guildbanner-mythic-mini" useAtlasSize="true">
+								<Texture parentKey="MythicTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-mythic-mini" useAtlasSize="true">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="2" type="number"/>
 									</KeyValues>
@@ -132,7 +141,7 @@
 										<Anchor point="BOTTOMLEFT" x="8" y="7"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="ChallengeModeTexture" file="Interface\Common\mini-hourglass">
+								<Texture parentKey="ChallengeModeTexture" parentArray="DifficultyTextures" file="Interface\Common\mini-hourglass">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="3" type="number"/>
 									</KeyValues>
@@ -141,9 +150,17 @@
 									</Anchors>
 									<Size x="12" y="12"/>
 								</Texture>
-								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="25">
+								<Texture parentKey="WalkInTexture" parentArray="DifficultyTextures" atlas="ui-hud-minimap-guildbanner-delves-mini" useAtlasSize="true">
 									<KeyValues>
 										<KeyValue key="layoutIndex" value="4" type="number"/>
+									</KeyValues>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="8" y="7"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="25">
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="5" type="number"/>
 									</KeyValues>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" x="20" y="8"/>
@@ -158,7 +175,7 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="ChallengeMode" setAllPoints="true">
+			<Frame parentKey="ChallengeMode" parentArray="ContentModes" setAllPoints="true">
 				<Size x="35" y="36"/>
 				<Layers>
 					<Layer level="BACKGROUND">

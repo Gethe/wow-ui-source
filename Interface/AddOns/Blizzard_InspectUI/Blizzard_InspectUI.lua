@@ -103,10 +103,6 @@ function InspectFrame_OnHide(self)
 	if not PlayerSpellsFrame or not PlayerSpellsFrame:IsInspecting() then
 		ClearInspectPlayer();
 	end
-
-	-- in the InspectTalentFrame_Update function, a default talent tab is selected smartly if there is no tab selected
-	-- it actually ends up feeling natural to have this behavior happen every time the frame is shown
-	PanelTemplates_SetTab(InspectTalentFrame, nil);
 end
 
 function InspectFrame_OnUpdate(self)

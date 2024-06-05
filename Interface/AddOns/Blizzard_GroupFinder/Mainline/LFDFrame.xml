@@ -264,7 +264,7 @@
 							</OnEnter>
 						</Scripts>
 					</Button>
-					<DropdownButton name="$parentTypeDropDown" parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
+					<DropdownButton name="$parentTypeDropdown" parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="131" y="287"/>
 						</Anchors>

@@ -326,9 +326,9 @@ function DropdownButtonMixin:UpdateToMenuSelections(menuDescription, selections)
 	]]--
 end
 
-function DropdownButtonMixin:Pick(description, menuInputContext)
+function DropdownButtonMixin:Pick(description, menuInputContext, menuInputButtonName)
 	if description then
-		local responded = description:Pick(menuInputContext);
+		local responded = description:Pick(menuInputContext, menuInputButtonName);
 		if responded then
 			self:UpdateToMenuSelections(self:GetMenuDescription());
 			return true;

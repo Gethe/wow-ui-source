@@ -20,8 +20,6 @@ function PlayerSpellsFrameMixin:OnLoad()
 		[PlayerSpellsUtil.FrameTabs.SpellBook] = self.spellBookTabID,
 	};
 
-	self.CloseButton:SetScript("OnClick", GenerateClosure(self.CheckConfirmClose, self));
-
 	self.isMinimizingEnabled = true;
 	self.manualMinimizeEnabled = GetCVarBool("spellBookMinimize");
 
@@ -64,6 +62,8 @@ function PlayerSpellsFrameMixin:OnHide()
 	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	UpdateMicroButtons();
 	self.lockInspect = false;
+
+	EventRegistry:TriggerEvent("PlayerSpellsFrame.CloseFrame");
 end
 
 function PlayerSpellsFrameMixin:OnEvent(event)
@@ -319,12 +319,6 @@ function PlayerSpellsFrameMixin:UpdatePortrait()
 		local classID = self:GetClassID();
 		self:SetPortraitToClassIcon(C_CreatureInfo.GetClassInfo(classID).classFile);
 	end
-end
-
-function PlayerSpellsFrameMixin:CheckConfirmClose()
-	-- No need to check before closing anymore.
-	HideUIPanel(self);
-	EventRegistry:TriggerEvent("PlayerSpellsFrame.CloseFrame");
 end
 
 function PlayerSpellsFrameMixin:CheckConfirmResetAction(callback, cancelCallback)

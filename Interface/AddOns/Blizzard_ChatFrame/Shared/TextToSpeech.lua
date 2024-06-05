@@ -1,11 +1,11 @@
 SpeechToTextMixin = {};
 
 function SpeechToTextMixin:OnLoad()
-	SettingsCheckBoxControlMixin.OnLoad(self);
+	SettingsCheckboxControlMixin.OnLoad(self);
 
-	self.SubTextContainer:SetPoint("TOPLEFT", self.CheckBox, "TOPRIGHT", 0, 0);
+	self.SubTextContainer:SetPoint("TOPLEFT", self.Checkbox, "TOPRIGHT", 0, 0);
 	self.SubTextContainer.SubText:ClearAllPoints();
-	self.SubTextContainer.SubText:SetPoint("LEFT", self.CheckBox, "RIGHT", 8, 0);
+	self.SubTextContainer.SubText:SetPoint("LEFT", self.Checkbox, "RIGHT", 8, 0);
 end
 
 TextToSpeechButtonMixin = {};

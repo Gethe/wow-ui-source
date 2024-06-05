@@ -141,7 +141,7 @@ function StaticPopup_Resize(dialog, which)
 	elseif ( info.hasMoneyInputFrame ) then
 		height = height + 22;
 	end
-	if ( info.hasDropDown ) then
+	if ( info.hasDropdown ) then
 		height = height + 8 + dialog.Dropdown:GetHeight();
 	end
 	if ( dialog.insertedFrame ) then
@@ -238,7 +238,7 @@ function StaticPopup_ShowCustomGenericInputBox(customData, insertedFrame)
 	StaticPopup_Show("GENERIC_INPUT_BOX", nil, nil, customData, insertedFrame);
 end
 
-function StaticPopup_ShowGenericDropDown(text, callback, options, requiresConfirmation, defaultOption)
+function StaticPopup_ShowGenericDropdown(text, callback, options, requiresConfirmation, defaultOption)
 	local data = { text = text, callback = callback, options = options, requiresConfirmation = requiresConfirmation, defaultOption = defaultOption };
 	StaticPopup_Show("GENERIC_DROP_DOWN", nil, nil, data);
 end
@@ -455,8 +455,8 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		editBox:Hide();
 	end
 
-	--See StaticPopup_ShowGenericDropDown
-	dialog.Dropdown:SetShown(info.hasDropDown);
+	--See StaticPopup_ShowGenericDropdown
+	dialog.Dropdown:SetShown(info.hasDropdown);
 
 	-- Show or hide money frame
 	if ( info.hasMoneyFrame ) then

@@ -1760,8 +1760,8 @@ function BankPanelTabSettingsMenuMixin:Update()
 
 	self:SetSelectedIconText();
 
-	self:InitDepositSettingCheckBoxes();
-	self.DepositSettingsMenu.ExpansionFilterDropDown:Refresh();
+	self:InitDepositSettingCheckboxes();
+	self.DepositSettingsMenu.ExpansionFilterDropdown:Refresh();
 end
 
 function BankPanelTabSettingsMenuMixin:SetSelectedTab(selectedTabID)
@@ -1818,7 +1818,7 @@ end
 
 function BankPanelTabSettingsMenuMixin:GetNewTabDepositFlags()
 	local depositFlags = 0;
-	for index, checkBox in ipairs(self.DepositSettingsMenu.DepositSettingsCheckBoxes) do
+	for index, checkBox in ipairs(self.DepositSettingsMenu.DepositSettingsCheckboxes) do
 		local isValidSetting = checkBox.settingFlag ~= nil;
 		if isValidSetting then
 			local setDepositFlag = checkBox:GetChecked();
@@ -1826,7 +1826,7 @@ function BankPanelTabSettingsMenuMixin:GetNewTabDepositFlags()
 		end
 	end
 
-	local expansionFlags = self.DepositSettingsMenu.ExpansionFilterDropDown:GetFilterValue();
+	local expansionFlags = self.DepositSettingsMenu.ExpansionFilterDropdown:GetFilterValue();
 	if expansionFlags then
 		local setFlag = true;
 		depositFlags = FlagsUtil.Combine(depositFlags, expansionFlags, setFlag);
@@ -1835,14 +1835,14 @@ function BankPanelTabSettingsMenuMixin:GetNewTabDepositFlags()
 	return depositFlags;
 end
 
-function BankPanelTabSettingsMenuMixin:InitDepositSettingCheckBoxes()
+function BankPanelTabSettingsMenuMixin:InitDepositSettingCheckboxes()
 	local tabData = self:GetSelectedTabData();
 	if not tabData then
 		return;
 	end
 
 	local depositFlags = tabData.depositFlags;
-	for index, checkBox in ipairs(self.DepositSettingsMenu.DepositSettingsCheckBoxes) do
+	for index, checkBox in ipairs(self.DepositSettingsMenu.DepositSettingsCheckboxes) do
 		local isValidSetting = checkBox.settingFlag ~= nil;
 		checkBox:SetEnabled(isValidSetting);
 		checkBox:SetChecked(isValidSetting and FlagsUtil.IsSet(depositFlags, checkBox.settingFlag) or false);
@@ -1874,14 +1874,14 @@ local BankTabExpansionFilterTypeNames = {
 BankTabDepositSettingsMenuMixin = {};
 
 function BankTabDepositSettingsMenuMixin:OnLoad()
-	self.ExpansionFilterDropDown:SetWidth(110);
+	self.ExpansionFilterDropdown:SetWidth(110);
 end
 
 function BankTabDepositSettingsMenuMixin:OnShow()
-	self.ExpansionFilterDropDown:Refresh();
+	self.ExpansionFilterDropdown:Refresh();
 end
 
-BankPanelTabSettingsExpansionFilterDropDownMixin = {};
+BankPanelTabSettingsExpansionFilterDropdownMixin = {};
 
 local function GetCurrentFilterType(tabData)
 	local filterType = 0;
@@ -1891,7 +1891,7 @@ local function GetCurrentFilterType(tabData)
 	return filterType;
 end
 
-function BankPanelTabSettingsExpansionFilterDropDownMixin:Refresh()
+function BankPanelTabSettingsExpansionFilterDropdownMixin:Refresh()
 	local tabData = self:GetSelectedTabData();
 	if not tabData then
 		return;
@@ -1916,26 +1916,26 @@ function BankPanelTabSettingsExpansionFilterDropDownMixin:Refresh()
 	end);
 end
 
-function BankPanelTabSettingsExpansionFilterDropDownMixin:GetSelectedTabData()
+function BankPanelTabSettingsExpansionFilterDropdownMixin:GetSelectedTabData()
 	local settingsMenu = self:GetParent():GetParent();
 	return settingsMenu:GetSelectedTabData();
 end
 
-function BankPanelTabSettingsExpansionFilterDropDownMixin:GetFilterValue()
+function BankPanelTabSettingsExpansionFilterDropdownMixin:GetFilterValue()
 	return self.selectedValue;
 end
 
-function BankPanelTabSettingsExpansionFilterDropDownMixin:SetFilterValue(value)
+function BankPanelTabSettingsExpansionFilterDropdownMixin:SetFilterValue(value)
 	self.selectedValue = value;
 end
 
-BankPanelCheckBoxMixin = {};
+BankPanelCheckboxMixin = {};
 
-function BankPanelCheckBoxMixin:OnShow()
+function BankPanelCheckboxMixin:OnShow()
 	self:Init();
 end
 
-function BankPanelCheckBoxMixin:Init()
+function BankPanelCheckboxMixin:Init()
 	if self.fontObject then
 		self.Text:SetFontObject(self.fontObject);
 	end
@@ -1949,14 +1949,14 @@ function BankPanelCheckBoxMixin:Init()
 	end
 end
 
-BankPanelIncludeReagentsCheckBoxMixin = CreateFromMixins(BankPanelCheckBoxMixin);
+BankPanelIncludeReagentsCheckboxMixin = CreateFromMixins(BankPanelCheckboxMixin);
 
-function BankPanelIncludeReagentsCheckBoxMixin:OnShow()
-	BankPanelCheckBoxMixin.OnShow(self);
+function BankPanelIncludeReagentsCheckboxMixin:OnShow()
+	BankPanelCheckboxMixin.OnShow(self);
 	self:SetChecked(GetCVarBool("bankAutoDepositReagents"));
 end
 
-function BankPanelIncludeReagentsCheckBoxMixin:OnClick()
+function BankPanelIncludeReagentsCheckboxMixin:OnClick()
 	SetCVar("bankAutoDepositReagents", self:GetChecked());
 end
 

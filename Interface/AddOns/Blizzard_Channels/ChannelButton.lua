@@ -7,7 +7,6 @@ end
 
 function ChannelButtonBaseMixin:OnClick(button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	HideDropDownMenu(1);
 end
 
 function ChannelButtonBaseMixin:GetChannelList()

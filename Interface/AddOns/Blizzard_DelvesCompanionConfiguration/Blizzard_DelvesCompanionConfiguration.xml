@@ -5,15 +5,21 @@
         <!--
             <KeyValues>
                 * Drives the fetching of the proper SelectionNodeID for the slot based on type
-                * See DelvesCompanionConfiguration.lua -> ConfigSlotType
-                <KeyValue type="string" key="type" value="{ConfigSlotType.type}"/>
+                * See DelvesConstants.tag -> COMPANION_CONFIG_SLOT_TYPES
+                <KeyValue type="string" key="type" value="{COMPANION_CONFIG_SLOT_TYPES.<type>}"/>
             </KeyValues>
         -->
         <Size x="80" y="75"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture parentKey="Shadow" atlas="talents-node-pvp-shadow" useAtlasSize="false"> <!-- todo art? -->
+                <Texture parentKey="Shadow" atlas="talents-node-pvp-shadow" useAtlasSize="false">
                     <Size x="80" y="75"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="NewGlowHighlight" atlas="talents-node-choice-newglow" useAtlasSize="false" hidden="true" alpha="0">
+                    <Size x="102" y="102"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
@@ -32,7 +38,7 @@
                         <Anchor point="CENTER" x="1" y="-1"/>
                     </Anchors>
                 </Texture>
-                <MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE"> <!-- todo art? -->
+                <MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
                     <Size x="45" y="50"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
@@ -43,14 +49,14 @@
                     </MaskedTextures>
                 </MaskTexture>
             </Layer>
-            <Layer level="ARTWORK">
-                <Texture parentKey="Border" atlas="talents-node-pvp-locked"> <!-- todo art -->
+            <Layer level="ARTWORK" >
+                <Texture parentKey="Border" atlas="talents-node-pvp-locked">
                     <Size x="80" y="75"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
                 </Texture>
-                <Texture parentKey="BorderHighlight" alphaMode="ADD" alpha="0.4" hidden="true"> <!-- todo art -->
+                <Texture parentKey="BorderHighlight" alphaMode="ADD" alpha="0.4" hidden="true">
                     <Size x="80" y="75"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
@@ -71,12 +77,32 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame parentKey="OptionsList" inherits="CompanionConfigListTemplate" hidden="true">
+            <Frame parentKey="NewLabel" inherits="NewFeatureLabelTemplate" hidden="true" useParentLevel="true">
+                <KeyValues>
+                    <KeyValue key="animateGlow" value="false" type="boolean"/>
+                    <KeyValue key="label" value="DELVES_NEW_CURIO" type="global"/>
+                    <KeyValue key="justifyH" value="CENTER" type="string"/>
+                </KeyValues>
+                <Size x="50" y="20"/>
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" y="12"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="OptionsList" inherits="CompanionConfigListTemplate" mixin="CompanionConfigSlotOptionsListMixin" hidden="true">
                 <Anchors>
                     <Anchor point="TOP" relativeKey="$parent.Texture" relativePoint="CENTER" x="-2" y="-20"/>
                 </Anchors>
+                <Scripts>
+                    <OnHide method="OnHide"/>
+                </Scripts>
             </Frame>
         </Frames>
+        <Animations>
+            <AnimationGroup parentKey="NewGlowHighlightAnimIn" setToFinalAlpha="true">
+                <Alpha childKey="NewGlowHighlight" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="NewGlowHighlight" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+            </AnimationGroup>
+        </Animations>
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnShow method="OnShow"/>
@@ -140,9 +166,15 @@
 						<Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
+                <Texture parentKey="NewGlow" atlas="charactercreate-customize-dropdown-newtagglow" useAtlasSize="false" hidden="true">
+                    <Size x="140" y="30"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.Name" x="-5" y="-1"/>
+                    </Anchors>
+                </Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Border" atlas="talents-node-pvpflyout-green" hidden="true"> <!-- TODO hidden until we have a way to get the rarity of trinkets -->
+				<Texture parentKey="Border" file="Interface\Common\WhiteIconFrame">
 					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="2" y="-2"/>
@@ -155,6 +187,8 @@
             <OnClick method="OnClick"/>
             <OnEnter method="OnEnter"/>
             <OnLeave method="OnLeave"/>
+            <OnHide method="OnHide"/>
+            <OnShow method="OnShow"/>
         </Scripts>
 	</Button>
 
@@ -257,7 +291,7 @@
                         <FontString parentKey="CompanionLevel" justifyH="CENTER" inherits="GameFontNormal">
                             <Size x="30" y="25"/>
                             <Anchors>
-                                <Anchor point="CENTER"/> 
+                                <Anchor point="CENTER" x="1"/> 
                             </Anchors>
                         </FontString>
                     </Layer>
@@ -308,19 +342,19 @@
 
             <Button parentKey="CompanionCombatTrinketSlot" inherits="CompanionConfigSlotTemplate">
                 <KeyValues>
-                    <KeyValue type="string" key="type" value="CombatTrinket"/>
+                    <KeyValue type="string" key="type" value="Combat"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatRoleSlot" relativePoint="BOTTOM" y="-5"/>
+                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatRoleSlot" relativePoint="BOTTOM" y="-13"/>
                 </Anchors>
             </Button>
 
             <Button parentKey="CompanionUtilityTrinketSlot" inherits="CompanionConfigSlotTemplate">
                 <KeyValues>
-                    <KeyValue type="string" key="type" value="UtilityTrinket"/>
+                    <KeyValue type="string" key="type" value="Utility"/>
                 </KeyValues>
                 <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatTrinketSlot" relativePoint="BOTTOM" y="-5"/>
+                    <Anchor point="TOP" relativeKey="$parent.CompanionCombatTrinketSlot" relativePoint="BOTTOM" y="-13"/>
                 </Anchors>
             </Button>
 
@@ -328,7 +362,7 @@
             <Button parentKey="CompanionConfigShowAbilitiesButton" inherits="UIPanelButtonTemplate" mixin="CompanionConfigShowAbilitiesButtonMixin">
                 <Size x="170" y="25"/>
                 <Anchors>
-                    <Anchor point="BOTTOM"  y="25"/>
+                    <Anchor point="BOTTOM"  y="15"/>
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">

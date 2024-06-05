@@ -396,7 +396,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<DropdownButton parentKey="RestrictPingsDropDown" name="$parentRestrictPingsDropDown" inherits="WowStyle1DropdownTemplate"/>
+					<DropdownButton parentKey="RestrictPingsDropdown" name="$parentRestrictPingsDropdown" inherits="WowStyle1DropdownTemplate"/>
 					<Frame name="parentBottomButtons" parentKey="BottomButtons" hidden="true">
 						<Size x="222" y="40"/>
 						<Frames>

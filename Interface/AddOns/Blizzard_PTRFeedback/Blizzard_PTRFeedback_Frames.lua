@@ -233,7 +233,7 @@ function PTR_IssueReporter.AttachMultipleChoiceNoQuestion(frame, answers, canSel
     end
     
     for key, choiceInfo in pairs (answers) do
-        local height = PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choiceInfo.Choice, canSelectMultiple, true, checkBoxMargin, choiceInfo.Key, true)
+        local height = PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, choiceInfo.Choice, canSelectMultiple, true, checkBoxMargin, choiceInfo.Key, true)
         if (height > verticalCheckboxHeight) then
             verticalCheckboxHeight = height
         end
@@ -324,7 +324,7 @@ function PTR_IssueReporter.AttachMultipleChoiceQuestion(frame, question, answers
     local checkBoxMargin = questionFrameWidth/(numberOfCurrentCheckboxes)
     
     for key, choice in pairs (answers) do
-        local height = PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically, checkBoxMargin)
+        local height = PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, choice, canSelectMultiple, displayVertically, checkBoxMargin)
         if (height > verticalCheckboxHeight) then
             verticalCheckboxHeight = height
         end
@@ -420,9 +420,9 @@ function PTR_IssueReporter.SetupQuestionFrame(questionFrame, question)
     return headerHeight
 end
 ----------------------------------------------------------------------------------------------------
-function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSelectMultiple, isVertical, checkBoxMargin, keyUpdate, forceSelection)
+function PTR_IssueReporter.AttachCheckboxToQuestion(questionFrame, answer, canSelectMultiple, isVertical, checkBoxMargin, keyUpdate, forceSelection)
     
-    local newCheckBox
+    local newCheckbox
     
     if not (PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox) then
         PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox = {}
@@ -436,18 +436,18 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
     end    
     
     if  numberOfUnusedFrames > 0 then -- Check if there is a frame we should reuse
-        newCheckBox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
+        newCheckbox = PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames]
         PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox[numberOfUnusedFrames] = nil
         numberOfUnusedFrames = #PTR_IssueReporter.Data.UnusedFrameComponents.Checkbox
     else
-        newCheckBox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
-        newCheckBox.text = newCheckBox:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-        newCheckBox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
-        newCheckBox.text:SetJustifyH("CENTER")
-        newCheckBox.text:SetJustifyV("MIDDLE")
-        newCheckBox.text:SetTextColor(1, 1, 1)
+        newCheckbox = CreateFrame("CheckButton", nil, questionFrame.QuestionBackground, "UICheckButtonTemplate")
+        newCheckbox.text = newCheckbox:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+        newCheckbox.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+        newCheckbox.text:SetJustifyH("CENTER")
+        newCheckbox.text:SetJustifyV("MIDDLE")
+        newCheckbox.text:SetTextColor(1, 1, 1)
         
-        newCheckBox:SetScript("OnClick", function(self)
+        newCheckbox:SetScript("OnClick", function(self)
             if (self.keyUpdate) then
                 if (self:GetChecked()) then
                     PTR_IssueReporter.Data.Current_Message_Key = self.keyUpdate
@@ -466,25 +466,25 @@ function PTR_IssueReporter.AttachCheckBoxToQuestion(questionFrame, answer, canSe
         end)
     end
     
-    newCheckBox.keyUpdate = keyUpdate
-    newCheckBox.text:ClearAllPoints()
+    newCheckbox.keyUpdate = keyUpdate
+    newCheckbox.text:ClearAllPoints()
     
     if (isVertical) then        
-        newCheckBox.text:SetPoint("LEFT", newCheckBox, "RIGHT", 0, 0)
-        newCheckBox.text:SetWidth(0)
+        newCheckbox.text:SetPoint("LEFT", newCheckbox, "RIGHT", 0, 0)
+        newCheckbox.text:SetWidth(0)
     else
-        newCheckBox.text:SetPoint("TOP", newCheckBox, "BOTTOM", 0, 0)
+        newCheckbox.text:SetPoint("TOP", newCheckbox, "BOTTOM", 0, 0)
 
-        newCheckBox.text:SetWidth(checkBoxMargin)
+        newCheckbox.text:SetWidth(checkBoxMargin)
     end
     
-    newCheckBox:SetChecked(false)
-    newCheckBox:SetParent(questionFrame.QuestionBackground)
-    newCheckBox.text:SetText(answer)
-    newCheckBox:Show()
+    newCheckbox:SetChecked(false)
+    newCheckbox:SetParent(questionFrame.QuestionBackground)
+    newCheckbox.text:SetText(answer)
+    newCheckbox:Show()
     
-    table.insert(questionFrame.Checkboxes, newCheckBox)
-    return newCheckBox:GetHeight() + newCheckBox.text:GetHeight()
+    table.insert(questionFrame.Checkboxes, newCheckbox)
+    return newCheckbox:GetHeight() + newCheckbox.text:GetHeight()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetSurveyButtonEnabledState()

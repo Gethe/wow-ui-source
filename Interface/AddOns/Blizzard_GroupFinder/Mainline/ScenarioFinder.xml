@@ -55,7 +55,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<DropdownButton name="$parentTypeDropDown" inherits="WowStyle1DropdownTemplate" parentKey="Dropdown" id="1">
+					<DropdownButton name="$parentTypeDropdown" inherits="WowStyle1DropdownTemplate" parentKey="Dropdown" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>

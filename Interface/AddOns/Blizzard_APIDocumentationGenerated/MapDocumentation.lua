@@ -482,7 +482,7 @@ local Map =
 			},
 		},
 		{
-			Name = "IsMapValidForNavBarDropDown",
+			Name = "IsMapValidForNavBarDropdown",
 			Type = "Function",
 
 			Arguments =

@@ -488,7 +488,7 @@
 				</Frames>
 			</Frame>
 
-			<Frame parentKey="TrackRecipeCheckBox" inherits="ResizeLayoutFrame" scale="0.9">
+			<Frame parentKey="TrackRecipeCheckbox" inherits="ResizeLayoutFrame" scale="0.9">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RecipeHeader" x="5" y="2"/>
 				</Anchors>
@@ -512,7 +512,7 @@
 				</Frames>
 			</Frame>
 
-			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="AllocateBestQualityCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ReagentContainer" x="6" y="-3"/>

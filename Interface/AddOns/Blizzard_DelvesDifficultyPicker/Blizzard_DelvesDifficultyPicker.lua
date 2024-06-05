@@ -234,6 +234,7 @@ function DelvesDifficultyPickerFrameMixin:OnHide()
 	C_GossipInfo.CloseGossip();
 	if self.bountifulAnimFrame then
 		self.bountifulAnimFrame:Hide();
+		self.bountifulAnimFrame = nil;
 	end
 end		
 
@@ -249,7 +250,7 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 	elseif UnitLevel("player") < Constants.DelvesConsts.MIN_PLAYER_LEVEL then
 		self:SetEnabled(false);
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 225);
-		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR);
+		GameTooltip_AddErrorLine(GameTooltip, DELVES_ENTRANCE_LEVEL_REQUIREMENT_ERROR:format(Constants.DelvesConsts.MIN_PLAYER_LEVEL));
 		GameTooltip:Show(); 
 	end
 end 

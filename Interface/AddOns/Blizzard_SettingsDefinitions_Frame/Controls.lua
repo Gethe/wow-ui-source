@@ -177,7 +177,7 @@ local function Register()
 			return container:GetData();
 		end
 
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
+		local initializer = CreateSettingsCheckboxDropdownInitializer(
 			cbSetting, CLICK_TO_MOVE, OPTION_TOOLTIP_CLICK_TO_MOVE,
 			dropdownSetting, GetOptionData, CAMERA_CTM_FOLLOWING_STYLE, OPTION_TOOLTIP_CTM_CAMERA_FOLLOWING_STYLE);
 		initializer:AddSearchTags(CLICK_TO_MOVE, CAMERA_CTM_FOLLOWING_STYLE);

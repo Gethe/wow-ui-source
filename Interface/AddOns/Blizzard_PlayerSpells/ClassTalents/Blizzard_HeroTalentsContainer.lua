@@ -11,12 +11,12 @@ function HeroTalentsContainerMixin:Init(talentFrame, specSelectionDialog)
 	
 	self.activeSubTreeInfo = nil;
 	self.activeSubTreeSelectionNodeInfo = nil;
-	self.isExpanded = nil;
+	self.isCollapsed = nil;
 	
 	self.specSelectionDialog:SetTalentFrame(talentFrame);
 
-	local initialIsExpanded = true;
-	self:SetExpanded(initialIsExpanded);
+	local initialIsCollapsed = not not GetCVarBool("heroTalentsCollapse");
+	self:SetCollapsed(initialIsCollapsed);
 
 	self:MarkHeroTalentUIDirty();
 end
@@ -58,7 +58,7 @@ function HeroTalentsContainerMixin:HasAnythingToDisplay()
 end
 
 function HeroTalentsContainerMixin:ShouldAllowCollapsing()
-	return self:IsDisplayingActiveHeroSpec() and not self:IsInspecting() and not self.CurrencyFrame:IsShown();
+	return self:IsDisplayingActiveHeroSpec() and not self:IsInspecting() and not self.CurrencyFrame:IsShown() and not self.anyActiveSubTreeMatches;
 end
 
 function HeroTalentsContainerMixin:MarkHeroTalentUIDirty()
@@ -183,14 +183,14 @@ function HeroTalentsContainerMixin:UpdateHeroTalentUI()
 
 	self:UpdateHeroSpecButton();
 
-	local skipCheckingExpandState = true;
-	self:UpdateHeroTalentCurrency(skipCheckingExpandState);
+	local skipCheckingCollapseState = true;
+	self:UpdateHeroTalentCurrency(skipCheckingCollapseState);
+	self:UpdateSearchDisplay(skipCheckingCollapseState);
 
-	if shouldDisplay and not self.isExpanded and not self:ShouldAllowCollapsing() then
-		-- If we're collapsed, and we shouldn't be, force expand which will update containers
-		self:SetExpanded(true);
-	else
-		-- Otherwise just update containers as normal
+	-- Update our collapse state, which, if changed, will update containers
+	local updatedViaCollapseChange = shouldDisplay and self:CheckCollapseState();
+	if not updatedViaCollapseChange then
+		-- Collapse state unchanged, so just update containers as normal
 		self:UpdateContainerVisibility();
 	end
 
@@ -237,7 +237,7 @@ function HeroTalentsContainerMixin:UpdateHeroSpecButton()
 	self.HeroSpecButton:SetSubTreeIds(subTreeIDs, isLocked);
 end
 
-function HeroTalentsContainerMixin:UpdateHeroTalentCurrency(skipCheckingExpandState)
+function HeroTalentsContainerMixin:UpdateHeroTalentCurrency(skipCheckingCollapseState)
 	local talentFrame = self:GetTalentFrame();
 	local currencyAvailable = 0;
 
@@ -288,16 +288,37 @@ function HeroTalentsContainerMixin:UpdateHeroTalentCurrency(skipCheckingExpandSt
 		self.specSelectionDialog:UpdateCurrencies();
 	end
 
-	local shouldAlllowCollapsing = self:ShouldAllowCollapsing();
-	if not skipCheckingExpandState and not self.isExpanded and not shouldAlllowCollapsing then
-		-- If we're collapsed, and the currency frame is now hiding the expand button, force expand
-		self:SetExpanded(true);
-	else
-		-- Otherwise just update the visibility of the Expand button
-		self.ExpandButton:SetShown(shouldAlllowCollapsing);
+	if not skipCheckingCollapseState then
+		self:CheckCollapseState();
 	end
 
 	self:CheckTutorials();
+end
+
+function HeroTalentsContainerMixin:UpdateSearchDisplay(skipCheckingCollapseState)
+	self.anyActiveSubTreeMatches = false;
+	local talentFrame = self:GetTalentFrame();
+	local bestInactiveSubTreeMatch = nil;
+
+	if self:HasAnythingToDisplay() and talentFrame:IsSearchActive() then
+		for talentButton in talentFrame:EnumerateAllTalentButtons() do
+			local nodeInfo = talentButton:GetNodeInfo();
+			local nodeMatchType = talentButton:GetSearchMatchType();
+			if nodeInfo.subTreeID and nodeMatchType then
+				if nodeInfo.subTreeActive then
+					self.anyActiveSubTreeMatches = true;
+				elseif not bestInactiveSubTreeMatch or nodeMatchType > bestInactiveSubTreeMatch then
+					bestInactiveSubTreeMatch = nodeMatchType;
+				end
+			end
+		end
+	end
+
+	self.HeroSpecButton:SetSearchMatchType(bestInactiveSubTreeMatch);
+
+	if not skipCheckingCollapseState then
+		self:CheckCollapseState();
+	end
 end
 
 function HeroTalentsContainerMixin:UpdateHeroTalentsUnlockedAnim()
@@ -325,15 +346,9 @@ function HeroTalentsContainerMixin:UpdateBackgroundAnims()
 
 	-- Play the sheen animations so they're syncronized with the sheen animation on the talent buttons.
 	if playing then
-		local function PlayAndSyncSheenAnimation(sheenAnim)
-			local reverse = false;
-			local timeOffset = ClassTalentUtil.GetOrStartSyncedAnimationOffset(sheenAnim:GetDuration());
-			sheenAnim:Play(reverse, timeOffset);
-		end
-
-		PlayAndSyncSheenAnimation(self.HeroSpecButton.HeroClassIconSheen.Anim);
-		PlayAndSyncSheenAnimation(self.HeroSpecButton.HeroClassRingBorderSheen.Anim);
-		PlayAndSyncSheenAnimation(self.ExpandedContainer.HeroClassBackplateFullSheen.Anim);
+		self.HeroSpecButton.HeroClassIconSheen.Anim:PlaySynced();
+		self.HeroSpecButton.HeroClassRingBorderSheen.Anim:PlaySynced();
+		self.ExpandedContainer.HeroClassBackplateFullSheen.Anim:PlaySynced();
 	else
 		self.HeroSpecButton.HeroClassIconSheen.Anim:Stop();
 		self.HeroSpecButton.HeroClassRingBorderSheen.Anim:Stop();
@@ -346,27 +361,62 @@ function HeroTalentsContainerMixin:OnHeroTalentsUnlockedAnimFinished()
 	self:UpdateChoiceGlowAnim();
 end
 
-function HeroTalentsContainerMixin:SetExpanded(isExpanded)
-	if self.isExpanded == isExpanded then
-		return;
+function HeroTalentsContainerMixin:CheckCollapseState()
+	local didChangeCollapseState = false;
+
+	local shouldAlllowCollapsing = self:ShouldAllowCollapsing();
+	if self.isCollapsed and not shouldAlllowCollapsing then
+		-- Collapsed and we shouldn't be, so force expand
+		-- Avoid saving the force expand so that we can re-collapse once able to, if that's what the player chose previously
+		local skipPersisting = true;
+		didChangeCollapseState = self:SetCollapsed(false, skipPersisting);
+	elseif not self.isCollapsed and shouldAlllowCollapsing then
+		-- We're not collapsed but could be, so check whether the player had previously chosen to collapse
+		local wasCollapsed = GetCVarBool("heroTalentsCollapse");
+		if wasCollapsed then
+			-- They did, so get us back to being collapsed again
+			didChangeCollapseState = self:SetCollapsed(true);
+		end
 	end
 
-	if not isExpanded and not self:ShouldAllowCollapsing() then
-		return;
+	if not didChangeCollapseState then
+		-- Changing collapse state would've updated our button, so update it now in case it does need visual changes
+		self:UpdateCollapseButton();
 	end
 
-	self.isExpanded = isExpanded;
-	self.ExpandButton:SetExpanded(isExpanded);
+	return didChangeCollapseState;
+end
+
+function HeroTalentsContainerMixin:SetCollapsed(collapsed, skipPersisting)
+	if self.isCollapsed == collapsed then
+		return false;
+	end
+
+	if collapsed and not self:ShouldAllowCollapsing() then
+		return false;
+	end
+
+	if not skipPersisting then
+		SetCVar("heroTalentsCollapse", collapsed);
+	end
+
+	self.isCollapsed = collapsed;
 
 	self:UpdateContainerVisibility();
+	self:UpdateCollapseButton();
+	return true;
+end
+
+function HeroTalentsContainerMixin:UpdateCollapseButton()
+	self.CollapseButton:SetShown(self:ShouldAllowCollapsing());
+	self.CollapseButton:SetCollapsed(self.isCollapsed);
 end
 
 function HeroTalentsContainerMixin:UpdateContainerVisibility()
 	local isDisplayingActiveHeroSpec = self:IsDisplayingActiveHeroSpec();
 
-	self.ExpandButton:SetShown(self:ShouldAllowCollapsing());
-	self.ExpandedContainer:SetShown(isDisplayingActiveHeroSpec and self.isExpanded);
-	self.CollapsedContainer:SetShown(isDisplayingActiveHeroSpec and not self.isExpanded);
+	self.ExpandedContainer:SetShown(isDisplayingActiveHeroSpec and not self.isCollapsed);
+	self.CollapsedContainer:SetShown(isDisplayingActiveHeroSpec and self.isCollapsed);
 	self.PreviewContainer:SetShown(self:IsDisplayingHeroSpecChoices() or self:IsDisplayingPreviewSpecs());
 
 	-- If the Hero Talent Selection dialog is up, then it currently contains all the SubTree nodes, don't move them
@@ -374,7 +424,7 @@ function HeroTalentsContainerMixin:UpdateContainerVisibility()
 		return;
 	end
 
-	-- Otherwise place all subTree nodes into our proper container based on their state and our expanded state
+	-- Otherwise place all subTree nodes into our proper container based on their state and our collapsed state
 	for talentButton in self:GetTalentFrame():EnumerateAllTalentButtons() do
 		local nodeInfo = talentButton:GetNodeInfo();
 		if nodeInfo.subTreeID then
@@ -422,8 +472,8 @@ function HeroTalentsContainerMixin:UpdateHeroTalentButtonPosition(talentButton)
 end
 
 function HeroTalentsContainerMixin:TryPositionInCollapsedFrame(talentButton, nodeInfo)
-	-- If we're not in expanded mode or node isn't currently visible, skip it
-	if self.isExpanded or not talentButton:ShouldBeVisible() then
+	-- If we're not in collapsed mode or node isn't currently visible, skip it
+	if not self.isCollapsed or not talentButton:ShouldBeVisible() then
 		return false;
 	end
 
@@ -452,9 +502,9 @@ function HeroTalentsContainerMixin:TryPositionInCollapsedFrame(talentButton, nod
 	return true;
 end
 
-function HeroTalentsContainerMixin:OnExpandClicked()
-	local isExpanded = not self.isExpanded;
-	self:SetExpanded(isExpanded);
+function HeroTalentsContainerMixin:OnCollapseClicked()
+	local isCollapsed = not self.isCollapsed;
+	self:SetCollapsed(isCollapsed);
 end
 
 function HeroTalentsContainerMixin:OnHeroSpecButtonClicked()
@@ -485,6 +535,10 @@ end
 
 HeroSpecButtonMixin = {};
 
+function HeroSpecButtonMixin:OnLoad()
+	self.SearchIcon.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
+end
+
 function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 	local talentFrame = self:GetTalentFrame();
 
@@ -495,10 +549,14 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 		-- One SubTree, show as the sole active SubTree
 		local activeSubTreeInfo = talentFrame:GetAndCacheSubTreeInfo(subTreeIDs[1]);
 
-		self.Icon1:SetAtlas(activeSubTreeInfo.iconElementID);
-		self.Icon1Anim:SetAtlas(activeSubTreeInfo.iconElementID);
-		self.Icon1Hover:SetAtlas(activeSubTreeInfo.iconElementID);
-		self.Icon2:Hide();
+		for _, texture in ipairs(self.Icon1Textures) do
+			texture:SetAtlas(activeSubTreeInfo.iconElementID);
+		end
+
+		for _, texture in ipairs(self.Icon2Textures) do
+			texture:Hide();
+		end
+
 		for _, mask in ipairs(self.IconSplitMasks) do
 			mask:Hide();
 		end
@@ -509,12 +567,14 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 		local subTree1 = talentFrame:GetAndCacheSubTreeInfo(subTreeIDs[1]);
 		local subTree2 = talentFrame:GetAndCacheSubTreeInfo(subTreeIDs[2]);
 
-		self.Icon1:SetAtlas(subTree1.iconElementID);
-		self.Icon1Hover:SetAtlas(subTree1.iconElementID);
-		self.Icon2:SetAtlas(subTree2.iconElementID);
-		self.Icon2Hover:SetAtlas(subTree2.iconElementID);
-		self.Icon2:Show();
-		self.Icon1Anim:Hide();
+		for _, texture in ipairs(self.Icon1Textures) do
+			texture:SetAtlas(subTree1.iconElementID);
+		end
+
+		for _, texture in ipairs(self.Icon2Textures) do
+			texture:SetAtlas(subTree2.iconElementID);
+			texture:Show();
+		end
 
 		for _, mask in ipairs(self.IconSplitMasks) do
 			mask:Show();
@@ -538,12 +598,13 @@ function HeroSpecButtonMixin:SetSubTreeIds(subTreeIDs, isLocked)
 	end
 
 	if self:IsMouseMotionFocus() then
-		self.BorderHover:Hide();
-		self.Icon1Hover:Hide();
-		self.Icon2Hover:Hide();
-		self.ChoiceBorderHover:Hide();
+		self:OnLeave();
 		self:OnEnter();
 	end
+end
+
+function HeroSpecButtonMixin:SetSearchMatchType(matchType)
+	self.SearchIcon:SetMatchType(matchType);
 end
 
 function HeroSpecButtonMixin:OnEnter()
@@ -551,13 +612,13 @@ function HeroSpecButtonMixin:OnEnter()
 		return;
 	end
 
+	self.Icon1Hover:Show();
+	self.Icon2Hover:SetShown(self.areChoicesActive);
+
 	if self.areChoicesActive then
 		self.ChoiceBorderHover:Show();
-		self.Icon1Hover:Show();
-		self.Icon2Hover:Show();
 	else
 		self.BorderHover:Show();
-		self.Icon1Hover:Show();
 	end
 end
 
@@ -566,13 +627,13 @@ function HeroSpecButtonMixin:OnLeave()
 		return;
 	end
 
+	self.Icon1Hover:Hide();
+	self.Icon2Hover:Hide();
+
 	if self.areChoicesActive then
 		self.ChoiceBorderHover:Hide();
-		self.Icon1Hover:Hide();
-		self.Icon2Hover:Hide();
 	else
 		self.BorderHover:Hide();
-		self.Icon1Hover:Hide();
 	end
 end
 
@@ -592,24 +653,38 @@ end
 
 
 
-HeroTalentExpandButtonMixin = {};
+HeroTalentCollapseButtonMixin = {};
 
-function HeroTalentExpandButtonMixin:SetExpanded(isExpanded)
-	local atlasToUse = isExpanded and self.expandedAtlas or self.collapsedAtlas;
+function HeroTalentCollapseButtonMixin:SetCollapsed(isCollapsed)
+	self.isCollapsed = isCollapsed;
+	local atlasToUse = isCollapsed and self.collapsedAtlas or self.expandedAtlas;
 	self.Texture:SetAtlas(atlasToUse);
 	self.TextureHover:SetAtlas(atlasToUse);
+
+	if self:IsMouseMotionFocus() then
+		self:OnEnter();
+	end
 end
 
-function HeroTalentExpandButtonMixin:OnClick()
-	self:GetParent():OnExpandClicked();
+function HeroTalentCollapseButtonMixin:OnClick()
+	local sound = self.isCollapsed and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON;
+	PlaySound(sound);
+	self:GetParent():OnCollapseClicked();
 end
 
-function HeroTalentExpandButtonMixin:OnEnter()
+function HeroTalentCollapseButtonMixin:OnEnter()
 	self.TextureHover:Show();
+
+	local tooltipText = self.isCollapsed and HERO_TALENTS_EXPAND or HERO_TALENTS_COLLAPSE;
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -10, -10);
+	GameTooltip_AddHighlightLine(GameTooltip, tooltipText);
+	SharedTooltip_SetBackdropStyle(GameTooltip, GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT);
+	GameTooltip:Show();
 end
 
-function HeroTalentExpandButtonMixin:OnLeave()
+function HeroTalentCollapseButtonMixin:OnLeave()
 	self.TextureHover:Hide();
+	GameTooltip_Hide();
 end
 
 

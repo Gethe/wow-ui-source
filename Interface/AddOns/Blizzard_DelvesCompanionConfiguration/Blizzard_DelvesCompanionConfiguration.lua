@@ -6,17 +6,21 @@
 local DELVES_SUPPLIES_CREATURE_ID = 207283;
 local DELVES_SUPPLIES_MAX_DISTANCE = 10;
 
+local SET_SEEN_CURIOS_DELAY = 0.2; -- 200ms
+local REFRESH_SEEN_CURIOS_DELAY = 0.5 -- 500ms
+
 local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "TRAIT_SYSTEM_NPC_CLOSED",
     "UPDATE_FACTION",
     "QUEST_LOG_UPDATE",
+    "UNIT_SPELLCAST_SUCCEEDED",
 };
 
-local ConfigSlotType = EnumUtil.MakeEnum(
-	"Role",
-	"UtilityTrinket",
-	"CombatTrinket"
-);
+local borderColorForRarity = {
+    [Enum.CurioRarity.Uncommon] = UNCOMMON_GREEN_COLOR,
+    [Enum.CurioRarity.Rare] = RARE_BLUE_COLOR,
+    [Enum.CurioRarity.Epic] = EPIC_PURPLE_COLOR,
+};
 
 local function GetCompanionCurrentLevel()
     return DelvesCompanionConfigurationFrame.companionLevel;
@@ -45,6 +49,18 @@ local function ShowConfigTooltip(frame, data, offsetX, offsetY)
     GameTooltip:Show();
 end
 
+local function AcknowledgeUnseenCurios()
+    DelvesCompanionConfigurationFrame.unseenCuriosAcknowledged = true;
+end
+
+local function UnacknowledgeUnseenCurios()
+    DelvesCompanionConfigurationFrame.unseenCuriosAcknowledged = false;
+end
+
+local function UnseenCuriosAcknowledged()
+    return DelvesCompanionConfigurationFrame.unseenCuriosAcknowledged;
+end
+
 --[[ Config Frame ]]
 DelvesCompanionConfigurationFrameMixin = {};
 
@@ -56,19 +72,29 @@ function DelvesCompanionConfigurationFrameMixin:OnLoad()
         whileDead = 0,
 	};
 	RegisterUIPanel(self, panelAttributes);
+    self.unseenCuriosAcknowledged = false;
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnShow()
+    AcknowledgeUnseenCurios();
     self:Refresh();
     FrameUtil.RegisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
     -- TODO this event may change if/when that GameObject changes (see OnHide comment)
-    if event == "TRAIT_SYSTEM_NPC_CLOSED" then
-        HideUIPanel(self);
-    elseif event == "UPDATE_FACTION" then
-        self:Refresh();
+    if self:IsShown() then
+        if event == "TRAIT_SYSTEM_NPC_CLOSED" then
+            HideUIPanel(self);
+        elseif event == "UPDATE_FACTION" then
+            self:Refresh();
+        elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+            C_Timer.After(REFRESH_SEEN_CURIOS_DELAY, function()
+                UnacknowledgeUnseenCurios();
+                self.CompanionCombatTrinketSlot:Refresh();
+                self.CompanionUtilityTrinketSlot:Refresh();
+            end);
+        end
     end
 end
 
@@ -94,8 +120,9 @@ function DelvesCompanionConfigurationFrameMixin:Refresh()
     self.CompanionInfoFrame:Refresh();
 end
 
+-- TODO / NOTE : GameObject we're using to open this frame currently uses gossip, ClearInteraction call may need to be removed in the near future
 function DelvesCompanionConfigurationFrameMixin:OnHide()
-    -- TODO / NOTE : GameObject we're using to open this frame currently uses gossip, this may need to change in the near future
+    UnacknowledgeUnseenCurios();
     C_PlayerInteractionManager.ClearInteraction();
     FrameUtil.UnregisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
 end
@@ -107,18 +134,10 @@ function CompanionPortraitFrameMixin:Refresh()
     SetPortraitTextureFromCreatureDisplayID(self.Icon, Constants.DelvesConsts.BRANN_CREATURE_DISPLAY_ID);
 end
 
--- TODO placeholder code, this is going to change
 function CompanionPortraitFrameMixin:OnEnter()
-    local experienceInfo = GetCompanionExperienceInfo();
-    local temp_DescriptionString = "[PH] Complete delves with your companion to increase their level!"; --! todo remove -> going to be replaced with widget
-    local temp_progressFormatString = "[PH] Current Progress: %s"; --! todo remove -> going to be replaced with widget
-    local temp_progressNumbersFormatString = WHITE_FONT_COLOR:WrapTextInColorCode(string.format("%s / %s", experienceInfo.currentExperience, experienceInfo.nextLevelAt)); --! todo remove -> going to be replaced with widget
-
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -5, -50);
-    GameTooltip_AddNormalLine(GameTooltip, temp_DescriptionString); --! todo remove -> going to be replaced with widget
-    GameTooltip_AddBlankLinesToTooltip(GameTooltip, 1);
-    GameTooltip_AddNormalLine(GameTooltip, string.format(temp_progressFormatString, temp_progressNumbersFormatString)); --! todo remove -> going to be replaced with widget
-    GameTooltip:Show();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -5, -50);
+	GameTooltip_AddWidgetSet(GameTooltip, Constants.DelvesConsts.DELVE_COMPANION_TOOLTIP_WIDGET_SET_ID);
+	GameTooltip:Show();
 end
 
 function CompanionPortraitFrameMixin:OnLeave()
@@ -154,7 +173,6 @@ end
 --[[ Role and Trinket Slots , Options List ]]
 CompanionConfigSlotTemplateMixin = {};
 
--- TODO need to set border color/rarity, too - hidden for now while design/gameplay set that up
 function CompanionConfigSlotTemplateMixin:OnLoad()
     local view = CreateScrollBoxListLinearView(1, 0, 0, 0, 0, 1);
     view:SetElementFactory(function(factory, node) 
@@ -166,6 +184,7 @@ function CompanionConfigSlotTemplateMixin:OnLoad()
                 spellID = node.spellID,
                 name = node.name,
                 description = node.description,
+                isUnseen = node.isUnseen,
             };
 
             if node.atlas then
@@ -175,11 +194,12 @@ function CompanionConfigSlotTemplateMixin:OnLoad()
                 button.Icon:SetTexture(node.textureID);
             end
             button.Name:SetText(node.name);
+            button.selected = node.selected;
 
-            if node.selected then
-                button.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+            if node.borderColor then
+                button.Border:SetVertexColor(node.borderColor:GetRGB());
             else
-                button.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+                button.Border:SetVertexColor(1, 1, 1);
             end
         end
         factory("CompanionConfigListButtonTemplate", Initializer);
@@ -188,11 +208,36 @@ function CompanionConfigSlotTemplateMixin:OnLoad()
 
     EventRegistry:RegisterCallback("CompanionConfiguration.ListShown", self.Hide, self.OptionsList);
     EventRegistry:RegisterCallback("CompanionConfigListButton.Commit", self.Refresh, self);
+
+    self.selectionNodeID = self:GetSelectionNodeID();
+
+    self:SetSeenCurios();
+end
+
+function CompanionConfigSlotTemplateMixin:SetSeenCurios()
+    C_Timer.After(SET_SEEN_CURIOS_DELAY, function()
+        self.configID = C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+        
+        if not self.configID or not self.type then
+            return;
+        end
+
+        local type = Enum.CompanionConfigSlotTypes[self.type];
+
+        self.selectionNodeInfo = C_Traits.GetNodeInfo(self.configID, self.selectionNodeID);
+
+        if #C_DelvesUI.GetUnseenCuriosBySlotType(type, self.selectionNodeInfo.entryIDs) > 0 and not UnseenCuriosAcknowledged() then
+            return;
+        end
+
+        C_DelvesUI.SaveSeenCuriosBySlotType(type, self.selectionNodeInfo.entryIDs);
+    end);
 end
 
 function CompanionConfigSlotTemplateMixin:OnShow()
-    self.configID = C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
-    self.selectionNodeID = self:GetSelectionNodeID();
+    self.configID = self.configID or C_Traits.GetConfigIDByTreeID(Constants.DelvesConsts.BRANN_TRAIT_TREE_ID);
+    self.NewLabel:Hide();
+    self.NewGlowHighlight:Hide();
     self:Refresh();
 end
 
@@ -236,19 +281,29 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
     
     if self.OptionsList:IsShown() then
         self.OptionsList:Hide();
+        
+        if self.NewLabel:IsShown() then
+            self.NewLabel:Hide();
+            self.NewGlowHighlight:Hide();
+        end
     else
         EventRegistry:TriggerEvent("CompanionConfiguration.ListShown");
         self.OptionsList:Show();
     end
 end
 
-function CompanionConfigSlotTemplateMixin:Refresh()
-    self.OptionsList:Hide();
+function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
+    if not keepOptionsListOpen then
+        self.OptionsList:Hide();
+    end
+
     self:SetEnabled(true);
     self.selectionNodeInfo = C_Traits.GetNodeInfo(self.configID, self.selectionNodeID);
     self.Label:SetText(self:GetSlotLabelText());
 
     self:BuildSelectionNodeOptions();
+    self.unseenCurios = C_DelvesUI.GetUnseenCuriosBySlotType(Enum.CompanionConfigSlotTypes[self.type], self.selectionNodeInfo.entryIDs);
+    local hasUnseenCurios = #self.unseenCurios > 0;
 
     if self.selectionNodeInfo then
         if not self.selectionNodeInfo.isVisible then
@@ -273,13 +328,13 @@ function CompanionConfigSlotTemplateMixin:Refresh()
             self.HighlightTexture:SetTexture(nil);
         elseif self:HasSelectionAndInfo() then
             local selectedEntry = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
-            
+
             self.Value:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
             self.Label:SetTextColor(WHITE_FONT_COLOR:GetRGB());
 
             self.Value:SetText(selectedEntry.name);
-            self.Border:SetAtlas("talents-node-choice-yellow");  -- todo art
-            self.BorderHighlight:SetAtlas("talents-node-choice-yellow"); -- todo art
+            self.Border:SetAtlas("talents-node-choice-yellow");
+            self.BorderHighlight:SetAtlas("talents-node-choice-yellow");
             if selectedEntry.atlas then
                 self.Texture:SetAtlas(selectedEntry.atlas);
                 self.Texture:SetSize(62, 68);
@@ -291,17 +346,31 @@ function CompanionConfigSlotTemplateMixin:Refresh()
                 self.HighlightTexture:SetTexture(selectedEntry.textureID);
                 self.HighlightTexture:SetSize(50, 55);
             end
+
+            if hasUnseenCurios then
+                self.NewLabel:Show();
+                self.NewGlowHighlight:Show();
+                self.NewGlowHighlightAnimIn:Play();
+            end
         else
+            self.Label:SetTextColor(WHITE_FONT_COLOR:GetRGB());
             self.Value:SetText(GREEN_FONT_COLOR:WrapTextInColorCode(DELVES_CURIO_SLOT_EMPTY));
-            self.Border:SetAtlas("talents-node-pvp-green");  -- todo art
-            self.BorderHighlight:SetAtlas("talents-node-pvp-green"); -- todo art
+            self.Border:SetAtlas("talents-node-pvp-green");
+            self.BorderHighlight:SetAtlas("talents-node-pvp-green");
             self.Texture:SetAtlas(nil);
             self.Texture:SetTexture(nil);
             self.HighlightTexture:SetTexture(nil);
+
+            if hasUnseenCurios then
+                self.NewLabel:Show();
+                self.NewGlowHighlight:Show();
+                self.NewGlowHighlightAnimIn:Play();
+            end
         end
     end
 
     self:PopulateOptionsList();
+    self:SetSeenCurios();
 end
 
 function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
@@ -310,6 +379,26 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
     local buttonCount = 0;
 
     for id, entryInfo in pairs(self.selectionNodeOptions) do
+        local isUnseen = false;
+        for _, unseenID in ipairs(self.unseenCurios) do
+            if id == unseenID then
+                isUnseen = true;
+                break;
+            end
+        end
+
+        local additionalEntryInfo = C_Traits.GetEntryInfo(self.configID, id);
+        local selectedEntryRarity = Enum.CurioRarity.Common;
+
+        if additionalEntryInfo then
+            for _, conditionID in ipairs(additionalEntryInfo.conditionIDs) do
+                local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
+                if conditionInfo and conditionInfo.traitCondAccountElementID then
+                    selectedEntryRarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                end
+            end
+        end
+
         dataProvider:Insert({
             entryID = id,
             name = entryInfo.name,
@@ -318,6 +407,8 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
             selected = activeEntryID == id,
             spellID = entryInfo.spellID,
             description = entryInfo.description,
+            isUnseen = isUnseen,
+            borderColor = borderColorForRarity[selectedEntryRarity],
         });
         buttonCount = buttonCount + 1;
     end
@@ -328,11 +419,11 @@ function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
 end
 
 function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
-    if ConfigSlotType[self.type] == ConfigSlotType.Role then
+    if Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Role then
         return DELVES_CONFIG_SLOT_LABEL_COMBAT_ROLE;
-    elseif ConfigSlotType[self.type] == ConfigSlotType.UtilityTrinket then
+    elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Utility then
         return DELVES_CONFIG_SLOT_UTILITY_CURIO;
-    elseif ConfigSlotType[self.type] == ConfigSlotType.CombatTrinket then
+    elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
         return DELVES_CONFIG_SLOT_COMBAT_CURIO;
     else
         return nil;
@@ -340,11 +431,11 @@ function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
 end
 
 function CompanionConfigSlotTemplateMixin:GetSelectionNodeID()
-    if ConfigSlotType[self.type] == ConfigSlotType.Role then
+    if Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Role then
         return Constants.DelvesConsts.BRANN_ROLE_NODE_ID;
-    elseif ConfigSlotType[self.type] == ConfigSlotType.UtilityTrinket then
+    elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Utility then
         return Constants.DelvesConsts.BRANN_UTILITY_TRINKET_NODE_ID;
-    elseif ConfigSlotType[self.type] == ConfigSlotType.CombatTrinket then
+    elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
         return Constants.DelvesConsts.BRANN_COMBAT_TRINKET_NODE_ID;
     else
         return nil;
@@ -381,6 +472,17 @@ function CompanionConfigSlotTemplateMixin:BuildSelectionNodeOptions()
     end
 end
 
+CompanionConfigSlotOptionsListMixin = {};
+
+function CompanionConfigSlotOptionsListMixin:OnHide()
+    local slot = self:GetParent();
+
+    if slot.NewLabel:IsShown() then
+        slot.NewLabel:Hide();
+        slot.NewGlowHighlight:Hide();
+    end
+end
+
 --[[ Config List Button ]]
 CompanionConfigListButtonMixin = {};
 
@@ -406,8 +508,53 @@ function CompanionConfigListButtonMixin:OnEnter()
     ShowConfigTooltip(self, self.data, 2, -30);
 end
 
+function CompanionConfigListButtonMixin:HideNewGlowIfShown()
+    if self.NewGlow:IsShown() then
+        self.Name:SetShadowColor(0, 0, 0, 0);
+        self.NewGlow:Hide();
+        if self.selected then
+            self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+        else
+            self.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+        end
+    end
+end
+
 function CompanionConfigListButtonMixin:OnLeave()
     GameTooltip:Hide();
+    if self.data.isUnseen then
+        self.data.isUnseen = false;
+    end
+    self:HideNewGlowIfShown();
+end
+
+function CompanionConfigListButtonMixin:OnHide()
+    self:HideNewGlowIfShown();
+end
+
+function CompanionConfigListButtonMixin:OnShow()
+    if self.data.isUnseen then
+        self.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+        self.Name:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
+        
+        local halfStringWidth = self.Name:GetStringWidth() / 2;
+        local doubleStringWidth = self.Name:GetStringWidth() * 2;
+        
+        self.NewGlow:SetWidth(doubleStringWidth);
+        self.NewGlow:SetPoint("CENTER", self.Name, "LEFT", math.ceil(halfStringWidth + 1), -1);
+
+        self.NewGlow:Show();
+    else
+        self.Name:SetShadowColor(0, 0, 0, 0);
+                
+        if self.selected then
+            self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+        else
+            self.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+        end
+
+        self.NewGlow:Hide();
+    end
 end
 
 --[[ Abilities Button ]]

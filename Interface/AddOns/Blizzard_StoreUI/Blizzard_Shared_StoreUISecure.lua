@@ -2324,10 +2324,10 @@ function StoreVASValidationFrame_Init(self)
 	self.CharacterSelectionFrame.TransferRealmEditbox:Hide();
 	self.CharacterSelectionFrame.TransferRealmEditbox.AutoCompleteBox:Hide();
 	self.CharacterSelectionFrame.TransferAccountCheckbox:Hide();
-	self.CharacterSelectionFrame.TransferAccountDropDown:Hide();
+	self.CharacterSelectionFrame.TransferAccountDropdown:Hide();
 	self.CharacterSelectionFrame.TransferFactionCheckbox:Hide();
 	self.CharacterSelectionFrame.TransferBattlenetAccountEditbox:Hide();
-	self.CharacterSelectionFrame.TransferBnetWoWAccountDropDown:Hide();
+	self.CharacterSelectionFrame.TransferBnetWoWAccountDropdown:Hide();
 	self.CharacterSelectionFrame.ClassIcon:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterFrame:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
@@ -2460,8 +2460,8 @@ function StoreVASValidationFrame_UpdateCharacterTransferValidationPosition()
 	local yOffset = -8;
 	if (frame.ChangeIconFrame:IsShown()) then
 		bottomWidget = frame.ChangeIconFrame;
-	elseif (frame.TransferBnetWoWAccountDropDown:IsShown()) then
-		bottomWidget = frame.TransferBnetWoWAccountDropDown;
+	elseif (frame.TransferBnetWoWAccountDropdown:IsShown()) then
+		bottomWidget = frame.TransferBnetWoWAccountDropdown;
 		xOffset = 16;
 	elseif (frame.TransferFactionCheckbox:IsShown()) then
 		bottomWidget = frame.TransferFactionCheckbox;
@@ -2542,8 +2542,8 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 
 		if (not error) then
 			IsVasBnetTransferValidated = true;
-			frame.TransferBnetWoWAccountDropDown:Show();
-			frame.TransferBnetWoWAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+			frame.TransferBnetWoWAccountDropdown:Show();
+			frame.TransferBnetWoWAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 			frame.ValidationDescription:Hide();
 		else
 			frame.ValidationDescription:ClearAllPoints();
@@ -2656,10 +2656,10 @@ function StoreVASValidationState_Lock()
 	frame.FollowGuildCheckbox:Disable();
 	frame.TransferRealmEditbox:Disable();
 	frame.TransferAccountCheckbox:Disable();
-	frame.TransferAccountDropDown.Button:Disable();
+	frame.TransferAccountDropdown.Button:Disable();
 	frame.TransferFactionCheckbox:Disable();
 	frame.TransferBattlenetAccountEditbox:Disable();
-	frame.TransferBnetWoWAccountDropDown.Button:Disable();
+	frame.TransferBnetWoWAccountDropdown.Button:Disable();
 	frame.NewCharacterName:Disable();
 	frame.NewGuildName:Disable();
 	frame.ContinueButton:Disable();
@@ -2675,10 +2675,10 @@ function StoreVASValidationState_Unlock()
 	frame.FollowGuildCheckbox:Enable();
 	frame.TransferRealmEditbox:Enable();
 	frame.TransferAccountCheckbox:Enable();
-	frame.TransferAccountDropDown.Button:Enable();
+	frame.TransferAccountDropdown.Button:Enable();
 	frame.TransferFactionCheckbox:Enable();
 	frame.TransferBattlenetAccountEditbox:Enable();
-	frame.TransferBnetWoWAccountDropDown.Button:Enable();
+	frame.TransferBnetWoWAccountDropdown.Button:Enable();
 	frame.NewCharacterName:Enable();
 	frame.NewGuildName:Enable();
 	frame.ContinueButton:Enable();
@@ -2893,11 +2893,11 @@ end
 local InfoTable = nil;
 local InfoCallback = nil;
 local InfoFrame = nil;
-local DropDownOffset = 0;
-local DropDownMaxButtons = 20;
+local DropdownOffset = 0;
+local DropdownMaxButtons = 20;
 
 -- Very simple dropdown.  infoTable contains infoEntries containing text and value, the callback is what is called when a button is clicked.
-function StoreDropDown_SetDropdown(frame, infoTable, callback)
+function StoreDropdown_SetDropdown(frame, infoTable, callback)
 	for list, _ in pairs(StoreDropdownLists) do
 		list:Hide();
 	end
@@ -2909,24 +2909,24 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 	InfoFrame = frame;
 	InfoCallback = callback;
 	InfoTable = infoTable;
-	DropDownOffset = 0;
+	DropdownOffset = 0;
 
-	StoreDropDownMenu_SetUpButtons();
+	StoreDropdownMenu_SetUpButtons();
 
 	frame.List:Show();
 end
 
-function StoreDropDownMenu_PreviousOnClick(self)
-	DropDownOffset = math.max(0, DropDownOffset - DropDownMaxButtons);
-	StoreDropDownMenu_SetUpButtons();
+function StoreDropdownMenu_PreviousOnClick(self)
+	DropdownOffset = math.max(0, DropdownOffset - DropdownMaxButtons);
+	StoreDropdownMenu_SetUpButtons();
 end
 
-function StoreDropDownMenu_NextOnClick(self)
-	DropDownOffset = math.min(DropDownOffset + DropDownMaxButtons, #InfoTable);
-	StoreDropDownMenu_SetUpButtons();
+function StoreDropdownMenu_NextOnClick(self)
+	DropdownOffset = math.min(DropdownOffset + DropdownMaxButtons, #InfoTable);
+	StoreDropdownMenu_SetUpButtons();
 end
 
-function StoreDropDownMenu_SetUpButtons()
+function StoreDropdownMenu_SetUpButtons()
 	local buttonHeight = 16;
 	local spacing = 0;
 	local verticalPadding = 32;
@@ -2934,12 +2934,12 @@ function StoreDropDownMenu_SetUpButtons()
 	local numButtons = 0;
 	local buttonOffset = 0;
 	local frame = InfoFrame;
-	local hasMore = DropDownOffset + DropDownMaxButtons < #InfoTable;
+	local hasMore = DropdownOffset + DropdownMaxButtons < #InfoTable;
 
-	if (DropDownOffset > 0) then
+	if (DropdownOffset > 0) then
 		local button = frame.List.Buttons[1];
 		button:SetText(BLIZZARD_STORE_VAS_PREVIOUS_ENTRIES);
-		button:SetScript("OnClick", StoreDropDownMenu_PreviousOnClick);
+		button:SetScript("OnClick", StoreDropdownMenu_PreviousOnClick);
 		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
 		button:Show();
@@ -2949,9 +2949,9 @@ function StoreDropDownMenu_SetUpButtons()
 		numButtons = numButtons + 1;
 	end
 
-	for i = 1, DropDownMaxButtons do
+	for i = 1, DropdownMaxButtons do
 		local buttonIndex = i + buttonOffset;
-		local infoIndex = i + DropDownOffset;
+		local infoIndex = i + DropdownOffset;
 		local info = InfoTable[infoIndex];
 
 		if (not info) then
@@ -2960,8 +2960,8 @@ function StoreDropDownMenu_SetUpButtons()
 
 		local button;
 		if (not frame.List.Buttons[buttonIndex]) then
-			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropDownMenuButtonTemplate");
-			StoreDropDownMenuMenuButton_OnLoad(button);
+			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropdownMenuButtonTemplate");
+			StoreDropdownMenuMenuButton_OnLoad(button);
 			button:SetPoint("TOPLEFT", frame.List.Buttons[buttonIndex-1], "BOTTOMLEFT", 0, -spacing);
 		else
 			button = frame.List.Buttons[buttonIndex];
@@ -2970,7 +2970,7 @@ function StoreDropDownMenu_SetUpButtons()
 		button:SetText(info.text);
 		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
-		button:SetScript("OnClick", StoreDropDownMenuMenuButton_OnClick);
+		button:SetScript("OnClick", StoreDropdownMenuMenuButton_OnClick);
 		button.index = infoIndex;
 
 		if (info.checked) then
@@ -2989,14 +2989,14 @@ function StoreDropDownMenu_SetUpButtons()
 		local buttonIndex = numButtons + 1;
 		local button;
 		if (not frame.List.Buttons[buttonIndex]) then
-			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropDownMenuButtonTemplate", buttonIndex);
-			StoreDropDownMenuMenuButton_OnLoad(button);
+			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropdownMenuButtonTemplate", buttonIndex);
+			StoreDropdownMenuMenuButton_OnLoad(button);
 			button:SetPoint("TOPLEFT", frame.List.Buttons[buttonIndex-1], "BOTTOMLEFT", 0, -spacing);
 		else
 			button = frame.List.Buttons[buttonIndex];
 		end
 		button:SetText(BLIZZARD_STORE_VAS_NEXT_ENTRIES);
-		button:SetScript("OnClick", StoreDropDownMenu_NextOnClick);
+		button:SetScript("OnClick", StoreDropdownMenu_NextOnClick);
 		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
 		button:Show();
@@ -3014,24 +3014,24 @@ function StoreDropDownMenu_SetUpButtons()
 	end
 end
 
-function StoreDropDownMenu_OnHide(self)
+function StoreDropdownMenu_OnHide(self)
 	InfoTable = nil;
 	InfoFrame = nil;
 	InfoCallback = nil;
-	DropDownOffset = 0;
+	DropdownOffset = 0;
 end
 
-function StoreDropDownMenuMenuButton_OnLoad(self)
+function StoreDropdownMenuMenuButton_OnLoad(self)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-	self:SetScript("OnClick", StoreDropDownMenuMenuButton_OnClick);
+	self:SetScript("OnClick", StoreDropdownMenuMenuButton_OnClick);
 end
 
-function StoreDropDownMenuMenuButton_OnClick(self, button)
+function StoreDropdownMenuMenuButton_OnClick(self, button)
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	if (not InfoTable or not InfoCallback) then
 		-- This should not happen, it means our cache was cleared while the frame was opened.
 		-- We probably want a GMError here.
-		GMError("StoreDropDown cache was cleared while the frame was shown.");
+		GMError("StoreDropdown cache was cleared while the frame was shown.");
 		self:GetParent():Hide();
 		return;
 	end
@@ -3062,12 +3062,12 @@ function VASCharacterSelectionRealmSelector_Callback(value)
 	frame.TransferRealmEditbox:SetText("");
 	frame.TransferAccountCheckbox:Hide();
 	frame.TransferAccountCheckbox:SetChecked(false);
-	frame.TransferAccountDropDown:Hide();
+	frame.TransferAccountDropdown:Hide();
 	frame.TransferFactionCheckbox:Hide();
 	frame.TransferFactionCheckbox:SetChecked(false);
 	frame.TransferBattlenetAccountEditbox:Hide();
 	frame.TransferBattlenetAccountEditbox:SetText("");
-	frame.TransferBnetWoWAccountDropDown:Hide();
+	frame.TransferBnetWoWAccountDropdown:Hide();
 	frame.ValidationDescription:Hide();
 	frame.ChangeIconFrame:Hide();
 	frame.NewCharacterName:SetText("");
@@ -3157,7 +3157,7 @@ function VASCharacterSelectionChangeIconFrame_SetIcons(character, serviceType)
 	frame:Show();
 end
 
-local function UpdateFactionTransferCheckBoxForFaction(self, faction)
+local function UpdateFactionTransferCheckboxForFaction(self, faction)
 	local bundleProductInfo = GetBundleProductInfo(self.productID);
 	local newFaction = GetFactionName(faction, true);
 	-- We don't filter the character list, this prevents a lua error if a neutral pandarian is selected.
@@ -3334,7 +3334,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.TransferFactionCheckbox:ClearAllPoints();
 		frame.TransferFactionCheckbox:SetPoint("TOPLEFT", frame.RenameGuildCheckbox, "BOTTOMLEFT", 0, -4);
 
-		UpdateFactionTransferCheckBoxForFaction(StoreVASValidationFrame, character.faction);
+		UpdateFactionTransferCheckboxForFaction(StoreVASValidationFrame, character.faction);
 
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
@@ -3352,14 +3352,14 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 		frame.TransferRealmEditbox:SetText("");
 		frame.TransferBattlenetAccountEditbox:Hide();
 		frame.TransferBattlenetAccountEditbox:SetText("");
-		frame.TransferBnetWoWAccountDropDown:Hide();
+		frame.TransferBnetWoWAccountDropdown:Hide();
 		frame.TransferAccountCheckbox:SetChecked(false);
-		frame.TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
-		frame.TransferAccountDropDown:Hide();
+		frame.TransferAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		frame.TransferAccountDropdown:Hide();
 		SelectedDestinationWowAccount = nil;
 		SelectedDestinationBnetWowAccount = nil;
 
-		UpdateFactionTransferCheckBoxForFaction(StoreVASValidationFrame, character.faction);
+		UpdateFactionTransferCheckboxForFaction(StoreVASValidationFrame, character.faction);
 
 		StoreVASValidationFrame_SyncFontHeights(frame.TransferAccountCheckbox.Label, frame.TransferFactionCheckbox.Label);
 		frame.ContinueButton:Disable();
@@ -3749,7 +3749,7 @@ function FollowGuildCheckbox_OnClick(self)
 	self:GetParent().TransferRealmEditbox:SetShown(showOthers);
 	self:GetParent().TransferAccountCheckbox:SetShown(showOthers);
 
-	self:GetParent().TransferAccountDropDown:SetShown(showOthers and self:GetParent().TransferAccountCheckbox:GetChecked());
+	self:GetParent().TransferAccountDropdown:SetShown(showOthers and self:GetParent().TransferAccountCheckbox:GetChecked());
 	self:GetParent().TransferBattlenetAccountEditbox:SetShown(showOthers and SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET);
 	self:GetParent().TransferFactionCheckbox:SetShown(showOthers and not self:GetParent().TransferAccountCheckbox:GetChecked());
 
@@ -3761,7 +3761,7 @@ function FollowGuildCheckbox_OnClick(self)
 
 		self:GetParent().TransferRealmEditbox:SetText("");
 		self:GetParent().TransferAccountCheckbox:SetChecked(false);
-		self:GetParent().TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		self:GetParent().TransferAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 	end
 
 	VASCharacterSelectionTransferGatherAndValidateData();
@@ -3803,11 +3803,11 @@ function TransferAccountCheckbox_OnClick(self)
 		SelectedDestinationBnetWowAccount = nil;
 		self:GetParent().TransferBattlenetAccountEditbox:Hide();
 		self:GetParent().TransferBattlenetAccountEditbox:SetText("");
-		self:GetParent().TransferBnetWoWAccountDropDown:Hide();
-		self:GetParent().TransferAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
-		self:GetParent().TransferBnetWoWAccountDropDown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		self:GetParent().TransferBnetWoWAccountDropdown:Hide();
+		self:GetParent().TransferAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
+		self:GetParent().TransferBnetWoWAccountDropdown.Text:SetText(BLIZZARD_STORE_VAS_SELECT_ACCOUNT);
 	end
-	self:GetParent().TransferAccountDropDown:SetShown(self:GetChecked());
+	self:GetParent().TransferAccountDropdown:SetShown(self:GetChecked());
 	self:GetParent().TransferFactionCheckbox:SetShown(not self:GetChecked());
 	if (self:GetChecked()) then
 		self:GetParent().TransferFactionCheckbox:SetChecked(false);
@@ -3820,7 +3820,7 @@ function VASCharacterSelectionTransferBattlenetAccountEditbox_OnTextChanged(self
 	self.EmptyText:SetShown(not self:GetText() or self:GetText() == "");
 
 	IsVasBnetTransferValidated = false;
-	self:GetParent().TransferBnetWoWAccountDropDown:Hide();
+	self:GetParent().TransferBnetWoWAccountDropdown:Hide();
 
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
@@ -3840,7 +3840,7 @@ function VASCharacterSelectionRealmSelector_OnClick(self)
 		infoTable[#infoTable+1] = {text=RealmList[i].realmName, value=RealmList[i], checked=(SelectedRealm == RealmList[i])};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionRealmSelector_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionRealmSelector_Callback);
 end
 
 function VASCharacterSelectionCharacterSelector_OnClick(self)
@@ -3872,7 +3872,7 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 		infoTable[#infoTable+1] = {text=str, value=i, checked=(SelectedCharacter == i)};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionCharacterSelector_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionCharacterSelector_Callback);
 end
 
 local TIMEOUT_SECS = 60; -- How long to wait for a response from the account server
@@ -4056,7 +4056,7 @@ function VASCharacterSelection_ClearStoreTooltip(self)
  	StoreTooltip:Hide();
 end
 
-function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
+function VASCharacterSelectionTransferAccountDropdown_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
@@ -4076,16 +4076,16 @@ function VASCharacterSelectionTransferAccountDropDown_OnClick(self)
 		infoTable[#infoTable+1] = {text=BLIZZARD_STORE_VAS_DIFFERENT_BNET, value=BLIZZARD_STORE_VAS_DIFFERENT_BNET, checked=(SelectedDestinationWowAccount == BLIZZARD_STORE_VAS_DIFFERENT_BNET)};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferAccountDropDown_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferAccountDropdown_Callback);
 end
 
-function VASCharacterSelectionTransferAccountDropDown_Callback(value)
+function VASCharacterSelectionTransferAccountDropdown_Callback(value)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	SelectedDestinationWowAccount = value;
-	frame.TransferAccountDropDown.Text:SetText(value);
+	frame.TransferAccountDropdown.Text:SetText(value);
 	frame.TransferBattlenetAccountEditbox:SetText("");
 	frame.TransferBattlenetAccountEditbox:SetShown(value == BLIZZARD_STORE_VAS_DIFFERENT_BNET);
-	frame.TransferBnetWoWAccountDropDown:Hide();
+	frame.TransferBnetWoWAccountDropdown:Hide();
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 
@@ -4106,7 +4106,7 @@ function StripWoWAccountLicenseInfo(gameAccount)
 	return gameAccount;
 end
 
-function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
+function VASCharacterSelectionTransferBnetWoWAccountDropdown_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	if (self:GetParent().List:IsShown()) then
@@ -4120,13 +4120,13 @@ function VASCharacterSelectionTransferBnetWoWAccountDropDown_OnClick(self)
 		infoTable[#infoTable+1] = {text=StripWoWAccountLicenseInfo(gameAccount), value=gameAccount, checked=(SelectedDestinationBnetWowAccount == gameAccount)};
 	end
 
-	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback);
+	StoreDropdown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionTransferBnetWoWAccountDropdown_Callback);
 end
 
-function VASCharacterSelectionTransferBnetWoWAccountDropDown_Callback(value)
+function VASCharacterSelectionTransferBnetWoWAccountDropdown_Callback(value)
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	SelectedDestinationBnetWowAccount = value;
-	frame.TransferBnetWoWAccountDropDown.Text:SetText(StripWoWAccountLicenseInfo(value));
+	frame.TransferBnetWoWAccountDropdown.Text:SetText(StripWoWAccountLicenseInfo(value));
 	VASCharacterSelectionTransferGatherAndValidateData();
 end
 

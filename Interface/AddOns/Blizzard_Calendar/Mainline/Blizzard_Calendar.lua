@@ -1138,7 +1138,6 @@ function CalendarFrame_OnHide(self)
 	CalendarFrame_CloseEvent();
 	CalendarEventPickerFrame_Hide();
 	CalendarTexturePickerFrame_Hide();
-	HideDropDownMenu(1);
 	StaticPopup_Hide("CALENDAR_DELETE_EVENT");
 	StaticPopup_Hide("CALENDAR_ERROR");
 	-- pop all modal frames as a fail safe, just in case we somehow end up in a state where modal frames
@@ -2202,7 +2201,7 @@ function GenerateDayContextMenu(owner, rootDescription, flags, dayButton, eventB
 			end
 		end
 
-		MenuUtil.QueueDivider(rootDescription);
+		rootDescription:QueueDivider();
 	end
 
 	if showEvent then
@@ -2218,11 +2217,11 @@ function GenerateDayContextMenu(owner, rootDescription, flags, dayButton, eventB
 				end
 			elseif canPaste then
 				rootDescription:CreateButton(CALENDAR_PASTE_EVENT, CalendarDayContextMenu_PasteEvent, dayButton);
-				MenuUtil.QueueDivider(rootDescription);
+				rootDescription:QueueDivider();
 			end
 			if canRemove then
 				rootDescription:CreateButton(CALENDAR_DELETE_EVENT, CalendarDayContextMenu_DeleteEvent);
-				MenuUtil.QueueDivider(rootDescription);
+				rootDescription:QueueDivider();
 			end
 
 			if event.calendarType ~= "GUILD_ANNOUNCEMENT" then
@@ -2247,12 +2246,12 @@ function GenerateDayContextMenu(owner, rootDescription, flags, dayButton, eventB
 				end
 				if _CalendarFrame_CanRemoveEvent(event.modStatus, event.calendarType, event.inviteType, event.inviteStatus) then
 					rootDescription:CreateButton(CALENDAR_REMOVE_INVITATION, CalendarDayContextMenu_RemoveInvite);
-					MenuUtil.QueueDivider(rootDescription);
+					rootDescription:QueueDivider();
 				end
 			end
 			if C_Calendar.ContextMenuEventCanComplain(monthOffset, day, eventIndex) then
 				rootDescription:CreateButton(REPORT_CALENDAR, CalendarDayContextMenu_ReportSpam);
-				MenuUtil.QueueDivider(rootDescription);
+				rootDescription:QueueDivider();
 			end
 		elseif canPaste then
 			rootDescription:CreateButton(CALENDAR_PASTE_EVENT, CalendarDayContextMenu_PasteEvent, dayButton);
@@ -3876,7 +3875,7 @@ function CalendarCreateEventInviteListButton_OnClick(self, button)
 						C_Calendar.EventSetInviteStatus(inviteIndex, statusOption.status);
 					end);
 				end
-				MenuUtil.QueueDivider();
+				rootDescription:QueueDivider();
 			end
 
 			if not UnitIsUnit("player", inviteInfo.name) and (not UnitInParty(inviteInfo.name) or not UnitInRaid(inviteInfo.name)) then

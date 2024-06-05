@@ -154,7 +154,7 @@ function AuctionHouseSearchBarMixin:OnLoad()
 				rootDescription:CreateCheckbox(GetAHFilterName(filter), IsSelected, SetSelected, filter);
 			end
 
-			MenuUtil.QueueSpacer(rootDescription);
+			rootDescription:QueueSpacer();
 		end
 	end);
 end

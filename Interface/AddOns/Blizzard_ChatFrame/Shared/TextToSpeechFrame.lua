@@ -208,7 +208,7 @@ function TextToSpeechFrame_Update(self)
 end
 
 function TextToSpeechFrame_UpdateMessageCheckboxes(frame)
-	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxNameString = frame:GetName().."Checkbox";
 	local checkBoxName, checkBox;
 
 	local checkBoxTable = frame.checkBoxTable or {}
@@ -475,7 +475,7 @@ local channelsWithTtsName =
 };
 
 function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate)
-	local checkBoxNameString = frame:GetName().."CheckBox";
+	local checkBoxNameString = frame:GetName().."Checkbox";
 	local checkBoxName, checkBox;
 	local checkBoxFontString;
 	local secondColIndex = 15;

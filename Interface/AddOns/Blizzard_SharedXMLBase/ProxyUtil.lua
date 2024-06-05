@@ -38,11 +38,13 @@ Proxies are always be created using CreateProxy. This is important so that the u
 object references are retained correctly.
 --]]
 
+local SetPrivateReference = ProxyUtil.SetPrivateReference;
+
 function ProxyUtil.CreateProxy(obj, mixin)
 	--assert(mixin.__index == mixin);
 	local proxy = {};
 
-	ProxyUtil.SetPrivateReference(proxy, obj);
+	SetPrivateReference(proxy, obj);
 
 	-- Assign the mixin as a metatable to the proxy.
 	setmetatable(proxy, mixin);

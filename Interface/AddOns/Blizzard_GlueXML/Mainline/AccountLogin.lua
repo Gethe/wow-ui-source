@@ -36,7 +36,7 @@ function AccountLogin_OnLoad(self)
 	local defaultText = nil;
 	self.UI.AccountsDropdown:SetWidth(234);
 
-	AccountLoginDropDown_SetupList();
+	AccountLoginDropdown_SetupList();
 end
 
 function AccountLogin_OnEvent(self, event, ...)
@@ -149,7 +149,7 @@ function AccountLogin_UpdateSavedData(self)
 		AccountLogin_FocusPassword();
 	end
 
-	AccountLoginDropDown_SetupList();
+	AccountLoginDropdown_SetupList();
 end
 
 function AccountLogin_OnKeyDown(self, key)
@@ -336,16 +336,7 @@ end
 -- Accounts dropdown
 -- =============================================================
 
-function AccountLogin_FindSelectedSavedAccount(accounts)
-	if #accounts > 0 then
-		local account = FindValueInTableIf(accounts, function(account)
-			return account.selected;
-		end);
-		return account;
-	end
-end
-
-function AccountLogin_GetSavedAccountList()
+local function AccountLogin_GetSavedAccountList()
 	local accounts = {};
 
 	for str in string.gmatch(GetSavedAccountList(), "([%w!]+)|?") do
@@ -364,22 +355,19 @@ function AccountLogin_GetPendingSavedAccountString()
 	return selectedSavedAccount.str;
 end
 
-local function AccountLogin_SetPendingSavedAccount(account)
-	selectedSavedAccount = account;
-end
-
 do
 	local function IsSelected(account)
-		return account.selected;
+		return selectedSavedAccount.str == account.str;
 	end
 
 	local function SetSelected(account)
-		AccountLogin_SetPendingSavedAccount(account);
+		selectedSavedAccount = account;
 	end
 	
-	function AccountLoginDropDown_SetupList()
-		local accounts = AccountLogin_GetSavedAccountList();
-		selectedSavedAccount = AccountLogin_FindSelectedSavedAccount(accounts);
+	function AccountLoginDropdown_SetupList()
+		selectedSavedAccount = FindValueInTableIf(AccountLogin_GetSavedAccountList(), function(account)
+			return account.selected;
+		end);
 	
 		AccountLogin.UI.AccountsDropdown:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_ACCOUNT_LOGIN");

@@ -459,7 +459,7 @@ function GuildControlUI_DisableRankButtons()
 	end
 end
 
-function GuildControlUIRankDropDown_OnClick(self)
+function GuildControlUIRankDropdown_OnClick(self)
 	local activeEditBox = GuildControlUI.activeEditBox;
 	if ( activeEditBox ) then
 		activeEditBox:ClearFocus();

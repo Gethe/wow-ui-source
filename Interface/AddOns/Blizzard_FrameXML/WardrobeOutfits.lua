@@ -106,7 +106,7 @@ function WardrobeOutfitDropdownMixin:InitOutfitDropdown()
 					fontString2:SetTextToFit(CreateSimpleTextureMarkup([[Interface\Buttons\UI-CheckBox-Check]], size, size));
 				end
 
-				local gearButton = MenuTemplates.AttachAutoHideButton(button);
+				local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
 				gearButton:SetPoint("RIGHT");
 
 				MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
@@ -260,8 +260,8 @@ function WardrobeOutfitManager:ShowPopup(popup, ...)
 	end
 end
 
-function WardrobeOutfitManager:ClosePopups(requestingDropDown)
-	if ( requestingDropDown and requestingDropDown ~= self.popupDropDown ) then
+function WardrobeOutfitManager:ClosePopups(requestingDropdown)
+	if ( requestingDropdown and requestingDropdown ~= self.popupDropdown ) then
 		return;
 	end
 	for _, popup in pairs(self.popups) do

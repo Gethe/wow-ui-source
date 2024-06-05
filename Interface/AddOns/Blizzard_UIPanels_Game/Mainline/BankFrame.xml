@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<CheckButton name="BankPanelCheckBoxTemplate" mixin="BankPanelCheckBoxMixin" inherits="TruncatedTooltipFontStringWrapperTemplate" virtual="true">
+	<CheckButton name="BankPanelCheckboxTemplate" mixin="BankPanelCheckboxMixin" inherits="TruncatedTooltipFontStringWrapperTemplate" virtual="true">
 		<!-- <KeyValues>
 			<KeyValue key="text" value="<Insert globalstring here>" type="global"/>
 			<KeyValue key="fontObject" value="<Insert fontObject here>" type="global"/>
@@ -25,7 +25,7 @@
 		</Scripts>
 	</CheckButton>
 
-	<CheckButton name="BankPanelTabDepositSettingsCheckBoxTemplate" inherits="BankPanelCheckBoxTemplate" parentArray="DepositSettingsCheckBoxes" virtual="true">
+	<CheckButton name="BankPanelTabDepositSettingsCheckboxTemplate" inherits="BankPanelCheckboxTemplate" parentArray="DepositSettingsCheckboxes" virtual="true">
 		<Size x="20" y="19"/>
 		<KeyValues>
 			<!-- REQUIRED <KeyValue key="settingFlag" value="<Insert enum value here>" type="global"/> -->
@@ -87,7 +87,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="AssignEquipmentCheckBox" inherits="BankPanelTabDepositSettingsCheckBoxTemplate">
+			<CheckButton parentKey="AssignEquipmentCheckbox" inherits="BankPanelTabDepositSettingsCheckboxTemplate">
 				<KeyValues>
 					<KeyValue key="text" value="BANK_TAB_ASSIGN_EQUIPMENT_CHECKBOX" type="global"/>
 					<KeyValue key="settingFlag" value="Enum.BagSlotFlags.ClassEquipment" type="global"/>
@@ -97,47 +97,47 @@
 				</Anchors>
 			</CheckButton>
 
-			<CheckButton parentKey="AssignConsumablesCheckBox" inherits="BankPanelTabDepositSettingsCheckBoxTemplate">
+			<CheckButton parentKey="AssignConsumablesCheckbox" inherits="BankPanelTabDepositSettingsCheckboxTemplate">
 				<KeyValues>
 					<KeyValue key="text" value="BANK_TAB_ASSIGN_CONSUMABLES_CHECKBOX" type="global"/>
 					<KeyValue key="settingFlag" value="Enum.BagSlotFlags.ClassConsumables" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AssignEquipmentCheckBox" relativePoint="BOTTOMLEFT" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AssignEquipmentCheckbox" relativePoint="BOTTOMLEFT" y="-3"/>
 				</Anchors>
 			</CheckButton>
 
-			<CheckButton parentKey="AssignProfessionGoodsCheckBox" inherits="BankPanelTabDepositSettingsCheckBoxTemplate">
+			<CheckButton parentKey="AssignProfessionGoodsCheckbox" inherits="BankPanelTabDepositSettingsCheckboxTemplate">
 				<KeyValues>
 					<KeyValue key="text" value="BANK_TAB_ASSIGN_PROFESSION_GOODS_CHECKBOX" type="global"/>
 					<KeyValue key="settingFlag" value="Enum.BagSlotFlags.ClassProfessionGoods" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AssignConsumablesCheckBox" relativePoint="BOTTOMLEFT" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AssignConsumablesCheckbox" relativePoint="BOTTOMLEFT" y="-3"/>
 				</Anchors>
 			</CheckButton>
 
-			<CheckButton parentKey="AssignReagentsCheckBox" inherits="BankPanelTabDepositSettingsCheckBoxTemplate">
+			<CheckButton parentKey="AssignReagentsCheckbox" inherits="BankPanelTabDepositSettingsCheckboxTemplate">
 				<KeyValues>
 					<KeyValue key="text" value="BANK_TAB_ASSIGN_REAGENTS_CHECKBOX" type="global"/>
 					<KeyValue key="settingFlag" value="Enum.BagSlotFlags.ClassReagents" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.AssignEquipmentCheckBox.Text" relativePoint="RIGHT" x="4"/>
+					<Anchor point="LEFT" relativeKey="$parent.AssignEquipmentCheckbox.Text" relativePoint="RIGHT" x="4"/>
 				</Anchors>
 			</CheckButton>
 
-			<CheckButton parentKey="AssignJunkCheckBox" inherits="BankPanelTabDepositSettingsCheckBoxTemplate">
+			<CheckButton parentKey="AssignJunkCheckbox" inherits="BankPanelTabDepositSettingsCheckboxTemplate">
 				<KeyValues>
 					<KeyValue key="text" value="BANK_TAB_ASSIGN_JUNK_CHECKBOX" type="global"/>
 					<KeyValue key="settingFlag" value="Enum.BagSlotFlags.ClassJunk" type="global"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AssignReagentsCheckBox" relativePoint="BOTTOMLEFT" y="-3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AssignReagentsCheckbox" relativePoint="BOTTOMLEFT" y="-3"/>
 				</Anchors>
 			</CheckButton>
 
-			<CheckButton parentKey="IgnoreCleanUpCheckBox" inherits="BankPanelTabDepositSettingsCheckBoxTemplate">
+			<CheckButton parentKey="IgnoreCleanUpCheckbox" inherits="BankPanelTabDepositSettingsCheckboxTemplate">
 				<KeyValues>
 					<KeyValue key="text" value="BANK_TAB_IGNORE_IN_CLEANUP_CHECKBOX" type="global"/>
 					<KeyValue key="settingFlag" value="Enum.BagSlotFlags.DisableAutoSort" type="global"/>
@@ -147,7 +147,7 @@
 				</Anchors>
 			</CheckButton>
 
-			<DropdownButton parentKey="ExpansionFilterDropDown" inherits="WowStyle1DropdownTemplate" mixin="BankPanelTabSettingsExpansionFilterDropDownMixin">
+			<DropdownButton parentKey="ExpansionFilterDropdown" inherits="WowStyle1DropdownTemplate" mixin="BankPanelTabSettingsExpansionFilterDropdownMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.AssignExpansionHeader" relativePoint="BOTTOMLEFT" x="-1" y="-8"/>
 				</Anchors>
@@ -238,7 +238,7 @@
 				</Scripts>
 			</Button>
 
-			<CheckButton parentKey="IncludeReagentsCheckbox" inherits="BankPanelCheckBoxTemplate" mixin="BankPanelIncludeReagentsCheckBoxMixin" text="BANK_DEPOSIT_INCLUDE_REAGENTS_CHECKBOX_LABEL">
+			<CheckButton parentKey="IncludeReagentsCheckbox" inherits="BankPanelCheckboxTemplate" mixin="BankPanelIncludeReagentsCheckboxMixin" text="BANK_DEPOSIT_INCLUDE_REAGENTS_CHECKBOX_LABEL">
 				<Size x="24" y="23"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.DepositButton" relativePoint="RIGHT" x="10"/>

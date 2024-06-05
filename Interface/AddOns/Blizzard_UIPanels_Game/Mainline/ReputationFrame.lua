@@ -72,7 +72,7 @@ function ReputationFrameMixin:OnLoad()
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, GenerateClosure(self.RefreshAccountWideReputationTutorial), self);
 
-	self.filterDropDown:SetWidth(130);
+	self.filterDropdown:SetWidth(130);
 end
 
 local ReputationFrameEvents = {
@@ -108,7 +108,7 @@ function ReputationFrameMixin:OnShow()
 		SetCVarBitfield("closedInfoFrames",	LE_FRAME_TUTORIAL_REPUTATION_EXALTED_PLUS, true);
 	end
 
-	self.filterDropDown:SetupMenu(function(dropdown, rootDescription)
+	self.filterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_REPUTATION_FRAME_FILTER");
 
 		for index, sortType in ipairs(ReputationFilterSortTypeOrder) do
@@ -759,17 +759,17 @@ function ReputationDetailFrameMixin:Refresh()
 	self.Title:SetText(factionData.name);
 	self.Description:SetText(factionData.description);
 
-	self.AtWarCheckBox:SetEnabled(factionData.canToggleAtWar and not factionData.isHeader);
-	self.AtWarCheckBox:SetChecked(factionData.atWarWith);
+	self.AtWarCheckbox:SetEnabled(factionData.canToggleAtWar and not factionData.isHeader);
+	self.AtWarCheckbox:SetChecked(factionData.atWarWith);
 	local atWarTextColor = factionData.canToggleAtWar and not factionData.isHeader and RED_FONT_COLOR or GRAY_FONT_COLOR;
-	self.AtWarCheckBox.Label:SetTextColor(atWarTextColor:GetRGB());
+	self.AtWarCheckbox.Label:SetTextColor(atWarTextColor:GetRGB());
 
-	self.MakeInactiveCheckBox:SetEnabled(factionData.canSetInactive);		
-	self.MakeInactiveCheckBox:SetChecked(not C_Reputation.IsFactionActive(selectedFactionIndex));
+	self.MakeInactiveCheckbox:SetEnabled(factionData.canSetInactive);		
+	self.MakeInactiveCheckbox:SetChecked(not C_Reputation.IsFactionActive(selectedFactionIndex));
 	local inactiveTextColor = factionData.canSetInactive and NORMAL_FONT_COLOR or GRAY_FONT_COLOR;
-	self.MakeInactiveCheckBox.Label:SetTextColor(inactiveTextColor:GetRGB());
+	self.MakeInactiveCheckbox.Label:SetTextColor(inactiveTextColor:GetRGB());
 
-	self.WatchFactionCheckBox:SetChecked(factionData.isWatched);
+	self.WatchFactionCheckbox:SetChecked(factionData.isWatched);
 	
 	local isMajorFaction = C_Reputation.IsMajorFaction(factionData.factionID);
 	self:SetHeight(isMajorFaction and 228 or 203);
@@ -813,9 +813,9 @@ function ReputationDetailViewRenownButtonMixin:OnClick()
 	end
 end
 
-ReputationDetailAtWarCheckBoxMixin = {};
+ReputationDetailAtWarCheckboxMixin = {};
 
-function ReputationDetailAtWarCheckBoxMixin:OnClick()
+function ReputationDetailAtWarCheckboxMixin:OnClick()
 	C_Reputation.ToggleFactionAtWar(C_Reputation.GetSelectedFaction());
 	
 	local clickSound = self:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
@@ -824,20 +824,20 @@ function ReputationDetailAtWarCheckBoxMixin:OnClick()
 	ReputationFrame:Update();
 end
 
-function ReputationDetailAtWarCheckBoxMixin:OnEnter()
+function ReputationDetailAtWarCheckboxMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local wrapText = true;
 	GameTooltip_AddNormalLine(GameTooltip, REPUTATION_AT_WAR_DESCRIPTION, wrapText);
 	GameTooltip:Show();
 end
 
-function ReputationDetailAtWarCheckBoxMixin:OnLeave()
+function ReputationDetailAtWarCheckboxMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-ReputationDetailInactiveCheckBoxMixin = {};
+ReputationDetailInactiveCheckboxMixin = {};
 
-function ReputationDetailInactiveCheckBoxMixin:OnClick()
+function ReputationDetailInactiveCheckboxMixin:OnClick()
 	local shouldBeActive = not self:GetChecked();
 	C_Reputation.SetFactionActive(C_Reputation.GetSelectedFaction(), shouldBeActive);
 
@@ -845,20 +845,20 @@ function ReputationDetailInactiveCheckBoxMixin:OnClick()
 	PlaySound(clickSound);
 end
 
-function ReputationDetailInactiveCheckBoxMixin:OnEnter()
+function ReputationDetailInactiveCheckboxMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local wrapText = true;
 	GameTooltip_AddNormalLine(GameTooltip, REPUTATION_MOVE_TO_INACTIVE, wrapText);
 	GameTooltip:Show();
 end
 
-function ReputationDetailInactiveCheckBoxMixin:OnLeave()
+function ReputationDetailInactiveCheckboxMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
-ReputationDetailWatchFactionCheckBoxMixin = {};
+ReputationDetailWatchFactionCheckboxMixin = {};
 
-function ReputationDetailWatchFactionCheckBoxMixin:OnClick()
+function ReputationDetailWatchFactionCheckboxMixin:OnClick()
 	C_Reputation.SetWatchedFactionByIndex(self:GetChecked() and C_Reputation.GetSelectedFaction() or 0);
 
 	StatusTrackingBarManager:UpdateBarsShown();
@@ -867,14 +867,14 @@ function ReputationDetailWatchFactionCheckBoxMixin:OnClick()
 	PlaySound(clickSound);
 end
 
-function ReputationDetailWatchFactionCheckBoxMixin:OnEnter()
+function ReputationDetailWatchFactionCheckboxMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local wrapText = true;
 	GameTooltip_AddNormalLine(GameTooltip, REPUTATION_SHOW_AS_XP, wrapText);
 	GameTooltip:Show();
 end
 
-function ReputationDetailWatchFactionCheckBoxMixin:OnLeave()
+function ReputationDetailWatchFactionCheckboxMixin:OnLeave()
 	GameTooltip_Hide();
 end
 

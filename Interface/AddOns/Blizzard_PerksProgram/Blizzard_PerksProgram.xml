@@ -619,7 +619,7 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<CheckButton parentKey="TogglePlayerPreview" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+					<CheckButton parentKey="TogglePlayerPreview" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_PLAYER_PREVIEW" type="global"/>
 							<KeyValue key="perksProgramOnClickMethod" value="TogglePlayerPreviewOnClick" type="string"/>
@@ -630,7 +630,7 @@
 							<Anchor point="CENTER" relativeKey="$parent.RotateButtonContainer" relativePoint="CENTER" x="18"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton parentKey="ToggleMountSpecial" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+					<CheckButton parentKey="ToggleMountSpecial" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_MOUNT_SPECIAL_ANIM" type="global"/>
 							<KeyValue key="perksProgramOnClickMethod" value="SetMountSpecialPreviewOnClick" type="string"/>
@@ -642,7 +642,7 @@
 						</Anchors>
 					</CheckButton>
 					
-					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_HIDE_ARMOR" type="global"/>
 							<KeyValue key="perksProgramOnClickMethod" value="PlayerToggledHideArmorOnClick" type="string"/>
@@ -653,7 +653,7 @@
 							<Anchor point="LEFT" relativeKey="$parent.RotateButtonContainer" relativePoint="LEFT" x="-18"/>
 						</Anchors>
 					</CheckButton>
-					<CheckButton parentKey="ToggleAttackAnimation" inherits="PerksProgramCheckBoxTemplate" frameLevel="1000" hidden="true">
+					<CheckButton parentKey="ToggleAttackAnimation" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 								<KeyValue key="textString" value="PERKS_PROGRAM_PLAY_ATTACK_ANIM" type="global"/>
 								<KeyValue key="perksProgramOnClickMethod" value="PlayerSetAttackAnimationOnClick" type="string"/>

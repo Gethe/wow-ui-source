@@ -10,9 +10,19 @@
 		<Anchors>
 			<Anchor point="CENTER" y="107"/>
 		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="talents-heroclass-choicepopup-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<!-- Prevents interacting with the Talent Frame behind this dialog while open -->
-			<Frame parentKey="CoverFrame" frameLevel="1" enableMouse="true">
+			<Button parentKey="CoverFrame" frameLevel="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="UIParent"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="UIParent"/>
@@ -24,7 +34,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-			</Frame>
+			</Button>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 			<Frame parentKey="SpecOptionsContainer" inherits="HorizontalLayoutFrame">
 				<Anchors>
@@ -58,10 +68,6 @@
 	<!-- Base template to separate art & FX extras from functional content for easier readability/editing -->
 	<Frame name="HeroTalentSpecFXTemplate" virtual="true">
 		<Layers>
-			<Layer level="BACKGROUND">
-				<!-- Anchors adjusted at runtime based on being left vs rightmost option -->
-				<Texture parentKey="HoverBackground" atlas="spec-hover-background" alpha="0.05" alphaMode="ADD" hidden="true"/>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="ColumnDivider" atlas="spec-columndivider" useAtlasSize="true">
 					<Anchors>
@@ -259,8 +265,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -5,6 +5,8 @@ function HeroTalentsSelectionMixin:OnLoad()
 
 	local width, height = self.SpecOptionsContainer:GetSize();
 	self.SpecOptionsContainer:SetFixedSize(width, height);
+
+	self.CoverFrame:SetScript("OnClick", GenerateClosure(self.OnCoverFrameClicked, self));
 end
 
 function HeroTalentsSelectionMixin:IsActive()
@@ -35,6 +37,8 @@ function HeroTalentsSelectionMixin:OnShow()
 	UIPanelUpdateScaleForFit(self, self.checkFitExtraWidth, self.checkFitExtraHeight);
 	
 	self.DisabledOverlay:Hide();
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function HeroTalentsSelectionMixin:OnHide()
@@ -49,6 +53,8 @@ function HeroTalentsSelectionMixin:OnHide()
 	end
 	self.onDialogCloseCallback = nil;
 	self.SpecContentFramePool:ReleaseAll();
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
 
 function HeroTalentsSelectionMixin:OnEvent(event, ...)
@@ -283,6 +289,10 @@ function HeroTalentsSelectionMixin:OnKeyDown(key)
 	end
 end
 
+function HeroTalentsSelectionMixin:OnCoverFrameClicked()
+	self:Hide();
+end
+
 function HeroTalentsSelectionMixin:AnyPendingHeroTalentCosts()
 	local talentFrame = self:GetTalentFrame();
 
@@ -383,12 +393,6 @@ function HeroTalentSpecContentMixin:Setup(subTreeID, index, numSpecs, specConten
 
 	self.ColumnDivider:SetShown(not self.isRightMostSpec)
 
-	-- Adjust background positioning
-	local leftBGPadding = self.isLeftMostSpec and 0 or self.ColumnDivider:GetWidth() / 2;
-	local rightBGPadding = self.isRightMostSpec and 0 or self.ColumnDivider:GetWidth() / 2;
-	self.HoverBackground:SetPoint("TOPLEFT", leftBGPadding, 0);
-	self.HoverBackground:SetPoint("BOTTOMRIGHT", rightBGPadding, 0);
-
 	self:UpdateCurrency();
 end
 
@@ -479,11 +483,6 @@ function HeroTalentSpecContentMixin:SetIsActive(isActiveSpec)
 
 	self:UpdateApplyButton(self.anyApplyableHeroTalentChanges);
 
-	-- If mouse already hovering, update hover state visibility based on new active state
-	if self:IsMouseOver() then
-		self:SetHoverStateActive(not self.isActiveSpec);
-	end
-
 	self:CheckTutorials();
 end
 
@@ -503,10 +502,6 @@ function HeroTalentSpecContentMixin:SetIsAnySpecActive(isAnySpecActive)
 
 	-- Don't show points available until the player has picked a spec.
 	self.CurrencyFrame:SetShown(self.isAnySpecActive);
-end
-
-function HeroTalentSpecContentMixin:SetHoverStateActive(isActive)
-	self.HoverBackground:SetShown(isActive);
 end
 
 function HeroTalentSpecContentMixin:SetActivationFlashPlaying(playFlash)
@@ -542,18 +537,6 @@ end
 function HeroTalentSpecContentMixin:OnHide()
 	if self.playingActivationFlash then
 		self:SetActivationFlashPlaying(false);
-	end
-end
-
-function HeroTalentSpecContentMixin:OnEnter()
-	if not self.isActiveSpec then
-		self:SetHoverStateActive(true);
-	end
-end
-
-function HeroTalentSpecContentMixin:OnLeave()
-	if not self.isActiveSpec then
-		self:SetHoverStateActive(false);
 	end
 end
 

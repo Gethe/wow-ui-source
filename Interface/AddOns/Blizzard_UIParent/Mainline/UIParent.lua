@@ -2835,8 +2835,6 @@ function ToggleGameMenu()
 	elseif ( SpellStopTargeting() ) then
 	elseif(MatchCelebrationPartyPoseFrame and MatchCelebrationPartyPoseFrame:IsShown()) then
 	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then
-	elseif ( PlayerSpellsFrame and PlayerSpellsFrame:IsShown() ) then
-		PlayerSpellsFrame:CheckConfirmClose();
 	elseif ( ProfessionsFrame and ProfessionsFrame:IsShown() ) then
 		ProfessionsFrame:CheckConfirmClose();
 	elseif ( securecall("CloseAllWindows") ) then

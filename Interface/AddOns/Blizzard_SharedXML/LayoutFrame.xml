@@ -35,6 +35,11 @@
 
 				Determines if child scale is taken into account when laying out children
 				<KeyValue key="respectChildScale" value="true" type="boolean"/>
+				
+				The childLayoutDirection keyValue controls which direction we layout the child frames in
+				By default the child frames are anchored top to bottom (actual point used depends on the align keyvalue on each child frame)
+				Possible choices here are "topToBottom" and "bottomToTop"
+				<KeyValue key="childLayoutDirection" value="topToBottom" type="string"/>
 			</KeyValues>
 			-->
 
@@ -73,6 +78,11 @@
 				Possible choices here are "center" (anchored LEFT to LEFT) and "bottom" (anchored BOTTOMLEFT to BOTTOMLEFT)
 				<KeyValue key="align" value="center" type="string"/>
 
+				The childLayoutDirection keyValue does the same thing as VerticalLayoutFrame, but the valid values are different.
+				By default the child frames are anchored left to right (actual point used depends on the align keyvalue on each child frame)
+				Possible choices here are "leftToRight" and "rightToLeft"
+				<KeyValue key="childLayoutDirection" value="leftToRight" type="string"/>
+			
 				Determines if child scale is taken into account when laying out children
 				<KeyValue key="respectChildScale" value="true" type="boolean"/>
 			-->

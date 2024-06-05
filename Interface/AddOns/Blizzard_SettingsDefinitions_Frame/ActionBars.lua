@@ -24,7 +24,7 @@ local function Register()
 		local options = Settings.CreateModifiedClickOptions(tooltips);
 		local dropdownSetting = Settings.RegisterModifiedClickSetting(category, "PICKUPACTION", PICKUP_ACTION_KEY_TEXT, "SHIFT");
 
-		local initializer = CreateSettingsCheckBoxDropDownInitializer(
+		local initializer = CreateSettingsCheckboxDropdownInitializer(
 			cbSetting, LOCK_ACTIONBAR_TEXT, OPTION_TOOLTIP_LOCK_ACTIONBAR,
 			dropdownSetting, options, PICKUP_ACTION_KEY_TEXT, OPTION_TOOLTIP_PICKUP_ACTION_KEY_TEXT);
 		initializer:AddSearchTags(LOCK_ACTIONBAR_TEXT);

@@ -21,7 +21,6 @@ ClassTalents/Blizzard_ClassTalentsFrame.xml
 PvPTalents/Blizzard_PvPTalentListTemplates.xml
 PvPTalents/Blizzard_PvPTalentSlotTemplates.xml
 PvPTalents/Blizzard_WarmodeButtonTemplate.xml
-SpellBook/Blizzard_SpellBookUtil.lua
 SpellBook/Blizzard_SpellBookTemplates.xml
 SpellBook/Blizzard_SpellBookItem.xml
 SpellBook/Blizzard_SpellBookSearch.lua

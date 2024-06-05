@@ -103,8 +103,8 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 
 	self.RecraftingRequiredTools:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -4);
 
-	self.AllocateBestQualityCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
-	self.AllocateBestQualityCheckBox:SetScript("OnClick", function(button, buttonName, down)
+	self.AllocateBestQualityCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
+	self.AllocateBestQualityCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		Professions.SetShouldAllocateBestQualityReagents(checked);
 
@@ -113,12 +113,12 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		self:UpdateAllSlots();
 
 		-- Trick to re-fire the OnEnter script to update the tooltip.
-		self.AllocateBestQualityCheckBox:Hide();
-		self.AllocateBestQualityCheckBox:Show();
+		self.AllocateBestQualityCheckbox:Hide();
+		self.AllocateBestQualityCheckbox:Show();
 		PlaySound(SOUNDKIT.UI_PROFESSION_USE_BEST_REAGENTS_CHECKBOX);
 	end);
 
-	self.AllocateBestQualityCheckBox:SetScript("OnEnter", function(button)
+	self.AllocateBestQualityCheckbox:SetScript("OnEnter", function(button)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 		local checked = button:GetChecked();
 		if checked then
@@ -128,11 +128,11 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 		end
 		GameTooltip:Show();
 	end);
-	self.AllocateBestQualityCheckBox:SetScript("OnLeave", GameTooltip_Hide);
+	self.AllocateBestQualityCheckbox:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.TrackRecipeCheckBox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
-	self.TrackRecipeCheckBox:SetPoint("TOPRIGHT", -(self.TrackRecipeCheckBox.text:GetStringWidth() + 20), -16);
-	self.TrackRecipeCheckBox:SetScript("OnClick", function(button, buttonName, down)
+	self.TrackRecipeCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_TRACK_RECIPE));
+	self.TrackRecipeCheckbox:SetPoint("TOPRIGHT", -(self.TrackRecipeCheckbox.text:GetStringWidth() + 20), -16);
+	self.TrackRecipeCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local currentRecipeInfo = self:GetRecipeInfo();
 		local checked = button:GetChecked();
 
@@ -224,7 +224,7 @@ function ProfessionsRecipeSchematicFormMixin:OnEvent(event, ...)
 		local recipeID, tracked = ...
 		local isCurrent = self:IsCurrentRecipe(recipeID);
 		if isCurrent then
-			self.TrackRecipeCheckBox:SetChecked(tracked);
+			self.TrackRecipeCheckbox:SetChecked(tracked);
 		end
 	elseif event == "TRADE_SKILL_ITEM_UPDATE" then
 		if self.transaction and self.transaction:IsRecraft() then
@@ -358,8 +358,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self.RecipeSourceButton:Hide();
 	self.FirstCraftBonus:Hide();
 	self.FavoriteButton:Hide();
-	self.TrackRecipeCheckBox:Hide();
-	self.AllocateBestQualityCheckBox:Hide();
+	self.TrackRecipeCheckbox:Hide();
+	self.AllocateBestQualityCheckbox:Hide();
 
 	self.Reagents:Hide();
 	self.OptionalReagents:Hide();
@@ -492,8 +492,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	local shouldShowTrackRecipe = not (minimized or self.isInspection) and self.showTrackRecipe and self.transaction:HasReagentSlots() and Professions.CanTrackRecipe(recipeInfo);
-	self.TrackRecipeCheckBox:SetShown(shouldShowTrackRecipe);
-	self.TrackRecipeCheckBox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID, isRecraft));
+	self.TrackRecipeCheckbox:SetShown(shouldShowTrackRecipe);
+	self.TrackRecipeCheckbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeInfo.recipeID, isRecraft));
 
 	-- If the item we're creating has no quality then default to using the lowest quality
 	-- reagents. If so, also hide the check box so that the player doesn't reactivate the option for no benefit.
@@ -1436,9 +1436,9 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	self:UpdateRecraftSlot(operationInfo);
 
 	local shouldShowAllocateBestQuality = (not minimized) and (not alwaysUsesLowestQuality) and professionLearned and Professions.DoesSchematicIncludeReagentQualities(self.recipeSchematic);
-	self.AllocateBestQualityCheckBox:SetShown(shouldShowAllocateBestQuality);
+	self.AllocateBestQualityCheckbox:SetShown(shouldShowAllocateBestQuality);
 	if shouldShowAllocateBestQuality then
-		self.AllocateBestQualityCheckBox:SetChecked(shouldAllocateBest);
+		self.AllocateBestQualityCheckbox:SetChecked(shouldAllocateBest);
 	end
 
 	self.transaction:SetAllocationsChangedHandler(self.statsChangedHandler);

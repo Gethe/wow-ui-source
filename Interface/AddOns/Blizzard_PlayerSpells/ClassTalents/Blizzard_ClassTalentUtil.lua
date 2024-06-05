@@ -193,14 +193,3 @@ function ClassTalentUtil.GetSheenAlphaForVisualState(visualState)
 end
 
 ClassTalentUtil.ShouldRefundClearEdges = IsShiftKeyDown;
-
-
-function ClassTalentUtil.GetOrStartSyncedAnimationOffset(animDuration)
-	if not ClassTalentUtil.firstSyncedAnimStartTime then
-		ClassTalentUtil.firstSyncedAnimStartTime = GetTime();
-		return 0;
-	end
-
-	local timeSinceStart = GetTime() - ClassTalentUtil.firstSyncedAnimStartTime;
-	return timeSinceStart % animDuration;
-end

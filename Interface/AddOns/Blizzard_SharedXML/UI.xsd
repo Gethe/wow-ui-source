@@ -1572,6 +1572,7 @@
 			<xs:choice maxOccurs="unbounded">
 				<xs:element ref="AnimationRef"/>
 				<xs:element name="Scripts" type="AnimGroupScriptsType"/>
+				<xs:element name="KeyValues" type="KeyValuesType"/>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>

@@ -303,7 +303,6 @@
 							<KeyValue key="resizeToText" type="boolean" value="true"/>
 							<KeyValue key="resizeToTextPadding" type="number" value="60"/>
 							<KeyValue key="resizeToTextMinWidth" type="number" value="95"/>
-							<KeyValue key="resizeToTextMaxWidth" type="number" value="120"/>
 							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>

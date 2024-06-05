@@ -120,10 +120,6 @@ do
 		end
 	end
 
-	function SecureArray:InsertTbl(tbl)
-		securecallfunction(tAppendAll, self.tbl, tbl);
-	end
-
 	function SecureArray:RemoveValue(value)
 		-- Element move will taint execution.
 		return securecallfunction(tDeleteItem, self.tbl, value);
@@ -351,7 +347,7 @@ do
 		return securecallfunction(self:GetWrapperSecure(), ...);
 	end
 	
-	function SecureTypes.CreateSecureFunction(func)
+	function SecureTypes.CreateSecureFunction()
 		local tbl = {};
 		setmetatable(tbl, SecureFunction);
 		return tbl;

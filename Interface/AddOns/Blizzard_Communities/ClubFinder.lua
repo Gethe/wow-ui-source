@@ -301,7 +301,7 @@ function ClubFinderRequestToJoinMixin:ApplyToClub()
 	local selectedSpecs = { };
 
 	for button in self.SpecsPool:EnumerateActive() do
-		if(button.CheckBox:GetChecked()) then
+		if(button.Checkbox:GetChecked()) then
 			table.insert(selectedSpecs, button.specID);
 		end
 	end
@@ -317,7 +317,7 @@ end
 function ClubFinderRequestToJoinMixin:EnableOrDisableApplyButton()
 	local checkedCount = 0;
 	for button in self.SpecsPool:EnumerateActive() do
-		if(button.CheckBox:GetChecked()) then
+		if(button.Checkbox:GetChecked()) then
 			checkedCount = checkedCount + 1;
 		end
 	end
@@ -364,7 +364,7 @@ function ClubFinderRequestToJoinMixin:Initialize()
 
 	local isRecruitingAllSpecs = #self.info.recruitingSpecIds == 0 or #self.info.recruitingSpecIds == CLUB_FINDER_MAX_NUM_SPECIALIZATIONS;
 	if (not isRecruitingAllSpecs and not self:DoesPlayerMatchRecruitingSpecs()) then
-		self.SpecsPool = CreateFramePool("FRAME", self, "ClubFinderLittleSpecializationCheckBoxTemplate");
+		self.SpecsPool = CreateFramePool("FRAME", self, "ClubFinderLittleSpecializationCheckboxTemplate");
 		self.noMatchingSpecs = true;
 		if (#specIds < 4) then
 			extraFrameHeight = 65;
@@ -372,7 +372,7 @@ function ClubFinderRequestToJoinMixin:Initialize()
 			extraFrameHeight = 70; --Base offset;
 		end
 	else
-		self.SpecsPool = CreateFramePool("FRAME", self, "ClubFinderBigSpecializationCheckBoxTemplate");
+		self.SpecsPool = CreateFramePool("FRAME", self, "ClubFinderBigSpecializationCheckboxTemplate");
 		self.noMatchingSpecs = false;
 		if (#specIds < 4) then
 			extraFrameHeight = 40;
@@ -811,11 +811,11 @@ function ClubFinderOptionsMixin:OnSearchButtonClick()
 
 	for _, playerSpecID in ipairs(specIDs) do
 		local _, name, _, _, role = GetSpecializationInfoForSpecID(playerSpecID);
-		if (canBeTank and role == "TANK" and self.TankRoleFrame.CheckBox:GetChecked()) then
+		if (canBeTank and role == "TANK" and self.TankRoleFrame.Checkbox:GetChecked()) then
 			table.insert(filteredSpecIDs, playerSpecID);
-		elseif (canBeDPS and role == "DAMAGER" and self.DpsRoleFrame.CheckBox:GetChecked()) then
+		elseif (canBeDPS and role == "DAMAGER" and self.DpsRoleFrame.Checkbox:GetChecked()) then
 			table.insert(filteredSpecIDs, playerSpecID);
-		elseif (canBeHealer and role == "HEALER" and self.HealerRoleFrame.CheckBox:GetChecked()) then
+		elseif (canBeHealer and role == "HEALER" and self.HealerRoleFrame.Checkbox:GetChecked()) then
 			table.insert(filteredSpecIDs, playerSpecID);
 		end
 	end
@@ -833,7 +833,7 @@ end
 
 function ClubFinderOptionsMixin:InitializeRoleButton(button)
 	button.Icon:SetDesaturated(true);
-	button.CheckBox:Disable();
+	button.Checkbox:Disable();
 end
 
 function ClubFinderOptionsMixin:InitializeRoleButtons()
@@ -843,9 +843,9 @@ function ClubFinderOptionsMixin:InitializeRoleButtons()
 end
 
 function ClubFinderOptionsMixin:RefreshRoleButtons()
-	self.DpsRoleFrame.CheckBox:SetChecked(ClubFinderGetPlayerSettingsByValue(Enum.ClubFinderSettingFlags.Damage));
-	self.HealerRoleFrame.CheckBox:SetChecked(ClubFinderGetPlayerSettingsByValue(Enum.ClubFinderSettingFlags.Healer));
-	self.TankRoleFrame.CheckBox:SetChecked(ClubFinderGetPlayerSettingsByValue(Enum.ClubFinderSettingFlags.Tank));
+	self.DpsRoleFrame.Checkbox:SetChecked(ClubFinderGetPlayerSettingsByValue(Enum.ClubFinderSettingFlags.Damage));
+	self.HealerRoleFrame.Checkbox:SetChecked(ClubFinderGetPlayerSettingsByValue(Enum.ClubFinderSettingFlags.Healer));
+	self.TankRoleFrame.Checkbox:SetChecked(ClubFinderGetPlayerSettingsByValue(Enum.ClubFinderSettingFlags.Tank));
 end
 
 function ClubFinderOptionsMixin:SetOptionsState(shouldHide)
@@ -873,13 +873,13 @@ function ClubFinderOptionsMixin:SetEnabledRoles()
 		local role = select(5,GetSpecializationInfoForClassID(classID, i));
 		if (canBeTank and role == "TANK") then
 			self.TankRoleFrame.Icon:SetDesaturated(false);
-			self.TankRoleFrame.CheckBox:Enable();
+			self.TankRoleFrame.Checkbox:Enable();
 		elseif(canBeHealer and role == "HEALER") then
 			self.HealerRoleFrame.Icon:SetDesaturated(false);
-			self.HealerRoleFrame.CheckBox:Enable();
+			self.HealerRoleFrame.Checkbox:Enable();
 		elseif(canBeDPS and role == "DAMAGER") then
 			self.DpsRoleFrame.Icon:SetDesaturated(false);
-			self.DpsRoleFrame.CheckBox:Enable();
+			self.DpsRoleFrame.Checkbox:Enable();
 		end
 	end
 end
@@ -2165,9 +2165,9 @@ function ClubFinderTabMixin:SetTab()
 
 end
 
-ClubFinderRoleCheckBoxMixin = { };
+ClubFinderRoleCheckboxMixin = { };
 
-function ClubFinderRoleCheckBoxMixin:OnEnter()
+function ClubFinderRoleCheckboxMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 5);
 
 	if self:IsEnabled() then
@@ -2185,7 +2185,7 @@ function ClubFinderRoleCheckBoxMixin:OnEnter()
 	GameTooltip:Show()
 end
 
-function ClubFinderRoleCheckBoxMixin:OnLeave()
+function ClubFinderRoleCheckboxMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
@@ -2193,15 +2193,15 @@ end
 ClubFinderRoleMixin = { };
 
 function ClubFinderRoleMixin:OnEnter()
-	self.CheckBox:OnEnter();
+	self.Checkbox:OnEnter();
 end
 
 function ClubFinderRoleMixin:OnLeave()
-	self.CheckBox:OnLeave();
+	self.Checkbox:OnLeave();
 end
 
 function ClubFinderRoleMixin:SetEnabled(enabled)
-	self.CheckBox:SetEnabled(enabled);
+	self.Checkbox:SetEnabled(enabled);
 	self.Icon:SetDesaturated(not enabled);
 end
 

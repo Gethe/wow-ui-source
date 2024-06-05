@@ -225,7 +225,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		return container:GetData();
 	end
 
-	local function InitControlDropDown(containerFrame, setting, name, tooltip, options)
+	local function InitControlDropdown(containerFrame, setting, name, tooltip, options)
 		if not setting then
 			containerFrame:Hide();
 			return
@@ -272,10 +272,10 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		self.cbrHandles:SetOnValueChangedCallback(setting:GetVariable(), OnSettingValueChanged);
 	end
 
-	local function InitControlCheckBoxSlider(containerFrame, cbSetting, sliderSetting, cbName, cbTooltip, name, tooltip, options)
+	local function InitControlCheckboxSlider(containerFrame, cbSetting, sliderSetting, cbName, cbTooltip, name, tooltip, options)
 		InitControlSlider(containerFrame, sliderSetting, name, tooltip, options);
 
-		local function OnCheckBoxValueChanged(o, value)
+		local function OnCheckboxValueChanged(o, value)
 			cbSetting:SetValue(value);
 
 			if value then
@@ -288,10 +288,10 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		end
 
 		local cbInitTooltip = GenerateClosure(Settings.InitTooltip, cbName, cbTooltip);
-		containerFrame.CheckBox:Init(cbSetting:GetValue(), cbInitTooltip);
+		containerFrame.Checkbox:Init(cbSetting:GetValue(), cbInitTooltip);
 		containerFrame:SetTooltipFunc(cbInitTooltip);
-		containerFrame:SetCustomTooltipAnchoring(self.CheckBox, "ANCHOR_TOP", 0, 0);
-		self.cbrHandles:RegisterCallback(containerFrame.CheckBox, SettingsCheckboxMixin.Event.OnValueChanged, OnCheckBoxValueChanged);
+		containerFrame:SetCustomTooltipAnchoring(self.Checkbox, "ANCHOR_TOP", 0, 0);
+		self.cbrHandles:RegisterCallback(containerFrame.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, OnCheckboxValueChanged);
 	end
 
 	do
@@ -323,28 +323,28 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, IncrementByOne);
 
 	if raid then
-		InitControlCheckBoxSlider(self.GraphicsQuality, Settings.GetSetting(RaidSettingsEnabledCVar), settingGraphicsQuality, SETTINGS_RAID_GRAPHICS_QUALITY, RAID_SETTINGS_ENABLED_TOOLTIP, SETTINGS_RAID_GRAPHICS_QUALITY, OPTION_TOOLTIP_RAID_GRAPHICS_QUALITY, options);
+		InitControlCheckboxSlider(self.GraphicsQuality, Settings.GetSetting(RaidSettingsEnabledCVar), settingGraphicsQuality, SETTINGS_RAID_GRAPHICS_QUALITY, RAID_SETTINGS_ENABLED_TOOLTIP, SETTINGS_RAID_GRAPHICS_QUALITY, OPTION_TOOLTIP_RAID_GRAPHICS_QUALITY, options);
 	else
 		InitControlSlider(self.GraphicsQuality, settingGraphicsQuality, BASE_GRAPHICS_QUALITY, OPTION_TOOLTIP_GRAPHICS_QUALITY, options);
 	end
 	self.GraphicsQuality:SetCustomTooltipAnchoring(self.GraphicsQuality, "ANCHOR_TOP", 0, 0);
 	self.GraphicsQuality.SliderWithSteppers.Slider:SetCustomTooltipAnchoring(self.GraphicsQuality.SliderWithSteppers, "ANCHOR_TOP", 0, 0);
 
-	InitControlDropDown(self.ShadowQuality, settingShadowQuality, SHADOW_QUALITY, OPTION_TOOLTIP_SHADOW_QUALITY, GetShadowQualityOptions);
-	InitControlDropDown(self.LiquidDetail, settingLiquidDetail, LIQUID_DETAIL, OPTION_TOOLTIP_LIQUID_DETAIL, GetLiquidDetailOptions);
-	InitControlDropDown(self.ParticleDensity, settingParticleDensity, PARTICLE_DENSITY, OPTION_TOOLTIP_PARTICLE_DENSITY, GetParticleDensityOptions);
-	InitControlDropDown(self.SSAO, settingSSAO,	SSAO_LABEL, OPTION_TOOLTIP_SSAO, GetSSAOOptions);
-	InitControlDropDown(self.DepthEffects, settingDepthEffects, DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
-	InitControlDropDown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
-	InitControlDropDown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
-	InitControlDropDown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GenerateClosure(GraphicsOverrides.GetTextureResolutionOptions, settingTextureResolution, AddValidatedSettingOption, AddRecommended));
-	InitControlDropDown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
-	InitControlDropDown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
+	InitControlDropdown(self.ShadowQuality, settingShadowQuality, SHADOW_QUALITY, OPTION_TOOLTIP_SHADOW_QUALITY, GetShadowQualityOptions);
+	InitControlDropdown(self.LiquidDetail, settingLiquidDetail, LIQUID_DETAIL, OPTION_TOOLTIP_LIQUID_DETAIL, GetLiquidDetailOptions);
+	InitControlDropdown(self.ParticleDensity, settingParticleDensity, PARTICLE_DENSITY, OPTION_TOOLTIP_PARTICLE_DENSITY, GetParticleDensityOptions);
+	InitControlDropdown(self.SSAO, settingSSAO,	SSAO_LABEL, OPTION_TOOLTIP_SSAO, GetSSAOOptions);
+	InitControlDropdown(self.DepthEffects, settingDepthEffects, DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
+	InitControlDropdown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
+	InitControlDropdown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
+	InitControlDropdown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GenerateClosure(GraphicsOverrides.GetTextureResolutionOptions, settingTextureResolution, AddValidatedSettingOption, AddRecommended));
+	InitControlDropdown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
+	InitControlDropdown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
 	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
 	InitControlSlider(	self.EnvironmentDetail, settingEnvironmentDetail,	ENVIRONMENT_DETAIL, OPTION_TOOLTIP_ENVIRONMENT_DETAIL, options);
 	InitControlSlider(	self.GroundClutter, settingGroundClutter,	GROUND_CLUTTER, OPTION_TOOLTIP_GROUND_CLUTTER, options);
 
-	GraphicsOverrides.AdjustAdvancedQualityControls(self, settings, raid, InitControlDropDown, AddValidatedSettingOption, AddRecommended);
+	GraphicsOverrides.AdjustAdvancedQualityControls(self, settings, raid, InitControlDropdown, AddValidatedSettingOption, AddRecommended);
 end
 
 SettingsAdvancedQualitySectionMixin = CreateFromMixins(SettingsExpandableSectionMixin);
@@ -403,9 +403,9 @@ function SettingsAdvancedSliderMixin:OnLoad()
 	self.SliderWithSteppers.Slider:InitDefaultTooltipScriptHandlers();
 end
 
-SettingsAdvancedCheckBoxSliderMixin = CreateFromMixins(DefaultTooltipMixin);
+SettingsAdvancedCheckboxSliderMixin = CreateFromMixins(DefaultTooltipMixin);
 
-function SettingsAdvancedCheckBoxSliderMixin:OnLoad()
+function SettingsAdvancedCheckboxSliderMixin:OnLoad()
 	Mixin(self.SliderWithSteppers.Slider, DefaultTooltipMixin);
 	DefaultTooltipMixin.OnLoad(self);
 	self:SetCustomTooltipAnchoring(self.SliderWithSteppers, "ANCHOR_TOPLEFT", -40, 0);

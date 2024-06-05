@@ -1,3 +1,4 @@
+ClassTalentBorderSheenSyncKey = "ClassTalentBorderSheen";
 
 --------------------------------------------------
 -- Base mixin for both the standard talent Buttons and the Selection Choice mixin.
@@ -7,10 +8,8 @@ ClassTalentButtonArtMixin = {};
 
 function ClassTalentButtonArtMixin:OnShow()
 	if not self.BorderSheen.Anim:IsPlaying() then
-		-- Get a shared calculated time offset so that all node sheens stay synced
-		local timeOffset = ClassTalentUtil.GetOrStartSyncedAnimationOffset(self.BorderSheen.Anim:GetDuration());
-		local reverse = false;
-		self.BorderSheen.Anim:Play(reverse, timeOffset);
+		-- Ensure all node sheens stay synced
+		self.BorderSheen.Anim:PlaySynced();
 	end
 end
 
@@ -54,6 +53,7 @@ function ClassTalentButtonBaseMixin:OnLoad()
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
 	self.SelectableGlow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
 	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
+	self.SearchIcon.tooltipBackdropStyle = self.tooltipBackdropStyle;
 end
 
 function ClassTalentButtonBaseMixin:UpdateActionBarStatus()
@@ -335,6 +335,7 @@ function ClassTalentSelectionChoiceMixin:OnLoad()
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
 
 	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
+	self.SearchIcon.tooltipBackdropStyle = self.tooltipBackdropStyle;
 end
 
 function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, selectionIndex)

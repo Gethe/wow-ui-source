@@ -112,11 +112,6 @@ function TimeManagerFrame_OnLoad(self)
 
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 
-	self.AlarmTimeFrame.HourDropdown:SetWidth(50);
-	self.AlarmTimeFrame.MinuteDropdown:SetWidth(50);
-	self.AlarmTimeFrame.AMPMDropdown:SetWidth(55);
-
-	--get rid of button bar at bottom
 	ButtonFrameTemplate_HideButtonBar(self);
 
 	TimeManager_Update();
@@ -147,7 +142,7 @@ function TimeManagerFrame_SetupHourDropdown(self)
 		hourMin, hourMax = 1, 12;
 	end
 
-	local width = 50;
+	local width = 60;
 	self.AlarmTimeFrame.HourDropdown:SetWidth(width);
 	self.AlarmTimeFrame.HourDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TIME_MANAGER_HOUR");
@@ -174,7 +169,7 @@ function TimeManagerFrame_SetupMinuteDropdown(self)
 		_TimeManager_Setting_SetTime();
 	end
 
-	local width = 50;
+	local width = 60;
 	self.AlarmTimeFrame.MinuteDropdown:SetWidth(width);
 	self.AlarmTimeFrame.MinuteDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TIME_MANAGER_MINUTE");
@@ -196,7 +191,7 @@ function TimeManagerFrame_SetupAMPMDropdown(self)
 		TimeManager_StartCheckingAlarm();
 	end
 
-	local width = 55;
+	local width = 65;
 	self.AlarmTimeFrame.AMPMDropdown:SetWidth(width);
 	self.AlarmTimeFrame.AMPMDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TIME_MANAGER_AMPM");

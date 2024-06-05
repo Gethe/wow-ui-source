@@ -2531,7 +2531,7 @@
 					<OnLoad function="AchievementFrameAchievements_OnLoad"/>
 					<OnEvent function="AchievementFrameAchievements_OnEvent"/>
 					<OnHide>
-						AchievementFrameFilterDropDown:Hide();
+						AchievementFrameFilterDropdown:Hide();
 						AchievementFrameHeaderRightDDLInset:Hide();
 					</OnHide>
 					<OnShow function="AchievementFrameAchievements_OnShow"/>
@@ -3297,7 +3297,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<DropdownButton name="AchievementFrameFilterDropDown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
+			<DropdownButton name="AchievementFrameFilterDropdown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="144" y="8"/>
 				</Anchors>

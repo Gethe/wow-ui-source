@@ -2096,8 +2096,10 @@ end
 function GearSetEditButton_OnMouseDown(self, button)
 	self.texture:SetPoint("TOPLEFT", 1, -1);
 
+	local parentButton = self:GetParent();
+
 	local function GetSetID()
-		return self:GetParent().setID;
+		return parentButton.setID;
 	end
 
 	local function IsSelected(i)
@@ -2112,7 +2114,7 @@ function GearSetEditButton_OnMouseDown(self, button)
 			C_EquipmentSet.UnassignEquipmentSetSpec(GetSetID());
 		end
 
-		GearSetButton_UpdateSpecInfo(self:GetParent());
+		GearSetButton_UpdateSpecInfo(parentButton);
 		PaperDollEquipmentManagerPane_Update(true);
 	end
 
@@ -2120,7 +2122,7 @@ function GearSetEditButton_OnMouseDown(self, button)
 		rootDescription:SetTag("MENU_PAPERDOLL_FRAME");
 
 		rootDescription:CreateButton(EQUIPMENT_SET_EDIT, function()
-			GearSetButton_OpenPopup(self);
+			GearSetButton_OpenPopup(parentButton);
 		end);
 
 		rootDescription:CreateTitle(EQUIPMENT_SET_ASSIGN_TO_SPEC);
@@ -2244,7 +2246,7 @@ function GearManagerPopupFrameMixin:Update()
 		self.IconSelector:SetSelectedIndex(initialIndex);
 		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(self:GetIconByIndex(initialIndex));
 	elseif ( self.mode == IconSelectorPopupFrameModes.Edit ) then
-		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(PaperDollFrame.EquipmentManagerPane.selectedSetID);
+		local name, texture = C_EquipmentSet.GetEquipmentSetInfo(self.setID);
 		self.BorderBox.IconSelectorEditBox:SetText(name);
 		self.BorderBox.IconSelectorEditBox:HighlightText();
 

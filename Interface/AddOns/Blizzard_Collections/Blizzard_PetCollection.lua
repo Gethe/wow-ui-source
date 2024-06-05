@@ -167,25 +167,25 @@ function PetJournal_InitFilterDropdown(self)
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_PET_COLLECTION_FILTER");
 
-		rootDescription:CreateCheckbox(COLLECTED, PetJournalFilterDropDown_GetCollectedFilter, function()
-			PetJournalFilterDropDown_SetCollectedFilter(not PetJournalFilterDropDown_GetCollectedFilter());
+		rootDescription:CreateCheckbox(COLLECTED, PetJournalFilterDropdown_GetCollectedFilter, function()
+			PetJournalFilterDropdown_SetCollectedFilter(not PetJournalFilterDropdown_GetCollectedFilter());
 		end);
 
-		rootDescription:CreateCheckbox(NOT_COLLECTED, PetJournalFilterDropDown_GetNotCollectedFilter, function()
-			PetJournalFilterDropDown_SetNotCollectedFilter(not PetJournalFilterDropDown_GetNotCollectedFilter());
+		rootDescription:CreateCheckbox(NOT_COLLECTED, PetJournalFilterDropdown_GetNotCollectedFilter, function()
+			PetJournalFilterDropdown_SetNotCollectedFilter(not PetJournalFilterDropdown_GetNotCollectedFilter());
 		end);
 		
 		local familiesSubmenu = rootDescription:CreateButton(PET_FAMILIES);
-		familiesSubmenu:CreateButton(CHECK_ALL, PetJournalFilterDropDown_SetAllPetTypes, true);
-		familiesSubmenu:CreateButton(UNCHECK_ALL, PetJournalFilterDropDown_SetAllPetTypes, false);
+		familiesSubmenu:CreateButton(CHECK_ALL, PetJournalFilterDropdown_SetAllPetTypes, true);
+		familiesSubmenu:CreateButton(UNCHECK_ALL, PetJournalFilterDropdown_SetAllPetTypes, false);
 
 		for filterIndex = 1, C_PetJournal.GetNumPetTypes() do
 			familiesSubmenu:CreateCheckbox(_G["BATTLE_PET_NAME_"..filterIndex], IsFamilyChecked, SetFamilyChecked, filterIndex);
 		end
 		
 		local sourceSubmenu = rootDescription:CreateButton(SOURCES);
-		sourceSubmenu:CreateButton(CHECK_ALL, PetJournalFilterDropDown_SetAllPetSources, true);
-		sourceSubmenu:CreateButton(UNCHECK_ALL, PetJournalFilterDropDown_SetAllPetSources, false);
+		sourceSubmenu:CreateButton(CHECK_ALL, PetJournalFilterDropdown_SetAllPetSources, true);
+		sourceSubmenu:CreateButton(UNCHECK_ALL, PetJournalFilterDropdown_SetAllPetSources, false);
 
 		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("BATTLEPETS", petSourceOrderPriorities);
 		for index = 1, C_PetJournal.GetNumPetSources() do
@@ -1566,27 +1566,27 @@ function GetPetTypeTexture(petType)
 	end
 end
 
-function PetJournalFilterDropDown_SetCollectedFilter(value)
+function PetJournalFilterDropdown_SetCollectedFilter(value)
 	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED, value);
 end
 
-function PetJournalFilterDropDown_GetCollectedFilter()
+function PetJournalFilterDropdown_GetCollectedFilter()
 	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED);
 end
 
-function PetJournalFilterDropDown_SetNotCollectedFilter(value)
+function PetJournalFilterDropdown_SetNotCollectedFilter(value)
 	C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED, value);
 end
 
-function PetJournalFilterDropDown_GetNotCollectedFilter()
+function PetJournalFilterDropdown_GetNotCollectedFilter()
 	return C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
 end
 
-function PetJournalFilterDropDown_SetAllPetTypes(value)
+function PetJournalFilterDropdown_SetAllPetTypes(value)
 	C_PetJournal.SetAllPetTypesChecked(value);
 end 
 
-function PetJournalFilterDropDown_SetAllPetSources(value)
+function PetJournalFilterDropdown_SetAllPetSources(value)
 	C_PetJournal.SetAllPetSourcesChecked(value);
 end
 

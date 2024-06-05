@@ -34,7 +34,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ArachnophobiaTemplate" inherits="SettingsCheckBoxControlTemplate" mixin="ArachnophobiaMixin" virtual="true">
+	<Frame name="ArachnophobiaTemplate" inherits="SettingsCheckboxControlTemplate" mixin="ArachnophobiaMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="SubTextContainer" setAllPoints="true" hyperlinksEnabled="true" enableMouse="true">
 				<Layers>

@@ -13,7 +13,7 @@ function PerksProgramFooterFrameMixin:OnLoad()
 end
 
 local CHECKBOX_PADDING = 22;
-local function GetCheckBoxCenteringOffset(checkboxes)
+local function GetCheckboxCenteringOffset(checkboxes)
 	local centeringOffset = 0;
 	for _, checkbox in pairs(checkboxes) do
 		centeringOffset = centeringOffset + checkbox:GetWidth() + checkbox.Text:GetWidth() - CHECKBOX_PADDING;
@@ -52,7 +52,7 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 	local showMountSpecialCheckbox = showMountCheckboxToggles and mountSpecialCheckboxEnabled;
 	self.ToggleMountSpecial:SetShown(showMountSpecialCheckbox);
 	if showMountSpecialCheckbox then
-		self.TogglePlayerPreview:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", GetCheckBoxCenteringOffset({self.TogglePlayerPreview, self.ToggleMountSpecial}), 0);
+		self.TogglePlayerPreview:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", GetCheckboxCenteringOffset({self.TogglePlayerPreview, self.ToggleMountSpecial}), 0);
 	else
 		self.TogglePlayerPreview:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", -18, 0);
 	end
@@ -65,21 +65,21 @@ function PerksProgramFooterFrameMixin:OnProductSelected(data)
 		self.ToggleMountSpecial:SetChecked(false);
 	end
 
-	local showTransmogCheckBoxes = categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset;
-	self.ToggleHideArmor:SetShown(showTransmogCheckBoxes);
+	local showTransmogCheckboxes = categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset;
+	self.ToggleHideArmor:SetShown(showTransmogCheckboxes);
 
 	local displayData = data.displayData;
-	local showAttackAnimation = showTransmogCheckBoxes and (displayData.animationKitID or (displayData.animation and displayData.animation > 0));
+	local showAttackAnimation = showTransmogCheckboxes and (displayData.animationKitID or (displayData.animation and displayData.animation > 0));
 	local attackCheckboxEnabled = C_PerksProgram.IsAttackAnimToggleEnabled();
 	showAttackAnimation = showAttackAnimation and attackCheckboxEnabled;
 	if showAttackAnimation then
-		self.ToggleHideArmor:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", GetCheckBoxCenteringOffset({self.ToggleHideArmor, self.ToggleAttackAnimation}), 0);
+		self.ToggleHideArmor:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", GetCheckboxCenteringOffset({self.ToggleHideArmor, self.ToggleAttackAnimation}), 0);
 	else
 		self.ToggleHideArmor:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", -18, 0);
 	end
 	self.ToggleAttackAnimation:SetShown(showAttackAnimation);
 
-	if showTransmogCheckBoxes then
+	if showTransmogCheckboxes then
 		local hideArmor = not(self.selectedProductInfo.displayData.autodress);
 		local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
 		if hideArmorSetting ~= nil then

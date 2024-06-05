@@ -49,11 +49,11 @@
 				</Anchors>
 			</Frame>
 
-			<CheckButton parentKey="TrackRecipeCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="TrackRecipeCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="26" y="26"/>
 			</CheckButton>
 
-			<CheckButton parentKey="AllocateBestQualityCheckBox" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="AllocateBestQualityCheckbox" inherits="UICheckButtonTemplate">
 				<Size x="26" y="26"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="20"/>

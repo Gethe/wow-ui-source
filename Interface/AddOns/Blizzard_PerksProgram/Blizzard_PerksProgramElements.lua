@@ -926,24 +926,24 @@ function PerksProgramSetDetailsItemMixin:OnLeave()
 end
 
 ----------------------------------------------------------------------------------
--- PerksProgramCheckBoxMixin
+-- PerksProgramCheckboxMixin
 ----------------------------------------------------------------------------------
-PerksProgramCheckBoxMixin = {};
+PerksProgramCheckboxMixin = {};
 
-function PerksProgramCheckBoxMixin:OnLoad()
+function PerksProgramCheckboxMixin:OnLoad()
 	if self.textString then
 		self.Text:SetText(self.textString);
 	end
 end
 
-function PerksProgramCheckBoxMixin:OnShow()
+function PerksProgramCheckboxMixin:OnShow()
 	if self.perksProgramOnShowMethod then
 		local isChecked = PerksProgramFrame[self.perksProgramOnShowMethod](PerksProgramFrame);
 		self:SetChecked(isChecked);
 	end
 end
 
-function PerksProgramCheckBoxMixin:OnClick()
+function PerksProgramCheckboxMixin:OnClick()
 	if self.perksProgramOnClickMethod then
 		local isChecked = self:GetChecked();
 		PerksProgramFrame[self.perksProgramOnClickMethod](PerksProgramFrame, isChecked);

@@ -497,10 +497,10 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ClubFinderBigSpecializationCheckBoxTemplate" virtual="true">
+	<Frame name="ClubFinderBigSpecializationCheckboxTemplate" virtual="true">
 		<Size x="200" y="40"/>
 		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="ClubFinderCheckboxTemplate">
+			<CheckButton parentKey="Checkbox" inherits="ClubFinderCheckboxTemplate">
 				<Size x="35" y="35"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -518,17 +518,17 @@
 				<FontString parentKey="SpecName" justifyH="LEFT" inherits="GameFontHighlight">
 					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CheckBox" relativePoint="LEFT" x="35"/>
+						<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Frame>
 
-	<Frame name="ClubFinderLittleSpecializationCheckBoxTemplate" virtual="true">
+	<Frame name="ClubFinderLittleSpecializationCheckboxTemplate" virtual="true">
 		<Size x="200" y="32"/>
 		<Frames>
-			<CheckButton parentKey="CheckBox" inherits="ClubFinderCheckboxTemplate">
+			<CheckButton parentKey="Checkbox" inherits="ClubFinderCheckboxTemplate">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -546,7 +546,7 @@
 				<FontString parentKey="SpecName" justifyH="LEFT" inherits="GameFontHighlightSmall">
 					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CheckBox" relativePoint="LEFT" x="35"/>
+						<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="LEFT" x="35"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1073,7 +1073,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="Checkbox" mixin="ClubFinderRoleCheckboxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1099,7 +1099,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="Checkbox" mixin="ClubFinderRoleCheckboxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>
@@ -1125,7 +1125,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<CheckButton parentKey="CheckBox" mixin="ClubFinderRoleCheckBoxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+				<CheckButton parentKey="Checkbox" mixin="ClubFinderRoleCheckboxMixin" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
 					<Size x="23" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="-12" y="-8"/>

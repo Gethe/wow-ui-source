@@ -837,14 +837,14 @@ do
 			return optionData.currentChoiceIndex == choiceData.choiceIndex;
 		end
 	
-		local function OnSelect(choiceData, inputContext, menu)
+		local function OnSelect(choiceData, menuInputData, menu)
 			RunNextFrame(function() 
 				CharCustomizeFrame.previewIsDirty = false;
 				CharCustomizeFrame:SetCustomizationChoice(optionData.id, choiceData.id);
 			end);
 	
 			-- If the selection was done via mouse-wheel, reinitialize and keep the menu open.
-			if inputContext == MenuInputContext.MouseWheel then
+			if menuInputData.context == MenuInputContext.MouseWheel then
 				return MenuResponse.Refresh;
 			end
 		end
@@ -925,8 +925,8 @@ do
 			optionDescription:AddInitializer(function(button, description, menu)
 				button.HighlightBGTex:SetAlpha(0);
 	
-				button:SetScript("OnClick", function(button)
-					description:Pick(MenuInputContext.MouseButton);
+				button:SetScript("OnClick", function(button, buttonName)
+					description:Pick(MenuInputContext.MouseButton, buttonName);
 				end);
 	
 				local selected = IsSelected(choiceData);

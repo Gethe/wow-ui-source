@@ -416,14 +416,14 @@ function WorldMapNavBarMixin:Refresh()
 			local mapGroupMembersInfo = C_Map.GetMapGroupMembersInfo(mapGroupID);
 			if ( mapGroupMembersInfo ) then
 				for i, mapGroupMemberInfo in ipairs(mapGroupMembersInfo) do
-					if ( C_Map.IsMapValidForNavBarDropDown(mapGroupMemberInfo.mapID) ) then
-						buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
+					if ( C_Map.IsMapValidForNavBarDropdown(mapGroupMemberInfo.mapID) ) then
+						buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropdownList;
 						break;
 					end
 				end
 			end	
-		elseif ( C_Map.IsMapValidForNavBarDropDown(mapInfo.mapID) ) then
-			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropDownList;
+		elseif ( C_Map.IsMapValidForNavBarDropdown(mapInfo.mapID) ) then
+			buttonData.listFunc = WorldMapNavBarButtonMixin.GetDropdownList;
 		end
 		tinsert(hierarchy, 1, buttonData);
 		mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID);
@@ -437,14 +437,14 @@ end
 
 WorldMapNavBarButtonMixin = { };
 
-function WorldMapNavBarButtonMixin:GetDropDownList()
+function WorldMapNavBarButtonMixin:GetDropdownList()
 	local list = { };
 	local mapInfo = C_Map.GetMapInfo(self.data.id);
 	if ( mapInfo ) then
 		local children = C_Map.GetMapChildrenInfo(mapInfo.parentMapID);
 		if ( children ) then
 			for i, childInfo in ipairs(children) do
-				if ( C_Map.IsMapValidForNavBarDropDown(childInfo.mapID) ) then
+				if ( C_Map.IsMapValidForNavBarDropdown(childInfo.mapID) ) then
 					local entry = { text = childInfo.name, id = childInfo.mapID, func = function(button, mapID) self:GetParent():GoToMap(mapID); end };
 					tinsert(list, entry);
 				end

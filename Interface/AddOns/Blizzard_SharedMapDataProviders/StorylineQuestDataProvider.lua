@@ -139,7 +139,7 @@ local function CreateQuestOfferFromTaskInfo(mapID, info)
 		info.isLegendary = C_QuestLog.IsLegendaryQuest(info.questID);
 		info.isCampaign = false; -- This cannot be a campaign for a task, it would be in a quest line
 		info.isImportant = C_QuestLog.IsImportantQuest(info.questID);
-		info.isAccountCompleted = false; -- May need to expose this query
+		info.isAccountCompleted = C_QuestLog.IsQuestFlaggedCompletedOnAccount(info.questID);
 		info.floorLocation = Enum.QuestLineFloorLocation.Same; -- This data may not be exposed yet
 		return info;
 	end
@@ -278,12 +278,14 @@ end
 function QuestOfferDataProviderMixin:OnShow()
 	MapCanvasDataProviderMixin.OnShow(self);
 	self:RegisterEvent("QUESTLINE_UPDATE");
+	self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
 	self:RequestQuestLinesForMap();
 end
 
 function QuestOfferDataProviderMixin:OnHide()
 	MapCanvasDataProviderMixin.OnHide(self);
 	self:UnregisterEvent("QUESTLINE_UPDATE");
+	self:UnregisterEvent("MINIMAP_UPDATE_TRACKING");
 end
 
 function QuestOfferDataProviderMixin:OnMapChanged()
@@ -299,6 +301,8 @@ function QuestOfferDataProviderMixin:OnEvent(event, ...)
 		else
 			self:RefreshAllData();
 		end
+	elseif event == "MINIMAP_UPDATE_TRACKING" then
+		self:RefreshAllData();
 	end
 end
 

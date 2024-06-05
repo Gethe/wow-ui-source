@@ -10,21 +10,21 @@ local function LocalizeFriendsFrame_zh()
 		_G[tabName].Text:SetPoint("CENTER", tabName, "CENTER", 0, 5);
 	end
 
-	WhoFrameDropDown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
+	WhoFrameDropdown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
 end
 
 local function AdjustFriendsFrameDropdown_132()
-	FriendsFriendsFrameDropDown:SetWidth(132);
+	FriendsFriendsFrameDropdown:SetWidth(132);
 end
 
 local function AdjustFriendsFrameDropdown_136()
-	FriendsFriendsFrameDropDown:SetWidth(136);
+	FriendsFriendsFrameDropdown:SetWidth(136);
 end
 
 local l10nTable = {
 	deDE = {
 		localizeFrames = function()
-			FriendsFriendsFrameDropDown:SetWidth(146);
+			FriendsFriendsFrameDropdown:SetWidth(146);
 		end
 	},
 	enGB = {},

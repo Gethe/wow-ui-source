@@ -1111,9 +1111,9 @@
 									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<DropdownButton parentKey="TypeDropdown" name="$parentTypeDropDown" inherits="WowStyle1DropdownTemplate" id="1">
+							<DropdownButton parentKey="TypeDropdown" name="$parentTypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="11" y="4"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="-6" y="4"/>
 								</Anchors>
 							</DropdownButton>
 							<Frame parentKey="SpecificScrollBox" inherits="WowScrollBoxList" hidden="true" frameStrata="HIGH">

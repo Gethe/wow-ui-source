@@ -25,6 +25,8 @@
 			currentPageWithMaxText: Global String for displaying current and max page
 			fontName: Optional override font to use for PageText
 			fontColor: Optional override color to use for PageText
+			prevPageSound: Optional sound to play on navigating to the previous page
+			nextPageSound: Optional sound to play on navigating to the next page
 		 -->
 		<KeyValues>
 			<KeyValue key="hideWhenSinglePage" value="false" type="boolean"/>
@@ -32,7 +34,9 @@
 			<KeyValue key="currentPageOnlyText" value="PAGE_NUMBER" type="global"/>
 			<KeyValue key="currentPageWithMaxText" value="PAGE_NUMBER_WITH_MAX" type="global"/>
 		<!--<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
-			<KeyValue key="fontColor" value="NORMAL_FONT_COLOR" type="global"/> -->
+			<KeyValue key="fontColor" value="NORMAL_FONT_COLOR" type="global"/>
+			<KeyValue key="prevPageSound" value="SOUNDKIT.IG_ABILITY_PAGE_TURN" type="global"/>
+			<KeyValue key="nextPageSound" value="SOUNDKIT.IG_ABILITY_PAGE_TURN" type="global"/> -->
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

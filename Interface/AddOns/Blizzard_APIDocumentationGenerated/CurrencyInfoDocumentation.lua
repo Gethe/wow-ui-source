@@ -57,7 +57,7 @@ local CurrencyInfo =
 
 			Returns =
 			{
-				{ Name = "rosterCurrencyData", Type = "table", InnerType = "CharacterCurrencyData", Nilable = false },
+				{ Name = "accountCurrencyData", Type = "table", InnerType = "CharacterCurrencyData", Nilable = false },
 			},
 		},
 		{
@@ -496,6 +496,11 @@ local CurrencyInfo =
 				{ Name = "quantityGainSource", Type = "number", Nilable = true },
 				{ Name = "quantityLostSource", Type = "number", Nilable = true },
 			},
+		},
+		{
+			Name = "CurrencyTransferFailed",
+			Type = "Event",
+			LiteralName = "CURRENCY_TRANSFER_FAILED",
 		},
 		{
 			Name = "CurrencyTransferLogUpdate",

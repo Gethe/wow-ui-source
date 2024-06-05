@@ -310,10 +310,8 @@ end
 function SpellBookItemMixin:UpdateSynchronizedAnimState(animGroup, shouldBePlaying)
 	local isPlaying = animGroup:IsPlaying();
 	if shouldBePlaying and not isPlaying then
-		-- Get a shared calculated time offset so that all looping anims stay synced with other SpellBookItems
-		local timeOffset = SpellBookUtil.GetOrStartSyncedAnimationOffset(animGroup:GetDuration());
-		local reverse = false;
-		animGroup:Play(reverse, timeOffset);
+		-- Ensure all looping anims stay synced with other SpellBookItems
+		animGroup:PlaySynced();
 	elseif not shouldBePlaying and isPlaying then
 		animGroup:Stop();
 	end

@@ -44,7 +44,7 @@
 	</Frame>
 
 	<Frame name="SettingsLanguageTemplate" inherits="SettingsLanguageBaseTemplate" mixin="SettingsLanguageDropdownControlMixin" virtual="true"/>
-	<Frame name="SettingsAudioLocaleTemplate" inherits="SettingsLanguageBaseTemplate" mixin="SettingsAudioLocaleDropDownMixin" virtual="true"/>
+	<Frame name="SettingsAudioLocaleTemplate" inherits="SettingsLanguageBaseTemplate" mixin="SettingsAudioLocaleDropdownMixin" virtual="true"/>
 
 	<Frame name="SettingsLanguageRestartNeededTemplate" inherits="SettingsListElementTemplate" mixin="LanguageRestartNeededMixin" virtual="true">
 		<Size x="512" y="22"/>

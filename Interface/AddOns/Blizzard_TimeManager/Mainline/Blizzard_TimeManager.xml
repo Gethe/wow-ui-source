@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="TimeManagerFrame" toplevel="true" parent="UIParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="190" y="240"/>
+		<Size x="220" y="240"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-10" y="-190"/>
 		</Anchors>
@@ -112,7 +112,7 @@
 				</Layers>
 				<Frames>
 					<EditBox name="TimeManagerAlarmMessageEditBox" inherits="InputBoxTemplate" autoFocus="false" letters="32" historyLines="1">
-						<Size x="160" y="20"/>
+						<Size x="190" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmMessageLabel" relativePoint="BOTTOMLEFT" x="4" y="-4"/>
 						</Anchors>
@@ -139,7 +139,7 @@
 			<CheckButton name="TimeManagerMilitaryTimeCheck" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="155" y="-190"/>
+					<Anchor point="TOPLEFT" x="185" y="-190"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

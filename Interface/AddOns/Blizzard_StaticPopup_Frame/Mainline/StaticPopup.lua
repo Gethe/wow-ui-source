@@ -125,7 +125,7 @@ StaticPopupDialogs["GENERIC_DROP_DOWN"] = {
 	text = "", -- supplied dynamically.
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	hasDropDown = 1,
+	hasDropdown = 1,
 	OnShow = function(self, data)
 		self.text:SetText(data.text);
 		
@@ -3987,7 +3987,7 @@ StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
 	OnAccept = function(self)
 		local setFavorite = true;
 		local confirmed = true;
-		WardrobeCollectionFrameModelDropDown_SetFavorite(self.data, setFavorite, confirmed);
+		WardrobeCollectionFrameModelDropdown_SetFavorite(self.data, setFavorite, confirmed);
 	end,
 	timeout = 0,
 	hideOnEscape = 1,

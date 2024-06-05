@@ -715,6 +715,23 @@ function LFGListEntryCreation_OnLoad(self)
 	self.Description.EditBox:SetScript("OnEnterPressed", nop);
 
 	self.GroupDropdown:SetWidth(141);
+
+	-- Group dropdown has a "More" option that requires us to set the text
+	-- manually if the option is not in the selected list.
+	self.GroupDropdown:SetSelectionText(function(currentSelections)
+		-- overrideName assigned when an option is picked from the dialog.
+		if self.GroupDropdown.overrideName then
+			return self.GroupDropdown.overrideName;
+		end
+
+		local currentSelection = currentSelections[1];
+		if currentSelection then
+			return MenuUtil.GetElementText(currentSelection);
+		end
+
+		return nil;
+	end);
+
 	self.ActivityDropdown:SetWidth(138);
 	self.PlayStyleDropdown:SetWidth(144);
 
@@ -722,6 +739,7 @@ function LFGListEntryCreation_OnLoad(self)
 end
 
 function LFGListEntryCreation_SetupGroupDropdown(self)
+	self.GroupDropdown.overrideName = nil;
 	self.GroupDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_LFG_FRAME_GROUP");
 
@@ -996,8 +1014,13 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 
 	--Update the group dropdown. If the group dropdown is showing an activity, hide the activity dropdown
 	local groupName = C_LFGList.GetActivityGroupInfo(groupID);
+	self.GroupDropdown.overrideName = groupName or activityInfo.shortName;
+
 	self.ActivityDropdown:SetShown(groupName and not categoryInfo.autoChooseActivity);
+	self.ActivityDropdown:GenerateMenu();
+
 	self.GroupDropdown:SetShown(not categoryInfo.autoChooseActivity);
+	self.GroupDropdown:GenerateMenu();
 
 	local shouldShowPlayStyleDropdown = (categoryInfo.showPlaystyleDropdown) and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity or activityInfo.isMythicActivity);
 	local shouldShowCrossFactionToggle = (categoryInfo.allowCrossFaction);

@@ -969,7 +969,8 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 			local itemLocation = C_Item.GetItemLocation(salvageItem:GetItemGUID());
 			if itemLocation then
 				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation, craftingReagentTbl);
+				local applyConcentration = transaction:IsApplyingConcentration();
+				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation, craftingReagentTbl, applyConcentration);
 			end
 		end
 	else
@@ -1169,7 +1170,7 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 			table.insert(ProfessionsCraftingPage_HelpPlate, optionalReagentsSection);
 		end
 
-		if self.SchematicForm.AllocateBestQualityCheckBox:IsShown() then
+		if self.SchematicForm.AllocateBestQualityCheckbox:IsShown() then
 			local width = 210;
 			local y = -545;
 			local bestQualityCheckboxSection =

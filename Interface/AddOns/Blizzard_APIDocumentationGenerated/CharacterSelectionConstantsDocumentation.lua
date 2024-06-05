@@ -34,6 +34,19 @@ local CharacterSelectionConstants =
 			},
 		},
 		{
+			Name = "WarbandSceneAnimationSheatheState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Maintain", Type = "WarbandSceneAnimationSheatheState", EnumValue = 0 },
+				{ Name = "SheatheWeapons", Type = "WarbandSceneAnimationSheatheState", EnumValue = 1 },
+				{ Name = "ShowWeapons", Type = "WarbandSceneAnimationSheatheState", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "WarbandSceneAnimationStandState",
 			Type = "Enumeration",
 			NumValues = 5,

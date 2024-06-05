@@ -126,7 +126,7 @@
 							</OnEnter>
 						</Scripts>
 					</Button>
-					<DropdownButton parentKey="SelectionDropdown" name="$parentSelectionDropDown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="SelectionDropdown" name="$parentSelectionDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="131" y="289"/>
 						</Anchors>

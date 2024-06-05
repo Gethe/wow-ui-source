@@ -405,20 +405,6 @@ function BaseMenuDescriptionMixin:Insert(description, index)
 	return description;
 end
 
-function BaseMenuDescriptionMixin:InsertTbl(descriptions)
-	local properties = self:GetSharedMenuProperties();
-
-	for index, description in ipairs(descriptions) do
-		description:SetSharedMenuProperties(properties);
-	end
-
-	self.elementDescriptions:InsertTbl(descriptions);
-
-	self:GetMenuChangedCallbacks():ExecuteRange(function(index, callback)
-		callback();
-	end);
-end
-
 function BaseMenuDescriptionMixin:GetInitializers()
 	return self.initializers;
 end
@@ -605,22 +591,6 @@ do
 	RootMenuDescriptionProxyMixin.Insert = Insert;
 	MenuElementDescriptionProxyMixin.Insert = Insert;
 
-	local function InsertTbl(descriptionProxy, descriptionProxies)
-		local description = Proxies:ToPrivate(descriptionProxy);
-		InsertQueuedDescriptions(descriptionProxy, description);
-
-		local insert = table.insert;
-		local descriptions = {};
-		for index, desc in ipairs(descriptionProxies) do
-			insert(descriptions, Proxies:ToPrivate(desc));
-		end
-
-		description:InsertTbl(descriptions);
-	end
-
-	RootMenuDescriptionProxyMixin.InsertTbl = InsertTbl;
-	MenuElementDescriptionProxyMixin.InsertTbl = InsertTbl;
-
 	--[[
 	EnumerateElementDescriptions cannot be forwarded in CreateProxyMixin above because
 	the function iterator will return the private objects instead of proxies.
@@ -793,13 +763,17 @@ do
 		return self.defaultResponse;
 	end
 
-	local function SecureCallResponder(descriptionProxy, description, menuInputContext)
+	local function SecureCallResponder(descriptionProxy, description, menuInputContext, menuInputButtonName)
 		local menu = description.menu;
 		local menuProxy = menu and menu:ToProxy() or nil;
-		return descriptionProxy.responder(descriptionProxy:GetData(), menuInputContext, menuProxy);
+		local menuInputData = {
+			context = menuInputContext,
+			buttonName = menuInputButtonName,
+		};
+		return descriptionProxy.responder(descriptionProxy:GetData(), menuInputData, menuProxy);
 	end
 
-	function MenuElementDescriptionProxyMixin:Pick(menuInputContext)
+	function MenuElementDescriptionProxyMixin:Pick(menuInputContext, menuInputButtonName)
 		assert(menuInputContext, "MenuElementDescriptionProxyMixin:Pick() called without an input context.")
 		--[[
 		If a responder callback is not set, then the menu will not change. Selecting a submenu root should 
@@ -809,7 +783,7 @@ do
 		local willRespond = self.responder ~= nil;
 		if willRespond then
 			-- Use the default response if it exists. This is supplied by checkbox and radio descriptions.
-			local descriptionResponse = self:GetDefaultResponse(menuInputContext);
+			local descriptionResponse = self:GetDefaultResponse(menuInputContext, menuInputButtonName);
 			if descriptionResponse then
 				response = descriptionResponse;
 			end
@@ -820,7 +794,7 @@ do
 			where a checkbox or radio is changed.
 			]]--
 			local description = Proxies:ToPrivate(self);
-			local overrideResponse = securecallfunction(SecureCallResponder, self, description, menuInputContext);
+			local overrideResponse = securecallfunction(SecureCallResponder, self, description, menuInputContext, menuInputButtonName);
 			if overrideResponse then
 				response = overrideResponse;
 			end
@@ -2034,9 +2008,9 @@ end
 
 local function SecureTaggedMenuOpened(menuDescription)
 	local proxy = menuDescription:ToProxy();
-	local tag = proxy:GetTag();
+	local tag, contextData = proxy:GetTag();
 	if tag then
-		EventRegistry:TriggerEvent("Menu.OpenMenuTag", tag);
+		EventRegistry:TriggerEvent("Menu.OpenMenuTag", tag, contextData);
 	end
 end
 

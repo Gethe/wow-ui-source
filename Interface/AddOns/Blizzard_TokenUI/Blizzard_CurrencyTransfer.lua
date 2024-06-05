@@ -10,6 +10,7 @@ CurrencyTransferToggleButtonMixin = CreateFromMixins(CurrencyTransferSystemMixin
 
 local CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
+	"CURRENCY_TRANSFER_FAILED",
 	"ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
 };
 
@@ -36,7 +37,7 @@ function CurrencyTransferToggleButtonMixin:OnHide()
 end
 
 function CurrencyTransferToggleButtonMixin:OnEvent(event, ...)
-	if event == "CURRENCY_DISPLAY_UPDATE" or event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" then
+	if event == "CURRENCY_DISPLAY_UPDATE" or event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" or event == "CURRENCY_TRANSFER_FAILED" then
 		self:UpdateEnabledState();
 	end
 end
@@ -94,6 +95,7 @@ CurrencyTransferMenuMixin = CreateFromMixins(CallbackRegistryMixin);
 
 local CURRENCY_TRANSFER_MENU_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
+	"CURRENCY_TRANSFER_FAILED",
 };
 
 CurrencyTransferMenuMixin:GenerateCallbackEvents({
@@ -117,6 +119,8 @@ function CurrencyTransferMenuMixin:OnEvent(event, ...)
 		if currencyID and currencyID == self:GetCurrencyID() then
 			self:FullRefresh();
 		end
+	elseif event == "CURRENCY_TRANSFER_FAILED" then
+		HideUIPanel(self);
 	end
 end
 

@@ -23,6 +23,10 @@ function ClassTalentSearchMixin:IsSearchInitialized()
 	return self.searchController and self.searchController:IsInitialized();
 end
 
+function ClassTalentSearchMixin:IsSearchActive()
+	return self:IsSearchInitialized() and self.searchController:GetActiveSearchFilter() ~= nil;
+end
+
 function ClassTalentSearchMixin:UpdateEnabledSearchTypes()
 	-- Avoid reacting if search hasn't initialized yet
 	if not self:IsSearchInitialized() then
@@ -145,10 +149,13 @@ end
 function ClassTalentSearchMixin:DisplayFullSearchResults()
 	for talentButton in self:EnumerateAllTalentButtons() do
 		local nodeID = talentButton:GetNodeID();
-		local entryID = talentButton:GetEntryID();
-		local matchType = self:GetSearchMatchTypeForEntry(nodeID, entryID);
+		-- Not passing a specific entryID here because we want the best match result across all the node's entries
+		-- Which is important for Selection nodes inidcating matches for non-selected entries
+		local matchType = self:GetSearchMatchTypeForEntry(nodeID, nil);
 		talentButton:SetSearchMatchType(matchType);
 	end
+
+	self.HeroTalentsContainer:UpdateSearchDisplay();
 end
 
 function ClassTalentSearchMixin:GetSearchMatchTypeForEntry(nodeID, entryID)

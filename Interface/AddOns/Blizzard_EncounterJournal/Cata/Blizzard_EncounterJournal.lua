@@ -2325,7 +2325,7 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 			EncounterJournal.encounter.info.lootTab:Click();
 		end
 	elseif tierIndex then
-		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);
+		EncounterJournal_TierDropdown_Select(EncounterJournal, tierIndex+1);
 	else
 		EncounterJournal_ListInstances();
 	end
@@ -2358,15 +2358,15 @@ function EJ_ContentTab_Select(id)
 	instanceSelect:Show();
 
 	-- 	if ( not EncounterJournal.dungeonsTab.isDisabled or not EncounterJournal.raidsTab.isDisabled ) then
-	-- 		EncounterJournal_DisableTierDropDown(true);
+	-- 		EncounterJournal_DisableTierDropdown(true);
 	-- 	else
-	-- 		EncounterJournal_EnableTierDropDown();
+	-- 		EncounterJournal_EnableTierDropdown();
 	-- 	end
 	local isDungeon = id == EncounterJournal.dungeonsTab:GetID();
 	local isRaid = id == EncounterJournal.raidsTab:GetID();
 	if ( isDungeon or isRaid ) then
 		EncounterJournal_ListInstances();
-		--EncounterJournal_EnableTierDropDown();
+		--EncounterJournal_EnableTierDropdown();
 	end
 
 	-- Update title bar with the current tab name
@@ -2504,7 +2504,7 @@ function AdventureJournal_Reward_OnMouseDown(self)
 		EncounterJournal.encounter.info[EJ_Tabs[2].button]:Click();
 	elseif ( data.isRandomDungeon ) then
 		EJ_ContentTab_Select(EncounterJournal.dungeonsTab:GetID());
-		EncounterJournal_TierDropDown_Select(nil, data.expansionLevel);
+		EncounterJournal_TierDropdown_Select(nil, data.expansionLevel);
 	end
 end
 

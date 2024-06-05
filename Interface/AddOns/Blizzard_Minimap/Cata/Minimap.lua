@@ -158,7 +158,7 @@ end
 
 function MiniMapLFGFrame_OnClick(self, button)
 	if ( button == "RightButton" ) then
-		QueueStatusDropDown_Show(self);
+		QueueStatusDropdown_Show(self);
 	else
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
 		if ( IsInLFDBattlefield() ) then

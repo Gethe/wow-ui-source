@@ -134,7 +134,7 @@ function ProfessionsCustomerOrdersBrowsePageMixin:InitFilterDropdown()
 				rootDescription:CreateCheckbox(GetFilterName(filter), IsSelected, SetSelected, filter);
 			end
 
-			MenuUtil.QueueSpacer(rootDescription);
+			rootDescription:QueueSpacer();
 		end
 	end);
 end

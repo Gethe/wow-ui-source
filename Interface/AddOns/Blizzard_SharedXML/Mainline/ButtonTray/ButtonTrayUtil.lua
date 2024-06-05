@@ -14,7 +14,7 @@ function ButtonTrayUtil.TestButtonTraySetup(button, label, callback, tooltipText
 	button:SetScript("OnClick", TalentTestButtonTrayButtonOnClick);
 end
 
-function ButtonTrayUtil.TestCheckBoxTraySetup(button, labelText, callback, customFont, tooltipText)
+function ButtonTrayUtil.TestCheckboxTraySetup(button, labelText, callback, customFont, tooltipText)
 	button:SetCallback(callback);
 	button:SetLabelText(labelText);
 	button.Label:SetFontObject(customFont);

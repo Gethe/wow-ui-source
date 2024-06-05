@@ -2840,8 +2840,8 @@ function WardrobeItemsModelMixin:OnMouseUp(button)
 				WardrobeCollectionFrameModelDropdown_SetFavorite(appearanceID, not favorite);
 			end);
 
-			MenuUtil.QueueSpacer(rootDescription);
-			MenuUtil.QueueTitle(rootDescription, WARDROBE_TRANSMOGRIFY_AS);
+			rootDescription:QueueSpacer();
+			rootDescription:QueueTitle(WARDROBE_TRANSMOGRIFY_AS);
 
 			local activeCategory = itemsCollectionFrame:GetActiveCategory();
 			local transmogLocation = itemsCollectionFrame.transmogLocation;

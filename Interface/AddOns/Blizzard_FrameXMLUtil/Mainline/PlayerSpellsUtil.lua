@@ -90,7 +90,7 @@ function PlayerSpellsUtil.ToggleSpellBookFrame(spellBookCategory)
 							and	(not spellBookCategory or PlayerSpellsFrame.SpellBookFrame:IsCategoryActive(spellBookCategory));
 
 	if alreadyShowing then
-		PlayerSpellsFrame:CheckConfirmClose();
+		HideUIPanel(PlayerSpellsFrame);
 	else
 		SetOrClearInspectUnit(inspectUnit);
 
@@ -114,7 +114,7 @@ function PlayerSpellsUtil.TogglePlayerSpellsFrame(suggestedTab, inspectUnit)
 							and (not suggestedTab or PlayerSpellsFrame:IsFrameTabActive(suggestedTab));
 
 	if alreadyShowing then
-		PlayerSpellsFrame:CheckConfirmClose();
+		HideUIPanel(PlayerSpellsFrame);
 	else
 		SetOrClearInspectUnit(inspectUnit);
 

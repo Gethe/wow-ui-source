@@ -4,7 +4,7 @@ function RTTSMixin:OnLoad()
 	SettingsDropdownControlMixin.OnLoad(self);
 
 	self.Button:ClearAllPoints();
-	self.Button:SetPoint("TOPLEFT", self.DropDown, "BOTTOMLEFT");
+	self.Button:SetPoint("TOPLEFT", self.Dropdown, "BOTTOMLEFT");
 end
 
 function RTTSMixin:Init(initializer)
@@ -14,7 +14,7 @@ function RTTSMixin:Init(initializer)
 	if #options == 0 then
 		local function OnVoiceUpdate()
 			local setting = self:GetSetting();
-			self.DropDown:SetValue(setting:GetValue());
+			self.Dropdown:SetValue(setting:GetValue());
 			self:UnregisterEvent("VOICE_CHAT_TTS_VOICES_UPDATE");
 		end
 
@@ -65,7 +65,7 @@ local function Register()
 			local function OnButtonClick()
 				ToggleTextToSpeechFrame();
 			end;
-			local initializer = CreateSettingsCheckBoxWithButtonInitializer(ttsSetting, CONFIGURE_TEXT_TO_SPEECH, OnButtonClick, true, OPTION_TOOLTIP_ENABLE_TEXT_TO_SPEECH);
+			local initializer = CreateSettingsCheckboxWithButtonInitializer(ttsSetting, CONFIGURE_TEXT_TO_SPEECH, OnButtonClick, true, OPTION_TOOLTIP_ENABLE_TEXT_TO_SPEECH);
 			layout:AddInitializer(initializer);
 		end
 

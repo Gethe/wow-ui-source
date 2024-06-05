@@ -729,6 +729,7 @@ local SharedTraits =
 				{ Name = "traitCurrencyID", Type = "number", Nilable = true },
 				{ Name = "spentAmountRequired", Type = "number", Nilable = true },
 				{ Name = "tooltipFormat", Type = "string", Nilable = true },
+				{ Name = "traitCondAccountElementID", Type = "number", Nilable = true },
 			},
 		},
 		{
