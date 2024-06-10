@@ -229,10 +229,15 @@ local vasErrorData = {
 	},
 	[Enum.VasError.TooMuchMoneyForLevel] = {
 		msg = function(character)
+			-- If you update these gold thresholds, be sure to also update:
+			--   - UserAuth.cpp - TRANSFER_GOLD_LIMIT_BASE and related
+			--   - The DB script / configs - Ask a DBE to help you
 			local str = "";
 			local moneyCapForLevel = 0;
 			if GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING then
-				if (character.level > 50) then
+				if (character.level > 80) then
+					moneyCapForLevel = 50000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
+				elseif (character.level > 50) then
 					moneyCapForLevel = 25000 * COPPER_PER_SILVER * SILVER_PER_GOLD;
 				elseif (character.level > 30) then
 					moneyCapForLevel = 2500 * COPPER_PER_SILVER * SILVER_PER_GOLD;

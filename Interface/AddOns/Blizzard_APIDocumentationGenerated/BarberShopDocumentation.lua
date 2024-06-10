@@ -109,6 +109,15 @@ local BarberShop =
 			},
 		},
 		{
+			Name = "HasAlteredForm",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasAlteredForm", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasAnyChanges",
 			Type = "Function",
 
@@ -230,6 +239,17 @@ local BarberShop =
 			Arguments =
 			{
 				{ Name = "dressedState", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPortraitTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "raceID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
 			},
 		},
 		{

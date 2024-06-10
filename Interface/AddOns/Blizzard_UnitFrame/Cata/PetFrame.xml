@@ -63,9 +63,29 @@
 										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-26"/>
 									</Anchors>
 								</FontString>
+								<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="45" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="3"/>
+									</Anchors>
+								</FontString>
 								<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-38"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="45" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="-8"/>
 									</Anchors>
 								</FontString>
 							</Layer>
